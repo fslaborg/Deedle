@@ -1,4 +1,7 @@
-﻿// --------------------------------------------------------------------------------------
+﻿#nowarn "40" // Recursive references checked at runtime
+#r "packages/FSharp.Data.dll"
+
+// --------------------------------------------------------------------------------------
 // Initialization
 // --------------------------------------------------------------------------------------
 
@@ -9,7 +12,6 @@
 NuGet.get __SOURCE_DIRECTORY__ "FSharp.Data"
 #endif
 
-#r "lib/FSharp.Data.dll"
 open FSharp.Data
 
 open System
@@ -23,10 +25,10 @@ open System.Runtime.CompilerServices
 // Nullable value
 // --------------------------------------------------------------------------------------
 
+let notImplemented msg = raise <| NotImplementedException(msg)
 let (|Let|) argument input = (argument, input)
 
-// TODO: Rename to N/A
-let isNan<'T> () =
+let isNA<'T> () =
   let ty = typeof<'T>
   let nanTest : 'T -> bool = 
     if ty = typeof<float> then unbox Double.IsNaN
@@ -45,7 +47,10 @@ type OptionalValue<'T>(hasValue:bool, value:'T) =
   new (value:'T) = OptionalValue(true, value)
   static member Empty = OptionalValue(false, Unchecked.defaultof<'T>)
   override x.ToString() = 
-    if hasValue then value.ToString() else "missing"
+    if hasValue then 
+      if Object.Equals(null, value) then "<null>"
+      else value.ToString() 
+    else "missing"
 
 module Array = 
   let inline existsAt low high f (data:'T[]) = 
@@ -57,16 +62,28 @@ module Array =
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module OptionalValue = 
+  let inline map f (input:OptionalValue<_>) = 
+    if input.HasValue then OptionalValue(f input.Value)
+    else OptionalValue.Empty
+
+  let inline ofTuple (b, value) =
+    if b then OptionalValue(value) else OptionalValue.Empty
+
   let inline asOption (value:OptionalValue<'T>) = 
     if value.HasValue then Some value.Value else None
 
+  let inline ofOption opt = 
+    match opt with
+    | None -> OptionalValue.Empty
+    | Some v -> OptionalValue(v)
+
   let inline containsNan (data:'T[]) = 
-    let isNan = isNan<'T>() // TODO: Optimize using static member constraints
-    Array.exists isNan data
+    let isNA = isNA<'T>() // TODO: Optimize using static member constraints
+    Array.exists isNA data
 
   let inline createNanArray (data:'T[]) =   
-    let isNan = isNan<'T>() // TODO: Optimize using static member constraints
-    data |> Array.map (fun v -> if isNan v then OptionalValue.Empty else OptionalValue(v))
+    let isNA = isNA<'T>() // TODO: Optimize using static member constraints
+    data |> Array.map (fun v -> if isNA v then OptionalValue.Empty else OptionalValue(v))
 
 
 module IReadOnlyList =
@@ -125,8 +142,11 @@ type IVector<'TAddress> =
   /// Reorders elements of the vector. The function takes a new vector length 
   /// (first parameter) and a list of relocations (a single pair of addresses
   /// specifies that an element at an old address should be moved to a new address).
-  abstract Reorder : 'TAddress * (seq<'TAddress * 'TAddress>) -> IVector<'TAddress>
+  ///
+  /// This may be given non-existent address! (when reordering shorter vector accoding to longer index)
+  abstract Reorder : ('TAddress * 'TAddress) * (seq<'TAddress * 'TAddress>) -> IVector<'TAddress>
   abstract GetRange : 'TAddress * 'TAddress -> IVector<'TAddress>
+  abstract DropRange : 'TAddress * 'TAddress -> IVector<'TAddress>
   abstract GetObject : 'TAddress -> bool * obj
   abstract MapObjects : (obj -> 'TNewValue) -> IVector<'TAddress, 'TNewValue>
 
@@ -134,7 +154,6 @@ and IVector<'TAddress, 'TValue> =
   inherit IVector<'TAddress>
   abstract GetValue : 'TAddress -> OptionalValue<'TValue>
   abstract Data : VectorData<'TValue>
-
   abstract Map : ('TValue -> 'TNewValue) -> IVector<'TAddress, 'TNewValue>
   abstract Append : IVector<'TAddress, 'TValue> -> IVector<'TAddress, 'TValue>
 
@@ -164,14 +183,22 @@ module VectorExtensions =
 // Concrete vector implementations
 // --------------------------------------------------------------------------------------
 
-[<RequireQualifiedAccess>]
-type Vector<'T> = 
-  | VectorOptional of OptionalValue<'T>[]
-  | VectorNonOptional of 'T[]
+type Vector =
+  static member inline Create<'T>(data:'T[]) : IVector<int, 'T> = 
+    let hasNans = OptionalValue.containsNan data
+    if hasNans then upcast Vector.VectorOptional(OptionalValue.createNanArray data) 
+    else upcast Vector.VectorNonOptional(data)
 
-  static member inline internal createVector (data:OptionalValue<_>[]) : Vector<_> =  // TODO: Rename &^ move 
+  static member inline Create<'T when 'T : equality>(data:seq<'T>) : IVector<int, 'T> = 
+    Vector.Create(Array.ofSeq data)
+
+  static member inline CreateOptional<'T>(data:OptionalValue<'T>[]) : Vector<'T> = 
     if data |> Array.exists (fun v -> not v.HasValue) then Vector.VectorOptional(data)
     else Vector.VectorNonOptional(data |> Array.map (fun v -> v.Value))
+
+and [<RequireQualifiedAccess>] Vector<'T> = 
+  | VectorOptional of OptionalValue<'T>[]
+  | VectorNonOptional of 'T[]
 
   override x.ToString() = prettyPrintVector x
   interface IVector<int> with
@@ -180,6 +207,13 @@ type Vector<'T> =
       match vector with
       | VectorOptional data -> let it = data.[index] in it.HasValue, box it.ValueOrDefault
       | VectorNonOptional data -> true, box data.[index]
+
+    member vector.DropRange(first, last) = 
+      match vector with 
+      | VectorOptional data ->
+          upcast Vector.CreateOptional<_>(Array.append (data.[.. first - 1]) (data.[last + 1 ..]))
+      | VectorNonOptional data ->
+          upcast VectorNonOptional(Array.append (data.[.. first - 1]) (data.[last + 1 ..]))
 
     member vector.GetRange(first, last) = 
       match vector with
@@ -190,16 +224,18 @@ type Vector<'T> =
       | VectorNonOptional data -> 
           upcast VectorNonOptional(data.[first .. last])
 
-    member vector.Reorder(length, relocations) = 
-      let newData = Array.zeroCreate length
+    member vector.Reorder((lo, hi), relocations) = 
+      let newData = Array.zeroCreate (hi - lo + 1)
       match vector with 
       | VectorOptional data ->
           for oldIndex, newIndex in relocations do
-            newData.[newIndex] <- data.[oldIndex]
+            if oldIndex < data.Length && oldIndex >= 0 then
+              newData.[newIndex] <- data.[oldIndex]
       | VectorNonOptional data ->
           for oldIndex, newIndex in relocations do
-            newData.[newIndex] <- OptionalValue(data.[oldIndex])
-      upcast Vector.createVector newData
+            if oldIndex < data.Length && oldIndex >= 0 then
+              newData.[newIndex] <- OptionalValue(data.[oldIndex])
+      upcast Vector.CreateOptional<'T>(newData)
 
     member vector.MapObjects(f:obj -> 'R) : IVector<int, 'R> = (vector :> IVector<int, 'T>).Map<'R>(box >> f)
 
@@ -213,21 +249,21 @@ type Vector<'T> =
       | VectorNonOptional data -> DenseList (IReadOnlyList.ofArray data)
       | VectorOptional data -> SparseList (IReadOnlyList.ofArray data)
     member vector.Map<'TNewValue>(f) = 
-      let isNan = isNan<'TNewValue>() 
+      let isNA = isNA<'TNewValue>() 
       let newData =
         match vector with
         | VectorNonOptional data ->
             data |> Array.map (fun v -> 
               let res = f v 
-              if isNan res then OptionalValue.Empty else OptionalValue(res))
+              if isNA res then OptionalValue.Empty else OptionalValue(res))
         | VectorOptional data ->
             data |> Array.map (fun v -> 
               if not v.HasValue then OptionalValue.Empty else
                 let res = f v.Value
-                if isNan res then OptionalValue.Empty else OptionalValue(res))
-      upcast Vector.createVector newData
+                if isNA res then OptionalValue.Empty else OptionalValue(res))
+      upcast Vector.CreateOptional<'TNewValue>(newData)
 
-    member vector.Append(other) = 
+    member vector.Append(other) : IVector<_, 'T> = 
       let (|AsVectorOptional|) = function
         | VectorOptional d -> d
         | VectorNonOptional d -> Array.map (fun v -> OptionalValue v) d
@@ -237,15 +273,21 @@ type Vector<'T> =
          | VectorNonOptional d1, VectorNonOptional d2 -> upcast VectorNonOptional (Array.append d1 d2)
          | AsVectorOptional d1, AsVectorOptional d2 -> upcast VectorOptional (Array.append d1 d2)
       | _ ->
-        upcast Vector.createVector (Array.ofSeq (Seq.append vector.DataSequence other.DataSequence))
+        let newData = Array.ofSeq (Seq.append vector.DataSequence other.DataSequence)
+        upcast Vector.CreateOptional<'T>(newData)
 
-and Vector =
-  static member inline Create<'T>(data:'T[]) : IVector<int, 'T> = 
-    let hasNans = OptionalValue.containsNan data
-    if hasNans then upcast Vector.VectorOptional(OptionalValue.createNanArray data) 
-    else upcast Vector.VectorNonOptional(data)
-  static member inline Create<'T when 'T : equality>(data:seq<'T>) : IVector<int, 'T> = 
-    Vector.Create(Array.ofSeq data)
+let delegatedVector (vector:IVector<'TAddress, 'TValue> ref) =
+  { new IVector<'TAddress, 'TValue> with
+      member x.GetValue(a) = vector.Value.GetValue(a)
+      member x.Data = vector.Value.Data
+      member x.Map(f) = vector.Value.Map(f)
+      member x.Append(v) = vector.Value.Append(v)
+    interface IVector<'TAddress> with
+      member x.Reorder(l, r) = vector.Value.Reorder(l, r)
+      member x.GetRange(l, h) = vector.Value.GetRange(l, h)
+      member x.DropRange(l, h) = vector.Value.DropRange(l, h)
+      member x.GetObject(i) = vector.Value.GetObject(i)
+      member x.MapObjects(f) = vector.Value.MapObjects(f) }
 
 // --------------------------------------------------------------------------------------
 // TESTS
@@ -260,7 +302,7 @@ Vector.Create [ 1 .. 100 ]
 let nan = Vector.Create [ 1.0; Double.NaN; 10.1 ]
 
 let five = Vector.Create [ 1 .. 5 ]
-let ten = five.Reorder(10, seq { for v in 0 .. 4 -> v, 2 * v })
+let ten = five.Reorder((0, 10), seq { for v in 0 .. 4 -> v, 2 * v })
 ten.GetObject(2)
 ten.GetObject(3)
 
@@ -276,41 +318,51 @@ five.Map (fun v -> if v = 1 then Double.NaN else float v)
 five.Map float
 
 // Confusing? 
-//   nan.Map (fun v -> if Double.IsNaN(v) then -1.0 else v)
+//   nan.Map (fun v -> if Double.isNA(v) then -1.0 else v)
 
 // --------------------------------------------------------------------------------------
 // Index
 // --------------------------------------------------------------------------------------
 
-let generateAddressRange<'TAddress> (count:'TAddress) : seq<'TAddress> =
-  let ty = typeof<'TAddress> 
-  if ty = typeof<int> then seq { for i in 0 .. (unbox<int> (box count)) - 1 -> unbox (box i) }
-  elif ty = typeof<int64> then seq { for i in 0L .. (unbox<int64> (box count)) - 1L -> unbox (box i) }
-  else failwith "generateAddressRange: Unknown type"
-
-let getSize<'TAddress, 'T>(arg:seq<'T>) : 'TAddress = 
-  let ty = typeof<'TAddress>
-  if ty = typeof<int> then unbox (box (arg.Count()))
-  elif ty = typeof<int64> then unbox (box (arg.LongCount()))
-  else failwith "getSize: Unknown type"
-
+type AddressOperations<'TAddress> = 
+  abstract GenerateRange : 'TAddress * 'TAddress -> seq<'TAddress>
+  abstract Zero : 'TAddress 
+  abstract RangeOf : seq<'T> -> 'TAddress * 'TAddress
+  abstract GetRange : seq<'T> * 'TAddress * 'TAddress -> seq<'T>
+  
 type IIndex<'TKey, 'TAddress> = 
   abstract Lookup : 'TKey -> OptionalValue<'TAddress>  
   abstract Elements : seq<'TKey * 'TAddress>
-  abstract Size : 'TAddress
+  abstract Range : 'TAddress * 'TAddress
   abstract UnionWith : IIndex<'TKey, 'TAddress> -> IIndex<'TKey, 'TAddress>
   abstract Append : IIndex<'TKey, 'TAddress> -> IIndex<'TKey, 'TAddress>
+  abstract DropItem : 'TKey -> IIndex<'TKey, 'TAddress>
+  abstract GetRange : option<'TKey> * option<'TKey> -> IIndex<'TKey, 'TAddress>
 
 /// A hashtable that maps index values 'TKey to offsets 'TAddress allowing duplicates
-type Index<'TKey, 'TAddress when 'TKey : equality and 'TAddress : equality>(keys:seq<'TKey>, offsets:seq<'TAddress>) =
+type Index<'TKey, 'TAddress when 'TKey : equality and 'TAddress : equality> (keys:seq<'TKey>, ops:AddressOperations<'TAddress>) =
   // Build a lookup table
   let dict = Dictionary<'TKey, 'TAddress>()
-  do for k, v in Seq.zip keys offsets do 
+  do let addresses = ops.GenerateRange(ops.RangeOf(keys))
+     for k, v in Seq.zip keys addresses do 
        match dict.TryGetValue(k) with
        | true, list -> invalidArg "keys" "Duplicate keys are not allowed in the index."
        | _ -> dict.[k] <- v  
 
   interface IIndex<'TKey, 'TAddress> with
+    member x.GetRange(lo, hi) =
+      let (|Lookup|_|) x = match dict.TryGetValue(x) with true, v -> Some v | _ -> None
+      let def = lazy ops.RangeOf(keys)
+      let getBound offs proj = 
+        match offs with 
+        | None -> proj def.Value 
+        | Some (Lookup i) -> i
+        | _ -> invalidArg "lo,hi" "Keys of the range were not found in the data frame."
+      upcast Index<_, _>(ops.GetRange(keys, getBound lo fst, getBound hi snd), ops)
+
+    member x.DropItem(key) = 
+      upcast Index<_, _>(Seq.filter ((<>) key) keys, ops) 
+      
     member x.Lookup(key) = 
       match dict.TryGetValue(key) with
       | true, address -> OptionalValue(address)
@@ -319,14 +371,11 @@ type Index<'TKey, 'TAddress when 'TKey : equality and 'TAddress : equality>(keys
     member x.Elements = 
       seq { for (KeyValue(k, value)) in dict -> k, value }        
 
-    member x.Size = getSize (x :> IIndex<_, _>).Elements
+    member x.Range = ops.RangeOf((x :> IIndex<_, _>).Elements)
 
     member this.UnionWith(other) = 
       let keys = (Seq.map fst (this :> IIndex<_, _>).Elements).Union(Seq.map fst other.Elements)
-      let offsets = 
-        try generateAddressRange<'TAddress> (getSize keys)
-        with _ -> invalidOp "Cannot join data frames with incompatible or unknown types of indices"
-      Index(keys, offsets) :> IIndex<_, _>
+      Index<_, _>(keys, ops) :> IIndex<_, _>
 
     /// Throws if there is a repetition
     member this.Append(other) =      
@@ -334,13 +383,27 @@ type Index<'TKey, 'TAddress when 'TKey : equality and 'TAddress : equality>(keys
         [ Seq.map fst (this :> IIndex<_, _>).Elements
           Seq.map fst other.Elements ]
         |> Seq.concat
-      let offsets = 
-        try generateAddressRange<'TAddress> (getSize keys)
-        with _ -> invalidOp "Cannot join data frames with incompatible or unknown types of indices"
-      Index(keys, offsets) :> IIndex<_, _>
+      upcast Index<_, _>(keys, ops)
+
+let intAddress = 
+  { new AddressOperations<int> with
+      member x.GenerateRange(lo, hi) : seq<int> = seq { lo .. hi } 
+      member x.Zero = 0
+      member x.RangeOf(seq) = 0, (Seq.length seq) - 1 
+      member x.GetRange(seq, lo, hi) = 
+        if hi >= lo then seq |> Seq.skip lo |> Seq.take (hi - lo + 1) 
+        else Seq.empty }
 
 type Index = 
-  static member Create(data:seq<'T>) = Index(data, data |> Seq.mapi (fun i _ -> i))
+  static member Create(data:seq<'T>) = Index(data, intAddress)
+
+let inline reindex (oldIndex:IIndex<'TKey, 'TAddress>) (newIndex:IIndex<'TKey, 'TAddress>) (data:IVector<'TAddress>) =
+  let relocations = seq {  
+    for key, oldAddress in oldIndex.Elements do
+      let newAddress = newIndex.Lookup(key)
+      if newAddress.HasValue then 
+        yield oldAddress, newAddress.Value }
+  data.Reorder(newIndex.Range, relocations)
 
 // --------------------------------------------------------------------------------------
 // Series
@@ -352,13 +415,46 @@ type Series<'TIndex, 'TValue when 'TIndex : equality>(index:IIndex<'TIndex, int>
   member internal x.Data = data
   member x.Observations = seq { for key, address in index.Elements -> key, data.GetValue(address) }
   member x.Values = x.Observations |> Seq.map fst // TODO: .. Keys?
-  member x.Item 
-    with get(key) = 
-      let address = index.Lookup(key) 
-      if not address.HasValue then invalidArg "key" (sprintf "The index '%O' is not present in the series." key)
-      let value = data.GetValue(address.Value)
-      if not value.HasValue then invalidArg "key" (sprintf "The value for index '%O' is empty." key)
-      value.Value
+  member x.TryGet(key) =
+    let address = index.Lookup(key) 
+    if not address.HasValue then invalidArg "key" (sprintf "The index '%O' is not present in the series." key)
+    let value = data.GetValue(address.Value)
+    value |> OptionalValue.asOption
+  
+  member x.GetItems(items) =
+    let newIndex = Index.Create items
+    let newData = (reindex index newIndex data) :?> IVector<int, 'TValue>  // TODO: Well.. we could have typed Reoreder but... this should always work
+    Series<'TIndex,'TValue>(newIndex, newData) 
+
+  member x.GetSlice(lo, hi) =
+    let newIndex = index.GetRange(lo, hi)
+    let newData = (reindex index newIndex data) :?> IVector<int, 'TValue>  // TODO: Well.. we could have typed Reoreder but... this should always work
+    Series<'TIndex,'TValue>(newIndex, newData) 
+
+  member x.GetItem(key) =
+    match x.TryGet(key) with
+    | None -> invalidArg "key" (sprintf "The value for index '%O' is empty." key)
+    | Some v -> v
+
+  static member (?) (series:Series<_, _>, name:string) = series.GetItem(name)
+
+  member x.Map<'R>(f:'TIndex -> 'TValue -> 'R) = 
+    let newData =
+      [| for key, addr in index.Elements -> // TODO: Does not scale
+           data.GetValue(addr) |> OptionalValue.map (f key) |]
+    Series<'TIndex, 'R>(index, Vector.CreateOptional newData)
+
+  member x.MapRaw<'R>(f:'TIndex -> option<'TValue> -> option<'R>) = 
+    let newData =
+      [| for key, addr in index.Elements -> // TODO: Does not scale
+           data.GetValue(addr) |> OptionalValue.asOption |> f key |> OptionalValue.ofOption |]
+    Series<'TIndex, 'R>(index, Vector.CreateOptional newData)
+
+  // Should be an extension method on Series<_, obj>
+  member x.GetAny<'R>(column) : 'R = unbox (x.GetItem(column))
+  member x.TryGetAny<'R>(column) : 'R option = x.TryGet(column) |> Option.map unbox
+
+type Series<'TIndex when 'TIndex : equality> = Series<'TIndex, obj>
 
 type Series = 
   static member Create(data:seq<'TValue>) =
@@ -366,8 +462,12 @@ type Series =
     Series<int, 'TValue>(Index.Create(lookup), Vector.Create(data))
   static member Create(index:seq<'TIndex>, data:seq<'TValue>) =
     Series<'TIndex, 'TValue>(Index.Create(index), Vector.Create(data))
+  static member Create(index:IIndex<'TIndex, int>, data:IVector<int, 'TValue>) = 
+    Series<'TIndex, 'TValue>(index, data)
 
-module Extensions = 
+[<AutoOpen>] 
+module SeriesExtensions =
+
   [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
   module Series = 
     let inline sum (series:Series<_, _>) = 
@@ -381,28 +481,19 @@ module Extensions =
       | SparseList list -> IReadOnlyList.averageOptional list
       | Sequence seq -> Seq.average (Seq.choose OptionalValue.asOption seq)
 
+  type Series<'TIndex, 'TValue when 'TIndex : equality> with
+    member x.Item with get(a) = x.GetItem(a)
+    member x.Item with get(a, b) = x.GetItems [a; b] 
+    member x.Item with get(a, b, c) = x.GetItems [a; b; c] 
+    member x.Item with get(a, b, c, d) = x.GetItems [a; b; c; d]
+    member x.Item with get(a, b, c, d, e) = x.GetItems [a; b; c; d; e]
+    member x.Item with get(a, b, c, d, e, f) = x.GetItems [a; b; c; d; e; f]
+    member x.Item with get(a, b, c, d, e, f, g) = x.GetItems [a; b; c; d; e; f; g]
+    member x.Item with get(a, b, c, d, e, f, g, h) = x.GetItems [a; b; c; d; e; f; g; h] 
+
 // --------------------------------------------------------------------------------------
 // Data frame
 // --------------------------------------------------------------------------------------
-
-/// Assumes that both column and row indices use int for addressing. It takes the current
-/// address in the "row" direction and an index that maps column keys to offsets in 
-/// 'vectors' (which is used to get the right column vector)
-type RowReader<'TColumn>(offset:int, columnIndex:IIndex<'TColumn, int>, vectors:IVector<int, IVector<int>>) =
-  let columns = lazy IReadOnlyList.ofSeq (Seq.map fst columnIndex.Elements)
-  member x.GetColumn<'R>(columnKey) : option<'R> =     
-    let columnIndex = columnIndex.Lookup(columnKey)
-    if not columnIndex.HasValue then 
-      invalidArg "columnKey" (sprintf "Column with key '%O' does not exist in the data frame." columnKey)
-    let vector = vectors.GetValue(columnIndex.Value)
-    if not vector.HasValue then
-      invalidOp (sprintf "Vector for column with key '%O' is missing in the data frame." columnKey)
-    let b, v = vector.Value.GetObject(offset)
-    if b then Some (v :?> 'R) else None
-
-  member x.Columns = columns.Value
-  member x.GetColumnAt<'R>(index)  =     
-    x.GetColumn<'R>(columns.Value |> Seq.nth index) 
 
 type JoinKind = 
   | Outer = 0
@@ -410,29 +501,67 @@ type JoinKind =
   | Left = 2
   | Right = 3
 
-type FrameRows<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnIndex : equality> =
-  abstract Map : ('TRowIndex -> RowReader<'TColumnIndex> -> option<'R>) -> Series<'TRowIndex,'R> when 'R : equality
-
 /// A frame contains one Index, with multiple Vecs
 /// (because this is dynamic, we need to store them as IVec)
-type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnIndex : equality>
+and Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnIndex : equality>
     ( rowIndex:IIndex<'TRowIndex, int>, columnIndex:IIndex<'TColumnIndex, int>, 
       data:IVector<int, IVector<int>>) =
+
+  // ----------------------------------------------------------------------------------------------
+  // Internals (rowIndex, columnIndex, data and various helpers)
+  // ----------------------------------------------------------------------------------------------
 
   let mutable rowIndex = rowIndex
   let mutable columnIndex = columnIndex
   let mutable data = data
 
-  let reindex (oldIndex:IIndex<'TKey, 'TAddress>) (newIndex:IIndex<'TKey, 'TAddress>) (data:IVector<'TAddress>) =
-    let relocations = seq {  
-      for key, oldAddress in oldIndex.Elements do
-        let newAddress = newIndex.Lookup(key)
-        if newAddress.HasValue then yield oldAddress, newAddress.Value }
-    data.Reorder(newIndex.Size, relocations)
+  let createRowReader rowAddress =
+    let rec materializeVector() =
+      let data = (virtualVector : ref<IVector<_, _>>).Value.DataSequence
+      virtualVector := upcast Vector.CreateOptional(data |> Array.ofSeq)
+    and virtualVector = 
+      { new IVector<int, obj> with
+          member x.GetValue(columnAddress) = 
+            let vector = data.GetValue(columnAddress)
+            if not vector.HasValue then OptionalValue.Empty
+            else
+              match vector.Value.GetObject(rowAddress) with
+              | true, v -> OptionalValue(v)
+              | _ -> OptionalValue.Empty
+          member x.Data = 
+            [| for _, addr in columnIndex.Elements -> x.GetValue(addr) |]
+            |> IReadOnlyList.ofArray |> SparseList          
+          member x.Map(f) = materializeVector(); virtualVector.Value.Map(f)
+          member x.Append(v) = materializeVector(); virtualVector.Value.Append(v)
+        interface IVector<int> with
+          member x.Reorder(s, r) = materializeVector(); virtualVector.Value.Reorder(s, r)
+          member x.GetRange(l, h) = materializeVector(); virtualVector.Value.GetRange(l, h)
+          member x.DropRange(l, h) = materializeVector(); virtualVector.Value.DropRange(l, h)
+          member x.GetObject(i) = let v = (x :?> IVector<int, obj>).GetValue(i) in v.HasValue, v.ValueOrDefault
+          member x.MapObjects(f) = materializeVector(); virtualVector.Value.MapObjects(f) } |> ref
+    delegatedVector virtualVector
+
+  let safeGetRowVector row = 
+    let rowVect = rowIndex.Lookup(row)
+    if not rowVect.HasValue then invalidArg "index" (sprintf "The data frame does not contain row with index '%O'" row) 
+    else  createRowReader rowVect.Value
+
+  let safeGetColVector column = 
+    let columnIndex = columnIndex.Lookup(column)
+    if not columnIndex.HasValue then 
+      invalidArg "column" (sprintf "Column with a key '%O' does not exist in the data frame" column)
+    let columnVector = data.GetValue columnIndex.Value
+    if not columnVector.HasValue then
+      invalidOp "column" (sprintf "Column with a key '%O' is present, but does not contain a value" column)
+    columnVector.Value
 
   member internal frame.RowIndex = rowIndex
   member internal frame.ColumnIndex = columnIndex
   member internal frame.Data = data
+
+  // ----------------------------------------------------------------------------------------------
+  // Frame operations - joins
+  // ----------------------------------------------------------------------------------------------
 
   member frame.Join(otherFrame:Frame<'TRowIndex, 'TColumnIndex>, ?kind) =    
     match kind with 
@@ -445,10 +574,15 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
     | Let rowIndex (newRowIndex, Some JoinKind.Left) 
     | Let otherFrame.RowIndex (newRowIndex, Some JoinKind.Right) ->
         let newColumnIndex = columnIndex.Append(otherFrame.ColumnIndex)
-        let newData = data.Map(reindex rowIndex newRowIndex).Append(otherFrame.Data.Map(reindex otherFrame.RowIndex newRowIndex))
+        let newData = data.Map(reindex rowIndex newRowIndex)
+        let newData = newData.Append(otherFrame.Data.Map(reindex otherFrame.RowIndex newRowIndex))
         Frame(newRowIndex, newColumnIndex, newData)
 
     | _ -> failwith "! (join not implemented)"
+
+  // ----------------------------------------------------------------------------------------------
+  // Series related operations - add, drop, get, ?, ?<-, etc.
+  // ----------------------------------------------------------------------------------------------
 
   member frame.AddSeries(column:'TColumnIndex, series:Series<_, _>) = 
     let other = Frame(series.Index, Index.Create [column], Vector.Create [series.Data :> IVector<int> ])
@@ -456,70 +590,65 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
     columnIndex <- joined.ColumnIndex
     data <- joined.Data
 
-  member frame.GetSeries<'R>(column:'TColumnIndex) : Series<'TRowIndex, 'R> = 
-    let convertVector (vec:IVector<int>) : IVector<int, 'R> = 
-      match vec with
-      | :? IVector<int, 'R> as vec -> vec
-      | other -> 
-          raise (InvalidCastException("The series cannot be converted to the required type."))
+  member frame.DropSeries(column:'TColumnIndex) = 
+    let columnAddress = columnIndex.Lookup(column)
+    if not columnAddress.HasValue then 
+      invalidArg "column" (sprintf "Column with a key '%A' does not exist in the data frame" column) 
+    columnIndex <- columnIndex.DropItem(column)
+    data <- downcast data.DropRange(columnAddress.Value, columnAddress.Value)
 
-    let columnIndex = columnIndex.Lookup(column)
-    if not columnIndex.HasValue then 
-      invalidArg "column" (sprintf "Column with a key '%A' does not exist in the data frame" column)
-    else
-      let columnVector = data.GetValue columnIndex.Value
-      if not columnVector.HasValue then
-        invalidOp "column" (sprintf "Column with a key '%A' is present, but does not contain a value" column)
-      Series(rowIndex, convertVector columnVector.Value)
-
-  static member (?<-) (frame:Frame<_, _>, column, series:Series<'T, 'V>) =
+  member frame.ReplaceSeries(column:'TColumnIndex, series:Series<_, _>) = 
+    if columnIndex.Lookup(column).HasValue then
+      frame.DropSeries(column)
     frame.AddSeries(column, series)
 
+  member frame.GetSeries<'R>(column:'TColumnIndex) : Series<'TRowIndex, 'R> = 
+    let convertVector (vec:IVector<int>) : IVector<int, 'R> = 
+      let typ = typeof<'R>
+      match vec with
+      | :? IVector<int, 'R> as vec -> vec
+      | vec -> vec.MapObjects (fun v -> System.Convert.ChangeType(v, typ) :?> 'R)
+    Series.Create(rowIndex, convertVector (safeGetColVector column))
+
+  static member (?<-) (frame:Frame<_, _>, column, series:Series<'T, 'V>) =
+    frame.ReplaceSeries(column, series)
+
   static member (?<-) (frame:Frame<_, _>, column, data:seq<'V>) =
-    frame.AddSeries(column, Series(frame.RowIndex, Vector.Create data))
+    frame.ReplaceSeries(column, Series.Create(frame.RowIndex, Vector.Create data))
 
   static member (?) (frame:Frame<_, _>, column) : Series<'T, float> = 
     frame.GetSeries<float>(column)
 
-  member x.Rows =
-    { new FrameRows<_, _> with
-        member x.Map<'R when 'R : equality>(f) = 
-          // TODO: Does not scale
-          let seriesData = 
-            [| for rowKey, rowAddress in rowIndex.Elements ->
-                 match f rowKey (RowReader(rowAddress, columnIndex, data)) with
-                 | Some v -> OptionalValue(v)
-                 | _ -> OptionalValue.Empty |]
-          Series<'TRowIndex, 'R>(rowIndex, Vector.createVector(seriesData)) }
-(*
-  member x.GetSlice(rowStart, rowEnd, colStart, colEnd) =     
-    let allColumns = x.Columns |> Seq.toArray
-    let findColumn name def = 
-      match name with 
-      | None -> def
-      | Some name -> Seq.findIndex (fst >> ((=) name)) allColumns
-            
-    let colStart, colEnd = findColumn colStart 0, findColumn colEnd (allColumns.Length - 1)
-    let rowStart, rowEnd = defaultArg rowStart 0, defaultArg rowEnd ((Seq.length index.Values) - 1)
-    
-    let allIndex = x.Index.Values |> Seq.toArray
-    let index = Index (allIndex.[rowStart .. rowEnd])
-    let columns = 
-      [ for i in colStart .. colEnd -> 
-          let name, colData = allColumns.[i]
-          name, colData.GetRange(rowStart, rowEnd) ]
-    Frame(index, columns)
-*)
-  member x.Item 
-    with get(index) =
-      let row = rowIndex.Lookup(index)
-      if not row.HasValue then invalidArg "index" (sprintf "The data frame does not contain row with index '%O'" index) 
-      else RowReader(row.Value, columnIndex, data)
+  // ----------------------------------------------------------------------------------------------
+  // df.Rows and df.Columns
+  // ----------------------------------------------------------------------------------------------
+
+  member x.Columns = 
+    Series.Create(columnIndex, data.Map(fun vect -> Series.Create(rowIndex, vect.MapObjects id)))
+
+  member x.Rows = 
+    let seriesData = 
+      [| for rowKey, rowAddress in rowIndex.Elements ->  // TODO: Does not scale?
+            Series.Create(columnIndex, createRowReader rowAddress) |]
+    Series.Create(rowIndex, Vector.Create(seriesData)) 
 
 type Frame =
-  static member Create(column:'TColumnIndex, series:Series<'TRowIndex, _>) = 
+  static member Create(column:'TColumnIndex, series:Series<'TRowIndex, 'TValue>) = 
     let data = Vector.Create [| series.Data :> IVector<int> |]
     Frame(series.Index, Index.Create [column], data)
+(*
+  static member Create(nested:Series<'TRowIndex, Series<'TColumnIndex, 'TValue>>) =
+    let initial = Frame(Index.Create [], Index.Create [], Vector.Create [| |])
+    (initial, nested.Observations) ||> Seq.fold (fun df (name, series) -> 
+      if not series.HasValue then df 
+      else df.(Frame.Create(name, series.Value), JoinKind.Outer))
+
+  static member Create(nested:Series<'TColumnIndex, Series<'TRowIndex, 'TValue>>) =
+    let initial = Frame(Index.Create [], Index.Create [], Vector.Create [| |])
+    (initial, nested.Observations) ||> Seq.fold (fun df (name, series) -> 
+      if not series.HasValue then df 
+      else df.Join(Frame.Create(name, series.Value), JoinKind.Outer))
+*)
 
 // Simple functions that pretty-print series and frames
 // (to be integrated as ToString and with F# Interactive)
@@ -537,13 +666,11 @@ let printTable (data:string[,]) =
 let prettyPrintFrame (f:Frame<_, _>) =
   seq { yield ""::[ for colName, _ in f.ColumnIndex.Elements do yield colName.ToString() ]
         for ind, addr in f.RowIndex.Elements do
-          let row = f.[ind]
+          let row = f.Rows.[ind]
           yield 
             (ind.ToString() + " ->")::
-            [ for col in row.Columns -> 
-                match row.GetColumn<obj>(col) with
-                | None -> "missing"
-                | Some v -> v.ToString() ] }
+            [ for _, value in row.Observations ->  // TODO: is this good?
+                value.ToString() ] }
   |> array2D
   |> printTable
 
@@ -568,7 +695,6 @@ type Frame with
 // Some basic examples of using the data frame
 // --------------------------------------------------------------------------------------
 
-open Extensions
 open Microsoft.FSharp.Linq.NullableOperators
 
 let s1 = Series.Create(["a"; "b"; "c"], [1 .. 3])
@@ -590,9 +716,12 @@ let f2 = Frame.Create("S2", s2)
 f1 |> prettyPrintFrame
 f2 |> prettyPrintFrame
 
+f1.Join(f2, JoinKind.Left) |> prettyPrintFrame
+
+
 f1?Another <- f2.GetSeries<int>("S2")
 
-f1?Test0 <- [ "a"; "b" ] // TODO: bug
+f1?Test0 <- [ "a"; "b" ] // TODO: bug - fixed
 f1?Test <- [ "a"; "b"; "!" ]
 f1?Test2 <- [ "a"; "b"; "!"; "?" ]
 
@@ -610,23 +739,61 @@ joinedR |> prettyPrintFrame
 
 // TODO: Think what this should do...
 // (special case construction OR sum/mean/...)
-let zeros = joined.Rows.Map(fun key reader -> if key = "a" then None else Some Double.NaN)
+let zerosQ = joined.Rows.MapRaw(fun key reader -> if key = "a" then None else Some Double.NaN)
+zerosQ |> prettyPrintSeries
+
+let zerosE = joined.Rows.Map(fun key reader -> if key = "a" then None else Some Double.NaN)
+zerosE |> prettyPrintSeries
+
+let zeros = joined.Rows.MapRaw(fun key reader -> if key = "a" then None else Some 0.0)
 zeros |> prettyPrintSeries
 
 joined?Zeros <- zeros
 joined |> prettyPrintFrame 
 
-joined?Sum <- joined.Rows.Map(fun key reader -> 
-  match reader.GetColumn<int>("S1"), reader.GetColumn<int>("S2") with
+
+
+joined |> prettyPrintFrame 
+
+joined.Rows.["a"] |> prettyPrintSeries
+joined.Rows.["a", "c"] |> Frame.Create |> prettyPrintFrame
+
+joined.Rows.["a", "c", "d"] |> Frame.Create |> prettyPrintFrame
+joined.Rows.["a" .. "c"] |> Frame.Create |> prettyPrintFrame
+
+let reversed = joined.Rows.["d", "c", "b", "a"] |> Frame.Create
+reversed |> prettyPrintFrame
+reversed.Rows.["d" .. "d"] |> prettyPrintFrame
+reversed.Rows.["d" .. "c"] |> prettyPrintFrame
+reversed.Rows.["a" .. "c"] |> prettyPrintFrame // Empty data frame - as expected
+
+let tf = Frame.Create("First", joined.Rows.["a"]) 
+tf |> prettyPrintFrame
+
+tf?Second <- joined.Rows.["b"]
+tf |> prettyPrintFrame
+
+let a = joined.Rows.["a"] 
+a |> prettyPrintSeries
+
+a?S1
+a.["S1"]
+a.TryGetAny<int>("S1")
+a.GetAny<int>("S1")
+
+joined?Sum <- joined.Rows.Map(fun key row -> 
+  match row.TryGetAny<int>("S1"), row.TryGetAny<int>("S2") with
   | Some n1, Some n2 -> Some(n1 + n2)
-  | _ -> None)
+  | _ -> Some -2)
+
+prettyPrintFrame joined
 
 //
 // joined?Sum <- joined.Columns.["S1", "S2"].Rows.Map(fun key reader -> 
 //   reader.GetColumn<int>("S1") + reader.GetColumn<int>("S2") )
 //
 
-joined.["c"].GetColumn<string>("Test") // TODO: Can this return Series?
+joined.Rows.["c"].GetAny<string>("Test")
 
     
 joined.GetSeries<int>("Sum")
@@ -634,12 +801,11 @@ joined.GetSeries<int>("Sum")
 
 prettyPrintFrame joined
 
-// TODO: Convert - joined.GetSeries<float>("Sum")
-//                 joined?Sum
+// Conversions
+joined.GetSeries<int>("Sum") |> prettyPrintSeries
+joined.GetSeries<float>("Sum") |> prettyPrintSeries
 
 joined?Sum |> Series.sum
-
-// joined?Sum |> Series.mean
 
 
 // --------------------------------------------------------------------------------------
