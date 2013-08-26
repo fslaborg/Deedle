@@ -73,10 +73,12 @@ module internal VectorHelpers =
         member x.GetObject(i) = vector.Value.GetObject(i) }
 
 
-  type VectorCallSite<'TAddress, 'R> =
+  type VectorCallSite1<'TAddress, 'R> =
     abstract Invoke<'T> : IVector<'TAddress, 'T> -> 'R
+  type VectorCallSite2<'TAddress, 'R> =
+    abstract Invoke<'T> : IVector<'TAddress, 'T> * IVector<'TAddress, 'T> -> 'R
 
-  let createDispatcher<'TAddress, 'R> (callSite:VectorCallSite<'TAddress, 'R>) =
+  let createDispatcher<'TAddress, 'R> (callSite:VectorCallSite1<'TAddress, 'R>) =
     let dict = lazy Dictionary<_, System.Func<IVector<'TAddress>, 'R>>()
 
     let doubleCode = typeof<float>.TypeHandle.Value
@@ -92,7 +94,7 @@ module internal VectorHelpers =
         match dict.Value.TryGetValue(code) with
         | true, f -> f.Invoke(vect)
         | _ ->
-            let mi = typeof<VectorCallSite<'TAddress, 'R>>.GetMethod("Invoke").MakeGenericMethod(vect.ElementType)
+            let mi = typeof<VectorCallSite1<'TAddress, 'R>>.GetMethod("Invoke").MakeGenericMethod(vect.ElementType)
             let par = Expression.Parameter(typeof<IVector<'TAddress>>)
             let ty = typedefof<IVector<_, _>>.MakeGenericType(typeof<'TAddress>, vect.ElementType)
             let expr =
@@ -101,6 +103,36 @@ module internal VectorHelpers =
             let func = expr.Compile()
             dict.Value.[code] <- func
             func.Invoke vect
+    invoke 
+
+  let createTwoArgDispatcher<'TAddress, 'R> (callSite:VectorCallSite2<'TAddress, 'R>) =
+    let dict = lazy Dictionary<_, System.Func<IVector<'TAddress>, IVector<'TAddress>, 'R>>()
+
+    let doubleCode = typeof<float>.TypeHandle.Value
+    let intCode = typeof<int>.TypeHandle.Value
+    let stringCode = typeof<string>.TypeHandle.Value
+
+    let invoke (vect1:IVector<'TAddress>, vect2:IVector<'TAddress>) = 
+      let code = vect1.ElementType.TypeHandle.Value
+      if vect2.ElementType.TypeHandle.Value <> code then 
+        invalidOp "createTwoArgDispatcher: Both arguments should have the same element type"
+      if code = doubleCode then callSite.Invoke<float>(vect1 :?> IVector<'TAddress, float>, vect2 :?> IVector<'TAddress, float>)
+      elif code = intCode then callSite.Invoke<int>(vect1 :?> IVector<'TAddress, int>, vect2 :?> IVector<'TAddress, int>)
+      elif code = stringCode then callSite.Invoke<string>(vect1 :?> IVector<'TAddress, string>, vect2 :?> IVector<'TAddress, string>)
+      else
+        match dict.Value.TryGetValue(code) with
+        | true, f -> f.Invoke(vect1, vect2)
+        | _ ->
+            let mi = typeof<VectorCallSite2<'TAddress, 'R>>.GetMethod("Invoke").MakeGenericMethod(vect1.ElementType)
+            let par1 = Expression.Parameter(typeof<IVector<'TAddress>>)
+            let par2 = Expression.Parameter(typeof<IVector<'TAddress>>)
+            let ty = typedefof<IVector<_, _>>.MakeGenericType(typeof<'TAddress>, vect1.ElementType)
+            let expr =
+              Expression.Lambda<System.Func<IVector<'TAddress>, IVector<'TAddress>, 'R>>
+                ( Expression.Call(mi, [Expression.Convert(par1, ty) :> Expression; Expression.Convert(par2, ty) :> Expression]), [ par1; par2 ])
+            let func = expr.Compile()
+            dict.Value.[code] <- func
+            func.Invoke(vect1, vect2)
     invoke 
 
 // --------------------------------------------------------------------------------------
@@ -116,6 +148,9 @@ type VectorRange<'TAddress> = 'TAddress * 'TAddress
 
 /// Representes a "variable" in the mini-DSL below
 type VectorHole = int
+
+type IVectorValueTransform =
+  abstract GetFunction<'T> : unit -> (OptionalValue<'T> -> OptionalValue<'T> -> OptionalValue<'T>)
 
 /// A "mini-DSL" that describes construction of a vector. Vector can be constructed
 /// from arrays of values, from existing vector value (of an unknown representation)
@@ -137,8 +172,8 @@ type VectorConstruction<'TAddress> =
   | GetRange of VectorConstruction<'TAddress> * VectorRange<'TAddress>
   | Append of VectorConstruction<'TAddress> * VectorConstruction<'TAddress>
 
-  // Fill N/A values in the first vector from values in the second vector 
-  | FillNA of VectorConstruction<'TAddress> * VectorConstruction<'TAddress>
+  // Combines two aligned vectors. The function specifies how to merge values.
+  | Combine of VectorConstruction<'TAddress> * VectorConstruction<'TAddress> * IVectorValueTransform
 
 
 /// Represents an object that can construct vector values by processing 
@@ -152,3 +187,16 @@ type IVectorBuilder<'TAddress> =
 
 
 
+type VectorValueTransform =
+  static member Create<'T>(operation:OptionalValue<'T> -> OptionalValue<'T> -> OptionalValue<'T>) = 
+    { new IVectorValueTransform with
+        member vt.GetFunction<'R>() = 
+          unbox<OptionalValue<'R> -> OptionalValue<'R> -> OptionalValue<'R>> (box operation) }
+  static member FillNA =
+    { new IVectorValueTransform with
+        member vt.GetFunction<'R>() = (fun (l:OptionalValue<'R>) (r:OptionalValue<'R>) -> if l.HasValue then l else r) }
+  static member LeftOrRight =
+    { new IVectorValueTransform with
+        member vt.GetFunction<'R>() = (fun (l:OptionalValue<'R>) (r:OptionalValue<'R>) -> 
+          if l.HasValue && r.HasValue then invalidOp "Combining vectors failed - both vectors have a value."
+          if l.HasValue then l else r) }

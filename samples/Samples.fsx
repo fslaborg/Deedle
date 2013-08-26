@@ -46,6 +46,16 @@ f1.Join(f3, JoinKind.Inner) |> prettyPrintFrame
 f1.Join(f3, JoinKind.Left) |> prettyPrintFrame 
 f1.Join(f3, JoinKind.Right) |> prettyPrintFrame 
 
+let a1 = Frame.Create("C1", Series.Create([1;2], ["one"; "two"]))
+a1?C2 <- ["three"]
+
+let a2 = Frame.Create("C2", Series.Create([2;3], ["one"; "two"]))
+
+a1 |> prettyPrintFrame
+a2 |> prettyPrintFrame
+
+a1.Append(a2) |> prettyPrintFrame
+
 
 let f1 = Frame.Create("S1", s1)
 f1?Another <- f2.GetSeries<int>("S2")

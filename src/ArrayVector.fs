@@ -108,14 +108,15 @@ type ArrayVectorBuilder() =
           | AsVectorOptional first, AsVectorOptional second ->
               VectorOptional(Array.append first second) |> av
 
-      | FillNA(left, right) ->
+      | Combine(left, right, op) ->
           // Convert both vectors to ArrayVectors and zip them
-          // (if first has no N/A values, then just return it)
-          match builder.buildArrayVector left arguments with
-          | (VectorNonOptional _) as left -> left |> av
-          | VectorOptional left ->
-              let (AsVectorOptional right) = builder.buildArrayVector right arguments
-              let filled = left |> Array.mapi (fun i v -> if v.HasValue then v else right.[i])
+          match builder.buildArrayVector left arguments,builder.buildArrayVector right arguments with
+          | AsVectorOptional left, AsVectorOptional right ->
+              let merge = op.GetFunction<'T>()
+              let filled = Array.init (max left.Length right.Length) (fun idx ->
+                let lv = if idx >= left.Length then OptionalValue.Empty else left.[idx]
+                let rv = if idx >= right.Length then OptionalValue.Empty else right.[idx]
+                merge lv rv)
               vectorBuilder.CreateOptional(filled)
 
 /// --------------------------------------------------------------------------------------
@@ -131,15 +132,17 @@ and [<RequireQualifiedAccess>] ArrayVector<'T> internal (representation:ArrayVec
     member val ElementType = typeof<'T>
     member vector.GetObject(index) = 
       match representation with
-      | VectorOptional data -> data.[index] |> OptionalValue.map box
-      | VectorNonOptional data -> OptionalValue(box data.[index])
+      | VectorOptional data when index < data.Length -> data.[index] |> OptionalValue.map box 
+      | VectorNonOptional data when index < data.Length -> OptionalValue(box data.[index])
+      | _ -> OptionalValue.Empty
 
   // Implement the typed vector interface
   interface IVector<int, 'T> with
     member vector.GetValue(index) = 
       match representation with
-      | VectorOptional data -> data.[index]
-      | VectorNonOptional data -> OptionalValue(data.[index])
+      | VectorOptional data when index < data.Length -> data.[index]
+      | VectorNonOptional data when index < data.Length -> OptionalValue(data.[index])
+      | _ -> OptionalValue.Empty
     member vector.Data = 
       match representation with 
       | VectorNonOptional data -> DenseList (IReadOnlyList.ofArray data)

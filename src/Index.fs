@@ -31,13 +31,14 @@ type IIndex<'TKey, 'TAddress> =
     IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress> * VectorConstruction<'TAddress>
 
   abstract Append<'TValue> :
-    IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress> * VectorConstruction<'TAddress> -> 
+    IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress> * VectorConstruction<'TAddress> * IVectorValueTransform -> 
     IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress>
 
   abstract Reindex<'TValue> :
     IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress> -> VectorConstruction<'TAddress>
 
-  //abstract DropItem : 'TKey -> IIndex<'TKey, 'TAddress>
+  abstract DropItem : 'TKey * VectorConstruction<'TAddress> -> 
+    IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress> 
   
 
 // --------------------------------------------------------------------------------------
@@ -140,17 +141,15 @@ type LinearIndex<'TKey, 'TAddress when 'TKey : equality and 'TAddress : equality
           Seq.unionWithOrdering index1.Mappings index2.Mappings |> Array.ofSeq 
       returnUsingAlignedSequence joined vector1 vector2
         
-    member index1.Append(index2, vector1, vector2) = 
+    member index1.Append(index2, vector1, vector2, transform) = 
       let index2, vector2 = asLinearIndex index2 vector2
       let joined = 
         if index1.Sorted && index2.Sorted then
           Seq.alignWithOrdering index1.Mappings index2.Mappings comparer |> Array.ofSeq 
         else
           Seq.unionWithOrdering index1.Mappings index2.Mappings |> Array.ofSeq 
-      let duplicates = joined |> Seq.exists (function _, Some _, Some _ -> true | _ -> false)
-      if duplicates then invalidArg "index2" "When appending series or data frames, the keys should be unique!"
       let newIndex, vec1Cmd, vec2Cmd = returnUsingAlignedSequence joined vector1 vector2
-      newIndex, Vectors.FillNA(vec1Cmd, vec2Cmd)
+      newIndex, Vectors.Combine(vec1Cmd, vec2Cmd, transform)
 
     /// Intersect the index with another. For sorted indices, this is the same as
     /// UnionWith, but we filter & only return keys present in both sequences.
@@ -172,6 +171,16 @@ type LinearIndex<'TKey, 'TAddress when 'TKey : equality and 'TAddress : equality
             yield oldAddress, newAddress.Value }
       Vectors.Relocate(vector, index2.Range, relocations)
 
+    member index.DropItem(key, vector) = 
+      match lookup.TryGetValue(key) with
+      | true, addr ->
+          let newVector = Vectors.DropRange(vector, (addr, addr))
+          let newIndex = LinearIndex<_, _>(Seq.filter ((<>) key) keys, ops, sorted)
+          upcast newIndex, newVector
+      | _ ->
+          invalidArg "key" (sprintf "The key '%O' is not present in the index." key)
+
+
     /// Get a new index representing a sub-index of the current one
     /// (together with a transformation that should be applied to a vector)
     member x.GetRange(lo, hi, vector) =
@@ -190,7 +199,6 @@ type LinearIndex<'TKey, 'TAddress when 'TKey : equality and 'TAddress : equality
       let newKeys = ops.GetRange(keys, lo, hi)
       let newVector = Vectors.GetRange(vector, range)
       upcast LinearIndex<_, _>(newKeys, ops, sorted), newVector
-
 
 (*
 

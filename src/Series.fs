@@ -46,6 +46,16 @@ type Series<'TIndex, 'TValue when 'TIndex : equality>(index:IIndex<'TIndex, int>
 
   // ----------------------------------------------------------------------------------------------
   // Operations
+  
+  // TODO: Series.Map & Series.Filter need to use some clever index/vector functions
+
+  member x.Filter(f:'TIndex -> 'TValue -> bool) = 
+    let newVector =
+      [| for key, addr in index.Mappings ->
+          let opt = vector.GetValue(addr)
+          if opt.HasValue && (f key opt.Value) then opt
+          else OptionalValue.Empty |]
+    Series<'TIndex, 'TValue>(index, vectorBuilder.CreateOptional(newVector))
 
   member x.Map<'R>(f:'TIndex -> 'TValue -> 'R) = 
     let newVector =
