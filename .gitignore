@@ -1,0 +1,4 @@
+bin
+src/bin
+src/obj
+*.suo

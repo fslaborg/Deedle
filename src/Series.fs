@@ -23,7 +23,7 @@ type Series<'TIndex, 'TValue when 'TIndex : equality>(index:IIndex<'TIndex, int>
 
   member x.GetItems(items) =
     let newIndex = Index.CreateUnsorted(items)
-    let newVector = vectorBuilder.Build(IndexHelpers.reindex index newIndex (Vectors.Return 0), [| vector |])
+    let newVector = vectorBuilder.Build(index.Reindex(newIndex, Vectors.Return 0), [| vector |])
     Series(newIndex, newVector)
 
   member x.GetSlice(lo, hi) =

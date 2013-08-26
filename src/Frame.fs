@@ -42,9 +42,17 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
   let mutable columnIndex = columnIndex
   let mutable data = data
 
+  // A "generic function" that boxes all values of a vector (IVector<int, 'T> -> IVector<int, obj>)
   let boxVector = 
     { new VectorHelpers.VectorCallSite<int, IVector<int, obj>> with
         override x.Invoke<'T>(col:IVector<int, 'T>) = col.Map(box) }
+    |> VectorHelpers.createDispatcher
+
+  // A "generic function" that transforms a generic vector using specified transformation
+  let transformColumn rowCmd = 
+    { new VectorHelpers.VectorCallSite<int, IVector<int>> with
+        override x.Invoke<'T>(col:IVector<int, 'T>) = 
+          vectorBuilder.Build<'T>(rowCmd, [| col |]) :> IVector<int> }
     |> VectorHelpers.createDispatcher
 
   let createRowReader rowAddress =
@@ -96,34 +104,29 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
   // ----------------------------------------------------------------------------------------------
 
   member frame.Join(otherFrame:Frame<'TRowIndex, 'TColumnIndex>, ?kind) =    
-    match kind with 
-    | Some JoinKind.Outer | None ->
-        // Union row indices and get transformations to apply to left/right vectors
-        let newRowIndex, thisRowCmd, otherRowCmd = 
+    // Union row indices and get transformations to apply to left/right vectors
+    let newRowIndex, thisRowCmd, otherRowCmd = 
+      match kind with 
+      | Some JoinKind.Inner ->
+          rowIndex.IntersectWith(otherFrame.RowIndex, Vectors.Return 0, Vectors.Return 0)
+      | Some JoinKind.Left ->
+          let otherRowCmd = otherFrame.RowIndex.Reindex(rowIndex, Vectors.Return 0)
+          rowIndex, Vectors.Return 0, otherRowCmd
+      | Some JoinKind.Right ->
+          let thisRowCmd = rowIndex.Reindex(otherFrame.RowIndex, Vectors.Return 0)
+          otherFrame.RowIndex, thisRowCmd, Vectors.Return 0
+      | Some JoinKind.Outer | None | Some _ ->
           rowIndex.UnionWith(otherFrame.RowIndex, Vectors.Return 0, Vectors.Return 0)
-        let newColumnIndex, colCmd = 
-          columnIndex.Append(otherFrame.ColumnIndex, Vectors.Return 0, Vectors.Return 1)
 
-        let transformColumn rowCmd = 
-          { new VectorHelpers.VectorCallSite<int, IVector<int>> with
-              override x.Invoke<'T>(col:IVector<int, 'T>) = 
-                vectorBuilder.Build<'T>(rowCmd, [| col |]) :> IVector<int> }
-          |> VectorHelpers.createDispatcher
-        
-        let newThisData = data.Map(transformColumn thisRowCmd)
-        let newOtherData = otherFrame.Data.Map(transformColumn otherRowCmd)
-        let newData = vectorBuilder.Build(colCmd, [| newThisData; newOtherData |])
-        Frame(newRowIndex, newColumnIndex, newData)
-
-(*
-    | Let rowIndex (newRowIndex, Some JoinKind.Left) 
-    | Let otherFrame.RowIndex (newRowIndex, Some JoinKind.Right) ->
-        let newColumnIndex = columnIndex.Append(otherFrame.ColumnIndex)
-        let newData = data.Map(IndexOps.reindex rowIndex newRowIndex)
-        let newData = newData.Append(otherFrame.Data.Map(IndexOps.reindex otherFrame.RowIndex newRowIndex))
-        Frame(newRowIndex, newColumnIndex, newData)
-*)
-    | _ -> failwith "! (join not implemented)"
+    // Append the column indices and get transformation to combine them
+    let newColumnIndex, colCmd = 
+      columnIndex.Append(otherFrame.ColumnIndex, Vectors.Return 0, Vectors.Return 1)
+    // Apply transformation to both data vectors
+    let newThisData = data.Map(transformColumn thisRowCmd)
+    let newOtherData = otherFrame.Data.Map(transformColumn otherRowCmd)
+    // Combine column vectors a single vector & return results
+    let newData = vectorBuilder.Build(colCmd, [| newThisData; newOtherData |])
+    Frame(newRowIndex, newColumnIndex, newData)
 
 (*
   member frame.Append(otherFrame:Frame<'TRowIndex, 'TColumnIndex>) = 

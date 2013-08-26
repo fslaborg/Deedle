@@ -34,18 +34,11 @@ type IIndex<'TKey, 'TAddress> =
     IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress> * VectorConstruction<'TAddress> -> 
     IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress>
 
+  abstract Reindex<'TValue> :
+    IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress> -> VectorConstruction<'TAddress>
+
   //abstract DropItem : 'TKey -> IIndex<'TKey, 'TAddress>
   
-
-
-module IndexHelpers = 
-  let inline reindex (oldIndex:IIndex<'TKey, 'TAddress>) (newIndex:IIndex<'TKey, 'TAddress>) data =
-    let relocations = seq {  
-      for key, oldAddress in oldIndex.Mappings do
-        let newAddress = newIndex.Lookup(key)
-        if newAddress.HasValue then 
-          yield oldAddress, newAddress.Value }
-    Relocate(data, newIndex.Range, relocations)
 
 // --------------------------------------------------------------------------------------
 // A concrete implementation of an index. Represents an index where the values are sto-
@@ -140,33 +133,44 @@ type LinearIndex<'TKey, 'TAddress when 'TKey : equality and 'TAddress : equality
 
     member index1.UnionWith(index2, vector1, vector2) = 
       let index2, vector2 = asLinearIndex index2 vector2
-      if index1.Sorted && index2.Sorted then
-        let joined = Seq.alignWithOrdering index1.Mappings index2.Mappings comparer |> Array.ofSeq 
-        returnUsingAlignedSequence joined vector1 vector2
-      else
-        failwith "joining of unsorted indices is TODO!"
-
+      let joined =
+        if index1.Sorted && index2.Sorted then
+          Seq.alignWithOrdering index1.Mappings index2.Mappings comparer |> Array.ofSeq 
+        else
+          Seq.unionWithOrdering index1.Mappings index2.Mappings |> Array.ofSeq 
+      returnUsingAlignedSequence joined vector1 vector2
+        
     member index1.Append(index2, vector1, vector2) = 
       let index2, vector2 = asLinearIndex index2 vector2
-      if index1.Sorted && index2.Sorted then
-        let joined = Seq.alignWithOrdering index1.Mappings index2.Mappings comparer |> Array.ofSeq 
-        let duplicates = joined |> Seq.exists (function _, Some _, Some _ -> true | _ -> false)
-        if duplicates then invalidArg "index2" "When appending series or data frames, the keys should be unique!"
-        let newIndex, vec1Cmd, vec2Cmd = returnUsingAlignedSequence joined vector1 vector2
-        newIndex, Vectors.FillNA(vec1Cmd, vec2Cmd)
-      else
-        failwith "joining of unsorted indices is TODO!"
+      let joined = 
+        if index1.Sorted && index2.Sorted then
+          Seq.alignWithOrdering index1.Mappings index2.Mappings comparer |> Array.ofSeq 
+        else
+          Seq.unionWithOrdering index1.Mappings index2.Mappings |> Array.ofSeq 
+      let duplicates = joined |> Seq.exists (function _, Some _, Some _ -> true | _ -> false)
+      if duplicates then invalidArg "index2" "When appending series or data frames, the keys should be unique!"
+      let newIndex, vec1Cmd, vec2Cmd = returnUsingAlignedSequence joined vector1 vector2
+      newIndex, Vectors.FillNA(vec1Cmd, vec2Cmd)
 
     /// Intersect the index with another. For sorted indices, this is the same as
     /// UnionWith, but we filter & only return keys present in both sequences.
     member index1.IntersectWith(index2, vector1, vector2) = 
       let index2, vector2 = asLinearIndex index2 vector2
-      if index1.Sorted && index2.Sorted then
-        let joined = Seq.alignWithOrdering index1.Mappings index2.Mappings comparer |> Array.ofSeq 
-        let joined = joined |> Seq.filter (function _, Some _, Some _ -> true | _ -> false)
-        returnUsingAlignedSequence joined vector1 vector2
-      else
-        failwith "intersecting of unsorted indices is TODO!"
+      let joined = 
+        if index1.Sorted && index2.Sorted then
+          Seq.alignWithOrdering index1.Mappings index2.Mappings comparer |> Array.ofSeq 
+        else
+          Seq.unionWithOrdering index1.Mappings index2.Mappings |> Array.ofSeq 
+      let joined = joined |> Seq.filter (function _, Some _, Some _ -> true | _ -> false)
+      returnUsingAlignedSequence joined vector1 vector2
+
+    member index1.Reindex(index2, vector) = 
+      let relocations = seq {  
+        for key, oldAddress in index1.Mappings do
+          let newAddress = index2.Lookup(key)
+          if newAddress.HasValue then 
+            yield oldAddress, newAddress.Value }
+      Vectors.Relocate(vector, index2.Range, relocations)
 
     /// Get a new index representing a sub-index of the current one
     /// (together with a transformation that should be applied to a vector)

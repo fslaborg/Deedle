@@ -36,8 +36,18 @@ f3 |> prettyPrintFrame
 
 f1.Join(f2, JoinKind.Outer) |> prettyPrintFrame
 f1.Join(f3, JoinKind.Outer) |> prettyPrintFrame
+f3.Join(f1, JoinKind.Outer) |> prettyPrintFrame
+
+f1.Join(f2, JoinKind.Inner) |> prettyPrintFrame 
+f1.Join(f2, JoinKind.Left) |> prettyPrintFrame 
+f1.Join(f2, JoinKind.Right) |> prettyPrintFrame 
+
+f1.Join(f3, JoinKind.Inner) |> prettyPrintFrame 
+f1.Join(f3, JoinKind.Left) |> prettyPrintFrame 
+f1.Join(f3, JoinKind.Right) |> prettyPrintFrame 
 
 
+let f1 = Frame.Create("S1", s1)
 f1?Another <- f2.GetSeries<int>("S2")
 
 f1?Test0 <- [ "a"; "b" ] // TODO: bug - fixed

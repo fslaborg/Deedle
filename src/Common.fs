@@ -181,6 +181,17 @@ module Seq =
           yield! next () }
     yield! next () }
 
+  let unionWithOrdering (seq1:seq<'T * 'TAddress>) (seq2:seq<'T * 'TAddress>) = seq {
+    let dict = Dictionary<_, _>()
+    for key, addr in seq1 do
+      dict.[key] <- (Some addr, None)
+    for key, addr in seq2 do
+      match dict.TryGetValue(key) with
+      | true, (left, _) -> dict.[key] <- (left, Some addr)
+      | _ -> dict.[key] <- (None, Some addr)
+    for (KeyValue(k, (l, r))) in dict do
+      yield k, l, r }
+
 (*
 alignWithOrdering [ 'a'; 'd' ] [ 'b'; 'c' ] |> List.ofSeq
 alignWithOrdering [ 'd' ] [ 'a'; 'b'; 'c' ] |> List.ofSeq
@@ -190,6 +201,8 @@ alignWithOrdering [ 'a'; 'c'; 'd'; 'e' ] [ 'a'; 'b'; 'c'; 'e' ] |> List.ofSeq
 alignWithOrdering [ ("b", 0); ("c", 1); ("d", 2) ] [ ("a", 0); ("b", 1); ("c", 2) ] (Comparer<string>.Default) |> List.ofSeq = 
   [("a", None, Some 0); ("b", Some 0, Some 1); ("c", Some 1, Some 2); ("d", Some 2, None)]
 
+unionWithOrdering [ ("b", 0); ("c", 1); ("d", 2) ] [ ("b", 1); ("c", 2); ("a", 0); ] |> List.ofSeq |> set =
+  set [("b", Some 0, Some 1); ("c", Some 1, Some 2); ("d", Some 2, None); ("a", None, Some 0)]
 *)
 
 module PrettyPrint = 
