@@ -161,8 +161,8 @@ module Seq =
         while en.MoveNext() do yield f en.Current }
 
     let rec next () = seq {
-      if not en1HasNext.Value then yield! returnAll en2 en2HasNext.Value (fun (k, i) -> k, Some i, None)
-      elif not en2HasNext.Value then yield! returnAll en1 en1HasNext.Value (fun (k, i) -> k, None, Some i)
+      if not en1HasNext.Value then yield! returnAll en2 en2HasNext.Value (fun (k, i) -> k, None, Some i)
+      elif not en2HasNext.Value then yield! returnAll en1 en1HasNext.Value (fun (k, i) -> k, Some i, None)
       else
         let en1Val, en2Val = fst en1.Current, fst en2.Current
         let comparison = comparer.Compare(en1Val, en2Val)
@@ -186,6 +186,11 @@ alignWithOrdering [ 'a'; 'd' ] [ 'b'; 'c' ] |> List.ofSeq
 alignWithOrdering [ 'd' ] [ 'a'; 'b'; 'c' ] |> List.ofSeq
 alignWithOrdering [ 'a'; 'b' ] [ 'c'; 'd' ] |> List.ofSeq
 alignWithOrdering [ 'a'; 'c'; 'd'; 'e' ] [ 'a'; 'b'; 'c'; 'e' ] |> List.ofSeq
+
+alignWithOrdering [ ("b", 0); ("c", 1); ("d", 2) ] [ ("a", 0); ("b", 1); ("c", 2) ] (Comparer<string>.Default) |> List.ofSeq = 
+  [("a", None, Some 0); ("b", Some 0, Some 1); ("c", Some 1, Some 2); ("d", Some 2, None)]
+
 *)
+
 module PrettyPrint = 
   let ItemCount = 10

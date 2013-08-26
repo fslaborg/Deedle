@@ -26,17 +26,23 @@ type ArrayVectorBuilder() =
   
   /// A simple helper that creates IVector from ArrayVectorData
   let av data = ArrayVector(data) :> IVector<_, _>
+  
+  /// Treat vector as containing optionals
+  let (|AsVectorOptional|) = function
+    | VectorOptional d -> d
+    | VectorNonOptional d -> Array.map (fun v -> OptionalValue v) d
 
   /// Builds a vector using the specified commands, ensures that the
   /// returned vector is ArrayVector (if no, it converts it) and then
   /// returns the internal representation of the vector
-  let rec buildArrayVector (commands:VectorConstruction<int>) arguments : ArrayVectorData<'T> = 
-    match vectorBuilder.Build(commands, arguments) with
+  member private builder.buildArrayVector<'T> (commands:VectorConstruction<int>) (arguments:IVector<int, 'T>[]) : ArrayVectorData<'T> = 
+    let got = vectorBuilder.Build(commands, arguments)
+    match got with
     | :? ArrayVector<'T> as av -> av.Representation
     | otherVector -> 
         match vectorBuilder.CreateOptional(Array.ofSeq otherVector.DataSequence) with
         | :? ArrayVector<'T> as av -> av.Representation
-        | _ -> failwith "buildArrayVector: Unexpected vector type"
+        | _ -> failwith "builder.buildArrayVector: Unexpected vector type"
 
   /// Provides a global access to an instance of ArrayVectorBuilder       
   static member Instance = vectorBuilder
@@ -59,12 +65,12 @@ type ArrayVectorBuilder() =
     member builder.Build<'T>(command:VectorConstruction<int>, arguments:IVector<int, 'T>[]) = 
       match command with
       | Return vectorVar -> arguments.[vectorVar]
-      | ReturnAsOrdinal source -> av <| buildArrayVector source arguments
+      | ReturnAsOrdinal source -> av <| builder.buildArrayVector source arguments
       | Relocate(source, (loRange, hiRange), relocations) ->
           // Create a new array with specified size and move values from the
           // old array (source) to the new, according to 'relocations'
           let newData = Array.zeroCreate (hiRange - loRange + 1)
-          match buildArrayVector source arguments with 
+          match builder.buildArrayVector source arguments with 
           | VectorOptional data ->
               for oldIndex, newIndex in relocations do
                 if oldIndex < data.Length && oldIndex >= 0 then
@@ -78,7 +84,7 @@ type ArrayVectorBuilder() =
       | DropRange(source, (loRange, hiRange)) ->
           // Create a new array without the specified range. For Optional, call the 
           // builder recursively as this may turn Optional representation to NonOptional
-          match buildArrayVector source arguments with 
+          match builder.buildArrayVector source arguments with 
           | VectorOptional data -> 
               vectorBuilder.CreateOptional(Array.dropRange loRange hiRange data) 
           | VectorNonOptional data -> 
@@ -87,7 +93,7 @@ type ArrayVectorBuilder() =
       |  GetRange(source, (loRange, hiRange)) ->
           // Get the specified sub-range. For Optional, call the builder recursively 
           // as this may turn Optional representation to NonOptional
-          match buildArrayVector source arguments with 
+          match builder.buildArrayVector source arguments with 
           | VectorOptional data -> 
               vectorBuilder.CreateOptional(data.[loRange .. hiRange])
           | VectorNonOptional data -> 
@@ -96,14 +102,21 @@ type ArrayVectorBuilder() =
       | Append(first, second) ->
           // Convert both vectors to ArrayVectors and append them (this preserves
           // the kind of representation - Optional will stay Optional etc.)
-          let (|AsVectorOptional|) = function
-            | VectorOptional d -> d
-            | VectorNonOptional d -> Array.map (fun v -> OptionalValue v) d
-          match buildArrayVector first arguments, buildArrayVector second arguments with
+          match builder.buildArrayVector first arguments, builder.buildArrayVector second arguments with
           | VectorNonOptional first, VectorNonOptional second -> 
               VectorNonOptional(Array.append first second) |> av
           | AsVectorOptional first, AsVectorOptional second ->
               VectorOptional(Array.append first second) |> av
+
+      | FillNA(left, right) ->
+          // Convert both vectors to ArrayVectors and zip them
+          // (if first has no N/A values, then just return it)
+          match builder.buildArrayVector left arguments with
+          | (VectorNonOptional _) as left -> left |> av
+          | VectorOptional left ->
+              let (AsVectorOptional right) = builder.buildArrayVector right arguments
+              let filled = left |> Array.mapi (fun i v -> if v.HasValue then v else right.[i])
+              vectorBuilder.CreateOptional(filled)
 
 /// --------------------------------------------------------------------------------------
 

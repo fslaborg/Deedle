@@ -137,6 +137,9 @@ type VectorConstruction<'TAddress> =
   | GetRange of VectorConstruction<'TAddress> * VectorRange<'TAddress>
   | Append of VectorConstruction<'TAddress> * VectorConstruction<'TAddress>
 
+  // Fill N/A values in the first vector from values in the second vector 
+  | FillNA of VectorConstruction<'TAddress> * VectorConstruction<'TAddress>
+
 
 /// Represents an object that can construct vector values by processing 
 // the "mini-DSL" representation `VectorConstruction<'TAddress, 'TValue>`

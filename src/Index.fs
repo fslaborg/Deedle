@@ -30,7 +30,10 @@ type IIndex<'TKey, 'TAddress> =
     IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress> * VectorConstruction<'TAddress> -> 
     IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress> * VectorConstruction<'TAddress>
 
-  //abstract Append : IIndex<'TKey, 'TAddress> -> IIndex<'TKey, 'TAddress>
+  abstract Append<'TValue> :
+    IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress> * VectorConstruction<'TAddress> -> 
+    IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress>
+
   //abstract DropItem : 'TKey -> IIndex<'TKey, 'TAddress>
   
 
@@ -116,7 +119,7 @@ type LinearIndex<'TKey, 'TAddress when 'TKey : equality and 'TAddress : equality
     let vect1Reloc = seq { for n, (_, o, _) in joinedWithIndex do if Option.isSome o then yield o.Value, n }
     let newVector1 = Vectors.Relocate(vector1, range, vect1Reloc)
     let vect2Reloc = seq { for n, (_, _, o) in joinedWithIndex do if Option.isSome o then yield o.Value, n }
-    let newVector2 = Vectors.Relocate(vector1, range, vect1Reloc)
+    let newVector2 = Vectors.Relocate(vector2, range, vect2Reloc)
 
     // That's it! Return the result.
     ( upcast newIndex, newVector1, newVector2 )
@@ -143,13 +146,24 @@ type LinearIndex<'TKey, 'TAddress when 'TKey : equality and 'TAddress : equality
       else
         failwith "joining of unsorted indices is TODO!"
 
+    member index1.Append(index2, vector1, vector2) = 
+      let index2, vector2 = asLinearIndex index2 vector2
+      if index1.Sorted && index2.Sorted then
+        let joined = Seq.alignWithOrdering index1.Mappings index2.Mappings comparer |> Array.ofSeq 
+        let duplicates = joined |> Seq.exists (function _, Some _, Some _ -> true | _ -> false)
+        if duplicates then invalidArg "index2" "When appending series or data frames, the keys should be unique!"
+        let newIndex, vec1Cmd, vec2Cmd = returnUsingAlignedSequence joined vector1 vector2
+        newIndex, Vectors.FillNA(vec1Cmd, vec2Cmd)
+      else
+        failwith "joining of unsorted indices is TODO!"
+
     /// Intersect the index with another. For sorted indices, this is the same as
     /// UnionWith, but we filter & only return keys present in both sequences.
     member index1.IntersectWith(index2, vector1, vector2) = 
       let index2, vector2 = asLinearIndex index2 vector2
       if index1.Sorted && index2.Sorted then
         let joined = Seq.alignWithOrdering index1.Mappings index2.Mappings comparer |> Array.ofSeq 
-        let joined = joined |> Seq.filter (fun (_, o1, o2) -> o1.IsSome && o2.IsSome)
+        let joined = joined |> Seq.filter (function _, Some _, Some _ -> true | _ -> false)
         returnUsingAlignedSequence joined vector1 vector2
       else
         failwith "intersecting of unsorted indices is TODO!"

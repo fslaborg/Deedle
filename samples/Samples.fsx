@@ -8,26 +8,34 @@ open System
 open FSharp.DataFrame
 open FSharp.DataFrame.PrettyPrint
 
+// S1 and S2 are ordered series, S3 is not ordered
 let s1 = Series.Create(["a"; "b"; "c"], [1 .. 3])
-s1.Observations
+s1.Observations |> printfn "%A"
 
-let s2 = Series.Create(["d"; "c"; "b"], [6; 4; 5])
-s2.Observations
+let s2 = Series.Create(["b"; "c"; "d"], [6; 4; 5])
+s2.Observations |> printfn "%A"
 
+let s3 = Series.Create(["d"; "c"; "b"], [6; 4; 5])
+s3.Observations |> printfn "%A"
+
+// Snull is ordered with ordinal index (but has missing values)
 let snull = Series.Create [1.0; 2.0; Double.NaN ]
 snull |> prettyPrintSeries
+snull.Observations |> printfn "%A"
 
-snull.Observations
-
+// Create data frames, get the series
 let f1 = Frame.Create("S1", s1)
 f1.GetSeries<int>("S1") |> prettyPrintSeries
 
 let f2 = Frame.Create("S2", s2)
+let f3 = Frame.Create("S3", s3)
 
 f1 |> prettyPrintFrame
 f2 |> prettyPrintFrame
+f3 |> prettyPrintFrame
 
-f1.Join(f2, JoinKind.Left) |> prettyPrintFrame
+f1.Join(f2, JoinKind.Outer) |> prettyPrintFrame
+f1.Join(f3, JoinKind.Outer) |> prettyPrintFrame
 
 
 f1?Another <- f2.GetSeries<int>("S2")

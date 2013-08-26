@@ -101,20 +101,18 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
         // Union row indices and get transformations to apply to left/right vectors
         let newRowIndex, thisRowCmd, otherRowCmd = 
           rowIndex.UnionWith(otherFrame.RowIndex, Vectors.Return 0, Vectors.Return 0)
-        
-        //let newColumnIndex = columnIndex.UnionWith(otherFrame.ColumnIndex, Vectors.Return 0, Vectors.Return 1)
-        let newColumnIndex = columnIndex
+        let newColumnIndex, colCmd = 
+          columnIndex.Append(otherFrame.ColumnIndex, Vectors.Return 0, Vectors.Return 1)
 
         let transformColumn rowCmd = 
           { new VectorHelpers.VectorCallSite<int, IVector<int>> with
               override x.Invoke<'T>(col:IVector<int, 'T>) = 
-                vectorBuilder.Build(rowCmd, [| col |]) :> IVector<int> }
+                vectorBuilder.Build<'T>(rowCmd, [| col |]) :> IVector<int> }
           |> VectorHelpers.createDispatcher
         
         let newThisData = data.Map(transformColumn thisRowCmd)
         let newOtherData = otherFrame.Data.Map(transformColumn otherRowCmd)
-        let newData = newThisData
-
+        let newData = vectorBuilder.Build(colCmd, [| newThisData; newOtherData |])
         Frame(newRowIndex, newColumnIndex, newData)
 
 (*
