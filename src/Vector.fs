@@ -202,3 +202,17 @@ type VectorValueTransform =
         member vt.GetFunction<'R>() = (fun (l:OptionalValue<'R>) (r:OptionalValue<'R>) -> 
           if l.HasValue && r.HasValue then invalidOp "Combining vectors failed - both vectors have a value."
           if l.HasValue then l else r) }
+
+module VectorHelpers =
+  // A "generic function" that boxes all values of a vector (IVector<int, 'T> -> IVector<int, obj>)
+  let boxVector<'T> = 
+    { new VectorHelpers.VectorCallSite1<int, IVector<int, obj>> with
+        override x.Invoke<'T>(col:IVector<int, 'T>) = col.Select(box) }
+    |> VectorHelpers.createDispatcher
+
+  // A "generic function" that transforms a generic vector using specified transformation
+  let transformColumn (vectorBuilder:IVectorBuilder<'TAddress>) rowCmd = 
+    { new VectorHelpers.VectorCallSite1<'TAddress, IVector<'TAddress>> with
+        override x.Invoke<'T>(col:IVector<'TAddress, 'T>) = 
+          vectorBuilder.Build<'T>(rowCmd, [| col |]) :> IVector<'TAddress> }
+    |> VectorHelpers.createDispatcher

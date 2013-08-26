@@ -23,6 +23,16 @@ let snull = Series.Create [1.0; 2.0; Double.NaN ]
 snull |> prettyPrintSeries
 snull.Observations |> printfn "%A"
 
+
+s3 |> prettyPrintSeries
+s3 + 10 |> prettyPrintSeries
+
+let d3 = Series.Create(["d"; "c"; "b"], [6.0; 4.0; 5.0])
+d3 + 10.0 |> prettyPrintSeries
+
+s3 + s3 |> prettyPrintSeries
+d3 + d3 |> prettyPrintSeries
+
 // Create data frames, get the series
 let f1 = Frame.Create("S1", s1)
 f1.GetSeries<int>("S1") |> prettyPrintSeries

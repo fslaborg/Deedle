@@ -8,11 +8,22 @@ open FSharp.DataFrame.Indices
 // Series
 // ------------------------------------------------------------------------------------------------
 
+// :-(
+type SeriesOperations = 
+  abstract OuterJoin<'TIndex, 'TValue when 'TIndex : equality> : 
+    Series<'TIndex, 'TValue> * Series<'TIndex, 'TValue> -> 
+    Series<'TIndex, Series<int, obj>>
+
 /// A series contains one Index and one Vec
-type Series<'TIndex, 'TValue when 'TIndex : equality>(index:IIndex<'TIndex, int>, vector:IVector<int, 'TValue>) =
+and Series<'TIndex, 'TValue when 'TIndex : equality>(index:IIndex<'TIndex, int>, vector:IVector<int, 'TValue>) =
   
   /// Vector builder
   let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
+
+  // :-(((((
+  static let ensureInit = Lazy.Create(fun _ ->
+    let ty = System.Reflection.Assembly.GetExecutingAssembly().GetType("FSharp.DataFrame.Frame")
+    ty.GetMethod("Register").Invoke(null, [||]) |> ignore )
 
   member internal x.Index = index
   member x.Vector = vector
@@ -70,6 +81,55 @@ type Series<'TIndex, 'TValue when 'TIndex : equality>(index:IIndex<'TIndex, int>
       [| for key, addr in index.Mappings -> 
            f.Invoke(KeyValuePair(key, vector.GetValue(addr))) |]
     Series<'TIndex, 'R>(index, vectorBuilder.CreateOptional(newVector))
+
+  // ----------------------------------------------------------------------------------------------
+  // Operators
+
+  // :-((
+  static member val SeriesOperations : SeriesOperations = Unchecked.defaultof<_> with get, set
+
+  // Float
+  static member inline ScalarOperationL<'TIndex, 'T>(series:Series<'TIndex, 'T>, scalar, op : 'T -> 'T -> 'T) = 
+    series.Select(fun (KeyValue(k, v)) -> op v scalar)
+  static member inline ScalarOperationR<'TIndex, 'T>(scalar, series:Series<'TIndex, 'T>, op : 'T -> 'T -> 'T) = 
+    series.Select(fun (KeyValue(k, v)) -> op scalar v)
+
+  static member (+) (scalar, series) = Series<_, _>.ScalarOperationR<_, int>(scalar, series, (+))
+  static member (+) (series, scalar) = Series<_, _>.ScalarOperationL<_, int>(series, scalar, (+))
+  static member (-) (scalar, series) = Series<_, _>.ScalarOperationR<_, int>(scalar, series, (-))
+  static member (-) (series, scalar) = Series<_, _>.ScalarOperationL<_, int>(series, scalar, (-))
+  static member (*) (scalar, series) = Series<_, _>.ScalarOperationR<_, int>(scalar, series, (*))
+  static member (*) (series, scalar) = Series<_, _>.ScalarOperationL<_, int>(series, scalar, (*))
+  static member (/) (scalar, series) = Series<_, _>.ScalarOperationR<_, int>(scalar, series, (/))
+  static member (/) (series, scalar) = Series<_, _>.ScalarOperationL<_, int>(series, scalar, (/))
+
+  static member (+) (scalar, series) = Series<_, _>.ScalarOperationR<_, float>(scalar, series, (+))
+  static member (+) (series, scalar) = Series<_, _>.ScalarOperationL<_, float>(series, scalar, (+))
+  static member (-) (scalar, series) = Series<_, _>.ScalarOperationR<_, float>(scalar, series, (-))
+  static member (-) (series, scalar) = Series<_, _>.ScalarOperationL<_, float>(series, scalar, (-))
+  static member (*) (scalar, series) = Series<_, _>.ScalarOperationR<_, float>(scalar, series, (*))
+  static member (*) (series, scalar) = Series<_, _>.ScalarOperationL<_, float>(series, scalar, (*))
+  static member (/) (scalar, series) = Series<_, _>.ScalarOperationR<_, float>(scalar, series, (/))
+  static member (/) (series, scalar) = Series<_, _>.ScalarOperationL<_, float>(series, scalar, (/))
+
+  // Float
+  static member inline internal VectorOperation<'TIndex, 'T>(series1:Series<'TIndex, 'T>, series2:Series<'TIndex, 'T>, op) : Series<_, 'T> =
+    ensureInit.Value
+    let joined = Series<_, _>.SeriesOperations.OuterJoin(series1, series2)
+    joined.SelectMissing(fun (KeyValue(_, v)) -> 
+      match v.Value.TryGet(0), v.Value.TryGet(1) with
+      | Some a, Some b -> OptionalValue(op (a :?> 'T) (b :?> 'T))
+      | _ -> OptionalValue.Empty )
+
+  static member (+) (s1, s2) = Series<_, _>.VectorOperation<_, int>(s1, s2, (+))
+  static member (-) (s1, s2) = Series<_, _>.VectorOperation<_, int>(s1, s2, (-))
+  static member (*) (s1, s2) = Series<_, _>.VectorOperation<_, int>(s1, s2, (*))
+  static member (/) (s1, s2) = Series<_, _>.VectorOperation<_, int>(s1, s2, (/))
+
+  static member (+) (s1, s2) = Series<_, _>.VectorOperation<_, float>(s1, s2, (+))
+  static member (-) (s1, s2) = Series<_, _>.VectorOperation<_, float>(s1, s2, (-))
+  static member (*) (s1, s2) = Series<_, _>.VectorOperation<_, float>(s1, s2, (*))
+  static member (/) (s1, s2) = Series<_, _>.VectorOperation<_, float>(s1, s2, (/))
 
 // ------------------------------------------------------------------------------------------------
 // Untyped series

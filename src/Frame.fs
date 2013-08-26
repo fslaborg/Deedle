@@ -227,7 +227,18 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
 
 
 and Frame =
-  static member Create(column:'TColumnIndex, series:Series<'TRowIndex, 'TValue>) = 
+  static member Register() = 
+    Series.SeriesOperations <-
+      { new SeriesOperations with
+          member x.OuterJoin<'TIndex2, 'TValue2 when 'TIndex2 : equality>
+              (series1:Series<'TIndex2, 'TValue2>, series2:Series<'TIndex2, 'TValue2>) = 
+            let frame1 = Frame(series1.Index, Index.Create [0], Vector.Create [| series1.Vector :> IVector<int> |])
+            let frame2 = Frame(series2.Index, Index.Create [1], Vector.Create [| series2.Vector :> IVector<int> |])
+            let joined = frame1.Join(frame2)
+            joined.Rows.Select(fun row -> row.Value :> Series<_, _>) }
+
+  static member Create<'TColumnIndex, 'TRowIndex, 'TValue when 'TColumnIndex : equality and 'TRowIndex : equality>
+      (column:'TColumnIndex, series:Series<'TRowIndex, 'TValue>) = 
     let data = Vector.Create [| series.Vector :> IVector<int> |]
     Frame(series.Index, Index.Create [column], data)
 
@@ -337,4 +348,3 @@ type Frame with
            Vector.Create [| for row in data.Data -> row.GetColumn(name) |] :> IVector<int> |]
       |> Vector.Create
     Frame(rowIndex, columnIndex, data)
-
