@@ -23,6 +23,7 @@ type Series<'TIndex, 'TValue when 'TIndex : equality>(index:IIndex<'TIndex, int>
   // Accessors
 
   member x.GetItems(items) =
+    // TODO: Should throw when item is not in the sereis?
     let newIndex = Index.CreateUnsorted(items)
     let newVector = vectorBuilder.Build(index.Reindex(newIndex, Vectors.Return 0), [| vector |])
     Series(newIndex, newVector)

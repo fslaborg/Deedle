@@ -156,16 +156,33 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
   // df.Rows and df.Columns
   // ----------------------------------------------------------------------------------------------
 
-  member x.Columns = 
+  member frame.Columns = 
     Series.Create(columnIndex, data.Select(fun vect -> 
       Series.CreateUntyped(rowIndex, boxVector vect)))
 
-  member x.Rows = 
+  member frame.ColumnsDense = 
+    Series.Create(columnIndex, data.SelectMissing(fun vect -> 
+      // Assuming that the data has all values - which should be an invariant...
+      let all = rowIndex.Mappings |> Seq.forall (fun (key, addr) -> vect.Value.GetObject(addr).HasValue)
+      if all then OptionalValue(Series.CreateUntyped(rowIndex, boxVector vect.Value))
+      else OptionalValue.Empty ))
+
+  member frame.Rows = 
     let emptySeries = Series(rowIndex, Vector.Create [])
     emptySeries.SelectMissing (fun row ->
       let rowAddress = rowIndex.Lookup(row.Key)
       if not rowAddress.HasValue then OptionalValue.Empty
       else OptionalValue(Series.CreateUntyped(columnIndex, createRowReader rowAddress.Value)))
+
+  member frame.RowsDense = 
+    let emptySeries = Series(rowIndex, Vector.Create [])
+    emptySeries.SelectMissing (fun row ->
+      let rowAddress = rowIndex.Lookup(row.Key)
+      if not rowAddress.HasValue then OptionalValue.Empty else 
+        let rowVec = createRowReader rowAddress.Value
+        let all = columnIndex.Mappings |> Seq.forall (fun (key, addr) -> rowVec.GetValue(addr).HasValue)
+        if all then OptionalValue(Series.CreateUntyped(columnIndex, rowVec))
+        else OptionalValue.Empty )
 
   // ----------------------------------------------------------------------------------------------
   // Series related operations - add, drop, get, ?, ?<-, etc.
@@ -243,8 +260,34 @@ and Frame =
         when 'TRowIndex : equality and 'TColumnIndex : equality 
         and 'TSeries :> Series<'TRowIndex, 'TValue>>
       (nested:Series<'TColumnIndex, 'TSeries>) =
-    let initial = Frame(Index.Create [], nested.Index, Vector.Create [| |])
+
+    // Simple functions that pretty-print series and frames
+    // (to be integrated as ToString and with F# Interactive)
+    let printTable (data:string[,]) =
+      let rows = data.GetLength(0)
+      let columns = data.GetLength(1)
+      let widths = Array.zeroCreate columns 
+      data |> Array2D.iteri (fun r c str ->
+        widths.[c] <- max (widths.[c]) (str.Length))
+      for r in 0 .. rows - 1 do
+        for c in 0 .. columns - 1 do
+          System.Console.Write(data.[r, c].PadRight(widths.[c] + 1))
+        System.Console.WriteLine()
+
+    let prettyPrintFrame (f:Frame<_, _>) =
+      seq { yield ""::[ for colName, _ in f.ColumnIndex.Mappings do yield colName.ToString() ]
+            for ind, addr in f.RowIndex.Mappings do
+              let row = f.Rows.[ind]
+              yield 
+                (ind.ToString() + " ->")::
+                [ for _, value in row.Observations ->  // TODO: is this good?
+                    value.ToString() ] }
+      |> array2D
+      |> printTable
+
+    let initial = Frame(Index.Create [], Index.CreateUnsorted [], Vector.Create [| |])
     (initial, nested.Observations) ||> Seq.fold (fun df (name, series) -> 
+      prettyPrintFrame df
       if not series.HasValue then df 
       else df.Join(Frame.Create(name, series.Value), JoinKind.Outer))
 

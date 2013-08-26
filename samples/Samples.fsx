@@ -81,16 +81,16 @@ let joinedI = f1.Join(f2, JoinKind.Inner)
 joinedI |> prettyPrintFrame 
 
 // All values are missing
-let zerosQ = joined.Rows.SelectMissing(fun row -> 
-  if row.Key = "a" then OptionalValue.Empty else OptionalValue(Double.NaN))
+let zerosQ = joined.Rows.SelectMissing(fun (KeyValue(key, row)) -> 
+  if key = "a" then OptionalValue.Empty else OptionalValue(Double.NaN))
 zerosQ |> prettyPrintSeries
 
-let zerosE = joined.Rows.Select(fun row -> 
-  if row.Key = "a" then None else Some Double.NaN)
+let zerosE = joined.Rows.Select(fun (KeyValue(key, row)) -> 
+  if key = "a" then None else Some Double.NaN)
 zerosE |> prettyPrintSeries
 
-let zeros = joined.Rows.SelectMissing(fun row -> 
-  if row.Key = "a" then OptionalValue.Empty else OptionalValue(0.0))
+let zeros = joined.Rows.SelectMissing(fun (KeyValue(key, row)) -> 
+  if key = "a" then OptionalValue.Empty else OptionalValue(0.0))
 zeros |> prettyPrintSeries
 
 joined?Zeros <- zeros
@@ -159,33 +159,39 @@ a.GetAs<int>("S1")
 a.GetAs<float>("S1")
 a.GetAs<byte>("S1")
 
-joined?Sum <- joined.Rows.SelectMissing(fun row -> 
-  match row.Value.TryGetAs<int>("S1"), row.Value.TryGetAs<int>("S2") with
-  | Some n1, Some n2 -> Some(n1 + n2)
-  | _ -> Some -2)
 
-prettyPrintFrame joined
+// This fails as expected
+joined?Sum <- joined.Rows.Select(fun (KeyValue(key, row)) -> row?S1 + row?S2) 
 
-let sub = joined.Columns.["S1", "S2"] |> Frame.FromColumns
-sub |> prettyPrintFrame
-joined?Sum <- sub.Rows.Select(fun row -> 
-  row.Value?S1 + row.Value?S2)
+// This works, but it is not very useful as we only need S1 and S2 (and not all columns)
+joined?Sum <- joined.RowsDense.SelectMissing(fun (KeyValue(key, row)) -> 
+  if row.HasValue then OptionalValue(row.Value?S1 + row.Value?S2)
+  else OptionalValue.Empty)
+
+// Get frame with just S1 and S2
+let sub1 = joined.Columns.["S1", "S2"] |> Frame.FromColumns
+sub1 |> prettyPrintFrame
+
+let sub2 = joined.Columns.["S1", "S2"] |> Frame.FromColumns
+sub2 |> prettyPrintFrame
+joined?SumS1_S2 <- sub2.RowsDense.Select(fun row -> row.Value?S1 + row.Value?S2)
+
+joined |> prettyPrintFrame
 
 //
-
 joined.Rows?c.GetAs<string>("Test")
 
     
-joined.GetSeries<int>("Sum")
+joined.GetSeries<int>("SumS1_S2")
 |> prettyPrintSeries
 
 prettyPrintFrame joined
 
 // Conversions
-joined.GetSeries<int>("Sum") |> prettyPrintSeries
-joined.GetSeries<float>("Sum") |> prettyPrintSeries
+joined.GetSeries<int>("SumS1_S2") |> prettyPrintSeries
+joined.GetSeries<float>("SumS1_S2") |> prettyPrintSeries
 
-joined?Sum |> Series.sum
+joined?SumS1_S2 |> Series.sum
 
 
 // --------------------------------------------------------------------------------------
