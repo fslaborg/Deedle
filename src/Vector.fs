@@ -32,8 +32,8 @@ type IVector<'TAddress, 'TValue> =
   abstract GetValue : 'TAddress -> OptionalValue<'TValue>
   abstract Data : VectorData<'TValue>
   // TODO: Not entirely happy with these two being here... 
-  abstract Map : ('TValue -> 'TNewValue) -> IVector<'TAddress, 'TNewValue>
-  abstract MapMissing : (OptionalValue<'TValue> -> OptionalValue<'TNewValue>) -> IVector<'TAddress, 'TNewValue>
+  abstract Select : ('TValue -> 'TNewValue) -> IVector<'TAddress, 'TNewValue>
+  abstract SelectMissing : (OptionalValue<'TValue> -> OptionalValue<'TNewValue>) -> IVector<'TAddress, 'TNewValue>
 
 [<AutoOpen>]
 module VectorExtensions = 
@@ -66,8 +66,8 @@ module internal VectorHelpers =
     { new IVector<'TAddress, 'TValue> with
         member x.GetValue(a) = vector.Value.GetValue(a)
         member x.Data = vector.Value.Data
-        member x.Map(f) = vector.Value.Map(f)
-        member x.MapMissing(f) = vector.Value.MapMissing(f)
+        member x.Select(f) = vector.Value.Select(f)
+        member x.SelectMissing(f) = vector.Value.SelectMissing(f)
       interface IVector<'TAddress> with
         member x.ElementType = vector.Value.ElementType
         member x.GetObject(i) = vector.Value.GetObject(i) }
@@ -79,7 +79,7 @@ module internal VectorHelpers =
     abstract Invoke<'T> : IVector<'TAddress, 'T> * IVector<'TAddress, 'T> -> 'R
 
   let createDispatcher<'TAddress, 'R> (callSite:VectorCallSite1<'TAddress, 'R>) =
-    let dict = lazy Dictionary<_, System.Func<IVector<'TAddress>, 'R>>()
+    let dict = lazy Dictionary<_, System.Func<VectorCallSite1<'TAddress, 'R>, IVector<'TAddress>, 'R>>()
 
     let doubleCode = typeof<float>.TypeHandle.Value
     let intCode = typeof<int>.TypeHandle.Value
@@ -92,21 +92,22 @@ module internal VectorHelpers =
       elif code = stringCode then callSite.Invoke<string>(vect :?> IVector<'TAddress, string>)
       else
         match dict.Value.TryGetValue(code) with
-        | true, f -> f.Invoke(vect)
+        | true, f -> f.Invoke(callSite, vect)
         | _ ->
             let mi = typeof<VectorCallSite1<'TAddress, 'R>>.GetMethod("Invoke").MakeGenericMethod(vect.ElementType)
+            let inst = Expression.Parameter(typeof<VectorCallSite1<'TAddress, 'R>>)
             let par = Expression.Parameter(typeof<IVector<'TAddress>>)
             let ty = typedefof<IVector<_, _>>.MakeGenericType(typeof<'TAddress>, vect.ElementType)
             let expr =
-              Expression.Lambda<System.Func<IVector<'TAddress>, 'R>>
-                ( Expression.Call(mi, [Expression.Convert(par, ty) :> Expression]), [ par ])
+              Expression.Lambda<System.Func<VectorCallSite1<'TAddress, 'R>, IVector<'TAddress>, 'R>>
+                ( Expression.Call(inst, mi, Expression.Convert(par, ty)), [ inst; par ])
             let func = expr.Compile()
             dict.Value.[code] <- func
-            func.Invoke vect
+            func.Invoke(callSite, vect)
     invoke 
 
   let createTwoArgDispatcher<'TAddress, 'R> (callSite:VectorCallSite2<'TAddress, 'R>) =
-    let dict = lazy Dictionary<_, System.Func<IVector<'TAddress>, IVector<'TAddress>, 'R>>()
+    let dict = lazy Dictionary<_, System.Func<VectorCallSite2<'TAddress, 'R>, IVector<'TAddress>, IVector<'TAddress>, 'R>>()
 
     let doubleCode = typeof<float>.TypeHandle.Value
     let intCode = typeof<int>.TypeHandle.Value
@@ -121,18 +122,19 @@ module internal VectorHelpers =
       elif code = stringCode then callSite.Invoke<string>(vect1 :?> IVector<'TAddress, string>, vect2 :?> IVector<'TAddress, string>)
       else
         match dict.Value.TryGetValue(code) with
-        | true, f -> f.Invoke(vect1, vect2)
+        | true, f -> f.Invoke(callSite, vect1, vect2)
         | _ ->
             let mi = typeof<VectorCallSite2<'TAddress, 'R>>.GetMethod("Invoke").MakeGenericMethod(vect1.ElementType)
+            let inst = Expression.Parameter(typeof<VectorCallSite2<'TAddress, 'R>>)
             let par1 = Expression.Parameter(typeof<IVector<'TAddress>>)
             let par2 = Expression.Parameter(typeof<IVector<'TAddress>>)
             let ty = typedefof<IVector<_, _>>.MakeGenericType(typeof<'TAddress>, vect1.ElementType)
             let expr =
-              Expression.Lambda<System.Func<IVector<'TAddress>, IVector<'TAddress>, 'R>>
-                ( Expression.Call(mi, [Expression.Convert(par1, ty) :> Expression; Expression.Convert(par2, ty) :> Expression]), [ par1; par2 ])
+              Expression.Lambda<System.Func<VectorCallSite2<'TAddress, 'R>, IVector<'TAddress>, IVector<'TAddress>, 'R>>
+                ( Expression.Call(inst, mi, Expression.Convert(par1, ty), Expression.Convert(par2, ty)), [ inst; par1; par2 ])
             let func = expr.Compile()
             dict.Value.[code] <- func
-            func.Invoke(vect1, vect2)
+            func.Invoke(callSite, vect1, vect2)
     invoke 
 
 // --------------------------------------------------------------------------------------

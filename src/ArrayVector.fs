@@ -57,7 +57,7 @@ type ArrayVectorBuilder() =
     member builder.CreateOptional(optValues) =
       // Check for both OptionalValue.Empty and OptionalValue.Value = NaN
       let hasNAs = OptionalValue.containsMissingOrNA optValues
-      if hasNAs then av <| VectorOptional(optValues)
+      if hasNAs then av <| VectorOptional(OptionalValue.createMissingOrNAArray optValues)
       else av <| VectorNonOptional(optValues |> Array.map (fun v -> v.Value))
 
     /// Given a vector construction command(s) produces a new IVector
@@ -93,6 +93,7 @@ type ArrayVectorBuilder() =
       |  GetRange(source, (loRange, hiRange)) ->
           // Get the specified sub-range. For Optional, call the builder recursively 
           // as this may turn Optional representation to NonOptional
+          if hiRange < loRange then VectorNonOptional [||] |> av else
           match builder.buildArrayVector source arguments with 
           | VectorOptional data -> 
               vectorBuilder.CreateOptional(data.[loRange .. hiRange])
@@ -148,9 +149,9 @@ and [<RequireQualifiedAccess>] ArrayVector<'T> internal (representation:ArrayVec
       | VectorNonOptional data -> DenseList (IReadOnlyList.ofArray data)
       | VectorOptional data -> SparseList (IReadOnlyList.ofArray data)
 
-    // A version of Map that can transform missing values to actual values (we always 
+    // A version of Select that can transform missing values to actual values (we always 
     // end up with array that may contain missing values, so use CreateOptional)
-    member vector.MapMissing<'TNewValue>(f) = 
+    member vector.SelectMissing<'TNewValue>(f) = 
       let isNA = isNA<'TNewValue>() 
       let flattenNA (value:OptionalValue<_>) = 
         if value.HasValue && isNA value.Value then OptionalValue.Empty else value
@@ -162,9 +163,9 @@ and [<RequireQualifiedAccess>] ArrayVector<'T> internal (representation:ArrayVec
             data |> Array.map (f >> flattenNA)
       ArrayVectorBuilder.Instance.CreateOptional(data)
 
-    // Map function does not call 'f' on missing values.
-    member vector.Map<'TNewValue>(f:'T -> 'TNewValue) = 
-      (vector :> IVector<_, _>).MapMissing(OptionalValue.map f)
+    // Select function does not call 'f' on missing values.
+    member vector.Select<'TNewValue>(f:'T -> 'TNewValue) = 
+      (vector :> IVector<_, _>).SelectMissing(OptionalValue.map f)
 
 // --------------------------------------------------------------------------------------
 // Public type 'FSharp.DataFrame.Vector' that can be used for creating vectors
@@ -218,9 +219,9 @@ nan.Data
 
 ten.GetRange(2, 6)
 
-five.Map (fun v -> if v = 1 then Double.NaN else float v) 
-five.Map float
+five.Select (fun v -> if v = 1 then Double.NaN else float v) 
+five.Select float
 
 // Confusing? 
-//   nan.Map (fun v -> if Double.isNA(v) then -1.0 else v)
+//   nan.Select (fun v -> if Double.isNA(v) then -1.0 else v)
 *)

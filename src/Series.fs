@@ -1,5 +1,6 @@
 ﻿namespace FSharp.DataFrame
 
+open System.Collections.Generic
 open FSharp.DataFrame.Common
 open FSharp.DataFrame.Indices
 
@@ -47,26 +48,26 @@ type Series<'TIndex, 'TValue when 'TIndex : equality>(index:IIndex<'TIndex, int>
   // ----------------------------------------------------------------------------------------------
   // Operations
   
-  // TODO: Series.Map & Series.Filter need to use some clever index/vector functions
+  // TODO: Series.Select & Series.Where need to use some clever index/vector functions
 
-  member x.Filter(f:'TIndex -> 'TValue -> bool) = 
+  member x.Where(f:System.Func<KeyValuePair<'TIndex, 'TValue>, bool>) = 
     let newVector =
       [| for key, addr in index.Mappings ->
           let opt = vector.GetValue(addr)
-          if opt.HasValue && (f key opt.Value) then opt
+          if opt.HasValue && (f.Invoke (KeyValuePair(key, opt.Value))) then opt
           else OptionalValue.Empty |]
     Series<'TIndex, 'TValue>(index, vectorBuilder.CreateOptional(newVector))
 
-  member x.Map<'R>(f:'TIndex -> 'TValue -> 'R) = 
+  member x.Select<'R>(f:System.Func<KeyValuePair<'TIndex, 'TValue>, 'R>) = 
     let newVector =
       [| for key, addr in index.Mappings -> 
-           vector.GetValue(addr) |> OptionalValue.map (f key) |]
+           vector.GetValue(addr) |> OptionalValue.map (fun v -> f.Invoke(KeyValuePair(key, v))) |]
     Series<'TIndex, 'R>(index, vectorBuilder.CreateOptional(newVector))
 
-  member x.MapMissing<'R>(f:'TIndex -> option<'TValue> -> option<'R>) = 
+  member x.SelectMissing<'R>(f:System.Func<KeyValuePair<'TIndex, OptionalValue<'TValue>>, OptionalValue<'R>>) = 
     let newVector =
       [| for key, addr in index.Mappings -> 
-           vector.GetValue(addr) |> OptionalValue.asOption |> f key |> OptionalValue.ofOption |]
+           f.Invoke(KeyValuePair(key, vector.GetValue(addr))) |]
     Series<'TIndex, 'R>(index, vectorBuilder.CreateOptional(newVector))
 
 // ------------------------------------------------------------------------------------------------
@@ -94,6 +95,8 @@ type Series =
     Series<'TIndex, 'TValue>(Index.Create(index), Vector.Create(data))
   static member Create(index:IIndex<'TIndex, int>, data:IVector<int, 'TValue>) = 
     Series<'TIndex, 'TValue>(index, data)
+  static member CreateUntyped(index:IIndex<'TIndex, int>, data:IVector<int, obj>) = 
+    Series<'TIndex>(index, data)
 
 // ------------------------------------------------------------------------------------------------
 // Operations etc.

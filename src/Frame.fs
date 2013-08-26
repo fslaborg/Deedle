@@ -16,6 +16,22 @@ type JoinKind =
   | Left = 2
   | Right = 3
 
+module FrameHelpers =
+  // A "generic function" that boxes all values of a vector (IVector<int, 'T> -> IVector<int, obj>)
+  let boxVector = 
+    { new VectorHelpers.VectorCallSite1<int, IVector<int, obj>> with
+        override x.Invoke<'T>(col:IVector<int, 'T>) = col.Select(box) }
+    |> VectorHelpers.createDispatcher
+
+  // A "generic function" that transforms a generic vector using specified transformation
+  let transformColumn (vectorBuilder:IVectorBuilder<'TAddress>) rowCmd = 
+    { new VectorHelpers.VectorCallSite1<'TAddress, IVector<'TAddress>> with
+        override x.Invoke<'T>(col:IVector<'TAddress, 'T>) = 
+          vectorBuilder.Build<'T>(rowCmd, [| col |]) :> IVector<'TAddress> }
+    |> VectorHelpers.createDispatcher
+
+open FrameHelpers
+
 /// A frame contains one Index, with multiple Vecs
 /// (because this is dynamic, we need to store them as IVec)
 type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnIndex : equality>
@@ -36,19 +52,6 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
   let mutable columnIndex = columnIndex
   let mutable data = data
 
-  // A "generic function" that boxes all values of a vector (IVector<int, 'T> -> IVector<int, obj>)
-  let boxVector = 
-    { new VectorHelpers.VectorCallSite1<int, IVector<int, obj>> with
-        override x.Invoke<'T>(col:IVector<int, 'T>) = col.Map(box) }
-    |> VectorHelpers.createDispatcher
-
-  // A "generic function" that transforms a generic vector using specified transformation
-  let transformColumn rowCmd = 
-    { new VectorHelpers.VectorCallSite1<int, IVector<int>> with
-        override x.Invoke<'T>(col:IVector<int, 'T>) = 
-          vectorBuilder.Build<'T>(rowCmd, [| col |]) :> IVector<int> }
-    |> VectorHelpers.createDispatcher
-
   let createRowReader rowAddress =
     let rec materializeVector() =
       let data = (virtualVector : ref<IVector<_, _>>).Value.DataSequence
@@ -62,8 +65,8 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
           member x.Data = 
             [| for _, addr in columnIndex.Mappings -> x.GetValue(addr) |]
             |> IReadOnlyList.ofArray |> SparseList          
-          member x.Map(f) = materializeVector(); virtualVector.Value.Map(f)
-          member x.MapMissing(f) = materializeVector(); virtualVector.Value.MapMissing(f)
+          member x.Select(f) = materializeVector(); virtualVector.Value.Select(f)
+          member x.SelectMissing(f) = materializeVector(); virtualVector.Value.SelectMissing(f)
         
         interface IVector<int> with
           member x.ElementType = typeof<obj>
@@ -117,8 +120,8 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
     let newColumnIndex, colCmd = 
       columnIndex.Append(otherFrame.ColumnIndex, Vectors.Return 0, Vectors.Return 1, VectorValueTransform.LeftOrRight)
     // Apply transformation to both data vectors
-    let newThisData = data.Map(transformColumn thisRowCmd)
-    let newOtherData = otherFrame.Data.Map(transformColumn otherRowCmd)
+    let newThisData = data.Select(transformColumn vectorBuilder thisRowCmd)
+    let newOtherData = otherFrame.Data.Select(transformColumn vectorBuilder otherRowCmd)
     // Combine column vectors a single vector & return results
     let newData = vectorBuilder.Build(colCmd, [| newThisData; newOtherData |])
     Frame(newRowIndex, newColumnIndex, newData)
@@ -154,13 +157,15 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
   // ----------------------------------------------------------------------------------------------
 
   member x.Columns = 
-    Series.Create(columnIndex, data.Map(fun vect -> Series.Create(rowIndex, boxVector vect)))
+    Series.Create(columnIndex, data.Select(fun vect -> 
+      Series.CreateUntyped(rowIndex, boxVector vect)))
 
   member x.Rows = 
-    let seriesData = 
-      [| for rowKey, rowAddress in rowIndex.Mappings ->  // TODO: Does not scale?
-            Series.Create(columnIndex, createRowReader rowAddress) |]
-    Series.Create(rowIndex, Vector.Create(seriesData)) 
+    let emptySeries = Series(rowIndex, Vector.Create [])
+    emptySeries.SelectMissing (fun row ->
+      let rowAddress = rowIndex.Lookup(row.Key)
+      if not rowAddress.HasValue then OptionalValue.Empty
+      else OptionalValue(Series.CreateUntyped(columnIndex, createRowReader rowAddress.Value)))
 
   // ----------------------------------------------------------------------------------------------
   // Series related operations - add, drop, get, ?, ?<-, etc.
@@ -190,7 +195,7 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
         let changeType = 
           { new VectorHelpers.VectorCallSite1<int, IVector<int, 'R>> with
               override x.Invoke<'T>(col:IVector<int, 'T>) = 
-                col.Map(fun v -> System.Convert.ChangeType(v, typeof<'R>) :?> 'R) }
+                col.Select(fun v -> System.Convert.ChangeType(v, typeof<'R>) :?> 'R) }
           |> VectorHelpers.createDispatcher
         Series.Create(rowIndex, changeType colVector)
 
@@ -210,26 +215,35 @@ and Frame =
     Frame(series.Index, Index.Create [column], data)
 
   static member CreateRow(row:'TRowIndex, series:Series<'TColumnIndex, 'TValue>) = 
-    let data = series.Vector.MapMissing(fun v -> 
+    let data = series.Vector.SelectMissing(fun v -> 
       let res = Vectors.ArrayVector.ArrayVectorBuilder.Instance.CreateOptional [| v |] 
       OptionalValue(res :> IVector<_>))
     Frame(Index.Create [row], series.Index, data)
-(*
-  static member FromRows(nested:Series<'TRowIndex, Series<'TColumnIndex, 'TValue>>) =
-    // TODO: THis is probably slow
-    let columnIndex = 
-      nested.Map(fun _ s -> s.Index).Vector.DataSequence |> Seq.fold (fun id1 id2 -> 
-        if id2.HasValue then id2.Value.UnionWith(id1) 
-        else id1) (upcast Index.Create [])
 
-    let initial = Frame(Index.Create [], Index.Create [], Vector.Create [| |])
-    (initial, nested.Observations) ||> Seq.fold (fun df (name, series) -> 
-      if not series.HasValue then df 
-      else df.Append(Frame.CreateRow(name, series.Value)))
-*)
-  static member FromColumns<'TRowIndex, 'TColumnIndex, 'TValue when 'TRowIndex : equality and 'TColumnIndex : equality>
-      (nested:Series<'TColumnIndex, Series<'TRowIndex, 'TValue>>) =
-    let initial = Frame(Index.Create [], Index.Create [], Vector.Create [| |])
+  static member FromRows<'TRowIndex, 'TColumnIndex, 'TSeries, 'TValue 
+        when 'TRowIndex : equality and 'TColumnIndex : equality 
+        and 'TSeries :> Series<'TColumnIndex, 'TValue>>
+      (nested:Series<'TRowIndex, 'TSeries>) =
+    // Append all rows in some order
+    let initial = Frame(Index.CreateUnsorted [], Index.Create [], Vector.Create [| |])
+    let folded =
+      (initial, nested.Observations) ||> Seq.fold (fun df (name, series) -> 
+        if not series.HasValue then df 
+        else Frame.CreateRow(name, series.Value).Append(df))
+
+    // Reindex according to the original index
+    let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance // TODO: Capture somewhere
+    let rowCmd = folded.RowIndex.Reindex(nested.Index, Vectors.Return 0)
+    let newRowIndex = nested.Index
+    let newColumnIndex = folded.ColumnIndex
+    let newData = folded.Data.Select(transformColumn vectorBuilder rowCmd)
+    Frame(newRowIndex, newColumnIndex, newData)
+
+  static member FromColumns<'TRowIndex, 'TColumnIndex, 'TSeries, 'TValue 
+        when 'TRowIndex : equality and 'TColumnIndex : equality 
+        and 'TSeries :> Series<'TRowIndex, 'TValue>>
+      (nested:Series<'TColumnIndex, 'TSeries>) =
+    let initial = Frame(Index.Create [], nested.Index, Vector.Create [| |])
     (initial, nested.Observations) ||> Seq.fold (fun df (name, series) -> 
       if not series.HasValue then df 
       else df.Join(Frame.Create(name, series.Value), JoinKind.Outer))

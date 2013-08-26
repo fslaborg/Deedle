@@ -54,13 +54,17 @@ let a2 = Frame.Create("C2", Series.Create([2;3], ["one"; "two"]))
 a1 |> prettyPrintFrame
 a2 |> prettyPrintFrame
 
+// This is fine
 a1.Append(a2) |> prettyPrintFrame
 
+// but this fails
+try a1.Append(a1) |> prettyPrintFrame with _ -> printfn "ok"
 
-let f1 = Frame.Create("S1", s1)
+
+// let f1 = Frame.Create("S1", s1)
 f1?Another <- f2.GetSeries<int>("S2")
 
-f1?Test0 <- [ "a"; "b" ] // TODO: bug - fixed
+f1?Test0 <- [ "a"; "b" ]
 f1?Test <- [ "a"; "b"; "!" ]
 f1?Test2 <- [ "a"; "b"; "!"; "?" ]
 
@@ -73,30 +77,34 @@ joined |> prettyPrintFrame
 let joinedR = f1.Join(f2, JoinKind.Right)
 joinedR |> prettyPrintFrame 
 
-// let joinedI = f1.Join(f2, JoinKind.Inner) // TODO!
-// joinedI |> prettyPrintFrame 
+let joinedI = f1.Join(f2, JoinKind.Inner)
+joinedI |> prettyPrintFrame 
 
-// TODO: Think what this should do...
-// (special case construction OR sum/mean/...)
-let zerosQ = joined.Rows.MapRaw(fun key reader -> if key = "a" then None else Some Double.NaN)
+// All values are missing
+let zerosQ = joined.Rows.SelectMissing(fun row -> 
+  if row.Key = "a" then OptionalValue.Empty else OptionalValue(Double.NaN))
 zerosQ |> prettyPrintSeries
 
-let zerosE = joined.Rows.Map(fun key reader -> if key = "a" then None else Some Double.NaN)
+let zerosE = joined.Rows.Select(fun row -> 
+  if row.Key = "a" then None else Some Double.NaN)
 zerosE |> prettyPrintSeries
 
-let zeros = joined.Rows.MapRaw(fun key reader -> if key = "a" then None else Some 0.0)
+let zeros = joined.Rows.SelectMissing(fun row -> 
+  if row.Key = "a" then OptionalValue.Empty else OptionalValue(0.0))
 zeros |> prettyPrintSeries
 
 joined?Zeros <- zeros
 joined |> prettyPrintFrame 
 
 
-let a1 = Frame.CreateRow(1, joined.Rows.["a"])
-let a2 = Frame.CreateRow(2, joined.Rows.["b"])
-a1 |> prettyPrintFrame
-a2 |> prettyPrintFrame
-a1.Append(a2) |> prettyPrintFrame
+// Matching two frames in append
+let c1 = Frame.CreateRow(1, joined.Rows.["a"])
+let c2 = Frame.CreateRow(2, joined.Rows.["b"])
+c1 |> prettyPrintFrame
+c2 |> prettyPrintFrame
+c1.Append(c2) |> prettyPrintFrame
 
+// Appending things to an empty frame
 let initial = Frame(Index.Create [], Index.Create [], Vector.Create [| |])
 initial.Append(a1) |> prettyPrintFrame
 
@@ -105,20 +113,38 @@ joined |> prettyPrintFrame
 joined.Rows.["a"] |> prettyPrintSeries
 joined.Rows.["c"] |> prettyPrintSeries
 
+joined.Rows?a |> prettyPrintSeries
+joined.Rows?c |> prettyPrintSeries
+
+joined.Rows?c?S1
+joined.Rows?c?Another
+
+try joined.Rows?c?Test |> ignore with _ -> printfn "assuming double.."
+
+joined.Rows?c.GetAs<string>("Test")
+let cs = joined.Rows?c
+
+cs.Get("Test")
+cs.GetAs<string>("Test")
+cs.["S1" .. "S2"] |> prettyPrintSeries
+cs.["S1", "Zeros", "S2"] |> prettyPrintSeries
+
+
 joined.Rows.["a", "c"] |> Frame.FromColumns |> prettyPrintFrame
 joined.Rows.["a", "c"] |> Frame.FromRows |> prettyPrintFrame
 
-(*
-joined.Rows.["a", "c", "d"] |> Frame.Create |> prettyPrintFrame
-joined.Rows.["a" .. "c"] |> Frame.Create |> prettyPrintFrame
+joined.Rows.["a", "c", "d"] |> Frame.FromRows |> prettyPrintFrame
+joined.Rows.["a" .. "c"] |> Frame.FromRows |> prettyPrintFrame
+joined.Rows.["d", "c", "b", "a"] |> Frame.FromRows |> prettyPrintFrame
 
-let reversed = joined.Rows.["d", "c", "b", "a"] |> Frame.Create
+// preserve ordering of selectors etc.
+let reversed = joined.Rows.["d", "c", "b", "a"] |> Frame.FromRows
 reversed |> prettyPrintFrame
-reversed.Rows.["d" .. "d"] |> prettyPrintFrame
-reversed.Rows.["d" .. "c"] |> prettyPrintFrame
-reversed.Rows.["a" .. "c"] |> prettyPrintFrame // Empty data frame - as expected
-*)
-let tf = Frame.Create("First", joined.Rows.["a"]) 
+reversed.Rows.["d" .. "d"] |> Frame.FromRows |> prettyPrintFrame
+reversed.Rows.["d" .. "c"] |> Frame.FromRows |> prettyPrintFrame
+reversed.Rows.["a" .. "c"] |> prettyPrintSeries
+
+let tf = Frame.Create("First", joined.Rows?a) 
 tf |> prettyPrintFrame
 
 tf?Second <- joined.Rows.["b"]
@@ -129,22 +155,25 @@ a |> prettyPrintSeries
 
 a?S1
 a.["S1"]
-a.TryGetAny<int>("S1")
-a.GetAny<int>("S1")
+a.GetAs<int>("S1")
+a.GetAs<float>("S1")
+a.GetAs<byte>("S1")
 
-joined?Sum <- joined.Rows.Map(fun key row -> 
-  match row.TryGetAny<int>("S1"), row.TryGetAny<int>("S2") with
+joined?Sum <- joined.Rows.SelectMissing(fun row -> 
+  match row.Value.TryGetAs<int>("S1"), row.Value.TryGetAs<int>("S2") with
   | Some n1, Some n2 -> Some(n1 + n2)
   | _ -> Some -2)
 
 prettyPrintFrame joined
 
-//
-// joined?Sum <- joined.Columns.["S1", "S2"].Rows.Map(fun key reader -> 
-//   reader.GetColumn<int>("S1") + reader.GetColumn<int>("S2") )
+let sub = joined.Columns.["S1", "S2"] |> Frame.FromColumns
+sub |> prettyPrintFrame
+joined?Sum <- sub.Rows.Select(fun row -> 
+  row.Value?S1 + row.Value?S2)
+
 //
 
-joined.Rows.["c"].GetAny<string>("Test")
+joined.Rows?c.GetAs<string>("Test")
 
     
 joined.GetSeries<int>("Sum")

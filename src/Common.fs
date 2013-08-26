@@ -1,29 +1,10 @@
-﻿module FSharp.DataFrame.Common
+﻿namespace FSharp.DataFrame
 
-// --------------------------------------------------------------------------------------
-// Initialization
-// --------------------------------------------------------------------------------------
 open System
-open System.Linq
-open System.Drawing
-open System.Collections.Generic
-open System.Runtime.CompilerServices
 
 // --------------------------------------------------------------------------------------
 // Nullable value
 // --------------------------------------------------------------------------------------
-
-// let notImplemented msg = raise <| NotImplementedException(msg)
-let (|Let|) argument input = (argument, input)
-
-let isNA<'T> () =
-  let ty = typeof<'T>
-  let nanTest : 'T -> bool = 
-    if ty = typeof<float> then unbox Double.IsNaN
-    elif ty = typeof<float32> then unbox Single.IsNaN
-    elif ty.IsValueType then (fun _ -> false)
-    else (fun v -> Object.Equals(null, box v))
-  nanTest
 
 [<Struct>]
 type OptionalValue<'T>(hasValue:bool, value:'T) = 
@@ -39,6 +20,31 @@ type OptionalValue<'T>(hasValue:bool, value:'T) =
       if Object.Equals(null, value) then "<null>"
       else value.ToString() 
     else "missing"
+
+// --------------------------------------------------------------------------------------
+// Internals    
+// --------------------------------------------------------------------------------------
+
+namespace FSharp.DataFrame.Common
+
+open System
+open System.Linq
+open System.Drawing
+open FSharp.DataFrame
+open System.Collections.Generic
+
+[<AutoOpen>] 
+module GlobalHelpers =
+  let (|Let|) argument input = (argument, input)
+
+  let isNA<'T> () =
+    let ty = typeof<'T>
+    let nanTest : 'T -> bool = 
+      if ty = typeof<float> then unbox Double.IsNaN
+      elif ty = typeof<float32> then unbox Single.IsNaN
+      elif ty.IsValueType then (fun _ -> false)
+      else (fun v -> Object.Equals(null, box v))
+    nanTest
 
 module Array = 
   /// Drop a specified range from a given array. The operation is inclusive on
@@ -88,7 +94,7 @@ module OptionalValue =
     let isNA = isNA<'T>() // TODO: Optimize using static member constraints
     data |> Array.map (fun v -> if isNA v then OptionalValue.Empty else OptionalValue(v))
 
-  let inline createNAOrMissingArray (data:OptionalValue<'T>[]) =   
+  let inline createMissingOrNAArray (data:OptionalValue<'T>[]) =   
     let isNA = isNA<'T>() // TODO: Optimize using static member constraints
     data |> Array.map (fun v -> 
       if not v.HasValue || isNA v.Value then OptionalValue.Empty else OptionalValue(v.Value))
