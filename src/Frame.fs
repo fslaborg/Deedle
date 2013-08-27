@@ -35,8 +35,8 @@ open FrameHelpers
 /// A frame contains one Index, with multiple Vecs
 /// (because this is dynamic, we need to store them as IVec)
 type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnIndex : equality>
-    ( rowIndex:IIndex<'TRowIndex, int>, columnIndex:IIndex<'TColumnIndex, int>, 
-      data:IVector<int, IVector<int>>) =
+    internal ( rowIndex:IIndex<'TRowIndex, int>, columnIndex:IIndex<'TColumnIndex, int>, 
+               data:IVector<int, IVector<int>>) =
 
   // ----------------------------------------------------------------------------------------------
   // Internals (rowIndex, columnIndex, data and various helpers)
@@ -237,6 +237,21 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
       |> array2D
       |> Formatting.formatTable
 
+  // ----------------------------------------------------------------------------------------------
+  // Internals (rowIndex, columnIndex, data and various helpers)
+  // ----------------------------------------------------------------------------------------------
+
+  new(names:seq<'TColumnIndex>, columns:seq<ISeries<'TRowIndex>>) =
+    let df = Frame(Index.Create [], Index.Create [], Vector.Create [])
+    let df = (df, Seq.zip names columns) ||> Seq.fold (fun df (colKey, colData) ->
+      let other = Frame(colData.Index, Index.CreateUnsorted [colKey], Vector.Create [colData.Vector])
+      df.Join(other, JoinKind.Outer) )
+    Frame(df.RowIndex, df.ColumnIndex, df.Data)
+
+// ------------------------------------------------------------------------------------------------
+// Construction
+// ------------------------------------------------------------------------------------------------
+
 and Frame =
   static member Register() = 
     Series.SeriesOperations <-
@@ -282,47 +297,50 @@ and Frame =
         when 'TRowIndex : equality and 'TColumnIndex : equality 
         and 'TSeries :> Series<'TRowIndex, 'TValue>>
       (nested:Series<'TColumnIndex, 'TSeries>) =
-
-    // Simple functions that pretty-print series and frames
-    // (to be integrated as ToString and with F# Interactive)
-    let formatTable (data:string[,]) =
-      let rows = data.GetLength(0)
-      let columns = data.GetLength(1)
-      let widths = Array.zeroCreate columns 
-      data |> Array2D.iteri (fun r c str ->
-        widths.[c] <- max (widths.[c]) (str.Length))
-      for r in 0 .. rows - 1 do
-        for c in 0 .. columns - 1 do
-          System.Console.Write(data.[r, c].PadRight(widths.[c] + 1))
-        System.Console.WriteLine()
-
-    let prettyPrintFrame (f:Frame<_, _>) =
-      seq { yield ""::[ for colName, _ in f.ColumnIndex.Mappings do yield colName.ToString() ]
-            for ind, addr in f.RowIndex.Mappings do
-              let row = f.Rows.[ind]
-              yield 
-                (ind.ToString() + " ->")::
-                [ for _, value in row.Observations ->  // TODO: is this good?
-                    value.ToString() ] }
-      |> array2D
-      |> formatTable
-
     let initial = Frame(Index.Create [], Index.CreateUnsorted [], Vector.Create [| |])
     (initial, nested.Observations) ||> Seq.fold (fun df (name, series) -> 
-      prettyPrintFrame df
       if not series.HasValue then df 
       else df.Join(Frame.Create(name, series.Value), JoinKind.Outer))
 
-open FSharp.Data
-open System.Linq
+[<AutoOpen>]
+module FSharp =
+  type Frame = 
+    static member ofRows(rows:seq<_ * Series<_, _>>) = 
+      let names, values = rows |> List.ofSeq |> List.unzip
+      Frame.FromRows(Series(names, values))
 
-type Frame with
-  static member ReadCsv(file:string) = 
-    let data = Csv.CsvFile.Load(file).Cache()
-    let columnIndex = Index.Create data.Headers.Value
-    let rowIndex = Index.Create [ 0 .. data.Data.Count() - 1 ]
-    let data = 
-      [| for name in data.Headers.Value ->
-           Vector.Create [| for row in data.Data -> row.GetColumn(name) |] :> IVector<int> |]
-      |> Vector.Create
-    Frame(rowIndex, columnIndex, data)
+    static member ofRows(rows) = 
+      Frame.FromRows(rows)
+    
+    static member ofColumns(cols) = 
+      Frame.FromColumns(cols)
+    static member ofColumns(cols:seq<_ * Series<_, _>>) = 
+      let names, values = cols |> List.ofSeq |> List.unzip
+      Frame.FromColumns(Series(names, values))
+    
+    static member ofValues(values) =
+      values 
+      |> Seq.groupBy (fun (row, col, value) -> col)
+      |> Seq.map (fun (col, items) -> 
+          let keys, _, values = Array.ofSeq items |> Array.unzip3
+          col, Series(keys, values) )
+      |> Frame.ofColumns
+
+  let (=>) a b = a, b
+
+[<AutoOpen>]
+module FrameExtensions =
+  open FSharp.Data
+  open System.Linq
+
+  type Frame with
+    static member ReadCsv(file:string) = 
+      let data = Csv.CsvFile.Load(file).Cache()
+      let columnIndex = Index.Create data.Headers.Value
+      let rowIndex = Index.Create [ 0 .. data.Data.Count() - 1 ]
+      let data = 
+        [| for name in data.Headers.Value ->
+             Vector.Create [| for row in data.Data -> row.GetColumn(name) |] :> IVector<int> |]
+        |> Vector.Create
+      Frame(rowIndex, columnIndex, data)
+

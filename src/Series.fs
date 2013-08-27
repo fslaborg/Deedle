@@ -9,6 +9,10 @@ open FSharp.DataFrame.Vectors
 // Series
 // ------------------------------------------------------------------------------------------------
 
+type ISeries<'TIndex> =
+  abstract Vector : FSharp.DataFrame.IVector<int>
+  abstract Index : IIndex<'TIndex, int>
+
 // :-(
 type internal SeriesOperations = 
   abstract OuterJoin<'TIndex, 'TValue when 'TIndex : equality> : 
@@ -16,7 +20,8 @@ type internal SeriesOperations =
     Series<'TIndex, Series<int, obj>>
 
 /// A series contains one Index and one Vec
-and Series<'TIndex, 'TValue when 'TIndex : equality>(index:IIndex<'TIndex, int>, vector:IVector<int, 'TValue>) =
+and Series<'TIndex, 'TValue when 'TIndex : equality>
+    internal (index:IIndex<'TIndex, int>, vector:IVector<int, 'TValue>) =
   
   /// Vector builder
   let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
@@ -33,6 +38,11 @@ and Series<'TIndex, 'TValue when 'TIndex : equality>(index:IIndex<'TIndex, int>,
 
   // ----------------------------------------------------------------------------------------------
   // IEnumerable
+  // ----------------------------------------------------------------------------------------------
+
+  interface ISeries<'TIndex> with
+    member x.Vector = vector :> IVector<int>
+    member x.Index = index
 
   interface IFormattable with
     member series.Format() = 
@@ -52,6 +62,7 @@ and Series<'TIndex, 'TValue when 'TIndex : equality>(index:IIndex<'TIndex, int>,
 
   // ----------------------------------------------------------------------------------------------
   // Accessors
+  // ----------------------------------------------------------------------------------------------
 
   member x.GetItems(items) =
     // TODO: Should throw when item is not in the sereis?
@@ -79,6 +90,7 @@ and Series<'TIndex, 'TValue when 'TIndex : equality>(index:IIndex<'TIndex, int>,
 
   // ----------------------------------------------------------------------------------------------
   // Operations
+  // ----------------------------------------------------------------------------------------------
   
   // TODO: Series.Select & Series.Where need to use some clever index/vector functions
 
@@ -104,6 +116,7 @@ and Series<'TIndex, 'TValue when 'TIndex : equality>(index:IIndex<'TIndex, int>,
 
   // ----------------------------------------------------------------------------------------------
   // Operators
+  // ----------------------------------------------------------------------------------------------
 
   // :-((
   static member val internal SeriesOperations : SeriesOperations = Unchecked.defaultof<_> with get, set
@@ -151,18 +164,26 @@ and Series<'TIndex, 'TValue when 'TIndex : equality>(index:IIndex<'TIndex, int>,
   static member (*) (s1, s2) = Series<_, _>.VectorOperation<_, float>(s1, s2, (*))
   static member (/) (s1, s2) = Series<_, _>.VectorOperation<_, float>(s1, s2, (/))
 
+  // ----------------------------------------------------------------------------------------------
+  // Nicer constructor
+  // ----------------------------------------------------------------------------------------------
+
+  new(keys:seq<_>, values:seq<_>) = 
+    let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
+    Series(Index.Create keys, vectorBuilder.CreateNonOptional (Array.ofSeq values))
+
 // ------------------------------------------------------------------------------------------------
 // Untyped series
 // ------------------------------------------------------------------------------------------------
 
-type Series<'TIndex when 'TIndex : equality>(index, vector) = 
+type ObjectSeries<'TIndex when 'TIndex : equality> internal(index:IIndex<_, _>, vector) = 
   inherit Series<'TIndex, obj>(index, vector)
   
   member x.GetAs<'R>(column) : 'R = 
     System.Convert.ChangeType(x.Get(column), typeof<'R>) |> unbox
   member x.TryGetAs<'R>(column) : 'R option = 
     x.TryGet(column) |> Option.map (fun v -> System.Convert.ChangeType(v, typeof<'R>) |> unbox)
-  static member (?) (series:Series<_>, name:string) = series.GetAs<float>(name)
+  static member (?) (series:ObjectSeries<_>, name:string) = series.GetAs<float>(name)
 
 // ------------------------------------------------------------------------------------------------
 // Construction
@@ -177,7 +198,7 @@ type Series =
   static member Create(index:IIndex<'TIndex, int>, data:IVector<int, 'TValue>) = 
     Series<'TIndex, 'TValue>(index, data)
   static member CreateUntyped(index:IIndex<'TIndex, int>, data:IVector<int, obj>) = 
-    Series<'TIndex>(index, data)
+    ObjectSeries<'TIndex>(index, data)
 
 // ------------------------------------------------------------------------------------------------
 // Operations etc.

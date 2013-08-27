@@ -1,12 +1,31 @@
 ﻿#I "../bin"
 #load "DataFrame.fsx"
 
+let dateRange (first:System.DateTime) count = 
+  seq { for i in 0 .. (count - 1) -> first.AddDays(float i) }
+
+let rand count = 
+  let rnd = System.Random()
+  seq { for i in 0 .. (count - 1) -> rnd.NextDouble() }
+
 // --------------------------------------------------------------------------------------
 // Some basic examples of using the data frame
 // --------------------------------------------------------------------------------------
 
 open System
 open FSharp.DataFrame
+
+
+
+let tsOld = Series(dateRange (DateTime(2013,1,1)) 10, rand 10)
+let tsNew = Series([DateTime(2013,1,1); DateTime(2013,1,2); DateTime(2013,1,3)], [ 10.0; 20.0; 30.0 ])
+
+let df = Frame(["sierrats"; "olympus"], [tsOld; tsNew])
+
+let df = Frame.ofValues [ (1, "Tomas", "happy"); (2, "Tomas", "unhappy"); (1, "Adam", "happy") ]
+let df = Frame.ofRows ["sierrats" => tsOld; "olympus" => tsNew] 
+let df = Frame.ofColumns ["sierrats" => tsOld; "olympus" => tsNew] 
+                
 
 // S1 and S2 are ordered series, S3 is not ordered
 let s1 = Series.Create(["a"; "b"; "c"], [1 .. 3])
