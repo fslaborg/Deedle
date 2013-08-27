@@ -1,4 +1,19 @@
-﻿// --------------------------------------------------------------------------------------
+﻿namespace FSharp.DataFrame.Vectors
+
+open FSharp.DataFrame
+open System.Collections.Generic
+
+/// Provides a way to get the data of a vector. This is a concrete type used by 
+/// functions that operate on vectors (like Series.sum, etc.). The vector may choose
+/// to return the data as IReadOnlyList (with or without N/A values) which is more
+/// efficient to use or as a lazy sequence (slower, but more general).
+[<RequireQualifiedAccess>]
+type VectorData<'TAddress> = 
+  | DenseList of IReadOnlyList<'TAddress>
+  | SparseList of IReadOnlyList<OptionalValue<'TAddress>>
+  | Sequence of seq<OptionalValue<'TAddress>>
+
+  // --------------------------------------------------------------------------------------
 // Interface (generic & non-generic) for representing vectors
 // --------------------------------------------------------------------------------------
 namespace FSharp.DataFrame
@@ -8,15 +23,7 @@ open System.Reflection
 open System.Linq.Expressions
 open System.Collections.Generic
 open FSharp.DataFrame.Common
-
-/// Provides a way to get the data of a vector. This is a concrete type used by 
-/// functions that operate on vectors (like Series.sum, etc.). The vector may choose
-/// to return the data as IReadOnlyList (with or without N/A values) which is more
-/// efficient to use or as a lazy sequence (slower, but more general).
-type VectorData<'TAddress> = 
-  | DenseList of IReadOnlyList<'TAddress>
-  | SparseList of IReadOnlyList<OptionalValue<'TAddress>>
-  | Sequence of seq<OptionalValue<'TAddress>>
+open FSharp.DataFrame.Vectors
 
 /// Represents an (untyped) vector that stores some values and provides access
 /// to the values via a generic address. For convenience, the vector exposes
@@ -42,24 +49,24 @@ module VectorExtensions =
     /// order of elements in the vector and so it also returns N/A values.)
     member x.DataSequence = 
       match x.Data with
-      | Sequence s -> s
-      | SparseList s -> upcast s
-      | DenseList s -> Seq.map (fun v -> OptionalValue(v)) s
+      | VectorData.Sequence s -> s
+      | VectorData.SparseList s -> upcast s
+      | VectorData.DenseList s -> Seq.map (fun v -> OptionalValue(v)) s
 
 module internal VectorHelpers =
   /// Pretty printer for vectors. This uses the 'Data' property
   let prettyPrintVector (vector:IVector<'TAddress, 'T>) = 
     let printSequence kind (input:seq<string>) dots = 
       let sb = Text.StringBuilder(kind + " [")
-      for it in input |> Seq.takeAtMost PrettyPrint.ItemCount do 
+      for it in input |> Seq.takeAtMost Formatting.ItemCount do 
         sb.Append(" ").Append(it).Append(";") |> ignore
       sb.Remove(sb.Length - 1, 1) |> ignore
       if dots then sb.Append("; ... ]").ToString() 
       else sb.Append(" ]").ToString()
     match vector.Data with
-    | DenseList list -> printSequence "dense" (Seq.map (fun v -> v.ToString()) list) (list.Count > PrettyPrint.ItemCount)
-    | SparseList list -> printSequence "sparse" (Seq.map (fun v -> v.ToString()) list) (list.Count > PrettyPrint.ItemCount)
-    | Sequence list -> printSequence "seq" (Seq.map (fun v -> v.ToString()) list) (Seq.length list > PrettyPrint.ItemCount)
+    | VectorData.DenseList list -> printSequence "dense" (Seq.map (fun v -> v.ToString()) list) (list.Count > Formatting.ItemCount)
+    | VectorData.SparseList list -> printSequence "sparse" (Seq.map (fun v -> v.ToString()) list) (list.Count > Formatting.ItemCount)
+    | VectorData.Sequence list -> printSequence "seq" (Seq.map (fun v -> v.ToString()) list) (Seq.length list > Formatting.ItemCount)
 
   /// Create a new vector that delegates all functionality to a ref vector
   let delegatedVector (vector:IVector<'TAddress, 'TValue> ref) =

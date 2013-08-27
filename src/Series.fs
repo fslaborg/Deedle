@@ -3,13 +3,14 @@
 open System.Collections.Generic
 open FSharp.DataFrame.Common
 open FSharp.DataFrame.Indices
+open FSharp.DataFrame.Vectors
 
 // ------------------------------------------------------------------------------------------------
 // Series
 // ------------------------------------------------------------------------------------------------
 
 // :-(
-type SeriesOperations = 
+type internal SeriesOperations = 
   abstract OuterJoin<'TIndex, 'TValue when 'TIndex : equality> : 
     Series<'TIndex, 'TValue> * Series<'TIndex, 'TValue> -> 
     Series<'TIndex, Series<int, obj>>
@@ -29,6 +30,25 @@ and Series<'TIndex, 'TValue when 'TIndex : equality>(index:IIndex<'TIndex, int>,
   member x.Vector = vector
   member x.Observations = seq { for key, address in index.Mappings -> key, vector.GetValue(address) }
   member x.Keys = seq { for key, _ in index.Mappings -> key }
+
+  // ----------------------------------------------------------------------------------------------
+  // IEnumerable
+
+  interface IFormattable with
+    member series.Format() = 
+      seq { for k, v in series.Observations do
+              yield [ k.ToString(); v.ToString() ] }
+      |> array2D
+      |> Formatting.formatTable
+
+
+  interface System.Collections.Generic.IEnumerable<'TValue> with
+    member x.GetEnumerator() = 
+      seq { for k, v in x.Observations do
+              if v.HasValue then yield v.Value }
+      |> Seq.getEnumerator
+  interface System.Collections.IEnumerable with
+    member x.GetEnumerator() = (x :> seq<_>).GetEnumerator() :> System.Collections.IEnumerator
 
   // ----------------------------------------------------------------------------------------------
   // Accessors
@@ -67,7 +87,7 @@ and Series<'TIndex, 'TValue when 'TIndex : equality>(index:IIndex<'TIndex, int>,
       [| for key, addr in index.Mappings ->
           let opt = vector.GetValue(addr)
           if opt.HasValue && (f.Invoke (KeyValuePair(key, opt.Value))) then opt
-          else OptionalValue.Empty |]
+          else OptionalValue.Missing |]
     Series<'TIndex, 'TValue>(index, vectorBuilder.CreateOptional(newVector))
 
   member x.Select<'R>(f:System.Func<KeyValuePair<'TIndex, 'TValue>, 'R>) = 
@@ -86,7 +106,7 @@ and Series<'TIndex, 'TValue when 'TIndex : equality>(index:IIndex<'TIndex, int>,
   // Operators
 
   // :-((
-  static member val SeriesOperations : SeriesOperations = Unchecked.defaultof<_> with get, set
+  static member val internal SeriesOperations : SeriesOperations = Unchecked.defaultof<_> with get, set
 
   // Float
   static member inline ScalarOperationL<'TIndex, 'T>(series:Series<'TIndex, 'T>, scalar, op : 'T -> 'T -> 'T) = 
@@ -119,7 +139,7 @@ and Series<'TIndex, 'TValue when 'TIndex : equality>(index:IIndex<'TIndex, int>,
     joined.SelectMissing(fun (KeyValue(_, v)) -> 
       match v.Value.TryGet(0), v.Value.TryGet(1) with
       | Some a, Some b -> OptionalValue(op (a :?> 'T) (b :?> 'T))
-      | _ -> OptionalValue.Empty )
+      | _ -> OptionalValue.Missing )
 
   static member (+) (s1, s2) = Series<_, _>.VectorOperation<_, int>(s1, s2, (+))
   static member (-) (s1, s2) = Series<_, _>.VectorOperation<_, int>(s1, s2, (-))
@@ -167,14 +187,14 @@ type Series =
 module Series = 
   let inline sum (series:Series<_, _>) = 
     match series.Vector.Data with
-    | DenseList list -> IReadOnlyList.sum list
-    | SparseList list -> IReadOnlyList.sumOptional list
-    | Sequence seq -> Seq.sum (Seq.choose OptionalValue.asOption seq)
+    | VectorData.DenseList list -> IReadOnlyList.sum list
+    | VectorData.SparseList list -> IReadOnlyList.sumOptional list
+    | VectorData.Sequence seq -> Seq.sum (Seq.choose OptionalValue.asOption seq)
   let inline mean (series:Series<_, _>) = 
     match series.Vector.Data with
-    | DenseList list -> IReadOnlyList.average list
-    | SparseList list -> IReadOnlyList.averageOptional list
-    | Sequence seq -> Seq.average (Seq.choose OptionalValue.asOption seq)
+    | VectorData.DenseList list -> IReadOnlyList.average list
+    | VectorData.SparseList list -> IReadOnlyList.averageOptional list
+    | VectorData.Sequence seq -> Seq.average (Seq.choose OptionalValue.asOption seq)
 
 [<AutoOpen>] 
 module SeriesExtensions =

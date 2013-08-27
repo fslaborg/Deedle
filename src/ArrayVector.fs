@@ -50,14 +50,14 @@ type ArrayVectorBuilder() =
   interface IVectorBuilder<int> with
     member builder.CreateNonOptional(values) =
       // Check that there are no NaN values and create appropriate representation
-      let hasNAs = OptionalValue.containsNA values
-      if hasNAs then av <| VectorOptional(OptionalValue.createNAArray values)
+      let hasNAs = MissingValues.containsNA values
+      if hasNAs then av <| VectorOptional(MissingValues.createNAArray values)
       else av <| VectorNonOptional(values)
 
     member builder.CreateOptional(optValues) =
-      // Check for both OptionalValue.Empty and OptionalValue.Value = NaN
-      let hasNAs = OptionalValue.containsMissingOrNA optValues
-      if hasNAs then av <| VectorOptional(OptionalValue.createMissingOrNAArray optValues)
+      // Check for both OptionalValue.Missing and OptionalValue.Value = NaN
+      let hasNAs = MissingValues.containsMissingOrNA optValues
+      if hasNAs then av <| VectorOptional(MissingValues.createMissingOrNAArray optValues)
       else av <| VectorNonOptional(optValues |> Array.map (fun v -> v.Value))
 
     /// Given a vector construction command(s) produces a new IVector
@@ -115,8 +115,8 @@ type ArrayVectorBuilder() =
           | AsVectorOptional left, AsVectorOptional right ->
               let merge = op.GetFunction<'T>()
               let filled = Array.init (max left.Length right.Length) (fun idx ->
-                let lv = if idx >= left.Length then OptionalValue.Empty else left.[idx]
-                let rv = if idx >= right.Length then OptionalValue.Empty else right.[idx]
+                let lv = if idx >= left.Length then OptionalValue.Missing else left.[idx]
+                let rv = if idx >= right.Length then OptionalValue.Missing else right.[idx]
                 merge lv rv)
               vectorBuilder.CreateOptional(filled)
 
@@ -135,7 +135,7 @@ and [<RequireQualifiedAccess>] ArrayVector<'T> internal (representation:ArrayVec
       match representation with
       | VectorOptional data when index < data.Length -> data.[index] |> OptionalValue.map box 
       | VectorNonOptional data when index < data.Length -> OptionalValue(box data.[index])
-      | _ -> OptionalValue.Empty
+      | _ -> OptionalValue.Missing
 
   // Implement the typed vector interface
   interface IVector<int, 'T> with
@@ -143,18 +143,18 @@ and [<RequireQualifiedAccess>] ArrayVector<'T> internal (representation:ArrayVec
       match representation with
       | VectorOptional data when index < data.Length -> data.[index]
       | VectorNonOptional data when index < data.Length -> OptionalValue(data.[index])
-      | _ -> OptionalValue.Empty
+      | _ -> OptionalValue.Missing
     member vector.Data = 
       match representation with 
-      | VectorNonOptional data -> DenseList (IReadOnlyList.ofArray data)
-      | VectorOptional data -> SparseList (IReadOnlyList.ofArray data)
+      | VectorNonOptional data -> VectorData.DenseList (IReadOnlyList.ofArray data)
+      | VectorOptional data -> VectorData.SparseList (IReadOnlyList.ofArray data)
 
     // A version of Select that can transform missing values to actual values (we always 
     // end up with array that may contain missing values, so use CreateOptional)
     member vector.SelectMissing<'TNewValue>(f) = 
-      let isNA = isNA<'TNewValue>() 
+      let isNA = MissingValues.isNA<'TNewValue>() 
       let flattenNA (value:OptionalValue<_>) = 
-        if value.HasValue && isNA value.Value then OptionalValue.Empty else value
+        if value.HasValue && isNA value.Value then OptionalValue.Missing else value
       let data = 
         match representation with
         | VectorNonOptional data ->

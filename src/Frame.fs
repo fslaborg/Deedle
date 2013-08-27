@@ -16,7 +16,7 @@ type JoinKind =
   | Left = 2
   | Right = 3
 
-module FrameHelpers =
+module internal FrameHelpers =
   // A "generic function" that boxes all values of a vector (IVector<int, 'T> -> IVector<int, obj>)
   let boxVector = 
     { new VectorHelpers.VectorCallSite1<int, IVector<int, obj>> with
@@ -60,11 +60,11 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
       { new IVector<int, obj> with
           member x.GetValue(columnAddress) = 
             let vector = data.GetValue(columnAddress)
-            if not vector.HasValue then OptionalValue.Empty
+            if not vector.HasValue then OptionalValue.Missing
             else vector.Value.GetObject(rowAddress) 
           member x.Data = 
             [| for _, addr in columnIndex.Mappings -> x.GetValue(addr) |]
-            |> IReadOnlyList.ofArray |> SparseList          
+            |> IReadOnlyList.ofArray |> VectorData.SparseList          
           member x.Select(f) = materializeVector(); virtualVector.Value.Select(f)
           member x.SelectMissing(f) = materializeVector(); virtualVector.Value.SelectMissing(f)
         
@@ -89,7 +89,7 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
   
   member private x.tryGetColVector column = 
     let columnIndex = columnIndex.Lookup(column)
-    if not columnIndex.HasValue then OptionalValue.Empty else
+    if not columnIndex.HasValue then OptionalValue.Missing else
     data.GetValue columnIndex.Value
 
   member internal frame.RowIndex = rowIndex
@@ -165,24 +165,24 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
       // Assuming that the data has all values - which should be an invariant...
       let all = rowIndex.Mappings |> Seq.forall (fun (key, addr) -> vect.Value.GetObject(addr).HasValue)
       if all then OptionalValue(Series.CreateUntyped(rowIndex, boxVector vect.Value))
-      else OptionalValue.Empty ))
+      else OptionalValue.Missing ))
 
   member frame.Rows = 
     let emptySeries = Series(rowIndex, Vector.Create [])
     emptySeries.SelectMissing (fun row ->
       let rowAddress = rowIndex.Lookup(row.Key)
-      if not rowAddress.HasValue then OptionalValue.Empty
+      if not rowAddress.HasValue then OptionalValue.Missing
       else OptionalValue(Series.CreateUntyped(columnIndex, createRowReader rowAddress.Value)))
 
   member frame.RowsDense = 
     let emptySeries = Series(rowIndex, Vector.Create [])
     emptySeries.SelectMissing (fun row ->
       let rowAddress = rowIndex.Lookup(row.Key)
-      if not rowAddress.HasValue then OptionalValue.Empty else 
+      if not rowAddress.HasValue then OptionalValue.Missing else 
         let rowVec = createRowReader rowAddress.Value
         let all = columnIndex.Mappings |> Seq.forall (fun (key, addr) -> rowVec.GetValue(addr).HasValue)
         if all then OptionalValue(Series.CreateUntyped(columnIndex, rowVec))
-        else OptionalValue.Empty )
+        else OptionalValue.Missing )
 
   // ----------------------------------------------------------------------------------------------
   // Series related operations - add, drop, get, ?, ?<-, etc.
@@ -225,6 +225,17 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
   static member (?) (frame:Frame<_, _>, column) : Series<'T, float> = 
     frame.GetSeries<float>(column)
 
+  interface IFormattable with
+    member frame.Format() = 
+      seq { yield ""::[ for colName, _ in frame.ColumnIndex.Mappings do yield colName.ToString() ]
+            for ind, addr in frame.RowIndex.Mappings do
+              let row = frame.Rows.[ind]
+              yield 
+                (ind.ToString() + " ->")::
+                [ for _, value in row.Observations ->  // TODO: is this good?
+                    value.ToString() ] }
+      |> array2D
+      |> Formatting.formatTable
 
 and Frame =
   static member Register() = 
@@ -274,7 +285,7 @@ and Frame =
 
     // Simple functions that pretty-print series and frames
     // (to be integrated as ToString and with F# Interactive)
-    let printTable (data:string[,]) =
+    let formatTable (data:string[,]) =
       let rows = data.GetLength(0)
       let columns = data.GetLength(1)
       let widths = Array.zeroCreate columns 
@@ -294,46 +305,13 @@ and Frame =
                 [ for _, value in row.Observations ->  // TODO: is this good?
                     value.ToString() ] }
       |> array2D
-      |> printTable
+      |> formatTable
 
     let initial = Frame(Index.Create [], Index.CreateUnsorted [], Vector.Create [| |])
     (initial, nested.Observations) ||> Seq.fold (fun df (name, series) -> 
       prettyPrintFrame df
       if not series.HasValue then df 
       else df.Join(Frame.Create(name, series.Value), JoinKind.Outer))
-
-module PrettyPrint =
-  open System
-
-  // Simple functions that pretty-print series and frames
-  // (to be integrated as ToString and with F# Interactive)
-  let printTable (data:string[,]) =
-    let rows = data.GetLength(0)
-    let columns = data.GetLength(1)
-    let widths = Array.zeroCreate columns 
-    data |> Array2D.iteri (fun r c str ->
-      widths.[c] <- max (widths.[c]) (str.Length))
-    for r in 0 .. rows - 1 do
-      for c in 0 .. columns - 1 do
-        Console.Write(data.[r, c].PadRight(widths.[c] + 1))
-      Console.WriteLine()
-
-  let prettyPrintFrame (f:Frame<_, _>) =
-    seq { yield ""::[ for colName, _ in f.ColumnIndex.Mappings do yield colName.ToString() ]
-          for ind, addr in f.RowIndex.Mappings do
-            let row = f.Rows.[ind]
-            yield 
-              (ind.ToString() + " ->")::
-              [ for _, value in row.Observations ->  // TODO: is this good?
-                  value.ToString() ] }
-    |> array2D
-    |> printTable
-
-  let prettyPrintSeries (s:Series<_, _>) =
-    seq { for k, v in s.Observations do
-            yield [ k.ToString(); v.ToString() ] }
-    |> array2D
-    |> printTable
 
 open FSharp.Data
 open System.Linq

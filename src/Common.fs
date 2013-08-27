@@ -14,12 +14,37 @@ type OptionalValue<'T>(hasValue:bool, value:'T) =
     else invalidOp "OptionalValue.Value: Value is not available" 
   member x.ValueOrDefault = value
   new (value:'T) = OptionalValue(true, value)
-  static member Empty = OptionalValue(false, Unchecked.defaultof<'T>)
+  static member Missing = OptionalValue(false, Unchecked.defaultof<'T>)
   override x.ToString() = 
     if hasValue then 
       if Object.Equals(null, value) then "<null>"
       else value.ToString() 
     else "missing"
+
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module OptionalValue = 
+  let inline bind f (input:OptionalValue<_>) = 
+    if input.HasValue then f input.Value
+    else OptionalValue.Missing
+
+  let inline map f (input:OptionalValue<_>) = 
+    if input.HasValue then OptionalValue(f input.Value)
+    else OptionalValue.Missing
+
+  let inline ofTuple (b, value) =
+    if b then OptionalValue(value) else OptionalValue.Missing
+
+  let inline asOption (value:OptionalValue<'T>) = 
+    if value.HasValue then Some value.Value else None
+
+  let inline ofOption opt = 
+    match opt with
+    | None -> OptionalValue.Missing
+    | Some v -> OptionalValue(v)
+
+  let (|Missing|Present|) (optional:OptionalValue<'T>) =
+    if optional.HasValue then Present(optional.Value)
+    else Missing
 
 // --------------------------------------------------------------------------------------
 // Internals    
@@ -33,9 +58,7 @@ open System.Drawing
 open FSharp.DataFrame
 open System.Collections.Generic
 
-[<AutoOpen>] 
-module GlobalHelpers =
-  let (|Let|) argument input = (argument, input)
+module MissingValues =
 
   let isNA<'T> () =
     let ty = typeof<'T>
@@ -45,42 +68,6 @@ module GlobalHelpers =
       elif ty.IsValueType then (fun _ -> false)
       else (fun v -> Object.Equals(null, box v))
     nanTest
-
-module Array = 
-  /// Drop a specified range from a given array. The operation is inclusive on
-  /// both sides. Given [ 1; 2; 3; 4 ] and indices (1, 2), the result is [ 1; 4 ]
-  let inline dropRange first last (data:'T[]) =
-    if last < first then invalidOp "The first index must be smaller than or equal to the last."
-    if first < 0 || last >= data.Length then invalidArg "first" "The index must be within the array range."
-    Array.append (data.[.. first - 1]) (data.[last + 1 ..])
-
-  let inline existsAt low high f (data:'T[]) = 
-    let rec test i = 
-      if i > high then false
-      elif f data.[i] then true
-      else test (i + 1)
-    test low
-
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-module OptionalValue = 
-  let inline bind f (input:OptionalValue<_>) = 
-    if input.HasValue then f input.Value
-    else OptionalValue.Empty
-
-  let inline map f (input:OptionalValue<_>) = 
-    if input.HasValue then OptionalValue(f input.Value)
-    else OptionalValue.Empty
-
-  let inline ofTuple (b, value) =
-    if b then OptionalValue(value) else OptionalValue.Empty
-
-  let inline asOption (value:OptionalValue<'T>) = 
-    if value.HasValue then Some value.Value else None
-
-  let inline ofOption opt = 
-    match opt with
-    | None -> OptionalValue.Empty
-    | Some v -> OptionalValue(v)
 
   let inline containsNA (data:'T[]) = 
     let isNA = isNA<'T>() // TODO: Optimize using static member constraints
@@ -92,13 +79,12 @@ module OptionalValue =
 
   let inline createNAArray (data:'T[]) =   
     let isNA = isNA<'T>() // TODO: Optimize using static member constraints
-    data |> Array.map (fun v -> if isNA v then OptionalValue.Empty else OptionalValue(v))
+    data |> Array.map (fun v -> if isNA v then OptionalValue.Missing else OptionalValue(v))
 
   let inline createMissingOrNAArray (data:OptionalValue<'T>[]) =   
     let isNA = isNA<'T>() // TODO: Optimize using static member constraints
     data |> Array.map (fun v -> 
-      if not v.HasValue || isNA v.Value then OptionalValue.Empty else OptionalValue(v.Value))
-
+      if not v.HasValue || isNA v.Value then OptionalValue.Missing else OptionalValue(v.Value))
 
 module IReadOnlyList =
   /// Converts an array to IReadOnlyList. In F# 3.0, the language does not
@@ -137,7 +123,24 @@ module IReadOnlyList =
         count <- count + 1
     LanguagePrimitives.DivideByInt total count
 
+module Array = 
+  /// Drop a specified range from a given array. The operation is inclusive on
+  /// both sides. Given [ 1; 2; 3; 4 ] and indices (1, 2), the result is [ 1; 4 ]
+  let inline dropRange first last (data:'T[]) =
+    if last < first then invalidOp "The first index must be smaller than or equal to the last."
+    if first < 0 || last >= data.Length then invalidArg "first" "The index must be within the array range."
+    Array.append (data.[.. first - 1]) (data.[last + 1 ..])
+
+  let inline existsAt low high f (data:'T[]) = 
+    let rec test i = 
+      if i > high then false
+      elif f data.[i] then true
+      else test (i + 1)
+    test low
+
 module Seq = 
+  let getEnumerator (s:seq<_>) = s.GetEnumerator()
+
   let takeAtMost count (input:seq<_>) = input.Take(count)
 
   /// Returns true if the specified sequence is sorted.
@@ -211,5 +214,30 @@ unionWithOrdering [ ("b", 0); ("c", 1); ("d", 2) ] [ ("b", 1); ("c", 2); ("a", 0
   set [("b", Some 0, Some 1); ("c", Some 1, Some 2); ("d", Some 2, None); ("a", None, Some 0)]
 *)
 
-module PrettyPrint = 
+type IFormattable =
+  abstract Format : unit -> string
+
+module Formatting = 
   let ItemCount = 10
+
+  open System
+  open System.IO
+  open System.Text
+
+  // Simple functions that pretty-print series and frames
+  // (to be integrated as ToString and with F# Interactive)
+  let formatTable (data:string[,]) =
+    let sb = StringBuilder()
+    use wr = new StringWriter(sb)
+
+    let rows = data.GetLength(0)
+    let columns = data.GetLength(1)
+    let widths = Array.zeroCreate columns 
+    data |> Array2D.iteri (fun r c str ->
+      widths.[c] <- max (widths.[c]) (str.Length))
+    for r in 0 .. rows - 1 do
+      for c in 0 .. columns - 1 do
+        wr.Write(data.[r, c].PadRight(widths.[c] + 1))
+      wr.WriteLine()
+
+    sb.ToString()

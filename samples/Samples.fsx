@@ -1,4 +1,5 @@
-﻿#r "../bin/FSharp.DataFrame.dll"
+﻿#I "../bin"
+#load "DataFrame.fsx"
 
 // --------------------------------------------------------------------------------------
 // Some basic examples of using the data frame
@@ -6,69 +7,65 @@
 
 open System
 open FSharp.DataFrame
-open FSharp.DataFrame.PrettyPrint
 
 // S1 and S2 are ordered series, S3 is not ordered
 let s1 = Series.Create(["a"; "b"; "c"], [1 .. 3])
 s1.Observations |> printfn "%A"
 
 let s2 = Series.Create(["b"; "c"; "d"], [6; 4; 5])
-s2.Observations |> printfn "%A"
 
 let s3 = Series.Create(["d"; "c"; "b"], [6; 4; 5])
-s3.Observations |> printfn "%A"
 
 // Snull is ordered with ordinal index (but has missing values)
 let snull = Series.Create [1.0; 2.0; Double.NaN ]
-snull |> prettyPrintSeries
 snull.Observations |> printfn "%A"
 
 
-s3 |> prettyPrintSeries
-s3 + 10 |> prettyPrintSeries
+s3
+s3 + 10
 
 let d3 = Series.Create(["d"; "c"; "b"], [6.0; 4.0; 5.0])
-d3 + 10.0 |> prettyPrintSeries
+d3 + 10.0
 
-s3 + s3 |> prettyPrintSeries
-d3 + d3 |> prettyPrintSeries
+s3 + s3
+d3 + d3
 
 // Create data frames, get the series
 let f1 = Frame.Create("S1", s1)
-f1.GetSeries<int>("S1") |> prettyPrintSeries
+f1.GetSeries<int>("S1")
 
 let f2 = Frame.Create("S2", s2)
 let f3 = Frame.Create("S3", s3)
 
-f1 |> prettyPrintFrame
-f2 |> prettyPrintFrame
-f3 |> prettyPrintFrame
+f1
+f2
+f3
 
-f1.Join(f2, JoinKind.Outer) |> prettyPrintFrame
-f1.Join(f3, JoinKind.Outer) |> prettyPrintFrame
-f3.Join(f1, JoinKind.Outer) |> prettyPrintFrame
+f1.Join(f2, JoinKind.Outer)
+f1.Join(f3, JoinKind.Outer)
+f3.Join(f1, JoinKind.Outer)
 
-f1.Join(f2, JoinKind.Inner) |> prettyPrintFrame 
-f1.Join(f2, JoinKind.Left) |> prettyPrintFrame 
-f1.Join(f2, JoinKind.Right) |> prettyPrintFrame 
+f1.Join(f2, JoinKind.Inner) 
+f1.Join(f2, JoinKind.Left) 
+f1.Join(f2, JoinKind.Right) 
 
-f1.Join(f3, JoinKind.Inner) |> prettyPrintFrame 
-f1.Join(f3, JoinKind.Left) |> prettyPrintFrame 
-f1.Join(f3, JoinKind.Right) |> prettyPrintFrame 
+f1.Join(f3, JoinKind.Inner) 
+f1.Join(f3, JoinKind.Left) 
+f1.Join(f3, JoinKind.Right) 
 
 let a1 = Frame.Create("C1", Series.Create([1;2], ["one"; "two"]))
 a1?C2 <- ["three"]
 
 let a2 = Frame.Create("C2", Series.Create([2;3], ["one"; "two"]))
 
-a1 |> prettyPrintFrame
-a2 |> prettyPrintFrame
+a1
+a2
 
 // This is fine
-a1.Append(a2) |> prettyPrintFrame
+a1.Append(a2)
 
 // but this fails
-try a1.Append(a1) |> prettyPrintFrame with _ -> printfn "ok"
+try a1.Append(a1) |> ignore with _ -> printfn "ok"
 
 
 // let f1 = Frame.Create("S1", s1)
@@ -78,53 +75,43 @@ f1?Test0 <- [ "a"; "b" ]
 f1?Test <- [ "a"; "b"; "!" ]
 f1?Test2 <- [ "a"; "b"; "!"; "?" ]
 
-f1 |> prettyPrintFrame
-f2 |> prettyPrintFrame
+f1
+f2
 
 let joined = f1.Join(f2, JoinKind.Outer)
-joined |> prettyPrintFrame 
-
 let joinedR = f1.Join(f2, JoinKind.Right)
-joinedR |> prettyPrintFrame 
-
 let joinedI = f1.Join(f2, JoinKind.Inner)
-joinedI |> prettyPrintFrame 
 
 // All values are missing
 let zerosQ = joined.Rows.SelectMissing(fun (KeyValue(key, row)) -> 
-  if key = "a" then OptionalValue.Empty else OptionalValue(Double.NaN))
-zerosQ |> prettyPrintSeries
+  if key = "a" then OptionalValue.Missing else OptionalValue(Double.NaN))
 
 let zerosE = joined.Rows.Select(fun (KeyValue(key, row)) -> 
   if key = "a" then None else Some Double.NaN)
-zerosE |> prettyPrintSeries
 
 let zeros = joined.Rows.SelectMissing(fun (KeyValue(key, row)) -> 
-  if key = "a" then OptionalValue.Empty else OptionalValue(0.0))
-zeros |> prettyPrintSeries
+  if key = "a" then OptionalValue.Missing else OptionalValue(0.0))
 
 joined?Zeros <- zeros
-joined |> prettyPrintFrame 
+joined 
 
 
 // Matching two frames in append
 let c1 = Frame.CreateRow(1, joined.Rows.["a"])
 let c2 = Frame.CreateRow(2, joined.Rows.["b"])
-c1 |> prettyPrintFrame
-c2 |> prettyPrintFrame
-c1.Append(c2) |> prettyPrintFrame
+c1.Append(c2)
 
 // Appending things to an empty frame
 let initial = Frame(Index.Create [], Index.Create [], Vector.Create [| |])
-initial.Append(a1) |> prettyPrintFrame
+initial.Append(a1)
 
-joined |> prettyPrintFrame 
+joined 
 
-joined.Rows.["a"] |> prettyPrintSeries
-joined.Rows.["c"] |> prettyPrintSeries
+joined.Rows.["a"]
+joined.Rows.["c"]
 
-joined.Rows?a |> prettyPrintSeries
-joined.Rows?c |> prettyPrintSeries
+joined.Rows?a
+joined.Rows?c
 
 joined.Rows?c?S1
 joined.Rows?c?Another
@@ -136,32 +123,32 @@ let cs = joined.Rows?c
 
 cs.Get("Test")
 cs.GetAs<string>("Test")
-cs.["S1" .. "S2"] |> prettyPrintSeries
-cs.["S1", "Zeros", "S2"] |> prettyPrintSeries
+cs.["S1" .. "S2"]
+cs.["S1", "Zeros", "S2"]
 
 
-joined.Rows.["a", "c"] |> Frame.FromColumns |> prettyPrintFrame
-joined.Rows.["a", "c"] |> Frame.FromRows |> prettyPrintFrame
+joined.Rows.["a", "c"] |> Frame.FromColumns
+joined.Rows.["a", "c"] |> Frame.FromRows
 
-joined.Rows.["a", "c", "d"] |> Frame.FromRows |> prettyPrintFrame
-joined.Rows.["a" .. "c"] |> Frame.FromRows |> prettyPrintFrame
-joined.Rows.["d", "c", "b", "a"] |> Frame.FromRows |> prettyPrintFrame
+joined.Rows.["a", "c", "d"] |> Frame.FromRows
+joined.Rows.["a" .. "c"] |> Frame.FromRows
+joined.Rows.["d", "c", "b", "a"] |> Frame.FromRows
 
 // preserve ordering of selectors etc.
 let reversed = joined.Rows.["d", "c", "b", "a"] |> Frame.FromRows
-reversed |> prettyPrintFrame
-reversed.Rows.["d" .. "d"] |> Frame.FromRows |> prettyPrintFrame
-reversed.Rows.["d" .. "c"] |> Frame.FromRows |> prettyPrintFrame
-reversed.Rows.["a" .. "c"] |> prettyPrintSeries
+reversed
+reversed.Rows.["d" .. "d"] |> Frame.FromRows
+reversed.Rows.["d" .. "c"] |> Frame.FromRows
+reversed.Rows.["a" .. "c"]
 
 let tf = Frame.Create("First", joined.Rows?a) 
-tf |> prettyPrintFrame
+tf
 
 tf?Second <- joined.Rows.["b"]
-tf |> prettyPrintFrame
+tf
 
 let a = joined.Rows.["a"] 
-a |> prettyPrintSeries
+a
 
 a?S1
 a.["S1"]
@@ -175,31 +162,31 @@ joined?Sum <- joined.Rows.Select(fun (KeyValue(key, row)) -> row?S1 + row?S2)
 
 // This works, but it is not very useful as we only need S1 and S2 (and not all columns)
 joined?Sum <- joined.RowsDense.SelectMissing(fun (KeyValue(key, row)) -> 
-  if row.HasValue then OptionalValue(row.Value?S1 + row.Value?S2)
-  else OptionalValue.Empty)
+  match row with
+  | OptionalValue.Present v -> OptionalValue(v?S1 + v?S2)
+  | OptionalValue.Missing -> OptionalValue.Missing)
 
 // Get frame with just S1 and S2
 let sub1 = joined.Columns.["S1", "S2"] |> Frame.FromColumns
-sub1 |> prettyPrintFrame
+sub1
 
 let sub2 = joined.Columns.["S1", "S2"] |> Frame.FromColumns
-sub2 |> prettyPrintFrame
+sub2
 joined?SumS1_S2 <- sub2.RowsDense.Select(fun row -> row.Value?S1 + row.Value?S2)
 
-joined |> prettyPrintFrame
+joined
 
 //
 joined.Rows?c.GetAs<string>("Test")
 
     
 joined.GetSeries<int>("SumS1_S2")
-|> prettyPrintSeries
 
-prettyPrintFrame joined
+joined
 
 // Conversions
-joined.GetSeries<int>("SumS1_S2") |> prettyPrintSeries
-joined.GetSeries<float>("SumS1_S2") |> prettyPrintSeries
+joined.GetSeries<int>("SumS1_S2")
+joined.GetSeries<float>("SumS1_S2")
 
 joined?SumS1_S2 |> Series.sum
 
@@ -221,7 +208,7 @@ let showDigit (data:RowReader) =
 
 let data = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "\\data\\digitssample.csv")
 
-data |> prettyPrintFrame
+data
 
 let labels = data.GetSeries<string>("label")
 labels.Values
@@ -355,7 +342,7 @@ test.Data |> Seq.countBy (fun input ->
                 | true, index -> Some index 
                 | _ -> None ) }
     let newColumns = 
-      [ getColumns index columns Set.empty; 
+      [ getColumns index columns Set.Missing; 
         getColumns frame.Index frame.Columns (Seq.map fst columns |> set) ]
       |> Seq.concat               
     Frame(newIndex, newColumns)
