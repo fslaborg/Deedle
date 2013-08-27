@@ -26,7 +26,7 @@ let df = Frame.ofValues [ (1, "Tomas", "happy"); (2, "Tomas", "unhappy"); (1, "A
 let df = Frame.ofRows ["sierrats" => tsOld; "olympus" => tsNew] 
 let df = Frame.ofColumns ["sierrats" => tsOld; "olympus" => tsNew] 
                 
-
+r
 // S1 and S2 are ordered series, S3 is not ordered
 let s1 = Series.Create(["a"; "b"; "c"], [1 .. 3])
 s1.Observations |> printfn "%A"
@@ -102,13 +102,13 @@ let joinedR = f1.Join(f2, JoinKind.Right)
 let joinedI = f1.Join(f2, JoinKind.Inner)
 
 // All values are missing
-let zerosQ = joined.Rows.SelectMissing(fun (KeyValue(key, row)) -> 
+let zerosQ = joined.Rows.SelectOptional(fun (KeyValue(key, row)) -> 
   if key = "a" then OptionalValue.Missing else OptionalValue(Double.NaN))
 
 let zerosE = joined.Rows.Select(fun (KeyValue(key, row)) -> 
   if key = "a" then None else Some Double.NaN)
 
-let zeros = joined.Rows.SelectMissing(fun (KeyValue(key, row)) -> 
+let zeros = joined.Rows.SelectOptional(fun (KeyValue(key, row)) -> 
   if key = "a" then OptionalValue.Missing else OptionalValue(0.0))
 
 joined?Zeros <- zeros
@@ -180,7 +180,7 @@ a.GetAs<byte>("S1")
 joined?Sum <- joined.Rows.Select(fun (KeyValue(key, row)) -> row?S1 + row?S2) 
 
 // This works, but it is not very useful as we only need S1 and S2 (and not all columns)
-joined?Sum <- joined.RowsDense.SelectMissing(fun (KeyValue(key, row)) -> 
+joined?Sum <- joined.RowsDense.SelectOptional(fun (KeyValue(key, row)) -> 
   match row with
   | OptionalValue.Present v -> OptionalValue(v?S1 + v?S2)
   | OptionalValue.Missing -> OptionalValue.Missing)

@@ -40,7 +40,7 @@ type IVector<'TAddress, 'TValue> =
   abstract Data : VectorData<'TValue>
   // TODO: Not entirely happy with these two being here... 
   abstract Select : ('TValue -> 'TNewValue) -> IVector<'TAddress, 'TNewValue>
-  abstract SelectMissing : (OptionalValue<'TValue> -> OptionalValue<'TNewValue>) -> IVector<'TAddress, 'TNewValue>
+  abstract SelectOptional : (OptionalValue<'TValue> -> OptionalValue<'TNewValue>) -> IVector<'TAddress, 'TNewValue>
 
 [<AutoOpen>]
 module VectorExtensions = 
@@ -74,7 +74,7 @@ module internal VectorHelpers =
         member x.GetValue(a) = vector.Value.GetValue(a)
         member x.Data = vector.Value.Data
         member x.Select(f) = vector.Value.Select(f)
-        member x.SelectMissing(f) = vector.Value.SelectMissing(f)
+        member x.SelectOptional(f) = vector.Value.SelectOptional(f)
       interface IVector<'TAddress> with
         member x.ElementType = vector.Value.ElementType
         member x.GetObject(i) = vector.Value.GetObject(i) }

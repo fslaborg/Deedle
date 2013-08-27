@@ -1,5 +1,4 @@
-﻿#nowarn "40" // 'let rec' values
-namespace FSharp.DataFrame
+﻿namespace FSharp.DataFrame
 
 // --------------------------------------------------------------------------------------
 // Data frame
@@ -53,10 +52,12 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
   let mutable data = data
 
   let createRowReader rowAddress =
-    let rec materializeVector() =
+    // 'let rec' would be more elegant, but it is slow...
+    let virtualVector = ref (Unchecked.defaultof<_>)
+    let materializeVector() =
       let data = (virtualVector : ref<IVector<_, _>>).Value.DataSequence
       virtualVector := upcast Vector.CreateNA(data)
-    and virtualVector = 
+    virtualVector :=
       { new IVector<int, obj> with
           member x.GetValue(columnAddress) = 
             let vector = data.GetValue(columnAddress)
@@ -66,11 +67,11 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
             [| for _, addr in columnIndex.Mappings -> x.GetValue(addr) |]
             |> IReadOnlyList.ofArray |> VectorData.SparseList          
           member x.Select(f) = materializeVector(); virtualVector.Value.Select(f)
-          member x.SelectMissing(f) = materializeVector(); virtualVector.Value.SelectMissing(f)
+          member x.SelectOptional(f) = materializeVector(); virtualVector.Value.SelectOptional(f)
         
         interface IVector<int> with
           member x.ElementType = typeof<obj>
-          member x.GetObject(i) = (x :?> IVector<int, obj>).GetValue(i) } |> ref
+          member x.GetObject(i) = (x :?> IVector<int, obj>).GetValue(i) }
     VectorHelpers.delegatedVector virtualVector
 
   let safeGetRowVector row = 
@@ -156,12 +157,14 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
   // df.Rows and df.Columns
   // ----------------------------------------------------------------------------------------------
 
+  // TODO: These may be accessed often.. we need to cache them?
+
   member frame.Columns = 
     Series.Create(columnIndex, data.Select(fun vect -> 
       Series.CreateUntyped(rowIndex, boxVector vect)))
 
   member frame.ColumnsDense = 
-    Series.Create(columnIndex, data.SelectMissing(fun vect -> 
+    Series.Create(columnIndex, data.SelectOptional(fun vect -> 
       // Assuming that the data has all values - which should be an invariant...
       let all = rowIndex.Mappings |> Seq.forall (fun (key, addr) -> vect.Value.GetObject(addr).HasValue)
       if all then OptionalValue(Series.CreateUntyped(rowIndex, boxVector vect.Value))
@@ -169,14 +172,14 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
 
   member frame.Rows = 
     let emptySeries = Series(rowIndex, Vector.Create [])
-    emptySeries.SelectMissing (fun row ->
+    emptySeries.SelectOptional (fun row ->
       let rowAddress = rowIndex.Lookup(row.Key)
       if not rowAddress.HasValue then OptionalValue.Missing
       else OptionalValue(Series.CreateUntyped(columnIndex, createRowReader rowAddress.Value)))
 
   member frame.RowsDense = 
     let emptySeries = Series(rowIndex, Vector.Create [])
-    emptySeries.SelectMissing (fun row ->
+    emptySeries.SelectOptional (fun row ->
       let rowAddress = rowIndex.Lookup(row.Key)
       if not rowAddress.HasValue then OptionalValue.Missing else 
         let rowVec = createRowReader rowAddress.Value
@@ -228,8 +231,9 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
   interface IFormattable with
     member frame.Format() = 
       seq { yield ""::[ for colName, _ in frame.ColumnIndex.Mappings do yield colName.ToString() ]
+            let rows = frame.Rows
             for ind, addr in frame.RowIndex.Mappings do
-              let row = frame.Rows.[ind]
+              let row = rows.[ind]
               yield 
                 (ind.ToString() + " ->")::
                 [ for _, value in row.Observations ->  // TODO: is this good?
@@ -269,7 +273,7 @@ and Frame =
     Frame(series.Index, Index.Create [column], data)
 
   static member CreateRow(row:'TRowIndex, series:Series<'TColumnIndex, 'TValue>) = 
-    let data = series.Vector.SelectMissing(fun v -> 
+    let data = series.Vector.SelectOptional(fun v -> 
       let res = Vectors.ArrayVector.ArrayVectorBuilder.Instance.CreateOptional [| v |] 
       OptionalValue(res :> IVector<_>))
     Frame(Index.Create [row], series.Index, data)
@@ -304,6 +308,10 @@ and Frame =
 
 [<AutoOpen>]
 module FSharp =
+  type Series = 
+    static member ofValues(values) = 
+      Series(Seq.map fst values, Seq.map snd values)
+
   type Frame = 
     static member ofRows(rows:seq<_ * Series<_, _>>) = 
       let names, values = rows |> List.ofSeq |> List.unzip

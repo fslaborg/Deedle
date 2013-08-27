@@ -151,7 +151,7 @@ and [<RequireQualifiedAccess>] ArrayVector<'T> internal (representation:ArrayVec
 
     // A version of Select that can transform missing values to actual values (we always 
     // end up with array that may contain missing values, so use CreateOptional)
-    member vector.SelectMissing<'TNewValue>(f) = 
+    member vector.SelectOptional<'TNewValue>(f) = 
       let isNA = MissingValues.isNA<'TNewValue>() 
       let flattenNA (value:OptionalValue<_>) = 
         if value.HasValue && isNA value.Value then OptionalValue.Missing else value
@@ -165,7 +165,7 @@ and [<RequireQualifiedAccess>] ArrayVector<'T> internal (representation:ArrayVec
 
     // Select function does not call 'f' on missing values.
     member vector.Select<'TNewValue>(f:'T -> 'TNewValue) = 
-      (vector :> IVector<_, _>).SelectMissing(OptionalValue.map f)
+      (vector :> IVector<_, _>).SelectOptional(OptionalValue.map f)
 
 // --------------------------------------------------------------------------------------
 // Public type 'FSharp.DataFrame.Vector' that can be used for creating vectors

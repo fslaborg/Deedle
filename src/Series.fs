@@ -92,15 +92,28 @@ and Series<'TIndex, 'TValue when 'TIndex : equality>
   // Operations
   // ----------------------------------------------------------------------------------------------
   
+  member x.Count = x.Observations |> Seq.filter (fun (k, v) -> v.HasValue) |> Seq.length
+  member x.CountOptional = x.Observations |> Seq.length
+
+
   // TODO: Series.Select & Series.Where need to use some clever index/vector functions
 
   member x.Where(f:System.Func<KeyValuePair<'TIndex, 'TValue>, bool>) = 
-    let newVector =
-      [| for key, addr in index.Mappings ->
+    let keys, optValues =
+      [| for key, addr in index.Mappings do
           let opt = vector.GetValue(addr)
-          if opt.HasValue && (f.Invoke (KeyValuePair(key, opt.Value))) then opt
-          else OptionalValue.Missing |]
-    Series<'TIndex, 'TValue>(index, vectorBuilder.CreateOptional(newVector))
+          if not opt.HasValue then yield key, opt
+          elif f.Invoke (KeyValuePair(key, opt.Value)) then yield key, opt |]
+      |> Array.unzip
+    Series<_, _>(Index.Create(keys), vectorBuilder.CreateOptional(optValues))
+
+  member x.WhereOptional(f:System.Func<KeyValuePair<'TIndex, OptionalValue<'TValue>>, bool>) = 
+    let keys, optValues =
+      [| for key, addr in index.Mappings do
+          let opt = vector.GetValue(addr)
+          if f.Invoke (KeyValuePair(key, opt)) then yield key, opt |]
+      |> Array.unzip
+    Series<_, _>(Index.Create(keys), vectorBuilder.CreateOptional(optValues))
 
   member x.Select<'R>(f:System.Func<KeyValuePair<'TIndex, 'TValue>, 'R>) = 
     let newVector =
@@ -108,11 +121,14 @@ and Series<'TIndex, 'TValue when 'TIndex : equality>
            vector.GetValue(addr) |> OptionalValue.map (fun v -> f.Invoke(KeyValuePair(key, v))) |]
     Series<'TIndex, 'R>(index, vectorBuilder.CreateOptional(newVector))
 
-  member x.SelectMissing<'R>(f:System.Func<KeyValuePair<'TIndex, OptionalValue<'TValue>>, OptionalValue<'R>>) = 
+  member x.SelectOptional<'R>(f:System.Func<KeyValuePair<'TIndex, OptionalValue<'TValue>>, OptionalValue<'R>>) = 
     let newVector =
-      [| for key, addr in index.Mappings -> 
-           f.Invoke(KeyValuePair(key, vector.GetValue(addr))) |]
+      index.Mappings |> Array.ofSeq |> Array.map (fun (key, addr) ->
+           f.Invoke(KeyValuePair(key, vector.GetValue(addr))))
     Series<'TIndex, 'R>(index, vectorBuilder.CreateOptional(newVector))
+
+  member x.DropNA() =
+    x.WhereOptional(fun (KeyValue(k, v)) -> v.HasValue)
 
   // ----------------------------------------------------------------------------------------------
   // Operators
@@ -149,7 +165,7 @@ and Series<'TIndex, 'TValue when 'TIndex : equality>
   static member inline internal VectorOperation<'TIndex, 'T>(series1:Series<'TIndex, 'T>, series2:Series<'TIndex, 'T>, op) : Series<_, 'T> =
     ensureInit.Value
     let joined = Series<_, _>.SeriesOperations.OuterJoin(series1, series2)
-    joined.SelectMissing(fun (KeyValue(_, v)) -> 
+    joined.SelectOptional(fun (KeyValue(_, v)) -> 
       match v.Value.TryGet(0), v.Value.TryGet(1) with
       | Some a, Some b -> OptionalValue(op (a :?> 'T) (b :?> 'T))
       | _ -> OptionalValue.Missing )
@@ -199,6 +215,21 @@ type Series =
     Series<'TIndex, 'TValue>(index, data)
   static member CreateUntyped(index:IIndex<'TIndex, int>, data:IVector<int, obj>) = 
     ObjectSeries<'TIndex>(index, data)
+
+type SeriesBuilder<'TIndex when 'TIndex : equality>() = 
+  let mutable keys = []
+  let mutable values = []
+
+  member x.Add<'TValue>(key:'TIndex, value) =
+    keys <- key::keys
+    values <- (box value)::values
+  
+  member x.Series =
+    Series.CreateUntyped(Index.Create (List.rev keys), Vector.Create(List.rev values))
+
+  static member (?<-) (builder:SeriesBuilder<string>, name:string, value) =
+    builder.Add(name, value)
+  
 
 // ------------------------------------------------------------------------------------------------
 // Operations etc.
