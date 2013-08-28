@@ -33,8 +33,8 @@ open FrameHelpers
 
 /// A frame contains one Index, with multiple Vecs
 /// (because this is dynamic, we need to store them as IVec)
-type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnIndex : equality>
-    internal ( rowIndex:IIndex<'TRowIndex, int>, columnIndex:IIndex<'TColumnIndex, int>, 
+type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>
+    internal ( rowIndex:IIndex<'TRowKey, int>, columnIndex:IIndex<'TColumnKey, int>, 
                data:IVector<int, IVector<int>>) =
 
   // ----------------------------------------------------------------------------------------------
@@ -101,7 +101,7 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
   // Frame operations - joins
   // ----------------------------------------------------------------------------------------------
 
-  member frame.Join(otherFrame:Frame<'TRowIndex, 'TColumnIndex>, ?kind) =    
+  member frame.Join(otherFrame:Frame<'TRowKey, 'TColumnKey>, ?kind) =    
     // Union row indices and get transformations to apply to left/right vectors
     let newRowIndex, thisRowCmd, otherRowCmd = 
       match kind with 
@@ -127,7 +127,7 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
     let newData = vectorBuilder.Build(colCmd, [| newThisData; newOtherData |])
     Frame(newRowIndex, newColumnIndex, newData)
 
-  member frame.Append(otherFrame:Frame<'TRowIndex, 'TColumnIndex>) = 
+  member frame.Append(otherFrame:Frame<'TRowKey, 'TColumnKey>) = 
     // Union the column indices and get transformations for both
     let newColumnIndex, thisColCmd, otherColCmd = 
       columnIndex.UnionWith(otherFrame.ColumnIndex, Vectors.Return 0, Vectors.Return 1)
@@ -152,7 +152,7 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
     let newData = vectorBuilder.Build(newDataCmd, [| data; otherFrame.Data |])
 
     Frame(newRowIndex, newColumnIndex, newData)
-  
+
   // ----------------------------------------------------------------------------------------------
   // df.Rows and df.Columns
   // ----------------------------------------------------------------------------------------------
@@ -191,23 +191,23 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
   // Series related operations - add, drop, get, ?, ?<-, etc.
   // ----------------------------------------------------------------------------------------------
 
-  member frame.AddSeries(column:'TColumnIndex, series:Series<_, _>) = 
+  member frame.AddSeries(column:'TColumnKey, series:Series<_, _>) = 
     let other = Frame(series.Index, Index.CreateUnsorted [column], Vector.Create [series.Vector :> IVector<int> ])
     let joined = frame.Join(other, JoinKind.Left)
     columnIndex <- joined.ColumnIndex
     data <- joined.Data
 
-  member frame.DropSeries(column:'TColumnIndex) = 
+  member frame.DropSeries(column:'TColumnKey) = 
     let newColumnIndex, colCmd = columnIndex.DropItem(column, Vectors.Return 0)    
     columnIndex <- newColumnIndex
     data <- vectorBuilder.Build(colCmd, [| data |])
 
-  member frame.ReplaceSeries(column:'TColumnIndex, series:Series<_, _>) = 
+  member frame.ReplaceSeries(column:'TColumnKey, series:Series<_, _>) = 
     if columnIndex.Lookup(column).HasValue then
       frame.DropSeries(column)
     frame.AddSeries(column, series)
 
-  member frame.GetSeries<'R>(column:'TColumnIndex) : Series<'TRowIndex, 'R> = 
+  member frame.GetSeries<'R>(column:'TColumnKey) : Series<'TRowKey, 'R> = 
     match safeGetColVector column with
     | :? IVector<int, 'R> as vec -> 
         Series.Create(rowIndex, vec)
@@ -236,7 +236,7 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
               let row = rows.[ind]
               yield 
                 (ind.ToString() + " ->")::
-                [ for _, value in row.Observations ->  // TODO: is this good?
+                [ for _, value in row.ObservationsOptional ->  // TODO: is this good?
                     value.ToString() ] }
       |> array2D
       |> Formatting.formatTable
@@ -245,7 +245,7 @@ type Frame<'TRowIndex, 'TColumnIndex when 'TRowIndex : equality and 'TColumnInde
   // Internals (rowIndex, columnIndex, data and various helpers)
   // ----------------------------------------------------------------------------------------------
 
-  new(names:seq<'TColumnIndex>, columns:seq<ISeries<'TRowIndex>>) =
+  new(names:seq<'TColumnKey>, columns:seq<ISeries<'TRowKey>>) =
     let df = Frame(Index.Create [], Index.Create [], Vector.Create [])
     let df = (df, Seq.zip names columns) ||> Seq.fold (fun df (colKey, colData) ->
       let other = Frame(colData.Index, Index.CreateUnsorted [colKey], Vector.Create [colData.Vector])
@@ -267,25 +267,25 @@ and Frame =
             let joined = frame1.Join(frame2)
             joined.Rows.Select(fun row -> row.Value :> Series<_, _>) }
 
-  static member Create<'TColumnIndex, 'TRowIndex, 'TValue when 'TColumnIndex : equality and 'TRowIndex : equality>
-      (column:'TColumnIndex, series:Series<'TRowIndex, 'TValue>) = 
+  static member Create<'TColumnKey, 'TRowKey, 'TValue when 'TColumnKey : equality and 'TRowKey : equality>
+      (column:'TColumnKey, series:Series<'TRowKey, 'TValue>) = 
     let data = Vector.Create [| series.Vector :> IVector<int> |]
     Frame(series.Index, Index.Create [column], data)
 
-  static member CreateRow(row:'TRowIndex, series:Series<'TColumnIndex, 'TValue>) = 
+  static member CreateRow(row:'TRowKey, series:Series<'TColumnKey, 'TValue>) = 
     let data = series.Vector.SelectOptional(fun v -> 
       let res = Vectors.ArrayVector.ArrayVectorBuilder.Instance.CreateOptional [| v |] 
       OptionalValue(res :> IVector<_>))
     Frame(Index.Create [row], series.Index, data)
 
-  static member FromRows<'TRowIndex, 'TColumnIndex, 'TSeries, 'TValue 
-        when 'TRowIndex : equality and 'TColumnIndex : equality 
-        and 'TSeries :> Series<'TColumnIndex, 'TValue>>
-      (nested:Series<'TRowIndex, 'TSeries>) =
+  static member FromRows<'TRowKey, 'TColumnKey, 'TSeries, 'TValue 
+        when 'TRowKey : equality and 'TColumnKey : equality 
+        and 'TSeries :> Series<'TColumnKey, 'TValue>>
+      (nested:Series<'TRowKey, 'TSeries>) =
     // Append all rows in some order
     let initial = Frame(Index.CreateUnsorted [], Index.Create [], Vector.Create [| |])
     let folded =
-      (initial, nested.Observations) ||> Seq.fold (fun df (name, series) -> 
+      (initial, nested.ObservationsOptional) ||> Seq.fold (fun df (name, series) -> 
         if not series.HasValue then df 
         else Frame.CreateRow(name, series.Value).Append(df))
 
@@ -297,14 +297,43 @@ and Frame =
     let newData = folded.Data.Select(transformColumn vectorBuilder rowCmd)
     Frame(newRowIndex, newColumnIndex, newData)
 
-  static member FromColumns<'TRowIndex, 'TColumnIndex, 'TSeries, 'TValue 
-        when 'TRowIndex : equality and 'TColumnIndex : equality 
-        and 'TSeries :> Series<'TRowIndex, 'TValue>>
-      (nested:Series<'TColumnIndex, 'TSeries>) =
+  static member FromColumns<'TRowKey, 'TColumnKey, 'TSeries, 'TValue 
+        when 'TRowKey : equality and 'TColumnKey : equality 
+        and 'TSeries :> Series<'TRowKey, 'TValue>>
+      (nested:Series<'TColumnKey, 'TSeries>) =
     let initial = Frame(Index.Create [], Index.CreateUnsorted [], Vector.Create [| |])
-    (initial, nested.Observations) ||> Seq.fold (fun df (name, series) -> 
+    (initial, nested.ObservationsOptional) ||> Seq.fold (fun df (name, series) -> 
       if not series.HasValue then df 
       else df.Join(Frame.Create(name, series.Value), JoinKind.Outer))
+
+
+  // ----------------------------------------------------------------------------------------------
+  // Reindexing 
+  // ----------------------------------------------------------------------------------------------
+
+type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality> with
+  member x.WithColumnIndex(columnKeys:seq<_>) =
+    let columns = seq { for v in x.Columns.Values -> v :> ISeries<_> }
+    
+    // Copy & paste from the new() constructor (oops)
+    let df = Frame(Index.Create [], Index.Create [], Vector.Create [])
+    let df = (df, Seq.zip columnKeys columns) ||> Seq.fold (fun df (colKey, colData) ->
+      let other = Frame(colData.Index, Index.CreateUnsorted [colKey], Vector.Create [colData.Vector])
+      df.Join(other, JoinKind.Outer) )
+    Frame(df.RowIndex, df.ColumnIndex, df.Data)
+
+
+  member x.WithRowIndex<'TNewRowIndex when 'TNewRowIndex : equality>(column) =
+    let newSeries = 
+      x.Rows
+       .Where(fun kv -> kv.Value.TryGetAs<'TNewRowIndex>(column).IsSome)
+       .Select(fun kv -> 
+          let key = kv.Value.GetAs<'TNewRowIndex>(column)
+          key, kv.Value.Where(fun kv -> kv.Key <> column))
+    let keys, values = (Array.ofSeq newSeries.Values) |> Array.unzip
+    let data = Series.Create(keys, values)
+    Frame.FromRows(data)
+
 
 [<AutoOpen>]
 module FSharp =
@@ -313,10 +342,12 @@ module FSharp =
       Series(Seq.map fst values, Seq.map snd values)
 
   type Frame = 
-    static member ofRows(rows:seq<_ * Series<_, _>>) = 
+    static member ofRowsOrdinal(rows:seq<#Series<_, _>>) = 
+      let keys = rows |> Seq.mapi (fun i _ -> i)
+      Frame.FromRows(Series(keys, rows))
+    static member ofRows(rows:seq<_ * #Series<_, _>>) = 
       let names, values = rows |> List.ofSeq |> List.unzip
       Frame.FromRows(Series(names, values))
-
     static member ofRows(rows) = 
       Frame.FromRows(rows)
     

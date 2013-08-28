@@ -5,7 +5,9 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.DataFrame", "src\FSh
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0ACC5440-2ECD-4D02-88D3-E0F1A1E0FC89}"
 	ProjectSection(SolutionItems) = preProject
+		tools\build.fsx = tools\build.fsx
 		samples\Samples.fsx = samples\Samples.fsx
+		samples\Tutorial.fsx = samples\Tutorial.fsx
 	EndProjectSection
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.DataFrame.Tests", "tests\FSharp.DataFrame.Tests.fsproj", "{09D8960B-9703-425E-AF0B-FA39525F5B9C}"

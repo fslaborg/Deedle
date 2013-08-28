@@ -44,7 +44,7 @@
     <Compile Include="Series.fs" />
     <Compile Include="Frame.fs" />
     <None Include="packages.config" />
-    <None Include="DataFrame.fsx">
+    <None Include="FSharp.DataFrame.fsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

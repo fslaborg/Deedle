@@ -1,12 +1,5 @@
 ﻿#I "../bin"
-#load "DataFrame.fsx"
-
-let dateRange (first:System.DateTime) count = 
-  seq { for i in 0 .. (count - 1) -> first.AddDays(float i) }
-
-let rand count = 
-  let rnd = System.Random()
-  seq { for i in 0 .. (count - 1) -> rnd.NextDouble() }
+#load "FSharp.DataFrame.fsx"
 
 // --------------------------------------------------------------------------------------
 // Some basic examples of using the data frame
@@ -15,21 +8,48 @@ let rand count =
 open System
 open FSharp.DataFrame
 
+/// Generate date range from 'first' with 'count' days
+let dateRange (first:System.DateTime) count = (*[omit:(...)]*)
+  seq { for i in 0 .. (count - 1) -> first.AddDays(float i) }(*[/omit]*)
+/// Generate 'count' number of random doubles
+let rand count = (*[omit:(...)]*)
+  let rnd = System.Random()
+  seq { for i in 0 .. (count - 1) -> rnd.NextDouble() }(*[/omit]*)
 
+(*
+f.Rows.Select(fun (KeyValue(_, s)) -> s?a + s?b)
+f.Rows.Select(fun (KeyValue(_, s)) -> s?a + s?b)
+
+(f.Columns.["a", "b"] |> Frame.FromColumns).RowsDense.Select(fun (KeyValue(_, s)) -> s?a + s?b)
+
+f.Rows.Get(1)
+
+f?a + f?b
+
+f?sum <- f.Rows.Where(fun kvp -> kvp.Value.TryGet("a").IsSome && kvp.Value.TryGet("b").IsSome).Select(fun kv -> kv.Value?a + kv.Value?a)
+
+f.Rows.Select(fun kvp -> if kvp.Value.HasAll ... then kvp.Value else missing)
+f.Rows.Mask(fun kvp -> kvp.Value.HasAll ["a"; "b"]).Select(fun v -> v?a + v?a)
+
+f.Rows.SelectOptional(fun kvp -> vp.Value.HasAll ["a"; "b" ] with
+    match kvp.Value.Value.TryGetAs<int>("a"), kvp.Value.Value.TryGetAs<int>("b") with
+    | Some a, Some b -> OptionalValue(a + b)
+    | _ -> OptionalValue.Missing)
+*)
 
 let tsOld = Series(dateRange (DateTime(2013,1,1)) 10, rand 10)
 let tsNew = Series([DateTime(2013,1,1); DateTime(2013,1,2); DateTime(2013,1,3)], [ 10.0; 20.0; 30.0 ])
 
 let df = Frame(["sierrats"; "olympus"], [tsOld; tsNew])
 
-let df = Frame.ofValues [ (1, "Tomas", "happy"); (2, "Tomas", "unhappy"); (1, "Adam", "happy") ]
-let df = Frame.ofRows ["sierrats" => tsOld; "olympus" => tsNew] 
-let df = Frame.ofColumns ["sierrats" => tsOld; "olympus" => tsNew] 
+let df1 = Frame.ofValues [ (1, "Tomas", "happy"); (2, "Tomas", "unhappy"); (1, "Adam", "happy") ]
+let df2 = Frame.ofRows ["sierrats" => tsOld; "olympus" => tsNew] 
+let df3 = Frame.ofColumns ["sierrats" => tsOld; "olympus" => tsNew] 
                 
-r
+
 // S1 and S2 are ordered series, S3 is not ordered
 let s1 = Series.Create(["a"; "b"; "c"], [1 .. 3])
-s1.Observations |> printfn "%A"
+s1.ObservationsOptional |> printfn "%A"
 
 let s2 = Series.Create(["b"; "c"; "d"], [6; 4; 5])
 
@@ -37,7 +57,7 @@ let s3 = Series.Create(["d"; "c"; "b"], [6; 4; 5])
 
 // Snull is ordered with ordinal index (but has missing values)
 let snull = Series.Create [1.0; 2.0; Double.NaN ]
-snull.Observations |> printfn "%A"
+snull.ObservationsOptional |> printfn "%A"
 
 
 s3
@@ -121,8 +141,8 @@ let c2 = Frame.CreateRow(2, joined.Rows.["b"])
 c1.Append(c2)
 
 // Appending things to an empty frame
-let initial = Frame(Index.Create [], Index.Create [], Vector.Create [| |])
-initial.Append(a1)
+//let initial = Frame(Index.Create [], Index.Create [], Vector.Create [| |])
+//initial.Append(a1)
 
 joined 
 
@@ -177,7 +197,7 @@ a.GetAs<byte>("S1")
 
 
 // This fails as expected
-joined?Sum <- joined.Rows.Select(fun (KeyValue(key, row)) -> row?S1 + row?S2) 
+try joined?Sum <- joined.Rows.Select(fun (KeyValue(key, row)) -> row?S1 + row?S2) with _ -> printfn "missing"
 
 // This works, but it is not very useful as we only need S1 and S2 (and not all columns)
 joined?Sum <- joined.RowsDense.SelectOptional(fun (KeyValue(key, row)) -> 
