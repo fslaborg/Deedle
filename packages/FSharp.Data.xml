@@ -375,6 +375,11 @@
  Saves CSV to a string
 </summary>
 </member>
+<member name="M:FSharp.Data.RuntimeImplementation.CsvFile`1.Save(System.String,Microsoft.FSharp.Core.FSharpOption{System.Char},Microsoft.FSharp.Core.FSharpOption{System.Char})">
+<summary>
+ Saves CSV to the specified file
+</summary>
+</member>
 <member name="M:FSharp.Data.RuntimeImplementation.CsvFile`1.Save(System.IO.Stream,Microsoft.FSharp.Core.FSharpOption{System.Char},Microsoft.FSharp.Core.FSharpOption{System.Char})">
 <summary>
  Saves CSV to the specified stream
@@ -609,13 +614,80 @@
 <member name="">
 
 </member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="M:FSharp.Data.RuntimeImplementation.XmlElement.Create(System.Xml.Linq.XElement)">
+<summary>
+ Creates a JsonDocument representing the specified value
+</summary>
+</member>
+<member name="T:FSharp.Data.RuntimeImplementation.XmlElement">
+<summary>
+ Underlying representation of the generated XML types
+</summary>
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="T:FSharp.Data.RuntimeImplementation.XmlOperations">
+<summary>
+ Static helper methods called from the generated code
+</summary>
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
 <member name="T:FSharp.Data.RuntimeImplementation.Caching.ICache`1">
 <summary>
  Represents a cache (various implementations are available)
 </summary>
 </member>
-<member name="">
-
+<member name="M:FSharp.Data.RuntimeImplementation.Caching.createInternetFileCache(System.String,System.TimeSpan)">
+<summary>
+ Creates a cache that stores data in a local file system
+</summary>
+</member>
+<member name="M:FSharp.Data.RuntimeImplementation.Caching.hashString(System.String)">
+<summary>
+ Get hash code of a string - used to determine cache file
+</summary>
 </member>
 <member name="M:FSharp.Data.RuntimeImplementation.Caching.createInMemoryCache``1(System.TimeSpan)">
 <summary>
@@ -924,10 +996,46 @@
 <member name="">
 
 </member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
 <member name="M:FSharp.Data.RuntimeImplementation.Freebase.FreebaseObject.GetImages">
 <summary>
  Images associated with this item. 
 </summary>
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
 </member>
 <member name="">
 
@@ -1857,6 +1965,15 @@
 <member name="">
 
 </member>
+<member name="M:FSharp.Data.RuntimeImplementation.ProviderFileSystem.watchForChanges(Microsoft.FSharp.Core.FSharpFunc{Microsoft.FSharp.Core.Unit,Microsoft.FSharp.Core.Unit},System.String)">
+<summary>
+ If the file is not web based, setup an file system watcher that 
+ invalidates the generated type whenever the file changes
+
+ Asumes that the fileName is a valid file name on the disk
+ (and not e.g. a web reference)
+</summary>
+</member>
 <member name="T:FSharp.Data.RuntimeImplementation.ProviderFileSystem">
 
 </member>
@@ -2550,6 +2667,15 @@
 </member>
 <member name="T:FSharp.Data.RuntimeImplementation.WorldBank.Implementation">
 
+</member>
+<member name="">
+
+</member>
+<member name="F:FSharp.Net.FSharp.Net.Http.runningOnMono">
+<summary>
+ Are we currently running on Mono?
+ (Mono does not have the issue with encoding slashes in URLs, so we do not need workaround)
+</summary>
 </member>
 <member name="">
 

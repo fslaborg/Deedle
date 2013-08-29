@@ -370,16 +370,51 @@ module FSharp =
 [<AutoOpen>]
 module FrameExtensions =
   open FSharp.Data
-  open System.Linq
-
+  open ProviderImplementation
+  open FSharp.Data.RuntimeImplementation
+  open FSharp.Data.RuntimeImplementation.StructuralTypes
+  
   type Frame with
-    static member ReadCsv(file:string) = 
+    static member ReadCsv(file:string, ?inferTypes, ?schema, ?inferRows) =
+
+      let inferRows = defaultArg inferRows 0
+      let missingValues = "NaN,NA,#N/A,:"
+      let missingValuesArr = [| "NaN"; "NA"; "#N/A"; ":" |]
+      let culture = ""
+      let cultureInfo = System.Globalization.CultureInfo.InvariantCulture
+      
+      let safeMode = false // Irrelevant - all DF values can be missing
+      let preferOptionals = true // Ignored
+
+      let createVector typ (data:string[]) = 
+        if typ = typeof<bool> then Vector.Create (Array.map (fun s -> Operations.ConvertBoolean(culture, Some(s))) data) :> IVector<int>
+        elif typ = typeof<decimal> then Vector.Create (Array.map (fun s -> Operations.ConvertDecimal(culture, Some(s))) data) :> IVector<int>
+        elif typ = typeof<float> then Vector.Create (Array.map (fun s -> Operations.ConvertFloat(culture, missingValues, Some(s))) data) :> IVector<int>
+        elif typ = typeof<int> then Vector.Create (Array.map (fun s -> Operations.ConvertInteger(culture, Some(s))) data) :> IVector<int>
+        elif typ = typeof<int64> then Vector.Create (Array.map (fun s -> Operations.ConvertInteger64(culture, Some(s))) data) :> IVector<int> 
+        else Vector.Create data :> IVector<int>
+
+      // If 'inferTypes' is specified (or by default), use the CSV type inference
+      // to load information about types in the CSV file. By default, use the entire
+      // content (but inferRows can be set to smaller number). Otherwise we just
+      // "infer" all columns as string.
+      let inferedProperties = 
+        let data = Csv.CsvFile.Load(file)
+        if not (inferTypes = Some false) then
+          CsvInference.inferType 
+            data inferRows (missingValuesArr, cultureInfo) (defaultArg schema "") safeMode preferOptionals
+          ||> CsvInference.getFields preferOptionals
+        else 
+          if data.Headers.IsNone then failwith "CSV file is missing headers!"
+          [ for c in data.Headers.Value -> 
+              PrimitiveInferedProperty.Create(c, typeof<string>, true) ]
+
+      // Load the data and convert the values to the appropriate type
       let data = Csv.CsvFile.Load(file).Cache()
       let columnIndex = Index.Create data.Headers.Value
-      let rowIndex = Index.Create [ 0 .. data.Data.Count() - 1 ]
       let data = 
-        [| for name in data.Headers.Value ->
-             Vector.Create [| for row in data.Data -> row.GetColumn(name) |] :> IVector<int> |]
-        |> Vector.Create
-      Frame(rowIndex, columnIndex, data)
-
+        [| for name, prop in Seq.zip data.Headers.Value inferedProperties  ->
+             [| for row in data.Data -> row.GetColumn(name) |]
+             |> createVector prop.RuntimeType |]
+      let rowIndex = Index.Create [ 0 .. data.Length - 1 ]
+      Frame(rowIndex, columnIndex, Vector.Create data)
