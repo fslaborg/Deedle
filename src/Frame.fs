@@ -104,18 +104,18 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   // Frame operations - joins
   // ----------------------------------------------------------------------------------------------
 
-  member frame.Join(otherFrame:Frame<'TRowKey, 'TColumnKey>, ?kind, ?semantics) =    
+  member frame.Join(otherFrame:Frame<'TRowKey, 'TColumnKey>, ?kind, ?lookup) =    
     // Union row indices and get transformations to apply to left/right vectors
-    let semantics = defaultArg semantics LookupSemantics.Exact
+    let lookup = defaultArg lookup LookupSemantics.Exact
     let newRowIndex, thisRowCmd, otherRowCmd = 
       match kind with 
       | Some JoinKind.Inner ->
           indexBuilder.Intersect(rowIndex, otherFrame.RowIndex, Vectors.Return 0, Vectors.Return 0)
       | Some JoinKind.Left ->
-          let otherRowCmd = indexBuilder.Reindex(otherFrame.RowIndex, rowIndex, semantics, Vectors.Return 0)
+          let otherRowCmd = indexBuilder.Reindex(otherFrame.RowIndex, rowIndex, lookup, Vectors.Return 0)
           rowIndex, Vectors.Return 0, otherRowCmd
       | Some JoinKind.Right ->
-          let thisRowCmd = indexBuilder.Reindex(rowIndex, otherFrame.RowIndex, semantics, Vectors.Return 0)
+          let thisRowCmd = indexBuilder.Reindex(rowIndex, otherFrame.RowIndex, lookup, Vectors.Return 0)
           otherFrame.RowIndex, thisRowCmd, Vectors.Return 0
       | Some JoinKind.Outer | None | Some _ ->
           indexBuilder.Union(rowIndex, otherFrame.RowIndex, Vectors.Return 0, Vectors.Return 0)
@@ -206,15 +206,15 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     columnIndex <- newColumnIndex
     data <- vectorBuilder.Build(colCmd, [| data |])
 
-  member frame.ReplaceSeries(column:'TColumnKey, series:Series<_, _>, ?semantics) = 
-    let semantics = defaultArg semantics LookupSemantics.Exact
-    if columnIndex.Lookup(column, semantics).HasValue then
+  member frame.ReplaceSeries(column:'TColumnKey, series:Series<_, _>, ?lookup) = 
+    let lookup = defaultArg lookup LookupSemantics.Exact
+    if columnIndex.Lookup(column, lookup).HasValue then
       frame.DropSeries(column)
     frame.AddSeries(column, series)
 
-  member frame.GetSeries<'R>(column:'TColumnKey, ?semantics) : Series<'TRowKey, 'R> = 
-    let semantics = defaultArg semantics LookupSemantics.Exact
-    match safeGetColVector(column, semantics) with
+  member frame.GetSeries<'R>(column:'TColumnKey, ?lookup) : Series<'TRowKey, 'R> = 
+    let lookup = defaultArg lookup LookupSemantics.Exact
+    match safeGetColVector(column, lookup) with
     | :? IVector<int, 'R> as vec -> 
         Series.Create(rowIndex, vec)
     | colVector ->

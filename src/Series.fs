@@ -71,11 +71,11 @@ and Series<'TKey, 'TValue when 'TKey : equality>
   // Accessors
   // ----------------------------------------------------------------------------------------------
 
-  member x.GetItems(items,?semantics) =
+  member x.GetItems(items,?lookup) =
     // TODO: Should throw when item is not in the sereis?
-    let semantics = defaultArg semantics LookupSemantics.Exact
+    let lookup = defaultArg lookup LookupSemantics.Exact
     let newIndex = indexBuilder.Create<_, int>(items, None)
-    let newVector = vectorBuilder.Build(indexBuilder.Reindex(index, newIndex, semantics, Vectors.Return 0), [| vector |])
+    let newVector = vectorBuilder.Build(indexBuilder.Reindex(index, newIndex, lookup, Vectors.Return 0), [| vector |])
     Series(newIndex, newVector)
 
   member x.GetSlice(lo, hi) =
@@ -83,15 +83,15 @@ and Series<'TKey, 'TValue when 'TKey : equality>
     let newVector = vectorBuilder.Build(newVector, [| vector |])
     Series(newIndex, newVector) 
 
-  member x.TryGet(key, ?semantics) =
-    let semantics = defaultArg semantics LookupSemantics.Exact
-    let address = index.Lookup(key, semantics) 
+  member x.TryGet(key, ?lookup) =
+    let lookup = defaultArg lookup LookupSemantics.Exact
+    let address = index.Lookup(key, lookup) 
     if not address.HasValue then invalidArg "key" (sprintf "The index '%O' is not present in the series." key)
     let value = vector.GetValue(address.Value)
     value |> OptionalValue.asOption
   
-  member x.Get(key, ?semantics) =
-    match x.TryGet(key, ?semantics=semantics) with
+  member x.Get(key, ?lookup) =
+    match x.TryGet(key, ?lookup=lookup) with
     | None -> raise (ValueMissingException(key.ToString()))
     | Some v -> v
 

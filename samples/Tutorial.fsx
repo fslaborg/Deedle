@@ -373,14 +373,14 @@ let obsDaysExact = daysFrame.Join(obsFrame, kind=JoinKind.Left)
 
 // All values are available - for each day, we find the nearest smaller
 // time in the frame indexed by later times in the day
-let obsDaysPrev = daysFrame.Join(obsFrame, kind=JoinKind.Left, semantics=LookupSemantics.NearestSmaller)
+let obsDaysPrev = daysFrame.Join(obsFrame, kind=JoinKind.Left, lookup=LookupSemantics.NearestSmaller)
 
 // The first value is missing (because there is no nearest value with 
 // greater key - the first one has the smallest key) but the rest is available
-let obsDaysNext = daysFrame.Join(obsFrame, kind=JoinKind.Left, semantics=LookupSemantics.NearestGreater)
+let obsDaysNext = daysFrame.Join(obsFrame, kind=JoinKind.Left, lookup=LookupSemantics.NearestGreater)
 
 (**
-The optional parameter `?semantics` is ignored when the join `?kind` is other
+The optional parameter `?lookup` is ignored when the join `?kind` is other
 than `Left` or `Right`. Also, if the data frame is not ordered, the behaviour 
 defaults to exact matching.
 
