@@ -335,6 +335,48 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     let newData = x.Data.Select(FrameHelpers.transformColumn x.vectorBuilder rowCmd)
     Frame(newRowIndex, x.ColumnIndex, newData)
 
+module internal Reflection = 
+  open System.Linq
+  open System.Linq.Expressions
+  open Microsoft.FSharp.Reflection
+  open Microsoft.FSharp
+
+  let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
+  let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
+
+  let enumerableSelect =
+    match <@@ Enumerable.Select([0], fun v -> v) @@> with
+    | Quotations.Patterns.Call(_, mi, _) -> mi.GetGenericMethodDefinition() | _ -> failwith "Could not find Enumerable.Select"
+  let enumerableToArray =
+    match <@@ Enumerable.ToArray([0]) @@> with
+    | Quotations.Patterns.Call(_, mi, _) -> mi.GetGenericMethodDefinition() | _ -> failwith "Could not find Enumerable.ToArray"
+  let createNonOpt = 
+    match <@@ vectorBuilder.CreateNonOptional([| |]) @@> with
+    | Quotations.Patterns.Call(_, mi, _) -> mi.GetGenericMethodDefinition() | _ -> failwith "Could not find vectorBuilder.CreateNonOptional"
+
+  let convertRecordSequence<'T>(data:seq<'T>) =
+    let recdTy = typeof<'T>
+    let fields = recdTy.GetProperties() |> Seq.filter (fun p -> p.CanRead) 
+    let colIndex = indexBuilder.Create<string, int>([ for f in fields -> f.Name ], Some false)
+    let frameData = 
+      [| for f in fields do
+          // Information about the types involved...
+          let fldTy = f.PropertyType
+          // Build: fun recd -> recd.<Field>
+          let recd = Expression.Parameter(recdTy)
+          let func = Expression.Lambda(Expression.Call(recd, f.GetGetMethod()), [recd])
+          // Build: Enumerable.ToArray(Enumerable.Select(<input>, fun recd -> recd.<Field>))
+          let input = Expression.Parameter(typeof<seq<'T>>)
+          let selected = Expression.Call(enumerableSelect.MakeGenericMethod [| recdTy; fldTy |], input, func)
+          let body = Expression.Call(enumerableToArray.MakeGenericMethod [| fldTy |], selected)
+          // Build: vectorBuilder.CreateNonOptional( ... body ... )
+          let conv = Expression.Call(Expression.Constant(vectorBuilder), createNonOpt.MakeGenericMethod [| fldTy |], body)
+          // Compile & run
+          let convFunc = Expression.Lambda(conv, [input]).Compile()
+          yield convFunc.DynamicInvoke( [| box data |] ) :?> IVector<int> |]
+      |> vectorBuilder.CreateNonOptional
+    Frame<int, string>(Index.Create [0 .. (Seq.length data) - 1], colIndex, frameData)
+
 [<AutoOpen>]
 module FSharp =
   type Series = 
@@ -342,6 +384,9 @@ module FSharp =
       Series(Seq.map fst values, Seq.map snd values)
 
   type Frame = 
+    static member ofRecords (values:seq<'T>) =
+      Reflection.convertRecordSequence<'T>(values)    
+
     static member ofRowsOrdinal(rows:seq<#Series<_, _>>) = 
       let keys = rows |> Seq.mapi (fun i _ -> i)
       Frame.FromRows(Series(keys, rows))

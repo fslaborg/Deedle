@@ -183,10 +183,26 @@ let df4 =
   |> Frame.ofValues
 
 (**
+Data frame can be also easily created from a collection of F# record types (or of any classes
+with public readable properties). The `Frame.ofRecords` function uses reflection to find the 
+names and types of properties of a record and creates a data frame with the same structure.
+
+*)
+// Assuming we have a record 'Price' and a collection 'values'
+type Price = { Day : DateTime; Open : float }
+let values = 
+  [ { Day = DateTime.Now; Open = 10.1 }
+    { Day = DateTime.Now.AddDays(1.0); Open = 15.1 }
+    { Day = DateTime.Now.AddDays(2.0); Open = 9.1 } ]
+
+// Creates a data frame with columns 'Day' and 'Open'
+let df5 = Frame.ofRecords values
+
+(**
 Finally, we can also load data frame from CSV:
 *)
-let msftCsv = Frame.ReadCsv(@"C:\Users\tpetricek\Downloads\msft.csv") //http://ichart.finance.yahoo.com/table.csv?s=MSFT")
-let fbCsv = Frame.ReadCsv(@"C:\Users\tpetricek\Downloads\fb.csv") //"http://ichart.finance.yahoo.com/table.csv?s=FB")
+let msftCsv = Frame.ReadCsv("http://ichart.finance.yahoo.com/table.csv?s=MSFT")
+let fbCsv = Frame.ReadCsv("http://ichart.finance.yahoo.com/table.csv?s=FB")
 
 (**
 At the moment, this just stores all data as strings, but we could easily reuse 
