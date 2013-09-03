@@ -71,10 +71,11 @@ and Series<'TKey, 'TValue when 'TKey : equality>
   // Accessors
   // ----------------------------------------------------------------------------------------------
 
-  member x.GetItems(items) =
+  member x.GetItems(items,?semantics) =
     // TODO: Should throw when item is not in the sereis?
+    let semantics = defaultArg semantics LookupSemantics.Exact
     let newIndex = indexBuilder.Create<_, int>(items, None)
-    let newVector = vectorBuilder.Build(indexBuilder.Reindex(index, newIndex, Vectors.Return 0), [| vector |])
+    let newVector = vectorBuilder.Build(indexBuilder.Reindex(index, newIndex, semantics, Vectors.Return 0), [| vector |])
     Series(newIndex, newVector)
 
   member x.GetSlice(lo, hi) =
@@ -82,18 +83,19 @@ and Series<'TKey, 'TValue when 'TKey : equality>
     let newVector = vectorBuilder.Build(newVector, [| vector |])
     Series(newIndex, newVector) 
 
-  member x.TryGet(key) =
-    let address = index.Lookup(key) 
+  member x.TryGet(key, ?semantics) =
+    let semantics = defaultArg semantics LookupSemantics.Exact
+    let address = index.Lookup(key, semantics) 
     if not address.HasValue then invalidArg "key" (sprintf "The index '%O' is not present in the series." key)
     let value = vector.GetValue(address.Value)
     value |> OptionalValue.asOption
   
-  member x.Get(key) =
-    match x.TryGet(key) with
+  member x.Get(key, ?semantics) =
+    match x.TryGet(key, ?semantics=semantics) with
     | None -> raise (ValueMissingException(key.ToString()))
     | Some v -> v
 
-  static member (?) (series:Series<_, _>, name:string) = series.Get(name)
+  static member (?) (series:Series<_, _>, name:string) = series.Get(name, LookupSemantics.Exact)
 
   // ----------------------------------------------------------------------------------------------
   // Operations

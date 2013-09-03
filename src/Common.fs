@@ -31,6 +31,12 @@ module OptionalValue =
     if input.HasValue then OptionalValue(f input.Value)
     else OptionalValue.Missing
 
+  let inline ofSingletonList list = 
+    match list with
+    | [it] -> OptionalValue(it)
+    | [] -> OptionalValue.Missing
+    | _ -> invalidArg "list" "OptionalValue.ofSingletonList requires singleton or empty list"
+
   let inline ofTuple (b, value) =
     if b then OptionalValue(value) else OptionalValue.Missing
 

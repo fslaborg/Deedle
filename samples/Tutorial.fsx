@@ -201,8 +201,8 @@ let df5 = Frame.ofRecords values
 (**
 Finally, we can also load data frame from CSV:
 *)
-let msftCsv = Frame.ReadCsv("http://ichart.finance.yahoo.com/table.csv?s=MSFT")
-let fbCsv = Frame.ReadCsv("http://ichart.finance.yahoo.com/table.csv?s=FB")
+let msftCsv = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/MSFT.csv")
+let fbCsv = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/FB.csv")
 
 (**
 At the moment, this just stores all data as strings, but we could easily reuse 
@@ -215,11 +215,18 @@ Reindexing & joins
 
 The loaded stock prices are automatically indexed with ordinal numbers, but we would
 like to align them using their dates (in case there are some values missing). This
-can be done by setting the row index to the "Date" column.
+can be done by setting the row index to the "Date" column. Once we set the date as the
+index, we also need to order the index. The Yahoo prices are ordered from the newest to
+the oldest, but our data-frame requires ascending ordering.
+
+When a frame has ordered index, we can use additional functionality that will be needed 
+later (for example, we can select sub-range by specifying dates that are not explicitly 
+included in the index).
 *)
 
 // Use the Date column as the index for the data frame
 let msftDate = msftCsv.WithRowIndex<DateTime>("Date")
+let msftOrd = msftDate.WithOrderedRows()
 
 (**
 Now that we have properly indexed stock prices, we can create a new data frame that
@@ -228,13 +235,15 @@ that shows their difference:
 *)
 
 // Create data frame with just Open and Close prices
-let msft = msftDate.Columns.["Open", "Close"] |> Frame.FromColumns
+let msft = msftOrd.Columns.["Open", "Close"] |> Frame.FromColumns
 
 // Add new column with the difference between Open & Close
 msft?Difference <- msft?Open - msft?Close
 
 // Do the same thing for Facebook
-let fb = fbCsv.WithRowIndex<DateTime>("Date").Columns.["Open", "Close"] |> Frame.FromColumns
+let fb = 
+  fbCsv.WithRowIndex<DateTime>("Date").WithOrderedRows().Columns.["Open", "Close"] 
+  |> Frame.FromColumns
 fb?Difference <- fb?Open - fb?Close
 
 // Now we can easily plot the differences
@@ -290,17 +299,16 @@ In the previous example, we used an indexer with a single key. You can also spec
 keys (using a tuple) or a range (using the slicing syntax):
 *)
 
-// Get values corresponding to January 2013
-let jan = joinedIn.Rows.[DateTime(2013, 1, 31) .. DateTime(2013, 1, 2)] |> Frame.FromRows
-jan?FbOpen |> Series.mean
-jan?MsftOpen |> Series.mean
-
 // Get values corresponding to first three days of January 2013
 let jan234 = joinedIn.Rows.[DateTime(2013, 1, 2), DateTime(2013, 1, 3), DateTime(2013, 1, 4)] |> Frame.FromRows
 jan234?MsftOpen |> Series.mean
 
-(**
+// Get values corresponding to January 2013
+let jan = joinedIn.Rows.[DateTime(2013, 1, 1) .. DateTime(2013, 1, 31)] |> Frame.FromRows
+jan?FbOpen |> Series.mean
+jan?MsftOpen |> Series.mean
 
+(**
 The result of the indexing operation is a single data series when you use just a single
 date (the previous example) or a series of series when you specify multiple indices or a 
 range (this example). Here, we always convert the structure back to a data frame using 
@@ -308,6 +316,73 @@ range (this example). Here, we always convert the structure back to a data frame
 
 The `Series` module used here should (in the future) include more useful functions for working
 with data series - but for now, it just contains `mean` and `sum`.
+
+Note that the slicing using range (the second case) does not actually generate a sequence
+of dates from 1 January to 31 January - it passes these to the index. Because our data frame
+has an ordered index, the index looks for all keys that are greater than 1 January and smaller
+than 31 January (this matters here, because the data frame does not contain 1 January - the 
+first day is 2 January)
+
+Indexing and joining ordered series
+-----------------------------------
+
+As already mentioned, if we have an ordered series or an ordered data frame, then we can
+leverage the ordering in a number of ways. In the previous example, slicing used lower
+and upper bounds rather than exact matching. Similarly, it is possible to get nearest
+smaller (or greater) element when using direct lookup.
+
+For example, let's create two series with 10 values for 10 days. The `daysSeries` 
+contains keys starting from `DateTime.Today` (12:00 AM) and `obsSeries` has dates
+with time component set to the current time (this is wrong representation, but it 
+can be used to ilustrate the idea):
+*)
+
+let daysSeries = Series.Create(dateRange DateTime.Today 10, rand 10)
+let obsSeries = Series.Create(dateRange DateTime.Now 10, rand 10)
+
+(**
+The indexing operation written as `daysSeries.[date]` uses _exact_ semantics so it will 
+fail if the exact date is not available. When using `Get` method, we can provide an
+additional parameter to specify the required behaviour:
+*)
+
+// Fails, because current time is not present
+daysSeries.[DateTime.Now]
+obsSeries.[DateTime.Now]
+
+// This works - we get the value for DateTime.Today (12:00 AM)
+daysSeries.Get(DateTime.Now, LookupSemantics.NearestSmaller)
+// This does not - there is no nearest smaller value than Today 12:00 AM
+obsSeries.Get(DateTime.Today, LookupSemantics.NearestSmaller)
+
+(**
+Similarly, you can specify the semantics when calling `TryGet` (to get an optional value)
+or when using `GetItems` (to lookup multiple keys at once). Note that this behaviour is
+only supported for series or frames with ordered index. For unordered, all operations use
+the exact semantics.
+
+The semantics can be also specified when using left or right join on data frames. To 
+demonstrate this, let's create two data frames with columns indexed by 1 and 2, respectively:
+*)
+
+let daysFrame = [ 1 => daysSeries ] |> Frame.ofColumns
+let obsFrame = [ 2 => obsSeries ] |> Frame.ofColumns
+
+// All values in column 2 are missing (because the times do not match)
+let obsDaysExact = daysFrame.Join(obsFrame, kind=JoinKind.Left)
+
+// All values are available - for each day, we find the nearest smaller
+// time in the frame indexed by later times in the day
+let obsDaysPrev = daysFrame.Join(obsFrame, kind=JoinKind.Left, semantics=LookupSemantics.NearestSmaller)
+
+// The first value is missing (because there is no nearest value with 
+// greater key - the first one has the smallest key) but the rest is available
+let obsDaysNext = daysFrame.Join(obsFrame, kind=JoinKind.Left, semantics=LookupSemantics.NearestGreater)
+
+(**
+The optional parameter `?semantics` is ignored when the join `?kind` is other
+than `Left` or `Right`. Also, if the data frame is not ordered, the behaviour 
+defaults to exact matching.
 
 Projection and filtering
 ------------------------

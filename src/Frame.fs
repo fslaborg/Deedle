@@ -104,17 +104,18 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   // Frame operations - joins
   // ----------------------------------------------------------------------------------------------
 
-  member frame.Join(otherFrame:Frame<'TRowKey, 'TColumnKey>, ?kind) =    
+  member frame.Join(otherFrame:Frame<'TRowKey, 'TColumnKey>, ?kind, ?semantics) =    
     // Union row indices and get transformations to apply to left/right vectors
+    let semantics = defaultArg semantics LookupSemantics.Exact
     let newRowIndex, thisRowCmd, otherRowCmd = 
       match kind with 
       | Some JoinKind.Inner ->
           indexBuilder.Intersect(rowIndex, otherFrame.RowIndex, Vectors.Return 0, Vectors.Return 0)
       | Some JoinKind.Left ->
-          let otherRowCmd = indexBuilder.Reindex(otherFrame.RowIndex, rowIndex, Vectors.Return 0)
+          let otherRowCmd = indexBuilder.Reindex(otherFrame.RowIndex, rowIndex, semantics, Vectors.Return 0)
           rowIndex, Vectors.Return 0, otherRowCmd
       | Some JoinKind.Right ->
-          let thisRowCmd = indexBuilder.Reindex(rowIndex, otherFrame.RowIndex, Vectors.Return 0)
+          let thisRowCmd = indexBuilder.Reindex(rowIndex, otherFrame.RowIndex, semantics, Vectors.Return 0)
           otherFrame.RowIndex, thisRowCmd, Vectors.Return 0
       | Some JoinKind.Outer | None | Some _ ->
           indexBuilder.Union(rowIndex, otherFrame.RowIndex, Vectors.Return 0, Vectors.Return 0)
@@ -176,14 +177,14 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   member frame.Rows = 
     let emptySeries = Series(rowIndex, Vector.Create [])
     emptySeries.SelectOptional (fun row ->
-      let rowAddress = rowIndex.Lookup(row.Key)
+      let rowAddress = rowIndex.Lookup(row.Key, LookupSemantics.Exact)
       if not rowAddress.HasValue then OptionalValue.Missing
       else OptionalValue(Series.CreateUntyped(columnIndex, createRowReader rowAddress.Value)))
 
   member frame.RowsDense = 
     let emptySeries = Series(rowIndex, Vector.Create [])
     emptySeries.SelectOptional (fun row ->
-      let rowAddress = rowIndex.Lookup(row.Key)
+      let rowAddress = rowIndex.Lookup(row.Key, LookupSemantics.Exact)
       if not rowAddress.HasValue then OptionalValue.Missing else 
         let rowVec = createRowReader rowAddress.Value
         let all = columnIndex.Mappings |> Seq.forall (fun (key, addr) -> rowVec.GetValue(addr).HasValue)
@@ -205,13 +206,15 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     columnIndex <- newColumnIndex
     data <- vectorBuilder.Build(colCmd, [| data |])
 
-  member frame.ReplaceSeries(column:'TColumnKey, series:Series<_, _>) = 
-    if columnIndex.Lookup(column).HasValue then
+  member frame.ReplaceSeries(column:'TColumnKey, series:Series<_, _>, ?semantics) = 
+    let semantics = defaultArg semantics LookupSemantics.Exact
+    if columnIndex.Lookup(column, semantics).HasValue then
       frame.DropSeries(column)
     frame.AddSeries(column, series)
 
-  member frame.GetSeries<'R>(column:'TColumnKey) : Series<'TRowKey, 'R> = 
-    match safeGetColVector column with
+  member frame.GetSeries<'R>(column:'TColumnKey, ?semantics) : Series<'TRowKey, 'R> = 
+    let semantics = defaultArg semantics LookupSemantics.Exact
+    match safeGetColVector(column, semantics) with
     | :? IVector<int, 'R> as vec -> 
         Series.Create(rowIndex, vec)
     | colVector ->
@@ -296,7 +299,7 @@ and Frame =
     let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance // TODO: Capture somewhere
     let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
 
-    let rowCmd = indexBuilder.Reindex(folded.RowIndex, nested.Index, Vectors.Return 0)
+    let rowCmd = indexBuilder.Reindex(folded.RowIndex, nested.Index, LookupSemantics.Exact, Vectors.Return 0)
     let newRowIndex = nested.Index
     let newColumnIndex = folded.ColumnIndex
     let newData = folded.Data.Select(transformColumn vectorBuilder rowCmd)
@@ -317,6 +320,12 @@ and Frame =
   // ----------------------------------------------------------------------------------------------
 
 type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality> with
+
+  member frame.WithOrderedRows() = 
+    let newRowIndex, rowCmd = frame.indexBuilder.OrderIndex(frame.RowIndex, Vectors.Return 0)
+    let newData = frame.Data.Select(transformColumn frame.vectorBuilder rowCmd)
+    Frame(newRowIndex, frame.ColumnIndex, newData)
+
   member x.WithColumnIndex(columnKeys:seq<_>) =
     let columns = seq { for v in x.Columns.Values -> v :> ISeries<_> }
     

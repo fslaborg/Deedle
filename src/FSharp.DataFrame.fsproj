@@ -41,8 +41,10 @@
     <Compile Include="Vector.fs" />
     <Compile Include="ArrayVector.fs" />
     <Compile Include="Index.fs" />
+    <Compile Include="LinearIndex.fs" />
     <Compile Include="Series.fs" />
     <Compile Include="Frame.fs" />
+    <Compile Include="Functions.fs" />
     <None Include="packages.config" />
     <None Include="FSharp.DataFrame.fsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
