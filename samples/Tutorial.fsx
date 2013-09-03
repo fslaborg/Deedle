@@ -185,9 +185,8 @@ let df4 =
 (**
 Finally, we can also load data frame from CSV:
 *)
-
-let msftCsv = Frame.ReadCsv("http://ichart.finance.yahoo.com/table.csv?s=MSFT")
-let fbCsv = Frame.ReadCsv("http://ichart.finance.yahoo.com/table.csv?s=FB")
+let msftCsv = Frame.ReadCsv(@"C:\Users\tpetricek\Downloads\msft.csv") //http://ichart.finance.yahoo.com/table.csv?s=MSFT")
+let fbCsv = Frame.ReadCsv(@"C:\Users\tpetricek\Downloads\fb.csv") //"http://ichart.finance.yahoo.com/table.csv?s=FB")
 
 (**
 At the moment, this just stores all data as strings, but we could easily reuse 

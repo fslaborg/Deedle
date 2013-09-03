@@ -13,7 +13,7 @@ type ValueMissingException(column) =
 // Series
 // ------------------------------------------------------------------------------------------------
 
-type ISeries<'TKey> =
+type ISeries<'TKey when 'TKey : equality> =
   abstract Vector : FSharp.DataFrame.IVector<int>
   abstract Index : IIndex<'TKey, int>
 
@@ -27,8 +27,9 @@ type internal SeriesOperations =
 and Series<'TKey, 'TValue when 'TKey : equality>
     internal (index:IIndex<'TKey, int>, vector:IVector<int, 'TValue>) =
   
-  /// Vector builder
+  /// Vector & index builders
   let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
+  let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
 
   // :-(((((
   static let ensureInit = Lazy.Create(fun _ ->
@@ -72,12 +73,12 @@ and Series<'TKey, 'TValue when 'TKey : equality>
 
   member x.GetItems(items) =
     // TODO: Should throw when item is not in the sereis?
-    let newIndex = Index.CreateUnsorted(items)
-    let newVector = vectorBuilder.Build(index.Reindex(newIndex, Vectors.Return 0), [| vector |])
+    let newIndex = indexBuilder.Create<_, int>(items, None)
+    let newVector = vectorBuilder.Build(indexBuilder.Reindex(index, newIndex, Vectors.Return 0), [| vector |])
     Series(newIndex, newVector)
 
   member x.GetSlice(lo, hi) =
-    let newIndex, newVector = index.GetRange(lo, hi, Vectors.Return 0)
+    let newIndex, newVector = indexBuilder.GetRange(index, lo, hi, Vectors.Return 0)
     let newVector = vectorBuilder.Build(newVector, [| vector |])
     Series(newIndex, newVector) 
 
@@ -114,7 +115,7 @@ and Series<'TKey, 'TValue when 'TKey : equality>
             with :? ValueMissingException -> false
           if included then yield key, opt  |]
       |> Array.unzip
-    Series<_, _>(Index.Create(keys), vectorBuilder.CreateOptional(optValues))
+    Series<_, _>(indexBuilder.Create<_, int>(keys, None), vectorBuilder.CreateOptional(optValues))
 
   member x.WhereOptional(f:System.Func<KeyValuePair<'TKey, OptionalValue<'TValue>>, bool>) = 
     let keys, optValues =
@@ -122,7 +123,7 @@ and Series<'TKey, 'TValue when 'TKey : equality>
           let opt = vector.GetValue(addr)
           if f.Invoke (KeyValuePair(key, opt)) then yield key, opt |]
       |> Array.unzip
-    Series<_, _>(Index.Create(keys), vectorBuilder.CreateOptional(optValues))
+    Series<_, _>(indexBuilder.Create<_, int>(keys, None), vectorBuilder.CreateOptional(optValues))
 
   member x.Select<'R>(f:System.Func<KeyValuePair<'TKey, 'TValue>, 'R>) = 
     let newVector =

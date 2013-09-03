@@ -43,7 +43,8 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
 
   /// Vector builder
   let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
- 
+  let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
+
   // TODO: Perhaps assert that the 'data' vector has all things required by column index
   // (to simplify various handling below)
 
@@ -92,6 +93,8 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     let columnIndex = columnIndex.Lookup(column)
     if not columnIndex.HasValue then OptionalValue.Missing else
     data.GetValue columnIndex.Value
+  member private x.indexBuilder = indexBuilder
+  member private x.vectorBuilder = vectorBuilder
 
   member internal frame.RowIndex = rowIndex
   member internal frame.ColumnIndex = columnIndex
@@ -106,20 +109,20 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     let newRowIndex, thisRowCmd, otherRowCmd = 
       match kind with 
       | Some JoinKind.Inner ->
-          rowIndex.IntersectWith(otherFrame.RowIndex, Vectors.Return 0, Vectors.Return 0)
+          indexBuilder.Intersect(rowIndex, otherFrame.RowIndex, Vectors.Return 0, Vectors.Return 0)
       | Some JoinKind.Left ->
-          let otherRowCmd = otherFrame.RowIndex.Reindex(rowIndex, Vectors.Return 0)
+          let otherRowCmd = indexBuilder.Reindex(otherFrame.RowIndex, rowIndex, Vectors.Return 0)
           rowIndex, Vectors.Return 0, otherRowCmd
       | Some JoinKind.Right ->
-          let thisRowCmd = rowIndex.Reindex(otherFrame.RowIndex, Vectors.Return 0)
+          let thisRowCmd = indexBuilder.Reindex(rowIndex, otherFrame.RowIndex, Vectors.Return 0)
           otherFrame.RowIndex, thisRowCmd, Vectors.Return 0
       | Some JoinKind.Outer | None | Some _ ->
-          rowIndex.UnionWith(otherFrame.RowIndex, Vectors.Return 0, Vectors.Return 0)
+          indexBuilder.Union(rowIndex, otherFrame.RowIndex, Vectors.Return 0, Vectors.Return 0)
 
     // Append the column indices and get transformation to combine them
     // (LeftOrRight - specifies that when column exist in both data frames then fail)
     let newColumnIndex, colCmd = 
-      columnIndex.Append(otherFrame.ColumnIndex, Vectors.Return 0, Vectors.Return 1, VectorValueTransform.LeftOrRight)
+      indexBuilder.Append(columnIndex, otherFrame.ColumnIndex, Vectors.Return 0, Vectors.Return 1, VectorValueTransform.LeftOrRight)
     // Apply transformation to both data vectors
     let newThisData = data.Select(transformColumn vectorBuilder thisRowCmd)
     let newOtherData = otherFrame.Data.Select(transformColumn vectorBuilder otherRowCmd)
@@ -130,12 +133,12 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   member frame.Append(otherFrame:Frame<'TRowKey, 'TColumnKey>) = 
     // Union the column indices and get transformations for both
     let newColumnIndex, thisColCmd, otherColCmd = 
-      columnIndex.UnionWith(otherFrame.ColumnIndex, Vectors.Return 0, Vectors.Return 1)
+      indexBuilder.Union(columnIndex, otherFrame.ColumnIndex, Vectors.Return 0, Vectors.Return 1)
 
     // Append the row indices and get transformation that combines two column vectors
     // (LeftOrRight - specifies that when column exist in both data frames then fail)
     let newRowIndex, rowCmd = 
-      rowIndex.Append(otherFrame.RowIndex, Vectors.Return 0, Vectors.Return 1, VectorValueTransform.LeftOrRight)
+      indexBuilder.Append(rowIndex, otherFrame.RowIndex, Vectors.Return 0, Vectors.Return 1, VectorValueTransform.LeftOrRight)
 
     // Transform columns to align them
     let appendVector = 
@@ -198,7 +201,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     data <- joined.Data
 
   member frame.DropSeries(column:'TColumnKey) = 
-    let newColumnIndex, colCmd = columnIndex.DropItem(column, Vectors.Return 0)    
+    let newColumnIndex, colCmd = indexBuilder.DropItem(columnIndex, column, Vectors.Return 0)    
     columnIndex <- newColumnIndex
     data <- vectorBuilder.Build(colCmd, [| data |])
 
@@ -291,7 +294,9 @@ and Frame =
 
     // Reindex according to the original index
     let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance // TODO: Capture somewhere
-    let rowCmd = folded.RowIndex.Reindex(nested.Index, Vectors.Return 0)
+    let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
+
+    let rowCmd = indexBuilder.Reindex(folded.RowIndex, nested.Index, Vectors.Return 0)
     let newRowIndex = nested.Index
     let newColumnIndex = folded.ColumnIndex
     let newData = folded.Data.Select(transformColumn vectorBuilder rowCmd)
@@ -324,16 +329,11 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
 
 
   member x.WithRowIndex<'TNewRowIndex when 'TNewRowIndex : equality>(column) =
-    let newSeries = 
-      x.Rows
-       .Where(fun kv -> kv.Value.TryGetAs<'TNewRowIndex>(column).IsSome)
-       .Select(fun kv -> 
-          let key = kv.Value.GetAs<'TNewRowIndex>(column)
-          key, kv.Value.Where(fun kv -> kv.Key <> column))
-    let keys, values = (Array.ofSeq newSeries.Values) |> Array.unzip
-    let data = Series.Create(keys, values)
-    Frame.FromRows(data)
-
+    let columnVec = x.GetSeries<'TNewRowIndex>(column)
+    let lookup addr = columnVec.Vector.GetValue(addr)
+    let newRowIndex, rowCmd = x.indexBuilder.WithIndex(x.RowIndex, lookup, Vectors.Return 0)
+    let newData = x.Data.Select(FrameHelpers.transformColumn x.vectorBuilder rowCmd)
+    Frame(newRowIndex, x.ColumnIndex, newData)
 
 [<AutoOpen>]
 module FSharp =
@@ -387,11 +387,11 @@ module FrameExtensions =
       let preferOptionals = true // Ignored
 
       let createVector typ (data:string[]) = 
-        if typ = typeof<bool> then Vector.Create (Array.map (fun s -> Operations.ConvertBoolean(culture, Some(s))) data) :> IVector<int>
-        elif typ = typeof<decimal> then Vector.Create (Array.map (fun s -> Operations.ConvertDecimal(culture, Some(s))) data) :> IVector<int>
-        elif typ = typeof<float> then Vector.Create (Array.map (fun s -> Operations.ConvertFloat(culture, missingValues, Some(s))) data) :> IVector<int>
-        elif typ = typeof<int> then Vector.Create (Array.map (fun s -> Operations.ConvertInteger(culture, Some(s))) data) :> IVector<int>
-        elif typ = typeof<int64> then Vector.Create (Array.map (fun s -> Operations.ConvertInteger64(culture, Some(s))) data) :> IVector<int> 
+        if typ = typeof<bool> then Vector.CreateNA (Array.map (fun s -> Operations.ConvertBoolean(culture, Some(s))) data) :> IVector<int>
+        elif typ = typeof<decimal> then Vector.CreateNA (Array.map (fun s -> Operations.ConvertDecimal(culture, Some(s))) data) :> IVector<int>
+        elif typ = typeof<float> then Vector.CreateNA (Array.map (fun s -> Operations.ConvertFloat(culture, missingValues, Some(s))) data) :> IVector<int>
+        elif typ = typeof<int> then Vector.CreateNA (Array.map (fun s -> Operations.ConvertInteger(culture, Some(s))) data) :> IVector<int>
+        elif typ = typeof<int64> then Vector.CreateNA (Array.map (fun s -> Operations.ConvertInteger64(culture, Some(s))) data) :> IVector<int> 
         else Vector.Create data :> IVector<int>
 
       // If 'inferTypes' is specified (or by default), use the CSV type inference
@@ -412,9 +412,9 @@ module FrameExtensions =
       // Load the data and convert the values to the appropriate type
       let data = Csv.CsvFile.Load(file).Cache()
       let columnIndex = Index.Create data.Headers.Value
-      let data = 
+      let columns = 
         [| for name, prop in Seq.zip data.Headers.Value inferedProperties  ->
              [| for row in data.Data -> row.GetColumn(name) |]
              |> createVector prop.RuntimeType |]
-      let rowIndex = Index.Create [ 0 .. data.Length - 1 ]
-      Frame(rowIndex, columnIndex, Vector.Create data)
+      let rowIndex = Index.Create [ 0 .. (Seq.length data.Data) - 1 ]
+      Frame(rowIndex, columnIndex, Vector.Create columns)

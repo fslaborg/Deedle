@@ -167,9 +167,7 @@ type IVectorValueTransform =
 type VectorConstruction<'TAddress> =
 
   // Convert an existing vector to another representation
-  // (ReturnAsOrdinal creates a vector with "default" ordering)
   | Return of VectorHole
-  | ReturnAsOrdinal of VectorConstruction<'TAddress>
   
   // Reorders elements of the vector. Carries a new required vector range and a list
   // of relocations (each pair of addresses specifies that an element at an old address 
