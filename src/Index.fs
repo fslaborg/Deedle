@@ -12,63 +12,63 @@ type LookupSemantics =
   | NearestGreater = 1
   | NearestSmaller = 2
 
-type Aggregation<'TKey, 'TAddress> =
+type Aggregation<'K> =
   | WindowSize of int
   | ChunkSize of int
-  | WindowWhile of ('TKey -> 'TKey -> bool)
-  | ChunkWhile of ('TKey -> 'TKey -> bool)
-  | GroupBy of ('TKey -> System.IComparable)
+  | WindowWhile of ('K -> 'K -> bool)
+  | ChunkWhile of ('K -> 'K -> bool)
+  | GroupBy of ('K -> System.IComparable)
 
 namespace FSharp.DataFrame.Indices
 
 open FSharp.DataFrame
 open FSharp.DataFrame.Common
+open FSharp.DataFrame.Addressing
 open FSharp.DataFrame.Vectors
 
-/// An interface that represents index mapping keys of type 'TKey to locations
-/// of address 'TAddress.
-type IIndex<'TKey, 'TAddress when 'TKey : equality and 'TAddress : equality> = 
-  abstract Keys : seq<'TKey>
-  abstract Lookup : 'TKey * LookupSemantics -> OptionalValue<'TAddress>  
-  abstract Mappings : seq<'TKey * 'TAddress>
-  abstract Range : 'TAddress * 'TAddress
+/// An interface that represents index mapping keys of type 'T to locations
+/// of address Address.
+type IIndex<'K when 'K : equality> = 
+  abstract Keys : seq<'K>
+  abstract Lookup : 'K * LookupSemantics -> OptionalValue<Address>  
+  abstract Mappings : seq<'K * Address>
+  abstract Range : Address * Address
   abstract Ordered : bool
-  abstract Comparer : System.Collections.Generic.Comparer<'TKey>
+  abstract Comparer : System.Collections.Generic.Comparer<'K>
   
 /// A builder represents various ways of constructing index
-type IIndexBuilder<'TAddress when 'TAddress : equality> =
-  abstract Create : seq<'TKey> * Option<bool> -> IIndex<'TKey, 'TAddress>
+type IIndexBuilder =
+  abstract Create : seq<'K> * Option<bool> -> IIndex<'K>
     
   abstract GetRange : 
-    IIndex<'TKey, 'TAddress> * option<'TKey> * option<'TKey> * VectorConstruction<'TAddress> ->
-    IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress> 
+    IIndex<'K> * option<'K> * option<'K> * VectorConstruction ->
+    IIndex<'K> * VectorConstruction 
 
   abstract Union : 
-    IIndex<'TKey, 'TAddress> * IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress> * VectorConstruction<'TAddress> -> 
-    IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress> * VectorConstruction<'TAddress>
+    IIndex<'K> * IIndex<'K> * VectorConstruction * VectorConstruction -> 
+    IIndex<'K> * VectorConstruction * VectorConstruction
 
   abstract Intersect :
-    IIndex<'TKey, 'TAddress> * IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress> * VectorConstruction<'TAddress> -> 
-    IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress> * VectorConstruction<'TAddress>
+    IIndex<'K> * IIndex<'K> * VectorConstruction * VectorConstruction -> 
+    IIndex<'K> * VectorConstruction * VectorConstruction
 
   abstract Append :
-    IIndex<'TKey, 'TAddress> * IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress> * VectorConstruction<'TAddress> * IVectorValueTransform -> 
-    IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress>
+    IIndex<'K> * IIndex<'K> * VectorConstruction * VectorConstruction * IVectorValueTransform -> 
+    IIndex<'K> * VectorConstruction
 
   abstract Reindex :
-    IIndex<'TKey, 'TAddress> * IIndex<'TKey, 'TAddress> * LookupSemantics * VectorConstruction<'TAddress> -> VectorConstruction<'TAddress>
+    IIndex<'K> * IIndex<'K> * LookupSemantics * VectorConstruction -> VectorConstruction
 
   abstract WithIndex :
-    IIndex<'TKey, 'TAddress> * ('TAddress -> OptionalValue<'TNewKey>) * VectorConstruction<'TAddress> -> 
-    IIndex<'TNewKey, 'TAddress> * VectorConstruction<'TAddress>
+    IIndex<'K> * (Address -> OptionalValue<'TNewKey>) * VectorConstruction -> 
+    IIndex<'TNewKey> * VectorConstruction
 
-  abstract DropItem : IIndex<'TKey, 'TAddress> * 'TKey * VectorConstruction<'TAddress> -> 
-    IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress> 
+  abstract DropItem : IIndex<'K> * 'K * VectorConstruction -> 
+    IIndex<'K> * VectorConstruction 
 
-  abstract OrderIndex : IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress> ->
-    IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress>
+  abstract OrderIndex : IIndex<'K> * VectorConstruction ->
+    IIndex<'K> * VectorConstruction
 
-  abstract Aggregate : IIndex<'TKey, 'TAddress> * Aggregation<'TKey, 'TAddress> * VectorConstruction<'TAddress> *
-    (IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress> -> OptionalValue<'R>) *
-    (IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress> -> 'TKey) -> 
-      IIndex<'TKey, 'TAddress> * IVector<'TAddress, 'R> // Returning vector might be too concrete?
+  abstract Aggregate : IIndex<'K> * Aggregation<'K> * VectorConstruction *
+    (IIndex<'K> * VectorConstruction -> OptionalValue<'R>) *
+    (IIndex<'K> * VectorConstruction -> 'K) -> IIndex<'K> * IVector<'R> // Returning vector might be too concrete?

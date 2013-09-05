@@ -15,7 +15,10 @@ let timed f =
   printfn "%dms" sw.ElapsedMilliseconds
   res
 
+
 do
+
+(*
   // Generate price using geometric Brownian motion
   let randomPrice drift volatility initial count = 
     let dist = Normal(0.0, 1.0, RandomSource=Random(0))  
@@ -35,5 +38,7 @@ do
 
   let it0 = timed (fun () -> diffs |> Series.chunk (TimeSpan(1, 0, 0)) )
   let it1 = timed (fun () -> diffs |> Series.chunk (TimeSpan(1, 0, 0)) )
+*)
 
+  
   ()

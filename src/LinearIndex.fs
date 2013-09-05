@@ -8,46 +8,22 @@ namespace FSharp.DataFrame.Indices.Linear
 open System.Linq
 open System.Collections.Generic
 open FSharp.DataFrame
+open FSharp.DataFrame.Addressing
 open FSharp.DataFrame.Common
 open FSharp.DataFrame.Indices
 
-/// To make the LinearIndex generic in the address type, this interface
-/// is used to provide basic operations on the addresses (e.g. this can be 
-/// implemented to use 'long' as an address)
-type IAddressOperations<'TAddress> = 
-  abstract GenerateRange : 'TAddress * 'TAddress -> seq<'TAddress>
-  //abstract Zero : 'TAddress 
-  abstract Add : 'TAddress * 'TAddress -> 'TAddress
-  abstract Int32Convertor : option<int -> 'TAddress>
-  abstract RangeOf : seq<'T> -> 'TAddress * 'TAddress
-  abstract GetRange : seq<'T> * 'TAddress * 'TAddress -> seq<'T>
 
-module AddressHelpers = 
-  let getAddressOperations<'TAddress>() : IAddressOperations<'TAddress> = 
-    if typeof<'TAddress> = typeof<int> then
-      { new IAddressOperations<int> with
-          member x.GenerateRange(lo, hi) : seq<int> = seq { lo .. hi } 
-          member x.Int32Convertor = Some(id)
-          member x.Add(a, b) = a + b
-          //member x.Zero = 0
-          member x.RangeOf(seq) = 0, (Seq.length seq) - 1 
-          member x.GetRange(seq, lo, hi) = 
-            if hi >= lo then seq |> Seq.skip lo |> Seq.take (hi - lo + 1) 
-            else Seq.empty } |> unbox
-    else failwith "getAddressOperations: Address type not supported."
-  
-
-/// An index that maps 'TKey to offsets 'TAddress. The keys cannot be duplicated.
+/// An index that maps 'TKey to offsets Address. The keys cannot be duplicated.
 /// If a comparer is provided, then the index preserves the ordering of elements
 /// (and it assumes that 'keys' are already sorted).
-type LinearIndex<'TKey, 'TAddress when 'TKey : equality and 'TAddress : equality> 
-    internal (keys:seq<'TKey>, ops:IAddressOperations<'TAddress>, ?ordered, ?comparer) =
+type LinearIndex<'TKey when 'TKey : equality> 
+    internal (keys:seq<'TKey>, ops:IAddressOperations, ?ordered, ?comparer) =
 
   // Build a lookup table etc.
   let comparer = defaultArg comparer Comparer<'TKey>.Default
   let ordered = match ordered with Some ord -> ord | _ -> Seq.isSorted keys comparer
 
-  let lookup = Dictionary<'TKey, 'TAddress>()
+  let lookup = Dictionary<'TKey, Address>()
   let keysArray = lazy Array.ofSeq keys
   let addresses = ops.GenerateRange(ops.RangeOf(keys))
   let mappings = Seq.zip keys addresses
@@ -57,7 +33,7 @@ type LinearIndex<'TKey, 'TAddress when 'TKey : equality and 'TAddress : equality
        | _ -> lookup.[k] <- v  
 
   // Expose some internals for interface implementations...
-  interface IIndex<'TKey, 'TAddress> with
+  interface IIndex<'TKey> with
     member x.Keys = keys
     /// Get the address for the specified key
     member x.Lookup(key, semantics) = 
@@ -65,7 +41,7 @@ type LinearIndex<'TKey, 'TAddress when 'TKey : equality and 'TAddress : equality
       // When the value exists directly, it is a best match in all cases
       | (true, res), _, _ -> OptionalValue(res)
 
-      // If we can convert array index to 'TAddress, we can use binary search!
+      // If we can convert array index to address, we can use binary search!
       | (false, _), LookupSemantics.NearestSmaller, Some asAddr when ordered ->
           Array.binarySearchNearestSmaller key comparer keysArray.Value
           |> OptionalValue.ofOption
@@ -75,7 +51,7 @@ type LinearIndex<'TKey, 'TAddress when 'TKey : equality and 'TAddress : equality
           |> OptionalValue.ofOption
           |> OptionalValue.map asAddr
 
-      // When we cannot convert array index to 'TAddress, we have to use sequential search...
+      // When we cannot convert array index to address, we have to use sequential search...
       //
       // Find the index of the first key that is greater than the one specified
       // (generate address range and find the address using 'skipWhile')
@@ -119,15 +95,15 @@ type LinearIndex<'TKey, 'TAddress when 'TKey : equality and 'TAddress : equality
 // intersection, appending and reindexing)
 // --------------------------------------------------------------------------------------
 
-type LinearIndexBuilder<'TAddress when 'TAddress : equality>(vectorBuilder:Vectors.IVectorBuilder<'TAddress>) =
+type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
   /// Given the result of 'Seq.alignWithOrdering', create a new index
   /// and apply the transformations on two specified vector constructors
-  let returnUsingAlignedSequence joined vector1 vector2 : (IIndex<_, _> * _ * _) = 
+  let returnUsingAlignedSequence joined vector1 vector2 : (IIndex<_> * _ * _) = 
     // Create a new index using the sorted keys
-    let ops = AddressHelpers.getAddressOperations<'TAddress>()
-    let newIndex = LinearIndex<_, _>(seq { for k, _, _ in joined -> k}, ops, true)
-    let range = (newIndex :> IIndex<_, _>).Range
+    let ops = AddressHelpers.getAddressOperations()
+    let newIndex = LinearIndex<_>(seq { for k, _, _ in joined -> k}, ops, true)
+    let range = (newIndex :> IIndex<_>).Range
 
     // Create relocation transformations for both vectors
     let joinedWithIndex = Seq.zip (ops.GenerateRange range) joined
@@ -142,15 +118,15 @@ type LinearIndexBuilder<'TAddress when 'TAddress : equality>(vectorBuilder:Vecto
   /// Instance of the index builder (specialized to Int32 addresses)
   static let indexBuilder = LinearIndexBuilder(Vectors.ArrayVector.ArrayVectorBuilder.Instance)
   /// Provides a global access to an instance of LinearIndexBuilder
-  static member Instance = indexBuilder :> IIndexBuilder<_>
+  static member Instance = indexBuilder :> IIndexBuilder
 
-  interface IIndexBuilder<'TAddress> with
-    member builder.Create<'TKey when 'TAddress : equality and 'TKey : equality>(keys, ordered) = 
-      let ops = AddressHelpers.getAddressOperations<'TAddress>()
-      upcast LinearIndex<'TKey, 'TAddress>(keys, ops, ?ordered=ordered)
+  interface IIndexBuilder with
+    member builder.Create<'TKey when 'TKey : equality>(keys, ordered) = 
+      let ops = AddressHelpers.getAddressOperations()
+      upcast LinearIndex<'TKey>(keys, ops, ?ordered=ordered)
 
     member builder.Aggregate(index, aggregation, vector, valueSel, keySel) =
-      let builder = (builder :> IIndexBuilder<_>)
+      let builder = (builder :> IIndexBuilder)
       let ranges =
         match aggregation with
         | WindowSize _ | ChunkSize _ | WindowWhile _ | ChunkWhile _ -> 
@@ -175,15 +151,15 @@ type LinearIndexBuilder<'TAddress when 'TAddress : equality>(vectorBuilder:Vecto
 
       let ranges = ranges |> Array.ofSeq          
       let keys = ranges |> Seq.map keySel
-      let newIndex = (builder :> IIndexBuilder<_>).Create(keys, None)
+      let newIndex = builder.Create(keys, None)
       let vect = ranges |> Seq.map valueSel |> Array.ofSeq |> vectorBuilder.CreateOptional
       newIndex, vect
 
     member builder.OrderIndex(index, vector) =
-      let ops = AddressHelpers.getAddressOperations<'TAddress>()
+      let ops = AddressHelpers.getAddressOperations()
       let keys = Array.ofSeq index.Keys
       Array.sortInPlaceWith (fun a b -> index.Comparer.Compare(a, b)) keys
-      let newIndex = LinearIndex(keys, ops, true, index.Comparer) :> IIndex<_, _>
+      let newIndex = LinearIndex(keys, ops, true, index.Comparer) :> IIndex<_>
       let relocations = 
         seq { for key, oldAddress in index.Mappings ->
                 let newAddress = newIndex.Lookup(key, LookupSemantics.Exact) 
@@ -192,7 +168,7 @@ type LinearIndexBuilder<'TAddress when 'TAddress : equality>(vectorBuilder:Vecto
       newIndex, Vectors.Relocate(vector, newIndex.Range, relocations)
 
     member builder.Union<'TKey when 'TKey : equality >
-        (index1:IIndex<'TKey, 'TAddress>, index2, vector1, vector2) = 
+        (index1:IIndex<'TKey>, index2, vector1, vector2) = 
       let joined =
         if index1.Ordered && index2.Ordered then
           Seq.alignWithOrdering index1.Mappings index2.Mappings index1.Comparer |> Array.ofSeq 
@@ -201,7 +177,7 @@ type LinearIndexBuilder<'TAddress when 'TAddress : equality>(vectorBuilder:Vecto
       returnUsingAlignedSequence joined vector1 vector2
         
     member builder.Append<'TKey when 'TKey : equality >
-        (index1:IIndex<'TKey, 'TAddress>, index2, vector1, vector2, transform) = 
+        (index1:IIndex<'TKey>, index2, vector1, vector2, transform) = 
       let joined = 
         if index1.Ordered && index2.Ordered then
           Seq.alignWithOrdering index1.Mappings index2.Mappings index1.Comparer |> Array.ofSeq 
@@ -213,7 +189,7 @@ type LinearIndexBuilder<'TAddress when 'TAddress : equality>(vectorBuilder:Vecto
     /// Intersect the index with another. For sorted indices, this is the same as
     /// UnionWith, but we filter & only return keys present in both sequences.
     member builder.Intersect<'TKey when 'TKey : equality >
-        (index1:IIndex<'TKey, 'TAddress>, index2, vector1, vector2) = 
+        (index1:IIndex<'TKey>, index2, vector1, vector2) = 
       let joined = 
         if index1.Ordered && index2.Ordered then
           Seq.alignWithOrdering index1.Mappings index2.Mappings index1.Comparer |> Array.ofSeq 
@@ -223,15 +199,15 @@ type LinearIndexBuilder<'TAddress when 'TAddress : equality>(vectorBuilder:Vecto
       returnUsingAlignedSequence joined vector1 vector2
 
     member builder.WithIndex<'TKey, 'TNewKey when 'TKey : equality  and 'TNewKey : equality>
-        (index1:IIndex<'TKey, 'TAddress>, f:'TAddress -> OptionalValue<'TNewKey>, vector) =
+        (index1:IIndex<'TKey>, f:Address -> OptionalValue<'TNewKey>, vector) =
       let newKeys =
         [| for key, oldAddress in index1.Mappings do
              let newKey = f oldAddress
              if newKey.HasValue then yield newKey.Value, oldAddress |]
       
-      let ops = AddressHelpers.getAddressOperations<'TAddress>()
-      let newIndex = LinearIndex<'TNewKey, 'TAddress>(Seq.map fst newKeys, ops)
-      let newRange = (newIndex :> IIndex<_, _>).Range
+      let ops = AddressHelpers.getAddressOperations()
+      let newIndex = LinearIndex<'TNewKey>(Seq.map fst newKeys, ops)
+      let newRange = (newIndex :> IIndex<_>).Range
       let relocations = Seq.zip (ops.GenerateRange(newRange)) (Seq.map snd newKeys)
       upcast newIndex, Vectors.Relocate(vector, newRange, relocations)
 
@@ -244,13 +220,13 @@ type LinearIndexBuilder<'TAddress when 'TAddress : equality>(vectorBuilder:Vecto
       Vectors.Relocate(vector, index2.Range, relocations)
 
     member builder.DropItem<'TKey when 'TKey : equality >
-        (index:IIndex<'TKey, 'TAddress>, key, vector) = 
+        (index:IIndex<'TKey>, key, vector) = 
       match index.Lookup(key, LookupSemantics.Exact) with
       | OptionalValue.Present(addr) ->
-          let ops = AddressHelpers.getAddressOperations<'TAddress>()
+          let ops = AddressHelpers.getAddressOperations()
           let newVector = Vectors.DropRange(vector, (addr, addr))
           let newKeys = index.Keys |> Seq.filter ((<>) key)
-          let newIndex = LinearIndex<_, _>(newKeys, ops, index.Ordered)
+          let newIndex = LinearIndex<_>(newKeys, ops, index.Ordered)
           upcast newIndex, newVector
       | _ ->
           invalidArg "key" (sprintf "The key '%O' is not present in the index." key)
@@ -259,9 +235,9 @@ type LinearIndexBuilder<'TAddress when 'TAddress : equality>(vectorBuilder:Vecto
     /// Get a new index representing a sub-index of the current one
     /// (together with a transformation that should be applied to a vector)
     member builder.GetRange<'TKey when 'TKey : equality >
-        (index:IIndex<'TKey, 'TAddress>, lo, hi, vector) =
+        (index:IIndex<'TKey>, lo, hi, vector) =
       // Default values are specified by the entire range
-      let ops = AddressHelpers.getAddressOperations<'TAddress>()
+      let ops = AddressHelpers.getAddressOperations()
       let defaults = lazy ops.RangeOf(index.Keys)
       let getBound offs semantics proj = 
         let (|Lookup|_|) x = 
@@ -278,7 +254,7 @@ type LinearIndexBuilder<'TAddress when 'TAddress : equality>(vectorBuilder:Vecto
         getBound hi LookupSemantics.NearestSmaller snd
       let newKeys = ops.GetRange(index.Keys, lo, hi) |> Array.ofSeq
       let newVector = Vectors.GetRange(vector, range)
-      upcast LinearIndex<_, _>(newKeys, ops, index.Ordered), newVector
+      upcast LinearIndex<_>(newKeys, ops, index.Ordered), newVector
 
 // --------------------------------------------------------------------------------------
 // ??
@@ -292,6 +268,6 @@ open FSharp.DataFrame.Indices.Linear
 
 type Index = 
   static member Create<'T when 'T : equality>(keys:seq<'T>) =
-    LinearIndexBuilder<_>.Instance.Create<'T>(keys, None)
+    LinearIndexBuilder.Instance.Create<'T>(keys, None)
   static member CreateUnsorted<'T when 'T : equality>(keys:seq<'T>) = 
-    LinearIndexBuilder<_>.Instance.Create<'T>(keys, Some false)        
+    LinearIndexBuilder.Instance.Create<'T>(keys, Some false)        

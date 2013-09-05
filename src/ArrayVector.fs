@@ -6,6 +6,7 @@
 /// --------------------------------------------------------------------------------------
 
 open FSharp.DataFrame
+open FSharp.DataFrame.Addressing
 open FSharp.DataFrame.Common
 open FSharp.DataFrame.Vectors
 
@@ -17,15 +18,15 @@ type internal ArrayVectorData<'T> =
   | VectorNonOptional of 'T[]
 
 /// --------------------------------------------------------------------------------------
-/// Implements a builder object (`IVectorBuilder<int>`) for creating
+/// Implements a builder object (`IVectorBuilder`) for creating
 /// vectors of type `ArrayVector<'T>`. This includes operations such as
 /// appending, relocating values, creating vectors from arrays etc.
 type ArrayVectorBuilder() = 
   /// Instance of the vector builder
-  static let vectorBuilder = ArrayVectorBuilder() :> IVectorBuilder<_>
+  static let vectorBuilder = ArrayVectorBuilder() :> IVectorBuilder
   
   /// A simple helper that creates IVector from ArrayVectorData
-  let av data = ArrayVector(data) :> IVector<_, _>
+  let av data = ArrayVector(data) :> IVector<_>
   
   /// Treat vector as containing optionals
   let (|AsVectorOptional|) = function
@@ -35,7 +36,7 @@ type ArrayVectorBuilder() =
   /// Builds a vector using the specified commands, ensures that the
   /// returned vector is ArrayVector (if no, it converts it) and then
   /// returns the internal representation of the vector
-  member private builder.buildArrayVector<'T> (commands:VectorConstruction<int>) (arguments:IVector<int, 'T>[]) : ArrayVectorData<'T> = 
+  member private builder.buildArrayVector<'T> (commands:VectorConstruction) (arguments:IVector<'T>[]) : ArrayVectorData<'T> = 
     let got = vectorBuilder.Build(commands, arguments)
     match got with
     | :? ArrayVector<'T> as av -> av.Representation
@@ -47,7 +48,7 @@ type ArrayVectorBuilder() =
   /// Provides a global access to an instance of ArrayVectorBuilder       
   static member Instance = vectorBuilder
 
-  interface IVectorBuilder<int> with
+  interface IVectorBuilder with
     member builder.CreateNonOptional(values) =
       // Check that there are no NaN values and create appropriate representation
       let hasNAs = MissingValues.containsNA values
@@ -62,25 +63,25 @@ type ArrayVectorBuilder() =
 
     /// Given a vector construction command(s) produces a new IVector
     /// (the result is typically ArrayVector, but this is not guaranteed)
-    member builder.Build<'T>(command:VectorConstruction<int>, arguments:IVector<int, 'T>[]) = 
+    member builder.Build<'T>(command:VectorConstruction, arguments:IVector<'T>[]) = 
       match command with
       | Return vectorVar -> arguments.[vectorVar]
-      | Relocate(source, (loRange, hiRange), relocations) ->
+      | Relocate(source, (IntAddress loRange, IntAddress hiRange), relocations) ->
           // Create a new array with specified size and move values from the
           // old array (source) to the new, according to 'relocations'
           let newData = Array.zeroCreate (hiRange - loRange + 1)
           match builder.buildArrayVector source arguments with 
           | VectorOptional data ->
-              for newIndex, oldIndex in relocations do
+              for IntAddress newIndex, IntAddress oldIndex in relocations do
                 if oldIndex < data.Length && oldIndex >= 0 then
                   newData.[newIndex] <- data.[oldIndex]
           | VectorNonOptional data ->
-              for newIndex, oldIndex in relocations do
+              for IntAddress newIndex, IntAddress oldIndex in relocations do
                 if oldIndex < data.Length && oldIndex >= 0 then
                   newData.[newIndex] <- OptionalValue(data.[oldIndex])
           vectorBuilder.CreateOptional(newData)
 
-      | DropRange(source, (loRange, hiRange)) ->
+      | DropRange(source, (IntAddress loRange, IntAddress hiRange)) ->
           // Create a new array without the specified range. For Optional, call the 
           // builder recursively as this may turn Optional representation to NonOptional
           match builder.buildArrayVector source arguments with 
@@ -89,7 +90,7 @@ type ArrayVectorBuilder() =
           | VectorNonOptional data -> 
               VectorNonOptional(Array.dropRange loRange hiRange data) |> av
 
-      |  GetRange(source, (loRange, hiRange)) ->
+      |  GetRange(source, (IntAddress loRange, IntAddress hiRange)) ->
           // Get the specified sub-range. For Optional, call the builder recursively 
           // as this may turn Optional representation to NonOptional
           if hiRange < loRange then VectorNonOptional [||] |> av else
@@ -128,17 +129,19 @@ and [<RequireQualifiedAccess>] ArrayVector<'T> internal (representation:ArrayVec
   override vector.ToString() = VectorHelpers.prettyPrintVector vector
 
   // Implement the untyped vector interface
-  interface IVector<int> with
+  interface IVector with
     member val ElementType = typeof<'T>
-    member vector.GetObject(index) = 
+    member x.SuppressPrinting = false
+
+    member vector.GetObject(IntAddress index) = 
       match representation with
       | VectorOptional data when index < data.Length -> data.[index] |> OptionalValue.map box 
       | VectorNonOptional data when index < data.Length -> OptionalValue(box data.[index])
       | _ -> OptionalValue.Missing
 
   // Implement the typed vector interface
-  interface IVector<int, 'T> with
-    member vector.GetValue(index) = 
+  interface IVector<'T> with
+    member vector.GetValue(IntAddress index) = 
       match representation with
       | VectorOptional data when index < data.Length -> data.[index]
       | VectorNonOptional data when index < data.Length -> OptionalValue(data.[index])
@@ -164,7 +167,7 @@ and [<RequireQualifiedAccess>] ArrayVector<'T> internal (representation:ArrayVec
 
     // Select function does not call 'f' on missing values.
     member vector.Select<'TNewValue>(f:'T -> 'TNewValue) = 
-      (vector :> IVector<_, _>).SelectOptional(OptionalValue.map f)
+      (vector :> IVector<_>).SelectOptional(OptionalValue.map f)
 
 // --------------------------------------------------------------------------------------
 // Public type 'FSharp.DataFrame.Vector' that can be used for creating vectors

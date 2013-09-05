@@ -17,32 +17,24 @@ type JoinKind =
 
 module internal FrameHelpers =
   // A "generic function" that boxes all values of a vector (IVector<int, 'T> -> IVector<int, obj>)
-  let boxVector = 
-    { new VectorHelpers.VectorCallSite1<int, IVector<int, obj>> with
-        override x.Invoke<'T>(col:IVector<int, 'T>) = col.Select(box) }
-    |> VectorHelpers.createDispatcher
-
+  let boxVector v = VectorHelpers.boxVector v
   // A "generic function" that transforms a generic vector using specified transformation
-  let transformColumn (vectorBuilder:IVectorBuilder<'TAddress>) rowCmd = 
-    { new VectorHelpers.VectorCallSite1<'TAddress, IVector<'TAddress>> with
-        override x.Invoke<'T>(col:IVector<'TAddress, 'T>) = 
-          vectorBuilder.Build<'T>(rowCmd, [| col |]) :> IVector<'TAddress> }
-    |> VectorHelpers.createDispatcher
+  let transformColumn vb cmd = VectorHelpers.transformColumn vb cmd
 
   // A "generic function" that changes the type of vector elements
-  let changeType<'R> : IVector<int> -> IVector<int, 'R> = 
-    { new VectorHelpers.VectorCallSite1<int, IVector<int, 'R>> with
-        override x.Invoke<'T>(col:IVector<int, 'T>) = 
+  let changeType<'R> : IVector -> IVector<'R> = 
+    { new VectorHelpers.VectorCallSite1<IVector<'R>> with
+        override x.Invoke<'T>(col:IVector<'T>) = 
           col.Select(fun v -> System.Convert.ChangeType(v, typeof<'R>) :?> 'R) }
     |> VectorHelpers.createDispatcher
 
   // A "generic function" that fills NA values
-  let fillNA (def:obj) : IVector<int> -> IVector<int> = 
-    { new VectorHelpers.VectorCallSite1<int, IVector<int>> with
-        override x.Invoke<'T>(col:IVector<int, 'T>) = 
+  let fillNA (def:obj) : IVector -> IVector = 
+    { new VectorHelpers.VectorCallSite1<IVector> with
+        override x.Invoke<'T>(col:IVector<'T>) = 
           col.SelectOptional(function
             | OptionalValue.Missing -> OptionalValue(unbox def)
-            | OptionalValue.Present v -> OptionalValue(v)) :> IVector<_> }
+            | OptionalValue.Present v -> OptionalValue(v)) :> IVector }
     |> VectorHelpers.createDispatcher
   
 open FrameHelpers
@@ -50,8 +42,8 @@ open FrameHelpers
 /// A frame contains one Index, with multiple Vecs
 /// (because this is dynamic, we need to store them as IVec)
 type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>
-    internal ( rowIndex:IIndex<'TRowKey, int>, columnIndex:IIndex<'TColumnKey, int>, 
-               data:IVector<int, IVector<int>>) =
+    internal ( rowIndex:IIndex<'TRowKey>, columnIndex:IIndex<'TColumnKey>, 
+               data:IVector<IVector>) =
 
   // ----------------------------------------------------------------------------------------------
   // Internals (rowIndex, columnIndex, data and various helpers)
@@ -59,7 +51,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
 
   /// Vector builder
   let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
-  let indexBuilder = Indices.Linear.LinearIndexBuilder<_>.Instance
+  let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
 
   // TODO: Perhaps assert that the 'data' vector has all things required by column index
   // (to simplify various handling below)
@@ -72,10 +64,10 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     // 'let rec' would be more elegant, but it is slow...
     let virtualVector = ref (Unchecked.defaultof<_>)
     let materializeVector() =
-      let data = (virtualVector : ref<IVector<_, _>>).Value.DataSequence
-      virtualVector := upcast Vector.CreateNA(data)
+      let data = (virtualVector : ref<IVector<_>>).Value.DataSequence
+      virtualVector := Vector.CreateNA(data)
     virtualVector :=
-      { new IVector<int, obj> with
+      { new IVector<obj> with
           member x.GetValue(columnAddress) = 
             let vector = data.GetValue(columnAddress)
             if not vector.HasValue then OptionalValue.Missing
@@ -86,9 +78,10 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
           member x.Select(f) = materializeVector(); virtualVector.Value.Select(f)
           member x.SelectOptional(f) = materializeVector(); virtualVector.Value.SelectOptional(f)
         
-        interface IVector<int> with
+        interface IVector with
+          member x.SuppressPrinting = false
           member x.ElementType = typeof<obj>
-          member x.GetObject(i) = (x :?> IVector<int, obj>).GetValue(i) }
+          member x.GetObject(i) = (x :?> IVector<obj>).GetValue(i) }
     VectorHelpers.delegatedVector virtualVector
 
   let safeGetRowVector row = 
@@ -159,21 +152,21 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
 
     // Transform columns - if we have both vectors, we need to append them
     let appendVector = 
-      { new VectorHelpers.VectorCallSite2<int, IVector<int>> with
-          override x.Invoke<'T>(col1:IVector<int, 'T>, col2:IVector<int, 'T>) = 
-            vectorBuilder.Build(rowCmd, [| col1; col2 |]) :> IVector<_> }
+      { new VectorHelpers.VectorCallSite2<IVector> with
+          override x.Invoke<'T>(col1:IVector<'T>, col2:IVector<'T>) = 
+            vectorBuilder.Build(rowCmd, [| col1; col2 |]) :> IVector }
     |> VectorHelpers.createTwoArgDispatcher
     // .. if we only have one vector, we need to pad it 
     let padVector isLeft = 
-      { new VectorHelpers.VectorCallSite1<int, IVector<int>> with
-          override x.Invoke<'T>(col:IVector<int, 'T>) = 
+      { new VectorHelpers.VectorCallSite1<IVector> with
+          override x.Invoke<'T>(col:IVector<'T>) = 
             let empty = Vector.Create []
             let args = if isLeft then [| col; empty |] else [| empty; col |]
-            vectorBuilder.Build(rowCmd, args) :> IVector<_> }
+            vectorBuilder.Build(rowCmd, args) :> IVector }
       |> VectorHelpers.createDispatcher
     let padLeftVector, padRightVector = padVector true, padVector false
 
-    let append = VectorValueTransform.Create(fun (l:OptionalValue<IVector<int>>) r ->
+    let append = VectorValueTransform.Create(fun (l:OptionalValue<IVector>) r ->
       if l.HasValue && r.HasValue then OptionalValue(appendVector (l.Value, r.Value))
       elif l.HasValue then OptionalValue(padLeftVector l.Value)
       elif r.HasValue then OptionalValue(padRightVector r.Value)
@@ -206,14 +199,14 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
       else OptionalValue.Missing ))
 
   member frame.Rows = 
-    let emptySeries = Series(rowIndex, Vector.Create [])
+    let emptySeries = Series<_, _>(rowIndex, Vector.Create [], vectorBuilder, indexBuilder)
     emptySeries.SelectOptional (fun row ->
       let rowAddress = rowIndex.Lookup(row.Key, LookupSemantics.Exact)
       if not rowAddress.HasValue then OptionalValue.Missing
       else OptionalValue(Series.CreateUntyped(columnIndex, createRowReader rowAddress.Value)))
 
   member frame.RowsDense = 
-    let emptySeries = Series(rowIndex, Vector.Create [])
+    let emptySeries = Series<_, _>(rowIndex, Vector.Create [], vectorBuilder, indexBuilder)
     emptySeries.SelectOptional (fun row ->
       let rowAddress = rowIndex.Lookup(row.Key, LookupSemantics.Exact)
       if not rowAddress.HasValue then OptionalValue.Missing else 
@@ -234,7 +227,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     Series.Create(columnIndex, changeType row.Vector)
 
   member frame.AddSeries(column:'TColumnKey, series:Series<_, _>) = 
-    let other = Frame(series.Index, Index.CreateUnsorted [column], Vector.Create [series.Vector :> IVector<int> ])
+    let other = Frame(series.Index, Index.CreateUnsorted [column], Vector.Create [series.Vector :> IVector ])
     let joined = frame.Join(other, JoinKind.Left)
     columnIndex <- joined.ColumnIndex
     data <- joined.Data
@@ -253,7 +246,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   member frame.GetSeries<'R>(column:'TColumnKey, ?lookup) : Series<'TRowKey, 'R> = 
     let lookup = defaultArg lookup LookupSemantics.Exact
     match safeGetColVector(column, lookup) with
-    | :? IVector<int, 'R> as vec -> 
+    | :? IVector<'R> as vec -> 
         Series.Create(rowIndex, vec)
     | colVector ->
         Series.Create(rowIndex, changeType colVector)
@@ -301,20 +294,20 @@ and Frame =
       { new SeriesOperations with
           member x.OuterJoin<'TIndex2, 'TValue2 when 'TIndex2 : equality>
               (series1:Series<'TIndex2, 'TValue2>, series2:Series<'TIndex2, 'TValue2>) = 
-            let frame1 = Frame(series1.Index, Index.Create [0], Vector.Create [| series1.Vector :> IVector<int> |])
-            let frame2 = Frame(series2.Index, Index.Create [1], Vector.Create [| series2.Vector :> IVector<int> |])
+            let frame1 = Frame(series1.Index, Index.Create [0], Vector.Create [| series1.Vector :> IVector |])
+            let frame2 = Frame(series2.Index, Index.Create [1], Vector.Create [| series2.Vector :> IVector |])
             let joined = frame1.Join(frame2)
             joined.Rows.Select(fun row -> row.Value :> Series<_, _>) }
 
   static member internal Create<'TColumnKey, 'TRowKey, 'TValue when 'TColumnKey : equality and 'TRowKey : equality>
       (column:'TColumnKey, series:Series<'TRowKey, 'TValue>) = 
-    let data = Vector.Create [| series.Vector :> IVector<int> |]
+    let data = Vector.Create [| series.Vector :> IVector |]
     Frame(series.Index, Index.Create [column], data)
 
   static member internal CreateRow(row:'TRowKey, series:Series<'TColumnKey, 'TValue>) = 
     let data = series.Vector.SelectOptional(fun v -> 
       let res = Vectors.ArrayVector.ArrayVectorBuilder.Instance.CreateOptional [| v |] 
-      OptionalValue(res :> IVector<_>))
+      OptionalValue(res :> IVector))
     Frame(Index.Create [row], series.Index, data)
 
   static member internal FromRows<'TRowKey, 'TColumnKey, 'TSeries, 'TValue 
@@ -329,7 +322,7 @@ and Frame =
 
     // Reindex according to the original index
     let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance // TODO: Capture somewhere
-    let indexBuilder = Indices.Linear.LinearIndexBuilder<_>.Instance
+    let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
 
     let rowCmd = indexBuilder.Reindex(folded.RowIndex, nested.Index, LookupSemantics.Exact, Vectors.Return 0)
     let newRowIndex = nested.Index
@@ -386,7 +379,7 @@ module internal Reflection =
   open Microsoft.FSharp.Reflection
   open Microsoft.FSharp
 
-  let indexBuilder = Indices.Linear.LinearIndexBuilder<_>.Instance
+  let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
   let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
 
   let enumerableSelect =
@@ -418,7 +411,7 @@ module internal Reflection =
           let conv = Expression.Call(Expression.Constant(vectorBuilder), createNonOpt.MakeGenericMethod [| fldTy |], body)
           // Compile & run
           let convFunc = Expression.Lambda(conv, [input]).Compile()
-          yield convFunc.DynamicInvoke( [| box data |] ) :?> IVector<int> |]
+          yield convFunc.DynamicInvoke( [| box data |] ) :?> IVector |]
       |> vectorBuilder.CreateNonOptional
     Frame<int, string>(Index.Create [0 .. (Seq.length data) - 1], colIndex, frameData)
 
@@ -480,12 +473,12 @@ module FrameExtensions =
       let preferOptionals = true // Ignored
 
       let createVector typ (data:string[]) = 
-        if typ = typeof<bool> then Vector.CreateNA (Array.map (fun s -> Operations.ConvertBoolean(culture, Some(s))) data) :> IVector<int>
-        elif typ = typeof<decimal> then Vector.CreateNA (Array.map (fun s -> Operations.ConvertDecimal(culture, Some(s))) data) :> IVector<int>
-        elif typ = typeof<float> then Vector.CreateNA (Array.map (fun s -> Operations.ConvertFloat(culture, missingValues, Some(s))) data) :> IVector<int>
-        elif typ = typeof<int> then Vector.CreateNA (Array.map (fun s -> Operations.ConvertInteger(culture, Some(s))) data) :> IVector<int>
-        elif typ = typeof<int64> then Vector.CreateNA (Array.map (fun s -> Operations.ConvertInteger64(culture, Some(s))) data) :> IVector<int> 
-        else Vector.Create data :> IVector<int>
+        if typ = typeof<bool> then Vector.CreateNA (Array.map (fun s -> Operations.ConvertBoolean(culture, Some(s))) data) :> IVector
+        elif typ = typeof<decimal> then Vector.CreateNA (Array.map (fun s -> Operations.ConvertDecimal(culture, Some(s))) data) :> IVector
+        elif typ = typeof<float> then Vector.CreateNA (Array.map (fun s -> Operations.ConvertFloat(culture, missingValues, Some(s))) data) :> IVector
+        elif typ = typeof<int> then Vector.CreateNA (Array.map (fun s -> Operations.ConvertInteger(culture, Some(s))) data) :> IVector
+        elif typ = typeof<int64> then Vector.CreateNA (Array.map (fun s -> Operations.ConvertInteger64(culture, Some(s))) data) :> IVector
+        else Vector.Create data :> IVector
 
       // If 'inferTypes' is specified (or by default), use the CSV type inference
       // to load information about types in the CSV file. By default, use the entire

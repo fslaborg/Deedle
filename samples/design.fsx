@@ -17,9 +17,9 @@ the right "core" internals that should make it easier to add all the additional
 The following types are (mostly) not directly visible to the user, but you could
 use them when extending the library: 
 
- * `IVector<'TAddress, 'TValue>` represents a vector (essentially an abstract data
+ * `IVector<'TValue>` represents a vector (essentially an abstract data
    storage) that contains values `'TValue` that can be accessed via an address
-   `'TAddress`. A simple concrete implementation is an array with `int` addresses,
+   `Address`. A simple concrete implementation is an array with `int` addresses,
    but we aim to make this abstract - one could use an array of arrays with `int64`
    index for large data sets, lazy vector that loads data from a stream or even 
    a virtual vector with e.g. Cassandra data source). 
@@ -32,13 +32,13 @@ use them when extending the library:
    implementation actually does a simple optimization - if there are no missing values,
    it just stores `array<int>`.
 
- * `VectorConstruction<'TAddress>` is a discriminated union (DSL) that describes
-   construction of vector. For every vector type, there is an `IVectorBuilder<'TAddress>`
+ * `VectorConstruction` is a discriminated union (DSL) that describes
+   construction of vector. For every vector type, there is an `IVectorBuilder`
    that knows how to construct vectors using the construction instructions (these 
    include things like re-shuffling of elements, appending vectors, getting a sub-range
    etc.)
 
- * `IIndex<'TKey, 'TAddress>` represents an index - that is, a mapping from keys
+ * `IIndex<'TKey>` represents an index - that is, a mapping from keys
    of a series or data frame to addresses in a vector. In the simple case, this is just
    a hash table that returns the `int` offset in an array when given a key (e.g.
    `string` or `DateTime`). A super-simple index would just map `int` offsets to 

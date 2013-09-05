@@ -38,6 +38,7 @@
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')" />
   <ItemGroup>
     <Compile Include="Common.fs" />
+    <Compile Include="Address.fs" />
     <Compile Include="Vector.fs" />
     <Compile Include="ArrayVector.fs" />
     <Compile Include="Index.fs" />

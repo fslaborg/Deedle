@@ -15,6 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{245F1283-3
 	ProjectSection(SolutionItems) = preProject
 		samples\design.fsx = samples\design.fsx
 		samples\features.fsx = samples\features.fsx
+		samples\lazysource.fsx = samples\lazysource.fsx
 		samples\tutorial.fsx = samples\tutorial.fsx
 		samples\volatility.fsx = samples\volatility.fsx
 	EndProjectSection

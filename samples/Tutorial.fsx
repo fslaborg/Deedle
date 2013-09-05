@@ -10,6 +10,7 @@ also need F# Charting, which works similarly:
 *)
 #I "../bin"
 #I "../lib"
+#I "../packages"
 #load "FSharp.DataFrame.fsx"
 #load "FSharp.Charting.fsx"
 open FSharp.DataFrame

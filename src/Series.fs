@@ -13,24 +13,21 @@ type ValueMissingException(column) =
 // Series
 // ------------------------------------------------------------------------------------------------
 
-type ISeries<'TKey when 'TKey : equality> =
-  abstract Vector : FSharp.DataFrame.IVector<int>
-  abstract Index : IIndex<'TKey, int>
+type ISeries<'K when 'K : equality> =
+  abstract Vector : FSharp.DataFrame.IVector
+  abstract Index : IIndex<'K>
 
 // :-(
 type internal SeriesOperations = 
-  abstract OuterJoin<'TKey, 'TValue when 'TKey : equality> : 
-    Series<'TKey, 'TValue> * Series<'TKey, 'TValue> -> 
-    Series<'TKey, Series<int, obj>>
+  abstract OuterJoin<'K, 'V when 'K : equality> : 
+    Series<'K, 'V> * Series<'K, 'V> -> 
+    Series<'K, Series<int, obj>>
 
 /// A series contains one Index and one Vec
-and Series<'TKey, 'TValue when 'TKey : equality>
-    internal (index:IIndex<'TKey, int>, vector:IVector<int, 'TValue>) =
+and Series<'K, 'V when 'K : equality>
+    ( index:IIndex<'K>, vector:IVector<'V>,
+      vectorBuilder : IVectorBuilder, indexBuilder : IIndexBuilder ) =
   
-  /// Vector & index builders
-  let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
-  let indexBuilder = Indices.Linear.LinearIndexBuilder<_>.Instance
-
   // :-(((((
   static let ensureInit = Lazy.Create(fun _ ->
     let ty = System.Reflection.Assembly.GetExecutingAssembly().GetType("FSharp.DataFrame.Frame")
@@ -48,21 +45,22 @@ and Series<'TKey, 'TValue when 'TKey : equality>
   // IEnumerable
   // ----------------------------------------------------------------------------------------------
 
-  interface ISeries<'TKey> with
-    member x.Vector = vector :> IVector<int>
+  interface ISeries<'K> with
+    member x.Vector = vector :> IVector
     member x.Index = index
 
   interface IFormattable with
     member series.Format() = 
-      seq { for item in series.ObservationsOptional |> Seq.startAndEnd 10 10 do
-              match item with 
-              | Choice1Of3(k, v) | Choice3Of3(k, v) -> yield [ k.ToString(); v.ToString() ]
-              | Choice2Of3() -> yield [ "..."; "..."] }
-      |> array2D
-      |> Formatting.formatTable
+      if vector.SuppressPrinting then "(Suppressed)" else
+        seq { for item in series.ObservationsOptional |> Seq.startAndEnd 10 10 do
+                match item with 
+                | Choice1Of3(k, v) | Choice3Of3(k, v) -> yield [ k.ToString(); v.ToString() ]
+                | Choice2Of3() -> yield [ "..."; "..."] }
+        |> array2D
+        |> Formatting.formatTable
 
 (*
-  interface System.Collections.Generic.IEnumerable<'TValue> with
+  interface System.Collections.Generic.IEnumerable<'V> with
     member x.GetEnumerator() = 
       seq { for k, v in x.ObservationsOptional do
               if v.HasValue then yield v.Value }
@@ -79,12 +77,12 @@ and Series<'TKey, 'TValue when 'TKey : equality>
     let lookup = defaultArg lookup LookupSemantics.Exact
     let newIndex = indexBuilder.Create<_>(items, None)
     let newVector = vectorBuilder.Build(indexBuilder.Reindex(index, newIndex, lookup, Vectors.Return 0), [| vector |])
-    Series(newIndex, newVector)
+    Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
   member x.GetSlice(lo, hi) =
     let newIndex, newVector = indexBuilder.GetRange(index, lo, hi, Vectors.Return 0)
     let newVector = vectorBuilder.Build(newVector, [| vector |])
-    Series(newIndex, newVector) 
+    Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
   member x.TryGet(key, ?lookup) =
     let lookup = defaultArg lookup LookupSemantics.Exact
@@ -110,7 +108,7 @@ and Series<'TKey, 'TValue when 'TKey : equality>
 
   // TODO: Series.Select & Series.Where need to use some clever index/vector functions
 
-  member x.Where(f:System.Func<KeyValuePair<'TKey, 'TValue>, bool>) = 
+  member x.Where(f:System.Func<KeyValuePair<'K, 'V>, bool>) = 
     let keys, optValues =
       [| for key, addr in index.Mappings do
           let opt = vector.GetValue(addr)
@@ -120,30 +118,34 @@ and Series<'TKey, 'TValue when 'TKey : equality>
             with :? ValueMissingException -> false
           if included then yield key, opt  |]
       |> Array.unzip
-    Series<_, _>(indexBuilder.Create<_>(keys, None), vectorBuilder.CreateOptional(optValues))
+    Series<_, _>
+      ( indexBuilder.Create<_>(keys, None), vectorBuilder.CreateOptional(optValues),
+        vectorBuilder, indexBuilder )
 
-  member x.WhereOptional(f:System.Func<KeyValuePair<'TKey, OptionalValue<'TValue>>, bool>) = 
+  member x.WhereOptional(f:System.Func<KeyValuePair<'K, OptionalValue<'V>>, bool>) = 
     let keys, optValues =
       [| for key, addr in index.Mappings do
           let opt = vector.GetValue(addr)
           if f.Invoke (KeyValuePair(key, opt)) then yield key, opt |]
       |> Array.unzip
-    Series<_, _>(indexBuilder.Create<_>(keys, None), vectorBuilder.CreateOptional(optValues))
+    Series<_, _>
+      ( indexBuilder.Create<_>(keys, None), vectorBuilder.CreateOptional(optValues),
+        vectorBuilder, indexBuilder )
 
-  member x.Select<'R>(f:System.Func<KeyValuePair<'TKey, 'TValue>, 'R>) = 
+  member x.Select<'R>(f:System.Func<KeyValuePair<'K, 'V>, 'R>) = 
     let newVector =
       [| for key, addr in index.Mappings -> 
            vector.GetValue(addr) |> OptionalValue.bind (fun v -> 
              // If a required value is missing, then skip over this
              try OptionalValue(f.Invoke(KeyValuePair(key, v)))
              with :? ValueMissingException -> OptionalValue.Missing ) |]
-    Series<'TKey, 'R>(index, vectorBuilder.CreateOptional(newVector))
+    Series<'K, 'R>(index, vectorBuilder.CreateOptional(newVector), vectorBuilder, indexBuilder )
 
-  member x.SelectOptional<'R>(f:System.Func<KeyValuePair<'TKey, OptionalValue<'TValue>>, OptionalValue<'R>>) = 
+  member x.SelectOptional<'R>(f:System.Func<KeyValuePair<'K, OptionalValue<'V>>, OptionalValue<'R>>) = 
     let newVector =
       index.Mappings |> Array.ofSeq |> Array.map (fun (key, addr) ->
            f.Invoke(KeyValuePair(key, vector.GetValue(addr))))
-    Series<'TKey, 'R>(index, vectorBuilder.CreateOptional(newVector))
+    Series<'K, 'R>(index, vectorBuilder.CreateOptional(newVector), vectorBuilder, indexBuilder)
 
   member x.DropNA() =
     x.WhereOptional(fun (KeyValue(k, v)) -> v.HasValue)
@@ -153,17 +155,17 @@ and Series<'TKey, 'TValue when 'TKey : equality>
       indexBuilder.Aggregate
         ( x.Index, aggregation, Vectors.Return 0, 
           (fun (index, cmd) -> 
-              let window = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]))
+              let window = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
               valueSelector window),
           (fun (index, cmd) -> 
               match keySelector with 
               | None -> index.Keys |> Seq.head
-              | Some f -> f (Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |])))) )
-    Series<'TKey, 'R>(newIndex, newVector)
+              | Some f -> f (Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder))) )
+    Series<'K, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   member x.WithOrdinalIndex() = 
     let newIndex = indexBuilder.Create(x.Index.Keys |> Seq.mapi (fun i _ -> i), Some true)
-    Series<int, _>(newIndex, vector)
+    Series<int, _>(newIndex, vector, vectorBuilder, indexBuilder)
 
   member x.Pairwise() =
     let newIndex, newVector = 
@@ -177,7 +179,7 @@ and Series<'TKey, 'TValue when 'TKey : equality>
               | [ _; _ ] -> OptionalValue.Missing
               | _ -> failwith "Pairwise: failed - expected two values" ),
           (fun (index, vector) -> index.Keys |> Seq.head) )
-    Series<'TKey, 'TValue * 'TValue>(newIndex, newVector)
+    Series<'K, 'V * 'V>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   // ----------------------------------------------------------------------------------------------
   // Operators
@@ -187,11 +189,11 @@ and Series<'TKey, 'TValue when 'TKey : equality>
   static member val internal SeriesOperations : SeriesOperations = Unchecked.defaultof<_> with get, set
 
   // Float
-  static member inline internal NullaryOperation<'TKey, 'T>(series:Series<'TKey, 'T>, op : 'T -> 'T) = 
+  static member inline internal NullaryOperation<'K, 'T>(series:Series<'K, 'T>, op : 'T -> 'T) = 
     series.Select(fun (KeyValue(k, v)) -> op v)
-  static member inline internal ScalarOperationL<'TKey, 'T>(series:Series<'TKey, 'T>, scalar, op : 'T -> 'T -> 'T) = 
+  static member inline internal ScalarOperationL<'K, 'T>(series:Series<'K, 'T>, scalar, op : 'T -> 'T -> 'T) = 
     series.Select(fun (KeyValue(k, v)) -> op v scalar)
-  static member inline internal ScalarOperationR<'TKey, 'T>(scalar, series:Series<'TKey, 'T>, op : 'T -> 'T -> 'T) = 
+  static member inline internal ScalarOperationR<'K, 'T>(scalar, series:Series<'K, 'T>, op : 'T -> 'T -> 'T) = 
     series.Select(fun (KeyValue(k, v)) -> op scalar v)
 
   static member (+) (scalar, series) = Series<_, _>.ScalarOperationR<_, int>(scalar, series, (+))
@@ -213,7 +215,7 @@ and Series<'TKey, 'TValue when 'TKey : equality>
   static member (/) (series, scalar) = Series<_, _>.ScalarOperationL<_, float>(series, scalar, (/))
 
   // Float
-  static member inline internal VectorOperation<'TKey, 'T>(series1:Series<'TKey, 'T>, series2:Series<'TKey, 'T>, op) : Series<_, 'T> =
+  static member inline internal VectorOperation<'K, 'T>(series1:Series<'K, 'T>, series2:Series<'K, 'T>, op) : Series<_, 'T> =
     ensureInit.Value
     let joined = Series<_, _>.SeriesOperations.OuterJoin(series1, series2)
     joined.SelectOptional(fun (KeyValue(_, v)) -> 
@@ -240,14 +242,16 @@ and Series<'TKey, 'TValue when 'TKey : equality>
 
   new(keys:seq<_>, values:seq<_>) = 
     let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
-    Series(Index.Create keys, vectorBuilder.CreateNonOptional (Array.ofSeq values))
+    let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
+    Series( Index.Create keys, vectorBuilder.CreateNonOptional (Array.ofSeq values),
+            vectorBuilder, indexBuilder )
 
 // ------------------------------------------------------------------------------------------------
 // Untyped series
 // ------------------------------------------------------------------------------------------------
 
-type ObjectSeries<'TKey when 'TKey : equality> internal(index:IIndex<_, _>, vector) = 
-  inherit Series<'TKey, obj>(index, vector)
+type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vectorBuilder, indexBuilder) = 
+  inherit Series<'K, obj>(index, vector, vectorBuilder, indexBuilder)
   
   member x.GetAs<'R>(column) : 'R = 
     System.Convert.ChangeType(x.Get(column), typeof<'R>) |> unbox
@@ -259,22 +263,26 @@ type ObjectSeries<'TKey when 'TKey : equality> internal(index:IIndex<_, _>, vect
 // Construction
 // ------------------------------------------------------------------------------------------------
 
-type Series = 
-  static member internal Create(data:seq<'TValue>) =
-    let lookup = data |> Seq.mapi (fun i _ -> i)
-    Series<int, 'TValue>(Index.Create(lookup), Vector.Create(data))
-  static member internal Create(index:seq<'TKey>, data:seq<'TValue>) =
-    Series<'TKey, 'TValue>(Index.Create(index), Vector.Create(data))
-  static member internal Create(index:IIndex<'TKey, int>, data:IVector<int, 'TValue>) = 
-    Series<'TKey, 'TValue>(index, data)
-  static member internal CreateUntyped(index:IIndex<'TKey, int>, data:IVector<int, obj>) = 
-    ObjectSeries<'TKey>(index, data)
+type internal Series = 
+  /// Vector & index builders
+  static member vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
+  static member indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
 
-type SeriesBuilder<'TKey when 'TKey : equality>() = 
+  static member Create(data:seq<'V>) =
+    let lookup = data |> Seq.mapi (fun i _ -> i)
+    Series<int, 'V>(Index.Create(lookup), Vector.Create(data), Series.vectorBuilder, Series.indexBuilder)
+  static member Create(index:seq<'K>, data:seq<'V>) =
+    Series<'K, 'V>(Index.Create(index), Vector.Create(data), Series.vectorBuilder, Series.indexBuilder)
+  static member Create(index:IIndex<'K>, data:IVector<'V>) = 
+    Series<'K, 'V>(index, data, Series.vectorBuilder, Series.indexBuilder)
+  static member CreateUntyped(index:IIndex<'K>, data:IVector<obj>) = 
+    ObjectSeries<'K>(index, data, Series.vectorBuilder, Series.indexBuilder)
+
+type SeriesBuilder<'K when 'K : equality>() = 
   let mutable keys = []
   let mutable values = []
 
-  member x.Add<'TValue>(key:'TKey, value) =
+  member x.Add<'V>(key:'K, value) =
     keys <- key::keys
     values <- (box value)::values
   
@@ -291,7 +299,7 @@ type SeriesBuilder<'TKey when 'TKey : equality>() =
 
 [<AutoOpen>] 
 module SeriesExtensions =
-  type Series<'TKey, 'TValue when 'TKey : equality> with
+  type Series<'K, 'V when 'K : equality> with
     member x.Item with get(a) = x.Get(a)
     member x.Item with get(a, b) = x.GetItems [a; b] 
     member x.Item with get(a, b, c) = x.GetItems [a; b; c] 
