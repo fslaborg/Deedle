@@ -71,11 +71,11 @@ type ArrayVectorBuilder() =
           let newData = Array.zeroCreate (hiRange - loRange + 1)
           match builder.buildArrayVector source arguments with 
           | VectorOptional data ->
-              for oldIndex, newIndex in relocations do
+              for newIndex, oldIndex in relocations do
                 if oldIndex < data.Length && oldIndex >= 0 then
                   newData.[newIndex] <- data.[oldIndex]
           | VectorNonOptional data ->
-              for oldIndex, newIndex in relocations do
+              for newIndex, oldIndex in relocations do
                 if oldIndex < data.Length && oldIndex >= 0 then
                   newData.[newIndex] <- OptionalValue(data.[oldIndex])
           vectorBuilder.CreateOptional(newData)

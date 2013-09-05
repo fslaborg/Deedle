@@ -642,6 +642,13 @@
  <param name="XTitle">The title of the X-axis.</param>
  <param name="YTitle">The title of the Y-axis.</param>
 </member>
+<member name="M:FSharp.Charting.Chart.RegisterKeyConvertor``1(Microsoft.FSharp.Core.FSharpFunc{``0,System.IComparable})">
+<summary>
+ Register a function that is used to automatically transform X values (keys) 
+ of a non-primitive type to one of the types supported by the charting library
+ (for example, by default DateTimeOffset is converted to DateTime)
+</summary>
+</member>
 <member name="M:FSharp.Charting.Chart.RangeColumn``3(System.Collections.Generic.IEnumerable{System.Tuple{``0,``1}},Microsoft.FSharp.Core.FSharpOption{System.String},Microsoft.FSharp.Core.FSharpOption{System.String},Microsoft.FSharp.Core.FSharpOption{``2},Microsoft.FSharp.Core.FSharpOption{System.Drawing.Color},Microsoft.FSharp.Core.FSharpOption{System.String},Microsoft.FSharp.Core.FSharpOption{System.String})">
  <summary>
  Displays a range of data by plotting two Y values
@@ -1122,6 +1129,9 @@
 <summary>
  Provides a set of static methods for creating charts.
 </summary>
+</member>
+<member name="">
+
 </member>
 <member name="">
 
@@ -2486,6 +2496,9 @@
 <member name="">
 
 </member>
+<member name="">
+
+</member>
 <member name="P:FSharp.Charting.ChartTypes.GenericChart.TryTitle">
 <summary>
  Return the object that holds the configuration preoperties for the chart title, if present
@@ -3769,7 +3782,43 @@
 <member name="">
 
 </member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
 <member name="T:FSharp.Charting.ChartTypes">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="T:FSharp.Charting.KeyConversions">
 
 </member>
 <member name="">

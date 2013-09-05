@@ -29,12 +29,13 @@ and Series<'TKey, 'TValue when 'TKey : equality>
   
   /// Vector & index builders
   let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
-  let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
+  let indexBuilder = Indices.Linear.LinearIndexBuilder<_>.Instance
 
   // :-(((((
   static let ensureInit = Lazy.Create(fun _ ->
     let ty = System.Reflection.Assembly.GetExecutingAssembly().GetType("FSharp.DataFrame.Frame")
-    ty.GetMethod("Register").Invoke(null, [||]) |> ignore )
+    let mi = ty.GetMethod("Register", System.Reflection.BindingFlags.Static ||| System.Reflection.BindingFlags.NonPublic)
+    mi.Invoke(null, [||]) |> ignore )
 
   member internal x.Index = index
   member x.Vector = vector
@@ -53,8 +54,10 @@ and Series<'TKey, 'TValue when 'TKey : equality>
 
   interface IFormattable with
     member series.Format() = 
-      seq { for k, v in series.ObservationsOptional do
-              yield [ k.ToString(); v.ToString() ] }
+      seq { for item in series.ObservationsOptional |> Seq.startAndEnd 10 10 do
+              match item with 
+              | Choice1Of3(k, v) | Choice3Of3(k, v) -> yield [ k.ToString(); v.ToString() ]
+              | Choice2Of3() -> yield [ "..."; "..."] }
       |> array2D
       |> Formatting.formatTable
 
@@ -74,7 +77,7 @@ and Series<'TKey, 'TValue when 'TKey : equality>
   member x.GetItems(items,?lookup) =
     // TODO: Should throw when item is not in the sereis?
     let lookup = defaultArg lookup LookupSemantics.Exact
-    let newIndex = indexBuilder.Create<_, int>(items, None)
+    let newIndex = indexBuilder.Create<_>(items, None)
     let newVector = vectorBuilder.Build(indexBuilder.Reindex(index, newIndex, lookup, Vectors.Return 0), [| vector |])
     Series(newIndex, newVector)
 
@@ -117,7 +120,7 @@ and Series<'TKey, 'TValue when 'TKey : equality>
             with :? ValueMissingException -> false
           if included then yield key, opt  |]
       |> Array.unzip
-    Series<_, _>(indexBuilder.Create<_, int>(keys, None), vectorBuilder.CreateOptional(optValues))
+    Series<_, _>(indexBuilder.Create<_>(keys, None), vectorBuilder.CreateOptional(optValues))
 
   member x.WhereOptional(f:System.Func<KeyValuePair<'TKey, OptionalValue<'TValue>>, bool>) = 
     let keys, optValues =
@@ -125,7 +128,7 @@ and Series<'TKey, 'TValue when 'TKey : equality>
           let opt = vector.GetValue(addr)
           if f.Invoke (KeyValuePair(key, opt)) then yield key, opt |]
       |> Array.unzip
-    Series<_, _>(indexBuilder.Create<_, int>(keys, None), vectorBuilder.CreateOptional(optValues))
+    Series<_, _>(indexBuilder.Create<_>(keys, None), vectorBuilder.CreateOptional(optValues))
 
   member x.Select<'R>(f:System.Func<KeyValuePair<'TKey, 'TValue>, 'R>) = 
     let newVector =
@@ -145,6 +148,37 @@ and Series<'TKey, 'TValue when 'TKey : equality>
   member x.DropNA() =
     x.WhereOptional(fun (KeyValue(k, v)) -> v.HasValue)
 
+  member x.Aggregate(aggregation, valueSelector, ?keySelector) =
+    let newIndex, newVector = 
+      indexBuilder.Aggregate
+        ( x.Index, aggregation, Vectors.Return 0, 
+          (fun (index, cmd) -> 
+              let window = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]))
+              valueSelector window),
+          (fun (index, cmd) -> 
+              match keySelector with 
+              | None -> index.Keys |> Seq.head
+              | Some f -> f (Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |])))) )
+    Series<'TKey, 'R>(newIndex, newVector)
+
+  member x.WithOrdinalIndex() = 
+    let newIndex = indexBuilder.Create(x.Index.Keys |> Seq.mapi (fun i _ -> i), Some true)
+    Series<int, _>(newIndex, vector)
+
+  member x.Pairwise() =
+    let newIndex, newVector = 
+      indexBuilder.Aggregate
+        ( x.Index, WindowSize 2, Vectors.Return 0, 
+          (fun (index, cmd) -> 
+              let actualVector = vectorBuilder.Build(cmd, [| vector |])
+              let obs = [ for k, addr in index.Mappings -> actualVector.GetValue(addr) ]
+              match obs with
+              | [ OptionalValue.Present v1; OptionalValue.Present v2 ] -> OptionalValue( (v1, v2) )
+              | [ _; _ ] -> OptionalValue.Missing
+              | _ -> failwith "Pairwise: failed - expected two values" ),
+          (fun (index, vector) -> index.Keys |> Seq.head) )
+    Series<'TKey, 'TValue * 'TValue>(newIndex, newVector)
+
   // ----------------------------------------------------------------------------------------------
   // Operators
   // ----------------------------------------------------------------------------------------------
@@ -153,9 +187,11 @@ and Series<'TKey, 'TValue when 'TKey : equality>
   static member val internal SeriesOperations : SeriesOperations = Unchecked.defaultof<_> with get, set
 
   // Float
-  static member inline ScalarOperationL<'TKey, 'T>(series:Series<'TKey, 'T>, scalar, op : 'T -> 'T -> 'T) = 
+  static member inline internal NullaryOperation<'TKey, 'T>(series:Series<'TKey, 'T>, op : 'T -> 'T) = 
+    series.Select(fun (KeyValue(k, v)) -> op v)
+  static member inline internal ScalarOperationL<'TKey, 'T>(series:Series<'TKey, 'T>, scalar, op : 'T -> 'T -> 'T) = 
     series.Select(fun (KeyValue(k, v)) -> op v scalar)
-  static member inline ScalarOperationR<'TKey, 'T>(scalar, series:Series<'TKey, 'T>, op : 'T -> 'T -> 'T) = 
+  static member inline internal ScalarOperationR<'TKey, 'T>(scalar, series:Series<'TKey, 'T>, op : 'T -> 'T -> 'T) = 
     series.Select(fun (KeyValue(k, v)) -> op scalar v)
 
   static member (+) (scalar, series) = Series<_, _>.ScalarOperationR<_, int>(scalar, series, (+))
@@ -195,6 +231,9 @@ and Series<'TKey, 'TValue when 'TKey : equality>
   static member (*) (s1, s2) = Series<_, _>.VectorOperation<_, float>(s1, s2, (*))
   static member (/) (s1, s2) = Series<_, _>.VectorOperation<_, float>(s1, s2, (/))
 
+  static member Log(series) = Series<_, _>.NullaryOperation<_, float>(series, log)
+  static member Log10(series) = Series<_, _>.NullaryOperation<_, float>(series, log10)
+
   // ----------------------------------------------------------------------------------------------
   // Nicer constructor
   // ----------------------------------------------------------------------------------------------
@@ -221,14 +260,14 @@ type ObjectSeries<'TKey when 'TKey : equality> internal(index:IIndex<_, _>, vect
 // ------------------------------------------------------------------------------------------------
 
 type Series = 
-  static member Create(data:seq<'TValue>) =
+  static member internal Create(data:seq<'TValue>) =
     let lookup = data |> Seq.mapi (fun i _ -> i)
     Series<int, 'TValue>(Index.Create(lookup), Vector.Create(data))
-  static member Create(index:seq<'TKey>, data:seq<'TValue>) =
+  static member internal Create(index:seq<'TKey>, data:seq<'TValue>) =
     Series<'TKey, 'TValue>(Index.Create(index), Vector.Create(data))
-  static member Create(index:IIndex<'TKey, int>, data:IVector<int, 'TValue>) = 
+  static member internal Create(index:IIndex<'TKey, int>, data:IVector<int, 'TValue>) = 
     Series<'TKey, 'TValue>(index, data)
-  static member CreateUntyped(index:IIndex<'TKey, int>, data:IVector<int, obj>) = 
+  static member internal CreateUntyped(index:IIndex<'TKey, int>, data:IVector<int, obj>) = 
     ObjectSeries<'TKey>(index, data)
 
 type SeriesBuilder<'TKey when 'TKey : equality>() = 
@@ -249,19 +288,6 @@ type SeriesBuilder<'TKey when 'TKey : equality>() =
 // ------------------------------------------------------------------------------------------------
 // Operations etc.
 // ------------------------------------------------------------------------------------------------
-
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-module Series = 
-  let inline sum (series:Series<_, _>) = 
-    match series.Vector.Data with
-    | VectorData.DenseList list -> IReadOnlyList.sum list
-    | VectorData.SparseList list -> IReadOnlyList.sumOptional list
-    | VectorData.Sequence seq -> Seq.sum (Seq.choose OptionalValue.asOption seq)
-  let inline mean (series:Series<_, _>) = 
-    match series.Vector.Data with
-    | VectorData.DenseList list -> IReadOnlyList.average list
-    | VectorData.SparseList list -> IReadOnlyList.averageOptional list
-    | VectorData.Sequence seq -> Seq.average (Seq.choose OptionalValue.asOption seq)
 
 [<AutoOpen>] 
 module SeriesExtensions =

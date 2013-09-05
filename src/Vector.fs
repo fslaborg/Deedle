@@ -170,8 +170,8 @@ type VectorConstruction<'TAddress> =
   | Return of VectorHole
   
   // Reorders elements of the vector. Carries a new required vector range and a list
-  // of relocations (each pair of addresses specifies that an element at an old address 
-  // should be moved to a new address). THe addresses may be out of range!
+  // of relocations (each pair of addresses specifies that an element at a new address 
+  // should be filled with an element from an old address). THe addresses may be out of range!
   | Relocate of VectorConstruction<'TAddress> * VectorRange<'TAddress> * seq<'TAddress * 'TAddress>
 
   // Drop part of range & get subrange & append multiple vectors

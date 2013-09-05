@@ -144,10 +144,129 @@ module Array =
       else test (i + 1)
     test low
 
+  let inline private binarySearch key (comparer:System.Collections.Generic.IComparer<'T>) (array:'T[]) =
+    let rec search (lo, hi) =
+      if lo = hi then lo else
+      let mid = (lo + hi) / 2
+      match comparer.Compare(key, array.[mid]) with 
+      | 0 -> mid
+      | n when n < 0 -> search (lo, max lo (mid - 1))
+      | _ -> search (min hi (mid + 1), hi) 
+    search (0, array.Length - 1) 
+
+  let binarySearchNearestGreater key (comparer:System.Collections.Generic.IComparer<'T>) (array:'T[]) =
+    let loc = binarySearch key comparer array
+    if comparer.Compare(array.[loc], key) >= 0 then Some loc
+    elif loc + 1 < array.Length && comparer.Compare(array.[loc + 1], key) >= 1 then Some (loc + 1)
+    else None
+
+  let binarySearchNearestSmaller key (comparer:System.Collections.Generic.IComparer<'T>) (array:'T[]) =
+    let loc = binarySearch key comparer array
+    if comparer.Compare(array.[loc], key) <= 0 then Some loc
+    elif loc - 1 >= 0 && comparer.Compare(array.[loc - 1], key) <= 0 then Some (loc - 1)
+    else None
+
 module Seq = 
+  let takeAtMost count (input:seq<_>) = input.Take(count)
+
   let getEnumerator (s:seq<_>) = s.GetEnumerator()
 
-  let takeAtMost count (input:seq<_>) = input.Take(count)
+  let startAndEnd startCount endCount input = seq { 
+    let lastItems = Array.zeroCreate endCount
+    let lastPointer = ref 0
+    let written = ref 0
+    let skippedAny = ref false
+    let writeNext(v) = 
+      if !written < endCount then incr written; 
+      lastItems.[!lastPointer] <- v; lastPointer := (!lastPointer + 1) % endCount
+    let readNext() = let p = !lastPointer in lastPointer := (!lastPointer + 1) % endCount; lastItems.[p]
+    let readRest() = 
+      lastPointer := (!lastPointer + endCount - !written) % endCount
+      seq { for i in 1 .. !written -> readNext() }
+
+    use en = getEnumerator input 
+    let rec skipToEnd() = 
+      if en.MoveNext() then 
+        writeNext(en.Current)
+        skippedAny := true
+        skipToEnd()
+      else seq { if skippedAny.Value then 
+                   yield Choice2Of3()
+                   for v in readRest() -> Choice3Of3 v 
+                 else for v in readRest() -> Choice1Of3 v }
+    let rec fillRest count = 
+      if count = endCount then skipToEnd()
+      elif en.MoveNext() then 
+        writeNext(en.Current)
+        fillRest (count + 1)
+      else seq { for v in readRest() -> Choice1Of3 v }
+    let rec yieldFirst count = seq { 
+      if count = 0 then yield! fillRest 0
+      elif en.MoveNext() then 
+        yield Choice1Of3 en.Current
+        yield! yieldFirst (count - 1) }
+    yield! yieldFirst startCount }
+(*
+  startAndEnd 4 4 [ 1 .. 6 ] |> Array.ofSeq = 
+    [| Choice1Of3 1; Choice1Of3 2; Choice1Of3 3; Choice1Of3 4; Choice1Of3 5; Choice1Of3 6|]
+
+  startAndEnd 3 3 [ 1 .. 6 ] |> Array.ofSeq = 
+    [| Choice1Of3 1; Choice1Of3 2; Choice1Of3 3; Choice1Of3 4; Choice1Of3 5; Choice1Of3 6|]
+
+  startAndEnd 2 2 [ 1 .. 6 ] |> Array.ofSeq = 
+    [|Choice1Of3 1; Choice1Of3 2; Choice2Of3(); Choice3Of3 5; Choice3Of3 6|]
+
+  startAndEnd 2 2 [ 1 .. 6 ] |> Array.ofSeq = 
+    [|Choice1Of3 1; Choice1Of3 2; Choice2Of3(); Choice3Of3 5; Choice3Of3 6|]
+*)
+
+  let windowedWhile f input = seq {
+    let windows = System.Collections.Generic.LinkedList()
+    for v in input do
+      windows.AddLast( (v, []) ) |> ignore
+      // Walk over all windows; use 'f' to determine if the item
+      // should be added - if so, add it, otherwise yield window
+      let win = ref windows.First
+      while win.Value <> null do 
+        let start, items = win.Value.Value
+        let next = win.Value.Next
+        if f start v then win.Value.Value <- start, v::items
+        else 
+          yield items |> List.rev |> Array.ofList
+          windows.Remove(win.Value)
+        win := next
+    for _, win in windows do
+      yield win |> List.rev |> Array.ofList }
+
+  let chunkedWhile f input = seq {
+    let chunk = ref None
+    for v in input do
+      match chunk.Value with 
+      | None -> chunk := Some(v, [v])
+      | Some(start, items) ->
+          if f start v then chunk := Some(start, v::items)
+          else
+            yield items |> List.rev |> Array.ofList
+            chunk := Some(v, [v])
+    match chunk.Value with
+    | Some (_, items) -> yield items |> List.rev |> Array.ofList
+    | _ -> () }
+
+  (*
+  chunkedWhile (fun f t -> t - f < 10) [ 1; 4; 11; 12; 13; 15; 20; 25 ] |> Array.ofSeq =
+    [| [|1; 4|]; [|11; 12; 13; 15; 20|]; [|25|] |]
+
+  windowedWhile (fun f t -> t - f < 10) [ 1; 4; 11; 12; 13; 15; 20; 25 ] |> Array.ofSeq =
+    [| [|1; 4|]; [|4; 11; 12; 13|]; [|11; 12; 13; 15; 20|]; [|12; 13; 15; 20|];
+       [|13; 15; 20|]; [|15; 20|]; [|20; 25|]; [|25|] |]
+  *)
+
+  let chunked size input = 
+    input 
+    |> Seq.windowed size
+    |> Seq.mapi (fun i win -> i, win)
+    |> Seq.filter (fun (i, _) -> i % size = 0)
+    |> Seq.map snd
 
   /// Returns true if the specified sequence is sorted.
   let isSorted (data:seq<_>) (comparer:IComparer<_>) =

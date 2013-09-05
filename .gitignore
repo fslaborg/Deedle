@@ -4,3 +4,4 @@ src/obj
 *.suo
 tests/obj
 tests/bin
+*.vsp

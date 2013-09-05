@@ -12,6 +12,13 @@ type LookupSemantics =
   | NearestGreater = 1
   | NearestSmaller = 2
 
+type Aggregation<'TKey, 'TAddress> =
+  | WindowSize of int
+  | ChunkSize of int
+  | WindowWhile of ('TKey -> 'TKey -> bool)
+  | ChunkWhile of ('TKey -> 'TKey -> bool)
+  | GroupBy of ('TKey -> System.IComparable)
+
 namespace FSharp.DataFrame.Indices
 
 open FSharp.DataFrame
@@ -29,7 +36,7 @@ type IIndex<'TKey, 'TAddress when 'TKey : equality and 'TAddress : equality> =
   abstract Comparer : System.Collections.Generic.Comparer<'TKey>
   
 /// A builder represents various ways of constructing index
-type IIndexBuilder =
+type IIndexBuilder<'TAddress when 'TAddress : equality> =
   abstract Create : seq<'TKey> * Option<bool> -> IIndex<'TKey, 'TAddress>
     
   abstract GetRange : 
@@ -60,3 +67,8 @@ type IIndexBuilder =
 
   abstract OrderIndex : IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress> ->
     IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress>
+
+  abstract Aggregate : IIndex<'TKey, 'TAddress> * Aggregation<'TKey, 'TAddress> * VectorConstruction<'TAddress> *
+    (IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress> -> OptionalValue<'R>) *
+    (IIndex<'TKey, 'TAddress> * VectorConstruction<'TAddress> -> 'TKey) -> 
+      IIndex<'TKey, 'TAddress> * IVector<'TAddress, 'R> // Returning vector might be too concrete?
