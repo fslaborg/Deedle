@@ -16,7 +16,7 @@ type LazyVector internal (min:DateTime, max:DateTime, column) =
   let vector = Lazy.Create(fun () ->
     printfn "QUERY: %A to %A" min max
     let count = int (max - min).TotalDays 
-    let data = [| for i in 0 .. count - 1 -> 3.0 |]
+    let data = [| for i in 0 .. count -> 3.0 |]
     ArrayVector.ArrayVectorBuilder.Instance.CreateNonOptional(data) )
 
   member x.Minimal = min
@@ -56,16 +56,19 @@ type LazyIndex(min:DateTime, max:DateTime) =
 
   let index = Lazy.Create(fun () ->
     let count = int (max - min).TotalDays 
-    let keys = [| for i in 0 .. count - 1 -> min.AddDays(float i) |]
+    let keys = [| for i in 0 .. count -> min.AddDays(float i) |]
     Linear.LinearIndexBuilder.Instance.Create(keys, Some true) )
 
   interface IIndex<DateTime> with
     member x.Keys = index.Value.Keys
-    member x.Lookup(key, semantics) = index.Value.Lookup(key, semantics)
+    member x.Lookup(key, semantics) = printfn "Lookup %A" key; index.Value.Lookup(key, semantics)
     member x.Mappings = index.Value.Mappings
     member x.Range = index.Value.Range
     member x.Ordered = index.Value.Ordered
     member x.Comparer = index.Value.Comparer
+
+  member x.Minimal = min
+  member x.Maximal = max
 
 type LazyIndexBuilder() =
   let builder = Linear.LinearIndexBuilder.Instance
@@ -80,12 +83,14 @@ type LazyIndexBuilder() =
     member x.Reindex(index1, index2, semantics, vector) = builder.Reindex(index1, index2, semantics, vector)
     member x.DropItem(index, key, vector) = builder.DropItem(index, key, vector)
     member x.GetRange(index, lo:option<'K>, hi:option<'K>, vector) = 
-      if typeof<'K> = typeof<DateTime> then
+      match index with
+      | :? LazyIndex as index when typeof<'K> = typeof<DateTime> ->
         let lo = defaultArg (unbox<option<DateTime>> lo) DateTime.MinValue
         let hi = defaultArg (unbox<option<DateTime>> hi) DateTime.MaxValue
         let cmd = Vectors.GetRange(vector, (Address.Custom(box lo), Address.Custom(box hi)))
+        let index = unbox<IIndex<'K>> (LazyIndex(max index.Minimal lo, min index.Maximal hi))
         index, cmd 
-      else
+      | _ ->
         builder.GetRange(index, lo, hi, vector)
 
 /// --------------------------------------------------------------------------------------
@@ -100,5 +105,9 @@ let loadSeries min max =
 let s1 = loadSeries (DateTime(2000,1,1)) (DateTime(2015,1,1))
 let s2 = s1.[DateTime(2013,1,1) .. ]
 let s3 = s2.[ .. DateTime(2013,2,1)]
+
+
+s3.Observations |> Seq.map fst |> Seq.iter (printfn "%O")
+s3.[DateTime(2013,2,1)]
 
 s3.Count
