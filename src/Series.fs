@@ -74,7 +74,7 @@ and Series<'K, 'V when 'K : equality>
 
   member x.GetItems(items,?lookup) =
     // TODO: Should throw when item is not in the sereis?
-    let lookup = defaultArg lookup LookupSemantics.Exact
+    let lookup = defaultArg lookup Lookup.Exact
     let newIndex = indexBuilder.Create<_>(items, None)
     let newVector = vectorBuilder.Build(indexBuilder.Reindex(index, newIndex, lookup, Vectors.Return 0), [| vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
@@ -85,7 +85,7 @@ and Series<'K, 'V when 'K : equality>
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
   member x.TryGet(key, ?lookup) =
-    let lookup = defaultArg lookup LookupSemantics.Exact
+    let lookup = defaultArg lookup Lookup.Exact
     let address = index.Lookup(key, lookup) 
     if not address.HasValue then invalidArg "key" (sprintf "The index '%O' is not present in the series." key)
     let value = vector.GetValue(address.Value)
@@ -96,7 +96,7 @@ and Series<'K, 'V when 'K : equality>
     | None -> raise (ValueMissingException(key.ToString()))
     | Some v -> v
 
-  static member (?) (series:Series<_, _>, name:string) = series.Get(name, LookupSemantics.Exact)
+  static member (?) (series:Series<_, _>, name:string) = series.Get(name, Lookup.Exact)
 
   // ----------------------------------------------------------------------------------------------
   // Operations
@@ -189,6 +189,8 @@ and Series<'K, 'V when 'K : equality>
   static member val internal SeriesOperations : SeriesOperations = Unchecked.defaultof<_> with get, set
 
   // Float
+  static member inline internal NullaryGenericOperation<'K, 'T1, 'T2>(series:Series<'K, 'T1>, op : 'T1 -> 'T2) = 
+    series.Select(fun (KeyValue(k, v)) -> op v)
   static member inline internal NullaryOperation<'K, 'T>(series:Series<'K, 'T>, op : 'T -> 'T) = 
     series.Select(fun (KeyValue(k, v)) -> op v)
   static member inline internal ScalarOperationL<'K, 'T>(series:Series<'K, 'T>, scalar, op : 'T -> 'T -> 'T) = 
@@ -233,8 +235,53 @@ and Series<'K, 'V when 'K : equality>
   static member (*) (s1, s2) = Series<_, _>.VectorOperation<_, float>(s1, s2, (*))
   static member (/) (s1, s2) = Series<_, _>.VectorOperation<_, float>(s1, s2, (/))
 
+  // Trigonometric
+  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
+  static member Acos(series) = Series<_, _>.NullaryOperation<_, float>(series, acos)
+  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
+  static member Asin(series) = Series<_, _>.NullaryOperation<_, float>(series, asin)
+  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
+  static member Atan(series) = Series<_, _>.NullaryOperation<_, float>(series, atan)
+  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
+  static member Sin(series) = Series<_, _>.NullaryOperation<_, float>(series, sin)
+  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
+  static member Sinh(series) = Series<_, _>.NullaryOperation<_, float>(series, sinh)
+  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
+  static member Cos(series) = Series<_, _>.NullaryOperation<_, float>(series, cos)
+  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
+  static member Cosh(series) = Series<_, _>.NullaryOperation<_, float>(series, cosh)
+  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
+  static member Tan(series) = Series<_, _>.NullaryOperation<_, float>(series, tan)
+  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
+  static member Tanh(series) = Series<_, _>.NullaryOperation<_, float>(series, tanh)
+
+  // Actually useful
+  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
+  static member Abs(series) = Series<_, _>.NullaryOperation<_, float>(series, abs)
+  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
+  static member Abs(series) = Series<_, _>.NullaryOperation<_, int>(series, abs)
+  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
+  static member Ceiling(series) = Series<_, _>.NullaryOperation<_, float>(series, ceil)
+  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
+  static member Exp(series) = Series<_, _>.NullaryOperation<_, float>(series, exp)
+  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
+  static member Floor(series) = Series<_, _>.NullaryOperation<_, float>(series, floor)
+  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
+  static member Truncate(series) = Series<_, _>.NullaryOperation<_, float>(series, truncate)
+  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
   static member Log(series) = Series<_, _>.NullaryOperation<_, float>(series, log)
+  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
   static member Log10(series) = Series<_, _>.NullaryOperation<_, float>(series, log10)
+  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
+  static member Round(series) = Series<_, _>.NullaryOperation<_, float>(series, round)
+
+  // May return different type  
+  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
+  static member Sign(series) = Series<_, _>.NullaryGenericOperation<_, float, _>(series, sign)
+  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
+  static member Sqrt(series) = Series<_, _>.NullaryGenericOperation<_, float, _>(series, sqrt)
+
+  // TODO: **
 
   // ----------------------------------------------------------------------------------------------
   // Nicer constructor

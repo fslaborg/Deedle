@@ -44,6 +44,7 @@
     <Compile Include="Index.fs" />
     <Compile Include="LinearIndex.fs" />
     <Compile Include="Series.fs" />
+    <Compile Include="DelayedSeries.fs" />
     <Compile Include="Frame.fs" />
     <Compile Include="Functions.fs" />
     <None Include="packages.config" />

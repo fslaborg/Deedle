@@ -238,9 +238,9 @@ daysSeries.[DateTime.Now]
 obsSeries.[DateTime.Now]
 
 // This works - we get the value for DateTime.Today (12:00 AM)
-daysSeries.Get(DateTime.Now, LookupSemantics.NearestSmaller)
+daysSeries.Get(DateTime.Now, Lookup.NearestSmaller)
 // This does not - there is no nearest smaller value than Today 12:00 AM
-obsSeries.Get(DateTime.Today, LookupSemantics.NearestSmaller)
+obsSeries.Get(DateTime.Today, Lookup.NearestSmaller)
 
 (**
 Similarly, you can specify the semantics when calling `TryGet` (to get an optional value)
@@ -260,11 +260,11 @@ let obsDaysExact = daysFrame.Join(obsFrame, kind=JoinKind.Left)
 
 // All values are available - for each day, we find the nearest smaller
 // time in the frame indexed by later times in the day
-let obsDaysPrev = daysFrame.Join(obsFrame, kind=JoinKind.Left, lookup=LookupSemantics.NearestSmaller)
+let obsDaysPrev = daysFrame.Join(obsFrame, kind=JoinKind.Left, lookup=Lookup.NearestSmaller)
 
 // The first value is missing (because there is no nearest value with 
 // greater key - the first one has the smallest key) but the rest is available
-let obsDaysNext = daysFrame.Join(obsFrame, kind=JoinKind.Left, lookup=LookupSemantics.NearestGreater)
+let obsDaysNext = daysFrame.Join(obsFrame, kind=JoinKind.Left, lookup=Lookup.NearestGreater)
 
 (**
 The optional parameter `?lookup` is ignored when the join `?kind` is other

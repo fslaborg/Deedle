@@ -48,8 +48,18 @@ module Series =
   let withOrdinalIndex (series:Series<'K, 'T>) = 
     series.WithOrdinalIndex()
 
-  let map f (series:Series<'K, 'T>) = 
+  let filter f (series:Series<'K, 'T>) = 
+    series.Where(fun kvp -> f kvp.Key kvp.Value)
+
+  let map (f:'K -> 'T -> 'R) (series:Series<'K, 'T>) = 
     series.Select(fun kvp -> f kvp.Key kvp.Value)
+
+  let filterAll f (series:Series<'K, 'T>) = 
+    series.WhereOptional(fun kvp -> f kvp.Key (OptionalValue.asOption kvp.Value))
+
+  let mapAll (f:_ -> _ -> option<'R>) (series:Series<'K, 'T>) = 
+    series.SelectOptional(fun kvp -> 
+      f kvp.Key (OptionalValue.asOption kvp.Value) |> OptionalValue.ofOption)
 
   let pairwise (series:Series<'K, 'T>) = series.Pairwise()
   
@@ -73,6 +83,17 @@ module Series =
   let groupBy keySelector (series:Series<'K, 'T>) =
     groupInto keySelector (fun s -> OptionalValue(s)) series
 
+  let countValues (series:Series<'K, 'T>) = series.Count
+  let countKeys (series:Series<'K, 'T>) = series.CountOptional
+
+  let hasAll keys (series:Series<'K, 'T>) = 
+    keys |> Seq.forall (fun k -> series.TryGet(k).IsSome)
+  let hasSome keys (series:Series<'K, 'T>) = 
+    keys |> Seq.exists (fun k -> series.TryGet(k).IsSome)
+  let hasNone keys (series:Series<'K, 'T>) = 
+    keys |> Seq.forall (fun k -> series.TryGet(k).IsNone)
+  let has key (series:Series<'K, 'T>) = series.TryGet(key).IsSome
+  let hasNot key (series:Series<'K, 'T>) = series.TryGet(key).IsNone
 
 type Column<'T> = C
 

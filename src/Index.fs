@@ -7,7 +7,7 @@
 // Index is an interface and so you can define your own. 
 // --------------------------------------------------------------------------------------
 
-type LookupSemantics = 
+type Lookup = 
   | Exact = 0
   | NearestGreater = 1
   | NearestSmaller = 2
@@ -30,7 +30,7 @@ open FSharp.DataFrame.Vectors
 /// of address Address.
 type IIndex<'K when 'K : equality> = 
   abstract Keys : seq<'K>
-  abstract Lookup : 'K * LookupSemantics -> OptionalValue<Address>  
+  abstract Lookup : 'K * Lookup -> OptionalValue<Address>  
   abstract Mappings : seq<'K * Address>
   abstract Range : Address * Address
   abstract Ordered : bool
@@ -57,7 +57,7 @@ type IIndexBuilder =
     IIndex<'K> * VectorConstruction
 
   abstract Reindex :
-    IIndex<'K> * IIndex<'K> * LookupSemantics * VectorConstruction -> VectorConstruction
+    IIndex<'K> * IIndex<'K> * Lookup * VectorConstruction -> VectorConstruction
 
   abstract WithIndex :
     IIndex<'K> * (Address -> OptionalValue<'TNewKey>) * VectorConstruction -> 

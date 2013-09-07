@@ -115,7 +115,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
 
   member frame.Join(otherFrame:Frame<'TRowKey, 'TColumnKey>, ?kind, ?lookup) =    
     // Union row indices and get transformations to apply to left/right vectors
-    let lookup = defaultArg lookup LookupSemantics.Exact
+    let lookup = defaultArg lookup Lookup.Exact
     let newRowIndex, thisRowCmd, otherRowCmd = 
       match kind with 
       | Some JoinKind.Inner ->
@@ -201,14 +201,14 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   member frame.Rows = 
     let emptySeries = Series<_, _>(rowIndex, Vector.Create [], vectorBuilder, indexBuilder)
     emptySeries.SelectOptional (fun row ->
-      let rowAddress = rowIndex.Lookup(row.Key, LookupSemantics.Exact)
+      let rowAddress = rowIndex.Lookup(row.Key, Lookup.Exact)
       if not rowAddress.HasValue then OptionalValue.Missing
       else OptionalValue(Series.CreateUntyped(columnIndex, createRowReader rowAddress.Value)))
 
   member frame.RowsDense = 
     let emptySeries = Series<_, _>(rowIndex, Vector.Create [], vectorBuilder, indexBuilder)
     emptySeries.SelectOptional (fun row ->
-      let rowAddress = rowIndex.Lookup(row.Key, LookupSemantics.Exact)
+      let rowAddress = rowIndex.Lookup(row.Key, Lookup.Exact)
       if not rowAddress.HasValue then OptionalValue.Missing else 
         let rowVec = createRowReader rowAddress.Value
         let all = columnIndex.Mappings |> Seq.forall (fun (key, addr) -> rowVec.GetValue(addr).HasValue)
@@ -238,13 +238,13 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     data <- vectorBuilder.Build(colCmd, [| data |])
 
   member frame.ReplaceSeries(column:'TColumnKey, series:Series<_, _>, ?lookup) = 
-    let lookup = defaultArg lookup LookupSemantics.Exact
+    let lookup = defaultArg lookup Lookup.Exact
     if columnIndex.Lookup(column, lookup).HasValue then
       frame.DropSeries(column)
     frame.AddSeries(column, series)
 
   member frame.GetSeries<'R>(column:'TColumnKey, ?lookup) : Series<'TRowKey, 'R> = 
-    let lookup = defaultArg lookup LookupSemantics.Exact
+    let lookup = defaultArg lookup Lookup.Exact
     match safeGetColVector(column, lookup) with
     | :? IVector<'R> as vec -> 
         Series.Create(rowIndex, vec)
@@ -324,7 +324,7 @@ and Frame =
     let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance // TODO: Capture somewhere
     let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
 
-    let rowCmd = indexBuilder.Reindex(folded.RowIndex, nested.Index, LookupSemantics.Exact, Vectors.Return 0)
+    let rowCmd = indexBuilder.Reindex(folded.RowIndex, nested.Index, Lookup.Exact, Vectors.Return 0)
     let newRowIndex = nested.Index
     let newColumnIndex = folded.ColumnIndex
     let newData = folded.Data.Select(transformColumn vectorBuilder rowCmd)
@@ -418,9 +418,9 @@ module internal Reflection =
 [<AutoOpen>]
 module FSharp =
   type Series = 
+    static member ofObservations(observations) = 
+      Series(Seq.map fst observations, Seq.map snd observations)
     static member ofValues(values) = 
-      Series(Seq.map fst values, Seq.map snd values)
-    static member ofValuesOrdinal(values) = 
       let keys = values |> Seq.mapi (fun i _ -> i)
       Series(keys, values)
     

@@ -42,11 +42,11 @@ type LinearIndex<'TKey when 'TKey : equality>
       | (true, res), _, _ -> OptionalValue(res)
 
       // If we can convert array index to address, we can use binary search!
-      | (false, _), LookupSemantics.NearestSmaller, Some asAddr when ordered ->
+      | (false, _), Lookup.NearestSmaller, Some asAddr when ordered ->
           Array.binarySearchNearestSmaller key comparer keysArray.Value
           |> OptionalValue.ofOption
           |> OptionalValue.map asAddr
-      | (false, _), LookupSemantics.NearestGreater, Some asAddr when ordered ->
+      | (false, _), Lookup.NearestGreater, Some asAddr when ordered ->
           Array.binarySearchNearestGreater key comparer keysArray.Value
           |> OptionalValue.ofOption
           |> OptionalValue.map asAddr
@@ -55,7 +55,7 @@ type LinearIndex<'TKey when 'TKey : equality>
       //
       // Find the index of the first key that is greater than the one specified
       // (generate address range and find the address using 'skipWhile')
-      | (false, _), LookupSemantics.NearestGreater, None when ordered ->
+      | (false, _), Lookup.NearestGreater, None when ordered ->
           Seq.zip keysArray.Value (ops.GenerateRange(ops.RangeOf(keys)))
           |> Seq.skipWhile (fun (k, _) -> comparer.Compare(k, key) < 0) 
           |> Seq.map snd
@@ -65,7 +65,7 @@ type LinearIndex<'TKey when 'TKey : equality>
       // Find the index of the last key before the specified one
       // (generate address range prefixed with None, find the first greater key
       // and then return the previous address from the prefixed sequence)
-      | (false, _), LookupSemantics.NearestSmaller, None when ordered ->
+      | (false, _), Lookup.NearestSmaller, None when ordered ->
           let range = ops.RangeOf(keys)
           let shifted = Seq.append [None] (Seq.map Some (ops.GenerateRange(range)))
           let indexOpt =
@@ -162,7 +162,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       let newIndex = LinearIndex(keys, ops, true, index.Comparer) :> IIndex<_>
       let relocations = 
         seq { for key, oldAddress in index.Mappings ->
-                let newAddress = newIndex.Lookup(key, LookupSemantics.Exact) 
+                let newAddress = newIndex.Lookup(key, Lookup.Exact) 
                 if not newAddress.HasValue then failwith "OrderIndex: key not found in the new index"
                 newAddress.Value, oldAddress }
       newIndex, Vectors.Relocate(vector, newIndex.Range, relocations)
@@ -221,7 +221,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
     member builder.DropItem<'TKey when 'TKey : equality >
         (index:IIndex<'TKey>, key, vector) = 
-      match index.Lookup(key, LookupSemantics.Exact) with
+      match index.Lookup(key, Lookup.Exact) with
       | OptionalValue.Present(addr) ->
           let ops = AddressHelpers.getAddressOperations()
           let newVector = Vectors.DropRange(vector, (addr, addr))
@@ -250,8 +250,8 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
       // Create new index using the range & vector transformation
       let (lo, hi) as range = 
-        getBound lo LookupSemantics.NearestGreater fst, 
-        getBound hi LookupSemantics.NearestSmaller snd
+        getBound lo Lookup.NearestGreater fst, 
+        getBound hi Lookup.NearestSmaller snd
       let newKeys = ops.GetRange(index.Keys, lo, hi) |> Array.ofSeq
       let newVector = Vectors.GetRange(vector, range)
       upcast LinearIndex<_>(newKeys, ops, index.Ordered), newVector

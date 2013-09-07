@@ -28,8 +28,8 @@ let randomPrice drift volatility initial count =
     Some((dt, price), (dt, price))) |> Seq.take count
 
 // Generate two "high-frequency" time series (with different volatility)
-let hfq1 = Series.ofValues (randomPrice 0.05 0.1 20.0 (24*60*60))
-let hfq2 = Series.ofValues (randomPrice 0.05 0.2 20.0 (24*60*60))
+let hfq1 = Series.ofObservations (randomPrice 0.05 0.1 20.0 (24*60*60))
+let hfq2 = Series.ofObservations (randomPrice 0.05 0.2 20.0 (24*60*60))
 
 // Chart them using F# Chart to see what they look like
 Chart.Combine(
@@ -41,11 +41,11 @@ hfq1 |> Series.mean
 hfq1 |> Series.mean
 
 // Get all day data in 1 minute intervals
-let intervals = [ for i in 0.0 .. 24.0*60.0 - 1.0 -> DateTimeOffset(DateTime(2013, 1, 1)).AddMinutes(i) ]
+let intervals = [ for i in 0.0 .. 24.0*60.0 - 1.0 -> DateTimeOffset(DateTime(2013, 1, 1)).AddMinutes(i + 0.001) ]
 
 // Get nearest smaller values for the specified interval & calculate logs
 // Then take difference between previous and the next log value
-let logs1 = hfq1 |> Series.lookupAll intervals LookupSemantics.NearestGreater |> log
+let logs1 = hfq1 |> Series.lookupAll intervals Lookup.NearestGreater |> log
 let diffs = logs1 |> Series.pairwiseWith (fun _ (v1, v2) -> v2 - v1)
 
 Chart.Rows 

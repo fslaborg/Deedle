@@ -30,10 +30,10 @@ do
       let dt = dt.AddSeconds(1.0)
       Some((dt, price), (dt, price))) |> Seq.take count
 
-  let hfq1 = Series.ofValues (randomPrice 0.05 0.5 5.0 100)
+  let hfq1 = Series.ofObservations (randomPrice 0.05 0.5 5.0 100)
   
   let intervals = [ for i in 0.0 .. 10.0 .. 10000.0 -> DateTimeOffset(DateTime(2013, 1, 1)).AddSeconds(i) ]
-  let logs1 = hfq1 |> Series.lookupAll intervals LookupSemantics.NearestGreater |> log
+  let logs1 = hfq1 |> Series.lookupAll intervals Lookup.NearestGreater |> log
   let diffs = logs1 |> Series.pairwiseWith (fun _ (v1, v2) -> v2 - v1)
 
   let it0 = timed (fun () -> diffs |> Series.chunk (TimeSpan(1, 0, 0)) )

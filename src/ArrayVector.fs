@@ -120,6 +120,10 @@ type ArrayVectorBuilder() =
                 merge lv rv)
               vectorBuilder.CreateOptional(filled)
 
+      | CustomCommand(vectors, f) ->
+          let vectors = List.map (fun v -> vectorBuilder.Build(v, arguments) :> IVector) vectors
+          f vectors :?> IVector<_>
+
 /// --------------------------------------------------------------------------------------
 
 /// Vector that stores data in an array. The data is stored using the
