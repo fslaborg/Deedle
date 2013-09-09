@@ -317,22 +317,41 @@ and Frame =
   static member internal FromRows<'TRowKey, 'TColumnKey, 'TSeries, 'TValue 
         when 'TRowKey : equality and 'TColumnKey : equality and 'TSeries :> Series<'TColumnKey, 'TValue>>
       (nested:Series<'TRowKey, 'TSeries>) =
-    // Append all rows in some order
-    let initial = Frame(Index.CreateUnsorted [], Index.Create [], Vector.Create [| |])
-    let folded =
-      (initial, nested.ObservationsOptional) ||> Seq.fold (fun df (name, series) -> 
-        if not series.HasValue then df 
-        else Frame.CreateRow(name, series.Value).Append(df))
-
-    // Reindex according to the original index
     let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance // TODO: Capture somewhere
     let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
 
-    let rowCmd = indexBuilder.Reindex(folded.RowIndex, nested.Index, Lookup.Exact, Vectors.Return 0)
-    let newRowIndex = nested.Index
-    let newColumnIndex = folded.ColumnIndex
-    let newData = folded.Data.Select(transformColumn vectorBuilder rowCmd)
-    Frame(newRowIndex, newColumnIndex, newData)
+    // Union column indices, ignoring the vector trasnformations
+    let columnIndex = nested.Values |> Seq.map (fun sr -> sr.Index) |> Seq.reduce (fun i1 i2 -> 
+      let index, _, _ = indexBuilder.Union(i1, i2, Vectors.Return 0, Vectors.Return 0)
+      index )
+    // Row index is just the index of the series
+    let rowIndex = nested.Index
+
+    // Dispatcher that creates column vector of the right type
+    let columnCreator key =
+      { new VectorHelpers.ValueCallSite1<IVector> with
+          override x.Invoke<'T>(_:'T) = 
+            let it = nested.SelectOptional(fun kvp ->
+              if kvp.Value.HasValue then 
+                kvp.Value.Value.TryGet(key) 
+                |> Option.map (fun v -> System.Convert.ChangeType(v, typeof<'T>) |> unbox<'T>)
+                |> OptionalValue.ofOption
+              else OptionalValue.Missing)
+            it.Vector :> IVector }
+      |> VectorHelpers.createValueDispatcher
+
+    // Create data vectors
+    let data = 
+      columnIndex.Keys 
+      |> Seq.map (fun key ->
+          // Pick a witness from the column, so that we can use column creator
+          let someValue =
+            nested.Observations |> Seq.map snd |> Seq.tryPick (fun series -> 
+              series.TryGet(key) |> Option.map box)
+          let someValue = defaultArg someValue (obj())
+          columnCreator key someValue)
+      |> Array.ofSeq |> vectorBuilder.CreateNonOptional
+    Frame(rowIndex, columnIndex, data)
 
   static member internal FromColumns<'TRowKey, 'TColumnKey, 'TSeries, 'TValue 
         when 'TRowKey : equality and 'TColumnKey : equality and 'TSeries :> Series<'TRowKey, 'TValue>>

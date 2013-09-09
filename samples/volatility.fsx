@@ -97,3 +97,5 @@ let df =
       "ShiftTwo" => (short |> Series.shift 2) ]
 
 df |> Frame.shiftRows 1
+
+df.ro

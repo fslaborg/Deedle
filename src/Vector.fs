@@ -83,19 +83,43 @@ module internal VectorHelpers =
         member x.GetObject(i) = vector.Value.GetObject(i) }
 
 
+  type ValueCallSite1<'R> =
+    abstract Invoke<'T> : 'T -> 'R
   type VectorCallSite1<'R> =
     abstract Invoke<'T> : IVector<'T> -> 'R
   type VectorCallSite2<'R> =
     abstract Invoke<'T> : IVector<'T> * IVector<'T> -> 'R
 
+  let doubleCode = typeof<float>.TypeHandle.Value
+  let intCode = typeof<int>.TypeHandle.Value
+  let stringCode = typeof<string>.TypeHandle.Value
+
+  let createValueDispatcher<'R> (callSite:ValueCallSite1<'R>) =
+    let dict = lazy Dictionary<_, System.Func<ValueCallSite1<'R>, obj, 'R>>()
+    fun (value:obj) ->
+      let ty = value.GetType()
+      let code = ty.TypeHandle.Value
+      if code = doubleCode then callSite.Invoke<float>(value :?> float)
+      elif code = intCode then callSite.Invoke<int>(value :?> int)
+      elif code = stringCode then callSite.Invoke<string>(value :?> string)
+      else
+        match dict.Value.TryGetValue(code) with
+        | true, f -> f.Invoke(callSite, value)
+        | _ ->
+            let mi = typeof<ValueCallSite1<'R>>.GetMethod("Invoke").MakeGenericMethod(ty)
+            let inst = Expression.Parameter(typeof<ValueCallSite1<'R>>)
+            let par = Expression.Parameter(typeof<obj>)
+            let expr =
+              Expression.Lambda<System.Func<ValueCallSite1<'R>, obj, 'R>>
+                ( Expression.Call(inst, mi, Expression.Convert(par, ty)), [ inst; par ])
+            let func = expr.Compile()
+            dict.Value.[code] <- func
+            func.Invoke(callSite, value)
+
+
   let createDispatcher<'R> (callSite:VectorCallSite1<'R>) =
     let dict = lazy Dictionary<_, System.Func<VectorCallSite1<'R>, IVector, 'R>>()
-
-    let doubleCode = typeof<float>.TypeHandle.Value
-    let intCode = typeof<int>.TypeHandle.Value
-    let stringCode = typeof<string>.TypeHandle.Value
-
-    let invoke (vect:IVector) = 
+    fun (vect:IVector) ->
       let code = vect.ElementType.TypeHandle.Value
       if code = doubleCode then callSite.Invoke<float>(vect :?> IVector<float>)
       elif code = intCode then callSite.Invoke<int>(vect :?> IVector<int>)
@@ -114,16 +138,10 @@ module internal VectorHelpers =
             let func = expr.Compile()
             dict.Value.[code] <- func
             func.Invoke(callSite, vect)
-    invoke 
 
   let createTwoArgDispatcher<'R> (callSite:VectorCallSite2<'R>) =
     let dict = lazy Dictionary<_, System.Func<VectorCallSite2<'R>, IVector, IVector, 'R>>()
-
-    let doubleCode = typeof<float>.TypeHandle.Value
-    let intCode = typeof<int>.TypeHandle.Value
-    let stringCode = typeof<string>.TypeHandle.Value
-
-    let invoke (vect1:IVector, vect2:IVector) = 
+    fun (vect1:IVector, vect2:IVector) ->
       let code = vect1.ElementType.TypeHandle.Value
       if vect2.ElementType.TypeHandle.Value <> code then 
         invalidOp "createTwoArgDispatcher: Both arguments should have the same element type"
@@ -145,7 +163,6 @@ module internal VectorHelpers =
             let func = expr.Compile()
             dict.Value.[code] <- func
             func.Invoke(callSite, vect1, vect2)
-    invoke 
 
 // --------------------------------------------------------------------------------------
 // Types related to vectors that should not be exposed too directly
