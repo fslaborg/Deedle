@@ -164,7 +164,7 @@ type DelayedIndex<'K, 'V when 'K : equality> internal (source:DelayedSource<'K, 
   member x.Source = source
   interface IIndex<'K> with
     member x.Keys = source.Index.Keys
-    member x.Lookup(key, semantics) = source.Index.Lookup(key, semantics)
+    member x.Lookup(key, semantics, check) = source.Index.Lookup(key, semantics, check)
     member x.Mappings = source.Index.Mappings
     member x.Range = source.Index.Range
     member x.Ordered = source.Index.Ordered
@@ -189,6 +189,7 @@ type DelayedIndexBuilder() =
   interface IIndexBuilder with
     member x.Create(keys, ordered) = builder.Create(keys, ordered)
     member x.Aggregate(index, aggregation, vector, valueSel, keySel) = builder.Aggregate(index, aggregation, vector, valueSel, keySel)
+    member x.GroupBy(index, keySel, vector, valueSel) = builder.GroupBy(index, keySel, vector, valueSel)
     member x.OrderIndex(index, vector) = builder.OrderIndex(index, vector)
     member x.Union(index1, index2, vector1, vector2) = 
       let res = builder.Union(index1, index2, vector1, vector2)

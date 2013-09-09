@@ -14,6 +14,61 @@ open System
 open FSharp.DataFrame
 open FSharp.Charting
 
+
+(** 
+Grouping 
+--------
+*)
+
+let titanic = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/Titanic.csv")
+titanic |> Frame.groupRowsBy "Sex"
+
+(**
+Filling missing values
+----------------------
+*)
+
+let air = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/AirQuality.csv", separators=";")
+let ozone = air?Ozone
+
+air?OzoneFilled <-
+  ozone |> Series.mapAll (fun k -> function 
+    | None -> ozone.TryGet(k, Lookup.NearestSmaller)
+    | value -> value)
+
+// Might not be super usefu but does the trick
+ozone |> Series.fillMissingWith 0.0
+// This works
+ozone |> Series.fillMissing Lookup.NearestGreater
+// but here, the first value is still missing
+ozone |> Series.fillMissing Lookup.NearestSmaller
+// we can be more explicit and write
+ozone |> Series.fillMissingUsing (fun k -> 
+  defaultArg (ozone.TryGet(k, Lookup.NearestSmaller)) 0.0)
+// Or we can drop the first value
+ozone |> Series.fillMissing Lookup.NearestSmaller
+      |> Series.dropMissing
+
+
+
+// air.WithRowIndex<int>("Month")
+
+// System.Linq.Enumerable.group
+// air.Rows.Aggregate(Aggregation.GroupBy(
+
+
+
+(*
+
+let f = Frame.ofColumns ["C" => Series.ofValues [ 1;2;3 ]]
+f.Append(f)
+
+// TODO:
+let f = Frame.ofColumns ["C" => Series.ofObservations [ 1,"hi"; 2,"there"; 3,"ciao" ]]
+f.Append(f)
+
+*)
+
 (**
 Operations
 ----------

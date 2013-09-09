@@ -17,7 +17,6 @@ type Aggregation<'K> =
   | ChunkSize of int
   | WindowWhile of ('K -> 'K -> bool)
   | ChunkWhile of ('K -> 'K -> bool)
-  | GroupBy of ('K -> System.IComparable)
 
 namespace FSharp.DataFrame.Indices
 
@@ -30,7 +29,7 @@ open FSharp.DataFrame.Vectors
 /// of address Address.
 type IIndex<'K when 'K : equality> = 
   abstract Keys : seq<'K>
-  abstract Lookup : 'K * Lookup -> OptionalValue<Address>  
+  abstract Lookup : 'K * Lookup * (Address -> bool) -> OptionalValue<Address>  
   abstract Mappings : seq<'K * Address>
   abstract Range : Address * Address
   abstract Ordered : bool
@@ -71,4 +70,7 @@ type IIndexBuilder =
 
   abstract Aggregate : IIndex<'K> * Aggregation<'K> * VectorConstruction *
     (IIndex<'K> * VectorConstruction -> OptionalValue<'R>) *
-    (IIndex<'K> * VectorConstruction -> 'K) -> IIndex<'K> * IVector<'R> // Returning vector might be too concrete?
+    (IIndex<'K> * VectorConstruction -> 'TNewKey) -> IIndex<'TNewKey> * IVector<'R> // Returning vector might be too concrete?
+
+  abstract GroupBy : IIndex<'K> * ('K -> 'TNewKey) * VectorConstruction *
+    ('TNewKey * IIndex<'K> * VectorConstruction -> OptionalValue<'R>) -> IIndex<'TNewKey> * IVector<'R> // Returning vector might be too concrete?

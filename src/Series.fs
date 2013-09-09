@@ -86,10 +86,15 @@ and Series<'K, 'V when 'K : equality>
 
   member x.TryGet(key, ?lookup) =
     let lookup = defaultArg lookup Lookup.Exact
-    let address = index.Lookup(key, lookup) 
-    if not address.HasValue then invalidArg "key" (sprintf "The index '%O' is not present in the series." key)
-    let value = vector.GetValue(address.Value)
-    value |> OptionalValue.asOption
+    let address = index.Lookup(key, lookup, fun addr -> vector.GetValue(addr).HasValue) 
+    match address, lookup with
+    | OptionalValue.Missing, Lookup.Exact ->
+        invalidArg "key" (sprintf "The index '%O' is not present in the series." key)
+    | OptionalValue.Missing, _ ->
+        None
+    | OptionalValue.Present(v), _ ->
+        vector.GetValue(address.Value)
+        |> OptionalValue.asOption
   
   member x.Get(key, ?lookup) =
     match x.TryGet(key, ?lookup=lookup) with
@@ -147,7 +152,10 @@ and Series<'K, 'V when 'K : equality>
            f.Invoke(KeyValuePair(key, vector.GetValue(addr))))
     Series<'K, 'R>(index, vectorBuilder.CreateOptional(newVector), vectorBuilder, indexBuilder)
 
-  member x.DropNA() =
+  //member x.FillMissing() = 
+  //  x.Vector.SelectOptional(
+
+  member x.DropMissing() =
     x.WhereOptional(fun (KeyValue(k, v)) -> v.HasValue)
 
   member x.Aggregate(aggregation, valueSelector, ?keySelector) =
@@ -163,9 +171,23 @@ and Series<'K, 'V when 'K : equality>
               | Some f -> f (Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder))) )
     Series<'K, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
 
+  member x.GroupBy(keySelector, valueSelector) =
+    let newIndex, newVector = 
+      indexBuilder.GroupBy
+        ( x.Index, 
+          (fun key -> keySelector key (x.Get(key))), Vectors.Return 0, 
+          (fun (newKey, index, cmd) -> 
+              let group = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
+              valueSelector newKey group) )
+    Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
+
   member x.WithOrdinalIndex() = 
     let newIndex = indexBuilder.Create(x.Index.Keys |> Seq.mapi (fun i _ -> i), Some true)
     Series<int, _>(newIndex, vector, vectorBuilder, indexBuilder)
+
+  member x.WithIndex(keys) = 
+    let newIndex = indexBuilder.Create(keys, None)
+    Series<'TNewKey, _>(newIndex, vector, vectorBuilder, indexBuilder)
 
   member x.Pairwise() =
     let newIndex, newVector = 

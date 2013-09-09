@@ -201,14 +201,14 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   member frame.Rows = 
     let emptySeries = Series<_, _>(rowIndex, Vector.Create [], vectorBuilder, indexBuilder)
     emptySeries.SelectOptional (fun row ->
-      let rowAddress = rowIndex.Lookup(row.Key, Lookup.Exact)
+      let rowAddress = rowIndex.Lookup(row.Key, Lookup.Exact, fun _ -> true)
       if not rowAddress.HasValue then OptionalValue.Missing
       else OptionalValue(Series.CreateUntyped(columnIndex, createRowReader rowAddress.Value)))
 
   member frame.RowsDense = 
     let emptySeries = Series<_, _>(rowIndex, Vector.Create [], vectorBuilder, indexBuilder)
     emptySeries.SelectOptional (fun row ->
-      let rowAddress = rowIndex.Lookup(row.Key, Lookup.Exact)
+      let rowAddress = rowIndex.Lookup(row.Key, Lookup.Exact, fun _ -> true)
       if not rowAddress.HasValue then OptionalValue.Missing else 
         let rowVec = createRowReader rowAddress.Value
         let all = columnIndex.Mappings |> Seq.forall (fun (key, addr) -> rowVec.GetValue(addr).HasValue)
@@ -239,13 +239,13 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
 
   member frame.ReplaceSeries(column:'TColumnKey, series:Series<_, _>, ?lookup) = 
     let lookup = defaultArg lookup Lookup.Exact
-    if columnIndex.Lookup(column, lookup).HasValue then
+    if columnIndex.Lookup(column, lookup, fun _ -> true).HasValue then
       frame.DropSeries(column)
     frame.AddSeries(column, series)
 
   member frame.GetSeries<'R>(column:'TColumnKey, ?lookup) : Series<'TRowKey, 'R> = 
     let lookup = defaultArg lookup Lookup.Exact
-    match safeGetColVector(column, lookup) with
+    match safeGetColVector(column, lookup, fun _ -> true) with
     | :? IVector<'R> as vec -> 
         Series.Create(rowIndex, vec)
     | colVector ->
@@ -264,12 +264,16 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     member frame.Format() = 
       seq { yield ""::[ for colName, _ in frame.ColumnIndex.Mappings do yield colName.ToString() ]
             let rows = frame.Rows
-            for ind, addr in frame.RowIndex.Mappings do
-              let row = rows.[ind]
-              yield 
-                (ind.ToString() + " ->")::
-                [ for _, value in row.ObservationsOptional ->  // TODO: is this good?
-                    value.ToString() ] }
+            for item in frame.RowIndex.Mappings |> Seq.startAndEnd 10 10 do
+              match item with 
+              | Choice2Of3() ->
+                  yield ":"::[for i in 1 .. data.DataSequence |> Seq.length -> "..."]
+              | Choice1Of3(ind, addr) | Choice3Of3(ind, addr) ->
+                  let row = rows.[ind]
+                  yield 
+                    (ind.ToString() + " ->")::
+                    [ for _, value in row.ObservationsOptional ->  // TODO: is this good?
+                        value.ToString() ] }
       |> array2D
       |> Formatting.formatTable
 
@@ -461,7 +465,7 @@ module FrameExtensions =
   open FSharp.Data.RuntimeImplementation.StructuralTypes
   
   type Frame with
-    static member ReadCsv(file:string, ?inferTypes, ?schema, ?inferRows) =
+    static member ReadCsv(file:string, ?inferTypes, ?schema, ?inferRows, ?separators) =
 
       let inferRows = defaultArg inferRows 0
       let missingValues = "NaN,NA,#N/A,:"
@@ -485,7 +489,7 @@ module FrameExtensions =
       // content (but inferRows can be set to smaller number). Otherwise we just
       // "infer" all columns as string.
       let inferedProperties = 
-        let data = Csv.CsvFile.Load(file)
+        let data = Csv.CsvFile.Load(file, ?separators=separators)
         if not (inferTypes = Some false) then
           CsvInference.inferType 
             data inferRows (missingValuesArr, cultureInfo) (defaultArg schema "") safeMode preferOptionals
@@ -496,7 +500,7 @@ module FrameExtensions =
               PrimitiveInferedProperty.Create(c, typeof<string>, true) ]
 
       // Load the data and convert the values to the appropriate type
-      let data = Csv.CsvFile.Load(file).Cache()
+      let data = Csv.CsvFile.Load(file, ?separators=separators).Cache()
       let columnIndex = Index.Create data.Headers.Value
       let columns = 
         [| for name, prop in Seq.zip data.Headers.Value inferedProperties  ->

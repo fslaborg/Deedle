@@ -2,6 +2,7 @@
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Series = 
+  open System.Linq
   open FSharp.DataFrame.Common
   open FSharp.DataFrame.Vectors
   open MathNet.Numerics.Statistics
@@ -65,23 +66,65 @@ module Series =
   
   let pairwiseWith f (series:Series<'K, 'T>) = series.Pairwise() |> map f
 
-  let inline windowedInto distance f (series:Series<'K, 'T>) =
-    series.Aggregate(Aggregation.WindowWhile(fun skey ekey -> (ekey - skey) < distance), f)
+  (**
+  Windowing, Chunking and Grouping
+  ----------------------------------------------------------------------------------------------
 
-  let inline windowed distance (series:Series<'K, 'T>) = 
-    windowedInto distance (fun s -> OptionalValue(s)) series 
+  The functions with name starting with `windowed` take a series and generate floating 
+  (overlapping) windows. The `chunk` functions 
 
-  let inline chunkInto distance f (series:Series<'K, 'T>) =
-    series.Aggregate(Aggregation.ChunkWhile(fun skey ekey -> (ekey - skey) < distance), f)
+  *)
 
-  let inline chunk distance (series:Series<'K, 'T>) = 
-    chunkInto distance (fun s -> OptionalValue(s)) series 
+  let aggregate aggregation valueSelector keySelector (series:Series<'K, 'T>) =
+    series.Aggregate(aggregation, valueSelector >> OptionalValue.ofOption, keySelector)
 
-  let groupInto (keySelector:'K -> _ -> #System.IComparable) f (series:Series<'K, 'T>) =
-    series.Aggregate(Aggregation.GroupBy(fun k -> (keySelector k (series.Get(k)) ) :> System.IComparable), f)
+  let inline windowSizeInto size f (series:Series<'K, 'T>) =
+    series.Aggregate(Aggregation.WindowSize(size), f >> OptionalValue.ofOption)
 
-  let groupBy keySelector (series:Series<'K, 'T>) =
-    groupInto keySelector (fun s -> OptionalValue(s)) series
+  let inline windowSize distance (series:Series<'K, 'T>) = 
+    windowSizeInto distance (fun s -> Some(s)) series 
+
+  let inline windowDistInto distance f (series:Series<'K, 'T>) =
+    series.Aggregate(Aggregation.WindowWhile(fun skey ekey -> (ekey - skey) < distance), f >> OptionalValue.ofOption)
+
+  let inline windowDist distance (series:Series<'K, 'T>) = 
+    windowDistInto distance (fun s -> Some(s)) series 
+
+  let inline windowWhileInto cond f (series:Series<'K, 'T>) =
+    series.Aggregate(Aggregation.WindowWhile(cond), f >> OptionalValue.ofOption)
+
+  let inline windowWhile cond (series:Series<'K, 'T>) = 
+    windowWhileInto cond (fun s -> Some(s)) series 
+
+
+  let inline chunkSizeInto size f (series:Series<'K, 'T>) =
+    series.Aggregate(Aggregation.ChunkSize(size), f >> OptionalValue.ofOption)
+
+  let inline chunkSize distance (series:Series<'K, 'T>) = 
+    chunkSizeInto distance (fun s -> Some(s)) series 
+
+  let inline chunkDistInto distance f (series:Series<'K, 'T>) =
+    series.Aggregate(Aggregation.ChunkWhile(fun skey ekey -> (ekey - skey) < distance), f >> OptionalValue.ofOption)
+
+  let inline chunkDist distance (series:Series<'K, 'T>) = 
+    chunkDistInto distance (fun s -> Some(s)) series 
+
+  let inline chunkWhileInto cond f (series:Series<'K, 'T>) =
+    series.Aggregate(Aggregation.ChunkWhile(cond), f >> OptionalValue.ofOption)
+
+  let inline chunkWhile cond (series:Series<'K, 'T>) = 
+    chunkWhileInto cond (fun s -> Some(s)) series 
+
+
+  let groupByInto (keySelector:'K -> 'T -> 'TNewKey) f (series:Series<'K, 'T>) : Series<'TNewKey, 'TNewValue> =
+    series.GroupBy(keySelector, fun k s -> OptionalValue.ofOption (f k s))
+
+  let groupBy (keySelector:'K -> 'T -> 'TNewKey) (series:Series<'K, 'T>) =
+    groupByInto keySelector (fun k s -> Some(s)) series
+
+  // ----------------------------------------------------------------------------------------------
+  // Counting & checking if values are present
+  // ----------------------------------------------------------------------------------------------
 
   let countValues (series:Series<'K, 'T>) = series.Count
   let countKeys (series:Series<'K, 'T>) = series.CountOptional
@@ -95,6 +138,40 @@ module Series =
   let has key (series:Series<'K, 'T>) = series.TryGet(key).IsSome
   let hasNot key (series:Series<'K, 'T>) = series.TryGet(key).IsNone
 
+  // ----------------------------------------------------------------------------------------------
+  // Handling of missing values
+  // ----------------------------------------------------------------------------------------------
+
+  let dropMissing (series:Series<'K, 'T>) = series.DropMissing()
+
+  let fillMissingUsing f (series:Series<'K, 'T>) = 
+    series |> mapAll (fun k -> function 
+      | None -> Some(f k)
+      | value -> value)
+
+  let fillMissingWith value (series:Series<'K, 'T>) = 
+    series |> mapAll (fun k -> function 
+      | None -> Some(value)
+      | value -> value)
+
+  let fillMissing lookup (series:Series<'K, 'T>) = 
+    series |> mapAll (fun k -> function 
+      | None -> series.TryGet(k, lookup)
+      | value -> value)
+
+  let shift offset (series:Series<'K, 'T>) = 
+    let shifted = 
+      if offset < 0 then
+        let offset = -offset
+        series |> aggregate (WindowSize(offset + 1)) 
+          (fun s -> Some(s.Values |> Seq.nth offset)) 
+          (fun s -> s.Keys.First())
+      else
+        series |> aggregate (WindowSize(offset + 1)) 
+          (fun s -> Some(s.Values |> Seq.head)) 
+          (fun s -> s.Keys.Last())
+    shifted.GetItems(series.Keys)
+
 type Column<'T> = C
 
 [<AutoOpen>]
@@ -103,9 +180,26 @@ module ColumnExtensions =
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]    
 module Frame = 
-  // ------------------------------------------------------------------------------------
+  // ----------------------------------------------------------------------------------------------
+  // Grouping
+  // ----------------------------------------------------------------------------------------------
+
+  let groupRowsByInto column f (frame:Frame<'TRowKey, 'TColKey>) = 
+    frame.Rows |> Series.groupByInto 
+      (fun _ v -> v.Get(column))
+      (fun k g -> g |> Frame.ofRows |> f |> Some)
+
+  let groupRowsBy column (frame:Frame<'TRowKey, 'TColKey>) = 
+    groupRowsByInto column id frame
+
+  //let shiftRows offset (frame:Frame<'TRowKey, 'TColKey>) = 
+  //  frame.Columns 
+  //  |> Series.map (fun k col -> Series.shift offset col)
+  //  |> Frame.ofColumns
+
+  // ----------------------------------------------------------------------------------------------
   // Wrappers that simply call member functions of the data frame
-  // ------------------------------------------------------------------------------------
+  // ----------------------------------------------------------------------------------------------
 
   /// Creates a new data frame that contains all data from 
   /// the original data frame, together with additional series.
@@ -217,9 +311,9 @@ module Frame =
   let withMissingVal defaultValue (frame:Frame<'TRowKey, 'TColKey>) =
     frame.WithMissing(defaultValue)
 
-  // ------------------------------------------------------------------------------------
+  // ----------------------------------------------------------------------------------------------
   // Additional functions for working with data frames
-  // ------------------------------------------------------------------------------------
+  // ----------------------------------------------------------------------------------------------
 
   let inline mean (frame:Frame<'TRowKey, 'TColKey>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Series.mean)
@@ -229,3 +323,5 @@ module Frame =
 
   let inline sdv (frame:Frame<'TRowKey, 'TColKey>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Series.sdv)
+
+      

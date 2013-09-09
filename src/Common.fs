@@ -169,6 +169,9 @@ module Array =
 module Seq = 
   let takeAtMost count (input:seq<_>) = input.Take(count)
 
+  let headOrNone (input:seq<_>) = 
+    (input |> Seq.map Some).FirstOrDefault()
+
   let getEnumerator (s:seq<_>) = s.GetEnumerator()
 
   let startAndEnd startCount endCount input = seq { 

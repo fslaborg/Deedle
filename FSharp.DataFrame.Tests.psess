@@ -75,6 +75,12 @@
     <Report>
       <Path>FSharp.DataFrame.Tests130904(2).vsp</Path>
     </Report>
+    <Report>
+      <Path>FSharp.DataFrame.Tests130909.vsp</Path>
+    </Report>
+    <Report>
+      <Path>FSharp.DataFrame.Tests130909(1).vsp</Path>
+    </Report>
   </Reports>
   <Launches>
     <ProjBinary>

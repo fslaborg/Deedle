@@ -69,7 +69,9 @@ type IAddressOperations =
 module AddressHelpers =
   let getAddressOperations() = 
     { new IAddressOperations with
-        member x.GenerateRange(IntAddress lo, IntAddress hi) = seq { lo .. hi } |> Seq.map Int
+        member x.GenerateRange(IntAddress lo, IntAddress hi) = 
+          let lo, hi = if hi < lo then hi, lo else lo, hi
+          seq { lo .. hi } |> Seq.map Int
         member x.Int32Convertor = Some(fun v -> Int v)
         member x.Add(IntAddress a, IntAddress b) = Int (a + b)
         member x.RangeOf(seq) = Int 0, Int ((Seq.length seq) - 1)
