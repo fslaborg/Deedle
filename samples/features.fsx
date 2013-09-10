@@ -20,13 +20,41 @@ Grouping
 --------
 *)
 
+// Load the data from the Titanic data set
 let titanic = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/Titanic.csv")
-titanic |> Frame.groupRowsBy "Sex"
+
+// Group the data frame by sex 
+let grouped = titanic |> Frame.groupRowsBy "Sex"
+
+// For each group, calculate the total number of survived & died
+let survivalBySex =
+  grouped 
+  |> Series.map (fun sex df -> 
+      // Group each sex by the Survived column & count elements in each group
+      df.GetSeries<bool>("Survived") |> Series.groupBy (fun k v -> v) 
+      |> Frame.ofColumns |> Frame.countValues )
+  |> Frame.ofRows
+  |> Frame.withColumnKeys ["Died"; "Survived"]
+
+// Add column with Total number of males/females on Titanic
+survivalBySex?Total <- grouped |> Series.map (fun _ -> Frame.countKeys)
+
+// Build a data frame with nice summary of rates in percents
+let results =
+  [ "Died (%)" => survivalBySex?Died / survivalBySex?Total * 100.0
+    "Survived (%)" => survivalBySex?Survived / survivalBySex?Total * 100.0 ]
+  |> Frame.ofColumns
+
 
 (**
 Filling missing values
 ----------------------
 *)
+
+[ Nullable(1); Nullable(); Nullable(3); Nullable(4) ]
+|> Series.ofValues
+|> Series.sum
+
 
 let air = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/AirQuality.csv", separators=";")
 let ozone = air?Ozone

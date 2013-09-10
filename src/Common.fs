@@ -68,10 +68,11 @@ module MissingValues =
 
   let isNA<'T> () =
     let ty = typeof<'T>
-    let nanTest : 'T -> bool = 
+    let isNullable = ty.IsGenericType && (ty.GetGenericTypeDefinition() = typedefof<Nullable<_>>)
+    let nanTest : 'T -> bool =
       if ty = typeof<float> then unbox Double.IsNaN
       elif ty = typeof<float32> then unbox Single.IsNaN
-      elif ty.IsValueType then (fun _ -> false)
+      elif ty.IsValueType && not isNullable then (fun _ -> false)
       else (fun v -> Object.Equals(null, box v))
     nanTest
 

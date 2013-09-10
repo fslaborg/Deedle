@@ -107,8 +107,8 @@ and Series<'K, 'V when 'K : equality>
   // Operations
   // ----------------------------------------------------------------------------------------------
   
-  member x.Count = x.ObservationsOptional |> Seq.filter (fun (k, v) -> v.HasValue) |> Seq.length
-  member x.CountOptional = x.ObservationsOptional |> Seq.length
+  member x.CountValues = x.ObservationsOptional |> Seq.filter (fun (k, v) -> v.HasValue) |> Seq.length
+  member x.CountKeys = x.ObservationsOptional |> Seq.length
 
 
   // TODO: Series.Select & Series.Where need to use some clever index/vector functions

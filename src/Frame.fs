@@ -396,6 +396,11 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     let newData = x.Data.Select(FrameHelpers.transformColumn x.vectorBuilder rowCmd)
     Frame(newRowIndex, x.ColumnIndex, newData)
 
+
+/// Type alias for a data frame with string-indexed columns
+type Frame<'R when 'R : equality> = Frame<'R, string>
+
+
 module internal Reflection = 
   open System.Linq
   open System.Linq.Expressions
@@ -440,12 +445,17 @@ module internal Reflection =
 
 [<AutoOpen>]
 module FSharp =
+  open System
+
   type Series = 
     static member ofObservations(observations) = 
       Series(Seq.map fst observations, Seq.map snd observations)
     static member ofValues(values) = 
       let keys = values |> Seq.mapi (fun i _ -> i)
       Series(keys, values)
+    static member ofNullables(values:seq<Nullable<_>>) = 
+      let keys = values |> Seq.mapi (fun i _ -> i)
+      Series(keys, values).Select(fun kvp -> kvp.Value.Value)
     
   type Frame = 
     static member ofRecords (values:seq<'T>) =

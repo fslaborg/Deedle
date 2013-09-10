@@ -126,8 +126,8 @@ module Series =
   // Counting & checking if values are present
   // ----------------------------------------------------------------------------------------------
 
-  let countValues (series:Series<'K, 'T>) = series.Count
-  let countKeys (series:Series<'K, 'T>) = series.CountOptional
+  let countValues (series:Series<'K, 'T>) = series.CountValues
+  let countKeys (series:Series<'K, 'T>) = series.CountKeys
 
   let hasAll keys (series:Series<'K, 'T>) = 
     keys |> Seq.forall (fun k -> series.TryGet(k).IsSome)
@@ -320,6 +320,12 @@ module Frame =
 
   let inline sum (frame:Frame<'TRowKey, 'TColKey>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Series.sum)
+
+  let inline countValues (frame:Frame<'TRowKey, 'TColKey>) = 
+    frame.GetColumns<obj>() |> Series.map (fun _ -> Series.countValues)
+
+  let countKeys (frame:Frame<'TRowKey, 'TColKey>) = 
+    frame.RowIndex.Keys |> Seq.length
 
   let inline sdv (frame:Frame<'TRowKey, 'TColKey>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Series.sdv)
