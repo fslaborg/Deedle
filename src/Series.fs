@@ -88,8 +88,10 @@ and Series<'K, 'V when 'K : equality>
     let lookup = defaultArg lookup Lookup.Exact
     let address = index.Lookup(key, lookup, fun addr -> vector.GetValue(addr).HasValue) 
     match address, lookup with
-    | OptionalValue.Missing, Lookup.Exact ->
-        invalidArg "key" (sprintf "The index '%O' is not present in the series." key)
+// Maybe we do not want this:
+//
+//    | OptionalValue.Missing, Lookup.Exact ->
+//        invalidArg "key" (sprintf "The index '%O' is not present in the series." key)
     | OptionalValue.Missing, _ ->
         None
     | OptionalValue.Present(v), _ ->

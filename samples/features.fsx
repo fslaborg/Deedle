@@ -56,8 +56,8 @@ let nulls =
   |> Series.ofValues
   |> Series.map (fun _ v -> v.Value)
 
-let df = Frame.ofColumns [ "Test" => nulls ]
-df?Test
+let test = Frame.ofColumns [ "Test" => nulls ]
+test?Test
 
 [ Nullable(1); Nullable(); Nullable(3); Nullable(4) ]
 |> Series.ofNullables
@@ -151,6 +151,17 @@ let sums = peopleCountries |> Frame.sum
 sums.Observations
 |> Seq.sortBy (fun (c, v) -> -v)
 |> Chart.Column
+
+
+(* More options when working with records *)
+let recdSeries = 
+  Series.ofValues [ "Tomas"; null; "Joe"; "Eve" ]
+  |> Series.map (fun _ v -> { Name = v; Age = -1; Countries = [] })
+
+// Missing values are preserved at the right index..
+Frame.ofRecords recdSeries
+
+
 
 
 (* TEST *)

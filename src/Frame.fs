@@ -28,6 +28,14 @@ module internal FrameHelpers =
           col.Select(fun v -> System.Convert.ChangeType(v, typeof<'R>) :?> 'R) }
     |> VectorHelpers.createDispatcher
 
+  // A "generic function" that drops 
+  let getVectorRange (builder:IVectorBuilder) range : IVector -> IVector = 
+    let cmd = Vectors.GetRange(Vectors.Return 0, range)
+    { new VectorHelpers.VectorCallSite1<IVector> with
+        override x.Invoke<'T>(col:IVector<'T>) = 
+          builder.Build(cmd, [| col |]) :> IVector }
+    |> VectorHelpers.createDispatcher
+
   // A "generic function" that fills NA values
   let fillNA (def:obj) : IVector -> IVector = 
     { new VectorHelpers.VectorCallSite1<IVector> with
@@ -405,6 +413,18 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     let newData = x.Data.Select(FrameHelpers.transformColumn x.vectorBuilder rowCmd)
     Frame(newRowIndex, x.ColumnIndex, newData)
 
+  member frame.ReplaceRowIndexKeys<'TNewRowIndex when 'TNewRowIndex : equality>(keys:seq<'TNewRowIndex>) =
+    let newRowIndex = frame.indexBuilder.Create(keys, None)
+    let getRange = FrameHelpers.getVectorRange frame.vectorBuilder frame.RowIndex.Range
+    let newData = frame.Data.Select(getRange)
+    Frame(newRowIndex, frame.ColumnIndex, newData)
+
+  member frame.ReindexRowKeys(keys) = 
+    // Create empty frame with the required keys    
+    let empty = Frame<_, _>(frame.indexBuilder.Create(keys, None), frame.indexBuilder.Create([], None), frame.vectorBuilder.CreateNonOptional [||])
+    for key, series in frame.Columns.Observations do 
+      empty.AddSeries(key, series)
+    empty
 
 /// Type alias for a data frame with string-indexed columns
 type Frame<'R when 'R : equality> = Frame<'R, string>
@@ -429,12 +449,12 @@ module internal Reflection =
     match <@@ vectorBuilder.CreateNonOptional([| |]) @@> with
     | Quotations.Patterns.Call(_, mi, _) -> mi.GetGenericMethodDefinition() | _ -> failwith "Could not find vectorBuilder.CreateNonOptional"
 
-  let convertRecordSequence<'T>(data:seq<'T>) =
+  let getRecordConvertors<'T>() = 
     let recdTy = typeof<'T>
     let fields = recdTy.GetProperties() |> Seq.filter (fun p -> p.CanRead) 
     let colIndex = indexBuilder.Create<string>([ for f in fields -> f.Name ], Some false)
-    let frameData = 
-      [| for f in fields do
+    let fieldConvertors = 
+      [| for f in fields ->
           // Information about the types involved...
           let fldTy = f.PropertyType
           // Build: fun recd -> recd.<Field>
@@ -447,8 +467,14 @@ module internal Reflection =
           // Build: vectorBuilder.CreateNonOptional( ... body ... )
           let conv = Expression.Call(Expression.Constant(vectorBuilder), createNonOpt.MakeGenericMethod [| fldTy |], body)
           // Compile & run
-          let convFunc = Expression.Lambda(conv, [input]).Compile()
-          yield convFunc.DynamicInvoke( [| box data |] ) :?> IVector |]
+          Expression.Lambda(conv, [input]).Compile() |]
+    colIndex, fieldConvertors
+
+  let convertRecordSequence<'T>(data:seq<'T>) =
+    let colIndex, convertors = getRecordConvertors<'T>()
+    let frameData = 
+      [| for convFunc in convertors ->
+          convFunc.DynamicInvoke( [| box data |] ) :?> IVector |]
       |> vectorBuilder.CreateNonOptional
     Frame<int, string>(Index.Create [0 .. (Seq.length data) - 1], colIndex, frameData)
 
@@ -467,6 +493,15 @@ module FSharp =
       Series(keys, values).Select(fun kvp -> kvp.Value.Value)
     
   type Frame = 
+    static member ofRecords (series:Series<'K, 'R>) =
+      let keyValuePairs = 
+        seq { for k, v in series.ObservationsOptional do 
+                if v.HasValue then yield k, v.Value }
+      let recordsToConvert = Seq.map snd keyValuePairs
+      let frame = Reflection.convertRecordSequence<'R>(recordsToConvert)
+      let frame = frame.ReplaceRowIndexKeys(Seq.map fst keyValuePairs)
+      frame.ReindexRowKeys(series.Keys)
+
     static member ofRecords (values:seq<'T>) =
       Reflection.convertRecordSequence<'T>(values)    
     static member ofRowsOrdinal(rows:seq<#Series<_, _>>) = 
