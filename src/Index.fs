@@ -32,11 +32,13 @@ type IIndex<'K when 'K : equality> =
   abstract Lookup : 'K * Lookup * (Address -> bool) -> OptionalValue<Address>  
   abstract Mappings : seq<'K * Address>
   abstract Range : Address * Address
+  abstract KeyRange : 'K * 'K
   abstract Ordered : bool
   abstract Comparer : System.Collections.Generic.Comparer<'K>
+  abstract Builder : IIndexBuilder
   
 /// A builder represents various ways of constructing index
-type IIndexBuilder =
+and IIndexBuilder =
   abstract Create : seq<'K> * Option<bool> -> IIndex<'K>
     
   abstract GetRange : 

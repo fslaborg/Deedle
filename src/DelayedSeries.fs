@@ -163,6 +163,8 @@ type DelayedVector<'K, 'V when 'K : equality> internal (source:DelayedSource<'K,
 type DelayedIndex<'K, 'V when 'K : equality> internal (source:DelayedSource<'K, 'V>) = 
   member x.Source = source
   interface IIndex<'K> with
+    member x.Builder = DelayedIndexBuilder() :> IIndexBuilder
+    member x.KeyRange = source.Index.KeyRange
     member x.Keys = source.Index.Keys
     member x.Lookup(key, semantics, check) = source.Index.Lookup(key, semantics, check)
     member x.Mappings = source.Index.Mappings
@@ -184,7 +186,7 @@ and DelayedIndexFunction<'K, 'R when 'K : equality> =
 /// are still delegated to LinearIndexBuilder, but the `GetRange` method looks at the
 /// index and if it is DelayedIndex, then it uses the `Source` to build a new `Source`
 /// with a restricted range.
-type DelayedIndexBuilder() =
+and DelayedIndexBuilder() =
   let builder = Linear.LinearIndexBuilder.Instance
   interface IIndexBuilder with
     member x.Create(keys, ordered) = builder.Create(keys, ordered)

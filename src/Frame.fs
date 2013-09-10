@@ -114,17 +114,26 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   // ----------------------------------------------------------------------------------------------
 
   member frame.Join(otherFrame:Frame<'TRowKey, 'TColumnKey>, ?kind, ?lookup) =    
-    // Union row indices and get transformations to apply to left/right vectors
     let lookup = defaultArg lookup Lookup.Exact
+
+    let restrictToRowIndex (restriction:IIndex<_>) (sourceIndex:IIndex<_>) vector = 
+      if restriction.Ordered then
+        let min, max = rowIndex.KeyRange
+        sourceIndex.Builder.GetRange(sourceIndex, Some min, Some max, vector)
+      else sourceIndex, vector
+
+    // Union row indices and get transformations to apply to left/right vectors
     let newRowIndex, thisRowCmd, otherRowCmd = 
       match kind with 
       | Some JoinKind.Inner ->
           indexBuilder.Intersect(rowIndex, otherFrame.RowIndex, Vectors.Return 0, Vectors.Return 0)
       | Some JoinKind.Left ->
-          let otherRowCmd = indexBuilder.Reindex(otherFrame.RowIndex, rowIndex, lookup, Vectors.Return 0)
+          let otherRowIndex, vector = restrictToRowIndex rowIndex otherFrame.RowIndex (Vectors.Return 0)
+          let otherRowCmd = indexBuilder.Reindex(otherRowIndex, rowIndex, lookup, vector)
           rowIndex, Vectors.Return 0, otherRowCmd
       | Some JoinKind.Right ->
-          let thisRowCmd = indexBuilder.Reindex(rowIndex, otherFrame.RowIndex, lookup, Vectors.Return 0)
+          let thisRowIndex, vector = restrictToRowIndex otherFrame.RowIndex rowIndex (Vectors.Return 0)
+          let thisRowCmd = indexBuilder.Reindex(thisRowIndex, otherFrame.RowIndex, lookup, vector)
           otherFrame.RowIndex, thisRowCmd, Vectors.Return 0
       | Some JoinKind.Outer | None | Some _ ->
           indexBuilder.Union(rowIndex, otherFrame.RowIndex, Vectors.Return 0, Vectors.Return 0)
@@ -460,7 +469,6 @@ module FSharp =
   type Frame = 
     static member ofRecords (values:seq<'T>) =
       Reflection.convertRecordSequence<'T>(values)    
-
     static member ofRowsOrdinal(rows:seq<#Series<_, _>>) = 
       let keys = rows |> Seq.mapi (fun i _ -> i)
       Frame.FromRows(Series(keys, rows))
@@ -469,6 +477,10 @@ module FSharp =
       Frame.FromRows(Series(names, values))
     static member ofRows(rows) = 
       Frame.FromRows(rows)
+    static member ofRowKeys(keys) = 
+      let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance // TODO: Capture somewhere
+      let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
+      Frame<_>(indexBuilder.Create(keys, None), indexBuilder.Create([], None), vectorBuilder.CreateNonOptional [||])
     
     static member ofColumns(cols) = 
       Frame.FromColumns(cols)

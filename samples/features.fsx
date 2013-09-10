@@ -51,9 +51,16 @@ Filling missing values
 ----------------------
 *)
 
+let nulls =
+  [ Nullable(1); Nullable(); Nullable(3); Nullable(4) ]
+  |> Series.ofValues
+  |> Series.map (fun _ v -> v.Value)
+
+let df = Frame.ofColumns [ "Test" => nulls ]
+df?Test
+
 [ Nullable(1); Nullable(); Nullable(3); Nullable(4) ]
-|> Series.ofValues
-|> Series.sum
+|> Series.ofNullables
 
 
 let air = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/AirQuality.csv", separators=";")

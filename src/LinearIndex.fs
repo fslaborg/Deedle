@@ -17,7 +17,7 @@ open FSharp.DataFrame.Indices
 /// If a comparer is provided, then the index preserves the ordering of elements
 /// (and it assumes that 'keys' are already sorted).
 type LinearIndex<'TKey when 'TKey : equality> 
-    internal (keys:seq<'TKey>, ops:IAddressOperations, ?ordered, ?comparer) =
+    internal (keys:seq<'TKey>, ops:IAddressOperations, builder, ?ordered, ?comparer) =
 
   // Build a lookup table etc.
   let comparer = defaultArg comparer Comparer<'TKey>.Default
@@ -39,6 +39,11 @@ type LinearIndex<'TKey when 'TKey : equality>
   // Expose some internals for interface implementations...
   interface IIndex<'TKey> with
     member x.Keys = keys
+    member x.Builder = builder
+    member x.KeyRange = 
+      if not ordered then invalidOp "KeyRange is not supported for unordered index."
+      Seq.head keys, Seq.head keysArrayRev.Value
+
     /// Get the address for the specified key.
     /// The 'semantics' specifies fancy lookup methods.
     member x.Lookup(key, semantics, check) = 
@@ -122,7 +127,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
   let returnUsingAlignedSequence joined vector1 vector2 : (IIndex<_> * _ * _) = 
     // Create a new index using the sorted keys
     let ops = AddressHelpers.getAddressOperations()
-    let newIndex = LinearIndex<_>(seq { for k, _, _ in joined -> k}, ops, true)
+    let newIndex = LinearIndex<_>(seq { for k, _, _ in joined -> k}, ops, LinearIndexBuilder.Instance, true)
     let range = (newIndex :> IIndex<_>).Range
 
     // Create relocation transformations for both vectors
@@ -143,7 +148,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
   interface IIndexBuilder with
     member builder.Create<'TKey when 'TKey : equality>(keys, ordered) = 
       let ops = AddressHelpers.getAddressOperations()
-      upcast LinearIndex<'TKey>(keys, ops, ?ordered=ordered)
+      upcast LinearIndex<'TKey>(keys, ops, builder, ?ordered=ordered)
 
     member builder.Aggregate<'K, 'R, 'TNewKey when 'K : equality and 'TNewKey : equality>
         (index:IIndex<'K>, aggregation, vector, valueSel:_ * _ -> OptionalValue<'R>, keySel:_ * _ -> 'TNewKey) =
@@ -188,7 +193,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       let ops = AddressHelpers.getAddressOperations()
       let keys = Array.ofSeq index.Keys
       Array.sortInPlaceWith (fun a b -> index.Comparer.Compare(a, b)) keys
-      let newIndex = LinearIndex(keys, ops, true, index.Comparer) :> IIndex<_>
+      let newIndex = LinearIndex(keys, ops, builder, true, index.Comparer) :> IIndex<_>
       let relocations = 
         seq { for key, oldAddress in index.Mappings ->
                 let newAddress = newIndex.Lookup(key, Lookup.Exact, fun _ -> true) 
@@ -235,7 +240,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
              if newKey.HasValue then yield newKey.Value, oldAddress |]
       
       let ops = AddressHelpers.getAddressOperations()
-      let newIndex = LinearIndex<'TNewKey>(Seq.map fst newKeys, ops)
+      let newIndex = LinearIndex<'TNewKey>(Seq.map fst newKeys, ops, builder)
       let newRange = (newIndex :> IIndex<_>).Range
       let relocations = Seq.zip (ops.GenerateRange(newRange)) (Seq.map snd newKeys)
       upcast newIndex, Vectors.Relocate(vector, newRange, relocations)
@@ -255,7 +260,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           let ops = AddressHelpers.getAddressOperations()
           let newVector = Vectors.DropRange(vector, (addr, addr))
           let newKeys = index.Keys |> Seq.filter ((<>) key)
-          let newIndex = LinearIndex<_>(newKeys, ops, index.Ordered)
+          let newIndex = LinearIndex<_>(newKeys, ops, builder, index.Ordered)
           upcast newIndex, newVector
       | _ ->
           invalidArg "key" (sprintf "The key '%O' is not present in the index." key)
@@ -283,7 +288,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
         getBound hi Lookup.NearestSmaller snd
       let newKeys = ops.GetRange(index.Keys, lo, hi) |> Array.ofSeq
       let newVector = Vectors.GetRange(vector, range)
-      upcast LinearIndex<_>(newKeys, ops, index.Ordered), newVector
+      upcast LinearIndex<_>(newKeys, ops, builder, index.Ordered), newVector
 
 // --------------------------------------------------------------------------------------
 // ??
