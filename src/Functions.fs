@@ -1,5 +1,6 @@
 ﻿namespace FSharp.DataFrame
 
+/// Series module comment..
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Series = 
   open System.Linq
