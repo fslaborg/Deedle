@@ -10,7 +10,9 @@ packages/NUnit*
 packages/FsCheck*
 packages/FSharp*
 packages/MathNet*
-docs
+docs/*.html
+docs/*/*.html
+docs/data
 tools/FAKE
 *.vsp
 TestResults.xml
