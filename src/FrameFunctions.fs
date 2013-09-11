@@ -83,11 +83,13 @@ module FSharp =
       |> Frame.ofColumns
 
   let (=>) a b = a, b
+  let ($) f series = Series.mapValues f series
       
 [<AutoOpen>]
 module FrameExtensions =
   open FSharp.Data
   open ProviderImplementation
+  open FSharp.DataFrame.Vectors 
   open FSharp.Data.RuntimeImplementation
   open FSharp.Data.RuntimeImplementation.StructuralTypes
   
@@ -136,18 +138,22 @@ module FrameExtensions =
       let rowIndex = Index.Create [ 0 .. (Seq.length data.Data) - 1 ]
       Frame(rowIndex, columnIndex, Vector.Create columns)
 
-[<AutoOpen>]
-module FrameExtensions2 =
-  type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality> with
 
+  type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality> with
+    member frame.Where(condition) =
+      frame.Rows.Where(condition) |> Frame.ofRows
+      
+    member frame.Append(rowKey, row) =
+      frame.Append(Frame.ofRows [ rowKey => row ])
+      
     member frame.WithMissing(value) = 
-      let fillFunc = FrameHelpers.fillNA value
+      let fillFunc = VectorHelpers.fillNA value
       let data = frame.Data.Select fillFunc
       Frame<'TRowKey, 'TColumnKey>(frame.RowIndex, frame.ColumnIndex, data)
 
     member frame.WithOrderedRows() = 
       let newRowIndex, rowCmd = frame.IndexBuilder.OrderIndex(frame.RowIndex, Vectors.Return 0)
-      let newData = frame.Data.Select(FrameHelpers.transformColumn frame.VectorBuilder rowCmd)
+      let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
       Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
 
     member x.WithColumnIndex(columnKeys:seq<'TNewColumnKey>) =
@@ -158,12 +164,12 @@ module FrameExtensions2 =
       let columnVec = x.GetSeries<'TNewRowIndex>(column)
       let lookup addr = columnVec.Vector.GetValue(addr)
       let newRowIndex, rowCmd = x.IndexBuilder.WithIndex(x.RowIndex, lookup, Vectors.Return 0)
-      let newData = x.Data.Select(FrameHelpers.transformColumn x.VectorBuilder rowCmd)
+      let newData = x.Data.Select(VectorHelpers.transformColumn x.VectorBuilder rowCmd)
       Frame<_, _>(newRowIndex, x.ColumnIndex, newData)
 
     member frame.ReplaceRowIndexKeys<'TNewRowIndex when 'TNewRowIndex : equality>(keys:seq<'TNewRowIndex>) =
       let newRowIndex = frame.IndexBuilder.Create(keys, None)
-      let getRange = FrameHelpers.getVectorRange frame.VectorBuilder frame.RowIndex.Range
+      let getRange = VectorHelpers.getVectorRange frame.VectorBuilder frame.RowIndex.Range
       let newData = frame.Data.Select(getRange)
       Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
 
@@ -174,34 +180,42 @@ module FrameExtensions2 =
         empty.AddSeries(key, series)
       empty
 
-    //member frame.Where()
+    member frame.GroupRowsBy<'TGroup when 'TGroup : equality>(key) =
+      frame.Rows |> Series.groupInto (fun _ v -> v.GetAs<'TGroup>(key)) (fun k g -> g |> Frame.ofRows)
 
+    member frame.GroupRowsInto<'TGroup when 'TGroup : equality>(key, f:System.Func<_, _, _>) =
+      frame.Rows |> Series.groupInto (fun _ v -> v.GetAs<'TGroup>(key)) (fun k g -> f.Invoke(k, g |> Frame.ofRows))
 
-
-type Column<'T> = C
-
-[<AutoOpen>]
-module ColumnExtensions = 
-  let column<'T> : Column<'T> = C
+type column<'T>(value:obj) =
+  member x.Value = value
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]    
 module Frame = 
+  open FSharp.DataFrame.Internal
+
   // ----------------------------------------------------------------------------------------------
   // Grouping
   // ----------------------------------------------------------------------------------------------
 
-  let groupRowsByInto column f (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.Rows |> Series.groupByInto 
-      (fun _ v -> v.Get(column))
-      (fun k g -> g |> Frame.ofRows |> f |> Some)
+  let groupRowsInto column f (frame:Frame<'TRowKey, 'TColKey>) = 
+    frame.Rows |> Series.groupInto 
+      (fun _ v -> v.Get(column)) 
+      (fun k g -> g |> Frame.ofRows |> f)
 
   let groupRowsBy column (frame:Frame<'TRowKey, 'TColKey>) = 
-    groupRowsByInto column id frame
+    groupRowsInto column id frame
 
   //let shiftRows offset (frame:Frame<'TRowKey, 'TColKey>) = 
   //  frame.Columns 
   //  |> Series.map (fun k col -> Series.shift offset col)
   //  |> Frame.ofColumns
+
+  let takeLast count (frame:Frame<'TRowKey, 'TColKey>) = 
+    frame.Rows |> Series.takeLast count |> Frame.ofRows
+
+  let dropMissing (frame:Frame<'TRowKey, 'TColKey>) = 
+    frame.RowsDense |> Series.dropMissing |> Frame.ofRows
+
 
   // ----------------------------------------------------------------------------------------------
   // Wrappers that simply call member functions of the data frame
@@ -292,8 +306,8 @@ module Frame =
 
   /// Creates a new data frame that uses the specified column as an row index.
   [<CompiledName("WithRowIndex")>]
-  let withRowIndex (columnType:Column<'TNewRowKey>) column (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.WithRowIndex<'TNewRowKey>(column)
+  let withRowIndex (column:column<'TNewRowKey>) (frame:Frame<'TRowKey, 'TColKey>) = 
+    frame.WithRowIndex<'TNewRowKey>(unbox<'TColKey> column.Value)
 
   /// Creates a new data frame that uses the specified list of keys as a new column index.
   [<CompiledName("WithColumnKeys")>]
@@ -318,6 +332,13 @@ module Frame =
     frame.WithMissing(defaultValue)
 
   // ----------------------------------------------------------------------------------------------
+  // TBD
+  // ----------------------------------------------------------------------------------------------
+
+  let inline filterRows f (frame:Frame<'TRowKey, 'TColKey>) = 
+    frame.Where(fun kvp -> f kvp.Key kvp.Value) 
+
+  // ----------------------------------------------------------------------------------------------
   // Additional functions for working with data frames
   // ----------------------------------------------------------------------------------------------
 
@@ -335,6 +356,9 @@ module Frame =
 
   let inline sdv (frame:Frame<'TRowKey, 'TColKey>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Series.sdv)
+
+  let inline diff offset (frame:Frame<'TRowKey, 'TColKey>) = 
+    frame.Columns |> Series.mapValues (fun s -> Series.diff offset (s.As<float>())) |> Frame.ofColumns
 
 
 [<AutoOpen>]

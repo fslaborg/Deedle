@@ -50,10 +50,10 @@ and Series<'K, 'V when 'K : equality>
     member x.Vector = vector :> IVector
     member x.Index = index
 
-  interface IFormattable with
+  interface IFsiFormattable with
     member series.Format() = 
       if vector.SuppressPrinting then "(Suppressed)" else
-        seq { for item in series.ObservationsOptional |> Seq.startAndEnd 10 10 do
+        seq { for item in series.ObservationsOptional |> Seq.startAndEnd Formatting.StartItemCount Formatting.EndItemCount  do
                 match item with 
                 | Choice1Of3(k, v) | Choice3Of3(k, v) -> yield [ k.ToString(); v.ToString() ]
                 | Choice2Of3() -> yield [ "..."; "..."] }
@@ -149,6 +149,13 @@ and Series<'K, 'V when 'K : equality>
              with :? ValueMissingException -> OptionalValue.Missing ) |]
     Series<'K, 'R>(index, vectorBuilder.CreateOptional(newVector), vectorBuilder, indexBuilder )
 
+  member x.SelectKeys<'R when 'R : equality>(f:System.Func<KeyValuePair<'K, OptionalValue<'V>>, 'R>) = 
+    let newKeys =
+      [| for key, addr in index.Mappings -> 
+           f.Invoke(KeyValuePair(key, vector.GetValue(addr))) |]
+    let newIndex = indexBuilder.Create(newKeys, None)
+    Series<'R, _>(newIndex, vector, vectorBuilder, indexBuilder )
+
   member x.SelectOptional<'R>(f:System.Func<KeyValuePair<'K, OptionalValue<'V>>, OptionalValue<'R>>) = 
     let newVector =
       index.Mappings |> Array.ofSeq |> Array.map (fun (key, addr) ->
@@ -161,18 +168,20 @@ and Series<'K, 'V when 'K : equality>
   member x.DropMissing() =
     x.WhereOptional(fun (KeyValue(k, v)) -> v.HasValue)
 
-  member x.Aggregate(aggregation, valueSelector:Func<_, _>, ?keySelector:Func<_, _>) =
+  // Seq.head
+  member x.Aggregate<'TNewKey, 'R when 'TNewKey : equality>(aggregation, valueSelector:Func<_, _>, keySelector:Func<_, _>) =
     let newIndex, newVector = 
       indexBuilder.Aggregate
         ( x.Index, aggregation, Vectors.Return 0, 
           (fun (kind, index, cmd) -> 
               let window = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
-              valueSelector.Invoke(DataSegment(kind, window))),
+              OptionalValue(valueSelector.Invoke(DataSegment(kind, window)))),
           (fun (kind, index, cmd) -> 
-              match keySelector with 
-              | None -> index.Keys |> Seq.head
-              | Some f -> f.Invoke(DataSegment(kind, Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)))) )
-    Series<'K, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
+              keySelector.Invoke(DataSegment(kind, Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)))) )
+    Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
+
+  member x.Aggregate<'R>(aggregation, valueSelector) =
+    x.Aggregate<'K, 'R>(aggregation, valueSelector, Func<_, _>(fun k -> k.Data.Keys |> Seq.head))
 
   member x.GroupBy(keySelector, valueSelector) =
     let newIndex, newVector = 
@@ -335,6 +344,11 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
   member x.TryGetAs<'R>(column) : 'R option = 
     x.TryGet(column) |> Option.map (fun v -> System.Convert.ChangeType(v, typeof<'R>) |> unbox)
   static member (?) (series:ObjectSeries<_>, name:string) = series.GetAs<float>(name)
+
+  member x.As<'R>() =
+    match box vector with
+    | :? IVector<'R> as vec -> Series(index, vec, vectorBuilder, indexBuilder)
+    | _ -> Series(index, VectorHelpers.changeType vector, vectorBuilder, indexBuilder)
 
 // ------------------------------------------------------------------------------------------------
 // Construction

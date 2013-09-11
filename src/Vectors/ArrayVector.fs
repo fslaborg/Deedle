@@ -27,7 +27,7 @@ type ArrayVectorBuilder() =
   
   /// A simple helper that creates IVector from ArrayVectorData
   let av data = ArrayVector(data) :> IVector<_>
-  
+
   /// Treat vector as containing optionals
   let (|AsVectorOptional|) = function
     | VectorOptional d -> d

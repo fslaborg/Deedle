@@ -95,12 +95,35 @@ type DataSegmentKind = Complete | Incomplete
 ///
 /// If you do not need to distinguish the two cases, you can use the `Data` property
 /// to get the array representing the segment data.
-type DataSegment<'T>(kind:DataSegmentKind, data:'T) = 
+type DataSegment<'T> = 
+  | DataSegment of DataSegmentKind * 'T
   /// Returns the data associated with the segment
   /// (for boundary segment, this may be smaller than the required window size)
-  member x.Data = data
+  member x.Data = let (DataSegment(_, data)) = x in data
   /// Return the kind of this segment
-  member x.Kind = kind
+  member x.Kind = let (DataSegment(kind, _)) = x in kind
+
+
+/// Provides helper functions and active patterns for working with `DataSegment` values
+module DataSegment = 
+  /// Complete active pattern that makes it possible to write functions that behave 
+  /// differently for complete and incomplete segments. For example, the following 
+  /// returns zero for incomplete segments:
+  ///
+  ///     let sumSegmentOrZero = function
+  ///       | DataSegment.Complete(value) -> Series.sum value
+  ///       | DataSegment.Incomplete _ -> 0.0
+  ///
+  let (|Complete|Incomplete|) (ds:DataSegment<_>) =
+    if ds.Kind = DataSegmentKind.Complete then Complete(ds.Data)
+    else Incomplete(ds.Data)
+
+  /// Returns the data property of the specified `DataSegment<T>`
+  let data (ds:DataSegment<_>) = ds.Data
+
+  /// Returns the kind property of the specified `DataSegment<T>`
+  let kind (ds:DataSegment<_>) = ds.Kind
+
 
 // --------------------------------------------------------------------------------------
 // OptionalValue module (to be used from F#)
@@ -303,6 +326,25 @@ module Seq =
   let headOrNone (input:seq<_>) = 
     (input |> Seq.map Some).FirstOrDefault()
 
+  /// Returns the specified number of elements from the end of the sequence
+  /// Note that this needs to store the specified number of elements in memory
+  /// and it needs to iterate over the entire sequence.
+  let lastFew count (input:seq<_>) = 
+    let cache = Array.zeroCreate count 
+    let mutable cacheCount = 0
+    let mutable cacheIndex = 0
+    for v in input do 
+      cache.[cacheIndex] <- v
+      cacheCount <- cacheCount + 1
+      cacheIndex <- (cacheIndex + 1) % count
+    let available = min cacheCount count
+    cacheIndex <- (cacheIndex - available + count) % count
+    let cacheIndex = cacheIndex
+    seq { for i in 0 .. available - 1 do yield cache.[(cacheIndex + i) % count] }
+    
+  // lastFew 3 List.empty<int> |> List.ofSeq = []
+  // lastFew 3 [ 1 .. 10 ]  |> List.ofSeq = [ 8; 9; 10]
+
   /// Calls the `GetEnumerator` method. Simple function to guide type inference.
   let getEnumerator (s:seq<_>) = s.GetEnumerator()
 
@@ -461,11 +503,13 @@ module Seq =
     if not (en.MoveNext()) then true
     else isSorted en.Current en
 
-  /// Align two ordered sequences of key * address pairs and produce a 
+  /// Align two ordered sequences of `Key * Address` pairs and produce a 
   /// collection that contains three-element tuples consisting of: 
+  ///
   ///   * ordered keys (from one or the ohter sequence)
   ///   * optional address of the key in the first sequence
   ///   * optional address of the key in the second sequence
+  ///
   let alignWithOrdering (seq1:seq<'T * 'TAddress>) (seq2:seq<'T * 'TAddress>) (comparer:IComparer<_>) = seq {
     let withIndex seq = Seq.mapi (fun i v -> i, v) seq
     use en1 = seq1.GetEnumerator()
@@ -498,7 +542,10 @@ module Seq =
           yield! next () }
     yield! next () }
 
-  let unionWithOrdering (seq1:seq<'T * 'TAddress>) (seq2:seq<'T * 'TAddress>) = seq {
+  /// Align two unordered sequences of `Key * Address` pairs and produce a collection
+  /// that contains three-element tuples consisting of keys, optional address in the
+  /// first sequence & optional address in the second sequence. (See also `alignWithOrdering`)
+  let alignWithoutOrdering (seq1:seq<'T * 'TAddress>) (seq2:seq<'T * 'TAddress>) = seq {
     let dict = Dictionary<_, _>()
     for key, addr in seq1 do
       dict.[key] <- (Some addr, None)
@@ -509,24 +556,17 @@ module Seq =
     for (KeyValue(k, (l, r))) in dict do
       yield k, l, r }
 
-(*
-alignWithOrdering [ 'a'; 'd' ] [ 'b'; 'c' ] |> List.ofSeq
-alignWithOrdering [ 'd' ] [ 'a'; 'b'; 'c' ] |> List.ofSeq
-alignWithOrdering [ 'a'; 'b' ] [ 'c'; 'd' ] |> List.ofSeq
-alignWithOrdering [ 'a'; 'c'; 'd'; 'e' ] [ 'a'; 'b'; 'c'; 'e' ] |> List.ofSeq
 
-alignWithOrdering [ ("b", 0); ("c", 1); ("d", 2) ] [ ("a", 0); ("b", 1); ("c", 2) ] (Comparer<string>.Default) |> List.ofSeq = 
-  [("a", None, Some 0); ("b", Some 0, Some 1); ("c", Some 1, Some 2); ("d", Some 2, None)]
-
-unionWithOrdering [ ("b", 0); ("c", 1); ("d", 2) ] [ ("b", 1); ("c", 2); ("a", 0); ] |> List.ofSeq |> set =
-  set [("b", Some 0, Some 1); ("c", Some 1, Some 2); ("d", Some 2, None); ("a", None, Some 0)]
-*)
-
-type IFormattable =
+/// An interface implemented by types that support nice formatting for F# Interactive
+/// (The `FSharp.DataFrame.fsx` file registers an FSI printer using this interface.)
+type IFsiFormattable =
   abstract Format : unit -> string
 
 module Formatting = 
-  let ItemCount = 10
+  /// Maximal number of items to be printed at the beginning of a series/frame
+  let StartItemCount = 15
+  /// Maximal number of items to be printed at the end of a series/frame
+  let EndItemCount = 15
 
   open System
   open System.IO

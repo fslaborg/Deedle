@@ -15,37 +15,7 @@ type JoinKind =
   | Left = 2
   | Right = 3
 
-module internal FrameHelpers =
-  // A "generic function" that boxes all values of a vector (IVector<int, 'T> -> IVector<int, obj>)
-  let boxVector v = VectorHelpers.boxVector v
-  // A "generic function" that transforms a generic vector using specified transformation
-  let transformColumn vb cmd = VectorHelpers.transformColumn vb cmd
-
-  // A "generic function" that changes the type of vector elements
-  let changeType<'R> : IVector -> IVector<'R> = 
-    { new VectorHelpers.VectorCallSite1<IVector<'R>> with
-        override x.Invoke<'T>(col:IVector<'T>) = 
-          col.Select(fun v -> System.Convert.ChangeType(v, typeof<'R>) :?> 'R) }
-    |> VectorHelpers.createDispatcher
-
-  // A "generic function" that drops 
-  let getVectorRange (builder:IVectorBuilder) range : IVector -> IVector = 
-    let cmd = Vectors.GetRange(Vectors.Return 0, range)
-    { new VectorHelpers.VectorCallSite1<IVector> with
-        override x.Invoke<'T>(col:IVector<'T>) = 
-          builder.Build(cmd, [| col |]) :> IVector }
-    |> VectorHelpers.createDispatcher
-
-  // A "generic function" that fills NA values
-  let fillNA (def:obj) : IVector -> IVector = 
-    { new VectorHelpers.VectorCallSite1<IVector> with
-        override x.Invoke<'T>(col:IVector<'T>) = 
-          col.SelectOptional(function
-            | OptionalValue.Missing -> OptionalValue(unbox def)
-            | OptionalValue.Present v -> OptionalValue(v)) :> IVector }
-    |> VectorHelpers.createDispatcher
-  
-open FrameHelpers
+open VectorHelpers
 
 /// A frame contains one Index, with multiple Vecs
 /// (because this is dynamic, we need to store them as IVec)
@@ -277,11 +247,11 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   static member (?) (frame:Frame<_, _>, column) : Series<'T, float> = 
     frame.GetSeries<float>(column)
 
-  interface IFormattable with
+  interface IFsiFormattable with
     member frame.Format() = 
       seq { yield ""::[ for colName, _ in frame.ColumnIndex.Mappings do yield colName.ToString() ]
             let rows = frame.Rows
-            for item in frame.RowIndex.Mappings |> Seq.startAndEnd 10 10 do
+            for item in frame.RowIndex.Mappings |> Seq.startAndEnd Formatting.StartItemCount Formatting.EndItemCount do
               match item with 
               | Choice2Of3() ->
                   yield ":"::[for i in 1 .. data.DataSequence |> Seq.length -> "..."]

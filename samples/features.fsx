@@ -19,10 +19,18 @@ Fancy windowing & chunking
 --------------------------
 *)
 
-let s = Series.ofValues [ 'a' .. 'j' ]
-s |> Series.windowSize (3, Boundary.Skip) |> Series.map (fun _ v -> String(Array.ofSeq v.Data.Values))
-s |> Series.windowSize (3, Boundary.AtBeginning) |> Series.map (fun _ v -> String(Array.ofSeq v.Data.Values))
+let st = Series.ofValues [ 'a' .. 'j' ]
+st |> Series.windowSize (3, Boundary.Skip) |> Series.map (fun _ v -> String(Array.ofSeq v.Values))
+st |> Series.windowSize (3, Boundary.AtBeginning) |> Series.map (fun _ v -> String(Array.ofSeq v.Values))
+st |> Series.windowSize (3, Boundary.AtEnding) |> Series.map (fun _ v -> String(Array.ofSeq v.Values))
 
+let concatString = function
+  | DataSegment.Complete(ser) -> String(ser |> Series.values |> Array.ofSeq)
+  | DataSegment.Incomplete(ser) -> String(ser |> Series.values |> Array.ofSeq).PadRight(3, '-')
+
+st |> Series.chunkSizeInto (3, Boundary.Skip) concatString
+st |> Series.chunkSizeInto (3, Boundary.AtBeginning) concatString
+st |> Series.chunkSizeInto (3, Boundary.AtEnding) concatString
 
 (** 
 Grouping 
@@ -83,14 +91,14 @@ air?OzoneFilled <-
 // Might not be super usefu but does the trick
 ozone |> Series.fillMissingWith 0.0
 // This works
-ozone |> Series.fillMissing Lookup.NearestGreater
+ozone |> Series.fillMissing Direction.Backward
 // but here, the first value is still missing
-ozone |> Series.fillMissing Lookup.NearestSmaller
+ozone |> Series.fillMissing Direction.Forward
 // we can be more explicit and write
 ozone |> Series.fillMissingUsing (fun k -> 
   defaultArg (ozone.TryGet(k, Lookup.NearestSmaller)) 0.0)
 // Or we can drop the first value
-ozone |> Series.fillMissing Lookup.NearestSmaller
+ozone |> Series.fillMissing Direction.Forward
       |> Series.dropMissing
 
 
@@ -141,12 +149,13 @@ type Person =
 let people = 
   [ { Name = "Joe"; Age = 51; Countries = [ "UK"; "US"; "UK"] }
     { Name = "Tomas"; Age = 28; Countries = [ "CZ"; "UK"; "US"; "CZ" ] }
-    { Name = "Eve"; Age = 2; Countries = [ "FR" ] } ]
+    { Name = "Eve"; Age = 2; Countries = [ "FR" ] }
+    { Name = "Suzanne"; Age = 15; Countries = [ "US" ] } ]
 
 // Turn the list of records into data frame and use 
 // the 'Name' column (containing strings) as the key
 let dfList = Frame.ofRecords people 
-let df = dfList |> Frame.withRowIndex column<string> "Name"
+let df = dfList |> Frame.withRowIndex (column<string>("Name"))
 
 let peopleCountries = 
   df.GetSeries<string list>("Countries")
@@ -169,6 +178,14 @@ let recdSeries =
 
 // Missing values are preserved at the right index..
 Frame.ofRecords recdSeries
+
+
+
+let dfPeople = Frame.ofRecords people 
+dfPeople?CountryCount <- List.length $ dfPeople.GetSeries<string list>("Countries")
+dfPeople |> Frame.groupRowsBy
+
+
 
 
 

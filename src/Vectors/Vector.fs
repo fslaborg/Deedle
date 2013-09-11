@@ -58,17 +58,18 @@ module VectorExtensions =
 module internal VectorHelpers =
   /// Pretty printer for vectors. This uses the 'Data' property
   let prettyPrintVector (vector:IVector<'T>) = 
-    let printSequence kind (input:seq<string>) dots = 
+    let printSequence kind (input:seq<string>) = 
       let sb = Text.StringBuilder(kind + " [")
-      for it in input |> Seq.truncate Formatting.ItemCount do 
-        sb.Append(" ").Append(it).Append(";") |> ignore
-      sb.Remove(sb.Length - 1, 1) |> ignore
-      if dots then sb.Append("; ... ]").ToString() 
-      else sb.Append(" ]").ToString()
+      for it in input |> Seq.startAndEnd Formatting.StartItemCount Formatting.EndItemCount do
+        match it with 
+        | Choice1Of3(v) | Choice3Of3(v) -> 
+            sb.Append(" ").Append(v).Append(";") |> ignore
+        | Choice2Of3() -> sb.Append(" ... ") |> ignore
+      sb.Append(" ]").ToString()
     match vector.Data with
-    | VectorData.DenseList list -> printSequence "dense" (Seq.map (fun v -> v.ToString()) list) (list.Count > Formatting.ItemCount)
-    | VectorData.SparseList list -> printSequence "sparse" (Seq.map (fun v -> v.ToString()) list) (list.Count > Formatting.ItemCount)
-    | VectorData.Sequence list -> printSequence "seq" (Seq.map (fun v -> v.ToString()) list) (Seq.length list > Formatting.ItemCount)
+    | VectorData.DenseList list -> printSequence "dense" (Seq.map (fun v -> v.ToString()) list) 
+    | VectorData.SparseList list -> printSequence "sparse" (Seq.map (fun v -> v.ToString()) list) 
+    | VectorData.Sequence list -> printSequence "seq" (Seq.map (fun v -> v.ToString()) list) 
 
   /// Create a new vector that delegates all functionality to a ref vector
   let delegatedVector (vector:IVector<'TValue> ref) =
@@ -243,3 +244,28 @@ module VectorHelpers =
         override x.Invoke<'T>(col:IVector<'T>) = 
           vectorBuilder.Build<'T>(rowCmd, [| col |]) :> IVector }
     |> VectorHelpers.createDispatcher
+
+  // A "generic function" that changes the type of vector elements
+  let changeType<'R> : IVector -> IVector<'R> = 
+    { new VectorHelpers.VectorCallSite1<IVector<'R>> with
+        override x.Invoke<'T>(col:IVector<'T>) = 
+          col.Select(fun v -> System.Convert.ChangeType(v, typeof<'R>) :?> 'R) }
+    |> VectorHelpers.createDispatcher
+
+  // A "generic function" that drops 
+  let getVectorRange (builder:IVectorBuilder) range : IVector -> IVector = 
+    let cmd = VectorConstruction.GetRange(VectorConstruction.Return 0, range)
+    { new VectorHelpers.VectorCallSite1<IVector> with
+        override x.Invoke<'T>(col:IVector<'T>) = 
+          builder.Build(cmd, [| col |]) :> IVector }
+    |> VectorHelpers.createDispatcher
+
+  // A "generic function" that fills NA values
+  let fillNA (def:obj) : IVector -> IVector = 
+    { new VectorHelpers.VectorCallSite1<IVector> with
+        override x.Invoke<'T>(col:IVector<'T>) = 
+          col.SelectOptional(function
+            | OptionalValue.Missing -> OptionalValue(unbox def)
+            | OptionalValue.Present v -> OptionalValue(v)) :> IVector }
+    |> VectorHelpers.createDispatcher
+  

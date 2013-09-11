@@ -25,8 +25,6 @@ these do not actually have to be strings). So, to create a data frame, we first 
 to create a series:
 *)
 
-Frame([1], Series.ofValues [1;2;3])
-
 open System
 
 /// Generate date range from 'first' with 'count' days

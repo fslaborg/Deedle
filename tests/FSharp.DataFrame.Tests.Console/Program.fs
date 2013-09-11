@@ -7,7 +7,7 @@
 open FSharp.DataFrame
 open System
 open System
-open MathNet.Numerics.Distributions
+//open MathNet.Numerics.Distributions
 
 let timed f = 
   let sw = System.Diagnostics.Stopwatch.StartNew()
