@@ -14,6 +14,15 @@ open System
 open FSharp.DataFrame
 open FSharp.Charting
 
+(**
+Fancy windowing & chunking
+--------------------------
+*)
+
+let s = Series.ofValues [ 'a' .. 'j' ]
+s |> Series.windowSize (3, Boundary.Skip) |> Series.map (fun _ v -> String(Array.ofSeq v.Data.Values))
+s |> Series.windowSize (3, Boundary.AtBeginning) |> Series.map (fun _ v -> String(Array.ofSeq v.Data.Values))
+
 
 (** 
 Grouping 

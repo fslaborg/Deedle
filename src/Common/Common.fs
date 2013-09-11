@@ -3,60 +3,168 @@
 open System
 
 // --------------------------------------------------------------------------------------
-// Nullable value
+// OptionalValue<T> type
 // --------------------------------------------------------------------------------------
 
+/// Value type that represents a potentially missing value. This is similar to 
+/// `System.Nullable<T>`, but does not restrict the contained value to be a value
+/// type, so it can be used for storing values of any types. When obtained from
+/// `DataFrame<R, C>` or `Series<K, T>`, the `Value` will never be `Double.NaN` or `null`
+/// (but this is not, in general, checked when constructing the value).
+///
+/// The type is only used in C#-friendly API. F# operations generally use expose
+/// standard F# `option<T>` type instead. However, there the `OptionalValue` module
+/// contains helper functions for using this type from F# as well as `Missing` and
+/// `Present` active patterns.
 [<Struct>]
-type OptionalValue<'T>(hasValue:bool, value:'T) = 
+type OptionalValue<'T> private (hasValue:bool, value:'T) = 
+  /// Gets a value indicating whether the current `OptionalValue<T>` has a value
   member x.HasValue = hasValue
+
+  /// Returns the value stored in the current `OptionalValue<T>`. 
+  /// Exceptions:
+  ///   `InvalidOperationException` - Thrown when `HasValue` is `false`.
   member x.Value = 
     if hasValue then value
     else invalidOp "OptionalValue.Value: Value is not available" 
+  
+  /// Returns the value stored in the current `OptionalValue<T>` or 
+  /// the default value of the type `T` when a value is not present.
   member x.ValueOrDefault = value
+
+  /// Creates a new instance of `OptionalValue<T>` that contains  
+  /// the specified `T` value .
   new (value:'T) = OptionalValue(true, value)
+
+  /// Returns a new instance of `OptionalValue<T>` that does not contain a value.
   static member Missing = OptionalValue(false, Unchecked.defaultof<'T>)
+
+  /// Prints the value or "<null>" when the value is present, but is `null`
+  /// or "<missing>" when the value is not present (`HasValue = false`).
   override x.ToString() = 
     if hasValue then 
       if Object.Equals(null, value) then "<null>"
       else value.ToString() 
-    else "missing"
+    else "<missing>"
 
+
+/// Specifies in which direction should we look when performing operations such as
+/// `Series.Pairwise`. For example consider:
+///
+///     let abc = Series.ofObservations [ 1 => "a"; 2 => "b"; 3 => "c" ]
+///
+///     // When looking forward, observations have key of the first element
+///     abc.Pairwise(direction=Direction.Forward) = 
+///       Series.ofObservations [ 1 => ("a", "b"); 2 => ("b", "c") ]
+///
+///     // When looking backward, observations have key of the second element
+///     abc.Pairwise(direction=Direction.Backward) = 
+///       Series.ofObservations [ 2 => ("a", "b"); 3 => ("b", "c") ]
+///
+type Direction = 
+  | Forward = 1 
+  | Backward = 2
+
+/// Represents boundary behaviour for operations such as floating window. The type
+/// specifies whether incomplete windows (of smaller than required length) should be
+/// produced at the beginning (`AtBeginning`) or at the end (`AtEnding`) or
+/// skipped (`Skip`). For chunking, combinations are allowed too - to skip incomplete
+/// chunk at the beginning, use `Boundary.Skip ||| Boundary.AtBeginning`.
+[<Flags>]
+type Boundary =
+  | AtBeginning = 1
+  | AtEnding = 2
+  | Skip = 4
+
+/// Represents a kind of `DataSegment<T>`. See that type for more information.
+type DataSegmentKind = Complete | Incomplete
+
+/// Represents a segment of a series or sequence. The value is returned from 
+/// various functions that aggregate data into chunks or floating windows. The 
+/// `Complete` case represents complete segment (e.g. of the specified size) and
+/// `Boundary` represents segment at the boundary (e.g. smaller than the required
+/// size). For example (using internal `windowed` function):
+///
+//      open FSharp.DataFrame.Internal
+///
+///     Seq.windowedWithBounds 3 Boundary.AtBeginning [ 1; 2; 3; 4 ] |> Array.ofSeq = 
+///       [| DataSegment(Incomplete, [| 1 |])
+///          DataSegment(Incomplete, [| 1; 2 |])
+///          DataSegment(Complete [| 1; 2; 3 |])
+///          DataSegment(Complete [| 2; 3; 4 |]) |]
+///
+/// If you do not need to distinguish the two cases, you can use the `Data` property
+/// to get the array representing the segment data.
+type DataSegment<'T>(kind:DataSegmentKind, data:'T) = 
+  /// Returns the data associated with the segment
+  /// (for boundary segment, this may be smaller than the required window size)
+  member x.Data = data
+  /// Return the kind of this segment
+  member x.Kind = kind
+
+// --------------------------------------------------------------------------------------
+// OptionalValue module (to be used from F#)
+// --------------------------------------------------------------------------------------
+
+/// Provides various helper functions for using the `OptionalValue<T>` type from F#
+/// (The functions are similar to those in the standard `Option` module).
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module OptionalValue = 
-  let inline bind f (input:OptionalValue<_>) = 
+
+  /// If the `OptionalValue<T>` does not contain a value, then returns a new 
+  /// `OptionalValue<R>.Empty`. Otherwise, returns the result of applying the 
+  /// function `f` to the value contained in the provided optional value.
+  [<CompiledName("Bind")>]
+  let inline bind f (input:OptionalValue<'T>) : OptionalValue<'R> = 
     if input.HasValue then f input.Value
     else OptionalValue.Missing
 
-  let inline map f (input:OptionalValue<_>) = 
+  /// If the `OptionalValue<T>` does not contain a value, then returns a new 
+  /// `OptionalValue<R>.Empty`. Otherwise, returns the result `OptionalValue<R>`
+  /// containing the result of applying the function `f` to the value contained 
+  /// in the provided optional value.
+  [<CompiledName("Map")>]
+  let inline map f (input:OptionalValue<'T>) : OptionalValue<'R> = 
     if input.HasValue then OptionalValue(f input.Value)
     else OptionalValue.Missing
 
-  let inline ofSingletonList list = 
-    match list with
-    | [it] -> OptionalValue(it)
-    | [] -> OptionalValue.Missing
-    | _ -> invalidArg "list" "OptionalValue.ofSingletonList requires singleton or empty list"
-
-  let inline ofTuple (b, value) =
+  /// Creates `OptionalValue<T>` from a tuple of type `bool * 'T`. This function
+  /// can be used with .NET methods that use `out` arguments. For example:
+  ///
+  ///     Int32.TryParse("42") |> OptionalValue.ofTuple
+  ///
+  [<CompiledName("OfTuple")>]
+  let inline ofTuple (b, value:'T) =
     if b then OptionalValue(value) else OptionalValue.Missing
 
+  /// Turns the `OptionalValue<T>` into a corresponding standard F# `option<T>` value
   let inline asOption (value:OptionalValue<'T>) = 
     if value.HasValue then Some value.Value else None
 
-  let inline ofOption opt = 
+  /// Turns a standard F# `option<T>` value into a corresponding `OptionalValue<T>`
+  let inline ofOption (opt:option<'T>) = 
     match opt with
     | None -> OptionalValue.Missing
     | Some v -> OptionalValue(v)
 
+  /// Complete active pattern that can be used to pattern match on `OptionalValue<T>`.
+  /// For example:
+  ///
+  ///     let optVal = OptionalValue(42)
+  ///     match optVal with
+  ///     | OptionalValue.Missing -> printfn "Empty"
+  ///     | OptionalValue.Present(v) -> printfn "Contains %d" v
+  ///
   let (|Missing|Present|) (optional:OptionalValue<'T>) =
     if optional.HasValue then Present(optional.Value)
     else Missing
 
+
 // --------------------------------------------------------------------------------------
-// Internals    
+// Internals - working with missing values   
 // --------------------------------------------------------------------------------------
 
-namespace FSharp.DataFrame.Common
+namespace FSharp.DataFrame.Internal
 
 open System
 open System.Linq
@@ -64,7 +172,15 @@ open System.Drawing
 open FSharp.DataFrame
 open System.Collections.Generic
 
+/// Utility functions for identifying missing values. The `isNA` function 
+/// can be used to test whether a value represents a missing value - this includes
+/// the `null` value, `Nullable<T>` value with `HasValue = false` and 
+/// `Single.NaN` as well as `Double.NaN`.
+///
+/// The functions in this module are not intended to be called directly.
 module MissingValues =
+
+  // TODO: Possibly optimize (in some cases) using static member constraints?
 
   let isNA<'T> () =
     let ty = typeof<'T>
@@ -77,22 +193,30 @@ module MissingValues =
     nanTest
 
   let inline containsNA (data:'T[]) = 
-    let isNA = isNA<'T>() // TODO: Optimize using static member constraints
+    let isNA = isNA<'T>() 
     Array.exists isNA data
 
   let inline containsMissingOrNA (data:OptionalValue<'T>[]) = 
-    let isNA = isNA<'T>() // TODO: Optimize using static member constraints
+    let isNA = isNA<'T>() 
     data |> Array.exists (fun v -> not v.HasValue || isNA v.Value)
 
   let inline createNAArray (data:'T[]) =   
-    let isNA = isNA<'T>() // TODO: Optimize using static member constraints
+    let isNA = isNA<'T>() 
     data |> Array.map (fun v -> if isNA v then OptionalValue.Missing else OptionalValue(v))
 
   let inline createMissingOrNAArray (data:OptionalValue<'T>[]) =   
-    let isNA = isNA<'T>() // TODO: Optimize using static member constraints
+    let isNA = isNA<'T>() 
     data |> Array.map (fun v -> 
       if not v.HasValue || isNA v.Value then OptionalValue.Missing else OptionalValue(v.Value))
 
+
+// --------------------------------------------------------------------------------------
+// Internals - various functions for working with collections
+// --------------------------------------------------------------------------------------
+
+/// Provides helper functions for working with `IReadOnlyList<T>` similar to those 
+/// in the `Array` module. Most importantly, F# 3.0 does not know that array implements
+/// `IReadOnlyList<T>`, so the `ofArray` function performs boxing & unboxing to convert.
 module IReadOnlyList =
   /// Converts an array to IReadOnlyList. In F# 3.0, the language does not
   /// know that array implements IReadOnlyList, so this is just boxing/unboxing.
@@ -130,6 +254,9 @@ module IReadOnlyList =
         count <- count + 1
     LanguagePrimitives.DivideByInt total count
 
+
+/// This module contains additional functions for working with arrays. 
+/// `FSharp.DataFrame.Internals` is opened, it extends the standard `Array` module.
 module Array = 
   /// Drop a specified range from a given array. The operation is inclusive on
   /// both sides. Given [ 1; 2; 3; 4 ] and indices (1, 2), the result is [ 1; 4 ]
@@ -137,13 +264,6 @@ module Array =
     if last < first then invalidOp "The first index must be smaller than or equal to the last."
     if first < 0 || last >= data.Length then invalidArg "first" "The index must be within the array range."
     Array.append (data.[.. first - 1]) (data.[last + 1 ..])
-
-  let inline existsAt low high f (data:'T[]) = 
-    let rec test i = 
-      if i > high then false
-      elif f data.[i] then true
-      else test (i + 1)
-    test low
 
   let inline private binarySearch key (comparer:System.Collections.Generic.IComparer<'T>) (array:'T[]) =
     let rec search (lo, hi) =
@@ -155,26 +275,42 @@ module Array =
       | _ -> search (min hi (mid + 1), hi) 
     search (0, array.Length - 1) 
 
+  /// Returns the index of 'key' or the index of immediately following value.
+  /// If the specified key is greater than all keys in the array, None is returned.
   let binarySearchNearestGreater key (comparer:System.Collections.Generic.IComparer<'T>) (array:'T[]) =
+    if array.Length = 0 then None else
     let loc = binarySearch key comparer array
     if comparer.Compare(array.[loc], key) >= 0 then Some loc
     elif loc + 1 < array.Length && comparer.Compare(array.[loc + 1], key) >= 1 then Some (loc + 1)
     else None
 
+  /// Returns the index of 'key' or the index of immediately preceeding value.
+  /// If the specified key is smaller than all keys in the array, None is returned.
   let binarySearchNearestSmaller key (comparer:System.Collections.Generic.IComparer<'T>) (array:'T[]) =
+    if array.Length = 0 then None else
     let loc = binarySearch key comparer array
     if comparer.Compare(array.[loc], key) <= 0 then Some loc
     elif loc - 1 >= 0 && comparer.Compare(array.[loc - 1], key) <= 0 then Some (loc - 1)
     else None
 
-module Seq = 
-  let takeAtMost count (input:seq<_>) = input.Take(count)
 
+/// This module contains additional functions for working with sequences. 
+/// `FSharp.DataFrame.Internals` is opened, it extends the standard `Seq` module.
+module Seq = 
+
+  /// If the input is non empty, returns `Some(head)` where `head` is 
+  /// the first value. Otherwise, returns `None`.
   let headOrNone (input:seq<_>) = 
     (input |> Seq.map Some).FirstOrDefault()
 
+  /// Calls the `GetEnumerator` method. Simple function to guide type inference.
   let getEnumerator (s:seq<_>) = s.GetEnumerator()
 
+  /// Given a sequence, returns `startCount` number of elements at the beginning 
+  /// of the sequence (wrapped in `Choice1Of3`) followed by one `Choice2Of2()` value
+  /// and then followed by `endCount` number of elements at the end of the sequence
+  /// wrapped in `Choice3Of3`. If the input is shorter than `startCount + endCount`,
+  /// then all values are returned and wrapped in `Choice1Of3`.
   let startAndEnd startCount endCount input = seq { 
     let lastItems = Array.zeroCreate endCount
     let lastPointer = ref 0
@@ -210,21 +346,13 @@ module Seq =
         yield Choice1Of3 en.Current
         yield! yieldFirst (count - 1) }
     yield! yieldFirst startCount }
-(*
-  startAndEnd 4 4 [ 1 .. 6 ] |> Array.ofSeq = 
-    [| Choice1Of3 1; Choice1Of3 2; Choice1Of3 3; Choice1Of3 4; Choice1Of3 5; Choice1Of3 6|]
 
-  startAndEnd 3 3 [ 1 .. 6 ] |> Array.ofSeq = 
-    [| Choice1Of3 1; Choice1Of3 2; Choice1Of3 3; Choice1Of3 4; Choice1Of3 5; Choice1Of3 6|]
 
-  startAndEnd 2 2 [ 1 .. 6 ] |> Array.ofSeq = 
-    [|Choice1Of3 1; Choice1Of3 2; Choice2Of3(); Choice3Of3 5; Choice3Of3 6|]
-
-  startAndEnd 2 2 [ 1 .. 6 ] |> Array.ofSeq = 
-    [|Choice1Of3 1; Choice1Of3 2; Choice2Of3(); Choice3Of3 5; Choice3Of3 6|]
-*)
-
-  let windowedWhile f input = seq {
+  /// Generate floating windows from the input sequence. New floating window is 
+  /// started for each element. To find the end of the window, the function calls
+  /// the provided argument `f` with the first and the last elements of the window
+  /// as arguments. A window ends when `f` returns `false`.
+  let windowedWhile (f:'T -> 'T -> bool) input = seq {
     let windows = System.Collections.Generic.LinkedList()
     for v in input do
       windows.AddLast( (v, []) ) |> ignore
@@ -242,6 +370,12 @@ module Seq =
     for _, win in windows do
       yield win |> List.rev |> Array.ofList }
 
+  
+  /// Generate non-verlapping chunks from the input sequence. A chunk is started 
+  /// at the beginning and then immediately after the end of the previous chunk.
+  /// To find the end of the chunk, the function calls the provided argument `f` 
+  /// with the first and the last elements of the chunk as arguments. A chunk 
+  /// ends when `f` returns `false`.
   let chunkedWhile f input = seq {
     let chunk = ref None
     for v in input do
@@ -256,21 +390,66 @@ module Seq =
     | Some (_, items) -> yield items |> List.rev |> Array.ofList
     | _ -> () }
 
-  (*
-  chunkedWhile (fun f t -> t - f < 10) [ 1; 4; 11; 12; 13; 15; 20; 25 ] |> Array.ofSeq =
-    [| [|1; 4|]; [|11; 12; 13; 15; 20|]; [|25|] |]
 
-  windowedWhile (fun f t -> t - f < 10) [ 1; 4; 11; 12; 13; 15; 20; 25 ] |> Array.ofSeq =
-    [| [|1; 4|]; [|4; 11; 12; 13|]; [|11; 12; 13; 15; 20|]; [|12; 13; 15; 20|];
-       [|13; 15; 20|]; [|15; 20|]; [|20; 25|]; [|25|] |]
-  *)
+  /// A version of `Seq.windowed` that allows specifying more complex boundary
+  /// behaviour. The `boundary` argument can specify one of the following options:
+  /// 
+  ///  * `Boundary.Skip` - only full windows are returned (like `Seq.windowed`)
+  ///  * `Boundary.AtBeginning` - incomplete windows (smaller than the required
+  ///    size) are returned at the beginning.
+  ///  * `Boundary.AtEnding` - incomplete windows are returned at the end.
+  ///
+  /// The result is a sequence of `DataSegnebt<T>` values, which makes it 
+  /// easy to distinguish between complete and incomplete windows.
+  let windowedWithBounds size boundary (input:seq<'T>) = seq {
+    let windows = Array.create size []
+    let currentWindow = ref 0
+    for v in input do
+      for i in 0 .. windows.Length - 1 do windows.[i] <- v::windows.[i]
+      let win = windows.[currentWindow.Value] |> Array.ofList |> Array.rev
+      // If the window is smaller, we yield it as Boundary only when
+      // the required behaviour is to yield boundary at the beginning
+      if win.Length < size then
+        if boundary = Boundary.AtBeginning then yield DataSegment(Incomplete, win)
+      else yield DataSegment(Complete, win)
+      windows.[currentWindow.Value] <- []
+      currentWindow := (!currentWindow + 1) % size
+    // If we are supposed to generate boundary at the end, do it now
+    if boundary = Boundary.AtEnding then
+      for _ in 1 .. size - 1 do
+        yield DataSegment(Incomplete, windows.[currentWindow.Value] |> Array.ofList |> Array.rev)
+        currentWindow := (!currentWindow + 1) % size }
 
-  let chunked size input = 
-    input 
-    |> Seq.windowed size
-    |> Seq.mapi (fun i win -> i, win)
-    |> Seq.filter (fun (i, _) -> i % size = 0)
-    |> Seq.map snd
+
+  /// Similar to `Seq.windowedWithBounds`, but generates non-overlapping chunks
+  /// rather than floating windows. See that function for detailed documentation.
+  /// The function may iterate over the sequence repeatedly.
+  let chunkedWithBounds size (boundary:Boundary) input = seq {
+    // If the user wants incomplete chunk at the beginning, we 
+    // need to know the length of the whole sequence..
+    let tail = ref input
+    if boundary.HasFlag(Boundary.AtBeginning) then 
+      let size = (Seq.length input) % size
+      if size <> 0 && not (boundary.HasFlag(Boundary.Skip)) then
+        yield DataSegment(Incomplete, Seq.take size input |> Array.ofSeq)
+      tail := input |> Seq.skip size
+    
+    // Process the main part of the sequence
+    let currentChunk = ref []
+    let currentChunkSize = ref 0
+    for v in !tail do
+      currentChunk := v::currentChunk.Value
+      incr currentChunkSize
+      if !currentChunkSize = size then
+        yield DataSegment(Complete, !currentChunk |> Array.ofList |> Array.rev)
+        currentChunk := []
+        currentChunkSize := 0 
+        
+    // If we want to yield incomplete chunks at the end and we got some, yield now
+    if boundary.HasFlag(Boundary.AtEnding) && !currentChunk <> [] &&
+       not (boundary.HasFlag(Boundary.Skip)) then
+       yield DataSegment(Incomplete, !currentChunk |> Array.ofList |> Array.rev) }
+
 
   /// Returns true if the specified sequence is sorted.
   let isSorted (data:seq<_>) (comparer:IComparer<_>) =

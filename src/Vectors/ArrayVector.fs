@@ -7,7 +7,7 @@
 
 open FSharp.DataFrame
 open FSharp.DataFrame.Addressing
-open FSharp.DataFrame.Common
+open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Vectors
 
 /// Internal representation of the ArrayVector. To make this more 
@@ -179,7 +179,7 @@ and [<RequireQualifiedAccess>] ArrayVector<'T> internal (representation:ArrayVec
 
 namespace FSharp.DataFrame 
 
-open FSharp.DataFrame.Common
+open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Vectors
 open FSharp.DataFrame.Vectors.ArrayVector
 

@@ -5,7 +5,7 @@
 // --------------------------------------------------------------------------------------
 
 open FSharp.DataFrame
-open FSharp.DataFrame.Common
+open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Indices
 open FSharp.DataFrame.Vectors
 

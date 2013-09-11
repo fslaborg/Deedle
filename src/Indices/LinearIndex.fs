@@ -9,7 +9,7 @@ open System.Linq
 open System.Collections.Generic
 open FSharp.DataFrame
 open FSharp.DataFrame.Addressing
-open FSharp.DataFrame.Common
+open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Indices
 
 
@@ -151,18 +151,19 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       upcast LinearIndex<'TKey>(keys, ops, builder, ?ordered=ordered)
 
     member builder.Aggregate<'K, 'R, 'TNewKey when 'K : equality and 'TNewKey : equality>
-        (index:IIndex<'K>, aggregation, vector, valueSel:_ * _ -> OptionalValue<'R>, keySel:_ * _ -> 'TNewKey) =
+        (index:IIndex<'K>, aggregation, vector, valueSel:_ * _ * _ -> OptionalValue<'R>, keySel:_ * _ * _ -> 'TNewKey) =
       let builder = (builder :> IIndexBuilder)
       let ranges =
         if not index.Ordered then invalidOp "Floating window aggregation or chunking is not supported on un-ordered indices."
         let windows = 
           match aggregation with
-          | WindowSize size -> Seq.windowed size index.Keys
-          | ChunkSize size -> Seq.chunked size index.Keys
-          | WindowWhile cond -> Seq.windowedWhile cond index.Keys
-          | ChunkWhile cond -> Seq.chunkedWhile cond index.Keys
+          | WindowWhile cond -> Seq.windowedWhile cond index.Keys |> Seq.map (fun vs -> DataSegment(Complete, vs))
+          | ChunkWhile cond -> Seq.chunkedWhile cond index.Keys |> Seq.map (fun vs -> DataSegment(Complete, vs))
+          | WindowSize(size, bounds) -> Seq.windowedWithBounds size bounds index.Keys 
+          | ChunkSize(size, bounds) -> Seq.chunkedWithBounds size bounds index.Keys
         windows |> Seq.map (fun win -> 
-          builder.GetRange(index, Some win.[0], Some win.[win.Length - 1], vector))
+          let index, cmd = builder.GetRange(index, Some win.Data.[0], Some win.Data.[win.Data.Length - 1], vector)
+          win.Kind, index, cmd )
 
       let ranges = ranges |> Array.ofSeq          
       let keys = ranges |> Seq.map keySel
@@ -297,7 +298,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 namespace FSharp.DataFrame 
 
 open System.Collections.Generic
-open FSharp.DataFrame.Common
+open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Indices.Linear
 
 type Index = 

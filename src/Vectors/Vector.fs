@@ -22,7 +22,7 @@ open System
 open System.Reflection
 open System.Linq.Expressions
 open System.Collections.Generic
-open FSharp.DataFrame.Common
+open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Vectors
 open FSharp.DataFrame.Addressing
 
@@ -60,7 +60,7 @@ module internal VectorHelpers =
   let prettyPrintVector (vector:IVector<'T>) = 
     let printSequence kind (input:seq<string>) dots = 
       let sb = Text.StringBuilder(kind + " [")
-      for it in input |> Seq.takeAtMost Formatting.ItemCount do 
+      for it in input |> Seq.truncate Formatting.ItemCount do 
         sb.Append(" ").Append(it).Append(";") |> ignore
       sb.Remove(sb.Length - 1, 1) |> ignore
       if dots then sb.Append("; ... ]").ToString() 
@@ -170,7 +170,7 @@ module internal VectorHelpers =
 namespace FSharp.DataFrame.Vectors
 
 open FSharp.DataFrame
-open FSharp.DataFrame.Common
+open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Addressing
 
 /// Represents a range inside a vector

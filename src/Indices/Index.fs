@@ -13,15 +13,15 @@ type Lookup =
   | NearestSmaller = 2
 
 type Aggregation<'K> =
-  | WindowSize of int
-  | ChunkSize of int
+  | WindowSize of int * Boundary
+  | ChunkSize of int * Boundary
   | WindowWhile of ('K -> 'K -> bool)
   | ChunkWhile of ('K -> 'K -> bool)
 
 namespace FSharp.DataFrame.Indices
 
 open FSharp.DataFrame
-open FSharp.DataFrame.Common
+open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Addressing
 open FSharp.DataFrame.Vectors
 
@@ -71,8 +71,8 @@ and IIndexBuilder =
     IIndex<'K> * VectorConstruction
 
   abstract Aggregate : IIndex<'K> * Aggregation<'K> * VectorConstruction *
-    (IIndex<'K> * VectorConstruction -> OptionalValue<'R>) *
-    (IIndex<'K> * VectorConstruction -> 'TNewKey) -> IIndex<'TNewKey> * IVector<'R> // Returning vector might be too concrete?
+    (DataSegmentKind * IIndex<'K> * VectorConstruction -> OptionalValue<'R>) *
+    (DataSegmentKind * IIndex<'K> * VectorConstruction -> 'TNewKey) -> IIndex<'TNewKey> * IVector<'R> // Returning vector might be too concrete?
 
   abstract GroupBy : IIndex<'K> * ('K -> 'TNewKey) * VectorConstruction *
     ('TNewKey * IIndex<'K> * VectorConstruction -> OptionalValue<'R>) -> IIndex<'TNewKey> * IVector<'R> // Returning vector might be too concrete?

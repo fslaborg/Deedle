@@ -1,7 +1,8 @@
 ﻿namespace FSharp.DataFrame
 
+open System
 open System.Collections.Generic
-open FSharp.DataFrame.Common
+open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Indices
 open FSharp.DataFrame.Vectors
 
@@ -160,17 +161,17 @@ and Series<'K, 'V when 'K : equality>
   member x.DropMissing() =
     x.WhereOptional(fun (KeyValue(k, v)) -> v.HasValue)
 
-  member x.Aggregate(aggregation, valueSelector, ?keySelector) =
+  member x.Aggregate(aggregation, valueSelector:Func<_, _>, ?keySelector:Func<_, _>) =
     let newIndex, newVector = 
       indexBuilder.Aggregate
         ( x.Index, aggregation, Vectors.Return 0, 
-          (fun (index, cmd) -> 
+          (fun (kind, index, cmd) -> 
               let window = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
-              valueSelector window),
-          (fun (index, cmd) -> 
+              valueSelector.Invoke(DataSegment(kind, window))),
+          (fun (kind, index, cmd) -> 
               match keySelector with 
               | None -> index.Keys |> Seq.head
-              | Some f -> f (Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder))) )
+              | Some f -> f.Invoke(DataSegment(kind, Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)))) )
     Series<'K, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   member x.GroupBy(keySelector, valueSelector) =
@@ -191,19 +192,24 @@ and Series<'K, 'V when 'K : equality>
     let newIndex = indexBuilder.Create(keys, None)
     Series<'TNewKey, _>(newIndex, vector, vectorBuilder, indexBuilder)
 
-  member x.Pairwise() =
+  member x.Pairwise(?boundary, ?direction) =
+    let boundary = defaultArg boundary Boundary.Skip
+    let direction = defaultArg direction Direction.Backward
     let newIndex, newVector = 
       indexBuilder.Aggregate
-        ( x.Index, WindowSize 2, Vectors.Return 0, 
-          (fun (index, cmd) -> 
+        ( x.Index, WindowSize(2, boundary), Vectors.Return 0, 
+          (fun (kind, index, cmd) -> 
               let actualVector = vectorBuilder.Build(cmd, [| vector |])
               let obs = [ for k, addr in index.Mappings -> actualVector.GetValue(addr) ]
               match obs with
-              | [ OptionalValue.Present v1; OptionalValue.Present v2 ] -> OptionalValue( (v1, v2) )
+              | [ OptionalValue.Present v1; OptionalValue.Present v2 ] -> 
+                  OptionalValue( DataSegment(kind, (v1, v2)) )
               | [ _; _ ] -> OptionalValue.Missing
               | _ -> failwith "Pairwise: failed - expected two values" ),
-          (fun (index, vector) -> index.Keys |> Seq.head) )
-    Series<'K, 'V * 'V>(newIndex, newVector, vectorBuilder, indexBuilder)
+          (fun (kind, index, vector) -> 
+              if direction = Direction.Backward then index.Keys |> Seq.last
+              else index.Keys |> Seq.head ) )
+    Series<'K, DataSegment<'V * 'V>>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   // ----------------------------------------------------------------------------------------------
   // Operators

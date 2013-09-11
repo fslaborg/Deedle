@@ -4,7 +4,7 @@
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Series = 
   open System.Linq
-  open FSharp.DataFrame.Common
+  open FSharp.DataFrame.Internal
   open FSharp.DataFrame.Vectors
   open MathNet.Numerics.Statistics
 
@@ -77,45 +77,44 @@ module Series =
   *)
 
   let aggregate aggregation valueSelector keySelector (series:Series<'K, 'T>) =
-    series.Aggregate(aggregation, valueSelector >> OptionalValue.ofOption, keySelector)
+    series.Aggregate
+      ( aggregation, System.Func<_, _>(valueSelector >> OptionalValue.ofOption), System.Func<_, _>(keySelector))
 
-  let inline windowSizeInto size f (series:Series<'K, 'T>) =
-    series.Aggregate(Aggregation.WindowSize(size), f >> OptionalValue.ofOption)
+  let inline windowSizeInto bounds f (series:Series<'K, 'T>) : Series<'K, 'R> =
+    series.Aggregate(Aggregation.WindowSize(bounds), fun ds -> OptionalValue(f ds))
 
-  let inline windowSize distance (series:Series<'K, 'T>) = 
-    windowSizeInto distance (fun s -> Some(s)) series 
+  let inline windowSize bounds (series:Series<'K, 'T>) = 
+    windowSizeInto bounds id series 
 
   let inline windowDistInto distance f (series:Series<'K, 'T>) =
-    series.Aggregate(Aggregation.WindowWhile(fun skey ekey -> (ekey - skey) < distance), f >> OptionalValue.ofOption)
+    series.Aggregate(Aggregation.WindowWhile(fun skey ekey -> (ekey - skey) < distance), fun ds -> OptionalValue(f ds.Data))
 
   let inline windowDist distance (series:Series<'K, 'T>) = 
-    windowDistInto distance (fun s -> Some(s)) series 
+    windowDistInto distance id series 
 
   let inline windowWhileInto cond f (series:Series<'K, 'T>) =
-    series.Aggregate(Aggregation.WindowWhile(cond), f >> OptionalValue.ofOption)
+    series.Aggregate(Aggregation.WindowWhile(cond), fun ds -> OptionalValue(f ds.Data))
 
   let inline windowWhile cond (series:Series<'K, 'T>) = 
-    windowWhileInto cond (fun s -> Some(s)) series 
+    windowWhileInto cond id series 
 
+  let inline chunkSizeInto bounds f (series:Series<'K, 'T>) : Series<'K, 'R> =
+    series.Aggregate(Aggregation.ChunkSize(bounds), fun ds -> OptionalValue(f ds))
 
-  let inline chunkSizeInto size f (series:Series<'K, 'T>) =
-    series.Aggregate(Aggregation.ChunkSize(size), f >> OptionalValue.ofOption)
+  let inline chunkSize bounds (series:Series<'K, 'T>) = 
+    chunkSizeInto bounds id series 
 
-  let inline chunkSize distance (series:Series<'K, 'T>) = 
-    chunkSizeInto distance (fun s -> Some(s)) series 
+  let inline chunkDistInto (distance:^D) f (series:Series<'K, 'T>) : Series<'K, 'R> =
+    series.Aggregate(Aggregation.ChunkWhile(fun skey ekey -> (ekey - skey) < distance), fun ds -> OptionalValue(f ds.Data))
 
-  let inline chunkDistInto distance f (series:Series<'K, 'T>) =
-    series.Aggregate(Aggregation.ChunkWhile(fun skey ekey -> (ekey - skey) < distance), f >> OptionalValue.ofOption)
-
-  let inline chunkDist distance (series:Series<'K, 'T>) = 
-    chunkDistInto distance (fun s -> Some(s)) series 
+  let inline chunkDist (distance:^D) (series:Series<'K, 'T>) = 
+    chunkDistInto distance id series 
 
   let inline chunkWhileInto cond f (series:Series<'K, 'T>) =
-    series.Aggregate(Aggregation.ChunkWhile(cond), f >> OptionalValue.ofOption)
+    series.Aggregate(Aggregation.ChunkWhile(cond), fun ds -> OptionalValue(f ds.Data))
 
   let inline chunkWhile cond (series:Series<'K, 'T>) = 
-    chunkWhileInto cond (fun s -> Some(s)) series 
-
+    chunkWhileInto cond id series 
 
   let groupByInto (keySelector:'K -> 'T -> 'TNewKey) f (series:Series<'K, 'T>) : Series<'TNewKey, 'TNewValue> =
     series.GroupBy(keySelector, fun k s -> OptionalValue.ofOption (f k s))
@@ -159,6 +158,8 @@ module Series =
     series |> mapAll (fun k -> function 
       | None -> series.TryGet(k, lookup)
       | value -> value)
+(*
+TODO
 
   let shift offset (series:Series<'K, 'T>) = 
     let shifted = 
@@ -172,6 +173,7 @@ module Series =
           (fun s -> Some(s.Values |> Seq.head)) 
           (fun s -> s.Keys.Last())
     shifted.GetItems(series.Keys)
+*)
 
 [<AutoOpen>]
 module FSharp1 =
