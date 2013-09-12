@@ -21,13 +21,13 @@ let root = @"file://C:\dev\FSharp.DataFrame\docs"
 
 
 // Copy all sample data files to the "data" directory
-let sourceDocs = sources ++ "data"
-let outputDocs = output ++ "data"
-
-if Directory.Exists outputDocs then Directory.Delete(outputDocs, true)
-Directory.CreateDirectory outputDocs
-for fileInfo in DirectoryInfo(sourceDocs).EnumerateFiles() do
-    fileInfo.CopyTo(outputDocs ++ fileInfo.Name) |> ignore
+let copy = [ sources ++ "data", output ++ "data"
+             sources ++ "../tools/content", output ++ "content" ]
+for source, target in copy do
+  if Directory.Exists target then Directory.Delete(target, true)
+  Directory.CreateDirectory target |> ignore
+  for fileInfo in DirectoryInfo(source).EnumerateFiles() do
+      fileInfo.CopyTo(target ++ fileInfo.Name) |> ignore
 
 // Generate HTML from all FSX files in samples & subdirectories
 let build () =

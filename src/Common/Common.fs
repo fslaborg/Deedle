@@ -119,9 +119,11 @@ module DataSegment =
     else Incomplete(ds.Data)
 
   /// Returns the data property of the specified `DataSegment<T>`
+  [<CompiledName("GetData")>]
   let data (ds:DataSegment<_>) = ds.Data
 
   /// Returns the kind property of the specified `DataSegment<T>`
+  [<CompiledName("GetKind")>]
   let kind (ds:DataSegment<_>) = ds.Kind
 
 

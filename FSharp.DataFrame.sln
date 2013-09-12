@@ -5,7 +5,6 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.DataFrame", "src\FSh
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0ACC5440-2ECD-4D02-88D3-E0F1A1E0FC89}"
 	ProjectSection(SolutionItems) = preProject
-		tools\build.fsx = tools\build.fsx
 		samples\samples.fsx = samples\samples.fsx
 	EndProjectSection
 EndProject
@@ -14,8 +13,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{245F1283-3
 		samples\design.fsx = samples\design.fsx
 		samples\features.fsx = samples\features.fsx
 		samples\lazysource.fsx = samples\lazysource.fsx
+		samples\samples.fsx = samples\samples.fsx
+		samples\timeseries.fsx = samples\timeseries.fsx
 		samples\tutorial.fsx = samples\tutorial.fsx
-		samples\volatility.fsx = samples\volatility.fsx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{B6AFD701-8A05-4A18-A3F3-EDAF8D7530ED}"
+	ProjectSection(SolutionItems) = preProject
+		tools\build.fsx = tools\build.fsx
+		tools\template.html = tools\template.html
 	EndProjectSection
 EndProject
 Global
@@ -34,5 +40,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{245F1283-32FA-4B38-AC76-448B8AE5F7AC} = {0ACC5440-2ECD-4D02-88D3-E0F1A1E0FC89}
+		{B6AFD701-8A05-4A18-A3F3-EDAF8D7530ED} = {0ACC5440-2ECD-4D02-88D3-E0F1A1E0FC89}
 	EndGlobalSection
 EndGlobal

@@ -58,6 +58,10 @@ Target "Clean" (fun _ ->
     CleanDirs ["bin"]
 )
 
+Target "CleanDocs" (fun _ ->
+    CleanDirs ["docs"]
+)
+
 // --------------------------------------------------------------------------------------
 // Build library (builds Visual Studio solution, which builds multiple versions
 // of the runtime library & desktop + Silverlight version of design time library)
@@ -117,9 +121,15 @@ Target "NuGet" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Generate the documentation
 
-Target "GenerateDocs" (fun _ ->
+Target "JustGenerateDocs" (fun _ ->
     executeFSI "tools" "build.fsx" [] |> ignore
 )
+
+Target "JustRegenerateDocs" DoNothing
+Target "GenerateDocs" DoNothing
+
+"JustGenerateDocs" ==> "GenerateDocs"
+"CleanDocs" ==> "JustGenerateDocs" ==> "JustRegenerateDocs"
 
 // --------------------------------------------------------------------------------------
 // Release Scripts
@@ -144,7 +154,6 @@ Target "UpdateBinaries" (fun _ ->
 )
 
 Target "Release" DoNothing
-
 "GenerateDocs" ==> "UpdateDocs"
 "UpdateDocs" ==> "Release"
 "NuGet" ==> "Release"

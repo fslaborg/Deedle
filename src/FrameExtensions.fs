@@ -54,7 +54,81 @@ module internal Reflection =
 module FSharp =
   open System
 
-  type Frame = 
+// ------------------------------------------------------------------------------------------------
+// Construction
+// ------------------------------------------------------------------------------------------------
+
+  type Frame =
+    static member internal Register() = 
+      Series.SeriesOperations <-
+        { new SeriesOperations with
+            member x.OuterJoin<'TIndex2, 'TValue2 when 'TIndex2 : equality>
+                (series1:Series<'TIndex2, 'TValue2>, series2:Series<'TIndex2, 'TValue2>) = 
+              let frame1 = Frame(series1.Index, Index.Create [0], Vector.Create [| series1.Vector :> IVector |])
+              let frame2 = Frame(series2.Index, Index.Create [1], Vector.Create [| series2.Vector :> IVector |])
+              let joined = frame1.Join(frame2)
+              joined.Rows.Select(fun row -> row.Value :> Series<_, _>) }
+
+    static member internal Create<'TColumnKey, 'TRowKey, 'TValue when 'TColumnKey : equality and 'TRowKey : equality>
+        (column:'TColumnKey, series:Series<'TRowKey, 'TValue>) = 
+      let data = Vector.Create [| series.Vector :> IVector |]
+      Frame(series.Index, Index.Create [column], data)
+
+    static member internal CreateRow(row:'TRowKey, series:Series<'TColumnKey, 'TValue>) = 
+      let data = series.Vector.SelectOptional(fun v -> 
+        let res = Vectors.ArrayVector.ArrayVectorBuilder.Instance.CreateOptional [| v |] 
+        OptionalValue(res :> IVector))
+      Frame(Index.Create [row], series.Index, data)
+
+    static member internal FromRows<'TRowKey, 'TColumnKey, 'TSeries, 'TValue 
+          when 'TRowKey : equality and 'TColumnKey : equality and 'TSeries :> Series<'TColumnKey, 'TValue>>
+        (nested:Series<'TRowKey, 'TSeries>) =
+      let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance // TODO: Capture somewhere
+      let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
+
+      // Union column indices, ignoring the vector trasnformations
+      let columnIndex = nested.Values |> Seq.map (fun sr -> sr.Index) |> Seq.reduce (fun i1 i2 -> 
+        let index, _, _ = indexBuilder.Union(i1, i2, Vectors.Return 0, Vectors.Return 0)
+        index )
+      // Row index is just the index of the series
+      let rowIndex = nested.Index
+
+      // Dispatcher that creates column vector of the right type
+      let columnCreator key =
+        { new VectorHelpers.ValueCallSite1<IVector> with
+            override x.Invoke<'T>(_:'T) = 
+              let it = nested.SelectOptional(fun kvp ->
+                if kvp.Value.HasValue then 
+                  kvp.Value.Value.TryGet(key) 
+                  |> Option.map (fun v -> System.Convert.ChangeType(v, typeof<'T>) |> unbox<'T>)
+                  |> OptionalValue.ofOption
+                else OptionalValue.Missing)
+              it.Vector :> IVector }
+        |> VectorHelpers.createValueDispatcher
+
+      // Create data vectors
+      let data = 
+        columnIndex.Keys 
+        |> Seq.map (fun key ->
+            // Pick a witness from the column, so that we can use column creator
+            let someValue =
+              nested.Observations |> Seq.map snd |> Seq.tryPick (fun series -> 
+                series.TryGet(key) |> Option.map box)
+            let someValue = defaultArg someValue (obj())
+            columnCreator key someValue)
+        |> Array.ofSeq |> vectorBuilder.CreateNonOptional
+      Frame(rowIndex, columnIndex, data)
+
+    static member internal FromColumns<'TRowKey, 'TColumnKey, 'TSeries, 'TValue 
+          when 'TRowKey : equality and 'TColumnKey : equality and 'TSeries :> Series<'TRowKey, 'TValue>>
+        (nested:Series<'TColumnKey, 'TSeries>) =
+      let initial = Frame(Index.Create [], Index.CreateUnsorted [], Vector.Create [| |])
+      (initial, nested.ObservationsOptional) ||> Seq.fold (fun df (name, series) -> 
+        if not series.HasValue then df 
+        else df.Join(Frame.Create(name, series.Value), JoinKind.Outer))
+
+
+  type Frame with
     static member ofRowsOrdinal(rows:seq<#Series<_, _>>) = 
       let keys = rows |> Seq.mapi (fun i _ -> i)
       Frame.FromRows(Series(keys, rows))
@@ -186,6 +260,24 @@ module FrameExtensions =
     member frame.GroupRowsInto<'TGroup when 'TGroup : equality>(key, f:System.Func<_, _, _>) =
       frame.Rows |> Series.groupInto (fun _ v -> v.GetAs<'TGroup>(key)) (fun k g -> f.Invoke(k, g |> Frame.ofRows))
 
+
+
+[<AutoOpen>]
+module FSharp2 =
+  type FSharp.Frame with
+    static member ofRecords (series:Series<'K, 'R>) =
+      let keyValuePairs = 
+        seq { for k, v in series.ObservationsOptional do 
+                if v.HasValue then yield k, v.Value }
+      let recordsToConvert = Seq.map snd keyValuePairs
+      let frame = Reflection.convertRecordSequence<'R>(recordsToConvert)
+      let frame = frame.ReplaceRowIndexKeys(Seq.map fst keyValuePairs)
+      frame.ReindexRowKeys(series.Keys)
+
+    static member ofRecords (values:seq<'T>) =
+      Reflection.convertRecordSequence<'T>(values)    
+
+[<CompiledName("Column`1")>]
 type column<'T>(value:obj) =
   member x.Value = value
 
@@ -359,19 +451,3 @@ module Frame =
 
   let inline diff offset (frame:Frame<'TRowKey, 'TColKey>) = 
     frame.Columns |> Series.mapValues (fun s -> Series.diff offset (s.As<float>())) |> Frame.ofColumns
-
-
-[<AutoOpen>]
-module FSharp2 =
-  type FSharp.Frame with
-    static member ofRecords (series:Series<'K, 'R>) =
-      let keyValuePairs = 
-        seq { for k, v in series.ObservationsOptional do 
-                if v.HasValue then yield k, v.Value }
-      let recordsToConvert = Seq.map snd keyValuePairs
-      let frame = Reflection.convertRecordSequence<'R>(recordsToConvert)
-      let frame = frame.ReplaceRowIndexKeys(Seq.map fst keyValuePairs)
-      frame.ReindexRowKeys(series.Keys)
-
-    static member ofRecords (values:seq<'T>) =
-      Reflection.convertRecordSequence<'T>(values)    

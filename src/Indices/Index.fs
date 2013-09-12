@@ -18,6 +18,11 @@ type Aggregation<'K> =
   | WindowWhile of ('K -> 'K -> bool)
   | ChunkWhile of ('K -> 'K -> bool)
 
+type Aggregation =
+  static member WindowSize(size, boundary) = WindowSize(size, boundary)
+  static member ChunkSize(size, boundary) = ChunkSize(size, boundary)
+//  static member WindowWhile<'K>(Func
+
 namespace FSharp.DataFrame.Indices
 
 open FSharp.DataFrame

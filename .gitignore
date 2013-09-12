@@ -4,6 +4,8 @@ src/obj
 *.suo
 tests/FSharp.DataFrame.Tests/obj
 tests/FSharp.DataFrame.Tests/bin
+tests/FSharp.DataFrame.CSharp.Tests/obj
+tests/FSharp.DataFrame.CSharp.Tests/bin
 tests/FSharp.DataFrame.Tests.Console/obj
 tests/FSharp.DataFrame.Tests.Console/bin
 packages/NUnit*
