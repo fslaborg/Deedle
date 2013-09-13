@@ -47,7 +47,6 @@ type OptionalValue<'T> private (hasValue:bool, value:'T) =
       else value.ToString() 
     else "<missing>"
 
-
 /// Specifies in which direction should we look when performing operations such as
 /// `Series.Pairwise`. For example consider:
 ///
@@ -62,8 +61,8 @@ type OptionalValue<'T> private (hasValue:bool, value:'T) =
 ///       Series.ofObservations [ 2 => ("a", "b"); 3 => ("b", "c") ]
 ///
 type Direction = 
+  | Backward = 0
   | Forward = 1 
-  | Backward = 2
 
 /// Represents boundary behaviour for operations such as floating window. The type
 /// specifies whether incomplete windows (of smaller than required length) should be
@@ -106,6 +105,11 @@ type DataSegment<'T> =
 
 /// Provides helper functions and active patterns for working with `DataSegment` values
 module DataSegment = 
+  /// A complete active pattern that extracts the kind and data from a `DataSegment`
+  /// value. This makes it easier to write functions that only need data:
+  ///
+  ///    let sumAny = function DataSegment.Any(_, data) -> Series.sum data
+  ///
   let (|Any|) (ds:DataSegment<'T>) = ds.Kind, ds.Data
   
   /// Complete active pattern that makes it possible to write functions that behave 

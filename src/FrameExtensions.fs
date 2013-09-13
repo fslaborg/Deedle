@@ -127,8 +127,8 @@ module FSharpFrameExtensions =
 
     static member ofRecords (series:Series<'K, 'R>) =
       let keyValuePairs = 
-        seq { for k, v in series.ObservationsOptional do 
-                if v.HasValue then yield k, v.Value }
+        seq { for k, v in Series.observationsAll series do 
+                if v.IsSome then yield k, v.Value }
       let recordsToConvert = Seq.map snd keyValuePairs
       let frame = Reflection.convertRecordSequence<'R>(recordsToConvert)
       let frame = frame.ReplaceRowIndexKeys(Seq.map fst keyValuePairs)

@@ -36,8 +36,18 @@ module Series =
   [<CompiledName("Median")>]
   let inline median (series:Series<'K, float>) = series |> streamingAggregation Statistics.Median
 
-
-  let observations (series:Series<'K, 'T>) = series.Observations
+  /// Return observations with available values. The operation skips over 
+  /// all keys with missing values (such as values created from `null`,
+  /// `Double.NaN`, or those that are missing due to outer join etc.).
+  let observations (series:Series<'K, 'T>) = seq { 
+    for key, address in series.Index.Mappings do
+      let v = series.Vector.GetValue(address)
+      if v.HasValue then yield key, v.Value }
+  
+  /// Returns all keys from the sequence, together with the associated (optional) values. 
+  let observationsAll (series:Series<'K, 'T>) = seq { 
+    for key, address in series.Index.Mappings ->
+      key, OptionalValue.asOption (series.Vector.GetValue(address)) }
 
   /// Create a new series that contains values for all provided keys.
   /// Use the specified lookup semantics - for exact matching, use `getAll`
@@ -177,8 +187,15 @@ module Series =
   // Counting & checking if values are present
   // ----------------------------------------------------------------------------------------------
 
-  let countValues (series:Series<'K, 'T>) = series.CountValues
-  let countKeys (series:Series<'K, 'T>) = series.CountKeys
+  /// Returns the total number of values in the specified series. This excludes
+  /// missing values or not available values (such as values created from `null`,
+  /// `Double.NaN`, or those that are missing due to outer join etc.).
+  let countValues (series:Series<'K, 'T>) = series.Values |> Seq.length
+
+  /// Returns the total number of keys in the specified series. This returns
+  /// the total length of the series, including keys for which there is no 
+  /// value available.
+  let countKeys (series:Series<'K, 'T>) = series.Keys |> Seq.length
 
   let hasAll keys (series:Series<'K, 'T>) = 
     keys |> Seq.forall (fun k -> series.TryGet(k).IsSome)
@@ -195,6 +212,7 @@ module Series =
 
   let dropMissing (series:Series<'K, 'T>) = series.DropMissing()
 
+  /// Fill missing values in the series using the specified function.
   let fillMissingUsing f (series:Series<'K, 'T>) = 
     series |> mapAll (fun k -> function 
       | None -> Some(f k)
@@ -205,6 +223,26 @@ module Series =
       | None -> Some(value)
       | value -> value)
 
+  /// Fill missing values in the series with the nearest available value
+  /// (using the specified direction). Note that the series may still contain
+  /// missing values after call to this function. This operation can only be
+  /// used on ordered series.
+  ///
+  /// Example:
+  ///
+  ///     let sample = Series.ofValues [ Double.NaN; 1.0; Double.NaN; 3.0 ]
+  ///
+  ///     // Returns a series consisting of [1; 1; 3; 3]
+  ///     sample |> Series.fillMissing Direction.Backward
+  ///
+  ///     // Returns a series consisting of [<missing>; 1; 1; 3]
+  ///     sample |> Series.fillMissing Direction.Forward 
+  ///
+  /// Parameters:
+  ///  * `direction` - Specifies the direction used when searching for 
+  ///    the nearest available value. `Backward` means that we want to
+  ///    look for the first value with a smaller key while `Forward` searches
+  ///    for the nearest greater key.
   let fillMissing direction (series:Series<'K, 'T>) = 
     let lookup = if direction = Direction.Forward then Lookup.NearestSmaller else Lookup.NearestGreater
     series |> mapAll (fun k -> function 

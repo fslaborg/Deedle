@@ -13,6 +13,8 @@ namespace FSharp.DataFrame.CSharp.Tests
     static void Main(string[] args)
     {
 		var msft = Frame.ReadCsv(@"..\..\..\..\samples\data\msft.csv");
+
+		var s = msft.GetSeries<double>("Open");
 		
 
 		// Aggregation.WindowSize(0, Boundary.AtBeginning)

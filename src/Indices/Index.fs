@@ -30,6 +30,9 @@ open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Addressing
 open FSharp.DataFrame.Vectors
 
+/// Specifies the boundary behavior of the `IIndexBuilder.GetRange` operation
+type BoundaryBehavior = Inclusive | Exclusive
+
 /// An interface that represents index mapping keys of type 'T to locations
 /// of address Address.
 type IIndex<'K when 'K : equality> = 
@@ -41,13 +44,13 @@ type IIndex<'K when 'K : equality> =
   abstract Ordered : bool
   abstract Comparer : System.Collections.Generic.Comparer<'K>
   abstract Builder : IIndexBuilder
-  
+
 /// A builder represents various ways of constructing index
 and IIndexBuilder =
   abstract Create : seq<'K> * Option<bool> -> IIndex<'K>
     
   abstract GetRange : 
-    IIndex<'K> * option<'K> * option<'K> * VectorConstruction ->
+    IIndex<'K> * option<'K * BoundaryBehavior> * option<'K * BoundaryBehavior> * VectorConstruction ->
     IIndex<'K> * VectorConstruction 
 
   abstract Union : 

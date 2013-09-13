@@ -32,8 +32,8 @@ let hfq2 = Series.ofObservations (randomPrice 0.05 0.2 20.0 (24*60*60) (TimeSpan
 
 // Chart them using F# Chart to see what they look like
 Chart.Combine(
-  [ Chart.FastLine(hfq1.Observations)
-    Chart.FastLine(hfq2.Observations) ]).WithYAxis(Min=17.0, Max=22.0)
+  [ Chart.FastLine(Series.observations hfq1)
+    Chart.FastLine(Series.observations hfq2) ]).WithYAxis(Min=17.0, Max=22.0)
   
 // Calculate the means of the two series (and see that they are the same)
 hfq1 |> Series.mean

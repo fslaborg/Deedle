@@ -5,9 +5,12 @@
 // --------------------------------------------------------------------------------------
 
 open FSharp.DataFrame
+open System.ComponentModel
 open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Indices
 open FSharp.DataFrame.Vectors
+
+open System.Runtime.InteropServices
 
 type JoinKind = 
   | Outer = 0
@@ -100,7 +103,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     let restrictToRowIndex (restriction:IIndex<_>) (sourceIndex:IIndex<_>) vector = 
       if restriction.Ordered then
         let min, max = rowIndex.KeyRange
-        sourceIndex.Builder.GetRange(sourceIndex, Some min, Some max, vector)
+        sourceIndex.Builder.GetRange(sourceIndex, Some(min, BoundaryBehavior.Inclusive), Some(max, BoundaryBehavior.Inclusive), vector)
       else sourceIndex, vector
 
     // Union row indices and get transformations to apply to left/right vectors
@@ -234,13 +237,15 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
       frame.DropSeries(column)
     frame.AddSeries(column, series)
 
-  member frame.GetSeries<'R>(column:'TColumnKey, ?lookup) : Series<'TRowKey, 'R> = 
-    let lookup = defaultArg lookup Lookup.Exact
+  member frame.GetSeries<'R>(column:'TColumnKey, lookup) : Series<'TRowKey, 'R> = 
     match safeGetColVector(column, lookup, fun _ -> true) with
     | :? IVector<'R> as vec -> 
         Series.Create(rowIndex, vec)
     | colVector ->
         Series.Create(rowIndex, changeType colVector)
+
+  member frame.GetSeries<'R>(column:'TColumnKey) : Series<'TRowKey, 'R> = 
+    frame.GetSeries(column, Lookup.Exact)
 
   static member (?<-) (frame:Frame<_, _>, column, series:Series<'T, 'V>) =
     frame.ReplaceSeries(column, series)
@@ -253,20 +258,22 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
 
   interface IFsiFormattable with
     member frame.Format() = 
-      seq { yield ""::[ for colName, _ in frame.ColumnIndex.Mappings do yield colName.ToString() ]
-            let rows = frame.Rows
-            for item in frame.RowIndex.Mappings |> Seq.startAndEnd Formatting.StartItemCount Formatting.EndItemCount do
-              match item with 
-              | Choice2Of3() ->
-                  yield ":"::[for i in 1 .. data.DataSequence |> Seq.length -> "..."]
-              | Choice1Of3(ind, addr) | Choice3Of3(ind, addr) ->
-                  let row = rows.[ind]
-                  yield 
-                    (ind.ToString() + " ->")::
-                    [ for _, value in row.ObservationsOptional ->  // TODO: is this good?
-                        value.ToString() ] }
-      |> array2D
-      |> Formatting.formatTable
+      try
+        seq { yield ""::[ for colName, _ in frame.ColumnIndex.Mappings do yield colName.ToString() ]
+              let rows = frame.Rows
+              for item in frame.RowIndex.Mappings |> Seq.startAndEnd Formatting.StartItemCount Formatting.EndItemCount do
+                match item with 
+                | Choice2Of3() ->
+                    yield ":"::[for i in 1 .. data.DataSequence |> Seq.length -> "..."]
+                | Choice1Of3(ind, addr) | Choice3Of3(ind, addr) ->
+                    let row = rows.[ind]
+                    yield 
+                      (ind.ToString() + " ->")::
+                      [ for KeyValue(_, value) in SeriesExtensions.GetAllObservations(row) ->  // TODO: is this good?
+                          value.ToString() ] }
+        |> array2D
+        |> Formatting.formatTable
+      with e -> sprintf "Formatting failed: %A" e
 
   // ----------------------------------------------------------------------------------------------
   // Internals (rowIndex, columnIndex, data and various helpers)
@@ -289,7 +296,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   member frame.ReindexRowKeys(keys) = 
     // Create empty frame with the required keys    
     let empty = Frame<_, _>(frame.IndexBuilder.Create(keys, None), frame.IndexBuilder.Create([], None), frame.VectorBuilder.CreateNonOptional [||])
-    for key, series in frame.Columns.Observations do 
+    for key, series in frame.Columns |> Series.observations do 
       empty.AddSeries(key, series)
     empty
 

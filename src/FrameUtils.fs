@@ -112,8 +112,8 @@ module internal FrameUtils =
           // and try creating a typed IVector based on the column type
           try
             let someValue =
-              nested.Observations |> Seq.map snd |> Seq.tryPick (fun series -> 
-                series.TryGetObject(key))
+              nested |> Series.observations |> Seq.tryPick (fun (_, v) -> 
+                v.TryGetObject(key))
             let someValue = defaultArg someValue (obj())
             columnCreator key someValue
           with :? System.InvalidCastException ->
@@ -129,9 +129,8 @@ module internal FrameUtils =
         and 'TRowKey : equality and 'TColumnKey : equality>
       (nested:Series<'TColumnKey, 'TSeries>) =
     let initial = Frame(Index.Create [], Index.CreateUnsorted [], Vector.Create [| |])
-    (initial, nested.ObservationsOptional) ||> Seq.fold (fun df (name, series) -> 
-      if not series.HasValue then df 
-      else df.Join(createColumn(name, series.Value), JoinKind.Outer))
+    (initial, Series.observations nested) ||> Seq.fold (fun df (name, series) -> 
+      df.Join(createColumn(name, series), JoinKind.Outer))
 
 
   /// Load data from a CSV file using F# Data API

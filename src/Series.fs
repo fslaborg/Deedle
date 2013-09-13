@@ -1,6 +1,7 @@
 ﻿namespace FSharp.DataFrame
 
 open System
+open System.ComponentModel
 open System.Collections.Generic
 open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Indices
@@ -36,12 +37,28 @@ and Series<'K, 'V when 'K : equality>
     let mi = ty.GetMethod("Register", System.Reflection.BindingFlags.Static ||| System.Reflection.BindingFlags.NonPublic)
     mi.Invoke(null, [||]) |> ignore )
 
-  member internal x.Index = index
+  /// Returns the index associated with this series. This member should not generally
+  /// be accessed directly, because all functionality is exposed through series operations.
+  member x.Index = index
+
+  /// Returns the vector associated with this series. This member should not generally
+  /// be accessed directly, because all functionality is exposed through series operations.
   member x.Vector = vector
-  member x.ObservationsOptional = seq { for key, address in index.Mappings -> key, vector.GetValue(address) }
-  member x.Observations = seq { for key, v in x.ObservationsOptional do if v.HasValue then yield key, v.Value }
+
+  /// Returns a collection of keys that are defined by the index of this series.
+  /// Note that the length of this sequence does not match the `Values` sequence
+  /// if there are missing values. To get matching sequence, use `GetObservations`
+  /// extension method or `Series.observation`.
   member x.Keys = seq { for key, _ in index.Mappings -> key }
-  member x.Values = seq { for _, v in x.Observations -> v }
+
+  /// Returns a collection of values that are available in the series data.
+  /// Note that the length of this sequence does not match the `Keys` sequence
+  /// if there are missing values. To get matching sequence, use `GetObservations`
+  /// extension method or `Series.observation`.
+  member x.Values = seq { 
+    for _, a in index.Mappings do 
+      let v = vector.GetValue(a) 
+      if v.HasValue then yield v.Value }
 
   // ----------------------------------------------------------------------------------------------
   // IEnumerable
@@ -55,9 +72,11 @@ and Series<'K, 'V when 'K : equality>
   interface IFsiFormattable with
     member series.Format() = 
       if vector.SuppressPrinting then "(Suppressed)" else
-        seq { for item in series.ObservationsOptional |> Seq.startAndEnd Formatting.StartItemCount Formatting.EndItemCount  do
+        seq { for item in index.Mappings |> Seq.startAndEnd Formatting.StartItemCount Formatting.EndItemCount  do
                 match item with 
-                | Choice1Of3(k, v) | Choice3Of3(k, v) -> yield [ k.ToString(); "->"; v.ToString() ]
+                | Choice1Of3(k, a) | Choice3Of3(k, a) -> 
+                    let v = vector.GetValue(a)
+                    yield [ k.ToString(); "->"; v.ToString() ]
                 | Choice2Of3() -> yield [ "..."; "->"; "..."] }
         |> array2D
         |> Formatting.formatTable
@@ -74,6 +93,11 @@ and Series<'K, 'V when 'K : equality>
   // ----------------------------------------------------------------------------------------------
   // Accessors
   // ----------------------------------------------------------------------------------------------
+
+  member x.GetSubrange(lo, hi) =
+    let newIndex, newVector = indexBuilder.GetRange(index, lo, hi, Vectors.Return 0)
+    let newVector = vectorBuilder.Build(newVector, [| vector |])
+    Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
   /// Returns a new series with an index containing the specified keys.
   /// When the key is not found in the current series, the newly returned
@@ -101,10 +125,10 @@ and Series<'K, 'V when 'K : equality>
     let newVector = vectorBuilder.Build(indexBuilder.Reindex(index, newIndex, lookup, Vectors.Return 0), [| vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
+  [<EditorBrowsable(EditorBrowsableState.Never)>]
   member x.GetSlice(lo, hi) =
-    let newIndex, newVector = indexBuilder.GetRange(index, lo, hi, Vectors.Return 0)
-    let newVector = vectorBuilder.Build(newVector, [| vector |])
-    Series(newIndex, newVector, vectorBuilder, indexBuilder)
+    let inclusive v = v |> Option.map (fun v -> v, BoundaryBehavior.Inclusive)
+    x.GetSubrange(inclusive lo, inclusive hi)
 
   member x.TryGet(key, ?lookup) =
     let lookup = defaultArg lookup Lookup.Exact
@@ -134,10 +158,6 @@ and Series<'K, 'V when 'K : equality>
   // Operations
   // ----------------------------------------------------------------------------------------------
   
-  member x.CountValues = x.ObservationsOptional |> Seq.filter (fun (k, v) -> v.HasValue) |> Seq.length
-  member x.CountKeys = x.ObservationsOptional |> Seq.length
-
-
   // TODO: Series.Select & Series.Where need to use some clever index/vector functions
 
   member x.Where(f:System.Func<KeyValuePair<'K, 'V>, bool>) = 

@@ -26,6 +26,12 @@ let (|IntAddress|) = function
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Address =
+  let increment = function
+    | Int lo -> Int (lo + 1)
+    | _ -> failwith "Not supported"
+  let decrement = function
+    | Int lo -> Int (lo - 1)
+    | _ -> failwith "Not supported"
   let generateRange = function
     | Int lo, Int hi -> 
         ( if hi < lo then seq { lo .. -1 .. hi } 

@@ -20,9 +20,9 @@ sb?Str <- 42
 sb?Int <- 3.14
 sb?Float <- 10
 sb?Date <- "2013-01-01"
-df.Append(42, sb.Series)
+let df2 = df.Append(42, sb.Series)
 
-let df2 = df |> Frame.transpose
+let df3 = df2 |> Frame.transpose
 
 /// Generate date range from 'first' with 'count' days
 let dateRange (first:System.DateTime) count = (*[omit:(...)]*)

@@ -160,7 +160,10 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           | WindowSize(size, bounds) -> Seq.windowedWithBounds size bounds index.Keys 
           | ChunkSize(size, bounds) -> Seq.chunkedWithBounds size bounds index.Keys
         windows |> Seq.map (fun win -> 
-          let index, cmd = builder.GetRange(index, Some win.Data.[0], Some win.Data.[win.Data.Length - 1], vector)
+          let index, cmd = 
+            builder.GetRange
+              ( index, Some(win.Data.[0], BoundaryBehavior.Inclusive), 
+                Some(win.Data.[win.Data.Length - 1], BoundaryBehavior.Inclusive), vector)
           win.Kind, index, cmd )
 
       let ranges = ranges |> Array.ofSeq          
@@ -272,16 +275,18 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           match index.Lookup(x, semantics, fun _ -> true) with 
           | OptionalValue.Present(v) -> Some v | _ -> None
         match offs with 
-        | None -> proj defaults.Value 
-        | Some (Lookup i) -> i
+        | None -> (proj defaults.Value), BoundaryBehavior.Inclusive
+        | Some (Lookup i, bound) -> i, bound
         | _ -> invalidArg "lo,hi" "Keys of the range were not found in the index."
 
       // Create new index using the range & vector transformation
-      let (lo, hi) as range = 
+      let (lo, hi) = 
         getBound lo Lookup.NearestGreater fst, 
         getBound hi Lookup.NearestSmaller snd
+      let lo = if snd lo = BoundaryBehavior.Exclusive then Address.increment (fst lo) else fst lo
+      let hi = if snd hi = BoundaryBehavior.Exclusive then Address.decrement (fst hi) else fst hi
       let newKeys = Address.getRange(index.Keys, lo, hi) |> Array.ofSeq
-      let newVector = Vectors.GetRange(vector, range)
+      let newVector = Vectors.GetRange(vector, (lo, hi))
       upcast LinearIndex<_>(newKeys, builder, index.Ordered), newVector
 
 // --------------------------------------------------------------------------------------

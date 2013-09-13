@@ -163,10 +163,10 @@ module Frame =
   // Additional functions for working with data frames
   // ----------------------------------------------------------------------------------------------
 
-  let inline mean (frame:Frame<'TRowKey, 'TColKey>) = 
+  let mean (frame:Frame<'TRowKey, 'TColKey>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Series.mean)
 
-  let inline sum (frame:Frame<'TRowKey, 'TColKey>) = 
+  let sum (frame:Frame<'TRowKey, 'TColKey>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Series.sum)
 
   let inline countValues (frame:Frame<'TRowKey, 'TColKey>) = 
@@ -175,7 +175,7 @@ module Frame =
   let countKeys (frame:Frame<'TRowKey, 'TColKey>) = 
     frame.RowIndex.Keys |> Seq.length
 
-  let inline sdv (frame:Frame<'TRowKey, 'TColKey>) = 
+  let sdv (frame:Frame<'TRowKey, 'TColKey>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Series.sdv)
 
   let inline diff offset (frame:Frame<'TRowKey, 'TColKey>) = 

@@ -2,6 +2,7 @@
 namespace FSharp.DataFrame.Delayed
 
 open System
+open System.Linq
 open FSharp.DataFrame
 open FSharp.DataFrame.Addressing
 open FSharp.DataFrame.Vectors
@@ -13,95 +14,130 @@ open FSharp.DataFrame.Indices
 
 module Ranges = 
   type Ranges<'T> = 
-    | Range of ('T * 'T)
-    | Union of Ranges<'T> * Ranges<'T>
+    | Range of (('T * BoundaryBehavior) * ('T * BoundaryBehavior))
     | Intersect of Ranges<'T> * Ranges<'T>
+    | Union of Ranges<'T> * Ranges<'T>
+
+  /// Test if a range contains the specified value
+  let contains (comparer:System.Collections.Generic.IComparer<_>) x input =
+    let (<) a b = comparer.Compare(a, b) < 0
+    let (>) a b = comparer.Compare(a, b) > 0
+    let rec loop = function
+      | Range((lo, lob), (hi, hib)) ->
+          (x > lo && x < hi) || (x = lo && lob = Inclusive) || (x = hi && hib = Inclusive)
+      | Union(lo, hi) -> loop lo || loop hi
+      | Intersect(lo, hi) -> loop lo && loop hi
+    loop input
 
   /// Returns an ordered sequence of exclusive ranges
-  let flattenRanges (comparer:System.Collections.Generic.IComparer<_>) ranges =
+  let flattenRanges overallMin overallMax (comparer:System.Collections.Generic.IComparer<_>) ranges middle =
+    let (<) a b = comparer.Compare(a, b) < 0
+    let (>) a b = comparer.Compare(a, b) > 0
     let (<=) a b = comparer.Compare(a, b) <= 0
     let (>=) a b = comparer.Compare(a, b) >= 0
-    let (>) a b = comparer.Compare(a, b) > 0
-    let (|SmallerBy|) op = function
-      | ((h1::_) as l1), ((h2::_) as l2) when op h1 <= op h2 -> l1, l2
-      | l1, l2 -> l2, l1
-    let rec endJustAfter e = function
-      | ((s1, e1) as h1)::t1 ->
-          if s1 > e then e, h1::t1
-          elif s1 <= e && e1 >= e then e1, t1
-          else (*s1 <= e && e1 < e *) endJustAfter e t1
-      | [] -> e, []
-    let rec allUntil e acc = function
-      | ((s1, e1) as h1)::t1 when s1 > e -> List.rev acc, h1::t1
-      | ((s1, e1) as h1)::t1 when e1 <= e -> allUntil e (h1::acc) t1
-      | ((s1, e1) as h1)::t1 (* s1 <= e < e1 *) -> List.rev ((s1, e)::acc), (e, e1)::t1
-      | [] -> List.rev acc, []
-    let rec loop = function
-      | Range(lo, hi) -> [ (lo, hi) ]
-      | Union(l, r) ->
-          let rec union = function
-            // One is empty - just return the other
-            | [], other | other, [] -> other
-            // Assume that s1 <= s2 
-            | SmallerBy fst (((s1, e1) as h1)::t1, r2) ->
-                let e, r2' = endJustAfter e1 r2
-                (s1, e) :: (union (t1, r2'))
-            | _ -> failwith "pattern matching failed"
-          union (loop l, loop r)
-      | Intersect(l, r) -> 
-          let rec intersect = function
-            // One is empty - so the intersection is empty
-            | [], _ | _, [] -> []
-            // Assume that s1 <= s2
-            | SmallerBy fst (((s1, e1) as h1)::t1, r2) ->
-                let incl, r2' = allUntil e1 [] r2
-                incl @ (intersect (t1, r2'))
-            | _ -> failwith "pattern matching failed"
-          intersect (loop l, loop r)
-    loop ranges
+
+    // First we get all boundary points in the range tree and sort them
+    let rec getBoundaries ranges = seq {
+      match ranges with 
+      | Range((lo, _), (hi, _)) -> yield! [lo; hi]
+      | Union(l, r) | Intersect(l, r) -> 
+          yield! getBoundaries l
+          yield! getBoundaries r }
+    let allRanges = Seq.concat [seq [overallMin; overallMax]; getBoundaries ranges]
+    let sorted = allRanges.Distinct() |> Array.ofSeq
+    Array.sortInPlaceWith (fun a b -> comparer.Compare(a, b)) sorted
+
+    // Now we iterate over all regions and check if we want to include them
+    // include the last point twice, otherwise we will not handle end correctly
+    let includes = sorted |> Array.map (fun v -> v, if contains comparer v ranges then Inclusive else Exclusive)
+    let includes = seq { yield! includes; yield includes.Last() }
+    let regions = 
+      [ for ((lo, loinc), (hi, hiinc)) as reg in Seq.pairwise includes ->
+          (contains comparer (middle lo hi) ranges), reg ]
+
+    // Walk over regions, remembering if we want to produce one or not
+    // and generate non-overlapping, continuous blocks
+    let rec yieldRegions sofar regions = seq { 
+      match regions with
+      | [] -> if sofar <> None then yield sofar.Value
+      | (incl, (lo, hi))::regions ->
+          match sofar, snd lo, incl with
+          // ---X--- ...
+          | Some(sv,_), Inclusive, true -> 
+              yield! yieldRegions (Some(sv, hi)) regions
+          // ---o--- ...
+          | Some(sv, _), Exclusive, true ->
+              yield sv, lo
+              yield! yieldRegions (Some(lo, hi)) regions
+          // ---?    ...
+          | Some(sv, _), _, false ->
+              yield sv, lo
+              yield! yieldRegions None regions
+          //    x    ...
+          | None, Inclusive, false ->
+              yield lo, lo
+              yield! yieldRegions None regions
+          //    o    ...
+          | None, Exclusive, false ->
+              yield! yieldRegions None regions
+          //    ?--- ...
+          | None, _, true ->
+              yield! yieldRegions (Some(lo, hi)) regions }
+    yieldRegions None regions       
+
 (* tests
 
+  // skipToEndOfRegion (5, Inclusive) [ ((5, Exclusive), (5, Exclusive)) ]
 
-// endJustAfter 5 [ (1,2); (3,4); (6, 7) ] = 5, [(6,7)]
-// endJustAfter 3 [ (0,1); (2,4); (6, 7) ] = 4, [(6,7)]
+  // skipToEndOfRegion (5, Inclusive) [ ((1, Inclusive), (5, Exclusive)) ]
+  // skipToEndOfRegion (5, Exclusive) [ ((1, Inclusive), (5, Exclusive)) ]
+  // skipToEndOfRegion (5, Exclusive) [ ((1, Inclusive), (5, Exclusive)); ((5, Exclusive), (6, Inclusive)) ]
+  // skipToEndOfRegion (5, Exclusive) [ ((1, Inclusive), (6, Exclusive)); ((6, Exclusive), (6, Inclusive)) ]
 
-// allUntil 8 [] [ (1,2); (3,4); (6,9) ] = ([(1, 2); (3, 4); (6, 8)], [(8, 9)])
-// allUntil 5 [] [ (1,2); (3,4); (6,9) ] = ([(1, 2); (3, 4)], [(6, 9)])
-// allUntil 10 [] [ (10, 11) ] = ([10,10], [10, 11])
 
-let rec contains x = function
-  | Range(lo, hi) -> x >= lo && x <= hi
-  | Union(lo, hi) -> contains x lo || contains x hi
-  | Intersect(lo, hi) -> contains x lo && contains x hi
+  // allUntil 8 [] [ (1,2); (3,4); (6,9) ] = ([(1, 2); (3, 4); (6, 8)], [(8, 9)])
+  // allUntil 5 [] [ (1,2); (3,4); (6,9) ] = ([(1, 2); (3, 4)], [(6, 9)])
+  // allUntil 10 [] [ (10, 11) ] = ([10,10], [10, 11])
 
-let check range = 
-  let flat = flattenRanges range
-  [ 0 .. 100 ] |> Seq.forall (fun i ->
-    (contains i range) = (flat |> Seq.exists (fun (lo, hi) -> i >= lo && i <= hi)))
+  let check range = 
+    let flat = flattenRanges 0 100 (System.Collections.Generic.Comparer<int>.Default) range (fun a b -> (a + b) / 2)
+    [ 0 .. 100 ] |> Seq.iter (fun x ->
+      let expected = contains x range
+      let actual = flat |> Seq.exists (fun ((lo, lob), (hi, hib)) -> 
+        (x > lo && x < hi) || (x = lo && lob = Inclusive) || (x = hi && hib = Inclusive))
+      if not (expected = actual) then failwithf "Mismatch at %d" x)
 
-let empty range = [ 0 .. 100 ] |> Seq.exists (fun v -> contains v range) |> not
-let incomplete range = [ 0 .. 100 ] |> Seq.forall (fun v -> contains v range) |> not
+  let empty range = [ 0 .. 100 ] |> Seq.exists (fun v -> contains v range) |> not
+  let incomplete range = [ 0 .. 100 ] |> Seq.forall (fun v -> contains v range) |> not
 
-check (Intersect(Range(1, 5), Range(3, 7)))
-check (Intersect(Union(Range(1, 5), Range(5, 6)), Range(3, 7)))
-check (Union(Range(1, 3), Range(2, 4)))
-check (Union(Range(1, 2), Range(3, 4)))
-check (Union(Range(1, 2), Union(Range(3, 4), Range(2, 5))))
+  check (Intersect(Range((1, Exclusive), (5, Inclusive)), Range((3, Inclusive), (7, Inclusive))))
+  check (Intersect(Range((1, Exclusive), (5, Exclusive)), Range((5, Inclusive), (7, Inclusive))))
+  check (Intersect(Range((1, Exclusive), (5, Exclusive)), Range((5, Exclusive), (7, Inclusive))))
 
-let rec randomRanges (rnd:System.Random) lo hi = 
-  let mid = rnd.Next(lo, hi+1)
-  let midl = rnd.Next(lo, mid+1)
-  let midr = rnd.Next(mid, hi+1)
-  match rnd.Next(5) with
-  | 0 -> Union(randomRanges rnd midl mid, randomRanges rnd mid midr)
-  | 1 -> Intersect(randomRanges rnd lo midr, randomRanges rnd midl hi)
-  | _ -> Range(lo, hi)
+  check (Union(Range((1, Exclusive), (5, Inclusive)), Range((3, Inclusive), (7, Inclusive))))
+  check (Union(Range((1, Exclusive), (5, Exclusive)), Range((5, Inclusive), (7, Inclusive))))
+  check (Union(Range((1, Exclusive), (5, Exclusive)), Range((5, Exclusive), (7, Inclusive))))
 
-for i in 0 .. 10000 do 
-  if not (randomRanges (Random(i)) 0 100 |> check) then 
-    failwithf "Failed with %d" i
+  check (Union(Range((1, Inclusive), (5, Exclusive)), Range((5, Inclusive), (5, Inclusive))))
+
+  let rec randomRanges (rnd:System.Random) lo hi = 
+    let mid = rnd.Next(lo, hi+1)
+    let midl = rnd.Next(lo, mid+1)
+    let midr = rnd.Next(mid, hi+1)
+    match rnd.Next(5) with
+    | 0 -> Union(randomRanges rnd midl mid, randomRanges rnd mid midr)
+    | 1 -> Intersect(randomRanges rnd lo midr, randomRanges rnd midl hi)
+    | _ -> 
+      let lob, hib = 
+        let beh() = if rnd.Next(2) = 0 then Inclusive else Exclusive
+        if lo = hi then let b = beh() in b, b
+        else beh(), beh()
+      Range( (lo, lob), (hi, hib) )
+
+  for i in 0 .. 10000 do 
+    try randomRanges (Random(i)) 0 100 |> check
+    with e -> failwithf "Failed with seed %d (%s)" i e.Message
 *)
-
 // --------------------------------------------------------------------------------------
 // Delayed source
 // --------------------------------------------------------------------------------------
@@ -113,19 +149,21 @@ open System.Threading.Tasks
 /// a delayed series, use `DelayedSeries.Create` (this creates index and vector 
 /// linked to this `DelayedSource`).
 type DelayedSource<'K, 'V when 'K : equality>
-    (rangeMin:'K, rangeMax:'K, ranges:Ranges<'K>, identifier, loader:System.Func<_, _, Task<_>>) =
+    (rangeMin:'K, rangeMax:'K, midpoint:'K -> 'K -> 'K, ranges:Ranges<'K>, identifier, loader:System.Func<'K * BoundaryBehavior, 'K * BoundaryBehavior, Task<seq<'K * 'V>>>) =
 
   static let vectorBuilder = ArrayVector.ArrayVectorBuilder.Instance
   static let indexBuilder = Linear.LinearIndexBuilder.Instance
 
   // Lazy value that loads the data when needed
   let seriesData = Lazy.Create(fun () ->
-    let ranges = flattenRanges (System.Collections.Generic.Comparer<'K>.Default) ranges
-    let lo, hi = match ranges with [(lo, hi)] -> lo, hi | _ -> failwith "Unioning is TODO"
-    let dataTask = loader.Invoke(lo, hi)
-    let data = dataTask.Result
-    let vector = vectorBuilder.CreateNonOptional(Array.map snd data) :> IVector<'V>
-    let index = indexBuilder.Create(Seq.map fst data, Some true) :> IIndex<'K>
+    let ranges = flattenRanges rangeMin rangeMax (System.Collections.Generic.Comparer<'K>.Default) ranges midpoint
+    let data = 
+      [| for lo, hi in ranges do
+           let dataTask = loader.Invoke(lo, hi)
+           let data = dataTask.Result
+           yield! data |]
+    let vector = vectorBuilder.CreateNonOptional(Array.map snd data)
+    let index = indexBuilder.Create(Seq.map fst data, Some true)
     index, vector )
 
   member x.Ranges = ranges
@@ -133,6 +171,7 @@ type DelayedSource<'K, 'V when 'K : equality>
   member x.RangeMin = rangeMin
 
   member x.Identifier = identifier
+  member x.MidPoint = midpoint
   member x.Loader = loader
   member x.Index = fst seriesData.Value
   member x.Values = snd seriesData.Value
@@ -202,7 +241,7 @@ and DelayedIndexBuilder() =
     member x.WithIndex(index1, f, vector) = builder.WithIndex(index1, f, vector)
     member x.Reindex(index1, index2, semantics, vector) = builder.Reindex(index1, index2, semantics, vector)
     member x.DropItem(index, key, vector) = builder.DropItem(index, key, vector)
-    member x.GetRange(index, optLo:option<'K>, optHi:option<'K>, vector) = 
+    member x.GetRange(index, optLo:option<'K * _>, optHi:option<'K * _>, vector) = 
       match index with
       | :? IDelayedIndex<'K> as index ->
         // Use 'index.Invoke' to run the 'Invoke' method of the following
@@ -211,14 +250,14 @@ and DelayedIndexBuilder() =
             member x.Invoke<'V>(index:DelayedIndex<'K, 'V>) =
 
               // Calculate range for the current slicing
-              let lo = defaultArg optLo index.Source.RangeMin
-              let hi = defaultArg optHi index.Source.RangeMax
+              let lo = defaultArg optLo (index.Source.RangeMin, BoundaryBehavior.Inclusive)
+              let hi = defaultArg optHi (index.Source.RangeMax, BoundaryBehavior.Inclusive)
               let range = Intersect(index.Source.Ranges, Range(lo, hi))
               // A function that combines the current slice with another 
               // range and returns a source for this portion of data
               let restrictSource otherRange identifier loader = 
                 let ranges = Intersect(range, otherRange)
-                DelayedSource<'K, 'V>(index.Source.RangeMin, index.Source.RangeMax, ranges, identifier, loader)
+                DelayedSource<'K, 'V>(index.Source.RangeMin, index.Source.RangeMax, index.Source.MidPoint, ranges, identifier, loader)
                 
               // Create a new Delayed source for this index with more restricted range
               let source = restrictSource index.Source.Ranges index.Source.Identifier index.Source.Loader
@@ -247,16 +286,16 @@ and DelayedIndexBuilder() =
 namespace FSharp.DataFrame
 
 open FSharp.DataFrame.Delayed
+open FSharp.DataFrame.Indices
 open FSharp.DataFrame.Vectors.ArrayVector
 
 type DelayedSeries =
-  static member Create<'K, 'V when 'K : equality>(min, max, token, loader) =
-    let series = DelayedSource<'K, 'V>(min, max, Ranges.Range(min, max), token, loader)
+  static member Create<'K, 'V when 'K : equality>(min, max, midpoint, token, loader) =
+    let initRange = Ranges.Range((min, BoundaryBehavior.Inclusive), (max, BoundaryBehavior.Inclusive))
+    let series = DelayedSource<'K, 'V>(min, max, midpoint, initRange, token, loader)
     let index = DelayedIndex(series)
     let vector = DelayedVector(series)
     // DelayedIndex never issues any special commands, 
     // so we can just use ArrayVector builder
     let vectorBuilder = ArrayVectorBuilder.Instance
     Series(index, vector, vectorBuilder, DelayedIndexBuilder())
-
-
