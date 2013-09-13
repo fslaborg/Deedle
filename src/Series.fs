@@ -75,10 +75,29 @@ and Series<'K, 'V when 'K : equality>
   // Accessors
   // ----------------------------------------------------------------------------------------------
 
-  member x.GetItems(items,?lookup) =
-    // TODO: Should throw when item is not in the sereis?
-    let lookup = defaultArg lookup Lookup.Exact
-    let newIndex = indexBuilder.Create<_>(items, None)
+  /// Returns a new series with an index containing the specified keys.
+  /// When the key is not found in the current series, the newly returned
+  /// series will contain a missing value. When the second parameter is not
+  /// specified, the keys have to exactly match the keys in the current series
+  /// (`Lookup.Exact`).
+  ///
+  /// Parameters:
+  ///  * `keys` - A collection of keys in the current series.
+  member x.GetItems(keys) = x.GetItems(keys, Lookup.Exact)
+
+  /// Returns a new series with an index containing the specified keys.
+  /// When the key is not found in the current series, the newly returned
+  /// series will contain a missing value. When the second parameter is not
+  /// specified, the keys have to exactly match the keys in the current series
+  /// (`Lookup.Exact`).
+  ///
+  /// Parameters:
+  ///  * `keys` - A collection of keys in the current series.
+  ///  * `lookup` - Specifies the lookup behavior when searching for keys in 
+  ///    the current series. `Lookup.NearestGreater` and `Lookup.NearestSmaller`
+  ///    can be used when the current series is ordered.
+  member x.GetItems(keys, lookup) =    
+    let newIndex = indexBuilder.Create<_>(keys, None)
     let newVector = vectorBuilder.Build(indexBuilder.Reindex(index, newIndex, lookup, Vectors.Return 0), [| vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
