@@ -12,6 +12,10 @@ namespace FSharp.DataFrame.CSharp.Tests
   {
     static void Main(string[] args)
     {
+		var msft = Frame.ReadCsv(@"..\..\..\..\samples\data\msft.csv");
+		
+
+		// Aggregation.WindowSize(0, Boundary.AtBeginning)
     }
   }
 }

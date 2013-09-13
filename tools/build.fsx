@@ -19,18 +19,18 @@ let output   = __SOURCE_DIRECTORY__ ++ "../docs"
 // When running locally, you can use your path
 let root = @"file://C:\dev\FSharp.DataFrame\docs"
 
-
-// Copy all sample data files to the "data" directory
-let copy = [ sources ++ "data", output ++ "data"
-             sources ++ "../tools/content", output ++ "content" ]
-for source, target in copy do
-  if Directory.Exists target then Directory.Delete(target, true)
-  Directory.CreateDirectory target |> ignore
-  for fileInfo in DirectoryInfo(source).EnumerateFiles() do
-      fileInfo.CopyTo(target ++ fileInfo.Name) |> ignore
-
-// Generate HTML from all FSX files in samples & subdirectories
 let build () =
+  // Copy all sample data files to the "data" directory
+  let copy = [ sources ++ "data", output ++ "data"
+               sources ++ "../tools/content", output ++ "content"
+               sources ++ "../tools/content/images", output ++ "content/images" ]
+  for source, target in copy do
+    if Directory.Exists target then Directory.Delete(target, true)
+    Directory.CreateDirectory target |> ignore
+    for fileInfo in DirectoryInfo(source).EnumerateFiles() do
+        fileInfo.CopyTo(target ++ fileInfo.Name) |> ignore
+
+  // Generate HTML from all FSX files in samples & subdirectories
   for sub in [ "." ] do
     Literate.ProcessDirectory
       ( sources ++ sub, template, output ++ sub, 

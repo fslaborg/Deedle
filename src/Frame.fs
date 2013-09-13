@@ -87,6 +87,9 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   member internal frame.ColumnIndex = columnIndex
   member internal frame.Data = data
 
+  member frame.RowKeys = rowIndex.Keys
+  member frame.ColumnKeys = columnIndex.Keys
+
   // ----------------------------------------------------------------------------------------------
   // Frame operations - joins
   // ----------------------------------------------------------------------------------------------
@@ -139,10 +142,11 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
 
     // Transform columns - if we have both vectors, we need to append them
     let appendVector = 
-      { new VectorHelpers.VectorCallSite2<IVector> with
-          override x.Invoke<'T>(col1:IVector<'T>, col2:IVector<'T>) = 
-            vectorBuilder.Build(rowCmd, [| col1; col2 |]) :> IVector }
-    |> VectorHelpers.createTwoArgDispatcher
+      { new VectorHelpers.VectorCallSite1<IVector -> IVector> with
+          override x.Invoke<'T>(col1:IVector<'T>) = (fun col2 ->
+            let col2 = VectorHelpers.changeType<'T> col2
+            vectorBuilder.Build(rowCmd, [| col1; col2 |]) :> IVector) }
+      |> VectorHelpers.createDispatcher
     // .. if we only have one vector, we need to pad it 
     let padVector isLeft = 
       { new VectorHelpers.VectorCallSite1<IVector> with
@@ -154,7 +158,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     let padLeftVector, padRightVector = padVector true, padVector false
 
     let append = VectorValueTransform.Create(fun (l:OptionalValue<IVector>) r ->
-      if l.HasValue && r.HasValue then OptionalValue(appendVector (l.Value, r.Value))
+      if l.HasValue && r.HasValue then OptionalValue(appendVector l.Value r.Value)
       elif l.HasValue then OptionalValue(padLeftVector l.Value)
       elif r.HasValue then OptionalValue(padRightVector r.Value)
       else OptionalValue.Missing )
@@ -274,3 +278,18 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
       let other = Frame(colData.Index, Index.CreateUnsorted [colKey], Vector.Create [colData.Vector])
       df.Join(other, JoinKind.Outer) )
     Frame(df.RowIndex, df.ColumnIndex, df.Data)
+
+
+  member frame.ReplaceRowIndexKeys<'TNewRowIndex when 'TNewRowIndex : equality>(keys:seq<'TNewRowIndex>) =
+    let newRowIndex = frame.IndexBuilder.Create(keys, None)
+    let getRange = VectorHelpers.getVectorRange frame.VectorBuilder frame.RowIndex.Range
+    let newData = frame.Data.Select(getRange)
+    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
+
+  member frame.ReindexRowKeys(keys) = 
+    // Create empty frame with the required keys    
+    let empty = Frame<_, _>(frame.IndexBuilder.Create(keys, None), frame.IndexBuilder.Create([], None), frame.VectorBuilder.CreateNonOptional [||])
+    for key, series in frame.Columns.Observations do 
+      empty.AddSeries(key, series)
+    empty
+

@@ -1,5 +1,4 @@
 ﻿#I "../bin"
-#I "../packages"
 #load "FSharp.DataFrame.fsx"
 
 // --------------------------------------------------------------------------------------
@@ -8,6 +7,22 @@
 
 open System
 open FSharp.DataFrame
+
+let df = 
+  Frame.ofColumns
+    [ "Str" =?> Series.ofValues ["hi"]
+      "Int" =?> Series.ofValues [42]
+      "Float" =?> Series.ofValues [42.0]
+      "Date" =?> Series.ofValues [DateTime.Now] ]
+
+let sb = SeriesBuilder()
+sb?Str <- 42
+sb?Int <- 3.14
+sb?Float <- 10
+sb?Date <- "2013-01-01"
+df.Append(42, sb.Series)
+
+let df2 = df |> Frame.transpose
 
 /// Generate date range from 'first' with 'count' days
 let dateRange (first:System.DateTime) count = (*[omit:(...)]*)

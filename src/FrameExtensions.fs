@@ -1,152 +1,121 @@
 ﻿namespace FSharp.DataFrame
 
-module internal Reflection = 
-  open System.Linq
-  open System.Linq.Expressions
-  open Microsoft.FSharp.Reflection
-  open Microsoft.FSharp
-
-  let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
-  let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
-
-  let enumerableSelect =
-    match <@@ Enumerable.Select([0], fun v -> v) @@> with
-    | Quotations.Patterns.Call(_, mi, _) -> mi.GetGenericMethodDefinition() | _ -> failwith "Could not find Enumerable.Select"
-  let enumerableToArray =
-    match <@@ Enumerable.ToArray([0]) @@> with
-    | Quotations.Patterns.Call(_, mi, _) -> mi.GetGenericMethodDefinition() | _ -> failwith "Could not find Enumerable.ToArray"
-  let createNonOpt = 
-    match <@@ vectorBuilder.CreateNonOptional([| |]) @@> with
-    | Quotations.Patterns.Call(_, mi, _) -> mi.GetGenericMethodDefinition() | _ -> failwith "Could not find vectorBuilder.CreateNonOptional"
-
-  let getRecordConvertors<'T>() = 
-    let recdTy = typeof<'T>
-    let fields = recdTy.GetProperties() |> Seq.filter (fun p -> p.CanRead) 
-    let colIndex = indexBuilder.Create<string>([ for f in fields -> f.Name ], Some false)
-    let fieldConvertors = 
-      [| for f in fields ->
-          // Information about the types involved...
-          let fldTy = f.PropertyType
-          // Build: fun recd -> recd.<Field>
-          let recd = Expression.Parameter(recdTy)
-          let func = Expression.Lambda(Expression.Call(recd, f.GetGetMethod()), [recd])
-          // Build: Enumerable.ToArray(Enumerable.Select(<input>, fun recd -> recd.<Field>))
-          let input = Expression.Parameter(typeof<seq<'T>>)
-          let selected = Expression.Call(enumerableSelect.MakeGenericMethod [| recdTy; fldTy |], input, func)
-          let body = Expression.Call(enumerableToArray.MakeGenericMethod [| fldTy |], selected)
-          // Build: vectorBuilder.CreateNonOptional( ... body ... )
-          let conv = Expression.Call(Expression.Constant(vectorBuilder), createNonOpt.MakeGenericMethod [| fldTy |], body)
-          // Compile & run
-          Expression.Lambda(conv, [input]).Compile() |]
-    colIndex, fieldConvertors
-
-  let convertRecordSequence<'T>(data:seq<'T>) =
-    let colIndex, convertors = getRecordConvertors<'T>()
-    let frameData = 
-      [| for convFunc in convertors ->
-          convFunc.DynamicInvoke( [| box data |] ) :?> IVector |]
-      |> vectorBuilder.CreateNonOptional
-    Frame<int, string>(Index.Create [0 .. (Seq.length data) - 1], colIndex, frameData)
-
-
-
-[<AutoOpen>]
-module FSharp =
-  open System
-
 // ------------------------------------------------------------------------------------------------
 // Construction
 // ------------------------------------------------------------------------------------------------
 
-  type Frame =
-    static member internal Register() = 
-      Series.SeriesOperations <-
-        { new SeriesOperations with
-            member x.OuterJoin<'TIndex2, 'TValue2 when 'TIndex2 : equality>
-                (series1:Series<'TIndex2, 'TValue2>, series2:Series<'TIndex2, 'TValue2>) = 
-              let frame1 = Frame(series1.Index, Index.Create [0], Vector.Create [| series1.Vector :> IVector |])
-              let frame2 = Frame(series2.Index, Index.Create [1], Vector.Create [| series2.Vector :> IVector |])
-              let joined = frame1.Join(frame2)
-              joined.Rows.Select(fun row -> row.Value :> Series<_, _>) }
+open System
+open FSharp.DataFrame.Vectors 
+open System.Runtime.InteropServices
+open System.Runtime.CompilerServices
 
-    static member internal Create<'TColumnKey, 'TRowKey, 'TValue when 'TColumnKey : equality and 'TRowKey : equality>
-        (column:'TColumnKey, series:Series<'TRowKey, 'TValue>) = 
-      let data = Vector.Create [| series.Vector :> IVector |]
-      Frame(series.Index, Index.Create [column], data)
+type Frame =
+  /// Load data frame from a CSV file. The operation automatically reads column names from the 
+  /// CSV file (if they are present) and infers the type of values for each column. Columns
+  /// of primitive types (`int`, `float`, etc.) are converted to the right type. Columns of other
+  /// types (such as dates) are not converted automatically.
+  ///
+  /// Parameters:
+  ///  * `location` - Specifies a file name or an web location of the resource.
+  ///  * `skipTypeInference` - Specifies whether the method should skip inferring types
+  ///    of columns automatically (when set to `true` you need to provide explicit `schema`)
+  ///  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
+  ///    rows to use for type inference. The default value is 0, meaninig all rows.
+  ///  * `schema` - A string that specifies CSV schema. See the documentation for 
+  ///    information about the schema format.
+  ///  * `separators` - A string that specifies one or more (single character) separators
+  ///    that are used to separate columns in the CSV file. Use for example `";"` to 
+  ///    parse semicolon separated files.
+  ///  * `culture` - Specifies the name of the culture that is used when parsing 
+  ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member ReadCsv
+    ( location:string, [<Optional>] skipTypeInference, [<Optional>] inferRows, 
+      [<Optional>] schema, [<Optional>] separators, [<Optional>] culture) =
+    FrameUtils.readCsv 
+      location (Some (not skipTypeInference)) (Some inferRows) (Some schema) "NaN,NA,#N/A,:" 
+      (if separators = null then None else Some separators) (Some culture)
 
-    static member internal CreateRow(row:'TRowKey, series:Series<'TColumnKey, 'TValue>) = 
-      let data = series.Vector.SelectOptional(fun v -> 
-        let res = Vectors.ArrayVector.ArrayVectorBuilder.Instance.CreateOptional [| v |] 
-        OptionalValue(res :> IVector))
-      Frame(Index.Create [row], series.Index, data)
+  /// Creates a data frame with ordinal Integer index from a sequence of rows.
+  /// The column indices of individual rows are unioned, so if a row has fewer
+  /// columns, it will be successfully added, but there will be missing values.
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member FromRows<'K,'V,'S when 'S :> Series<'K, 'V>>(rows:seq<'S>) = 
+    FrameUtils.fromRows(Series(rows |> Seq.mapi (fun i _ -> i), rows))
 
-    static member internal FromRows<'TRowKey, 'TColumnKey, 'TSeries, 'TValue 
-          when 'TRowKey : equality and 'TColumnKey : equality and 'TSeries :> Series<'TColumnKey, 'TValue>>
-        (nested:Series<'TRowKey, 'TSeries>) =
-      let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance // TODO: Capture somewhere
-      let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
 
-      // Union column indices, ignoring the vector trasnformations
-      let columnIndex = nested.Values |> Seq.map (fun sr -> sr.Index) |> Seq.reduce (fun i1 i2 -> 
-        let index, _, _ = indexBuilder.Union(i1, i2, Vectors.Return 0, Vectors.Return 0)
-        index )
-      // Row index is just the index of the series
-      let rowIndex = nested.Index
+[<AutoOpen>]
+module FSharpFrameExtensions =
 
-      // Dispatcher that creates column vector of the right type
-      let columnCreator key =
-        { new VectorHelpers.ValueCallSite1<IVector> with
-            override x.Invoke<'T>(_:'T) = 
-              let it = nested.SelectOptional(fun kvp ->
-                if kvp.Value.HasValue then 
-                  kvp.Value.Value.TryGet(key) 
-                  |> Option.map (fun v -> System.Convert.ChangeType(v, typeof<'T>) |> unbox<'T>)
-                  |> OptionalValue.ofOption
-                else OptionalValue.Missing)
-              it.Vector :> IVector }
-        |> VectorHelpers.createValueDispatcher
+  /// Custom operator that can be used when constructing series from observations
+  /// or frames from key-row or key-column pairs. The operator simply returns a 
+  /// tuple, but it provides a more convenient syntax. For example:
+  ///
+  ///     Series.ofObservations [ "k1" => 1; "k2" => 15 ]
+  ///
+  let (=>) a b = a, b
 
-      // Create data vectors
-      let data = 
-        columnIndex.Keys 
-        |> Seq.map (fun key ->
-            // Pick a witness from the column, so that we can use column creator
-            let someValue =
-              nested.Observations |> Seq.map snd |> Seq.tryPick (fun series -> 
-                series.TryGet(key) |> Option.map box)
-            let someValue = defaultArg someValue (obj())
-            columnCreator key someValue)
-        |> Array.ofSeq |> vectorBuilder.CreateNonOptional
-      Frame(rowIndex, columnIndex, data)
-
-    static member internal FromColumns<'TRowKey, 'TColumnKey, 'TSeries, 'TValue 
-          when 'TRowKey : equality and 'TColumnKey : equality and 'TSeries :> Series<'TRowKey, 'TValue>>
-        (nested:Series<'TColumnKey, 'TSeries>) =
-      let initial = Frame(Index.Create [], Index.CreateUnsorted [], Vector.Create [| |])
-      (initial, nested.ObservationsOptional) ||> Seq.fold (fun df (name, series) -> 
-        if not series.HasValue then df 
-        else df.Join(Frame.Create(name, series.Value), JoinKind.Outer))
-
+  let (=?>) a (b:ISeries<_>) = a, b
+  
+  /// Custom operator that can be used for applying fuction to all elements of 
+  /// a series. This provides a nicer syntactic sugar for the `Series.mapValues` 
+  /// function. For example:
+  ///
+  ///     // Given a float series and a function on floats
+  ///     let s1 = Series.ofValues [ 1.0 .. 10.0 ]
+  ///     let adjust v = max 10.0 v
+  ///
+  ///     // Apply "adjust (v + v)" to all elements
+  ///     adjust $ (s1 + s1)
+  ///
+  let ($) f series = Series.mapValues f series
 
   type Frame with
+    /// Load data frame from a CSV file. The operation automatically reads column names from the 
+    /// CSV file (if they are present) and infers the type of values for each column. Columns
+    /// of primitive types (`int`, `float`, etc.) are converted to the right type. Columns of other
+    /// types (such as dates) are not converted automatically.
+    ///
+    /// Parameters:
+    ///  * `location` - Specifies a file name or an web location of the resource.
+    ///  * `inferTypes` - Specifies whether the method should attempt to infer types
+    ///    of columns automatically (set this to `false` if you want to specify schema)
+    ///  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
+    ///    rows to use for type inference. The default value is 0, meaninig all rows.
+    ///  * `schema` - A string that specifies CSV schema. See the documentation for 
+    ///    information about the schema format.
+    ///  * `separators` - A string that specifies one or more (single character) separators
+    ///    that are used to separate columns in the CSV file. Use for example `";"` to 
+    ///    parse semicolon separated files.
+    ///  * `culture` - Specifies the name of the culture that is used when parsing 
+    ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
+    static member ReadCsv(location:string, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture) =
+      FrameUtils.readCsv location inferTypes inferRows schema "NaN,NA,#N/A,:" separators culture
+
+    /// Creates a data frame with ordinal Integer index from a sequence of rows.
+    /// The column indices of individual rows are unioned, so if a row has fewer
+    /// columns, it will be successfully added, but there will be missing values.
     static member ofRowsOrdinal(rows:seq<#Series<_, _>>) = 
-      let keys = rows |> Seq.mapi (fun i _ -> i)
-      Frame.FromRows(Series(keys, rows))
-    static member ofRows(rows:seq<_ * #Series<_, _>>) = 
+      FrameUtils.fromRows(Series(rows |> Seq.mapi (fun i _ -> i), rows))
+
+    static member ofRows(rows:seq<_ * #ISeries<_>>) = 
       let names, values = rows |> List.ofSeq |> List.unzip
-      Frame.FromRows(Series(names, values))
+      FrameUtils.fromRows(Series(names, values))
+
     static member ofRows(rows) = 
-      Frame.FromRows(rows)
+      FrameUtils.fromRows(rows)
+
     static member ofRowKeys(keys) = 
-      let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance // TODO: Capture somewhere
-      let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
-      Frame<_, string>(indexBuilder.Create(keys, None), indexBuilder.Create([], None), vectorBuilder.CreateNonOptional [||])
+      let rowIndex = FrameUtils.indexBuilder.Create(keys, None)
+      let colIndex = FrameUtils.indexBuilder.Create([], None)
+      Frame<_, string>(rowIndex, colIndex, FrameUtils.vectorBuilder.CreateNonOptional [||])
     
     static member ofColumns(cols) = 
-      Frame.FromColumns(cols)
-    static member ofColumns(cols:seq<_ * Series<_, _>>) = 
+      FrameUtils.fromColumns(cols)
+
+    static member ofColumns(cols:seq<_ * #ISeries<'K>>) = 
       let names, values = cols |> List.ofSeq |> List.unzip
-      Frame.FromColumns(Series(names, values))
+      FrameUtils.fromColumns(Series(names, values))
     
     static member ofValues(values) =
       values 
@@ -156,115 +125,6 @@ module FSharp =
           col, Series(keys, values) )
       |> Frame.ofColumns
 
-  let (=>) a b = a, b
-  let ($) f series = Series.mapValues f series
-      
-[<AutoOpen>]
-module FrameExtensions =
-  open FSharp.Data
-  open ProviderImplementation
-  open FSharp.DataFrame.Vectors 
-  open FSharp.Data.RuntimeImplementation
-  open FSharp.Data.RuntimeImplementation.StructuralTypes
-  
-  type Frame with
-    static member ReadCsv(file:string, ?inferTypes, ?schema, ?inferRows, ?separators) =
-
-      let inferRows = defaultArg inferRows 0
-      let missingValues = "NaN,NA,#N/A,:"
-      let missingValuesArr = [| "NaN"; "NA"; "#N/A"; ":" |]
-      let culture = ""
-      let cultureInfo = System.Globalization.CultureInfo.InvariantCulture
-      
-      let safeMode = false // Irrelevant - all DF values can be missing
-      let preferOptionals = true // Ignored
-
-      let createVector typ (data:string[]) = 
-        if typ = typeof<bool> then Vector.CreateNA (Array.map (fun s -> Operations.ConvertBoolean(culture, Some(s))) data) :> IVector
-        elif typ = typeof<decimal> then Vector.CreateNA (Array.map (fun s -> Operations.ConvertDecimal(culture, Some(s))) data) :> IVector
-        elif typ = typeof<float> then Vector.CreateNA (Array.map (fun s -> Operations.ConvertFloat(culture, missingValues, Some(s))) data) :> IVector
-        elif typ = typeof<int> then Vector.CreateNA (Array.map (fun s -> Operations.ConvertInteger(culture, Some(s))) data) :> IVector
-        elif typ = typeof<int64> then Vector.CreateNA (Array.map (fun s -> Operations.ConvertInteger64(culture, Some(s))) data) :> IVector
-        else Vector.Create data :> IVector
-
-      // If 'inferTypes' is specified (or by default), use the CSV type inference
-      // to load information about types in the CSV file. By default, use the entire
-      // content (but inferRows can be set to smaller number). Otherwise we just
-      // "infer" all columns as string.
-      let inferedProperties = 
-        let data = Csv.CsvFile.Load(file, ?separators=separators)
-        if not (inferTypes = Some false) then
-          CsvInference.inferType 
-            data inferRows (missingValuesArr, cultureInfo) (defaultArg schema "") safeMode preferOptionals
-          ||> CsvInference.getFields preferOptionals
-        else 
-          if data.Headers.IsNone then failwith "CSV file is missing headers!"
-          [ for c in data.Headers.Value -> 
-              PrimitiveInferedProperty.Create(c, typeof<string>, true) ]
-
-      // Load the data and convert the values to the appropriate type
-      let data = Csv.CsvFile.Load(file, ?separators=separators).Cache()
-      let columnIndex = Index.Create data.Headers.Value
-      let columns = 
-        [| for name, prop in Seq.zip data.Headers.Value inferedProperties  ->
-             [| for row in data.Data -> row.GetColumn(name) |]
-             |> createVector prop.RuntimeType |]
-      let rowIndex = Index.Create [ 0 .. (Seq.length data.Data) - 1 ]
-      Frame(rowIndex, columnIndex, Vector.Create columns)
-
-
-  type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality> with
-    member frame.Where(condition) =
-      frame.Rows.Where(condition) |> Frame.ofRows
-      
-    member frame.Append(rowKey, row) =
-      frame.Append(Frame.ofRows [ rowKey => row ])
-      
-    member frame.WithMissing(value) = 
-      let fillFunc = VectorHelpers.fillNA value
-      let data = frame.Data.Select fillFunc
-      Frame<'TRowKey, 'TColumnKey>(frame.RowIndex, frame.ColumnIndex, data)
-
-    member frame.WithOrderedRows() = 
-      let newRowIndex, rowCmd = frame.IndexBuilder.OrderIndex(frame.RowIndex, Vectors.Return 0)
-      let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
-      Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
-
-    member x.WithColumnIndex(columnKeys:seq<'TNewColumnKey>) =
-      let columns = seq { for v in x.Columns.Values -> v :> ISeries<_> }
-      Frame<_, _>(columnKeys, columns)
-
-    member x.WithRowIndex<'TNewRowIndex when 'TNewRowIndex : equality>(column) =
-      let columnVec = x.GetSeries<'TNewRowIndex>(column)
-      let lookup addr = columnVec.Vector.GetValue(addr)
-      let newRowIndex, rowCmd = x.IndexBuilder.WithIndex(x.RowIndex, lookup, Vectors.Return 0)
-      let newData = x.Data.Select(VectorHelpers.transformColumn x.VectorBuilder rowCmd)
-      Frame<_, _>(newRowIndex, x.ColumnIndex, newData)
-
-    member frame.ReplaceRowIndexKeys<'TNewRowIndex when 'TNewRowIndex : equality>(keys:seq<'TNewRowIndex>) =
-      let newRowIndex = frame.IndexBuilder.Create(keys, None)
-      let getRange = VectorHelpers.getVectorRange frame.VectorBuilder frame.RowIndex.Range
-      let newData = frame.Data.Select(getRange)
-      Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
-
-    member frame.ReindexRowKeys(keys) = 
-      // Create empty frame with the required keys    
-      let empty = Frame<_, _>(frame.IndexBuilder.Create(keys, None), frame.IndexBuilder.Create([], None), frame.VectorBuilder.CreateNonOptional [||])
-      for key, series in frame.Columns.Observations do 
-        empty.AddSeries(key, series)
-      empty
-
-    member frame.GroupRowsBy<'TGroup when 'TGroup : equality>(key) =
-      frame.Rows |> Series.groupInto (fun _ v -> v.GetAs<'TGroup>(key)) (fun k g -> g |> Frame.ofRows)
-
-    member frame.GroupRowsInto<'TGroup when 'TGroup : equality>(key, f:System.Func<_, _, _>) =
-      frame.Rows |> Series.groupInto (fun _ v -> v.GetAs<'TGroup>(key)) (fun k g -> f.Invoke(k, g |> Frame.ofRows))
-
-
-
-[<AutoOpen>]
-module FSharp2 =
-  type FSharp.Frame with
     static member ofRecords (series:Series<'K, 'R>) =
       let keyValuePairs = 
         seq { for k, v in series.ObservationsOptional do 
@@ -277,177 +137,56 @@ module FSharp2 =
     static member ofRecords (values:seq<'T>) =
       Reflection.convertRecordSequence<'T>(values)    
 
-[<CompiledName("Column`1")>]
-type column<'T>(value:obj) =
-  member x.Value = value
 
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]    
-module Frame = 
-  open FSharp.DataFrame.Internal
+  type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality> with
+    member frame.Append(rowKey, row) = frame.Append(Frame.ofRows [ rowKey => row ])
+      
+    member frame.WithMissing(value) = 
+      let data = frame.Data.Select (VectorHelpers.fillNA value)
+      Frame<'TRowKey, 'TColumnKey>(frame.RowIndex, frame.ColumnIndex, data)
 
-  // ----------------------------------------------------------------------------------------------
-  // Grouping
-  // ----------------------------------------------------------------------------------------------
+    member x.WithColumnIndex(columnKeys:seq<'TNewColumnKey>) =
+      let columns = seq { for v in x.Columns.Values -> v :> ISeries<_> }
+      Frame<_, _>(columnKeys, columns)
 
-  let groupRowsInto column f (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.Rows |> Series.groupInto 
-      (fun _ v -> v.Get(column)) 
-      (fun k g -> g |> Frame.ofRows |> f)
+    member x.WithRowIndex<'TNewRowIndex when 'TNewRowIndex : equality>(column) =
+      let columnVec = x.GetSeries<'TNewRowIndex>(column)
+      let lookup addr = columnVec.Vector.GetValue(addr)
+      let newRowIndex, rowCmd = x.IndexBuilder.WithIndex(x.RowIndex, lookup, Vectors.Return 0)
+      let newData = x.Data.Select(VectorHelpers.transformColumn x.VectorBuilder rowCmd)
+      Frame<_, _>(newRowIndex, x.ColumnIndex, newData)
 
-  let groupRowsBy column (frame:Frame<'TRowKey, 'TColKey>) = 
-    groupRowsInto column id frame
+    member frame.GroupRowsBy<'TGroup when 'TGroup : equality>(key) =
+      frame.Rows |> Series.groupInto (fun _ v -> v.GetAs<'TGroup>(key)) (fun k g -> g |> Frame.ofRows)
 
-  //let shiftRows offset (frame:Frame<'TRowKey, 'TColKey>) = 
-  //  frame.Columns 
-  //  |> Series.map (fun k col -> Series.shift offset col)
-  //  |> Frame.ofColumns
-
-  let takeLast count (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.Rows |> Series.takeLast count |> Frame.ofRows
-
-  let dropMissing (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.RowsDense |> Series.dropMissing |> Frame.ofRows
+    member frame.GroupRowsInto<'TGroup when 'TGroup : equality>(key, f:System.Func<_, _, _>) =
+      frame.Rows |> Series.groupInto (fun _ v -> v.GetAs<'TGroup>(key)) (fun k g -> f.Invoke(k, g |> Frame.ofRows))
 
 
-  // ----------------------------------------------------------------------------------------------
-  // Wrappers that simply call member functions of the data frame
-  // ----------------------------------------------------------------------------------------------
-
-  /// Creates a new data frame that contains all data from 
-  /// the original data frame, together with additional series.
-  [<CompiledName("AddSeries")>]
-  let addSeries column series (frame:Frame<'TRowKey, 'TColKey>) = 
-    let f = frame.Clone() in f.AddSeries(column, series); f
-
-  /// Append two data frames. The columns of the resulting data frame
-  /// will be the union of columns of the two data frames. The row keys
-  /// may overlap, but the values must not - if there is a value for a
-  /// certain column, at the same row index in both data frames, an exception
-  /// is thrown. 
-  [<CompiledName("Append")>]
-  let append (frame1:Frame<'TRowKey, 'TColKey>) frame2 = frame1.Append(frame2)
-
-  /// Returns the columns of the data frame as a series (indexed by 
-  /// the column keys of the source frame) containing _series_ representing
-  /// individual columns of the frame.
-  [<CompiledName("Columns")>]
-  let columns (frame:Frame<'TRowKey, 'TColKey>) = frame.Columns
-
-  /// Returns the rows of the data frame as a series (indexed by 
-  /// the row keys of the source frame) containing _series_ representing
-  /// individual row of the frame.
-  [<CompiledName("Rows")>]
-  let rows (frame:Frame<'TRowKey, 'TColKey>) = frame.Rows
-
-  /// Returns the columns of the data frame as a series (indexed by 
-  /// the column keys of the source frame) containing _series_ representing
-  /// individual columns of the frame. This is similar to `Columns`, but it
-  /// skips columns that contain missing value in _any_ row.
-  [<CompiledName("ColumnsDense")>]
-  let columnsDense (frame:Frame<'TRowKey, 'TColKey>) = frame.ColumnsDense
-
-  /// Returns the rows of the data frame as a series (indexed by 
-  /// the row keys of the source frame) containing _series_ representing
-  /// individual row of the frame. This is similar to `Rows`, but it
-  /// skips rows that contain missing value in _any_ column.
-  [<CompiledName("RowsDense")>]
-  let rowsDense (frame:Frame<'TRowKey, 'TColKey>) = frame.RowsDense
-
-  /// Creates a new data frame that contains all data from the original
-  /// data frame without the specified series (column).
-  [<CompiledName("DropSeries")>]
-  let dropSeries column (frame:Frame<'TRowKey, 'TColKey>) = 
-    let f = frame.Clone() in f.DropSeries(column); f
-
-  /// Creates a new data frame where the specified column is repalced
-  /// with a new series. (If the series does not exist, only the new
-  /// series is added.)
-  [<CompiledName("ReplaceSeries")>]
-  let replaceSeries column series (frame:Frame<'TRowKey, 'TColKey>) = 
-    let f = frame.Clone() in f.ReplaceSeries(column, series); f
-
-  /// Returns a specified series (column) from a data frame. This 
-  /// function uses exact matching semantics. Use `lookupSeries` if you
-  /// want to use inexact matching (e.g. on dates)
-  [<CompiledName("GetSeries")>]
-  let getSeries column (frame:Frame<'TRowKey, 'TColKey>) = frame.GetSeries(column)
-
-  /// Returns a specified row from a data frame. This 
-  /// function uses exact matching semantics. Use `lookupRow` if you
-  /// want to use inexact matching (e.g. on dates)
-  [<CompiledName("GetRow")>]
-  let getRow row (frame:Frame<'TRowKey, 'TColKey>) = frame.GetRow(row)
-
-  /// Returns a specified series (column) from a data frame. If the data frame has 
-  /// ordered column index, the lookup semantics can be used to get series
-  /// with nearest greater/smaller key. For exact semantics, you can use `getSeries`.
-  [<CompiledName("LookupSeries")>]
-  let lookupSeries column lookup (frame:Frame<'TRowKey, 'TColKey>) = frame.GetSeries(column, lookup)
-
-  /// Returns a specified row from a data frame. If the data frame has 
-  /// ordered row index, the lookup semantics can be used to get row with 
-  /// nearest greater/smaller key. For exact semantics, you can use `getSeries`.
-  [<CompiledName("LookupRow")>]
-  let lookupRow row lookup (frame:Frame<'TRowKey, 'TColKey>) = frame.GetRow(row, lookup)
-
-  /// Returns a data frame that contains the same data as the argument, 
-  /// but whose rows are ordered series. This allows using inexact lookup
-  /// for rows (e.g. using `lookupRow`) or inexact left/right joins.
-  [<CompiledName("OrderRows")>]
-  let orderRows (frame:Frame<'TRowKey, 'TColKey>) = frame.WithOrderedRows()
-
-  /// Creates a new data frame that uses the specified column as an row index.
-  [<CompiledName("WithRowIndex")>]
-  let withRowIndex (column:column<'TNewRowKey>) (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.WithRowIndex<'TNewRowKey>(unbox<'TColKey> column.Value)
-
-  /// Creates a new data frame that uses the specified list of keys as a new column index.
-  [<CompiledName("WithColumnKeys")>]
-  let withColumnKeys (keys:seq<'TNewColKey>) (frame:Frame<'TRowKey, 'TColKey>) = frame.WithColumnIndex(keys)
-
-  /// Join two frames using the specified kind of join. This function uses
-  /// exact matching on keys. If you want to align nearest smaller or greater
-  /// keys in left or outer join, use `joinAlign`. 
-  [<CompiledName("Join")>]
-  let join kind (frame1:Frame<'TRowKey, 'TColKey>) frame2 = frame1.Join(frame2, kind)
-
-  /// Join two frames using the specified kind of join and 
-  /// the specified lookup semantics.
-  [<CompiledName("JoinAlign")>]
-  let joinAlign kind lookup (frame1:Frame<'TRowKey, 'TColKey>) frame2 = frame1.Join(frame2, kind, lookup)
-
-  
-  /// Fills all missing values in all columns & rows of the data frame with the
-  /// specified value (this can only be used when the data is homogeneous)
-  [<CompiledName("WithMissing")>]
-  let withMissingVal defaultValue (frame:Frame<'TRowKey, 'TColKey>) =
-    frame.WithMissing(defaultValue)
-
-  // ----------------------------------------------------------------------------------------------
-  // TBD
-  // ----------------------------------------------------------------------------------------------
-
-  let inline filterRows f (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.Where(fun kvp -> f kvp.Key kvp.Value) 
-
-  // ----------------------------------------------------------------------------------------------
-  // Additional functions for working with data frames
-  // ----------------------------------------------------------------------------------------------
-
-  let inline mean (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.mean)
-
-  let inline sum (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sum)
-
-  let inline countValues (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.GetColumns<obj>() |> Series.map (fun _ -> Series.countValues)
-
-  let countKeys (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.RowIndex.Keys |> Seq.length
-
-  let inline sdv (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sdv)
-
-  let inline diff offset (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.Columns |> Series.mapValues (fun s -> Series.diff offset (s.As<float>())) |> Frame.ofColumns
+[<Extension>]
+type FrameExtensions =
+  /// Filters frame rows using the specified condtion. Returns a new data frame
+  /// that contains rows for which the provided function returned false. The function
+  /// is called with `KeyValuePair` containing the row key as the `Key` and `Value`
+  /// gives access to the row series.
+  ///
+  /// Parameters:
+  ///  * `frame` - A data frame to invoke the filtering function on.
+  ///  * `condition` - A delegate that specifies the filtering condition.
+  [<Extension>]
+  static member Where(frame:Frame<'TRowKey, 'TColumnKey>, condition) = 
+    frame.Rows.Where(condition) |> Frame.ofRows
+  [<Extension>]
+  static member Select(frame:Frame<'TRowKey, 'TColumnKey>, projection) = 
+    frame.Rows.Select(projection) |> Frame.ofRows
+  [<Extension>]
+  static member Append(frame:Frame<'TRowKey, 'TColumnKey>, rowKey, row) = 
+    frame.Append(Frame.ofRows [ rowKey => row ])
+  [<Extension>]
+  static member OrdereRows(frame:Frame<'TRowKey, 'TColumnKey>) = 
+    let newRowIndex, rowCmd = frame.IndexBuilder.OrderIndex(frame.RowIndex, Vectors.Return 0)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
+    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
+  [<Extension>]
+  static member Transpose(frame:Frame<'TRowKey, 'TColumnKey>) = 
+    frame.Columns |> Frame.ofRows

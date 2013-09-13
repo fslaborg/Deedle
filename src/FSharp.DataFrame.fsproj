@@ -47,9 +47,12 @@
     <Compile Include="Indices\Index.fs" />
     <Compile Include="Indices\LinearIndex.fs" />
     <Compile Include="Series.fs" />
-    <Compile Include="SeriesFunctions.fs" />
+    <Compile Include="SeriesExtensions.fs" />
+    <Compile Include="SeriesModule.fs" />
     <Compile Include="Frame.fs" />
-    <Compile Include="FrameFunctions.fs" />
+    <Compile Include="FrameUtils.fs" />
+    <Compile Include="FrameExtensions.fs" />
+    <Compile Include="FrameModule.fs" />
     <Compile Include="DelayedSeries.fs" />
     <None Include="packages.config" />
     <None Include="FSharp.DataFrame.fsx">

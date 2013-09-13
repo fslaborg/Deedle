@@ -253,10 +253,10 @@ module VectorHelpers =
     |> VectorHelpers.createDispatcher
 
   // A "generic function" that drops 
-  let getVectorRange (builder:IVectorBuilder) range : IVector -> IVector = 
-    let cmd = VectorConstruction.GetRange(VectorConstruction.Return 0, range)
+  let getVectorRange (builder:IVectorBuilder) range = 
     { new VectorHelpers.VectorCallSite1<IVector> with
         override x.Invoke<'T>(col:IVector<'T>) = 
+          let cmd = VectorConstruction.GetRange(VectorConstruction.Return 0, range)
           builder.Build(cmd, [| col |]) :> IVector }
     |> VectorHelpers.createDispatcher
 

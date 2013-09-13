@@ -77,9 +77,11 @@ module Series =
     series.SelectOptional(fun kvp -> 
       f kvp.Key (OptionalValue.asOption kvp.Value) |> OptionalValue.ofOption)
 
-  let pairwise (series:Series<'K, 'T>) = series.Pairwise()
+  let pairwise (series:Series<'K, 'T>) = 
+    series.Pairwise() |> map (fun k v -> v.Data)
   
-  let pairwiseWith f (series:Series<'K, 'T>) = series.Pairwise() |> map f
+  let pairwiseWith f (series:Series<'K, 'T>) = 
+    series.Pairwise() |> map (fun k v -> f k v.Data)
 
   let inline diff offset (series:Series<'K, 'T>) = 
     series.Aggregate
@@ -231,18 +233,3 @@ module Series =
   let takeLast count (series:Series<'K, 'T>) = 
     let keys = series.Keys |> Seq.lastFew count 
     Series(keys, seq { for k in keys -> series.[k] })
-
-[<AutoOpen>]
-module FSharp1 =
-  open System
-
-  type Series = 
-    static member ofObservations(observations) = 
-      Series(Seq.map fst observations, Seq.map snd observations)
-    static member ofValues(values) = 
-      let keys = values |> Seq.mapi (fun i _ -> i)
-      Series(keys, values)
-    static member ofNullables(values:seq<Nullable<_>>) = 
-      let keys = values |> Seq.mapi (fun i _ -> i)
-      Series(keys, values).Select(fun kvp -> kvp.Value.Value)
-    

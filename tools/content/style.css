@@ -126,7 +126,7 @@ span.s { color:#808000; }
 /* line number */
 span.l { color:#80b0b0; }
 /* fsi output */
-span.fsi { font-style:italic; color:#606060; }
+span.fsi { font-style:italic; color:#808080; }
 /* omitted */
 span.omitted { 
 	border:solid 1px #d8d8d8;

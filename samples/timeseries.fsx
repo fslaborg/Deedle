@@ -5,8 +5,7 @@ Volatility
 
 *)
 #I "../bin"
-#I "../lib"
-#I "../packages"
+#I "../packages/FSharp.Charting.0.84"
 #r "MathNet.Numerics.dll"
 #load "FSharp.DataFrame.fsx"
 #load "FSharp.Charting.fsx"

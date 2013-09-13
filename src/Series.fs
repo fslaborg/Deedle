@@ -17,6 +17,7 @@ type ValueMissingException(column) =
 type ISeries<'K when 'K : equality> =
   abstract Vector : FSharp.DataFrame.IVector
   abstract Index : IIndex<'K>
+  abstract TryGetObject : 'K -> option<obj>
 
 // :-(
 type internal SeriesOperations = 
@@ -27,11 +28,11 @@ type internal SeriesOperations =
 /// A series contains one Index and one Vec
 and Series<'K, 'V when 'K : equality>
     ( index:IIndex<'K>, vector:IVector<'V>,
-      vectorBuilder : IVectorBuilder, indexBuilder : IIndexBuilder ) =
+      vectorBuilder : IVectorBuilder, indexBuilder : IIndexBuilder ) as this =
   
   // :-(((((
   static let ensureInit = Lazy.Create(fun _ ->
-    let ty = System.Reflection.Assembly.GetExecutingAssembly().GetType("FSharp.DataFrame.Frame")
+    let ty = System.Reflection.Assembly.GetExecutingAssembly().GetType("FSharp.DataFrame.FrameOperations")
     let mi = ty.GetMethod("Register", System.Reflection.BindingFlags.Static ||| System.Reflection.BindingFlags.NonPublic)
     mi.Invoke(null, [||]) |> ignore )
 
@@ -47,6 +48,7 @@ and Series<'K, 'V when 'K : equality>
   // ----------------------------------------------------------------------------------------------
 
   interface ISeries<'K> with
+    member x.TryGetObject(k) = this.TryGet(k) |> Option.map box
     member x.Vector = vector :> IVector
     member x.Index = index
 
@@ -55,8 +57,8 @@ and Series<'K, 'V when 'K : equality>
       if vector.SuppressPrinting then "(Suppressed)" else
         seq { for item in series.ObservationsOptional |> Seq.startAndEnd Formatting.StartItemCount Formatting.EndItemCount  do
                 match item with 
-                | Choice1Of3(k, v) | Choice3Of3(k, v) -> yield [ k.ToString(); v.ToString() ]
-                | Choice2Of3() -> yield [ "..."; "..."] }
+                | Choice1Of3(k, v) | Choice3Of3(k, v) -> yield [ k.ToString(); "->"; v.ToString() ]
+                | Choice2Of3() -> yield [ "..."; "->"; "..."] }
         |> array2D
         |> Formatting.formatTable
 
@@ -103,6 +105,9 @@ and Series<'K, 'V when 'K : equality>
     match x.TryGet(key, ?lookup=lookup) with
     | None -> raise (ValueMissingException(key.ToString()))
     | Some v -> v
+
+  member x.Item with get(a) = x.Get(a)
+  member x.Item with get(items) = x.GetItems items
 
   static member (?) (series:Series<_, _>, name:string) = series.Get(name, Lookup.Exact)
 
@@ -224,10 +229,8 @@ and Series<'K, 'V when 'K : equality>
   // Operators
   // ----------------------------------------------------------------------------------------------
 
-  // :-((
   static member val internal SeriesOperations : SeriesOperations = Unchecked.defaultof<_> with get, set
 
-  // Float
   static member inline internal NullaryGenericOperation<'K, 'T1, 'T2>(series:Series<'K, 'T1>, op : 'T1 -> 'T2) = 
     series.Select(fun (KeyValue(k, v)) -> op v)
   static member inline internal NullaryOperation<'K, 'T>(series:Series<'K, 'T>, op : 'T -> 'T) = 
@@ -236,6 +239,14 @@ and Series<'K, 'V when 'K : equality>
     series.Select(fun (KeyValue(k, v)) -> op v scalar)
   static member inline internal ScalarOperationR<'K, 'T>(scalar, series:Series<'K, 'T>, op : 'T -> 'T -> 'T) = 
     series.Select(fun (KeyValue(k, v)) -> op scalar v)
+
+  static member inline internal VectorOperation<'K, 'T>(series1:Series<'K, 'T>, series2:Series<'K, 'T>, op) : Series<_, 'T> =
+    ensureInit.Value
+    let joined = Series<_, _>.SeriesOperations.OuterJoin(series1, series2)
+    joined.SelectOptional(fun (KeyValue(_, v)) -> 
+      match v.Value.TryGet(0), v.Value.TryGet(1) with
+      | Some a, Some b -> OptionalValue(op (a :?> 'T) (b :?> 'T))
+      | _ -> OptionalValue.Missing )
 
   static member (+) (scalar, series) = Series<_, _>.ScalarOperationR<_, int>(scalar, series, (+))
   static member (+) (series, scalar) = Series<_, _>.ScalarOperationL<_, int>(series, scalar, (+))
@@ -255,15 +266,6 @@ and Series<'K, 'V when 'K : equality>
   static member (/) (scalar, series) = Series<_, _>.ScalarOperationR<_, float>(scalar, series, (/))
   static member (/) (series, scalar) = Series<_, _>.ScalarOperationL<_, float>(series, scalar, (/))
 
-  // Float
-  static member inline internal VectorOperation<'K, 'T>(series1:Series<'K, 'T>, series2:Series<'K, 'T>, op) : Series<_, 'T> =
-    ensureInit.Value
-    let joined = Series<_, _>.SeriesOperations.OuterJoin(series1, series2)
-    joined.SelectOptional(fun (KeyValue(_, v)) -> 
-      match v.Value.TryGet(0), v.Value.TryGet(1) with
-      | Some a, Some b -> OptionalValue(op (a :?> 'T) (b :?> 'T))
-      | _ -> OptionalValue.Missing )
-
   static member (+) (s1, s2) = Series<_, _>.VectorOperation<_, int>(s1, s2, (+))
   static member (-) (s1, s2) = Series<_, _>.VectorOperation<_, int>(s1, s2, (-))
   static member (*) (s1, s2) = Series<_, _>.VectorOperation<_, int>(s1, s2, (*))
@@ -275,49 +277,29 @@ and Series<'K, 'V when 'K : equality>
   static member (/) (s1, s2) = Series<_, _>.VectorOperation<_, float>(s1, s2, (/))
 
   // Trigonometric
-  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
   static member Acos(series) = Series<_, _>.NullaryOperation<_, float>(series, acos)
-  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
   static member Asin(series) = Series<_, _>.NullaryOperation<_, float>(series, asin)
-  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
   static member Atan(series) = Series<_, _>.NullaryOperation<_, float>(series, atan)
-  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
   static member Sin(series) = Series<_, _>.NullaryOperation<_, float>(series, sin)
-  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
   static member Sinh(series) = Series<_, _>.NullaryOperation<_, float>(series, sinh)
-  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
   static member Cos(series) = Series<_, _>.NullaryOperation<_, float>(series, cos)
-  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
   static member Cosh(series) = Series<_, _>.NullaryOperation<_, float>(series, cosh)
-  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
   static member Tan(series) = Series<_, _>.NullaryOperation<_, float>(series, tan)
-  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
   static member Tanh(series) = Series<_, _>.NullaryOperation<_, float>(series, tanh)
 
   // Actually useful
-  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
   static member Abs(series) = Series<_, _>.NullaryOperation<_, float>(series, abs)
-  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
   static member Abs(series) = Series<_, _>.NullaryOperation<_, int>(series, abs)
-  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
   static member Ceiling(series) = Series<_, _>.NullaryOperation<_, float>(series, ceil)
-  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
   static member Exp(series) = Series<_, _>.NullaryOperation<_, float>(series, exp)
-  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
   static member Floor(series) = Series<_, _>.NullaryOperation<_, float>(series, floor)
-  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
   static member Truncate(series) = Series<_, _>.NullaryOperation<_, float>(series, truncate)
-  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
   static member Log(series) = Series<_, _>.NullaryOperation<_, float>(series, log)
-  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
   static member Log10(series) = Series<_, _>.NullaryOperation<_, float>(series, log10)
-  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
   static member Round(series) = Series<_, _>.NullaryOperation<_, float>(series, round)
 
   // May return different type  
-  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
   static member Sign(series) = Series<_, _>.NullaryGenericOperation<_, float, _>(series, sign)
-  [<CompilerMessage(null, -1, IsHidden=true, IsError=false)>]
   static member Sqrt(series) = Series<_, _>.NullaryGenericOperation<_, float, _>(series, sqrt)
 
   // TODO: **
@@ -383,20 +365,3 @@ type SeriesBuilder<'K when 'K : equality>() =
   static member (?<-) (builder:SeriesBuilder<string>, name:string, value) =
     builder.Add(name, value)
   
-
-// ------------------------------------------------------------------------------------------------
-// Operations etc.
-// ------------------------------------------------------------------------------------------------
-
-[<AutoOpen>] 
-module SeriesExtensions =
-  type Series<'K, 'V when 'K : equality> with
-    member x.Item with get(a) = x.Get(a)
-    member x.Item with get(a, b) = x.GetItems [a; b] 
-    member x.Item with get(a, b, c) = x.GetItems [a; b; c] 
-    member x.Item with get(a, b, c, d) = x.GetItems [a; b; c; d]
-    member x.Item with get(a, b, c, d, e) = x.GetItems [a; b; c; d; e]
-    member x.Item with get(a, b, c, d, e, f) = x.GetItems [a; b; c; d; e; f]
-    member x.Item with get(a, b, c, d, e, f, g) = x.GetItems [a; b; c; d; e; f; g]
-    member x.Item with get(a, b, c, d, e, f, g, h) = x.GetItems [a; b; c; d; e; f; g; h] 
-

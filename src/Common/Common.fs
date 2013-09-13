@@ -106,6 +106,8 @@ type DataSegment<'T> =
 
 /// Provides helper functions and active patterns for working with `DataSegment` values
 module DataSegment = 
+  let (|Any|) (ds:DataSegment<'T>) = ds.Kind, ds.Data
+  
   /// Complete active pattern that makes it possible to write functions that behave 
   /// differently for complete and incomplete segments. For example, the following 
   /// returns zero for incomplete segments:

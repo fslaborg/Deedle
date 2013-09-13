@@ -6,13 +6,12 @@ TODO
 
 *)
 #I "../bin"
-#I "../lib"
-#I "../packages"
 #load "FSharp.DataFrame.fsx"
-#load "FSharp.Charting.fsx"
+#load "../packages/FSharp.Charting.0.84/FSharp.Charting.fsx"
 open System
 open FSharp.DataFrame
 open FSharp.Charting
+
 
 (**
 Fancy windowing & chunking
