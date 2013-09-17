@@ -37,7 +37,7 @@ Grouping
 *)
 
 // Load the data from the Titanic data set
-let titanic = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/Titanic.csv")
+let titanic = Frame.readCsv(__SOURCE_DIRECTORY__ + "/data/Titanic.csv")
 
 // Group the data frame by sex 
 let grouped = titanic |> Frame.groupRowsBy "Sex"

@@ -11,6 +11,11 @@ type ValueMissingException(column) =
   inherit System.Exception(sprintf "The value for index '%s' is empty." column)
   member x.Column = column
 
+type UnionBehavior =
+  | PreferLeft = 0
+  | PreferRight = 1
+  | Exclusive = 2
+
 // ------------------------------------------------------------------------------------------------
 // Series
 // ------------------------------------------------------------------------------------------------
@@ -47,25 +52,48 @@ and Series<'K, 'V when 'K : equality>
 
   /// Returns a collection of keys that are defined by the index of this series.
   /// Note that the length of this sequence does not match the `Values` sequence
-  /// if there are missing values. To get matching sequence, use `GetObservations`
-  /// extension method or `Series.observation`.
+  /// if there are missing values. To get matching sequence, use the `Observations`
+  /// property or `Series.observation`.
   member x.Keys = seq { for key, _ in index.Mappings -> key }
 
   /// Returns a collection of values that are available in the series data.
   /// Note that the length of this sequence does not match the `Keys` sequence
-  /// if there are missing values. To get matching sequence, use `GetObservations`
-  /// extension method or `Series.observation`.
+  /// if there are missing values. To get matching sequence, use the `Observations`
+  /// property or `Series.observation`.
   member x.Values = seq { 
     for _, a in index.Mappings do 
       let v = vector.GetValue(a) 
       if v.HasValue then yield v.Value }
+
+  /// Returns a collection of observations that form this series. Note that this property
+  /// skips over all missing (or NaN) values. Observations are returned as `KeyValuePair<K, V>` 
+  /// objects. For an F# alternative that uses tuples, see `Series.observations`.
+  member x.Observations = seq {
+    for k, a in index.Mappings do
+      let v = vector.GetValue(a)
+      if v.HasValue then yield KeyValuePair(k, v.Value) }
+
+  // ----------------------------------------------------------------------------------------------
+  // Equlity
+  // ----------------------------------------------------------------------------------------------
+
+  override series.Equals(another) = 
+    match another with
+    | null -> false
+    | :? Series<'K, 'V> as another -> 
+        series.Index.Equals(another.Index) && series.Vector.Equals(another.Vector)
+    | _ -> false
+
+  override series.GetHashCode() =
+    let combine h1 h2 = ((h1 <<< 5) + h1) ^^^ h2
+    combine (series.Index.GetHashCode()) (series.Vector.GetHashCode())
 
   // ----------------------------------------------------------------------------------------------
   // IEnumerable
   // ----------------------------------------------------------------------------------------------
 
   interface ISeries<'K> with
-    member x.TryGetObject(k) = this.TryGet(k) |> Option.map box
+    member x.TryGetObject(k) = this.TryGet(k) |> OptionalValue.asOption |> Option.map box
     member x.Vector = vector :> IVector
     member x.Index = index
 
@@ -99,6 +127,12 @@ and Series<'K, 'V when 'K : equality>
     let newVector = vectorBuilder.Build(newVector, [| vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
+
+  [<EditorBrowsable(EditorBrowsableState.Never)>]
+  member x.GetSlice(lo, hi) =
+    let inclusive v = v |> Option.map (fun v -> v, BoundaryBehavior.Inclusive)
+    x.GetSubrange(inclusive lo, inclusive hi)
+
   /// Returns a new series with an index containing the specified keys.
   /// When the key is not found in the current series, the newly returned
   /// series will contain a missing value. When the second parameter is not
@@ -125,29 +159,30 @@ and Series<'K, 'V when 'K : equality>
     let newVector = vectorBuilder.Build(indexBuilder.Reindex(index, newIndex, lookup, Vectors.Return 0), [| vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
-  [<EditorBrowsable(EditorBrowsableState.Never)>]
-  member x.GetSlice(lo, hi) =
-    let inclusive v = v |> Option.map (fun v -> v, BoundaryBehavior.Inclusive)
-    x.GetSubrange(inclusive lo, inclusive hi)
 
-  member x.TryGet(key, ?lookup) =
-    let lookup = defaultArg lookup Lookup.Exact
+  member x.TryGetObservation(key, lookup) =
     let address = index.Lookup(key, lookup, fun addr -> vector.GetValue(addr).HasValue) 
-    match address, lookup with
-// Maybe we do not want this:
-//
-//    | OptionalValue.Missing, Lookup.Exact ->
-//        invalidArg "key" (sprintf "The index '%O' is not present in the series." key)
-    | OptionalValue.Missing, _ ->
-        None
-    | OptionalValue.Present(v), _ ->
-        vector.GetValue(address.Value)
-        |> OptionalValue.asOption
-  
-  member x.Get(key, ?lookup) =
-    match x.TryGet(key, ?lookup=lookup) with
-    | None -> raise (ValueMissingException(key.ToString()))
-    | Some v -> v
+    match address with
+    | OptionalValue.Missing -> OptionalValue.Missing
+    | OptionalValue.Present(key, addr) -> vector.GetValue(addr) |> OptionalValue.map (fun v -> KeyValuePair(key, v))
+
+  member x.GetObservation(key, lookup) =
+    let res = x.TryGetObservation(key, lookup) 
+    if not res.HasValue then raise (ValueMissingException(key.ToString()))
+    else res.Value
+
+  member x.TryGet(key, lookup) =
+    x.TryGetObservation(key, lookup) |> OptionalValue.map (fun (KeyValue(_, v)) -> v)
+
+  member x.Get(key, lookup) =
+    x.GetObservation(key, lookup).Value
+
+  /// Attempts to get a value at the specified `key`
+  member x.TryGetObservation(key) = x.TryGetObservation(key, Lookup.Exact)
+  member x.GetObservation(key) = x.GetObservation(key, Lookup.Exact)
+  member x.TryGet(key) = x.TryGet(key, Lookup.Exact)
+  member x.Get(key) = x.Get(key, Lookup.Exact)
+
 
   member x.Item with get(a) = x.Get(a)
   member x.Item with get(items) = x.GetItems items
@@ -157,7 +192,22 @@ and Series<'K, 'V when 'K : equality>
   // ----------------------------------------------------------------------------------------------
   // Operations
   // ----------------------------------------------------------------------------------------------
+
+  member series.Union(another:Series<'K, 'V>) = 
+    series.Union(another, UnionBehavior.PreferLeft)
   
+  member series.Union(another:Series<'K, 'V>, behavior) = 
+    let newIndex, vec1, vec2 = indexBuilder.Union(series.Index, another.Index, Vectors.Return 0, Vectors.Return 1)
+    let transform = 
+      match behavior with
+      | UnionBehavior.PreferRight -> VectorHelpers.VectorValueTransform.RightIfAvailable
+      | UnionBehavior.Exclusive -> VectorHelpers.VectorValueTransform.LeftOrRight
+      | _ -> VectorHelpers.VectorValueTransform.LeftIfAvailable
+    let vecCmd = Vectors.Combine(vec1, vec2, transform)
+    let newVec = vectorBuilder.Build(vecCmd, [| series.Vector; another.Vector |])
+    Series(newIndex, newVec, vectorBuilder, indexBuilder)
+
+
   // TODO: Series.Select & Series.Where need to use some clever index/vector functions
 
   member x.Where(f:System.Func<KeyValuePair<'K, 'V>, bool>) = 
@@ -171,7 +221,7 @@ and Series<'K, 'V when 'K : equality>
           if included then yield key, opt  |]
       |> Array.unzip
     Series<_, _>
-      ( indexBuilder.Create<_>(keys, None), vectorBuilder.CreateOptional(optValues),
+      ( indexBuilder.Create<_>(keys, None), vectorBuilder.CreateMissing(optValues),
         vectorBuilder, indexBuilder )
 
   member x.WhereOptional(f:System.Func<KeyValuePair<'K, OptionalValue<'V>>, bool>) = 
@@ -181,7 +231,7 @@ and Series<'K, 'V when 'K : equality>
           if f.Invoke (KeyValuePair(key, opt)) then yield key, opt |]
       |> Array.unzip
     Series<_, _>
-      ( indexBuilder.Create<_>(keys, None), vectorBuilder.CreateOptional(optValues),
+      ( indexBuilder.Create<_>(keys, None), vectorBuilder.CreateMissing(optValues),
         vectorBuilder, indexBuilder )
 
   member x.Select<'R>(f:System.Func<KeyValuePair<'K, 'V>, 'R>) = 
@@ -191,7 +241,7 @@ and Series<'K, 'V when 'K : equality>
              // If a required value is missing, then skip over this
              try OptionalValue(f.Invoke(KeyValuePair(key, v)))
              with :? ValueMissingException -> OptionalValue.Missing ) |]
-    Series<'K, 'R>(index, vectorBuilder.CreateOptional(newVector), vectorBuilder, indexBuilder )
+    Series<'K, 'R>(index, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder )
 
   member x.SelectKeys<'R when 'R : equality>(f:System.Func<KeyValuePair<'K, OptionalValue<'V>>, 'R>) = 
     let newKeys =
@@ -204,7 +254,7 @@ and Series<'K, 'V when 'K : equality>
     let newVector =
       index.Mappings |> Array.ofSeq |> Array.map (fun (key, addr) ->
            f.Invoke(KeyValuePair(key, vector.GetValue(addr))))
-    Series<'K, 'R>(index, vectorBuilder.CreateOptional(newVector), vectorBuilder, indexBuilder)
+    Series<'K, 'R>(index, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
 
   //member x.FillMissing() = 
   //  x.Vector.SelectOptional(
@@ -272,76 +322,75 @@ and Series<'K, 'V when 'K : equality>
 
   static member inline internal NullaryGenericOperation<'K, 'T1, 'T2>(series:Series<'K, 'T1>, op : 'T1 -> 'T2) = 
     series.Select(fun (KeyValue(k, v)) -> op v)
-  static member inline internal NullaryOperation<'K, 'T>(series:Series<'K, 'T>, op : 'T -> 'T) = 
+  static member inline internal NullaryOperation<'T>(series:Series<'K, 'T>, op : 'T -> 'T) = 
     series.Select(fun (KeyValue(k, v)) -> op v)
-  static member inline internal ScalarOperationL<'K, 'T>(series:Series<'K, 'T>, scalar, op : 'T -> 'T -> 'T) = 
+  static member inline internal ScalarOperationL<'T>(series:Series<'K, 'T>, scalar, op : 'T -> 'T -> 'T) = 
     series.Select(fun (KeyValue(k, v)) -> op v scalar)
-  static member inline internal ScalarOperationR<'K, 'T>(scalar, series:Series<'K, 'T>, op : 'T -> 'T -> 'T) = 
+  static member inline internal ScalarOperationR<'T>(scalar, series:Series<'K, 'T>, op : 'T -> 'T -> 'T) = 
     series.Select(fun (KeyValue(k, v)) -> op scalar v)
 
-  static member inline internal VectorOperation<'K, 'T>(series1:Series<'K, 'T>, series2:Series<'K, 'T>, op) : Series<_, 'T> =
+  static member inline internal VectorOperation<'T>(series1:Series<'K, 'T>, series2:Series<'K, 'T>, op) : Series<_, 'T> =
     ensureInit.Value
     let joined = Series<_, _>.SeriesOperations.OuterJoin(series1, series2)
     joined.SelectOptional(fun (KeyValue(_, v)) -> 
       match v.Value.TryGet(0), v.Value.TryGet(1) with
-      | Some a, Some b -> OptionalValue(op (a :?> 'T) (b :?> 'T))
+      | OptionalValue.Present a, OptionalValue.Present b -> OptionalValue(op (a :?> 'T) (b :?> 'T))
       | _ -> OptionalValue.Missing )
 
-  static member (+) (scalar, series) = Series<_, _>.ScalarOperationR<_, int>(scalar, series, (+))
-  static member (+) (series, scalar) = Series<_, _>.ScalarOperationL<_, int>(series, scalar, (+))
-  static member (-) (scalar, series) = Series<_, _>.ScalarOperationR<_, int>(scalar, series, (-))
-  static member (-) (series, scalar) = Series<_, _>.ScalarOperationL<_, int>(series, scalar, (-))
-  static member (*) (scalar, series) = Series<_, _>.ScalarOperationR<_, int>(scalar, series, (*))
-  static member (*) (series, scalar) = Series<_, _>.ScalarOperationL<_, int>(series, scalar, (*))
-  static member (/) (scalar, series) = Series<_, _>.ScalarOperationR<_, int>(scalar, series, (/))
-  static member (/) (series, scalar) = Series<_, _>.ScalarOperationL<_, int>(series, scalar, (/))
+  static member (+) (scalar, series) = Series<'K, _>.ScalarOperationR<int>(scalar, series, (+))
+  static member (+) (series, scalar) = Series<'K, _>.ScalarOperationL<int>(series, scalar, (+))
+  static member (-) (scalar, series) = Series<'K, _>.ScalarOperationR<int>(scalar, series, (-))
+  static member (-) (series, scalar) = Series<'K, _>.ScalarOperationL<int>(series, scalar, (-))
+  static member (*) (scalar, series) = Series<'K, _>.ScalarOperationR<int>(scalar, series, (*))
+  static member (*) (series, scalar) = Series<'K, _>.ScalarOperationL<int>(series, scalar, (*))
+  static member (/) (scalar, series) = Series<'K, _>.ScalarOperationR<int>(scalar, series, (/))
+  static member (/) (series, scalar) = Series<'K, _>.ScalarOperationL<int>(series, scalar, (/))
 
-  static member (+) (scalar, series) = Series<_, _>.ScalarOperationR<_, float>(scalar, series, (+))
-  static member (+) (series, scalar) = Series<_, _>.ScalarOperationL<_, float>(series, scalar, (+))
-  static member (-) (scalar, series) = Series<_, _>.ScalarOperationR<_, float>(scalar, series, (-))
-  static member (-) (series, scalar) = Series<_, _>.ScalarOperationL<_, float>(series, scalar, (-))
-  static member (*) (scalar, series) = Series<_, _>.ScalarOperationR<_, float>(scalar, series, (*))
-  static member (*) (series, scalar) = Series<_, _>.ScalarOperationL<_, float>(series, scalar, (*))
-  static member (/) (scalar, series) = Series<_, _>.ScalarOperationR<_, float>(scalar, series, (/))
-  static member (/) (series, scalar) = Series<_, _>.ScalarOperationL<_, float>(series, scalar, (/))
+  static member (+) (scalar, series) = Series<'K, _>.ScalarOperationR<float>(scalar, series, (+))
+  static member (+) (series, scalar) = Series<'K, _>.ScalarOperationL<float>(series, scalar, (+))
+  static member (-) (scalar, series) = Series<'K, _>.ScalarOperationR<float>(scalar, series, (-))
+  static member (-) (series, scalar) = Series<'K, _>.ScalarOperationL<float>(series, scalar, (-))
+  static member (*) (scalar, series) = Series<'K, _>.ScalarOperationR<float>(scalar, series, (*))
+  static member (*) (series, scalar) = Series<'K, _>.ScalarOperationL<float>(series, scalar, (*))
+  static member (/) (scalar, series) = Series<'K, _>.ScalarOperationR<float>(scalar, series, (/))
+  static member (/) (series, scalar) = Series<'K, _>.ScalarOperationL<float>(series, scalar, (/))
+  static member Pow (scalar, series) = Series<'K, _>.ScalarOperationR<float>(scalar, series, ( ** ))
+  static member Pow (series, scalar) = Series<'K, _>.ScalarOperationL<float>(series, scalar, ( ** ))
 
-  static member (+) (s1, s2) = Series<_, _>.VectorOperation<_, int>(s1, s2, (+))
-  static member (-) (s1, s2) = Series<_, _>.VectorOperation<_, int>(s1, s2, (-))
-  static member (*) (s1, s2) = Series<_, _>.VectorOperation<_, int>(s1, s2, (*))
-  static member (/) (s1, s2) = Series<_, _>.VectorOperation<_, int>(s1, s2, (/))
+  static member (+) (s1, s2) = Series<'K, _>.VectorOperation<int>(s1, s2, (+))
+  static member (-) (s1, s2) = Series<'K, _>.VectorOperation<int>(s1, s2, (-))
+  static member (*) (s1, s2) = Series<'K, _>.VectorOperation<int>(s1, s2, (*))
+  static member (/) (s1, s2) = Series<'K, _>.VectorOperation<int>(s1, s2, (/))
 
-  static member (+) (s1, s2) = Series<_, _>.VectorOperation<_, float>(s1, s2, (+))
-  static member (-) (s1, s2) = Series<_, _>.VectorOperation<_, float>(s1, s2, (-))
-  static member (*) (s1, s2) = Series<_, _>.VectorOperation<_, float>(s1, s2, (*))
-  static member (/) (s1, s2) = Series<_, _>.VectorOperation<_, float>(s1, s2, (/))
-
+  static member (+) (s1, s2) = Series<'K, _>.VectorOperation<float>(s1, s2, (+))
+  static member (-) (s1, s2) = Series<'K, _>.VectorOperation<float>(s1, s2, (-))
+  static member (*) (s1, s2) = Series<'K, _>.VectorOperation<float>(s1, s2, (*))
+  static member (/) (s1, s2) = Series<'K, _>.VectorOperation<float>(s1, s2, (/))
+  static member Pow(s1, s2) = Series<'K, _>.VectorOperation<float>(s1, s2, ( ** ))
+  
   // Trigonometric
-  static member Acos(series) = Series<_, _>.NullaryOperation<_, float>(series, acos)
-  static member Asin(series) = Series<_, _>.NullaryOperation<_, float>(series, asin)
-  static member Atan(series) = Series<_, _>.NullaryOperation<_, float>(series, atan)
-  static member Sin(series) = Series<_, _>.NullaryOperation<_, float>(series, sin)
-  static member Sinh(series) = Series<_, _>.NullaryOperation<_, float>(series, sinh)
-  static member Cos(series) = Series<_, _>.NullaryOperation<_, float>(series, cos)
-  static member Cosh(series) = Series<_, _>.NullaryOperation<_, float>(series, cosh)
-  static member Tan(series) = Series<_, _>.NullaryOperation<_, float>(series, tan)
-  static member Tanh(series) = Series<_, _>.NullaryOperation<_, float>(series, tanh)
+  static member Acos(series) = Series<'K, _>.NullaryOperation<float>(series, acos)
+  static member Asin(series) = Series<'K, _>.NullaryOperation<float>(series, asin)
+  static member Atan(series) = Series<'K, _>.NullaryOperation<float>(series, atan)
+  static member Sin(series) = Series<'K, _>.NullaryOperation<float>(series, sin)
+  static member Sinh(series) = Series<'K, _>.NullaryOperation<float>(series, sinh)
+  static member Cos(series) = Series<'K, _>.NullaryOperation<float>(series, cos)
+  static member Cosh(series) = Series<'K, _>.NullaryOperation<float>(series, cosh)
+  static member Tan(series) = Series<'K, _>.NullaryOperation<float>(series, tan)
+  static member Tanh(series) = Series<'K, _>.NullaryOperation<float>(series, tanh)
 
   // Actually useful
-  static member Abs(series) = Series<_, _>.NullaryOperation<_, float>(series, abs)
-  static member Abs(series) = Series<_, _>.NullaryOperation<_, int>(series, abs)
-  static member Ceiling(series) = Series<_, _>.NullaryOperation<_, float>(series, ceil)
-  static member Exp(series) = Series<_, _>.NullaryOperation<_, float>(series, exp)
-  static member Floor(series) = Series<_, _>.NullaryOperation<_, float>(series, floor)
-  static member Truncate(series) = Series<_, _>.NullaryOperation<_, float>(series, truncate)
-  static member Log(series) = Series<_, _>.NullaryOperation<_, float>(series, log)
-  static member Log10(series) = Series<_, _>.NullaryOperation<_, float>(series, log10)
-  static member Round(series) = Series<_, _>.NullaryOperation<_, float>(series, round)
-
-  // May return different type  
-  static member Sign(series) = Series<_, _>.NullaryGenericOperation<_, float, _>(series, sign)
-  static member Sqrt(series) = Series<_, _>.NullaryGenericOperation<_, float, _>(series, sqrt)
-
-  // TODO: **
+  static member Abs(series) = Series<'K, _>.NullaryOperation<float>(series, abs)
+  static member Abs(series) = Series<'K, _>.NullaryOperation<int>(series, abs)
+  static member Ceiling(series) = Series<'K, _>.NullaryOperation<float>(series, ceil)
+  static member Exp(series) = Series<'K, _>.NullaryOperation<float>(series, exp)
+  static member Floor(series) = Series<'K, _>.NullaryOperation<float>(series, floor)
+  static member Truncate(series) = Series<'K, _>.NullaryOperation<float>(series, truncate)
+  static member Log(series) = Series<'K, _>.NullaryOperation<float>(series, log)
+  static member Log10(series) = Series<'K, _>.NullaryOperation<float>(series, log10)
+  static member Round(series) = Series<'K, _>.NullaryOperation<float>(series, round)
+  static member Sign(series) = Series<'K, _>.NullaryGenericOperation<_, float, _>(series, sign)
+  static member Sqrt(series) = Series<'K, _>.NullaryGenericOperation<_, float, _>(series, sqrt)
 
   // ----------------------------------------------------------------------------------------------
   // Nicer constructor
@@ -350,7 +399,7 @@ and Series<'K, 'V when 'K : equality>
   new(keys:seq<_>, values:seq<_>) = 
     let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
     let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
-    Series( Index.Create keys, vectorBuilder.CreateNonOptional (Array.ofSeq values),
+    Series( Index.Create keys, vectorBuilder.Create (Array.ofSeq values),
             vectorBuilder, indexBuilder )
 
 // ------------------------------------------------------------------------------------------------
@@ -362,45 +411,11 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
   
   member x.GetAs<'R>(column) : 'R = 
     System.Convert.ChangeType(x.Get(column), typeof<'R>) |> unbox
-  member x.TryGetAs<'R>(column) : 'R option = 
-    x.TryGet(column) |> Option.map (fun v -> System.Convert.ChangeType(v, typeof<'R>) |> unbox)
+  member x.TryGetAs<'R>(column) : OptionalValue<'R> = 
+    x.TryGet(column) |> OptionalValue.map (fun v -> System.Convert.ChangeType(v, typeof<'R>) |> unbox)
   static member (?) (series:ObjectSeries<_>, name:string) = series.GetAs<float>(name)
 
   member x.As<'R>() =
     match box vector with
     | :? IVector<'R> as vec -> Series(index, vec, vectorBuilder, indexBuilder)
     | _ -> Series(index, VectorHelpers.changeType vector, vectorBuilder, indexBuilder)
-
-// ------------------------------------------------------------------------------------------------
-// Construction
-// ------------------------------------------------------------------------------------------------
-
-type internal Series = 
-  /// Vector & index builders
-  static member vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
-  static member indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
-
-  static member Create(data:seq<'V>) =
-    let lookup = data |> Seq.mapi (fun i _ -> i)
-    Series<int, 'V>(Index.Create(lookup), Vector.Create(data), Series.vectorBuilder, Series.indexBuilder)
-  static member Create(index:seq<'K>, data:seq<'V>) =
-    Series<'K, 'V>(Index.Create(index), Vector.Create(data), Series.vectorBuilder, Series.indexBuilder)
-  static member Create(index:IIndex<'K>, data:IVector<'V>) = 
-    Series<'K, 'V>(index, data, Series.vectorBuilder, Series.indexBuilder)
-  static member CreateUntyped(index:IIndex<'K>, data:IVector<obj>) = 
-    ObjectSeries<'K>(index, data, Series.vectorBuilder, Series.indexBuilder)
-
-type SeriesBuilder<'K when 'K : equality>() = 
-  let mutable keys = []
-  let mutable values = []
-
-  member x.Add<'V>(key:'K, value) =
-    keys <- key::keys
-    values <- (box value)::values
-  
-  member x.Series =
-    Series.CreateUntyped(Index.Create (List.rev keys), Vector.Create(List.rev values))
-
-  static member (?<-) (builder:SeriesBuilder<string>, name:string, value) =
-    builder.Add(name, value)
-  

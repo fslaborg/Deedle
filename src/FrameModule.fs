@@ -159,6 +159,19 @@ module Frame =
   let transpose (frame:Frame<'TRowKey, 'TColumnKey>) = 
     frame.Columns |> Frame.ofRows
 
+  let getColumns (columns:seq<_>) (frame:Frame<'TRowKey, 'TColKey>) = 
+    frame.Columns.[columns] |> Frame.ofColumns
+
+  let getRows (rows:seq<_>) (frame:Frame<'TRowKey, 'TColKey>) = 
+    frame.Rows.[rows] |> Frame.ofRows
+
+
+  let inline maxRowBy column (frame:Frame<'TRowKey, 'TColKey>) = 
+    frame.Rows |> Series.maxBy (fun row -> row.GetAs<float>(column))
+
+  let inline minRowBy column (frame:Frame<'TRowKey, 'TColKey>) = 
+    frame.Rows |> Series.minBy (fun row -> row.GetAs<float>(column))
+
   // ----------------------------------------------------------------------------------------------
   // Additional functions for working with data frames
   // ----------------------------------------------------------------------------------------------

@@ -162,7 +162,7 @@ type DelayedSource<'K, 'V when 'K : equality>
            let dataTask = loader.Invoke(lo, hi)
            let data = dataTask.Result
            yield! data |]
-    let vector = vectorBuilder.CreateNonOptional(Array.map snd data)
+    let vector = vectorBuilder.Create(Array.map snd data)
     let index = indexBuilder.Create(Seq.map fst data, Some true)
     index, vector )
 
@@ -193,7 +193,7 @@ type DelayedVector<'K, 'V when 'K : equality> internal (source:DelayedSource<'K,
   interface IVector<'V> with
     member x.GetValue(index) = source.Values.GetValue(index)
     member x.Data = source.Values.Data
-    member x.SelectOptional(f) = source.Values.SelectOptional(f)
+    member x.SelectMissing(f) = source.Values.SelectMissing(f)
     member x.Select(f) = source.Values.Select(f)
 
 

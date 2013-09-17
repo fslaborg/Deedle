@@ -8,6 +8,9 @@
 open System
 open FSharp.DataFrame
 
+Series.ofValues [ 1.0; 2.0; 4.0 ] |> Series.diff 1
+Series.ofValues [ 1.0; 2.0; 4.0 ] |> Series.diff -1
+
 let df = 
   Frame.ofColumns
     [ "Str" =?> Series.ofValues ["hi"]

@@ -3,9 +3,9 @@
 open FSharp.DataFrame
 open System.Collections.Generic
 
-/// Provides a way to get the data of a vector. This is a concrete type used by 
-/// functions that operate on vectors (like Series.sum, etc.). The vector may choose
-/// to return the data as IReadOnlyList (with or without N/A values) which is more
+/// Provides a way to get the data of an arbitrary vector. This is a concrete type used 
+/// by functions that operate on vectors (like `Series.sum`, etc.). The vector may choose
+/// to return the data as `IReadOnlyList` (with or without N/A values) which is more
 /// efficient to use or as a lazy sequence (slower, but more general).
 [<RequireQualifiedAccess>]
 type VectorData<'T> = 
@@ -14,156 +14,73 @@ type VectorData<'T> =
   | Sequence of seq<OptionalValue<'T>>
 
 // --------------------------------------------------------------------------------------
-// Interface (generic & non-generic) for representing vectors
+// Interfaces (generic & non-generic) for representing vectors
 // --------------------------------------------------------------------------------------
 namespace FSharp.DataFrame
 
 open System
-open System.Reflection
-open System.Linq.Expressions
 open System.Collections.Generic
 open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Vectors
 open FSharp.DataFrame.Addressing
 
 /// Represents an (untyped) vector that stores some values and provides access
-/// to the values via a generic address. For convenience, the vector exposes
-/// type of elements as System.Type.
+/// to the values via a generic address. This type should be only used directly when
+/// extending the DataFrame library and adding a new way of storing or loading data.
+/// To allow invocation via Reflection, the vector exposes type of elements as `System.Type`.
 type IVector = 
+
+  /// Returns the type of elements stored in the current vector as `System.Type`.
+  /// This member is mainly used for internal purposes (to invoke a generic function
+  /// represented by `VectorCallSite1<R>` with the typed version of the current 
+  /// vector as an argument.
   abstract ElementType : System.Type
+
+  /// When `true`, the formatter in F# Interactive will not attempt to evaluate the
+  /// vector to print it. This is useful when the vector contains lazily loaded data.
   abstract SuppressPrinting : bool
+
+  /// Return value stored in the vector at a specified address. This is simply an
+  /// untyped version of `GetValue` method on a typed vector.
   abstract GetObject : Address -> OptionalValue<obj>
 
-/// A generic typed vector. Represents mapping from addresses to 
-/// values of type 'TValue. It is possible to get all data using the Data member.
+
+/// A generic, typed vector. Represents mapping from addresses to values of type `T`. 
+/// The vector provides a minimal interface that is required by series and can be
+/// implemented in a number of ways to provide vector backed by database or an
+/// alternative representation of data.
 type IVector<'T> = 
   inherit IVector 
+  /// Returns value stored in the vector at a specified address. 
   abstract GetValue : Address -> OptionalValue<'T>
-  abstract Data : VectorData<'T>
-  // TODO: Not entirely happy with these two being here... 
-  abstract Select : ('T -> 'TNew) -> IVector<'TNew>
-  abstract SelectOptional : (OptionalValue<'T> -> OptionalValue<'TNew>) -> IVector<'TNew>
 
+  /// Returns all data of the vector in one of the supported formats. Depending
+  /// on the vector, data may be returned as a continuous block of memory using
+  /// `IReadOnlyList<T>` or as a lazy sequence `seq<T>`.
+  abstract Data : VectorData<'T>
+
+  /// Apply the specified function to all values stored in the vector and return
+  /// a new vector (not necessarily of the same representation) with the results.
+  abstract Select : ('T -> 'TNew) -> IVector<'TNew>
+
+  /// Apply the specified function to all values stored in the vector and return
+  /// a new vector (not necessarily of the same representation) with the results.
+  /// The function handles missing values - it is called with optional values and
+  /// may return a missing value as a result of the transformation.
+  abstract SelectMissing : (OptionalValue<'T> -> OptionalValue<'TNew>) -> IVector<'TNew>
+
+
+/// Module with extensions for generic vector type
 [<AutoOpen>]
 module VectorExtensions = 
   type IVector<'TValue> with
     /// Returns the data of the vector as a lazy sequence. (This preserves the 
-    /// order of elements in the vector and so it also returns N/A values.)
+    /// order of elements in the vector and so it also returns missing values.)
     member x.DataSequence = 
       match x.Data with
       | VectorData.Sequence s -> s
       | VectorData.SparseList s -> upcast s
       | VectorData.DenseList s -> Seq.map (fun v -> OptionalValue(v)) s
-
-module internal VectorHelpers =
-  /// Pretty printer for vectors. This uses the 'Data' property
-  let prettyPrintVector (vector:IVector<'T>) = 
-    let printSequence kind (input:seq<string>) = 
-      let sb = Text.StringBuilder(kind + " [")
-      for it in input |> Seq.startAndEnd Formatting.StartItemCount Formatting.EndItemCount do
-        match it with 
-        | Choice1Of3(v) | Choice3Of3(v) -> 
-            sb.Append(" ").Append(v).Append(";") |> ignore
-        | Choice2Of3() -> sb.Append(" ... ") |> ignore
-      sb.Append(" ]").ToString()
-    match vector.Data with
-    | VectorData.DenseList list -> printSequence "dense" (Seq.map (fun v -> v.ToString()) list) 
-    | VectorData.SparseList list -> printSequence "sparse" (Seq.map (fun v -> v.ToString()) list) 
-    | VectorData.Sequence list -> printSequence "seq" (Seq.map (fun v -> v.ToString()) list) 
-
-  /// Create a new vector that delegates all functionality to a ref vector
-  let delegatedVector (vector:IVector<'TValue> ref) =
-    { new IVector<'TValue> with
-        member x.GetValue(a) = vector.Value.GetValue(a)
-        member x.Data = vector.Value.Data
-        member x.Select(f) = vector.Value.Select(f)
-        member x.SelectOptional(f) = vector.Value.SelectOptional(f)
-      interface IVector with
-        member x.SuppressPrinting = vector.Value.SuppressPrinting
-        member x.ElementType = vector.Value.ElementType
-        member x.GetObject(i) = vector.Value.GetObject(i) }
-
-
-  type ValueCallSite1<'R> =
-    abstract Invoke<'T> : 'T -> 'R
-  type VectorCallSite1<'R> =
-    abstract Invoke<'T> : IVector<'T> -> 'R
-  type VectorCallSite2<'R> =
-    abstract Invoke<'T> : IVector<'T> * IVector<'T> -> 'R
-
-  let doubleCode = typeof<float>.TypeHandle.Value
-  let intCode = typeof<int>.TypeHandle.Value
-  let stringCode = typeof<string>.TypeHandle.Value
-
-  let createValueDispatcher<'R> (callSite:ValueCallSite1<'R>) =
-    let dict = lazy Dictionary<_, System.Func<ValueCallSite1<'R>, obj, 'R>>()
-    fun (value:obj) ->
-      let ty = value.GetType()
-      let code = ty.TypeHandle.Value
-      if code = doubleCode then callSite.Invoke<float>(value :?> float)
-      elif code = intCode then callSite.Invoke<int>(value :?> int)
-      elif code = stringCode then callSite.Invoke<string>(value :?> string)
-      else
-        match dict.Value.TryGetValue(code) with
-        | true, f -> f.Invoke(callSite, value)
-        | _ ->
-            let mi = typeof<ValueCallSite1<'R>>.GetMethod("Invoke").MakeGenericMethod(ty)
-            let inst = Expression.Parameter(typeof<ValueCallSite1<'R>>)
-            let par = Expression.Parameter(typeof<obj>)
-            let expr =
-              Expression.Lambda<System.Func<ValueCallSite1<'R>, obj, 'R>>
-                ( Expression.Call(inst, mi, Expression.Convert(par, ty)), [ inst; par ])
-            let func = expr.Compile()
-            dict.Value.[code] <- func
-            func.Invoke(callSite, value)
-
-
-  let createDispatcher<'R> (callSite:VectorCallSite1<'R>) =
-    let dict = lazy Dictionary<_, System.Func<VectorCallSite1<'R>, IVector, 'R>>()
-    fun (vect:IVector) ->
-      let code = vect.ElementType.TypeHandle.Value
-      if code = doubleCode then callSite.Invoke<float>(vect :?> IVector<float>)
-      elif code = intCode then callSite.Invoke<int>(vect :?> IVector<int>)
-      elif code = stringCode then callSite.Invoke<string>(vect :?> IVector<string>)
-      else
-        match dict.Value.TryGetValue(code) with
-        | true, f -> f.Invoke(callSite, vect)
-        | _ ->
-            let mi = typeof<VectorCallSite1<'R>>.GetMethod("Invoke").MakeGenericMethod(vect.ElementType)
-            let inst = Expression.Parameter(typeof<VectorCallSite1<'R>>)
-            let par = Expression.Parameter(typeof<IVector>)
-            let ty = typedefof<IVector<_>>.MakeGenericType(vect.ElementType)
-            let expr =
-              Expression.Lambda<System.Func<VectorCallSite1<'R>, IVector, 'R>>
-                ( Expression.Call(inst, mi, Expression.Convert(par, ty)), [ inst; par ])
-            let func = expr.Compile()
-            dict.Value.[code] <- func
-            func.Invoke(callSite, vect)
-
-  let createTwoArgDispatcher<'R> (callSite:VectorCallSite2<'R>) =
-    let dict = lazy Dictionary<_, System.Func<VectorCallSite2<'R>, IVector, IVector, 'R>>()
-    fun (vect1:IVector, vect2:IVector) ->
-      let code = vect1.ElementType.TypeHandle.Value
-      if vect2.ElementType.TypeHandle.Value <> code then 
-        invalidOp "createTwoArgDispatcher: Both arguments should have the same element type"
-      if code = doubleCode then callSite.Invoke<float>(vect1 :?> IVector<float>, vect2 :?> IVector<float>)
-      elif code = intCode then callSite.Invoke<int>(vect1 :?> IVector<int>, vect2 :?> IVector<int>)
-      elif code = stringCode then callSite.Invoke<string>(vect1 :?> IVector<string>, vect2 :?> IVector<string>)
-      else
-        match dict.Value.TryGetValue(code) with
-        | true, f -> f.Invoke(callSite, vect1, vect2)
-        | _ ->
-            let mi = typeof<VectorCallSite2<'R>>.GetMethod("Invoke").MakeGenericMethod(vect1.ElementType)
-            let inst = Expression.Parameter(typeof<VectorCallSite2<'R>>)
-            let par1 = Expression.Parameter(typeof<IVector>)
-            let par2 = Expression.Parameter(typeof<IVector>)
-            let ty = typedefof<IVector<_>>.MakeGenericType(vect1.ElementType)
-            let expr =
-              Expression.Lambda<System.Func<VectorCallSite2<'R>, IVector, IVector, 'R>>
-                ( Expression.Call(inst, mi, Expression.Convert(par1, ty), Expression.Convert(par2, ty)), [ inst; par1; par2 ])
-            let func = expr.Compile()
-            dict.Value.[code] <- func
-            func.Invoke(callSite, vect1, vect2)
 
 // --------------------------------------------------------------------------------------
 // Types related to vectors that should not be exposed too directly
@@ -180,92 +97,67 @@ type VectorRange = Address * Address
 /// Representes a "variable" in the mini-DSL below
 type VectorHole = int
 
+/// Represent a transformation that is applied when combining two vectors
+/// (because we are combining untyped `IVector` values, the transformation
+/// is also untyped)
 type IVectorValueTransform =
+  /// Returns a function that combines two values stored in vectors into a new vector value.
+  /// Although generic, this function will only be called with the `T` set to the
+  /// type of vector that is being built. Since `VectorConstruction` is not generic,
+  /// the type cannot be statically propagated.
   abstract GetFunction<'T> : unit -> (OptionalValue<'T> -> OptionalValue<'T> -> OptionalValue<'T>)
 
 /// A "mini-DSL" that describes construction of a vector. Vector can be constructed
-/// from arrays of values, from existing vector value (of an unknown representation)
-/// or by various range operations (relocate, drop, slicing, appending)
+/// from various range operations (relocate, drop, slicing, appending), by combination
+/// of two vectors or by taking a vector from a list of variables.
 type VectorConstruction =
-
-  // Convert an existing vector to another representation
+  /// When constructing vectors, we get an array of vectors to be used as "variables"
+  /// - this element represent getting one of the variables.
   | Return of VectorHole
 
-  // Reorders elements of the vector. Carries a new required vector range and a list
-  // of relocations (each pair of addresses specifies that an element at a new address 
-  // should be filled with an element from an old address). THe addresses may be out of range!
+  /// Reorders elements of the vector. Carries a new required vector range and a list
+  /// of relocations (each pair of addresses specifies that an element at a new address 
+  /// should be filled with an element from an old address). THe addresses may be out of range!
   | Relocate of VectorConstruction * VectorRange * seq<Address * Address>
 
-  // Drop part of range & get subrange & append multiple vectors
+  /// Drop the specified range of addresses from the vector 
+  /// and return a new vector that excludes the range
   | DropRange of VectorConstruction * VectorRange 
+
+  /// Get the specified range of addresses from the vector and return it as a new vector
   | GetRange of VectorConstruction * VectorRange
+
+  /// Append two vectors after each other
   | Append of VectorConstruction * VectorConstruction
 
-  // Combines two aligned vectors. The function specifies how to merge values.
+  /// Combine two aligned vectors. The `IVectorValueTransform` object
+  /// specifies how to merge values (in case there is a value at a given address
+  /// in both of the vectors).
   | Combine of VectorConstruction * VectorConstruction * IVectorValueTransform
 
+  /// Apply a custom command to a vector - this can be used by special indices (e.g. index
+  /// for a lazy vector) to provide a custom operations to be used. The first parameter
+  /// is a list of sub-vectors to be combined (if as in e.g. `Append`) and the
+  /// second argument is a function that will be called with evaluated vectors and is
+  /// supposed to create the new vector.
   | CustomCommand of list<VectorConstruction> * (list<IVector> -> IVector)
 
+
 /// Represents an object that can construct vector values by processing 
-// the "mini-DSL" representation `VectorConstruction`
+/// the "mini-DSL" representation `VectorConstruction`.
 type IVectorBuilder = 
-  // Create a vector from array containing values or optional values
-  abstract CreateNonOptional : 'TValue[] -> IVector<'TValue>
-  abstract CreateOptional : OptionalValue<'TValue>[] -> IVector<'TValue>
-  // Apply a vector construction to a given vector
-  abstract Build<'TValue> : VectorConstruction * IVector<'TValue>[] -> IVector<'TValue>
-
-
-
-type VectorValueTransform =
-  static member Create<'T>(operation:OptionalValue<'T> -> OptionalValue<'T> -> OptionalValue<'T>) = 
-    { new IVectorValueTransform with
-        member vt.GetFunction<'R>() = 
-          unbox<OptionalValue<'R> -> OptionalValue<'R> -> OptionalValue<'R>> (box operation) }
-  static member FillNA =
-    { new IVectorValueTransform with
-        member vt.GetFunction<'R>() = (fun (l:OptionalValue<'R>) (r:OptionalValue<'R>) -> if l.HasValue then l else r) }
-  static member LeftOrRight =
-    { new IVectorValueTransform with
-        member vt.GetFunction<'R>() = (fun (l:OptionalValue<'R>) (r:OptionalValue<'R>) -> 
-          if l.HasValue && r.HasValue then invalidOp "Combining vectors failed - both vectors have a value."
-          if l.HasValue then l else r) }
-
-module VectorHelpers =
-  // A "generic function" that boxes all values of a vector (IVector<int, 'T> -> IVector<int, obj>)
-  let boxVector<'T> = 
-    { new VectorHelpers.VectorCallSite1<IVector<obj>> with
-        override x.Invoke<'T>(col:IVector<'T>) = col.Select(box) }
-    |> VectorHelpers.createDispatcher
-
-  // A "generic function" that transforms a generic vector using specified transformation
-  let transformColumn (vectorBuilder:IVectorBuilder) rowCmd = 
-    { new VectorHelpers.VectorCallSite1<IVector> with
-        override x.Invoke<'T>(col:IVector<'T>) = 
-          vectorBuilder.Build<'T>(rowCmd, [| col |]) :> IVector }
-    |> VectorHelpers.createDispatcher
-
-  // A "generic function" that changes the type of vector elements
-  let changeType<'R> : IVector -> IVector<'R> = 
-    { new VectorHelpers.VectorCallSite1<IVector<'R>> with
-        override x.Invoke<'T>(col:IVector<'T>) = 
-          col.Select(fun v -> System.Convert.ChangeType(v, typeof<'R>) :?> 'R) }
-    |> VectorHelpers.createDispatcher
-
-  // A "generic function" that drops 
-  let getVectorRange (builder:IVectorBuilder) range = 
-    { new VectorHelpers.VectorCallSite1<IVector> with
-        override x.Invoke<'T>(col:IVector<'T>) = 
-          let cmd = VectorConstruction.GetRange(VectorConstruction.Return 0, range)
-          builder.Build(cmd, [| col |]) :> IVector }
-    |> VectorHelpers.createDispatcher
-
-  // A "generic function" that fills NA values
-  let fillNA (def:obj) : IVector -> IVector = 
-    { new VectorHelpers.VectorCallSite1<IVector> with
-        override x.Invoke<'T>(col:IVector<'T>) = 
-          col.SelectOptional(function
-            | OptionalValue.Missing -> OptionalValue(unbox def)
-            | OptionalValue.Present v -> OptionalValue(v)) :> IVector }
-    |> VectorHelpers.createDispatcher
+  /// Create a vector from an array containing values. The values may 
+  /// still represent missing values and the vector should handle this.
+  /// For example `Double.NaN` or `null` should be turned into a missing
+  /// value in the returned vector.
+  abstract Create : 'T[] -> IVector<'T>
   
+  /// Create a vector from an array containing values that may be missing. 
+  /// Even if a value is passed, it may be a missing value such as `Double.NaN`
+  /// or `null`. The vector builder should hanlde this.
+  abstract CreateMissing : OptionalValue<'T>[] -> IVector<'T>
+
+  /// Apply a vector construction to a given vector. The second parameter
+  /// is an array of arguments ("variables") that may be referenced from the
+  /// `VectorConstruction` using the `Return 0` construct.
+  abstract Build<'T> : VectorConstruction * IVector<'T>[] -> IVector<'T>

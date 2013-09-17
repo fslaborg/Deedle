@@ -37,7 +37,7 @@ type BoundaryBehavior = Inclusive | Exclusive
 /// of address Address.
 type IIndex<'K when 'K : equality> = 
   abstract Keys : seq<'K>
-  abstract Lookup : 'K * Lookup * (Address -> bool) -> OptionalValue<Address>  
+  abstract Lookup : 'K * Lookup * (Address -> bool) -> OptionalValue<'K * Address>  
   abstract Mappings : seq<'K * Address>
   abstract Range : Address * Address
   abstract KeyRange : 'K * 'K

@@ -183,6 +183,14 @@ module Series =
   let groupBy (keySelector:'K -> 'T -> 'TNewKey) (series:Series<'K, 'T>) =
     groupInto keySelector (fun k s -> s) series
 
+  // Unioning
+
+  let union (series1:Series<'K, 'V>) (series2:Series<'K, 'V>) = 
+    series1.Union(series2)
+
+  let unionUsing behavior (series1:Series<'K, 'V>) (series2:Series<'K, 'V>) = 
+    series1.Union(series2, behavior)
+
   // ----------------------------------------------------------------------------------------------
   // Counting & checking if values are present
   // ----------------------------------------------------------------------------------------------
@@ -198,13 +206,13 @@ module Series =
   let countKeys (series:Series<'K, 'T>) = series.Keys |> Seq.length
 
   let hasAll keys (series:Series<'K, 'T>) = 
-    keys |> Seq.forall (fun k -> series.TryGet(k).IsSome)
+    keys |> Seq.forall (fun k -> series.TryGet(k).HasValue)
   let hasSome keys (series:Series<'K, 'T>) = 
-    keys |> Seq.exists (fun k -> series.TryGet(k).IsSome)
+    keys |> Seq.exists (fun k -> series.TryGet(k).HasValue)
   let hasNone keys (series:Series<'K, 'T>) = 
-    keys |> Seq.forall (fun k -> series.TryGet(k).IsNone)
-  let has key (series:Series<'K, 'T>) = series.TryGet(key).IsSome
-  let hasNot key (series:Series<'K, 'T>) = series.TryGet(key).IsNone
+    keys |> Seq.forall (fun k -> series.TryGet(k).HasValue |> not)
+  let has key (series:Series<'K, 'T>) = series.TryGet(key).HasValue
+  let hasNot key (series:Series<'K, 'T>) = series.TryGet(key).HasValue
 
   // ----------------------------------------------------------------------------------------------
   // Handling of missing values
@@ -246,7 +254,7 @@ module Series =
   let fillMissing direction (series:Series<'K, 'T>) = 
     let lookup = if direction = Direction.Forward then Lookup.NearestSmaller else Lookup.NearestGreater
     series |> mapAll (fun k -> function 
-      | None -> series.TryGet(k, lookup)
+      | None -> series.TryGet(k, lookup) |> OptionalValue.asOption
       | value -> value)
 
   let values (series:Series<'K, 'T>) = series.Values
@@ -271,3 +279,9 @@ module Series =
   let takeLast count (series:Series<'K, 'T>) = 
     let keys = series.Keys |> Seq.lastFew count 
     Series(keys, seq { for k in keys -> series.[k] })
+
+  let inline maxBy f (series:Series<'K, 'T>) = 
+    series |> observations |> Seq.maxBy (snd >> f)
+
+  let inline minBy f (series:Series<'K, 'T>) = 
+    series |> observations |> Seq.maxBy (snd >> f)

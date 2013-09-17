@@ -168,6 +168,11 @@ module OptionalValue =
   let inline ofTuple (b, value:'T) =
     if b then OptionalValue(value) else OptionalValue.Missing
 
+  /// Creates `OptionalValue<T>` from a .NET `Nullable<T>` type.
+  [<CompiledName("OfNullable")>]
+  let inline ofNullable (value:Nullable<'T>) =
+    if value.HasValue then OptionalValue(value.Value) else OptionalValue.Missing
+
   /// Turns the `OptionalValue<T>` into a corresponding standard F# `option<T>` value
   let inline asOption (value:OptionalValue<'T>) = 
     if value.HasValue then Some value.Value else None
@@ -328,6 +333,24 @@ module Array =
 /// This module contains additional functions for working with sequences. 
 /// `FSharp.DataFrame.Internals` is opened, it extends the standard `Seq` module.
 module Seq = 
+
+  /// Comapre two sequences using the `Equals` method. Returns true
+  /// when all their elements are equal and they have the same size.
+  let structuralEquals (s1:seq<'T>) (s2:seq<'T>) = 
+    let mutable result = None
+    use en1 = s1.GetEnumerator()
+    use en2 = s2.GetEnumerator()
+    while result.IsNone do 
+      let canNext1, canNext2 = en1.MoveNext(), en2.MoveNext()
+      if canNext1 <> canNext2 then result <- Some false
+      elif not canNext1 then result <- Some true
+      elif not ((box en1.Current).Equals(en2.Current)) then result <- Some false
+    result.Value
+
+  /// Calculate hash code of a sequence, based on the values
+  let structuralHash (s:seq<'T>) = 
+    let combine h1 h2 = ((h1 <<< 5) + h1) ^^^ h2
+    s |> Seq.map (fun v -> (box v).GetHashCode()) |> Seq.fold combine -1
 
   /// If the input is non empty, returns `Some(head)` where `head` is 
   /// the first value. Otherwise, returns `None`.

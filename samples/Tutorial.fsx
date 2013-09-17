@@ -139,8 +139,8 @@ let df5 = Frame.ofRecords prices
 (**
 Finally, we can also load data frame from CSV:
 *)
-let msftCsv = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/MSFT.csv")
-let fbCsv = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/FB.csv")
+let msftCsv = Frame.readCsv(__SOURCE_DIRECTORY__ + "/data/MSFT.csv")
+let fbCsv = Frame.readCsv(__SOURCE_DIRECTORY__ + "/data/FB.csv")
 // [fsi:val fbCsv : Frame<int,string> =]
 // [fsi:         Date       Open  High  Low   Close Volume    Adj Close ]
 // [fsi:  0 ->   2013-08-30 42.02 42.26 41.06 41.29 67587400  41.29     ]
@@ -197,14 +197,15 @@ msft?Difference <- msft?Open - msft?Close
 
 // Do the same thing for Facebook
 let fb = 
-  fbCsv.WithRowIndex<DateTime>("Date").WithOrderedRows().Columns.[ ["Open"; "Close"] ]
-  |> Frame.ofColumns
+  fbCsv.WithRowIndex<DateTime>("Date")
+  |> Frame.orderRows
+  |> Frame.getColumns ["Open"; "Close"]
 fb?Difference <- fb?Open - fb?Close
 
 // Now we can easily plot the differences
 Chart.Combine
-  [ Chart.Line(msft?Difference.Observations) 
-    Chart.Line(fb?Difference.Observations) ]
+  [ Chart.Line(msft?Difference |> Series.observations) 
+    Chart.Line(fb?Difference |> Series.observations) ]
 
 (**
 When selecting columns using `f.Columns.[ .. ]` it is possible to use a list of columns
@@ -230,8 +231,8 @@ let joinedIn = msftRen.Join(fbRen, kind=JoinKind.Inner)
 
 // Visualize daily differences on available values only
 Chart.Rows
-  [ Chart.Line(joinedIn?MsftDiff.Observations) 
-    Chart.Line(joinedIn?FbDiff.Observations) ]
+  [ Chart.Line(joinedIn?MsftDiff |> Series.observations) 
+    Chart.Line(joinedIn?FbDiff |> Series.observations) ]
 
 (**
 As a result, you should see a chart that looks something like this:
@@ -408,8 +409,8 @@ price is greater than FB:
 joinedOut?Comparison <- joinedOut.Rows.Select(fun kv -> 
   kv.Value?MsftOpen > kv.Value?FbOpen)
 
-joinedOut.GetSeries<bool>("Comparison").Where(fun kv -> kv.Value).Count
-joinedOut.GetSeries<bool>("Comparison").Where(fun kv -> not kv.Value).Count
+joinedOut.GetSeries<bool>("Comparison").Where(fun kv -> kv.Value) |> Series.countValues
+joinedOut.GetSeries<bool>("Comparison").Where(fun kv -> not kv.Value) |> Series.countValues
 
 (**
 Once we add the series, we can get it as a series of booleans and count `true` and

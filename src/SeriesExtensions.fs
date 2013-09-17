@@ -4,7 +4,7 @@ open System
 open System.Linq
 open System.Collections.Generic
 open System.Runtime.InteropServices
-    open FSharp.DataFrame.Indices
+open FSharp.DataFrame.Indices
 open System.Runtime.CompilerServices
 
 [<AutoOpen>]
@@ -21,6 +21,49 @@ module FSharpSeriesExtensions =
       let keys = values |> Seq.mapi (fun i _ -> i)
       Series(keys, values).Select(fun kvp -> kvp.Value.Value)
 
+
+type Series =
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member FromObservations(observations:seq<KeyValuePair<'K, 'V>>) = 
+    observations |> Seq.map (fun kvp -> kvp.Key, kvp.Value) |> Series.ofObservations
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member FromValues(values:seq<'T>) = Series(values |> Seq.mapi (fun i _ -> i), values)
+    
+[<Extension>]
+type EnumerableExtensions =
+  [<Extension>]
+  static member ToSeries(observations:seq<KeyValuePair<'K, 'V>>) = 
+    observations |> Seq.map (fun kvp -> kvp.Key, kvp.Value) |> Series.ofObservations
+
+type Series with
+  /// Vector & index builders
+  static member internal vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
+  static member internal indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
+
+  static member internal Create(data:seq<'V>) =
+    let lookup = data |> Seq.mapi (fun i _ -> i)
+    Series<int, 'V>(Index.Create(lookup), Vector.ofValues(data), Series.vectorBuilder, Series.indexBuilder)
+  static member internal Create(index:seq<'K>, data:seq<'V>) =
+    Series<'K, 'V>(Index.Create(index), Vector.ofValues(data), Series.vectorBuilder, Series.indexBuilder)
+  static member internal Create(index:IIndex<'K>, data:IVector<'V>) = 
+    Series<'K, 'V>(index, data, Series.vectorBuilder, Series.indexBuilder)
+  static member internal CreateUntyped(index:IIndex<'K>, data:IVector<obj>) = 
+    ObjectSeries<'K>(index, data, Series.vectorBuilder, Series.indexBuilder)
+
+type SeriesBuilder<'K when 'K : equality>() = 
+  let mutable keys = []
+  let mutable values = []
+
+  member x.Add<'V>(key:'K, value) =
+    keys <- key::keys
+    values <- (box value)::values
+  
+  member x.Series =
+    Series.CreateUntyped(Index.Create (List.rev keys), Vector.ofValues(List.rev values))
+
+  static member (?<-) (builder:SeriesBuilder<string>, name:string, value) =
+    builder.Add(name, value)
+  
 [<Extension>]
 type SeriesExtensions =
   [<Extension>]
@@ -42,6 +85,18 @@ type SeriesExtensions =
 
   [<Extension>]
   static member Shift(series:Series<'K, 'V>, offset) = Series.shift offset
+
+  [<Extension>]
+  static member Sum(series:Series<'K, float>) = Series.sum series
+
+  [<Extension>]
+  static member Sum(series:Series<'K, int>) = Series.sum series
+
+  [<Extension>]
+  static member Sum(series:Series<'K, float32>) = Series.sum series
+
+  [<Extension>]
+  static member Sum(series:Series<'K, decimal>) = Series.sum series
 
   [<Extension>]
   static member FillMissing(series:Series<'K, 'T>, value:'T) = 
@@ -110,3 +165,14 @@ type SeriesExtensions =
   static member CountKeys(series:Series<'K, 'T>) = Series.countKeys series
 
 
+  // static member Where(series:Series<'K, 'T>, f:System.Func<KeyValuePair<'K, 'V>, bool>) = 
+
+
+  [<Extension>]
+  static member Diff(series:Series<'K, float>, offset) = series |> Series.diff offset
+  [<Extension>]
+  static member Diff(series:Series<'K, float32>, offset) = series |> Series.diff offset
+  [<Extension>]
+  static member Diff(series:Series<'K, decimal>, offset) = series |> Series.diff offset
+  [<Extension>]
+  static member Diff(series:Series<'K, int>, offset) = series |> Series.diff offset

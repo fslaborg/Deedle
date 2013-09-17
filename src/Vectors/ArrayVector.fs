@@ -17,10 +17,15 @@ type internal ArrayVectorData<'T> =
   | VectorOptional of OptionalValue<'T>[]
   | VectorNonOptional of 'T[]
 
-/// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
+
 /// Implements a builder object (`IVectorBuilder`) for creating
 /// vectors of type `ArrayVector<'T>`. This includes operations such as
 /// appending, relocating values, creating vectors from arrays etc.
+/// The vector builder automatically switches between the two possible
+/// representations of the vector - when a missing value is present, it
+/// uses `ArrayVectorData.VectorOptional`, otherwise it uses 
+/// `ArrayVectorData.VectorNonOptional`.
 type ArrayVectorBuilder() = 
   /// Instance of the vector builder
   static let vectorBuilder = ArrayVectorBuilder() :> IVectorBuilder
@@ -41,21 +46,21 @@ type ArrayVectorBuilder() =
     match got with
     | :? ArrayVector<'T> as av -> av.Representation
     | otherVector -> 
-        match vectorBuilder.CreateOptional(Array.ofSeq otherVector.DataSequence) with
+        match vectorBuilder.CreateMissing(Array.ofSeq otherVector.DataSequence) with
         | :? ArrayVector<'T> as av -> av.Representation
         | _ -> failwith "builder.buildArrayVector: Unexpected vector type"
 
-  /// Provides a global access to an instance of ArrayVectorBuilder       
+  /// Provides a global access to an instance of the `ArrayVectorBuilder`
   static member Instance = vectorBuilder
 
   interface IVectorBuilder with
-    member builder.CreateNonOptional(values) =
+    member builder.Create(values) =
       // Check that there are no NaN values and create appropriate representation
       let hasNAs = MissingValues.containsNA values
       if hasNAs then av <| VectorOptional(MissingValues.createNAArray values)
       else av <| VectorNonOptional(values)
 
-    member builder.CreateOptional(optValues) =
+    member builder.CreateMissing(optValues) =
       // Check for both OptionalValue.Missing and OptionalValue.Value = NaN
       let hasNAs = MissingValues.containsMissingOrNA optValues
       if hasNAs then av <| VectorOptional(MissingValues.createMissingOrNAArray optValues)
@@ -79,24 +84,24 @@ type ArrayVectorBuilder() =
               for IntAddress newIndex, IntAddress oldIndex in relocations do
                 if oldIndex < data.Length && oldIndex >= 0 then
                   newData.[newIndex] <- OptionalValue(data.[oldIndex])
-          vectorBuilder.CreateOptional(newData)
+          vectorBuilder.CreateMissing(newData)
 
       | DropRange(source, (IntAddress loRange, IntAddress hiRange)) ->
           // Create a new array without the specified range. For Optional, call the 
           // builder recursively as this may turn Optional representation to NonOptional
           match builder.buildArrayVector source arguments with 
           | VectorOptional data -> 
-              vectorBuilder.CreateOptional(Array.dropRange loRange hiRange data) 
+              vectorBuilder.CreateMissing(Array.dropRange loRange hiRange data) 
           | VectorNonOptional data -> 
               VectorNonOptional(Array.dropRange loRange hiRange data) |> av
 
-      |  GetRange(source, (IntAddress loRange, IntAddress hiRange)) ->
+      | GetRange(source, (IntAddress loRange, IntAddress hiRange)) ->
           // Get the specified sub-range. For Optional, call the builder recursively 
           // as this may turn Optional representation to NonOptional
           if hiRange < loRange then VectorNonOptional [||] |> av else
           match builder.buildArrayVector source arguments with 
           | VectorOptional data -> 
-              vectorBuilder.CreateOptional(data.[loRange .. hiRange])
+              vectorBuilder.CreateMissing(data.[loRange .. hiRange])
           | VectorNonOptional data -> 
               VectorNonOptional(data.[loRange .. hiRange]) |> av
 
@@ -118,7 +123,7 @@ type ArrayVectorBuilder() =
                 let lv = if idx >= left.Length then OptionalValue.Missing else left.[idx]
                 let rv = if idx >= right.Length then OptionalValue.Missing else right.[idx]
                 merge lv rv)
-              vectorBuilder.CreateOptional(filled)
+              vectorBuilder.CreateMissing(filled)
 
       | CustomCommand(vectors, f) ->
           let vectors = List.map (fun v -> vectorBuilder.Build(v, arguments) :> IVector) vectors
@@ -128,9 +133,18 @@ type ArrayVectorBuilder() =
 
 /// Vector that stores data in an array. The data is stored using the
 /// `ArrayVectorData<'T>` type (discriminated union)
-and [<RequireQualifiedAccess>] ArrayVector<'T> internal (representation:ArrayVectorData<'T>) = 
+and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) = 
   member internal vector.Representation = representation
+
+  // To string formatting & equality support
   override vector.ToString() = VectorHelpers.prettyPrintVector vector
+  override vector.Equals(another) = 
+    match another with
+    | null -> false
+    | :? IVector<'T> as another -> Seq.structuralEquals vector.DataSequence another.DataSequence
+    | _ -> false
+  override vector.GetHashCode() =
+    vector.DataSequence |> Seq.structuralHash
 
   // Implement the untyped vector interface
   interface IVector with
@@ -156,8 +170,8 @@ and [<RequireQualifiedAccess>] ArrayVector<'T> internal (representation:ArrayVec
       | VectorOptional data -> VectorData.SparseList (IReadOnlyList.ofArray data)
 
     // A version of Select that can transform missing values to actual values (we always 
-    // end up with array that may contain missing values, so use CreateOptional)
-    member vector.SelectOptional<'TNewValue>(f) = 
+    // end up with array that may contain missing values, so use CreateMissing)
+    member vector.SelectMissing<'TNewValue>(f) = 
       let isNA = MissingValues.isNA<'TNewValue>() 
       let flattenNA (value:OptionalValue<_>) = 
         if value.HasValue && isNA value.Value then OptionalValue.Missing else value
@@ -167,67 +181,8 @@ and [<RequireQualifiedAccess>] ArrayVector<'T> internal (representation:ArrayVec
             data |> Array.map (fun v -> OptionalValue(v) |> f |> flattenNA)
         | VectorOptional data ->
             data |> Array.map (f >> flattenNA)
-      ArrayVectorBuilder.Instance.CreateOptional(data)
+      ArrayVectorBuilder.Instance.CreateMissing(data)
 
     // Select function does not call 'f' on missing values.
     member vector.Select<'TNewValue>(f:'T -> 'TNewValue) = 
-      (vector :> IVector<_>).SelectOptional(OptionalValue.map f)
-
-// --------------------------------------------------------------------------------------
-// Public type 'FSharp.DataFrame.Vector' that can be used for creating vectors
-// --------------------------------------------------------------------------------------
-
-namespace FSharp.DataFrame 
-
-open FSharp.DataFrame.Internal
-open FSharp.DataFrame.Vectors
-open FSharp.DataFrame.Vectors.ArrayVector
-
-/// Type that provides access to creating vectors (represented as arrays)
-type Vector = 
-  /// Creates a vector that stores the specified data in an array.
-  static member inline Create<'T>(data:'T[]) = 
-    ArrayVectorBuilder.Instance.CreateNonOptional(data)
-  /// Creates a vector that stores the specified data in an array.
-  static member inline Create<'T>(data:seq<'T>) = 
-    ArrayVectorBuilder.Instance.CreateNonOptional(Array.ofSeq data)
-  /// Creates a vector that stores the specified data in an array.
-  static member inline CreateNA<'T>(data:seq<option<'T>>) = 
-    ArrayVectorBuilder.Instance.CreateOptional(data |> Seq.map OptionalValue.ofOption |> Array.ofSeq)
-  /// Creates a vector that stores the specified data in an array.
-  static member inline CreateNA<'T>(data:seq<OptionalValue<'T>>) = 
-    ArrayVectorBuilder.Instance.CreateOptional(data |> Array.ofSeq)
-
-// --------------------------------------------------------------------------------------
-// TESTS
-// --------------------------------------------------------------------------------------
-(*
-
-
-fsi.AddPrinter (fun (v:IVector<int>) -> v.ToString())
-
-// TODO: Overload for creating [1; missing 2] with ints
-Vector.Create [ 1 .. 10 ]
-Vector.Create [ 1 .. 100 ]
-
-let nan = Vector.Create [ 1.0; Double.NaN; 10.1 ]
-
-let five = Vector.Create [ 1 .. 5 ]
-let ten = five.Reorder((0, 10), seq { for v in 0 .. 4 -> v, 2 * v })
-ten.GetObject(2)
-ten.GetObject(3)
-
-five.GetValue(0)
-nan.GetValue(1)
-
-five.Data
-nan.Data
-
-ten.GetRange(2, 6)
-
-five.Select (fun v -> if v = 1 then Double.NaN else float v) 
-five.Select float
-
-// Confusing? 
-//   nan.Select (fun v -> if Double.isNA(v) then -1.0 else v)
-*)
+      (vector :> IVector<_>).SelectMissing(OptionalValue.map f)

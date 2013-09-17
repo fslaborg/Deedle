@@ -89,7 +89,7 @@ module FSharpFrameExtensions =
     ///    parse semicolon separated files.
     ///  * `culture` - Specifies the name of the culture that is used when parsing 
     ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
-    static member ReadCsv(location:string, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture) =
+    static member readCsv(location:string, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture) =
       FrameUtils.readCsv location inferTypes inferRows schema "NaN,NA,#N/A,:" separators culture
 
     /// Creates a data frame with ordinal Integer index from a sequence of rows.
@@ -108,7 +108,7 @@ module FSharpFrameExtensions =
     static member ofRowKeys(keys) = 
       let rowIndex = FrameUtils.indexBuilder.Create(keys, None)
       let colIndex = FrameUtils.indexBuilder.Create([], None)
-      Frame<_, string>(rowIndex, colIndex, FrameUtils.vectorBuilder.CreateNonOptional [||])
+      Frame<_, string>(rowIndex, colIndex, FrameUtils.vectorBuilder.Create [||])
     
     static member ofColumns(cols) = 
       FrameUtils.fromColumns(cols)

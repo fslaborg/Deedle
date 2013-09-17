@@ -18,9 +18,9 @@ module internal Reflection =
     | Quotations.Patterns.Call(_, mi, _) -> mi.GetGenericMethodDefinition() 
     | _ -> failwith "Could not find Enumerable.ToArray"
   let createNonOpt = 
-    match <@@ vectorBuilder.CreateNonOptional([| |]) @@> with
+    match <@@ vectorBuilder.Create([| |]) @@> with
     | Quotations.Patterns.Call(_, mi, _) -> mi.GetGenericMethodDefinition() 
-    | _ -> failwith "Could not find vectorBuilder.CreateNonOptional"
+    | _ -> failwith "Could not find vectorBuilder.Create"
 
   let getRecordConvertors<'T>() = 
     let recdTy = typeof<'T>
@@ -37,7 +37,7 @@ module internal Reflection =
           let input = Expression.Parameter(typeof<seq<'T>>)
           let selected = Expression.Call(enumerableSelect.MakeGenericMethod [| recdTy; fldTy |], input, func)
           let body = Expression.Call(enumerableToArray.MakeGenericMethod [| fldTy |], selected)
-          // Build: vectorBuilder.CreateNonOptional( ... body ... )
+          // Build: vectorBuilder.Create( ... body ... )
           let conv = Expression.Call(Expression.Constant(vectorBuilder), createNonOpt.MakeGenericMethod [| fldTy |], body)
           // Compile & run
           Expression.Lambda(conv, [input]).Compile() |]
@@ -48,7 +48,7 @@ module internal Reflection =
     let frameData = 
       [| for convFunc in convertors ->
           convFunc.DynamicInvoke( [| box data |] ) :?> IVector |]
-      |> vectorBuilder.CreateNonOptional
+      |> vectorBuilder.Create
     Frame<int, string>(Index.Create [0 .. (Seq.length data) - 1], colIndex, frameData)
 
 // ------------------------------------------------------------------------------------------------
@@ -69,13 +69,13 @@ module internal FrameUtils =
   /// Create data frame containing a single column
   let createColumn<'TColumnKey, 'TRowKey when 'TColumnKey : equality and 'TRowKey : equality>
       (column:'TColumnKey, series:ISeries<'TRowKey>) = 
-    let data = Vector.Create [| series.Vector |]
+    let data = Vector.ofValues [| series.Vector |]
     Frame(series.Index, Index.Create [column], data)
 
   /// Create data frame containing a single row
   let createRow(row:'TRowKey, series:Series<'TColumnKey, 'TValue>) = 
-    let data = series.Vector.SelectOptional(fun v -> 
-      let res = Vectors.ArrayVector.ArrayVectorBuilder.Instance.CreateOptional [| v |] 
+    let data = series.Vector.SelectMissing(fun v -> 
+      let res = Vectors.ArrayVector.ArrayVectorBuilder.Instance.CreateMissing [| v |] 
       OptionalValue(res :> IVector))
     Frame(Index.Create [row], series.Index, data)
 
@@ -120,7 +120,7 @@ module internal FrameUtils =
             // If that failes, the sequence is heterogeneous
             // so we try again and pass object as a witness
             columnCreator key (obj()) )
-      |> Array.ofSeq |> vectorBuilder.CreateNonOptional
+      |> Array.ofSeq |> vectorBuilder.Create
     Frame(rowIndex, columnIndex, data)
 
 
@@ -128,7 +128,7 @@ module internal FrameUtils =
   let fromColumns<'TRowKey, 'TColumnKey, 'TSeries when 'TSeries :> ISeries<'TRowKey> 
         and 'TRowKey : equality and 'TColumnKey : equality>
       (nested:Series<'TColumnKey, 'TSeries>) =
-    let initial = Frame(Index.Create [], Index.CreateUnsorted [], Vector.Create [| |])
+    let initial = Frame(Index.Create [], Index.CreateUnsorted [], Vector.ofValues [| |])
     (initial, Series.observations nested) ||> Seq.fold (fun df (name, series) -> 
       df.Join(createColumn(name, series), JoinKind.Outer))
 
@@ -146,12 +146,12 @@ module internal FrameUtils =
     let cultureInfo = System.Globalization.CultureInfo.GetCultureInfo(culture)
 
     let createVector typ (data:string[]) = 
-      if typ = typeof<bool> then Vector.CreateNA (Array.map (fun s -> Operations.ConvertBoolean(culture, Some(s))) data) :> IVector
-      elif typ = typeof<decimal> then Vector.CreateNA (Array.map (fun s -> Operations.ConvertDecimal(culture, Some(s))) data) :> IVector
-      elif typ = typeof<float> then Vector.CreateNA (Array.map (fun s -> Operations.ConvertFloat(culture, missingValues, Some(s))) data) :> IVector
-      elif typ = typeof<int> then Vector.CreateNA (Array.map (fun s -> Operations.ConvertInteger(culture, Some(s))) data) :> IVector
-      elif typ = typeof<int64> then Vector.CreateNA (Array.map (fun s -> Operations.ConvertInteger64(culture, Some(s))) data) :> IVector
-      else Vector.Create data :> IVector
+      if typ = typeof<bool> then Vector.ofOptionalValues (Array.map (fun s -> Operations.ConvertBoolean(culture, Some(s))) data) :> IVector
+      elif typ = typeof<decimal> then Vector.ofOptionalValues (Array.map (fun s -> Operations.ConvertDecimal(culture, Some(s))) data) :> IVector
+      elif typ = typeof<float> then Vector.ofOptionalValues (Array.map (fun s -> Operations.ConvertFloat(culture, missingValues, Some(s))) data) :> IVector
+      elif typ = typeof<int> then Vector.ofOptionalValues (Array.map (fun s -> Operations.ConvertInteger(culture, Some(s))) data) :> IVector
+      elif typ = typeof<int64> then Vector.ofOptionalValues (Array.map (fun s -> Operations.ConvertInteger64(culture, Some(s))) data) :> IVector
+      else Vector.ofValues data :> IVector
 
     // If 'inferTypes' is specified (or by default), use the CSV type inference
     // to load information about types in the CSV file. By default, use the entire
@@ -176,7 +176,7 @@ module internal FrameUtils =
             [| for row in data.Data -> row.GetColumn(name) |]
             |> createVector prop.RuntimeType |]
     let rowIndex = Index.Create [ 0 .. (Seq.length data.Data) - 1 ]
-    Frame(rowIndex, columnIndex, Vector.Create columns)
+    Frame(rowIndex, columnIndex, Vector.ofValues columns)
 
 // ------------------------------------------------------------------------------------------------
 //
@@ -191,7 +191,7 @@ type internal FrameOperations =
       { new SeriesOperations with
           member x.OuterJoin<'TIndex2, 'TValue2 when 'TIndex2 : equality>
               (series1:Series<'TIndex2, 'TValue2>, series2:Series<'TIndex2, 'TValue2>) = 
-            let frame1 = Frame(series1.Index, Index.Create [0], Vector.Create [| series1.Vector :> IVector |])
-            let frame2 = Frame(series2.Index, Index.Create [1], Vector.Create [| series2.Vector :> IVector |])
+            let frame1 = Frame(series1.Index, Index.Create [0], Vector.ofValues [| series1.Vector :> IVector |])
+            let frame2 = Frame(series2.Index, Index.Create [1], Vector.ofValues [| series2.Vector :> IVector |])
             let joined = frame1.Join(frame2)
             joined.Rows.Select(fun row -> row.Value :> Series<_, _>) }

@@ -18,7 +18,7 @@ let timed f =
 
 do
 
-  let titanic = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/../samples/data/Titanic.csv")
+  let titanic = Frame.readCsv(__SOURCE_DIRECTORY__ + "/../samples/data/Titanic.csv")
   let it = timed(fun () -> titanic |> Frame.groupRowsBy "Sex")
 
 (*
