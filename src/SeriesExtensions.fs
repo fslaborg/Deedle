@@ -81,6 +81,14 @@ type SeriesExtensions =
     series.GetSubrange( None, Some(upperExclusive, BoundaryBehavior.Exclusive) )
 
   [<Extension>]
+  static member StartAt(series:Series<'K, 'V>, lowerInclusive) = 
+    series.GetSubrange( Some(lowerInclusive, BoundaryBehavior.Inclusive), None )
+
+  [<Extension>]
+  static member EndAt(series:Series<'K, 'V>, upperInclusive) = 
+    series.GetSubrange( Some(upperInclusive, BoundaryBehavior.Inclusive), None )
+
+  [<Extension>]
   static member Log(series:Series<'K, float>) = log series
 
   [<Extension>]
@@ -176,3 +184,11 @@ type SeriesExtensions =
   static member Diff(series:Series<'K, decimal>, offset) = series |> Series.diff offset
   [<Extension>]
   static member Diff(series:Series<'K, int>, offset) = series |> Series.diff offset
+
+  [<Extension>]
+  static member WindowInto(series:Series<'K, 'V>, size:int, reduce:Func<Series<'K, 'V>,'U>): Series<'K, 'U> = 
+    Series.windowInto size reduce.Invoke series
+
+  [<Extension>]
+  static member Window(series:Series<'K, 'V>, size:int): Series<'K, Series<'K, 'V>> = 
+    Series.window size series
