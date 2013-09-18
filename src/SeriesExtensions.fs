@@ -84,7 +84,7 @@ type SeriesExtensions =
   static member Log(series:Series<'K, float>) = log series
 
   [<Extension>]
-  static member Shift(series:Series<'K, 'V>, offset) = Series.shift offset
+  static member Shift(series:Series<'K, 'V>, offset) = Series.shift offset series
 
   [<Extension>]
   static member Sum(series:Series<'K, float>) = Series.sum series
