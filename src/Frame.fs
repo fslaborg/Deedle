@@ -278,6 +278,25 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
       with e -> sprintf "Formatting failed: %A" e
 
   // ----------------------------------------------------------------------------------------------
+  // Some operators
+  // ----------------------------------------------------------------------------------------------
+
+  static member inline private PointwiseFrameSeries<'T>(frame:Frame<'TRowKey, 'TColumnKey>, series:Series<'TRowKey, 'T>, op) =
+    frame.Columns |> Series.mapValues (fun os ->
+      let df = Frame([1;2], [os; series])
+      df.Rows |> Series.mapValues (fun row -> op (row.GetAs<'T>(1)) (row.GetAs<'T>(2)))) 
+
+  static member inline private ScalarOperationR<'T>(frame:Frame<'TRowKey, 'TColumnKey>, scalar:'T, op) =
+    frame.Columns |> Series.mapValues (fun os -> Series.mapValues (fun v -> op v scalar) (os.As<'T>()))
+
+
+  static member (/) (frame:Frame<'TRowKey, 'TColumnKey>, series:Series<'TRowKey, float>) =
+    Frame<'TRowKey, 'TColumnKey>.PointwiseFrameSeries<float>(frame, series, (/))
+
+  static member (*) (frame:Frame<'TRowKey, 'TColumnKey>, scalar:float) =
+    Frame<'TRowKey, 'TColumnKey>.ScalarOperationR<float>(frame, scalar, (/))
+
+  // ----------------------------------------------------------------------------------------------
   // Internals (rowIndex, columnIndex, data and various helpers)
   // ----------------------------------------------------------------------------------------------
 

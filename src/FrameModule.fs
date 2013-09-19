@@ -17,6 +17,9 @@ module Frame =
       (fun _ v -> v.Get(column)) 
       (fun k g -> g |> Frame.ofRows |> f)
 
+  let groupRowsUsing selector (frame:Frame<'TRowKey, 'TColKey>) = 
+    frame.Rows |> Series.groupInto selector (fun k g -> g |> Frame.ofRows)
+
   let groupRowsBy column (frame:Frame<'TRowKey, 'TColKey>) = 
     groupRowsInto column id frame
 
@@ -153,8 +156,14 @@ module Frame =
   let inline filterRows f (frame:Frame<'TRowKey, 'TColKey>) = 
     FrameExtensions.Where(frame, fun kvp -> f kvp.Key kvp.Value)
 
+  let inline filterRowValues f (frame:Frame<'TRowKey, 'TColKey>) = 
+    FrameExtensions.Where(frame, fun kvp -> f kvp.Value)
+
   let inline mapRows f (frame:Frame<'TRowKey, 'TColKey>) = 
     FrameExtensions.Select(frame, fun kvp -> f kvp.Key kvp.Value) 
+
+  let inline mapRowValues f (frame:Frame<'TRowKey, 'TColKey>) = 
+    FrameExtensions.Select(frame, fun kvp -> f kvp.Value) 
 
   let transpose (frame:Frame<'TRowKey, 'TColumnKey>) = 
     frame.Columns |> Frame.ofRows

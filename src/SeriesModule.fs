@@ -71,6 +71,9 @@ module Series =
   let filter f (series:Series<'K, 'T>) = 
     series.Where(fun kvp -> f kvp.Key kvp.Value)
 
+  let filterValues f (series:Series<'K, 'T>) = 
+    series.Where(fun kvp -> f kvp.Value)
+
   let map (f:'K -> 'T -> 'R) (series:Series<'K, 'T>) = 
     series.Select(fun kvp -> f kvp.Key kvp.Value)
 
