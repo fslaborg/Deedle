@@ -8,6 +8,7 @@ open System
 open FSharp.DataFrame.Vectors 
 open System.Runtime.InteropServices
 open System.Runtime.CompilerServices
+open System.Collections.Generic
 
 type Frame =
   /// Load data frame from a CSV file. The operation automatically reads column names from the 
@@ -43,6 +44,11 @@ type Frame =
   static member FromRows<'K,'V,'S when 'S :> Series<'K, 'V>>(rows:seq<'S>) = 
     FrameUtils.fromRows(Series(rows |> Seq.mapi (fun i _ -> i), rows))
 
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member FromColumns<'RowKey, 'ColKey, 'V when 'RowKey : equality and 'ColKey : equality>(cols:seq<KeyValuePair<'ColKey, Series<'RowKey, 'V>>>) = 
+    let colKeys = cols |> Seq.map (fun kvp -> kvp.Key)
+    let colSeries = cols |> Seq.map (fun kvp -> kvp.Value)
+    FrameUtils.fromColumns(Series(colKeys, colSeries))
 
 [<AutoOpen>]
 module FSharpFrameExtensions =
@@ -190,3 +196,4 @@ type FrameExtensions =
   [<Extension>]
   static member Transpose(frame:Frame<'TRowKey, 'TColumnKey>) = 
     frame.Columns |> Frame.ofRows
+

@@ -108,7 +108,7 @@ type SeriesExtensions =
 
   [<Extension>]
   static member FillMissing(series:Series<'K, 'T>, value:'T) = 
-    Series.fillMissingWith value
+    Series.fillMissingWith value series
 
   /// Fill missing values in the series with the nearest available value
   /// (using the specified direction). The default direction is `Direction.Backward`.
@@ -132,7 +132,7 @@ type SeriesExtensions =
   ///    for the nearest greater key.
   [<Extension>]
   static member FillMissing(series:Series<'K, 'T>, [<Optional>] direction) = 
-    Series.fillMissing direction
+    Series.fillMissing direction series
 
   /// Fill missing values in the series using the specified function.
   ///
@@ -141,7 +141,7 @@ type SeriesExtensions =
   ///    based on the key in the series.
   [<Extension>]
   static member FillMissing(series:Series<'K, 'T>, filler:Func<_, _>) = 
-    Series.fillMissingUsing filler.Invoke
+    Series.fillMissingUsing filler.Invoke series
 
   /// Returns all keys from the sequence, together with the associated (optional)
   /// values. The values are returned using the `OptionalValue<T>` struct which
