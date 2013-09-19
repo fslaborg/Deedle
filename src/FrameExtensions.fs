@@ -5,6 +5,7 @@
 // ------------------------------------------------------------------------------------------------
 
 open System
+open System.Collections.Generic
 open FSharp.DataFrame.Vectors 
 open System.Runtime.InteropServices
 open System.Runtime.CompilerServices
@@ -43,6 +44,25 @@ type Frame =
   static member FromRows<'K,'V,'S when 'S :> Series<'K, 'V>>(rows:seq<'S>) = 
     FrameUtils.fromRows(Series(rows |> Seq.mapi (fun i _ -> i), rows))
 
+  static member FromColumns(cols) = 
+    FrameUtils.fromColumns(cols)
+
+  static member FromColumns(cols) = 
+    let names, values = cols |> Seq.map(fun (KeyValue(k,v)) -> k,v) |> List.ofSeq |> List.unzip
+    FrameUtils.fromColumns(Series(names, values))
+
+  /// Creates a data frame with ordinal Integer index from a sequence of rows.
+  /// The column indices of individual rows are unioned, so if a row has fewer
+  /// columns, it will be successfully added, but there will be missing values.
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member FromColumns(keys:seq<'TRowKey>, columns:seq<KeyValuePair<'TColumnKey, 'S>>) = 
+    let rowIndex = FrameUtils.indexBuilder.Create(keys, None)
+    let colIndex = FrameUtils.indexBuilder.Create([], None)
+    let df = Frame<_, _>(rowIndex, colIndex, FrameUtils.vectorBuilder.Create [||])
+    let other = Frame.FromColumns(columns)
+    df.Join(other, kind=JoinKind.Left)
+
+  // TODO: Add the above to F# API
 
 [<AutoOpen>]
 module FSharpFrameExtensions =

@@ -20,7 +20,6 @@ namespace FSharp.DataFrame.CSharp.Tests
 		}
 	}
 
-	/*
   class Program
   {
     static void Main(string[] args)
@@ -29,8 +28,8 @@ namespace FSharp.DataFrame.CSharp.Tests
 
 		var s = msft.GetSeries<double>("Open");
 
-		IEnumerable<KeyValuePair<int, double>> kvps =
-			new[] { new KeyValuePair<int, double>(10, 42) };
+    IEnumerable<KeyValuePair<int, double>> kvps =
+        Enumerable.Range(0, 10).Select(k => new KeyValuePair<int, double>(k, k * k));
 
 		var series = kvps.ToSeries();
 		foreach (var kvp in series.Observations)
@@ -39,8 +38,12 @@ namespace FSharp.DataFrame.CSharp.Tests
 		var s2 = series + series;
 
 		Console.WriteLine(s2.Sum());
+
+    var df = Frame.FromColumns(new[] { 1, 2, 3 }, new[] { new KeyValuePair<string, Series<int, double>>("Test", s2) });
+    Console.WriteLine(((FSharp.DataFrame.Internal.IFsiFormattable)df).Format());
+
+
 		// Aggregation.WindowSize(0, Boundary.AtBeginning)
     }
   }
-	 */
 }
