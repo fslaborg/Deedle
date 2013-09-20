@@ -42,7 +42,7 @@ module Frame =
   /// Creates a new data frame that contains all data from 
   /// the original data frame, together with additional series.
   [<CompiledName("AddSeries")>]
-  let addSeries column series (frame:Frame<'TRowKey, 'TColKey>) = 
+  let addSeries column (series:Series<_, _>) (frame:Frame<'TRowKey, 'TColKey>) = 
     let f = frame.Clone() in f.AddSeries(column, series); f
 
   /// Append two data frames. The columns of the resulting data frame

@@ -1,4 +1,5 @@
-﻿namespace FSharp.DataFrame
+﻿#nowarn "10001"
+namespace FSharp.DataFrame
 
 // ------------------------------------------------------------------------------------------------
 // Construction
@@ -9,6 +10,7 @@ open System.Collections.Generic
 open FSharp.DataFrame.Vectors 
 open System.Runtime.InteropServices
 open System.Runtime.CompilerServices
+open System.Collections.Generic
 
 type Frame =
   /// Load data frame from a CSV file. The operation automatically reads column names from the 
@@ -47,10 +49,6 @@ type Frame =
   static member FromColumns(cols) = 
     FrameUtils.fromColumns(cols)
 
-  static member FromColumns(cols) = 
-    let names, values = cols |> Seq.map(fun (KeyValue(k,v)) -> k,v) |> List.ofSeq |> List.unzip
-    FrameUtils.fromColumns(Series(names, values))
-
   /// Creates a data frame with ordinal Integer index from a sequence of rows.
   /// The column indices of individual rows are unioned, so if a row has fewer
   /// columns, it will be successfully added, but there will be missing values.
@@ -63,6 +61,11 @@ type Frame =
     df.Join(other, kind=JoinKind.Left)
 
   // TODO: Add the above to F# API
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member FromColumns(cols:seq<KeyValuePair<_, _>>) = 
+    let colKeys = cols |> Seq.map (fun kvp -> kvp.Key)
+    let colSeries = cols |> Seq.map (fun kvp -> kvp.Value)
+    FrameUtils.fromColumns(Series(colKeys, colSeries))
 
 [<AutoOpen>]
 module FSharpFrameExtensions =
@@ -210,7 +213,6 @@ type FrameExtensions =
   [<Extension>]
   static member Transpose(frame:Frame<'TRowKey, 'TColumnKey>) = 
     frame.Columns |> Frame.ofRows
-
 
 type KeyValuePair =
   static member Create<'K, 'V>(key:'K, value:'V) = KeyValuePair(key, value)
