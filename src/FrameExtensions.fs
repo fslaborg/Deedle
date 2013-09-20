@@ -43,17 +43,17 @@ type Frame =
   /// The column indices of individual rows are unioned, so if a row has fewer
   /// columns, it will be successfully added, but there will be missing values.
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
-  static member FromRows<'K,'V,'S when 'S :> Series<'K, 'V>>(rows:seq<'S>) = 
+  static member FromRows(rows:seq<Series<'ColKey,'V>>) = 
     FrameUtils.fromRows(Series(rows |> Seq.mapi (fun i _ -> i), rows))
 
-  static member FromColumns(cols) = 
-    FrameUtils.fromColumns(cols)
+//  static member FromColumns(cols) = 
+//    FrameUtils.fromColumns(cols)
 
   /// Creates a data frame with ordinal Integer index from a sequence of rows.
   /// The column indices of individual rows are unioned, so if a row has fewer
   /// columns, it will be successfully added, but there will be missing values.
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
-  static member FromColumns(keys:seq<'TRowKey>, columns:seq<KeyValuePair<'TColumnKey, 'S>>) = 
+  static member FromColumns(keys:seq<'RowKey>, columns:seq<KeyValuePair<'ColKey, Series<'RowKey, 'V>>>) = 
     let rowIndex = FrameUtils.indexBuilder.Create(keys, None)
     let colIndex = FrameUtils.indexBuilder.Create([], None)
     let df = Frame<_, _>(rowIndex, colIndex, FrameUtils.vectorBuilder.Create [||])
@@ -62,7 +62,7 @@ type Frame =
 
   // TODO: Add the above to F# API
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
-  static member FromColumns(cols:seq<KeyValuePair<_, _>>) = 
+  static member FromColumns<'RowKey,'ColKey, 'V when 'RowKey: equality and 'ColKey: equality>(cols:seq<KeyValuePair<'ColKey, Series<'RowKey, 'V>>>) = 
     let colKeys = cols |> Seq.map (fun kvp -> kvp.Key)
     let colSeries = cols |> Seq.map (fun kvp -> kvp.Value)
     FrameUtils.fromColumns(Series(colKeys, colSeries))
@@ -214,5 +214,3 @@ type FrameExtensions =
   static member Transpose(frame:Frame<'TRowKey, 'TColumnKey>) = 
     frame.Columns |> Frame.ofRows
 
-type KeyValuePair =
-  static member Create<'K, 'V>(key:'K, value:'V) = KeyValuePair(key, value)
