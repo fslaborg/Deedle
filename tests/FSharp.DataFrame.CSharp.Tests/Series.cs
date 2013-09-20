@@ -16,7 +16,7 @@ namespace FSharp.DataFrame.CSharp.Tests
 		{
 			var nums =
 				(from n in Enumerable.Range(0, 10)
-				 select KeyValuePair.Create(n, (char)('a' + n))).ToSeries();
+				 select KeyValue.Create(n, (char)('a' + n))).ToSeries();
 
 			var actual = 
 				nums.Aggregate(Aggregation.WindowSize<int>(5, Boundary.Skip), 
@@ -40,7 +40,7 @@ namespace FSharp.DataFrame.CSharp.Tests
 		{
 			var nums =
 				(from n in Enumerable.Range(0, 10)
-				 select KeyValuePair.Create(n, (char)('a' + n))).ToSeries();
+				 select KeyValue.Create(n, (char)('a' + n))).ToSeries();
 
 			var actual =
 				nums.Aggregate(Aggregation.ChunkSize<int>(5, Boundary.Skip),
