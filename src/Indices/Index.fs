@@ -37,13 +37,16 @@ type Aggregation<'K> =
   /// Aggregate data into floating windows of a specified size 
   /// and the provided handling of boundary elements.
   | WindowSize of int * Boundary
+
   /// Aggregate data into non-overlapping chunks of a specified size 
   /// and the provided handling of boundary elements.
   | ChunkSize of int * Boundary
+
   /// Aggregate data into floating windows where each window ends as soon
   /// as the specified function returns `false` when called with the 
   /// first key and the current key as arguments.
   | WindowWhile of ('K -> 'K -> bool)
+
   /// Aggregate data into non-overlapping chunks where each chunk ends as soon
   /// as the specified function returns `false` when called with the 
   /// first key and the current key as arguments.
@@ -137,6 +140,8 @@ type IIndex<'K when 'K : equality> =
   /// same kind as the current index (e.g. a lazy index returns a lazy index builder)
   abstract Builder : IIndexBuilder
 
+// and IndexVectorPair<'K> = IIndex<'K> * IIndex<'K> * VectorConstruction * VectorConstruction
+// and SeriesSkeleton (or something) = IIndex<'K> * VectorConstruction
 
 /// A builder represents various ways of constructing index, either from keys or from
 /// other indices. The operations that build a new index from an existing index also 

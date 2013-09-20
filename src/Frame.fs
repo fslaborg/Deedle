@@ -11,13 +11,6 @@ open FSharp.DataFrame.Indices
 open FSharp.DataFrame.Vectors
 
 open System.Runtime.InteropServices
-
-type JoinKind = 
-  | Outer = 0
-  | Inner = 1
-  | Left = 2
-  | Right = 3
-
 open VectorHelpers
 
 /// A frame contains one Index, with multiple Vecs

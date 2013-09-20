@@ -12,6 +12,37 @@ open System
 open FSharp.DataFrame
 open FSharp.Charting
 
+(**
+Joining series
+--------------
+*)
+
+// sortBy : seq<'T> -> orderdSeq<'T>
+// thenBy : orderdSeq<'T> -> orderdSeq<'T>
+
+
+(*
+
+query { for n in [ 1 .. 10 ] do
+        let m = n + 1 
+        sortBy n
+        thenBy m
+        select (string n) into g
+        take 10
+        where (n > 4)
+        select n }
+
+frame { for r in frame do
+        withIndex (r.GetAs<string>("Name"))
+        shift 1
+        window 5 into win 
+        ... } 
+*)
+
+let sa = Series.ofObservations [ 1 => "a"; 2 => "b" ]
+let sb = Series.ofObservations [ 3 => "c"; 2 => "b" ]
+
+sa.Join(sb, Some JoinKind.Inner, Lookup.Exact)
 
 (**
 Fancy windowing & chunking

@@ -6,10 +6,13 @@ open System.Collections.Generic
 open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Indices
 open FSharp.DataFrame.Vectors
+open FSharp.DataFrame.VectorHelpers
 
-type ValueMissingException(column) =
-  inherit System.Exception(sprintf "The value for index '%s' is empty." column)
-  member x.Column = column
+type JoinKind = 
+  | Outer = 0
+  | Inner = 1
+  | Left = 2
+  | Right = 3
 
 type UnionBehavior =
   | PreferLeft = 0
@@ -168,7 +171,7 @@ and Series<'K, 'V when 'K : equality>
 
   member x.GetObservation(key, lookup) =
     let res = x.TryGetObservation(key, lookup) 
-    if not res.HasValue then raise (ValueMissingException(key.ToString()))
+    if not res.HasValue then raise (KeyNotFoundException(key.ToString()))
     else res.Value
 
   member x.TryGet(key, lookup) =
@@ -195,6 +198,47 @@ and Series<'K, 'V when 'K : equality>
 
   member x.KeyRange = index.KeyRange
 
+ // TODO: Avoid duplicating code here and in Frame.Join
+
+  member series.Join<'V2>(otherSeries:Series<'K, 'V2>, kind, lookup) =
+    let restrictToThisIndex (restriction:IIndex<_>) (sourceIndex:IIndex<_>) vector = 
+      if restriction.Ordered then
+        let min, max = index.KeyRange
+        sourceIndex.Builder.GetRange(sourceIndex, Some(min, BoundaryBehavior.Inclusive), Some(max, BoundaryBehavior.Inclusive), vector)
+      else sourceIndex, vector
+
+    // Union row indices and get transformations to apply to left/right vectors
+    let newIndex, thisRowCmd, otherRowCmd = 
+      match kind with 
+      | Some JoinKind.Inner ->
+          indexBuilder.Intersect(index, otherSeries.Index, Vectors.Return 0, Vectors.Return 1)
+      | Some JoinKind.Left ->
+          let otherRowIndex, vector = restrictToThisIndex index otherSeries.Index (Vectors.Return 1)
+          let otherRowCmd = indexBuilder.Reindex(otherRowIndex, index, lookup, vector)
+          index, Vectors.Return 0, otherRowCmd
+      | Some JoinKind.Right ->
+          let thisRowIndex, vector = restrictToThisIndex otherSeries.Index index (Vectors.Return 0)
+          let thisRowCmd = indexBuilder.Reindex(thisRowIndex, otherSeries.Index, lookup, vector)
+          otherSeries.Index, thisRowCmd, Vectors.Return 1
+      | Some JoinKind.Outer | None | Some _ ->
+          indexBuilder.Union(index, otherSeries.Index, Vectors.Return 0, Vectors.Return 1)
+
+    // ....
+    let combine =
+      VectorValueTransform.Create<Choice<'V, 'V2, 'V * 'V2>>(fun left right ->
+        match left, right with 
+        | OptionalValue.Present(Choice1Of3 l), OptionalValue.Present(Choice2Of3 r) -> 
+            OptionalValue(Choice3Of3(l, r))
+        | _ -> failwith "Series.Join: Unexpected vector structure")
+
+    let inputThis : IVector<Choice<'V, 'V2, 'V * 'V2>> = vector.Select Choice1Of3 
+    let inputThat : IVector<Choice<'V, 'V2, 'V * 'V2>> = otherSeries.Vector.Select Choice2Of3
+
+    let combinedCmd = Vectors.Combine(thisRowCmd, otherRowCmd, combine)
+    let newVector = vectorBuilder.Build(combinedCmd, [| inputThis; inputThat |])
+    let newVector = newVector.Select(function (Choice3Of3 tup) -> tup | _ -> failwith "Series.Join: Unexpected vector structure")
+    Series(newIndex, newVector, vectorBuilder, indexBuilder)
+
   member series.Union(another:Series<'K, 'V>) = 
     series.Union(another, UnionBehavior.PreferLeft)
   
@@ -218,8 +262,7 @@ and Series<'K, 'V when 'K : equality>
           let opt = vector.GetValue(addr)
           let included = 
             // If a required value is missing, then skip over this
-            try opt.HasValue && f.Invoke (KeyValuePair(key, opt.Value)) 
-            with :? ValueMissingException -> false
+            opt.HasValue && f.Invoke (KeyValuePair(key, opt.Value)) 
           if included then yield key, opt  |]
       |> Array.unzip
     Series<_, _>
@@ -241,8 +284,7 @@ and Series<'K, 'V when 'K : equality>
       [| for key, addr in index.Mappings -> 
            vector.GetValue(addr) |> OptionalValue.bind (fun v -> 
              // If a required value is missing, then skip over this
-             try OptionalValue(f.Invoke(KeyValuePair(key, v)))
-             with :? ValueMissingException -> OptionalValue.Missing ) |]
+             OptionalValue(f.Invoke(KeyValuePair(key, v))) ) |]
     Series<'K, 'R>(index, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder )
 
   member x.SelectKeys<'R when 'R : equality>(f:System.Func<KeyValuePair<'K, OptionalValue<'V>>, 'R>) = 
