@@ -16,4 +16,6 @@ docs
 tools/FAKE
 *.vsp
 TestResults.xml
+TestResult.xml
+*.VisualState.xml
 .backup/

@@ -70,7 +70,9 @@ type IVector<'T> =
   abstract SelectMissing : (OptionalValue<'T> -> OptionalValue<'TNew>) -> IVector<'TNew>
 
 
-/// Module with extensions for generic vector type
+/// Module with extensions for generic vector type. Given `vec` of type `IVector<T>`, 
+/// the extension property `vec.DataSequence` returns all data of the vector converted
+/// to the "least common denominator" data structure - `IEnumerable<T>`.
 [<AutoOpen>]
 module VectorExtensions = 
   type IVector<'TValue> with

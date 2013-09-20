@@ -8,6 +8,9 @@ open FSharp.DataFrame.Vectors.ArrayVector
 // F# frienly operations for creating vectors
 // ------------------------------------------------------------------------------------------------
 
+/// Defines non-generic `Vector` type that provides functions for building vectors
+/// (hard-bound to `ArrayVectorBuilder` type). In F#, the module is automatically opened
+/// using `AutoOpen`. The methods are not designed for the use from C#.
 [<AutoOpen>]
 module FSharpVectorExtensions =
   open System

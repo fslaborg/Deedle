@@ -14,6 +14,10 @@ open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Vectors
 open FSharp.DataFrame.Addressing
 
+// --------------------------------------------------------------------------------------
+// Various
+// --------------------------------------------------------------------------------------
+
 /// Pretty printer for vectors. This uses the 'Data' property
 let prettyPrintVector (vector:IVector<'T>) = 
   let printSequence kind (input:seq<string>) = 
@@ -40,6 +44,11 @@ let delegatedVector (vector:IVector<'TValue> ref) =
       member x.SuppressPrinting = vector.Value.SuppressPrinting
       member x.ElementType = vector.Value.ElementType
       member x.GetObject(i) = vector.Value.GetObject(i) }
+
+
+// --------------------------------------------------------------------------------------
+// Generic operations 
+// --------------------------------------------------------------------------------------
 
 /// Represents a generic function `\forall.'T.('T -> 'R)`. The function can be 
 /// generically invoked on an argument of type `obj` using `createValueDispatcher`
@@ -200,4 +209,3 @@ let fillNA (def:obj) : IVector -> IVector =
           | OptionalValue.Missing -> OptionalValue(unbox def)
           | OptionalValue.Present v -> OptionalValue(v)) :> IVector }
   |> createVectorDispatcher
-  

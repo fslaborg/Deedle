@@ -49,7 +49,7 @@ module internal Reflection =
       [| for convFunc in convertors ->
           convFunc.DynamicInvoke( [| box data |] ) :?> IVector |]
       |> vectorBuilder.Create
-    Frame<int, string>(Index.Create [0 .. (Seq.length data) - 1], colIndex, frameData)
+    Frame<int, string>(Index.ofKeys [0 .. (Seq.length data) - 1], colIndex, frameData)
 
 // ------------------------------------------------------------------------------------------------
 //
@@ -70,14 +70,14 @@ module internal FrameUtils =
   let createColumn<'TColumnKey, 'TRowKey when 'TColumnKey : equality and 'TRowKey : equality>
       (column:'TColumnKey, series:ISeries<'TRowKey>) = 
     let data = Vector.ofValues [| series.Vector |]
-    Frame(series.Index, Index.Create [column], data)
+    Frame(series.Index, Index.ofKeys [column], data)
 
   /// Create data frame containing a single row
   let createRow(row:'TRowKey, series:Series<'TColumnKey, 'TValue>) = 
     let data = series.Vector.SelectMissing(fun v -> 
       let res = Vectors.ArrayVector.ArrayVectorBuilder.Instance.CreateMissing [| v |] 
       OptionalValue(res :> IVector))
-    Frame(Index.Create [row], series.Index, data)
+    Frame(Index.ofKeys [row], series.Index, data)
 
 
   /// Create data frame from a series of rows
@@ -128,7 +128,7 @@ module internal FrameUtils =
   let fromColumns<'TRowKey, 'TColumnKey, 'TSeries when 'TSeries :> ISeries<'TRowKey> 
         and 'TRowKey : equality and 'TColumnKey : equality>
       (nested:Series<'TColumnKey, 'TSeries>) =
-    let initial = Frame(Index.Create [], Index.CreateUnsorted [], Vector.ofValues [| |])
+    let initial = Frame(Index.ofKeys [], Index.ofUnorderedKeys [], Vector.ofValues [| |])
     (initial, Series.observations nested) ||> Seq.fold (fun df (name, series) -> 
       df.Join(createColumn(name, series), JoinKind.Outer))
 
@@ -170,12 +170,12 @@ module internal FrameUtils =
 
     // Load the data and convert the values to the appropriate type
     let data = Csv.CsvFile.Load(file, ?separators=separators).Cache()
-    let columnIndex = Index.Create data.Headers.Value
+    let columnIndex = Index.ofKeys data.Headers.Value
     let columns = 
       [| for name, prop in Seq.zip data.Headers.Value inferedProperties  ->
             [| for row in data.Data -> row.GetColumn(name) |]
             |> createVector prop.RuntimeType |]
-    let rowIndex = Index.Create [ 0 .. (Seq.length data.Data) - 1 ]
+    let rowIndex = Index.ofKeys [ 0 .. (Seq.length data.Data) - 1 ]
     Frame(rowIndex, columnIndex, Vector.ofValues columns)
 
 // ------------------------------------------------------------------------------------------------
@@ -191,7 +191,7 @@ type internal FrameOperations =
       { new SeriesOperations with
           member x.OuterJoin<'TIndex2, 'TValue2 when 'TIndex2 : equality>
               (series1:Series<'TIndex2, 'TValue2>, series2:Series<'TIndex2, 'TValue2>) = 
-            let frame1 = Frame(series1.Index, Index.Create [0], Vector.ofValues [| series1.Vector :> IVector |])
-            let frame2 = Frame(series2.Index, Index.Create [1], Vector.ofValues [| series2.Vector :> IVector |])
+            let frame1 = Frame(series1.Index, Index.ofKeys [0], Vector.ofValues [| series1.Vector :> IVector |])
+            let frame2 = Frame(series2.Index, Index.ofKeys [1], Vector.ofValues [| series2.Vector :> IVector |])
             let joined = frame1.Join(frame2)
             joined.Rows.Select(fun row -> row.Value :> Series<_, _>) }

@@ -401,7 +401,7 @@ and Series<'K, 'V when 'K : equality>
   new(keys:seq<_>, values:seq<_>) = 
     let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
     let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
-    Series( Index.Create keys, vectorBuilder.Create (Array.ofSeq values),
+    Series( Index.ofKeys keys, vectorBuilder.Create (Array.ofSeq values),
             vectorBuilder, indexBuilder )
 
 // ------------------------------------------------------------------------------------------------

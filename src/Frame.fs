@@ -228,7 +228,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     frame.AddSeries(column, series)
 
   member frame.AddSeries(column:'TColumnKey, series:Series<_, _>) = 
-    let other = Frame(series.Index, Index.CreateUnsorted [column], Vector.ofValues [series.Vector :> IVector ])
+    let other = Frame(series.Index, Index.ofUnorderedKeys [column], Vector.ofValues [series.Vector :> IVector ])
     let joined = frame.Join(other, JoinKind.Left)
     columnIndex <- joined.ColumnIndex
     data <- joined.Data
@@ -306,9 +306,9 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   // ----------------------------------------------------------------------------------------------
 
   new(names:seq<'TColumnKey>, columns:seq<ISeries<'TRowKey>>) =
-    let df = Frame(Index.Create [], Index.Create [], Vector.ofValues [])
+    let df = Frame(Index.ofKeys [], Index.ofKeys [], Vector.ofValues [])
     let df = (df, Seq.zip names columns) ||> Seq.fold (fun df (colKey, colData) ->
-      let other = Frame(colData.Index, Index.CreateUnsorted [colKey], Vector.ofValues [colData.Vector])
+      let other = Frame(colData.Index, Index.ofUnorderedKeys [colKey], Vector.ofValues [colData.Vector])
       df.Join(other, JoinKind.Outer) )
     Frame(df.RowIndex, df.ColumnIndex, df.Data)
 

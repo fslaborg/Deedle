@@ -13,9 +13,9 @@ open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Indices
 
 
-/// An index that maps 'K to offsets Address. The keys cannot be duplicated.
-/// If a comparer is provided, then the index preserves the ordering of elements
-/// (and it assumes that 'keys' are already sorted).
+/// An index that maps keys `K` to offsets `Address`. The keys cannot be duplicated.
+/// The construction checks if the keys are ordered (using the provided or the default
+/// comparer for `K`) and disallows certain operations on unordered indices.
 type LinearIndex<'K when 'K : equality> 
     internal (keys:seq<'K>, builder, ?ordered, ?comparer) =
 
@@ -24,7 +24,7 @@ type LinearIndex<'K when 'K : equality>
   let ordered = match ordered with Some ord -> ord | _ -> Seq.isSorted keys comparer
 
   // These are used for NearestSmaller/NearestGreater lookup and 
-  // might not work for big data sets
+  // might not work for big data sets...
   let keysArray = lazy Array.ofSeq keys
   let keysArrayRev = lazy (Array.ofSeq keys |> Array.rev)
 
@@ -36,19 +36,22 @@ type LinearIndex<'K when 'K : equality>
        | true, list -> invalidArg "keys" "Duplicate keys are not allowed in the index."
        | _ -> lookup.[k] <- v  
 
+  // Implement structural equality check against another index
   override index.Equals(another) = 
     match another with
     | null -> false
     | :? IIndex<'K> as another -> Seq.structuralEquals mappings another.Mappings
     | _ -> false
 
+  // Implement structural hashing against another index
   override index.GetHashCode() =
     mappings |> Seq.structuralHash
 
-  // Expose some internals for interface implementations...
   interface IIndex<'K> with
     member x.Keys = keys
     member x.Builder = builder
+
+    // Returns the range of keys - makes sense only for ordered index
     member x.KeyRange = 
       if not ordered then invalidOp "KeyRange is not supported for unordered index."
       Seq.head keys, Seq.head keysArrayRev.Value
@@ -127,6 +130,8 @@ type LinearIndex<'K when 'K : equality>
 // intersection, appending and reindexing)
 // --------------------------------------------------------------------------------------
 
+/// Index builder object that is associated with `LinearIndex<K>` type. The builder
+/// provides operations for manipulating linear indices (and the associated vectors).
 type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
   /// Given the result of 'Seq.alignWithOrdering', create a new index
@@ -152,20 +157,25 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
   static member Instance = indexBuilder :> IIndexBuilder
 
   interface IIndexBuilder with
+    /// Create an index from the specified data
     member builder.Create<'K when 'K : equality>(keys, ordered) = 
       upcast LinearIndex<'K>(keys, builder, ?ordered=ordered)
 
+    /// Aggregate ordered index
     member builder.Aggregate<'K, 'R, 'TNewKey when 'K : equality and 'TNewKey : equality>
         (index:IIndex<'K>, aggregation, vector, valueSel:_ * _ * _ -> OptionalValue<'R>, keySel:_ * _ * _ -> 'TNewKey) =
+      if not index.Ordered then 
+        invalidOp "Floating window aggregation or chunking is not supported on un-ordered indices."
       let builder = (builder :> IIndexBuilder)
       let ranges =
-        if not index.Ordered then invalidOp "Floating window aggregation or chunking is not supported on un-ordered indices."
+        // Get windows based on the key sequence
         let windows = 
           match aggregation with
           | WindowWhile cond -> Seq.windowedWhile cond index.Keys |> Seq.map (fun vs -> DataSegment(Complete, vs))
           | ChunkWhile cond -> Seq.chunkedWhile cond index.Keys |> Seq.map (fun vs -> DataSegment(Complete, vs))
           | WindowSize(size, bounds) -> Seq.windowedWithBounds size bounds index.Keys 
           | ChunkSize(size, bounds) -> Seq.chunkedWithBounds size bounds index.Keys
+        // For each window, get a VectorConstruction that represents it
         windows |> Seq.map (fun win -> 
           let index, cmd = 
             builder.GetRange
@@ -173,16 +183,19 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
                 Some(win.Data.[win.Data.Length - 1], BoundaryBehavior.Inclusive), vector)
           win.Kind, index, cmd )
 
-      let ranges = ranges |> Array.ofSeq          
-      let keys = ranges |> Seq.map keySel
+      /// Build a new index & vector by applying key/value selectors
+      let keys = ranges |> Array.ofSeq |> Seq.map keySel
       let newIndex = builder.Create(keys, None)
       let vect = ranges |> Seq.map valueSel |> Array.ofSeq |> vectorBuilder.CreateMissing
       newIndex, vect
 
+
+    /// Group an (un)ordered index
     member builder.GroupBy<'K, 'TNewKey, 'R when 'K : equality and 'TNewKey : equality>
         (index:IIndex<'K>, keySel:'K -> 'TNewKey, vector, valueSel:_ * _ * _ -> OptionalValue<'R>) =
       let builder = (builder :> IIndexBuilder)
       let ranges =
+        // Build a sequence of indices & vector constructions representing the groups
         let windows = index.Keys |> Seq.groupBy keySel
         windows |> Seq.map (fun (key, win) ->
           let relocations = 
@@ -191,12 +204,14 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           let newIndex = builder.Create(win, None)
           key, newIndex, Vectors.Relocate(vector, Address.rangeOf(win), relocations))
 
-      let ranges = ranges |> Array.ofSeq          
-      let keys = ranges |> Seq.map (fun (k, idx, vec) -> k)
+      /// Build a new index & vector by applying value selector
+      let keys = ranges |> Array.ofSeq |> Seq.map (fun (k, idx, vec) -> k)
       let newIndex = builder.Create(keys, None)
       let vect = ranges |> Seq.map valueSel |> Array.ofSeq |> vectorBuilder.CreateMissing
       newIndex, vect
 
+
+    /// Order index and build vector transformation 
     member builder.OrderIndex(index, vector) =
       let keys = Array.ofSeq index.Keys
       Array.sortInPlaceWith (fun a b -> index.Comparer.Compare(a, b)) keys
@@ -208,6 +223,9 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
                 snd newAddress.Value, oldAddress }
       newIndex, Vectors.Relocate(vector, newIndex.Range, relocations)
 
+
+    /// Union the index with another. For sorted indices, this needs to align the keys;
+    /// for unordered, it appends new ones to the end.
     member builder.Union<'K when 'K : equality >
         (index1:IIndex<'K>, index2, vector1, vector2) = 
       let joined =
@@ -217,6 +235,8 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq 
       returnUsingAlignedSequence joined vector1 vector2
         
+    /// Append is similar to union, but it also combines the vectors using the specified
+    /// vector transformation.
     member builder.Append<'K when 'K : equality >
         (index1:IIndex<'K>, index2, vector1, vector2, transform) = 
       let joined = 
@@ -227,8 +247,8 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       let newIndex, vec1Cmd, vec2Cmd = returnUsingAlignedSequence joined vector1 vector2
       newIndex, Vectors.Combine(vec1Cmd, vec2Cmd, transform)
 
-    /// Intersect the index with another. For sorted indices, this is the same as
-    /// UnionWith, but we filter & only return keys present in both sequences.
+    /// Intersect the index with another. This is the same as
+    /// Union, but we filter & only return keys present in both sequences.
     member builder.Intersect<'K when 'K : equality >
         (index1:IIndex<'K>, index2, vector1, vector2) = 
       let joined = 
@@ -239,6 +259,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       let joined = joined |> Seq.filter (function _, Some _, Some _ -> true | _ -> false)
       returnUsingAlignedSequence joined vector1 vector2
 
+    /// Build a new index by getting a key for each old key using the specified function
     member builder.WithIndex<'K, 'TNewKey when 'K : equality  and 'TNewKey : equality>
         (index1:IIndex<'K>, f:Address -> OptionalValue<'TNewKey>, vector) =
       let newKeys =
@@ -251,6 +272,8 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       let relocations = Seq.zip (Address.generateRange(newRange)) (Seq.map snd newKeys)
       upcast newIndex, Vectors.Relocate(vector, newRange, relocations)
 
+
+    /// Reorder elements in the index to match with another index ordering
     member builder.Reindex(index1, index2, semantics, vector) = 
       let relocations = seq {  
         for key, newAddress in index2.Mappings do
@@ -259,6 +282,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
             yield newAddress, oldAddress.Value |> snd }
       Vectors.Relocate(vector, index2.Range, relocations)
 
+    /// Drop the specified item from the index
     member builder.DropItem<'K when 'K : equality >
         (index:IIndex<'K>, key, vector) = 
       match index.Lookup(key, Lookup.Exact, fun _ -> true) with
@@ -297,7 +321,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       upcast LinearIndex<_>(newKeys, builder, index.Ordered), newVector
 
 // --------------------------------------------------------------------------------------
-// ??
+// Functions for creatin linear indices
 // --------------------------------------------------------------------------------------
 
 namespace FSharp.DataFrame 
@@ -306,8 +330,35 @@ open System.Collections.Generic
 open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Indices.Linear
 
-type Index = 
+/// Defines non-generic `Index` type that provides functions for building indices
+/// (hard-bound to `LinearIndexBuilder` type). In F#, the module is automatically opened
+/// using `AutoOpen`. The methods are not designed for the use from C#.
+[<AutoOpen>]
+module FSharpIndexExtensions =
+  open System
+
+  /// Type that provides a simple access to creating indices represented
+  /// using the built-in `LinearVector` type.
+  type Index = 
+    /// Create an index from a sequence of keys and check if they are sorted or not
+    static member ofKeys<'T when 'T : equality>(keys:seq<'T>) =
+      LinearIndexBuilder.Instance.Create<'T>(keys, None)
+
+    /// Create an index from a sequence of keys and assume they are not sorted
+    /// (the resulting index is also not sorted).
+    static member ofUnorderedKeys<'T when 'T : equality>(keys:seq<'T>) = 
+      LinearIndexBuilder.Instance.Create<'T>(keys, Some false)        
+
+
+/// Type that provides access to creating indices (represented as `LinearIndex` values)
+type Index =
+  /// Create an index from a sequence of keys and check if they are sorted or not
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member Create<'T when 'T : equality>(keys:seq<'T>) =
     LinearIndexBuilder.Instance.Create<'T>(keys, None)
-  static member CreateUnsorted<'T when 'T : equality>(keys:seq<'T>) = 
+
+  /// Create an index from a sequence of keys and assume they are not sorted
+  /// (the resulting index is also not sorted).
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member CreateUnordered<'T when 'T : equality>(keys:seq<'T>) = 
     LinearIndexBuilder.Instance.Create<'T>(keys, Some false)        

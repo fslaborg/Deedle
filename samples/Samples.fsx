@@ -160,7 +160,7 @@ let c2 = Frame.CreateRow(2, joined.Rows.["b"])
 c1.Append(c2)
 
 // Appending things to an empty frame
-//let initial = Frame(Index.Create [], Index.Create [], Vector.Create [| |])
+//let initial = Frame(Index.ofKeys [], Index.ofKeys [], Vector.Create [| |])
 //initial.Append(a1)
 
 joined 

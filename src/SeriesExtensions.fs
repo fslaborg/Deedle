@@ -42,28 +42,37 @@ type Series with
 
   static member internal Create(data:seq<'V>) =
     let lookup = data |> Seq.mapi (fun i _ -> i)
-    Series<int, 'V>(Index.Create(lookup), Vector.ofValues(data), Series.vectorBuilder, Series.indexBuilder)
+    Series<int, 'V>(Index.ofKeys(lookup), Vector.ofValues(data), Series.vectorBuilder, Series.indexBuilder)
   static member internal Create(index:seq<'K>, data:seq<'V>) =
-    Series<'K, 'V>(Index.Create(index), Vector.ofValues(data), Series.vectorBuilder, Series.indexBuilder)
+    Series<'K, 'V>(Index.ofKeys(index), Vector.ofValues(data), Series.vectorBuilder, Series.indexBuilder)
   static member internal Create(index:IIndex<'K>, data:IVector<'V>) = 
     Series<'K, 'V>(index, data, Series.vectorBuilder, Series.indexBuilder)
   static member internal CreateUntyped(index:IIndex<'K>, data:IVector<obj>) = 
     ObjectSeries<'K>(index, data, Series.vectorBuilder, Series.indexBuilder)
 
-type SeriesBuilder<'K when 'K : equality>() = 
+type SeriesBuilder<'K, 'V when 'K : equality>() = 
   let mutable keys = []
   let mutable values = []
 
-  member x.Add<'V>(key:'K, value) =
+  member x.Add(key:'K, value:'V) =
     keys <- key::keys
-    values <- (box value)::values
+    values <- value::values
   
   member x.Series =
-    Series.CreateUntyped(Index.Create (List.rev keys), Vector.ofValues(List.rev values))
+    Series.Create(Index.ofKeys (List.rev keys), Vector.ofValues(List.rev values))
 
-  static member (?<-) (builder:SeriesBuilder<string>, name:string, value) =
+  static member (?<-) (builder:SeriesBuilder<string, 'V>, name:string, value:'V) =
     builder.Add(name, value)
   
+  interface System.Collections.IEnumerable with
+    member x.GetEnumerator() = (x :> seq<_>).GetEnumerator() :> Collections.IEnumerator
+  interface seq<KeyValuePair<'K, 'V>> with
+    member x.GetEnumerator() = 
+      (Seq.zip keys values |> Seq.map (fun (k, v) -> KeyValuePair(k, v))).GetEnumerator()
+
+type SeriesBuilder<'K when 'K : equality>() =
+  inherit SeriesBuilder<'K, obj>()
+
 [<Extension>]
 type SeriesExtensions =
   [<Extension>]

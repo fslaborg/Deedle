@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{B0584275-6E9D-4DB8-A35D-4F37B623F97E}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>FSharp.DataFrame.CSharp.Tests</RootNamespace>
     <AssemblyName>FSharp.DataFrame.CSharp.Tests</AssemblyName>
