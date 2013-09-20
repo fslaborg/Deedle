@@ -193,6 +193,8 @@ and Series<'K, 'V when 'K : equality>
   // Operations
   // ----------------------------------------------------------------------------------------------
 
+  member x.KeyRange = index.KeyRange
+
   member series.Union(another:Series<'K, 'V>) = 
     series.Union(another, UnionBehavior.PreferLeft)
   

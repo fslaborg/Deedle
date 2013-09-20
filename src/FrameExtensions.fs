@@ -210,3 +210,7 @@ type FrameExtensions =
   [<Extension>]
   static member Transpose(frame:Frame<'TRowKey, 'TColumnKey>) = 
     frame.Columns |> Frame.ofRows
+
+
+type KeyValuePair =
+  static member Create<'K, 'V>(key:'K, value:'V) = KeyValuePair(key, value)

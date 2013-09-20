@@ -222,6 +222,11 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     let row = frame.Rows.Get(row, lookup)
     Series.Create(columnIndex, changeType row.Vector)
 
+  member frame.AddSeries(column:'TColumnKey, series:seq<_>) = 
+    if (Seq.length frame.RowIndex.Keys) <> (Seq.length series) then invalidArg "series" "Must have the right length"
+    let series = Series(frame.RowIndex, Vector.ofValues series, vectorBuilder, indexBuilder)
+    frame.AddSeries(column, series)
+
   member frame.AddSeries(column:'TColumnKey, series:Series<_, _>) = 
     let other = Frame(series.Index, Index.CreateUnsorted [column], Vector.ofValues [series.Vector :> IVector ])
     let joined = frame.Join(other, JoinKind.Left)
