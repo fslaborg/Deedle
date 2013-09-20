@@ -43,7 +43,7 @@ type Frame =
   /// The column indices of individual rows are unioned, so if a row has fewer
   /// columns, it will be successfully added, but there will be missing values.
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
-  static member FromRows<'K,'V,'S when 'S :> Series<'K, 'V>>(rows:seq<'S>) = 
+  static member FromRows(rows:seq<Series<'ColKey,'V>>) = 
     FrameUtils.fromRows(Series(rows |> Seq.mapi (fun i _ -> i), rows))
 
 //  static member FromColumns(cols) = 
