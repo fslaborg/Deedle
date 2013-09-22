@@ -32,12 +32,14 @@ let hfq2 = Series.ofObservations (randomPrice 0.05 0.2 20.0 (24*60*60) (TimeSpan
 
 // Chart them using F# Chart to see what they look like
 Chart.Combine(
-  [ Chart.FastLine(Series.observations hfq1)
-    Chart.FastLine(Series.observations hfq2) ]).WithYAxis(Min=17.0, Max=22.0)
+  [ Chart.FastLine(hfq1 |> Series.observations)
+    Chart.FastLine(hfq2 |> Series.observations) ]).WithYAxis(Min=17.0, Max=22.0)
   
 // Calculate the means of the two series (and see that they are the same)
 hfq1 |> Series.mean
 hfq1 |> Series.mean
+
+// hfq1 + hfq2 
 
 // Get all day data in 1 minute intervals
 let intervals = [ for i in 0.0 .. 24.0*60.0 - 1.0 -> DateTimeOffset(DateTime(2013, 1, 1)).AddMinutes(i + 0.001) ]
@@ -48,8 +50,8 @@ let logs1 = hfq1 |> Series.lookupAll intervals Lookup.NearestGreater |> log
 let diffs = logs1 |> Series.pairwiseWith (fun _ (v1, v2) -> v2 - v1)
 
 Chart.Rows 
-  [ Chart.Line(logs1.Observations);
-    Chart.Line(diffs.Observations) ]
+  [ Chart.Line(logs1 |> Series.observations);
+    Chart.Line(diffs |> Series.observations) ]
 
 // Get 1 hour chunks and build a data frame with one column
 // for each hour (containing 60 rows for 60 minutes in the hour)

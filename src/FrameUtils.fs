@@ -177,21 +177,3 @@ module internal FrameUtils =
             |> createVector prop.RuntimeType |]
     let rowIndex = Index.ofKeys [ 0 .. (Seq.length data.Data) - 1 ]
     Frame(rowIndex, columnIndex, Vector.ofValues columns)
-
-// ------------------------------------------------------------------------------------------------
-//
-// ------------------------------------------------------------------------------------------------
-
-/// A type that enables recursive reference between series and frame
-/// (series needs frame's outer join when applying binary operations)
-type internal FrameOperations =
-  /// Called by the static constructor of a Series - do not rename or move
-  static member internal Register() = 
-    Series.SeriesOperations <-
-      { new SeriesOperations with
-          member x.OuterJoin<'TIndex2, 'TValue2 when 'TIndex2 : equality>
-              (series1:Series<'TIndex2, 'TValue2>, series2:Series<'TIndex2, 'TValue2>) = 
-            let frame1 = Frame(series1.Index, Index.ofKeys [0], Vector.ofValues [| series1.Vector :> IVector |])
-            let frame2 = Frame(series2.Index, Index.ofKeys [1], Vector.ofValues [| series2.Vector :> IVector |])
-            let joined = frame1.Join(frame2)
-            joined.Rows.Select(fun row -> row.Value :> Series<_, _>) }

@@ -19,3 +19,4 @@ TestResults.xml
 TestResult.xml
 *.VisualState.xml
 .backup/
+*.bak
