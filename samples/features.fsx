@@ -42,7 +42,9 @@ frame { for r in frame do
 let sa = Series.ofObservations [ 1 => "a"; 2 => "b" ]
 let sb = Series.ofObservations [ 3 => "c"; 2 => "b" ]
 
-sa.Join(sb, Some JoinKind.Inner, Lookup.Exact)
+sa.Join(sb, JoinKind.Inner, Lookup.Exact)
+sa.Join(sb, JoinKind.Left, Lookup.Exact)
+sa.Join(sb, JoinKind.Outer, Lookup.Exact)
 
 (**
 Fancy windowing & chunking

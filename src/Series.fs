@@ -28,23 +28,11 @@ type ISeries<'K when 'K : equality> =
   abstract Index : IIndex<'K>
   abstract TryGetObject : 'K -> option<obj>
 
-// :-(
-type internal SeriesOperations = 
-  abstract OuterJoin<'K, 'V when 'K : equality> : 
-    Series<'K, 'V> * Series<'K, 'V> -> 
-    Series<'K, Series<int, obj>>
-
 /// A series contains one Index and one Vec
 and Series<'K, 'V when 'K : equality>
     ( index:IIndex<'K>, vector:IVector<'V>,
       vectorBuilder : IVectorBuilder, indexBuilder : IIndexBuilder ) as this =
   
-  // :-(((((
-  static let ensureInit = Lazy.Create(fun _ ->
-    let ty = System.Reflection.Assembly.GetExecutingAssembly().GetType("FSharp.DataFrame.FrameOperations")
-    let mi = ty.GetMethod("Register", System.Reflection.BindingFlags.Static ||| System.Reflection.BindingFlags.NonPublic)
-    mi.Invoke(null, [||]) |> ignore )
-
   /// Returns the index associated with this series. This member should not generally
   /// be accessed directly, because all functionality is exposed through series operations.
   member x.Index = index
@@ -200,9 +188,15 @@ and Series<'K, 'V when 'K : equality>
 
  // TODO: Avoid duplicating code here and in Frame.Join
 
+  member series.Join<'V2>(otherSeries:Series<'K, 'V2>) =
+    series.Join(otherSeries, JoinKind.Outer, Lookup.Exact)
+
+  member series.Join<'V2>(otherSeries:Series<'K, 'V2>, kind) =
+    series.Join(otherSeries, kind, Lookup.Exact)
+
   member series.Join<'V2>(otherSeries:Series<'K, 'V2>, kind, lookup) =
     let restrictToThisIndex (restriction:IIndex<_>) (sourceIndex:IIndex<_>) vector = 
-      if restriction.Ordered then
+      if restriction.Ordered && sourceIndex.Ordered then
         let min, max = index.KeyRange
         sourceIndex.Builder.GetRange(sourceIndex, Some(min, BoundaryBehavior.Inclusive), Some(max, BoundaryBehavior.Inclusive), vector)
       else sourceIndex, vector
@@ -210,17 +204,17 @@ and Series<'K, 'V when 'K : equality>
     // Union row indices and get transformations to apply to left/right vectors
     let newIndex, thisRowCmd, otherRowCmd = 
       match kind with 
-      | Some JoinKind.Inner ->
+      | JoinKind.Inner ->
           indexBuilder.Intersect(index, otherSeries.Index, Vectors.Return 0, Vectors.Return 1)
-      | Some JoinKind.Left ->
+      | JoinKind.Left ->
           let otherRowIndex, vector = restrictToThisIndex index otherSeries.Index (Vectors.Return 1)
           let otherRowCmd = indexBuilder.Reindex(otherRowIndex, index, lookup, vector)
           index, Vectors.Return 0, otherRowCmd
-      | Some JoinKind.Right ->
+      | JoinKind.Right ->
           let thisRowIndex, vector = restrictToThisIndex otherSeries.Index index (Vectors.Return 0)
           let thisRowCmd = indexBuilder.Reindex(thisRowIndex, otherSeries.Index, lookup, vector)
           otherSeries.Index, thisRowCmd, Vectors.Return 1
-      | Some JoinKind.Outer | None | Some _ ->
+      | JoinKind.Outer | _ ->
           indexBuilder.Union(index, otherSeries.Index, Vectors.Return 0, Vectors.Return 1)
 
     // ....
@@ -229,6 +223,8 @@ and Series<'K, 'V when 'K : equality>
         match left, right with 
         | OptionalValue.Present(Choice1Of3 l), OptionalValue.Present(Choice2Of3 r) -> 
             OptionalValue(Choice3Of3(l, r))
+        | OptionalValue.Present(v), _
+        | _, OptionalValue.Present(v) -> OptionalValue(v)
         | _ -> failwith "Series.Join: Unexpected vector structure")
 
     let inputThis : IVector<Choice<'V, 'V2, 'V * 'V2>> = vector.Select Choice1Of3 
@@ -236,7 +232,10 @@ and Series<'K, 'V when 'K : equality>
 
     let combinedCmd = Vectors.Combine(thisRowCmd, otherRowCmd, combine)
     let newVector = vectorBuilder.Build(combinedCmd, [| inputThis; inputThat |])
-    let newVector = newVector.Select(function (Choice3Of3 tup) -> tup | _ -> failwith "Series.Join: Unexpected vector structure")
+    let newVector = newVector.Select(function 
+      | Choice3Of3(l, r) -> OptionalValue(l), OptionalValue(r)
+      | Choice1Of3(l) -> OptionalValue(l), OptionalValue.Missing
+      | Choice2Of3(r) -> OptionalValue.Missing, OptionalValue(r))
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
   member series.Union(another:Series<'K, 'V>) = 
@@ -362,8 +361,6 @@ and Series<'K, 'V when 'K : equality>
   // Operators
   // ----------------------------------------------------------------------------------------------
 
-  static member val internal SeriesOperations : SeriesOperations = Unchecked.defaultof<_> with get, set
-
   static member inline internal NullaryGenericOperation<'K, 'T1, 'T2>(series:Series<'K, 'T1>, op : 'T1 -> 'T2) = 
     series.Select(fun (KeyValue(k, v)) -> op v)
   static member inline internal NullaryOperation<'T>(series:Series<'K, 'T>, op : 'T -> 'T) = 
@@ -374,11 +371,11 @@ and Series<'K, 'V when 'K : equality>
     series.Select(fun (KeyValue(k, v)) -> op scalar v)
 
   static member inline internal VectorOperation<'T>(series1:Series<'K, 'T>, series2:Series<'K, 'T>, op) : Series<_, 'T> =
-    ensureInit.Value
-    let joined = Series<_, _>.SeriesOperations.OuterJoin(series1, series2)
+    let joined = series1.Join(series2)
     joined.SelectOptional(fun (KeyValue(_, v)) -> 
-      match v.Value.TryGet(0), v.Value.TryGet(1) with
-      | OptionalValue.Present a, OptionalValue.Present b -> OptionalValue(op (a :?> 'T) (b :?> 'T))
+      match v with
+      | OptionalValue.Present(OptionalValue.Present a, OptionalValue.Present b) -> 
+          OptionalValue(op a b)
       | _ -> OptionalValue.Missing )
 
   static member (+) (scalar, series) = Series<'K, _>.ScalarOperationR<int>(scalar, series, (+))
@@ -439,6 +436,14 @@ and Series<'K, 'V when 'K : equality>
   // ----------------------------------------------------------------------------------------------
   // Nicer constructor
   // ----------------------------------------------------------------------------------------------
+
+  member series.JoinInner<'V2>(otherSeries:Series<'K, 'V2>) : Series<'K, 'V * 'V2> =
+    let joined = series.Join(otherSeries, JoinKind.Inner, Lookup.Exact)
+    joined.Select(fun (KeyValue(_, v)) ->
+      match v with
+      | OptionalValue.Present l, OptionalValue.Present r -> l, r 
+      | _ -> failwith "JoinInner: Unexpected missing value")
+    
 
   new(keys:seq<_>, values:seq<_>) = 
     let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance

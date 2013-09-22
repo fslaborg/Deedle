@@ -126,7 +126,7 @@ module Series =
     let keySel = System.Func<DataSegment<Series<_, _>>, _>(fun data -> 
       if dir = Direction.Backward then data.Data.Index.Keys |> Seq.last
       else data.Data.Index.Keys |> Seq.head )
-    series.Aggregate(Aggregation.WindowSize(bounds), (fun ds -> f ds), keySel)
+    series.Aggregate(WindowSize(bounds), (fun ds -> f ds), keySel)
 
   let inline windowSize bounds (series:Series<'K, 'T>) = 
     windowSizeInto bounds DataSegment.data series 
@@ -134,35 +134,35 @@ module Series =
   // Based on distance
 
   let inline windowDistInto distance f (series:Series<'K, 'T>) =
-    series.Aggregate(Aggregation.WindowWhile(fun skey ekey -> (ekey - skey) < distance), fun ds -> f ds.Data)
+    series.Aggregate(WindowWhile(fun skey ekey -> (ekey - skey) < distance), fun ds -> f ds.Data)
   let inline windowDist distance (series:Series<'K, 'T>) = 
     windowDistInto distance id series 
 
   // Window using while
 
   let inline windowWhileInto cond f (series:Series<'K, 'T>) =
-    series.Aggregate(Aggregation.WindowWhile(cond), fun ds -> f ds.Data)
+    series.Aggregate(WindowWhile(cond), fun ds -> f ds.Data)
   let inline windowWhile cond (series:Series<'K, 'T>) = 
     windowWhileInto cond id series 
 
   // Chunk based on size
 
   let inline chunkSizeInto bounds f (series:Series<'K, 'T>) : Series<'K, 'R> =
-    series.Aggregate(Aggregation.ChunkSize(bounds), fun ds -> f ds)
+    series.Aggregate(ChunkSize(bounds), fun ds -> f ds)
   let inline chunkSize bounds (series:Series<'K, 'T>) = 
     chunkSizeInto bounds DataSegment.data series 
 
   // Chunk based on distance
 
   let inline chunkDistInto (distance:^D) f (series:Series<'K, 'T>) : Series<'K, 'R> =
-    series.Aggregate(Aggregation.ChunkWhile(fun skey ekey -> (ekey - skey) < distance), fun ds -> f ds.Data)
+    series.Aggregate(ChunkWhile(fun skey ekey -> (ekey - skey) < distance), fun ds -> f ds.Data)
   let inline chunkDist (distance:^D) (series:Series<'K, 'T>) = 
     chunkDistInto distance id series 
 
   // Chunk while
 
   let inline chunkWhileInto cond f (series:Series<'K, 'T>) =
-    series.Aggregate(Aggregation.ChunkWhile(cond), fun ds -> OptionalValue(f ds.Data))
+    series.Aggregate(ChunkWhile(cond), fun ds -> OptionalValue(f ds.Data))
   let inline chunkWhile cond (series:Series<'K, 'T>) = 
     chunkWhileInto cond id series 
 

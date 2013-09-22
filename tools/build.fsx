@@ -17,7 +17,8 @@ let output   = __SOURCE_DIRECTORY__ ++ "../docs"
 //let root = "http://fsharp.github.com/FSharp.Data"
 
 // When running locally, you can use your path
-let root = @"file://C:\dev\FSharp.DataFrame\docs"
+//let root = @"file://C:\dev\FSharp.DataFrame\docs"
+let root = @"file://C:\Tomas\Projects\FSharp.DataFrame\docs"
 
 let build () =
   // Copy all sample data files to the "data" directory
