@@ -8,9 +8,66 @@ TODO
 #I "../bin"
 #load "FSharp.DataFrame.fsx"
 #load "../packages/FSharp.Charting.0.84/FSharp.Charting.fsx"
+#r "../packages/FSharp.Data.1.1.9/lib/net40/FSharp.Data.dll"
 open System
+open FSharp.Data
 open FSharp.DataFrame
 open FSharp.Charting
+
+(** 
+Hiearrchical indexing
+---------------------
+
+*)
+type MultiKey<'K1, 'K2> = 
+  | MultiKey of 'K1 * 'K2
+  override x.ToString() = let (MultiKey(k1, k2)) = x in sprintf "%A" (k1, k2)
+
+let wb = WorldBankData.GetDataContext()
+
+let loadRegion (region:WorldBankData.ServiceTypes.Region) =
+  let df =
+    Frame.ofColumns
+      [ for country in region.Countries -> 
+          country.Name => Series.ofObservations country.Indicators.``GDP (current US$)`` ]
+  df //.Columns.SelectKeys(fun kvp -> MultiKey(region.Name, kvp.Key))
+  //|> Frame.ofColumns
+
+let df1 = loadRegion wb.Regions.``Euro area``
+let df2 = loadRegion wb.Regions.``OECD members``
+
+df1.Columns.[ ["Austria"; "Belgium"] ]
+df1.Rows.[ 2000 .. 2012 ]
+
+let world = df1.Join(df2)
+
+let Level1Of2 k = MultiKey(k, failwith "!")
+let Level2Of2 k = MultiKey(k, failwith "!")
+
+world.Columns.[Level1Of2 "Euro area"]
+world.Columns.[Level2Of2 "Australia"]
+
+let it = world.Columns.[MultiKey("Euro area", "Austria")]
+
+
+(** 
+Overlaoded slicing
+------------------
+*)
+
+let wb2 = WorldBankData.GetDataContext()
+
+let arab = 
+  Frame.ofColumns
+    [ for country in wb2.Regions.``Arab World``.Countries -> 
+        country.Name => Series.ofObservations country.Indicators.``GDP (current US$)`` ]
+
+arab.Columns.[ ["Algeria"; "Bahrain"] ]
+|> Frame.mean
+
+arab.Rows.[ 2000 .. 2012 ]
+
+
 
 (**
 Joining series

@@ -169,10 +169,10 @@ module Frame =
     frame.Columns |> Frame.ofRows
 
   let getColumns (columns:seq<_>) (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.Columns.[columns] |> Frame.ofColumns
+    frame.Columns.[columns]
 
   let getRows (rows:seq<_>) (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.Rows.[rows] |> Frame.ofRows
+    frame.Rows.[rows]
 
 
   let inline maxRowBy column (frame:Frame<'TRowKey, 'TColKey>) = 

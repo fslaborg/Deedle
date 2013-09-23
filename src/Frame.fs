@@ -175,32 +175,34 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
       Series.Create(rowIndex, changeType<'R> vect)))
 
   member frame.Columns = 
-    Series.Create(columnIndex, data.Select(fun vect -> 
-      Series.CreateUntyped(rowIndex, boxVector vect)))
+    ColumnSeries(Series.Create(columnIndex, data.Select(fun vect -> 
+      Series.CreateUntyped(rowIndex, boxVector vect))))
 
   member frame.ColumnsDense = 
-    Series.Create(columnIndex, data.SelectMissing(fun vect -> 
+    ColumnSeries(Series.Create(columnIndex, data.SelectMissing(fun vect -> 
       // Assuming that the data has all values - which should be an invariant...
       let all = rowIndex.Mappings |> Seq.forall (fun (key, addr) -> vect.Value.GetObject(addr).HasValue)
       if all then OptionalValue(Series.CreateUntyped(rowIndex, boxVector vect.Value))
-      else OptionalValue.Missing ))
+      else OptionalValue.Missing )))
 
   member frame.Rows = 
     let emptySeries = Series<_, _>(rowIndex, Vector.ofValues [], vectorBuilder, indexBuilder)
-    emptySeries.SelectOptional (fun row ->
+    let res = emptySeries.SelectOptional (fun row ->
       let rowAddress = rowIndex.Lookup(row.Key, Lookup.Exact, fun _ -> true)
       if not rowAddress.HasValue then OptionalValue.Missing
       else OptionalValue(Series.CreateUntyped(columnIndex, createRowReader (snd rowAddress.Value))))
+    RowSeries(res)
 
   member frame.RowsDense = 
     let emptySeries = Series<_, _>(rowIndex, Vector.ofValues [], vectorBuilder, indexBuilder)
-    emptySeries.SelectOptional (fun row ->
+    let res = emptySeries.SelectOptional (fun row ->
       let rowAddress = rowIndex.Lookup(row.Key, Lookup.Exact, fun _ -> true)
       if not rowAddress.HasValue then OptionalValue.Missing else 
         let rowVec = createRowReader (snd rowAddress.Value)
         let all = columnIndex.Mappings |> Seq.forall (fun (key, addr) -> rowVec.GetValue(addr).HasValue)
         if all then OptionalValue(Series.CreateUntyped(columnIndex, rowVec))
         else OptionalValue.Missing )
+    RowSeries(res)
 
   // ----------------------------------------------------------------------------------------------
   // Series related operations - add, drop, get, ?, ?<-, etc.
@@ -318,4 +320,108 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     for key, series in frame.Columns |> Series.observations do 
       empty.AddSeries(key, series)
     empty
+
+
+// ------------------------------------------------------------------------------------------------
+// Building frame from series of rows/columns (this has to be here, because we need it in 
+// ColumnSeries/RowSeries (below) which are referenced by df.Rows, df.Columns (above)
+// ------------------------------------------------------------------------------------------------
+
+and FrameUtils = 
+  // Current vector builder to be used for creating frames
+  static member vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance 
+  // Current index builder to be used for creating frames
+  static member indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
+
+  /// Create data frame containing a single column
+  static member createColumn<'TColumnKey, 'TRowKey when 'TColumnKey : equality and 'TRowKey : equality>
+      (column:'TColumnKey, series:ISeries<'TRowKey>) = 
+    let data = Vector.ofValues [| series.Vector |]
+    Frame(series.Index, Index.ofKeys [column], data)
+
+  /// Create data frame containing a single row
+  static member createRow(row:'TRowKey, series:Series<'TColumnKey, 'TValue>) = 
+    let data = series.Vector.SelectMissing(fun v -> 
+      let res = Vectors.ArrayVector.ArrayVectorBuilder.Instance.CreateMissing [| v |] 
+      OptionalValue(res :> IVector))
+    Frame(Index.ofKeys [row], series.Index, data)
+
+  /// Create data frame from a series of rows
+  static member fromRows<'TRowKey, 'TColumnKey, 'TSeries
+        when 'TRowKey : equality and 'TColumnKey : equality and 'TSeries :> ISeries<'TColumnKey>>
+      (nested:Series<'TRowKey, 'TSeries>) =
+
+    // Union column indices, ignoring the vector trasnformations
+    let columnIndex = nested.Values |> Seq.map (fun sr -> sr.Index) |> Seq.reduce (fun i1 i2 -> 
+      let index, _, _ = FrameUtils.indexBuilder.Union( (i1, Vectors.Return 0), (i2, Vectors.Return 0) )
+      index )
+    // Row index is just the index of the series
+    let rowIndex = nested.Index
+
+    // Dispatcher that creates column vector of the right type
+    let columnCreator key =
+      { new VectorHelpers.ValueCallSite1<IVector> with
+          override x.Invoke<'T>(_:'T) = 
+            let it = nested.SelectOptional(fun kvp ->
+              if kvp.Value.HasValue then 
+                kvp.Value.Value.TryGetObject(key) 
+                |> OptionalValue.map (fun v -> System.Convert.ChangeType(v, typeof<'T>) |> unbox<'T>)
+              else OptionalValue.Missing)
+            it.Vector :> IVector }
+      |> VectorHelpers.createValueDispatcher
+    // Create data vectors
+    let data = 
+      columnIndex.Keys 
+      |> Seq.map (fun key ->
+          // Pick a witness from the column, so that we can use column creator
+          // and try creating a typed IVector based on the column type
+          try
+            let someValue =
+              nested |> Series.observations |> Seq.tryPick (fun (_, v) -> 
+                v.TryGetObject(key) |> OptionalValue.asOption)
+            let someValue = defaultArg someValue (obj())
+            columnCreator key someValue
+          with :? System.InvalidCastException ->
+            // If that failes, the sequence is heterogeneous
+            // so we try again and pass object as a witness
+            columnCreator key (obj()) )
+      |> Array.ofSeq |> FrameUtils.vectorBuilder.Create
+    Frame(rowIndex, columnIndex, data)
+
+
+  /// Create data frame from a series of columns
+  static member fromColumns<'TRowKey, 'TColumnKey, 'TSeries when 'TSeries :> ISeries<'TRowKey> 
+        and 'TRowKey : equality and 'TColumnKey : equality>
+      (nested:Series<'TColumnKey, 'TSeries>) =
+    let initial = Frame(Index.ofKeys [], Index.ofUnorderedKeys [], Vector.ofValues [| |])
+    (initial, Series.observations nested) ||> Seq.fold (fun df (name, series) -> 
+      df.Join(FrameUtils.createColumn(name, series), JoinKind.Outer))
+
+// ------------------------------------------------------------------------------------------------
+//
+// ------------------------------------------------------------------------------------------------
+
+and ColumnSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>(index, vector, vectorBuilder, indexBuilder) =
+  inherit Series<'TColumnKey, ObjectSeries<'TRowKey>>(index, vector, vectorBuilder, indexBuilder)
+
+  new(series:Series<'TColumnKey, ObjectSeries<'TRowKey>>) = 
+    ColumnSeries(series.Index, series.Vector, series.VectorBuilder, series.IndexBuilder)
+
+  [<EditorBrowsable(EditorBrowsableState.Never)>]
+  member x.GetSlice(lo, hi) =
+    let inclusive v = v |> Option.map (fun v -> v, BoundaryBehavior.Inclusive)
+    x.GetSubrange(inclusive lo, inclusive hi) |> FrameUtils.fromColumns
+  member x.Item with get(items) = x.GetItems items |> FrameUtils.fromColumns
+
+and RowSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>(index, vector, vectorBuilder, indexBuilder) =
+  inherit Series<'TRowKey, ObjectSeries<'TColumnKey>>(index, vector, vectorBuilder, indexBuilder)
+
+  new(series:Series<'TRowKey, ObjectSeries<'TColumnKey>>) = 
+    RowSeries(series.Index, series.Vector, series.VectorBuilder, series.IndexBuilder)
+
+  [<EditorBrowsable(EditorBrowsableState.Never)>]
+  member x.GetSlice(lo, hi) =
+    let inclusive v = v |> Option.map (fun v -> v, BoundaryBehavior.Inclusive)
+    x.GetSubrange(inclusive lo, inclusive hi) |> FrameUtils.fromRows
+  member x.Item with get(items) = x.GetItems items |> FrameUtils.fromRows
 

@@ -55,82 +55,12 @@ module internal Reflection =
 //
 // ------------------------------------------------------------------------------------------------
 
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module internal FrameUtils = 
   open FSharp.Data
   open ProviderImplementation
   open FSharp.Data.RuntimeImplementation
   open FSharp.Data.RuntimeImplementation.StructuralTypes
-
-  // Current vector builder to be used for creating frames
-  let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance 
-  // Current index builder to be used for creating frames
-  let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
-
-  /// Create data frame containing a single column
-  let createColumn<'TColumnKey, 'TRowKey when 'TColumnKey : equality and 'TRowKey : equality>
-      (column:'TColumnKey, series:ISeries<'TRowKey>) = 
-    let data = Vector.ofValues [| series.Vector |]
-    Frame(series.Index, Index.ofKeys [column], data)
-
-  /// Create data frame containing a single row
-  let createRow(row:'TRowKey, series:Series<'TColumnKey, 'TValue>) = 
-    let data = series.Vector.SelectMissing(fun v -> 
-      let res = Vectors.ArrayVector.ArrayVectorBuilder.Instance.CreateMissing [| v |] 
-      OptionalValue(res :> IVector))
-    Frame(Index.ofKeys [row], series.Index, data)
-
-
-  /// Create data frame from a series of rows
-  let fromRows<'TRowKey, 'TColumnKey, 'TSeries
-        when 'TRowKey : equality and 'TColumnKey : equality and 'TSeries :> ISeries<'TColumnKey>>
-      (nested:Series<'TRowKey, 'TSeries>) =
-
-    // Union column indices, ignoring the vector trasnformations
-    let columnIndex = nested.Values |> Seq.map (fun sr -> sr.Index) |> Seq.reduce (fun i1 i2 -> 
-      let index, _, _ = indexBuilder.Union( (i1, Vectors.Return 0), (i2, Vectors.Return 0) )
-      index )
-    // Row index is just the index of the series
-    let rowIndex = nested.Index
-
-    // Dispatcher that creates column vector of the right type
-    let columnCreator key =
-      { new VectorHelpers.ValueCallSite1<IVector> with
-          override x.Invoke<'T>(_:'T) = 
-            let it = nested.SelectOptional(fun kvp ->
-              if kvp.Value.HasValue then 
-                kvp.Value.Value.TryGetObject(key) 
-                |> OptionalValue.map (fun v -> System.Convert.ChangeType(v, typeof<'T>) |> unbox<'T>)
-              else OptionalValue.Missing)
-            it.Vector :> IVector }
-      |> VectorHelpers.createValueDispatcher
-    // Create data vectors
-    let data = 
-      columnIndex.Keys 
-      |> Seq.map (fun key ->
-          // Pick a witness from the column, so that we can use column creator
-          // and try creating a typed IVector based on the column type
-          try
-            let someValue =
-              nested |> Series.observations |> Seq.tryPick (fun (_, v) -> 
-                v.TryGetObject(key) |> OptionalValue.asOption)
-            let someValue = defaultArg someValue (obj())
-            columnCreator key someValue
-          with :? System.InvalidCastException ->
-            // If that failes, the sequence is heterogeneous
-            // so we try again and pass object as a witness
-            columnCreator key (obj()) )
-      |> Array.ofSeq |> vectorBuilder.Create
-    Frame(rowIndex, columnIndex, data)
-
-
-  /// Create data frame from a series of columns
-  let fromColumns<'TRowKey, 'TColumnKey, 'TSeries when 'TSeries :> ISeries<'TRowKey> 
-        and 'TRowKey : equality and 'TColumnKey : equality>
-      (nested:Series<'TColumnKey, 'TSeries>) =
-    let initial = Frame(Index.ofKeys [], Index.ofUnorderedKeys [], Vector.ofValues [| |])
-    (initial, Series.observations nested) ||> Seq.fold (fun df (name, series) -> 
-      df.Join(createColumn(name, series), JoinKind.Outer))
-
 
   /// Load data from a CSV file using F# Data API
   let readCsv (file:string) inferTypes inferRows schema (missingValues:string) separators culture =

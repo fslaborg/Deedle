@@ -44,7 +44,6 @@ type IVector =
   /// untyped version of `GetValue` method on a typed vector.
   abstract GetObject : Address -> OptionalValue<obj>
 
-
 /// A generic, typed vector. Represents mapping from addresses to values of type `T`. 
 /// The vector provides a minimal interface that is required by series and can be
 /// implemented in a number of ways to provide vector backed by database or an

@@ -62,6 +62,9 @@ and Series<'K, 'V when 'K : equality>
     ( index:IIndex<'K>, vector:IVector<'V>,
       vectorBuilder : IVectorBuilder, indexBuilder : IIndexBuilder ) as this =
   
+  member internal x.VectorBuilder = vectorBuilder
+  member internal x.IndexBuilder = indexBuilder
+
   /// Returns the index associated with this series. This member should not generally
   /// be accessed directly, because all functionality is exposed through series operations.
   member x.Index = index
@@ -146,7 +149,6 @@ and Series<'K, 'V when 'K : equality>
     let newIndex, newVector = indexBuilder.GetRange(index, lo, hi, Vectors.Return 0)
     let newVector = vectorBuilder.Build(newVector, [| vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
-
 
   [<EditorBrowsable(EditorBrowsableState.Never)>]
   member x.GetSlice(lo, hi) =
