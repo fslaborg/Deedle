@@ -148,7 +148,7 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
 
   // Implement the untyped vector interface
   interface IVector with
-    member val ElementType = typeof<'T>
+    member x.ElementType = typeof<'T>
     member x.SuppressPrinting = false
 
     member vector.GetObject(IntAddress index) = 
