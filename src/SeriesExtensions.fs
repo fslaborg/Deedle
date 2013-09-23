@@ -21,21 +21,13 @@ module FSharpSeriesExtensions =
       let keys = values |> Seq.mapi (fun i _ -> i)
       Series(keys, values).Select(fun kvp -> kvp.Value.Value)
 
-
-type Series =
-  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
-  static member FromObservations(observations:seq<KeyValuePair<'K, 'V>>) = 
-    observations |> Seq.map (fun kvp -> kvp.Key, kvp.Value) |> Series.ofObservations
-  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
-  static member FromValues(values:seq<'T>) = Series(values |> Seq.mapi (fun i _ -> i), values)
-    
 [<Extension>]
 type EnumerableExtensions =
   [<Extension>]
   static member ToSeries(observations:seq<KeyValuePair<'K, 'V>>) = 
     observations |> Seq.map (fun kvp -> kvp.Key, kvp.Value) |> Series.ofObservations
 
-type Series with
+type internal Series =
   /// Vector & index builders
   static member internal vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
   static member internal indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
