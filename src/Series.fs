@@ -8,27 +8,56 @@ open FSharp.DataFrame.Indices
 open FSharp.DataFrame.Vectors
 open FSharp.DataFrame.VectorHelpers
 
+/// This enumeration specifies joining behavior for `Join` method provided
+/// by `Series` and `Frame`. Outer join unions the keys (and may introduce
+/// missing values), inner join takes the intersection of keys; left and
+/// right joins take the keys of the first or the second series/frame.
 type JoinKind = 
+  /// Combine the keys available in both structures, align the values that
+  /// are available in both of them and mark the remaining values as missing.
   | Outer = 0
+  /// Take the intersection of the keys available in both structures and align the 
+  /// values of the two structures. The resulting structure cannot contain missing values.
   | Inner = 1
+  /// Take the keys of the left (first) structure and align values from the right (second)
+  /// structure with the keys of the first one. Values for keys not available in the second
+  /// structure will be missing.
   | Left = 2
+  /// Take the keys of the right (second) structure and align values from the left (first)
+  /// structure with the keys of the second one. Values for keys not available in the first
+  /// structure will be missing.
   | Right = 3
 
+
+/// This enumeration specifeis the behavior of `Union` operation on series when there are
+/// overlapping keys in two series that are being unioned. The options include prefering values
+/// from the left/right series or throwing an exception when both values are available.
 type UnionBehavior =
+  /// When there are values available in both series that are being unioned, prefer the left value.
   | PreferLeft = 0
+  /// When there are values available in both series that are being unioned, prefer the right value.
   | PreferRight = 1
+  /// When there are values available in both series that are being unioned, raise an exception.
   | Exclusive = 2
 
 // ------------------------------------------------------------------------------------------------
 // Series
 // ------------------------------------------------------------------------------------------------
 
+/// Represents an untyped series with keys of type `K` and values of some unknown type
+/// (This type should not generally be used directly, but it can be used when you need
+/// to write code that works on a sequence of series of heterogeneous types).
 type ISeries<'K when 'K : equality> =
+  /// Returns the vector containing data of the series (as an untyped vector)
   abstract Vector : FSharp.DataFrame.IVector
+  /// Returns the index containing keys of the series 
   abstract Index : IIndex<'K>
-  abstract TryGetObject : 'K -> option<obj>
+  /// Attempts to get the value at a specified key and return it as `obj`
+  abstract TryGetObject : 'K -> OptionalValue<obj>
 
-/// A series contains one Index and one Vec
+
+/// The type `Series<K, V>` represents a data series consisting of values `V` indexed by
+/// keys `K`. The keys of a series may or may not be ordered 
 and Series<'K, 'V when 'K : equality>
     ( index:IIndex<'K>, vector:IVector<'V>,
       vectorBuilder : IVectorBuilder, indexBuilder : IIndexBuilder ) as this =
@@ -84,7 +113,7 @@ and Series<'K, 'V when 'K : equality>
   // ----------------------------------------------------------------------------------------------
 
   interface ISeries<'K> with
-    member x.TryGetObject(k) = this.TryGet(k) |> OptionalValue.asOption |> Option.map box
+    member x.TryGetObject(k) = this.TryGet(k) |> OptionalValue.map box
     member x.Vector = vector :> IVector
     member x.Index = index
 

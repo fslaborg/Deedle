@@ -99,8 +99,7 @@ module internal FrameUtils =
             let it = nested.SelectOptional(fun kvp ->
               if kvp.Value.HasValue then 
                 kvp.Value.Value.TryGetObject(key) 
-                |> Option.map (fun v -> System.Convert.ChangeType(v, typeof<'T>) |> unbox<'T>)
-                |> OptionalValue.ofOption
+                |> OptionalValue.map (fun v -> System.Convert.ChangeType(v, typeof<'T>) |> unbox<'T>)
               else OptionalValue.Missing)
             it.Vector :> IVector }
       |> VectorHelpers.createValueDispatcher
@@ -113,7 +112,7 @@ module internal FrameUtils =
           try
             let someValue =
               nested |> Series.observations |> Seq.tryPick (fun (_, v) -> 
-                v.TryGetObject(key))
+                v.TryGetObject(key) |> OptionalValue.asOption)
             let someValue = defaultArg someValue (obj())
             columnCreator key someValue
           with :? System.InvalidCastException ->
