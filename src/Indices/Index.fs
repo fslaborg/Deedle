@@ -214,6 +214,11 @@ and IIndexBuilder =
   abstract DropItem : SeriesConstruction<'K> * 'K -> 
     SeriesConstruction<'K> 
 
+  /// Get items associated with the specified key from the index. This method assumes
+  /// that `K` implements `ICustomKey<K>` which is used for custom equality testing
+  /// (for example, when getting a level of a hierarchical index)
+  abstract LookupLevel : SeriesConstruction<'K> * 'K -> SeriesConstruction<'K>
+
   /// Order (possibly unordered) index and return transformation that reorders vector
   abstract OrderIndex : SeriesConstruction<'K> -> SeriesConstruction<'K>
 

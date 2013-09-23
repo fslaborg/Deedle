@@ -36,14 +36,17 @@ type LinearIndex<'K when 'K : equality>
        | true, list -> invalidArg "keys" "Duplicate keys are not allowed in the index."
        | _ -> lookup.[k] <- v  
 
-  // Implement structural equality check against another index
+  /// Exposes keys array for use in the index builder
+  member internal index.KeysArray = keysArray
+
+  /// Implements structural equality check against another index
   override index.Equals(another) = 
     match another with
     | null -> false
     | :? IIndex<'K> as another -> Seq.structuralEquals mappings another.Mappings
     | _ -> false
 
-  // Implement structural hashing against another index
+  /// Implement structural hashing against another index
   override index.GetHashCode() =
     mappings |> Seq.structuralHash
 
@@ -51,7 +54,7 @@ type LinearIndex<'K when 'K : equality>
     member x.Keys = keys
     member x.Builder = builder
 
-    // Returns the range of keys - makes sense only for ordered index
+    /// Returns the range of keys - makes sense only for ordered index
     member x.KeyRange = 
       if not ordered then invalidOp "KeyRange is not supported for unordered index."
       Seq.head keys, Seq.head keysArrayRev.Value
@@ -150,6 +153,15 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
     // That's it! Return the result.
     ( upcast newIndex, newVector1, newVector2 )
+
+  /// Convert any index to a linear index (and relocate vector accordingly)
+  let asLinearIndex (index:IIndex<_>) vector =
+    match index with
+    | :? LinearIndex<_> as lin -> lin, vector
+    | _ ->
+      let relocs = index.Mappings |> Seq.mapi (fun i (k, a) -> Address.Int i, a)
+      let newVector = Vectors.Relocate(vector, Address.rangeOf(index.Mappings), relocs)
+      LinearIndex(index.Mappings |> Seq.map fst, LinearIndexBuilder.Instance), newVector
 
   /// Instance of the index builder (specialized to Int32 addresses)
   static let indexBuilder = LinearIndexBuilder(Vectors.ArrayVector.ArrayVectorBuilder.Instance)
@@ -281,6 +293,21 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           if oldAddress.HasValue then 
             yield newAddress, oldAddress.Value |> snd }
       Vectors.Relocate(vector, index2.Range, relocations)
+
+    member builder.LookupLevel( (index, vector), searchKey:'K ) =
+      let custKey = 
+        match box searchKey with 
+        | :? ICustomKey<'K> as k -> k
+        | _ -> invalidOp "Hierarchical indexing is only supported using custom keys"
+      let matching = 
+        [| for key, addr in index.Mappings do
+             if custKey.Matches(unbox key) then 
+               yield addr, key |]
+      let range = Address.rangeOf(matching)
+      let relocs = Seq.zip (Address.generateRange(range)) (Seq.map fst matching)
+      let newIndex = LinearIndex<_>(Seq.map snd matching, builder, index.Ordered)
+      let newVector = Vectors.Relocate(vector, range, relocs)
+      upcast newIndex, newVector
 
     /// Drop the specified item from the index
     member builder.DropItem<'K when 'K : equality >

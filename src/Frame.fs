@@ -398,30 +398,27 @@ and FrameUtils =
       df.Join(FrameUtils.createColumn(name, series), JoinKind.Outer))
 
 // ------------------------------------------------------------------------------------------------
-//
+// 
 // ------------------------------------------------------------------------------------------------
 
 and ColumnSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>(index, vector, vectorBuilder, indexBuilder) =
   inherit Series<'TColumnKey, ObjectSeries<'TRowKey>>(index, vector, vectorBuilder, indexBuilder)
-
   new(series:Series<'TColumnKey, ObjectSeries<'TRowKey>>) = 
     ColumnSeries(series.Index, series.Vector, series.VectorBuilder, series.IndexBuilder)
 
   [<EditorBrowsable(EditorBrowsableState.Never)>]
   member x.GetSlice(lo, hi) =
-    let inclusive v = v |> Option.map (fun v -> v, BoundaryBehavior.Inclusive)
-    x.GetSubrange(inclusive lo, inclusive hi) |> FrameUtils.fromColumns
-  member x.Item with get(items) = x.GetItems items |> FrameUtils.fromColumns
+    base.GetSlice(lo, hi) |> FrameUtils.fromColumns
+  member x.Item with get(items) = x.GetItems(items) |> FrameUtils.fromColumns
+  member x.Item with get(HL level) = x.GetByLevel(level) |> FrameUtils.fromColumns
 
 and RowSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>(index, vector, vectorBuilder, indexBuilder) =
   inherit Series<'TRowKey, ObjectSeries<'TColumnKey>>(index, vector, vectorBuilder, indexBuilder)
-
   new(series:Series<'TRowKey, ObjectSeries<'TColumnKey>>) = 
     RowSeries(series.Index, series.Vector, series.VectorBuilder, series.IndexBuilder)
 
   [<EditorBrowsable(EditorBrowsableState.Never)>]
   member x.GetSlice(lo, hi) =
-    let inclusive v = v |> Option.map (fun v -> v, BoundaryBehavior.Inclusive)
-    x.GetSubrange(inclusive lo, inclusive hi) |> FrameUtils.fromRows
-  member x.Item with get(items) = x.GetItems items |> FrameUtils.fromRows
-
+    base.GetSlice(lo, hi) |> FrameUtils.fromRows
+  member x.Item with get(items) = x.GetItems(items) |> FrameUtils.fromRows
+  member x.Item with get(HL level) = x.GetByLevel(level) |> FrameUtils.fromRows

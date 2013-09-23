@@ -19,9 +19,6 @@ Hiearrchical indexing
 ---------------------
 
 *)
-type MultiKey<'K1, 'K2> = 
-  | MultiKey of 'K1 * 'K2
-  override x.ToString() = let (MultiKey(k1, k2)) = x in sprintf "%A" (k1, k2)
 
 let wb = WorldBankData.GetDataContext()
 
@@ -30,25 +27,36 @@ let loadRegion (region:WorldBankData.ServiceTypes.Region) =
     Frame.ofColumns
       [ for country in region.Countries -> 
           country.Name => Series.ofObservations country.Indicators.``GDP (current US$)`` ]
-  df //.Columns.SelectKeys(fun kvp -> MultiKey(region.Name, kvp.Key))
-  //|> Frame.ofColumns
+  df.Columns.SelectKeys(fun kvp -> MultiKey(region.Name, kvp.Key))
+  |> Frame.ofColumns
 
 let df1 = loadRegion wb.Regions.``Euro area``
 let df2 = loadRegion wb.Regions.``OECD members``
-
-df1.Columns.[ ["Austria"; "Belgium"] ]
-df1.Rows.[ 2000 .. 2012 ]
-
 let world = df1.Join(df2)
 
-let Level1Of2 k = MultiKey(k, failwith "!")
-let Level2Of2 k = MultiKey(k, failwith "!")
-
 world.Columns.[Level1Of2 "Euro area"]
-world.Columns.[Level2Of2 "Australia"]
+world.Columns.[Level1Of2 "Euro area"].Columns.[Level2Of2 "Austria"]
+world.Columns.[Level2Of2 "Mexico"]
 
-let it = world.Columns.[MultiKey("Euro area", "Austria")]
+world.Columns.[MultiKey("Euro area", "Austria")]
 
+let euro = 
+  world.Columns.[Level1Of2 "Euro area"]
+  |> Frame.mapColumnKeys Key.key2Of2
+
+euro
+|> Frame.groupRowsBy
+.GroupRowsUsing(fun k _ -> k
+
+// string * int * int
+
+MultiKey
+
+// Key
+// using level-1-equals    : Key * Key -> int
+
+// Key
+// using levels-1,2-equals : Key * Key -> int
 
 (** 
 Overlaoded slicing
@@ -79,7 +87,6 @@ Joining series
 
 
 (*
-
 query { for n in [ 1 .. 10 ] do
         let m = n + 1 
         sortBy n
@@ -88,7 +95,7 @@ query { for n in [ 1 .. 10 ] do
         take 10
         where (n > 4)
         select n }
-
+// 
 frame { for r in frame do
         withIndex (r.GetAs<string>("Name"))
         shift 1

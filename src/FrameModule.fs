@@ -23,6 +23,18 @@ module Frame =
   let groupRowsBy column (frame:Frame<'TRowKey, 'TColKey>) = 
     groupRowsInto column id frame
 
+  let groupColumnsInto column f (frame:Frame<'TRowKey, 'TColKey>) = 
+    frame.Columns |> Series.groupInto 
+      (fun _ v -> v.Get(column)) 
+      (fun k g -> g |> Frame.ofColumns |> f)
+
+  let groupColumnsUsing selector (frame:Frame<'TRowKey, 'TColKey>) = 
+    frame.Columns |> Series.groupInto selector (fun k g -> g |> Frame.ofColumns)
+
+  let groupColumnsBy column (frame:Frame<'TRowKey, 'TColKey>) = 
+    groupColumnsInto column id frame
+
+
   //let shiftRows offset (frame:Frame<'TRowKey, 'TColKey>) = 
   //  frame.Columns 
   //  |> Series.map (fun k col -> Series.shift offset col)
@@ -165,6 +177,9 @@ module Frame =
   let inline mapRowValues f (frame:Frame<'TRowKey, 'TColKey>) = 
     FrameExtensions.Select(frame, fun kvp -> f kvp.Value) 
 
+  let inline mapRowKeys f (frame:Frame<'TRowKey, 'TColKey>) = 
+    FrameExtensions.SelectRowKeys(frame, fun kvp -> f kvp.Key) 
+
   let transpose (frame:Frame<'TRowKey, 'TColumnKey>) = 
     frame.Columns |> Frame.ofRows
 
@@ -173,6 +188,9 @@ module Frame =
 
   let getRows (rows:seq<_>) (frame:Frame<'TRowKey, 'TColKey>) = 
     frame.Rows.[rows]
+
+  let inline mapColumnKeys f (frame:Frame<'TRowKey, 'TColKey>) = 
+    FrameExtensions.SelectColumnKeys(frame, fun kvp -> f kvp.Key) 
 
 
   let inline maxRowBy column (frame:Frame<'TRowKey, 'TColKey>) = 

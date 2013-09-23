@@ -22,7 +22,8 @@
     <OutputPath>../bin/</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>../bin/FSharp.DataFrame.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -46,6 +47,7 @@
     <Compile Include="Vectors\VectorHelpers.fs" />
     <Compile Include="Vectors\ArrayVector.fs" />
     <Compile Include="Vectors\VectorExtensions.fs" />
+    <Compile Include="Indices\MultiKey.fs" />
     <Compile Include="Indices\Index.fs" />
     <Compile Include="Indices\LinearIndex.fs" />
     <Compile Include="Series.fs" />

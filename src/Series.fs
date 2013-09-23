@@ -199,7 +199,13 @@ and Series<'K, 'V when 'K : equality>
   member x.Get(key, lookup) =
     x.GetObservation(key, lookup).Value
 
-  /// Attempts to get a value at the specified `key`
+  member x.GetByLevel(key:'K) =
+    let newIndex, levelCmd = indexBuilder.LookupLevel((index, Vectors.Return 0), key)
+    let newVector = vectorBuilder.Build(levelCmd, [| vector |])
+    Series(newIndex, newVector, vectorBuilder, indexBuilder)
+    
+
+  /// Attempts to get a value at the specified 'key'
   member x.TryGetObservation(key) = x.TryGetObservation(key, Lookup.Exact)
   member x.GetObservation(key) = x.GetObservation(key, Lookup.Exact)
   member x.TryGet(key) = x.TryGet(key, Lookup.Exact)
@@ -208,6 +214,7 @@ and Series<'K, 'V when 'K : equality>
 
   member x.Item with get(a) = x.Get(a)
   member x.Item with get(items) = x.GetItems items
+  member x.Item with get(HL a) = x.GetByLevel(a)
 
   static member (?) (series:Series<_, _>, name:string) = series.Get(name, Lookup.Exact)
 
