@@ -231,16 +231,13 @@ and DelayedIndexBuilder() =
     member x.Create(keys, ordered) = builder.Create(keys, ordered)
     member x.Aggregate(index, aggregation, vector, valueSel, keySel) = builder.Aggregate(index, aggregation, vector, valueSel, keySel)
     member x.GroupBy(index, keySel, vector, valueSel) = builder.GroupBy(index, keySel, vector, valueSel)
-    member x.OrderIndex(index, vector) = builder.OrderIndex(index, vector)
-    member x.Union(index1, index2, vector1, vector2) = 
-      let res = builder.Union(index1, index2, vector1, vector2)
-      res
-
-    member x.Append(index1, index2, vector1, vector2, transform) = builder.Append(index1, index2, vector1, vector2, transform)
-    member x.Intersect(index1, index2, vector1, vector2) = builder.Intersect(index1, index2, vector1, vector2)
+    member x.OrderIndex(sc) = builder.OrderIndex(sc)
+    member x.Union(sc1, sc2) = builder.Union(sc1, sc2)
+    member x.Append(sc1, sc2, transform) = builder.Append(sc1, sc2, transform)
+    member x.Intersect(sc1, sc2) = builder.Intersect(sc1, sc2)
     member x.WithIndex(index1, f, vector) = builder.WithIndex(index1, f, vector)
     member x.Reindex(index1, index2, semantics, vector) = builder.Reindex(index1, index2, semantics, vector)
-    member x.DropItem(index, key, vector) = builder.DropItem(index, key, vector)
+    member x.DropItem(sc, key) = builder.DropItem(sc, key)
     member x.GetRange(index, optLo:option<'K * _>, optHi:option<'K * _>, vector) = 
       match index with
       | :? IDelayedIndex<'K> as index ->

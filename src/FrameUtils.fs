@@ -87,7 +87,7 @@ module internal FrameUtils =
 
     // Union column indices, ignoring the vector trasnformations
     let columnIndex = nested.Values |> Seq.map (fun sr -> sr.Index) |> Seq.reduce (fun i1 i2 -> 
-      let index, _, _ = indexBuilder.Union(i1, i2, Vectors.Return 0, Vectors.Return 0)
+      let index, _, _ = indexBuilder.Union( (i1, Vectors.Return 0), (i2, Vectors.Return 0) )
       index )
     // Row index is just the index of the series
     let rowIndex = nested.Index

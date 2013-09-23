@@ -140,8 +140,11 @@ type IIndex<'K when 'K : equality> =
   /// same kind as the current index (e.g. a lazy index returns a lazy index builder)
   abstract Builder : IIndexBuilder
 
-// and IndexVectorPair<'K> = IIndex<'K> * IIndex<'K> * VectorConstruction * VectorConstruction
-// and SeriesSkeleton (or something) = IIndex<'K> * VectorConstruction
+/// Represents a pair of index and vector construction 
+/// (many of the index operations take/return an index together with a construction
+/// command that builds a vector matching with the index, so this type alias
+/// makes this more obvious)
+and SeriesConstruction<'K when 'K : equality> = IIndex<'K> * VectorConstruction
 
 /// A builder represents various ways of constructing index, either from keys or from
 /// other indices. The operations that build a new index from an existing index also 
@@ -170,18 +173,18 @@ and IIndexBuilder =
   /// that contain boundary behavior and the boundary key.
   abstract GetRange : 
     IIndex<'K> * option<'K * BoundaryBehavior> * option<'K * BoundaryBehavior> * VectorConstruction ->
-    IIndex<'K> * VectorConstruction 
+    SeriesConstruction<'K>
 
   /// Creates a union of two indices and builds corresponding vector transformations
   /// for both vectors that match the left and the right index.
   abstract Union : 
-    IIndex<'K> * IIndex<'K> * VectorConstruction * VectorConstruction -> 
+    SeriesConstruction<'K> * SeriesConstruction<'K> ->
     IIndex<'K> * VectorConstruction * VectorConstruction
 
   /// Creates an interesection of two indices and builds corresponding vector transformations
   /// for both vectors that match the left and the right index.
   abstract Intersect :
-    IIndex<'K> * IIndex<'K> * VectorConstruction * VectorConstruction -> 
+    SeriesConstruction<'K> * SeriesConstruction<'K> ->
     IIndex<'K> * VectorConstruction * VectorConstruction
 
   /// Append two indices and builds corresponding vector transformations
@@ -190,7 +193,7 @@ and IIndexBuilder =
   /// The specified `IVectorValueTransform` defines how to deal with the case when
   /// a key is defined in both indices (i.e. which value should be in the new vector).
   abstract Append :
-    IIndex<'K> * IIndex<'K> * VectorConstruction * VectorConstruction * IVectorValueTransform -> 
+    SeriesConstruction<'K> * SeriesConstruction<'K> * IVectorValueTransform -> 
     IIndex<'K> * VectorConstruction
 
   /// Given an old index and a new index, build a vector transformation that reorders
@@ -205,15 +208,14 @@ and IIndexBuilder =
   /// (used e.g. when we have a frame and want to use specified column as a new index).
   abstract WithIndex :
     IIndex<'K> * (Address -> OptionalValue<'TNewKey>) * VectorConstruction -> 
-    IIndex<'TNewKey> * VectorConstruction
+    SeriesConstruction<'TNewKey>
 
   /// Drop an item associated with the specified key from the index. 
-  abstract DropItem : IIndex<'K> * 'K * VectorConstruction -> 
-    IIndex<'K> * VectorConstruction 
+  abstract DropItem : SeriesConstruction<'K> * 'K -> 
+    SeriesConstruction<'K> 
 
   /// Order (possibly unordered) index and return transformation that reorders vector
-  abstract OrderIndex : IIndex<'K> * VectorConstruction ->
-    IIndex<'K> * VectorConstruction
+  abstract OrderIndex : SeriesConstruction<'K> -> SeriesConstruction<'K>
 
   /// Aggregate an ordered index into floating windows or chunks. 
   ///
@@ -228,12 +230,12 @@ and IIndexBuilder =
   ///  - `keySelector` - Given information about window/chunk (including 
   ///    vector construction that can be used to build the data chunk), return a key of the chunk/window.
   abstract Aggregate : index:IIndex<'K> * aggregation:Aggregation<'K> * source:VectorConstruction *
-    valueSelector:(DataSegmentKind * IIndex<'K> * VectorConstruction -> OptionalValue<'R>) *
-    keySelector:(DataSegmentKind * IIndex<'K> * VectorConstruction -> 'TNewKey) 
+    valueSelector:(DataSegmentKind * SeriesConstruction<'K> -> OptionalValue<'R>) *
+    keySelector:(DataSegmentKind * SeriesConstruction<'K> -> 'TNewKey) 
       -> IIndex<'TNewKey> * IVector<'R>
 
   /// Group a (possibly unordered) index using the specified `keySelector` function.
   /// The operation builds a new index with the selected keys and a matching vector
   /// with values produced by the `valueSelector` function.
   abstract GroupBy : IIndex<'K> * keySelector:('K -> 'TNewKey) * VectorConstruction *
-    valueSelector:('TNewKey * IIndex<'K> * VectorConstruction -> OptionalValue<'R>) -> IIndex<'TNewKey> * IVector<'R>
+    valueSelector:('TNewKey * SeriesConstruction<'K> -> OptionalValue<'R>) -> IIndex<'TNewKey> * IVector<'R>

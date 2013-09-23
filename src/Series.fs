@@ -234,7 +234,7 @@ and Series<'K, 'V when 'K : equality>
     let newIndex, thisRowCmd, otherRowCmd = 
       match kind with 
       | JoinKind.Inner ->
-          indexBuilder.Intersect(index, otherSeries.Index, Vectors.Return 0, Vectors.Return 1)
+          indexBuilder.Intersect( (index, Vectors.Return 0), (otherSeries.Index, Vectors.Return 1) )
       | JoinKind.Left ->
           let otherRowIndex, vector = restrictToThisIndex index otherSeries.Index (Vectors.Return 1)
           let otherRowCmd = indexBuilder.Reindex(otherRowIndex, index, lookup, vector)
@@ -244,7 +244,7 @@ and Series<'K, 'V when 'K : equality>
           let thisRowCmd = indexBuilder.Reindex(thisRowIndex, otherSeries.Index, lookup, vector)
           otherSeries.Index, thisRowCmd, Vectors.Return 1
       | JoinKind.Outer | _ ->
-          indexBuilder.Union(index, otherSeries.Index, Vectors.Return 0, Vectors.Return 1)
+          indexBuilder.Union( (index, Vectors.Return 0), (otherSeries.Index, Vectors.Return 1) )
 
     // ....
     let combine =
@@ -271,7 +271,7 @@ and Series<'K, 'V when 'K : equality>
     series.Union(another, UnionBehavior.PreferLeft)
   
   member series.Union(another:Series<'K, 'V>, behavior) = 
-    let newIndex, vec1, vec2 = indexBuilder.Union(series.Index, another.Index, Vectors.Return 0, Vectors.Return 1)
+    let newIndex, vec1, vec2 = indexBuilder.Union( (series.Index, Vectors.Return 0), (another.Index, Vectors.Return 1) )
     let transform = 
       match behavior with
       | UnionBehavior.PreferRight -> VectorHelpers.VectorValueTransform.RightIfAvailable
@@ -339,10 +339,10 @@ and Series<'K, 'V when 'K : equality>
     let newIndex, newVector = 
       indexBuilder.Aggregate
         ( x.Index, aggregation, Vectors.Return 0, 
-          (fun (kind, index, cmd) -> 
+          (fun (kind, (index, cmd)) -> 
               let window = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
               OptionalValue(valueSelector.Invoke(DataSegment(kind, window)))),
-          (fun (kind, index, cmd) -> 
+          (fun (kind, (index, cmd)) -> 
               keySelector.Invoke(DataSegment(kind, Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)))) )
     Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
 
@@ -354,7 +354,7 @@ and Series<'K, 'V when 'K : equality>
       indexBuilder.GroupBy
         ( x.Index, 
           (fun key -> keySelector key (x.Get(key))), Vectors.Return 0, 
-          (fun (newKey, index, cmd) -> 
+          (fun (newKey, (index, cmd)) -> 
               let group = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
               valueSelector newKey group) )
     Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
@@ -373,7 +373,7 @@ and Series<'K, 'V when 'K : equality>
     let newIndex, newVector = 
       indexBuilder.Aggregate
         ( x.Index, WindowSize(2, boundary), Vectors.Return 0, 
-          (fun (kind, index, cmd) -> 
+          (fun (kind, (index, cmd)) -> 
               let actualVector = vectorBuilder.Build(cmd, [| vector |])
               let obs = [ for k, addr in index.Mappings -> actualVector.GetValue(addr) ]
               match obs with
@@ -381,7 +381,7 @@ and Series<'K, 'V when 'K : equality>
                   OptionalValue( DataSegment(kind, (v1, v2)) )
               | [ _; _ ] -> OptionalValue.Missing
               | _ -> failwith "Pairwise: failed - expected two values" ),
-          (fun (kind, index, vector) -> 
+          (fun (kind, (index, vector)) -> 
               if direction = Direction.Backward then index.Keys |> Seq.last
               else index.Keys |> Seq.head ) )
     Series<'K, DataSegment<'V * 'V>>(newIndex, newVector, vectorBuilder, indexBuilder)

@@ -163,7 +163,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
     /// Aggregate ordered index
     member builder.Aggregate<'K, 'R, 'TNewKey when 'K : equality and 'TNewKey : equality>
-        (index:IIndex<'K>, aggregation, vector, valueSel:_ * _ * _ -> OptionalValue<'R>, keySel:_ * _ * _ -> 'TNewKey) =
+        (index:IIndex<'K>, aggregation, vector, valueSel:_ * _ -> OptionalValue<'R>, keySel:_ * _ -> 'TNewKey) =
       if not index.Ordered then 
         invalidOp "Floating window aggregation or chunking is not supported on un-ordered indices."
       let builder = (builder :> IIndexBuilder)
@@ -181,7 +181,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
             builder.GetRange
               ( index, Some(win.Data.[0], BoundaryBehavior.Inclusive), 
                 Some(win.Data.[win.Data.Length - 1], BoundaryBehavior.Inclusive), vector)
-          win.Kind, index, cmd )
+          win.Kind, (index, cmd) )
 
       /// Build a new index & vector by applying key/value selectors
       let keys = ranges |> Array.ofSeq |> Seq.map keySel
@@ -192,7 +192,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
     /// Group an (un)ordered index
     member builder.GroupBy<'K, 'TNewKey, 'R when 'K : equality and 'TNewKey : equality>
-        (index:IIndex<'K>, keySel:'K -> 'TNewKey, vector, valueSel:_ * _ * _ -> OptionalValue<'R>) =
+        (index:IIndex<'K>, keySel:'K -> 'TNewKey, vector, valueSel:_ * _ -> OptionalValue<'R>) =
       let builder = (builder :> IIndexBuilder)
       let ranges =
         // Build a sequence of indices & vector constructions representing the groups
@@ -202,17 +202,17 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
             seq { for k, newAddr in Seq.zip win (Address.generateRange(Address.rangeOf(win))) -> 
                     newAddr, index.Lookup(k, Lookup.Exact, fun _ -> true).Value |> snd }
           let newIndex = builder.Create(win, None)
-          key, newIndex, Vectors.Relocate(vector, Address.rangeOf(win), relocations))
+          key, (newIndex, Vectors.Relocate(vector, Address.rangeOf(win), relocations)))
 
       /// Build a new index & vector by applying value selector
-      let keys = ranges |> Array.ofSeq |> Seq.map (fun (k, idx, vec) -> k)
+      let keys = ranges |> Array.ofSeq |> Seq.map (fun (k, _) -> k)
       let newIndex = builder.Create(keys, None)
       let vect = ranges |> Seq.map valueSel |> Array.ofSeq |> vectorBuilder.CreateMissing
       newIndex, vect
 
 
     /// Order index and build vector transformation 
-    member builder.OrderIndex(index, vector) =
+    member builder.OrderIndex( (index, vector) ) =
       let keys = Array.ofSeq index.Keys
       Array.sortInPlaceWith (fun a b -> index.Comparer.Compare(a, b)) keys
       let newIndex = LinearIndex(keys, builder, true, index.Comparer) :> IIndex<_>
@@ -227,7 +227,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
     /// Union the index with another. For sorted indices, this needs to align the keys;
     /// for unordered, it appends new ones to the end.
     member builder.Union<'K when 'K : equality >
-        (index1:IIndex<'K>, index2, vector1, vector2) = 
+        ( (index1:IIndex<'K>, vector1), (index2, vector2) )= 
       let joined =
         if index1.Ordered && index2.Ordered then
           Seq.alignWithOrdering index1.Mappings index2.Mappings index1.Comparer |> Array.ofSeq 
@@ -238,7 +238,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
     /// Append is similar to union, but it also combines the vectors using the specified
     /// vector transformation.
     member builder.Append<'K when 'K : equality >
-        (index1:IIndex<'K>, index2, vector1, vector2, transform) = 
+        ( (index1:IIndex<'K>, vector1), (index2, vector2), transform) = 
       let joined = 
         if index1.Ordered && index2.Ordered then
           Seq.alignWithOrdering index1.Mappings index2.Mappings index1.Comparer |> Array.ofSeq 
@@ -250,7 +250,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
     /// Intersect the index with another. This is the same as
     /// Union, but we filter & only return keys present in both sequences.
     member builder.Intersect<'K when 'K : equality >
-        (index1:IIndex<'K>, index2, vector1, vector2) = 
+        ( (index1:IIndex<'K>, vector1), (index2, vector2) ) = 
       let joined = 
         if index1.Ordered && index2.Ordered then
           Seq.alignWithOrdering index1.Mappings index2.Mappings index1.Comparer |> Array.ofSeq 
@@ -284,7 +284,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
     /// Drop the specified item from the index
     member builder.DropItem<'K when 'K : equality >
-        (index:IIndex<'K>, key, vector) = 
+        ( (index:IIndex<'K>, vector), key ) = 
       match index.Lookup(key, Lookup.Exact, fun _ -> true) with
       | OptionalValue.Present(addr) ->
           let newVector = Vectors.DropRange(vector, (snd addr, snd addr))
