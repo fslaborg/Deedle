@@ -8,31 +8,63 @@ open FSharp.DataFrame.Indices
 open FSharp.DataFrame.Vectors
 open FSharp.DataFrame.VectorHelpers
 
+/// This enumeration specifies joining behavior for `Join` method provided
+/// by `Series` and `Frame`. Outer join unions the keys (and may introduce
+/// missing values), inner join takes the intersection of keys; left and
+/// right joins take the keys of the first or the second series/frame.
 type JoinKind = 
+  /// Combine the keys available in both structures, align the values that
+  /// are available in both of them and mark the remaining values as missing.
   | Outer = 0
+  /// Take the intersection of the keys available in both structures and align the 
+  /// values of the two structures. The resulting structure cannot contain missing values.
   | Inner = 1
+  /// Take the keys of the left (first) structure and align values from the right (second)
+  /// structure with the keys of the first one. Values for keys not available in the second
+  /// structure will be missing.
   | Left = 2
+  /// Take the keys of the right (second) structure and align values from the left (first)
+  /// structure with the keys of the second one. Values for keys not available in the first
+  /// structure will be missing.
   | Right = 3
 
+
+/// This enumeration specifeis the behavior of `Union` operation on series when there are
+/// overlapping keys in two series that are being unioned. The options include prefering values
+/// from the left/right series or throwing an exception when both values are available.
 type UnionBehavior =
+  /// When there are values available in both series that are being unioned, prefer the left value.
   | PreferLeft = 0
+  /// When there are values available in both series that are being unioned, prefer the right value.
   | PreferRight = 1
+  /// When there are values available in both series that are being unioned, raise an exception.
   | Exclusive = 2
 
 // ------------------------------------------------------------------------------------------------
 // Series
 // ------------------------------------------------------------------------------------------------
 
+/// Represents an untyped series with keys of type `K` and values of some unknown type
+/// (This type should not generally be used directly, but it can be used when you need
+/// to write code that works on a sequence of series of heterogeneous types).
 type ISeries<'K when 'K : equality> =
+  /// Returns the vector containing data of the series (as an untyped vector)
   abstract Vector : FSharp.DataFrame.IVector
+  /// Returns the index containing keys of the series 
   abstract Index : IIndex<'K>
-  abstract TryGetObject : 'K -> option<obj>
+  /// Attempts to get the value at a specified key and return it as `obj`
+  abstract TryGetObject : 'K -> OptionalValue<obj>
 
-/// A series contains one Index and one Vec
+
+/// The type `Series<K, V>` represents a data series consisting of values `V` indexed by
+/// keys `K`. The keys of a series may or may not be ordered 
 and Series<'K, 'V when 'K : equality>
     ( index:IIndex<'K>, vector:IVector<'V>,
       vectorBuilder : IVectorBuilder, indexBuilder : IIndexBuilder ) as this =
   
+  member internal x.VectorBuilder = vectorBuilder
+  member internal x.IndexBuilder = indexBuilder
+
   /// Returns the index associated with this series. This member should not generally
   /// be accessed directly, because all functionality is exposed through series operations.
   member x.Index = index
@@ -84,7 +116,7 @@ and Series<'K, 'V when 'K : equality>
   // ----------------------------------------------------------------------------------------------
 
   interface ISeries<'K> with
-    member x.TryGetObject(k) = this.TryGet(k) |> OptionalValue.asOption |> Option.map box
+    member x.TryGetObject(k) = this.TryGet(k) |> OptionalValue.map box
     member x.Vector = vector :> IVector
     member x.Index = index
 
@@ -101,14 +133,13 @@ and Series<'K, 'V when 'K : equality>
         |> Formatting.formatTable
 
 (*
-  interface System.Collections.Generic.IEnumerable<'V> with
-    member x.GetEnumerator() = 
-      seq { for k, v in x.ObservationsOptional do
-              if v.HasValue then yield v.Value }
-      |> Seq.getEnumerator
+  interface seq<KeyValuePair<'K,'V>> with
+    member x.GetEnumerator() = x.Observations.GetEnumerator()
   interface System.Collections.IEnumerable with
     member x.GetEnumerator() = (x :> seq<_>).GetEnumerator() :> System.Collections.IEnumerator
-*)
+//*)
+
+
   // ----------------------------------------------------------------------------------------------
   // Accessors
   // ----------------------------------------------------------------------------------------------
@@ -117,7 +148,6 @@ and Series<'K, 'V when 'K : equality>
     let newIndex, newVector = indexBuilder.GetRange(index, lo, hi, Vectors.Return 0)
     let newVector = vectorBuilder.Build(newVector, [| vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
-
 
   [<EditorBrowsable(EditorBrowsableState.Never)>]
   member x.GetSlice(lo, hi) =
@@ -168,7 +198,13 @@ and Series<'K, 'V when 'K : equality>
   member x.Get(key, lookup) =
     x.GetObservation(key, lookup).Value
 
-  /// Attempts to get a value at the specified `key`
+  member x.GetByLevel(key:'K) =
+    let newIndex, levelCmd = indexBuilder.LookupLevel((index, Vectors.Return 0), key)
+    let newVector = vectorBuilder.Build(levelCmd, [| vector |])
+    Series(newIndex, newVector, vectorBuilder, indexBuilder)
+    
+
+  /// Attempts to get a value at the specified 'key'
   member x.TryGetObservation(key) = x.TryGetObservation(key, Lookup.Exact)
   member x.GetObservation(key) = x.GetObservation(key, Lookup.Exact)
   member x.TryGet(key) = x.TryGet(key, Lookup.Exact)
@@ -177,6 +213,7 @@ and Series<'K, 'V when 'K : equality>
 
   member x.Item with get(a) = x.Get(a)
   member x.Item with get(items) = x.GetItems items
+  member x.Item with get(HL a) = x.GetByLevel(a)
 
   static member (?) (series:Series<_, _>, name:string) = series.Get(name, Lookup.Exact)
 
@@ -205,7 +242,7 @@ and Series<'K, 'V when 'K : equality>
     let newIndex, thisRowCmd, otherRowCmd = 
       match kind with 
       | JoinKind.Inner ->
-          indexBuilder.Intersect(index, otherSeries.Index, Vectors.Return 0, Vectors.Return 1)
+          indexBuilder.Intersect( (index, Vectors.Return 0), (otherSeries.Index, Vectors.Return 1) )
       | JoinKind.Left ->
           let otherRowIndex, vector = restrictToThisIndex index otherSeries.Index (Vectors.Return 1)
           let otherRowCmd = indexBuilder.Reindex(otherRowIndex, index, lookup, vector)
@@ -215,7 +252,7 @@ and Series<'K, 'V when 'K : equality>
           let thisRowCmd = indexBuilder.Reindex(thisRowIndex, otherSeries.Index, lookup, vector)
           otherSeries.Index, thisRowCmd, Vectors.Return 1
       | JoinKind.Outer | _ ->
-          indexBuilder.Union(index, otherSeries.Index, Vectors.Return 0, Vectors.Return 1)
+          indexBuilder.Union( (index, Vectors.Return 0), (otherSeries.Index, Vectors.Return 1) )
 
     // ....
     let combine =
@@ -242,7 +279,7 @@ and Series<'K, 'V when 'K : equality>
     series.Union(another, UnionBehavior.PreferLeft)
   
   member series.Union(another:Series<'K, 'V>, behavior) = 
-    let newIndex, vec1, vec2 = indexBuilder.Union(series.Index, another.Index, Vectors.Return 0, Vectors.Return 1)
+    let newIndex, vec1, vec2 = indexBuilder.Union( (series.Index, Vectors.Return 0), (another.Index, Vectors.Return 1) )
     let transform = 
       match behavior with
       | UnionBehavior.PreferRight -> VectorHelpers.VectorValueTransform.RightIfAvailable
@@ -310,10 +347,10 @@ and Series<'K, 'V when 'K : equality>
     let newIndex, newVector = 
       indexBuilder.Aggregate
         ( x.Index, aggregation, Vectors.Return 0, 
-          (fun (kind, index, cmd) -> 
+          (fun (kind, (index, cmd)) -> 
               let window = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
               OptionalValue(valueSelector.Invoke(DataSegment(kind, window)))),
-          (fun (kind, index, cmd) -> 
+          (fun (kind, (index, cmd)) -> 
               keySelector.Invoke(DataSegment(kind, Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)))) )
     Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
 
@@ -325,7 +362,7 @@ and Series<'K, 'V when 'K : equality>
       indexBuilder.GroupBy
         ( x.Index, 
           (fun key -> keySelector key (x.Get(key))), Vectors.Return 0, 
-          (fun (newKey, index, cmd) -> 
+          (fun (newKey, (index, cmd)) -> 
               let group = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
               valueSelector newKey group) )
     Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
@@ -344,7 +381,7 @@ and Series<'K, 'V when 'K : equality>
     let newIndex, newVector = 
       indexBuilder.Aggregate
         ( x.Index, WindowSize(2, boundary), Vectors.Return 0, 
-          (fun (kind, index, cmd) -> 
+          (fun (kind, (index, cmd)) -> 
               let actualVector = vectorBuilder.Build(cmd, [| vector |])
               let obs = [ for k, addr in index.Mappings -> actualVector.GetValue(addr) ]
               match obs with
@@ -352,7 +389,7 @@ and Series<'K, 'V when 'K : equality>
                   OptionalValue( DataSegment(kind, (v1, v2)) )
               | [ _; _ ] -> OptionalValue.Missing
               | _ -> failwith "Pairwise: failed - expected two values" ),
-          (fun (kind, index, vector) -> 
+          (fun (kind, (index, vector)) -> 
               if direction = Direction.Backward then index.Keys |> Seq.last
               else index.Keys |> Seq.head ) )
     Series<'K, DataSegment<'V * 'V>>(newIndex, newVector, vectorBuilder, indexBuilder)

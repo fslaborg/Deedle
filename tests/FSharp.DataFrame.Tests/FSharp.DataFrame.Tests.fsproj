@@ -58,6 +58,7 @@
     <Compile Include="FsUnit.fs" />
     <Compile Include="Common.fs" />
     <Compile Include="Vector.fs" />
+    <Compile Include="MultiKey.fs" />
     <Compile Include="Series.fs" />
     <None Include="packages.config" />
   </ItemGroup>

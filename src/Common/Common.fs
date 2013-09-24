@@ -534,6 +534,16 @@ module Seq =
     if not (en.MoveNext()) then true
     else isSorted en.Current en
 
+  /// Returns the first and the last element from a sequence or 'None' if the sequence is empty
+  let tryFirstAndLast (input:seq<_>) = 
+    let mutable first = None
+    let mutable last = None
+    for v in input do 
+      if first.IsNone then first <- Some v
+      last <- Some v
+    let last = last
+    first |> Option.map (fun f -> f, last.Value)
+
   /// Align two ordered sequences of `Key * Address` pairs and produce a 
   /// collection that contains three-element tuples consisting of: 
   ///

@@ -44,7 +44,6 @@ type IVector =
   /// untyped version of `GetValue` method on a typed vector.
   abstract GetObject : Address -> OptionalValue<obj>
 
-
 /// A generic, typed vector. Represents mapping from addresses to values of type `T`. 
 /// The vector provides a minimal interface that is required by series and can be
 /// implemented in a number of ways to provide vector backed by database or an
@@ -112,6 +111,16 @@ type IVectorValueTransform =
 /// A "mini-DSL" that describes construction of a vector. Vector can be constructed
 /// from various range operations (relocate, drop, slicing, appending), by combination
 /// of two vectors or by taking a vector from a list of variables.
+///
+/// Notably, vectors can only be constructed from other vectors of the same type 
+/// (the `Combine` operation requires this - even though that one could be made more general).
+/// This is an intentional choice to make the representation simpler.
+///
+/// Logically, when we apply some index operation, we should get back a polymorphic vector
+/// construction (`\forall T. VectorConstruction<T>`) that can be applied to variuous 
+/// different vector types. That would mean adding some more types, so we just model vector
+/// construction as an untyped operation and the typing is resquired by the `Build` method
+/// of the vector builder.
 type VectorConstruction =
   /// When constructing vectors, we get an array of vectors to be used as "variables"
   /// - this element represent getting one of the variables.
