@@ -61,11 +61,18 @@ type Frame =
     df.Join(other, kind=JoinKind.Left)
 
   // TODO: Add the above to F# API
+
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member FromColumns<'RowKey,'ColKey, 'V when 'RowKey: equality and 'ColKey: equality>(cols:seq<KeyValuePair<'ColKey, Series<'RowKey, 'V>>>) = 
     let colKeys = cols |> Seq.map (fun kvp -> kvp.Key)
     let colSeries = cols |> Seq.map (fun kvp -> kvp.Value)
     FrameUtils.fromColumns(Series(colKeys, colSeries))
+
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member FromRowKeys<'K when 'K : equality>(keys:seq<'K>) =
+    let rowIndex = FrameUtils.indexBuilder.Create(keys, None)
+    let colIndex = FrameUtils.indexBuilder.Create([], None)
+    Frame<_, string>(rowIndex, colIndex, FrameUtils.vectorBuilder.Create [||])
 
 [<AutoOpen>]
 module FSharpFrameExtensions =
@@ -179,11 +186,16 @@ module FSharpFrameExtensions =
       let newData = x.Data.Select(VectorHelpers.transformColumn x.VectorBuilder rowCmd)
       Frame<_, _>(newRowIndex, x.ColumnIndex, newData)
 
+    // Grouping
+
     member frame.GroupRowsBy<'TGroup when 'TGroup : equality>(key) =
       frame.Rows |> Series.groupInto (fun _ v -> v.GetAs<'TGroup>(key)) (fun k g -> g |> Frame.ofRows)
 
     member frame.GroupRowsInto<'TGroup when 'TGroup : equality>(key, f:System.Func<_, _, _>) =
       frame.Rows |> Series.groupInto (fun _ v -> v.GetAs<'TGroup>(key)) (fun k g -> f.Invoke(k, g |> Frame.ofRows))
+
+    member frame.GroupRowsUsing<'TGroup when 'TGroup : equality>(f:System.Func<_, _, 'TGroup>) =
+      frame.Rows |> Series.groupInto (fun k v -> f.Invoke(k, v)) (fun k g -> g |> Frame.ofRows)
 
 
 [<Extension>]
@@ -199,17 +211,35 @@ type FrameExtensions =
   [<Extension>]
   static member Where(frame:Frame<'TRowKey, 'TColumnKey>, condition) = 
     frame.Rows.Where(condition) |> Frame.ofRows
+
   [<Extension>]
   static member Select(frame:Frame<'TRowKey, 'TColumnKey>, projection) = 
     frame.Rows.Select(projection) |> Frame.ofRows
+
+  [<Extension>]
+  static member SelectRowKeys(frame:Frame<'TRowKey, 'TColumnKey>, projection) = 
+    frame.Rows.SelectKeys(projection) |> Frame.ofRows
+
+  [<Extension>]
+  static member SelectColumnKeys(frame:Frame<'TRowKey, 'TColumnKey>, projection) = 
+    frame.Columns.SelectKeys(projection) |> Frame.ofColumns
+
   [<Extension>]
   static member Append(frame:Frame<'TRowKey, 'TColumnKey>, rowKey, row) = 
     frame.Append(Frame.ofRows [ rowKey => row ])
+
   [<Extension>]
-  static member OrdereRows(frame:Frame<'TRowKey, 'TColumnKey>) = 
+  static member OrderRows(frame:Frame<'TRowKey, 'TColumnKey>) = 
     let newRowIndex, rowCmd = frame.IndexBuilder.OrderIndex(frame.RowIndex, Vectors.Return 0)
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
+
+  [<Extension>]
+  static member OrderColumns(frame:Frame<'TRowKey, 'TColumnKey>) = 
+    let newColIndex, rowCmd = frame.IndexBuilder.OrderIndex(frame.ColumnIndex, Vectors.Return 0)
+    let newData = frame.VectorBuilder.Build(rowCmd, [| frame.Data |])
+    Frame<_, _>(frame.RowIndex, newColIndex, newData)
+
   [<Extension>]
   static member Transpose(frame:Frame<'TRowKey, 'TColumnKey>) = 
     frame.Columns |> Frame.ofRows

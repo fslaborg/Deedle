@@ -8,9 +8,113 @@ TODO
 #I "../bin"
 #load "FSharp.DataFrame.fsx"
 #load "../packages/FSharp.Charting.0.84/FSharp.Charting.fsx"
+#r "../packages/FSharp.Data.1.1.9/lib/net40/FSharp.Data.dll"
 open System
+open FSharp.Data
 open FSharp.DataFrame
 open FSharp.Charting
+
+(*
+let s1 = Series.ofValues [ 1 .. 10 ]
+let f1 = Frame.ofColumns [ "A" => s1 ]
+f1.Append(f1) // TODO: Allow UnionBehavior?
+f1.Join(f1)
+
+s1.Union(s1)
+s1.Join(s1) // TODO: Support lookup
+
+f1
+//*)
+
+(** 
+Hiearrchical indexing
+---------------------
+
+*)
+
+let wb = WorldBankData.GetDataContext()
+
+let loadRegion (region:WorldBankData.ServiceTypes.Region) =
+  [ for country in region.Countries -> 
+      MultiKey(region.Name, country.Name) => 
+        Series.ofObservations country.Indicators.``GDP (current US$)`` ]
+  |> Frame.ofColumns
+
+let df1 = loadRegion wb.Regions.``Euro area``
+let df2 = loadRegion wb.Regions.``OECD members``
+let world = df1.Join(df2)
+(*
+open System.Runtime.CompilerServices
+[<Extension>]
+type Foo = 
+  [<Extension>]
+  static member GetSlice(n:int, a, b, c, d) = 42
+
+let n = 42
+n.[1 .. 0, 4 .. ]
+
+let a = Array3D.init 10 10 10 (fun _ _ _ -> 0)
+a.[0 .. 10, *, *]
+*)
+world.Columns.[Lookup1Of2 "Euro area"]
+world.Columns.[Lookup1Of2 "Euro area"]
+world.Columns.[Lookup1Of2 "Euro area"].Columns.[Lookup2Of2 "Austria"]
+world.Columns.[Lookup2Of2 "Mexico"]
+world.Columns.[Lookup2Of2 "Belgium"]
+
+world.Columns.[MultiKey("Euro area", "Austria")]
+
+let euro = 
+  world.Columns.[Lookup1Of2 "Euro area"]
+  |> Frame.mapColumnKeys Key.key2Of2
+
+let grouped = 
+  euro
+  |> Frame.groupColsUsing (fun k _ -> k.Substring(0, 1))
+  |> Frame.orderCols
+  |> Frame.groupRowsUsing (fun k _ -> sprintf "%d0s" (k / 10))
+
+grouped.GetSeries<float>(MultiKey("A", "Austria"))
+|> Series.meanLevel Level1Of2
+
+// grouped.GroupRowsUsing(fun (MultiKey(decade, _)) row -> decade)
+grouped.GroupRowsLevel(Level1Of2, fun k df -> 
+  df.Columns
+  |> Series.map (fun c series -> 
+    series.Values |> Seq.forall id) )
+
+// Let me run an aggregation on all columns of a specific type
+// (e.g. if we have two-level keys where the second level is heterogeneous)
+
+// TODO: use tuples
+
+//|> Frame.groupRowsUsing (fun 
+
+
+let sample = Frame.ofColumns [ "Test" => Series.ofValues [ 1.0 .. 4.0 ] ]
+let groupedSample = 
+  sample.ReplaceRowIndexKeys 
+    [ MultiKey("Small", 0); MultiKey("Small", 1);
+      MultiKey("Big", 0); MultiKey("Big", 1) ] |> Frame.orderRows
+
+(** 
+Overlaoded slicing
+------------------
+*)
+
+let wb2 = WorldBankData.GetDataContext()
+
+let arab = 
+  Frame.ofColumns
+    [ for country in wb2.Regions.``Arab World``.Countries -> 
+        country.Name => Series.ofObservations country.Indicators.``GDP (current US$)`` ]
+
+arab.Columns.[ ["Algeria"; "Bahrain"] ]
+|> Frame.mean
+
+arab.Rows.[ 2000 .. 2012 ]
+
+
 
 (**
 Joining series
@@ -22,7 +126,6 @@ Joining series
 
 
 (*
-
 query { for n in [ 1 .. 10 ] do
         let m = n + 1 
         sortBy n
@@ -31,7 +134,7 @@ query { for n in [ 1 .. 10 ] do
         take 10
         where (n > 4)
         select n }
-
+// 
 frame { for r in frame do
         withIndex (r.GetAs<string>("Name"))
         shift 1
