@@ -129,11 +129,14 @@ module Series =
   let pairwiseWith f (series:Series<'K, 'T>) = 
     series.Pairwise() |> map (fun k v -> f k v.Data)
 
+  /// `result[k] = series[k] - series[k - offset]`
   let inline diff offset (series:Series<'K, 'T>) = 
     series.Aggregate
       ( WindowSize((abs offset) + 1, Boundary.Skip), 
-        (fun ds -> let h, t = ds.Data.Values.First(), ds.Data.Values.Last() in t - h),
-        (fun ks -> if offset > 0 then ks.Data.Keys.First() else ks.Data.Keys.Last() ) )
+        (fun ds ->  
+          let h, t = ds.Data.Values.First(), ds.Data.Values.Last() in 
+          if offset < 0 then h - t else t - h),
+        (fun ks -> if offset < 0 then ks.Data.Keys.First() else ks.Data.Keys.Last() ) )
 
   (**
   Windowing, Chunking and Grouping

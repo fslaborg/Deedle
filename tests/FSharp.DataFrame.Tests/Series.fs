@@ -31,8 +31,8 @@ let ``Series with different data are not considered equal``() =
 [<Test>]
 let ``Series.diff and SeriesExtensions.Diff work on sample input``() =
   let input = Series.ofObservations [ 'a' => 1; 'b' => 2; 'c' => 3 ]
-  let expectedForward = Series.ofObservations [ 'a' => 2 ]
-  let expectedBackward = Series.ofObservations [ 'c' => 2 ]
+  let expectedForward = Series.ofObservations [ 'c' => 2 ]
+  let expectedBackward = Series.ofObservations [ 'a' => -2 ]
   input |> Series.diff -2 |> shouldEqual expectedBackward
   input |> Series.diff 2 |> shouldEqual expectedForward 
   SeriesExtensions.Diff(input, -2) |> shouldEqual expectedBackward
