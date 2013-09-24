@@ -61,11 +61,18 @@ type Frame =
     df.Join(other, kind=JoinKind.Left)
 
   // TODO: Add the above to F# API
+
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member FromColumns<'RowKey,'ColKey, 'V when 'RowKey: equality and 'ColKey: equality>(cols:seq<KeyValuePair<'ColKey, Series<'RowKey, 'V>>>) = 
     let colKeys = cols |> Seq.map (fun kvp -> kvp.Key)
     let colSeries = cols |> Seq.map (fun kvp -> kvp.Value)
     FrameUtils.fromColumns(Series(colKeys, colSeries))
+
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member FromRowKeys<'K when 'K : equality>(keys:seq<'K>) =
+    let rowIndex = FrameUtils.indexBuilder.Create(keys, None)
+    let colIndex = FrameUtils.indexBuilder.Create([], None)
+    Frame<_, string>(rowIndex, colIndex, FrameUtils.vectorBuilder.Create [||])
 
 [<AutoOpen>]
 module FSharpFrameExtensions =
