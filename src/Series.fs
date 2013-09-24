@@ -133,14 +133,13 @@ and Series<'K, 'V when 'K : equality>
         |> Formatting.formatTable
 
 (*
-  interface System.Collections.Generic.IEnumerable<'V> with
-    member x.GetEnumerator() = 
-      seq { for k, v in x.ObservationsOptional do
-              if v.HasValue then yield v.Value }
-      |> Seq.getEnumerator
+  interface seq<KeyValuePair<'K,'V>> with
+    member x.GetEnumerator() = x.Observations.GetEnumerator()
   interface System.Collections.IEnumerable with
     member x.GetEnumerator() = (x :> seq<_>).GetEnumerator() :> System.Collections.IEnumerator
-*)
+//*)
+
+
   // ----------------------------------------------------------------------------------------------
   // Accessors
   // ----------------------------------------------------------------------------------------------

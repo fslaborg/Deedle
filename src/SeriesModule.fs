@@ -8,33 +8,66 @@ module Series =
   open FSharp.DataFrame.Vectors
   open MathNet.Numerics.Statistics
 
-  [<CompiledName("Sum")>]
-  let inline sum (series:Series<_, _>) = 
-    match series.Vector.Data with
-    | VectorData.DenseList list -> IReadOnlyList.sum list
-    | VectorData.SparseList list -> IReadOnlyList.sumOptional list
-    | VectorData.Sequence seq -> Seq.sum (Seq.choose OptionalValue.asOption seq)
-
-  [<CompiledName("Mean")>]
-  let inline mean (series:Series<_, _>) = 
-    match series.Vector.Data with
-    | VectorData.DenseList list -> IReadOnlyList.average list
-    | VectorData.SparseList list -> IReadOnlyList.averageOptional list
-    | VectorData.Sequence seq -> Seq.average (Seq.choose OptionalValue.asOption seq)
-
   // Non-public helper
-  let inline private streamingAggregation f (series:Series<_, float>) =
+  let inline private streamingAggregation f (series:Series<_, _>) =
     match series.Vector.Data with
     | VectorData.DenseList list -> f (list :> seq<_>)
     | VectorData.SparseList list -> f (Seq.choose OptionalValue.asOption list)
     | VectorData.Sequence seq -> f (Seq.choose OptionalValue.asOption seq)
 
+  let inline private fastAggregation flist foptlist fseq (series:Series<_, _>) =
+    match series.Vector.Data with
+    | VectorData.DenseList list -> flist list
+    | VectorData.SparseList list -> foptlist list
+    | VectorData.Sequence seq -> fseq (Seq.choose OptionalValue.asOption seq)
 
-  /// If there are missing values, they are skipped over.
+  let inline fastStatLevel (level:ILevelReader<_, _, _>) flist foptlist fseq (series:Series<MultiKey<_, _>, _>) : Series<_, _> = 
+    series.GroupBy
+      ( (fun key ser -> level.GetKey(key)),
+        (fun key ser -> OptionalValue(fastAggregation flist foptlist fseq series)))
+
+
+  [<CompiledName("Statistic")>]
+  let inline stat op (series:Series<'K, _>) = 
+    series |> streamingAggregation op
+
+  [<CompiledName("Sum")>]
+  let inline sum (series:Series<_, _>) = 
+    series |> fastAggregation IReadOnlyList.sum IReadOnlyList.sumOptional Seq.sum
+
+  [<CompiledName("Mean")>]
+  let inline mean (series:Series<_, _>) = 
+    series |> fastAggregation IReadOnlyList.average IReadOnlyList.averageOptional Seq.average
+
   [<CompiledName("StandardDeviation")>]
-  let inline sdv (series:Series<'K, float>) = series |> streamingAggregation Statistics.StandardDeviation
+  let inline sdv (series:Series<'K, float>) = series |> stat Statistics.StandardDeviation 
+
   [<CompiledName("Median")>]
-  let inline median (series:Series<'K, float>) = series |> streamingAggregation Statistics.Median
+  let inline median (series:Series<'K, float>) = series |> stat Statistics.Median
+
+
+  [<CompiledName("StatisticLevel")>]
+  let inline statLevel (level:ILevelReader<_, _, _>) op (series:Series<MultiKey<_, _>, _>) : Series<_, _> = 
+    series.GroupBy
+      ( (fun key ser -> level.GetKey(key)),
+        (fun key ser -> OptionalValue(stat op ser)))
+
+  [<CompiledName("SumLevel")>]
+  let inline sumLevel level (series:Series<_, _>) = 
+    series |> fastStatLevel level IReadOnlyList.sum IReadOnlyList.sumOptional Seq.sum
+
+  [<CompiledName("MeanLevel")>]
+  let inline meanLevel level (series:Series<_, _>) = 
+    series |> fastStatLevel level IReadOnlyList.average IReadOnlyList.averageOptional Seq.average
+
+  [<CompiledName("StandardDeviationLevel")>]
+  let inline sdvLevel level (series:Series<_, float>) = 
+    series |> statLevel level Statistics.StandardDeviation 
+
+  [<CompiledName("MedianLevel")>]
+  let inline medianLevel level (series:Series<_, float>) = 
+    series |> statLevel level Statistics.Median
+
 
   /// Return observations with available values. The operation skips over 
   /// all keys with missing values (such as values created from `null`,

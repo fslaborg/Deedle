@@ -231,14 +231,40 @@ module Frame =
   let sum (frame:Frame<'TRowKey, 'TColKey>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Series.sum)
 
+  let sdv (frame:Frame<'TRowKey, 'TColKey>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sdv)
+
+  let median (frame:Frame<'TRowKey, 'TColKey>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.median)
+
+  let stat op (frame:Frame<'TRowKey, 'TColKey>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.stat op)
+
+
   let inline countValues (frame:Frame<'TRowKey, 'TColKey>) = 
     frame.GetColumns<obj>() |> Series.map (fun _ -> Series.countValues)
 
   let countKeys (frame:Frame<'TRowKey, 'TColKey>) = 
     frame.RowIndex.Keys |> Seq.length
 
-  let sdv (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sdv)
-
   let inline diff offset (frame:Frame<'TRowKey, 'TColKey>) = 
     frame.Columns |> Series.mapValues (fun s -> Series.diff offset (s.As<float>())) |> Frame.ofColumns
+
+  // ----------------------------------------------------------------------------------------------
+  // Hierarchical aggregation
+  // ----------------------------------------------------------------------------------------------
+
+  let meanLevel level (frame:Frame<MultiKey<'TRowKey1, 'TRowKey2>, 'TColKey>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.meanLevel level)
+
+  let sumLevel level (frame:Frame<MultiKey<'TRowKey1, 'TRowKey2>, 'TColKey>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sumLevel level)
+
+  let sdvLevel level (frame:Frame<MultiKey<'TRowKey1, 'TRowKey2>, 'TColKey>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sdvLevel level)
+
+  let medianLevel level (frame:Frame<MultiKey<'TRowKey1, 'TRowKey2>, 'TColKey>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.medianLevel level)
+
+  let statLevel level op (frame:Frame<MultiKey<'TRowKey1, 'TRowKey2>, 'TColKey>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.statLevel level op)

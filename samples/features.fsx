@@ -14,6 +14,18 @@ open FSharp.Data
 open FSharp.DataFrame
 open FSharp.Charting
 
+(*
+let s1 = Series.ofValues [ 1 .. 10 ]
+let f1 = Frame.ofColumns [ "A" => s1 ]
+f1.Append(f1) // TODO: Allow UnionBehavior?
+f1.Join(f1)
+
+s1.Union(s1)
+s1.Join(s1) // TODO: Support lookup
+
+f1
+//*)
+
 (** 
 Hiearrchical indexing
 ---------------------
@@ -31,15 +43,29 @@ let loadRegion (region:WorldBankData.ServiceTypes.Region) =
 let df1 = loadRegion wb.Regions.``Euro area``
 let df2 = loadRegion wb.Regions.``OECD members``
 let world = df1.Join(df2)
+(*
+open System.Runtime.CompilerServices
+[<Extension>]
+type Foo = 
+  [<Extension>]
+  static member GetSlice(n:int, a, b, c, d) = 42
 
-world.Columns.[Level1Of2 "Euro area"]
-world.Columns.[Level1Of2 "Euro area"].Columns.[Level2Of2 "Austria"]
-world.Columns.[Level2Of2 "Mexico"]
+let n = 42
+n.[1 .. 0, 4 .. ]
+
+let a = Array3D.init 10 10 10 (fun _ _ _ -> 0)
+a.[0 .. 10, *, *]
+*)
+world.Columns.[Lookup1Of2 "Euro area"]
+world.Columns.[Lookup1Of2 "Euro area"]
+world.Columns.[Lookup1Of2 "Euro area"].Columns.[Lookup2Of2 "Austria"]
+world.Columns.[Lookup2Of2 "Mexico"]
+world.Columns.[Lookup2Of2 "Belgium"]
 
 world.Columns.[MultiKey("Euro area", "Austria")]
 
 let euro = 
-  world.Columns.[Level1Of2 "Euro area"]
+  world.Columns.[Lookup1Of2 "Euro area"]
   |> Frame.mapColumnKeys Key.key2Of2
 
 let grouped = 
@@ -47,6 +73,22 @@ let grouped =
   |> Frame.groupColsUsing (fun k _ -> k.Substring(0, 1))
   |> Frame.orderCols
   |> Frame.groupRowsUsing (fun k _ -> sprintf "%d0s" (k / 10))
+
+grouped.GetSeries<float>(MultiKey("A", "Austria"))
+|> Series.meanLevel Level1Of2
+
+// grouped.GroupRowsUsing(fun (MultiKey(decade, _)) row -> decade)
+grouped.GroupRowsLevel(Level1Of2, fun k df -> 
+  df.Columns
+  |> Series.map (fun c series -> 
+    series.Values |> Seq.forall id) )
+
+// Let me run an aggregation on all columns of a specific type
+// (e.g. if we have two-level keys where the second level is heterogeneous)
+
+// TODO: use tuples
+
+//|> Frame.groupRowsUsing (fun 
 
 
 let sample = Frame.ofColumns [ "Test" => Series.ofValues [ 1.0 .. 4.0 ] ]
