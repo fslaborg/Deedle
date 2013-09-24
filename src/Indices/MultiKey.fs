@@ -2,6 +2,8 @@
 
 type ICustomKey<'K> = 
   abstract Matches : ICustomKey<'K> -> bool
+  abstract Levels : int
+  abstract GetLevel : int -> obj
 
 type HierarchicalLookup<'K> = 
   HL of 'K
@@ -9,6 +11,11 @@ type HierarchicalLookup<'K> =
 /// 
 type IMultiKey = 
   abstract Keys : option<obj> * option<obj>
+
+[<AutoOpen>]
+module internal IMultiKeyExtensions = 
+  let (|IMultiKey|_|) (obj:obj) = 
+    match obj with :? IMultiKey as mk -> Some(mk.Keys) | _ -> None
 
 type MultiKey<'K1, 'K2> = 
   internal | MK of option<'K1> * option<'K2>
@@ -22,11 +29,23 @@ type MultiKey<'K1, 'K2> =
     | MK(Some k, None) -> sprintf "(%A, _)" k
     | MK(Some k1, Some k2) -> sprintf "%A" (k1, k2)
   interface ICustomKey<MultiKey<'K1, 'K2>> with
+    member x.Levels =
+      let rec level (typ:System.Type) =
+        if typ.IsGenericType && typ.GetGenericTypeDefinition() = typedefof<MultiKey<_, _>> then 
+          level (typ.GetGenericArguments().[1])
+        else 1
+      1 + level (typeof<'K2>)
+
+    member x.GetLevel(n) =
+      let rec level = function
+        | 1, IMultiKey(Some v, _) -> v
+        | 1, IMultiKey(None, _) -> failwith "Unexpected multi-key format"
+        | 1, v -> v
+        | n, IMultiKey(_, Some v) -> level (n-1, v)
+        | _ -> failwith "Unexpected multi-key format"
+      level (n, x)
+
     member x.Matches(another) = 
-      let (|IMultiKey|_|) (obj:obj) =
-        match obj with 
-        | :? IMultiKey as mk -> Some(mk.Keys)
-        | _ -> None
       let rec matches template value = 
         match template, value with
         | IMultiKey(Some v1, _), IMultiKey(Some v2, None) 

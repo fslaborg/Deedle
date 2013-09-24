@@ -261,18 +261,49 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   interface IFsiFormattable with
     member frame.Format() = 
       try
-        seq { yield ""::[ for colName, _ in frame.ColumnIndex.Mappings do yield colName.ToString() ]
-              let rows = frame.Rows
-              for item in frame.RowIndex.Mappings |> Seq.startAndEnd Formatting.StartItemCount Formatting.EndItemCount do
-                match item with 
-                | Choice2Of3() ->
-                    yield ":"::[for i in 1 .. data.DataSequence |> Seq.length -> "..."]
-                | Choice1Of3(ind, addr) | Choice3Of3(ind, addr) ->
-                    let row = rows.[ind]
-                    yield 
-                      (ind.ToString() + " ->")::
-                      [ for KeyValue(_, value) in SeriesExtensions.GetAllObservations(row) ->  // TODO: is this good?
-                          value.ToString() ] }
+        let colKey = frame.ColumnIndex.Keys |> Seq.head
+        let rowKey = frame.RowIndex.Keys |> Seq.head
+        let colLevels = match box colKey with :? ICustomKey<'TColumnKey> as ck -> ck.Levels | _ -> 1
+        let rowLevels = match box rowKey with :? ICustomKey<'TRowKey> as ck -> ck.Levels | _ -> 1
+
+        let getLevel ordered previous maxLevel level (key:'K) = 
+          let levelKey = 
+            if level = 1 && maxLevel = 1 then box key
+            else (unbox<ICustomKey<'K>> key).GetLevel(level)
+          if ordered && (Some levelKey = !previous) then "" 
+          else previous := Some levelKey; levelKey.ToString()
+        
+        seq { 
+          // Yield headers (for all column levels)
+          for colLevel in 1 .. colLevels do 
+            yield [
+              // Prefix with appropriate number of (empty) row keys
+              for i in 1 .. rowLevels do yield "" 
+              yield ""
+              let previous = ref None
+              for colKey, _ in frame.ColumnIndex.Mappings do 
+                yield getLevel frame.ColumnIndex.Ordered previous colLevels colLevel colKey ]
+
+          // Yield row data
+          let rows = frame.Rows
+          let previous = Array.init rowLevels (fun _ -> ref None)
+          for item in frame.RowIndex.Mappings |> Seq.startAndEnd Formatting.StartItemCount Formatting.EndItemCount do
+            match item with 
+            | Choice2Of3() ->
+                yield [
+                  // Prefix with appropriate number of (empty) row keys
+                  for i in 1 .. rowLevels do yield if i = 1 then ":" else ""
+                  yield ""
+                  for i in 1 .. data.DataSequence |> Seq.length -> "..." ]
+            | Choice1Of3(rowKey, addr) | Choice3Of3(rowKey, addr) ->
+                let row = rows.[rowKey]
+                yield [
+                  // Yield all row keys
+                  for rowLevel in 1 .. rowLevels do 
+                    yield getLevel frame.RowIndex.Ordered previous.[rowLevel - 1] rowLevels rowLevel rowKey
+                  yield "->"
+                  for KeyValue(_, value) in SeriesExtensions.GetAllObservations(row) do  // TODO: is this good?
+                    yield value.ToString() ] }
         |> array2D
         |> Formatting.formatTable
       with e -> sprintf "Formatting failed: %A" e

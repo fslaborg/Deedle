@@ -190,15 +190,6 @@ module FSharpFrameExtensions =
     member frame.GroupRowsUsing<'TGroup when 'TGroup : equality>(f:System.Func<_, _, 'TGroup>) =
       frame.Rows |> Series.groupInto (fun k v -> f.Invoke(k, v)) (fun k g -> g |> Frame.ofRows)
 
-    member frame.GroupRowsBy<'TGroup when 'TGroup : equality>(key) =
-      frame.Rows |> Series.groupInto (fun _ v -> v.GetAs<'TGroup>(key)) (fun k g -> g |> Frame.ofRows)
-
-    member frame.GroupRowsInto<'TGroup when 'TGroup : equality>(key, f:System.Func<_, _, _>) =
-      frame.Rows |> Series.groupInto (fun _ v -> v.GetAs<'TGroup>(key)) (fun k g -> f.Invoke(k, g |> Frame.ofRows))
-
-    member frame.GroupRowsUsing<'TGroup when 'TGroup : equality>(f:System.Func<_, _, 'TGroup>) =
-      frame.Rows |> Series.groupInto (fun k v -> f.Invoke(k, v)) (fun k g -> g |> Frame.ofRows)
-
 
 [<Extension>]
 type FrameExtensions =
@@ -231,10 +222,16 @@ type FrameExtensions =
     frame.Append(Frame.ofRows [ rowKey => row ])
 
   [<Extension>]
-  static member OrdereRows(frame:Frame<'TRowKey, 'TColumnKey>) = 
+  static member OrderRows(frame:Frame<'TRowKey, 'TColumnKey>) = 
     let newRowIndex, rowCmd = frame.IndexBuilder.OrderIndex(frame.RowIndex, Vectors.Return 0)
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
+
+  [<Extension>]
+  static member OrderColumns(frame:Frame<'TRowKey, 'TColumnKey>) = 
+    let newColIndex, rowCmd = frame.IndexBuilder.OrderIndex(frame.ColumnIndex, Vectors.Return 0)
+    let newData = frame.VectorBuilder.Build(rowCmd, [| frame.Data |])
+    Frame<_, _>(frame.RowIndex, newColIndex, newData)
 
   [<Extension>]
   static member Transpose(frame:Frame<'TRowKey, 'TColumnKey>) = 

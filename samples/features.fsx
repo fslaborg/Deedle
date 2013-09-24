@@ -23,11 +23,9 @@ Hiearrchical indexing
 let wb = WorldBankData.GetDataContext()
 
 let loadRegion (region:WorldBankData.ServiceTypes.Region) =
-  let df =
-    Frame.ofColumns
-      [ for country in region.Countries -> 
-          country.Name => Series.ofObservations country.Indicators.``GDP (current US$)`` ]
-  df.Columns.SelectKeys(fun kvp -> MultiKey(region.Name, kvp.Key))
+  [ for country in region.Countries -> 
+      MultiKey(region.Name, country.Name) => 
+        Series.ofObservations country.Indicators.``GDP (current US$)`` ]
   |> Frame.ofColumns
 
 let df1 = loadRegion wb.Regions.``Euro area``
@@ -44,19 +42,18 @@ let euro =
   world.Columns.[Level1Of2 "Euro area"]
   |> Frame.mapColumnKeys Key.key2Of2
 
-euro
-|> Frame.groupRowsBy
-.GroupRowsUsing(fun k _ -> k
+let grouped = 
+  euro
+  |> Frame.groupColsUsing (fun k _ -> k.Substring(0, 1))
+  |> Frame.orderCols
+  |> Frame.groupRowsUsing (fun k _ -> sprintf "%d0s" (k / 10))
 
-// string * int * int
 
-MultiKey
-
-// Key
-// using level-1-equals    : Key * Key -> int
-
-// Key
-// using levels-1,2-equals : Key * Key -> int
+let sample = Frame.ofColumns [ "Test" => Series.ofValues [ 1.0 .. 4.0 ] ]
+let groupedSample = 
+  sample.ReplaceRowIndexKeys 
+    [ MultiKey("Small", 0); MultiKey("Small", 1);
+      MultiKey("Big", 0); MultiKey("Big", 1) ] |> Frame.orderRows
 
 (** 
 Overlaoded slicing
