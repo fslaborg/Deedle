@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.20827.3
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.DataFrame", "src\FSharp.DataFrame.fsproj", "{22729065-4C30-4E43-A63F-4F3338A03878}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0ACC5440-2ECD-4D02-88D3-E0F1A1E0FC89}"
 	ProjectSection(SolutionItems) = preProject
 		samples\samples.fsx = samples\samples.fsx
@@ -23,8 +25,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{B6AFD701
 		tools\build.fsx = tools\build.fsx
 		tools\template.html = tools\template.html
 	EndProjectSection
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.DataFrame", "src\FSharp.DataFrame.fsproj", "{22729065-4C30-4E43-A63F-4F3338A03878}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -14,12 +14,12 @@ module Frame =
 
   let collapseCols (series:Series<'K, Frame<'K1, 'K2>>) = 
     series 
-    |> Series.map (fun k1 df -> df.Columns |> Series.mapKeys(fun k2 -> MultiKey(k1, k2)) |> Frame.ofColumns)
+    |> Series.map (fun k1 df -> df.Columns |> Series.mapKeys(fun k2 -> (k1, k2)) |> Frame.ofColumns)
     |> Series.values |> Seq.reduce (fun df1 df2 -> df1.Append(df2))
 
   let collapseRows (series:Series<'K, Frame<'K1, 'K2>>) = 
     series 
-    |> Series.map (fun k1 df -> df.Rows |> Series.mapKeys(fun k2 -> MultiKey(k1, k2)) |> Frame.ofRows)
+    |> Series.map (fun k1 df -> df.Rows |> Series.mapKeys(fun k2 -> (k1, k2)) |> Frame.ofRows)
     |> Series.values |> Seq.reduce (fun df1 df2 -> df1.Append(df2))
 
   let groupRowsInto column f (frame:Frame<'TRowKey, 'TColKey>) = 
@@ -126,10 +126,10 @@ module Frame =
   [<CompiledName("GetRow")>]
   let getRow row (frame:Frame<'TRowKey, 'TColKey>) = frame.GetRow(row)
 
-  let getRowLevel (HL key) (frame:Frame<'TRowKey, 'TColKey>) = 
+  let getRowLevel (key) (frame:Frame<'TRowKey, 'TColKey>) = 
     frame.Rows.GetByLevel(key) |> Frame.ofRows
 
-  let getColLevel (HL key) (frame:Frame<'TRowKey, 'TColKey>) = 
+  let getColLevel (key) (frame:Frame<'TRowKey, 'TColKey>) = 
     frame.Columns.GetByLevel(key) |> Frame.ofColumns
 
   /// Returns a specified series (column) from a data frame. If the data frame has 
@@ -254,17 +254,17 @@ module Frame =
   // Hierarchical aggregation
   // ----------------------------------------------------------------------------------------------
 
-  let meanLevel level (frame:Frame<MultiKey<'TRowKey1, 'TRowKey2>, 'TColKey>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.meanLevel level)
+  let meanLevel level (frame:Frame<'TRowKey1 * 'TRowKey2, 'TColKey>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.meanLevel level) |> Frame.ofColumns
 
-  let sumLevel level (frame:Frame<MultiKey<'TRowKey1, 'TRowKey2>, 'TColKey>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sumLevel level)
+  let sumLevel level (frame:Frame<'TRowKey1 * 'TRowKey2, 'TColKey>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sumLevel level) |> Frame.ofColumns
 
-  let sdvLevel level (frame:Frame<MultiKey<'TRowKey1, 'TRowKey2>, 'TColKey>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sdvLevel level)
+  let sdvLevel level (frame:Frame<'TRowKey1 * 'TRowKey2, 'TColKey>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sdvLevel level) |> Frame.ofColumns
 
-  let medianLevel level (frame:Frame<MultiKey<'TRowKey1, 'TRowKey2>, 'TColKey>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.medianLevel level)
+  let medianLevel level (frame:Frame<'TRowKey1 * 'TRowKey2, 'TColKey>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.medianLevel level) |> Frame.ofColumns
 
-  let statLevel level op (frame:Frame<MultiKey<'TRowKey1, 'TRowKey2>, 'TColKey>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.statLevel level op)
+  let statLevel level op (frame:Frame<'TRowKey1 * 'TRowKey2, 'TColKey>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.statLevel level op) |> Frame.ofColumns

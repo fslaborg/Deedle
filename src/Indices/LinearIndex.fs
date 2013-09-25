@@ -8,6 +8,7 @@ namespace FSharp.DataFrame.Indices.Linear
 open System.Linq
 open System.Collections.Generic
 open FSharp.DataFrame
+open FSharp.DataFrame.Keys
 open FSharp.DataFrame.Addressing
 open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Indices
@@ -204,20 +205,23 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
     /// Group an (un)ordered index
     member builder.GroupBy<'K, 'TNewKey, 'R when 'K : equality and 'TNewKey : equality>
-        (index:IIndex<'K>, keySel:'K -> 'TNewKey, vector, valueSel:_ * _ -> OptionalValue<'R>) =
+        (index:IIndex<'K>, keySel:'K -> OptionalValue<'TNewKey>, vector, valueSel:_ * _ -> OptionalValue<'R>) =
       let builder = (builder :> IIndexBuilder)
       let ranges =
         // Build a sequence of indices & vector constructions representing the groups
-        let windows = index.Keys |> Seq.groupBy keySel
-        windows |> Seq.map (fun (key, win) ->
+        let windows = index.Keys |> Seq.groupBy keySel |> Seq.choose (fun (k, v) -> 
+          if k.HasValue then Some(k.Value, v) else None)
+        windows 
+        |> Seq.map (fun (key, win) ->
           let relocations = 
             seq { for k, newAddr in Seq.zip win (Address.generateRange(Address.rangeOf(win))) -> 
                     newAddr, index.Lookup(k, Lookup.Exact, fun _ -> true).Value |> snd }
           let newIndex = builder.Create(win, None)
           key, (newIndex, Vectors.Relocate(vector, Address.rangeOf(win), relocations)))
+        |> Array.ofSeq
 
       /// Build a new index & vector by applying value selector
-      let keys = ranges |> Array.ofSeq |> Seq.map (fun (k, _) -> k)
+      let keys = ranges |> Seq.map (fun (k, _) -> k)
       let newIndex = builder.Create(keys, None)
       let vect = ranges |> Seq.map valueSel |> Array.ofSeq |> vectorBuilder.CreateMissing
       newIndex, vect
@@ -294,15 +298,10 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
             yield newAddress, oldAddress.Value |> snd }
       Vectors.Relocate(vector, index2.Range, relocations)
 
-    member builder.LookupLevel( (index, vector), searchKey:'K ) =
-      let custKey = 
-        match box searchKey with 
-        | :? ICustomKey<'K> as k -> k
-        | _ -> invalidOp "Hierarchical indexing is only supported using custom keys"
+    member builder.LookupLevel( (index, vector), searchKey:ICustomLookup<'K> ) =
       let matching = 
         [| for key, addr in index.Mappings do
-             if custKey.Matches(unbox key) then 
-               yield addr, key |]
+             if searchKey.Matches(key) then yield addr, key |]
       let range = Address.rangeOf(matching)
       let relocs = Seq.zip (Address.generateRange(range)) (Seq.map fst matching)
       let newIndex = LinearIndex<_>(Seq.map snd matching, builder, index.Ordered)

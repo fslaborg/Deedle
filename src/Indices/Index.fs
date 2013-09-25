@@ -103,6 +103,7 @@ type Aggregation =
 namespace FSharp.DataFrame.Indices
 
 open FSharp.DataFrame
+open FSharp.DataFrame.Keys
 open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Addressing
 open FSharp.DataFrame.Vectors
@@ -214,10 +215,10 @@ and IIndexBuilder =
   abstract DropItem : SeriesConstruction<'K> * 'K -> 
     SeriesConstruction<'K> 
 
-  /// Get items associated with the specified key from the index. This method assumes
-  /// that `K` implements `ICustomKey<K>` which is used for custom equality testing
-  /// (for example, when getting a level of a hierarchical index)
-  abstract LookupLevel : SeriesConstruction<'K> * 'K -> SeriesConstruction<'K>
+  /// Get items associated with the specified key from the index. This method takes
+  /// `ICustomLookup<K>` which provides an implementation of `ICustomKey<K>`. This 
+  /// is used for custom equality testing (for example, when getting a level of a hierarchical index)
+  abstract LookupLevel : SeriesConstruction<'K> * ICustomLookup<'K> -> SeriesConstruction<'K>
 
   /// Order (possibly unordered) index and return transformation that reorders vector
   abstract OrderIndex : SeriesConstruction<'K> -> SeriesConstruction<'K>
@@ -242,5 +243,5 @@ and IIndexBuilder =
   /// Group a (possibly unordered) index using the specified `keySelector` function.
   /// The operation builds a new index with the selected keys and a matching vector
   /// with values produced by the `valueSelector` function.
-  abstract GroupBy : IIndex<'K> * keySelector:('K -> 'TNewKey) * VectorConstruction *
+  abstract GroupBy : IIndex<'K> * keySelector:('K -> OptionalValue<'TNewKey>) * VectorConstruction *
     valueSelector:('TNewKey * SeriesConstruction<'K> -> OptionalValue<'R>) -> IIndex<'TNewKey> * IVector<'R>
