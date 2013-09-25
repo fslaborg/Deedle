@@ -1,4 +1,5 @@
 ﻿namespace FSharp.DataFrame
+open FSharp.DataFrame.Keys
 
 /// Series module comment..
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
@@ -21,7 +22,7 @@ module Series =
     | VectorData.SparseList list -> foptlist list
     | VectorData.Sequence seq -> fseq (Seq.choose OptionalValue.asOption seq)
 
-  let inline fastStatLevel (level:ILevelReader<_, _, _>) flist foptlist fseq (series:Series<MultiKey<_, _>, _>) : Series<_, _> = 
+  let inline fastStatLevel (level:ILevelReader<_, _, _>) flist foptlist fseq (series:Series<_ * _, _>) : Series<_, _> = 
     series.GroupBy
       ( (fun key ser -> level.GetKey(key)),
         (fun key ser -> OptionalValue(fastAggregation flist foptlist fseq series)))
@@ -47,7 +48,7 @@ module Series =
 
 
   [<CompiledName("StatisticLevel")>]
-  let inline statLevel (level:ILevelReader<_, _, _>) op (series:Series<MultiKey<_, _>, _>) : Series<_, _> = 
+  let inline statLevel (level:ILevelReader<_, _, _>) op (series:Series<_ * _, _>) : Series<_, _> = 
     series.GroupBy
       ( (fun key ser -> level.GetKey(key)),
         (fun key ser -> OptionalValue(stat op ser)))

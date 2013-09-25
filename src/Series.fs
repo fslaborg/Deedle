@@ -5,6 +5,7 @@ open System.ComponentModel
 open System.Collections.Generic
 open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Indices
+open FSharp.DataFrame.Keys
 open FSharp.DataFrame.Vectors
 open FSharp.DataFrame.VectorHelpers
 
@@ -198,7 +199,7 @@ and Series<'K, 'V when 'K : equality>
   member x.Get(key, lookup) =
     x.GetObservation(key, lookup).Value
 
-  member x.GetByLevel(key:'K) =
+  member x.GetByLevel(key:ICustomLookup<'K>) =
     let newIndex, levelCmd = indexBuilder.LookupLevel((index, Vectors.Return 0), key)
     let newVector = vectorBuilder.Build(levelCmd, [| vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
@@ -213,7 +214,7 @@ and Series<'K, 'V when 'K : equality>
 
   member x.Item with get(a) = x.Get(a)
   member x.Item with get(items) = x.GetItems items
-  member x.Item with get(HL a) = x.GetByLevel(a)
+  member x.Item with get(a) = x.GetByLevel(a)
 
   static member (?) (series:Series<_, _>, name:string) = series.Get(name, Lookup.Exact)
 

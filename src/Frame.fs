@@ -5,11 +5,12 @@
 // --------------------------------------------------------------------------------------
 
 open FSharp.DataFrame
-open System.ComponentModel
+open FSharp.DataFrame.Keys
 open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Indices
 open FSharp.DataFrame.Vectors
 
+open System.ComponentModel
 open System.Runtime.InteropServices
 open VectorHelpers
 
@@ -263,22 +264,22 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
       try
         let colKey = frame.ColumnIndex.Keys |> Seq.head
         let rowKey = frame.RowIndex.Keys |> Seq.head
-        let colLevels = match box colKey with :? ICustomKey<'TColumnKey> as ck -> ck.Levels | _ -> 1
-        let rowLevels = match box rowKey with :? ICustomKey<'TRowKey> as ck -> ck.Levels | _ -> 1
+        let colLevels = CustomKey.Get(colKey).Levels
+        let rowLevels = CustomKey.Get(rowKey).Levels
 
         let getLevel ordered previous maxLevel level (key:'K) = 
           let levelKey = 
-            if level = 1 && maxLevel = 1 then box key
-            else (unbox<ICustomKey<'K>> key).GetLevel(level)
+            if level = 0 && maxLevel = 0 then box key
+            else CustomKey.Get(key).GetLevel(level)
           if ordered && (Some levelKey = !previous) then "" 
           else previous := Some levelKey; levelKey.ToString()
         
         seq { 
           // Yield headers (for all column levels)
-          for colLevel in 1 .. colLevels do 
+          for colLevel in 0 .. colLevels - 1 do 
             yield [
               // Prefix with appropriate number of (empty) row keys
-              for i in 1 .. rowLevels do yield "" 
+              for i in 0 .. rowLevels - 1 do yield "" 
               yield ""
               let previous = ref None
               for colKey, _ in frame.ColumnIndex.Mappings do 
@@ -292,15 +293,15 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
             | Choice2Of3() ->
                 yield [
                   // Prefix with appropriate number of (empty) row keys
-                  for i in 1 .. rowLevels do yield if i = 1 then ":" else ""
+                  for i in 0 .. rowLevels - 1 do yield if i = 0 then ":" else ""
                   yield ""
                   for i in 1 .. data.DataSequence |> Seq.length -> "..." ]
             | Choice1Of3(rowKey, addr) | Choice3Of3(rowKey, addr) ->
                 let row = rows.[rowKey]
                 yield [
                   // Yield all row keys
-                  for rowLevel in 1 .. rowLevels do 
-                    yield getLevel frame.RowIndex.Ordered previous.[rowLevel - 1] rowLevels rowLevel rowKey
+                  for rowLevel in 0 .. rowLevels - 1 do 
+                    yield getLevel frame.RowIndex.Ordered previous.[rowLevel] rowLevels rowLevel rowKey
                   yield "->"
                   for KeyValue(_, value) in SeriesExtensions.GetAllObservations(row) do  // TODO: is this good?
                     yield value.ToString() ] }
@@ -441,7 +442,7 @@ and ColumnSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey 
   member x.GetSlice(lo, hi) =
     base.GetSlice(lo, hi) |> FrameUtils.fromColumns
   member x.Item with get(items) = x.GetItems(items) |> FrameUtils.fromColumns
-  member x.Item with get(HL level) = x.GetByLevel(level) |> FrameUtils.fromColumns
+  member x.Item with get(level) = x.GetByLevel(level) |> FrameUtils.fromColumns
 
 and RowSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>(index, vector, vectorBuilder, indexBuilder) =
   inherit Series<'TRowKey, ObjectSeries<'TColumnKey>>(index, vector, vectorBuilder, indexBuilder)
@@ -452,4 +453,4 @@ and RowSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : e
   member x.GetSlice(lo, hi) =
     base.GetSlice(lo, hi) |> FrameUtils.fromRows
   member x.Item with get(items) = x.GetItems(items) |> FrameUtils.fromRows
-  member x.Item with get(HL level) = x.GetByLevel(level) |> FrameUtils.fromRows
+  member x.Item with get(level) = x.GetByLevel(level) |> FrameUtils.fromRows

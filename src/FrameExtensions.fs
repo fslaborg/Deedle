@@ -136,9 +136,7 @@ module FSharpFrameExtensions =
       FrameUtils.fromRows(rows)
 
     static member ofRowKeys(keys) = 
-      let rowIndex = FrameUtils.indexBuilder.Create(keys, None)
-      let colIndex = FrameUtils.indexBuilder.Create([], None)
-      Frame<_, string>(rowIndex, colIndex, FrameUtils.vectorBuilder.Create [||])
+      Frame.FromRowKeys(keys)
     
     static member ofColumns(cols) = 
       FrameUtils.fromColumns(cols)

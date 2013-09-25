@@ -36,37 +36,46 @@ let wb = WorldBankData.GetDataContext()
 
 let loadRegion (region:WorldBankData.ServiceTypes.Region) =
   [ for country in region.Countries -> 
-      MultiKey(region.Name, country.Name) => 
+      (region.Name, country.Name) => 
         Series.ofObservations country.Indicators.``GDP (current US$)`` ]
   |> Frame.ofColumns
 
 let df1 = loadRegion wb.Regions.``Euro area``
 let df2 = loadRegion wb.Regions.``OECD members``
 let world = df1.Join(df2)
+
 (*
 open System.Runtime.CompilerServices
 [<Extension>]
 type Foo = 
   [<Extension>]
-  static member GetSlice(n:int, a, b, c, d) = 42
+  static member GetSlice(n:int, a, b, c, d) = sprintf "%A" (a,b,c,d)
+  [<Extension>]
+  static member GetSlice(n:int, a, b, c) = sprintf "%A" (a,b,c)
 
 let n = 42
 n.[1 .. 0, 4 .. ]
+n.[*, 2]
+n.[2, *]
+n.[*, *]
 
 let a = Array3D.init 10 10 10 (fun _ _ _ -> 0)
 a.[0 .. 10, *, *]
 *)
+
 world.Columns.[Lookup1Of2 "Euro area"]
 world.Columns.[Lookup1Of2 "Euro area"]
 world.Columns.[Lookup1Of2 "Euro area"].Columns.[Lookup2Of2 "Austria"]
 world.Columns.[Lookup2Of2 "Mexico"]
 world.Columns.[Lookup2Of2 "Belgium"]
 
-world.Columns.[MultiKey("Euro area", "Austria")]
+world.Columns.
+
+world.Columns.[("Euro area", "Austria")]
 
 let euro = 
   world.Columns.[Lookup1Of2 "Euro area"]
-  |> Frame.mapColumnKeys Key.key2Of2
+  |> Frame.mapColumnKeys snd
 
 let grouped = 
   euro
@@ -74,7 +83,7 @@ let grouped =
   |> Frame.orderCols
   |> Frame.groupRowsUsing (fun k _ -> sprintf "%d0s" (k / 10))
 
-grouped.GetSeries<float>(MultiKey("A", "Austria"))
+grouped.GetSeries<float>(("A", "Austria"))
 |> Series.meanLevel Level1Of2
 
 // grouped.GroupRowsUsing(fun (MultiKey(decade, _)) row -> decade)

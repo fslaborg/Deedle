@@ -8,6 +8,7 @@ namespace FSharp.DataFrame.Indices.Linear
 open System.Linq
 open System.Collections.Generic
 open FSharp.DataFrame
+open FSharp.DataFrame.Keys
 open FSharp.DataFrame.Addressing
 open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Indices
@@ -294,15 +295,10 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
             yield newAddress, oldAddress.Value |> snd }
       Vectors.Relocate(vector, index2.Range, relocations)
 
-    member builder.LookupLevel( (index, vector), searchKey:'K ) =
-      let custKey = 
-        match box searchKey with 
-        | :? ICustomKey<'K> as k -> k
-        | _ -> invalidOp "Hierarchical indexing is only supported using custom keys"
+    member builder.LookupLevel( (index, vector), searchKey:ICustomLookup<'K> ) =
       let matching = 
         [| for key, addr in index.Mappings do
-             if custKey.Matches(unbox key) then 
-               yield addr, key |]
+             if searchKey.Matches(key) then yield addr, key |]
       let range = Address.rangeOf(matching)
       let relocs = Seq.zip (Address.generateRange(range)) (Seq.map fst matching)
       let newIndex = LinearIndex<_>(Seq.map snd matching, builder, index.Ordered)
