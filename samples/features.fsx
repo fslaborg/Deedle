@@ -69,7 +69,6 @@ world.Columns.[Lookup1Of2 "Euro area"].Columns.[Lookup2Of2 "Austria"]
 world.Columns.[Lookup2Of2 "Mexico"]
 world.Columns.[Lookup2Of2 "Belgium"]
 
-world.Columns.
 
 world.Columns.[("Euro area", "Austria")]
 

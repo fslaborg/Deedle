@@ -67,6 +67,9 @@ type SeriesBuilder<'K when 'K : equality>() =
 
 [<Extension>]
 type SeriesExtensions =
+//  [<Extension>]
+//  static member GetSlice(series:Series<'K1 * 'K2>, )
+
   [<Extension>]
   static member Between(series:Series<'K, 'V>, lowerInclusive, upperInclusive) = 
     series.GetSubrange
