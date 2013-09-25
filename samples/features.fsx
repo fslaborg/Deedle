@@ -44,41 +44,21 @@ let df1 = loadRegion wb.Regions.``Euro area``
 let df2 = loadRegion wb.Regions.``OECD members``
 let world = df1.Join(df2)
 
-(*
-open System.Runtime.CompilerServices
-[<Extension>]
-type Foo = 
-  [<Extension>]
-  static member GetSlice(n:int, a, b, c, d) = sprintf "%A" (a,b,c,d)
-  [<Extension>]
-  static member GetSlice(n:int, a, b, c) = sprintf "%A" (a,b,c)
-
-let n = 42
-n.[1 .. 0, 4 .. ]
-n.[*, 2]
-n.[2, *]
-n.[*, *]
-
-let a = Array3D.init 10 10 10 (fun _ _ _ -> 0)
-a.[0 .. 10, *, *]
-*)
-
+// F# 3.0 needs this
 world.Columns.[Lookup1Of2 "Euro area"]
 world.Columns.[Lookup1Of2 "Euro area"]
 world.Columns.[Lookup1Of2 "Euro area"].Columns.[Lookup2Of2 "Austria"]
 world.Columns.[Lookup2Of2 "Mexico"]
 world.Columns.[Lookup2Of2 "Belgium"]
 
-FrameExtensions.GetSlice(world.Columns, "Euro area", None, None)
-world.Columns.GetSlice("Euro area", None, None)
-
+// F# 3.1 makes this way nicer
 world.Columns.["Euro area", *]
 world.Columns.[*, "Belgium"]
 world.Columns.[("Euro area", "Belgium")]
 
 let euro = 
   world.Columns.[Lookup1Of2 "Euro area"]
-  |> Frame.mapColumnKeys snd
+  |> Frame.mapColKeys snd
 
 let grouped = 
   euro
@@ -89,22 +69,22 @@ let grouped =
 grouped.Rows.["1990s", *].Columns.["F", *]
 
 grouped.Columns.[("A", "Austria")].As<float>() / 1.0e9
-|> Series.meanLevel Level1Of2
+|> Series.meanBy fst
 
 grouped.Columns.[("C", "Cyprus")].As<float>() / 1.0e9
-|> Series.meanLevel Level1Of2
+|> Series.meanBy fst
 
 grouped / 1.0e9
-|> Frame.meanLevel Level1Of2
+|> Frame.meanBy fst
 
 grouped / 1.0e9
 |> Frame.transpose
-|> Frame.meanLevel Level1Of2
+|> Frame.meanBy fst
 
 grouped / 1.0e9
-|> Frame.meanLevel Level1Of2
+|> Frame.meanBy fst
 |> Frame.transpose
-|> Frame.meanLevel Level1Of2
+|> Frame.meanBy fst
 
 let oddEvenGroups =
   euro / 1.0e9
@@ -112,27 +92,45 @@ let oddEvenGroups =
   |> Frame.orderRows
 
 oddEvenGroups 
-|> Frame.meanLevel Level1Of2
+|> Frame.meanBy fst
 
-// grouped.GroupRowsUsing(fun (MultiKey(decade, _)) row -> decade)
-grouped.GroupRowsLevel(Level1Of2, fun k df -> 
-  df.Columns
-  |> Series.map (fun c series -> 
-    series.Values |> Seq.forall id) )
 
-// Let me run an aggregation on all columns of a specific type
-// (e.g. if we have two-level keys where the second level is heterogeneous)
+let titanic = Frame.readCsv(__SOURCE_DIRECTORY__ + "/data/Titanic.csv")
+let byClassAndPort1 = titanic.GroupRowsBy<int>("Pclass").GroupRowsBy<string>("Embarked") |> Frame.mapRowKeys Tuple.flatten3
+let byClassAndPort = 
+  titanic
+  |> Frame.groupRowsByInt "Pclass"
+  |> Frame.groupRowsByString "Embarked"
+  |> Frame.mapRowKeys Tuple.flatten3
 
-// TODO: use tuples
 
-//|> Frame.groupRowsUsing (fun 
+let ageByClassAndPort = byClassAndPort.Columns.["Age"].As<float>()
+
+Frame.ofColumns
+  [ "AgeMeans", ageByClassAndPort |> Series.meanBy Tuple.get1And2Of3
+    "AgeCounts", float $ (ageByClassAndPort |> Series.countBy Tuple.get1And2Of3) ]
+
+byClassAndPort
+|> Frame.meanBy Tuple.get1And2Of3
+
+byClassAndPort
+|> Frame.sumBy Tuple.get1And2Of3
+
+let survivedByClassAndPort = byClassAndPort.Columns.["Survived"].As<bool>()
+
+// survivedByClassAndPort
+// |> Series.meanBy By1Of3
+
+survivedByClassAndPort 
+|> Series.foldBy Tuple.get1And2Of3 (fun sr -> sprintf "%A" (sr.Values |> Seq.countBy id |> List.ofSeq))
+
+byClassAndPort
+|> Frame.foldBy Tuple.get1And2Of3 (fun sr -> sr.CountValues())
+
 
 
 let sample = Frame.ofColumns [ "Test" => Series.ofValues [ 1.0 .. 4.0 ] ]
-let groupedSample = 
-  sample.ReplaceRowIndexKeys 
-    [ MultiKey("Small", 0); MultiKey("Small", 1);
-      MultiKey("Big", 0); MultiKey("Big", 1) ] |> Frame.orderRows
+let groupedSample = sample.ReplaceRowIndexKeys [ ("Small", 0); ("Small", 1); ("Big", 0); ("Big", 1) ] |> Frame.orderRows
 
 (** 
 Overlaoded slicing

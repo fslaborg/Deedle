@@ -171,32 +171,26 @@ module FSharpFrameExtensions =
 
   type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality> with
     member frame.Append(rowKey, row) = frame.Append(Frame.ofRows [ rowKey => row ])
-      
-    member frame.WithMissing(value) = 
-      let data = frame.Data.Select (VectorHelpers.fillNA value)
-      Frame<'TRowKey, 'TColumnKey>(frame.RowIndex, frame.ColumnIndex, data)
-
-    member x.WithColumnIndex(columnKeys:seq<'TNewColumnKey>) =
-      let columns = seq { for v in x.Columns.Values -> v :> ISeries<_> }
-      Frame<_, _>(columnKeys, columns)
-
-    member x.WithRowIndex<'TNewRowIndex when 'TNewRowIndex : equality>(column) =
-      let columnVec = x.GetSeries<'TNewRowIndex>(column)
-      let lookup addr = columnVec.Vector.GetValue(addr)
-      let newRowIndex, rowCmd = x.IndexBuilder.WithIndex(x.RowIndex, lookup, Vectors.Return 0)
-      let newData = x.Data.Select(VectorHelpers.transformColumn x.VectorBuilder rowCmd)
-      Frame<_, _>(newRowIndex, x.ColumnIndex, newData)
+    member frame.WithMissing(value) = Frame.withMissingVal value frame
+    member frame.WithColumnIndex(columnKeys:seq<'TNewColumnKey>) = Frame.withColumnKeys columnKeys frame
+    member frame.WithRowIndex<'TNewRowIndex when 'TNewRowIndex : equality>(col) = 
+      Frame.withRowIndex (column<'TNewRowIndex>(col)) frame
 
     // Grouping
-
     member frame.GroupRowsBy<'TGroup when 'TGroup : equality>(key) =
-      frame.Rows |> Series.groupInto (fun _ v -> v.GetAs<'TGroup>(key)) (fun k g -> g |> Frame.ofRows)
+      frame.Rows 
+      |> Series.groupInto (fun _ v -> v.GetAs<'TGroup>(key)) (fun k g -> g |> Frame.ofRows)      
+      |> Frame.collapseRows
 
     member frame.GroupRowsInto<'TGroup when 'TGroup : equality>(key, f:System.Func<_, _, _>) =
-      frame.Rows |> Series.groupInto (fun _ v -> v.GetAs<'TGroup>(key)) (fun k g -> f.Invoke(k, g |> Frame.ofRows))
+      frame.Rows 
+      |> Series.groupInto (fun _ v -> v.GetAs<'TGroup>(key)) (fun k g -> f.Invoke(k, g |> Frame.ofRows))
+      |> Frame.collapseRows
 
     member frame.GroupRowsUsing<'TGroup when 'TGroup : equality>(f:System.Func<_, _, 'TGroup>) =
-      frame.Rows |> Series.groupInto (fun k v -> f.Invoke(k, v)) (fun k g -> g |> Frame.ofRows)
+      frame.Rows 
+      |> Series.groupInto (fun k v -> f.Invoke(k, v)) (fun k g -> g |> Frame.ofRows)
+      |> Frame.collapseRows
 
 
 [<Extension>]
@@ -230,16 +224,10 @@ type FrameExtensions =
     frame.Append(Frame.ofRows [ rowKey => row ])
 
   [<Extension>]
-  static member OrderRows(frame:Frame<'TRowKey, 'TColumnKey>) = 
-    let newRowIndex, rowCmd = frame.IndexBuilder.OrderIndex(frame.RowIndex, Vectors.Return 0)
-    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
-    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
+  static member OrderRows(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.orderRows frame
 
   [<Extension>]
-  static member OrderColumns(frame:Frame<'TRowKey, 'TColumnKey>) = 
-    let newColIndex, rowCmd = frame.IndexBuilder.OrderIndex(frame.ColumnIndex, Vectors.Return 0)
-    let newData = frame.VectorBuilder.Build(rowCmd, [| frame.Data |])
-    Frame<_, _>(frame.RowIndex, newColIndex, newData)
+  static member OrderColumns(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.orderCols frame
 
   [<Extension>]
   static member Transpose(frame:Frame<'TRowKey, 'TColumnKey>) = 
@@ -250,45 +238,45 @@ type FrameExtensions =
   static member GetSlice(series:ColumnSeries<'TRowKey, 'TColKey1 * 'TColKey2>, lo1:option<'TColKey1>, hi1:option<'TColKey1>, lo2:option<'TColKey2>, hi2:option<'TColKey2>) =
     if lo1 <> None || hi1 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
     if lo2 <> None || hi2 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
-    series.[SimpleLookup [|Option.map box lo1; Option.map box lo2|]]
+    series.GetByLevel <| SimpleLookup [|Option.map box lo1; Option.map box lo2|]
 
   [<Extension; EditorBrowsable(EditorBrowsableState.Never)>]
   static member GetSlice(series:ColumnSeries<'TRowKey, 'TColKey1 * 'TColKey2>, lo1:option<'TColKey1>, hi1:option<'TColKey1>, k2:'TColKey2) =
     if lo1 <> None || hi1 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
-    series.[SimpleLookup [|Option.map box lo1; Some (box k2) |]]
+    series.GetByLevel <| SimpleLookup [|Option.map box lo1; Some (box k2) |]
 
   [<Extension; EditorBrowsable(EditorBrowsableState.Never)>]
   static member GetSlice(series:ColumnSeries<'TRowKey, 'TColKey1 * 'TColKey2>, k1:'TColKey1, lo2:option<'TColKey2>, hi2:option<'TColKey2>) =
     if lo2 <> None || hi2 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
-    series.[SimpleLookup [|Some (box k1); Option.map box lo2|]]
+    series.GetByLevel <| SimpleLookup [|Some (box k1); Option.map box lo2|]
 
   [<Extension; EditorBrowsable(EditorBrowsableState.Never)>]
   static member GetSlice(series:ColumnSeries<'TRowKey, 'TColKey1 * 'TColKey2>, lo1:option<'K1>, hi1:option<'K1>, lo2:option<'K2>, hi2:option<'K2>) =
     if lo1 <> None || hi1 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
     if lo2 <> None || hi2 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
-    series.[SimpleLookup [|Option.map box lo1; Option.map box lo2|]]
+    series.GetByLevel <| SimpleLookup [|Option.map box lo1; Option.map box lo2|]
 
   [<Extension; EditorBrowsable(EditorBrowsableState.Never)>]
   static member GetSlice(series:RowSeries<'TRowKey1 * 'TRowKey2, 'TColKey>, lo1:option<'TRowKey1>, hi1:option<'TRowKey1>, lo2:option<'TRowKey2>, hi2:option<'TRowKey2>) =
     if lo1 <> None || hi1 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
     if lo2 <> None || hi2 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
-    series.[SimpleLookup [|Option.map box lo1; Option.map box lo2|]]
+    series.GetByLevel <| SimpleLookup [|Option.map box lo1; Option.map box lo2|]
 
   [<Extension; EditorBrowsable(EditorBrowsableState.Never)>]
   static member GetSlice(series:RowSeries<'TRowKey1 * 'TRowKey2, 'TColKey>, lo1:option<'TRowKey1>, hi1:option<'TRowKey1>, k2:'TRowKey2) =
     if lo1 <> None || hi1 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
-    series.[SimpleLookup [|Option.map box lo1; Some (box k2) |]]
+    series.GetByLevel <| SimpleLookup [|Option.map box lo1; Some (box k2) |]
 
   [<Extension; EditorBrowsable(EditorBrowsableState.Never)>]
   static member GetSlice(series:RowSeries<'TRowKey1 * 'TRowKey2, 'TColKey>, k1:'TRowKey1, lo2:option<'TRowKey2>, hi2:option<'TRowKey2>) =
     if lo2 <> None || hi2 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
-    series.[SimpleLookup [|Some (box k1); Option.map box lo2|]]
+    series.GetByLevel <| SimpleLookup [|Some (box k1); Option.map box lo2|]
 
   [<Extension; EditorBrowsable(EditorBrowsableState.Never)>]
   static member GetSlice(series:RowSeries<'TRowKey1 * 'TRowKey2, 'TColKey>, lo1:option<'K1>, hi1:option<'K1>, lo2:option<'K2>, hi2:option<'K2>) =
     if lo1 <> None || hi1 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
     if lo2 <> None || hi2 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
-    series.[SimpleLookup [|Option.map box lo1; Option.map box lo2|]]
+    series.GetByLevel <| SimpleLookup [|Option.map box lo1; Option.map box lo2|]
 
 type KeyValue =
   static member Create<'K, 'V>(key:'K, value:'V) = KeyValuePair(key, value)

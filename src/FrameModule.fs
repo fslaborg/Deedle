@@ -14,35 +14,37 @@ module Frame =
 
   let collapseCols (series:Series<'K, Frame<'K1, 'K2>>) = 
     series 
-    |> Series.map (fun k1 df -> df.Columns |> Series.mapKeys(fun k2 -> (k1, k2)) |> Frame.ofColumns)
+    |> Series.map (fun k1 df -> df.Columns |> Series.mapKeys(fun k2 -> (k1, k2)) |> FrameUtils.fromColumns)
     |> Series.values |> Seq.reduce (fun df1 df2 -> df1.Append(df2))
-
   let collapseRows (series:Series<'K, Frame<'K1, 'K2>>) = 
     series 
-    |> Series.map (fun k1 df -> df.Rows |> Series.mapKeys(fun k2 -> (k1, k2)) |> Frame.ofRows)
+    |> Series.map (fun k1 df -> df.Rows |> Series.mapKeys(fun k2 -> (k1, k2)) |> FrameUtils.fromRows)
     |> Series.values |> Seq.reduce (fun df1 df2 -> df1.Append(df2))
 
-  let groupRowsInto column f (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.Rows |> Series.groupInto 
-      (fun _ v -> v.Get(column)) 
-      (fun k g -> g |> Frame.ofRows |> f)
 
   let groupRowsUsing selector (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.Rows |> Series.groupInto selector (fun k g -> g |> Frame.ofRows) |> collapseRows
+    frame.Rows |> Series.groupInto selector (fun k g -> g |> FrameUtils.fromRows) |> collapseRows
+  let groupColsUsing selector (frame:Frame<'TRowKey, 'TColKey>) = 
+    frame.Columns |> Series.groupInto selector (fun k g -> g |> FrameUtils.fromColumns) |> collapseCols
 
   let groupRowsBy column (frame:Frame<'TRowKey, 'TColKey>) = 
-    groupRowsInto column id frame |> collapseRows
-
-  let groupColsInto column f (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.Columns |> Series.groupInto 
-      (fun _ v -> v.Get(column)) 
-      (fun k g -> g |> Frame.ofColumns |> f)
-
-  let groupColsUsing selector (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.Columns |> Series.groupInto selector (fun k g -> g |> Frame.ofColumns) |> collapseCols
+    frame.Rows |> Series.groupInto 
+      (fun _ v -> v.GetAs<'K>(column)) 
+      (fun k g -> g |> FrameUtils.fromRows)
+    |> collapseRows
 
   let groupColsBy column (frame:Frame<'TRowKey, 'TColKey>) = 
-    groupColsInto column id frame |> collapseCols
+    frame.Columns |> Series.groupInto 
+      (fun _ v -> v.GetAs<'K>(column)) 
+      (fun k g -> g |> FrameUtils.fromColumns)
+    |> collapseCols
+
+  let groupRowsByObj column frame : Frame<obj * _, _> = groupRowsBy column frame
+  let groupRowsByInt column frame : Frame<int * _, _> = groupRowsBy column frame
+  let groupRowsByString column frame : Frame<string * _, _> = groupRowsBy column frame
+  let groupColsByObj column frame : Frame<_, obj * _> = groupColsBy column frame
+  let groupColsByInt column frame : Frame<_, int * _> = groupColsBy column frame
+  let groupColsByString column frame : Frame<_, string * _> = groupColsBy column frame
 
 
   //let shiftRows offset (frame:Frame<'TRowKey, 'TColKey>) = 
@@ -51,10 +53,10 @@ module Frame =
   //  |> Frame.ofColumns
 
   let takeLast count (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.Rows |> Series.takeLast count |> Frame.ofRows
+    frame.Rows |> Series.takeLast count |> FrameUtils.fromRows
 
   let dropMissing (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.RowsDense |> Series.dropMissing |> Frame.ofRows
+    frame.RowsDense |> Series.dropMissing |> FrameUtils.fromRows
 
 
   // ----------------------------------------------------------------------------------------------
@@ -127,10 +129,10 @@ module Frame =
   let getRow row (frame:Frame<'TRowKey, 'TColKey>) = frame.GetRow(row)
 
   let getRowLevel (key) (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.Rows.GetByLevel(key) |> Frame.ofRows
+    frame.Rows.GetByLevel(key)
 
   let getColLevel (key) (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.Columns.GetByLevel(key) |> Frame.ofColumns
+    frame.Columns.GetByLevel(key)
 
   /// Returns a specified series (column) from a data frame. If the data frame has 
   /// ordered column index, the lookup semantics can be used to get series
@@ -148,22 +150,34 @@ module Frame =
   /// but whose rows are ordered series. This allows using inexact lookup
   /// for rows (e.g. using `lookupRow`) or inexact left/right joins.
   [<CompiledName("OrderRows")>]
-  let orderRows (frame:Frame<'TRowKey, 'TColKey>) = FrameExtensions.OrderRows(frame)
+  let orderRows (frame:Frame<'TRowKey, 'TColKey>) = 
+    let newRowIndex, rowCmd = frame.IndexBuilder.OrderIndex(frame.RowIndex, Vectors.Return 0)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
+    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
 
   /// Returns a data frame that contains the same data as the argument, 
   /// but whose columns are ordered series. This allows using inexact lookup
   /// for columns (e.g. using `lookupCol`) or inexact left/right joins.
   [<CompiledName("OrderColumns")>]
-  let orderCols (frame:Frame<'TRowKey, 'TColKey>) = FrameExtensions.OrderColumns(frame)
+  let orderCols (frame:Frame<'TRowKey, 'TColKey>) = 
+    let newColIndex, rowCmd = frame.IndexBuilder.OrderIndex(frame.ColumnIndex, Vectors.Return 0)
+    let newData = frame.VectorBuilder.Build(rowCmd, [| frame.Data |])
+    Frame<_, _>(frame.RowIndex, newColIndex, newData)
 
   /// Creates a new data frame that uses the specified column as an row index.
   [<CompiledName("WithRowIndex")>]
   let withRowIndex (column:column<'TNewRowKey>) (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.WithRowIndex<'TNewRowKey>(unbox<'TColKey> column.Value)
+    let columnVec = frame.GetSeries<'TNewRowIndex>(unbox column.Value)
+    let lookup addr = columnVec.Vector.GetValue(addr)
+    let newRowIndex, rowCmd = frame.IndexBuilder.WithIndex(frame.RowIndex, lookup, Vectors.Return 0)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
+    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
 
   /// Creates a new data frame that uses the specified list of keys as a new column index.
   [<CompiledName("WithColumnKeys")>]
-  let withColumnKeys (keys:seq<'TNewColKey>) (frame:Frame<'TRowKey, 'TColKey>) = frame.WithColumnIndex(keys)
+  let withColumnKeys (keys:seq<'TNewColKey>) (frame:Frame<'TRowKey, 'TColKey>) = 
+    let columns = seq { for v in frame.Columns.Values -> v :> ISeries<_> }
+    Frame<_, _>(keys, columns)
 
   /// Join two frames using the specified kind of join. This function uses
   /// exact matching on keys. If you want to align nearest smaller or greater
@@ -181,39 +195,54 @@ module Frame =
   /// specified value (this can only be used when the data is homogeneous)
   [<CompiledName("WithMissing")>]
   let withMissingVal defaultValue (frame:Frame<'TRowKey, 'TColKey>) =
-    frame.WithMissing(defaultValue)
+    let data = frame.Data.Select (VectorHelpers.fillNA defaultValue)
+    Frame<'TRowKey, 'TColKey>(frame.RowIndex, frame.ColumnIndex, data)
 
   // ----------------------------------------------------------------------------------------------
   // TBD
   // ----------------------------------------------------------------------------------------------
 
   let inline filterRows f (frame:Frame<'TRowKey, 'TColKey>) = 
-    FrameExtensions.Where(frame, fun kvp -> f kvp.Key kvp.Value)
+    frame.Rows |> Series.filter f |> FrameUtils.fromRows
 
   let inline filterRowValues f (frame:Frame<'TRowKey, 'TColKey>) = 
-    FrameExtensions.Where(frame, fun kvp -> f kvp.Value)
+    frame.Rows |> Series.filterValues f |> FrameUtils.fromRows
 
   let inline mapRows f (frame:Frame<'TRowKey, 'TColKey>) = 
-    FrameExtensions.Select(frame, fun kvp -> f kvp.Key kvp.Value) 
+    frame.Rows |> Series.map f |> FrameUtils.fromRows
 
   let inline mapRowValues f (frame:Frame<'TRowKey, 'TColKey>) = 
-    FrameExtensions.Select(frame, fun kvp -> f kvp.Value) 
+    frame.Rows |> Series.mapValues f |> FrameUtils.fromRows
 
   let inline mapRowKeys f (frame:Frame<'TRowKey, 'TColKey>) = 
-    FrameExtensions.SelectRowKeys(frame, fun kvp -> f kvp.Key) 
+    frame.Rows |> Series.mapKeys f |> FrameUtils.fromRows
+
+  let inline filterCols f (frame:Frame<'TColumnKey, 'TColKey>) = 
+    frame.Columns |> Series.filter f |> FrameUtils.fromColumns
+
+  let inline filterColValues f (frame:Frame<'TColumnKey, 'TColKey>) = 
+    frame.Columns |> Series.filterValues f |> FrameUtils.fromColumns
+
+  let inline mapCols f (frame:Frame<'TColumnKey, 'TColKey>) = 
+    frame.Columns |> Series.map f |> FrameUtils.fromColumns
+
+  let inline mapColValues f (frame:Frame<'TColumnKey, 'TColKey>) = 
+    frame.Columns |> Series.mapValues f |> FrameUtils.fromColumns
+
+  let inline mapColKeys f (frame:Frame<'TColumnKey, 'TColKey>) = 
+    frame.Columns |> Series.mapKeys f |> FrameUtils.fromColumns
+
 
   let transpose (frame:Frame<'TRowKey, 'TColumnKey>) = 
-    frame.Columns |> Frame.ofRows
+    frame.Columns |> FrameUtils.fromRows
+
+
 
   let getCols (columns:seq<_>) (frame:Frame<'TRowKey, 'TColKey>) = 
     frame.Columns.[columns]
 
   let getRows (rows:seq<_>) (frame:Frame<'TRowKey, 'TColKey>) = 
     frame.Rows.[rows]
-
-  let inline mapColumnKeys f (frame:Frame<'TRowKey, 'TColKey>) = 
-    FrameExtensions.SelectColumnKeys(frame, fun kvp -> f kvp.Key) 
-
 
   let inline maxRowBy column (frame:Frame<'TRowKey, 'TColKey>) = 
     frame.Rows |> Series.maxBy (fun row -> row.GetAs<float>(column))
@@ -248,23 +277,26 @@ module Frame =
     frame.RowIndex.Keys |> Seq.length
 
   let inline diff offset (frame:Frame<'TRowKey, 'TColKey>) = 
-    frame.Columns |> Series.mapValues (fun s -> Series.diff offset (s.As<float>())) |> Frame.ofColumns
+    frame.Columns |> Series.mapValues (fun s -> Series.diff offset (s.As<float>())) |> FrameUtils.fromColumns
 
   // ----------------------------------------------------------------------------------------------
   // Hierarchical aggregation
   // ----------------------------------------------------------------------------------------------
 
-  let meanLevel level (frame:Frame<'TRowKey1 * 'TRowKey2, 'TColKey>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.meanLevel level) |> Frame.ofColumns
+  let meanBy keySelector (frame:Frame<'TRowKeys, 'TColKey>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.meanBy keySelector) |> FrameUtils.fromColumns
 
-  let sumLevel level (frame:Frame<'TRowKey1 * 'TRowKey2, 'TColKey>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sumLevel level) |> Frame.ofColumns
+  let sumBy keySelector (frame:Frame<'TRowKeys, 'TColKey>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sumBy keySelector) |> FrameUtils.fromColumns
 
-  let sdvLevel level (frame:Frame<'TRowKey1 * 'TRowKey2, 'TColKey>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sdvLevel level) |> Frame.ofColumns
+  let sdvBy keySelector (frame:Frame<'TRowKeys, 'TColKey>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sdvBy keySelector) |> FrameUtils.fromColumns
 
-  let medianLevel level (frame:Frame<'TRowKey1 * 'TRowKey2, 'TColKey>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.medianLevel level) |> Frame.ofColumns
+  let medianBy keySelector (frame:Frame<'TRowKeys, 'TColKey>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.medianBy keySelector) |> FrameUtils.fromColumns
 
-  let statLevel level op (frame:Frame<'TRowKey1 * 'TRowKey2, 'TColKey>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.statLevel level op) |> Frame.ofColumns
+  let statBy keySelector op (frame:Frame<'TRowKeys, 'TColKey>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.statBy keySelector op) |> FrameUtils.fromColumns
+
+  let foldBy keySelector op (frame:Frame<'TRowKeys, 'TColKey>) = 
+    frame.Columns |> Series.map (fun _ -> Series.foldBy keySelector op) |> FrameUtils.fromColumns

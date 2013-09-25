@@ -86,7 +86,6 @@ type SeriesExtensions =
     if lo2 <> None || hi2 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
     series.GetByLevel(SimpleLookup [|Some (box k1); Option.map box lo2|])
 
-
   [<Extension>]
   static member Between(series:Series<'K, 'V>, lowerInclusive, upperInclusive) = 
     series.GetSubrange

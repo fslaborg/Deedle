@@ -22,9 +22,9 @@ module Series =
     | VectorData.SparseList list -> foptlist list
     | VectorData.Sequence seq -> fseq (Seq.choose OptionalValue.asOption seq)
 
-  let inline fastStatLevel (level:ILevelReader<_, _, _>) flist foptlist fseq (series:Series<_ * _, _>) : Series<_, _> = 
+  let inline fastStatBy keySelector flist foptlist fseq (series:Series<_, _>) : Series<_, _> = 
     series.GroupBy
-      ( (fun key ser -> level.GetKey(key)),
+      ( (fun key ser -> keySelector key),
         (fun key ser -> OptionalValue(fastAggregation flist foptlist fseq ser)))
 
   [<CompiledName("Statistic")>]
@@ -46,28 +46,38 @@ module Series =
   let inline median (series:Series<'K, float>) = series |> stat Statistics.Median
 
 
-  [<CompiledName("StatisticLevel")>]
-  let inline statLevel (level:ILevelReader<_, _, _>) op (series:Series<_ * _, _>) : Series<_, _> = 
+  [<CompiledName("StatisticBy")>]
+  let inline statBy keySelector op (series:Series<_, _>) : Series<_, _> = 
     series.GroupBy
-      ( (fun key ser -> level.GetKey(key)),
+      ( (fun key ser -> keySelector key),
         (fun key ser -> OptionalValue(stat op ser)))
 
-  [<CompiledName("SumLevel")>]
-  let inline sumLevel level (series:Series<_, _>) = 
-    series |> fastStatLevel level IReadOnlyList.sum IReadOnlyList.sumOptional Seq.sum
+  [<CompiledName("SumBy")>]
+  let inline sumBy keySelector (series:Series<_, _>) = 
+    series |> fastStatBy keySelector IReadOnlyList.sum IReadOnlyList.sumOptional Seq.sum
 
-  [<CompiledName("MeanLevel")>]
-  let inline meanLevel level (series:Series<_, _>) = 
-    series |> fastStatLevel level IReadOnlyList.average IReadOnlyList.averageOptional Seq.average
+  [<CompiledName("CountBy")>]
+  let inline countBy keySelector (series:Series<_, _>) = 
+    series |> fastStatBy keySelector IReadOnlyList.length IReadOnlyList.lengthOptional Seq.length
 
-  [<CompiledName("StandardDeviationLevel")>]
-  let inline sdvLevel level (series:Series<_, float>) = 
-    series |> statLevel level Statistics.StandardDeviation 
+  [<CompiledName("MeanBy")>]
+  let inline meanBy keySelector (series:Series<_, _>) = 
+    series |> fastStatBy keySelector IReadOnlyList.average IReadOnlyList.averageOptional Seq.average
 
-  [<CompiledName("MedianLevel")>]
-  let inline medianLevel level (series:Series<_, float>) = 
-    series |> statLevel level Statistics.Median
+  [<CompiledName("StandardDeviationBy")>]
+  let inline sdvBy keySelector (series:Series<_, float>) = 
+    series |> statBy keySelector Statistics.StandardDeviation 
 
+  [<CompiledName("MedianBy")>]
+  let inline medianBy keySelector (series:Series<_, float>) = 
+    series |> statBy keySelector Statistics.Median
+
+
+  let foldBy keySelector op (series:Series<_, _>) = 
+    series.GroupBy
+      ( (fun key ser -> keySelector key),
+        (fun key ser -> OptionalValue(op ser)))
+    
 
   /// Return observations with available values. The operation skips over 
   /// all keys with missing values (such as values created from `null`,

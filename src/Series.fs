@@ -126,21 +126,45 @@ and Series<'K, 'V when 'K : equality>
       seq { for item in series.Observations |> Seq.startAndEnd Formatting.StartInlineItemCount Formatting.EndInlineItemCount ->
               match item with 
               | Choice2Of3() -> " ... "
-              | Choice1Of3(KeyValue(k, v)) | Choice3Of3(KeyValue(k, v)) -> sprintf "%O => %O " k v }
+              | Choice1Of3(KeyValue(k, v)) | Choice3Of3(KeyValue(k, v)) -> sprintf "%O => %O" k v }
       |> String.concat "; "
       |> sprintf "series [ %s]" 
 
   interface IFsiFormattable with
     member series.Format() = 
+      let getLevel ordered previous reset maxLevel level (key:'K) = 
+        let levelKey = 
+          if level = 0 && maxLevel = 0 then box key
+          else CustomKey.Get(key).GetLevel(level)
+        if ordered && (Some levelKey = !previous) then "" 
+        else previous := Some levelKey; reset(); levelKey.ToString()
+
       if vector.SuppressPrinting then "(Suppressed)" else
-        seq { for item in index.Mappings |> Seq.startAndEnd Formatting.StartItemCount Formatting.EndItemCount  do
-                match item with 
-                | Choice1Of3(k, a) | Choice3Of3(k, a) -> 
-                    let v = vector.GetValue(a)
-                    yield [ k.ToString(); "->"; v.ToString() ]
-                | Choice2Of3() -> yield [ "..."; "->"; "..."] }
-        |> array2D
-        |> Formatting.formatTable
+        let key = series.Index.Keys |> Seq.headOrNone
+        match key with 
+        | None -> "(Empty)"
+        | Some key ->
+            let levels = CustomKey.Get(key).Levels
+            let previous = Array.init levels (fun _ -> ref None)
+            let reset i () = for j in i + 1 .. levels - 1 do previous.[j] := None
+            seq { for item in index.Mappings |> Seq.startAndEnd Formatting.StartItemCount Formatting.EndItemCount  do
+                    match item with 
+                    | Choice1Of3(k, a) | Choice3Of3(k, a) -> 
+                        let v = vector.GetValue(a)
+                        yield [ 
+                          // Yield all row keys
+                          for level in 0 .. levels - 1 do 
+                            yield getLevel series.Index.Ordered previous.[level] (reset level) levels level k
+                          yield "->"
+                          yield v.ToString() ]
+                    | Choice2Of3() -> 
+                        yield [ 
+                          yield "..."
+                          for level in 1 .. levels - 1 do yield ""
+                          yield "->"
+                          yield "..." ] }
+            |> array2D
+            |> Formatting.formatTable
 
 (*
   interface seq<KeyValuePair<'K,'V>> with
@@ -511,6 +535,13 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
   member x.TryGetAs<'R>(column) : OptionalValue<'R> = 
     x.TryGet(column) |> OptionalValue.map (fun v -> System.Convert.ChangeType(v, typeof<'R>) |> unbox)
   static member (?) (series:ObjectSeries<_>, name:string) = series.GetAs<float>(name)
+
+  member x.TryAs<'R>() =
+    match box vector with
+    | :? IVector<'R> as vec -> OptionalValue(Series(index, vec, vectorBuilder, indexBuilder))
+    | _ -> 
+        VectorHelpers.tryChangeType vector
+        |> OptionalValue.map (fun vec -> Series(index, vec, vectorBuilder, indexBuilder))
 
   member x.As<'R>() =
     match box vector with

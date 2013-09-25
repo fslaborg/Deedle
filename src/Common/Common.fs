@@ -267,6 +267,9 @@ module IReadOnlyList =
     for i in 0 .. list.Count - 1 do total <- total + list.[i]
     total
 
+  /// Count elements of the IReadOnlyList
+  let inline length (list:IReadOnlyList<'T>) = list.Count
+
   /// Sum elements of the IReadOnlyList
   let inline average (list:IReadOnlyList<'T>) = 
     let mutable total = LanguagePrimitives.GenericZero
@@ -290,6 +293,11 @@ module IReadOnlyList =
         count <- count + 1
     LanguagePrimitives.DivideByInt total count
 
+  /// Count elements of the IReadOnlyList that are not missing
+  let inline lengthOptional (list:IReadOnlyList<OptionalValue<'T>>) = 
+    let mutable total = 0
+    for i in 0 .. list.Count - 1 do if list.[i].HasValue then total <- total + 1
+    total
 
 /// This module contains additional functions for working with arrays. 
 /// `FSharp.DataFrame.Internals` is opened, it extends the standard `Array` module.

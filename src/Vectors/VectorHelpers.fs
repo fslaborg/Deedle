@@ -193,6 +193,22 @@ let changeType<'R> : IVector -> IVector<'R> =
         col.Select(fun v -> System.Convert.ChangeType(v, typeof<'R>) :?> 'R) }
   |> createVectorDispatcher
 
+// A "generic function" that tries to change the type of vector elements
+let tryChangeType<'R> : IVector -> OptionalValue<IVector<'R>> = 
+  let shouldBeConvertible (o:obj) = o <> null && o :? IConvertible
+  { new VectorCallSite1<OptionalValue<IVector<'R>>> with
+      override x.Invoke<'T>(col:IVector<'T>) = 
+        // Check the first non-missing value to see if we should even try doing the conversion
+        let first = 
+          col.DataSequence |> Seq.choose OptionalValue.asOption |> Seq.headOrNone 
+          |> Option.map (box >> shouldBeConvertible)
+        if first = Some(false) then OptionalValue.Missing
+        else 
+          // We still cannot be sure that it will actually work
+          try OptionalValue(col.Select(fun v -> System.Convert.ChangeType(v, typeof<'R>) :?> 'R))
+          with :? InvalidCastException | :? FormatException -> OptionalValue.Missing }
+  |> createVectorDispatcher
+
 // A "generic function" that drops 
 let getVectorRange (builder:IVectorBuilder) range = 
   { new VectorCallSite1<IVector> with

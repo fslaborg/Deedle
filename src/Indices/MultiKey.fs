@@ -102,11 +102,6 @@ type SimpleLookup<'T>(patterns) =
       (patterns, keys) ||> Seq.forall2 (fun pat key ->
           match pat with None -> true | Some k -> k = key)
 
-
-type ILevelReader<'Original, 'K, 'New> = 
-  abstract GetKey : 'Original -> 'K
-  abstract DropKey : 'Original -> 'New
-
 // ------------------------------------------------------------------------------------------------
 // F#-friendly functions for creating multi-level keys and lookups
 // ------------------------------------------------------------------------------------------------
@@ -117,42 +112,6 @@ open FSharp.DataFrame.Keys
 /// F#-friendly functions for creating multi-level keys and lookups
 [<AutoOpen>]
 module MultiKeyExtensions =
-  let Level1Of2 = 
-    { new ILevelReader<'T1 * 'T2, _, _> with
-        member x.GetKey((l, _)) = l
-        member x.DropKey((_, r)) = r }
-  let Level2Of2 = 
-    { new ILevelReader<'T1 * 'T2, _, _> with
-        member x.GetKey((_, r)) = r
-        member x.DropKey((l, _)) = l }
-  let Level1Of3 = 
-    { new ILevelReader<'T1 * 'T2 * 'T3, _, _> with
-        member x.GetKey((k, _, _)) = k
-        member x.DropKey((_, k1, k2)) = (k1, k2) }
-  let Level2Of3 = 
-    { new ILevelReader<'T1 * 'T2 * 'T3, _, _> with
-        member x.GetKey((_, k, _)) = k
-        member x.DropKey((k1, _, k2)) = (k1, k2) }
-  let Level3Of3 = 
-    { new ILevelReader<'T1 * 'T2 * 'T3, _, _> with
-        member x.GetKey((_, _, k)) = k
-        member x.DropKey((k1, k2, _)) = (k1, k2) }
-  let Level1Of4 = 
-    { new ILevelReader<'T1 * 'T2 * 'T3 * 'T4, _, _> with
-        member x.GetKey((k, _, _, _)) = k
-        member x.DropKey((_, k1, k2, k3)) = (k1, k2, k3) }
-  let Level2Of4 = 
-    { new ILevelReader<'T1 * 'T2 * 'T3 * 'T4, _, _> with
-        member x.GetKey((_, k, _, _)) = k
-        member x.DropKey((k1, _, k2, k3)) = (k1, k2, k3) }
-  let Level3Of4 = 
-    { new ILevelReader<'T1 * 'T2 * 'T3 * 'T4, _, _> with
-        member x.GetKey((_, _, k, _)) = k
-        member x.DropKey((k1, k2, _, k3)) = (k1, k2, k3) }
-  let Level4Of4 = 
-    { new ILevelReader<'T1 * 'T2 * 'T3 * 'T4, _, _> with
-        member x.GetKey((_, _, _, k)) = k
-        member x.DropKey((k1, k2, k3, _)) = (k1, k2, k3) }
 
   /// Creates a hierarchical key lookup that allows matching on the 
   /// first element of a two-level hierarchical key.
@@ -199,28 +158,38 @@ module MultiKeyExtensions =
   let LookupAnyOf4 k1 k2 k3 k4 = 
     SimpleLookup [| Option.map box k1; Option.map box k2; Option.map box k3; Option.map box k4 |] :> ICustomLookup<_>
 
-(*
-/// Module with helper functions for extracting values from hierarchical keys
-module Key =
-  /// Returns the first value of a two-level hierarchical key
-  let key1Of2(MultiKey(v, _)) = v
-  /// Returns the second value of a two-level hierarchical key
-  let key2Of2(MultiKey(_, v)) = v
 
-  /// Returns the first value of a three-level hierarchical key
-  let key1Of3(MultiKey3(v, _, _)) = v
-  /// Returns the second value of a three-level hierarchical key
-  let key2Of3(MultiKey3(_, v, _)) = v
-  /// Returns the third value of a three-level hierarchical key
-  let key3Of3(MultiKey3(_, _, v)) = v
+/// Module with helper functions for extracting values from hierarchical tuples
+module Tuple =
+  /// Returns the first value of a two-level hierarchical tuple
+  let get1Of2(v, _) = v
+  /// Returns the second value of a two-level hierarchical tuple
+  let get2Of2(_, v) = v
 
-  /// Returns the first value of a four-level hierarchical key
-  let key1Of4(MultiKey4(v, _, _, _)) = v
-  /// Returns the second value of a four-level hierarchical key
-  let key2Of4(MultiKey4(_, v, _, _)) = v
-  /// Returns the third value of a four-level hierarchical key
-  let key3Of4(MultiKey4(_, _, v, _)) = v
-  /// Returns the fourth value of a four-level hierarchical key
-  let key4Of4(MultiKey4(_, _, _, v)) = v
+  /// Returns the first value of a three-level hierarchical tuple
+  let get1Of3(v, _, _) = v
+  /// Returns the second value of a three-level hierarchical tuple
+  let get2Of3(_, v, _) = v
+  /// Returns the third value of a three-level hierarchical tuple
+  let get3Of3(_, _, v) = v
 
-*)
+  /// Returns the first and the second value of a three-level hierarchical tuple
+  let get1And2Of3(v1, v2, _) = v1, v2
+  /// Returns the second and the third value of a three-level hierarchical tuple
+  let get2And3Of3(_, v1, v2) = v1, v2
+  /// Returns the first and the third value of a three-level hierarchical tuple
+  let get1And3Of3(v1, _, v2) = v1, v2
+
+  /// Returns the first value of a four-level hierarchical tuple
+  let get1Of4(v, _, _, _) = v
+  /// Returns the second value of a four-level hierarchical tuple
+  let get2Of4(_, v, _, _) = v
+  /// Returns the third value of a four-level hierarchical tuple
+  let get3Of4(_, _, v, _) = v
+  /// Returns the fourth value of a four-level hierarchical tuple
+  let get4Of4(_, _, _, v) = v
+
+  /// Flatten a two-level nested tuple into a flat tuple of 3 elements
+  let flatten3(v1, (v2, v3)) = (v1, v2, v3)
+  /// Flatten a two-level nested tuple into a flat tuple of 4 elements
+  let flatten4(v1, (v2, (v3, v4))) = (v1, v2, v3, v4)

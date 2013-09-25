@@ -169,12 +169,6 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   // df.Rows and df.Columns
   // ----------------------------------------------------------------------------------------------
 
-  // TODO: These may be accessed often.. we need to cache them?
-
-  member frame.GetColumns<'R>() = 
-    Series.Create(columnIndex, data.Select(fun vect -> 
-      Series.Create(rowIndex, changeType<'R> vect)))
-
   member frame.Columns = 
     ColumnSeries(Series.Create(columnIndex, data.Select(fun vect -> 
       Series.CreateUntyped(rowIndex, boxVector vect))))
@@ -204,6 +198,10 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
         if all then OptionalValue(Series.CreateUntyped(columnIndex, rowVec))
         else OptionalValue.Missing )
     RowSeries(res)
+
+  member frame.GetColumns<'R>() = 
+    frame.Columns.SelectOptional(fun (KeyValue(k, vopt)) ->
+      vopt |> OptionalValue.bind (fun ser -> ser.TryAs<'R>()))
 
   // ----------------------------------------------------------------------------------------------
   // Series related operations - add, drop, get, ?, ?<-, etc.
@@ -262,17 +260,19 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   interface IFsiFormattable with
     member frame.Format() = 
       try
-        let colKey = frame.ColumnIndex.Keys |> Seq.head
-        let rowKey = frame.RowIndex.Keys |> Seq.head
-        let colLevels = CustomKey.Get(colKey).Levels
-        let rowLevels = CustomKey.Get(rowKey).Levels
+        let colLevels = 
+          match frame.ColumnIndex.Keys |> Seq.headOrNone with 
+          Some colKey -> CustomKey.Get(colKey).Levels | _ -> 1
+        let rowLevels = 
+          match frame.RowIndex.Keys |> Seq.headOrNone with 
+          Some rowKey -> CustomKey.Get(rowKey).Levels | _ -> 1
 
-        let getLevel ordered previous maxLevel level (key:'K) = 
+        let getLevel ordered previous reset maxLevel level (key:'K) = 
           let levelKey = 
             if level = 0 && maxLevel = 0 then box key
             else CustomKey.Get(key).GetLevel(level)
           if ordered && (Some levelKey = !previous) then "" 
-          else previous := Some levelKey; levelKey.ToString()
+          else previous := Some levelKey; reset(); levelKey.ToString()
         
         seq { 
           // Yield headers (for all column levels)
@@ -283,11 +283,12 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
               yield ""
               let previous = ref None
               for colKey, _ in frame.ColumnIndex.Mappings do 
-                yield getLevel frame.ColumnIndex.Ordered previous colLevels colLevel colKey ]
+                yield getLevel frame.ColumnIndex.Ordered previous ignore colLevels colLevel colKey ]
 
           // Yield row data
           let rows = frame.Rows
           let previous = Array.init rowLevels (fun _ -> ref None)
+          let reset i () = for j in i + 1 .. rowLevels - 1 do previous.[j] := None
           for item in frame.RowIndex.Mappings |> Seq.startAndEnd Formatting.StartItemCount Formatting.EndItemCount do
             match item with 
             | Choice2Of3() ->
@@ -301,7 +302,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
                 yield [
                   // Yield all row keys
                   for rowLevel in 0 .. rowLevels - 1 do 
-                    yield getLevel frame.RowIndex.Ordered previous.[rowLevel] rowLevels rowLevel rowKey
+                    yield getLevel frame.RowIndex.Ordered previous.[rowLevel] (reset rowLevel) rowLevels rowLevel rowKey
                   yield "->"
                   for KeyValue(_, value) in SeriesExtensions.GetAllObservations(row) do  // TODO: is this good?
                     yield value.ToString() ] }
@@ -462,10 +463,11 @@ and ColumnSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey 
     ColumnSeries(series.Index, series.Vector, series.VectorBuilder, series.IndexBuilder)
 
   [<EditorBrowsable(EditorBrowsableState.Never)>]
-  member x.GetSlice(lo, hi) =
-    base.GetSlice(lo, hi) |> FrameUtils.fromColumns
+  member x.GetSlice(lo, hi) = base.GetSlice(lo, hi) |> FrameUtils.fromColumns
+  [<EditorBrowsable(EditorBrowsableState.Never)>]
+  member x.GetByLevel(level) = base.GetByLevel(level) |> FrameUtils.fromColumns
   member x.Item with get(items) = x.GetItems(items) |> FrameUtils.fromColumns
-  member x.Item with get(level) = x.GetByLevel(level) |> FrameUtils.fromColumns
+  member x.Item with get(level) = x.GetByLevel(level)
 
 and RowSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>(index, vector, vectorBuilder, indexBuilder) =
   inherit Series<'TRowKey, ObjectSeries<'TColumnKey>>(index, vector, vectorBuilder, indexBuilder)
@@ -473,7 +475,8 @@ and RowSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : e
     RowSeries(series.Index, series.Vector, series.VectorBuilder, series.IndexBuilder)
 
   [<EditorBrowsable(EditorBrowsableState.Never)>]
-  member x.GetSlice(lo, hi) =
-    base.GetSlice(lo, hi) |> FrameUtils.fromRows
+  member x.GetSlice(lo, hi) = base.GetSlice(lo, hi) |> FrameUtils.fromRows
+  [<EditorBrowsable(EditorBrowsableState.Never)>]
+  member x.GetByLevel(level) = base.GetByLevel(level) |> FrameUtils.fromRows
   member x.Item with get(items) = x.GetItems(items) |> FrameUtils.fromRows
-  member x.Item with get(level) = x.GetByLevel(level) |> FrameUtils.fromRows
+  member x.Item with get(level) = x.GetByLevel(level)

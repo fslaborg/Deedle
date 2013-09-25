@@ -42,7 +42,7 @@
     <Compile Include="Common\Attributes.fs" />
     <Compile Include="Common\Common.fs" />
     <Compile Include="Common\Address.fs" />
-	  <Compile Include="Vectors\Vector.fs" />
+    <Compile Include="Vectors\Vector.fs" />
     <Compile Include="Vectors\VectorHelpers.fs" />
     <Compile Include="Vectors\ArrayVector.fs" />
     <Compile Include="Vectors\VectorExtensions.fs" />
@@ -54,8 +54,8 @@
     <Compile Include="SeriesExtensions.fs" />
     <Compile Include="Frame.fs" />
     <Compile Include="FrameUtils.fs" />
-    <Compile Include="FrameExtensions.fs" />
     <Compile Include="FrameModule.fs" />
+    <Compile Include="FrameExtensions.fs" />
     <Compile Include="DelayedSeries.fs" />
     <None Include="packages.config" />
     <None Include="FSharp.DataFrame.fsx">
