@@ -107,7 +107,7 @@ type SeriesExtensions =
 
   [<Extension>]
   static member EndAt(series:Series<'K, 'V>, upperInclusive) = 
-    series.GetSubrange( Some(upperInclusive, BoundaryBehavior.Inclusive), None )
+    series.GetSubrange( None, Some(upperInclusive, BoundaryBehavior.Inclusive) )
 
   [<Extension>]
   static member Log(series:Series<'K, float>) = log series

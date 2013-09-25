@@ -345,20 +345,19 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           match index.Lookup(x, semantics, fun _ -> true) with 
           | OptionalValue.Present(_, v) -> Some v | _ -> None
         match offs with 
-        | None -> (proj defaults.Value), BoundaryBehavior.Inclusive
-        | Some (Lookup i, bound) -> i, bound
-        | _ -> invalidArg "lo,hi" "Keys of the range were not found in the index."
+        | None -> Some(proj defaults.Value, BoundaryBehavior.Inclusive)
+        | Some (Lookup i, bound) -> Some(i, bound)
+        | _ -> None
 
       // Create new index using the range & vector transformation
-      let (lo, hi) = 
-        getBound lo Lookup.NearestGreater fst, 
-        getBound hi Lookup.NearestSmaller snd
-      let lo = if snd lo = BoundaryBehavior.Exclusive then Address.increment (fst lo) else fst lo
-      let hi = if snd hi = BoundaryBehavior.Exclusive then Address.decrement (fst hi) else fst hi
-      let newKeys = Address.getRange(index.Keys, lo, hi) |> Array.ofSeq
-      let newVector = Vectors.GetRange(vector, (lo, hi))
-      upcast LinearIndex<_>(newKeys, builder, index.Ordered), newVector
-
+      match getBound lo Lookup.NearestGreater fst, getBound hi Lookup.NearestSmaller snd with
+      | Some lo, Some hi ->
+          let lo = if snd lo = BoundaryBehavior.Exclusive then Address.increment (fst lo) else fst lo
+          let hi = if snd hi = BoundaryBehavior.Exclusive then Address.decrement (fst hi) else fst hi
+          let newKeys = Address.getRange(index.Keys, lo, hi) |> Array.ofSeq
+          let newVector = Vectors.GetRange(vector, (lo, hi))
+          upcast LinearIndex<_>(newKeys, builder, index.Ordered), newVector
+      | _ -> upcast LinearIndex<_>([], builder, index.Ordered), Vectors.Empty
 // --------------------------------------------------------------------------------------
 // Functions for creatin linear indices
 // --------------------------------------------------------------------------------------

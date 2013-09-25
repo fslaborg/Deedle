@@ -71,6 +71,7 @@ type ArrayVectorBuilder() =
     member builder.Build<'T>(command:VectorConstruction, arguments:IVector<'T>[]) = 
       match command with
       | Return vectorVar -> arguments.[vectorVar]
+      | Empty -> vectorBuilder.Create [||]
       | Relocate(source, (IntAddress loRange, IntAddress hiRange), relocations) ->
           // Create a new array with specified size and move values from the
           // old array (source) to the new, according to 'relocations'

@@ -126,6 +126,9 @@ type VectorConstruction =
   /// - this element represent getting one of the variables.
   | Return of VectorHole
 
+  /// Creates an empty vector of the requested type
+  | Empty 
+
   /// Reorders elements of the vector. Carries a new required vector range and a list
   /// of relocations (each pair of addresses specifies that an element at a new address 
   /// should be filled with an element from an old address). THe addresses may be out of range!
