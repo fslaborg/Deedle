@@ -5,6 +5,7 @@
 
 namespace FSharp.DataFrame.Indices.Linear
 
+open System
 open System.Linq
 open System.Collections.Generic
 open FSharp.DataFrame
@@ -18,11 +19,23 @@ open FSharp.DataFrame.Indices
 /// The construction checks if the keys are ordered (using the provided or the default
 /// comparer for `K`) and disallows certain operations on unordered indices.
 type LinearIndex<'K when 'K : equality> 
-    internal (keys:seq<'K>, builder, ?ordered, ?comparer) =
+    internal (keys:seq<'K>, builder, ?ordered) =
 
   // Build a lookup table etc.
-  let comparer = defaultArg comparer Comparer<'K>.Default
-  let ordered = match ordered with Some ord -> ord | _ -> Seq.isSorted keys comparer
+  let comparer = Comparer<'K>.Default
+  let ordered = Lazy.Create(fun () -> 
+    // If the caller specified whether the series is ordered, or custom comparer, use that;
+    // Otherwise, we do check if it is comparable or nullable (for other types
+    // comparer.Compare fails).
+    match ordered with
+    | Some ord -> ord
+    | _ when 
+          typeof<IComparable>.IsAssignableFrom(typeof<'K>) ||
+          typeof<IComparable<'K>>.IsAssignableFrom(typeof<'K>) -> Seq.isSorted keys comparer
+    | _ when
+          typeof<'K>.IsGenericTypeDefinition && typeof<'K>.GetGenericTypeDefinition() = typedefof<Nullable<_>> ->
+            Seq.isSorted keys comparer
+    | _ -> false)
 
   // These are used for NearestSmaller/NearestGreater lookup and 
   // might not work for big data sets...
@@ -57,7 +70,7 @@ type LinearIndex<'K when 'K : equality>
 
     /// Returns the range of keys - makes sense only for ordered index
     member x.KeyRange = 
-      if not ordered then invalidOp "KeyRange is not supported for unordered index."
+      if not ordered.Value then invalidOp "KeyRange is not supported for unordered index."
       Seq.head keys, Seq.head keysArrayRev.Value
 
     /// Get the address for the specified key.
@@ -75,7 +88,7 @@ type LinearIndex<'K when 'K : equality>
 
       // If we can convert array index to address, we can use binary search!
       // (Find the index & generate all previous/next indices so that we can 'check' them)
-      | _, Lookup.NearestSmaller, Some asAddr when ordered ->
+      | _, Lookup.NearestSmaller, Some asAddr when ordered.Value ->
           let addrOpt = Array.binarySearchNearestSmaller key comparer keysArray.Value
           let indices = addrOpt |> Option.map (fun v -> seq { v .. -1 .. 0 })
           let indices = defaultArg indices Seq.empty
@@ -85,7 +98,7 @@ type LinearIndex<'K when 'K : equality>
           |> OptionalValue.ofOption
           |> OptionalValue.map (fun idx -> keysArray.Value.[idx], asAddr idx)
 
-      | _, Lookup.NearestGreater, Some asAddr when ordered ->
+      | _, Lookup.NearestGreater, Some asAddr when ordered.Value ->
           let addrOpt = Array.binarySearchNearestGreater key comparer keysArray.Value
           let indices = addrOpt |> Option.map (fun v -> seq { v .. keysArray.Value.Length - 1 })
           let indices = defaultArg indices Seq.empty
@@ -99,7 +112,7 @@ type LinearIndex<'K when 'K : equality>
       //
       // Find the index of the first key that is greater than the one specified
       // (generate address range and find the address using 'skipWhile')
-      | _, Lookup.NearestGreater, None when ordered ->
+      | _, Lookup.NearestGreater, None when ordered.Value ->
           Seq.zip keysArray.Value (Address.generateRange(Address.rangeOf(keys)))
           |> Seq.skipWhile (fun (k, _) -> comparer.Compare(k, key) < 0) 
           |> Seq.filter (snd >> check)
@@ -109,7 +122,7 @@ type LinearIndex<'K when 'K : equality>
       // Find the index of the last key before the specified one
       // (generate address range prefixed with None, find the first greater key
       // and then return the previous address from the prefixed sequence)
-      | _, Lookup.NearestSmaller, None when ordered ->
+      | _, Lookup.NearestSmaller, None when ordered.Value ->
           let lo, hi = Address.rangeOf(keys)
           Seq.zip keysArrayRev.Value (Address.generateRange(hi, lo))
           |> Seq.skipWhile (fun (k, _) -> comparer.Compare(k, key) > 0) 
@@ -125,7 +138,7 @@ type LinearIndex<'K when 'K : equality>
     /// Returns the range used by the index
     member x.Range = Address.rangeOf(keys)
     /// Are the keys of the index ordered?
-    member x.Ordered = ordered 
+    member x.Ordered = ordered.Value
     member x.Comparer = comparer
 
 
@@ -231,7 +244,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
     member builder.OrderIndex( (index, vector) ) =
       let keys = Array.ofSeq index.Keys
       Array.sortInPlaceWith (fun a b -> index.Comparer.Compare(a, b)) keys
-      let newIndex = LinearIndex(keys, builder, true, index.Comparer) :> IIndex<_>
+      let newIndex = LinearIndex(keys, builder, true) :> IIndex<_>
       let relocations = 
         seq { for key, oldAddress in index.Mappings ->
                 let newAddress = newIndex.Lookup(key, Lookup.Exact, fun _ -> true) 

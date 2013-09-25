@@ -67,3 +67,10 @@ let ``Grouping series with missing values works on sample input``() =
   let actual = n |> Series.groupBy (fun k _ -> k % 2) 
   let expected = Series.ofObservations [ 1 => Series.ofObservations [1 => 1; 3 => 2]]
   actual |> shouldEqual expected
+
+[<Test>]
+let ``Can create series with incomparable keys``() =
+  let rnd1 = System.Random()
+  let rnd2 = System.Random()
+  let s = Series.ofObservations [rnd1 => 1; rnd2 => 2]
+  s.[rnd1] |> shouldEqual 1

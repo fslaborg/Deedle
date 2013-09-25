@@ -97,6 +97,23 @@ grouped.Columns.[("C", "Cyprus")].As<float>() / 1.0e9
 grouped / 1.0e9
 |> Frame.meanLevel Level1Of2
 
+grouped / 1.0e9
+|> Frame.transpose
+|> Frame.meanLevel Level1Of2
+
+grouped / 1.0e9
+|> Frame.meanLevel Level1Of2
+|> Frame.transpose
+|> Frame.meanLevel Level1Of2
+
+let oddEvenGroups =
+  euro / 1.0e9
+  |> Frame.mapRowKeys (fun rk -> (sprintf "%ds" (rk/10*10), ((if rk%2 = 0 then "even" else "odd"), rk)))
+  |> Frame.orderRows
+
+oddEvenGroups 
+|> Frame.meanLevel Level1Of2
+
 // grouped.GroupRowsUsing(fun (MultiKey(decade, _)) row -> decade)
 grouped.GroupRowsLevel(Level1Of2, fun k df -> 
   df.Columns
