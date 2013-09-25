@@ -5,11 +5,12 @@
 // --------------------------------------------------------------------------------------
 
 open FSharp.DataFrame
-open System.ComponentModel
+open FSharp.DataFrame.Keys
 open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Indices
 open FSharp.DataFrame.Vectors
 
+open System.ComponentModel
 open System.Runtime.InteropServices
 open VectorHelpers
 
@@ -263,22 +264,22 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
       try
         let colKey = frame.ColumnIndex.Keys |> Seq.head
         let rowKey = frame.RowIndex.Keys |> Seq.head
-        let colLevels = match box colKey with :? ICustomKey<'TColumnKey> as ck -> ck.Levels | _ -> 1
-        let rowLevels = match box rowKey with :? ICustomKey<'TRowKey> as ck -> ck.Levels | _ -> 1
+        let colLevels = CustomKey.Get(colKey).Levels
+        let rowLevels = CustomKey.Get(rowKey).Levels
 
         let getLevel ordered previous maxLevel level (key:'K) = 
           let levelKey = 
-            if level = 1 && maxLevel = 1 then box key
-            else (unbox<ICustomKey<'K>> key).GetLevel(level)
+            if level = 0 && maxLevel = 0 then box key
+            else CustomKey.Get(key).GetLevel(level)
           if ordered && (Some levelKey = !previous) then "" 
           else previous := Some levelKey; levelKey.ToString()
         
         seq { 
           // Yield headers (for all column levels)
-          for colLevel in 1 .. colLevels do 
+          for colLevel in 0 .. colLevels - 1 do 
             yield [
               // Prefix with appropriate number of (empty) row keys
-              for i in 1 .. rowLevels do yield "" 
+              for i in 0 .. rowLevels - 1 do yield "" 
               yield ""
               let previous = ref None
               for colKey, _ in frame.ColumnIndex.Mappings do 
@@ -292,15 +293,15 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
             | Choice2Of3() ->
                 yield [
                   // Prefix with appropriate number of (empty) row keys
-                  for i in 1 .. rowLevels do yield if i = 1 then ":" else ""
+                  for i in 0 .. rowLevels - 1 do yield if i = 0 then ":" else ""
                   yield ""
                   for i in 1 .. data.DataSequence |> Seq.length -> "..." ]
             | Choice1Of3(rowKey, addr) | Choice3Of3(rowKey, addr) ->
                 let row = rows.[rowKey]
                 yield [
                   // Yield all row keys
-                  for rowLevel in 1 .. rowLevels do 
-                    yield getLevel frame.RowIndex.Ordered previous.[rowLevel - 1] rowLevels rowLevel rowKey
+                  for rowLevel in 0 .. rowLevels - 1 do 
+                    yield getLevel frame.RowIndex.Ordered previous.[rowLevel] rowLevels rowLevel rowKey
                   yield "->"
                   for KeyValue(_, value) in SeriesExtensions.GetAllObservations(row) do  // TODO: is this good?
                     yield value.ToString() ] }
@@ -312,20 +313,44 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   // Some operators
   // ----------------------------------------------------------------------------------------------
 
+  /// This pretty much duplicates `FrameUtils.ofColumns`, but we need to inline it here,
+  /// otherwise the type inference breaks in very bad ways :-(
+  static member inline private FromColumnsNonGeneric nested = 
+    let initial = Frame(Index.ofKeys [], Index.ofUnorderedKeys [], Vector.ofValues [| |])
+    (initial, Series.observations nested) ||> Seq.fold (fun df (column, (series:ISeries<_>)) -> 
+      let data = Vector.ofValues [| series.Vector |]
+      let df2 = Frame(series.Index, Index.ofKeys [column], data)
+      df.Join(df2, JoinKind.Outer))
+
   static member inline private PointwiseFrameSeries<'T>(frame:Frame<'TRowKey, 'TColumnKey>, series:Series<'TRowKey, 'T>, op) =
     frame.Columns |> Series.mapValues (fun os ->
       let df = Frame([1;2], [os; series])
       df.Rows |> Series.mapValues (fun row -> op (row.GetAs<'T>(1)) (row.GetAs<'T>(2)))) 
 
-  static member inline private ScalarOperationR<'T>(frame:Frame<'TRowKey, 'TColumnKey>, scalar:'T, op) =
-    frame.Columns |> Series.mapValues (fun os -> Series.mapValues (fun v -> op v scalar) (os.As<'T>()))
+  static member inline private ScalarOperationR<'T>(frame:Frame<'TRowKey, 'TColumnKey>, scalar:'T, op) : Frame<'TRowKey, 'TColumnKey> =
+    let res = 
+      frame.Columns |> Series.mapValues (fun os -> 
+        let res : Series<_, 'T> = Series.mapValues (fun v -> op v scalar) (os.As<'T>()) 
+        res :> ISeries<_>) 
+    Frame<'TRowKey, 'TColumnKey>.FromColumnsNonGeneric(res)
 
+  // TODO: Add all useful
 
+  // Frame `op` Series
   static member (/) (frame:Frame<'TRowKey, 'TColumnKey>, series:Series<'TRowKey, float>) =
     Frame<'TRowKey, 'TColumnKey>.PointwiseFrameSeries<float>(frame, series, (/))
+  static member (*) (frame:Frame<'TRowKey, 'TColumnKey>, series:Series<'TRowKey, float>) =
+    Frame<'TRowKey, 'TColumnKey>.PointwiseFrameSeries<float>(frame, series, (*))
+    
+  // Frame `op` Scalar
+  static member (/) (frame:Frame<'TRowKey, 'TColumnKey>, scalar:float) =
+    Frame<'TRowKey, 'TColumnKey>.ScalarOperationR<float>(frame, scalar, (/))
 
   static member (*) (frame:Frame<'TRowKey, 'TColumnKey>, scalar:float) =
-    Frame<'TRowKey, 'TColumnKey>.ScalarOperationR<float>(frame, scalar, (/))
+    Frame<'TRowKey, 'TColumnKey>.ScalarOperationR<float>(frame, scalar, (*))
+
+  static member (*) (frame:Frame<'TRowKey, 'TColumnKey>, scalar:int) =
+    Frame<'TRowKey, 'TColumnKey>.ScalarOperationR<int>(frame, scalar, (*))
 
   // ----------------------------------------------------------------------------------------------
   // Internals (rowIndex, columnIndex, data and various helpers)
@@ -419,7 +444,6 @@ and FrameUtils =
       |> Array.ofSeq |> FrameUtils.vectorBuilder.Create
     Frame(rowIndex, columnIndex, data)
 
-
   /// Create data frame from a series of columns
   static member fromColumns<'TRowKey, 'TColumnKey, 'TSeries when 'TSeries :> ISeries<'TRowKey> 
         and 'TRowKey : equality and 'TColumnKey : equality>
@@ -441,7 +465,7 @@ and ColumnSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey 
   member x.GetSlice(lo, hi) =
     base.GetSlice(lo, hi) |> FrameUtils.fromColumns
   member x.Item with get(items) = x.GetItems(items) |> FrameUtils.fromColumns
-  member x.Item with get(HL level) = x.GetByLevel(level) |> FrameUtils.fromColumns
+  member x.Item with get(level) = x.GetByLevel(level) |> FrameUtils.fromColumns
 
 and RowSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>(index, vector, vectorBuilder, indexBuilder) =
   inherit Series<'TRowKey, ObjectSeries<'TColumnKey>>(index, vector, vectorBuilder, indexBuilder)
@@ -452,4 +476,4 @@ and RowSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : e
   member x.GetSlice(lo, hi) =
     base.GetSlice(lo, hi) |> FrameUtils.fromRows
   member x.Item with get(items) = x.GetItems(items) |> FrameUtils.fromRows
-  member x.Item with get(HL level) = x.GetByLevel(level) |> FrameUtils.fromRows
+  member x.Item with get(level) = x.GetByLevel(level) |> FrameUtils.fromRows

@@ -60,3 +60,10 @@ let ``Union combines series when behavior is exclusive and series do not overlap
   let input2 = Series.ofObservations [ 'd' => 4  ]
   let expected = Series.ofObservations [ 'a' => 1; 'b' => 2; 'c' => 3; 'd' => 4 ]
   input1.Union(input2, UnionBehavior.Exclusive) |> shouldEqual expected
+
+[<Test>] 
+let ``Grouping series with missing values works on sample input``() =
+  let n = Series.ofNullables [Nullable(); Nullable(1); Nullable(); Nullable(2)]
+  let actual = n |> Series.groupBy (fun k _ -> k % 2) 
+  let expected = Series.ofObservations [ 1 => Series.ofObservations [1 => 1; 3 => 2]]
+  actual |> shouldEqual expected
