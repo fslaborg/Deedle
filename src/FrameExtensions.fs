@@ -7,10 +7,13 @@ namespace FSharp.DataFrame
 
 open System
 open System.Collections.Generic
-open FSharp.DataFrame.Vectors 
+open System.ComponentModel
 open System.Runtime.InteropServices
 open System.Runtime.CompilerServices
 open System.Collections.Generic
+
+open FSharp.DataFrame.Keys
+open FSharp.DataFrame.Vectors 
 
 type Frame =
   /// Load data frame from a CSV file. The operation automatically reads column names from the 
@@ -241,6 +244,51 @@ type FrameExtensions =
   [<Extension>]
   static member Transpose(frame:Frame<'TRowKey, 'TColumnKey>) = 
     frame.Columns |> Frame.ofRows
+
+
+  [<Extension; EditorBrowsable(EditorBrowsableState.Never)>]
+  static member GetSlice(series:ColumnSeries<'TRowKey, 'TColKey1 * 'TColKey2>, lo1:option<'TColKey1>, hi1:option<'TColKey1>, lo2:option<'TColKey2>, hi2:option<'TColKey2>) =
+    if lo1 <> None || hi1 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
+    if lo2 <> None || hi2 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
+    series.[SimpleLookup [|Option.map box lo1; Option.map box lo2|]]
+
+  [<Extension; EditorBrowsable(EditorBrowsableState.Never)>]
+  static member GetSlice(series:ColumnSeries<'TRowKey, 'TColKey1 * 'TColKey2>, lo1:option<'TColKey1>, hi1:option<'TColKey1>, k2:'TColKey2) =
+    if lo1 <> None || hi1 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
+    series.[SimpleLookup [|Option.map box lo1; Some (box k2) |]]
+
+  [<Extension; EditorBrowsable(EditorBrowsableState.Never)>]
+  static member GetSlice(series:ColumnSeries<'TRowKey, 'TColKey1 * 'TColKey2>, k1:'TColKey1, lo2:option<'TColKey2>, hi2:option<'TColKey2>) =
+    if lo2 <> None || hi2 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
+    series.[SimpleLookup [|Some (box k1); Option.map box lo2|]]
+
+  [<Extension; EditorBrowsable(EditorBrowsableState.Never)>]
+  static member GetSlice(series:ColumnSeries<'TRowKey, 'TColKey1 * 'TColKey2>, lo1:option<'K1>, hi1:option<'K1>, lo2:option<'K2>, hi2:option<'K2>) =
+    if lo1 <> None || hi1 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
+    if lo2 <> None || hi2 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
+    series.[SimpleLookup [|Option.map box lo1; Option.map box lo2|]]
+
+  [<Extension; EditorBrowsable(EditorBrowsableState.Never)>]
+  static member GetSlice(series:RowSeries<'TRowKey1 * 'TRowKey2, 'TColKey>, lo1:option<'TRowKey1>, hi1:option<'TRowKey1>, lo2:option<'TRowKey2>, hi2:option<'TRowKey2>) =
+    if lo1 <> None || hi1 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
+    if lo2 <> None || hi2 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
+    series.[SimpleLookup [|Option.map box lo1; Option.map box lo2|]]
+
+  [<Extension; EditorBrowsable(EditorBrowsableState.Never)>]
+  static member GetSlice(series:RowSeries<'TRowKey1 * 'TRowKey2, 'TColKey>, lo1:option<'TRowKey1>, hi1:option<'TRowKey1>, k2:'TRowKey2) =
+    if lo1 <> None || hi1 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
+    series.[SimpleLookup [|Option.map box lo1; Some (box k2) |]]
+
+  [<Extension; EditorBrowsable(EditorBrowsableState.Never)>]
+  static member GetSlice(series:RowSeries<'TRowKey1 * 'TRowKey2, 'TColKey>, k1:'TRowKey1, lo2:option<'TRowKey2>, hi2:option<'TRowKey2>) =
+    if lo2 <> None || hi2 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
+    series.[SimpleLookup [|Some (box k1); Option.map box lo2|]]
+
+  [<Extension; EditorBrowsable(EditorBrowsableState.Never)>]
+  static member GetSlice(series:RowSeries<'TRowKey1 * 'TRowKey2, 'TColKey>, lo1:option<'K1>, hi1:option<'K1>, lo2:option<'K2>, hi2:option<'K2>) =
+    if lo1 <> None || hi1 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
+    if lo2 <> None || hi2 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
+    series.[SimpleLookup [|Option.map box lo1; Option.map box lo2|]]
 
 type KeyValue =
   static member Create<'K, 'V>(key:'K, value:'V) = KeyValuePair(key, value)

@@ -205,20 +205,23 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
     /// Group an (un)ordered index
     member builder.GroupBy<'K, 'TNewKey, 'R when 'K : equality and 'TNewKey : equality>
-        (index:IIndex<'K>, keySel:'K -> 'TNewKey, vector, valueSel:_ * _ -> OptionalValue<'R>) =
+        (index:IIndex<'K>, keySel:'K -> OptionalValue<'TNewKey>, vector, valueSel:_ * _ -> OptionalValue<'R>) =
       let builder = (builder :> IIndexBuilder)
       let ranges =
         // Build a sequence of indices & vector constructions representing the groups
-        let windows = index.Keys |> Seq.groupBy keySel
-        windows |> Seq.map (fun (key, win) ->
+        let windows = index.Keys |> Seq.groupBy keySel |> Seq.choose (fun (k, v) -> 
+          if k.HasValue then Some(k.Value, v) else None)
+        windows 
+        |> Seq.map (fun (key, win) ->
           let relocations = 
             seq { for k, newAddr in Seq.zip win (Address.generateRange(Address.rangeOf(win))) -> 
                     newAddr, index.Lookup(k, Lookup.Exact, fun _ -> true).Value |> snd }
           let newIndex = builder.Create(win, None)
           key, (newIndex, Vectors.Relocate(vector, Address.rangeOf(win), relocations)))
+        |> Array.ofSeq
 
       /// Build a new index & vector by applying value selector
-      let keys = ranges |> Array.ofSeq |> Seq.map (fun (k, _) -> k)
+      let keys = ranges |> Seq.map (fun (k, _) -> k)
       let newIndex = builder.Create(keys, None)
       let vect = ranges |> Seq.map valueSel |> Array.ofSeq |> vectorBuilder.CreateMissing
       newIndex, vect

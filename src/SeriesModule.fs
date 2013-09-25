@@ -25,8 +25,7 @@ module Series =
   let inline fastStatLevel (level:ILevelReader<_, _, _>) flist foptlist fseq (series:Series<_ * _, _>) : Series<_, _> = 
     series.GroupBy
       ( (fun key ser -> level.GetKey(key)),
-        (fun key ser -> OptionalValue(fastAggregation flist foptlist fseq series)))
-
+        (fun key ser -> OptionalValue(fastAggregation flist foptlist fseq ser)))
 
   [<CompiledName("Statistic")>]
   let inline stat op (series:Series<'K, _>) = 

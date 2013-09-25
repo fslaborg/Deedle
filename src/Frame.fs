@@ -313,20 +313,44 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   // Some operators
   // ----------------------------------------------------------------------------------------------
 
+  /// This pretty much duplicates `FrameUtils.ofColumns`, but we need to inline it here,
+  /// otherwise the type inference breaks in very bad ways :-(
+  static member inline private FromColumnsNonGeneric nested = 
+    let initial = Frame(Index.ofKeys [], Index.ofUnorderedKeys [], Vector.ofValues [| |])
+    (initial, Series.observations nested) ||> Seq.fold (fun df (column, (series:ISeries<_>)) -> 
+      let data = Vector.ofValues [| series.Vector |]
+      let df2 = Frame(series.Index, Index.ofKeys [column], data)
+      df.Join(df2, JoinKind.Outer))
+
   static member inline private PointwiseFrameSeries<'T>(frame:Frame<'TRowKey, 'TColumnKey>, series:Series<'TRowKey, 'T>, op) =
     frame.Columns |> Series.mapValues (fun os ->
       let df = Frame([1;2], [os; series])
       df.Rows |> Series.mapValues (fun row -> op (row.GetAs<'T>(1)) (row.GetAs<'T>(2)))) 
 
-  static member inline private ScalarOperationR<'T>(frame:Frame<'TRowKey, 'TColumnKey>, scalar:'T, op) =
-    frame.Columns |> Series.mapValues (fun os -> Series.mapValues (fun v -> op v scalar) (os.As<'T>()))
+  static member inline private ScalarOperationR<'T>(frame:Frame<'TRowKey, 'TColumnKey>, scalar:'T, op) : Frame<'TRowKey, 'TColumnKey> =
+    let res = 
+      frame.Columns |> Series.mapValues (fun os -> 
+        let res : Series<_, 'T> = Series.mapValues (fun v -> op v scalar) (os.As<'T>()) 
+        res :> ISeries<_>) 
+    Frame<'TRowKey, 'TColumnKey>.FromColumnsNonGeneric(res)
 
+  // TODO: Add all useful
 
+  // Frame `op` Series
   static member (/) (frame:Frame<'TRowKey, 'TColumnKey>, series:Series<'TRowKey, float>) =
     Frame<'TRowKey, 'TColumnKey>.PointwiseFrameSeries<float>(frame, series, (/))
+  static member (*) (frame:Frame<'TRowKey, 'TColumnKey>, series:Series<'TRowKey, float>) =
+    Frame<'TRowKey, 'TColumnKey>.PointwiseFrameSeries<float>(frame, series, (*))
+    
+  // Frame `op` Scalar
+  static member (/) (frame:Frame<'TRowKey, 'TColumnKey>, scalar:float) =
+    Frame<'TRowKey, 'TColumnKey>.ScalarOperationR<float>(frame, scalar, (/))
 
   static member (*) (frame:Frame<'TRowKey, 'TColumnKey>, scalar:float) =
-    Frame<'TRowKey, 'TColumnKey>.ScalarOperationR<float>(frame, scalar, (/))
+    Frame<'TRowKey, 'TColumnKey>.ScalarOperationR<float>(frame, scalar, (*))
+
+  static member (*) (frame:Frame<'TRowKey, 'TColumnKey>, scalar:int) =
+    Frame<'TRowKey, 'TColumnKey>.ScalarOperationR<int>(frame, scalar, (*))
 
   // ----------------------------------------------------------------------------------------------
   // Internals (rowIndex, columnIndex, data and various helpers)
@@ -419,7 +443,6 @@ and FrameUtils =
             columnCreator key (obj()) )
       |> Array.ofSeq |> FrameUtils.vectorBuilder.Create
     Frame(rowIndex, columnIndex, data)
-
 
   /// Create data frame from a series of columns
   static member fromColumns<'TRowKey, 'TColumnKey, 'TSeries when 'TSeries :> ISeries<'TRowKey> 

@@ -243,5 +243,5 @@ and IIndexBuilder =
   /// Group a (possibly unordered) index using the specified `keySelector` function.
   /// The operation builds a new index with the selected keys and a matching vector
   /// with values produced by the `valueSelector` function.
-  abstract GroupBy : IIndex<'K> * keySelector:('K -> 'TNewKey) * VectorConstruction *
+  abstract GroupBy : IIndex<'K> * keySelector:('K -> OptionalValue<'TNewKey>) * VectorConstruction *
     valueSelector:('TNewKey * SeriesConstruction<'K> -> OptionalValue<'R>) -> IIndex<'TNewKey> * IVector<'R>

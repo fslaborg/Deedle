@@ -69,8 +69,12 @@ world.Columns.[Lookup1Of2 "Euro area"].Columns.[Lookup2Of2 "Austria"]
 world.Columns.[Lookup2Of2 "Mexico"]
 world.Columns.[Lookup2Of2 "Belgium"]
 
+FrameExtensions.GetSlice(world.Columns, "Euro area", None, None)
+world.Columns.GetSlice("Euro area", None, None)
 
-world.Columns.[("Euro area", "Austria")]
+world.Columns.["Euro area", *]
+world.Columns.[*, "Belgium"]
+world.Columns.[("Euro area", "Belgium")]
 
 let euro = 
   world.Columns.[Lookup1Of2 "Euro area"]
@@ -82,8 +86,16 @@ let grouped =
   |> Frame.orderCols
   |> Frame.groupRowsUsing (fun k _ -> sprintf "%d0s" (k / 10))
 
-grouped.GetSeries<float>(("A", "Austria"))
+grouped.Rows.["1990s", *].Columns.["F", *]
+
+grouped.Columns.[("A", "Austria")].As<float>() / 1.0e9
 |> Series.meanLevel Level1Of2
+
+grouped.Columns.[("C", "Cyprus")].As<float>() / 1.0e9
+|> Series.meanLevel Level1Of2
+
+grouped / 1.0e9
+|> Frame.meanLevel Level1Of2
 
 // grouped.GroupRowsUsing(fun (MultiKey(decade, _)) row -> decade)
 grouped.GroupRowsLevel(Level1Of2, fun k df -> 

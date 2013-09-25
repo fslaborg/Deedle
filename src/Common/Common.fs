@@ -609,6 +609,11 @@ module Formatting =
   /// Maximal number of items to be printed at the end of a series/frame
   let EndItemCount = 15
 
+  /// Maximal number of items to be printed at the beginning of an inline formatted series/frame
+  let StartInlineItemCount = 5
+  /// Maximal number of items to be printed at the end of an inline formatted series/frame
+  let EndInlineItemCount = 1
+
   open System
   open System.IO
   open System.Text

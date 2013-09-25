@@ -121,6 +121,15 @@ and Series<'K, 'V when 'K : equality>
     member x.Vector = vector :> IVector
     member x.Index = index
 
+  override series.ToString() =
+    if vector.SuppressPrinting then "(Suppressed)" else
+      seq { for item in series.Observations |> Seq.startAndEnd Formatting.StartInlineItemCount Formatting.EndInlineItemCount ->
+              match item with 
+              | Choice2Of3() -> " ... "
+              | Choice1Of3(KeyValue(k, v)) | Choice3Of3(KeyValue(k, v)) -> sprintf "%O => %O " k v }
+      |> String.concat "; "
+      |> sprintf "series [ %s]" 
+
   interface IFsiFormattable with
     member series.Format() = 
       if vector.SuppressPrinting then "(Suppressed)" else
@@ -362,10 +371,11 @@ and Series<'K, 'V when 'K : equality>
     let newIndex, newVector = 
       indexBuilder.GroupBy
         ( x.Index, 
-          (fun key -> keySelector key (x.Get(key))), Vectors.Return 0, 
+          (fun key -> 
+              x.TryGet(key) |> OptionalValue.map (keySelector key)), Vectors.Return 0, 
           (fun (newKey, (index, cmd)) -> 
               let group = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
-              valueSelector newKey group) )
+              valueSelector newKey group ) )
     Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   member x.WithOrdinalIndex() = 

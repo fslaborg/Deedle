@@ -255,16 +255,16 @@ module Frame =
   // ----------------------------------------------------------------------------------------------
 
   let meanLevel level (frame:Frame<'TRowKey1 * 'TRowKey2, 'TColKey>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.meanLevel level)
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.meanLevel level) |> Frame.ofColumns
 
   let sumLevel level (frame:Frame<'TRowKey1 * 'TRowKey2, 'TColKey>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sumLevel level)
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sumLevel level) |> Frame.ofColumns
 
   let sdvLevel level (frame:Frame<'TRowKey1 * 'TRowKey2, 'TColKey>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sdvLevel level)
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sdvLevel level) |> Frame.ofColumns
 
   let medianLevel level (frame:Frame<'TRowKey1 * 'TRowKey2, 'TColKey>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.medianLevel level)
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.medianLevel level) |> Frame.ofColumns
 
   let statLevel level op (frame:Frame<'TRowKey1 * 'TRowKey2, 'TColKey>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.statLevel level op)
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.statLevel level op) |> Frame.ofColumns
