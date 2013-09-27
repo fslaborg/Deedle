@@ -149,14 +149,14 @@ open System.Threading.Tasks
 /// a delayed series, use `DelayedSeries.Create` (this creates index and vector 
 /// linked to this `DelayedSource`).
 type DelayedSource<'K, 'V when 'K : equality>
-    (rangeMin:'K, rangeMax:'K, midpoint:'K -> 'K -> 'K, ranges:Ranges<'K>, identifier, loader:System.Func<'K * BoundaryBehavior, 'K * BoundaryBehavior, Task<seq<'K * 'V>>>) =
+    (rangeMin:'K, rangeMax:'K, midpoint:System.Func<'K,'K,'K>, ranges:Ranges<'K>, identifier, loader:System.Func<'K * BoundaryBehavior, 'K * BoundaryBehavior, Task<seq<'K * 'V>>>) =
 
   static let vectorBuilder = ArrayVector.ArrayVectorBuilder.Instance
   static let indexBuilder = Linear.LinearIndexBuilder.Instance
 
   // Lazy value that loads the data when needed
   let seriesData = Lazy.Create(fun () ->
-    let ranges = flattenRanges rangeMin rangeMax (System.Collections.Generic.Comparer<'K>.Default) ranges midpoint
+    let ranges = flattenRanges rangeMin rangeMax (System.Collections.Generic.Comparer<'K>.Default) ranges (fun k1 k2 -> midpoint.Invoke(k1, k2))
     let data = 
       [| for lo, hi in ranges do
            let dataTask = loader.Invoke(lo, hi)
@@ -239,6 +239,7 @@ and DelayedIndexBuilder() =
     member x.WithIndex(index1, f, vector) = builder.WithIndex(index1, f, vector)
     member x.Reindex(index1, index2, semantics, vector) = builder.Reindex(index1, index2, semantics, vector)
     member x.DropItem(sc, key) = builder.DropItem(sc, key)
+    member x.SampleBy(index, keys, dir, vect, ks, vs) = builder.SampleBy(index, keys, dir, vect, ks, vs)
     member x.GetRange(index, optLo:option<'K * _>, optHi:option<'K * _>, vector) = 
       match index with
       | :? IDelayedIndex<'K> as index ->

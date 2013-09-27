@@ -26,6 +26,28 @@ s1.Join(s1) // TODO: Support lookup
 f1
 //*)
 
+let dt = DateTime(2012, 2, 12)
+let ts = TimeSpan.FromMinutes(5.37)
+let inp = Seq.init 50 (fun i -> dt.Add(TimeSpan(ts.Ticks * int64 i)), i) |> Series.ofObservations
+
+inp.Aggregate(WindowSize(10, Boundary.AtEnding), (fun r -> r), (fun ds -> ds.Data.KeyRange |> fst))
+
+inp |> Series.sampleTimeInto (TimeSpan(1,0,0)) Direction.Forward Series.firstValue
+inp |> Series.sampleTimeInto (TimeSpan(1,0,0)) Direction.Backward Series.lastValue
+
+let ts2 = TimeSpan.FromHours(5.37)
+let inp2 = Seq.init 20 (fun i -> dt.Add(TimeSpan(ts2.Ticks * int64 i)), i) |> Series.ofObservations
+inp2 |> Series.sample [ DateTime(2012, 2, 13); DateTime(2012, 2, 15) ] Direction.Forward
+inp2 |> Series.sample [ DateTime(2012, 2, 13); DateTime(2012, 2, 15) ] Direction.Backward
+
+inp2 |> Series.sampleTimeInto (TimeSpan(24,0,0)) Direction.Forward Series.firstValue
+
+let ts3 = TimeSpan.FromHours(48.0)
+let inp3 = Seq.init 5 (fun i -> dt.Add(TimeSpan(ts3.Ticks * int64 i)), i) |> Series.ofObservations
+
+let keys = [ for d in 12 .. 20 -> DateTime(2012, 2, d) ]
+inp3 |> Series.sample keys Direction.Forward
+
 (** 
 Hiearrchical indexing
 ---------------------

@@ -97,6 +97,8 @@ and Series<'K, 'V when 'K : equality>
       let v = vector.GetValue(a)
       if v.HasValue then yield KeyValuePair(k, v.Value) }
 
+  member x.IsEmpty = Seq.isEmpty index.Mappings
+
   // ----------------------------------------------------------------------------------------------
   // Equlity
   // ----------------------------------------------------------------------------------------------
@@ -194,7 +196,8 @@ and Series<'K, 'V when 'K : equality>
   /// specified, the keys have to exactly match the keys in the current series
   /// (`Lookup.Exact`).
   ///
-  /// Parameters:
+  /// ## Parameters
+  ///
   ///  * `keys` - A collection of keys in the current series.
   member x.GetItems(keys) = x.GetItems(keys, Lookup.Exact)
 
@@ -204,7 +207,8 @@ and Series<'K, 'V when 'K : equality>
   /// specified, the keys have to exactly match the keys in the current series
   /// (`Lookup.Exact`).
   ///
-  /// Parameters:
+  /// ## Parameters
+  ///
   ///  * `keys` - A collection of keys in the current series.
   ///  * `lookup` - Specifies the lookup behavior when searching for keys in 
   ///    the current series. `Lookup.NearestGreater` and `Lookup.NearestSmaller`
@@ -390,6 +394,20 @@ and Series<'K, 'V when 'K : equality>
 
   member x.Aggregate<'R>(aggregation, valueSelector) =
     x.Aggregate<'K, 'R>(aggregation, valueSelector, Func<_, _>(fun k -> k.Data.Keys |> Seq.head))
+
+  member x.SampleBy<'TNewKey, 'R when 'TNewKey : equality>(keys, dir, valueSelector:Func<_, _, _>, keySelector:Func<_, _, _>) =
+    let newIndex, newVector = 
+      indexBuilder.SampleBy
+        ( x.Index, keys, dir, Vectors.Return 0, 
+          (fun (key, (index, cmd)) -> 
+              let window = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
+              OptionalValue(valueSelector.Invoke(key, window))),
+          (fun (key, (index, cmd)) -> 
+              keySelector.Invoke(key, Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder))) )
+    Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
+
+  member x.SampleBy(keys, dir, valueSelector) =
+    x.SampleBy(keys, dir, valueSelector, fun nk _ -> nk)
 
   member x.GroupBy(keySelector, valueSelector) =
     let newIndex, newVector = 
