@@ -1,6 +1,8 @@
-﻿namespace FSharp.DataFrame
+﻿#nowarn "86" // Let me redefine <, >, <=, >= locally using comparator
+namespace FSharp.DataFrame
 
 open System
+open System.Runtime.CompilerServices
 
 // --------------------------------------------------------------------------------------
 // OptionalValue<T> type
@@ -101,7 +103,14 @@ type DataSegment<'T> =
   member x.Data = let (DataSegment(_, data)) = x in data
   /// Return the kind of this segment
   member x.Kind = let (DataSegment(kind, _)) = x in kind
-
+  /// Format data segment nicely
+  override x.ToString() = 
+    let s = x.Data.ToString()
+    if s.StartsWith("series [") then
+      let repl = match x.Kind with Complete -> "complete-segment [" | _ -> "incomplete-segment ["
+      s.Replace("series [", repl)
+    else sprintf "DataSegment(%s, %s)" (if x.Kind = Complete then "Complete" else "Incomplete") s
+    
 
 /// Provides helper functions and active patterns for working with `DataSegment` values
 module DataSegment = 
@@ -136,6 +145,24 @@ module DataSegment =
 // --------------------------------------------------------------------------------------
 // OptionalValue module (to be used from F#)
 // --------------------------------------------------------------------------------------
+
+/// Extension methods for working with optional values from C#. These make
+/// it easier to provide default values and convert optional values to 
+/// `Nullable` (when the contained value is value type)
+[<Extension>]
+type OptionalValueExtensions =
+  
+  /// Extension method that converts optional value containing a value type
+  /// to a C# friendly `Nullable<T>` or `T?` type.
+  [<Extension>]
+  static member AsNullable(opt:OptionalValue<'T>) = 
+    if opt.HasValue then Nullable(opt.Value) else Nullable()
+
+  /// Extension method that returns value in the specified optional value
+  /// or the provided default value (the second argument).
+  [<Extension>]
+  static member OrDefault(opt:OptionalValue<'T>, defaultValue) = 
+    if opt.HasValue then opt.Value else defaultValue
 
 /// Provides various helper functions for using the `OptionalValue<T>` type from F#
 /// (The functions are similar to those in the standard `Option` module).
@@ -341,6 +368,8 @@ module Array =
 /// This module contains additional functions for working with sequences. 
 /// `FSharp.DataFrame.Internals` is opened, it extends the standard `Seq` module.
 module Seq = 
+  open ExtCore.Collections
+  open ExtCore.Collections.LazyListPatterns
 
   /// Comapre two sequences using the `Equals` method. Returns true
   /// when all their elements are equal and they have the same size.
@@ -472,6 +501,50 @@ module Seq =
     | _ -> () }
 
 
+  /// Generate non-overlapping chunks from the input sequence. Chunks are aligned
+  /// to the specified keys. The `dir` parameter specifies the direction. If it is
+  /// `Direction.Forward` than the key is the first element of a chunk; for 
+  /// `Direction.Backward`, the key is the last element (note that this does not hold
+  /// at the boundaries)
+  let chunkedUsing (comparer:Comparer<_>) dir keys input = seq {
+    let keys = LazyList.ofSeq keys
+    let input = LazyList.ofSeq input
+
+    let (<) a b = comparer.Compare(a, b) < 0
+    let (<=) a b = comparer.Compare(a, b) <= 0
+
+    // Consume input until we find element greater or equal to a given nextKey
+    let rec chunkUntilKeyOrEnd op nextKey input acc =
+      match nextKey, input with
+      | Some nk, Cons(h, input) when op h nk -> chunkUntilKeyOrEnd op nextKey input (h::acc)
+      | Some nk, _ -> input, List.rev acc
+      | None, input -> LazyList.empty, (List.rev acc) @ (List.ofSeq input)
+
+    if dir = Direction.Forward then 
+      match keys with
+      | Nil -> invalidArg "keys" "Keys for sampling should not be empty"
+      | Cons(key, keys) ->
+          let rec loop (key, keys) input = seq {
+            let input, chunk = chunkUntilKeyOrEnd (<) (headOrNone keys) input []
+            yield key, chunk
+            match keys with 
+            | Nil -> if not input.IsEmpty then failwith "Assertion failed: Input not empty"
+            | Cons(key, keys) -> yield! loop(key, keys) input }
+          yield! loop(key, keys) input
+
+    elif dir = Direction.Backward then
+      match keys with
+      | Nil -> invalidArg "keys" "Keys for sampling should not be empty"
+      | Cons(key, keys) ->
+          let rec loop (key, keys) input = seq { 
+            let input, chunk = chunkUntilKeyOrEnd (<=) (Some key) input []
+            match keys with 
+            | Nil -> yield key, chunk @ (List.ofSeq input)
+            | Cons(nkey, keys) -> 
+                yield key, chunk
+                yield! loop (nkey, keys) input }
+          yield! loop (key, keys) input }
+      
   /// A version of `Seq.windowed` that allows specifying more complex boundary
   /// behaviour. The `boundary` argument can specify one of the following options:
   /// 

@@ -160,7 +160,7 @@ module MultiKeyExtensions =
 
 
 /// Module with helper functions for extracting values from hierarchical tuples
-module Tuple =
+module Pair =
   /// Returns the first value of a two-level hierarchical tuple
   let get1Of2(v, _) = v
   /// Returns the second value of a two-level hierarchical tuple

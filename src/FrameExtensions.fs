@@ -21,7 +21,8 @@ type Frame =
   /// of primitive types (`int`, `float`, etc.) are converted to the right type. Columns of other
   /// types (such as dates) are not converted automatically.
   ///
-  /// Parameters:
+  /// ## Parameters
+  ///
   ///  * `location` - Specifies a file name or an web location of the resource.
   ///  * `skipTypeInference` - Specifies whether the method should skip inferring types
   ///    of columns automatically (when set to `true` you need to provide explicit `schema`)
@@ -109,7 +110,8 @@ module FSharpFrameExtensions =
     /// of primitive types (`int`, `float`, etc.) are converted to the right type. Columns of other
     /// types (such as dates) are not converted automatically.
     ///
-    /// Parameters:
+    /// ## Parameters
+    ///
     ///  * `location` - Specifies a file name or an web location of the resource.
     ///  * `inferTypes` - Specifies whether the method should attempt to infer types
     ///    of columns automatically (set this to `false` if you want to specify schema)
@@ -200,7 +202,8 @@ type FrameExtensions =
   /// is called with `KeyValuePair` containing the row key as the `Key` and `Value`
   /// gives access to the row series.
   ///
-  /// Parameters:
+  /// ## Parameters
+  ///
   ///  * `frame` - A data frame to invoke the filtering function on.
   ///  * `condition` - A delegate that specifies the filtering condition.
   [<Extension>]

@@ -135,7 +135,7 @@ type SeriesExtensions =
   /// Note that the series may still contain missing values after call to this 
   /// function. This operation can only be used on ordered series. 
   ///
-  /// Example:
+  /// ## Example
   ///
   ///     let sample = Series.ofValues [ Double.NaN; 1.0; Double.NaN; 3.0 ]
   ///
@@ -145,7 +145,8 @@ type SeriesExtensions =
   ///     // Returns a series consisting of [<missing>; 1; 1; 3]
   ///     sample.FillMissing(Direction.Forward)
   ///
-  /// Parameters:
+  /// ## Parameters
+  ///
   ///  * `direction` - Specifies the direction used when searching for 
   ///    the nearest available value. `Backward` means that we want to
   ///    look for the first value with a smaller key while `Forward` searches
@@ -156,7 +157,8 @@ type SeriesExtensions =
 
   /// Fill missing values in the series using the specified function.
   ///
-  /// Parameters:
+  /// ## Parameters
+  ///
   ///  * `filler` - A `Func` delegate that calculates the filling value
   ///    based on the key in the series.
   [<Extension>]
@@ -212,3 +214,38 @@ type SeriesExtensions =
   [<Extension>]
   static member Window(series:Series<'K, 'V>, size:int): Series<'K, Series<'K, 'V>> = 
     Series.window size series
+
+
+  [<Extension>]
+  static member Sample<'V>(series:Series<DateTime, 'V>, interval:TimeSpan, dir) =
+    series |> Series.Internal.sampleTimeIntoInternal (+) interval dir (fun k s ->
+      if s.IsEmpty then series.Get(k, Lookup.NearestSmaller)
+      else Series.lastValue s)
+
+  [<Extension>]
+  static member Sample<'V>(series:Series<DateTimeOffset, 'V>, interval:TimeSpan, dir) =
+    series |> Series.Internal.sampleTimeIntoInternal (+) interval dir (fun k s ->
+      if s.IsEmpty then series.Get(k, Lookup.NearestSmaller)
+      else Series.lastValue s)
+
+  [<Extension>]
+  static member Sample<'V>(series:Series<DateTime, 'V>, interval:TimeSpan) =
+    SeriesExtensions.Sample(series, interval, Direction.Backward)
+
+  [<Extension>]
+  static member Sample<'V>(series:Series<DateTimeOffset, 'V>, interval:TimeSpan) =
+    SeriesExtensions.Sample(series, interval, Direction.Backward)
+
+  [<Extension>]
+  static member SampleInto<'V>(series:Series<DateTime, 'V>, interval:TimeSpan, dir, func:Func<_, _>) =
+    series |> Series.Internal.sampleTimeIntoInternal (+) interval dir func.Invoke
+
+  [<Extension>]
+  static member SampleInto<'V>(series:Series<DateTimeOffset, 'V>, interval:TimeSpan, dir, func:Func<_, _>) =
+    series |> Series.Internal.sampleTimeIntoInternal (+) interval dir func.Invoke
+
+  [<Extension>]
+  static member FirstKey(series:Series<'K, 'V>) = series.KeyRange |> fst
+
+  [<Extension>]
+  static member LastKey(series:Series<'K, 'V>) = series.KeyRange |> snd
