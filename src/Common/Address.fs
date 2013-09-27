@@ -1,6 +1,8 @@
 ﻿/// An `Address` value is used as an interface between vectors and indices. The index maps
 /// keys of various types to address, which is then used to get a value from the vector.
 /// 
+/// Details:
+///
 /// In the most common case, the address will be `int` (and can represent index in an array),
 /// but it is possible to imagine other addresses - `int64` could be used with arrays of 
 /// arrays (to handle very large data). A lazily loaded vector might use something completely

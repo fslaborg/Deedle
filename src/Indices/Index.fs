@@ -52,6 +52,7 @@ type Aggregation<'K> =
   /// first key and the current key as arguments.
   | ChunkWhile of ('K -> 'K -> bool)
 
+
 /// A non-generic type that simplifies the construction of `Aggregation<K>` values
 /// from C#. It provides methods for constructing different kinds of aggregation
 /// strategies for ordered series.
@@ -59,7 +60,8 @@ type Aggregation =
   /// Aggregate data into floating windows of a specified size 
   /// and the provided handling of boundary elements.
   ///
-  /// Parameters:
+  /// ## Parameters
+  ///
   ///  - `size` - Specifies the size of the floating window. Depending on the
   ///    boundary behavior, the actual created windows may be smaller.
   ///  - `boundary` - Specifies how to handle boundaries (when there is not
@@ -69,7 +71,8 @@ type Aggregation =
   /// Aggregate data into non-overlapping chunks of a specified size 
   /// and the provided handling of boundary elements.
   ///
-  /// Parameters:
+  /// ## Parameters
+  ///
   ///  - `size` - Specifies the size of the floating window. Depending on the
   ///    boundary behavior, the actual created windows may be smaller.
   ///  - `boundary` - Specifies how to handle boundaries (when there is not
@@ -80,7 +83,8 @@ type Aggregation =
   /// as the specified function returns `false` when called with the 
   /// first key and the current key as arguments.
   ///
-  /// Parameters:
+  /// ## Parameters
+  ///
   ///  - `condition` - A delegate that specifies when to end the current window
   ///    (e.g. `(k1, k2) => k2 - k1 < 10` means that the difference between keys
   ///    in each window will be less than 10.
@@ -91,7 +95,8 @@ type Aggregation =
   /// as the specified function returns `false` when called with the 
   /// first key and the current key as arguments.
   ///
-  /// Parameters:
+  /// ## Parameters
+  ///
   ///  - `condition` - A delegate that specifies when to end the current chunk
   ///    (e.g. `(k1, k2) => k2 - k1 < 10` means that the difference between keys
   ///    in each chunk will be less than 10.
@@ -225,7 +230,8 @@ and IIndexBuilder =
 
   /// Aggregate an ordered index into floating windows or chunks. 
   ///
-  /// Parameters:
+  /// ## Parameters
+  ///
   ///  - `index` - Specifies the index to be aggregated
   ///  - `aggregation` - Defines the kind of aggregation to apply (the type 
   ///    is a discriminated union with a couple of cases)
@@ -245,3 +251,13 @@ and IIndexBuilder =
   /// with values produced by the `valueSelector` function.
   abstract GroupBy : IIndex<'K> * keySelector:('K -> OptionalValue<'TNewKey>) * VectorConstruction *
     valueSelector:('TNewKey * SeriesConstruction<'K> -> OptionalValue<'R>) -> IIndex<'TNewKey> * IVector<'R>
+
+
+  /// Aggregate data into non-overlapping chunks by aligning them to the
+  /// specified keys. The second parameter specifies the direction. If it is
+  /// `Direction.Forward` than the key is the first element of a chunk; for 
+  /// `Direction.Backward`, the key is the last element (note that this does not 
+  /// hold at the boundaries)
+  abstract SampleBy : IIndex<'K> * seq<'K> * Direction * source:VectorConstruction *
+    valueSelector:('TNewKey * SeriesConstruction<'K> -> OptionalValue<'R>) *
+    keySelector:('K * SeriesConstruction<'K> -> 'TNewKey) -> IIndex<'TNewKey> * IVector<'R>

@@ -1,4 +1,6 @@
-﻿namespace FSharp.DataFrame
+﻿#nowarn "77" // Static constraint in Series.sample requires special + operator
+
+namespace FSharp.DataFrame
 open FSharp.DataFrame.Keys
 
 /// Series module comment..
@@ -240,6 +242,39 @@ module Series =
   let unionUsing behavior (series1:Series<'K, 'V>) (series2:Series<'K, 'V>) = 
     series1.Union(series2, behavior)
 
+  //
+  open System
+
+  let sampleInto keys dir f (series:Series<'K , 'V>) =
+    series.SampleBy(keys, dir, (fun k s -> f k s))
+
+  let sample keys dir (series:Series<'K , 'V>) =
+    sampleInto keys dir (fun k s -> s) series
+
+  module Internal = 
+    let sampleTimeIntoInternal add (interval:TimeSpan) dir f (series:Series<'K , 'V>) =
+      let comparer = System.Collections.Generic.Comparer<'K>.Default
+      let smallest, largest = series.KeyRange
+      let keys =
+        let rec genKeys current = seq {
+          if dir = Direction.Backward then yield current
+          if comparer.Compare(current, largest) <= 0 then
+            if dir = Direction.Forward then yield current
+            yield! genKeys (add current interval) }
+        genKeys smallest
+      sampleInto keys dir f series
+
+  let inline sampleTimeInto interval dir f (series:Series< ^K , ^V >) = 
+    let add dt ts = (^K: (static member (+) : ^K * TimeSpan -> ^K) (dt, ts))
+    Internal.sampleTimeIntoInternal add interval dir (fun _ -> f) series
+
+  let inline sampleTime interval dir series = sampleTimeInto interval dir id series
+
+  let lastKey (series:Series< 'K , 'V >) = series.KeyRange |> snd
+  let firstKey (series:Series< 'K , 'V >) = series.KeyRange |> fst
+  let lastValue (series:Series< 'K , 'V >) = series |> get (series.KeyRange |> snd)
+  let firstValue (series:Series< 'K , 'V >) = series |> get (series.KeyRange |> fst)
+
   // ----------------------------------------------------------------------------------------------
   // Counting & checking if values are present
   // ----------------------------------------------------------------------------------------------
@@ -285,7 +320,7 @@ module Series =
   /// missing values after call to this function. This operation can only be
   /// used on ordered series.
   ///
-  /// Example:
+  /// ## Example
   ///
   ///     let sample = Series.ofValues [ Double.NaN; 1.0; Double.NaN; 3.0 ]
   ///
@@ -295,7 +330,8 @@ module Series =
   ///     // Returns a series consisting of [<missing>; 1; 1; 3]
   ///     sample |> Series.fillMissing Direction.Forward 
   ///
-  /// Parameters:
+  /// ## Parameters
+  ///
   ///  * `direction` - Specifies the direction used when searching for 
   ///    the nearest available value. `Backward` means that we want to
   ///    look for the first value with a smaller key while `Forward` searches

@@ -13,7 +13,7 @@ open FSharp.DataFrame.Keys
 open FSharp.DataFrame.Addressing
 open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Indices
-
+open System.Diagnostics
 
 /// An index that maps keys `K` to offsets `Address`. The keys cannot be duplicated.
 /// The construction checks if the keys are ordered (using the provided or the default
@@ -239,6 +239,27 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       let vect = ranges |> Seq.map valueSel |> Array.ofSeq |> vectorBuilder.CreateMissing
       newIndex, vect
 
+    /// Create chunks based on the specified key sequence
+    member builder.SampleBy<'K, 'TNewKey, 'R when 'K : equality and 'TNewKey : equality> 
+        (index:IIndex<'K>, keys:seq<'K>, dir:Direction, vector, valueSel:_ * _ -> OptionalValue<'R>, keySel:_ * _ -> 'TNewKey) =
+      let builder = (builder :> IIndexBuilder)
+      let ranges =
+        // Build a sequence of indices & vector constructions representing the groups
+        let windows = index.Keys |> Seq.chunkedUsing index.Comparer dir keys 
+        windows 
+        |> Seq.map (fun (key, win) ->
+          let relocations = 
+            seq { for k, newAddr in Seq.zip win (Address.generateRange(Address.rangeOf(win))) -> 
+                    newAddr, index.Lookup(k, Lookup.Exact, fun _ -> true).Value |> snd }
+          let newIndex = builder.Create(win, None)
+          key, (newIndex, Vectors.Relocate(vector, Address.rangeOf(win), relocations)))
+        |> Array.ofSeq
+
+      /// Build a new index & vector by applying value selector
+      let keys = ranges |> Array.map (fun (k, sc) -> keySel (k, sc), sc)
+      let newIndex = builder.Create(Seq.map fst keys, None)
+      let vect = keys |> Seq.map valueSel |> Array.ofSeq |> vectorBuilder.CreateMissing
+      newIndex, vect
 
     /// Order index and build vector transformation 
     member builder.OrderIndex( (index, vector) ) =

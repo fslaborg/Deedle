@@ -8,10 +8,10 @@
 #endif
 
 open System
+open System.Collections.Generic
 open FsUnit
 open FsCheck
 open NUnit.Framework
-
 open FSharp.DataFrame
 open FSharp.DataFrame.Internal
 
@@ -204,3 +204,21 @@ let ``Seq.alignWithoutOrdering works on sample input`` () =
   Seq.alignWithoutOrdering [ ("b", 0); ("c", 1); ("d", 2) ] [ ("b", 1); ("c", 2); ("a", 0); ] 
   |> List.ofSeq |> set |> shouldEqual
       (set [("b", Some 0, Some 1); ("c", Some 1, Some 2); ("d", Some 2, None); ("a", None, Some 0)])
+
+[<Test>]
+let ``Seq.chunkedUsing works in forward direction on sample input`` () =
+  let actual = Seq.chunkedUsing Comparer<int>.Default Direction.Forward [2;4;7] [1 .. 10] |> Array.ofSeq 
+  let expected = [| (2, [1; 2; 3]); (4, [4; 5; 6]); (7, [7; 8; 9; 10]) |]
+  actual |> shouldEqual expected
+  
+[<Test>]
+let ``Seq.chunkedUsing works in backward direction on sample input`` () =
+  let actual = Seq.chunkedUsing Comparer<int>.Default Direction.Backward [2;4;7] [1 .. 10] |> Array.ofSeq 
+  let expected = [|(2, [1;2]); (4, [3;4]); (7, [5; 6; 7; 8; 9; 10]) |]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Seq.chunkedUsing returns empty lists when keys are denser than values`` () =
+  let actual = [1;3;4;5] |> Seq.chunkedUsing Comparer<int>.Default Direction.Forward [1;2;3;5;6] |> List.ofSeq
+  let expected = [ (1,[1]); (2,[]); (3,[3;4]); (5,[5]); (6,[]) ]
+  actual |> shouldEqual expected
