@@ -31,6 +31,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API Reference", "API Refere
 		tools\reference\type.cshtml = tools\reference\type.cshtml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{3257BB99-93F9-4331-9DFA-D3D3E962626C}"
+	ProjectSection(SolutionItems) = preProject
+		samples\samples\volatility.fsx = samples\samples\volatility.fsx
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,6 +53,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{245F1283-32FA-4B38-AC76-448B8AE5F7AC} = {0ACC5440-2ECD-4D02-88D3-E0F1A1E0FC89}
 		{B6AFD701-8A05-4A18-A3F3-EDAF8D7530ED} = {0ACC5440-2ECD-4D02-88D3-E0F1A1E0FC89}
+		{3257BB99-93F9-4331-9DFA-D3D3E962626C} = {0ACC5440-2ECD-4D02-88D3-E0F1A1E0FC89}
 		{497092F5-654F-45A3-AAA7-C72CC725DF5E} = {B6AFD701-8A05-4A18-A3F3-EDAF8D7530ED}
 	EndGlobalSection
 EndGlobal
