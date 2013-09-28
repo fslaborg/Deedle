@@ -25,7 +25,7 @@ open System.Collections.Generic
 #nowarn "40" // recursive initialization
 
 [<AutoOpen>]
-module ExtCoreExtensions = 
+module internal ExtCoreExtensions = 
     /// Determines if a reference is a null reference.
     [<CompiledName("IsNull")>]
     let inline isNull< ^T when ^T : not struct> (x : ^T) =
@@ -92,7 +92,7 @@ and [<NoEquality; NoComparison>]
 /// These may force the computation of elements of the list.
 and [<NoEquality; NoComparison; Sealed>]
 //[<StructuredFormatDisplay("")>]
-    LazyList<'T> internal (initialStatus) =
+    internal LazyList<'T> internal (initialStatus) =
     //
     static let emptyList = LazyList (Value Empty)
     
@@ -209,7 +209,7 @@ and [<NoEquality; NoComparison; Sealed>]
 
 /// Functional operators on LazyLists.
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-module LazyList =
+module internal LazyList =
     //open OptimizedClosures
 
     /// The empty LazyList.
@@ -608,7 +608,7 @@ type LazyList<'T> with
 
 /// Active patterns for deconstructing lazy lists.
 [<AutoOpen>]
-module LazyListPatterns =
+module internal LazyListPatterns =
     // Active pattern for deconstructing lazy lists.
     let inline (|Nil|Cons|) (list : LazyList<'T>) =
         match list.TryHeadTail () with

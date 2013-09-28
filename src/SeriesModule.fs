@@ -24,6 +24,8 @@ module Series =
     | VectorData.SparseList list -> foptlist list
     | VectorData.Sequence seq -> fseq (Seq.choose OptionalValue.asOption seq)
 
+  /// [omit]
+  /// Does stuff
   let inline fastStatBy keySelector flist foptlist fseq (series:Series<_, _>) : Series<_, _> = 
     series.GroupBy
       ( (fun key ser -> keySelector key),

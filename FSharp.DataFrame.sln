@@ -9,8 +9,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{245F1283-3
 	ProjectSection(SolutionItems) = preProject
 		samples\design.fsx = samples\design.fsx
 		samples\features.fsx = samples\features.fsx
+		samples\index.fsx = samples\index.fsx
 		samples\lazysource.fsx = samples\lazysource.fsx
-		samples\Samples.fsx = samples\Samples.fsx
+		samples\samples.fsx = samples\samples.fsx
 		samples\timeseries.fsx = samples\timeseries.fsx
 		samples\tutorial.fsx = samples\tutorial.fsx
 	EndProjectSection
@@ -19,6 +20,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{B6AFD701
 	ProjectSection(SolutionItems) = preProject
 		tools\build.fsx = tools\build.fsx
 		tools\template.html = tools\template.html
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API Reference", "API Reference", "{497092F5-654F-45A3-AAA7-C72CC725DF5E}"
+	ProjectSection(SolutionItems) = preProject
+		tools\reference\default.cshtml = tools\reference\default.cshtml
+		tools\reference\members.cshtml = tools\reference\members.cshtml
+		tools\reference\module.cshtml = tools\reference\module.cshtml
+		tools\reference\namespaces.cshtml = tools\reference\namespaces.cshtml
+		tools\reference\type.cshtml = tools\reference\type.cshtml
 	EndProjectSection
 EndProject
 Global
@@ -38,5 +48,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{245F1283-32FA-4B38-AC76-448B8AE5F7AC} = {0ACC5440-2ECD-4D02-88D3-E0F1A1E0FC89}
 		{B6AFD701-8A05-4A18-A3F3-EDAF8D7530ED} = {0ACC5440-2ECD-4D02-88D3-E0F1A1E0FC89}
+		{497092F5-654F-45A3-AAA7-C72CC725DF5E} = {B6AFD701-8A05-4A18-A3F3-EDAF8D7530ED}
 	EndGlobalSection
 EndGlobal

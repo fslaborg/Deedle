@@ -105,6 +105,8 @@ module FSharpFrameExtensions =
   let ($) f series = Series.mapValues f series
 
   type Frame with
+    // NOTE: When changing the parameters below, do not forget to update 'features.fsx'!
+
     /// Load data frame from a CSV file. The operation automatically reads column names from the 
     /// CSV file (if they are present) and infers the type of values for each column. Columns
     /// of primitive types (`int`, `float`, etc.) are converted to the right type. Columns of other
@@ -174,9 +176,9 @@ module FSharpFrameExtensions =
   type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality> with
     member frame.Append(rowKey, row) = frame.Append(Frame.ofRows [ rowKey => row ])
     member frame.WithMissing(value) = Frame.withMissingVal value frame
-    member frame.WithColumnIndex(columnKeys:seq<'TNewColumnKey>) = Frame.withColumnKeys columnKeys frame
-    member frame.WithRowIndex<'TNewRowIndex when 'TNewRowIndex : equality>(col) = 
-      Frame.withRowIndex (column<'TNewRowIndex>(col)) frame
+    member frame.WithColumnIndex(columnKeys:seq<'TNewColumnKey>) = Frame.renameCols columnKeys frame
+    member frame.WithRowIndex<'TNewRowIndex when 'TNewRowIndex : equality>(col) : Frame<'TNewRowIndex, _> = 
+      Frame.indexRows col frame
 
     // Grouping
     member frame.GroupRowsBy<'TGroup when 'TGroup : equality>(key) =

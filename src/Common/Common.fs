@@ -50,17 +50,21 @@ type OptionalValue<'T> private (hasValue:bool, value:'T) =
     else "<missing>"
 
 /// Specifies in which direction should we look when performing operations such as
-/// `Series.Pairwise`. For example consider:
+/// `Series.Pairwise`. 
 ///
-///     let abc = Series.ofObservations [ 1 => "a"; 2 => "b"; 3 => "c" ]
+/// ## Example
 ///
-///     // When looking forward, observations have key of the first element
-///     abc.Pairwise(direction=Direction.Forward) = 
-///       Series.ofObservations [ 1 => ("a", "b"); 2 => ("b", "c") ]
+///     let abc = 
+///       [ 1 => "a"; 2 => "b"; 3 => "c" ]
+///       |> Series.ofObservations
 ///
-///     // When looking backward, observations have key of the second element
-///     abc.Pairwise(direction=Direction.Backward) = 
-///       Series.ofObservations [ 2 => ("a", "b"); 3 => ("b", "c") ]
+///     // Using 'Forward' the key of the first element is used
+///     abc.Pairwise(direction=Direction.Forward)
+///     [fsi:[ 1 => ("a", "b"); 2 => ("b", "c") ]]
+///
+///     // Using 'Backward' the key of the second element is used
+///     abc.Pairwise(direction=Direction.Backward)
+///     [fsi:[ 2 => ("a", "b"); 3 => ("b", "c") ]]
 ///
 type Direction = 
   | Backward = 0
@@ -84,15 +88,19 @@ type DataSegmentKind = Complete | Incomplete
 /// various functions that aggregate data into chunks or floating windows. The 
 /// `Complete` case represents complete segment (e.g. of the specified size) and
 /// `Boundary` represents segment at the boundary (e.g. smaller than the required
-/// size). For example (using internal `windowed` function):
+/// size). 
 ///
-//      open FSharp.DataFrame.Internal
+/// ## Example
 ///
-///     Seq.windowedWithBounds 3 Boundary.AtBeginning [ 1; 2; 3; 4 ] |> Array.ofSeq = 
-///       [| DataSegment(Incomplete, [| 1 |])
-///          DataSegment(Incomplete, [| 1; 2 |])
-///          DataSegment(Complete [| 1; 2; 3 |])
-///          DataSegment(Complete [| 2; 3; 4 |]) |]
+/// For example (using internal `windowed` function):
+///
+///     open FSharp.DataFrame.Internal
+///
+///     Seq.windowedWithBounds 3 Boundary.AtBeginning [ 1; 2; 3; 4 ]
+///     [fsi:  [| DataSegment(Incomplete, [| 1 |])         ]
+///     [fsi:       DataSegment(Incomplete, [| 1; 2 |])    ]
+///     [fsi:       DataSegment(Complete [| 1; 2; 3 |])    ]
+///     [fsi:       DataSegment(Complete [| 2; 3; 4 |]) |] ]
 ///
 /// If you do not need to distinguish the two cases, you can use the `Data` property
 /// to get the array representing the segment data.

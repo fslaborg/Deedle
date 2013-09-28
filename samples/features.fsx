@@ -1,10 +1,4 @@
-﻿(**
-Feature overview
-================
-
-TODO
-
-*)
+﻿(*** hide ***)
 #I "../bin"
 #load "FSharp.DataFrame.fsx"
 #load "../packages/FSharp.Charting.0.84/FSharp.Charting.fsx"
@@ -14,250 +8,164 @@ open FSharp.Data
 open FSharp.DataFrame
 open FSharp.Charting
 
-(*
-let s1 = Series.ofValues [ 1 .. 10 ]
-let f1 = Frame.ofColumns [ "A" => s1 ]
-f1.Append(f1) // TODO: Allow UnionBehavior?
-f1.Join(f1)
+let root = __SOURCE_DIRECTORY__ + "/data/"
 
-s1.Union(s1)
-s1.Join(s1) // TODO: Support lookup
+(**
+Data frame features
+===================
 
-f1
-//*)
+In this section, we look at various features of the F# data frame library (using both
+`Series` and `Frame` types and modules). Feel free to jump to the section you are interested
+in, but note that some sections refer back to values built in "Createing & loading".
 
-let dt = DateTime(2012, 2, 12)
-let ts = TimeSpan.FromMinutes(5.37)
-let inp = Seq.init 50 (fun i -> dt.Add(TimeSpan(ts.Ticks * int64 i)), i) |> Series.ofObservations
+You can also get this page as an [F# script file](https://github.com/BlueMountainCapital/FSharp.DataFrame/blob/master/samples/features.fsx)
+from GitHub and run the samples interactively.
 
-inp.Aggregate(WindowSize(10, Boundary.AtEnding), (fun r -> r), (fun ds -> ds.Data.KeyRange |> fst))
+<a name="creating"></a>
+Creating frames & loading data
+------------------------------
 
-inp |> Series.sampleTimeInto (TimeSpan(1,0,0)) Direction.Forward Series.firstValue
-inp |> Series.sampleTimeInto (TimeSpan(1,0,0)) Direction.Backward Series.lastValue
+<a name="creating-csv"></a>
+### Loading CSV files
 
-let ts2 = TimeSpan.FromHours(5.37)
-let inp2 = Seq.init 20 (fun i -> dt.Add(TimeSpan(ts2.Ticks * int64 i)), i) |> Series.ofObservations
-inp2 |> Series.sample [ DateTime(2012, 2, 13); DateTime(2012, 2, 15) ] Direction.Forward
-inp2 |> Series.sample [ DateTime(2012, 2, 13); DateTime(2012, 2, 15) ] Direction.Backward
-
-inp2 |> Series.sampleTimeInto (TimeSpan(24,0,0)) Direction.Forward Series.firstValue
-
-let ts3 = TimeSpan.FromHours(48.0)
-let inp3 = Seq.init 5 (fun i -> dt.Add(TimeSpan(ts3.Ticks * int64 i)), i) |> Series.ofObservations
-
-let keys = [ for d in 12 .. 20 -> DateTime(2012, 2, d) ]
-inp3 |> Series.sample keys Direction.Forward
-
-(** 
-Hiearrchical indexing
----------------------
-
+The easiest way to get data into data frame is to use a CSV file. The `Frame.readCsv`
+function exposes this functionality:
 *)
 
+// Assuming 'root' is a directory containing the file
+let titanic = Frame.readCsv(root + "Titanic.csv")
+
+// Specify column separator
+let air = Frame.readCsv(root + "AirQuality.csv", separators=";")
+
+(**
+The `readCsv` method has a number of optional arguments that you can use to control 
+the loading. It supports both CSV files, TSV files and other formats. If the file name
+ends with `tsv`, the Tab is used automatically, but you can set `separator` explicitly.
+The following parameters can be used:
+
+ * `location` - Specifies a file name or an web location of the resource.
+ * `inferTypes` - Specifies whether the method should attempt to infer types
+   of columns automatically (set this to `false` if you want to specify schema)
+ * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
+   rows to use for type inference. The default value is 0, meaninig all rows.
+ * `schema` - A string that specifies CSV schema. See the documentation for 
+   information about the schema format.
+ * `separators` - A string that specifies one or more (single character) separators
+   that are used to separate columns in the CSV file. Use for example `";"` to 
+   parse semicolon separated files.
+ * `culture` - Specifies the name of the culture that is used when parsing 
+   values in the CSV file (such as `"en-US"`). The default is invariant culture. 
+
+The parameters are the same as those used by the [CSV type provider in F# Data](http://fsharp.github.io/FSharp.Data/library/CsvProvider.html),
+so you can find additional documentation there.
+
+<a name="creating-recd"></a>
+### Loading F# records or .NET objects
+
+If you have another .NET or F# components that returns data as a sequence of F# records,
+C# anonymous types or other .NET objects, you can use `Frame.ofRecords` to turn them
+into a data frame. Assume we have:
+*)
+type Person = 
+  { Name:string; Age:int; Countries:string list; }
+
+let peopleRecds = 
+  [ { Name = "Joe"; Age = 51; Countries = [ "UK"; "US"; "UK"] }
+    { Name = "Tomas"; Age = 28; Countries = [ "CZ"; "UK"; "US"; "CZ" ] }
+    { Name = "Eve"; Age = 2; Countries = [ "FR" ] }
+    { Name = "Suzanne"; Age = 15; Countries = [ "US" ] } ]
+(**
+Now we can easily create a data frame that contains three columns 
+(`Name`, `Age` and `Countries`) containing data of the same type as 
+the properties of `Person`:
+*)
+// Turn the list of records into data frame 
+let peopleList = Frame.ofRecords peopleRecds
+// Use the 'Name' column as a key (of type string)
+let people = peopleList |> Frame.indexRowsString "Name"
+
+(**
+Note that this does not perform any conversion on the column data. Numerical series
+can be accessed using the `?` operator. For other types, we need to explicitly call
+`GetSeries` with the right type arguments:
+*)
+people?Age
+people.GetSeries<string list>("Countries")
+
+(**
+<a name="creating-wb"></a>
+### F# Data providers
+
+In general, you can use any data source that exposes data as series of tuples. This
+means that we can easily load data using, for example, the World Bank type provider 
+from [F# Data library](https://github.com/fsharp/FSharp.Data).
+*)
+// Connect to the World Bank
 let wb = WorldBankData.GetDataContext()
 
+/// Given a region, load GDP in current US$ and return data as 
+/// a frame with two-level column key (region and country name)
 let loadRegion (region:WorldBankData.ServiceTypes.Region) =
   [ for country in region.Countries -> 
+      // Create two-level column key using tuple
       (region.Name, country.Name) => 
+        // Create series from tuples returned by WorldBank
         Series.ofObservations country.Indicators.``GDP (current US$)`` ]
   |> Frame.ofColumns
 
-let df1 = loadRegion wb.Regions.``Euro area``
-let df2 = loadRegion wb.Regions.``OECD members``
-let world = df1.Join(df2)
+(**
+To make data manipulation more convenient, we read country information per region
+and create data frame with a hierarchical index (for more information, see the
+[advanced indexing section](#indexing)). Now we can easily read data for OECD and
+Euro area:
+*)
+// Load Euro and OECD regions
+let eu = loadRegion wb.Regions.``Euro area``
+let oecd = loadRegion wb.Regions.``OECD members``
 
-// F# 3.0 needs this
-world.Columns.[Lookup1Of2 "Euro area"]
-world.Columns.[Lookup1Of2 "Euro area"]
-world.Columns.[Lookup1Of2 "Euro area"].Columns.[Lookup2Of2 "Austria"]
-world.Columns.[Lookup2Of2 "Mexico"]
-world.Columns.[Lookup2Of2 "Belgium"]
+// Join and convert to in billions of USD
+let world = eu.Join(oecd) / 1e9
 
-// F# 3.1 makes this way nicer
-world.Columns.["Euro area", *]
-world.Columns.[*, "Belgium"]
-world.Columns.[("Euro area", "Belgium")]
+// [fsi:val world : Frame<int,(string * string)> =]
+// [fsi:        Euro area                OECD members  ]
+// [fsi:        Austria  Estonia   (...) Canada  Chile   (...)]
+// [fsi:1960 -> 6.592    <missing>       41.093  4.2117]
+// [fsi:1961 -> 7.311    <missing>       40.767  4.7053]
+// [fsi::       ...]
+// [fsi:2011 -> 417.6    22.15           1777.7  250.99]
+// [fsi:2012 -> 399.6    21.85           1821.4  268.18]
 
-let euro = 
-  world.Columns.[Lookup1Of2 "Euro area"]
-  |> Frame.mapColKeys snd
+(**
+The loaded data look something like the sample above. As you can see, the columns
+are grouped by the region and some data are not available.
 
-let grouped = 
-  euro
-  |> Frame.groupColsUsing (fun k _ -> k.Substring(0, 1))
-  |> Frame.orderCols
-  |> Frame.groupRowsUsing (fun k _ -> sprintf "%d0s" (k / 10))
-
-grouped.Rows.["1990s", *].Columns.["F", *]
-
-grouped.Columns.[("A", "Austria")].As<float>() / 1.0e9
-|> Series.meanBy fst
-
-grouped.Columns.[("C", "Cyprus")].As<float>() / 1.0e9
-|> Series.meanBy fst
-
-grouped / 1.0e9
-|> Frame.meanBy fst
-
-grouped / 1.0e9
-|> Frame.transpose
-|> Frame.meanBy fst
-
-grouped / 1.0e9
-|> Frame.meanBy fst
-|> Frame.transpose
-|> Frame.meanBy fst
-
-let oddEvenGroups =
-  euro / 1.0e9
-  |> Frame.mapRowKeys (fun rk -> (sprintf "%ds" (rk/10*10), ((if rk%2 = 0 then "even" else "odd"), rk)))
-  |> Frame.orderRows
-
-oddEvenGroups 
-|> Frame.meanBy fst
-
-
-let titanic = Frame.readCsv(__SOURCE_DIRECTORY__ + "/data/Titanic.csv")
+<a name="slicing"></a>
+Advanced slicing
+----------------
+*)
+"A"
+(**
+<a name="joining"></a>
+Advanced joining 
+----------------
+*)
+"A"
+(**
+<a name="indexing"></a>
+Hierarchical indexing
+---------------------
+*)
 let byClassAndPort1 = titanic.GroupRowsBy<int>("Pclass").GroupRowsBy<string>("Embarked") |> Frame.mapRowKeys Tuple.flatten3
 let byClassAndPort = 
   titanic
   |> Frame.groupRowsByInt "Pclass"
   |> Frame.groupRowsByString "Embarked"
-  |> Frame.mapRowKeys Tuple.flatten3
-
-
-let ageByClassAndPort = byClassAndPort.Columns.["Age"].As<float>()
-
-Frame.ofColumns
-  [ "AgeMeans", ageByClassAndPort |> Series.meanBy Tuple.get1And2Of3
-    "AgeCounts", float $ (ageByClassAndPort |> Series.countBy Tuple.get1And2Of3) ]
-
-byClassAndPort
-|> Frame.meanBy Tuple.get1And2Of3
-
-byClassAndPort
-|> Frame.sumBy Tuple.get1And2Of3
-
-let survivedByClassAndPort = byClassAndPort.Columns.["Survived"].As<bool>()
-
-// survivedByClassAndPort
-// |> Series.meanBy By1Of3
-
-survivedByClassAndPort 
-|> Series.foldBy Tuple.get1And2Of3 (fun sr -> sprintf "%A" (sr.Values |> Seq.countBy id |> List.ofSeq))
-
-byClassAndPort
-|> Frame.foldBy Tuple.get1And2Of3 (fun sr -> sr.CountValues())
-
-
-
-let sample = Frame.ofColumns [ "Test" => Series.ofValues [ 1.0 .. 4.0 ] ]
-let groupedSample = sample.ReplaceRowIndexKeys [ ("Small", 0); ("Small", 1); ("Big", 0); ("Big", 1) ] |> Frame.orderRows
-
-(** 
-Overlaoded slicing
-------------------
-*)
-
-let wb2 = WorldBankData.GetDataContext()
-
-let arab = 
-  Frame.ofColumns
-    [ for country in wb2.Regions.``Arab World``.Countries -> 
-        country.Name => Series.ofObservations country.Indicators.``GDP (current US$)`` ]
-
-arab.Columns.[ ["Algeria"; "Bahrain"] ]
-|> Frame.mean
-
-arab.Rows.[ 2000 .. 2012 ]
-
-
-
+  |> Frame.mapRowKeys Pair.flatten3
 (**
-Joining series
+<a name="missing"></a>
+Missing values
 --------------
-*)
-
-// sortBy : seq<'T> -> orderdSeq<'T>
-// thenBy : orderdSeq<'T> -> orderdSeq<'T>
-
-
-(*
-query { for n in [ 1 .. 10 ] do
-        let m = n + 1 
-        sortBy n
-        thenBy m
-        select (string n) into g
-        take 10
-        where (n > 4)
-        select n }
-// 
-frame { for r in frame do
-        withIndex (r.GetAs<string>("Name"))
-        shift 1
-        window 5 into win 
-        ... } 
-*)
-
-let sa = Series.ofObservations [ 1 => "a"; 2 => "b" ]
-let sb = Series.ofObservations [ 3 => "c"; 2 => "b" ]
-
-sa.Join(sb, JoinKind.Inner, Lookup.Exact)
-sa.Join(sb, JoinKind.Left, Lookup.Exact)
-sa.Join(sb, JoinKind.Outer, Lookup.Exact)
-
-(**
-Fancy windowing & chunking
---------------------------
-*)
-
-let st = Series.ofValues [ 'a' .. 'j' ]
-st |> Series.windowSize (3, Boundary.Skip) |> Series.map (fun _ v -> String(Array.ofSeq v.Values))
-st |> Series.windowSize (3, Boundary.AtBeginning) |> Series.map (fun _ v -> String(Array.ofSeq v.Values))
-st |> Series.windowSize (3, Boundary.AtEnding) |> Series.map (fun _ v -> String(Array.ofSeq v.Values))
-
-let concatString = function
-  | DataSegment.Complete(ser) -> String(ser |> Series.values |> Array.ofSeq)
-  | DataSegment.Incomplete(ser) -> String(ser |> Series.values |> Array.ofSeq).PadRight(3, '-')
-
-st |> Series.chunkSizeInto (3, Boundary.Skip) concatString
-st |> Series.chunkSizeInto (3, Boundary.AtBeginning) concatString
-st |> Series.chunkSizeInto (3, Boundary.AtEnding) concatString
-
-(** 
-Grouping 
---------
-*)
-
-// Load the data from the Titanic data set
-let titanic = Frame.readCsv(__SOURCE_DIRECTORY__ + "/data/Titanic.csv")
-
-// Group the data frame by sex 
-let grouped = titanic |> Frame.groupRowsBy "Sex"
-
-// For each group, calculate the total number of survived & died
-let survivalBySex =
-  grouped 
-  |> Series.map (fun sex df -> 
-      // Group each sex by the Survived column & count elements in each group
-      df.GetSeries<bool>("Survived") |> Series.groupBy (fun k v -> v) 
-      |> Frame.ofColumns |> Frame.countValues )
-  |> Frame.ofRows
-  |> Frame.withColumnKeys ["Died"; "Survived"]
-
-// Add column with Total number of males/females on Titanic
-survivalBySex?Total <- grouped |> Series.map (fun _ -> Frame.countKeys)
-
-// Build a data frame with nice summary of rates in percents
-let results =
-  [ "Died (%)" => survivalBySex?Died / survivalBySex?Total * 100.0
-    "Survived (%)" => survivalBySex?Survived / survivalBySex?Total * 100.0 ]
-  |> Frame.ofColumns
-
-
-(**
-Filling missing values
-----------------------
 *)
 
 let nulls =
@@ -272,7 +180,6 @@ test?Test
 |> Series.ofNullables
 
 
-let air = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/AirQuality.csv", separators=";")
 let ozone = air?Ozone
 
 air?OzoneFilled <-
@@ -301,91 +208,9 @@ ozone |> Series.fillMissing Direction.Forward
 // air.Rows.Aggregate(Aggregation.GroupBy(
 
 
-
-(*
-
-let f = Frame.ofColumns ["C" => Series.ofValues [ 1;2;3 ]]
-f.Append(f)
-
-// TODO:
-let f = Frame.ofColumns ["C" => Series.ofObservations [ 1,"hi"; 2,"there"; 3,"ciao" ]]
-f.Append(f)
-
-*)
-
 (**
-Operations
-----------
+<a name="grouping"></a>
+Grouping data
+-------------
 *)
-
-let rnd = Random()
-let s = Series.ofValues [ for i in 0 .. 100 -> rnd.NextDouble() * 10.0 ]
-
-log s 
-log10 s
-
-let s1 = abs (log s) * 10.0
-floor s1 - round s1  
-
-Series.Log10
-
-
-(**
-Grouping
---------
-
-*)
-type Person = 
-  { Name:string; Age:int; Countries:string list; }
-
-let people = 
-  [ { Name = "Joe"; Age = 51; Countries = [ "UK"; "US"; "UK"] }
-    { Name = "Tomas"; Age = 28; Countries = [ "CZ"; "UK"; "US"; "CZ" ] }
-    { Name = "Eve"; Age = 2; Countries = [ "FR" ] }
-    { Name = "Suzanne"; Age = 15; Countries = [ "US" ] } ]
-
-// Turn the list of records into data frame and use 
-// the 'Name' column (containing strings) as the key
-let dfList = Frame.ofRecords people 
-let df = dfList |> Frame.withRowIndex (column<string>("Name"))
-
-let peopleCountries = 
-  df.GetSeries<string list>("Countries")
-  |> Series.map (fun k countries -> 
-      [ for c, k in Seq.countBy id countries -> c, k ] |> Series.ofObservations )
-  |> Frame.ofRows
-  |> Frame.withMissingVal 0
-
-let sums = peopleCountries |> Frame.sum 
-
-sums.Observations
-|> Seq.sortBy (fun (c, v) -> -v)
-|> Chart.Column
-
-
-(* More options when working with records *)
-let recdSeries = 
-  Series.ofValues [ "Tomas"; null; "Joe"; "Eve" ]
-  |> Series.map (fun _ v -> { Name = v; Age = -1; Countries = [] })
-
-// Missing values are preserved at the right index..
-Frame.ofRecords recdSeries
-
-
-
-let dfPeople = Frame.ofRecords people 
-dfPeople?CountryCount <- List.length $ dfPeople.GetSeries<string list>("Countries")
-dfPeople |> Frame.groupRowsBy
-
-
-
-
-
-
-(* TEST *)
-
-let f1 = Frame.ofRows [ 1 => Series.ofObservations [ "A" => 1; "B" => 2 ] ]
-let f2 = Frame.ofRows [ 2 => Series.ofObservations [ "C" => 3 ] 
-                        3 => Series.ofObservations [ "C" => 4 ]  ]
-f1.Append(f2)
 

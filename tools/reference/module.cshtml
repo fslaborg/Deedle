@@ -1,0 +1,28 @@
+@{ 
+  Layout = "default";
+  Title = "Module";
+}
+
+<h1>@Model.Module.Name</h1>
+
+<div class="xmldoc">
+  @Model.Module.Comment.FullText
+</div>
+
+@RenderPart("members", new { 
+    Header = "Functions and values",
+    TableHeader = "Function or value",
+    Members = Model.Module.ValuesAndFuncs
+})
+
+@RenderPart("members", new { 
+    Header = "Type extensions",
+    TableHeader = "Type extension",
+    Members = Model.Module.TypeExtensions
+})
+
+@RenderPart("members", new { 
+    Header = "Active patterns",
+    TableHeader = "Active pattern",
+    Members = Model.Module.ActivePatterns
+})

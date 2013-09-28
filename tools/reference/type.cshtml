@@ -1,0 +1,28 @@
+@{ 
+  Layout = "default";
+  Title = "Module";
+}
+
+<h1>@Model.Type.Name</h1>
+
+<div class="xmldoc">
+  @Model.Type.Comment.FullText
+</div>
+
+@RenderPart("members", new { 
+  Header = "Constructors",
+  TableHeader = "Constructors",
+  Members = Model.Type.Constructors
+})
+
+@RenderPart("members", new { 
+  Header = "Instance members",
+  TableHeader = "Instance members",
+  Members = Model.Type.InstanceMembers
+})
+
+@RenderPart("members", new { 
+  Header = "Static members",
+  TableHeader = "Static members",
+  Members = Model.Type.StaticMembers
+})

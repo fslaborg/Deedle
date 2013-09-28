@@ -158,6 +158,8 @@ and SeriesConstruction<'K when 'K : equality> = IIndex<'K> * VectorConstruction
 /// previous index to match the new index. The methods generally take `VectorConstruction`
 /// as an input, apply necessary transformations to it and return a new `VectorConstruction`.
 ///
+/// ## Example
+///
 /// For example, given `index`, we can say:
 ///
 ///     // Create an index that excludes the value 42

@@ -125,11 +125,8 @@ Target "JustGenerateDocs" (fun _ ->
     executeFSI "tools" "build.fsx" [] |> ignore
 )
 
-Target "JustRegenerateDocs" DoNothing
 Target "GenerateDocs" DoNothing
-
-"JustGenerateDocs" ==> "GenerateDocs"
-"CleanDocs" ==> "JustGenerateDocs" ==> "JustRegenerateDocs"
+"CleanDocs" ==> "JustGenerateDocs" ==> "GenerateDocs"
 
 // --------------------------------------------------------------------------------------
 // Release Scripts

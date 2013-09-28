@@ -22,8 +22,7 @@
     <OutputPath>../bin/</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile>../bin/FSharp.DataFrame.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>

@@ -4,8 +4,8 @@ Volatility
 ==========
 
 *)
-#I "../bin"
-#I "../packages/FSharp.Charting.0.84"
+#I "../../bin"
+#I "../../packages/FSharp.Charting.0.84"
 #r "MathNet.Numerics.dll"
 #load "FSharp.DataFrame.fsx"
 #load "FSharp.Charting.fsx"
@@ -142,22 +142,3 @@ let concatString = function
 st |> Series.chunkSizeInto (3, Boundary.Skip) concatString
 st |> Series.chunkSizeInto (3, Boundary.AtBeginning) concatString
 st |> Series.chunkSizeInto (3, Boundary.AtEnding) concatString
-
-
-
-(**
-Operations
-----------
-*)
-
-let rnd = Random()
-let s = Series.ofValues [ for i in 0 .. 100 -> rnd.NextDouble() * 10.0 ]
-
-log s 
-log10 s
-
-let s1 = abs (log s) * 10.0
-floor s1 - round s1  
-
-Series.Log10
-

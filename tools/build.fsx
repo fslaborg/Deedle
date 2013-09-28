@@ -5,10 +5,13 @@
 
 #I "../packages/FSharp.Formatting.1.0.15/lib/net40"
 #load "../packages/FSharp.Formatting.1.0.15/literate/literate.fsx"
+#r "FSharp.MetadataFormat.dll"
 open System.IO
 open FSharp.Literate
+open FSharp.MetadataFormat
 
 let (++) a b = Path.Combine(a, b)
+let project  = __SOURCE_DIRECTORY__ ++ "../"
 let template = __SOURCE_DIRECTORY__ ++ "template.html"
 let sources  = __SOURCE_DIRECTORY__ ++ "../samples"
 let output   = __SOURCE_DIRECTORY__ ++ "../docs"
@@ -17,8 +20,8 @@ let output   = __SOURCE_DIRECTORY__ ++ "../docs"
 //let root = "http://fsharp.github.com/FSharp.Data"
 
 // When running locally, you can use your path
-//let root = @"file://C:\dev\FSharp.DataFrame\docs"
-let root = @"file://C:\Tomas\Projects\FSharp.DataFrame\docs"
+let root = @"file://C:\dev\FSharp.DataFrame\docs"
+//let root = @"file://C:\Tomas\Projects\FSharp.DataFrame\docs"
 
 let build () =
   // Copy all sample data files to the "data" directory
@@ -37,4 +40,8 @@ let build () =
       ( sources ++ sub, template, output ++ sub, 
         replacements = [ "root", root ] )
 
+// Generate 
 build()
+
+if not (Directory.Exists(output ++ "reference")) then  Directory.CreateDirectory(output ++ "reference") |> ignore
+MetadataFormat.Generate(project ++ "bin" ++ "FSharp.DataFrame.dll", output ++ "reference", project ++ "tools" ++ "reference")

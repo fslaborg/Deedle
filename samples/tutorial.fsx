@@ -2,6 +2,10 @@
 F# DataFrame in 10 minutes
 ==========================
 
+This document is a quick overview of the most important features of F# data frame library.
+You can also get this page as an [F# script file](https://github.com/BlueMountainCapital/FSharp.DataFrame/blob/master/samples/tutorial.fsx)
+from GitHub and run the samples interactively.
+
 The first step is to install `FSharp.DataFrame.dll` [from NuGet](https://www.nuget.org/packages/FSharp.DataFrame).
 Next, we need to load the library - in F# Interactive, this is done by loading 
 an `.fsx` file that loads the actual `.dll` with the library and registers 
@@ -31,8 +35,12 @@ to create a series:
 *)
 
 // Create from sequence of keys and sequence of values
-let dates  = [ DateTime(2013,1,1); DateTime(2013,1,4); DateTime(2013,1,8) ]
-let values = [ 10.0; 20.0; 30.0 ]
+let dates  = 
+  [ DateTime(2013,1,1); 
+    DateTime(2013,1,4); 
+    DateTime(2013,1,8) ]
+let values = 
+  [ 10.0; 20.0; 30.0 ]
 let first = Series(dates, values)
 
 // Create from a single list of observations
@@ -70,10 +78,10 @@ let rand count = (*[omit:(...)]*)
 // A series with values for 10 days 
 let second = Series(dateRange (DateTime(2013,1,1)) 10, rand 10)
 // [fsi:val it : Series<DateTime,float> =]
-// [fsi:  1/1/2013 12:00:00 AM  -> 0.957571796121808  ]
-// [fsi:  1/2/2013 12:00:00 AM  -> 0.424694305017914  ]
+// [fsi:  1/1/2013  12:00:00 AM -> 0.957571796121808  ]
+// [fsi:  1/2/2013  12:00:00 AM -> 0.424694305017914  ]
 // [fsi:  ...                      ...              ]
-// [fsi:  1/9/2013 12:00:00 AM  -> 0.874667080526551  ]
+// [fsi:  1/9/2013  12:00:00 AM -> 0.874667080526551  ]
 // [fsi:  1/10/2013 12:00:00 AM -> 0.308210378656262 ]
 
 (**
@@ -175,14 +183,18 @@ are not explicitly included in the index).
 
 // Use the Date column as the index & order rows
 let msftOrd = 
-  msftCsv.WithRowIndex<DateTime>("Date")
+  msftCsv
+  |> Frame.indexRowsDate "Date"
   |> Frame.orderRows
 
 (**
-The `WithRowIndex` operation is written using a method call, because this makes
-it possible to easily specify the required type of the key - in the above
-snippet, we parse the column into `DateTime` values. Then we use a function
-from the `Frame` module which contains a large number of useful functions.
+The `indexRowsDate` function uses a column of type `DateTime` as a new index.
+The library provides other functions for common types of indices (like `indexRowsInt`)
+and you can also use a generic function - when using the generic function, some 
+type annotations may be needed, so it is better to use a specific function.
+Next, we sort the rows using another function from the `Frame` module. The module
+contains a large number of useful functions that you'll use all the time - it
+is a good idea to go through the list to get an idea of what is supported.
 
 Now that we have properly indexed stock prices, we can create a new data frame that
 only has the data we're interested (Open & Close) prices and we add a new column 
@@ -190,16 +202,17 @@ that shows their difference:
 *)
 
 // Create data frame with just Open and Close prices
-let msft = msftOrd.Columns.[ ["Open"; "Close"] ] |> Frame.ofColumns
+let msft = msftOrd.Columns.[ ["Open"; "Close"] ]
 
 // Add new column with the difference between Open & Close
 msft?Difference <- msft?Open - msft?Close
 
 // Do the same thing for Facebook
 let fb = 
-  fbCsv.WithRowIndex<DateTime>("Date")
+  fbCsv
+  |> Frame.indexRowsDate "Date"
   |> Frame.orderRows
-  |> Frame.getColumns ["Open"; "Close"]
+  |> Frame.getCols ["Open"; "Close"]
 fb?Difference <- fb?Open - fb?Close
 
 // Now we can easily plot the differences
@@ -220,8 +233,11 @@ can do this, we need to rename their columns, because duplicate keys are not all
 *)
 
 // Change the column names so that they are unique
-let msftRen = msft.WithColumnIndex(["MsftOpen"; "MsftClose"; "MsftDiff"])
-let fbRen = fb.WithColumnIndex(["FbOpen"; "FbClose"; "FbDiff"])
+let msftNames = ["MsftOpen"; "MsftClose"; "MsftDiff"]
+let msftRen = msft |> Frame.renameCols msftNames
+
+let fbNames = ["FbOpen"; "FbClose"; "FbDiff"]
+let fbRen = fb |> Frame.renameCols fbNames
 
 // Outer join (align & fill with missing values)
 let joinedOut = msftRen.Join(fbRen, kind=JoinKind.Outer)
@@ -279,16 +295,14 @@ keys (using a list) or a range (using the slicing syntax):
 *)
 
 // Get values for the first three days of January 2013
-let jan234 = 
-  joinedIn.Rows.[ [ DateTime(2013, 1, 2); DateTime(2013, 1, 3);
-                    DateTime(2013, 1, 4)] ] |> Frame.ofRows
+let dates = [ for d in 2 .. 4 -> DateTime(2013, 1, d) ]
+let jan234 = joinedIn.Rows.[dates]
+
 // Calculate mean of Open price for 3 days
 jan234?MsftOpen |> Series.mean
 
 // Get values corresponding to entire January 2013
-let jan = 
-  joinedIn.Rows.[DateTime(2013, 1, 1) .. DateTime(2013, 1, 31)] 
-  |> Frame.ofRows
+let jan = joinedIn.Rows.[DateTime(2013, 1, 1) .. DateTime(2013, 1, 31)] 
 // [fsi:val jan : Frame<DateTime,string> =]
 // [fsi:               FbOpen FbClose FbDiff MsftOpen MsftClose MsftDiff ]
 // [fsi:  1/2/2013  -> 28.00  27.44   -0.55  27.62    27.25     -0.37 ]
@@ -303,9 +317,8 @@ jan?MsftOpen |> Series.mean
 
 (**
 The result of the indexing operation is a single data series when you use just a single
-date (the previous example) or a series (of series) when you specify multiple indices or a 
-range (this example). Here, we always convert the structure back to a data frame using 
-`Frame.ofRows` (you could also transpose it using `Frame.ofColumns`).
+date (the previous example) or a new data frame when you specify multiple indices or a 
+range (this example). 
 
 The `Series` module used here includes more useful functions for working
 with data series, including (but not limited to) statistical functions like `mean`,
@@ -381,16 +394,29 @@ let obsDaysExact = daysFrame.Join(obsFrame, kind=JoinKind.Left)
 
 // All values are available - for each day, we find the nearest smaller
 // time in the frame indexed by later times in the day
-let obsDaysPrev = daysFrame.Join(obsFrame, kind=JoinKind.Left, lookup=Lookup.NearestSmaller)
+let obsDaysPrev = 
+  (daysFrame, obsFrame) 
+  ||> Frame.joinAlign JoinKind.Left Lookup.NearestSmaller
 
-// The first value is missing (because there is no nearest value with 
-// greater key - the first one has the smallest key) but the rest is available
-let obsDaysNext = daysFrame.Join(obsFrame, kind=JoinKind.Left, lookup=Lookup.NearestGreater)
+// The first value is missing (because there is no nearest 
+// value with greater key - the first one has the smallest 
+// key) but the rest is available
+let obsDaysNext =
+  (daysFrame, obsFrame) 
+  ||> Frame.joinAlign JoinKind.Left Lookup.NearestGreater
 
 (**
-The optional parameter `?lookup` is ignored when the join `?kind` is other
-than `Left` or `Right`. Also, if the data frame is not ordered, the behaviour 
-defaults to exact matching.
+In general, the same operation can usually be achieved using a function from the 
+`Series` or `Frame` module and using a member (or an extension member) on the object.
+The previous sample shows both options - it uses `Join` as a member wiht optional
+argument first, and then it uses `joinAlign` function. Choosing between the two is
+a matter of preference - here, we are using `joinAlign` so that we can write code
+using pipelining (rather than long expression that would not fit on the page).
+
+The `Join` method takes two optional parameters - the parameter `?lookup` is ignored 
+when the join `?kind` is other than `Left` or `Right`. Also, if the data frame is not 
+ordered, the behaviour defaults to exact matching. The `joinAlign` function behaves
+the same way.
 
 <a name="projections"></a>
 
@@ -398,51 +424,126 @@ Projection and filtering
 ------------------------
 
 For filtering and projection, series provides `Where` and `Select` methods and 
-corresponding `Series.map` and `Series.filter` functions. On data frame
+corresponding `Series.map` and `Series.filter` functions (there is also `Series.mapValues`
+and `Series.mapKeys` if you only want to transform one aspect). 
 
-These are not available directly on 
-data frame, so you always need to write `df.Rows` or `df.Columns` (depending on which one
-you want). The following adds a new Boolean column that is true when the MSFT opening
-price is greater than FB:
+The methods are not available directly on data frame, so you always need to write `df.Rows` 
+or `df.Columns` (depending on which one you want). Correspondingly, the `Frame` module
+provides functions such as `Frame.mapRows`. The following adds a new Boolean column that is 
+true when the MSFT opening price is greater than FB:
 *)
 
-joinedOut?Comparison <- joinedOut.Rows.Select(fun kv -> 
-  kv.Value?MsftOpen > kv.Value?FbOpen)
-
-joinedOut.GetSeries<bool>("Comparison").Where(fun kv -> kv.Value) |> Series.countValues
-joinedOut.GetSeries<bool>("Comparison").Where(fun kv -> not kv.Value) |> Series.countValues
+joinedOut?Comparison <- joinedOut |> Frame.mapRowValues (fun row -> 
+  if row |> Series.hasAll ["MsftOpen"; "FbOpen"] then
+    if row?MsftOpen > row?FbOpen then "MSFT" else "FB"
+  else null )
 
 (**
-Once we add the series, we can get it as a series of booleans and count `true` and
-`false` values (there should be some nice pivoting to make this easier). We do not
-use `joinedOut?Comparison` because then we would get object series and we would have
-to write `unbox kv.Value`.
+When projecting or filtering rows, we need to be careful about missing data. The row
+accessor `row?MsftOpen` reads the specified column (and converts it to `float`), but when
+the column is not available, it throws an exception. In the snippet above, we use
+`Series.hasAll` to make sure that the series has all the values we need. We return `null`
+if this is not the case. The data frame library understands this and treats `null` as a 
+missing value (so it will show as `<missing>` in the output and it will be skipped by future
+operations).
 
-But - this is actually not as easy as it looks - the problem is that `joinedOut.Rows` returns
-all rows, including those where some value is missing (because we are using `joinedOut`
-which is the result of the outer join). So, in some cases `kv.Value?FbOpen` throws an
-exception - this is caught by `Select` and turned into a missing value.
-
-Here, we should probably have used `joinedIn` which only has rows where the values are 
-available. But if you want to work with data frame that has missing values, there are
-some other options (which should be faster):
-
+Now we can get the number of days when Microsoft stock prices were above Facebook and the
+other way round:
 *)
-joinedOut.RowsDense.Where(fun kv -> kv.Value?MsftOpen > kv.Value?FbOpen).Count
-joinedOut.RowsDense.Where(fun kv -> kv.Value?MsftOpen < kv.Value?FbOpen).Count
 
-let joinedOpens = joinedOut.Columns.["MsftOpen", "FbOpen"] |> Frame.ofColumns 
-joinedOpens.RowsDense.Where(fun kv -> kv.Value?MsftOpen > kv.Value?FbOpen).Count
+joinedOut.GetSeries<string>("Comparison")
+|> Series.filterValues ((=) "MSFT") |> Series.countValues
+// [fsi:val it : int = 220]
+
+joinedOut.GetSeries<string>("Comparison")
+|> Series.filterValues ((=) "FB") |> Series.countValues
+// [fsi:val it : int = 103]
 
 (**
-First of all, the first two lines use the `RowsDense` property instead of `Rows`. This
-behaves similarly to `Rows`, but it first checks each row and when the row contains
-some missing values, then it skips it. This means that accessing `MsftOpen` and 
-`FbOpen` will never fail.
-
-The problem is that this would skip rows that have missing values in columns that we
-do not really need (e.g. `MsftClose`). So, to do this more properly, we should first
-build a data frame that contains just the values we actually need - this is done on
-the last two lines.
-
+In this same, we should probably have used `joinedIn` which only has rows where the 
+values are always available. But you often want to work with data frame that has missing values, 
+so it is useful to see how this work. Here is another alternative:
 *)
+
+// Get data frame with only 'Open' columns
+let joinedOpens = joinedOut.Columns.[ ["MsftOpen"; "FbOpen"] ]
+
+// Get only rows that don't have any missing values
+// and then we can safely filter & count
+joinedOpens.RowsDense
+|> Series.filterValues (fun row -> row?MsftOpen > row?FbOpen)
+|> Series.countValues
+
+(**
+The key is the use of `RowsDense` on line 6. It behaves similarly to `Rows`, but
+only returns rows that have no missing values. This means that we can then perform
+the filtering safely without any checks.
+
+However, we do not mind if there are missing values in `FbClose`, because we do not
+need this column. For this reason, we first create `joinedOpens`, which projects
+just the two columns we need from the original data frame.
+
+<a name="grouping"></a>
+
+Grouping and aggregation
+------------------------
+
+As a last thing, we briefly look at grouping and aggregation. For more information
+about grouping of time series data, see [the time series features tutorial](timeseries.html)
+and [the data frame features](features.html) contains more about grouping of unordered
+frames.
+
+We'll use the simplest option which is the `Frame.groupRowsUsing` function (also available
+as `GroupRowsUsing` member). This allows us to specify key selector that selects new key
+for each row. If you want to group data using a value in a column, you can use 
+`Frame.groupRowsBy column`.
+
+The following snippet groups rows by month and year:
+*)
+let monthly =
+  joinedIn
+  |> Frame.groupRowsUsing (fun k _ -> DateTime(k.Year, k.Month, 1))
+
+// [fsi:val monthly : Frame<(DateTime * DateTime),string> =]
+// [fsi: ]
+// [fsi:                        FbOpen  MsftOpen ]
+// [fsi:  5/1/2012 5/18/2012 -> 38.23   29.27    ]
+// [fsi:           5/21/2012 -> 34.03   29.75    ]
+// [fsi:           5/22/2012 -> 31.00   29.76    ]
+// [fsi:  :                     ...              ]
+// [fsi:  8/1/2013 8/12/2013 -> 38.22   32.87    ]
+// [fsi:           8/13/2013 -> 37.02   32.23    ]
+// [fsi:           8/14/2013 -> 36.65   32.35    ]
+
+(**
+The output is trimmed to fit on the page. As you can see, we get back a frame that has
+a tuple `DateTime * DateTime` as the row key. This is treated in a special way as a 
+_hierarchical_ (or multi-level) index. For example, the output automatically shows the 
+rows in groups (assuming they are correctly ordered).
+
+A number of operations can be used on hierarchical indices. For example, we can get
+rows in a specified group (say, May 2013) and calculate means of columns in the group:
+*)
+monthly.Rows.[DateTime(2013,5,1), *] |> Frame.mean
+// [fsi:val it : Series<string,float> =]
+// [fsi:  FbOpen    -> 26.14 ]
+// [fsi:  FbClose   -> 26.35 ]
+// [fsi:  FbDiff    -> 0.20 ]
+// [fsi:  MsftOpen  -> 33.95 ]
+// [fsi:  MsftClose -> 33.76 ]
+// [fsi:  MsftDiff  -> -0.19 ]
+
+(**
+The above snippet uses slicing notation that is only available in F# 3.1 (Visual Studio 2013).
+In earlier versions, you can get the same thing using `monthly.Rows.[Lookup1Of2 (DateTime(2013,5,1))]`.
+The syntax indicates that we only want to specify the first part of the key and do not match
+on the second component. We can also use `Frame.meanBy` to get means for all first-level groups:
+*)
+monthly |> Frame.meanBy fst
+
+(**
+Here, we simply use the fact that the key is a tuple. The `fst` function projects the first 
+date from the key (month and year) and the result is a frame that contains the first-level keys,
+together with means for all available numeric columns.
+*)
+
