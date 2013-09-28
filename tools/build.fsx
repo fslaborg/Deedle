@@ -20,8 +20,16 @@ let output   = __SOURCE_DIRECTORY__ ++ "../docs"
 //let root = "http://fsharp.github.com/FSharp.Data"
 
 // When running locally, you can use your path
-let root = @"file://C:\dev\FSharp.DataFrame\docs"
-//let root = @"file://C:\Tomas\Projects\FSharp.DataFrame\docs"
+//let root = @"file://C:\dev\FSharp.DataFrame\docs"
+let root = @"file://C:\Tomas\Projects\FSharp.DataFrame\docs"
+
+let buildReference () = 
+  // Build the API reference documentation
+  if not (Directory.Exists(output ++ "reference")) then  
+    Directory.CreateDirectory(output ++ "reference") |> ignore
+  MetadataFormat.Generate
+    ( project ++ "bin" ++ "FSharp.DataFrame.dll", 
+      output ++ "reference", project ++ "tools" ++ "reference" )
 
 let build () =
   // Copy all sample data files to the "data" directory
@@ -42,6 +50,4 @@ let build () =
 
 // Generate 
 build()
-
-if not (Directory.Exists(output ++ "reference")) then  Directory.CreateDirectory(output ++ "reference") |> ignore
-MetadataFormat.Generate(project ++ "bin" ++ "FSharp.DataFrame.dll", output ++ "reference", project ++ "tools" ++ "reference")
+buildReference()
