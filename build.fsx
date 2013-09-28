@@ -131,16 +131,16 @@ Target "GenerateDocs" DoNothing
 // --------------------------------------------------------------------------------------
 // Release Scripts
 
-(*
 Target "ReleaseDocs" (fun _ ->
     DeleteDir "gh-pages"
-    Repository.clone "" "https://github.com/fsharp/FSharp.Data.git" "gh-pages"
+    Repository.clone "" "https://github.com/tpetricek/FSharp.DataFrame.git" "gh-pages"
     Branches.checkoutBranch "gh-pages" "gh-pages"
-    CopyRecursive "docs" "gh-pages" true |> printfn "%A"
-    CommandHelper.runSimpleGitCommand "gh-pages" (sprintf """commit -a -m "Update generated documentation for version %s""" version) |> printfn "%s"
-    Branches.push "gh-pages"
+    CopyRecursive "docs" "gh-pages/hidden" true |> printfn "%A"
+    //CommandHelper.runSimpleGitCommand "gh-pages" (sprintf """commit -a -m "Update generated documentation for version %s""" version) |> printfn "%s"
+    //Branches.push "gh-pages"
 )
 
+(*
 Target "UpdateBinaries" (fun _ ->
     DeleteDir "release"
     Repository.clone "" "https://github.com/fsharp/FSharp.Data.git" "release"
@@ -149,8 +149,9 @@ Target "UpdateBinaries" (fun _ ->
     CommandHelper.runSimpleGitCommand "release" (sprintf """commit -a -m "Update binaries for version %s""" version) |> printfn "%s"
     Branches.push "release"
 )
-
+*)
 Target "Release" DoNothing
+(*
 "GenerateDocs" ==> "UpdateDocs"
 "UpdateDocs" ==> "Release"
 "NuGet" ==> "Release"

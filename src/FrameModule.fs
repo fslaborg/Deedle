@@ -315,4 +315,12 @@ module Frame =
   let unstackBy keySelector (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.groupInto (fun k _ -> keySelector k) (fun nk s -> FrameUtils.fromRows s)
 
-  let unstack (frame:Frame<'R1 * 'R2, 'C>) = unstackBy fst frame
+  let unstack (frame:Frame<'R1 * 'R2, 'C>) = 
+    unstackBy fst frame
+    |> Series.mapValues (mapRowKeys snd)
+
+  let stack (series:Series<'R1, Frame<'R2, 'C>>) =
+    series
+    |> Series.map (fun k1 s -> s.Rows |> Series.mapKeys (fun k2 -> k1, k2) |> FrameUtils.fromRows)
+    |> Series.values
+    |> Seq.reduce append

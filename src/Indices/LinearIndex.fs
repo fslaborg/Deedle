@@ -153,9 +153,9 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
   /// Given the result of 'Seq.alignWithOrdering', create a new index
   /// and apply the transformations on two specified vector constructors
-  let returnUsingAlignedSequence joined vector1 vector2 : (IIndex<_> * _ * _) = 
+  let returnUsingAlignedSequence joined vector1 vector2 ordered : (IIndex<_> * _ * _) = 
     // Create a new index using the sorted keys
-    let newIndex = LinearIndex<_>(seq { for k, _, _ in joined -> k}, LinearIndexBuilder.Instance, true)
+    let newIndex = LinearIndex<_>(seq { for k, _, _ in joined -> k}, LinearIndexBuilder.Instance, ?ordered=ordered)
     let range = (newIndex :> IIndex<_>).Range
 
     // Create relocation transformations for both vectors
@@ -278,36 +278,36 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
     /// for unordered, it appends new ones to the end.
     member builder.Union<'K when 'K : equality >
         ( (index1:IIndex<'K>, vector1), (index2, vector2) )= 
-      let joined =
+      let joined, ordered =
         if index1.Ordered && index2.Ordered then
-          Seq.alignWithOrdering index1.Mappings index2.Mappings index1.Comparer |> Array.ofSeq 
+          Seq.alignWithOrdering index1.Mappings index2.Mappings index1.Comparer |> Array.ofSeq, Some true
         else
-          Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq 
-      returnUsingAlignedSequence joined vector1 vector2
+          Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq, None
+      returnUsingAlignedSequence joined vector1 vector2 ordered 
         
     /// Append is similar to union, but it also combines the vectors using the specified
     /// vector transformation.
     member builder.Append<'K when 'K : equality >
         ( (index1:IIndex<'K>, vector1), (index2, vector2), transform) = 
-      let joined = 
+      let joined, ordered = 
         if index1.Ordered && index2.Ordered then
-          Seq.alignWithOrdering index1.Mappings index2.Mappings index1.Comparer |> Array.ofSeq 
+          Seq.alignWithOrdering index1.Mappings index2.Mappings index1.Comparer |> Array.ofSeq, Some true
         else
-          Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq 
-      let newIndex, vec1Cmd, vec2Cmd = returnUsingAlignedSequence joined vector1 vector2
+          Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq, None
+      let newIndex, vec1Cmd, vec2Cmd = returnUsingAlignedSequence joined vector1 vector2 ordered
       newIndex, Vectors.Combine(vec1Cmd, vec2Cmd, transform)
 
     /// Intersect the index with another. This is the same as
     /// Union, but we filter & only return keys present in both sequences.
     member builder.Intersect<'K when 'K : equality >
         ( (index1:IIndex<'K>, vector1), (index2, vector2) ) = 
-      let joined = 
+      let joined, ordered = 
         if index1.Ordered && index2.Ordered then
-          Seq.alignWithOrdering index1.Mappings index2.Mappings index1.Comparer |> Array.ofSeq 
+          Seq.alignWithOrdering index1.Mappings index2.Mappings index1.Comparer |> Array.ofSeq, Some true
         else
-          Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq 
+          Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq, None
       let joined = joined |> Seq.filter (function _, Some _, Some _ -> true | _ -> false)
-      returnUsingAlignedSequence joined vector1 vector2
+      returnUsingAlignedSequence joined vector1 vector2 ordered
 
     /// Build a new index by getting a key for each old key using the specified function
     member builder.WithIndex<'K, 'TNewKey when 'K : equality  and 'TNewKey : equality>

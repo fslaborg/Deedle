@@ -49,7 +49,7 @@ let bySex =
       df.GetSeries<bool>("Survived") |> Series.groupBy (fun k v -> v) 
       |> Frame.ofColumns |> Frame.countValues )
   |> Frame.ofRows
-  |> Frame.withColumnKeys ["Died"; "Survived"]
+  |> Frame.renameCols ["Died"; "Survived"]
 
 // Add column with Total number of males/females on Titanic
 bySex?Total <- Frame.countKeys $ grouped
@@ -92,7 +92,7 @@ reference is automatically generated from Markdown comments in the library imple
    relevant when working with time series data (such as stock prices). This includes sliding
    windows, chunking, sampling and statistics.
 
- * [API Reference](#todo) contains automatically generated documentation for all types, modules
+ * [API Reference](reference/index.html) contains automatically generated documentation for all types, modules
    and functions in the library. This includes additional brief samples on using most of the
    functions.
  

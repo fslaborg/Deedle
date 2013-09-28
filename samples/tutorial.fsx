@@ -53,6 +53,9 @@ Series.ofObservations
 // [fsi:  1/4/2013 12:00:00 AM -> 20 ]
 // [fsi:  1/8/2013 12:00:00 AM -> 30 ]
 
+// Shorter alternative to 'Series.ofObservations'
+series [ 1 => 1.0; 2 => 2.0 ]
+
 // Create series with implicit (ordinal) keys
 Series.ofValues [ 10.0; 20.0; 30.0 ]
 // [fsi:val it : Series<int,float> =]

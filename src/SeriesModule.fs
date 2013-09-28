@@ -112,6 +112,11 @@ module Series =
   /// Uses exact lookup semantics for key lookup - use `lookupAll` for more options
   let get key (series:Series<'K, 'T>) = series.Get(key)
 
+  let tryGet key (series:Series<'K, 'T>) = series.TryGet(key) |> OptionalValue.asOption
+
+  let tryGetAt index (series:Series<'K, 'T>) = series.TryGetAt(index) |> OptionalValue.asOption
+  let getAt index (series:Series<'K, 'T>) = series.GetAt(index)
+
   let withOrdinalIndex (series:Series<'K, 'T>) = 
     series.WithOrdinalIndex()
 

@@ -248,6 +248,8 @@ and Series<'K, 'V when 'K : equality>
   member x.TryGet(key) = x.TryGet(key, Lookup.Exact)
   member x.Get(key) = x.Get(key, Lookup.Exact)
 
+  member x.TryGetAt(index) = x.Vector.GetValue(Addressing.Int index)
+  member x.GetAt(index) = x.Vector.GetValue(Addressing.Int index).Value
 
   member x.Item with get(a) = x.Get(a)
   member x.Item with get(items) = x.GetItems items

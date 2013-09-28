@@ -24,6 +24,8 @@ module FSharpSeriesExtensions =
       let keys = values |> Seq.mapi (fun i _ -> i)
       Series(keys, values).Select(fun kvp -> kvp.Value.Value)
 
+  let series observations = Series.ofObservations observations
+
 [<Extension>]
 type EnumerableExtensions =
   [<Extension>]
