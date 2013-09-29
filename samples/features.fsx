@@ -558,20 +558,6 @@ byGDP
 // [fsi:  True  -> 82.74  335.71     2719.26]
 
 (**
-<a name="joining"></a>
-Advanced joining 
-----------------
-*)
-
-let sa = Series.ofObservations [ 1 => "a"; 2 => "b" ]
-let sb = Series.ofObservations [ 3 => "c"; 2 => "b" ]
-
-sa.Join(sb, JoinKind.Inner, Lookup.Exact)
-sa.Join(sb, JoinKind.Left, Lookup.Exact)
-sa.Join(sb, JoinKind.Outer, Lookup.Exact)
-
-
-(**
 <a name="missing"></a>
 Handling missing values
 -----------------------
