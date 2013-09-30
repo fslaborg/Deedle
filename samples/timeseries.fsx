@@ -1,34 +1,252 @@
-﻿(**
-
-Volatility
-==========
-
-*)
+﻿(*** hide ***)
 #I "../bin"
-#I "../packages/FSharp.Charting.0.84"
-#r "MathNet.Numerics.dll"
 #load "FSharp.DataFrame.fsx"
-#load "FSharp.Charting.fsx"
-
+#load "../packages/FSharp.Charting.0.84/FSharp.Charting.fsx"
+#r "../packages/FSharp.Data.1.1.9/lib/net40/FSharp.Data.dll"
 open System
+open FSharp.Data
 open FSharp.DataFrame
 open FSharp.Charting
+
+let root = __SOURCE_DIRECTORY__ + "/data/"
+
+(**
+Time series features
+====================
+
+In this section, we look at F# data frame library features that are useful when working
+with time series data or, more generally, any ordered series. Although we mainly look at
+operations on the `Series` type, many of the operations can be applied to data frame `Frame`
+containing multiple series. Furthermore, data frame provides an elegant way for aligning and
+joining series. 
+
+You can also get this page as an [F# script file](https://github.com/BlueMountainCapital/FSharp.DataFrame/blob/master/samples/timeseries.fsx)
+from GitHub and run the samples interactively.
+
+Generating input data
+---------------------
+
+For the purpose of this tutorial, we'll need some input data. For simplicitly, we use the
+following function which generates random prices using the geometric Brownian motion.
+The code is adapted from the [financial tutorial on Try F#](http://www.tryfsharp.org/Learn/financial-computing#simulating-and-analyzing).
+
+*)
+
+// Use Math.NET for probability distributions
+#r "MathNet.Numerics.dll"
 open MathNet.Numerics.Distributions
 
-// Generate price using geometric Brownian motion
-let randomPrice drift volatility initial count span = 
-  let dist = Normal(0.0, 1.0, RandomSource=Random(0))  
-  let dt = 1.0 / (250.0 * 24.0 * 60.0)
+/// Generates price using geometric Brownian motion
+///  - 'seed' specifies the seed for random number generator
+///  - 'drift' and 'volatility' set properties of the price movement
+///  - 'initial' and 'start' specify the initial price and date
+///  - 'span' specifies time span between individual observations
+///  - 'count' is the number of required values to generate
+let randomPrice seed drift volatility initial start span count = 
+  (*[omit:(Implementation omitted)]*) 
+  let dist = Normal(0.0, 1.0, RandomSource=Random(seed))  
+  let dt = (span:TimeSpan).TotalDays / 250.0
   let driftExp = (drift - 0.5 * pown volatility 2) * dt
   let randExp = volatility * (sqrt dt)
-  (DateTimeOffset(DateTime(2013, 1, 1)), initial) |> Seq.unfold (fun (dt, price) ->
+  ((start:DateTimeOffset), initial) |> Seq.unfold (fun (dt, price) ->
     let price = price * exp (driftExp + randExp * dist.Sample()) 
-    let dt = dt + span
-    Some((dt, price), (dt, price))) |> Seq.take count
+    Some((dt, price), (dt + span, price))) |> Seq.take count(*[/omit]*)
+
+// 12:00 AM today, in current time zone
+let today = DateTimeOffset(DateTime.Today)
+let stock1 = randomPrice 1 0.1 3.0 20.0 today 
+let stock2 = randomPrice 2 0.2 1.5 22.0 today
+(**
+The implementation of the function is not particularly important for the purpose of this
+page, but you can find it in the [script file with full source](https://github.com/BlueMountainCapital/FSharp.DataFrame/blob/master/samples/timeseries.fsx).
+Once we have the function, we define a date `today` (representing today's midnight) and
+two helper functions that set basic properties for the `randomPrice` function. 
+
+To get random prices, we now only need to call `stock1` or `stock2` with `TimeSpan` and 
+the required number of prices:
+*)
+Chart.Combine
+  [ stock1 (TimeSpan(0, 1, 0)) 1000 |> Chart.FastLine
+    stock2 (TimeSpan(0, 1, 0)) 1000 |> Chart.FastLine ]
+(**
+The above snippet generates 1k of prices in one minutte intervals and plots them using the
+[F# Charting library](https://github.com/fsharp/FSharp.Charting). When you run the code
+and tweak the chart look, you should see something like this:
+
+<div style="text-align:center;margin-right:100px;">
+<img src="content/images/ts-chart.png" />
+</div>
+
+<a name="alignment"></a>
+Data alignment and joining
+--------------------------
+
+One of the key features of the data frame library for working with time series data is 
+_automatic alignment_ based on the keys. When we have multiple time series with date 
+as the key (here, we use `DateTimeOffset`, but any type of date will do), we can combine
+multiple series and align them automatically to specified date keys.
+
+To demonstrate this feature, we generate random prices in 60 minut, 30 minute and 
+65 minute intervals:
+*)
+
+let s1 = series <| stock1 (TimeSpan(1, 0, 0)) 6
+// [fsi:val s1 : Series<DateTimeOffset,float> =]
+// [fsi:  series [ 12:00:00 AM => 20.76; 1:00:00 AM => 21.11; 2:00:00 AM => 22.51 ]
+// [fsi:            3:00:00 AM => 23.88; 4:00:00 AM => 23.23; 5:00:00 AM => 22.68 ] ]
+
+let s2 = series <| stock2 (TimeSpan(0, 30, 0)) 12
+// [fsi:val s2 : Series<DateTimeOffset,float> =]
+// [fsi:  series [ 12:00:00 AM => 21.61; 12:30:00 AM => 21.64; 1:00:00 AM => 21.86 ]
+// [fsi:            1:30:00 AM => 22.22;  2:00:00 AM => 22.35; 2:30:00 AM => 22.76 ]
+// [fsi:            3:00:00 AM => 22.68;  3:30:00 AM => 22.64; 4:00:00 AM => 22.90 ]
+// [fsi:            4:30:00 AM => 23.40;  5:00:00 AM => 23.33; 5:30:00 AM => 23.43] ]
+
+let s3 = series <| stock1 (TimeSpan(1, 5, 0)) 6
+// [fsi:val s3 : Series<DateTimeOffset,float> =]
+// [fsi:  series [ 12:00:00 AM => 21.37; 1:05:00 AM => 22.73; 2:10:00 AM => 22.08 ]
+// [fsi:            3:15:00 AM => 23.92; 4:20:00 AM => 22.72; 5:25:00 AM => 22.79 ]
+
+(**
+### Joining time series 
+
+Let's first look at operations that are available on the `Series<K, V>` type. A series
+exposes `Join` operation that can combine multiple series into a single series of pairs.
+This is not as convenient as working with data frames (which we'll see later), but it 
+is useful if you only need to work with one or two columns without missing values:
+
+*)
+// Match values from right series to keys of the left one
+// (this creates series with no missing values)
+s1.Join(s2, JoinKind.Left)
+// [fsi:val it : Series<DateTimeOffset,float opt * float opt>]
+// [fsi:  12:00:00 AM -> (21.32, 21.61) ]
+// [fsi:   1:00:00 AM -> (22.62, 21.86) ]
+// [fsi:   2:00:00 AM -> (22.00, 22.35)  ]
+// [fsi:  (...)]
+
+// Match values from the left series to keys of the right one
+// (right has higher resolution, so half of left values are missing)
+s1.Join(s2, JoinKind.Right)
+// [fsi:val it : Series<DateTimeOffset,float opt * float opt>]
+// [fsi:  12:00:00 AM -> (21.32,     21.61) ]
+// [fsi:  12:30:00 AM -> (<missing>, 21.64)  ]      
+// [fsi:   1:00:00 AM -> (22.62,     21.86) ]
+// [fsi:  (...)]
+
+// Use left series key and find the nearest previous
+// (smaller) value from the right series
+s1.Join(s2, JoinKind.Left, Lookup.NearestSmaller)
+// [fsi:val it : Series<DateTimeOffset,float opt * float opt>]
+// [fsi:  12:00:00 AM -04:00 -> (21.32, 21.61) ]
+// [fsi:   1:00:00 AM -04:00 -> (22.62, 21.86) ]
+// [fsi:   2:00:00 AM -04:00 -> (22.00, 22.35)  ]
+// [fsi:  (...)]
+
+(**
+Using `Join` on series is somewhat complicated. The result is a series of tuples, but each 
+component of the tuple may be missing. To represent this, the library uses the `T opt` type
+(a type alias for `OptionalValue<T>`). This is not necessary when we use data frame to 
+work with multiple columns.
+
+### Joining data frames
+
+When we store data in data frames, we do not need to use tuples to represent combined values.
+Instead, we can simply use data frame with multiple columns. To see how this works, let's first
+create three data frames containing the three series from the previous section:
+*)
+
+// Contains value for each hour
+let f1 = Frame.ofColumns ["S1" => s1]
+// Contains value every 30 minutes
+let f2 = Frame.ofColumns ["S2" => s2]
+// Contains values with 65 minute offsets
+let f3 = Frame.ofColumns ["S3" => s3]
+
+(**
+Similarly to `Series<K, V>`, the type `Frame<R, C>` has an instance method `Join` that can be
+used for joining (for unordered) or aligning (for ordered) data. The same operation is also
+exposed as `Frame.join` and `Frame.align` functions, but it is usually more convenient to use 
+the member syntax in this case:
+*)
+
+// Union keys from both frames and align corresponding values
+f1.Join(f2, JoinKind.Outer)
+// [fsi:val it : Frame<DateTimeOffset,string> =]
+// [fsi:                 S1        S2               ]
+// [fsi:  12:00:00 AM -> 21.32     21.61 ]
+// [fsi:  12:30:00 AM -> <missing> 21.64 ]
+// [fsi:   1:00:00 AM -> 22.62     21.86 ]
+// [fsi:  (...)]
+
+// Take only keys where both frames contain all values
+// (We get only a single row, because 'f3' is off by 5 minutes)
+f2.Join(f3, JoinKind.Inner)
+// [fsi:val it : Frame<DateTimeOffset,string> =]
+// [fsi:                 S2      S3               ]
+// [fsi:  12:00:00 AM -> 21.61   21.37 ]
+
+// Take keys from the left frame and find corresponding values
+// from the right frame, or value for a nearest smaller date
+// ($21.37 is repeated for all values between 12:00 and 1:05)
+f2.Join(f3, JoinKind.Left, Lookup.NearestSmaller)
+// [fsi:val it : Frame<DateTimeOffset,string> =]
+// [fsi:                 S2      S3               ]
+// [fsi:  12:00:00 AM -> 21.61   21.37 ]
+// [fsi:  12:30:00 AM -> 21.64   21.37 ]
+// [fsi:   1:00:00 AM -> 21.86   21.37 ]
+// [fsi:   1:30:00 AM -> 22.22   22.73 ]
+// [fsi:  (...)]
+
+// If we perform left join as previously, but specify exact 
+// matching, then most of the values are missing
+f2.Join(f3, JoinKind.Left, Lookup.Exact)
+// [fsi:val it : Frame<DateTimeOffset,string> =]
+// [fsi:                 S2      S3               ]
+// [fsi:  12:00:00 AM -> 21.61   21.37]
+// [fsi:  12:30:00 AM -> 21.64   <missing>        ]
+// [fsi:   1:00:00 AM -> 21.86   <missing>        ]
+// [fsi:  (...)]
+
+// Equivalent to line 2, using function syntax 
+Frame.join JoinKind.Outer f1 f2
+
+// Equivalent to line 20, using function syntax
+Frame.align JoinKind.Left Lookup.NearestSmaller f1 f2
+
+(**
+Missing is good
+
+<a name="windowing"></a>
+Series windowing and chunking
+-----------------------------
+
+*)
+
+let x = 42
+
+(**
+<a name="sampling"></a>
+Sampling and scaling time series
+--------------------------------
+
+*)
+
+let x = 42
+
+(**
+<a name="stats"></a>
+Calculations and statistics
+---------------------------
+
+*)
+
+(*** hide ***)
+
 
 // Generate two "high-frequency" time series (with different volatility)
-let hfq1 = Series.ofObservations (randomPrice 0.05 0.1 20.0 (24*60*60) (TimeSpan(0, 0, 1)))
-let hfq2 = Series.ofObservations (randomPrice 0.05 0.2 20.0 (24*60*60) (TimeSpan(0, 0, 1)))
+let hfq1 = series (randomPrice 0.05 1.0 20.0 (24*60*60) (DateTimeOffset(DateTime(2013, 1, 1))) (TimeSpan(0, 0, 1)))
+let hfq2 = series (randomPrice 0.05 2.0 20.0 (24*60*60) (DateTimeOffset(DateTime(2013, 1, 1))) (TimeSpan(0, 0, 1)))
 
 // Chart them using F# Chart to see what they look like
 Chart.Combine(
@@ -125,7 +343,7 @@ let inp3 = Seq.init 5 (fun i -> dt.Add(TimeSpan(ts3.Ticks * int64 i)), i) |> Ser
 let keys = [ for d in 12 .. 20 -> DateTime(2012, 2, d) ]
 inp3 |> Series.sample keys Direction.Forward
 
-(**
+(*
 Fancy windowing & chunking
 --------------------------
 *)
@@ -145,7 +363,7 @@ st |> Series.chunkSizeInto (3, Boundary.AtEnding) concatString
 
 
 
-(**
+(*
 Operations
 ----------
 *)

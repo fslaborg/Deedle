@@ -49,6 +49,10 @@ type OptionalValue<'T> private (hasValue:bool, value:'T) =
       else value.ToString() 
     else "<missing>"
 
+/// A type alias for the `OptionalValue<T>` type. The type alias can be used
+/// to make F# type definitions that use optional values directly more succinct.
+type 'T opt = OptionalValue<'T>
+
 /// Specifies in which direction should we look when performing operations such as
 /// `Series.Pairwise`. 
 ///
@@ -200,20 +204,20 @@ module OptionalValue =
   ///     Int32.TryParse("42") |> OptionalValue.ofTuple
   ///
   [<CompiledName("OfTuple")>]
-  let inline ofTuple (b, value:'T) =
+  let inline ofTuple (b, value:'T) : 'T opt =
     if b then OptionalValue(value) else OptionalValue.Missing
 
   /// Creates `OptionalValue<T>` from a .NET `Nullable<T>` type.
   [<CompiledName("OfNullable")>]
-  let inline ofNullable (value:Nullable<'T>) =
+  let inline ofNullable (value:Nullable<'T>) : 'T opt =
     if value.HasValue then OptionalValue(value.Value) else OptionalValue.Missing
 
   /// Turns the `OptionalValue<T>` into a corresponding standard F# `option<T>` value
-  let inline asOption (value:OptionalValue<'T>) = 
+  let inline asOption (value:'T opt) = 
     if value.HasValue then Some value.Value else None
 
   /// Turns a standard F# `option<T>` value into a corresponding `OptionalValue<T>`
-  let inline ofOption (opt:option<'T>) = 
+  let inline ofOption (opt:option<'T>) : 'T opt = 
     match opt with
     | None -> OptionalValue.Missing
     | Some v -> OptionalValue(v)
@@ -226,7 +230,7 @@ module OptionalValue =
   ///     | OptionalValue.Missing -> printfn "Empty"
   ///     | OptionalValue.Present(v) -> printfn "Contains %d" v
   ///
-  let (|Missing|Present|) (optional:OptionalValue<'T>) =
+  let (|Missing|Present|) (optional:'T opt) =
     if optional.HasValue then Present(optional.Value)
     else Missing
 

@@ -197,7 +197,7 @@ module Frame =
   /// Join two frames using the specified kind of join and 
   /// the specified lookup semantics.
   [<CompiledName("JoinAlign")>]
-  let joinAlign kind lookup (frame1:Frame<'R, 'C>) frame2 = frame1.Join(frame2, kind, lookup)
+  let align kind lookup (frame1:Frame<'R, 'C>) frame2 = frame1.Join(frame2, kind, lookup)
 
   
   /// Fills all missing values in all columns & rows of the data frame with the

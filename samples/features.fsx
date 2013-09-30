@@ -146,6 +146,173 @@ let world = eu.Join(oecd) / 1e9
 The loaded data look something like the sample above. As you can see, the columns
 are grouped by the region and some data are not available.
 
+<a name="dataframe"></a>
+Manipulating data frames
+------------------------
+
+The series type `Series<K, V>` represents a series with keys of type `K` and values
+of type `V`. This means that when working with series, the type of values is known 
+statically. When working with data frames, this is not the case - a frame is represented
+as `Frame<R, C>` where `R` and `C` are the types of row and column indices, respectively
+(typically, `R` will be an `int` or `DateTime` and `C` will be `string` representing 
+different column/series names. 
+
+A frame can contain heterogeneous data. One column may contain integers, another may
+contain floating point values and yet another can contain strings, dates or other objects
+like lists of strings. This information is not captured statically - and so when working
+with frames, you may need to specify the type explicitly, for example, when reading
+a series from a frame.
+
+### Getting data from a frame
+
+We'll use the data frame `people` which contains three columns - `Name` of type `string`,
+`Age` of type `int` and `Countries` of type `string list` (we created it from F# records
+in [the previous section](#creating-recd)):
+
+               Name    Age Countries          
+    Joe     -> Joe     51  [UK; US; UK]       
+    Tomas   -> Tomas   28  [CZ; UK; US; ... ] 
+    Eve     -> Eve     2   [FR]               
+    Suzanne -> Suzanne 15  [US]   
+
+To get a column (series) from a frame `df`, you can use operations that are exposed directly
+by the data frame, or you can use `df.Columns` which returns all columns of the frame as a
+series of series.
+*)
+
+// Get the 'Age' column as a series of 'float' values
+// (the '?' operator converts values automatically)
+people?Age
+// Get the 'Name' column as a series of 'string' values
+people.GetSeries<string>("Name")
+// Get all frame columns as a series of series
+people.Columns
+
+(**
+A series `s` of type `Series<string, V>` supports the question mark operator `s?Foo` to get
+a value of type `V` associated with the key `Foo`. For other key types, you can sue the `Get` 
+method. Note that, unlike wiht frames, there is no implicit conversion:
+*)
+// Get Series<string, float> 
+let numAges = people?Age
+
+// Get value using question mark
+numAges?Tomas
+// Get value using 'Get' method
+numAges.Get("Tomas")
+// Returns missing when key is not found
+numAges.TryGet("Fridrich")
+
+(**
+The question mark operator and `Get` method can be used on the `Columns` property of data frame.
+The return type of `df?Columns` is `ColumnSeries<string, string>` which is just a thin wrapper
+over `Series<C, ObjectSeries<R>>`. This means that you get back a series indexed by column names
+where the values are `ObjectSeries<R>` representing individual columns. The type
+`ObjectSeries<R>` is a thin wrapper over `Series<R, obj>` which adds several functions 
+for getting the values as values of specified type.
+
+In our case, the returned values are individual columns represented as `ObjectSeries<string>`:
+*)
+// Get column as an object series
+people.Columns?Age
+people.Columns?Countries
+// [fsi:val it : ObjectSeries<string> =]
+// [fsi:  Joe     -> [UK; US; UK]       ]
+// [fsi:  Tomas   -> [CZ; UK; US; ... ] ]
+// [fsi:  Eve     -> [FR]               ]
+// [fsi:  Suzanne -> [US]]
+
+// Get column & try get column using members
+people.Columns.Get("Name")
+people.Columns.TryGet("CreditCard")
+// Get column at a specified offset
+people.Columns.GetAt(0)
+
+// Get column as object series and convert it
+// to a typed Series<string, string>
+people.Columns?Name.As<string>()
+// Try converting column to Series<string, int>
+people.Columns?Name.TryAs<int>()
+
+(**
+The type `ObjectSeries<string>` has a few methods in addition to ordinary `Series<K, V>` type.
+On the lines 18 and 20, we use `As<T>` and `TryAs<T>` that can be used to convert object series
+to a series with statically known type of values. The expression on line 18 is equivalent to
+`people.GetSeries<string>("Name")`, but it is not specific to frame columns - you can use the
+same approach to work with frame rows (using `people.Rows`) if your data set has rows of 
+homogeneous types.
+
+Another case where you'll need to work with `ObjectSeries<T>` is when mapping over rows:
+*)
+// Iterate over rows and get the length of country list
+people.Rows |> Series.mapValues (fun row ->
+  row.GetAs<string list>("Countries").Length)
+
+(**
+The rows that you get as a result of `people.Rows` are heterogeneous (they contain values
+of different types), so we cannot use `row.As<T>()` to convert all values of the series
+to some type. Instead, we use `GetAs<T>(...)` which is similar to `Get(...)` but converts
+the value to a given type. You could also achieve the same thing by writing `row?Countries` 
+and then casting the result to `string list`, but the `GetAs` method provides a more convenient
+syntax.
+
+### Adding rows and columns
+
+The series type is _immutable_ and so it is not possible to add new values to a series or 
+change the values stored in an existing series. However, you can use operations that return
+a new series as the result such as `Append`.
+*)
+
+// Create series with more value
+let more = series [ "John" => 48.0 ]
+// Create a new, concatenated series
+people?Age.Append(more)
+
+(**
+Data frame allows a very limited form of mutation. It is possible to add new series (as a column)
+to an existing data frame, drop a series or replace a series. However, individual series
+are still immutable.
+*)
+// Calculate age + 1 for all people
+let add1 = people?Age |> Series.mapValues ((+) 1.0)
+
+// Add as a new series to the frame
+people?AgePlusOne <- add1
+
+// Add new series from a list of values
+people?Siblings <- [0; 2; 1; 3]
+
+// Repalce existing series with new values
+// (Equivalent to people?Siblings <- ...)
+people.ReplaceSeries("Siblings", [3; 2; 1; 0])
+
+(**
+Finally, it is also possible to append one data frame or a single row to an existing data
+frame. The operation is immutable, so the result is a new data frame with the added
+rows. To create a new row for the data frame, we can use standard ways of constructing
+series from key-value pairs, or we can use the `SeriesBuilder` type:
+*)
+
+// Create new object series with values for required columns
+let newRow = 
+  [ "Name" => box "Jim"; "Age" => box 51;
+    "Countries" => box ["US"]; "Siblings" => box 5 ]
+  |> series
+// Create a new data frame, containing the new series
+people.Append("Jim", newRow)
+
+// Another option is to use mutable SeriesBuilder
+let otherRow = SeriesBuilder<string>()
+otherRow?Name <- "Jim"
+otherRow?Age <- 51
+otherRow?Countries <- ["US"]
+otherRow?Siblings <- 5
+// The Series property returns the built series
+people.Append("Jim", otherRow.Series)
+
+
+(**
+
 <a name="slicing"></a>
 Advanced slicing and lookup
 ---------------------------
@@ -567,8 +734,8 @@ contain missing values. When constructing series or frames from data, certain va
 are automatically treated as "missing values". This includes `Double.NaN`, `null` values
 for reference types and for nullable types:
 *)
-let nums = Series.ofValues [ Double.NaN; 1.0; 3.14 ]
-// [fsi:val nums : Series<int,float> =]
+Series.ofValues [ Double.NaN; 1.0; 3.14 ]
+// [fsi:val it : Series<int,float> =]
 // [fsi:  0 -> <missing> ]
 // [fsi:  1 -> 1        ] 
 // [fsi:  2 -> 3.14    ]

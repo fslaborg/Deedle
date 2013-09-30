@@ -238,6 +238,9 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
       frame.DropSeries(column)
     frame.AddSeries(column, series)
 
+  member frame.ReplaceSeries(column, data:seq<'V>) = 
+    frame.ReplaceSeries(column, Series.Create(frame.RowIndex, Vector.ofValues data))
+
   member frame.GetSeries<'R>(column:'TColumnKey, lookup) : Series<'TRowKey, 'R> = 
     match safeGetColVector(column, lookup, fun _ -> true) with
     | :? IVector<'R> as vec -> 
@@ -252,7 +255,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     frame.ReplaceSeries(column, series)
 
   static member (?<-) (frame:Frame<_, _>, column, data:seq<'V>) =
-    frame.ReplaceSeries(column, Series.Create(frame.RowIndex, Vector.ofValues data))
+    frame.ReplaceSeries(column, data)
 
   static member (?) (frame:Frame<_, _>, column) : Series<'T, float> = 
     frame.GetSeries<float>(column)

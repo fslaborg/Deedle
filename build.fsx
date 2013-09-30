@@ -81,7 +81,7 @@ Target "RunTests" (fun _ ->
 
     ActivateFinalTarget "CloseTestRunner"
 
-    (files ["tests/FSharp.DataFrame.Tests/bin/Release/FSharp.DataFrame.Tests*.dll"])
+    (files ["tests/*/bin/Release/FSharp.DataFrame*Tests*.dll"])
     |> NUnit (fun p ->
         { p with
             ToolPath = nunitPath

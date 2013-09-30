@@ -298,8 +298,8 @@ keys (using a list) or a range (using the slicing syntax):
 *)
 
 // Get values for the first three days of January 2013
-let dates = [ for d in 2 .. 4 -> DateTime(2013, 1, d) ]
-let jan234 = joinedIn.Rows.[dates]
+let janDates = [ for d in 2 .. 4 -> DateTime(2013, 1, d) ]
+let jan234 = joinedIn.Rows.[janDates]
 
 // Calculate mean of Open price for 3 days
 jan234?MsftOpen |> Series.mean

@@ -263,6 +263,15 @@ and Series<'K, 'V when 'K : equality>
 
   member x.KeyRange = index.KeyRange
 
+  member series.Append(otherSeries:Series<'K, 'V>) =
+    // Append the row indices and get transformation that combines two column vectors
+    // (LeftOrRight - specifies that when column exist in both data frames then fail)
+    let newIndex, cmd = 
+      indexBuilder.Append( (index, Vectors.Return 0), (otherSeries.Index, Vectors.Return 1), 
+                           VectorValueTransform.LeftOrRight )
+    let newVector = vectorBuilder.Build(cmd, [| series.Vector; otherSeries.Vector |])
+    Series(newIndex, newVector, vectorBuilder, indexBuilder)
+
  // TODO: Avoid duplicating code here and in Frame.Join
 
   member series.Join<'V2>(otherSeries:Series<'K, 'V2>) =
@@ -309,7 +318,7 @@ and Series<'K, 'V when 'K : equality>
 
     let combinedCmd = Vectors.Combine(thisRowCmd, otherRowCmd, combine)
     let newVector = vectorBuilder.Build(combinedCmd, [| inputThis; inputThat |])
-    let newVector = newVector.Select(function 
+    let newVector : IVector<_ opt * _ opt> = newVector.Select(function 
       | Choice3Of3(l, r) -> OptionalValue(l), OptionalValue(r)
       | Choice1Of3(l) -> OptionalValue(l), OptionalValue.Missing
       | Choice2Of3(r) -> OptionalValue.Missing, OptionalValue(r))

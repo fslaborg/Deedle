@@ -5,34 +5,35 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>22729065-4c30-4e43-a63f-4f3338a03878</ProjectGuid>
+    <ProjectGuid>{79f004b4-093b-49c8-b7bf-7b3ef7cc829e}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>FSharp.DataFrame</RootNamespace>
-    <AssemblyName>FSharp.DataFrame</AssemblyName>
+    <RootNamespace>FSharp.Data.Tests.DesignTime</RootNamespace>
+    <AssemblyName>FSharp.DataFrame.Documentation.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <Name>FSharp.DataFrame</Name>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <Name>FSharp.Data.Tests.DesignTime</Name>
+    <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-    <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
+    <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
-    <OutputPath>../bin/</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>../bin/FSharp.DataFrame.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\FSharp.Data.Tests.DesignTime.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
-    <OutputPath>../bin/</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>../bin/FSharp.DataFrame.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\FSharp.Data.Tests.DesignTime.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
@@ -51,48 +52,51 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
   <ItemGroup>
-    <Compile Include="Common\AssemblyInfo.fs" />
-    <Compile Include="Common\Attributes.fs" />
-    <Compile Include="Common\LazyList.fs" />
-    <Compile Include="Common\Common.fs" />
-    <Compile Include="Common\Address.fs" />
-    <Compile Include="Vectors\Vector.fs" />
-    <Compile Include="Vectors\VectorHelpers.fs" />
-    <Compile Include="Vectors\ArrayVector.fs" />
-    <Compile Include="Vectors\VectorExtensions.fs" />
-    <Compile Include="Indices\MultiKey.fs" />
-    <Compile Include="Indices\Index.fs" />
-    <Compile Include="Indices\LinearIndex.fs" />
-    <Compile Include="Series.fs" />
-    <Compile Include="SeriesModule.fs" />
-    <Compile Include="SeriesExtensions.fs" />
-    <Compile Include="Frame.fs" />
-    <Compile Include="FrameUtils.fs" />
-    <Compile Include="FrameModule.fs" />
-    <Compile Include="FrameExtensions.fs" />
-    <Compile Include="DelayedSeries.fs" />
+    <Compile Include="../Common/FsUnit.fs">
+      <Link>FsUnit.fs</Link>
+    </Compile>
+    <Compile Include="../../packages/FSharp.Formatting.1.0.15/literate/StringParsing.fs">
+      <Link>StringParsing.fs</Link>
+    </Compile>
+    <Compile Include="../../packages/FSharp.Formatting.1.0.15/literate/literate.fsx">
+      <Link>literate.fsx</Link>
+    </Compile>
+    <Compile Include="Documentation.Tests.fs" />
     <None Include="packages.config" />
-    <None Include="FSharp.DataFrame.fsx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="FSharp.Charting">
+      <HintPath>..\..\packages\FSharp.Charting.0.84\lib\net40\FSharp.Charting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FSharp.CodeFormat">
+      <HintPath>..\..\packages\FSharp.Formatting.1.0.15\lib\net40\FSharp.CodeFormat.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FSharp.CompilerBinding">
+      <HintPath>..\..\packages\FSharp.Formatting.1.0.15\lib\net40\FSharp.CompilerBinding.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.Data.DesignTime">
-      <HintPath>..\packages\FSharp.Data.1.1.9\lib\net40\FSharp.Data.DesignTime.dll</HintPath>
+      <HintPath>..\..\bin\FSharp.Data.DesignTime.dll</HintPath>
     </Reference>
-    <Reference Include="MathNet.Numerics">
-      <HintPath>..\packages\MathNet.Numerics.2.6.1\lib\net40\MathNet.Numerics.dll</HintPath>
+    <Reference Include="FSharp.Markdown">
+      <HintPath>..\..\packages\FSharp.Formatting.1.0.15\lib\net40\FSharp.Markdown.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="mscorlib" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
   </ItemGroup>
-  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
