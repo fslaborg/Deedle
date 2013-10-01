@@ -43,3 +43,11 @@ let False = new FalseConstraint()
 let sameAs x = new SameAsConstraint(x)
 
 let throw = Throws.TypeOf
+
+type Recorder<'T>() =
+  let mutable xs = []
+  member recorder.Record(x:'T) = xs <- x :: xs
+  member recorder.Values = xs
+
+let inline spy1 (recorder:Recorder<'T>) f = fun p -> recorder.Record(p); f p
+let inline spy2 (recorder:Recorder<'T1 * 'T2>) f = fun p1 p2 -> recorder.Record( (p1, p2) ); f p1 p2 

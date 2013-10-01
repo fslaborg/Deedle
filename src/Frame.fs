@@ -217,13 +217,19 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     Series.Create(columnIndex, changeType row.Vector)
 
   member frame.AddSeries(column:'TColumnKey, series:seq<_>) = 
-    if (Seq.length frame.RowIndex.Keys) <> (Seq.length series) then invalidArg "series" "Must have the right length"
-    let series = Series(frame.RowIndex, Vector.ofValues series, vectorBuilder, indexBuilder)
-    frame.AddSeries(column, series)
+    frame.AddSeries(column, series, Lookup.Exact)
 
   member frame.AddSeries(column:'TColumnKey, series:Series<_, _>) = 
+    frame.AddSeries(column, series, Lookup.Exact)
+
+  member frame.AddSeries(column:'TColumnKey, series:seq<_>, lookup) = 
+    if (Seq.length frame.RowIndex.Keys) <> (Seq.length series) then invalidArg "series" "Must have the right length"
+    let series = Series(frame.RowIndex, Vector.ofValues series, vectorBuilder, indexBuilder)
+    frame.AddSeries(column, series, lookup)
+
+  member frame.AddSeries<'V>(column:'TColumnKey, series:Series<'TRowKey, 'V>, lookup) = 
     let other = Frame(series.Index, Index.ofUnorderedKeys [column], Vector.ofValues [series.Vector :> IVector ])
-    let joined = frame.Join(other, JoinKind.Left)
+    let joined = frame.Join(other, JoinKind.Left, lookup)
     columnIndex <- joined.ColumnIndex
     data <- joined.Data
 

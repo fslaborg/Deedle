@@ -63,6 +63,7 @@
     <Compile Include="Vector.fs" />
     <Compile Include="MultiKey.fs" />
     <Compile Include="Series.fs" />
+    <Compile Include="LazySeries.fs" />
     <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup>

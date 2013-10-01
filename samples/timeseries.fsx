@@ -215,7 +215,21 @@ Frame.join JoinKind.Outer f1 f2
 Frame.align JoinKind.Left Lookup.NearestSmaller f1 f2
 
 (**
-Missing is good
+The automatic alignment is extremely useful when you have multiple data series with different
+offsets between individual observations. You can choose your set of keys (dates) and then easily
+align other data to match the keys. Another alternative to using `Join` explicitly is to create
+a new frame with just keys that you are interested in (using `Frame.ofRowKeys`) and then use
+the `AddSeries` member (or the `df?New <- s` syntax) to add series. This will automatically left
+join the new series to match the current row keys.
+
+When aligning data, you may or may not want to create data frame with missing values. If your
+observations do not happen at exact time, then using `Lookup.NearestSmaller` or `Lookup.NearestGreater`
+is a great way to avoid mismatch. 
+
+If you have observations that happen e.g. at two times faster rate (one series is hourly and 
+another is half-hourly), then you can create data frame with missing values using `Lookup.Exact` 
+(the default value) and then handle missing values explicitly (as [discussed here](features.html#missing)).
+
 
 <a name="windowing"></a>
 Series windowing and chunking

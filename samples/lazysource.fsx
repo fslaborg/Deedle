@@ -1,44 +1,117 @@
-﻿#I "../bin"
+﻿(*** hide ***)
+#I "../bin"
 #load "FSharp.DataFrame.fsx"
 open System
 
+(**
+Creating lazily loaded series
+=============================
+
+When loading data from an external data source (such as a database), you might
+want to create a _virtual_ time series that represents the data source, but 
+does not actually load the data until needed. If you apply some range restriction
+(like slicing) to the data series before using the values, then it is not 
+necessary to load the entire data set into memory.
+
+The F# data frame library supports lazy loading through the `DelayedSeries.Create` 
+method. It returns an ordinary data series of type `Series<K, V>` which has a 
+delayed internal representation.
+
+## Creating lazy series
+
+We will not use a real database in this tutorial, but let's say that you have the
+following function which loads data for a given day range: 
+*)
+
+/// Given a time range, generates random values for dates (at 12:00 AM)
+/// starting with the day of the first date time and ending with the 
+/// day after the second date time (to make sure they are in range)
+let generate (low:DateTime) (high:DateTime) =
+  let rnd = Random()
+  let days = int (high.Date - low.Date).TotalDays + 1
+  seq { for d in 0 .. days -> 
+          low.Date.AddDays(float d), rnd.Next() }
+
+(**
+Using random numbers as the source in this example is not entirely correct, because
+it means that we will get different values each time a new sub-range of the series
+is required - but it will suffice for the demonstration.
+
+Now, to create a lazily loaded series, we need to open the `Indices` namespace,
+specify the minimal and maximal value of the series and use `DelayedSeries.Create`:
+*)
 open FSharp.DataFrame
 open FSharp.DataFrame.Indices
 
+// Minimal and maximal values that can be loaded from the series
+let min, max = DateTime(2010, 1, 1), DateTime(2013, 1, 1)
 
-let loadSeries (min:DateTime) max column = 
+// Create a lazy series for the given range
+let ls = DelayedSeries.Create(min, max, fun (lo, lob) (hi, hib) -> 
+  async { 
+    printfn "Query: %A - %A" (lo, lob) (hi, hib)
+    return generate lo hi })
 
-  let inline midp (a:DateTime) (b:DateTime) =
-    let ts = b - a in a + TimeSpan(ts.Ticks / 2L)
+(**
+To make the diagnostics easier, we print the required range whenever a request
+is made. After running this code, you should not see any output yet.
+The parameter to `DelayedSeries.Create` is a function that takes 4 arguments:
 
-  DelayedSeries.Create(min, max, midp, column, fun (lo, loinc) (hi, hiinc) -> 
-    Async.StartAsTask <| async {
-      let rnd = Random()
-      printfn "QUERY %s: %A" column ((lo, loinc), (hi, hiinc))
+  - `lo` and `hi` specify the low and high boundaries of the range. Their
+    type is the type of the key (e.g. `DateTime` in our example)
+  - `lob` and `hib` are values of type `BoundaryBehavior` and can be either
+    `Inclusive` or `Exclusive`. They specify whether the boundary value should
+    be included or not.
 
-      let lo = if loinc = Exclusive then lo.AddDays(1.0) else lo
-      let hi = if hiinc = Exclusive then hi.AddDays(-1.0) else hi
-      return seq {
-        for i in 0 .. int (hi - lo).TotalDays do 
-          yield lo.AddDays(float i), rnd.NextDouble() } } )
+Our sample function does not handle boundaries correctly - it always includes the
+boundary (and possibly more values). This is not a problem, because the lazy loader
+automatically skips over such values. But if you want, you can use `lob` and `hib` 
+parameters to build a more optimal SQL query.
 
-let s1 = loadSeries (DateTime(2000,1,1)) (DateTime(2015,1,1)) "Test"
-let s2 = s1.[DateTime(2013,1,1) .. ]
-let s3 = s2.[ .. DateTime(2013,2,1)]
+## Using un-evaluated series
 
-// s3 |> Series.observations |> Seq.iter (printfn "%O")
-// s3.[DateTime(2013,2,1)]
+Let's now have a look at the operations that we can perform on un-evaluated series.
+Any operation that actually accesses values or keys of the series (such as `Series.observations`
+or lookup for a specific key) will force the evaluation of the series.
 
-Frame.ofColumns 
-  [ "S2" => s2; "S3" => s3; "S4" => Series.ofObservations [DateTime(2012,12,1), 42.0] ]
+However, we can use range restrictions before accessing the data:
+*)
+// Get series representing January 2012
+let jan12 = ls.[DateTime(2012, 1, 1) .. DateTime(2012, 2, 1)]
 
-let s4 = s1.GetSubrange(Some(DateTime(2014, 12, 25), Exclusive), None)
-//s4.[DateTime(2014,12,16)]
-//s4.[DateTime(2014,12,15)]
+// Further restriction - only first half of the month
+let janHalf = jan12.[.. DateTime(2012, 1, 15)]
 
-Frame.ofColumns 
-  [ "S2" => s2; "S3" => s3; "S4" => s4 ]
+// Get value for a specific date
+janHalf.[DateTime(2012, 1, 1)]
+// [fsi: Query: (1/1/2012, Inclusive) - (1/15/2012, Inclusive)]
+// [fsi: val it : int = 1127670994]
 
-let sept = Frame.ofRowKeys [ for d in 1 .. 30 -> DateTime(2012, 9, d) ]
-sept?S1 <- s1
+janHalf.[DateTime(2012, 1, 2)]
+// [fsi: val it : int = 560920727]
+(**
+As you can see from the output on line 9, the series obtained data for the
+15 day range that we created by restricting the original series. When we requested
+another value within the specified range, it was already available and it was
+returned immediately. Note that `janHalf` is restricted to the specified 15 day
+range, so we cannot access values outside of the range. Also, when you access a single
+value, entire series is loaded. The motivation is that you probably need to access
+multiple values, so it is likely cheaper to load the whole series.
 
+Another operation that can be performed on an unevaluated series is to add it
+to a data frame with some existing key range:
+*)
+
+// Create empty data frame for days of December 2011
+let dec11 = Frame.ofRowKeys [ for d in 1 .. 31 -> DateTime(2011, 12, d) ]
+
+// Add series as the 'Values' column to the data frame
+dec11?Values <- ls
+// [fsi: Query: (12/1/2011, Inclusive) - (12/31/2011, Inclusive)]
+
+(**
+When adding lazy series to a data frame, the series has to be evaluated (so that
+the values can be properly aligned) but it is first restricted to the range of the
+data frame. In the above example, only one month of data is loaded.
+
+*)
