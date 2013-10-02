@@ -58,12 +58,13 @@ module internal Reflection =
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module internal FrameUtils = 
   open FSharp.Data
+  open System.IO
   open ProviderImplementation
   open FSharp.Data.RuntimeImplementation
   open FSharp.Data.RuntimeImplementation.StructuralTypes
 
   /// Load data from a CSV file using F# Data API
-  let readCsv (file:string) inferTypes inferRows schema (missingValues:string) separators culture =
+  let readCsv (reader:TextReader) inferTypes inferRows schema (missingValues:string) separators culture =
     let schema = defaultArg schema ""
     let schema = if schema = null then "" else schema
     let missingValuesArr = missingValues.Split(',')
@@ -86,8 +87,8 @@ module internal FrameUtils =
     // to load information about types in the CSV file. By default, use the entire
     // content (but inferRows can be set to smaller number). Otherwise we just
     // "infer" all columns as string.
+    let data = Csv.CsvFile.Load(reader, ?separators=separators)
     let inferedProperties = 
-      let data = Csv.CsvFile.Load(file, ?separators=separators)
       if not (inferTypes = Some false) then
         CsvInference.inferType 
           data inferRows (missingValuesArr, cultureInfo) schema safeMode preferOptionals
@@ -98,7 +99,7 @@ module internal FrameUtils =
             PrimitiveInferedProperty.Create(c, typeof<string>, true) ]
 
     // Load the data and convert the values to the appropriate type
-    let data = Csv.CsvFile.Load(file, ?separators=separators).Cache()
+    let data = data.Cache()
     let columnIndex = Index.ofKeys data.Headers.Value
     let columns = 
       [| for name, prop in Seq.zip data.Headers.Value inferedProperties  ->

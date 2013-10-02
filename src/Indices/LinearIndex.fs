@@ -68,6 +68,15 @@ type LinearIndex<'K when 'K : equality>
     member x.Keys = keys
     member x.Builder = builder
 
+    /// Perform reverse lookup and return key for an address
+    member x.KeyAt(address) =
+      match address with 
+      | Address.Int i -> keysArray.Value.[i]
+      | _ -> invalidOp "This type of index does not support reverse lookup"
+
+    /// Returns whether the specified index is empty
+    member x.IsEmpty = keys |> Seq.isEmpty
+
     /// Returns the range of keys - makes sense only for ordered index
     member x.KeyRange = 
       if not ordered.Value then invalidOp "KeyRange is not supported for unordered index."
@@ -191,7 +200,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
     member builder.Aggregate<'K, 'R, 'TNewKey when 'K : equality and 'TNewKey : equality>
         (index:IIndex<'K>, aggregation, vector, valueSel:_ * _ -> OptionalValue<'R>, keySel:_ * _ -> 'TNewKey) =
       if not index.Ordered then 
-        invalidOp "Floating window aggregation or chunking is not supported on un-ordered indices."
+        invalidOp "Floating window aggregation and chunking is only supported on ordered indices."
       let builder = (builder :> IIndexBuilder)
       let ranges =
         // Get windows based on the key sequence
@@ -240,8 +249,12 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       newIndex, vect
 
     /// Create chunks based on the specified key sequence
-    member builder.SampleBy<'K, 'TNewKey, 'R when 'K : equality and 'TNewKey : equality> 
+    member builder.Resample<'K, 'TNewKey, 'R when 'K : equality and 'TNewKey : equality> 
         (index:IIndex<'K>, keys:seq<'K>, dir:Direction, vector, valueSel:_ * _ -> OptionalValue<'R>, keySel:_ * _ -> 'TNewKey) =
+
+      if not index.Ordered then 
+        invalidOp "Resampling is only supported on ordered indices"
+
       let builder = (builder :> IIndexBuilder)
       let ranges =
         // Build a sequence of indices & vector constructions representing the groups

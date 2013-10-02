@@ -6,6 +6,7 @@ namespace FSharp.DataFrame
 // ------------------------------------------------------------------------------------------------
 
 open System
+open System.IO
 open System.Collections.Generic
 open System.ComponentModel
 open System.Runtime.InteropServices
@@ -40,7 +41,34 @@ type Frame =
     ( location:string, [<Optional>] skipTypeInference, [<Optional>] inferRows, 
       [<Optional>] schema, [<Optional>] separators, [<Optional>] culture) =
     FrameUtils.readCsv 
-      location (Some (not skipTypeInference)) (Some inferRows) (Some schema) "NaN,NA,#N/A,:" 
+      (new StreamReader(location)) (Some (not skipTypeInference)) (Some inferRows) (Some schema) "NaN,NA,#N/A,:" 
+      (if separators = null then None else Some separators) (Some culture)
+
+  /// Load data frame from a CSV file. The operation automatically reads column names from the 
+  /// CSV file (if they are present) and infers the type of values for each column. Columns
+  /// of primitive types (`int`, `float`, etc.) are converted to the right type. Columns of other
+  /// types (such as dates) are not converted automatically.
+  ///
+  /// ## Parameters
+  ///
+  ///  * `stream` - Specifies the input stream, opened at the beginning of CSV data
+  ///  * `skipTypeInference` - Specifies whether the method should skip inferring types
+  ///    of columns automatically (when set to `true` you need to provide explicit `schema`)
+  ///  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
+  ///    rows to use for type inference. The default value is 0, meaninig all rows.
+  ///  * `schema` - A string that specifies CSV schema. See the documentation for 
+  ///    information about the schema format.
+  ///  * `separators` - A string that specifies one or more (single character) separators
+  ///    that are used to separate columns in the CSV file. Use for example `";"` to 
+  ///    parse semicolon separated files.
+  ///  * `culture` - Specifies the name of the culture that is used when parsing 
+  ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member ReadCsv
+    ( stream:Stream, [<Optional>] skipTypeInference, [<Optional>] inferRows, 
+      [<Optional>] schema, [<Optional>] separators, [<Optional>] culture) =
+    FrameUtils.readCsv 
+      (new StreamReader(stream)) (Some (not skipTypeInference)) (Some inferRows) (Some schema) "NaN,NA,#N/A,:" 
       (if separators = null then None else Some separators) (Some culture)
 
   /// Creates a data frame with ordinal Integer index from a sequence of rows.
@@ -71,6 +99,22 @@ type Frame =
     let colKeys = cols |> Seq.map (fun kvp -> kvp.Key)
     let colSeries = cols |> Seq.map (fun kvp -> kvp.Value)
     FrameUtils.fromColumns(Series(colKeys, colSeries))
+
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member FromRows(rows:seq<KeyValuePair<'RowKey, Series<'ColKey, 'V>>>) = 
+    let rowKeys = rows |> Seq.map (fun kvp -> kvp.Key)
+    let rowSeries = rows |> Seq.map (fun kvp -> kvp.Value)
+    FrameUtils.fromRows(Series(rowKeys, rowSeries))
+
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member FromRows(rows:seq<KeyValuePair<'RowKey, ObjectSeries<'ColKey>>>) = 
+    let rowKeys = rows |> Seq.map (fun kvp -> kvp.Key)
+    let rowSeries = rows |> Seq.map (fun kvp -> kvp.Value)
+    FrameUtils.fromRows(Series(rowKeys, rowSeries))
+
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member CreateEmpty() =
+    Frame<'R, 'C>(Index.ofKeys [], Index.ofKeys [], Vector.ofValues [])
 
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member FromRowKeys<'K when 'K : equality>(keys:seq<'K>) =
@@ -127,8 +171,30 @@ module FSharpFrameExtensions =
     ///  * `culture` - Specifies the name of the culture that is used when parsing 
     ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
     static member readCsv(location:string, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture) =
-      FrameUtils.readCsv location inferTypes inferRows schema "NaN,NA,#N/A,:" separators culture
+      FrameUtils.readCsv (new StreamReader(location)) inferTypes inferRows schema "NaN,NA,#N/A,:" separators culture
 
+    /// Load data frame from a CSV file. The operation automatically reads column names from the 
+    /// CSV file (if they are present) and infers the type of values for each column. Columns
+    /// of primitive types (`int`, `float`, etc.) are converted to the right type. Columns of other
+    /// types (such as dates) are not converted automatically.
+    ///
+    /// ## Parameters
+    ///
+    ///  * `stream` - Specifies the input stream, opened at the beginning of CSV data
+    ///  * `inferTypes` - Specifies whether the method should attempt to infer types
+    ///    of columns automatically (set this to `false` if you want to specify schema)
+    ///  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
+    ///    rows to use for type inference. The default value is 0, meaninig all rows.
+    ///  * `schema` - A string that specifies CSV schema. See the documentation for 
+    ///    information about the schema format.
+    ///  * `separators` - A string that specifies one or more (single character) separators
+    ///    that are used to separate columns in the CSV file. Use for example `";"` to 
+    ///    parse semicolon separated files.
+    ///  * `culture` - Specifies the name of the culture that is used when parsing 
+    ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
+    static member readCsv(stream:Stream, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture) =
+      FrameUtils.readCsv (new StreamReader(stream)) inferTypes inferRows schema "NaN,NA,#N/A,:" separators culture
+      
     /// Creates a data frame with ordinal Integer index from a sequence of rows.
     /// The column indices of individual rows are unioned, so if a row has fewer
     /// columns, it will be successfully added, but there will be missing values.
@@ -199,6 +265,18 @@ module FSharpFrameExtensions =
 
 [<Extension>]
 type FrameExtensions =
+  /// Returns the total number of row keys in the specified frame. This returns
+  /// the total length of the row series, including keys for which there is no 
+  /// value available.
+  [<Extension>]
+  static member CountRows(frame:Frame<'R, 'C>) = frame.RowIndex.Mappings |> Seq.length
+
+  /// Returns the total number of row keys in the specified frame. This returns
+  /// the total length of the row series, including keys for which there is no 
+  /// value available.
+  [<Extension>]
+  static member CountColumns(frame:Frame<'R, 'C>) = frame.ColumnIndex.Mappings |> Seq.length
+
   /// Filters frame rows using the specified condtion. Returns a new data frame
   /// that contains rows for which the provided function returned false. The function
   /// is called with `KeyValuePair` containing the row key as the `Key` and `Value`

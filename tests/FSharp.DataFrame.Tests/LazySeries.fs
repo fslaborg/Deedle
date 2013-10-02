@@ -4,7 +4,6 @@
 #r "../../bin/FSharp.DataFrame.dll"
 #r "../../packages/NUnit.2.6.2/lib/nunit.framework.dll"
 #r "../../packages/FsCheck.0.9.1.0/lib/net40-Client/FsCheck.dll"
-#r "../../packages/Foq.1.1/Lib/net40/Foq.dll"
 #load "../Common/FsUnit.fs"
 #endif
 
@@ -94,7 +93,7 @@ let ``Created series does not contain out-of-range keys, even if the source prov
 // ------------------------------------------------------------------------------------------------
 
 /// Generator that generates ranges by unioning/intersecting them
-let randomRange seed =   
+let internal randomRange seed =   
   let rec randomRanges (rnd:System.Random) lo hi = 
     let mid = rnd.Next(lo, hi+1)
     let midl = rnd.Next(lo, mid+1)
@@ -111,7 +110,7 @@ let randomRange seed =
   randomRanges (Random(seed)) 0 100
 
 /// Check that, flattening works correctly for a given range
-let check range = 
+let internal check range = 
   let intComp = System.Collections.Generic.Comparer<int>.Default
   let flat = Ranges.flattenRanges 0 100 intComp range 
   [ 0 .. 100 ] |> Seq.iter (fun x ->

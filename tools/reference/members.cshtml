@@ -1,17 +1,17 @@
-@if (Model.Members.Length > 0) {
-  <h2>@Model.Header</h2>
+@if (Enumerable.Count(Model.Members) > 0) {
+  <h3>@Model.Header</h3>
   <table class="table table-bordered member-list">
     <thead>
       <tr><td>@Model.TableHeader</td><td>Description</td></tr>
     </thead>
     <tbody>
     @foreach (var it in Model.Members)
-	  {
+    {
       <tr>
-		    <td class="member-name">
+        <td class="member-name">
           @{ var id = Html.UniqueID().ToString(); }
           <code onmouseout="hideTip(event, '@id', @id)" onmouseover="showTip(event, '@id', @id)">
-            @Html.Encode(it.Details.FormatUsage(45))
+            @Html.Encode(it.Details.FormatUsage(40))
           </code>
           <div class="tip" id="@id">
             <strong>Signature:</strong>@Html.Encode(it.Details.Signature)<br />
@@ -22,11 +22,10 @@
               <strong>Type parameters:</strong> @it.Details.FormatTypeArguments
             }
           </div>
-		    </td>
+        </td>
         <td class="xmldoc">@it.Comment.FullText</td>
       </tr>
-	  }
+    }
     </tbody>
   </table>
 }
-

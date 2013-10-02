@@ -248,9 +248,13 @@ and Series<'K, 'V when 'K : equality>
   member x.TryGet(key) = x.TryGet(key, Lookup.Exact)
   member x.Get(key) = x.Get(key, Lookup.Exact)
 
-  member x.TryGetAt(index) = x.Vector.GetValue(Addressing.Int index)
-  member x.GetAt(index) = x.Vector.GetValue(Addressing.Int index).Value
+  member x.TryGetAt(index) = 
+    x.Vector.GetValue(Addressing.Int index)
+    |> OptionalValue.map (fun v -> KeyValuePair(x.Index.KeyAt(Addressing.Int index), v))
 
+  member x.GetAt(index) = 
+    x.TryGetAt(index).Value
+  
   member x.Item with get(a) = x.Get(a)
   member x.Item with get(items) = x.GetItems items
   member x.Item with get(a) = x.GetByLevel(a)
@@ -392,7 +396,7 @@ and Series<'K, 'V when 'K : equality>
     x.WhereOptional(fun (KeyValue(k, v)) -> v.HasValue)
 
   // Seq.head
-  member x.Aggregate<'TNewKey, 'R when 'TNewKey : equality>(aggregation, valueSelector:Func<_, _>, keySelector:Func<_, _>) =
+  member x.Aggregate<'TNewKey, 'R when 'TNewKey : equality>(aggregation, keySelector:Func<_, _>, valueSelector:Func<_, _>) =
     let newIndex, newVector = 
       indexBuilder.Aggregate
         ( x.Index, aggregation, Vectors.Return 0, 
@@ -403,13 +407,30 @@ and Series<'K, 'V when 'K : equality>
               keySelector.Invoke(DataSegment(kind, Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)))) )
     Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
 
-  member x.Aggregate<'R>(aggregation, valueSelector) =
-    x.Aggregate<'K, 'R>(aggregation, valueSelector, Func<_, _>(fun k -> k.Data.Keys |> Seq.head))
-
-  member x.SampleBy<'TNewKey, 'R when 'TNewKey : equality>(keys, dir, valueSelector:Func<_, _, _>, keySelector:Func<_, _, _>) =
+  /// Resample the series based on a provided collection of keys. The values of the series
+  /// are aggregated into chunks based on the specified keys. Depending on `direction`, the 
+  /// specified key is either used as the smallest or as the greatest key of the chunk (with
+  /// the exception of boundaries that are added to the first/last chunk).
+  ///
+  /// Such chunks are then aggregated using the provided `valueSelector` and `keySelector`
+  /// (an overload that does not take `keySelector` just selects the explicitly provided key).
+  ///
+  /// ## Parameters
+  ///  - `keys` - A collection of keys to be used for resampling of the series
+  ///  - `direction` - If this parameter is `Direction.Forward`, then each key is
+  ///    used as the smallest key in a chunk; for `Direction.Backward`, the keys are
+  ///    used as the greatest keys in a chunk.
+  ///  - `valueSelector` - A function that is used to collapse a generated chunk into a 
+  ///    single value. Note that this function may be called with empty series.
+  ///  - `keySelector` - A function that is used to generate a new key for each chunk.
+  ///
+  /// ## Remarks
+  /// This operation is only supported on ordered series. The method throws
+  /// `InvalidOperationException` when the series is not ordered.
+  member x.Resample<'TNewKey, 'R when 'TNewKey : equality>(keys, direction, valueSelector:Func<_, _, _>, keySelector:Func<_, _, _>) =
     let newIndex, newVector = 
-      indexBuilder.SampleBy
-        ( x.Index, keys, dir, Vectors.Return 0, 
+      indexBuilder.Resample
+        ( x.Index, keys, direction, Vectors.Return 0, 
           (fun (key, (index, cmd)) -> 
               let window = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
               OptionalValue(valueSelector.Invoke(key, window))),
@@ -417,8 +438,27 @@ and Series<'K, 'V when 'K : equality>
               keySelector.Invoke(key, Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder))) )
     Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
 
-  member x.SampleBy(keys, dir, valueSelector) =
-    x.SampleBy(keys, dir, valueSelector, fun nk _ -> nk)
+  /// Resample the series based on a provided collection of keys. The values of the series
+  /// are aggregated into chunks based on the specified keys. Depending on `direction`, the 
+  /// specified key is either used as the smallest or as the greatest key of the chunk (with
+  /// the exception of boundaries that are added to the first/last chunk).
+  ///
+  /// Such chunks are then aggregated using the provided `valueSelector` and `keySelector`
+  /// (an overload that does not take `keySelector` just selects the explicitly provided key).
+  ///
+  /// ## Parameters
+  ///  - `keys` - A collection of keys to be used for resampling of the series
+  ///  - `direction` - If this parameter is `Direction.Forward`, then each key is
+  ///    used as the smallest key in a chunk; for `Direction.Backward`, the keys are
+  ///    used as the greatest keys in a chunk.
+  ///  - `valueSelector` - A function that is used to collapse a generated chunk into a 
+  ///    single value. Note that this function may be called with empty series.
+  ///
+  /// ## Remarks
+  /// This operation is only supported on ordered series. The method throws
+  /// `InvalidOperationException` when the series is not ordered.
+  member x.Resample(keys, direction, valueSelector) =
+    x.Resample(keys, direction, valueSelector, fun nk _ -> nk)
 
   member x.GroupBy(keySelector, valueSelector) =
     let newIndex, newVector = 
@@ -430,6 +470,15 @@ and Series<'K, 'V when 'K : equality>
               let group = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
               valueSelector newKey group ) )
     Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
+
+  member x.Reindex(newKeys) = 
+    let ns = 
+      Series( Index.ofKeys newKeys, vectorBuilder.Create (Array.ofSeq newKeys),
+              vectorBuilder, indexBuilder )
+    ns.Join(x, JoinKind.Left).SelectOptional(fun kvp ->
+      match kvp with
+      | KeyValue(k, OptionalValue.Present(_, v)) -> v
+      | _ -> OptionalValue.Missing )
 
   member x.WithOrdinalIndex() = 
     let newIndex = indexBuilder.Create(x.Index.Keys |> Seq.mapi (fun i _ -> i), Some true)

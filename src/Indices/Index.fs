@@ -27,7 +27,6 @@ type Lookup =
   /// only when the specified key is smaller than all available keys.
   | NearestSmaller = 2
 
-
 /// Represents a strategy for aggregating data in an ordered series into data segments.
 /// To create a value of this type from C#, use the non-generic `Aggregation` type.
 /// Data can be aggregate using floating windows or chunks of a specified size or 
@@ -125,6 +124,11 @@ type BoundaryBehavior = Inclusive | Exclusive
 type IIndex<'K when 'K : equality> = 
   /// Returns a sequence of all keys in the index.
   abstract Keys : seq<'K>
+  /// Performs reverse lookup - and returns key for a specified address
+  abstract KeyAt : Address -> 'K
+  /// Returns whether the specified index is empty. This is equivalent to 
+  /// testing if `Keys` are empty, but it does not have to evaluate delayed index.
+  abstract IsEmpty : bool
   /// Find the address associated with the specified key, or with the nearest
   /// key as specifeid by the `lookup` argument. The `condition` function is called
   /// when searching for keys to ask the caller whether the address should be returned
@@ -259,7 +263,7 @@ and IIndexBuilder =
   /// specified keys. The second parameter specifies the direction. If it is
   /// `Direction.Forward` than the key is the first element of a chunk; for 
   /// `Direction.Backward`, the key is the last element (note that this does not 
-  /// hold at the boundaries)
-  abstract SampleBy : IIndex<'K> * seq<'K> * Direction * source:VectorConstruction *
+  /// hold at the boundaries where values before/after the key may also be included)
+  abstract Resample : IIndex<'K> * seq<'K> * Direction * source:VectorConstruction *
     valueSelector:('TNewKey * SeriesConstruction<'K> -> OptionalValue<'R>) *
     keySelector:('K * SeriesConstruction<'K> -> 'TNewKey) -> IIndex<'TNewKey> * IVector<'R>

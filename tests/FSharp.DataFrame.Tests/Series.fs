@@ -9,11 +9,37 @@
 #endif
 
 open System
+open System.Collections.Generic
 open FsUnit
 open FsCheck
 open NUnit.Framework
 
 open FSharp.DataFrame
+
+// ------------------------------------------------------------------------------------------------
+// Indexing and accessing values
+// ------------------------------------------------------------------------------------------------
+
+let unordered = series [ 3 => "hi"; 2 => "bye"; 1 => "ciao"; 5 => "nazdar" ]
+let ordered = series [ 1 => "hi"; 2 => "bye"; 3 => "ciao"; 5 => "nazdar" ]
+let missing = series [ 1 => "hi"; 2 => null; 3 => "ciao"; 5 => "nazdar" ]
+
+let ``Can access elements in ordered and unordered series`` () =
+  unordered.[3] |> shouldEqual "hi"
+  ordered.[3] |> shouldEqual "ciao"
+
+let ``Accessing missing value or using out of range key throws`` () =
+  (fun () -> missing.[2] |> ignore) |> should throw typeof<KeyNotFoundException>
+  (fun () -> missing.[7] |> ignore) |> should throw typeof<KeyNotFoundException>
+
+let ``Can access elements by address`` () =
+  unordered.GetAt(0).Value |> shouldEqual "hi"
+  ordered.GetAt(0).Value |> shouldEqual "hi"
+  missing.TryGetAt(1).HasValue |> shouldEqual false
+  
+let ``Can lookup previous and next elements in ordered series`` () =
+  ordered.Get(4, Lookup.NearestGreater) |> shouldEqual "nazdar"
+  ordered.Get(4, Lookup.NearestSmaller) |> shouldEqual "ciao"
 
 // ------------------------------------------------------------------------------------------------
 // Construction & basics
@@ -84,48 +110,110 @@ let ``Grouping series with missing values works on sample input``() =
   actual |> shouldEqual expected
 
 // ------------------------------------------------------------------------------------------------
-// Sampling
+// Sampling and lookup
 // ------------------------------------------------------------------------------------------------
 
 let generate (dt:DateTime) (ts:TimeSpan) count =
   Seq.init count (fun i -> dt.Add(TimeSpan(ts.Ticks * int64 i)), i) |> Series.ofObservations
 
 [<Test>]
+let ``Sample by time - get value at or just before specified time`` () = 
+  let input = (generate (DateTime(2011, 12, 27)) (TimeSpan.FromHours(11.23)) 20) + 1
+  let expected = 
+    [ "12/27/2011 3:00:00 PM" => 2; "12/28/2011 3:00:00 PM" => 4;  "12/29/2011 3:00:00 PM" => 6;
+      "12/30/2011 3:00:00 PM" => 8; "12/31/2011 3:00:00 PM" => 10; "1/1/2012 3:00:00 PM" => 13;
+      "1/2/2012 3:00:00 PM" => 15;  "1/3/2012 3:00:00 PM" => 17;   "1/4/2012 3:00:00 PM" => 19
+      "1/5/2012 3:00:00 PM" => 20 ] 
+    |> series |> Series.mapKeys DateTime.Parse
+
+  let start = DateTime(2011, 12, 27).AddHours(15.0)
+  let actual = SeriesExtensions.Sample(input, start, TimeSpan.FromDays(1.0), Direction.Backward)
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Resample uniform - get the latest available value for each date (TestDaySampling)`` () = 
+  let input = (generate (DateTime(2011, 12, 2)) (TimeSpan.FromHours(5.23)) 20)
+  let expected = 
+    [ "12/2/2011" => 4;  "12/3/2011" => 9; "12/4/2011" => 13;
+      "12/5/2011" => 18; "12/6/2011" => 19 ] 
+    |> series |> Series.mapKeys DateTime.Parse
+  let actual = SeriesExtensions.ResampleUniform(input, (fun (dt:DateTime) -> dt.Date), (fun dt -> dt.AddDays(1.0)))
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Sample by time span - get the first available sample for each minute (TestMinuteSampling)`` () =
+  let input = (generate (DateTime(2011, 12, 2)) (TimeSpan.FromSeconds(2.5)) 50)
+  let expected = 
+    [ "12/2/2011 12:00:00 AM" => 0; "12/2/2011 12:01:00 AM" => 24; 
+      "12/2/2011 12:02:00 AM" => 48; "12/2/2011 12:03:00 AM" => 49 ]
+    |> series |> Series.mapKeys DateTime.Parse 
+
+  let actual = SeriesExtensions.Sample(input, TimeSpan.FromMinutes(1.0))
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Sample by time span - get the last available previous value for every hour (TestDownSampling)`` () =
+  let input = generate (DateTime(2012, 2, 12)) (TimeSpan.FromMinutes(5.37)) 50
+  let expected = 
+    [ "2/12/2012 12:00:00 AM" => 0;  "2/12/2012 1:00:00 AM" => 11
+      "2/12/2012 2:00:00 AM" => 22; "2/12/2012 3:00:00 AM" => 33
+      "2/12/2012 4:00:00 AM" => 44; "2/12/2012 5:00:00 AM" => 49 ]
+    |> series |> Series.mapKeys DateTime.Parse
+  let actual = input |> Series.sampleTimeInto (TimeSpan(1,0,0)) Direction.Backward Series.lastValue
+  actual |> shouldEqual expected        
+
+[<Test>]
+let ``Sample by keys - get the nearest previous key or <missing> (TestExplicitTimeSamples)`` () =
+  let input = (generate (DateTime(2012, 01, 01)) (TimeSpan.FromDays(3.0)) 15) + 1
+  let dateSampels = 
+    [ DateTime(2011, 12, 20); DateTime(2012, 01, 05); DateTime(2012, 01, 08);
+      DateTime(2012, 01, 19); DateTime(2012, 01, 29) ]
+  let expected = 
+    [ "12/20/2011" => Double.NaN; "1/5/2012" => 2.0;
+      "1/8/2012" => 3.0; "1/19/2012" => 7.0; "1/29/2012" => 10.0 ]
+    |> series |> Series.mapKeys DateTime.Parse |> Series.mapValues int
+  let actual = input.GetItems(dateSampels, Lookup.NearestSmaller)
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Reample uniform - select value of nearest previous key or fill with earlier (TestForwardFillSampling)`` () =
+  let input = 
+    [ "5/25/2012", 1.0; "5/26/2012", 2.0; "5/29/2012", 5.0; "5/30/2012", 6.0 ]
+    |> series |> Series.mapKeys DateTime.Parse 
+  let expected = 
+    [ "5/25/2012", 1.0; "5/26/2012", 2.0; "5/27/2012", 2.0;
+      "5/28/2012", 2.0; "5/29/2012", 5.0; "5/30/2012", 6.0 ]
+    |> series |> Series.mapKeys DateTime.Parse 
+  let actual = SeriesExtensions.ResampleUniform(input, (fun (dt:DateTime) -> dt.Date), (fun dt -> dt.AddDays(1.0)))
+  actual |> shouldEqual expected
+
+[<Test>]
 let ``Series.sampleTime works when using forward direction`` () =
   let start = DateTime(2012, 2, 12)
+  let input = generate start (TimeSpan.FromMinutes(5.37)) 50
   let expected = 
     Series.ofObservations
       [ start.AddHours(0.0) => 0;  start.AddHours(1.0) => 12
         start.AddHours(2.0) => 23; start.AddHours(3.0) => 34
         start.AddHours(4.0) => 45 ]
-  generate start (TimeSpan.FromMinutes(5.37)) 50
-  |> Series.sampleTimeInto (TimeSpan(1,0,0)) Direction.Forward Series.firstValue
-  |> shouldEqual expected        
-
-[<Test>]
-let ``Series.sampleTime works when using backward direction`` () =
-  let start = DateTime(2012, 2, 12)
-  let expected = 
-    Series.ofObservations
-      [ start.AddHours(0.0) => 0;  start.AddHours(1.0) => 11
-        start.AddHours(2.0) => 22; start.AddHours(3.0) => 33
-        start.AddHours(4.0) => 44; start.AddHours(5.0) => 49 ]
-  generate start (TimeSpan.FromMinutes(5.37)) 50
-  |> Series.sampleTimeInto (TimeSpan(1,0,0)) Direction.Backward Series.lastValue
-  |> shouldEqual expected        
+  let actual = input |> Series.sampleTimeInto (TimeSpan(1,0,0)) Direction.Forward Series.firstValue
+  actual |> shouldEqual expected        
 
 [<Test>]
 let ``Series.sampleInto works when using forward direction`` () =
   let start = DateTime(2012, 2, 12)
-  generate start (TimeSpan.FromHours(5.37)) 20
-  |> Series.sampleInto [ DateTime(2012, 2, 13); DateTime(2012, 2, 15) ] Direction.Forward (fun _ -> Series.firstValue)
-  |> shouldEqual <| Series.ofObservations [ DateTime(2012, 2, 13) => 0; DateTime(2012, 2, 15) => 14 ]
+  let input = generate start (TimeSpan.FromHours(5.37)) 20
+  let actual = 
+    input 
+    |> Series.resampleInto [ DateTime(2012, 2, 13); DateTime(2012, 2, 15) ] Direction.Forward (fun _ -> Series.firstValue)
+  let expected = series [ DateTime(2012, 2, 13) => 0; DateTime(2012, 2, 15) => 14 ]
+  actual |> shouldEqual expected
 
 [<Test>]
 let ``Series.sampleInto works when using backward direction`` () =
   let start = DateTime(2012, 2, 12)
   generate start (TimeSpan.FromHours(5.37)) 20
-  |> Series.sampleInto [ DateTime(2012, 2, 13); DateTime(2012, 2, 15) ] Direction.Backward (fun _ -> Series.lastValue)
+  |> Series.resampleInto [ DateTime(2012, 2, 13); DateTime(2012, 2, 15) ] Direction.Backward (fun _ -> Series.lastValue)
   |> shouldEqual <| Series.ofObservations [ DateTime(2012, 2, 13) => 4; DateTime(2012, 2, 15) => 19 ]
 
 [<Test>]
@@ -133,7 +221,7 @@ let ``Series.sample generates empty chunks for keys where there are no values`` 
   let start = DateTime(2012, 2, 12)
   let keys = [ for d in 12 .. 20 -> DateTime(2012, 2, d) ]
   generate start (TimeSpan.FromHours(48.0)) 5
-  |> Series.sample keys Direction.Forward
+  |> Series.resample keys Direction.Forward
   |> Series.mapValues (fun s -> if s.IsEmpty then -1 else s.[s.KeyRange |> fst])
   |> shouldEqual <| Series.ofObservations (Seq.zip keys [0; -1; 1; -1; 2; -1; 3; -1; 4])
 

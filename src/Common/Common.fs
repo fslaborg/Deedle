@@ -4,10 +4,6 @@ namespace FSharp.DataFrame
 open System
 open System.Runtime.CompilerServices
 
-// --------------------------------------------------------------------------------------
-// OptionalValue<T> type
-// --------------------------------------------------------------------------------------
-
 /// Value type that represents a potentially missing value. This is similar to 
 /// `System.Nullable<T>`, but does not restrict the contained value to be a value
 /// type, so it can be used for storing values of any types. When obtained from
@@ -52,6 +48,7 @@ type OptionalValue<'T> private (hasValue:bool, value:'T) =
 /// A type alias for the `OptionalValue<T>` type. The type alias can be used
 /// to make F# type definitions that use optional values directly more succinct.
 type 'T opt = OptionalValue<'T>
+
 
 /// Specifies in which direction should we look when performing operations such as
 /// `Series.Pairwise`. 

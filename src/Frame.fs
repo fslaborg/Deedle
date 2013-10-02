@@ -24,6 +24,8 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   // Internals (rowIndex, columnIndex, data and various helpers)
   // ----------------------------------------------------------------------------------------------
 
+  let mutable isEmpty = rowIndex.IsEmpty && columnIndex.IsEmpty
+
   /// Vector builder
   let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
   let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
@@ -207,6 +209,9 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   // Series related operations - add, drop, get, ?, ?<-, etc.
   // ----------------------------------------------------------------------------------------------
 
+  member frame.IsEmpty = 
+    rowIndex.Mappings |> Seq.isEmpty
+
   member frame.Clone() =
     Frame<_, _>(rowIndex, columnIndex, data)
 
@@ -222,16 +227,39 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   member frame.AddSeries(column:'TColumnKey, series:Series<_, _>) = 
     frame.AddSeries(column, series, Lookup.Exact)
 
-  member frame.AddSeries(column:'TColumnKey, series:seq<_>, lookup) = 
-    if (Seq.length frame.RowIndex.Keys) <> (Seq.length series) then invalidArg "series" "Must have the right length"
-    let series = Series(frame.RowIndex, Vector.ofValues series, vectorBuilder, indexBuilder)
-    frame.AddSeries(column, series, lookup)
+  member frame.AddSeries(column:'TColumnKey, series:seq<'V>, lookup) = 
+    if isEmpty then
+      if typeof<'TRowKey> = typeof<int> then
+        let series = unbox<Series<'TRowKey, 'V>> (Series.ofValues series)
+        frame.AddSeries(column, series)
+      else
+        invalidOp "Adding sequence to an empty frame with non-integer columns is not supported."
+    else
+      let count = Seq.length series
+      let rowCount = Seq.length frame.RowIndex.Keys
+      // Pad with missing values, if there is not enough, or trim if there is more
+      let vector = 
+        if count >= rowCount then 
+          Vector.ofValues (Seq.take count series)
+        else
+          let nulls = seq { for i in 1 .. rowCount - count -> None }
+          Vector.ofOptionalValues (Seq.append (Seq.map Some series) nulls)
+
+      let series = Series(frame.RowIndex, vector, vectorBuilder, indexBuilder)
+      frame.AddSeries(column, series, lookup)
 
   member frame.AddSeries<'V>(column:'TColumnKey, series:Series<'TRowKey, 'V>, lookup) = 
-    let other = Frame(series.Index, Index.ofUnorderedKeys [column], Vector.ofValues [series.Vector :> IVector ])
-    let joined = frame.Join(other, JoinKind.Left, lookup)
-    columnIndex <- joined.ColumnIndex
-    data <- joined.Data
+    if isEmpty then
+      // If the frame was empty, then initialize both indices
+      rowIndex <- series.Index
+      columnIndex <- Index.ofKeys [column]
+      data <- Vector.ofValues [series.Vector :> IVector]
+      isEmpty <- false
+    else
+      let other = Frame(series.Index, Index.ofUnorderedKeys [column], Vector.ofValues [series.Vector :> IVector ])
+      let joined = frame.Join(other, JoinKind.Left, lookup)
+      columnIndex <- joined.ColumnIndex
+      data <- joined.Data
 
   member frame.DropSeries(column:'TColumnKey) = 
     let newColumnIndex, colCmd = indexBuilder.DropItem( (columnIndex, Vectors.Return 0), column)
@@ -253,6 +281,9 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
         Series.Create(rowIndex, vec)
     | colVector ->
         Series.Create(rowIndex, changeType colVector)
+
+  member frame.Item 
+    with get(column:'TColumnKey) = frame.GetSeries<float>(column)
 
   member frame.GetSeries<'R>(column:'TColumnKey) : Series<'TRowKey, 'R> = 
     frame.GetSeries(column, Lookup.Exact)

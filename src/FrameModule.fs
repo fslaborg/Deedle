@@ -5,6 +5,16 @@ module Frame =
   open System
   open FSharp.DataFrame.Internal
 
+  /// Returns the total number of row keys in the specified frame. This returns
+  /// the total length of the row series, including keys for which there is no 
+  /// value available.
+  let countRows (frame:Frame<'R, 'C>) = frame.RowIndex.Mappings |> Seq.length
+
+  /// Returns the total number of column keys in the specified frame. This returns
+  /// the total length of columns, including keys for which there is no 
+  /// data available.
+  let countCols (frame:Frame<'R, 'C>) = frame.ColumnIndex.Mappings |> Seq.length
+
   // ----------------------------------------------------------------------------------------------
   // Grouping
   // ----------------------------------------------------------------------------------------------

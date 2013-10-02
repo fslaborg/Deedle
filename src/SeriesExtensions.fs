@@ -217,16 +217,104 @@ type SeriesExtensions =
   static member Window(series:Series<'K, 'V>, size:int): Series<'K, Series<'K, 'V>> = 
     Series.window size series
 
+  /// Resample the series based on equivalence class on the keys. A specified function
+  /// `keyProj` is used to project keys to another space and the observations for which the 
+  /// projected keys are equivalent are grouped into chunks. The chunks are then transformed
+  /// to values using the provided function `f`.
+  ///
+  /// ## Parameters
+  ///  - `series` - An input series to be resampled
+  ///  - `keyProj` - A function that transforms keys from original space to a new 
+  ///    space (which is then used for grouping based on equivalence)
+  ///  - `aggregate` - A function that is used to collapse a generated chunk into a 
+  ///    single value. 
+  ///
+  /// ## Remarks
+  /// This operation is only supported on ordered series. The method throws
+  /// `InvalidOperationException` when the series is not ordered. For unordered
+  /// series, similar functionality can be implemented using `GroupBy`.
+  [<Extension>]
+  static member ResampleEquivalence(series:Series<'K, 'V>, keyProj, aggregate) =
+    Series.resampleEquivInto keyProj aggregate series
+
+  /// Resample the series based on equivalence class on the keys and also generate values 
+  /// for all keys of the target space that are between the minimal and maximal key of the
+  /// specified series (e.g. generate value for all days in the range covered by the series).
+  /// For each equivalence class (e.g. date), select the latest value (with greatest key).
+  /// A specified function `keyProj` is used to project keys to another space and `nextKey`
+  /// is used to generate all keys in the range. 
+  ///
+  /// When there are no values for a (generated) key, then the function attempts to get the
+  /// greatest value from the previous smaller chunk (i.e. value for the previous date time).
+  ///
+  /// ## Parameters
+  ///  - `series` - An input series to be resampled
+  ///  - `fillMode` - When set to `Lookup.NearestSmaller` or `Lookup.NearestGreater`, 
+  ///     the function searches for a nearest available observation in an neighboring chunk.
+  ///     Otherwise, the function `f` is called with an empty series as an argument.
+  ///  - `keyProj` - A function that transforms keys from original space to a new 
+  ///    space (which is then used for grouping based on equivalence)
+  ///  - `nextKey` - A function that gets the next key in the transformed space
+  ///    
+  /// ## Remarks
+  /// This operation is only supported on ordered series. The method throws
+  /// `InvalidOperationException` when the series is not ordered. 
+  [<Extension>]
+  static member ResampleUniform(series:Series<'K, 'V>, keyProj:Func<_, _>, nextKey:Func<_, _>) =
+    Series.resampleUniformInto Lookup.NearestSmaller keyProj.Invoke nextKey.Invoke Series.lastValue series
+
+  /// Resample the series based on equivalence class on the keys and also generate values 
+  /// for all keys of the target space that are between the minimal and maximal key of the
+  /// specified series (e.g. generate value for all days in the range covered by the series).
+  /// A specified function `keyProj` is used to project keys to another space and `nextKey`
+  /// is used to generate all keys in the range. The chunk is then aggregated using `aggregate`.
+  ///
+  /// When there are no values for a (generated) key, then the function attempts to get the
+  /// greatest value from the previous smaller chunk (i.e. value for the previous date time).
+  ///
+  /// ## Parameters
+  ///  - `series` - An input series to be resampled
+  ///  - `fillMode` - When set to `Lookup.NearestSmaller` or `Lookup.NearestGreater`, 
+  ///     the function searches for a nearest available observation in an neighboring chunk.
+  ///     Otherwise, the function `f` is called with an empty series as an argument.
+  ///  - `keyProj` - A function that transforms keys from original space to a new 
+  ///    space (which is then used for grouping based on equivalence)
+  ///  - `nextKey` - A function that gets the next key in the transformed space
+  ///  - `aggregate` - A function that is used to collapse a generated chunk into a 
+  ///    single value. The function may be called on empty series when `fillMode` is
+  ///    `Lookup.Exact`.
+  ///    
+  /// ## Remarks
+  /// This operation is only supported on ordered series. The method throws
+  /// `InvalidOperationException` when the series is not ordered. 
+  [<Extension>]
+  static member ResampleUniform(series:Series<'K1, 'V>, keyProj:Func<'K1, 'K2>, nextKey:Func<'K2, 'K2>, fillMode:Lookup, aggregate) =
+    Series.resampleUniformInto fillMode keyProj.Invoke nextKey.Invoke aggregate series
+
+
+
+
+  [<Extension>]
+  static member Sample<'V>(series:Series<DateTime, 'V>, start:DateTime, interval:TimeSpan, dir) =
+    series |> Series.Implementation.sampleTimeIntoInternal (+) (Some start) interval dir (fun k s ->
+      if s.IsEmpty then series.Get(k, Lookup.NearestSmaller)
+      else Series.lastValue s)
+
+  [<Extension>]
+  static member Sample<'V>(series:Series<DateTimeOffset, 'V>, start:DateTimeOffset, interval:TimeSpan, dir) =
+    series |> Series.Implementation.sampleTimeIntoInternal (+) (Some start) interval dir (fun k s ->
+      if s.IsEmpty then series.Get(k, Lookup.NearestSmaller)
+      else Series.lastValue s)
 
   [<Extension>]
   static member Sample<'V>(series:Series<DateTime, 'V>, interval:TimeSpan, dir) =
-    series |> Series.Internal.sampleTimeIntoInternal (+) interval dir (fun k s ->
+    series |> Series.Implementation.sampleTimeIntoInternal (+) None interval dir (fun k s ->
       if s.IsEmpty then series.Get(k, Lookup.NearestSmaller)
       else Series.lastValue s)
 
   [<Extension>]
   static member Sample<'V>(series:Series<DateTimeOffset, 'V>, interval:TimeSpan, dir) =
-    series |> Series.Internal.sampleTimeIntoInternal (+) interval dir (fun k s ->
+    series |> Series.Implementation.sampleTimeIntoInternal (+) None interval dir (fun k s ->
       if s.IsEmpty then series.Get(k, Lookup.NearestSmaller)
       else Series.lastValue s)
 
@@ -240,11 +328,13 @@ type SeriesExtensions =
 
   [<Extension>]
   static member SampleInto<'V>(series:Series<DateTime, 'V>, interval:TimeSpan, dir, func:Func<_, _>) =
-    series |> Series.Internal.sampleTimeIntoInternal (+) interval dir func.Invoke
+    series |> Series.Implementation.sampleTimeIntoInternal (+) None interval dir func.Invoke
 
   [<Extension>]
   static member SampleInto<'V>(series:Series<DateTimeOffset, 'V>, interval:TimeSpan, dir, func:Func<_, _>) =
-    series |> Series.Internal.sampleTimeIntoInternal (+) interval dir func.Invoke
+    series |> Series.Implementation.sampleTimeIntoInternal (+) None interval dir func.Invoke
+
+  // --- end
 
   [<Extension>]
   static member FirstKey(series:Series<'K, 'V>) = series.KeyRange |> fst

@@ -104,12 +104,13 @@ module internal Ranges =
 
 open Ranges
 open System.Threading.Tasks
+open System.Collections.Generic
 
 /// This type represents data source for constructing delayed series. To construct
 /// a delayed series, use `DelayedSeries.Create` (this creates index and vector 
 /// linked to this `DelayedSource`).
 type internal DelayedSource<'K, 'V when 'K : equality>
-    (rangeMin:'K, rangeMax:'K, ranges:Ranges<'K>, loader:System.Func<'K, BoundaryBehavior, 'K, BoundaryBehavior, Task<seq<'K * 'V>>>) =
+    (rangeMin:'K, rangeMax:'K, ranges:Ranges<'K>, loader:System.Func<'K, BoundaryBehavior, 'K, BoundaryBehavior, Task<seq<KeyValuePair<'K, 'V>>>>) =
 
   static let vectorBuilder = ArrayVector.ArrayVectorBuilder.Instance
   static let indexBuilder = Linear.LinearIndexBuilder.Instance
@@ -126,7 +127,7 @@ type internal DelayedSource<'K, 'V when 'K : equality>
     let data = 
       [| for (lo, lob), (hi, hib) in ranges do
            let dataTask = loader.Invoke(lo, lob, hi, hib)
-           for k, v in dataTask.Result do
+           for KeyValue(k, v) in dataTask.Result do
              if (k > lo || (k >= lo && lob = Inclusive)) &&
                 (k < hi || (k <= hi && hib = Inclusive)) then
                yield k, v |] 
@@ -168,6 +169,8 @@ type internal DelayedVector<'K, 'V when 'K : equality> internal (source:DelayedS
 type internal DelayedIndex<'K, 'V when 'K : equality> internal (source:DelayedSource<'K, 'V>) = 
   member x.Source = source
   interface IIndex<'K> with
+    member x.KeyAt index = source.Index.KeyAt index
+    member x.IsEmpty = false
     member x.Builder = DelayedIndexBuilder() :> IIndexBuilder
     member x.KeyRange = source.Index.KeyRange
     member x.Keys = source.Index.Keys
@@ -205,7 +208,7 @@ and internal DelayedIndexBuilder() =
     member x.WithIndex(index1, f, vector) = builder.WithIndex(index1, f, vector)
     member x.Reindex(index1, index2, semantics, vector) = builder.Reindex(index1, index2, semantics, vector)
     member x.DropItem(sc, key) = builder.DropItem(sc, key)
-    member x.SampleBy(index, keys, dir, vect, ks, vs) = builder.SampleBy(index, keys, dir, vect, ks, vs)
+    member x.Resample(index, keys, close, vect, ks, vs) = builder.Resample(index, keys, close, vect, ks, vs)
     member x.GetRange(index, optLo:option<'K * _>, optHi:option<'K * _>, vector) = 
       match index with
       | :? IDelayedIndex<'K> as index ->
@@ -251,6 +254,8 @@ and internal DelayedIndexBuilder() =
 namespace FSharp.DataFrame
 
 open System
+open System.Collections.Generic
+open System.Threading.Tasks
 open FSharp.DataFrame.Delayed
 open FSharp.DataFrame.Indices
 open FSharp.DataFrame.Vectors.ArrayVector
@@ -292,7 +297,7 @@ type DelayedSeries =
   /// ## Remarks
   ///
   /// For more information see the [lazy data loading tutorial](../lazysource.html).
-  static member Create(min, max, loader:Func<_, _, _, _, _>) : Series<'K, 'V> =
+  static member Create(min, max, loader:Func<_, _, _, _, Task<seq<KeyValuePair<'K, 'V>>>>) : Series<'K, 'V> =
     let initRange = Ranges.Range((min, BoundaryBehavior.Inclusive), (max, BoundaryBehavior.Inclusive))
     let series = DelayedSource<'K, 'V>(min, max, initRange, loader)
     let index = DelayedIndex(series)
@@ -321,5 +326,8 @@ type DelayedSeries =
   /// For more information see the [lazy data loading tutorial](../lazysource.html).
   static member Create(min, max, loader) : Series<'K, 'V> =
     DelayedSeries.Create<'K, 'V>(min, max, fun lo lob hi hib -> 
-      loader (lo, lob) (hi, hib) |> Async.StartAsTask)
+      async { 
+        let! res = loader (lo, lob) (hi, hib) 
+        let proj = res |> Seq.map KeyValue.Create 
+        return proj } |> Async.StartAsTask )
 

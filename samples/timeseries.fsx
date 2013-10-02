@@ -235,6 +235,9 @@ another is half-hourly), then you can create data frame with missing values usin
 Series windowing and chunking
 -----------------------------
 
+## Aa
+ - ffooo
+
 *)
 
 let x = 42
@@ -244,10 +247,44 @@ let x = 42
 Sampling and scaling time series
 --------------------------------
 
+### Lookup
+
+### Resampling
+
+### Uniform resampling
+
+### Resampling time series
+
 *)
 
-let x = 42
+let inp = series <| stock1 (TimeSpan.FromHours(32.0)) 10
+inp |> Series.resampleUniform Lookup.NearestSmaller (fun dt -> dt.Date) (fun dt -> dt.AddDays(1.0))
 
+
+let lo, hi = inp.KeyRange
+let ts = TimeSpan.FromDays(1.0)
+let start = lo
+let dir = Direction.Forward
+
+let resample keys 
+let keys = 
+//  if dir = Direction.Forward then
+    Seq.unfold (fun dt -> Some(dt, dt+ts)) start 
+    |> Seq.takeWhile (fun dt -> dt <= hi)
+    
+    
+keys |> Seq.iter (printfn "%O")
+
+Series.mean $ (inp |> Series.sample keys Direction.Forward)
+Series.mean $ (inp |> Series.sample keys Direction.Backward)
+
+
+inp |> Series.sampleInto [DateTimeOffset(DateTime(2013,10,1))] Direction.Forward (fun k s -> s)
+inp |> Series.sampleInto [DateTimeOffset(DateTime(2013,10,1))] Direction.Backward (fun k s -> s)
+
+inp |> Series.sampleInto [DateTimeOffset(DateTime(2013,10,1)); DateTimeOffset(DateTime(2013,10,2))] Direction.Forward (fun k s -> s)
+inp |> Series.sampleInto [DateTimeOffset(DateTime(2013,10,1)); DateTimeOffset(DateTime(2013,10,2))] Direction.Backward (fun k s -> s)
+            
 (**
 <a name="stats"></a>
 Calculations and statistics
