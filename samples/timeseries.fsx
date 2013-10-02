@@ -235,12 +235,77 @@ another is half-hourly), then you can create data frame with missing values usin
 Series windowing and chunking
 -----------------------------
 
-## Aa
- - ffooo
+### Sliding windows
 
+basic stuff
 *)
 
-let x = 42
+let lf = series <| stock1 (TimeSpan(0, 1, 0)) 6
+
+lf |> Series.window 4
+lf |> Series.windowInto 4 Series.mean
+lf |> Series.windowInto 4 Series.firstValue
+
+(**
+
+More features
+
+*)
+let lfm1 = lf |> Series.windowInto 4 Series.mean
+Frame.ofColumns [ "Orig" => lf; "Means" => lfm1 ]
+// [fsi:val it : Frame<DateTimeOffset,string> =]
+// [fsi:                 Means      Orig        ]     
+// [fsi:  12:00:00 AM -> <missing>  20.16]
+// [fsi:  12:01:00 AM -> <missing>  20.32]
+// [fsi:  12:02:00 AM -> <missing>  20.25]
+// [fsi:  12:03:00 AM -> 20.30      20.45]
+// [fsi:  12:04:00 AM -> 20.34      20.32]
+// [fsi:  12:05:00 AM -> 20.34      20.33]
+
+let lfm2 = 
+  lf |> Series.windowSizeInto (4, Boundary.AtBeginning) (fun ds ->
+    Series.mean ds.Data)
+
+Frame.ofColumns [ "Orig" => lf; "Means" => lfm2 ]
+// [fsi:val it : Frame<DateTimeOffset,string> =]
+// [fsi:                 Means  Orig        ]     
+// [fsi:  12:00:00 AM -> 20.16  20.16]
+// [fsi:  12:01:00 AM -> 20.24  20.32]
+// [fsi:  12:02:00 AM -> 20.24  20.25]
+// [fsi:  12:03:00 AM -> 20.30  20.45]
+// [fsi:  12:04:00 AM -> 20.34  20.32]
+// [fsi:  12:05:00 AM -> 20.34  20.33]
+
+(**
+One more example
+*)
+
+let st = Series.ofValues [ 'a' .. 'j' ]
+st |> Series.chunkSizeInto (3, Boundary.AtEnding) (function
+  | DataSegment.Complete(ser) -> 
+      String(ser |> Series.values |> Array.ofSeq)
+  | DataSegment.Incomplete(ser) -> 
+      String(ser |> Series.values |> Array.ofSeq).PadRight(3, '-') )  
+
+(**
+
+### Window size conditions
+
+*)
+let daily = series <| stock1 (TimeSpan(35, 0, 0)) 10
+daily |> Series.windowDist (TimeSpan(24, 0, 0))
+
+daily |> Series.windowWhile (fun d1 d2 -> d1.Date = d2.Date)
+
+(**
+
+### Chunking
+*)
+
+let hf = series <| stock1 (TimeSpan(0, 0, 1)) 600
+
+hf |> Series.chunkDist (TimeSpan(0, 1, 0))
+
 
 (**
 <a name="sampling"></a>
@@ -289,6 +354,8 @@ inp |> Series.sampleInto [DateTimeOffset(DateTime(2013,10,1)); DateTimeOffset(Da
 <a name="stats"></a>
 Calculations and statistics
 ---------------------------
+
+Diff and such
 
 *)
 
@@ -376,6 +443,7 @@ let dt = DateTime(2012, 2, 12)
 let ts = TimeSpan.FromMinutes(5.37)
 let inp = Seq.init 50 (fun i -> dt.Add(TimeSpan(ts.Ticks * int64 i)), i) |> Series.ofObservations
 
+// TODO: Error in fsi output
 inp.Aggregate(WindowSize(10, Boundary.AtEnding), (fun r -> r), (fun ds -> ds.Data.KeyRange |> fst))
 
 inp |> Series.sampleTimeInto (TimeSpan(1,0,0)) Direction.Forward Series.firstValue
@@ -393,25 +461,6 @@ let inp3 = Seq.init 5 (fun i -> dt.Add(TimeSpan(ts3.Ticks * int64 i)), i) |> Ser
 
 let keys = [ for d in 12 .. 20 -> DateTime(2012, 2, d) ]
 inp3 |> Series.sample keys Direction.Forward
-
-(*
-Fancy windowing & chunking
---------------------------
-*)
-
-let st = Series.ofValues [ 'a' .. 'j' ]
-st |> Series.windowSize (3, Boundary.Skip) |> Series.map (fun _ v -> String(Array.ofSeq v.Values))
-st |> Series.windowSize (3, Boundary.AtBeginning) |> Series.map (fun _ v -> String(Array.ofSeq v.Values))
-st |> Series.windowSize (3, Boundary.AtEnding) |> Series.map (fun _ v -> String(Array.ofSeq v.Values))
-
-let concatString = function
-  | DataSegment.Complete(ser) -> String(ser |> Series.values |> Array.ofSeq)
-  | DataSegment.Incomplete(ser) -> String(ser |> Series.values |> Array.ofSeq).PadRight(3, '-')
-
-st |> Series.chunkSizeInto (3, Boundary.Skip) concatString
-st |> Series.chunkSizeInto (3, Boundary.AtBeginning) concatString
-st |> Series.chunkSizeInto (3, Boundary.AtEnding) concatString
-
 
 
 (*
