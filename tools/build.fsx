@@ -17,8 +17,8 @@ let sources  = __SOURCE_DIRECTORY__ ++ "../samples"
 let output   = __SOURCE_DIRECTORY__ ++ "../docs"
 
 // When running locally, you can use your path
-let root = @"file://C:\dev\FSharp.DataFrame\docs"
-//let root = @"file://C:\Tomas\Projects\FSharp.DataFrame\docs"
+//let root = @"file://C:\dev\FSharp.DataFrame\docs"
+let root = @"file://C:\Tomas\Projects\FSharp.DataFrame\docs"
 //let root = "http://tpetricek.github.io/FSharp.DataFrame/hidden-doc-link"
 
 let buildReference () = 

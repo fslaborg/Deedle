@@ -232,26 +232,41 @@ another is half-hourly), then you can create data frame with missing values usin
 
 
 <a name="windowing"></a>
-Series windowing and chunking
------------------------------
+Windowing, chunking and pairwise
+--------------------------------
+
+Windowing and chunking are two operations on ordered series that allow aggregating
+the values of series into groups. Both of these operations work on consecutive elements,
+which contrast with [grouping](tutorial.html#grouping) that does not use order.
 
 ### Sliding windows
 
-basic stuff
+Sliding window creates windows of certain size (or certain condition). The window
+"slides" over the input series and provides a view on a part of the series. The
+key thing is that a single element will typically appear in multiple windows.
 *)
 
+// Create input series with 6 observations
 let lf = series <| stock1 (TimeSpan(0, 1, 0)) 6
 
+// Create series of series representing individual windows
 lf |> Series.window 4
+// Aggregate each window using 'Series.mean'
 lf |> Series.windowInto 4 Series.mean
+// Get first value in each window
 lf |> Series.windowInto 4 Series.firstValue
 
 (**
-
-More features
+The functions used above create window of size 4 that moves from the left to right.
+Given input `[1,2,3,4,5,6]` the this produces the following three windows:
+`[1,2,3,4]`, `[2,3,4,5]` and `[3,4,5,6]`. By default, the `Series.window` function 
+automatically chooses the key of the last element of the window as the key for 
+the whole window (we'll see how to change this soon):
 
 *)
+// Calculate means for sliding windows
 let lfm1 = lf |> Series.windowInto 4 Series.mean
+// Construct dataframe to show aligned results
 Frame.ofColumns [ "Orig" => lf; "Means" => lfm1 ]
 // [fsi:val it : Frame<DateTimeOffset,string> =]
 // [fsi:                 Means      Orig        ]     
@@ -262,7 +277,14 @@ Frame.ofColumns [ "Orig" => lf; "Means" => lfm1 ]
 // [fsi:  12:04:00 AM -> 20.34      20.32]
 // [fsi:  12:05:00 AM -> 20.34      20.33]
 
+(**
+What if we want to avoid creating `<missing>` values? One approach is to 
+specify that we want to generate windows of smaller sizes at the beginning 
+or at the end of the beginning. This way, we get _incomplete_ windows that look as 
+`[1]`, `[1,2]`, `[1,2,3]` followed by the three _complete_ windows shown above:
+*)
 let lfm2 = 
+  // Create sliding windows with incomplete windows at the beginning
   lf |> Series.windowSizeInto (4, Boundary.AtBeginning) (fun ds ->
     Series.mean ds.Data)
 
@@ -277,54 +299,257 @@ Frame.ofColumns [ "Orig" => lf; "Means" => lfm2 ]
 // [fsi:  12:05:00 AM -> 20.34  20.33]
 
 (**
-One more example
+As you can see, the values in the first column are equal, because the first
+`Mean` value is just the average of singleton series.
+
+When you specify `Boundary.AtBeginning` (this example) or `Boundary.Skip` 
+(default value used in the previous example), the function uses the last key
+of the window as the key of the aggregated value. When you specify 
+`Boundary.AtEnding`, the last key is used, so the values can be nicely 
+aligned wiht original values. When you want to specify custom key selector,
+you can use a more general function `Series.aggregate`. 
+
+In the previous sample, the code that performs aggregation is no longer
+just a simple function like `Series.mean`, but a lambda that takes `ds`,
+which is of type `DataSegment<T>`. This type informs us whether the window
+is complete or not. For example:
 *)
 
-let st = Series.ofValues [ 'a' .. 'j' ]
-st |> Series.chunkSizeInto (3, Boundary.AtEnding) (function
+// Simple series with characters
+let st = Series.ofValues [ 'a' .. 'e' ]
+st |> Series.windowSizeInto (3, Boundary.AtEnding) (function
   | DataSegment.Complete(ser) -> 
-      String(ser |> Series.values |> Array.ofSeq)
+      // Return complete windows as uppercase strings
+      String(ser |> Series.values |> Array.ofSeq).ToUpper()
   | DataSegment.Incomplete(ser) -> 
+      // Return incomplete windows as padded lowercase strings
       String(ser |> Series.values |> Array.ofSeq).PadRight(3, '-') )  
+// [fsi:val it : Series<int,string> =]
+// [fsi:  0 -> ABC ]
+// [fsi:  1 -> BCD ]
+// [fsi:  2 -> CDE ]
+// [fsi:  3 -> de- ]
+// [fsi:  4 -> e-- ]
 
 (**
-
 ### Window size conditions
 
-*)
-let daily = series <| stock1 (TimeSpan(35, 0, 0)) 10
-daily |> Series.windowDist (TimeSpan(24, 0, 0))
+The previous examples generated windows of fixed size. However, there are two other
+options for specifying when a window ends. 
 
-daily |> Series.windowWhile (fun d1 d2 -> d1.Date = d2.Date)
+ - The first option is to specify the maximal
+   _distance_ between the first and the last key
+ - The second option is to specify a function that is called with the first
+   and the last key; a window ends when the function returns false.
+
+The two functions are `Series.windowDist` and `Series.windowWhile` (together
+with versions suffixed with `Into` that call a provided function to aggregate
+each window):
+*)
+// Generate prices for each hour over 30 days
+let hourly = series <| stock1 (TimeSpan(1, 0, 0)) (30*24)
+
+// Generate windows of size 1 day (if the source was
+// irregular, windows would have varying size)
+hourly |> Series.windowDist (TimeSpan(24, 0, 0))
+
+// Generate windows such that date in each window is the same
+// (windows start every hour and end at the end of the day)
+hourly |> Series.windowWhile (fun d1 d2 -> d1.Date = d2.Date)
 
 (**
+### Chunking series
 
-### Chunking
+Chunking is similar to windowing, but it creates non-overlapping chunks, 
+rather than (overlapping) sliding windows. The size of chunk can be specified
+in the same three ways as for sliding windows (fixed size, distance on keys
+and condition):
 *)
 
+// Generate per-second observations over 10 minutes
 let hf = series <| stock1 (TimeSpan(0, 0, 1)) 600
 
-hf |> Series.chunkDist (TimeSpan(0, 1, 0))
+// Create 10 second chunks with (possible) incomplete
+// chunk of smaller size at the end.
+hf |> Series.chunkSize (10, Boundary.AtEnding) 
 
+// Create 10 second chunks using time span and get
+// the first observation for each chunk (downsample)
+hf |> Series.chunkDistInto (TimeSpan(0, 0, 10)) Series.firstValue
+
+// Create chunks where hh:mm component is the same
+// (containing observations for all seconds in the minute)
+hf |> Series.chunkWhile (fun k1 k2 -> 
+  (k1.Hour, k1.Minute) = (k2.Hour, k2.Minute))
 
 (**
+The above examples use various chunking functions in a very similar way, mainly
+because the randomly generated input is very uniform. However, they all behave
+differently for inputs with non-uniform keys. 
+
+Using `chunkSize` means that the chunks have the same size, but may correspond
+to time series of different time spans. Using `chunkDist` guarantees that there
+is a maximal time span over each chunk, but it does not guarantee when a chunk
+starts. That is something which can be achieved using `chunkWhile`.
+
+Finally, all of the aggregations discussed so far are just special cases of
+`Series.aggregate` which takes a discriminated union that specifies the kind
+of aggregation ([see API reference](reference/fsharp-dataframe-aggregation-1.html)).
+However, in practice it is more convenient to use the helpers presented here -
+in some rare cases, you might need to use `Series.aggregate` as it provides
+a few other options.
+
+### Pairwise 
+
+A special form of windowing is building a series of pairs containing a current
+and previous value from the input series (in other words, the key for each pair
+is the key of the later element). For example:
+*)
+
+// Create a series of pairs from earlier 'hf' input
+hf |> Series.pairwise 
+
+// Calculate differences between the current and previous values
+hf |> Series.pairwiseWith (fun k (v1, v2) -> v2 - v1)
+
+(** 
+The `pairwise` operation always returns a series that has no value for
+the first key in the input series. If you want more complex behavior, you
+will usually need to replace `pairwise` with `window`. For example, you might
+want to get a series that contains the first value as the first element, 
+followed by differences. This has the nice property that summing rows,
+starting from the first one gives you the current price:
+*)
+// Sliding window with incomplete segment at the beginning 
+hf |> Series.windowSizeInto (2, Boundary.AtBeginning) (function
+  // Return the first value for the first segment
+  | DataSegment.Incomplete s -> s.GetAt(0).Value
+  // Calculate difference for all later segments
+  | DataSegment.Complete s -> s.GetAt(1).Value - s.GetAt(0).Value)
+
+(**
+
 <a name="sampling"></a>
-Sampling and scaling time series
---------------------------------
+Sampling and resampling time series
+-----------------------------------
+
+Given a time series with high-frequency prices, sampling or resampling makes 
+it possible to get time series with representative values at lower frequency.
+The library uses the following terminology:
+
+ - **Lookup** means that we find values at specified key; if a key is not
+   available, we can look for value associated with the nearest smaller or 
+   the nearest greater key.
+
+ - **Resampling** means that we aggregate values values into chunks based
+   on a specified collection of keys (e.g. explicitly provided times), or 
+   based on some relation between keys (e.g. date times having the same date).
+
+ - **Uniform resampling** is similar to resampling, but we specify keys by
+   providing functions that generate a uniform sequence of keys (e.g. days),
+   the operation also fills value for days that have no corresponding 
+   observations in the input sequence.
+
+Finally, the library also provides a few helper functions that are specifically
+desinged for series with keys of types `DateTime` and `DateTimeOffset`.
 
 ### Lookup
 
+Given a series `hf`, you can get a value at a specified key using `hf.Get(key)`
+or using `hf |> Series.get key`. However, it is also possible to find values
+for larger number of keys at once. The instance member for doing this
+is `hf.GetItems(..)`. Moreover, both `Get` and `GetItems` take an optional
+parameter that specifies the behavior when the exact key is not found.
+
+Using the function syntax, you can use `Series.getAll` for exact key 
+lookup and `Series.lookupAll` when you want more flexible lookup:
+*)
+// Generate a bit less than 24 hours of data with 13.7sec offsets
+let hf = series <| stock1 (TimeSpan.FromSeconds(13.7)) 6300
+// Generate keys for all minutes in 24 hours
+let keys = [ for m in 0.0 .. 24.0*60.0-1.0 -> today.AddMinutes(m) ]
+
+// Find value for a given key, or nearest greater key with value
+hf |> Series.lookupAll keys Lookup.NearestGreater
+// [fsi:val it : Series<DateTimeOffset,float> =]
+// [fsi:  12:00:00 AM -> 20.07 ]
+// [fsi:  12:01:00 AM -> 19.98 ]
+// [fsi:  ...         -> ...   ]
+// [fsi:  11:58:00 PM -> 19.03 ]
+// [fsi:  11:59:00 PM -> <missing>        ]
+
+// Find value for nearest smaller key
+// (This returns value for 11:59:00 PM as well)
+hf |> Series.lookupAll keys Lookup.NearestSmaller
+
+// Find values for exact key 
+// (This only works for the first key)
+hf |> Series.lookupAll keys Lookup.Exact
+
+(**
+Lookup operations only return one value for each key, so they are useful for
+quick sampling of large (or high-frequency) data. When we want to calculate
+a new value based on multiple values, we need to use resampling.
+
 ### Resampling
+
+Series supports two kinds of resamplings. The first kind is similar to lookup
+in that we have to explicitly specify keys. The difference is that resampling
+does not find just the nearest key, but all smaller or greater keys. For example:
+*)
+
+// For each key, collect values for greater keys until the 
+// next one (chunk for 11:59:00 PM is empty)
+hf |> Series.resample keys Direction.Forward
+
+// For each key, collect values for smaller keys until the 
+// previous one (the first chunk will be singleton series)
+hf |> Series.resample keys Direction.Backward
+
+// Aggregate each chunk of preceding values using mean
+hf |> Series.resampleInto keys Direction.Backward 
+  (fun k s -> Series.mean s)
+
+(**
+
+The second kind of resampling is based on a projection from existing keys in 
+the series. The operation then collects chunks such that the projection returns
+equal keys. This is very similar to `Series.groupBy`, but resampling assumes 
+that the projection preserves the ordering of the keys, and so it only aggregates
+consequent keys.
+
+The typical scenario is when you have time series with date time information
+(here `DateTimeOffset`) and want to get information for each day (we use 
+`DateTime` with empty time to represent dates):
+*)
+
+// Generate 2.5 months of data in 1.7 hour offsets
+let ds = series <| stock1 (TimeSpan.FromHours(1.7)) 1000
+
+// Sample by day (of type 'DateTime')
+let daily = ds |> Series.resampleEquiv (fun d -> d.Date)
+
+(**
+The same operation can be easily implemented using `Series.chunkWhile`, but as
+it is often used in the context of sampling, it is included in the library as a
+primitive. Moreover, we'll see that it is closely related to uniform resampling.
+
+Note that the resulting series has different type of keys than the source. The
+source has keys `DateTimeOffset` (representing date with time) while the resulting
+keys are of the type returned by the projection (here, `DateTime` representing just
+dates).
 
 ### Uniform resampling
 
-### Resampling time series
+### Sampling time series
 
 *)
-
+Series.res
+Series.resampleUniform
 let inp = series <| stock1 (TimeSpan.FromHours(32.0)) 10
 inp |> Series.resampleUniform Lookup.NearestSmaller (fun dt -> dt.Date) (fun dt -> dt.AddDays(1.0))
 
+Series.resample
 
 let lo, hi = inp.KeyRange
 let ts = TimeSpan.FromDays(1.0)
@@ -343,7 +568,7 @@ keys |> Seq.iter (printfn "%O")
 Series.mean $ (inp |> Series.sample keys Direction.Forward)
 Series.mean $ (inp |> Series.sample keys Direction.Backward)
 
-
+Series.sampleTime
 inp |> Series.sampleInto [DateTimeOffset(DateTime(2013,10,1))] Direction.Forward (fun k s -> s)
 inp |> Series.sampleInto [DateTimeOffset(DateTime(2013,10,1))] Direction.Backward (fun k s -> s)
 
