@@ -460,6 +460,24 @@ and Series<'K, 'V when 'K : equality>
   member x.Resample(keys, direction, valueSelector) =
     x.Resample(keys, direction, valueSelector, fun nk _ -> nk)
 
+  /// Resample the series based on a provided collection of keys. The values of the series
+  /// are aggregated into chunks based on the specified keys. Depending on `direction`, the 
+  /// specified key is either used as the smallest or as the greatest key of the chunk (with
+  /// the exception of boundaries that are added to the first/last chunk). The chunks
+  /// are then returned as a nested series. 
+  ///
+  /// ## Parameters
+  ///  - `keys` - A collection of keys to be used for resampling of the series
+  ///  - `direction` - If this parameter is `Direction.Forward`, then each key is
+  ///    used as the smallest key in a chunk; for `Direction.Backward`, the keys are
+  ///    used as the greatest keys in a chunk.
+  ///
+  /// ## Remarks
+  /// This operation is only supported on ordered series. The method throws
+  /// `InvalidOperationException` when the series is not ordered.
+  member x.Resample(keys, direction) =
+    x.Resample(keys, direction, (fun k v -> v), fun nk _ -> nk)
+
   member x.GroupBy(keySelector, valueSelector) =
     let newIndex, newVector = 
       indexBuilder.GroupBy

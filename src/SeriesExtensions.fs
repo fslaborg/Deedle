@@ -219,6 +219,24 @@ type SeriesExtensions =
 
   /// Resample the series based on equivalence class on the keys. A specified function
   /// `keyProj` is used to project keys to another space and the observations for which the 
+  /// projected keys are equivalent are grouped into chunks. The chunks are then returned
+  /// as nested series.
+  ///
+  /// ## Parameters
+  ///  - `series` - An input series to be resampled
+  ///  - `keyProj` - A function that transforms keys from original space to a new 
+  ///    space (which is then used for grouping based on equivalence)
+  ///
+  /// ## Remarks
+  /// This operation is only supported on ordered series. The method throws
+  /// `InvalidOperationException` when the series is not ordered. For unordered
+  /// series, similar functionality can be implemented using `GroupBy`.
+  [<Extension>]
+  static member ResampleEquivalence(series:Series<'K, 'V>, keyProj:Func<_, _>) =
+    Series.resampleEquiv keyProj.Invoke series
+
+  /// Resample the series based on equivalence class on the keys. A specified function
+  /// `keyProj` is used to project keys to another space and the observations for which the 
   /// projected keys are equivalent are grouped into chunks. The chunks are then transformed
   /// to values using the provided function `f`.
   ///
@@ -234,8 +252,8 @@ type SeriesExtensions =
   /// `InvalidOperationException` when the series is not ordered. For unordered
   /// series, similar functionality can be implemented using `GroupBy`.
   [<Extension>]
-  static member ResampleEquivalence(series:Series<'K, 'V>, keyProj, aggregate) =
-    Series.resampleEquivInto keyProj aggregate series
+  static member ResampleEquivalence(series:Series<'K, 'V>, keyProj:Func<_, _>, aggregate:Func<_, _>) =
+    Series.resampleEquivInto keyProj.Invoke aggregate.Invoke series
 
   /// Resample the series based on equivalence class on the keys and also generate values 
   /// for all keys of the target space that are between the minimal and maximal key of the

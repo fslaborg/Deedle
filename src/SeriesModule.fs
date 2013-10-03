@@ -134,8 +134,11 @@ module Series =
   let reindex keys (series:Series<'K, 'T>) = 
     series.Reindex(keys)
 
-  let withOrdinalIndex (series:Series<'K, 'T>) = 
+  let indexOrdinal (series:Series<'K, 'T>) = 
     series.WithOrdinalIndex()
+
+  let indexKeys (keys:seq<'K2>) (series:Series<'K1, 'T>) = 
+    series.WithIndex(keys)
 
   let filter f (series:Series<'K, 'T>) = 
     series.Where(fun kvp -> f kvp.Key kvp.Value)
@@ -466,10 +469,10 @@ module Series =
         match fillMode with
         | Lookup.NearestSmaller ->
             let res = reindexed.Get(k, fillMode)
-            Series([res.KeyRange |> fst], [res.[res.KeyRange |> fst]])
+            Series([res.KeyRange |> snd], [res.[res.KeyRange |> snd]])
         | Lookup.NearestGreater ->
             let res = reindexed.Get(k, fillMode)
-            Series([res.KeyRange |> snd], [res.[res.KeyRange |> snd]]) 
+            Series([res.KeyRange |> fst], [res.[res.KeyRange |> fst]]) 
         | _ -> Series([], [])  )
     |> mapValues f
 

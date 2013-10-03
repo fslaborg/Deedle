@@ -1,4 +1,4 @@
-﻿module internal AssemblyInfo
+﻿module AssemblyInfo
 open System.Reflection
 
 [<assembly: AssemblyTitleAttribute("FSharp.DataFrame")>]

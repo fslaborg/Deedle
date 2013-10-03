@@ -18,8 +18,8 @@ let output   = __SOURCE_DIRECTORY__ ++ "../docs"
 
 // When running locally, you can use your path
 //let root = @"file://C:\dev\FSharp.DataFrame\docs"
-let root = @"file://C:\Tomas\Projects\FSharp.DataFrame\docs"
-//let root = "http://tpetricek.github.io/FSharp.DataFrame/hidden-doc-link"
+//let root = @"file://C:\Tomas\Projects\FSharp.DataFrame\docs"
+let root = "http://tpetricek.github.io/FSharp.DataFrame/hidden-doc-link"
 
 let buildReference () = 
   // Build the API reference documentation
@@ -41,7 +41,7 @@ let build () =
         fileInfo.CopyTo(target ++ fileInfo.Name) |> ignore
 
   // Generate HTML from all FSX files in samples & subdirectories
-  for sub in [ "." ] do
+  for sub in [ "."; "samples" ] do
     Literate.ProcessDirectory
       ( sources ++ sub, template, output ++ sub, 
         replacements = [ "root", root ] )

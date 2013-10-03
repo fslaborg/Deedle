@@ -2,7 +2,6 @@
 #I "../bin"
 #load "FSharp.DataFrame.fsx"
 #load "../packages/FSharp.Charting.0.84/FSharp.Charting.fsx"
-#r "../packages/FSharp.Data.1.1.9/lib/net40/FSharp.Data.dll"
 open System
 open FSharp.Data
 open FSharp.DataFrame
@@ -11,8 +10,8 @@ open FSharp.Charting
 let root = __SOURCE_DIRECTORY__ + "/data/"
 
 (**
-Time series features
-====================
+Time series manipulation
+========================
 
 In this section, we look at F# data frame library features that are useful when working
 with time series data or, more generally, any ordered series. Although we mainly look at
@@ -465,12 +464,12 @@ Using the function syntax, you can use `Series.getAll` for exact key
 lookup and `Series.lookupAll` when you want more flexible lookup:
 *)
 // Generate a bit less than 24 hours of data with 13.7sec offsets
-let hf = series <| stock1 (TimeSpan.FromSeconds(13.7)) 6300
+let mf = series <| stock1 (TimeSpan.FromSeconds(13.7)) 6300
 // Generate keys for all minutes in 24 hours
 let keys = [ for m in 0.0 .. 24.0*60.0-1.0 -> today.AddMinutes(m) ]
 
 // Find value for a given key, or nearest greater key with value
-hf |> Series.lookupAll keys Lookup.NearestGreater
+mf |> Series.lookupAll keys Lookup.NearestGreater
 // [fsi:val it : Series<DateTimeOffset,float> =]
 // [fsi:  12:00:00 AM -> 20.07 ]
 // [fsi:  12:01:00 AM -> 19.98 ]
@@ -480,11 +479,11 @@ hf |> Series.lookupAll keys Lookup.NearestGreater
 
 // Find value for nearest smaller key
 // (This returns value for 11:59:00 PM as well)
-hf |> Series.lookupAll keys Lookup.NearestSmaller
+mf |> Series.lookupAll keys Lookup.NearestSmaller
 
 // Find values for exact key 
 // (This only works for the first key)
-hf |> Series.lookupAll keys Lookup.Exact
+mf |> Series.lookupAll keys Lookup.Exact
 
 (**
 Lookup operations only return one value for each key, so they are useful for
@@ -500,16 +499,18 @@ does not find just the nearest key, but all smaller or greater keys. For example
 
 // For each key, collect values for greater keys until the 
 // next one (chunk for 11:59:00 PM is empty)
-hf |> Series.resample keys Direction.Forward
+mf |> Series.resample keys Direction.Forward
 
 // For each key, collect values for smaller keys until the 
 // previous one (the first chunk will be singleton series)
-hf |> Series.resample keys Direction.Backward
+mf |> Series.resample keys Direction.Backward
 
 // Aggregate each chunk of preceding values using mean
-hf |> Series.resampleInto keys Direction.Backward 
+mf |> Series.resampleInto keys Direction.Backward 
   (fun k s -> Series.mean s)
 
+// Resampling is also available via the member syntax
+mf.Resample(keys, Direction.Forward)
 (**
 
 The second kind of resampling is based on a projection from existing keys in 
@@ -527,8 +528,10 @@ The typical scenario is when you have time series with date time information
 let ds = series <| stock1 (TimeSpan.FromHours(1.7)) 1000
 
 // Sample by day (of type 'DateTime')
-let daily = ds |> Series.resampleEquiv (fun d -> d.Date)
+ds |> Series.resampleEquiv (fun d -> d.Date)
 
+// Sample by day (of type 'DateTime')
+ds.ResampleEquivalence(fun d -> d.Date)
 (**
 The same operation can be easily implemented using `Series.chunkWhile`, but as
 it is often used in the context of sampling, it is included in the library as a
@@ -541,166 +544,218 @@ dates).
 
 ### Uniform resampling
 
+In the previous section, we looked at `resampleEquiv`, which is useful if you want
+to sample time series by keys with "lower resolution" - for example, sample date time
+observations by date. However, the function discussed in the previous section only
+generates values for which there are keys in the input sequence - if there is no
+observation for an entire day, then the day will not be included in the result.
+
+If you want to create sampling that assigns value to each key in the range specified
+by the input sequence, then you can use _uniform resampling_.
+
+The idea is that uniform resampling applies the key projection to the smallest and
+greatest key of the input (e.g. gets date of the first and last observation) and then
+it generates all keys in the projected space (e.g. all dates). Then it picks the
+best value for each of the generated key.
+*)
+
+// Create input data with non-uniformly distributed keys
+// (1 value for 10/3, three for 10/4 and two for 10/6)
+let days =
+  [ "10/3/2013 12:00:00"; "10/4/2013 15:00:00" 
+    "10/4/2013 18:00:00"; "10/4/2013 19:00:00"
+    "10/6/2013 15:00:00"; "10/6/2013 21:00:00" ]
+let nu = 
+  stock1 (TimeSpan(24,0,0)) 10 |> series
+  |> Series.indexKeys days |> Series.mapKeys DateTimeOffset.Parse
+
+// Generate uniform resampling based on dates. Fill
+// missing chunks with nearest smaller observations.
+let sampled =
+  nu |> Series.resampleUniform Lookup.NearestSmaller 
+    (fun dt -> dt.Date) (fun dt -> dt.AddDays(1.0))
+
+// Same thing using the C#-friendly member syntax
+// (Lookup.NearestSmaller is the default value)
+nu.ResampleUniform((fun dt -> dt.Date), (fun dt -> dt.AddDays(1.0)))
+
+// Turn into frame with multiple columns for each day
+// (to format the result in a readable way)
+sampled 
+|> Series.mapValues Series.indexOrdinal
+|> Frame.ofRows
+// [fsi:val it : Frame<DateTime,int> =]
+// [fsi:             0      1          2                ]
+// [fsi:10/3/2013 -> 21.45  <missing>  <missing>        ]
+// [fsi:10/4/2013 -> 21.63  19.83      17.51]
+// [fsi:10/5/2013 -> 17.51  <missing>  <missing>        ]
+// [fsi:10/6/2013 -> 18.80  20.93      <missing>        ]
+
+(**
+To perform the uniform resampling, we need to specify how to project (resampled) keys
+from original keys (we return the `Date`), how to calculate the next key (add 1 day)
+and how to fill missing values.
+
+After performing the resampling, we turn the data into a data frame, so that we can 
+nicely see the results. The individual chunks have the actual observation times as keys,
+so we replace those with just integers (using `Series.indexOrdinal`). The result contains
+a simple ordered row of observations for each day.
+
+The important thing is that there is an observation for each day - even for for 10/5/2013
+which does not have any corresponding observations in the input. We call the resampling
+function with `Lookup.NearestSmaller`, so the value 17.51 is picked from the last observation
+of the previous day (`Lookup.NearestGreater` would pick 18.80 and `Lookup.Exact` would give
+us an empty series for that date).
+
 ### Sampling time series
 
+Perhaps the most common sampling operation that you might want to do is to sample time series
+by a specified `TimeSpan`. Although this can be easily done by using some of the functions above,
+the library provides helper functions exactly for this purpose:
+
 *)
-Series.res
-Series.resampleUniform
-let inp = series <| stock1 (TimeSpan.FromHours(32.0)) 10
-inp |> Series.resampleUniform Lookup.NearestSmaller (fun dt -> dt.Date) (fun dt -> dt.AddDays(1.0))
+// Generate 1k observations with 1.7 hour offsets
+let pr = series <| stock1 (TimeSpan.FromHours(1.7)) 1000
 
-Series.resample
+// Sample at 2 hour intervals; 'Backward' specifies that
+// we collect all previous values into a chunk.
+pr |> Series.sampleTime (TimeSpan(2, 0, 0)) Direction.Backward
 
-let lo, hi = inp.KeyRange
-let ts = TimeSpan.FromDays(1.0)
-let start = lo
-let dir = Direction.Forward
+// Same thing using member syntax - 'Backward' is the dafult
+pr.Sample(TimeSpan(2, 0, 0))
 
-let resample keys 
-let keys = 
-//  if dir = Direction.Forward then
-    Seq.unfold (fun dt -> Some(dt, dt+ts)) start 
-    |> Seq.takeWhile (fun dt -> dt <= hi)
-    
-    
-keys |> Seq.iter (printfn "%O")
+// Get the most recent value, sampled at 2 hour intervals
+pr |> Series.sampleTimeInto
+  (TimeSpan(2, 0, 0)) Direction.Backward Series.lastValue
 
-Series.mean $ (inp |> Series.sample keys Direction.Forward)
-Series.mean $ (inp |> Series.sample keys Direction.Backward)
-
-Series.sampleTime
-inp |> Series.sampleInto [DateTimeOffset(DateTime(2013,10,1))] Direction.Forward (fun k s -> s)
-inp |> Series.sampleInto [DateTimeOffset(DateTime(2013,10,1))] Direction.Backward (fun k s -> s)
-
-inp |> Series.sampleInto [DateTimeOffset(DateTime(2013,10,1)); DateTimeOffset(DateTime(2013,10,2))] Direction.Forward (fun k s -> s)
-inp |> Series.sampleInto [DateTimeOffset(DateTime(2013,10,1)); DateTimeOffset(DateTime(2013,10,2))] Direction.Backward (fun k s -> s)
-            
 (**
 <a name="stats"></a>
 Calculations and statistics
 ---------------------------
 
-Diff and such
+In the final section of this tutorial, we look at writing some calculations over time series. Many of the
+functions demonstrated here can be also used on unordered data frames and series.
+
+### Shifting and differences
+
+First of all, let's look at functions that we need when we need to compare subsequent values in
+the series. We already demonstrated how to do this using `Series.pairwise`. In many cases,
+the same thing can be done using an operation that operates over the entire series.
+
+The two useful functions here are:
+
+ - `Series.diff` calcualtes the difference between current and n-_th_  previous element
+ - `Series.shift` shifts the values of a series by a specified offset
+
+The following snippet illustrates how both functions work:
+*)
+// Generate sample data with 1.7 hour offsets
+let sample = series <| stock1 (TimeSpan.FromHours(1.7)) 6
+
+// Calculates: new[i] = s[i] - s[i-1]
+let diff1 = sample |> Series.diff 1
+// Diff in the opposite direction
+let diffM1 = sample |> Series.diff -1
+
+// Shift series values by 1
+let shift1 = sample |> Series.shift 1
+
+// Align all results in a frame to see the results
+let df = 
+  [ "Shift +1" => shift1 
+    "Diff +1" => diff1 
+    "Diff" => sample - shift1 
+    "Orig" => sample ] |> Frame.ofColumns 
+// [fsi:val it : Frame<DateTimeOffset,string> =]
+// [fsi:                 Diff       Diff +1    Orig   Shift +1         ]
+// [fsi:  12:00:00 AM -> <missing>  <missing>  21.73  <missing>        ]
+// [fsi:   1:42:00 AM ->  1.73       1.73      23.47  21.73 ]
+// [fsi:   3:24:00 AM -> -0.83      -0.83      22.63  23.47 ]
+// [fsi:   5:06:00 AM ->  2.37       2.37      25.01  22.63 ]
+// [fsi:   6:48:00 AM -> -1.57      -1.57      23.43  25.01 ]
+// [fsi:   8:30:00 AM ->  0.09       0.09      23.52  23.43 ]
+
+(**
+In the above snippet, we first calcluate difference using the `Series.diff` function.
+Then we also show how to do that using `Series.shift` and binary operator applied
+to two series (`sample - shift`). The following section provides more details. 
+So far, we also used the functional notation (e.g. `sample |> Series.diff 1`), but
+all operations can be called using the member syntax - very often, this gives you
+a shorter syntax. This is also shown in the next few snippets.
+
+### Operators and functions
+
+Time series also supports a large number of standard F# functions such as `log` and `abs`.
+You can also use standard numerical operators to apply some operation to all elements
+of the series. 
+
+Because series are indexed, we can also apply binary operators to two series. This 
+automatically aligns the series and then applies the operation on corresponding elements.
 
 *)
 
-(*** hide ***)
+// Subtract previous value from the current value
+sample - sample.Shift(1)
 
+// Calculate logarithm of such differences
+log (sample - sample.Shift(1))
 
-// Generate two "high-frequency" time series (with different volatility)
-let hfq1 = series (randomPrice 0.05 1.0 20.0 (24*60*60) (DateTimeOffset(DateTime(2013, 1, 1))) (TimeSpan(0, 0, 1)))
-let hfq2 = series (randomPrice 0.05 2.0 20.0 (24*60*60) (DateTimeOffset(DateTime(2013, 1, 1))) (TimeSpan(0, 0, 1)))
+// Calculate square of differences
+sample.Diff(1) ** 2.0
 
-// Chart them using F# Chart to see what they look like
-Chart.Combine(
-  [ Chart.FastLine(hfq1 |> Series.observations)
-    Chart.FastLine(hfq2 |> Series.observations) ]).WithYAxis(Min=17.0, Max=22.0)
-  
-// Calculate the means of the two series (and see that they are the same)
-hfq1 |> Series.mean
-hfq1 |> Series.mean
+// Calculate average of value and two immediate neighbors
+(sample.Shift(-1) + sample + sample.Shift(2)) / 3.0
 
-// hfq1 + hfq2 
+// Get absolute value of differences
+abs (sample - sample.Shift(1))
 
-// Get all day data in 1 minute intervals
-let intervals = [ for i in 0.0 .. 24.0*60.0 - 1.0 -> DateTimeOffset(DateTime(2013, 1, 1)).AddMinutes(i + 0.001) ]
+// Get absolute value of distance from the mean
+abs (sample - (Series.mean sample))
 
-// Get nearest smaller values for the specified interval & calculate logs
-// Then take difference between previous and the next log value
-let logs1 = hfq1 |> Series.lookupAll intervals Lookup.NearestGreater |> log
-let diffs = logs1 |> Series.pairwiseWith (fun _ (v1, v2) -> v2 - v1)
+(**
+The time series library provides a large number of functions that can be applied in this
+way. These include trigonometric functions (`sin`, `cos`, ...), rounding functions
+(`round`, `floor`, `ceil`), exponentials and logarithms (`exp`, `log`, `log10`) and more.
+In general, whenever there is a built-in numerical F# function that can be used on 
+standard types, the time series library should support it too.
 
-Chart.Rows 
-  [ Chart.Line(logs1 |> Series.observations);
-    Chart.Line(diffs |> Series.observations) ]
-
-// Get 1 hour chunks and build a data frame with one column
-// for each hour (containing 60 rows for 60 minutes in the hour)
-let chunkedLogs =
-  diffs 
-  |> Series.chunkDist (TimeSpan(1, 0, 0))
-  |> Series.map (fun _ -> Series.withOrdinalIndex)
-  |> Frame.ofColumns
-
-
-// Means and standard deviations for each hour
-let sdvs = chunkedLogs |> Frame.sdv
-let means = chunkedLogs |> Frame.mean
-
-// Display a chart that shows means and sdvs per hour of day
-Chart.Rows
-  [ Chart.Column(sdvs.Observations)
-    Chart.Column(means.Observations) ]
-
-
-
-// TODO: Not used
-
-let hourly = Series.ofObservations (randomPrice 0.05 0.1 20.0 (24*365) (TimeSpan(1, 0, 0)))
-
-let timeOfDay = TimeSpan(13, 30, 0)
-let chunks = hourly |> Series.chunkWhile (fun d1 d2 -> d1.Date = d2.Date) 
-chunks |> Series.map (fun day daily -> 
-  daily |> Series.lookup (DateTimeOffset(day.Date + timeOfDay)) Lookup.NearestGreater)
-
-
-hourly
-
-
-let short = Series.ofObservations (randomPrice 0.5 10.0 20.0 10 (TimeSpan(1, 0, 0)))
-
-short
-short |> Series.shift 2
-short |> Series.shift -2
-
-let df =
-  Frame.ofColumns 
-    [ "Orig" => short
-      "ShiftTwo" => (short |> Series.shift 2) ]
-
-df |> Frame.shiftRows 1
-
-df.ro
-
-// Sampling
-
-let dt = DateTime(2012, 2, 12)
-let ts = TimeSpan.FromMinutes(5.37)
-let inp = Seq.init 50 (fun i -> dt.Add(TimeSpan(ts.Ticks * int64 i)), i) |> Series.ofObservations
-
-// TODO: Error in fsi output
-inp.Aggregate(WindowSize(10, Boundary.AtEnding), (fun r -> r), (fun ds -> ds.Data.KeyRange |> fst))
-
-inp |> Series.sampleTimeInto (TimeSpan(1,0,0)) Direction.Forward Series.firstValue
-inp |> Series.sampleTimeInto (TimeSpan(1,0,0)) Direction.Backward Series.lastValue
-
-let ts2 = TimeSpan.FromHours(5.37)
-let inp2 = Seq.init 20 (fun i -> dt.Add(TimeSpan(ts2.Ticks * int64 i)), i) |> Series.ofObservations
-inp2 |> Series.sample [ DateTime(2012, 2, 13); DateTime(2012, 2, 15) ] Direction.Forward
-inp2 |> Series.sample [ DateTime(2012, 2, 13); DateTime(2012, 2, 15) ] Direction.Backward
-
-inp2 |> Series.sampleTimeInto (TimeSpan(24,0,0)) Direction.Forward Series.firstValue
-
-let ts3 = TimeSpan.FromHours(48.0)
-let inp3 = Seq.init 5 (fun i -> dt.Add(TimeSpan(ts3.Ticks * int64 i)), i) |> Series.ofObservations
-
-let keys = [ for d in 12 .. 20 -> DateTime(2012, 2, d) ]
-inp3 |> Series.sample keys Direction.Forward
-
-
-(*
-Operations
-----------
+However, what can you do when you write a custom function to do some calculation and
+want to apply it to all series elements? Let's have a look:
 *)
 
-let rnd = Random()
-let s = Series.ofValues [ for i in 0 .. 100 -> rnd.NextDouble() * 10.0 ]
+// Truncate value to interval [-1.0, +1.0]
+let adjust v = min 1.0 (max -1.0 v)
 
-log s 
-log10 s
+// Apply adjustment to all function
+adjust $ sample.Diff(1)
 
-let s1 = abs (log s) * 10.0
-floor s1 - round s1  
+// The $ operator is a shorthand for
+sample.Diff(1) |> Series.mapValues adjust
 
-Series.Log10
+(***
+In general, the best way to apply custom functions to all values in a series is to 
+align the series (using either `Series.join` or `Series.align`) into a single series
+containing tuples and then apply `Series.mapValues`. The library also provides the `$` operator
+that simplifies the last step - `f $ s` applies the function `f` to all values of the series `s`.
 
+### Data frame operations
+
+Finally, many of the time series operations demonstrated above can be applied to entire
+data frames as well. This is particularly useful if you have data frame that contains multiple
+aligned time series of similar structure (for example, if you have multiple stock prices or 
+open-high-low-close values for a given stock). 
+
+The following snippet is a quick overview of what you can do:
+*)
+/// Multiply all numeric columns by a given constant
+df * 0.65
+
+// Apply function to all columns in all series
+let conv x = min x 20.0
+df |> Frame.mapRowValues (fun os -> conv $ os.As<float>())
+   |> Frame.ofRows
+
+// Sum each column and divide results by a constant
+Frame.sum df / 6.0
+// Divide sum by mean of each frame column
+Frame.sum df / Frame.mean df
