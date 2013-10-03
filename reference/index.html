@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
+  <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+  <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+  <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+  <link type="text/css" rel="stylesheet" href="../content/style.css" />
+  <script src="../content/tips.js" type="text/javascript"></script>
+  <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <style type="text/css">
+    #main h2 {
+       font-size: 160%;
+       margin-top:40px;
+    }
+    #main h3 {
+      font-size: 130%;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    thead {
+       font-weight:bold;
+    }
+    .type-list .type-name, .module-list .module-name {
+       width:25%;
+       font-weight:bold;
+    }
+    .member-list .member-name {
+       width:35%;
+    }
+    #main table .xmldoc h2 {
+      font-size:120%;
+    }
+  </style>
+</head>
+<body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://github.com/BlueMountainCapital/FSharp.DataFrame">github page</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/">F# Charting</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data/">F# Data</a></li>
+        </ul>
+        <h3 class="muted">F# DataFrame Library</h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+
+<h1>FSharp.DataFrame</h1>
+
+  <h2></h2>
+  <div>
+      <table class="table table-bordered module-list">
+      <thead>
+        <tr><td>Module</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+		      <td class="module-name">
+            <a href="-assemblyinfo.html">AssemblyInfo</a>
+		      </td>
+          <td class="xmldoc"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h2>FSharp.DataFrame</h2>
+  <div>
+    <table class="table table-bordered type-list">
+      <thead>
+        <tr><td>Type</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-opt-1.html">opt</a>
+		      </td>
+          <td class="xmldoc"><p>A type alias for the <code>OptionalValue&lt;T&gt;</code> type. The type alias can be used
+to make F# type definitions that use optional values directly more succinct.</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-vector.html">Vector</a>
+		      </td>
+          <td class="xmldoc"><p>Type that provides access to creating vectors (represented as arrays)</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-unionbehavior.html">UnionBehavior</a>
+		      </td>
+          <td class="xmldoc"><p>This enumeration specifeis the behavior of <code>Union</code> operation on series when there are
+overlapping keys in two series that are being unioned. The options include prefering values
+from the left/right series or throwing an exception when both values are available.</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-series-2.html">Series</a>
+		      </td>
+          <td class="xmldoc"><p>The type <code>Series&lt;K, V&gt;</code> represents a data series consisting of values <code>V</code> indexed by
+keys <code>K</code>. The keys of a series may or may not be ordered</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-seriesextensions.html">SeriesExtensions</a>
+		      </td>
+          <td class="xmldoc"></td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-seriesbuilder-2.html">SeriesBuilder</a>
+		      </td>
+          <td class="xmldoc"></td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-seriesbuilder-1.html">SeriesBuilder</a>
+		      </td>
+          <td class="xmldoc"></td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-rowseries-2.html">RowSeries</a>
+		      </td>
+          <td class="xmldoc"></td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-optionalvalue-1.html">OptionalValue</a>
+		      </td>
+          <td class="xmldoc"><p>Value type that represents a potentially missing value. This is similar to 
+<code>System.Nullable&lt;T&gt;</code>, but does not restrict the contained value to be a value
+type, so it can be used for storing values of any types. When obtained from
+<code>DataFrame&lt;R, C&gt;</code> or <code>Series&lt;K, T&gt;</code>, the <code>Value</code> will never be <code>Double.NaN</code> or <code>null</code>
+(but this is not, in general, checked when constructing the value).</p>
+
+<p>The type is only used in C#-friendly API. F# operations generally use expose
+standard F# <code>option&lt;T&gt;</code> type instead. However, there the <code>OptionalValue</code> module
+contains helper functions for using this type from F# as well as <code>Missing</code> and
+<code>Present</code> active patterns.</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-optionalvalueextensions.html">OptionalValueExtensions</a>
+		      </td>
+          <td class="xmldoc"><p>Extension methods for working with optional values from C#. These make
+it easier to provide default values and convert optional values to 
+<code>Nullable</code> (when the contained value is value type)</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-objectseries-1.html">ObjectSeries</a>
+		      </td>
+          <td class="xmldoc"></td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-lookup.html">Lookup</a>
+		      </td>
+          <td class="xmldoc"><p>Represents different behaviors of key lookup in series. For unordered series,
+the only available option is <code>Lookup.Exact</code> which finds the exact key - methods
+fail or return missing value if the key is not available in the index. For ordered
+series <code>Lookup.NearestGreater</code> finds the first greater key (e.g. later date) with
+a value. <code>Lookup.NearestSmaller</code> searches for the first smaller key.</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-keyvalue.html">KeyValue</a>
+		      </td>
+          <td class="xmldoc"></td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-joinkind.html">JoinKind</a>
+		      </td>
+          <td class="xmldoc"><p>This enumeration specifies joining behavior for <code>Join</code> method provided
+by <code>Series</code> and <code>Frame</code>. Outer join unions the keys (and may introduce
+missing values), inner join takes the intersection of keys; left and
+right joins take the keys of the first or the second series/frame.</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-index.html">Index</a>
+		      </td>
+          <td class="xmldoc"><p>Type that provides access to creating indices (represented as <code>LinearIndex</code> values)</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-ivector-1.html">IVector</a>
+		      </td>
+          <td class="xmldoc"><p>A generic, typed vector. Represents mapping from addresses to values of type <code>T</code>. 
+The vector provides a minimal interface that is required by series and can be
+implemented in a number of ways to provide vector backed by database or an
+alternative representation of data.</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-ivector.html">IVector</a>
+		      </td>
+          <td class="xmldoc"><p>Represents an (untyped) vector that stores some values and provides access
+to the values via a generic address. This type should be only used directly when
+extending the DataFrame library and adding a new way of storing or loading data.
+To allow invocation via Reflection, the vector exposes type of elements as <code>System.Type</code>.</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-iseries-1.html">ISeries</a>
+		      </td>
+          <td class="xmldoc"><p>Represents an untyped series with keys of type <code>K</code> and values of some unknown type
+(This type should not generally be used directly, but it can be used when you need
+to write code that works on a sequence of series of heterogeneous types).</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-icustomlookup-1.html">ICustomLookup</a>
+		      </td>
+          <td class="xmldoc"><p>Represents a special lookup. This can be used to support hierarchical or duplicate keys
+in an index. A key type <code>K</code> can come with associated <code>ICustomLookup&lt;K&gt;</code> to provide 
+customized pattern matching (equality testing)</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-frame-2.html">Frame</a>
+		      </td>
+          <td class="xmldoc"><p>A frame contains one Index, with multiple Vecs
+(because this is dynamic, we need to store them as IVec)</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-frameutils.html">FrameUtils</a>
+		      </td>
+          <td class="xmldoc"></td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-frameextensions.html">FrameExtensions</a>
+		      </td>
+          <td class="xmldoc"></td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-frame.html">Frame</a>
+		      </td>
+          <td class="xmldoc"></td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-enumerableextensions.html">EnumerableExtensions</a>
+		      </td>
+          <td class="xmldoc"></td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-direction.html">Direction</a>
+		      </td>
+          <td class="xmldoc"><p>Specifies in which direction should we look when performing operations such as
+<code>Series.Pairwise</code>.</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-delayedseries.html">DelayedSeries</a>
+		      </td>
+          <td class="xmldoc"><p>This type exposes a single static method <code>DelayedSeries.Create</code> that can be used for
+constructing data series (of type <code>Series&lt;K, V&gt;</code>) with lazily loaded data. You can
+use this functionality to create series that represents e.g. an entire price history
+in a database, but only loads data that are actually needed. For more information
+see the <a href="../lazysource.html">lazy data loading tutorial</a>.</p>
+
+<h3>Example</h3>
+
+<p>Assuming we have a function <code>generate lo hi</code> that generates data in the specified
+<code>DateTime</code> range, we can create lazy series as follows:</p>
+
+<pre><code>let ls = DelayedSeries.Create(min, max, fun (lo, lob) (hi, hib) -&gt; 
+  async { 
+    printfn "Query: %A - %A" (lo, lob) (hi, hib)
+    return generate lo hi })
+</code></pre>
+
+<p>The arguments <code>min</code> and <code>max</code> specfify the complete range of the series. The 
+function passed to <code>Create</code> is called with minimal and maximal required key
+(<code>lo</code> and <code>hi</code>) and with two values that specify boundary behaviour.</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-datasegment-1.html">DataSegment</a>
+		      </td>
+          <td class="xmldoc"><p>Represents a segment of a series or sequence. The value is returned from 
+various functions that aggregate data into chunks or floating windows. The 
+<code>Complete</code> case represents complete segment (e.g. of the specified size) and
+<code>Boundary</code> represents segment at the boundary (e.g. smaller than the required
+size).</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-datasegmentkind.html">DataSegmentKind</a>
+		      </td>
+          <td class="xmldoc"><p>Represents a kind of <code>DataSegment&lt;T&gt;</code>. See that type for more information.</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-columnseries-2.html">ColumnSeries</a>
+		      </td>
+          <td class="xmldoc"></td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-boundary.html">Boundary</a>
+		      </td>
+          <td class="xmldoc"><p>Represents boundary behaviour for operations such as floating window. The type
+specifies whether incomplete windows (of smaller than required length) should be
+produced at the beginning (<code>AtBeginning</code>) or at the end (<code>AtEnding</code>) or
+skipped (<code>Skip</code>). For chunking, combinations are allowed too - to skip incomplete
+chunk at the beginning, use <code>Boundary.Skip ||| Boundary.AtBeginning</code>.</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-aggregation-1.html">Aggregation</a>
+		      </td>
+          <td class="xmldoc"><p>Represents a strategy for aggregating data in an ordered series into data segments.
+To create a value of this type from C#, use the non-generic <code>Aggregation</code> type.
+Data can be aggregate using floating windows or chunks of a specified size or 
+by specifying a condition on two keys (i.e. end a window/chunk when the condition
+no longer holds).</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-aggregation.html">Aggregation</a>
+		      </td>
+          <td class="xmldoc"><p>A non-generic type that simplifies the construction of <code>Aggregation&lt;K&gt;</code> values
+from C#. It provides methods for constructing different kinds of aggregation
+strategies for ordered series.</p>
+</td>
+        </tr>
+      </tbody>
+    </table>
+      <table class="table table-bordered module-list">
+      <thead>
+        <tr><td>Module</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+		      <td class="module-name">
+            <a href="fsharp-dataframe-vectorextensions.html">VectorExtensions</a>
+		      </td>
+          <td class="xmldoc"><p>Module with extensions for generic vector type. Given <code>vec</code> of type <code>IVector&lt;T&gt;</code>, 
+the extension property <code>vec.DataSequence</code> returns all data of the vector converted
+to the "least common denominator" data structure - <code>IEnumerable&lt;T&gt;</code>.</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="module-name">
+            <a href="fsharp-dataframe-seriesmodule.html">Series</a>
+		      </td>
+          <td class="xmldoc"><p>Series module comment..</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="module-name">
+            <a href="fsharp-dataframe-pair.html">Pair</a>
+		      </td>
+          <td class="xmldoc"><p>Module with helper functions for extracting values from hierarchical tuples</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="module-name">
+            <a href="fsharp-dataframe-optionalvaluemodule.html">OptionalValue</a>
+		      </td>
+          <td class="xmldoc"><p>Provides various helper functions for using the <code>OptionalValue&lt;T&gt;</code> type from F#
+(The functions are similar to those in the standard <code>Option</code> module).</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="module-name">
+            <a href="fsharp-dataframe-multikeyextensions.html">MultiKeyExtensions</a>
+		      </td>
+          <td class="xmldoc"><p>F#-friendly functions for creating multi-level keys and lookups</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="module-name">
+            <a href="fsharp-dataframe-framemodule.html">Frame</a>
+		      </td>
+          <td class="xmldoc"></td>
+        </tr>
+        <tr>
+		      <td class="module-name">
+            <a href="fsharp-dataframe-fsharpvectorextensions.html">FSharpVectorExtensions</a>
+		      </td>
+          <td class="xmldoc"><p>Defines non-generic <code>Vector</code> type that provides functions for building vectors
+(hard-bound to <code>ArrayVectorBuilder</code> type). In F#, the module is automatically opened
+using <code>AutoOpen</code>. The methods are not designed for the use from C#.</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="module-name">
+            <a href="fsharp-dataframe-fsharpseriesextensions.html">FSharpSeriesExtensions</a>
+		      </td>
+          <td class="xmldoc"></td>
+        </tr>
+        <tr>
+		      <td class="module-name">
+            <a href="fsharp-dataframe-fsharpindexextensions.html">FSharpIndexExtensions</a>
+		      </td>
+          <td class="xmldoc"><p>Defines non-generic <code>Index</code> type that provides functions for building indices
+(hard-bound to <code>LinearIndexBuilder</code> type). In F#, the module is automatically opened
+using <code>AutoOpen</code>. The methods are not designed for the use from C#.</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="module-name">
+            <a href="fsharp-dataframe-fsharpframeextensions.html">FSharpFrameExtensions</a>
+		      </td>
+          <td class="xmldoc"></td>
+        </tr>
+        <tr>
+		      <td class="module-name">
+            <a href="fsharp-dataframe-datasegment.html">DataSegment</a>
+		      </td>
+          <td class="xmldoc"><p>Provides helper functions and active patterns for working with <code>DataSegment</code> values</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="module-name">
+            <a href="fsharp-dataframe-addressing.html">Addressing</a>
+		      </td>
+          <td class="xmldoc"><p>An <code>Address</code> value is used as an interface between vectors and indices. The index maps
+keys of various types to address, which is then used to get a value from the vector.</p>
+</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h2>FSharp.DataFrame.Indices</h2>
+  <div>
+    <table class="table table-bordered type-list">
+      <thead>
+        <tr><td>Type</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-indices-seriesconstruction-1.html">SeriesConstruction</a>
+		      </td>
+          <td class="xmldoc"><p>Represents a pair of index and vector construction 
+(many of the index operations take/return an index together with a construction
+command that builds a vector matching with the index, so this type alias
+makes this more obvious)</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-indices-iindex-1.html">IIndex</a>
+		      </td>
+          <td class="xmldoc"><p>An interface that represents index mapping keys of some generic type <code>T</code> to locations
+of address <code>Address</code>. The <code>IIndex&lt;K&gt;</code> contains minimal set of operations that have to
+be supported by an index. This type should be only used directly when
+extending the DataFrame library and adding a new way of storing or loading data.
+Values of this type are constructed using the associated <code>IIndexBuilder</code> type.</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-indices-iindexbuilder.html">IIndexBuilder</a>
+		      </td>
+          <td class="xmldoc"><p>A builder represents various ways of constructing index, either from keys or from
+other indices. The operations that build a new index from an existing index also 
+build <code>VectorConstruction</code> which specifies how to transform vectors aligned with the
+previous index to match the new index. The methods generally take <code>VectorConstruction</code>
+as an input, apply necessary transformations to it and return a new <code>VectorConstruction</code>.</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-indices-boundarybehavior.html">BoundaryBehavior</a>
+		      </td>
+          <td class="xmldoc"><p>Specifies the boundary behavior for the <code>IIndexBuilder.GetRange</code> operation
+(whether the boundary elements should be included or not)</p>
+</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  <h2>FSharp.DataFrame.Indices.Linear</h2>
+  <div>
+    <table class="table table-bordered type-list">
+      <thead>
+        <tr><td>Type</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-indices-linear-linearindex-1.html">LinearIndex</a>
+		      </td>
+          <td class="xmldoc"><p>An index that maps keys <code>K</code> to offsets <code>Address</code>. The keys cannot be duplicated.
+The construction checks if the keys are ordered (using the provided or the default
+comparer for <code>K</code>) and disallows certain operations on unordered indices.</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-indices-linear-linearindexbuilder.html">LinearIndexBuilder</a>
+		      </td>
+          <td class="xmldoc"><p>Index builder object that is associated with <code>LinearIndex&lt;K&gt;</code> type. The builder
+provides operations for manipulating linear indices (and the associated vectors).</p>
+</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  <h2>FSharp.DataFrame.Internal</h2>
+  <div>
+    <table class="table table-bordered type-list">
+      <thead>
+        <tr><td>Type</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-internal-ifsiformattable.html">IFsiFormattable</a>
+		      </td>
+          <td class="xmldoc"><p>An interface implemented by types that support nice formatting for F# Interactive
+(The <code>FSharp.DataFrame.fsx</code> file registers an FSI printer using this interface.)</p>
+</td>
+        </tr>
+      </tbody>
+    </table>
+      <table class="table table-bordered module-list">
+      <thead>
+        <tr><td>Module</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+		      <td class="module-name">
+            <a href="fsharp-dataframe-internal-missingvalues.html">MissingValues</a>
+		      </td>
+          <td class="xmldoc"><p>Utility functions for identifying missing values. The <code>isNA</code> function 
+can be used to test whether a value represents a missing value - this includes
+the <code>null</code> value, <code>Nullable&lt;T&gt;</code> value with <code>HasValue = false</code> and 
+<code>Single.NaN</code> as well as <code>Double.NaN</code>.</p>
+
+<p>The functions in this module are not intended to be called directly.</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="module-name">
+            <a href="fsharp-dataframe-internal-ireadonlylist.html">IReadOnlyList</a>
+		      </td>
+          <td class="xmldoc"><p>Provides helper functions for working with <code>IReadOnlyList&lt;T&gt;</code> similar to those 
+in the <code>Array</code> module. Most importantly, F# 3.0 does not know that array implements
+<code>IReadOnlyList&lt;T&gt;</code>, so the <code>ofArray</code> function performs boxing &amp; unboxing to convert.</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="module-name">
+            <a href="fsharp-dataframe-internal-array.html">Array</a>
+		      </td>
+          <td class="xmldoc"><p>This module contains additional functions for working with arrays. 
+<code>FSharp.DataFrame.Internals</code> is opened, it extends the standard <code>Array</code> module.</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="module-name">
+            <a href="fsharp-dataframe-internal-seq.html">Seq</a>
+		      </td>
+          <td class="xmldoc"><p>This module contains additional functions for working with sequences. 
+<code>FSharp.DataFrame.Internals</code> is opened, it extends the standard <code>Seq</code> module.</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="module-name">
+            <a href="fsharp-dataframe-internal-formatting.html">Formatting</a>
+		      </td>
+          <td class="xmldoc"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h2>FSharp.DataFrame.Keys</h2>
+  <div>
+    <table class="table table-bordered type-list">
+      <thead>
+        <tr><td>Type</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-keys-icustomkey.html">ICustomKey</a>
+		      </td>
+          <td class="xmldoc"><p>Represents a special hierarchical key. This is mainly used in pretty printing (where we want to 
+get parts of the keys based on levels. <code>CustomKey.Get</code> provides a way of getting <code>ICustomKey</code>.</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-keys-customkey.html">CustomKey</a>
+		      </td>
+          <td class="xmldoc"><p>Helper type that can be used to get <code>ICustomKey</code> for any object (including objects
+that actually implement the interface and tuples)</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-keys-simplelookup-1.html">SimpleLookup</a>
+		      </td>
+          <td class="xmldoc"><p>Implements a simple lookup that matches any multi-level key against a specified array of
+optional objects (that represent missing/set parts of a key)</p>
+</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  <h2>FSharp.DataFrame.Vectors</h2>
+  <div>
+    <table class="table table-bordered type-list">
+      <thead>
+        <tr><td>Type</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-vectors-vectorrange.html">VectorRange</a>
+		      </td>
+          <td class="xmldoc"><p>Represents a range inside a vector</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-vectors-vectorhole.html">VectorHole</a>
+		      </td>
+          <td class="xmldoc"><p>Representes a "variable" in the mini-DSL below</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-vectors-vectordata-1.html">VectorData</a>
+		      </td>
+          <td class="xmldoc"><p>Provides a way to get the data of an arbitrary vector. This is a concrete type used 
+by functions that operate on vectors (like <code>Series.sum</code>, etc.). The vector may choose
+to return the data as <code>IReadOnlyList</code> (with or without N/A values) which is more
+efficient to use or as a lazy sequence (slower, but more general).</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-vectors-vectorconstruction.html">VectorConstruction</a>
+		      </td>
+          <td class="xmldoc"><p>A "mini-DSL" that describes construction of a vector. Vector can be constructed
+from various range operations (relocate, drop, slicing, appending), by combination
+of two vectors or by taking a vector from a list of variables.</p>
+
+<p>Notably, vectors can only be constructed from other vectors of the same type 
+(the <code>Combine</code> operation requires this - even though that one could be made more general).
+This is an intentional choice to make the representation simpler.</p>
+
+<p>Logically, when we apply some index operation, we should get back a polymorphic vector
+construction (<code>\forall T. VectorConstruction&lt;T&gt;</code>) that can be applied to variuous 
+different vector types. That would mean adding some more types, so we just model vector
+construction as an untyped operation and the typing is resquired by the <code>Build</code> method
+of the vector builder.</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-vectors-ivectorvaluetransform.html">IVectorValueTransform</a>
+		      </td>
+          <td class="xmldoc"><p>Represent a transformation that is applied when combining two vectors
+(because we are combining untyped <code>IVector</code> values, the transformation
+is also untyped)</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-vectors-ivectorbuilder.html">IVectorBuilder</a>
+		      </td>
+          <td class="xmldoc"><p>Represents an object that can construct vector values by processing 
+the "mini-DSL" representation <code>VectorConstruction</code>.</p>
+</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  <h2>FSharp.DataFrame.Vectors.ArrayVector</h2>
+  <div>
+    <table class="table table-bordered type-list">
+      <thead>
+        <tr><td>Type</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-vectors-arrayvector-arrayvectorbuilder.html">ArrayVectorBuilder</a>
+		      </td>
+          <td class="xmldoc"><p>Implements a builder object (<code>IVectorBuilder</code>) for creating
+vectors of type <code>ArrayVector&lt;'T&gt;</code>. This includes operations such as
+appending, relocating values, creating vectors from arrays etc.
+The vector builder automatically switches between the two possible
+representations of the vector - when a missing value is present, it
+uses <code>ArrayVectorData.VectorOptional</code>, otherwise it uses 
+<code>ArrayVectorData.VectorNonOptional</code>.</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="fsharp-dataframe-vectors-arrayvector-arrayvector-1.html">ArrayVector</a>
+		      </td>
+          <td class="xmldoc"><hr />
+
+<p>Vector that stores data in an array. The data is stored using the
+<code>ArrayVectorData&lt;'T&gt;</code> type (discriminated union)</p>
+</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+        </div>
+        <div class="span3">
+          <a href="https://nuget.org/packages/FSharp.DataFrame">
+            <img src="../content/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          </a>
+
+          <ul class="nav nav-list" id="menu">
+            <li class="nav-header">F# DataFrame</li>
+            <li><a href="../index.html">Home page</a></li>
+            <li class="divider"></li>
+            <li><a href="https://nuget.org/packages/FSharp.DataFrame">Get Library via NuGet</a></li>
+            <li><a href="https://github.com/BlueMountainCapital/FSharp.DataFrame">Source Code on GitHub</a></li>
+            <li><a href="https://github.com/BlueMountainCapital/FSharp.DataFrame/blob/master/LICENSE.md">License</a></li>
+            <li><a href="https://github.com/BlueMountainCapital/FSharp.DataFrame/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            <li><a href="../design.html">Design notes</a></li>
+
+            <li class="nav-header">Using from F#</li>
+            <li>
+              <a href="../tutorial.html">Quick start tutorial</a>
+              <ul class="nav nav-list">
+                <li><a href="../tutorial.html#creating">Creating data frames</a></li>
+                <li><a href="../tutorial.html#reindexing-and-joins">Using index & joining</a></li>
+                <li><a href="../tutorial.html#selecting">Reading values, slicing</a></li>
+                <li><a href="../tutorial.html#timeseries">Ordered time series</a></li>
+                <li><a href="../tutorial.html#projections">Projection and filtering</a></li>
+                <li><a href="../tutorial.html#grouping">Aggregating groups</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="../features.html">Data frame features</a>
+              <ul class="nav nav-list">
+                <li><a href="../features.html#creating">Creating & loading</a></li>
+                <li><a href="../features.html#dataframe">Frame manipulation</a></li>
+                <li><a href="../features.html#slicing">Advanced slicing</a></li>
+                <li><a href="../features.html#grouping">Grouping data</a></li>
+                <li><a href="../features.html#indexing">Hierarchical indexing</a></li>
+                <li><a href="../features.html#missing">Missing values</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="../timeseries.html">Time series features</a>
+              <ul class="nav nav-list">
+                <li><a href="../timeseries.html#alignment">Alignment & joining</a></li>
+                <li><a href="../timeseries.html#windowing">Windows and chunks</a></li>
+                <li><a href="../timeseries.html#sampling">Lookup and resampling</a></li>
+                <li><a href="../timeseries.html#stats">Statistics & math</a></li>
+              </ul>
+            </li>
+
+            <li class="nav-header">Documentation</li>
+            <li><a href="../reference/index.html">API Reference</a></li>
+
+            <li class="nav-header">Samples</li>
+            <li><a href="../lazysource.html">Lazy data loading</a></li>
+            <li><a href="../samples/volatility.html">Price volatility</a></li>
+            <li><a href="../samples/titanic.html">Titanic survivors</a></li>
+          </ul>
+
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/BlueMountainCapital/FSharp.DataFrame"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
+</body>
+</html>

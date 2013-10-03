@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
+  <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+  <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+  <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+  <link type="text/css" rel="stylesheet" href="../content/style.css" />
+  <script src="../content/tips.js" type="text/javascript"></script>
+  <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <style type="text/css">
+    #main h2 {
+       font-size: 160%;
+       margin-top:40px;
+    }
+    #main h3 {
+      font-size: 130%;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    thead {
+       font-weight:bold;
+    }
+    .type-list .type-name, .module-list .module-name {
+       width:25%;
+       font-weight:bold;
+    }
+    .member-list .member-name {
+       width:35%;
+    }
+    #main table .xmldoc h2 {
+      font-size:120%;
+    }
+  </style>
+</head>
+<body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://github.com/BlueMountainCapital/FSharp.DataFrame">github page</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/">F# Charting</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data/">F# Data</a></li>
+        </ul>
+        <h3 class="muted">F# DataFrame Library</h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+
+
+
+<h1>Seq</h1>
+<div class="xmldoc">
+<p>This module contains additional functions for working with sequences. 
+<code>FSharp.DataFrame.Internals</code> is opened, it extends the standard <code>Seq</code> module.</p>
+</div>
+  <h3>Functions and values</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Function or value</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '821', 821)" onmouseover="showTip(event, '821', 821)">
+            structuralEquals s1 s2
+          </code>
+          <div class="tip" id="821">
+            <strong>Signature:</strong>s1:seq&lt;&#39;T&gt; -&gt; s2:seq&lt;&#39;T&gt; -&gt; bool<br />
+                          <strong>Type parameters:</strong> 'T          </div>
+        </td>
+        <td class="xmldoc"><p>Comapre two sequences using the <code>Equals</code> method. Returns true
+when all their elements are equal and they have the same size.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '822', 822)" onmouseover="showTip(event, '822', 822)">
+            structuralHash s
+          </code>
+          <div class="tip" id="822">
+            <strong>Signature:</strong>s:seq&lt;&#39;T&gt; -&gt; int<br />
+                          <strong>Type parameters:</strong> 'T          </div>
+        </td>
+        <td class="xmldoc"><p>Calculate hash code of a sequence, based on the values</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '823', 823)" onmouseover="showTip(event, '823', 823)">
+            headOrNone input
+          </code>
+          <div class="tip" id="823">
+            <strong>Signature:</strong>input:seq&lt;&#39;?6876&gt; -&gt; &#39;?6876 option<br />
+                          <strong>Type parameters:</strong> '?6876          </div>
+        </td>
+        <td class="xmldoc"><p>If the input is non empty, returns <code>Some(head)</code> where <code>head</code> is 
+the first value. Otherwise, returns <code>None</code>.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '824', 824)" onmouseover="showTip(event, '824', 824)">
+            lastFew count input
+          </code>
+          <div class="tip" id="824">
+            <strong>Signature:</strong>count:int -&gt; input:seq&lt;&#39;?6878&gt; -&gt; seq&lt;&#39;?6878&gt;<br />
+                          <strong>Type parameters:</strong> '?6878          </div>
+        </td>
+        <td class="xmldoc"><p>Returns the specified number of elements from the end of the sequence
+Note that this needs to store the specified number of elements in memory
+and it needs to iterate over the entire sequence.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '825', 825)" onmouseover="showTip(event, '825', 825)">
+            getEnumerator s
+          </code>
+          <div class="tip" id="825">
+            <strong>Signature:</strong>s:seq&lt;&#39;?6880&gt; -&gt; IEnumerator&lt;&#39;?6880&gt;<br />
+                          <strong>Type parameters:</strong> '?6880          </div>
+        </td>
+        <td class="xmldoc"><p>Calls the <code>GetEnumerator</code> method. Simple function to guide type inference.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '826', 826)" onmouseover="showTip(event, '826', 826)">
+            startAndEnd startCount endCount input
+          </code>
+          <div class="tip" id="826">
+            <strong>Signature:</strong>startCount:int -&gt; endCount:int -&gt; input:seq&lt;&#39;?6882&gt; -&gt; seq&lt;Choice&lt;&#39;?6882,unit,&#39;?6882&gt;&gt;<br />
+                          <strong>Type parameters:</strong> '?6882          </div>
+        </td>
+        <td class="xmldoc"><p>Given a sequence, returns <code>startCount</code> number of elements at the beginning 
+of the sequence (wrapped in <code>Choice1Of3</code>) followed by one <code>Choice2Of2()</code> value
+and then followed by <code>endCount</code> number of elements at the end of the sequence
+wrapped in <code>Choice3Of3</code>. If the input is shorter than <code>startCount + endCount</code>,
+then all values are returned and wrapped in <code>Choice1Of3</code>.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '827', 827)" onmouseover="showTip(event, '827', 827)">
+            windowedWhile f input
+          </code>
+          <div class="tip" id="827">
+            <strong>Signature:</strong>f:(&#39;T -&gt; &#39;T -&gt; bool) -&gt; input:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;T []&gt;<br />
+                          <strong>Type parameters:</strong> 'T          </div>
+        </td>
+        <td class="xmldoc"><p>Generate floating windows from the input sequence. New floating window is 
+started for each element. To find the end of the window, the function calls
+the provided argument <code>f</code> with the first and the last elements of the window
+as arguments. A window ends when <code>f</code> returns <code>false</code>.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '828', 828)" onmouseover="showTip(event, '828', 828)">
+            chunkedWhile f input
+          </code>
+          <div class="tip" id="828">
+            <strong>Signature:</strong>f:(&#39;?6886 -&gt; &#39;?6886 -&gt; bool) -&gt; input:seq&lt;&#39;?6886&gt; -&gt; seq&lt;&#39;?6886 []&gt;<br />
+                          <strong>Type parameters:</strong> '?6886          </div>
+        </td>
+        <td class="xmldoc"><p>Generate non-verlapping chunks from the input sequence. A chunk is started 
+at the beginning and then immediately after the end of the previous chunk.
+To find the end of the chunk, the function calls the provided argument <code>f</code> 
+with the first and the last elements of the chunk as arguments. A chunk 
+ends when <code>f</code> returns <code>false</code>.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '829', 829)" onmouseover="showTip(event, '829', 829)">
+            chunkedUsing comparer dir keys input
+          </code>
+          <div class="tip" id="829">
+            <strong>Signature:</strong>comparer:Comparer&lt;&#39;?6888&gt; -&gt; dir:Direction -&gt; keys:seq&lt;&#39;?6888&gt; -&gt; input:seq&lt;&#39;?6888&gt; -&gt; seq&lt;&#39;?6888 * &#39;?6888 list&gt;<br />
+                          <strong>Type parameters:</strong> '?6888          </div>
+        </td>
+        <td class="xmldoc"><p>Generate non-overlapping chunks from the input sequence. Chunks are aligned
+to the specified keys. The <code>dir</code> parameter specifies the direction. If it is
+<code>Direction.Forward</code> than the key is the first element of a chunk; for 
+<code>Direction.Backward</code>, the key is the last element (note that this does not hold
+at the boundaries)</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '830', 830)" onmouseover="showTip(event, '830', 830)">
+            windowedWithBounds size boundary input
+          </code>
+          <div class="tip" id="830">
+            <strong>Signature:</strong>size:int -&gt; boundary:Boundary -&gt; input:seq&lt;&#39;T&gt; -&gt; seq&lt;DataSegment&lt;&#39;T []&gt;&gt;<br />
+                          <strong>Type parameters:</strong> 'T          </div>
+        </td>
+        <td class="xmldoc"><p>A version of <code>Seq.windowed</code> that allows specifying more complex boundary
+behaviour. The <code>boundary</code> argument can specify one of the following options:</p>
+
+<ul>
+<li><code>Boundary.Skip</code> - only full windows are returned (like <code>Seq.windowed</code>)</li>
+<li><code>Boundary.AtBeginning</code> - incomplete windows (smaller than the required
+size) are returned at the beginning.</li>
+<li><code>Boundary.AtEnding</code> - incomplete windows are returned at the end.</li>
+</ul>
+
+<p>The result is a sequence of <code>DataSegnebt&lt;T&gt;</code> values, which makes it 
+easy to distinguish between complete and incomplete windows.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '831', 831)" onmouseover="showTip(event, '831', 831)">
+            chunkedWithBounds size boundary input
+          </code>
+          <div class="tip" id="831">
+            <strong>Signature:</strong>size:int -&gt; boundary:Boundary -&gt; input:seq&lt;&#39;?6892&gt; -&gt; seq&lt;DataSegment&lt;&#39;?6892 []&gt;&gt;<br />
+                          <strong>Type parameters:</strong> '?6892          </div>
+        </td>
+        <td class="xmldoc"><p>Similar to <code>Seq.windowedWithBounds</code>, but generates non-overlapping chunks
+rather than floating windows. See that function for detailed documentation.
+The function may iterate over the sequence repeatedly.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '832', 832)" onmouseover="showTip(event, '832', 832)">
+            isSorted data comparer
+          </code>
+          <div class="tip" id="832">
+            <strong>Signature:</strong>data:seq&lt;&#39;T&gt; -&gt; comparer:IComparer&lt;&#39;T&gt; -&gt; bool<br />
+                          <strong>Type parameters:</strong> 'T          </div>
+        </td>
+        <td class="xmldoc"><p>Returns true if the specified sequence is sorted.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '833', 833)" onmouseover="showTip(event, '833', 833)">
+            tryFirstAndLast input
+          </code>
+          <div class="tip" id="833">
+            <strong>Signature:</strong>input:seq&lt;&#39;?6896&gt; -&gt; (&#39;?6896 * &#39;?6896) option<br />
+                          <strong>Type parameters:</strong> '?6896          </div>
+        </td>
+        <td class="xmldoc"><p>Returns the first and the last element from a sequence or 'None' if the sequence is empty</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '834', 834)" onmouseover="showTip(event, '834', 834)">
+            alignWithOrdering seq1 seq2 comparer
+          </code>
+          <div class="tip" id="834">
+            <strong>Signature:</strong>seq1:seq&lt;&#39;T * &#39;TAddress&gt; -&gt; seq2:seq&lt;&#39;T * &#39;TAddress&gt; -&gt; comparer:IComparer&lt;&#39;T&gt; -&gt; seq&lt;&#39;T * &#39;TAddress option * &#39;TAddress option&gt;<br />
+                          <strong>Type parameters:</strong> 'T, 'TAddress          </div>
+        </td>
+        <td class="xmldoc"><p>Align two ordered sequences of <code>Key * Address</code> pairs and produce a 
+collection that contains three-element tuples consisting of:</p>
+
+<ul>
+<li>ordered keys (from one or the ohter sequence)</li>
+<li>optional address of the key in the first sequence</li>
+<li>optional address of the key in the second sequence</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '835', 835)" onmouseover="showTip(event, '835', 835)">
+            alignWithoutOrdering seq1 seq2
+          </code>
+          <div class="tip" id="835">
+            <strong>Signature:</strong>seq1:seq&lt;&#39;T * &#39;TAddress&gt; -&gt; seq2:seq&lt;&#39;T * &#39;TAddress&gt; -&gt; seq&lt;&#39;T * &#39;TAddress option * &#39;TAddress option&gt;<br />
+                          <strong>Type parameters:</strong> 'T, 'TAddress          </div>
+        </td>
+        <td class="xmldoc"><p>Align two unordered sequences of <code>Key * Address</code> pairs and produce a collection
+that contains three-element tuples consisting of keys, optional address in the
+first sequence &amp; optional address in the second sequence. (See also <code>alignWithOrdering</code>)</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+        </div>
+        <div class="span3">
+          <a href="https://nuget.org/packages/FSharp.DataFrame">
+            <img src="../content/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          </a>
+
+          <ul class="nav nav-list" id="menu">
+            <li class="nav-header">F# DataFrame</li>
+            <li><a href="../index.html">Home page</a></li>
+            <li class="divider"></li>
+            <li><a href="https://nuget.org/packages/FSharp.DataFrame">Get Library via NuGet</a></li>
+            <li><a href="https://github.com/BlueMountainCapital/FSharp.DataFrame">Source Code on GitHub</a></li>
+            <li><a href="https://github.com/BlueMountainCapital/FSharp.DataFrame/blob/master/LICENSE.md">License</a></li>
+            <li><a href="https://github.com/BlueMountainCapital/FSharp.DataFrame/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            <li><a href="../design.html">Design notes</a></li>
+
+            <li class="nav-header">Using from F#</li>
+            <li>
+              <a href="../tutorial.html">Quick start tutorial</a>
+              <ul class="nav nav-list">
+                <li><a href="../tutorial.html#creating">Creating data frames</a></li>
+                <li><a href="../tutorial.html#reindexing-and-joins">Using index & joining</a></li>
+                <li><a href="../tutorial.html#selecting">Reading values, slicing</a></li>
+                <li><a href="../tutorial.html#timeseries">Ordered time series</a></li>
+                <li><a href="../tutorial.html#projections">Projection and filtering</a></li>
+                <li><a href="../tutorial.html#grouping">Aggregating groups</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="../features.html">Data frame features</a>
+              <ul class="nav nav-list">
+                <li><a href="../features.html#creating">Creating & loading</a></li>
+                <li><a href="../features.html#dataframe">Frame manipulation</a></li>
+                <li><a href="../features.html#slicing">Advanced slicing</a></li>
+                <li><a href="../features.html#grouping">Grouping data</a></li>
+                <li><a href="../features.html#indexing">Hierarchical indexing</a></li>
+                <li><a href="../features.html#missing">Missing values</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="../timeseries.html">Time series features</a>
+              <ul class="nav nav-list">
+                <li><a href="../timeseries.html#alignment">Alignment & joining</a></li>
+                <li><a href="../timeseries.html#windowing">Windows and chunks</a></li>
+                <li><a href="../timeseries.html#sampling">Lookup and resampling</a></li>
+                <li><a href="../timeseries.html#stats">Statistics & math</a></li>
+              </ul>
+            </li>
+
+            <li class="nav-header">Documentation</li>
+            <li><a href="../reference/index.html">API Reference</a></li>
+
+            <li class="nav-header">Samples</li>
+            <li><a href="../lazysource.html">Lazy data loading</a></li>
+            <li><a href="../samples/volatility.html">Price volatility</a></li>
+            <li><a href="../samples/titanic.html">Titanic survivors</a></li>
+          </ul>
+
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/BlueMountainCapital/FSharp.DataFrame"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
+</body>
+</html>

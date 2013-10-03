@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
+  <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+  <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+  <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+  <link type="text/css" rel="stylesheet" href="../content/style.css" />
+  <script src="../content/tips.js" type="text/javascript"></script>
+  <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <style type="text/css">
+    #main h2 {
+       font-size: 160%;
+       margin-top:40px;
+    }
+    #main h3 {
+      font-size: 130%;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    thead {
+       font-weight:bold;
+    }
+    .type-list .type-name, .module-list .module-name {
+       width:25%;
+       font-weight:bold;
+    }
+    .member-list .member-name {
+       width:35%;
+    }
+    #main table .xmldoc h2 {
+      font-size:120%;
+    }
+  </style>
+</head>
+<body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://github.com/BlueMountainCapital/FSharp.DataFrame">github page</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/">F# Charting</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data/">F# Data</a></li>
+        </ul>
+        <h3 class="muted">F# DataFrame Library</h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+
+<h1>DelayedSeries</h1>
+
+<div class="xmldoc">
+  <p>This type exposes a single static method <code>DelayedSeries.Create</code> that can be used for
+constructing data series (of type <code>Series&lt;K, V&gt;</code>) with lazily loaded data. You can
+use this functionality to create series that represents e.g. an entire price history
+in a database, but only loads data that are actually needed. For more information
+see the <a href="../lazysource.html">lazy data loading tutorial</a>.</p>
+
+<h3>Example</h3>
+
+<p>Assuming we have a function <code>generate lo hi</code> that generates data in the specified
+<code>DateTime</code> range, we can create lazy series as follows:</p>
+
+<pre><code>let ls = DelayedSeries.Create(min, max, fun (lo, lob) (hi, hib) -&gt; 
+  async { 
+    printfn "Query: %A - %A" (lo, lob) (hi, hib)
+    return generate lo hi })
+</code></pre>
+
+<p>The arguments <code>min</code> and <code>max</code> specfify the complete range of the series. The 
+function passed to <code>Create</code> is called with minimal and maximal required key
+(<code>lo</code> and <code>hi</code>) and with two values that specify boundary behaviour.</p>
+
+</div>
+
+
+
+
+
+  <h3>Static members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Static members</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1107', 1107)" onmouseover="showTip(event, '1107', 1107)">
+            DelayedSeries.Create(min, max, loader)
+          </code>
+          <div class="tip" id="1107">
+            <strong>Signature:</strong>(min:&#39;K * max:&#39;K * loader:(&#39;K * BoundaryBehavior -&gt; &#39;K * BoundaryBehavior -&gt; Async&lt;&#39;?4817&gt;)) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
+                          <strong>Type parameters:</strong> 'K, '?4817, 'V          </div>
+        </td>
+        <td class="xmldoc"><p>An F#-friendly function that creates lazily loaded series. The method requires
+the overall range of the series (smallest and greatest key) and a function that
+loads the data. The function is called with two tuples that specify lower and upper
+boundary. It returns an asynchronous workflow that produces the data.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>min</code> - The smallest key that should be present in the created series.</li>
+<li><code>min</code> - The greatests key that should be present in the created series.</li>
+<li><code>loader</code> - A function which returns an asynchronous workflow that loads the data in a 
+specified range. The function is called with two tuples consisting of key and
+<code>BoundaryBehavior</code> values. The keys specify lower and upper boundary and
+<code>BoundaryBehavior</code> values can be either <code>Inclusive</code> or <code>Exclusive</code>.</li>
+</ul>
+
+<h2>Remarks</h2>
+
+<p>For more information see the <a href="../lazysource.html">lazy data loading tutorial</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1108', 1108)" onmouseover="showTip(event, '1108', 1108)">
+            DelayedSeries.Create(min, max, loader)
+          </code>
+          <div class="tip" id="1108">
+            <strong>Signature:</strong>(min:&#39;K * max:&#39;K * loader:Func&lt;&#39;K,BoundaryBehavior,&#39;K,BoundaryBehavior,Task&lt;seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt;&gt;&gt;) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V          </div>
+        </td>
+        <td class="xmldoc"><p>A C#-friendly function that creates lazily loaded series. The method requires
+the overall range of the series (smallest and greatest key) and a function that
+loads the data. In this overload, the function is a <code>Func</code> delegate taking 
+information about the requested range and returning <code>Task&lt;T&gt;</code> that produces the data.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>min</code> - The smallest key that should be present in the created series.</li>
+<li><code>min</code> - The greatests key that should be present in the created series.</li>
+<li><code>loader</code> - A delegate which returns a task that loads the data in a specified 
+range. The delegate is called with four arguments specifying the minimal and
+maximal key and two <code>BoundaryBehavior</code> values specifying whether the low and
+high ranges are inclusive or exclusive.</li>
+</ul>
+
+<h2>Remarks</h2>
+
+<p>For more information see the <a href="../lazysource.html">lazy data loading tutorial</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+
+        </div>
+        <div class="span3">
+          <a href="https://nuget.org/packages/FSharp.DataFrame">
+            <img src="../content/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          </a>
+
+          <ul class="nav nav-list" id="menu">
+            <li class="nav-header">F# DataFrame</li>
+            <li><a href="../index.html">Home page</a></li>
+            <li class="divider"></li>
+            <li><a href="https://nuget.org/packages/FSharp.DataFrame">Get Library via NuGet</a></li>
+            <li><a href="https://github.com/BlueMountainCapital/FSharp.DataFrame">Source Code on GitHub</a></li>
+            <li><a href="https://github.com/BlueMountainCapital/FSharp.DataFrame/blob/master/LICENSE.md">License</a></li>
+            <li><a href="https://github.com/BlueMountainCapital/FSharp.DataFrame/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            <li><a href="../design.html">Design notes</a></li>
+
+            <li class="nav-header">Using from F#</li>
+            <li>
+              <a href="../tutorial.html">Quick start tutorial</a>
+              <ul class="nav nav-list">
+                <li><a href="../tutorial.html#creating">Creating data frames</a></li>
+                <li><a href="../tutorial.html#reindexing-and-joins">Using index & joining</a></li>
+                <li><a href="../tutorial.html#selecting">Reading values, slicing</a></li>
+                <li><a href="../tutorial.html#timeseries">Ordered time series</a></li>
+                <li><a href="../tutorial.html#projections">Projection and filtering</a></li>
+                <li><a href="../tutorial.html#grouping">Aggregating groups</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="../features.html">Data frame features</a>
+              <ul class="nav nav-list">
+                <li><a href="../features.html#creating">Creating & loading</a></li>
+                <li><a href="../features.html#dataframe">Frame manipulation</a></li>
+                <li><a href="../features.html#slicing">Advanced slicing</a></li>
+                <li><a href="../features.html#grouping">Grouping data</a></li>
+                <li><a href="../features.html#indexing">Hierarchical indexing</a></li>
+                <li><a href="../features.html#missing">Missing values</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="../timeseries.html">Time series features</a>
+              <ul class="nav nav-list">
+                <li><a href="../timeseries.html#alignment">Alignment & joining</a></li>
+                <li><a href="../timeseries.html#windowing">Windows and chunks</a></li>
+                <li><a href="../timeseries.html#sampling">Lookup and resampling</a></li>
+                <li><a href="../timeseries.html#stats">Statistics & math</a></li>
+              </ul>
+            </li>
+
+            <li class="nav-header">Documentation</li>
+            <li><a href="../reference/index.html">API Reference</a></li>
+
+            <li class="nav-header">Samples</li>
+            <li><a href="../lazysource.html">Lazy data loading</a></li>
+            <li><a href="../samples/volatility.html">Price volatility</a></li>
+            <li><a href="../samples/titanic.html">Titanic survivors</a></li>
+          </ul>
+
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/BlueMountainCapital/FSharp.DataFrame"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
+</body>
+</html>

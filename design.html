@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>F# Data Frame
+</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The F# Data library implements type providers for working with structured file formats (CSV, JSON and XML) and for accessing the WorldBank and Freebase data. It also includes helpers for other data-related tasks.">
+    <meta name="author" content="Tomas Petricek">
+
+    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <link type="text/css" rel="stylesheet" href="http://BlueMountainCapital.github.io/FSharp.DataFrame/content/style.css" />
+    <script src="http://BlueMountainCapital.github.io/FSharp.DataFrame/content/tips.js" type="text/javascript"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://github.com/BlueMountainCapital/FSharp.DataFrame">github page</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/">F# Charting</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data/">F# Data</a></li>
+        </ul>
+        <h3 class="muted">F# DataFrame Library</h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          <h1>F# Data Frame</h1>
+
+<p>This is the first prototype of F# Data Frame library that was discussed here earlier. 
+For more information, please have a look at the following document:</p>
+
+<ul>
+<li><a href="https://docs.google.com/document/d/1M_hQinAQQrxYm7Ajn7yj38vpnMj32WfEp372OLG00rU/edit">Structured Data Library for F#/C#</a></li>
+</ul>
+
+<p>The current prototype implements only basic functionality, but it (hopefully) provides
+the right "core" internals that should make it easier to add all the additional 
+(useful) features. Here are a few notes about the desing:</p>
+
+<h3>Library internals</h3>
+
+<p>The following types are (mostly) not directly visible to the user, but you could
+use them when extending the library:</p>
+
+<ul>
+<li><p><code>IVector&lt;'TValue&gt;</code> represents a vector (essentially an abstract data
+storage) that contains values <code>'TValue</code> that can be accessed via an address
+<code>Address</code>. A simple concrete implementation is an array with <code>int</code> addresses,
+but we aim to make this abstract - one could use an array of arrays with <code>int64</code>
+index for large data sets, lazy vector that loads data from a stream or even
+a virtual vector with e.g. Cassandra data source).</p>
+<p>An important thing about vectors is that they handle missing values, so vector 
+of integers is actually more like <code>array&lt;option&lt;int&gt;&gt;</code> (but we have a custom value 
+type so that this is continuous block of memory). We decided that handling missing
+values is something that is so important for data frame, that it should be directly
+supported rather than done by e.g. storing optional or nullable values. Our 
+implementation actually does a simple optimization - if there are no missing values,
+it just stores <code>array&lt;int&gt;</code>.</p></li>
+<li><p><code>VectorConstruction</code> is a discriminated union (DSL) that describes
+construction of vector. For every vector type, there is an <code>IVectorBuilder</code>
+that knows how to construct vectors using the construction instructions (these
+include things like re-shuffling of elements, appending vectors, getting a sub-range
+etc.)</p></li>
+<li><p><code>IIndex&lt;'TKey&gt;</code> represents an index - that is, a mapping from keys
+of a series or data frame to addresses in a vector. In the simple case, this is just
+a hash table that returns the <code>int</code> offset in an array when given a key (e.g.
+<code>string</code> or <code>DateTime</code>). A super-simple index would just map <code>int</code> offsets to
+<code>int</code> addresses via an identity function (not implemented yet!) - if you have
+series or data frame that is simply a list of recrods.</p></li>
+</ul>
+
+<p>Now, the following types are directly used:</p>
+
+<ul>
+<li><p><code>Series&lt;'TKey, 'TValue&gt;</code> represents a series of values <code>'TValue</code> indexed by an
+index <code>'TKey</code>. Although this is not quite fully implemented yet, a series uses
+an abstract vector, index and vector builder, so it should work with any data
+representation. A series provides some standard slicing operators, projection,
+filtering etc. There are also some binary operators (multiply by a scalar, add series, etc.)</p></li>
+<li><p><code>Frame&lt;'TRowKey, 'TColumnKey&gt;</code> represents a data frame with rows indexed using
+<code>TRowKey</code> (this could be <code>DateTime</code> or just ordinal numbers like <code>int</code>) and columns
+indexed by <code>TColumnKey</code> (typically a <code>string</code>). The data in the frame can be
+hetrogeneous (e.g. different types of values in different columns) and so accessing
+data is dynamic - but you can e.g. get a typed series.</p>
+<p>The operations available on the data frame include adding &amp; removing series (which 
+aligns the new series according to the row index), joins (again - aligns the series) 
+etc. You can also get all rows as a series of (column) series and all columns as a 
+series of (row) series.</p></li>
+</ul>
+
+<h3>Questions &amp; call to action</h3>
+
+<p>As mentioned earlier, the current version is just a prototype. We're hoping that the 
+design of the internals is now reasonable, but the end user API is missing most of
+the important functions. So:</p>
+
+<ul>
+<li><p><strong>Send comments &amp; samples</strong> - if you have some interesting problem that might be
+a good fit for data frames, then please share a sample or problem description so
+that we can make sure that we support all you might need. We plan to share the code
+publicly in ~1 week so you can submit pull requests then too! Also, if you have
+some particularly nice Scala/Python/R/Matlab code that you'd like to do in F#,
+share it too so that we can copy clever ideas :-).</p></li>
+<li><p><strong>Time series vs. pivot table</strong> - there is some mismatch between two possible
+interpretations and uses of the library. One is for time-series data (e.g. in finance)
+where one typically works with dates as row indices. More generally, you can see this
+as <em>continous</em> index. It makes sense to do interpolation, sort the observations,
+align them, re-scale them etc.</p>
+<p>The other case is when we have some <em>discrete</em> observations (perhaps a list of 
+records with customer data, a list of prices of different stock prices etc.) In this
+case, we need more "pivot table" functions etc.</p>
+<p>Although these two uses are quite different, we feel that it might make sense to use
+the same type for both (just with a different index). The problem is that this might
+make the API more complex. Although, if we can keep the distincion in the type, we can
+use F# 3.1 extension methods that extend just "discrete data frame" or "continous data 
+frame". Also, F# functions could be structured in two modules like <code>df |&gt; Discrete.groupBy</code>
+and <code>df |&gt; Continuous.interoplateMissingValues</code>.</p></li>
+<li><p><strong>Immutability</strong> - in the current version, a series is immutable data type, but a
+data frame supports limited mutation - you can add new series, drop a series &amp; replace
+a series (but you cannot mutate the series). This seems to be useful because it works
+nicely with the <code>?&lt;-</code> operator and you do not have to re-bind when you're writing some
+research script.</p></li>
+<li><p><strong>Type provider</strong> - we are thinking about using type providers to give some additional
+safety (like checking column names and types in a data frame). This is currently
+on the TODO list - I think we can do something useful here, although it will
+certainly be limited.</p>
+<p>The current idea is that you migth want to do some research/prototyping using a 
+dynamic data frame, but once you're done and have some more stable data, you should
+be able to write, say <code>DataFrame&lt;"Open:float,Close:float"&gt;(dynamicDf)</code> and get a
+new typed data frame.</p></li>
+</ul>
+
+<p>If you have any comments regarding the topics above, please discuss them on the mailing
+list - this is currently a prototype and we are certainly open to changing things.</p>
+
+          
+        </div>
+        <div class="span3">
+          <a href="https://nuget.org/packages/FSharp.DataFrame">
+            <img src="http://BlueMountainCapital.github.io/FSharp.DataFrame/content/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          </a>
+
+          <ul class="nav nav-list" id="menu">
+            <li class="nav-header">F# DataFrame</li>
+            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/index.html">Home page</a></li>
+            <li class="divider"></li>
+            <li><a href="https://nuget.org/packages/FSharp.DataFrame">Get Library via NuGet</a></li>
+            <li><a href="https://github.com/BlueMountainCapital/FSharp.DataFrame">Source Code on GitHub</a></li>
+            <li><a href="https://github.com/BlueMountainCapital/FSharp.DataFrame/blob/master/LICENSE.md">License</a></li>
+            <li><a href="https://github.com/BlueMountainCapital/FSharp.DataFrame/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/design.html">Design notes</a></li>
+            
+            <li class="nav-header">Using from F#</li>
+            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/tutorial.html">Quick start tutorial</a>
+              <ul class="nav nav-list">
+                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/tutorial.html#creating">Creating data frames</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/tutorial.html#reindexing-and-joins">Using index & joining</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/tutorial.html#selecting">Reading values, slicing</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/tutorial.html#timeseries">Ordered time series</a></li>                
+                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/tutorial.html#projections">Projection and filtering</a></li>                
+                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/tutorial.html#grouping">Aggregating groups</a></li>                
+              </ul>
+            </li>
+            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/features.html">Data frame features</a>
+              <ul class="nav nav-list">
+                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/features.html#creating">Creating & loading</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/features.html#dataframe">Frame manipulation</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/features.html#slicing">Advanced slicing</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/features.html#grouping">Grouping data</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/features.html#indexing">Hierarchical indexing</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/features.html#missing">Missing values</a></li>
+              </ul>
+            </li>
+            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/timeseries.html">Time series features</a>
+              <ul class="nav nav-list">
+                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/timeseries.html#alignment">Alignment & joining</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/timeseries.html#windowing">Windows and chunks</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/timeseries.html#sampling">Lookup and resampling</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/timeseries.html#stats">Statistics & math</a></li>
+              </ul>
+            </li>
+
+            <li class="nav-header">Documentation</li>
+            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/reference/index.html">API Reference</a></li>
+
+            <li class="nav-header">Samples</li>
+            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/lazysource.html">Lazy data loading</a></li>
+            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/samples/volatility.html">Price volatility</a></li>
+            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/samples/titanic.html">Titanic survivors</a></li>
+          </ul>
+
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/BlueMountainCapital/FSharp.DataFrame"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
+  </body>
+  </html>
