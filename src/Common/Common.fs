@@ -303,23 +303,39 @@ module IReadOnlyList =
     for i in 0 .. list.Count - 1 do total <- total + list.[i]
     total
 
+  /// Reduce elements of the IReadOnlyList
+  let inline reduce op (list:IReadOnlyList<'T>) = 
+    let mutable res = list.[0]
+    for i in 1 .. list.Count - 1 do res <- op res list.[i]
+    res
+
   /// Count elements of the IReadOnlyList
   let inline length (list:IReadOnlyList<'T>) = list.Count
 
-  /// Sum elements of the IReadOnlyList
+  /// Average elements of the IReadOnlyList
   let inline average (list:IReadOnlyList<'T>) = 
     let mutable total = LanguagePrimitives.GenericZero
     for i in 0 .. list.Count - 1 do total <- total + list.[i]
     LanguagePrimitives.DivideByInt total list.Count
 
-  /// Sum elements of the IReadOnlyList
+  /// Sum elements of the IReadOnlyList, skipping over missing values
   let inline sumOptional (list:IReadOnlyList<OptionalValue<'T>>) = 
     let mutable total = LanguagePrimitives.GenericZero
     for i in 0 .. list.Count - 1 do 
       if list.[i].HasValue then total <- total + list.[i].Value
     total
 
-  /// Sum elements of the IReadOnlyList
+  /// Reduce elements of the IReadOnlyList, skipping over missing values
+  let inline reduceOptional op (list:IReadOnlyList<OptionalValue<'T>>) = 
+    let mutable res = None
+    for i in 0 .. list.Count - 1 do 
+      match res, list.[i] with
+      | Some r, OptionalValue.Present v -> res <- Some (op r v)
+      | None, OptionalValue.Present v -> res <- Some v
+      | _ -> ()
+    res.Value
+
+  /// Average elements of the IReadOnlyList, skipping over missing values
   let inline averageOptional (list:IReadOnlyList<OptionalValue<'T>>) = 
     let mutable total = LanguagePrimitives.GenericZero
     let mutable count = 0 
@@ -515,9 +531,10 @@ module Seq =
   /// `Direction.Forward` than the key is the first element of a chunk; for 
   /// `Direction.Backward`, the key is the last element (note that this does not hold
   /// at the boundaries)
-  let chunkedUsing (comparer:Comparer<_>) dir keys input = seq {
-    let keys = LazyList.ofSeq keys
-    let input = LazyList.ofSeq input
+  let chunkedUsing (comparer:Comparer<_>) dir keys input = 
+    let keys = List.ofSeq keys
+    let input = List.ofSeq input
+    let (|Cons|Nil|) l = match l with [] -> Nil | x::xs -> Cons(x, xs)
 
     let (<) a b = comparer.Compare(a, b) < 0
     let (<=) a b = comparer.Compare(a, b) <= 0
@@ -527,9 +544,9 @@ module Seq =
       match nextKey, input with
       | Some nk, Cons(h, input) when op h nk -> chunkUntilKeyOrEnd op nextKey input (h::acc)
       | Some nk, _ -> input, List.rev acc
-      | None, input -> LazyList.empty, (List.rev acc) @ (List.ofSeq input)
+      | None, input -> [], (List.rev acc) @ (List.ofSeq input)
 
-    if dir = Direction.Forward then 
+    if dir = Direction.Forward then  
       match keys with
       | Nil -> invalidArg "keys" "Keys for sampling should not be empty"
       | Cons(key, keys) ->
@@ -539,20 +556,22 @@ module Seq =
             match keys with 
             | Nil -> if not input.IsEmpty then failwith "Assertion failed: Input not empty"
             | Cons(key, keys) -> yield! loop(key, keys) input }
-          yield! loop(key, keys) input
+          loop(key, keys) input
 
     elif dir = Direction.Backward then
-      match keys with
-      | Nil -> invalidArg "keys" "Keys for sampling should not be empty"
-      | Cons(key, keys) ->
-          let rec loop (key, keys) input = seq { 
-            let input, chunk = chunkUntilKeyOrEnd (<=) (Some key) input []
-            match keys with 
-            | Nil -> yield key, chunk @ (List.ofSeq input)
-            | Cons(nkey, keys) -> 
-                yield key, chunk
-                yield! loop (nkey, keys) input }
-          yield! loop (key, keys) input }
+      if keys.IsEmpty then
+        invalidArg "keys" "Keys for sampling should not be empty"
+      else
+        // TODO: Implemented using lazy list - sequence expression does not eliminate tail-call "yield!" ??
+        let key, keys = keys.Head, keys.Tail
+        let rec loop (key, keys) input =  
+          let input, chunk = chunkUntilKeyOrEnd (<=) (Some key) input []
+          match keys with 
+          | Nil -> LazyList.ofSeq [ key, chunk @ (List.ofSeq input) ]
+          | Cons(nkey, keys) -> 
+              LazyList.consDelayed (key, chunk) (fun () -> loop (nkey, keys) input)
+        (loop (key, keys) input) :> seq<_>
+    else invalidArg "dir" "Invalid value for direction" 
       
   /// A version of `Seq.windowed` that allows specifying more complex boundary
   /// behaviour. The `boundary` argument can specify one of the following options:

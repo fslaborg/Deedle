@@ -285,6 +285,8 @@ module Frame =
   let stat op (frame:Frame<'R, 'C>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Series.stat op)
 
+  let reduce (op:'T -> 'T -> 'T) (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<'T>() |> Series.map (fun _ -> Series.reduce op) 
 
   let inline countValues (frame:Frame<'R, 'C>) = 
     frame.GetColumns<obj>() |> Series.map (fun _ -> Series.countValues)
@@ -317,8 +319,8 @@ module Frame =
   let statBy keySelector op (frame:Frame<'R, 'C>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Series.statBy keySelector op) |> FrameUtils.fromColumns
 
-  let foldBy keySelector op (frame:Frame<'R, 'C>) = 
-    frame.Columns |> Series.map (fun _ -> Series.foldBy keySelector op) |> FrameUtils.fromColumns
+  let reduceBy keySelector op (frame:Frame<'R, 'C>) = 
+    frame.Columns |> Series.map (fun _ -> Series.reduceBy keySelector op) |> FrameUtils.fromColumns
 
 
 

@@ -61,6 +61,9 @@ module Series =
   [<CompiledName("Median")>]
   let inline median (series:Series<'K, float>) = series |> stat Statistics.Median
 
+  let reduce op (series:Series<'K, 'T>) = 
+    series |> fastAggregation (IReadOnlyList.reduce op) (IReadOnlyList.reduceOptional op) (Seq.reduce op)
+
 
   [<CompiledName("StatisticBy")>]
   let inline statBy keySelector op (series:Series<_, _>) : Series<_, _> = 
@@ -89,7 +92,7 @@ module Series =
     series |> statBy keySelector Statistics.Median
 
 
-  let foldBy keySelector op (series:Series<_, _>) = 
+  let reduceBy keySelector op (series:Series<_, _>) = 
     series.GroupBy
       ( (fun key ser -> keySelector key),
         (fun key ser -> OptionalValue(op ser)))
@@ -134,11 +137,11 @@ module Series =
   let realign keys (series:Series<'K, 'T>) = 
     series.Realign(keys)
 
-  let indexOrdinal (series:Series<'K, 'T>) = 
-    series.IndexWithOrdinals()
+  let indexOrdinally (series:Series<'K, 'T>) = 
+    series.IndexOrdinally()
 
-  let indexKeys (keys:seq<'K2>) (series:Series<'K1, 'T>) = 
-    series.IndexWithKeys(keys)
+  let indexWith (keys:seq<'K2>) (series:Series<'K1, 'T>) = 
+    series.IndexWith(keys)
 
   let filter f (series:Series<'K, 'T>) = 
     series.Where(fun kvp -> f kvp.Key kvp.Value)
@@ -509,22 +512,26 @@ module Series =
   /// `sampleTimeInto`. For technical reasons (`inline`) this is public..
   module Implementation = 
 
+    let generateKeys add startOpt interval dir (series:Series<'K, 'V>) =
+      let smallest, largest = series.KeyRange
+      let comparer = System.Collections.Generic.Comparer<'K>.Default
+      let rec genKeys current = seq {
+        // For Backward, we need one more key after the end
+        if dir = Direction.Backward then yield current
+        if comparer.Compare(current, largest) <= 0 then
+          // For Forward, we only want keys in the range
+          if dir = Direction.Forward then yield current
+          yield! genKeys (add current interval) }
+      genKeys (defaultArg startOpt smallest)
+
     /// Given a specified starting time and time span, generates all keys that fit in the
     /// range of the series (and one additional, if `dir = Backward`) and then performs
     /// sampling using `resampleInto`.
     let sampleTimeIntoInternal add startOpt (interval:'T) dir f (series:Series<'K , 'V>) =
-      let comparer = System.Collections.Generic.Comparer<'K>.Default
-      let smallest, largest = series.KeyRange
-      let keys =
-        let rec genKeys current = seq {
-          // For Backward, we need one more key after the end
-          if dir = Direction.Backward then yield current
-          if comparer.Compare(current, largest) <= 0 then
-            // For Forward, we only want keys in the range
-            if dir = Direction.Forward then yield current
-            yield! genKeys (add current interval) }
-        genKeys (defaultArg startOpt smallest)
-      resampleInto keys dir f series
+      resampleInto (generateKeys add startOpt interval dir series) dir f series
+
+    let lookupTimeInternal add startOpt (interval:'T) dir lookup (series:Series<'K , 'V>) =
+      lookupAll (generateKeys add startOpt interval dir series) lookup series
 
   /// TODO
   /// [category:Lookup, resampling and scaling]

@@ -211,18 +211,17 @@ and Series<'K, 'V when 'K : equality>
   ///
   /// [category:Accessors and slicing]
   member x.Get(key) = x.Get(key, Lookup.Exact)
-
   ///
   /// [category:Accessors and slicing]
   member x.TryGetAt(index) = 
     x.Vector.GetValue(Addressing.Int index)
-    |> OptionalValue.map (fun v -> KeyValuePair(x.Index.KeyAt(Addressing.Int index), v))
-
-  ///
+  /// [category:Accessors and slicing]
+  member x.GetKeyAt(index) = 
+    x.Index.KeyAt(Addressing.Int index)
   /// [category:Accessors and slicing]
   member x.GetAt(index) = 
     x.TryGetAt(index).Value
-  
+
   ///
   /// [category:Accessors and slicing]
   member x.Item with get(a) = x.Get(a)
@@ -528,12 +527,12 @@ and Series<'K, 'V when 'K : equality>
       | _ -> OptionalValue.Missing )
 
   /// [category:Indexing]
-  member x.IndexWithOrdinals() = 
+  member x.IndexOrdinally() = 
     let newIndex = indexBuilder.Create(x.Index.Keys |> Seq.mapi (fun i _ -> i), Some true)
     Series<int, _>(newIndex, vector, vectorBuilder, indexBuilder)
 
   /// [category:Indexing]
-  member x.IndexWithKeys(keys) = 
+  member x.IndexWith(keys) = 
     let newIndex = indexBuilder.Create(keys, None)
     Series<'TNewKey, _>(newIndex, vector, vectorBuilder, indexBuilder)
 
@@ -732,6 +731,9 @@ and Series<'K, 'V when 'K : equality>
   // ----------------------------------------------------------------------------------------------
   // Nicer constructor
   // ----------------------------------------------------------------------------------------------
+
+  new(pairs:seq<KeyValuePair<'K, 'V>>) =
+    Series(pairs |> Seq.map (fun kvp -> kvp.Key), pairs |> Seq.map (fun kvp -> kvp.Value))
 
   new(keys:seq<_>, values:seq<_>) = 
     let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance

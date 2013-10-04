@@ -1,10 +1,10 @@
-﻿module FSharp.DataFrame.Tests.Common
-
-#if INTERACTIVE
+﻿#if INTERACTIVE
 #r "../../bin/FSharp.DataFrame.dll"
 #r "../../packages/NUnit.2.6.2/lib/nunit.framework.dll"
 #r "../../packages/FsCheck.0.9.1.0/lib/net40-Client/FsCheck.dll"
 #load "../Common/FsUnit.fs"
+#else
+module FSharp.DataFrame.Tests.Common
 #endif
 
 open System
@@ -222,3 +222,12 @@ let ``Seq.chunkedUsing returns empty lists when keys are denser than values`` ()
   let actual = [1;3;4;5] |> Seq.chunkedUsing Comparer<int>.Default Direction.Forward [1;2;3;5;6] |> List.ofSeq
   let expected = [ (1,[1]); (2,[]); (3,[3;4]); (5,[5]); (6,[]) ]
   actual |> shouldEqual expected
+
+[<Test>]
+let ``Seq.chunkedUsing works for 500k keys`` () =
+  let input = [for m in 1 .. 12 -> DateTime.Today.AddMonths(m) ] 
+  let keys = [for m in 0.0 .. 500000.0 -> DateTime.Today.AddMinutes(m) ]
+  let actual = input |> Seq.chunkedUsing Comparer<DateTime>.Default Direction.Forward keys
+  actual |> Seq.length |> shouldEqual 500001
+  let actual = input |> Seq.chunkedUsing Comparer<DateTime>.Default Direction.Backward keys
+  actual |> Seq.length |> shouldEqual 500001

@@ -78,8 +78,13 @@ type Frame =
   static member FromRows(rows:seq<Series<'ColKey,'V>>) = 
     FrameUtils.fromRows(Series(rows |> Seq.mapi (fun i _ -> i), rows))
 
-//  static member FromColumns(cols) = 
-//    FrameUtils.fromColumns(cols)
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member FromColumns(cols:Series<'TColKey, ObjectSeries<'TRowKey>>) = 
+    FrameUtils.fromColumns(cols)
+
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member FromColumns(cols:Series<'TColKey, Series<'TRowKey, 'V>>) = 
+    FrameUtils.fromColumns(cols)
 
   /// Creates a data frame with ordinal Integer index from a sequence of rows.
   /// The column indices of individual rows are unioned, so if a row has fewer
@@ -232,8 +237,9 @@ module FSharpFrameExtensions =
                 if v.IsSome then yield k, v.Value }
       let recordsToConvert = Seq.map snd keyValuePairs
       let frame = Reflection.convertRecordSequence<'R>(recordsToConvert)
-      let frame = frame.ReplaceRowIndexKeys(Seq.map fst keyValuePairs)
-      frame.ReindexRowKeys(series.Keys)
+      let frame = frame.IndexRowsWith(Seq.map fst keyValuePairs)
+      //frame.RealignRows(series.Keys) - huh, why was this here?
+      frame
 
     static member ofRecords (values:seq<'T>) =
       Reflection.convertRecordSequence<'T>(values)    
@@ -262,6 +268,28 @@ module FSharpFrameExtensions =
       |> Series.groupInto (fun k v -> f.Invoke(k, v)) (fun k g -> g |> Frame.ofRows)
       |> Frame.collapseRows
 
+module FrameBuilder =
+  type Columns<'R, 'C when 'C : equality and 'R : equality>() = 
+    let mutable series = []
+    member x.Add(key:'C, value:ISeries<'R>) =
+      series <- (key, value)::series
+    member x.Frame = Frame.ofColumns series
+    interface System.Collections.IEnumerable with
+      member x.GetEnumerator() = (x :> seq<_>).GetEnumerator() :> Collections.IEnumerator
+    interface seq<KeyValuePair<'C, ISeries<'R>>> with
+      member x.GetEnumerator() = 
+        (series |> List.rev |> Seq.map (fun (k, v) -> KeyValuePair(k, v))).GetEnumerator()
+
+  type Rows<'R, 'C when 'C : equality and 'R : equality>() = 
+    let mutable series = []
+    member x.Add(key:'R, value:ISeries<'C>) =
+      series <- (key, value)::series
+    member x.Frame = Frame.ofRows series
+    interface System.Collections.IEnumerable with
+      member x.GetEnumerator() = (x :> seq<_>).GetEnumerator() :> Collections.IEnumerator
+    interface seq<KeyValuePair<'R, ISeries<'C>>> with
+      member x.GetEnumerator() = 
+        (series |> List.rev |> Seq.map (fun (k, v) -> KeyValuePair(k, v))).GetEnumerator()
 
 [<Extension>]
 type FrameExtensions =
@@ -317,8 +345,27 @@ type FrameExtensions =
     frame.Columns |> Frame.ofRows
 
   [<Extension>]
+  static member IndexRowsOrdinally(frame:Frame<'TRowKey, 'TColumnKey>) = 
+    frame.Columns |> Series.mapValues Series.indexOrdinally |> Frame.ofColumns
+
+  [<Extension>]
   static member Shift(frame:Frame<'TRowKey, 'TColumnKey>, offset) = 
     frame |> Frame.shift offset
+
+  [<Extension>]
+  static member Reduce(frame:Frame<'TRowKey, 'TColumnKey>, aggregation:Func<'T, 'T, 'T>) = 
+    frame |> Frame.reduce (fun a b -> aggregation.Invoke(a, b))
+
+  /// [category:Fancy accessors]
+  [<Extension>]
+  static member GetRows(frame:Frame<'TRowKey, 'TColumnKey>, [<ParamArray>] rowKeys:_[]) = 
+    frame.Rows.GetItems(rowKeys) |> Frame.ofRows
+
+  [<Extension>]
+  static member GetRowsAt(frame:Frame<'TRowKey, 'TColumnKey>, [<ParamArray>] indices:int[]) = 
+    let keys = indices |> Array.map frame.Rows.GetKeyAt
+    let values = indices |> Array.map (fun i -> frame.Rows.GetAt(i) :> ISeries<_>)
+    Seq.zip keys values |> Frame.ofRows
 
   [<Extension; EditorBrowsable(EditorBrowsableState.Never)>]
   static member GetSlice(series:ColumnSeries<'TRowKey, 'TColKey1 * 'TColKey2>, lo1:option<'TColKey1>, hi1:option<'TColKey1>, lo2:option<'TColKey2>, hi2:option<'TColKey2>) =

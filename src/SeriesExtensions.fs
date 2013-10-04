@@ -31,6 +31,9 @@ type EnumerableExtensions =
   [<Extension>]
   static member ToSeries(observations:seq<KeyValuePair<'K, 'V>>) = 
     observations |> Seq.map (fun kvp -> kvp.Key, kvp.Value) |> Series.ofObservations
+  [<Extension>]
+  static member ToOrdinalSeries(observations:seq<'V>) = 
+    observations |> Series.ofValues
 
 type internal Series =
   /// Vector & index builders
@@ -135,6 +138,10 @@ type SeriesExtensions =
   [<Extension>]
   static member FillMissing(series:Series<'K, 'T>, value:'T) = 
     Series.fillMissingWith value series
+
+  [<Extension>]
+  static member ContainsKey(series:Series<'K, 'T>, key:'K) = 
+    series.Keys.Contains(key)
 
   /// Fill missing values in the series with the nearest available value
   /// (using the specified direction). The default direction is `Direction.Backward`.
@@ -318,27 +325,19 @@ type SeriesExtensions =
 
   [<Extension>]
   static member Sample<'V>(series:Series<DateTime, 'V>, start:DateTime, interval:TimeSpan, dir) =
-    series |> Series.Implementation.sampleTimeIntoInternal (+) (Some start) interval dir (fun k s ->
-      if s.IsEmpty then series.Get(k, Lookup.NearestSmaller)
-      else Series.lastValue s)
+    series |> Series.Implementation.lookupTimeInternal (+) (Some start) interval dir Lookup.NearestSmaller
 
   [<Extension>]
   static member Sample<'V>(series:Series<DateTimeOffset, 'V>, start:DateTimeOffset, interval:TimeSpan, dir) =
-    series |> Series.Implementation.sampleTimeIntoInternal (+) (Some start) interval dir (fun k s ->
-      if s.IsEmpty then series.Get(k, Lookup.NearestSmaller)
-      else Series.lastValue s)
+    series |> Series.Implementation.lookupTimeInternal (+) (Some start) interval dir Lookup.NearestSmaller
 
   [<Extension>]
   static member Sample<'V>(series:Series<DateTime, 'V>, interval:TimeSpan, dir) =
-    series |> Series.Implementation.sampleTimeIntoInternal (+) None interval dir (fun k s ->
-      if s.IsEmpty then series.Get(k, Lookup.NearestSmaller)
-      else Series.lastValue s)
+    series |> Series.Implementation.lookupTimeInternal (+) None interval dir Lookup.NearestSmaller
 
   [<Extension>]
   static member Sample<'V>(series:Series<DateTimeOffset, 'V>, interval:TimeSpan, dir) =
-    series |> Series.Implementation.sampleTimeIntoInternal (+) None interval dir (fun k s ->
-      if s.IsEmpty then series.Get(k, Lookup.NearestSmaller)
-      else Series.lastValue s)
+    series |> Series.Implementation.lookupTimeInternal (+) None interval dir Lookup.NearestSmaller
 
   [<Extension>]
   static member Sample<'V>(series:Series<DateTime, 'V>, interval:TimeSpan) =

@@ -214,6 +214,10 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
         else OptionalValue.Missing )
     RowSeries(res)
 
+  /// [category:Accessors]
+  member frame.Item 
+    with get(column:'TColumnKey, row:'TRowKey) = frame.Columns.[column].[row]
+
   // ----------------------------------------------------------------------------------------------
   // More accessors
   // ----------------------------------------------------------------------------------------------
@@ -236,11 +240,16 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   // ----------------------------------------------------------------------------------------------
 
   /// [category:Series operations]
+  member frame.Item 
+    with get(column:'TColumnKey) = frame.GetSeries<float>(column)
+    and set(column:'TColumnKey) (series:Series<'TRowKey, float>) = frame.ReplaceSeries(column, series)
+
+  /// [category:Series operations]
   member frame.AddSeries(column:'TColumnKey, series:seq<_>) = 
     frame.AddSeries(column, series, Lookup.Exact)
 
   /// [category:Series operations]
-  member frame.AddSeries(column:'TColumnKey, series:Series<_, _>) = 
+  member frame.AddSeries(column:'TColumnKey, series:ISeries<_>) = 
     frame.AddSeries(column, series, Lookup.Exact)
 
   /// [category:Series operations]
@@ -266,15 +275,15 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
       frame.AddSeries(column, series, lookup)
 
   /// [category:Series operations]
-  member frame.AddSeries<'V>(column:'TColumnKey, series:Series<'TRowKey, 'V>, lookup) = 
+  member frame.AddSeries<'V>(column:'TColumnKey, series:ISeries<'TRowKey>, lookup) = 
     if isEmpty then
       // If the frame was empty, then initialize both indices
       rowIndex <- series.Index
       columnIndex <- Index.ofKeys [column]
-      data <- Vector.ofValues [series.Vector :> IVector]
+      data <- Vector.ofValues [series.Vector]
       isEmpty <- false
     else
-      let other = Frame(series.Index, Index.ofUnorderedKeys [column], Vector.ofValues [series.Vector :> IVector ])
+      let other = Frame(series.Index, Index.ofUnorderedKeys [column], Vector.ofValues [series.Vector])
       let joined = frame.Join(other, JoinKind.Left, lookup)
       columnIndex <- joined.ColumnIndex
       data <- joined.Data
@@ -286,7 +295,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     data <- vectorBuilder.Build(colCmd, [| data |])
 
   /// [category:Series operations]
-  member frame.ReplaceSeries(column:'TColumnKey, series:Series<_, _>, ?lookup) = 
+  member frame.ReplaceSeries(column:'TColumnKey, series:ISeries<_>, ?lookup) = 
     let lookup = defaultArg lookup Lookup.Exact
     if columnIndex.Lookup(column, lookup, fun _ -> true).HasValue then
       frame.DropSeries(column)
@@ -305,8 +314,8 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
         Series.Create(rowIndex, changeType colVector)
 
   /// [category:Series operations]
-  member frame.Item 
-    with get(column:'TColumnKey) = frame.GetSeries<float>(column)
+  member frame.GetSeriesAt<'R>(index:int) : Series<'TRowKey, 'R> = 
+    frame.Columns.GetAt(index).As<'R>()
 
   /// [category:Series operations]
   member frame.GetSeries<'R>(column:'TColumnKey) : Series<'TRowKey, 'R> = 
@@ -508,7 +517,27 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     Frame<'TRowKey, 'TColumnKey>.ScalarOperationL<float>(frame, float scalar, (/))
 
   // ----------------------------------------------------------------------------------------------
-  // Internals (rowIndex, columnIndex, data and various helpers)
+  // Indexing
+  // ----------------------------------------------------------------------------------------------
+
+  /// [category:Indexing]
+  member frame.RealignRows(keys) = 
+    // Create empty frame with the required keys    
+    let empty = Frame<_, _>(frame.IndexBuilder.Create(keys, None), frame.IndexBuilder.Create([], None), frame.VectorBuilder.Create [||])
+    for key, series in frame.Columns |> Series.observations do 
+      empty.AddSeries(key, series)
+    empty
+
+  /// [category:Indexing]
+  member frame.IndexRowsWith<'TNewRowIndex when 'TNewRowIndex : equality>(keys:seq<'TNewRowIndex>) =
+    let newRowIndex = frame.IndexBuilder.Create(keys, None)
+    let getRange = VectorHelpers.getVectorRange frame.VectorBuilder frame.RowIndex.Range
+    let newData = frame.Data.Select(getRange)
+    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
+
+
+  // ----------------------------------------------------------------------------------------------
+  // Constructor
   // ----------------------------------------------------------------------------------------------
 
   new(names:seq<'TColumnKey>, columns:seq<ISeries<'TRowKey>>) =
@@ -518,27 +547,25 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
       df.Join(other, JoinKind.Outer) )
     Frame(df.RowIndex, df.ColumnIndex, df.Data)
 
-
-  member frame.ReplaceRowIndexKeys<'TNewRowIndex when 'TNewRowIndex : equality>(keys:seq<'TNewRowIndex>) =
-    let newRowIndex = frame.IndexBuilder.Create(keys, None)
-    let getRange = VectorHelpers.getVectorRange frame.VectorBuilder frame.RowIndex.Range
-    let newData = frame.Data.Select(getRange)
-    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
-
-  member frame.ReindexRowKeys(keys) = 
-    // Create empty frame with the required keys    
-    let empty = Frame<_, _>(frame.IndexBuilder.Create(keys, None), frame.IndexBuilder.Create([], None), frame.VectorBuilder.Create [||])
-    for key, series in frame.Columns |> Series.observations do 
-      empty.AddSeries(key, series)
-    empty
-
   member frame.Clone() =
     Frame<_, _>(rowIndex, columnIndex, data)
-
 
   // ----------------------------------------------------------------------------------------------
   // Interfaces and overrides
   // ----------------------------------------------------------------------------------------------
+
+  override frame.Equals(another) = 
+    match another with
+    | null -> false
+    | :? Frame<'TRowKey, 'TColumnKey> as another -> 
+        frame.RowIndex.Equals(another.RowIndex) &&
+        frame.ColumnIndex.Equals(another.ColumnIndex) &&
+        frame.Data.Equals(another.Data) 
+    | _ -> false
+
+  override frame.GetHashCode() =
+    let (++) h1 h2 = ((h1 <<< 5) + h1) ^^^ h2
+    frame.RowIndex.GetHashCode() ++ frame.ColumnIndex.GetHashCode() ++ frame.Data.GetHashCode()
 
   interface IFsiFormattable with
     member frame.Format() = 

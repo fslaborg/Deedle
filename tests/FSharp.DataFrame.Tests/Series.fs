@@ -3,13 +3,13 @@
 #load "../../bin/FSharp.DataFrame.fsx"
 #r "../../packages/NUnit.2.6.2/lib/nunit.framework.dll"
 #r "../../packages/FsCheck.0.9.1.0/lib/net40-Client/FsCheck.dll"
-#r "../../packages/FsUnit.1.2.1.0/Lib/Net40/FsUnit.NUnit.dll"
 #load "../Common/FsUnit.fs"
 #else
 module FSharp.DataFrame.Tests.Series
 #endif
 
 open System
+open System.Linq
 open System.Collections.Generic
 open FsUnit
 open FsCheck
@@ -34,8 +34,8 @@ let ``Accessing missing value or using out of range key throws`` () =
   (fun () -> missing.[7] |> ignore) |> should throw typeof<KeyNotFoundException>
 
 let ``Can access elements by address`` () =
-  unordered.GetAt(0).Value |> shouldEqual "hi"
-  ordered.GetAt(0).Value |> shouldEqual "hi"
+  unordered.GetAt(0) |> shouldEqual "hi"
+  ordered.GetAt(0) |> shouldEqual "hi"
   missing.TryGetAt(1).HasValue |> shouldEqual false
   
 let ``Can lookup previous and next elements in ordered series`` () =
@@ -225,6 +225,14 @@ let ``Series.sample generates empty chunks for keys where there are no values`` 
   |> Series.resample keys Direction.Forward
   |> Series.mapValues (fun s -> if s.IsEmpty then -1 else s.[s.KeyRange |> fst])
   |> shouldEqual <| Series.ofObservations (Seq.zip keys [0; -1; 1; -1; 2; -1; 3; -1; 4])
+
+[<Test>]
+let ``Can create minute samples over one year of items``() =
+  let input = generate DateTime.Today (TimeSpan.FromDays(30.0)) 12
+  let sampl = SeriesExtensions.Sample(input, TimeSpan.FromMinutes(1.0))
+  let dict = sampl.Observations.ToDictionary((fun k -> k.Key), (fun (k:KeyValuePair<_, _>) -> k.Value))
+  dict.[DateTime.Today.AddDays(5.0)] |> shouldEqual 0
+  dict.Count |> should be (greaterThan 100000)
 
 // ------------------------------------------------------------------------------------------------
 // Indexing & slicing & related extensions
