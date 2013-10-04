@@ -51,7 +51,7 @@ module Address =
     Int 0, Int ((Seq.length seq) - 1)
 
   let getRange = function 
-    | seq, Int lo, Int hi ->
-        if hi >= lo then seq |> Seq.skip lo |> Seq.take (hi - lo + 1) 
-        else Seq.empty
+    | (seq:_[]), Int lo, Int hi ->
+        if hi >= lo then seq.[lo .. hi]
+        else [| |]
     | _ -> failwith "Not supported"

@@ -334,3 +334,7 @@ module Frame =
     |> Series.map (fun k1 s -> s.Rows |> Series.mapKeys (fun k2 -> k1, k2) |> FrameUtils.fromRows)
     |> Series.values
     |> Seq.reduce append
+
+  let shift offset (frame:Frame<'R, 'C>) = 
+    frame |> mapColValues (Series.shift offset)
+    

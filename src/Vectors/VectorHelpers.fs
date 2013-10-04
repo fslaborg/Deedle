@@ -155,6 +155,12 @@ type VectorValueTransform =
     { new IVectorValueTransform with
         member vt.GetFunction<'R>() = 
           unbox<OptionalValue<'R> -> OptionalValue<'R> -> OptionalValue<'R>> (box operation) }
+  /// Creates a transformation that applies the specified function on `'T` values 
+  static member CreateLifted<'T>(operation:'T -> 'T -> 'T) = 
+    { new IVectorValueTransform with
+        member vt.GetFunction<'R>() = (fun (l:OptionalValue<'R>) (r:OptionalValue<'R>) -> 
+          if l.HasValue && r.HasValue then OptionalValue((unbox<'R -> 'R -> 'R> operation) l.Value r.Value)
+          else OptionalValue.Missing )}
   /// A generic transformation that prefers the left value (if it is not missing)
   static member LeftIfAvailable =
     { new IVectorValueTransform with
@@ -225,3 +231,15 @@ let fillNA (def:obj) : IVector -> IVector =
           | OptionalValue.Missing -> OptionalValue(unbox def)
           | OptionalValue.Present v -> OptionalValue(v)) :> IVector }
   |> createVectorDispatcher
+
+/// Substitute variable hole for another in a vector construction
+let rec substitute ((oldVar, newVar) as subst) = function
+  | Return v when v = oldVar -> Return newVar
+  | Return v -> Return v
+  | Empty -> Empty
+  | Relocate(vc, r, l) -> Relocate(substitute subst vc, r, l)
+  | DropRange(vc, r) -> DropRange(substitute subst vc, r)
+  | GetRange(vc, r) -> GetRange(substitute subst vc, r)
+  | Append(l, r) -> Append(substitute subst l, substitute subst r)
+  | Combine(l, r, c) -> Combine(substitute subst l, substitute subst r, c)
+  | CustomCommand(vcs, f) -> CustomCommand(List.map (substitute subst) vcs, f)

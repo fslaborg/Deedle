@@ -19,7 +19,7 @@ open System.Diagnostics
 /// The construction checks if the keys are ordered (using the provided or the default
 /// comparer for `K`) and disallows certain operations on unordered indices.
 type LinearIndex<'K when 'K : equality> 
-    internal (keys:seq<'K>, builder, ?ordered) =
+  internal (keys:seq<'K>, builder, ?ordered) =
 
   // Build a lookup table etc.
   let comparer = Comparer<'K>.Default
@@ -216,12 +216,12 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
             builder.GetRange
               ( index, Some(win.Data.[0], BoundaryBehavior.Inclusive), 
                 Some(win.Data.[win.Data.Length - 1], BoundaryBehavior.Inclusive), vector)
-          win.Kind, (index, cmd) )
+          win.Kind, (index, cmd) ) |> Array.ofSeq
 
       /// Build a new index & vector by applying key/value selectors
-      let keys = ranges |> Array.ofSeq |> Seq.map keySel
+      let keys = ranges |> Array.map keySel
       let newIndex = builder.Create(keys, None)
-      let vect = ranges |> Seq.map valueSel |> Array.ofSeq |> vectorBuilder.CreateMissing
+      let vect = ranges |> Array.map valueSel |> vectorBuilder.CreateMissing
       newIndex, vect
 
 
@@ -388,10 +388,14 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       | Some lo, Some hi ->
           let lo = if snd lo = BoundaryBehavior.Exclusive then Address.increment (fst lo) else fst lo
           let hi = if snd hi = BoundaryBehavior.Exclusive then Address.decrement (fst hi) else fst hi
-          let newKeys = Address.getRange(index.Keys, lo, hi) |> Array.ofSeq
+
+          let index, vector = asLinearIndex index vector 
+
+          let newKeys = Address.getRange(index.KeysArray.Value, lo, hi) |> Array.ofSeq
           let newVector = Vectors.GetRange(vector, (lo, hi))
-          upcast LinearIndex<_>(newKeys, builder, index.Ordered), newVector
+          upcast LinearIndex<_>(newKeys, builder, (index :> IIndex<_>).Ordered), newVector
       | _ -> upcast LinearIndex<_>([], builder, index.Ordered), Vectors.Empty
+
 // --------------------------------------------------------------------------------------
 // Functions for creatin linear indices
 // --------------------------------------------------------------------------------------

@@ -8,7 +8,7 @@
     <ProjectGuid>09d8960b-9703-425e-af0b-fa39525f5b9c</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>FSharp.DataFrame.Tests</RootNamespace>
-    <AssemblyName>FSharp.DataFrame.Tests</AssemblyName>
+    <AssemblyName>FSharp.DataFrame.Tests.Console</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <Name>FSharp.DataFrame.Tests</Name>
     <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
@@ -43,9 +43,6 @@
     <Reference Include="FSharp.DataFrame">
       <HintPath>..\..\bin\FSharp.DataFrame.dll</HintPath>
     </Reference>
-    <Reference Include="MathNet.Numerics">
-      <HintPath>..\lib\MathNet.Numerics.dll</HintPath>
-    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -54,6 +51,13 @@
   <ItemGroup>
     <Compile Include="Program.fs" />
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FSharp.DataFrame.Tests\FSharp.DataFrame.Tests.fsproj">
+      <Name>FSharp.DataFrame.Tests</Name>
+      <Project>{484a96e6-d217-47ee-974c-5d7b3cfb401e}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

@@ -70,5 +70,4 @@ module DocumentationTests =
   [<Test>]
   [<TestCaseSource "docFiles">]
   let ``Documentation generated correctly `` file = 
-    processFile file
-    |> should equal 0
+    Assert.AreEqual(0, processFile file)

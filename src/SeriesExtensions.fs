@@ -72,6 +72,10 @@ type SeriesBuilder<'K when 'K : equality>() =
 
 [<Extension>]
 type SeriesExtensions =
+  [<Extension>]
+  static member DropMissing(series:Series<'K, 'V>) =
+    Series.dropMissing series
+
   [<Extension; EditorBrowsable(EditorBrowsableState.Never)>]
   static member GetSlice(series:Series<'K1 * 'K2, 'V>, lo1:option<'K1>, hi1:option<'K1>, lo2:option<'K2>, hi2:option<'K2>) =
     if lo1 <> None || hi1 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"

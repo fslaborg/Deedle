@@ -133,10 +133,10 @@ Target "GenerateDocs" DoNothing
 
 Target "ReleaseDocs" (fun _ ->
     CleanDirs ["gh-pages"]
-    Repository.clone "" "https://github.com/tpetricek/FSharp.DataFrame.git" "gh-pages"
+    Repository.clone "" "https://github.com/BlueMountainCapital/FSharp.DataFrame.git" "gh-pages"
     Branches.checkoutBranch "gh-pages" "gh-pages"
-    CopyRecursive "docs" "gh-pages/hidden-doc-link" true |> printfn "%A"
-    //CommandHelper.runSimpleGitCommand "gh-pages" "add ." |> printfn "%s"
+    CopyRecursive "docs" "gh-pages" true |> printfn "%A"
+    CommandHelper.runSimpleGitCommand "gh-pages" "add ." |> printfn "%s"
     CommandHelper.runSimpleGitCommand "gh-pages" (sprintf """commit -a -m "Update generated documentation for version %s""" version) |> printfn "%s"
     Branches.push "gh-pages"
 )

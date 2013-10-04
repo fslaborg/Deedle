@@ -19,7 +19,7 @@ let output   = __SOURCE_DIRECTORY__ ++ "../docs"
 // When running locally, you can use your path
 //let root = @"file://C:\dev\FSharp.DataFrame\docs"
 //let root = @"file://C:\Tomas\Projects\FSharp.DataFrame\docs"
-let root = "http://tpetricek.github.io/FSharp.DataFrame/hidden-doc-link"
+let root = "http://BlueMountainCapital.github.io/FSharp.DataFrame"
 
 let buildReference () = 
   // Build the API reference documentation

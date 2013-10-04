@@ -131,14 +131,14 @@ module Series =
   let tryGetAt index (series:Series<'K, 'T>) = series.TryGetAt(index) |> OptionalValue.asOption
   let getAt index (series:Series<'K, 'T>) = series.GetAt(index)
 
-  let reindex keys (series:Series<'K, 'T>) = 
-    series.Reindex(keys)
+  let realign keys (series:Series<'K, 'T>) = 
+    series.Realign(keys)
 
   let indexOrdinal (series:Series<'K, 'T>) = 
-    series.WithOrdinalIndex()
+    series.IndexWithOrdinals()
 
   let indexKeys (keys:seq<'K2>) (series:Series<'K1, 'T>) = 
-    series.WithIndex(keys)
+    series.IndexWithKeys(keys)
 
   let filter f (series:Series<'K, 'T>) = 
     series.Where(fun kvp -> f kvp.Key kvp.Value)
@@ -266,7 +266,8 @@ module Series =
   // Handling of missing values
   // ----------------------------------------------------------------------------------------------
 
-  let dropMissing (series:Series<'K, 'T>) = series.DropMissing()
+  let dropMissing (series:Series<'K, 'T>) = 
+    series.WhereOptional(fun (KeyValue(k, v)) -> v.HasValue)
 
   /// Fill missing values in the series using the specified function.
   /// The specified function is called with all keys for which the series
@@ -461,7 +462,7 @@ module Series =
       series 
       |> chunkWhile (fun k1 k2 -> keyProj k1 = keyProj k2)
       |> mapKeys keyProj
-      |> reindex keys
+      |> realign keys
 
     // For keys that have no values, use empty series or singleton series from above/below
     reindexed

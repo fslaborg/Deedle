@@ -1,11 +1,12 @@
-﻿module FSharp.DataFrame.Tests.Series
-
-#if INTERACTIVE
+﻿#if INTERACTIVE
 #I "../../bin"
 #load "../../bin/FSharp.DataFrame.fsx"
 #r "../../packages/NUnit.2.6.2/lib/nunit.framework.dll"
 #r "../../packages/FsCheck.0.9.1.0/lib/net40-Client/FsCheck.dll"
+#r "../../packages/FsUnit.1.2.1.0/Lib/Net40/FsUnit.NUnit.dll"
 #load "../Common/FsUnit.fs"
+#else
+module FSharp.DataFrame.Tests.Series
 #endif
 
 open System

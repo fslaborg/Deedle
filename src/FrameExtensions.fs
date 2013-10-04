@@ -316,6 +316,9 @@ type FrameExtensions =
   static member Transpose(frame:Frame<'TRowKey, 'TColumnKey>) = 
     frame.Columns |> Frame.ofRows
 
+  [<Extension>]
+  static member Shift(frame:Frame<'TRowKey, 'TColumnKey>, offset) = 
+    frame |> Frame.shift offset
 
   [<Extension; EditorBrowsable(EditorBrowsableState.Never)>]
   static member GetSlice(series:ColumnSeries<'TRowKey, 'TColKey1 * 'TColKey2>, lo1:option<'TColKey1>, hi1:option<'TColKey1>, lo2:option<'TColKey2>, hi2:option<'TColKey2>) =
@@ -363,3 +366,4 @@ type FrameExtensions =
 
 type KeyValue =
   static member Create<'K, 'V>(key:'K, value:'V) = KeyValuePair(key, value)
+

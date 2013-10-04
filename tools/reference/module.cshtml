@@ -14,12 +14,9 @@
 
 <h1>@Model.Module.Name</h1>
 <div class="xmldoc">
-  @foreach (var sec in comment.Sections)
-  {
-    if (!byCategory.Any(g => g.Group.Key == sec.Key))
-    {
-      if (sec.Key != "<default>") 
-      {
+  @foreach (var sec in comment.Sections) {
+    if (!byCategory.Any(g => g.Group.Key == sec.Key)) {
+      if (sec.Key != "<default>")        {
         <h2>@sec.Key</h2>
       }
       @sec.Value  
