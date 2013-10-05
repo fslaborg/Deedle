@@ -2,7 +2,6 @@
 // FAKE build script 
 // --------------------------------------------------------------------------------------
 
-#I @"tools/FAKE/tools"
 #r @"tools/FAKE/tools/FakeLib.dll"
 
 open System
@@ -52,7 +51,12 @@ Target "AssemblyInfo" (fun _ ->
 )
 
 // --------------------------------------------------------------------------------------
-// Clean build results
+// Clean build results & restore NuGet packages
+
+Target "RestorePackages" (fun _ ->
+    !! "./**/packages.config"
+    |> Seq.iter (RestorePackage (fun p -> { p with ToolPath = "./.nuget/NuGet.exe" }))
+)
 
 Target "Clean" (fun _ ->
     CleanDirs ["bin"]
@@ -165,6 +169,7 @@ Target "Release" DoNothing
 Target "All" DoNothing
 
 "Clean"
+  ==> "RestorePackages"
   ==> "AssemblyInfo"
   ==> "Build"
   ==> "GenerateDocs"

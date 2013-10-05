@@ -27,8 +27,8 @@ let msft() =
 [<Test>]
 let ``Can read MSFT data from CSV file`` () =
   let df = msft()
-  df.CountRows() |> shouldEqual 6527
-  df.CountColumns() |> shouldEqual 7
+  df.RowKeys |> Seq.length |> shouldEqual 6527
+  df.ColumnKeys |> Seq.length |> shouldEqual 7
 
 [<Test>]
 let ``Applying numerical operation to frame does not affect non-numeric series`` () =

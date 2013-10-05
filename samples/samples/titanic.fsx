@@ -1,7 +1,7 @@
 ﻿(*** hide ***)
 #I "../../bin"
 #load "FSharp.DataFrame.fsx"
-#load "../../packages/FSharp.Charting.0.84/FSharp.Charting.fsx"
+#load "../../packages/FSharp.Charting.0.86/FSharp.Charting.fsx"
 #r "../../packages/FSharp.Data.1.1.9/lib/net40/FSharp.Data.dll"
 open System
 open FSharp.Data

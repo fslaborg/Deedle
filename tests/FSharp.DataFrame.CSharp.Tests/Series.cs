@@ -20,8 +20,8 @@ namespace FSharp.DataFrame.CSharp.Tests
 
 			var actual = 
 				nums.Aggregate(Aggregation.WindowSize<int>(5, Boundary.Skip), 
-					segment => new string(segment.Data.Values.ToArray()), 
-					segment => segment.Data.Keys.First());
+					segment => segment.Data.Keys.First(),
+          segment => new string(segment.Data.Values.ToArray()));
 			
 			var expected =
 				new SeriesBuilder<int, string> {
@@ -44,8 +44,8 @@ namespace FSharp.DataFrame.CSharp.Tests
 
 			var actual =
 				nums.Aggregate(Aggregation.ChunkSize<int>(5, Boundary.Skip),
-					segment => new string(segment.Data.Values.ToArray()),
-					segment => segment.Data.Keys.First());
+					segment => segment.Data.Keys.First(),
+          segment => new string(segment.Data.Values.ToArray()));
 
 			var expected =
 				new SeriesBuilder<int, string> {
@@ -64,8 +64,8 @@ namespace FSharp.DataFrame.CSharp.Tests
 
 			var actual =
 				nums.Aggregate(Aggregation.ChunkWhile<int>((k1, k2) => k2 - k1 < 10),
-					segment => new string(segment.Data.Values.ToArray()),
-					segment => segment.Data.Keys.First());
+					segment => segment.Data.Keys.First(),
+          segment => new string(segment.Data.Values.ToArray()));
 
 			var expected =
 				new SeriesBuilder<int, string> {

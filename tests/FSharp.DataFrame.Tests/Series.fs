@@ -230,7 +230,7 @@ let ``Series.sample generates empty chunks for keys where there are no values`` 
 let ``Can create minute samples over one year of items``() =
   let input = generate DateTime.Today (TimeSpan.FromDays(30.0)) 12
   let sampl = SeriesExtensions.Sample(input, TimeSpan.FromMinutes(1.0))
-  let dict = sampl.Observations.ToDictionary((fun k -> k.Key), (fun (k:KeyValuePair<_, _>) -> k.Value))
+  let dict = sampl |> Series.observations |> dict
   dict.[DateTime.Today.AddDays(5.0)] |> shouldEqual 0
   dict.Count |> should be (greaterThan 100000)
 

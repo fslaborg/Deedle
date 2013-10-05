@@ -1,6 +1,6 @@
 ﻿(*** hide ***)
 #I "../../bin"
-#I "../../packages/FSharp.Charting.0.84"
+#I "../../packages/FSharp.Charting.0.86"
 #r "MathNet.Numerics.dll"
 #load "FSharp.DataFrame.fsx"
 #load "FSharp.Charting.fsx"
