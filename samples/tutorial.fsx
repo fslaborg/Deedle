@@ -15,7 +15,7 @@ works similarly:
 
 *)
 #I "../bin"
-#I "../packages/FSharp.Charting.0.86"
+#I "../packages/FSharp.Charting.0.87"
 #load "FSharp.DataFrame.fsx"
 #load "FSharp.Charting.fsx"
 
