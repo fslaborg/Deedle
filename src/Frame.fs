@@ -225,7 +225,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   /// [category:Fancy accessors]
   member frame.GetColumns<'R>() = 
     frame.Columns.SelectOptional(fun (KeyValue(k, vopt)) ->
-      vopt |> OptionalValue.bind (fun ser -> ser.TryAs<'R>()))
+      vopt |> OptionalValue.bind (fun ser -> ser.TryAs<'R>(false)))
 
   /// [category:Fancy accessors]
   member frame.GetRow<'R>(row) = frame.GetRow<'R>(row, Lookup.Exact)
@@ -243,6 +243,17 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   member frame.Item 
     with get(column:'TColumnKey) = frame.GetSeries<float>(column)
     and set(column:'TColumnKey) (series:Series<'TRowKey, float>) = frame.ReplaceSeries(column, series)
+
+  /// [category:Series operations]
+  member frame.SeriesApply<'T>(f) = frame.SeriesApply(false, f)
+
+  /// [category:Series operations]
+  member frame.SeriesApply<'T>(strict, f:Func<Series<'TRowKey, 'T>, ISeries<_>>) = 
+    frame.Columns |> Series.mapValues (fun os ->
+      match os.TryAs<'T>(strict) with
+      | OptionalValue.Present s -> f.Invoke s
+      | _ -> os :> ISeries<_>)
+    |> Frame<'TRowKey, 'TColumnKey>.FromColumnsNonGeneric
 
   /// [category:Series operations]
   member frame.AddSeries(column:'TColumnKey, series:seq<_>) = 
@@ -357,7 +368,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   // Apply operation 'op' with 'series' on the right to all columns convertible to 'T
   static member inline private PointwiseFrameSeriesR<'T>(frame:Frame<'TRowKey, 'TColumnKey>, series:Series<'TRowKey, 'T>, op:'T -> 'T -> 'T) =
     frame.Columns |> Series.mapValues (fun os ->
-      match os.TryAs<'T>() with
+      match os.TryAs<'T>(false) with
       | OptionalValue.Present s -> s.JoinInner(series) |> Series.mapValues (fun (v1, v2) -> op v1 v2) :> ISeries<_>
       | _ -> os :> ISeries<_>)
     |> Frame<'TRowKey, 'TColumnKey>.FromColumnsNonGeneric
@@ -384,7 +395,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   // Apply operation 'op' with 'scalar' on the right to all columns convertible to 'T
   static member inline private ScalarOperationR<'T>(frame:Frame<'TRowKey, 'TColumnKey>, scalar:'T, op:'T -> 'T -> 'T) : Frame<'TRowKey, 'TColumnKey> =
     frame.Columns |> Series.mapValues (fun os -> 
-      match os.TryAs<'T>() with
+      match os.TryAs<'T>(false) with
       | OptionalValue.Present s -> (Series.mapValues (fun v -> op v scalar) s) :> ISeries<_>
       | _ -> os :> ISeries<_>)
     |> Frame<'TRowKey, 'TColumnKey>.FromColumnsNonGeneric

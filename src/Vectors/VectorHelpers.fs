@@ -215,6 +215,22 @@ let tryChangeType<'R> : IVector -> OptionalValue<IVector<'R>> =
           with :? InvalidCastException | :? FormatException -> OptionalValue.Missing }
   |> createVectorDispatcher
 
+// A "generic function" that tries to cast the type of vector elements
+let tryCastType<'R> : IVector -> OptionalValue<IVector<'R>> = 
+  let shouldBeConvertible (o:obj) = o <> null && o :? 'R
+  { new VectorCallSite1<OptionalValue<IVector<'R>>> with
+      override x.Invoke<'T>(col:IVector<'T>) = 
+        // Check the first non-missing value to see if we should even try doing the conversion
+        let first = 
+          col.DataSequence |> Seq.choose OptionalValue.asOption |> Seq.headOrNone 
+          |> Option.map (box >> shouldBeConvertible)
+        if first = Some(false) then OptionalValue.Missing
+        else 
+          // We still cannot be sure that it will actually work
+          try OptionalValue(col.Select(fun v -> unbox<'R> v))
+          with :? InvalidCastException -> OptionalValue.Missing }
+  |> createVectorDispatcher
+
 // A "generic function" that drops 
 let getVectorRange (builder:IVectorBuilder) range = 
   { new VectorCallSite1<IVector> with

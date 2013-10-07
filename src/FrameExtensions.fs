@@ -247,7 +247,6 @@ module FSharpFrameExtensions =
 
   type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality> with
     member frame.Append(rowKey, row) = frame.Append(Frame.ofRows [ rowKey => row ])
-    member frame.WithMissing(value) = Frame.withMissingVal value frame
     member frame.WithColumnIndex(columnKeys:seq<'TNewColumnKey>) = Frame.renameCols columnKeys frame
     member frame.WithRowIndex<'TNewRowIndex when 'TNewRowIndex : equality>(col) : Frame<'TNewRowIndex, _> = 
       Frame.indexRows col frame
@@ -410,6 +409,87 @@ type FrameExtensions =
     if lo1 <> None || hi1 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
     if lo2 <> None || hi2 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
     series.GetByLevel <| SimpleLookup [|Option.map box lo1; Option.map box lo2|]
+
+  // ----------------------------------------------------------------------------------------------
+  // Missing values
+  // ----------------------------------------------------------------------------------------------
+
+  /// Fill missing values of a given type in the frame with a constant value.
+  /// The operation is only applied to columns (series) that contain values of the
+  /// same type as the provided filling value. The operation does not attempt to 
+  /// convert between numeric values (so a series containing `float` will not be
+  /// converted to a series of `int`).
+  ///
+  /// ## Parameters
+  ///  - `frame` - An input data frame that is to be filled
+  ///  - `value` - A constant value that is used to fill all missing values
+  ///
+  /// [category:Missing values]
+  [<Extension>]
+  static member FillMissingWith(frame:Frame<'TRowKey, 'TColumnKey>, value:'T) = 
+    Frame.fillMissingWith value frame
+
+  /// Fill missing values in the data frame with the nearest available value
+  /// (using the specified direction). Note that the frame may still contain
+  /// missing values after call to this function (e.g. if the first value is not available
+  /// and we attempt to fill series with previous values). This operation can only be
+  /// used on ordered frames.
+  ///
+  /// ## Parameters
+  ///  - `frame` - An input data frame that is to be filled
+  ///  - `direction` - Specifies the direction used when searching for 
+  ///    the nearest available value. `Backward` means that we want to
+  ///    look for the first value with a smaller key while `Forward` searches
+  ///    for the nearest greater key.
+  ///
+  /// [category:Missing values]
+  [<Extension>]
+  static member FillMissing(frame:Frame<'TRowKey, 'TColumnKey>, direction) = 
+    Frame.fillMissing direction frame
+
+  /// Fill missing values in the frame using the specified function. The specified
+  /// function is called with all series and keys for which the frame does not 
+  /// contain value and the result of the call is used in place of the missing value.
+  ///
+  /// The operation is only applied to columns (series) that contain values of the
+  /// same type as the return type of the provided filling function. The operation 
+  /// does not attempt to convert between numeric values (so a series containing 
+  /// `float` will not be converted to a series of `int`).
+  ///
+  /// ## Parameters
+  ///  - `frame` - An input data frame that is to be filled
+  ///  - `f` - A function that takes a series `Series<R, T>` together with a key `K` 
+  ///    in the series and generates a value to be used in a place where the original 
+  ///    series contains a missing value.
+  ///
+  /// [category:Missing values]
+  [<Extension>]
+  static member FillMissingUsing(frame:Frame<'TRowKey, 'TColumnKey>, f:Func<_, _, 'T>) = 
+    Frame.fillMissingUsing (fun s k -> f.Invoke(s, k)) frame
+
+  /// Creates a new data frame that contains only those rows of the original 
+  /// data frame that are _dense_, meaning that they have a value for each column.
+  /// The resulting data frame has the same number of columns, but may have 
+  /// fewer rows (or no rows at all).
+  /// 
+  /// ## Parameters
+  ///  - `frame` - An input data frame that is to be filtered
+  ///
+  /// [category:Missing values]
+  [<Extension>]
+  static member DropSparseRows(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.dropSparseRows frame
+
+  /// Creates a new data frame that contains only those columns of the original 
+  /// data frame that are _dense_, meaning that they have a value for each row.
+  /// The resulting data frame has the same number of rows, but may have 
+  /// fewer columns (or no columns at all).
+  ///
+  /// ## Parameters
+  ///  - `frame` - An input data frame that is to be filtered
+  ///
+  /// [category:Missing values]
+  [<Extension>]
+  static member DropSparseColumns(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.dropSparseCols frame
 
 type KeyValue =
   static member Create<'K, 'V>(key:'K, value:'V) = KeyValuePair(key, value)

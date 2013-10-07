@@ -754,12 +754,16 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
     x.TryGet(column) |> OptionalValue.map (fun v -> System.Convert.ChangeType(v, typeof<'R>) |> unbox)
   static member (?) (series:ObjectSeries<_>, name:string) = series.GetAs<float>(name)
 
-  member x.TryAs<'R>() =
+  member x.TryAs<'R>(strict) =
     match box vector with
     | :? IVector<'R> as vec -> OptionalValue(Series(index, vec, vectorBuilder, indexBuilder))
     | _ -> 
-        VectorHelpers.tryChangeType vector
+        ( if strict then VectorHelpers.tryCastType vector
+          else VectorHelpers.tryChangeType vector )
         |> OptionalValue.map (fun vec -> Series(index, vec, vectorBuilder, indexBuilder))
+
+  member x.TryAs<'R>() =
+    x.TryAs<'R>(false)
 
   member x.As<'R>() =
     match box vector with

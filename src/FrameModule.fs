@@ -62,10 +62,6 @@ module Frame =
   let takeLast count (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.takeLast count |> FrameUtils.fromRows
 
-  let dropMissing (frame:Frame<'R, 'C>) = 
-    frame.RowsDense |> Series.dropMissing |> FrameUtils.fromRows
-
-
   // ----------------------------------------------------------------------------------------------
   // Wrappers that simply call member functions of the data frame
   // ----------------------------------------------------------------------------------------------
@@ -95,20 +91,6 @@ module Frame =
   /// individual row of the frame.
   [<CompiledName("Rows")>]
   let rows (frame:Frame<'R, 'C>) = frame.Rows
-
-  /// Returns the columns of the data frame as a series (indexed by 
-  /// the column keys of the source frame) containing _series_ representing
-  /// individual columns of the frame. This is similar to `Columns`, but it
-  /// skips columns that contain missing value in _any_ row.
-  [<CompiledName("ColumnsDense")>]
-  let colsDense (frame:Frame<'R, 'C>) = frame.ColumnsDense
-
-  /// Returns the rows of the data frame as a series (indexed by 
-  /// the row keys of the source frame) containing _series_ representing
-  /// individual row of the frame. This is similar to `Rows`, but it
-  /// skips rows that contain missing value in _any_ column.
-  [<CompiledName("RowsDense")>]
-  let rowsDense (frame:Frame<'R, 'C>) = frame.RowsDense
 
   /// Creates a new data frame that contains all data from the original
   /// data frame without the specified series (column).
@@ -210,14 +192,6 @@ module Frame =
   let align kind lookup (frame1:Frame<'R, 'C>) frame2 = frame1.Join(frame2, kind, lookup)
 
   
-  /// Fills all missing values in all columns & rows of the data frame with the
-  /// specified value (this can only be used when the data is homogeneous)
-  [<CompiledName("WithMissing")>]
-  let withMissingVal defaultValue (frame:Frame<'R, 'C>) =
-    let data = frame.Data.Select (VectorHelpers.fillNA defaultValue)
-    Frame<'R, 'C>(frame.RowIndex, frame.ColumnIndex, data)
-
-
   let inline filterRows f (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.filter f |> FrameUtils.fromRows
 
@@ -340,3 +314,103 @@ module Frame =
   let shift offset (frame:Frame<'R, 'C>) = 
     frame |> mapColValues (Series.shift offset)
     
+  // ----------------------------------------------------------------------------------------------
+  // Missing values
+  // ----------------------------------------------------------------------------------------------
+
+  /// Fill missing values of a given type in the frame with a constant value.
+  /// The operation is only applied to columns (series) that contain values of the
+  /// same type as the provided filling value. The operation does not attempt to 
+  /// convert between numeric values (so a series containing `float` will not be
+  /// converted to a series of `int`).
+  ///
+  /// ## Parameters
+  ///  - `frame` - An input data frame that is to be filled
+  ///  - `value` - A constant value that is used to fill all missing values
+  ///
+  /// [category:Missing values]
+  let fillMissingWith (value:'T) (frame:Frame<'R, 'C>) =
+    frame.SeriesApply(true, fun (s:Series<_, 'T>) -> Series.fillMissingWith value s :> ISeries<_>)
+
+  /// Fill missing values in the data frame with the nearest available value
+  /// (using the specified direction). Note that the frame may still contain
+  /// missing values after call to this function (e.g. if the first value is not available
+  /// and we attempt to fill series with previous values). This operation can only be
+  /// used on ordered frames.
+  ///
+  /// ## Parameters
+  ///  - `frame` - An input data frame that is to be filled
+  ///  - `direction` - Specifies the direction used when searching for 
+  ///    the nearest available value. `Backward` means that we want to
+  ///    look for the first value with a smaller key while `Forward` searches
+  ///    for the nearest greater key.
+  ///
+  /// [category:Missing values]
+  let fillMissing direction (frame:Frame<'R, 'C>) =
+    frame.Columns |> Series.mapValues (fun s -> Series.fillMissing direction s)
+
+  /// Fill missing values in the frame using the specified function. The specified
+  /// function is called with all series and keys for which the frame does not 
+  /// contain value and the result of the call is used in place of the missing value.
+  ///
+  /// The operation is only applied to columns (series) that contain values of the
+  /// same type as the return type of the provided filling function. The operation 
+  /// does not attempt to convert between numeric values (so a series containing 
+  /// `float` will not be converted to a series of `int`).
+  ///
+  /// ## Parameters
+  ///  - `frame` - An input data frame that is to be filled
+  ///  - `f` - A function that takes a series `Series<R, T>` together with a key `K` 
+  ///    in the series and generates a value to be used in a place where the original 
+  ///    series contains a missing value.
+  ///
+  /// [category:Missing values]
+  let fillMissingUsing (f:Series<'R, 'T> -> 'R -> 'T) (frame:Frame<'R, 'C>) =
+    frame.SeriesApply(false, fun (s:Series<_, 'T>) -> Series.fillMissingUsing (f s) s :> ISeries<_>)
+
+  /// Creates a new data frame that contains only those rows of the original 
+  /// data frame that are _dense_, meaning that they have a value for each column.
+  /// The resulting data frame has the same number of columns, but may have 
+  /// fewer rows (or no rows at all).
+  /// 
+  /// ## Parameters
+  ///  - `frame` - An input data frame that is to be filtered
+  ///
+  /// [category:Missing values]
+  let dropSparseRows (frame:Frame<'R, 'C>) = 
+    frame.RowsDense |> Series.dropMissing |> FrameUtils.fromRows
+
+  /// Creates a new data frame that contains only those columns of the original 
+  /// data frame that are _dense_, meaning that they have a value for each row.
+  /// The resulting data frame has the same number of rows, but may have 
+  /// fewer columns (or no columns at all).
+  ///
+  /// ## Parameters
+  ///  - `frame` - An input data frame that is to be filtered
+  ///
+  /// [category:Missing values]
+  let dropSparseCols (frame:Frame<'R, 'C>) = 
+    frame.ColumnsDense |> Series.dropMissing |> FrameUtils.fromRows
+
+  /// Returns the columns of the data frame that do not have any missing values.
+  /// The operation returns a series (indexed by the column keys of the source frame) 
+  /// containing _series_ representing individual columns of the frame. This is similar 
+  /// to `Columns`, but it skips columns that contain missing value in _any_ row.
+  ///
+  /// ## Parameters
+  ///  - `frame` - An input data frame containing columns to be filtered
+  ///
+  /// [category:Missing values]
+  let colsDense (frame:Frame<'R, 'C>) = frame.ColumnsDense
+
+  /// Returns the rows of the data frame that do not have any missing values. 
+  /// The operation returns a series (indexed by the row keys of the source frame) 
+  /// containing _series_ representing individual row of the frame. This is similar 
+  /// to `Rows`, but it skips rows that contain missing value in _any_ column.
+  ///
+  /// ## Parameters
+  ///  - `frame` - An input data frame containing rows to be filtered
+  ///
+  /// [category:Missing values]
+  let rowsDense (frame:Frame<'R, 'C>) = frame.RowsDense
+
