@@ -55,17 +55,16 @@
         <div class="span9" id="main">
           
 
-<h1>IIndexBuilder</h1>
 
+
+<h1>IIndexBuilder</h1>
 <div class="xmldoc">
-  <p>A builder represents various ways of constructing index, either from keys or from
+<p>A builder represents various ways of constructing index, either from keys or from
 other indices. The operations that build a new index from an existing index also 
 build <code>VectorConstruction</code> which specifies how to transform vectors aligned with the
 previous index to match the new index. The methods generally take <code>VectorConstruction</code>
 as an input, apply necessary transformations to it and return a new <code>VectorConstruction</code>.</p>
-
-<h2>Example</h2>
-
+        <h2>Example</h2>
 <p>For example, given <code>index</code>, we can say:</p>
 
 <pre><code>// Create an index that excludes the value 42
@@ -75,24 +74,20 @@ let newIndex, vectorCmd = indexBuilder.DropItem(index, 42, VectorConstruction.Re
 // (the integer '0' in `Return` is an offset in the array of vector arguments)
 let newVector = vectorBuilder.Build(vectorCmd, [| vectorToTransform |])
 </code></pre>
-
 </div>
-
-
-
   <h3>Instance members</h3>
   <table class="table table-bordered member-list">
     <thead>
-      <tr><td>Instance members</td><td>Description</td></tr>
+      <tr><td>Instance member</td><td>Description</td></tr>
     </thead>
     <tbody>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1131', 1131)" onmouseover="showTip(event, '1131', 1131)">
+          <code onmouseout="hideTip(event, '1300', 1300)" onmouseover="showTip(event, '1300', 1300)">
             iIndexBuilder.Aggregate(...)
           </code>
-          <div class="tip" id="1131">
+          <div class="tip" id="1300">
             <strong>Signature:</strong>(index:IIndex&lt;&#39;K&gt; * aggregation:Aggregation&lt;&#39;K&gt; * source:VectorConstruction * valueSelector:(DataSegmentKind * SeriesConstruction&lt;&#39;K&gt; -&gt; OptionalValue&lt;&#39;R&gt;) * keySelector:(DataSegmentKind * SeriesConstruction&lt;&#39;K&gt; -&gt; &#39;TNewKey)) -&gt; IIndex&lt;&#39;TNewKey&gt; * IVector&lt;&#39;R&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K, 'R, 'TNewKey          </div>
@@ -117,10 +112,10 @@ vector construction that can be used to build the data chunk), return a key of t
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1132', 1132)" onmouseover="showTip(event, '1132', 1132)">
+          <code onmouseout="hideTip(event, '1301', 1301)" onmouseover="showTip(event, '1301', 1301)">
             iIndexBuilder.Append(arg1, arg2, arg3)
           </code>
-          <div class="tip" id="1132">
+          <div class="tip" id="1301">
             <strong>Signature:</strong>(SeriesConstruction&lt;&#39;K&gt; * SeriesConstruction&lt;&#39;K&gt; * IVectorValueTransform) -&gt; IIndex&lt;&#39;K&gt; * VectorConstruction<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K          </div>
@@ -135,10 +130,10 @@ a key is defined in both indices (i.e. which value should be in the new vector).
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1133', 1133)" onmouseover="showTip(event, '1133', 1133)">
+          <code onmouseout="hideTip(event, '1302', 1302)" onmouseover="showTip(event, '1302', 1302)">
             iIndexBuilder.Create(arg1, arg2)
           </code>
-          <div class="tip" id="1133">
+          <div class="tip" id="1302">
             <strong>Signature:</strong>(seq&lt;&#39;K&gt; * Option&lt;bool&gt;) -&gt; IIndex&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K          </div>
@@ -151,10 +146,10 @@ should check and infer this from the data.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1134', 1134)" onmouseover="showTip(event, '1134', 1134)">
+          <code onmouseout="hideTip(event, '1303', 1303)" onmouseover="showTip(event, '1303', 1303)">
             iIndexBuilder.DropItem(arg1, arg2)
           </code>
-          <div class="tip" id="1134">
+          <div class="tip" id="1303">
             <strong>Signature:</strong>(SeriesConstruction&lt;&#39;K&gt; * &#39;K) -&gt; SeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K          </div>
@@ -165,10 +160,10 @@ should check and infer this from the data.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1135', 1135)" onmouseover="showTip(event, '1135', 1135)">
+          <code onmouseout="hideTip(event, '1304', 1304)" onmouseover="showTip(event, '1304', 1304)">
             iIndexBuilder.GetRange(...)
           </code>
-          <div class="tip" id="1135">
+          <div class="tip" id="1304">
             <strong>Signature:</strong>(IIndex&lt;&#39;K&gt; * (&#39;K * BoundaryBehavior) option * (&#39;K * BoundaryBehavior) option * VectorConstruction) -&gt; SeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K          </div>
@@ -181,10 +176,10 @@ that contain boundary behavior and the boundary key.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1136', 1136)" onmouseover="showTip(event, '1136', 1136)">
+          <code onmouseout="hideTip(event, '1305', 1305)" onmouseover="showTip(event, '1305', 1305)">
             iIndexBuilder.GroupBy(...)
           </code>
-          <div class="tip" id="1136">
+          <div class="tip" id="1305">
             <strong>Signature:</strong>(IIndex&lt;&#39;K&gt; * keySelector:(&#39;K -&gt; OptionalValue&lt;&#39;TNewKey&gt;) * VectorConstruction * valueSelector:(&#39;TNewKey * SeriesConstruction&lt;&#39;K&gt; -&gt; OptionalValue&lt;&#39;R&gt;)) -&gt; IIndex&lt;&#39;TNewKey&gt; * IVector&lt;&#39;R&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K, 'TNewKey, 'R          </div>
@@ -197,10 +192,10 @@ with values produced by the <code>valueSelector</code> function.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1137', 1137)" onmouseover="showTip(event, '1137', 1137)">
+          <code onmouseout="hideTip(event, '1306', 1306)" onmouseover="showTip(event, '1306', 1306)">
             iIndexBuilder.Intersect(arg1, arg2)
           </code>
-          <div class="tip" id="1137">
+          <div class="tip" id="1306">
             <strong>Signature:</strong>(SeriesConstruction&lt;&#39;K&gt; * SeriesConstruction&lt;&#39;K&gt;) -&gt; IIndex&lt;&#39;K&gt; * VectorConstruction * VectorConstruction<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K          </div>
@@ -212,10 +207,10 @@ for both vectors that match the left and the right index.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1138', 1138)" onmouseover="showTip(event, '1138', 1138)">
+          <code onmouseout="hideTip(event, '1307', 1307)" onmouseover="showTip(event, '1307', 1307)">
             iIndexBuilder.LookupLevel(arg1, arg2)
           </code>
-          <div class="tip" id="1138">
+          <div class="tip" id="1307">
             <strong>Signature:</strong>(SeriesConstruction&lt;&#39;K&gt; * ICustomLookup&lt;&#39;K&gt;) -&gt; SeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K          </div>
@@ -228,10 +223,10 @@ is used for custom equality testing (for example, when getting a level of a hier
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1139', 1139)" onmouseover="showTip(event, '1139', 1139)">
+          <code onmouseout="hideTip(event, '1308', 1308)" onmouseover="showTip(event, '1308', 1308)">
             iIndexBuilder.OrderIndex(arg1)
           </code>
-          <div class="tip" id="1139">
+          <div class="tip" id="1308">
             <strong>Signature:</strong>SeriesConstruction&lt;&#39;K&gt; -&gt; SeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K          </div>
@@ -242,10 +237,27 @@ is used for custom equality testing (for example, when getting a level of a hier
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1140', 1140)" onmouseover="showTip(event, '1140', 1140)">
+          <code onmouseout="hideTip(event, '1309', 1309)" onmouseover="showTip(event, '1309', 1309)">
+            iIndexBuilder.Project(arg1)
+          </code>
+          <div class="tip" id="1309">
+            <strong>Signature:</strong>IIndex&lt;&#39;K&gt; -&gt; IIndex&lt;&#39;K&gt;<br />
+              <strong>Modifiers:</strong> abstract<br />
+                          <strong>Type parameters:</strong> 'K          </div>
+        </td>
+        <td class="xmldoc"><p>When we perform some projection on the vector (e.g. <code>Series.map</code>), then we may also
+need to perform some transformation on the index (because it will typically turn delayed
+index into an evaluated index). This operation represents that - it should return 
+(evaluated) index with the same keys.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1310', 1310)" onmouseover="showTip(event, '1310', 1310)">
             iIndexBuilder.Reindex(...)
           </code>
-          <div class="tip" id="1140">
+          <div class="tip" id="1310">
             <strong>Signature:</strong>(IIndex&lt;&#39;K&gt; * IIndex&lt;&#39;K&gt; * Lookup * VectorConstruction) -&gt; VectorConstruction<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K          </div>
@@ -260,10 +272,10 @@ with another index) or when selecting multiple keys (<code>Series.lookupAll</cod
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1141', 1141)" onmouseover="showTip(event, '1141', 1141)">
+          <code onmouseout="hideTip(event, '1311', 1311)" onmouseover="showTip(event, '1311', 1311)">
             iIndexBuilder.Resample(...)
           </code>
-          <div class="tip" id="1141">
+          <div class="tip" id="1311">
             <strong>Signature:</strong>(IIndex&lt;&#39;K&gt; * seq&lt;&#39;K&gt; * Direction * source:VectorConstruction * valueSelector:(&#39;TNewKey * SeriesConstruction&lt;&#39;K&gt; -&gt; OptionalValue&lt;&#39;R&gt;) * keySelector:(&#39;K * SeriesConstruction&lt;&#39;K&gt; -&gt; &#39;TNewKey)) -&gt; IIndex&lt;&#39;TNewKey&gt; * IVector&lt;&#39;R&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K, 'TNewKey, 'R          </div>
@@ -278,10 +290,10 @@ hold at the boundaries where values before/after the key may also be included)</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1142', 1142)" onmouseover="showTip(event, '1142', 1142)">
+          <code onmouseout="hideTip(event, '1312', 1312)" onmouseover="showTip(event, '1312', 1312)">
             iIndexBuilder.Union(arg1, arg2)
           </code>
-          <div class="tip" id="1142">
+          <div class="tip" id="1312">
             <strong>Signature:</strong>(SeriesConstruction&lt;&#39;K&gt; * SeriesConstruction&lt;&#39;K&gt;) -&gt; IIndex&lt;&#39;K&gt; * VectorConstruction * VectorConstruction<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K          </div>
@@ -293,10 +305,10 @@ for both vectors that match the left and the right index.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1143', 1143)" onmouseover="showTip(event, '1143', 1143)">
+          <code onmouseout="hideTip(event, '1313', 1313)" onmouseover="showTip(event, '1313', 1313)">
             iIndexBuilder.WithIndex(...)
           </code>
-          <div class="tip" id="1143">
+          <div class="tip" id="1313">
             <strong>Signature:</strong>(IIndex&lt;&#39;K&gt; * (Address -&gt; OptionalValue&lt;&#39;TNewKey&gt;) * VectorConstruction) -&gt; SeriesConstruction&lt;&#39;TNewKey&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'K, 'TNewKey          </div>
@@ -307,9 +319,6 @@ for both vectors that match the left and the right index.</p>
       </tr>
     </tbody>
   </table>
-
-
-
 
         </div>
         <div class="span3">

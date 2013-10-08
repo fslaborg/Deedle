@@ -55,10 +55,11 @@
         <div class="span9" id="main">
           
 
-<h1>DelayedSeries</h1>
 
+
+<h1>DelayedSeries</h1>
 <div class="xmldoc">
-  <p>This type exposes a single static method <code>DelayedSeries.Create</code> that can be used for
+<p>This type exposes a single static method <code>DelayedSeries.Create</code> that can be used for
 constructing data series (of type <code>Series&lt;K, V&gt;</code>) with lazily loaded data. You can
 use this functionality to create series that represents e.g. an entire price history
 in a database, but only loads data that are actually needed. For more information
@@ -78,26 +79,20 @@ see the <a href="../lazysource.html">lazy data loading tutorial</a>.</p>
 <p>The arguments <code>min</code> and <code>max</code> specfify the complete range of the series. The 
 function passed to <code>Create</code> is called with minimal and maximal required key
 (<code>lo</code> and <code>hi</code>) and with two values that specify boundary behaviour.</p>
-
 </div>
-
-
-
-
-
   <h3>Static members</h3>
   <table class="table table-bordered member-list">
     <thead>
-      <tr><td>Static members</td><td>Description</td></tr>
+      <tr><td>Static member</td><td>Description</td></tr>
     </thead>
     <tbody>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1107', 1107)" onmouseover="showTip(event, '1107', 1107)">
+          <code onmouseout="hideTip(event, '1276', 1276)" onmouseover="showTip(event, '1276', 1276)">
             DelayedSeries.Create(min, max, loader)
           </code>
-          <div class="tip" id="1107">
+          <div class="tip" id="1276">
             <strong>Signature:</strong>(min:&#39;K * max:&#39;K * loader:(&#39;K * BoundaryBehavior -&gt; &#39;K * BoundaryBehavior -&gt; Async&lt;&#39;?4817&gt;)) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, '?4817, 'V          </div>
         </td>
@@ -125,10 +120,10 @@ specified range. The function is called with two tuples consisting of key and
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1108', 1108)" onmouseover="showTip(event, '1108', 1108)">
+          <code onmouseout="hideTip(event, '1277', 1277)" onmouseover="showTip(event, '1277', 1277)">
             DelayedSeries.Create(min, max, loader)
           </code>
-          <div class="tip" id="1108">
+          <div class="tip" id="1277">
             <strong>Signature:</strong>(min:&#39;K * max:&#39;K * loader:Func&lt;&#39;K,BoundaryBehavior,&#39;K,BoundaryBehavior,Task&lt;seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt;&gt;&gt;) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
@@ -155,7 +150,6 @@ high ranges are inclusive or exclusive.</li>
       </tr>
     </tbody>
   </table>
-
 
         </div>
         <div class="span3">

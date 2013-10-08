@@ -69,12 +69,12 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '779', 779)" onmouseover="showTip(event, '779', 779)">
+          <code onmouseout="hideTip(event, '209', 209)" onmouseover="showTip(event, '209', 209)">
             ( =&gt; ) a b
           </code>
-          <div class="tip" id="779">
-            <strong>Signature:</strong>a:&#39;?7678 -&gt; b:&#39;?7679 -&gt; &#39;?7678 * &#39;?7679<br />
-                          <strong>Type parameters:</strong> '?7678, '?7679          </div>
+          <div class="tip" id="209">
+            <strong>Signature:</strong>a:&#39;?8167 -&gt; b:&#39;?8168 -&gt; &#39;?8167 * &#39;?8168<br />
+                          <strong>Type parameters:</strong> '?8167, '?8168          </div>
         </td>
         <td class="xmldoc"><p>Custom operator that can be used when constructing series from observations
 or frames from key-row or key-column pairs. The operator simply returns a 
@@ -87,24 +87,24 @@ tuple, but it provides a more convenient syntax. For example:</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '780', 780)" onmouseover="showTip(event, '780', 780)">
+          <code onmouseout="hideTip(event, '210', 210)" onmouseover="showTip(event, '210', 210)">
             ( =?&gt; ) a b
           </code>
-          <div class="tip" id="780">
-            <strong>Signature:</strong>a:&#39;?7681 -&gt; b:ISeries&lt;&#39;?7682&gt; -&gt; &#39;?7681 * ISeries&lt;&#39;?7682&gt;<br />
-                          <strong>Type parameters:</strong> '?7681, '?7682          </div>
+          <div class="tip" id="210">
+            <strong>Signature:</strong>a:&#39;?8170 -&gt; b:ISeries&lt;&#39;?8171&gt; -&gt; &#39;?8170 * ISeries&lt;&#39;?8171&gt;<br />
+                          <strong>Type parameters:</strong> '?8170, '?8171          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '781', 781)" onmouseover="showTip(event, '781', 781)">
+          <code onmouseout="hideTip(event, '211', 211)" onmouseover="showTip(event, '211', 211)">
             ( $ ) f series
           </code>
-          <div class="tip" id="781">
-            <strong>Signature:</strong>f:(&#39;?7684 -&gt; &#39;?7685) -&gt; series:Series&lt;&#39;?7686,&#39;?7684&gt; -&gt; Series&lt;&#39;?7686,&#39;?7685&gt;<br />
-                          <strong>Type parameters:</strong> '?7684, '?7685, '?7686          </div>
+          <div class="tip" id="211">
+            <strong>Signature:</strong>f:(&#39;?8173 -&gt; &#39;?8174) -&gt; series:Series&lt;&#39;?8175,&#39;?8173&gt; -&gt; Series&lt;&#39;?8175,&#39;?8174&gt;<br />
+                          <strong>Type parameters:</strong> '?8173, '?8174, '?8175          </div>
         </td>
         <td class="xmldoc"><p>Custom operator that can be used for applying fuction to all elements of 
 a series. This provides a nicer syntactic sugar for the <code>Series.mapValues</code> 
@@ -130,10 +130,10 @@ adjust $ (s1 + s1)
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '782', 782)" onmouseover="showTip(event, '782', 782)">
+          <code onmouseout="hideTip(event, '212', 212)" onmouseover="showTip(event, '212', 212)">
             Frame.readCsv(...)
           </code>
-          <div class="tip" id="782">
+          <div class="tip" id="212">
             <strong>Signature:</strong>(location:string * ?inferTypes:bool option * ?inferRows:int option * ?schema:string option * ?separators:string option * ?culture:string option) -&gt; Frame&lt;int,string&gt;<br />
                       </div>
         </td>
@@ -163,10 +163,10 @@ values in the CSV file (such as <code>"en-US"</code>). The default is invariant 
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '783', 783)" onmouseover="showTip(event, '783', 783)">
+          <code onmouseout="hideTip(event, '213', 213)" onmouseover="showTip(event, '213', 213)">
             Frame.readCsv(...)
           </code>
-          <div class="tip" id="783">
+          <div class="tip" id="213">
             <strong>Signature:</strong>(stream:Stream * ?inferTypes:bool option * ?inferRows:int option * ?schema:string option * ?separators:string option * ?culture:string option) -&gt; Frame&lt;int,string&gt;<br />
                       </div>
         </td>
@@ -196,12 +196,12 @@ values in the CSV file (such as <code>"en-US"</code>). The default is invariant 
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '784', 784)" onmouseover="showTip(event, '784', 784)">
+          <code onmouseout="hideTip(event, '214', 214)" onmouseover="showTip(event, '214', 214)">
             Frame.ofRowsOrdinal(rows)
           </code>
-          <div class="tip" id="784">
-            <strong>Signature:</strong>rows:seq&lt;&#39;?7690&gt; -&gt; Frame&lt;int,&#39;?7691&gt;<br />
-                          <strong>Type parameters:</strong> '?7690, '?7691, '?7692          </div>
+          <div class="tip" id="214">
+            <strong>Signature:</strong>rows:seq&lt;&#39;?8179&gt; -&gt; Frame&lt;int,&#39;?8180&gt;<br />
+                          <strong>Type parameters:</strong> '?8179, '?8180, '?8181          </div>
         </td>
         <td class="xmldoc"><p>Creates a data frame with ordinal Integer index from a sequence of rows.
 The column indices of individual rows are unioned, so if a row has fewer
@@ -211,82 +211,82 @@ columns, it will be successfully added, but there will be missing values.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '785', 785)" onmouseover="showTip(event, '785', 785)">
+          <code onmouseout="hideTip(event, '215', 215)" onmouseover="showTip(event, '215', 215)">
             Frame.ofRows(rows)
           </code>
-          <div class="tip" id="785">
-            <strong>Signature:</strong>(rows:seq&lt;&#39;?7694 * &#39;?7695&gt;) -&gt; Frame&lt;&#39;?7694,&#39;?7696&gt;<br />
-                          <strong>Type parameters:</strong> '?7694, '?7695, '?7696          </div>
+          <div class="tip" id="215">
+            <strong>Signature:</strong>(rows:seq&lt;&#39;?8183 * &#39;?8184&gt;) -&gt; Frame&lt;&#39;?8183,&#39;?8185&gt;<br />
+                          <strong>Type parameters:</strong> '?8183, '?8184, '?8185          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '786', 786)" onmouseover="showTip(event, '786', 786)">
+          <code onmouseout="hideTip(event, '216', 216)" onmouseover="showTip(event, '216', 216)">
             Frame.ofRows(rows)
           </code>
-          <div class="tip" id="786">
-            <strong>Signature:</strong>rows:Series&lt;&#39;?7698,&#39;?7699&gt; -&gt; Frame&lt;&#39;?7698,&#39;?7700&gt;<br />
-                          <strong>Type parameters:</strong> '?7698, '?7699, '?7700          </div>
+          <div class="tip" id="216">
+            <strong>Signature:</strong>rows:Series&lt;&#39;?8187,&#39;?8188&gt; -&gt; Frame&lt;&#39;?8187,&#39;?8189&gt;<br />
+                          <strong>Type parameters:</strong> '?8187, '?8188, '?8189          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '787', 787)" onmouseover="showTip(event, '787', 787)">
+          <code onmouseout="hideTip(event, '217', 217)" onmouseover="showTip(event, '217', 217)">
             Frame.ofRowKeys(keys)
           </code>
-          <div class="tip" id="787">
-            <strong>Signature:</strong>keys:seq&lt;&#39;?7702&gt; -&gt; Frame&lt;&#39;?7702,string&gt;<br />
-                          <strong>Type parameters:</strong> '?7702          </div>
+          <div class="tip" id="217">
+            <strong>Signature:</strong>keys:seq&lt;&#39;?8191&gt; -&gt; Frame&lt;&#39;?8191,string&gt;<br />
+                          <strong>Type parameters:</strong> '?8191          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '788', 788)" onmouseover="showTip(event, '788', 788)">
+          <code onmouseout="hideTip(event, '218', 218)" onmouseover="showTip(event, '218', 218)">
             Frame.ofColumns(cols)
           </code>
-          <div class="tip" id="788">
-            <strong>Signature:</strong>cols:Series&lt;&#39;?7704,&#39;?7705&gt; -&gt; Frame&lt;&#39;?7706,&#39;?7704&gt;<br />
-                          <strong>Type parameters:</strong> '?7704, '?7705, '?7706          </div>
+          <div class="tip" id="218">
+            <strong>Signature:</strong>cols:Series&lt;&#39;?8193,&#39;?8194&gt; -&gt; Frame&lt;&#39;?8195,&#39;?8193&gt;<br />
+                          <strong>Type parameters:</strong> '?8193, '?8194, '?8195          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '789', 789)" onmouseover="showTip(event, '789', 789)">
+          <code onmouseout="hideTip(event, '219', 219)" onmouseover="showTip(event, '219', 219)">
             Frame.ofColumns(cols)
           </code>
-          <div class="tip" id="789">
-            <strong>Signature:</strong>(cols:seq&lt;&#39;?7708 * &#39;?7709&gt;) -&gt; Frame&lt;&#39;K,&#39;?7708&gt;<br />
-                          <strong>Type parameters:</strong> '?7708, '?7709, 'K          </div>
+          <div class="tip" id="219">
+            <strong>Signature:</strong>(cols:seq&lt;&#39;?8197 * &#39;?8198&gt;) -&gt; Frame&lt;&#39;K,&#39;?8197&gt;<br />
+                          <strong>Type parameters:</strong> '?8197, '?8198, 'K          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '790', 790)" onmouseover="showTip(event, '790', 790)">
+          <code onmouseout="hideTip(event, '220', 220)" onmouseover="showTip(event, '220', 220)">
             Frame.ofValues(values)
           </code>
-          <div class="tip" id="790">
-            <strong>Signature:</strong>(values:seq&lt;&#39;?7712 * &#39;?7713 * &#39;?7714&gt;) -&gt; Frame&lt;&#39;?7712,&#39;?7713&gt;<br />
-                          <strong>Type parameters:</strong> '?7712, '?7713, '?7714          </div>
+          <div class="tip" id="220">
+            <strong>Signature:</strong>(values:seq&lt;&#39;?8201 * &#39;?8202 * &#39;?8203&gt;) -&gt; Frame&lt;&#39;?8201,&#39;?8202&gt;<br />
+                          <strong>Type parameters:</strong> '?8201, '?8202, '?8203          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '791', 791)" onmouseover="showTip(event, '791', 791)">
+          <code onmouseout="hideTip(event, '221', 221)" onmouseover="showTip(event, '221', 221)">
             Frame.ofRecords(series)
           </code>
-          <div class="tip" id="791">
+          <div class="tip" id="221">
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;R&gt; -&gt; Frame&lt;&#39;K,string&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'R          </div>
         </td>
@@ -295,10 +295,10 @@ columns, it will be successfully added, but there will be missing values.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '792', 792)" onmouseover="showTip(event, '792', 792)">
+          <code onmouseout="hideTip(event, '222', 222)" onmouseover="showTip(event, '222', 222)">
             Frame.ofRecords(values)
           </code>
-          <div class="tip" id="792">
+          <div class="tip" id="222">
             <strong>Signature:</strong>values:seq&lt;&#39;T&gt; -&gt; Frame&lt;int,string&gt;<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
@@ -307,10 +307,10 @@ columns, it will be successfully added, but there will be missing values.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '793', 793)" onmouseover="showTip(event, '793', 793)">
+          <code onmouseout="hideTip(event, '223', 223)" onmouseover="showTip(event, '223', 223)">
             frame.Append(rowKey, row)
           </code>
-          <div class="tip" id="793">
+          <div class="tip" id="223">
             <strong>Signature:</strong>(rowKey:&#39;TRowKey * row:ISeries&lt;&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
@@ -319,22 +319,10 @@ columns, it will be successfully added, but there will be missing values.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '794', 794)" onmouseover="showTip(event, '794', 794)">
-            frame.WithMissing(value)
-          </code>
-          <div class="tip" id="794">
-            <strong>Signature:</strong>value:&#39;?7726 -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> '?7726          </div>
-        </td>
-        <td class="xmldoc"></td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '795', 795)" onmouseover="showTip(event, '795', 795)">
+          <code onmouseout="hideTip(event, '224', 224)" onmouseover="showTip(event, '224', 224)">
             frame.WithColumnIndex(columnKeys)
           </code>
-          <div class="tip" id="795">
+          <div class="tip" id="224">
             <strong>Signature:</strong>columnKeys:seq&lt;&#39;TNewColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TNewColumnKey&gt;<br />
                           <strong>Type parameters:</strong> 'TNewColumnKey          </div>
         </td>
@@ -343,10 +331,10 @@ columns, it will be successfully added, but there will be missing values.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '796', 796)" onmouseover="showTip(event, '796', 796)">
+          <code onmouseout="hideTip(event, '225', 225)" onmouseover="showTip(event, '225', 225)">
             frame.WithRowIndex(col)
           </code>
-          <div class="tip" id="796">
+          <div class="tip" id="225">
             <strong>Signature:</strong>col:&#39;TColumnKey -&gt; Frame&lt;&#39;TNewRowIndex,&#39;TColumnKey&gt;<br />
                           <strong>Type parameters:</strong> 'TNewRowIndex          </div>
         </td>
@@ -355,10 +343,10 @@ columns, it will be successfully added, but there will be missing values.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '797', 797)" onmouseover="showTip(event, '797', 797)">
+          <code onmouseout="hideTip(event, '226', 226)" onmouseover="showTip(event, '226', 226)">
             frame.GroupRowsBy(key)
           </code>
-          <div class="tip" id="797">
+          <div class="tip" id="226">
             <strong>Signature:</strong>key:&#39;TColumnKey -&gt; Frame&lt;(&#39;TGroup * &#39;TRowKey),&#39;TColumnKey&gt;<br />
                           <strong>Type parameters:</strong> 'TGroup          </div>
         </td>
@@ -367,10 +355,10 @@ columns, it will be successfully added, but there will be missing values.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '798', 798)" onmouseover="showTip(event, '798', 798)">
+          <code onmouseout="hideTip(event, '227', 227)" onmouseover="showTip(event, '227', 227)">
             frame.GroupRowsInto(key, f)
           </code>
-          <div class="tip" id="798">
+          <div class="tip" id="227">
             <strong>Signature:</strong>(key:&#39;TColumnKey * f:Func&lt;&#39;TGroup,Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;,Frame&lt;obj,obj&gt;&gt;) -&gt; Frame&lt;(&#39;TGroup * obj),obj&gt;<br />
                           <strong>Type parameters:</strong> 'TGroup          </div>
         </td>
@@ -379,10 +367,10 @@ columns, it will be successfully added, but there will be missing values.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '799', 799)" onmouseover="showTip(event, '799', 799)">
+          <code onmouseout="hideTip(event, '228', 228)" onmouseover="showTip(event, '228', 228)">
             frame.GroupRowsUsing(f)
           </code>
-          <div class="tip" id="799">
+          <div class="tip" id="228">
             <strong>Signature:</strong>f:Func&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;,&#39;TGroup&gt; -&gt; Frame&lt;(&#39;TGroup * &#39;TRowKey),&#39;TColumnKey&gt;<br />
                           <strong>Type parameters:</strong> 'TGroup          </div>
         </td>

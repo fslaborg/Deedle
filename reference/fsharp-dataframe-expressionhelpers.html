@@ -57,13 +57,61 @@
 
 
 
-<h1>VectorData</h1>
+<h1>ExpressionHelpers</h1>
 <div class="xmldoc">
-<p>Provides a way to get the data of an arbitrary vector. This is a concrete type used 
-by functions that operate on vectors (like <code>Series.sum</code>, etc.). The vector may choose
-to return the data as <code>IReadOnlyList</code> (with or without N/A values) which is more
-efficient to use or as a lazy sequence (slower, but more general).</p>
 </div>
+  <h3>Functions and values</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Function or value</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '229', 229)" onmouseover="showTip(event, '229', 229)">
+            asExpr _arg1
+          </code>
+          <div class="tip" id="229">
+            <strong>Signature:</strong>_arg1:Expr -&gt; Expression<br />
+                      </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>Type extensions</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Type extension</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '230', 230)" onmouseover="showTip(event, '230', 230)">
+            expression.Wrap()
+          </code>
+          <div class="tip" id="230">
+            <strong>Signature:</strong>unit -&gt; Expr<br />
+                      </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '231', 231)" onmouseover="showTip(event, '231', 231)">
+            expr.AsExpression()
+          </code>
+          <div class="tip" id="231">
+            <strong>Signature:</strong>unit -&gt; Expression<br />
+                      </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+    </tbody>
+  </table>
 
         </div>
         <div class="span3">

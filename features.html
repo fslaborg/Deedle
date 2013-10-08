@@ -230,14 +230,14 @@ Euro area:</p>
 <span class="c">// Join and convert to in billions of USD</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs40', 68)" onmouseover="showTip(event, 'fs40', 68)" class="i">world</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs37', 69)" onmouseover="showTip(event, 'fs37', 69)" class="i">eu</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs41', 70)" onmouseover="showTip(event, 'fs41', 70)" class="i">Join</span>(<span onmouseout="hideTip(event, 'fs39', 71)" onmouseover="showTip(event, 'fs39', 71)" class="i">oecd</span>) <span class="o">/</span> <span class="n">1e9</span>
 
-<span class="fsi">val world : Frame&lt;int,(string * string)&gt; =</span>
+<span class="fsi">val world : Frame<int,(string * string)> =</span>
 <span class="fsi">        Euro area                OECD members  </span>
 <span class="fsi">        Austria  Estonia   (...) Canada  Chile   (...)</span>
-<span class="fsi">1960 -&gt; 6.592    &lt;missing&gt;       41.093  4.2117</span>
-<span class="fsi">1961 -&gt; 7.311    &lt;missing&gt;       40.767  4.7053</span>
+<span class="fsi">1960 -> 6.592    <missing>       41.093  4.2117</span>
+<span class="fsi">1961 -> 7.311    <missing>       40.767  4.7053</span>
 <span class="fsi">:       ...</span>
-<span class="fsi">2011 -&gt; 417.6    22.15           1777.7  250.99</span>
-<span class="fsi">2012 -&gt; 399.6    21.85           1821.4  268.18</span></pre>
+<span class="fsi">2011 -> 417.6    22.15           1777.7  250.99</span>
+<span class="fsi">2012 -> 399.6    21.85           1821.4  268.18</span></pre>
 </td>
 </tr>
 </table><p>The loaded data look something like the sample above. As you can see, the columns
@@ -358,11 +358,11 @@ for getting the values as values of specified type.</p>
 <span class="c">// Get column as an object series</span>
 <span onmouseout="hideTip(event, 'fs19', 85)" onmouseover="showTip(event, 'fs19', 85)" class="i">people</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs42', 86)" onmouseover="showTip(event, 'fs42', 86)" class="i">Columns</span><span class="o">?</span><span class="i">Age</span>
 <span onmouseout="hideTip(event, 'fs19', 87)" onmouseover="showTip(event, 'fs19', 87)" class="i">people</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs42', 88)" onmouseover="showTip(event, 'fs42', 88)" class="i">Columns</span><span class="o">?</span><span class="i">Countries</span>
-<span class="fsi">val it : ObjectSeries&lt;string&gt; =</span>
-<span class="fsi">  Joe     -&gt; [UK; US; UK]       </span>
-<span class="fsi">  Tomas   -&gt; [CZ; UK; US; ... ] </span>
-<span class="fsi">  Eve     -&gt; [FR]               </span>
-<span class="fsi">  Suzanne -&gt; [US]</span>
+<span class="fsi">val it : ObjectSeries<string> =</span>
+<span class="fsi">  Joe     -> [UK; US; UK]       </span>
+<span class="fsi">  Tomas   -> [CZ; UK; US; ... ] </span>
+<span class="fsi">  Eve     -> [FR]               </span>
+<span class="fsi">  Suzanne -> [US]</span>
 
 <span class="c">// Get column &amp; try get column using members</span>
 <span onmouseout="hideTip(event, 'fs19', 89)" onmouseover="showTip(event, 'fs19', 89)" class="i">people</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs42', 90)" onmouseover="showTip(event, 'fs42', 90)" class="i">Columns</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs44', 91)" onmouseover="showTip(event, 'fs44', 91)" class="i">Get</span>(<span class="s">&quot;</span><span class="s">Name</span><span class="s">&quot;</span>)
@@ -653,12 +653,12 @@ also obtain values for a sequence of keys:</p>
 </td>
 <td class="snippet"><pre class="fssnip">
 <span onmouseout="hideTip(event, 'fs71', 205)" onmouseover="showTip(event, 'fs71', 205)" class="i">opens</span><span class="o">.</span>[<span onmouseout="hideTip(event, 'fs72', 206)" onmouseover="showTip(event, 'fs72', 206)" class="i">DateTime</span>(<span class="n">2013</span>, <span class="n">1</span>, <span class="n">1</span>) <span class="o">..</span> <span onmouseout="hideTip(event, 'fs72', 207)" onmouseover="showTip(event, 'fs72', 207)" class="i">DateTime</span>(<span class="n">2013</span>, <span class="n">1</span>, <span class="n">31</span>)]
-<span class="fsi">val it : Series&lt;DateTime,float&gt; =</span>
-<span class="fsi">  1/2/2013  -&gt; 27.25 </span>
-<span class="fsi">  1/3/2013  -&gt; 27.63 </span>
+<span class="fsi">val it : Series<DateTime,float> =</span>
+<span class="fsi">  1/2/2013  -> 27.25 </span>
+<span class="fsi">  1/3/2013  -> 27.63 </span>
 <span class="fsi">  ...</span>
-<span class="fsi">  1/30/2013 -&gt; 28.01 </span>
-<span class="fsi">  1/31/2013 -&gt; 27.79 </span></pre>
+<span class="fsi">  1/30/2013 -> 28.01 </span>
+<span class="fsi">  1/31/2013 -> 27.79 </span></pre>
 </td>
 </tr>
 </table><p>The slicing works even if the keys are not available in the series. The lookup
@@ -704,11 +704,11 @@ using <code>df.Rows</code> and <code>df.Columns</code>, so the first option is a
 </td>
 <td class="snippet"><pre class="fssnip">
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs80', 208)" onmouseover="showTip(event, 'fs80', 208)" class="i">travels</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs19', 209)" onmouseover="showTip(event, 'fs19', 209)" class="i">people</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 210)" onmouseover="showTip(event, 'fs21', 210)" class="i">GetSeries</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs11', 211)" onmouseover="showTip(event, 'fs11', 211)" class="i">string</span> <span onmouseout="hideTip(event, 'fs15', 212)" onmouseover="showTip(event, 'fs15', 212)" class="i">list</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Countries</span><span class="s">&quot;</span>)
-<span class="fsi">val travels : Series&lt;string,string list&gt; =</span>
-<span class="fsi">  Joe     -&gt; [UK; US; UK]       </span>
-<span class="fsi">  Tomas   -&gt; [CZ; UK; US; ... ] </span>
-<span class="fsi">  Eve     -&gt; [FR] </span>
-<span class="fsi">  Suzanne -&gt; [US]</span></pre>
+<span class="fsi">val travels : Series<string,string list> =</span>
+<span class="fsi">  Joe     -> [UK; US; UK]       </span>
+<span class="fsi">  Tomas   -> [CZ; UK; US; ... ] </span>
+<span class="fsi">  Eve     -> [FR] </span>
+<span class="fsi">  Suzanne -> [US]</span></pre>
 </td>
 </tr>
 </table><p>Now we can group the elements using both key (e.g. length of a name) and using the
@@ -763,13 +763,13 @@ The frame contains the number of visits to each country by each person:</p>
 <span onmouseout="hideTip(event, 'fs80', 240)" onmouseover="showTip(event, 'fs80', 240)" class="i">travels</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs33', 241)" onmouseover="showTip(event, 'fs33', 241)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs49', 242)" onmouseover="showTip(event, 'fs49', 242)" class="i">mapValues</span> (<span onmouseout="hideTip(event, 'fs91', 243)" onmouseover="showTip(event, 'fs91', 243)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs92', 244)" onmouseover="showTip(event, 'fs92', 244)" class="i">countBy</span> <span onmouseout="hideTip(event, 'fs93', 245)" onmouseover="showTip(event, 'fs93', 245)" class="i">id</span> <span class="o">&gt;</span><span class="o">&gt;</span> <span onmouseout="hideTip(event, 'fs53', 246)" onmouseover="showTip(event, 'fs53', 246)" class="i">series</span>)
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 247)" onmouseover="showTip(event, 'fs2', 247)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs94', 248)" onmouseover="showTip(event, 'fs94', 248)" class="i">ofRows</span>
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 249)" onmouseover="showTip(event, 'fs2', 249)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs95', 250)" onmouseover="showTip(event, 'fs95', 250)" class="i">withMissingVal</span> <span class="n">0</span>
-<span class="fsi">val it : Frame&lt;string,string&gt; =  </span>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 249)" onmouseover="showTip(event, 'fs2', 249)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs95', 250)" onmouseover="showTip(event, 'fs95', 250)" class="i">fillMissingWith</span> <span class="n">0</span>
+<span class="fsi">val it : Frame<string,string> =  </span>
 <span class="fsi">             CZ FR UK US </span>
-<span class="fsi">  Joe     -&gt; 0  0  2  1  </span>
-<span class="fsi">  Tomas   -&gt; 2  0  1  1  </span>
-<span class="fsi">  Eve     -&gt; 0  1  0  0  </span>
-<span class="fsi">  Suzanne -&gt; 0  0  0  1  </span></pre>
+<span class="fsi">  Joe     -> 0  0  2  1  </span>
+<span class="fsi">  Tomas   -> 2  0  1  1  </span>
+<span class="fsi">  Eve     -> 0  1  0  0  </span>
+<span class="fsi">  Suzanne -> 0  0  0  1  </span></pre>
 </td>
 </tr>
 </table><p>The problem can be solved just using <code>Series.mapValues</code>, together with standard F#
@@ -849,14 +849,14 @@ of keys that represent multiple levels. For example:</p>
 </td>
 <td class="snippet"><pre class="fssnip">
 <span onmouseout="hideTip(event, 'fs1', 271)" onmouseover="showTip(event, 'fs1', 271)" class="i">titanic</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 272)" onmouseover="showTip(event, 'fs2', 272)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs96', 273)" onmouseover="showTip(event, 'fs96', 273)" class="i">groupRowsByString</span> <span class="s">&quot;</span><span class="s">Sex</span><span class="s">&quot;</span>
-<span class="fsi">val it : Frame&lt;(string * int),string&gt; =</span>
+<span class="fsi">val it : Frame<(string * int),string> =</span>
 <span class="fsi">                Survive   Name                    </span>
-<span class="fsi">  female 2   -&gt; True      Heikkinen, Miss. Laina  </span>
-<span class="fsi">         11  -&gt; True      Bonnell, Miss. Elizabeth</span>
-<span class="fsi">         19  -&gt; True      Masselmani, Mrs. Fatima </span>
+<span class="fsi">  female 2   -> True      Heikkinen, Miss. Laina  </span>
+<span class="fsi">         11  -> True      Bonnell, Miss. Elizabeth</span>
+<span class="fsi">         19  -> True      Masselmani, Mrs. Fatima </span>
 <span class="fsi">                ...       ...                     </span>
-<span class="fsi">  male   870 -&gt; False     Balkic, Mr. Cerin       </span>
-<span class="fsi">         878 -&gt; False     Laleff, Mr. Kristo      </span></pre>
+<span class="fsi">  male   870 -> False     Balkic, Mr. Cerin       </span>
+<span class="fsi">         878 -> False     Laleff, Mr. Kristo      </span></pre>
 </td>
 </tr>
 </table><p>As you can see, the pretty printer understands multi-level indices and 
@@ -941,7 +941,7 @@ series from the frame.</p>
 
 <span class="c">// Count number of survivors in each group</span>
 <span onmouseout="hideTip(event, 'fs108', 310)" onmouseover="showTip(event, 'fs108', 310)" class="i">byClassAndPort</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 311)" onmouseover="showTip(event, 'fs21', 311)" class="i">GetSeries</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs117', 312)" onmouseover="showTip(event, 'fs117', 312)" class="i">bool</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Survived</span><span class="s">&quot;</span>)
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs33', 313)" onmouseover="showTip(event, 'fs33', 313)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs118', 314)" onmouseover="showTip(event, 'fs118', 314)" class="i">foldBy</span> <span onmouseout="hideTip(event, 'fs111', 315)" onmouseover="showTip(event, 'fs111', 315)" class="i">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs115', 316)" onmouseover="showTip(event, 'fs115', 316)" class="i">get1And2Of3</span> (<span onmouseout="hideTip(event, 'fs33', 317)" onmouseover="showTip(event, 'fs33', 317)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs119', 318)" onmouseover="showTip(event, 'fs119', 318)" class="i">values</span> <span class="o">&gt;</span><span class="o">&gt;</span> <span onmouseout="hideTip(event, 'fs91', 319)" onmouseover="showTip(event, 'fs91', 319)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs92', 320)" onmouseover="showTip(event, 'fs92', 320)" class="i">countBy</span> <span onmouseout="hideTip(event, 'fs93', 321)" onmouseover="showTip(event, 'fs93', 321)" class="i">id</span> <span class="o">&gt;</span><span class="o">&gt;</span> <span onmouseout="hideTip(event, 'fs53', 322)" onmouseover="showTip(event, 'fs53', 322)" class="i">series</span>)
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs33', 313)" onmouseover="showTip(event, 'fs33', 313)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs118', 314)" onmouseover="showTip(event, 'fs118', 314)" class="i">reduceBy</span> <span onmouseout="hideTip(event, 'fs111', 315)" onmouseover="showTip(event, 'fs111', 315)" class="i">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs115', 316)" onmouseover="showTip(event, 'fs115', 316)" class="i">get1And2Of3</span> (<span onmouseout="hideTip(event, 'fs33', 317)" onmouseover="showTip(event, 'fs33', 317)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs119', 318)" onmouseover="showTip(event, 'fs119', 318)" class="i">values</span> <span class="o">&gt;</span><span class="o">&gt;</span> <span onmouseout="hideTip(event, 'fs91', 319)" onmouseover="showTip(event, 'fs91', 319)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs92', 320)" onmouseover="showTip(event, 'fs92', 320)" class="i">countBy</span> <span onmouseout="hideTip(event, 'fs93', 321)" onmouseover="showTip(event, 'fs93', 321)" class="i">id</span> <span class="o">&gt;</span><span class="o">&gt;</span> <span onmouseout="hideTip(event, 'fs53', 322)" onmouseover="showTip(event, 'fs53', 322)" class="i">series</span>)
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 323)" onmouseover="showTip(event, 'fs2', 323)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs94', 324)" onmouseover="showTip(event, 'fs94', 324)" class="i">ofRows</span></pre>
 </td>
 </tr>
@@ -1052,14 +1052,14 @@ document).</p>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs126', 343)" onmouseover="showTip(event, 'fs126', 343)" class="i">decades</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs123', 344)" onmouseover="showTip(event, 'fs123', 344)" class="i">euro</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 345)" onmouseover="showTip(event, 'fs2', 345)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs101', 346)" onmouseover="showTip(event, 'fs101', 346)" class="i">groupRowsUsing</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs102', 347)" onmouseover="showTip(event, 'fs102', 347)" class="i">k</span> _ <span class="k">-&gt;</span> 
   <span onmouseout="hideTip(event, 'fs127', 348)" onmouseover="showTip(event, 'fs127', 348)" class="i">sprintf</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">d0s</span><span class="s">&quot;</span> (<span onmouseout="hideTip(event, 'fs102', 349)" onmouseover="showTip(event, 'fs102', 349)" class="i">k</span> <span class="o">/</span> <span class="n">10</span>))
 <span class="fsi"> </span>
-<span class="fsi">val decades : Frame&lt;(string * int),string&gt; =</span>
+<span class="fsi">val decades : Frame<(string * int),string> =</span>
 <span class="fsi">                Austria  Estonia   ...      </span>
-<span class="fsi">  1960s 1960 -&gt; 6.592    &lt;missing&gt; </span>
-<span class="fsi">        1961 -&gt; 7.311    &lt;missing&gt; </span>
+<span class="fsi">  1960s 1960 -> 6.592    <missing> </span>
+<span class="fsi">        1961 -> 7.311    <missing> </span>
 <span class="fsi">        ...  </span>
-<span class="fsi">  2010s 2010 -&gt; 376.8    18.84 </span>
-<span class="fsi">        2011 -&gt; 417.6    22.15 </span>
-<span class="fsi">        2012 -&gt; 399.6    21.85 </span></pre>
+<span class="fsi">  2010s 2010 -> 376.8    18.84 </span>
+<span class="fsi">        2011 -> 417.6    22.15 </span>
+<span class="fsi">        2012 -> 399.6    21.85 </span></pre>
 </td>
 </tr>
 </table><p>Now that we have a data frame with hierarchical index, we can select data
@@ -1139,10 +1139,10 @@ of countries and for each decade:</p>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 376)" onmouseover="showTip(event, 'fs2', 376)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs116', 377)" onmouseover="showTip(event, 'fs116', 377)" class="i">meanBy</span> <span onmouseout="hideTip(event, 'fs129', 378)" onmouseover="showTip(event, 'fs129', 378)" class="i">fst</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 379)" onmouseover="showTip(event, 'fs2', 379)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs135', 380)" onmouseover="showTip(event, 'fs135', 380)" class="i">transpose</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 381)" onmouseover="showTip(event, 'fs2', 381)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs116', 382)" onmouseover="showTip(event, 'fs116', 382)" class="i">meanBy</span> <span onmouseout="hideTip(event, 'fs129', 383)" onmouseover="showTip(event, 'fs129', 383)" class="i">fst</span>
-<span class="fsi">val it : Frame&lt;bool,string&gt; =</span>
+<span class="fsi">val it : Frame<bool,string> =</span>
 <span class="fsi">           1960s  1970s  ... 2010s</span>
-<span class="fsi">  False -&gt; 10.45  34.37      306.89</span>
-<span class="fsi">  True  -&gt; 82.74  335.71     2719.26</span></pre>
+<span class="fsi">  False -> 10.45  34.37      306.89</span>
+<span class="fsi">  True  -> 82.74  335.71     2719.26</span></pre>
 </td>
 </tr>
 </table><a name="missing"></a>
@@ -1166,10 +1166,10 @@ for reference types and for nullable types:</p>
 </td>
 <td class="snippet"><pre class="fssnip">
 <span onmouseout="hideTip(event, 'fs33', 384)" onmouseover="showTip(event, 'fs33', 384)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs136', 385)" onmouseover="showTip(event, 'fs136', 385)" class="i">ofValues</span> [ <span onmouseout="hideTip(event, 'fs137', 386)" onmouseover="showTip(event, 'fs137', 386)" class="i">Double</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs138', 387)" onmouseover="showTip(event, 'fs138', 387)" class="i">NaN</span>; <span class="n">1.0</span>; <span class="n">3.14</span> ]
-<span class="fsi">val it : Series&lt;int,float&gt; =</span>
-<span class="fsi">  0 -&gt; &lt;missing&gt; </span>
-<span class="fsi">  1 -&gt; 1        </span>
-<span class="fsi">  2 -&gt; 3.14    </span>
+<span class="fsi">val it : Series<int,float> =</span>
+<span class="fsi">  0 -> <missing> </span>
+<span class="fsi">  1 -> 1        </span>
+<span class="fsi">  2 -> 3.14    </span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs139', 388)" onmouseover="showTip(event, 'fs139', 388)" class="i">nulls</span> <span class="o">=</span> 
   [ <span onmouseout="hideTip(event, 'fs140', 389)" onmouseover="showTip(event, 'fs140', 389)" class="i">Nullable</span>(<span class="n">1</span>); <span onmouseout="hideTip(event, 'fs140', 390)" onmouseover="showTip(event, 'fs140', 390)" class="i">Nullable</span>(); <span onmouseout="hideTip(event, 'fs140', 391)" onmouseover="showTip(event, 'fs140', 391)" class="i">Nullable</span>(<span class="n">3</span>) ]
   <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs33', 392)" onmouseover="showTip(event, 'fs33', 392)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs136', 393)" onmouseover="showTip(event, 'fs136', 393)" class="i">ofValues</span></pre>
@@ -1274,7 +1274,7 @@ at all):</p>
 </tr>
 </table>
           <div class="tip" id="fs1">val titanic : Frame&lt;int,string&gt;<br /><br />Full name: Features.titanic</div>
-<div class="tip" id="fs2">Multiple items<br />module Frame<br /><br />from FSharp.DataFrame<br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;private new : rowIndex:IIndex&lt;&#39;TRowKey&gt; * columnIndex:IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:Series&lt;&#39;TRowKey,&#39;V&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:Series&lt;&#39;TRowKey,&#39;V&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member Append : otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member Clone : unit -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member DropSeries : column:&#39;TColumnKey -&gt; unit<br />&#160;&#160;...<br /><br />Full name: FSharp.DataFrame.Frame&lt;_,_&gt;<br /><br />--------------------<br />type Frame =<br />&#160;&#160;static member CreateEmpty : unit -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : keys:seq&lt;&#39;RowKey&gt; * columns:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromRowKeys : keys:seq&lt;&#39;K&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRows : rows:seq&lt;KeyValuePair&lt;&#39;RowKey,ObjectSeries&lt;&#39;ColKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromRows : rows:seq&lt;KeyValuePair&lt;&#39;RowKey,Series&lt;&#39;ColKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromRows : rows:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;int,&#39;ColKey&gt; (requires equality)<br />&#160;&#160;static member ReadCsv : stream:Stream * skipTypeInference:bool * inferRows:int * schema:string * separators:string * culture:string -&gt; Frame&lt;int,string&gt;<br />&#160;&#160;static member ReadCsv : location:string * skipTypeInference:bool * inferRows:int * schema:string * separators:string * culture:string -&gt; Frame&lt;int,string&gt;<br /><br />Full name: FSharp.DataFrame.Frame<br /><br />--------------------<br />new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
+<div class="tip" id="fs2">Multiple items<br />module Frame<br /><br />from FSharp.DataFrame<br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;private new : rowIndex:IIndex&lt;&#39;TRowKey&gt; * columnIndex:IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member Append : otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member Clone : unit -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member DropSeries : column:&#39;TColumnKey -&gt; unit<br />&#160;&#160;...<br /><br />Full name: FSharp.DataFrame.Frame&lt;_,_&gt;<br /><br />--------------------<br />type Frame =<br />&#160;&#160;static member CreateEmpty : unit -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : keys:seq&lt;&#39;RowKey&gt; * columns:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromRowKeys : keys:seq&lt;&#39;K&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRows : rows:seq&lt;KeyValuePair&lt;&#39;RowKey,ObjectSeries&lt;&#39;ColKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromRows : rows:seq&lt;KeyValuePair&lt;&#39;RowKey,Series&lt;&#39;ColKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromRows : rows:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;int,&#39;ColKey&gt; (requires equality)<br />&#160;&#160;static member ReadCsv : stream:Stream * skipTypeInference:bool * inferRows:int * schema:string * separators:string * culture:string -&gt; Frame&lt;int,string&gt;<br />&#160;&#160;...<br /><br />Full name: FSharp.DataFrame.Frame<br /><br />--------------------<br />new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
 <div class="tip" id="fs3">static member Frame.readCsv : location:string * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string -&gt; Frame&lt;int,string&gt;<br />static member Frame.readCsv : stream:IO.Stream * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string -&gt; Frame&lt;int,string&gt;</div>
 <div class="tip" id="fs4">val root : string<br /><br />Full name: Features.root</div>
 <div class="tip" id="fs5">val msft : Frame&lt;DateTime,string&gt;<br /><br />Full name: Features.msft</div>
@@ -1305,7 +1305,7 @@ at all):</p>
 <div class="tip" id="fs30">property WorldBankData.ServiceTypes.Region.Countries: WorldBankData.ServiceTypes.Countries<br /><em><br /><br />&lt;summary&gt;The indicators for the region&lt;/summary&gt;</em></div>
 <div class="tip" id="fs31">property RuntimeImplementation.WorldBank.Region.Name: string</div>
 <div class="tip" id="fs32">property RuntimeImplementation.WorldBank.Country.Name: string</div>
-<div class="tip" id="fs33">Multiple items<br />module Series<br /><br />from FSharp.DataFrame<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface ISeries&lt;&#39;K&gt;<br />&#160;&#160;new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : index:IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * keySelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;R&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member Append : otherSeries:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;override Equals : another:obj -&gt; bool<br />&#160;&#160;member Get : key:&#39;K -&gt; &#39;V<br />&#160;&#160;member Get : key:&#39;K * lookup:Lookup -&gt; &#39;V<br />&#160;&#160;member GetAt : index:int -&gt; KeyValuePair&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;...<br /><br />Full name: FSharp.DataFrame.Series&lt;_,_&gt;<br /><br />--------------------<br />type Series =<br />&#160;&#160;static member ofNullables : values:seq&lt;Nullable&lt;&#39;a0&gt;&gt; -&gt; Series&lt;int,&#39;a0&gt; (requires default constructor and value type and &#39;a0 :&gt; ValueType)<br />&#160;&#160;static member ofObservations : observations:seq&lt;&#39;a0 * &#39;a1&gt; -&gt; Series&lt;&#39;a0,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofValues : values:seq&lt;&#39;a0&gt; -&gt; Series&lt;int,&#39;a0&gt;<br /><br />Full name: FSharp.DataFrame.FSharpSeriesExtensions.Series<br /><br />--------------------<br />new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : index:Indices.IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:Vectors.IVectorBuilder * indexBuilder:Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
+<div class="tip" id="fs33">Multiple items<br />module Series<br /><br />from FSharp.DataFrame<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface ISeries&lt;&#39;K&gt;<br />&#160;&#160;new : pairs:seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : index:IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * keySelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;R&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member Append : otherSeries:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;override Equals : another:obj -&gt; bool<br />&#160;&#160;member Get : key:&#39;K -&gt; &#39;V<br />&#160;&#160;member Get : key:&#39;K * lookup:Lookup -&gt; &#39;V<br />&#160;&#160;...<br /><br />Full name: FSharp.DataFrame.Series&lt;_,_&gt;<br /><br />--------------------<br />type Series =<br />&#160;&#160;static member ofNullables : values:seq&lt;Nullable&lt;&#39;a0&gt;&gt; -&gt; Series&lt;int,&#39;a0&gt; (requires default constructor and value type and &#39;a0 :&gt; ValueType)<br />&#160;&#160;static member ofObservations : observations:seq&lt;&#39;a0 * &#39;a1&gt; -&gt; Series&lt;&#39;a0,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofValues : values:seq&lt;&#39;a0&gt; -&gt; Series&lt;int,&#39;a0&gt;<br /><br />Full name: FSharp.DataFrame.FSharpSeriesExtensions.Series<br /><br />--------------------<br />new : pairs:seq&lt;Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : index:Indices.IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:Vectors.IVectorBuilder * indexBuilder:Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
 <div class="tip" id="fs34">static member Series.ofObservations : observations:seq&lt;&#39;a0 * &#39;a1&gt; -&gt; Series&lt;&#39;a0,&#39;a1&gt; (requires equality)</div>
 <div class="tip" id="fs35">property WorldBankData.ServiceTypes.Country.Indicators: WorldBankData.ServiceTypes.Indicators<br /><em><br /><br />&lt;summary&gt;The indicators for the country&lt;/summary&gt;</em></div>
 <div class="tip" id="fs36">static member Frame.ofColumns : cols:Series&lt;&#39;a0,#ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a2,&#39;a0&gt; (requires equality and equality)<br />static member Frame.ofColumns : cols:seq&lt;&#39;a0 * #ISeries&lt;&#39;K&gt;&gt; -&gt; Frame&lt;&#39;K,&#39;a0&gt; (requires equality and equality)</div>
@@ -1318,7 +1318,7 @@ at all):</p>
 <div class="tip" id="fs43">val numAges : Series&lt;string,float&gt;<br /><br />Full name: Features.numAges</div>
 <div class="tip" id="fs44">member Series.Get : key:&#39;K -&gt; &#39;V<br />member Series.Get : key:&#39;K * lookup:Lookup -&gt; &#39;V</div>
 <div class="tip" id="fs45">member Series.TryGet : key:&#39;K -&gt; OptionalValue&lt;&#39;V&gt;<br />member Series.TryGet : key:&#39;K * lookup:Lookup -&gt; OptionalValue&lt;&#39;V&gt;</div>
-<div class="tip" id="fs46">member Series.GetAt : index:int -&gt; Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt;</div>
+<div class="tip" id="fs46">member Series.GetAt : index:int -&gt; &#39;V</div>
 <div class="tip" id="fs47">member ObjectSeries.As : unit -&gt; Series&lt;&#39;K,&#39;R&gt;</div>
 <div class="tip" id="fs48">property Frame.Rows: RowSeries&lt;string,string&gt;</div>
 <div class="tip" id="fs49">val mapValues : f:(&#39;T -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.mapValues</div>
@@ -1327,12 +1327,12 @@ at all):</p>
 <div class="tip" id="fs52">val more : Series&lt;string,float&gt;<br /><br />Full name: Features.more</div>
 <div class="tip" id="fs53">val series : observations:seq&lt;&#39;a * &#39;b&gt; -&gt; Series&lt;&#39;a,&#39;b&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.FSharpSeriesExtensions.series</div>
 <div class="tip" id="fs54">val add1 : Series&lt;string,float&gt;<br /><br />Full name: Features.add1</div>
-<div class="tip" id="fs55">member Frame.ReplaceSeries : column:&#39;TColumnKey * data:seq&lt;&#39;V&gt; -&gt; unit<br />member Frame.ReplaceSeries : column:&#39;TColumnKey * series:Series&lt;&#39;TRowKey,&#39;a2&gt; * ?lookup:Lookup -&gt; unit</div>
+<div class="tip" id="fs55">member Frame.ReplaceSeries : column:&#39;TColumnKey * data:seq&lt;&#39;V&gt; -&gt; unit<br />member Frame.ReplaceSeries : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; -&gt; unit<br />member Frame.ReplaceSeries : column:&#39;TColumnKey * data:seq&lt;&#39;V&gt; * lookup:Lookup -&gt; unit<br />member Frame.ReplaceSeries : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; * lookup:Lookup -&gt; unit</div>
 <div class="tip" id="fs56">val newRow : Series&lt;string,obj&gt;<br /><br />Full name: Features.newRow</div>
 <div class="tip" id="fs57">val box : value:&#39;T -&gt; obj<br /><br />Full name: Microsoft.FSharp.Core.Operators.box</div>
 <div class="tip" id="fs58">member Frame.Append : otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />member Frame.Append : rowKey:&#39;TRowKey * row:ISeries&lt;&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
 <div class="tip" id="fs59">val otherRow : SeriesBuilder&lt;string&gt;<br /><br />Full name: Features.otherRow</div>
-<div class="tip" id="fs60">Multiple items<br />type SeriesBuilder&lt;&#39;K,&#39;V (requires equality)&gt; =<br />&#160;&#160;interface seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt;<br />&#160;&#160;interface IEnumerable<br />&#160;&#160;new : unit -&gt; SeriesBuilder&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member Add : key:&#39;K * value:&#39;V -&gt; unit<br />&#160;&#160;member Series : Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;static member ( ?&lt;- ) : builder:SeriesBuilder&lt;string,&#39;V&gt; * name:string * value:&#39;V -&gt; unit<br /><br />Full name: FSharp.DataFrame.SeriesBuilder&lt;_,_&gt;<br /><br />--------------------<br />type SeriesBuilder&lt;&#39;K (requires equality)&gt; =<br />&#160;&#160;inherit SeriesBuilder&lt;&#39;K,obj&gt;<br />&#160;&#160;new : unit -&gt; SeriesBuilder&lt;&#39;K&gt;<br /><br />Full name: FSharp.DataFrame.SeriesBuilder&lt;_&gt;<br /><br />--------------------<br />new : unit -&gt; SeriesBuilder&lt;&#39;K,&#39;V&gt;<br /><br />--------------------<br />new : unit -&gt; SeriesBuilder&lt;&#39;K&gt;</div>
+<div class="tip" id="fs60">Multiple items<br />type SeriesBuilder&lt;&#39;K,&#39;V (requires equality)&gt; =<br />&#160;&#160;interface IDynamicMetaObjectProvider<br />&#160;&#160;interface seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt;<br />&#160;&#160;interface IEnumerable<br />&#160;&#160;new : unit -&gt; SeriesBuilder&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member Add : key:&#39;K * value:&#39;V -&gt; unit<br />&#160;&#160;member Series : Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;static member ( ?&lt;- ) : builder:SeriesBuilder&lt;string,&#39;V&gt; * name:string * value:&#39;V -&gt; unit<br /><br />Full name: FSharp.DataFrame.SeriesBuilder&lt;_,_&gt;<br /><br />--------------------<br />type SeriesBuilder&lt;&#39;K (requires equality)&gt; =<br />&#160;&#160;inherit SeriesBuilder&lt;&#39;K,obj&gt;<br />&#160;&#160;new : unit -&gt; SeriesBuilder&lt;&#39;K&gt;<br /><br />Full name: FSharp.DataFrame.SeriesBuilder&lt;_&gt;<br /><br />--------------------<br />new : unit -&gt; SeriesBuilder&lt;&#39;K,&#39;V&gt;<br /><br />--------------------<br />new : unit -&gt; SeriesBuilder&lt;&#39;K&gt;</div>
 <div class="tip" id="fs61">property SeriesBuilder.Series: Series&lt;string,obj&gt;</div>
 <div class="tip" id="fs62">val nums : Series&lt;int,float&gt;<br /><br />Full name: Features.nums</div>
 <div class="tip" id="fs63">val strs : Series&lt;string,string&gt;<br /><br />Full name: Features.strs</div>
@@ -1367,7 +1367,7 @@ at all):</p>
 <div class="tip" id="fs92">val countBy : projection:(&#39;T -&gt; &#39;Key) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;Key * int&gt; (requires equality)<br /><br />Full name: Microsoft.FSharp.Collections.Seq.countBy</div>
 <div class="tip" id="fs93">val id : x:&#39;T -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.Operators.id</div>
 <div class="tip" id="fs94">static member Frame.ofRows : rows:seq&lt;&#39;a0 * #ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a0,&#39;a2&gt; (requires equality and equality)<br />static member Frame.ofRows : rows:Series&lt;&#39;a0,#ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a0,&#39;a2&gt; (requires equality and equality)</div>
-<div class="tip" id="fs95">val withMissingVal : defaultValue:&#39;a -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><br />Full name: FSharp.DataFrame.Frame.withMissingVal</div>
+<div class="tip" id="fs95">val fillMissingWith : value:&#39;T -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><br />Full name: FSharp.DataFrame.Frame.fillMissingWith</div>
 <div class="tip" id="fs96">val groupRowsByString : column:&#39;a -&gt; frame:Frame&lt;&#39;b,&#39;a&gt; -&gt; Frame&lt;(string * &#39;b),&#39;a&gt; (requires equality and equality)<br /><br />Full name: FSharp.DataFrame.Frame.groupRowsByString</div>
 <div class="tip" id="fs97">val byDecimal : Frame&lt;(decimal * int),string&gt;<br /><br />Full name: Features.byDecimal</div>
 <div class="tip" id="fs98">Multiple items<br />val decimal : value:&#39;T -&gt; decimal (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.decimal<br /><br />--------------------<br />type decimal&lt;&#39;Measure&gt; = decimal<br /><br />Full name: Microsoft.FSharp.Core.decimal&lt;_&gt;<br /><br />--------------------<br />type decimal = Decimal<br /><br />Full name: Microsoft.FSharp.Core.decimal</div>
@@ -1390,7 +1390,7 @@ at all):</p>
 <div class="tip" id="fs115">val get1And2Of3 : v1:&#39;a * v2:&#39;b * &#39;c -&gt; &#39;a * &#39;b<br /><br />Full name: FSharp.DataFrame.Pair.get1And2Of3</div>
 <div class="tip" id="fs116">val meanBy : keySelector:(&#39;R -&gt; &#39;a) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;a,&#39;C&gt; (requires equality and equality and equality)<br /><br />Full name: FSharp.DataFrame.Frame.meanBy</div>
 <div class="tip" id="fs117">type bool = Boolean<br /><br />Full name: Microsoft.FSharp.Core.bool</div>
-<div class="tip" id="fs118">val foldBy : keySelector:(&#39;a -&gt; &#39;b) -&gt; op:(Series&lt;&#39;a,&#39;c&gt; -&gt; &#39;d) -&gt; series:Series&lt;&#39;a,&#39;c&gt; -&gt; Series&lt;&#39;b,&#39;d&gt; (requires equality and equality)<br /><br />Full name: FSharp.DataFrame.Series.foldBy</div>
+<div class="tip" id="fs118">val reduceBy : keySelector:(&#39;a -&gt; &#39;b) -&gt; op:(Series&lt;&#39;a,&#39;c&gt; -&gt; &#39;d) -&gt; series:Series&lt;&#39;a,&#39;c&gt; -&gt; Series&lt;&#39;b,&#39;d&gt; (requires equality and equality)<br /><br />Full name: FSharp.DataFrame.Series.reduceBy</div>
 <div class="tip" id="fs119">val values : series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;&#39;T&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.values</div>
 <div class="tip" id="fs120">property Frame.Columns: ColumnSeries&lt;int,(string * string)&gt;</div>
 <div class="tip" id="fs121">val Lookup1Of2 : k:&#39;a -&gt; ICustomLookup&lt;&#39;b&gt;<br /><br />Full name: FSharp.DataFrame.MultiKeyExtensions.Lookup1Of2</div>

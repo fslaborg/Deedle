@@ -55,10 +55,11 @@
         <div class="span9" id="main">
           
 
-<h1>OptionalValue</h1>
 
+
+<h1>OptionalValue</h1>
 <div class="xmldoc">
-  <p>Value type that represents a potentially missing value. This is similar to 
+<p>Value type that represents a potentially missing value. This is similar to 
 <code>System.Nullable&lt;T&gt;</code>, but does not restrict the contained value to be a value
 type, so it can be used for storing values of any types. When obtained from
 <code>DataFrame&lt;R, C&gt;</code> or <code>Series&lt;K, T&gt;</code>, the <code>Value</code> will never be <code>Double.NaN</code> or <code>null</code>
@@ -68,22 +69,20 @@ type, so it can be used for storing values of any types. When obtained from
 standard F# <code>option&lt;T&gt;</code> type instead. However, there the <code>OptionalValue</code> module
 contains helper functions for using this type from F# as well as <code>Missing</code> and
 <code>Present</code> active patterns.</p>
-
 </div>
-
   <h3>Constructors</h3>
   <table class="table table-bordered member-list">
     <thead>
-      <tr><td>Constructors</td><td>Description</td></tr>
+      <tr><td>Constructor</td><td>Description</td></tr>
     </thead>
     <tbody>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1001', 1001)" onmouseover="showTip(event, '1001', 1001)">
+          <code onmouseout="hideTip(event, '438', 438)" onmouseover="showTip(event, '438', 438)">
             new OptionalValue
           </code>
-          <div class="tip" id="1001">
+          <div class="tip" id="438">
             <strong>Signature:</strong>value:&#39;T -&gt; OptionalValue&lt;&#39;T&gt;<br />
                       </div>
         </td>
@@ -94,10 +93,10 @@ the specified <code>T</code> value .</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1002', 1002)" onmouseover="showTip(event, '1002', 1002)">
+          <code onmouseout="hideTip(event, '439', 439)" onmouseover="showTip(event, '439', 439)">
             new OptionalValue
           </code>
-          <div class="tip" id="1002">
+          <div class="tip" id="439">
             <strong>Signature:</strong>(hasValue:bool * value:&#39;T) -&gt; OptionalValue&lt;&#39;T&gt;<br />
                       </div>
         </td>
@@ -105,21 +104,19 @@ the specified <code>T</code> value .</p>
       </tr>
     </tbody>
   </table>
-
-
   <h3>Instance members</h3>
   <table class="table table-bordered member-list">
     <thead>
-      <tr><td>Instance members</td><td>Description</td></tr>
+      <tr><td>Instance member</td><td>Description</td></tr>
     </thead>
     <tbody>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1003', 1003)" onmouseover="showTip(event, '1003', 1003)">
+          <code onmouseout="hideTip(event, '440', 440)" onmouseover="showTip(event, '440', 440)">
             optionalValue.HasValue
           </code>
-          <div class="tip" id="1003">
+          <div class="tip" id="440">
             <strong>Signature:</strong>bool<br />
                       </div>
         </td>
@@ -129,10 +126,10 @@ the specified <code>T</code> value .</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1004', 1004)" onmouseover="showTip(event, '1004', 1004)">
+          <code onmouseout="hideTip(event, '441', 441)" onmouseover="showTip(event, '441', 441)">
             optionalValue.Value
           </code>
-          <div class="tip" id="1004">
+          <div class="tip" id="441">
             <strong>Signature:</strong>&#39;T<br />
                       </div>
         </td>
@@ -144,10 +141,10 @@ Exceptions:
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1005', 1005)" onmouseover="showTip(event, '1005', 1005)">
+          <code onmouseout="hideTip(event, '442', 442)" onmouseover="showTip(event, '442', 442)">
             optionalValue.ValueOrDefault
           </code>
-          <div class="tip" id="1005">
+          <div class="tip" id="442">
             <strong>Signature:</strong>&#39;T<br />
                       </div>
         </td>
@@ -157,21 +154,19 @@ the default value of the type <code>T</code> when a value is not present.</p>
       </tr>
     </tbody>
   </table>
-
-
   <h3>Static members</h3>
   <table class="table table-bordered member-list">
     <thead>
-      <tr><td>Static members</td><td>Description</td></tr>
+      <tr><td>Static member</td><td>Description</td></tr>
     </thead>
     <tbody>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1006', 1006)" onmouseover="showTip(event, '1006', 1006)">
+          <code onmouseout="hideTip(event, '443', 443)" onmouseover="showTip(event, '443', 443)">
             OptionalValue.Missing
           </code>
-          <div class="tip" id="1006">
+          <div class="tip" id="443">
             <strong>Signature:</strong>OptionalValue&lt;&#39;T&gt;<br />
                       </div>
         </td>
@@ -180,7 +175,6 @@ the default value of the type <code>T</code> when a value is not present.</p>
       </tr>
     </tbody>
   </table>
-
 
         </div>
         <div class="span3">

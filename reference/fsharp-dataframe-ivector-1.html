@@ -55,31 +55,28 @@
         <div class="span9" id="main">
           
 
-<h1>IVector</h1>
 
+
+<h1>IVector</h1>
 <div class="xmldoc">
-  <p>A generic, typed vector. Represents mapping from addresses to values of type <code>T</code>. 
+<p>A generic, typed vector. Represents mapping from addresses to values of type <code>T</code>. 
 The vector provides a minimal interface that is required by series and can be
 implemented in a number of ways to provide vector backed by database or an
 alternative representation of data.</p>
-
 </div>
-
-
-
   <h3>Instance members</h3>
   <table class="table table-bordered member-list">
     <thead>
-      <tr><td>Instance members</td><td>Description</td></tr>
+      <tr><td>Instance member</td><td>Description</td></tr>
     </thead>
     <tbody>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1018', 1018)" onmouseover="showTip(event, '1018', 1018)">
+          <code onmouseout="hideTip(event, '456', 456)" onmouseover="showTip(event, '456', 456)">
             iVector.GetValue(arg1)
           </code>
-          <div class="tip" id="1018">
+          <div class="tip" id="456">
             <strong>Signature:</strong>Address -&gt; OptionalValue&lt;&#39;T&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -90,10 +87,10 @@ alternative representation of data.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1019', 1019)" onmouseover="showTip(event, '1019', 1019)">
+          <code onmouseout="hideTip(event, '457', 457)" onmouseover="showTip(event, '457', 457)">
             iVector.Select(arg1)
           </code>
-          <div class="tip" id="1019">
+          <div class="tip" id="457">
             <strong>Signature:</strong>((&#39;T -&gt; &#39;TNew)) -&gt; IVector&lt;&#39;TNew&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'TNew          </div>
@@ -105,10 +102,10 @@ a new vector (not necessarily of the same representation) with the results.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1020', 1020)" onmouseover="showTip(event, '1020', 1020)">
+          <code onmouseout="hideTip(event, '458', 458)" onmouseover="showTip(event, '458', 458)">
             iVector.SelectMissing(arg1)
           </code>
-          <div class="tip" id="1020">
+          <div class="tip" id="458">
             <strong>Signature:</strong>((OptionalValue&lt;&#39;T&gt; -&gt; OptionalValue&lt;&#39;TNew&gt;)) -&gt; IVector&lt;&#39;TNew&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'TNew          </div>
@@ -122,10 +119,10 @@ may return a missing value as a result of the transformation.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1021', 1021)" onmouseover="showTip(event, '1021', 1021)">
+          <code onmouseout="hideTip(event, '459', 459)" onmouseover="showTip(event, '459', 459)">
             iVector.Data
           </code>
-          <div class="tip" id="1021">
+          <div class="tip" id="459">
             <strong>Signature:</strong>VectorData&lt;&#39;T&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -137,9 +134,6 @@ on the vector, data may be returned as a continuous block of memory using
       </tr>
     </tbody>
   </table>
-
-
-
 
         </div>
         <div class="span3">

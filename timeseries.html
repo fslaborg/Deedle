@@ -149,21 +149,21 @@ multiple series and align them automatically to specified date keys.</p>
 </td>
 <td class="snippet"><pre class="fssnip">
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs23', 33)" onmouseover="showTip(event, 'fs23', 33)" class="i">s1</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs24', 34)" onmouseover="showTip(event, 'fs24', 34)" class="i">series</span> <span class="o">&lt;|</span> <span onmouseout="hideTip(event, 'fs17', 35)" onmouseover="showTip(event, 'fs17', 35)" class="i">stock1</span> (<span onmouseout="hideTip(event, 'fs21', 36)" onmouseover="showTip(event, 'fs21', 36)" class="i">TimeSpan</span>(<span class="n">1</span>, <span class="n">0</span>, <span class="n">0</span>)) <span class="n">6</span>
-<span class="fsi">val s1 : Series&lt;DateTimeOffset,float&gt; =</span>
-<span class="fsi">  series [ 12:00:00 AM =&gt; 20.76; 1:00:00 AM =&gt; 21.11; 2:00:00 AM =&gt; 22.51 </span>
-<span class="fsi">            3:00:00 AM =&gt; 23.88; 4:00:00 AM =&gt; 23.23; 5:00:00 AM =&gt; 22.68 ] </span>
+<span class="fsi">val s1 : Series<DateTimeOffset,float> =</span>
+<span class="fsi">  series [ 12:00:00 AM => 20.76; 1:00:00 AM => 21.11; 2:00:00 AM => 22.51 </span>
+<span class="fsi">            3:00:00 AM => 23.88; 4:00:00 AM => 23.23; 5:00:00 AM => 22.68 ] </span>
 
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs25', 37)" onmouseover="showTip(event, 'fs25', 37)" class="i">s2</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs24', 38)" onmouseover="showTip(event, 'fs24', 38)" class="i">series</span> <span class="o">&lt;|</span> <span onmouseout="hideTip(event, 'fs18', 39)" onmouseover="showTip(event, 'fs18', 39)" class="i">stock2</span> (<span onmouseout="hideTip(event, 'fs21', 40)" onmouseover="showTip(event, 'fs21', 40)" class="i">TimeSpan</span>(<span class="n">0</span>, <span class="n">30</span>, <span class="n">0</span>)) <span class="n">12</span>
-<span class="fsi">val s2 : Series&lt;DateTimeOffset,float&gt; =</span>
-<span class="fsi">  series [ 12:00:00 AM =&gt; 21.61; 12:30:00 AM =&gt; 21.64; 1:00:00 AM =&gt; 21.86 </span>
-<span class="fsi">            1:30:00 AM =&gt; 22.22;  2:00:00 AM =&gt; 22.35; 2:30:00 AM =&gt; 22.76 </span>
-<span class="fsi">            3:00:00 AM =&gt; 22.68;  3:30:00 AM =&gt; 22.64; 4:00:00 AM =&gt; 22.90 </span>
-<span class="fsi">            4:30:00 AM =&gt; 23.40;  5:00:00 AM =&gt; 23.33; 5:30:00 AM =&gt; 23.43] </span>
+<span class="fsi">val s2 : Series<DateTimeOffset,float> =</span>
+<span class="fsi">  series [ 12:00:00 AM => 21.61; 12:30:00 AM => 21.64; 1:00:00 AM => 21.86 </span>
+<span class="fsi">            1:30:00 AM => 22.22;  2:00:00 AM => 22.35; 2:30:00 AM => 22.76 </span>
+<span class="fsi">            3:00:00 AM => 22.68;  3:30:00 AM => 22.64; 4:00:00 AM => 22.90 </span>
+<span class="fsi">            4:30:00 AM => 23.40;  5:00:00 AM => 23.33; 5:30:00 AM => 23.43] </span>
 
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs26', 41)" onmouseover="showTip(event, 'fs26', 41)" class="i">s3</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs24', 42)" onmouseover="showTip(event, 'fs24', 42)" class="i">series</span> <span class="o">&lt;|</span> <span onmouseout="hideTip(event, 'fs17', 43)" onmouseover="showTip(event, 'fs17', 43)" class="i">stock1</span> (<span onmouseout="hideTip(event, 'fs21', 44)" onmouseover="showTip(event, 'fs21', 44)" class="i">TimeSpan</span>(<span class="n">1</span>, <span class="n">5</span>, <span class="n">0</span>)) <span class="n">6</span>
-<span class="fsi">val s3 : Series&lt;DateTimeOffset,float&gt; =</span>
-<span class="fsi">  series [ 12:00:00 AM =&gt; 21.37; 1:05:00 AM =&gt; 22.73; 2:10:00 AM =&gt; 22.08 </span>
-<span class="fsi">            3:15:00 AM =&gt; 23.92; 4:20:00 AM =&gt; 22.72; 5:25:00 AM =&gt; 22.79 </span></pre>
+<span class="fsi">val s3 : Series<DateTimeOffset,float> =</span>
+<span class="fsi">  series [ 12:00:00 AM => 21.37; 1:05:00 AM => 22.73; 2:10:00 AM => 22.08 </span>
+<span class="fsi">            3:15:00 AM => 23.92; 4:20:00 AM => 22.72; 5:25:00 AM => 22.79 </span></pre>
 </td>
 </tr>
 </table><h3>Joining time series</h3>
@@ -205,28 +205,28 @@ is useful if you only need to work with one or two columns without missing value
 <span class="c">// Match values from right series to keys of the left one</span>
 <span class="c">// (this creates series with no missing values)</span>
 <span onmouseout="hideTip(event, 'fs23', 45)" onmouseover="showTip(event, 'fs23', 45)" class="i">s1</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 46)" onmouseover="showTip(event, 'fs27', 46)" class="i">Join</span>(<span onmouseout="hideTip(event, 'fs25', 47)" onmouseover="showTip(event, 'fs25', 47)" class="i">s2</span>, <span onmouseout="hideTip(event, 'fs28', 48)" onmouseover="showTip(event, 'fs28', 48)" class="i">JoinKind</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs29', 49)" onmouseover="showTip(event, 'fs29', 49)" class="i">Left</span>)
-<span class="fsi">val it : Series&lt;DateTimeOffset,float opt * float opt&gt;</span>
-<span class="fsi">  12:00:00 AM -&gt; (21.32, 21.61) </span>
-<span class="fsi">   1:00:00 AM -&gt; (22.62, 21.86) </span>
-<span class="fsi">   2:00:00 AM -&gt; (22.00, 22.35)  </span>
+<span class="fsi">val it : Series<DateTimeOffset,float opt * float opt></span>
+<span class="fsi">  12:00:00 AM -> (21.32, 21.61) </span>
+<span class="fsi">   1:00:00 AM -> (22.62, 21.86) </span>
+<span class="fsi">   2:00:00 AM -> (22.00, 22.35)  </span>
 <span class="fsi">  (...)</span>
 
 <span class="c">// Match values from the left series to keys of the right one</span>
 <span class="c">// (right has higher resolution, so half of left values are missing)</span>
 <span onmouseout="hideTip(event, 'fs23', 50)" onmouseover="showTip(event, 'fs23', 50)" class="i">s1</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 51)" onmouseover="showTip(event, 'fs27', 51)" class="i">Join</span>(<span onmouseout="hideTip(event, 'fs25', 52)" onmouseover="showTip(event, 'fs25', 52)" class="i">s2</span>, <span onmouseout="hideTip(event, 'fs28', 53)" onmouseover="showTip(event, 'fs28', 53)" class="i">JoinKind</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs30', 54)" onmouseover="showTip(event, 'fs30', 54)" class="i">Right</span>)
-<span class="fsi">val it : Series&lt;DateTimeOffset,float opt * float opt&gt;</span>
-<span class="fsi">  12:00:00 AM -&gt; (21.32,     21.61) </span>
-<span class="fsi">  12:30:00 AM -&gt; (&lt;missing&gt;, 21.64)  </span>
-<span class="fsi">   1:00:00 AM -&gt; (22.62,     21.86) </span>
+<span class="fsi">val it : Series<DateTimeOffset,float opt * float opt></span>
+<span class="fsi">  12:00:00 AM -> (21.32,     21.61) </span>
+<span class="fsi">  12:30:00 AM -> (<missing>, 21.64)  </span>
+<span class="fsi">   1:00:00 AM -> (22.62,     21.86) </span>
 <span class="fsi">  (...)</span>
 
 <span class="c">// Use left series key and find the nearest previous</span>
 <span class="c">// (smaller) value from the right series</span>
 <span onmouseout="hideTip(event, 'fs23', 55)" onmouseover="showTip(event, 'fs23', 55)" class="i">s1</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 56)" onmouseover="showTip(event, 'fs27', 56)" class="i">Join</span>(<span onmouseout="hideTip(event, 'fs25', 57)" onmouseover="showTip(event, 'fs25', 57)" class="i">s2</span>, <span onmouseout="hideTip(event, 'fs28', 58)" onmouseover="showTip(event, 'fs28', 58)" class="i">JoinKind</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs29', 59)" onmouseover="showTip(event, 'fs29', 59)" class="i">Left</span>, <span onmouseout="hideTip(event, 'fs31', 60)" onmouseover="showTip(event, 'fs31', 60)" class="i">Lookup</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs32', 61)" onmouseover="showTip(event, 'fs32', 61)" class="i">NearestSmaller</span>)
-<span class="fsi">val it : Series&lt;DateTimeOffset,float opt * float opt&gt;</span>
-<span class="fsi">  12:00:00 AM -04:00 -&gt; (21.32, 21.61) </span>
-<span class="fsi">   1:00:00 AM -04:00 -&gt; (22.62, 21.86) </span>
-<span class="fsi">   2:00:00 AM -04:00 -&gt; (22.00, 22.35)  </span>
+<span class="fsi">val it : Series<DateTimeOffset,float opt * float opt></span>
+<span class="fsi">  12:00:00 AM -04:00 -> (21.32, 21.61) </span>
+<span class="fsi">   1:00:00 AM -04:00 -> (22.62, 21.86) </span>
+<span class="fsi">   2:00:00 AM -04:00 -> (22.00, 22.35)  </span>
 <span class="fsi">  (...)</span></pre>
 </td>
 </tr>
@@ -311,40 +311,40 @@ the member syntax in this case:</p>
 <td class="snippet"><pre class="fssnip">
 <span class="c">// Union keys from both frames and align corresponding values</span>
 <span onmouseout="hideTip(event, 'fs33', 74)" onmouseover="showTip(event, 'fs33', 74)" class="i">f1</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 75)" onmouseover="showTip(event, 'fs38', 75)" class="i">Join</span>(<span onmouseout="hideTip(event, 'fs36', 76)" onmouseover="showTip(event, 'fs36', 76)" class="i">f2</span>, <span onmouseout="hideTip(event, 'fs28', 77)" onmouseover="showTip(event, 'fs28', 77)" class="i">JoinKind</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs39', 78)" onmouseover="showTip(event, 'fs39', 78)" class="i">Outer</span>)
-<span class="fsi">val it : Frame&lt;DateTimeOffset,string&gt; =</span>
+<span class="fsi">val it : Frame<DateTimeOffset,string> =</span>
 <span class="fsi">                 S1        S2               </span>
-<span class="fsi">  12:00:00 AM -&gt; 21.32     21.61 </span>
-<span class="fsi">  12:30:00 AM -&gt; &lt;missing&gt; 21.64 </span>
-<span class="fsi">   1:00:00 AM -&gt; 22.62     21.86 </span>
+<span class="fsi">  12:00:00 AM -> 21.32     21.61 </span>
+<span class="fsi">  12:30:00 AM -> <missing> 21.64 </span>
+<span class="fsi">   1:00:00 AM -> 22.62     21.86 </span>
 <span class="fsi">  (...)</span>
 
 <span class="c">// Take only keys where both frames contain all values</span>
 <span class="c">// (We get only a single row, because &#39;f3&#39; is off by 5 minutes)</span>
 <span onmouseout="hideTip(event, 'fs36', 79)" onmouseover="showTip(event, 'fs36', 79)" class="i">f2</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 80)" onmouseover="showTip(event, 'fs38', 80)" class="i">Join</span>(<span onmouseout="hideTip(event, 'fs37', 81)" onmouseover="showTip(event, 'fs37', 81)" class="i">f3</span>, <span onmouseout="hideTip(event, 'fs28', 82)" onmouseover="showTip(event, 'fs28', 82)" class="i">JoinKind</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs40', 83)" onmouseover="showTip(event, 'fs40', 83)" class="i">Inner</span>)
-<span class="fsi">val it : Frame&lt;DateTimeOffset,string&gt; =</span>
+<span class="fsi">val it : Frame<DateTimeOffset,string> =</span>
 <span class="fsi">                 S2      S3               </span>
-<span class="fsi">  12:00:00 AM -&gt; 21.61   21.37 </span>
+<span class="fsi">  12:00:00 AM -> 21.61   21.37 </span>
 
 <span class="c">// Take keys from the left frame and find corresponding values</span>
 <span class="c">// from the right frame, or value for a nearest smaller date</span>
 <span class="c">// ($21.37 is repeated for all values between 12:00 and 1:05)</span>
 <span onmouseout="hideTip(event, 'fs36', 84)" onmouseover="showTip(event, 'fs36', 84)" class="i">f2</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 85)" onmouseover="showTip(event, 'fs38', 85)" class="i">Join</span>(<span onmouseout="hideTip(event, 'fs37', 86)" onmouseover="showTip(event, 'fs37', 86)" class="i">f3</span>, <span onmouseout="hideTip(event, 'fs28', 87)" onmouseover="showTip(event, 'fs28', 87)" class="i">JoinKind</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs29', 88)" onmouseover="showTip(event, 'fs29', 88)" class="i">Left</span>, <span onmouseout="hideTip(event, 'fs31', 89)" onmouseover="showTip(event, 'fs31', 89)" class="i">Lookup</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs32', 90)" onmouseover="showTip(event, 'fs32', 90)" class="i">NearestSmaller</span>)
-<span class="fsi">val it : Frame&lt;DateTimeOffset,string&gt; =</span>
+<span class="fsi">val it : Frame<DateTimeOffset,string> =</span>
 <span class="fsi">                 S2      S3               </span>
-<span class="fsi">  12:00:00 AM -&gt; 21.61   21.37 </span>
-<span class="fsi">  12:30:00 AM -&gt; 21.64   21.37 </span>
-<span class="fsi">   1:00:00 AM -&gt; 21.86   21.37 </span>
-<span class="fsi">   1:30:00 AM -&gt; 22.22   22.73 </span>
+<span class="fsi">  12:00:00 AM -> 21.61   21.37 </span>
+<span class="fsi">  12:30:00 AM -> 21.64   21.37 </span>
+<span class="fsi">   1:00:00 AM -> 21.86   21.37 </span>
+<span class="fsi">   1:30:00 AM -> 22.22   22.73 </span>
 <span class="fsi">  (...)</span>
 
 <span class="c">// If we perform left join as previously, but specify exact </span>
 <span class="c">// matching, then most of the values are missing</span>
 <span onmouseout="hideTip(event, 'fs36', 91)" onmouseover="showTip(event, 'fs36', 91)" class="i">f2</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 92)" onmouseover="showTip(event, 'fs38', 92)" class="i">Join</span>(<span onmouseout="hideTip(event, 'fs37', 93)" onmouseover="showTip(event, 'fs37', 93)" class="i">f3</span>, <span onmouseout="hideTip(event, 'fs28', 94)" onmouseover="showTip(event, 'fs28', 94)" class="i">JoinKind</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs29', 95)" onmouseover="showTip(event, 'fs29', 95)" class="i">Left</span>, <span onmouseout="hideTip(event, 'fs31', 96)" onmouseover="showTip(event, 'fs31', 96)" class="i">Lookup</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs41', 97)" onmouseover="showTip(event, 'fs41', 97)" class="i">Exact</span>)
-<span class="fsi">val it : Frame&lt;DateTimeOffset,string&gt; =</span>
+<span class="fsi">val it : Frame<DateTimeOffset,string> =</span>
 <span class="fsi">                 S2      S3               </span>
-<span class="fsi">  12:00:00 AM -&gt; 21.61   21.37</span>
-<span class="fsi">  12:30:00 AM -&gt; 21.64   &lt;missing&gt;        </span>
-<span class="fsi">   1:00:00 AM -&gt; 21.86   &lt;missing&gt;        </span>
+<span class="fsi">  12:00:00 AM -> 21.61   21.37</span>
+<span class="fsi">  12:30:00 AM -> 21.64   <missing>        </span>
+<span class="fsi">   1:00:00 AM -> 21.86   <missing>        </span>
 <span class="fsi">  (...)</span>
 
 <span class="c">// Equivalent to line 2, using function syntax </span>
@@ -431,14 +431,14 @@ the whole window (we'll see how to change this soon):</p>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs50', 129)" onmouseover="showTip(event, 'fs50', 129)" class="i">lfm1</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs44', 130)" onmouseover="showTip(event, 'fs44', 130)" class="i">lf</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs45', 131)" onmouseover="showTip(event, 'fs45', 131)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs47', 132)" onmouseover="showTip(event, 'fs47', 132)" class="i">windowInto</span> <span class="n">4</span> <span onmouseout="hideTip(event, 'fs45', 133)" onmouseover="showTip(event, 'fs45', 133)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs48', 134)" onmouseover="showTip(event, 'fs48', 134)" class="i">mean</span>
 <span class="c">// Construct dataframe to show aligned results</span>
 <span onmouseout="hideTip(event, 'fs34', 135)" onmouseover="showTip(event, 'fs34', 135)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs35', 136)" onmouseover="showTip(event, 'fs35', 136)" class="i">ofColumns</span> [ <span class="s">&quot;</span><span class="s">Orig</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs44', 137)" onmouseover="showTip(event, 'fs44', 137)" class="i">lf</span>; <span class="s">&quot;</span><span class="s">Means</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs50', 138)" onmouseover="showTip(event, 'fs50', 138)" class="i">lfm1</span> ]
-<span class="fsi">val it : Frame&lt;DateTimeOffset,string&gt; =</span>
+<span class="fsi">val it : Frame<DateTimeOffset,string> =</span>
 <span class="fsi">                 Means      Orig        </span>
-<span class="fsi">  12:00:00 AM -&gt; &lt;missing&gt;  20.16</span>
-<span class="fsi">  12:01:00 AM -&gt; &lt;missing&gt;  20.32</span>
-<span class="fsi">  12:02:00 AM -&gt; &lt;missing&gt;  20.25</span>
-<span class="fsi">  12:03:00 AM -&gt; 20.30      20.45</span>
-<span class="fsi">  12:04:00 AM -&gt; 20.34      20.32</span>
-<span class="fsi">  12:05:00 AM -&gt; 20.34      20.33</span></pre>
+<span class="fsi">  12:00:00 AM -> <missing>  20.16</span>
+<span class="fsi">  12:01:00 AM -> <missing>  20.32</span>
+<span class="fsi">  12:02:00 AM -> <missing>  20.25</span>
+<span class="fsi">  12:03:00 AM -> 20.30      20.45</span>
+<span class="fsi">  12:04:00 AM -> 20.34      20.32</span>
+<span class="fsi">  12:05:00 AM -> 20.34      20.33</span></pre>
 </td>
 </tr>
 </table><p>What if we want to avoid creating <code>&lt;missing&gt;</code> values? One approach is to 
@@ -469,14 +469,14 @@ or at the end of the beginning. This way, we get <em>incomplete</em> windows tha
     <span onmouseout="hideTip(event, 'fs45', 146)" onmouseover="showTip(event, 'fs45', 146)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs48', 147)" onmouseover="showTip(event, 'fs48', 147)" class="i">mean</span> <span onmouseout="hideTip(event, 'fs55', 148)" onmouseover="showTip(event, 'fs55', 148)" class="i">ds</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs56', 149)" onmouseover="showTip(event, 'fs56', 149)" class="i">Data</span>)
 
 <span onmouseout="hideTip(event, 'fs34', 150)" onmouseover="showTip(event, 'fs34', 150)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs35', 151)" onmouseover="showTip(event, 'fs35', 151)" class="i">ofColumns</span> [ <span class="s">&quot;</span><span class="s">Orig</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs44', 152)" onmouseover="showTip(event, 'fs44', 152)" class="i">lf</span>; <span class="s">&quot;</span><span class="s">Means</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs51', 153)" onmouseover="showTip(event, 'fs51', 153)" class="i">lfm2</span> ]
-<span class="fsi">val it : Frame&lt;DateTimeOffset,string&gt; =</span>
+<span class="fsi">val it : Frame<DateTimeOffset,string> =</span>
 <span class="fsi">                 Means  Orig        </span>
-<span class="fsi">  12:00:00 AM -&gt; 20.16  20.16</span>
-<span class="fsi">  12:01:00 AM -&gt; 20.24  20.32</span>
-<span class="fsi">  12:02:00 AM -&gt; 20.24  20.25</span>
-<span class="fsi">  12:03:00 AM -&gt; 20.30  20.45</span>
-<span class="fsi">  12:04:00 AM -&gt; 20.34  20.32</span>
-<span class="fsi">  12:05:00 AM -&gt; 20.34  20.33</span></pre>
+<span class="fsi">  12:00:00 AM -> 20.16  20.16</span>
+<span class="fsi">  12:01:00 AM -> 20.24  20.32</span>
+<span class="fsi">  12:02:00 AM -> 20.24  20.25</span>
+<span class="fsi">  12:03:00 AM -> 20.30  20.45</span>
+<span class="fsi">  12:04:00 AM -> 20.34  20.32</span>
+<span class="fsi">  12:05:00 AM -> 20.34  20.33</span></pre>
 </td>
 </tr>
 </table><p>As you can see, the values in the first column are equal, because the first
@@ -521,12 +521,12 @@ is complete or not. For example:</p>
   | <span onmouseout="hideTip(event, 'fs60', 171)" onmouseover="showTip(event, 'fs60', 171)" class="i">DataSegment</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs67', 172)" onmouseover="showTip(event, 'fs67', 172)" class="i">Incomplete</span>(<span onmouseout="hideTip(event, 'fs62', 173)" onmouseover="showTip(event, 'fs62', 173)" class="i">ser</span>) <span class="k">-&gt;</span> 
       <span class="c">// Return incomplete windows as padded lowercase strings</span>
       <span onmouseout="hideTip(event, 'fs63', 174)" onmouseover="showTip(event, 'fs63', 174)" class="i">String</span>(<span onmouseout="hideTip(event, 'fs62', 175)" onmouseover="showTip(event, 'fs62', 175)" class="i">ser</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs45', 176)" onmouseover="showTip(event, 'fs45', 176)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs64', 177)" onmouseover="showTip(event, 'fs64', 177)" class="i">values</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs65', 178)" onmouseover="showTip(event, 'fs65', 178)" class="i">Array</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs66', 179)" onmouseover="showTip(event, 'fs66', 179)" class="i">ofSeq</span>)<span class="o">.</span><span class="i">PadRight</span>(<span class="n">3</span>, <span class="s">&#39;-&#39;</span>) )  
-<span class="fsi">val it : Series&lt;int,string&gt; =</span>
-<span class="fsi">  0 -&gt; ABC </span>
-<span class="fsi">  1 -&gt; BCD </span>
-<span class="fsi">  2 -&gt; CDE </span>
-<span class="fsi">  3 -&gt; de- </span>
-<span class="fsi">  4 -&gt; e-- </span></pre>
+<span class="fsi">val it : Series<int,string> =</span>
+<span class="fsi">  0 -> ABC </span>
+<span class="fsi">  1 -> BCD </span>
+<span class="fsi">  2 -> CDE </span>
+<span class="fsi">  3 -> de- </span>
+<span class="fsi">  4 -> e-- </span></pre>
 </td>
 </tr>
 </table><h3>Window size conditions</h3>
@@ -668,9 +668,9 @@ starting from the first one gives you the current price:</p>
 <span class="c">// Sliding window with incomplete segment at the beginning </span>
 <span onmouseout="hideTip(event, 'fs74', 236)" onmouseover="showTip(event, 'fs74', 236)" class="i">hf</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs45', 237)" onmouseover="showTip(event, 'fs45', 237)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs52', 238)" onmouseover="showTip(event, 'fs52', 238)" class="i">windowSizeInto</span> (<span class="n">2</span>, <span onmouseout="hideTip(event, 'fs53', 239)" onmouseover="showTip(event, 'fs53', 239)" class="i">Boundary</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs54', 240)" onmouseover="showTip(event, 'fs54', 240)" class="i">AtBeginning</span>) (<span class="k">function</span>
   <span class="c">// Return the first value for the first segment</span>
-  | <span onmouseout="hideTip(event, 'fs60', 241)" onmouseover="showTip(event, 'fs60', 241)" class="i">DataSegment</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs67', 242)" onmouseover="showTip(event, 'fs67', 242)" class="i">Incomplete</span> <span onmouseout="hideTip(event, 'fs87', 243)" onmouseover="showTip(event, 'fs87', 243)" class="i">s</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs87', 244)" onmouseover="showTip(event, 'fs87', 244)" class="i">s</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs88', 245)" onmouseover="showTip(event, 'fs88', 245)" class="i">GetAt</span>(<span class="n">0</span>)<span class="o">.</span><span class="i">Value</span>
+  | <span onmouseout="hideTip(event, 'fs60', 241)" onmouseover="showTip(event, 'fs60', 241)" class="i">DataSegment</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs67', 242)" onmouseover="showTip(event, 'fs67', 242)" class="i">Incomplete</span> <span onmouseout="hideTip(event, 'fs87', 243)" onmouseover="showTip(event, 'fs87', 243)" class="i">s</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs87', 244)" onmouseover="showTip(event, 'fs87', 244)" class="i">s</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs88', 245)" onmouseover="showTip(event, 'fs88', 245)" class="i">GetAt</span>(<span class="n">0</span>)
   <span class="c">// Calculate difference for all later segments</span>
-  | <span onmouseout="hideTip(event, 'fs60', 246)" onmouseover="showTip(event, 'fs60', 246)" class="i">DataSegment</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 247)" onmouseover="showTip(event, 'fs61', 247)" class="i">Complete</span> <span onmouseout="hideTip(event, 'fs87', 248)" onmouseover="showTip(event, 'fs87', 248)" class="i">s</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs87', 249)" onmouseover="showTip(event, 'fs87', 249)" class="i">s</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs88', 250)" onmouseover="showTip(event, 'fs88', 250)" class="i">GetAt</span>(<span class="n">1</span>)<span class="o">.</span><span class="i">Value</span> <span class="o">-</span> <span onmouseout="hideTip(event, 'fs87', 251)" onmouseover="showTip(event, 'fs87', 251)" class="i">s</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs88', 252)" onmouseover="showTip(event, 'fs88', 252)" class="i">GetAt</span>(<span class="n">0</span>)<span class="o">.</span><span class="i">Value</span>)</pre>
+  | <span onmouseout="hideTip(event, 'fs60', 246)" onmouseover="showTip(event, 'fs60', 246)" class="i">DataSegment</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 247)" onmouseover="showTip(event, 'fs61', 247)" class="i">Complete</span> <span onmouseout="hideTip(event, 'fs87', 248)" onmouseover="showTip(event, 'fs87', 248)" class="i">s</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs87', 249)" onmouseover="showTip(event, 'fs87', 249)" class="i">s</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs88', 250)" onmouseover="showTip(event, 'fs88', 250)" class="i">GetAt</span>(<span class="n">1</span>) <span class="o">-</span> <span onmouseout="hideTip(event, 'fs87', 251)" onmouseover="showTip(event, 'fs87', 251)" class="i">s</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs88', 252)" onmouseover="showTip(event, 'fs88', 252)" class="i">GetAt</span>(<span class="n">0</span>))</pre>
 </td>
 </tr>
 </table><a name="sampling"></a>
@@ -739,12 +739,12 @@ lookup and <code>Series.lookupAll</code> when you want more flexible lookup:</p>
 
 <span class="c">// Find value for a given key, or nearest greater key with value</span>
 <span onmouseout="hideTip(event, 'fs89', 263)" onmouseover="showTip(event, 'fs89', 263)" class="i">mf</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs45', 264)" onmouseover="showTip(event, 'fs45', 264)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs94', 265)" onmouseover="showTip(event, 'fs94', 265)" class="i">lookupAll</span> <span onmouseout="hideTip(event, 'fs91', 266)" onmouseover="showTip(event, 'fs91', 266)" class="i">keys</span> <span onmouseout="hideTip(event, 'fs31', 267)" onmouseover="showTip(event, 'fs31', 267)" class="i">Lookup</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs95', 268)" onmouseover="showTip(event, 'fs95', 268)" class="i">NearestGreater</span>
-<span class="fsi">val it : Series&lt;DateTimeOffset,float&gt; =</span>
-<span class="fsi">  12:00:00 AM -&gt; 20.07 </span>
-<span class="fsi">  12:01:00 AM -&gt; 19.98 </span>
-<span class="fsi">  ...         -&gt; ...   </span>
-<span class="fsi">  11:58:00 PM -&gt; 19.03 </span>
-<span class="fsi">  11:59:00 PM -&gt; &lt;missing&gt;        </span>
+<span class="fsi">val it : Series<DateTimeOffset,float> =</span>
+<span class="fsi">  12:00:00 AM -> 20.07 </span>
+<span class="fsi">  12:01:00 AM -> 19.98 </span>
+<span class="fsi">  ...         -> ...   </span>
+<span class="fsi">  11:58:00 PM -> 19.03 </span>
+<span class="fsi">  11:59:00 PM -> <missing>        </span>
 
 <span class="c">// Find value for nearest smaller key</span>
 <span class="c">// (This returns value for 11:59:00 PM as well)</span>
@@ -896,7 +896,7 @@ best value for each of the generated key.</p>
     <span class="s">&quot;</span><span class="s">10</span><span class="s">/</span><span class="s">6</span><span class="s">/</span><span class="s">2013</span><span class="s"> </span><span class="s">15</span><span class="s">:</span><span class="s">00</span><span class="s">:</span><span class="s">00</span><span class="s">&quot;</span>; <span class="s">&quot;</span><span class="s">10</span><span class="s">/</span><span class="s">6</span><span class="s">/</span><span class="s">2013</span><span class="s"> </span><span class="s">21</span><span class="s">:</span><span class="s">00</span><span class="s">:</span><span class="s">00</span><span class="s">&quot;</span> ]
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs107', 325)" onmouseover="showTip(event, 'fs107', 325)" class="i">nu</span> <span class="o">=</span> 
   <span onmouseout="hideTip(event, 'fs17', 326)" onmouseover="showTip(event, 'fs17', 326)" class="i">stock1</span> (<span onmouseout="hideTip(event, 'fs21', 327)" onmouseover="showTip(event, 'fs21', 327)" class="i">TimeSpan</span>(<span class="n">24</span>,<span class="n">0</span>,<span class="n">0</span>)) <span class="n">10</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs24', 328)" onmouseover="showTip(event, 'fs24', 328)" class="i">series</span>
-  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs45', 329)" onmouseover="showTip(event, 'fs45', 329)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs108', 330)" onmouseover="showTip(event, 'fs108', 330)" class="i">indexKeys</span> <span onmouseout="hideTip(event, 'fs106', 331)" onmouseover="showTip(event, 'fs106', 331)" class="i">days</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs45', 332)" onmouseover="showTip(event, 'fs45', 332)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs109', 333)" onmouseover="showTip(event, 'fs109', 333)" class="i">mapKeys</span> <span onmouseout="hideTip(event, 'fs14', 334)" onmouseover="showTip(event, 'fs14', 334)" class="i">DateTimeOffset</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs110', 335)" onmouseover="showTip(event, 'fs110', 335)" class="i">Parse</span>
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs45', 329)" onmouseover="showTip(event, 'fs45', 329)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs108', 330)" onmouseover="showTip(event, 'fs108', 330)" class="i">indexWith</span> <span onmouseout="hideTip(event, 'fs106', 331)" onmouseover="showTip(event, 'fs106', 331)" class="i">days</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs45', 332)" onmouseover="showTip(event, 'fs45', 332)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs109', 333)" onmouseover="showTip(event, 'fs109', 333)" class="i">mapKeys</span> <span onmouseout="hideTip(event, 'fs14', 334)" onmouseover="showTip(event, 'fs14', 334)" class="i">DateTimeOffset</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs110', 335)" onmouseover="showTip(event, 'fs110', 335)" class="i">Parse</span>
 
 <span class="c">// Generate uniform resampling based on dates. Fill</span>
 <span class="c">// missing chunks with nearest smaller observations.</span>
@@ -911,14 +911,14 @@ best value for each of the generated key.</p>
 <span class="c">// Turn into frame with multiple columns for each day</span>
 <span class="c">// (to format the result in a readable way)</span>
 <span onmouseout="hideTip(event, 'fs111', 349)" onmouseover="showTip(event, 'fs111', 349)" class="i">sampled</span> 
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs45', 350)" onmouseover="showTip(event, 'fs45', 350)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs116', 351)" onmouseover="showTip(event, 'fs116', 351)" class="i">mapValues</span> <span onmouseout="hideTip(event, 'fs45', 352)" onmouseover="showTip(event, 'fs45', 352)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs117', 353)" onmouseover="showTip(event, 'fs117', 353)" class="i">indexOrdinal</span>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs45', 350)" onmouseover="showTip(event, 'fs45', 350)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs116', 351)" onmouseover="showTip(event, 'fs116', 351)" class="i">mapValues</span> <span onmouseout="hideTip(event, 'fs45', 352)" onmouseover="showTip(event, 'fs45', 352)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs117', 353)" onmouseover="showTip(event, 'fs117', 353)" class="i">indexOrdinally</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs34', 354)" onmouseover="showTip(event, 'fs34', 354)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs118', 355)" onmouseover="showTip(event, 'fs118', 355)" class="i">ofRows</span>
-<span class="fsi">val it : Frame&lt;DateTime,int&gt; =</span>
+<span class="fsi">val it : Frame<DateTime,int> =</span>
 <span class="fsi">             0      1          2                </span>
-<span class="fsi">10/3/2013 -&gt; 21.45  &lt;missing&gt;  &lt;missing&gt;        </span>
-<span class="fsi">10/4/2013 -&gt; 21.63  19.83      17.51</span>
-<span class="fsi">10/5/2013 -&gt; 17.51  &lt;missing&gt;  &lt;missing&gt;        </span>
-<span class="fsi">10/6/2013 -&gt; 18.80  20.93      &lt;missing&gt;        </span></pre>
+<span class="fsi">10/3/2013 -> 21.45  <missing>  <missing>        </span>
+<span class="fsi">10/4/2013 -> 21.63  19.83      17.51</span>
+<span class="fsi">10/5/2013 -> 17.51  <missing>  <missing>        </span>
+<span class="fsi">10/6/2013 -> 18.80  20.93      <missing>        </span></pre>
 </td>
 </tr>
 </table><p>To perform the uniform resampling, we need to specify how to project (resampled) keys
@@ -1040,14 +1040,14 @@ the same thing can be done using an operation that operates over the entire seri
     <span class="s">&quot;</span><span class="s">Diff</span><span class="s"> </span><span class="s">+</span><span class="s">1</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs124', 396)" onmouseover="showTip(event, 'fs124', 396)" class="i">diff1</span> 
     <span class="s">&quot;</span><span class="s">Diff</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs123', 397)" onmouseover="showTip(event, 'fs123', 397)" class="i">sample</span> <span class="o">-</span> <span onmouseout="hideTip(event, 'fs127', 398)" onmouseover="showTip(event, 'fs127', 398)" class="i">shift1</span> 
     <span class="s">&quot;</span><span class="s">Orig</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs123', 399)" onmouseover="showTip(event, 'fs123', 399)" class="i">sample</span> ] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs34', 400)" onmouseover="showTip(event, 'fs34', 400)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs35', 401)" onmouseover="showTip(event, 'fs35', 401)" class="i">ofColumns</span> 
-<span class="fsi">val it : Frame&lt;DateTimeOffset,string&gt; =</span>
+<span class="fsi">val it : Frame<DateTimeOffset,string> =</span>
 <span class="fsi">                 Diff       Diff +1    Orig   Shift +1         </span>
-<span class="fsi">  12:00:00 AM -&gt; &lt;missing&gt;  &lt;missing&gt;  21.73  &lt;missing&gt;        </span>
-<span class="fsi">   1:42:00 AM -&gt;  1.73       1.73      23.47  21.73 </span>
-<span class="fsi">   3:24:00 AM -&gt; -0.83      -0.83      22.63  23.47 </span>
-<span class="fsi">   5:06:00 AM -&gt;  2.37       2.37      25.01  22.63 </span>
-<span class="fsi">   6:48:00 AM -&gt; -1.57      -1.57      23.43  25.01 </span>
-<span class="fsi">   8:30:00 AM -&gt;  0.09       0.09      23.52  23.43 </span></pre>
+<span class="fsi">  12:00:00 AM -> <missing>  <missing>  21.73  <missing>        </span>
+<span class="fsi">   1:42:00 AM ->  1.73       1.73      23.47  21.73 </span>
+<span class="fsi">   3:24:00 AM -> -0.83      -0.83      22.63  23.47 </span>
+<span class="fsi">   5:06:00 AM ->  2.37       2.37      25.01  22.63 </span>
+<span class="fsi">   6:48:00 AM -> -1.57      -1.57      23.43  25.01 </span>
+<span class="fsi">   8:30:00 AM ->  0.09       0.09      23.52  23.43 </span></pre>
 </td>
 </tr>
 </table><p>In the above snippet, we first calcluate difference using the <code>Series.diff</code> function.
@@ -1213,7 +1213,7 @@ open-high-low-close values for a given stock).</p>
 <div class="tip" id="fs31">type Lookup =<br />&#160;&#160;|  Exact  =  0<br />&#160;&#160;|  NearestGreater  =  1<br />&#160;&#160;|  NearestSmaller  =  2<br /><br />Full name: FSharp.DataFrame.Lookup</div>
 <div class="tip" id="fs32">Lookup.NearestSmaller: Lookup = 2</div>
 <div class="tip" id="fs33">val f1 : Frame&lt;DateTimeOffset,string&gt;<br /><br />Full name: Timeseries.f1</div>
-<div class="tip" id="fs34">Multiple items<br />module Frame<br /><br />from FSharp.DataFrame<br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;private new : rowIndex:IIndex&lt;&#39;TRowKey&gt; * columnIndex:IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:Series&lt;&#39;TRowKey,&#39;V&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:Series&lt;&#39;TRowKey,&#39;V&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member Append : otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member Clone : unit -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member DropSeries : column:&#39;TColumnKey -&gt; unit<br />&#160;&#160;...<br /><br />Full name: FSharp.DataFrame.Frame&lt;_,_&gt;<br /><br />--------------------<br />type Frame =<br />&#160;&#160;static member CreateEmpty : unit -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : keys:seq&lt;&#39;RowKey&gt; * columns:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromRowKeys : keys:seq&lt;&#39;K&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRows : rows:seq&lt;KeyValuePair&lt;&#39;RowKey,ObjectSeries&lt;&#39;ColKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromRows : rows:seq&lt;KeyValuePair&lt;&#39;RowKey,Series&lt;&#39;ColKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromRows : rows:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;int,&#39;ColKey&gt; (requires equality)<br />&#160;&#160;static member ReadCsv : stream:Stream * skipTypeInference:bool * inferRows:int * schema:string * separators:string * culture:string -&gt; Frame&lt;int,string&gt;<br />&#160;&#160;static member ReadCsv : location:string * skipTypeInference:bool * inferRows:int * schema:string * separators:string * culture:string -&gt; Frame&lt;int,string&gt;<br /><br />Full name: FSharp.DataFrame.Frame<br /><br />--------------------<br />new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
+<div class="tip" id="fs34">Multiple items<br />module Frame<br /><br />from FSharp.DataFrame<br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;private new : rowIndex:IIndex&lt;&#39;TRowKey&gt; * columnIndex:IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member Append : otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member Clone : unit -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member DropSeries : column:&#39;TColumnKey -&gt; unit<br />&#160;&#160;...<br /><br />Full name: FSharp.DataFrame.Frame&lt;_,_&gt;<br /><br />--------------------<br />type Frame =<br />&#160;&#160;static member CreateEmpty : unit -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : keys:seq&lt;&#39;RowKey&gt; * columns:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromRowKeys : keys:seq&lt;&#39;K&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRows : rows:seq&lt;KeyValuePair&lt;&#39;RowKey,ObjectSeries&lt;&#39;ColKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromRows : rows:seq&lt;KeyValuePair&lt;&#39;RowKey,Series&lt;&#39;ColKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromRows : rows:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;int,&#39;ColKey&gt; (requires equality)<br />&#160;&#160;static member ReadCsv : stream:Stream * skipTypeInference:bool * inferRows:int * schema:string * separators:string * culture:string -&gt; Frame&lt;int,string&gt;<br />&#160;&#160;...<br /><br />Full name: FSharp.DataFrame.Frame<br /><br />--------------------<br />new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
 <div class="tip" id="fs35">static member Frame.ofColumns : cols:Series&lt;&#39;a0,#ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a2,&#39;a0&gt; (requires equality and equality)<br />static member Frame.ofColumns : cols:seq&lt;&#39;a0 * #ISeries&lt;&#39;K&gt;&gt; -&gt; Frame&lt;&#39;K,&#39;a0&gt; (requires equality and equality)</div>
 <div class="tip" id="fs36">val f2 : Frame&lt;DateTimeOffset,string&gt;<br /><br />Full name: Timeseries.f2</div>
 <div class="tip" id="fs37">val f3 : Frame&lt;DateTimeOffset,string&gt;<br /><br />Full name: Timeseries.f3</div>
@@ -1224,7 +1224,7 @@ open-high-low-close values for a given stock).</p>
 <div class="tip" id="fs42">val join : kind:JoinKind -&gt; frame1:Frame&lt;&#39;R,&#39;C&gt; -&gt; frame2:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><br />Full name: FSharp.DataFrame.Frame.join</div>
 <div class="tip" id="fs43">val align : kind:JoinKind -&gt; lookup:Lookup -&gt; frame1:Frame&lt;&#39;R,&#39;C&gt; -&gt; frame2:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><br />Full name: FSharp.DataFrame.Frame.align</div>
 <div class="tip" id="fs44">val lf : Series&lt;DateTimeOffset,float&gt;<br /><br />Full name: Timeseries.lf</div>
-<div class="tip" id="fs45">Multiple items<br />module Series<br /><br />from FSharp.DataFrame<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface ISeries&lt;&#39;K&gt;<br />&#160;&#160;new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : index:IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * keySelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;R&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member Append : otherSeries:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;override Equals : another:obj -&gt; bool<br />&#160;&#160;member Get : key:&#39;K -&gt; &#39;V<br />&#160;&#160;member Get : key:&#39;K * lookup:Lookup -&gt; &#39;V<br />&#160;&#160;member GetAt : index:int -&gt; KeyValuePair&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;...<br /><br />Full name: FSharp.DataFrame.Series&lt;_,_&gt;<br /><br />--------------------<br />type Series =<br />&#160;&#160;static member ofNullables : values:seq&lt;Nullable&lt;&#39;a0&gt;&gt; -&gt; Series&lt;int,&#39;a0&gt; (requires default constructor and value type and &#39;a0 :&gt; ValueType)<br />&#160;&#160;static member ofObservations : observations:seq&lt;&#39;a0 * &#39;a1&gt; -&gt; Series&lt;&#39;a0,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofValues : values:seq&lt;&#39;a0&gt; -&gt; Series&lt;int,&#39;a0&gt;<br /><br />Full name: FSharp.DataFrame.FSharpSeriesExtensions.Series<br /><br />--------------------<br />new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : index:Indices.IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:Vectors.IVectorBuilder * indexBuilder:Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
+<div class="tip" id="fs45">Multiple items<br />module Series<br /><br />from FSharp.DataFrame<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface ISeries&lt;&#39;K&gt;<br />&#160;&#160;new : pairs:seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : index:IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * keySelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;R&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member Append : otherSeries:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;override Equals : another:obj -&gt; bool<br />&#160;&#160;member Get : key:&#39;K -&gt; &#39;V<br />&#160;&#160;member Get : key:&#39;K * lookup:Lookup -&gt; &#39;V<br />&#160;&#160;...<br /><br />Full name: FSharp.DataFrame.Series&lt;_,_&gt;<br /><br />--------------------<br />type Series =<br />&#160;&#160;static member ofNullables : values:seq&lt;Nullable&lt;&#39;a0&gt;&gt; -&gt; Series&lt;int,&#39;a0&gt; (requires default constructor and value type and &#39;a0 :&gt; ValueType)<br />&#160;&#160;static member ofObservations : observations:seq&lt;&#39;a0 * &#39;a1&gt; -&gt; Series&lt;&#39;a0,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofValues : values:seq&lt;&#39;a0&gt; -&gt; Series&lt;int,&#39;a0&gt;<br /><br />Full name: FSharp.DataFrame.FSharpSeriesExtensions.Series<br /><br />--------------------<br />new : pairs:seq&lt;Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : index:Indices.IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:Vectors.IVectorBuilder * indexBuilder:Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
 <div class="tip" id="fs46">val window : size:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.window</div>
 <div class="tip" id="fs47">val windowInto : size:int -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.windowInto</div>
 <div class="tip" id="fs48">val mean : series:Series&lt;&#39;a,&#39;b&gt; -&gt; &#39;b (requires equality and member ( + ) and member DivideByInt and member get_Zero)<br /><br />Full name: FSharp.DataFrame.Series.mean</div>
@@ -1267,7 +1267,7 @@ open-high-low-close values for a given stock).</p>
 <div class="tip" id="fs85">val v1 : float</div>
 <div class="tip" id="fs86">val v2 : float</div>
 <div class="tip" id="fs87">val s : Series&lt;DateTimeOffset,float&gt;</div>
-<div class="tip" id="fs88">member Series.GetAt : index:int -&gt; Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt;</div>
+<div class="tip" id="fs88">member Series.GetAt : index:int -&gt; &#39;V</div>
 <div class="tip" id="fs89">val mf : Series&lt;DateTimeOffset,float&gt;<br /><br />Full name: Timeseries.mf</div>
 <div class="tip" id="fs90">TimeSpan.FromSeconds(value: float) : TimeSpan</div>
 <div class="tip" id="fs91">val keys : DateTimeOffset list<br /><br />Full name: Timeseries.keys</div>
@@ -1287,7 +1287,7 @@ open-high-low-close values for a given stock).</p>
 <div class="tip" id="fs105">val d : DateTimeOffset</div>
 <div class="tip" id="fs106">val days : string list<br /><br />Full name: Timeseries.days</div>
 <div class="tip" id="fs107">val nu : Series&lt;DateTimeOffset,float&gt;<br /><br />Full name: Timeseries.nu</div>
-<div class="tip" id="fs108">val indexKeys : keys:seq&lt;&#39;K2&gt; -&gt; series:Series&lt;&#39;K1,&#39;T&gt; -&gt; Series&lt;&#39;K2,&#39;T&gt; (requires equality and equality)<br /><br />Full name: FSharp.DataFrame.Series.indexKeys</div>
+<div class="tip" id="fs108">val indexWith : keys:seq&lt;&#39;K2&gt; -&gt; series:Series&lt;&#39;K1,&#39;T&gt; -&gt; Series&lt;&#39;K2,&#39;T&gt; (requires equality and equality)<br /><br />Full name: FSharp.DataFrame.Series.indexWith</div>
 <div class="tip" id="fs109">val mapKeys : f:(&#39;K -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;R,&#39;T&gt; (requires equality and equality)<br /><br />Full name: FSharp.DataFrame.Series.mapKeys</div>
 <div class="tip" id="fs110">DateTimeOffset.Parse(input: string) : DateTimeOffset<br />DateTimeOffset.Parse(input: string, formatProvider: IFormatProvider) : DateTimeOffset<br />DateTimeOffset.Parse(input: string, formatProvider: IFormatProvider, styles: Globalization.DateTimeStyles) : DateTimeOffset</div>
 <div class="tip" id="fs111">val sampled : Series&lt;DateTime,Series&lt;DateTimeOffset,float&gt;&gt;<br /><br />Full name: Timeseries.sampled</div>
@@ -1296,7 +1296,7 @@ open-high-low-close values for a given stock).</p>
 <div class="tip" id="fs114">val dt : DateTime</div>
 <div class="tip" id="fs115">DateTime.AddDays(value: float) : DateTime</div>
 <div class="tip" id="fs116">val mapValues : f:(&#39;T -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.mapValues</div>
-<div class="tip" id="fs117">val indexOrdinal : series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;int,&#39;T&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.indexOrdinal</div>
+<div class="tip" id="fs117">val indexOrdinally : series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;int,&#39;T&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.indexOrdinally</div>
 <div class="tip" id="fs118">static member Frame.ofRows : rows:seq&lt;&#39;a0 * #ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a0,&#39;a2&gt; (requires equality and equality)<br />static member Frame.ofRows : rows:Series&lt;&#39;a0,#ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a0,&#39;a2&gt; (requires equality and equality)</div>
 <div class="tip" id="fs119">val pr : Series&lt;DateTimeOffset,float&gt;<br /><br />Full name: Timeseries.pr</div>
 <div class="tip" id="fs120">val sampleTime : interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;&#39;a,&#39;b&gt; -&gt; Series&lt;&#39;a,Series&lt;&#39;a,&#39;b&gt;&gt; (requires equality and member ( + ))<br /><br />Full name: FSharp.DataFrame.Series.sampleTime</div>

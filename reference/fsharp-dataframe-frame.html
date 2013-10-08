@@ -55,29 +55,24 @@
         <div class="span9" id="main">
           
 
+
+
 <h1>Frame</h1>
-
 <div class="xmldoc">
-  
 </div>
-
-
-
-
-
   <h3>Static members</h3>
   <table class="table table-bordered member-list">
     <thead>
-      <tr><td>Static members</td><td>Description</td></tr>
+      <tr><td>Static member</td><td>Description</td></tr>
     </thead>
     <tbody>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1097', 1097)" onmouseover="showTip(event, '1097', 1097)">
+          <code onmouseout="hideTip(event, '1263', 1263)" onmouseover="showTip(event, '1263', 1263)">
             Frame.CreateEmpty()
           </code>
-          <div class="tip" id="1097">
+          <div class="tip" id="1263">
             <strong>Signature:</strong>unit -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C          </div>
         </td>
@@ -86,10 +81,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1098', 1098)" onmouseover="showTip(event, '1098', 1098)">
+          <code onmouseout="hideTip(event, '1264', 1264)" onmouseover="showTip(event, '1264', 1264)">
             Frame.FromColumns(cols)
           </code>
-          <div class="tip" id="1098">
+          <div class="tip" id="1264">
             <strong>Signature:</strong>cols:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt;<br />
                           <strong>Type parameters:</strong> 'RowKey, 'ColKey, 'V          </div>
         </td>
@@ -98,10 +93,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1099', 1099)" onmouseover="showTip(event, '1099', 1099)">
+          <code onmouseout="hideTip(event, '1265', 1265)" onmouseover="showTip(event, '1265', 1265)">
             Frame.FromColumns(keys, columns)
           </code>
-          <div class="tip" id="1099">
+          <div class="tip" id="1265">
             <strong>Signature:</strong>(keys:seq&lt;&#39;RowKey&gt; * columns:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt;) -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt;<br />
                           <strong>Type parameters:</strong> 'RowKey, 'ColKey, 'V          </div>
         </td>
@@ -113,10 +108,34 @@ columns, it will be successfully added, but there will be missing values.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1100', 1100)" onmouseover="showTip(event, '1100', 1100)">
+          <code onmouseout="hideTip(event, '1266', 1266)" onmouseover="showTip(event, '1266', 1266)">
+            Frame.FromColumns(cols)
+          </code>
+          <div class="tip" id="1266">
+            <strong>Signature:</strong>cols:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TColKey, 'TRowKey, 'V          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1267', 1267)" onmouseover="showTip(event, '1267', 1267)">
+            Frame.FromColumns(cols)
+          </code>
+          <div class="tip" id="1267">
+            <strong>Signature:</strong>cols:Series&lt;&#39;TColKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TColKey, 'TRowKey          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1268', 1268)" onmouseover="showTip(event, '1268', 1268)">
             Frame.FromRowKeys(keys)
           </code>
-          <div class="tip" id="1100">
+          <div class="tip" id="1268">
             <strong>Signature:</strong>keys:seq&lt;&#39;K&gt; -&gt; Frame&lt;&#39;K,string&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -125,10 +144,10 @@ columns, it will be successfully added, but there will be missing values.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1101', 1101)" onmouseover="showTip(event, '1101', 1101)">
+          <code onmouseout="hideTip(event, '1269', 1269)" onmouseover="showTip(event, '1269', 1269)">
             Frame.FromRows(rows)
           </code>
-          <div class="tip" id="1101">
+          <div class="tip" id="1269">
             <strong>Signature:</strong>rows:seq&lt;KeyValuePair&lt;&#39;RowKey,ObjectSeries&lt;&#39;ColKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt;<br />
                           <strong>Type parameters:</strong> 'RowKey, 'ColKey          </div>
         </td>
@@ -137,10 +156,10 @@ columns, it will be successfully added, but there will be missing values.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1102', 1102)" onmouseover="showTip(event, '1102', 1102)">
+          <code onmouseout="hideTip(event, '1270', 1270)" onmouseover="showTip(event, '1270', 1270)">
             Frame.FromRows(rows)
           </code>
-          <div class="tip" id="1102">
+          <div class="tip" id="1270">
             <strong>Signature:</strong>rows:seq&lt;KeyValuePair&lt;&#39;RowKey,Series&lt;&#39;ColKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt;<br />
                           <strong>Type parameters:</strong> 'RowKey, 'ColKey, 'V          </div>
         </td>
@@ -149,10 +168,10 @@ columns, it will be successfully added, but there will be missing values.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1103', 1103)" onmouseover="showTip(event, '1103', 1103)">
+          <code onmouseout="hideTip(event, '1271', 1271)" onmouseover="showTip(event, '1271', 1271)">
             Frame.FromRows(rows)
           </code>
-          <div class="tip" id="1103">
+          <div class="tip" id="1271">
             <strong>Signature:</strong>rows:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;int,&#39;ColKey&gt;<br />
                           <strong>Type parameters:</strong> 'ColKey, 'V          </div>
         </td>
@@ -164,10 +183,10 @@ columns, it will be successfully added, but there will be missing values.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1104', 1104)" onmouseover="showTip(event, '1104', 1104)">
+          <code onmouseout="hideTip(event, '1272', 1272)" onmouseover="showTip(event, '1272', 1272)">
             Frame.ReadCsv(...)
           </code>
-          <div class="tip" id="1104">
+          <div class="tip" id="1272">
             <strong>Signature:</strong>(stream:Stream * skipTypeInference:bool * inferRows:int * schema:string * separators:string * culture:string) -&gt; Frame&lt;int,string&gt;<br />
                       </div>
         </td>
@@ -197,10 +216,10 @@ values in the CSV file (such as <code>"en-US"</code>). The default is invariant 
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1105', 1105)" onmouseover="showTip(event, '1105', 1105)">
+          <code onmouseout="hideTip(event, '1273', 1273)" onmouseover="showTip(event, '1273', 1273)">
             Frame.ReadCsv(...)
           </code>
-          <div class="tip" id="1105">
+          <div class="tip" id="1273">
             <strong>Signature:</strong>(location:string * skipTypeInference:bool * inferRows:int * schema:string * separators:string * culture:string) -&gt; Frame&lt;int,string&gt;<br />
                       </div>
         </td>
@@ -229,7 +248,6 @@ values in the CSV file (such as <code>"en-US"</code>). The default is invariant 
       </tr>
     </tbody>
   </table>
-
 
         </div>
         <div class="span3">

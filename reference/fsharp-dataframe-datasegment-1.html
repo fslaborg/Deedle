@@ -55,17 +55,16 @@
         <div class="span9" id="main">
           
 
-<h1>DataSegment</h1>
 
+
+<h1>DataSegment</h1>
 <div class="xmldoc">
-  <p>Represents a segment of a series or sequence. The value is returned from 
+<p>Represents a segment of a series or sequence. The value is returned from 
 various functions that aggregate data into chunks or floating windows. The 
 <code>Complete</code> case represents complete segment (e.g. of the specified size) and
 <code>Boundary</code> represents segment at the boundary (e.g. smaller than the required
 size).</p>
-
-<h2>Example</h2>
-
+        <h2>Example</h2>
 <p>For example (using internal <code>windowed</code> function):</p>
 
 <pre><code>open FSharp.DataFrame.Internal
@@ -79,24 +78,20 @@ Seq.windowedWithBounds 3 Boundary.AtBeginning [ 1; 2; 3; 4 ]
 
 <p>If you do not need to distinguish the two cases, you can use the <code>Data</code> property
 to get the array representing the segment data.</p>
-
 </div>
-
-
-
   <h3>Instance members</h3>
   <table class="table table-bordered member-list">
     <thead>
-      <tr><td>Instance members</td><td>Description</td></tr>
+      <tr><td>Instance member</td><td>Description</td></tr>
     </thead>
     <tbody>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1109', 1109)" onmouseover="showTip(event, '1109', 1109)">
+          <code onmouseout="hideTip(event, '1278', 1278)" onmouseover="showTip(event, '1278', 1278)">
             dataSegment.Data
           </code>
-          <div class="tip" id="1109">
+          <div class="tip" id="1278">
             <strong>Signature:</strong>&#39;T<br />
                       </div>
         </td>
@@ -107,10 +102,10 @@ to get the array representing the segment data.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1110', 1110)" onmouseover="showTip(event, '1110', 1110)">
+          <code onmouseout="hideTip(event, '1279', 1279)" onmouseover="showTip(event, '1279', 1279)">
             dataSegment.Kind
           </code>
-          <div class="tip" id="1110">
+          <div class="tip" id="1279">
             <strong>Signature:</strong>DataSegmentKind<br />
                       </div>
         </td>
@@ -119,9 +114,6 @@ to get the array representing the segment data.</p>
       </tr>
     </tbody>
   </table>
-
-
-
 
         </div>
         <div class="span3">

@@ -55,32 +55,29 @@
         <div class="span9" id="main">
           
 
-<h1>IIndex</h1>
 
+
+<h1>IIndex</h1>
 <div class="xmldoc">
-  <p>An interface that represents index mapping keys of some generic type <code>T</code> to locations
+<p>An interface that represents index mapping keys of some generic type <code>T</code> to locations
 of address <code>Address</code>. The <code>IIndex&lt;K&gt;</code> contains minimal set of operations that have to
 be supported by an index. This type should be only used directly when
 extending the DataFrame library and adding a new way of storing or loading data.
 Values of this type are constructed using the associated <code>IIndexBuilder</code> type.</p>
-
 </div>
-
-
-
   <h3>Instance members</h3>
   <table class="table table-bordered member-list">
     <thead>
-      <tr><td>Instance members</td><td>Description</td></tr>
+      <tr><td>Instance member</td><td>Description</td></tr>
     </thead>
     <tbody>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1121', 1121)" onmouseover="showTip(event, '1121', 1121)">
+          <code onmouseout="hideTip(event, '1290', 1290)" onmouseover="showTip(event, '1290', 1290)">
             iIndex.KeyAt(arg1)
           </code>
-          <div class="tip" id="1121">
+          <div class="tip" id="1290">
             <strong>Signature:</strong>Address -&gt; &#39;K<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -91,10 +88,10 @@ Values of this type are constructed using the associated <code>IIndexBuilder</co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1122', 1122)" onmouseover="showTip(event, '1122', 1122)">
+          <code onmouseout="hideTip(event, '1291', 1291)" onmouseover="showTip(event, '1291', 1291)">
             iIndex.Lookup(key, lookup, condition)
           </code>
-          <div class="tip" id="1122">
+          <div class="tip" id="1291">
             <strong>Signature:</strong>(key:&#39;K * lookup:Lookup * condition:(Address -&gt; bool)) -&gt; OptionalValue&lt;&#39;K * Address&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -109,10 +106,10 @@ in a series (where we need to check if a value at the address is available)</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1123', 1123)" onmouseover="showTip(event, '1123', 1123)">
+          <code onmouseout="hideTip(event, '1292', 1292)" onmouseover="showTip(event, '1292', 1292)">
             iIndex.Builder
           </code>
-          <div class="tip" id="1123">
+          <div class="tip" id="1292">
             <strong>Signature:</strong>IIndexBuilder<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -124,10 +121,10 @@ same kind as the current index (e.g. a lazy index returns a lazy index builder)<
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1124', 1124)" onmouseover="showTip(event, '1124', 1124)">
+          <code onmouseout="hideTip(event, '1293', 1293)" onmouseover="showTip(event, '1293', 1293)">
             iIndex.Comparer
           </code>
-          <div class="tip" id="1124">
+          <div class="tip" id="1293">
             <strong>Signature:</strong>Comparer&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -138,10 +135,10 @@ same kind as the current index (e.g. a lazy index returns a lazy index builder)<
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1125', 1125)" onmouseover="showTip(event, '1125', 1125)">
+          <code onmouseout="hideTip(event, '1294', 1294)" onmouseover="showTip(event, '1294', 1294)">
             iIndex.IsEmpty
           </code>
-          <div class="tip" id="1125">
+          <div class="tip" id="1294">
             <strong>Signature:</strong>bool<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -153,10 +150,10 @@ testing if <code>Keys</code> are empty, but it does not have to evaluate delayed
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1126', 1126)" onmouseover="showTip(event, '1126', 1126)">
+          <code onmouseout="hideTip(event, '1295', 1295)" onmouseover="showTip(event, '1295', 1295)">
             iIndex.KeyRange
           </code>
-          <div class="tip" id="1126">
+          <div class="tip" id="1295">
             <strong>Signature:</strong>&#39;K * &#39;K<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -168,10 +165,10 @@ testing if <code>Keys</code> are empty, but it does not have to evaluate delayed
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1127', 1127)" onmouseover="showTip(event, '1127', 1127)">
+          <code onmouseout="hideTip(event, '1296', 1296)" onmouseover="showTip(event, '1296', 1296)">
             iIndex.Keys
           </code>
-          <div class="tip" id="1127">
+          <div class="tip" id="1296">
             <strong>Signature:</strong>seq&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -182,10 +179,10 @@ testing if <code>Keys</code> are empty, but it does not have to evaluate delayed
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1128', 1128)" onmouseover="showTip(event, '1128', 1128)">
+          <code onmouseout="hideTip(event, '1297', 1297)" onmouseover="showTip(event, '1297', 1297)">
             iIndex.Mappings
           </code>
-          <div class="tip" id="1128">
+          <div class="tip" id="1297">
             <strong>Signature:</strong>seq&lt;&#39;K * Address&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -196,10 +193,10 @@ testing if <code>Keys</code> are empty, but it does not have to evaluate delayed
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1129', 1129)" onmouseover="showTip(event, '1129', 1129)">
+          <code onmouseout="hideTip(event, '1298', 1298)" onmouseover="showTip(event, '1298', 1298)">
             iIndex.Ordered
           </code>
-          <div class="tip" id="1129">
+          <div class="tip" id="1298">
             <strong>Signature:</strong>bool<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -210,10 +207,10 @@ testing if <code>Keys</code> are empty, but it does not have to evaluate delayed
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1130', 1130)" onmouseover="showTip(event, '1130', 1130)">
+          <code onmouseout="hideTip(event, '1299', 1299)" onmouseover="showTip(event, '1299', 1299)">
             iIndex.Range
           </code>
-          <div class="tip" id="1130">
+          <div class="tip" id="1299">
             <strong>Signature:</strong>Address * Address<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -223,9 +220,6 @@ testing if <code>Keys</code> are empty, but it does not have to evaluate delayed
       </tr>
     </tbody>
   </table>
-
-
-
 
         </div>
         <div class="span3">

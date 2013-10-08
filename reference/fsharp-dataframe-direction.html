@@ -55,14 +55,13 @@
         <div class="span9" id="main">
           
 
+
+
 <h1>Direction</h1>
-
 <div class="xmldoc">
-  <p>Specifies in which direction should we look when performing operations such as
+<p>Specifies in which direction should we look when performing operations such as
 <code>Series.Pairwise</code>.</p>
-
-<h2>Example</h2>
-
+        <h2>Example</h2>
 <pre><code>let abc = 
   [ 1 =&gt; "a"; 2 =&gt; "b"; 3 =&gt; "c" ]
   |&gt; Series.ofObservations
@@ -75,14 +74,7 @@ abc.Pairwise(direction=Direction.Forward)
 abc.Pairwise(direction=Direction.Backward)
 [fsi:[ 2 =&gt; ("a", "b"); 3 =&gt; ("b", "c") ]]
 </code></pre>
-
 </div>
-
-
-
-
-
-
 
         </div>
         <div class="span3">

@@ -59,7 +59,7 @@ works similarly:</p>
 </td>
 <td class="snippet"><pre class="fssnip">
 <span class="prep">#I</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">bin</span><span class="s">&quot;</span>
-<span class="prep">#I</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">packages</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Charting</span><span class="s">.</span><span class="s">0</span><span class="s">.</span><span class="s">84</span><span class="s">&quot;</span>
+<span class="prep">#I</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">packages</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Charting</span><span class="s">.</span><span class="s">0</span><span class="s">.</span><span class="s">87</span><span class="s">&quot;</span>
 <span class="prep">#load</span> <span class="s">&quot;</span><span class="s">FSharp</span><span class="s">.</span><span class="s">DataFrame</span><span class="s">.</span><span class="s">fsx</span><span class="s">&quot;</span>
 <span class="prep">#load</span> <span class="s">&quot;</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Charting</span><span class="s">.</span><span class="s">fsx</span><span class="s">&quot;</span>
 
@@ -121,20 +121,20 @@ to create a series:</p>
   [ <span onmouseout="hideTip(event, 'fs6', 17)" onmouseover="showTip(event, 'fs6', 17)" class="i">DateTime</span>(<span class="n">2013</span>,<span class="n">1</span>,<span class="n">1</span>) <span class="o">=&gt;</span> <span class="n">10.0</span>
     <span onmouseout="hideTip(event, 'fs6', 18)" onmouseover="showTip(event, 'fs6', 18)" class="i">DateTime</span>(<span class="n">2013</span>,<span class="n">1</span>,<span class="n">4</span>) <span class="o">=&gt;</span> <span class="n">20.0</span>
     <span onmouseout="hideTip(event, 'fs6', 19)" onmouseover="showTip(event, 'fs6', 19)" class="i">DateTime</span>(<span class="n">2013</span>,<span class="n">1</span>,<span class="n">8</span>) <span class="o">=&gt;</span> <span class="n">30.0</span> ]
-<span class="fsi">val it : Series&lt;DateTime,float&gt; =</span>
-<span class="fsi">  1/1/2013 12:00:00 AM -&gt; 10 </span>
-<span class="fsi">  1/4/2013 12:00:00 AM -&gt; 20 </span>
-<span class="fsi">  1/8/2013 12:00:00 AM -&gt; 30 </span>
+<span class="fsi">val it : Series<DateTime,float> =</span>
+<span class="fsi">  1/1/2013 12:00:00 AM -> 10 </span>
+<span class="fsi">  1/4/2013 12:00:00 AM -> 20 </span>
+<span class="fsi">  1/8/2013 12:00:00 AM -> 30 </span>
 
 <span class="c">// Shorter alternative to &#39;Series.ofObservations&#39;</span>
 <span onmouseout="hideTip(event, 'fs11', 20)" onmouseover="showTip(event, 'fs11', 20)" class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">1.0</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="n">2.0</span> ]
 
 <span class="c">// Create series with implicit (ordinal) keys</span>
 <span onmouseout="hideTip(event, 'fs9', 21)" onmouseover="showTip(event, 'fs9', 21)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs12', 22)" onmouseover="showTip(event, 'fs12', 22)" class="i">ofValues</span> [ <span class="n">10.0</span>; <span class="n">20.0</span>; <span class="n">30.0</span> ]
-<span class="fsi">val it : Series&lt;int,float&gt; =</span>
-<span class="fsi">  0 -&gt; 10 </span>
-<span class="fsi">  1 -&gt; 20 </span>
-<span class="fsi">  2 -&gt; 30 </span></pre>
+<span class="fsi">val it : Series<int,float> =</span>
+<span class="fsi">  0 -> 10 </span>
+<span class="fsi">  1 -> 20 </span>
+<span class="fsi">  2 -> 30 </span></pre>
 </td>
 </tr>
 </table><p>Note that the series type is generic. <code>Series&lt;K, T&gt;</code> represents a series
@@ -166,12 +166,12 @@ with 10 day value range and random values:</p>
 
 <span class="c">// A series with values for 10 days </span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs19', 32)" onmouseover="showTip(event, 'fs19', 32)" class="i">second</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 33)" onmouseover="showTip(event, 'fs9', 33)" class="i">Series</span>(<span onmouseout="hideTip(event, 'fs13', 34)" onmouseover="showTip(event, 'fs13', 34)" class="i">dateRange</span> (<span onmouseout="hideTip(event, 'fs6', 35)" onmouseover="showTip(event, 'fs6', 35)" class="i">DateTime</span>(<span class="n">2013</span>,<span class="n">1</span>,<span class="n">1</span>)) <span class="n">10</span>, <span onmouseout="hideTip(event, 'fs17', 36)" onmouseover="showTip(event, 'fs17', 36)" class="i">rand</span> <span class="n">10</span>)
-<span class="fsi">val it : Series&lt;DateTime,float&gt; =</span>
-<span class="fsi">  1/1/2013  12:00:00 AM -&gt; 0.957571796121808  </span>
-<span class="fsi">  1/2/2013  12:00:00 AM -&gt; 0.424694305017914  </span>
+<span class="fsi">val it : Series<DateTime,float> =</span>
+<span class="fsi">  1/1/2013  12:00:00 AM -> 0.957571796121808  </span>
+<span class="fsi">  1/2/2013  12:00:00 AM -> 0.424694305017914  </span>
 <span class="fsi">  ...                      ...              </span>
-<span class="fsi">  1/9/2013  12:00:00 AM -&gt; 0.874667080526551  </span>
-<span class="fsi">  1/10/2013 12:00:00 AM -&gt; 0.308210378656262 </span></pre>
+<span class="fsi">  1/9/2013  12:00:00 AM -> 0.874667080526551  </span>
+<span class="fsi">  1/10/2013 12:00:00 AM -> 0.308210378656262 </span></pre>
 </td>
 </tr>
 </table><p>Now we can easily construct a data frame that has two columns - one representing
@@ -188,12 +188,12 @@ the <code>first</code> series and another representing the <code>second</code> s
 </td>
 <td class="snippet"><pre class="fssnip">
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs20', 37)" onmouseover="showTip(event, 'fs20', 37)" class="i">df1</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs21', 38)" onmouseover="showTip(event, 'fs21', 38)" class="i">Frame</span>([<span class="s">&quot;</span><span class="s">first</span><span class="s">&quot;</span>; <span class="s">&quot;</span><span class="s">second</span><span class="s">&quot;</span>], [<span onmouseout="hideTip(event, 'fs8', 39)" onmouseover="showTip(event, 'fs8', 39)" class="i">first</span>; <span onmouseout="hideTip(event, 'fs19', 40)" onmouseover="showTip(event, 'fs19', 40)" class="i">second</span>])
-<span class="fsi">val it : Frame&lt;DateTime,strubg&gt; =</span>
+<span class="fsi">val it : Frame<DateTime,strubg> =</span>
 <span class="fsi">                           first     second             </span>
-<span class="fsi">  1/1/2013 12:00:00 AM -&gt;  10        0.287487044598668  </span>
-<span class="fsi">  1/2/2013 12:00:00 AM -&gt;  &lt;missing&gt; 0.66628182011949   </span>
+<span class="fsi">  1/1/2013 12:00:00 AM ->  10        0.287487044598668  </span>
+<span class="fsi">  1/2/2013 12:00:00 AM ->  <missing> 0.66628182011949   </span>
 <span class="fsi">  ...                      ...       ...              </span>
-<span class="fsi">  1/10/2013 12:00:00 AM -&gt; &lt;missing&gt; 0.104357822846788  </span></pre>
+<span class="fsi">  1/10/2013 12:00:00 AM -> <missing> 0.104357822846788  </span></pre>
 </td>
 </tr>
 </table><p>The type representing a data frame has two generic parameters:
@@ -283,13 +283,13 @@ names and types of properties of a record and creates a data frame with the same
 <td class="snippet"><pre class="fssnip">
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs37', 72)" onmouseover="showTip(event, 'fs37', 72)" class="i">msftCsv</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs21', 73)" onmouseover="showTip(event, 'fs21', 73)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 74)" onmouseover="showTip(event, 'fs38', 74)" class="i">readCsv</span>(<span class="k">__SOURCE_DIRECTORY__</span> <span class="o">+</span> <span class="s">&quot;</span><span class="s">/</span><span class="s">data</span><span class="s">/</span><span class="s">MSFT</span><span class="s">.</span><span class="s">csv</span><span class="s">&quot;</span>)
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs39', 75)" onmouseover="showTip(event, 'fs39', 75)" class="i">fbCsv</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs21', 76)" onmouseover="showTip(event, 'fs21', 76)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 77)" onmouseover="showTip(event, 'fs38', 77)" class="i">readCsv</span>(<span class="k">__SOURCE_DIRECTORY__</span> <span class="o">+</span> <span class="s">&quot;</span><span class="s">/</span><span class="s">data</span><span class="s">/</span><span class="s">FB</span><span class="s">.</span><span class="s">csv</span><span class="s">&quot;</span>)
-<span class="fsi">val fbCsv : Frame&lt;int,string&gt; =</span>
+<span class="fsi">val fbCsv : Frame<int,string> =</span>
 <span class="fsi">         Date       Open  High  Low   Close Volume    Adj Close </span>
-<span class="fsi">  0 -&gt;   2013-08-30 42.02 42.26 41.06 41.29 67587400  41.29     </span>
-<span class="fsi">  1 -&gt;   2013-08-29 40.89 41.78 40.80 41.28 58303400  41.28     </span>
+<span class="fsi">  0 ->   2013-08-30 42.02 42.26 41.06 41.29 67587400  41.29     </span>
+<span class="fsi">  1 ->   2013-08-29 40.89 41.78 40.80 41.28 58303400  41.28     </span>
 <span class="fsi">  :      ...        ...   ...   ...   ...   ...       ...       </span>
-<span class="fsi">  321 -&gt; 2012-05-21 36.53 36.66 33.00 34.03 168192700 34.03     </span>
-<span class="fsi">  322 -&gt; 2012-05-18 42.05 45.00 38.00 38.23 573576400 38.23     </span></pre>
+<span class="fsi">  321 -> 2012-05-21 36.53 36.66 33.00 34.03 168192700 34.03     </span>
+<span class="fsi">  322 -> 2012-05-18 42.05 45.00 38.00 38.23 573576400 38.23     </span></pre>
 </td>
 </tr>
 </table><p>When loading the data, data frame analyses the values and automatically converts
@@ -463,13 +463,13 @@ slicing operators on the series:</p>
 <td class="snippet"><pre class="fssnip">
 <span class="c">// Look for a row at a specific date</span>
 <span onmouseout="hideTip(event, 'fs60', 149)" onmouseover="showTip(event, 'fs60', 149)" class="i">joinedIn</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs63', 150)" onmouseover="showTip(event, 'fs63', 150)" class="i">Rows</span><span class="o">.</span>[<span onmouseout="hideTip(event, 'fs6', 151)" onmouseover="showTip(event, 'fs6', 151)" class="i">DateTime</span>(<span class="n">2013</span>, <span class="n">1</span>, <span class="n">2</span>)]
-<span class="fsi">val it : ObjectSeries&lt;string&gt; =</span>
-<span class="fsi">  FbOpen    -&gt; 28.00            </span>
-<span class="fsi">  FbClose   -&gt; 27.44   </span>
-<span class="fsi">  FbDiff    -&gt; -0.5599 </span>
-<span class="fsi">  MsftOpen  -&gt; 27.62   </span>
-<span class="fsi">  MsftClose -&gt; 27.25    </span>
-<span class="fsi">  MsftDiff  -&gt; -0.3700 </span>
+<span class="fsi">val it : ObjectSeries<string> =</span>
+<span class="fsi">  FbOpen    -> 28.00            </span>
+<span class="fsi">  FbClose   -> 27.44   </span>
+<span class="fsi">  FbDiff    -> -0.5599 </span>
+<span class="fsi">  MsftOpen  -> 27.62   </span>
+<span class="fsi">  MsftClose -> 27.25    </span>
+<span class="fsi">  MsftDiff  -> -0.3700 </span>
 
 <span class="c">// Get opening Facebook price for 2 Jan 2013</span>
 <span onmouseout="hideTip(event, 'fs60', 152)" onmouseover="showTip(event, 'fs60', 152)" class="i">joinedIn</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs63', 153)" onmouseover="showTip(event, 'fs63', 153)" class="i">Rows</span><span class="o">.</span>[<span onmouseout="hideTip(event, 'fs6', 154)" onmouseover="showTip(event, 'fs6', 154)" class="i">DateTime</span>(<span class="n">2013</span>, <span class="n">1</span>, <span class="n">2</span>)]<span class="o">?</span><span class="i">FbOpen</span>
@@ -517,13 +517,13 @@ keys (using a list) or a range (using the slicing syntax):</p>
 
 <span class="c">// Get values corresponding to entire January 2013</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs68', 166)" onmouseover="showTip(event, 'fs68', 166)" class="i">jan</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs60', 167)" onmouseover="showTip(event, 'fs60', 167)" class="i">joinedIn</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs63', 168)" onmouseover="showTip(event, 'fs63', 168)" class="i">Rows</span><span class="o">.</span>[<span onmouseout="hideTip(event, 'fs6', 169)" onmouseover="showTip(event, 'fs6', 169)" class="i">DateTime</span>(<span class="n">2013</span>, <span class="n">1</span>, <span class="n">1</span>) <span class="o">..</span> <span onmouseout="hideTip(event, 'fs6', 170)" onmouseover="showTip(event, 'fs6', 170)" class="i">DateTime</span>(<span class="n">2013</span>, <span class="n">1</span>, <span class="n">31</span>)] 
-<span class="fsi">val jan : Frame&lt;DateTime,string&gt; =</span>
+<span class="fsi">val jan : Frame<DateTime,string> =</span>
 <span class="fsi">               FbOpen FbClose FbDiff MsftOpen MsftClose MsftDiff </span>
-<span class="fsi">  1/2/2013  -&gt; 28.00  27.44   -0.55  27.62    27.25     -0.37 </span>
-<span class="fsi">  1/3/2013  -&gt; 27.77  27.88   0.10   27.25    27.63     0.37 </span>
-<span class="fsi">  ...       -&gt; ...    ...     ...    ...      ...       ... </span>
-<span class="fsi">  1/30/2013 -&gt; 31.24  30.98   -0.25  27.85    28.01     0.16 </span>
-<span class="fsi">  1/31/2013 -&gt; 30.98  29.15   -1.83  27.45    27.79     0.34  </span>
+<span class="fsi">  1/2/2013  -> 28.00  27.44   -0.55  27.62    27.25     -0.37 </span>
+<span class="fsi">  1/3/2013  -> 27.77  27.88   0.10   27.25    27.63     0.37 </span>
+<span class="fsi">  ...       -> ...    ...     ...    ...      ...       ... </span>
+<span class="fsi">  1/30/2013 -> 31.24  30.98   -0.25  27.85    28.01     0.16 </span>
+<span class="fsi">  1/31/2013 -> 30.98  29.15   -1.83  27.45    27.79     0.34  </span>
 
 <span class="c">// Calculate means over the period</span>
 <span onmouseout="hideTip(event, 'fs68', 171)" onmouseover="showTip(event, 'fs68', 171)" class="i">jan</span><span class="o">?</span><span class="i">FbOpen</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 172)" onmouseover="showTip(event, 'fs9', 172)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs67', 173)" onmouseover="showTip(event, 'fs67', 173)" class="i">mean</span>
@@ -578,17 +578,17 @@ can be used to ilustrate the idea):</p>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs69', 177)" onmouseover="showTip(event, 'fs69', 177)" class="i">daysSeries</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 178)" onmouseover="showTip(event, 'fs9', 178)" class="i">Series</span>(<span onmouseout="hideTip(event, 'fs13', 179)" onmouseover="showTip(event, 'fs13', 179)" class="i">dateRange</span> <span onmouseout="hideTip(event, 'fs6', 180)" onmouseover="showTip(event, 'fs6', 180)" class="i">DateTime</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs70', 181)" onmouseover="showTip(event, 'fs70', 181)" class="i">Today</span> <span class="n">10</span>, <span onmouseout="hideTip(event, 'fs17', 182)" onmouseover="showTip(event, 'fs17', 182)" class="i">rand</span> <span class="n">10</span>)
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs71', 183)" onmouseover="showTip(event, 'fs71', 183)" class="i">obsSeries</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 184)" onmouseover="showTip(event, 'fs9', 184)" class="i">Series</span>(<span onmouseout="hideTip(event, 'fs13', 185)" onmouseover="showTip(event, 'fs13', 185)" class="i">dateRange</span> <span onmouseout="hideTip(event, 'fs6', 186)" onmouseover="showTip(event, 'fs6', 186)" class="i">DateTime</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs33', 187)" onmouseover="showTip(event, 'fs33', 187)" class="i">Now</span> <span class="n">10</span>, <span onmouseout="hideTip(event, 'fs17', 188)" onmouseover="showTip(event, 'fs17', 188)" class="i">rand</span> <span class="n">10</span>)
 <span class="fsi">  </span>
-<span class="fsi">val daysSeries : Series&lt;DateTime,float&gt; =</span>
-<span class="fsi">  9/12/2013 12:00:00 AM -&gt; 0.834164640323336  </span>
-<span class="fsi">  9/13/2013 12:00:00 AM -&gt; 0.871085483520797  </span>
-<span class="fsi">  ...                   -&gt; ...                </span>
-<span class="fsi">  9/21/2013 12:00:00 AM -&gt; 0.939047194523293  </span>
+<span class="fsi">val daysSeries : Series<DateTime,float> =</span>
+<span class="fsi">  9/12/2013 12:00:00 AM -> 0.834164640323336  </span>
+<span class="fsi">  9/13/2013 12:00:00 AM -> 0.871085483520797  </span>
+<span class="fsi">  ...                   -> ...                </span>
+<span class="fsi">  9/21/2013 12:00:00 AM -> 0.939047194523293  </span>
 <span class="fsi">  </span>
-<span class="fsi">val obsSeries : Series&lt;DateTime,float&gt; =</span>
-<span class="fsi">  9/12/2013 2:38:27 PM -&gt; 0.433889241625503 </span>
-<span class="fsi">  9/13/2013 2:38:27 PM -&gt; 0.318957257233075 </span>
-<span class="fsi">  ...                   -&gt; ...               </span>
-<span class="fsi">  9/21/2013 2:38:27 PM -&gt; 0.227506533836716 </span></pre>
+<span class="fsi">val obsSeries : Series<DateTime,float> =</span>
+<span class="fsi">  9/12/2013 2:38:27 PM -> 0.433889241625503 </span>
+<span class="fsi">  9/13/2013 2:38:27 PM -> 0.318957257233075 </span>
+<span class="fsi">  ...                   -> ...               </span>
+<span class="fsi">  9/21/2013 2:38:27 PM -> 0.227506533836716 </span></pre>
 </td>
 </tr>
 </table><p>The indexing operation written as <code>daysSeries.[date]</code> uses <em>exact</em> semantics so it will 
@@ -655,14 +655,14 @@ demonstrate this, let's create two data frames with columns indexed by 1 and 2, 
 <span class="c">// time in the frame indexed by later times in the day</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs79', 221)" onmouseover="showTip(event, 'fs79', 221)" class="i">obsDaysPrev</span> <span class="o">=</span> 
   (<span onmouseout="hideTip(event, 'fs75', 222)" onmouseover="showTip(event, 'fs75', 222)" class="i">daysFrame</span>, <span onmouseout="hideTip(event, 'fs76', 223)" onmouseover="showTip(event, 'fs76', 223)" class="i">obsFrame</span>) 
-  <span class="o">||&gt;</span> <span onmouseout="hideTip(event, 'fs21', 224)" onmouseover="showTip(event, 'fs21', 224)" class="i">Frame</span><span class="o">.</span><span class="i">joinAlign</span> <span onmouseout="hideTip(event, 'fs58', 225)" onmouseover="showTip(event, 'fs58', 225)" class="i">JoinKind</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs78', 226)" onmouseover="showTip(event, 'fs78', 226)" class="i">Left</span> <span onmouseout="hideTip(event, 'fs73', 227)" onmouseover="showTip(event, 'fs73', 227)" class="i">Lookup</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs74', 228)" onmouseover="showTip(event, 'fs74', 228)" class="i">NearestSmaller</span>
+  <span class="o">||&gt;</span> <span onmouseout="hideTip(event, 'fs21', 224)" onmouseover="showTip(event, 'fs21', 224)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs80', 225)" onmouseover="showTip(event, 'fs80', 225)" class="i">align</span> <span onmouseout="hideTip(event, 'fs58', 226)" onmouseover="showTip(event, 'fs58', 226)" class="i">JoinKind</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs78', 227)" onmouseover="showTip(event, 'fs78', 227)" class="i">Left</span> <span onmouseout="hideTip(event, 'fs73', 228)" onmouseover="showTip(event, 'fs73', 228)" class="i">Lookup</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs74', 229)" onmouseover="showTip(event, 'fs74', 229)" class="i">NearestSmaller</span>
 
 <span class="c">// The first value is missing (because there is no nearest </span>
 <span class="c">// value with greater key - the first one has the smallest </span>
 <span class="c">// key) but the rest is available</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs80', 229)" onmouseover="showTip(event, 'fs80', 229)" class="i">obsDaysNext</span> <span class="o">=</span>
-  (<span onmouseout="hideTip(event, 'fs75', 230)" onmouseover="showTip(event, 'fs75', 230)" class="i">daysFrame</span>, <span onmouseout="hideTip(event, 'fs76', 231)" onmouseover="showTip(event, 'fs76', 231)" class="i">obsFrame</span>) 
-  <span class="o">||&gt;</span> <span onmouseout="hideTip(event, 'fs21', 232)" onmouseover="showTip(event, 'fs21', 232)" class="i">Frame</span><span class="o">.</span><span class="i">joinAlign</span> <span onmouseout="hideTip(event, 'fs58', 233)" onmouseover="showTip(event, 'fs58', 233)" class="i">JoinKind</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs78', 234)" onmouseover="showTip(event, 'fs78', 234)" class="i">Left</span> <span onmouseout="hideTip(event, 'fs73', 235)" onmouseover="showTip(event, 'fs73', 235)" class="i">Lookup</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs81', 236)" onmouseover="showTip(event, 'fs81', 236)" class="i">NearestGreater</span></pre>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs81', 230)" onmouseover="showTip(event, 'fs81', 230)" class="i">obsDaysNext</span> <span class="o">=</span>
+  (<span onmouseout="hideTip(event, 'fs75', 231)" onmouseover="showTip(event, 'fs75', 231)" class="i">daysFrame</span>, <span onmouseout="hideTip(event, 'fs76', 232)" onmouseover="showTip(event, 'fs76', 232)" class="i">obsFrame</span>) 
+  <span class="o">||&gt;</span> <span onmouseout="hideTip(event, 'fs21', 233)" onmouseover="showTip(event, 'fs21', 233)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs80', 234)" onmouseover="showTip(event, 'fs80', 234)" class="i">align</span> <span onmouseout="hideTip(event, 'fs58', 235)" onmouseover="showTip(event, 'fs58', 235)" class="i">JoinKind</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs78', 236)" onmouseover="showTip(event, 'fs78', 236)" class="i">Left</span> <span onmouseout="hideTip(event, 'fs73', 237)" onmouseover="showTip(event, 'fs73', 237)" class="i">Lookup</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs82', 238)" onmouseover="showTip(event, 'fs82', 238)" class="i">NearestGreater</span></pre>
 </td>
 </tr>
 </table><p>In general, the same operation can usually be achieved using a function from the 
@@ -697,9 +697,9 @@ true when the MSFT opening price is greater than FB:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span onmouseout="hideTip(event, 'fs56', 237)" onmouseover="showTip(event, 'fs56', 237)" class="i">joinedOut</span><span class="o">?</span><span onmouseout="hideTip(event, 'fs82', 238)" onmouseover="showTip(event, 'fs82', 238)" class="i">Comparison</span> <span class="o">&lt;-</span> <span onmouseout="hideTip(event, 'fs56', 239)" onmouseover="showTip(event, 'fs56', 239)" class="i">joinedOut</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 240)" onmouseover="showTip(event, 'fs21', 240)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs83', 241)" onmouseover="showTip(event, 'fs83', 241)" class="i">mapRowValues</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs84', 242)" onmouseover="showTip(event, 'fs84', 242)" class="i">row</span> <span class="k">-&gt;</span> 
-  <span class="k">if</span> <span onmouseout="hideTip(event, 'fs84', 243)" onmouseover="showTip(event, 'fs84', 243)" class="i">row</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 244)" onmouseover="showTip(event, 'fs9', 244)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs85', 245)" onmouseover="showTip(event, 'fs85', 245)" class="i">hasAll</span> [<span class="s">&quot;</span><span class="s">MsftOpen</span><span class="s">&quot;</span>; <span class="s">&quot;</span><span class="s">FbOpen</span><span class="s">&quot;</span>] <span class="k">then</span>
-    <span class="k">if</span> <span onmouseout="hideTip(event, 'fs84', 246)" onmouseover="showTip(event, 'fs84', 246)" class="i">row</span><span class="o">?</span><span class="i">MsftOpen</span> <span class="o">&gt;</span> <span onmouseout="hideTip(event, 'fs84', 247)" onmouseover="showTip(event, 'fs84', 247)" class="i">row</span><span class="o">?</span><span class="i">FbOpen</span> <span class="k">then</span> <span class="s">&quot;</span><span class="s">MSFT</span><span class="s">&quot;</span> <span class="k">else</span> <span class="s">&quot;</span><span class="s">FB</span><span class="s">&quot;</span>
+<span onmouseout="hideTip(event, 'fs56', 239)" onmouseover="showTip(event, 'fs56', 239)" class="i">joinedOut</span><span class="o">?</span><span onmouseout="hideTip(event, 'fs83', 240)" onmouseover="showTip(event, 'fs83', 240)" class="i">Comparison</span> <span class="o">&lt;-</span> <span onmouseout="hideTip(event, 'fs56', 241)" onmouseover="showTip(event, 'fs56', 241)" class="i">joinedOut</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 242)" onmouseover="showTip(event, 'fs21', 242)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs84', 243)" onmouseover="showTip(event, 'fs84', 243)" class="i">mapRowValues</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs85', 244)" onmouseover="showTip(event, 'fs85', 244)" class="i">row</span> <span class="k">-&gt;</span> 
+  <span class="k">if</span> <span onmouseout="hideTip(event, 'fs85', 245)" onmouseover="showTip(event, 'fs85', 245)" class="i">row</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 246)" onmouseover="showTip(event, 'fs9', 246)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs86', 247)" onmouseover="showTip(event, 'fs86', 247)" class="i">hasAll</span> [<span class="s">&quot;</span><span class="s">MsftOpen</span><span class="s">&quot;</span>; <span class="s">&quot;</span><span class="s">FbOpen</span><span class="s">&quot;</span>] <span class="k">then</span>
+    <span class="k">if</span> <span onmouseout="hideTip(event, 'fs85', 248)" onmouseover="showTip(event, 'fs85', 248)" class="i">row</span><span class="o">?</span><span class="i">MsftOpen</span> <span class="o">&gt;</span> <span onmouseout="hideTip(event, 'fs85', 249)" onmouseover="showTip(event, 'fs85', 249)" class="i">row</span><span class="o">?</span><span class="i">FbOpen</span> <span class="k">then</span> <span class="s">&quot;</span><span class="s">MSFT</span><span class="s">&quot;</span> <span class="k">else</span> <span class="s">&quot;</span><span class="s">FB</span><span class="s">&quot;</span>
   <span class="k">else</span> <span class="k">null</span> )</pre>
 </td>
 </tr>
@@ -724,12 +724,12 @@ other way round:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span onmouseout="hideTip(event, 'fs56', 248)" onmouseover="showTip(event, 'fs56', 248)" class="i">joinedOut</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs86', 249)" onmouseover="showTip(event, 'fs86', 249)" class="i">GetSeries</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs87', 250)" onmouseover="showTip(event, 'fs87', 250)" class="i">string</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Comparison</span><span class="s">&quot;</span>)
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 251)" onmouseover="showTip(event, 'fs9', 251)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs88', 252)" onmouseover="showTip(event, 'fs88', 252)" class="i">filterValues</span> ((<span class="o">=</span>) <span class="s">&quot;</span><span class="s">MSFT</span><span class="s">&quot;</span>) <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 253)" onmouseover="showTip(event, 'fs9', 253)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs89', 254)" onmouseover="showTip(event, 'fs89', 254)" class="i">countValues</span>
+<span onmouseout="hideTip(event, 'fs56', 250)" onmouseover="showTip(event, 'fs56', 250)" class="i">joinedOut</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs87', 251)" onmouseover="showTip(event, 'fs87', 251)" class="i">GetSeries</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs88', 252)" onmouseover="showTip(event, 'fs88', 252)" class="i">string</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Comparison</span><span class="s">&quot;</span>)
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 253)" onmouseover="showTip(event, 'fs9', 253)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs89', 254)" onmouseover="showTip(event, 'fs89', 254)" class="i">filterValues</span> ((<span class="o">=</span>) <span class="s">&quot;</span><span class="s">MSFT</span><span class="s">&quot;</span>) <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 255)" onmouseover="showTip(event, 'fs9', 255)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs90', 256)" onmouseover="showTip(event, 'fs90', 256)" class="i">countValues</span>
 <span class="fsi">val it : int = 220</span>
 
-<span onmouseout="hideTip(event, 'fs56', 255)" onmouseover="showTip(event, 'fs56', 255)" class="i">joinedOut</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs86', 256)" onmouseover="showTip(event, 'fs86', 256)" class="i">GetSeries</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs87', 257)" onmouseover="showTip(event, 'fs87', 257)" class="i">string</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Comparison</span><span class="s">&quot;</span>)
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 258)" onmouseover="showTip(event, 'fs9', 258)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs88', 259)" onmouseover="showTip(event, 'fs88', 259)" class="i">filterValues</span> ((<span class="o">=</span>) <span class="s">&quot;</span><span class="s">FB</span><span class="s">&quot;</span>) <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 260)" onmouseover="showTip(event, 'fs9', 260)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs89', 261)" onmouseover="showTip(event, 'fs89', 261)" class="i">countValues</span>
+<span onmouseout="hideTip(event, 'fs56', 257)" onmouseover="showTip(event, 'fs56', 257)" class="i">joinedOut</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs87', 258)" onmouseover="showTip(event, 'fs87', 258)" class="i">GetSeries</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs88', 259)" onmouseover="showTip(event, 'fs88', 259)" class="i">string</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Comparison</span><span class="s">&quot;</span>)
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 260)" onmouseover="showTip(event, 'fs9', 260)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs89', 261)" onmouseover="showTip(event, 'fs89', 261)" class="i">filterValues</span> ((<span class="o">=</span>) <span class="s">&quot;</span><span class="s">FB</span><span class="s">&quot;</span>) <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 262)" onmouseover="showTip(event, 'fs9', 262)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs90', 263)" onmouseover="showTip(event, 'fs90', 263)" class="i">countValues</span>
 <span class="fsi">val it : int = 103</span></pre>
 </td>
 </tr>
@@ -749,13 +749,13 @@ so it is useful to see how this work. Here is another alternative:</p>
 </td>
 <td class="snippet"><pre class="fssnip">
 <span class="c">// Get data frame with only &#39;Open&#39; columns</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs90', 262)" onmouseover="showTip(event, 'fs90', 262)" class="i">joinedOpens</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs56', 263)" onmouseover="showTip(event, 'fs56', 263)" class="i">joinedOut</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs44', 264)" onmouseover="showTip(event, 'fs44', 264)" class="i">Columns</span><span class="o">.</span>[ [<span class="s">&quot;</span><span class="s">MsftOpen</span><span class="s">&quot;</span>; <span class="s">&quot;</span><span class="s">FbOpen</span><span class="s">&quot;</span>] ]
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs91', 264)" onmouseover="showTip(event, 'fs91', 264)" class="i">joinedOpens</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs56', 265)" onmouseover="showTip(event, 'fs56', 265)" class="i">joinedOut</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs44', 266)" onmouseover="showTip(event, 'fs44', 266)" class="i">Columns</span><span class="o">.</span>[ [<span class="s">&quot;</span><span class="s">MsftOpen</span><span class="s">&quot;</span>; <span class="s">&quot;</span><span class="s">FbOpen</span><span class="s">&quot;</span>] ]
 
 <span class="c">// Get only rows that don&#39;t have any missing values</span>
 <span class="c">// and then we can safely filter &amp; count</span>
-<span onmouseout="hideTip(event, 'fs90', 265)" onmouseover="showTip(event, 'fs90', 265)" class="i">joinedOpens</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs91', 266)" onmouseover="showTip(event, 'fs91', 266)" class="i">RowsDense</span>
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 267)" onmouseover="showTip(event, 'fs9', 267)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs88', 268)" onmouseover="showTip(event, 'fs88', 268)" class="i">filterValues</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs84', 269)" onmouseover="showTip(event, 'fs84', 269)" class="i">row</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs84', 270)" onmouseover="showTip(event, 'fs84', 270)" class="i">row</span><span class="o">?</span><span class="i">MsftOpen</span> <span class="o">&gt;</span> <span onmouseout="hideTip(event, 'fs84', 271)" onmouseover="showTip(event, 'fs84', 271)" class="i">row</span><span class="o">?</span><span class="i">FbOpen</span>)
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 272)" onmouseover="showTip(event, 'fs9', 272)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs89', 273)" onmouseover="showTip(event, 'fs89', 273)" class="i">countValues</span></pre>
+<span onmouseout="hideTip(event, 'fs91', 267)" onmouseover="showTip(event, 'fs91', 267)" class="i">joinedOpens</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs92', 268)" onmouseover="showTip(event, 'fs92', 268)" class="i">RowsDense</span>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 269)" onmouseover="showTip(event, 'fs9', 269)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs89', 270)" onmouseover="showTip(event, 'fs89', 270)" class="i">filterValues</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs85', 271)" onmouseover="showTip(event, 'fs85', 271)" class="i">row</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs85', 272)" onmouseover="showTip(event, 'fs85', 272)" class="i">row</span><span class="o">?</span><span class="i">MsftOpen</span> <span class="o">&gt;</span> <span onmouseout="hideTip(event, 'fs85', 273)" onmouseover="showTip(event, 'fs85', 273)" class="i">row</span><span class="o">?</span><span class="i">FbOpen</span>)
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 274)" onmouseover="showTip(event, 'fs9', 274)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs90', 275)" onmouseover="showTip(event, 'fs90', 275)" class="i">countValues</span></pre>
 </td>
 </tr>
 </table><p>The key is the use of <code>RowsDense</code> on line 6. It behaves similarly to <code>Rows</code>, but
@@ -799,20 +799,20 @@ for each row. If you want to group data using a value in a column, you can use
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs92', 274)" onmouseover="showTip(event, 'fs92', 274)" class="i">monthly</span> <span class="o">=</span>
-  <span onmouseout="hideTip(event, 'fs60', 275)" onmouseover="showTip(event, 'fs60', 275)" class="i">joinedIn</span>
-  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 276)" onmouseover="showTip(event, 'fs21', 276)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs93', 277)" onmouseover="showTip(event, 'fs93', 277)" class="i">groupRowsUsing</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs94', 278)" onmouseover="showTip(event, 'fs94', 278)" class="i">k</span> _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs6', 279)" onmouseover="showTip(event, 'fs6', 279)" class="i">DateTime</span>(<span onmouseout="hideTip(event, 'fs94', 280)" onmouseover="showTip(event, 'fs94', 280)" class="i">k</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs95', 281)" onmouseover="showTip(event, 'fs95', 281)" class="i">Year</span>, <span onmouseout="hideTip(event, 'fs94', 282)" onmouseover="showTip(event, 'fs94', 282)" class="i">k</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs96', 283)" onmouseover="showTip(event, 'fs96', 283)" class="i">Month</span>, <span class="n">1</span>))
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs93', 276)" onmouseover="showTip(event, 'fs93', 276)" class="i">monthly</span> <span class="o">=</span>
+  <span onmouseout="hideTip(event, 'fs60', 277)" onmouseover="showTip(event, 'fs60', 277)" class="i">joinedIn</span>
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 278)" onmouseover="showTip(event, 'fs21', 278)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs94', 279)" onmouseover="showTip(event, 'fs94', 279)" class="i">groupRowsUsing</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs95', 280)" onmouseover="showTip(event, 'fs95', 280)" class="i">k</span> _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs6', 281)" onmouseover="showTip(event, 'fs6', 281)" class="i">DateTime</span>(<span onmouseout="hideTip(event, 'fs95', 282)" onmouseover="showTip(event, 'fs95', 282)" class="i">k</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs96', 283)" onmouseover="showTip(event, 'fs96', 283)" class="i">Year</span>, <span onmouseout="hideTip(event, 'fs95', 284)" onmouseover="showTip(event, 'fs95', 284)" class="i">k</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs97', 285)" onmouseover="showTip(event, 'fs97', 285)" class="i">Month</span>, <span class="n">1</span>))
 
-<span class="fsi">val monthly : Frame&lt;(DateTime * DateTime),string&gt; =</span>
+<span class="fsi">val monthly : Frame<(DateTime * DateTime),string> =</span>
 <span class="fsi"> </span>
 <span class="fsi">                        FbOpen  MsftOpen </span>
-<span class="fsi">  5/1/2012 5/18/2012 -&gt; 38.23   29.27    </span>
-<span class="fsi">           5/21/2012 -&gt; 34.03   29.75    </span>
-<span class="fsi">           5/22/2012 -&gt; 31.00   29.76    </span>
+<span class="fsi">  5/1/2012 5/18/2012 -> 38.23   29.27    </span>
+<span class="fsi">           5/21/2012 -> 34.03   29.75    </span>
+<span class="fsi">           5/22/2012 -> 31.00   29.76    </span>
 <span class="fsi">  :                     ...              </span>
-<span class="fsi">  8/1/2013 8/12/2013 -&gt; 38.22   32.87    </span>
-<span class="fsi">           8/13/2013 -&gt; 37.02   32.23    </span>
-<span class="fsi">           8/14/2013 -&gt; 36.65   32.35    </span></pre>
+<span class="fsi">  8/1/2013 8/12/2013 -> 38.22   32.87    </span>
+<span class="fsi">           8/13/2013 -> 37.02   32.23    </span>
+<span class="fsi">           8/14/2013 -> 36.65   32.35    </span></pre>
 </td>
 </tr>
 </table><p>The output is trimmed to fit on the page. As you can see, we get back a frame that has
@@ -834,14 +834,14 @@ rows in a specified group (say, May 2013) and calculate means of columns in the 
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span onmouseout="hideTip(event, 'fs92', 284)" onmouseover="showTip(event, 'fs92', 284)" class="i">monthly</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs97', 285)" onmouseover="showTip(event, 'fs97', 285)" class="i">Rows</span><span class="o">.</span>[<span onmouseout="hideTip(event, 'fs6', 286)" onmouseover="showTip(event, 'fs6', 286)" class="i">DateTime</span>(<span class="n">2013</span>,<span class="n">5</span>,<span class="n">1</span>), <span class="o">*</span>] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 287)" onmouseover="showTip(event, 'fs21', 287)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs98', 288)" onmouseover="showTip(event, 'fs98', 288)" class="i">mean</span>
-<span class="fsi">val it : Series&lt;string,float&gt; =</span>
-<span class="fsi">  FbOpen    -&gt; 26.14 </span>
-<span class="fsi">  FbClose   -&gt; 26.35 </span>
-<span class="fsi">  FbDiff    -&gt; 0.20 </span>
-<span class="fsi">  MsftOpen  -&gt; 33.95 </span>
-<span class="fsi">  MsftClose -&gt; 33.76 </span>
-<span class="fsi">  MsftDiff  -&gt; -0.19 </span></pre>
+<span onmouseout="hideTip(event, 'fs93', 286)" onmouseover="showTip(event, 'fs93', 286)" class="i">monthly</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs98', 287)" onmouseover="showTip(event, 'fs98', 287)" class="i">Rows</span><span class="o">.</span>[<span onmouseout="hideTip(event, 'fs6', 288)" onmouseover="showTip(event, 'fs6', 288)" class="i">DateTime</span>(<span class="n">2013</span>,<span class="n">5</span>,<span class="n">1</span>), <span class="o">*</span>] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 289)" onmouseover="showTip(event, 'fs21', 289)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs99', 290)" onmouseover="showTip(event, 'fs99', 290)" class="i">mean</span>
+<span class="fsi">val it : Series<string,float> =</span>
+<span class="fsi">  FbOpen    -> 26.14 </span>
+<span class="fsi">  FbClose   -> 26.35 </span>
+<span class="fsi">  FbDiff    -> 0.20 </span>
+<span class="fsi">  MsftOpen  -> 33.95 </span>
+<span class="fsi">  MsftClose -> 33.76 </span>
+<span class="fsi">  MsftDiff  -> -0.19 </span></pre>
 </td>
 </tr>
 </table><p>The above snippet uses slicing notation that is only available in F# 3.1 (Visual Studio 2013).
@@ -853,7 +853,7 @@ on the second component. We can also use <code>Frame.meanBy</code> to get means 
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span onmouseout="hideTip(event, 'fs92', 289)" onmouseover="showTip(event, 'fs92', 289)" class="i">monthly</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 290)" onmouseover="showTip(event, 'fs21', 290)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs99', 291)" onmouseover="showTip(event, 'fs99', 291)" class="i">meanBy</span> <span onmouseout="hideTip(event, 'fs100', 292)" onmouseover="showTip(event, 'fs100', 292)" class="i">fst</span></pre>
+<span onmouseout="hideTip(event, 'fs93', 291)" onmouseover="showTip(event, 'fs93', 291)" class="i">monthly</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 292)" onmouseover="showTip(event, 'fs21', 292)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs100', 293)" onmouseover="showTip(event, 'fs100', 293)" class="i">meanBy</span> <span onmouseout="hideTip(event, 'fs101', 294)" onmouseover="showTip(event, 'fs101', 294)" class="i">fst</span></pre>
 </td>
 </tr>
 </table><p>Here, we simply use the fact that the key is a tuple. The <code>fst</code> function projects the first 
@@ -868,7 +868,7 @@ together with means for all available numeric columns.</p>
 <div class="tip" id="fs6">Multiple items<br />type DateTime =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;new : ticks:int64 -&gt; DateTime + 10 overloads<br />&#160;&#160;&#160;&#160;member Add : value:TimeSpan -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddDays : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddHours : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddMilliseconds : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddMinutes : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddMonths : months:int -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddSeconds : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddTicks : value:int64 -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddYears : value:int -&gt; DateTime<br />&#160;&#160;&#160;&#160;...<br />&#160;&#160;end<br /><br />Full name: System.DateTime<br /><br />--------------------<br />DateTime()<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(ticks: int64) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(ticks: int64, kind: DateTimeKind) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, calendar: Globalization.Calendar) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, kind: DateTimeKind) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, calendar: Globalization.Calendar) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, millisecond: int) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, millisecond: int, kind: DateTimeKind) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em></div>
 <div class="tip" id="fs7">val values : float list<br /><br />Full name: Tutorial.values</div>
 <div class="tip" id="fs8">val first : Series&lt;DateTime,float&gt;<br /><br />Full name: Tutorial.first</div>
-<div class="tip" id="fs9">Multiple items<br />module Series<br /><br />from FSharp.DataFrame<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface ISeries&lt;&#39;K&gt;<br />&#160;&#160;new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : index:IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * keySelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;R&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member Append : otherSeries:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;override Equals : another:obj -&gt; bool<br />&#160;&#160;member Get : key:&#39;K -&gt; &#39;V<br />&#160;&#160;member Get : key:&#39;K * lookup:Lookup -&gt; &#39;V<br />&#160;&#160;member GetAt : index:int -&gt; KeyValuePair&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;...<br /><br />Full name: FSharp.DataFrame.Series&lt;_,_&gt;<br /><br />--------------------<br />type Series =<br />&#160;&#160;static member ofNullables : values:seq&lt;Nullable&lt;&#39;a0&gt;&gt; -&gt; Series&lt;int,&#39;a0&gt; (requires default constructor and value type and &#39;a0 :&gt; ValueType)<br />&#160;&#160;static member ofObservations : observations:seq&lt;&#39;a0 * &#39;a1&gt; -&gt; Series&lt;&#39;a0,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofValues : values:seq&lt;&#39;a0&gt; -&gt; Series&lt;int,&#39;a0&gt;<br /><br />Full name: FSharp.DataFrame.FSharpSeriesExtensions.Series<br /><br />--------------------<br />new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : index:Indices.IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:Vectors.IVectorBuilder * indexBuilder:Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
+<div class="tip" id="fs9">Multiple items<br />module Series<br /><br />from FSharp.DataFrame<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface ISeries&lt;&#39;K&gt;<br />&#160;&#160;new : pairs:seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : index:IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * keySelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;R&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member Append : otherSeries:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;override Equals : another:obj -&gt; bool<br />&#160;&#160;member Get : key:&#39;K -&gt; &#39;V<br />&#160;&#160;member Get : key:&#39;K * lookup:Lookup -&gt; &#39;V<br />&#160;&#160;...<br /><br />Full name: FSharp.DataFrame.Series&lt;_,_&gt;<br /><br />--------------------<br />type Series =<br />&#160;&#160;static member ofNullables : values:seq&lt;Nullable&lt;&#39;a0&gt;&gt; -&gt; Series&lt;int,&#39;a0&gt; (requires default constructor and value type and &#39;a0 :&gt; ValueType)<br />&#160;&#160;static member ofObservations : observations:seq&lt;&#39;a0 * &#39;a1&gt; -&gt; Series&lt;&#39;a0,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofValues : values:seq&lt;&#39;a0&gt; -&gt; Series&lt;int,&#39;a0&gt;<br /><br />Full name: FSharp.DataFrame.FSharpSeriesExtensions.Series<br /><br />--------------------<br />new : pairs:seq&lt;Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : index:Indices.IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:Vectors.IVectorBuilder * indexBuilder:Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
 <div class="tip" id="fs10">static member Series.ofObservations : observations:seq&lt;&#39;a0 * &#39;a1&gt; -&gt; Series&lt;&#39;a0,&#39;a1&gt; (requires equality)</div>
 <div class="tip" id="fs11">val series : observations:seq&lt;&#39;a * &#39;b&gt; -&gt; Series&lt;&#39;a,&#39;b&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.FSharpSeriesExtensions.series</div>
 <div class="tip" id="fs12">static member Series.ofValues : values:seq&lt;&#39;a0&gt; -&gt; Series&lt;int,&#39;a0&gt;</div>
@@ -880,7 +880,7 @@ together with means for all available numeric columns.</p>
 <div class="tip" id="fs18">let rnd = System.Random()<br />&#160;&#160;seq { for i in 0 .. (count - 1) -&gt; rnd.NextDouble() }</div>
 <div class="tip" id="fs19">val second : Series&lt;DateTime,float&gt;<br /><br />Full name: Tutorial.second</div>
 <div class="tip" id="fs20">val df1 : Frame&lt;DateTime,string&gt;<br /><br />Full name: Tutorial.df1</div>
-<div class="tip" id="fs21">Multiple items<br />module Frame<br /><br />from FSharp.DataFrame<br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;private new : rowIndex:IIndex&lt;&#39;TRowKey&gt; * columnIndex:IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:Series&lt;&#39;TRowKey,&#39;V&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:Series&lt;&#39;TRowKey,&#39;V&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member Append : otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member Clone : unit -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member DropSeries : column:&#39;TColumnKey -&gt; unit<br />&#160;&#160;...<br /><br />Full name: FSharp.DataFrame.Frame&lt;_,_&gt;<br /><br />--------------------<br />type Frame =<br />&#160;&#160;static member CreateEmpty : unit -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : keys:seq&lt;&#39;RowKey&gt; * columns:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromRowKeys : keys:seq&lt;&#39;K&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRows : rows:seq&lt;KeyValuePair&lt;&#39;RowKey,ObjectSeries&lt;&#39;ColKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromRows : rows:seq&lt;KeyValuePair&lt;&#39;RowKey,Series&lt;&#39;ColKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromRows : rows:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;int,&#39;ColKey&gt; (requires equality)<br />&#160;&#160;static member ReadCsv : stream:Stream * skipTypeInference:bool * inferRows:int * schema:string * separators:string * culture:string -&gt; Frame&lt;int,string&gt;<br />&#160;&#160;static member ReadCsv : location:string * skipTypeInference:bool * inferRows:int * schema:string * separators:string * culture:string -&gt; Frame&lt;int,string&gt;<br /><br />Full name: FSharp.DataFrame.Frame<br /><br />--------------------<br />new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
+<div class="tip" id="fs21">Multiple items<br />module Frame<br /><br />from FSharp.DataFrame<br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;private new : rowIndex:IIndex&lt;&#39;TRowKey&gt; * columnIndex:IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member Append : otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member Clone : unit -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member DropSeries : column:&#39;TColumnKey -&gt; unit<br />&#160;&#160;...<br /><br />Full name: FSharp.DataFrame.Frame&lt;_,_&gt;<br /><br />--------------------<br />type Frame =<br />&#160;&#160;static member CreateEmpty : unit -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : keys:seq&lt;&#39;RowKey&gt; * columns:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromRowKeys : keys:seq&lt;&#39;K&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRows : rows:seq&lt;KeyValuePair&lt;&#39;RowKey,ObjectSeries&lt;&#39;ColKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromRows : rows:seq&lt;KeyValuePair&lt;&#39;RowKey,Series&lt;&#39;ColKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromRows : rows:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;int,&#39;ColKey&gt; (requires equality)<br />&#160;&#160;static member ReadCsv : stream:Stream * skipTypeInference:bool * inferRows:int * schema:string * separators:string * culture:string -&gt; Frame&lt;int,string&gt;<br />&#160;&#160;...<br /><br />Full name: FSharp.DataFrame.Frame<br /><br />--------------------<br />new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
 <div class="tip" id="fs22">val df2 : Frame&lt;DateTime,string&gt;<br /><br />Full name: Tutorial.df2</div>
 <div class="tip" id="fs23">static member Frame.ofColumns : cols:Series&lt;&#39;a0,#ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a2,&#39;a0&gt; (requires equality and equality)<br />static member Frame.ofColumns : cols:seq&lt;&#39;a0 * #ISeries&lt;&#39;K&gt;&gt; -&gt; Frame&lt;&#39;K,&#39;a0&gt; (requires equality and equality)</div>
 <div class="tip" id="fs24">val df3 : Frame&lt;string,DateTime&gt;<br /><br />Full name: Tutorial.df3</div>
@@ -938,28 +938,29 @@ together with means for all available numeric columns.</p>
 <div class="tip" id="fs76">val obsFrame : Frame&lt;DateTime,int&gt;<br /><br />Full name: Tutorial.obsFrame</div>
 <div class="tip" id="fs77">val obsDaysExact : Frame&lt;DateTime,int&gt;<br /><br />Full name: Tutorial.obsDaysExact</div>
 <div class="tip" id="fs78">JoinKind.Left: JoinKind = 2</div>
-<div class="tip" id="fs79">val obsDaysPrev : obj<br /><br />Full name: Tutorial.obsDaysPrev</div>
-<div class="tip" id="fs80">val obsDaysNext : obj<br /><br />Full name: Tutorial.obsDaysNext</div>
-<div class="tip" id="fs81">Lookup.NearestGreater: Lookup = 1</div>
-<div class="tip" id="fs82">type Comparison&lt;&#39;T&gt; =<br />&#160;&#160;delegate of &#39;T * &#39;T -&gt; int<br /><br />Full name: System.Comparison&lt;_&gt;</div>
-<div class="tip" id="fs83">val mapRowValues : f:(ObjectSeries&lt;&#39;C&gt; -&gt; &#39;a) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;R,&#39;a&gt; (requires equality and equality)<br /><br />Full name: FSharp.DataFrame.Frame.mapRowValues</div>
-<div class="tip" id="fs84">val row : ObjectSeries&lt;string&gt;</div>
-<div class="tip" id="fs85">val hasAll : keys:seq&lt;&#39;K&gt; -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; bool (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.hasAll</div>
-<div class="tip" id="fs86">member Frame.GetSeries : column:&#39;TColumnKey -&gt; Series&lt;&#39;TRowKey,&#39;R&gt;<br />member Frame.GetSeries : column:&#39;TColumnKey * lookup:Lookup -&gt; Series&lt;&#39;TRowKey,&#39;R&gt;</div>
-<div class="tip" id="fs87">Multiple items<br />val string : value:&#39;T -&gt; string<br /><br />Full name: Microsoft.FSharp.Core.Operators.string<br /><br />--------------------<br />type string = String<br /><br />Full name: Microsoft.FSharp.Core.string</div>
-<div class="tip" id="fs88">val filterValues : f:(&#39;T -&gt; bool) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.filterValues</div>
-<div class="tip" id="fs89">val countValues : series:Series&lt;&#39;K,&#39;T&gt; -&gt; int (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.countValues</div>
-<div class="tip" id="fs90">val joinedOpens : Frame&lt;DateTime,string&gt;<br /><br />Full name: Tutorial.joinedOpens</div>
-<div class="tip" id="fs91">property Frame.RowsDense: RowSeries&lt;DateTime,string&gt;</div>
-<div class="tip" id="fs92">val monthly : Frame&lt;(DateTime * DateTime),string&gt;<br /><br />Full name: Tutorial.monthly</div>
-<div class="tip" id="fs93">val groupRowsUsing : selector:(&#39;R -&gt; ObjectSeries&lt;&#39;C&gt; -&gt; &#39;a) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;(&#39;a * &#39;R),&#39;C&gt; (requires equality and equality and equality)<br /><br />Full name: FSharp.DataFrame.Frame.groupRowsUsing</div>
-<div class="tip" id="fs94">val k : DateTime</div>
-<div class="tip" id="fs95">property DateTime.Year: int</div>
-<div class="tip" id="fs96">property DateTime.Month: int</div>
-<div class="tip" id="fs97">property Frame.Rows: RowSeries&lt;(DateTime * DateTime),string&gt;</div>
-<div class="tip" id="fs98">val mean : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt; (requires equality and equality)<br /><br />Full name: FSharp.DataFrame.Frame.mean</div>
-<div class="tip" id="fs99">val meanBy : keySelector:(&#39;R -&gt; &#39;a) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;a,&#39;C&gt; (requires equality and equality and equality)<br /><br />Full name: FSharp.DataFrame.Frame.meanBy</div>
-<div class="tip" id="fs100">val fst : tuple:(&#39;T1 * &#39;T2) -&gt; &#39;T1<br /><br />Full name: Microsoft.FSharp.Core.Operators.fst</div>
+<div class="tip" id="fs79">val obsDaysPrev : Frame&lt;DateTime,int&gt;<br /><br />Full name: Tutorial.obsDaysPrev</div>
+<div class="tip" id="fs80">val align : kind:JoinKind -&gt; lookup:Lookup -&gt; frame1:Frame&lt;&#39;R,&#39;C&gt; -&gt; frame2:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><br />Full name: FSharp.DataFrame.Frame.align</div>
+<div class="tip" id="fs81">val obsDaysNext : Frame&lt;DateTime,int&gt;<br /><br />Full name: Tutorial.obsDaysNext</div>
+<div class="tip" id="fs82">Lookup.NearestGreater: Lookup = 1</div>
+<div class="tip" id="fs83">type Comparison&lt;&#39;T&gt; =<br />&#160;&#160;delegate of &#39;T * &#39;T -&gt; int<br /><br />Full name: System.Comparison&lt;_&gt;</div>
+<div class="tip" id="fs84">val mapRowValues : f:(ObjectSeries&lt;&#39;C&gt; -&gt; &#39;a) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;R,&#39;a&gt; (requires equality and equality)<br /><br />Full name: FSharp.DataFrame.Frame.mapRowValues</div>
+<div class="tip" id="fs85">val row : ObjectSeries&lt;string&gt;</div>
+<div class="tip" id="fs86">val hasAll : keys:seq&lt;&#39;K&gt; -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; bool (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.hasAll</div>
+<div class="tip" id="fs87">member Frame.GetSeries : column:&#39;TColumnKey -&gt; Series&lt;&#39;TRowKey,&#39;R&gt;<br />member Frame.GetSeries : column:&#39;TColumnKey * lookup:Lookup -&gt; Series&lt;&#39;TRowKey,&#39;R&gt;</div>
+<div class="tip" id="fs88">Multiple items<br />val string : value:&#39;T -&gt; string<br /><br />Full name: Microsoft.FSharp.Core.Operators.string<br /><br />--------------------<br />type string = String<br /><br />Full name: Microsoft.FSharp.Core.string</div>
+<div class="tip" id="fs89">val filterValues : f:(&#39;T -&gt; bool) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.filterValues</div>
+<div class="tip" id="fs90">val countValues : series:Series&lt;&#39;K,&#39;T&gt; -&gt; int (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.countValues</div>
+<div class="tip" id="fs91">val joinedOpens : Frame&lt;DateTime,string&gt;<br /><br />Full name: Tutorial.joinedOpens</div>
+<div class="tip" id="fs92">property Frame.RowsDense: RowSeries&lt;DateTime,string&gt;</div>
+<div class="tip" id="fs93">val monthly : Frame&lt;(DateTime * DateTime),string&gt;<br /><br />Full name: Tutorial.monthly</div>
+<div class="tip" id="fs94">val groupRowsUsing : selector:(&#39;R -&gt; ObjectSeries&lt;&#39;C&gt; -&gt; &#39;a) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;(&#39;a * &#39;R),&#39;C&gt; (requires equality and equality and equality)<br /><br />Full name: FSharp.DataFrame.Frame.groupRowsUsing</div>
+<div class="tip" id="fs95">val k : DateTime</div>
+<div class="tip" id="fs96">property DateTime.Year: int</div>
+<div class="tip" id="fs97">property DateTime.Month: int</div>
+<div class="tip" id="fs98">property Frame.Rows: RowSeries&lt;(DateTime * DateTime),string&gt;</div>
+<div class="tip" id="fs99">val mean : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt; (requires equality and equality)<br /><br />Full name: FSharp.DataFrame.Frame.mean</div>
+<div class="tip" id="fs100">val meanBy : keySelector:(&#39;R -&gt; &#39;a) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;a,&#39;C&gt; (requires equality and equality and equality)<br /><br />Full name: FSharp.DataFrame.Frame.meanBy</div>
+<div class="tip" id="fs101">val fst : tuple:(&#39;T1 * &#39;T2) -&gt; &#39;T1<br /><br />Full name: Microsoft.FSharp.Core.Operators.fst</div>
 
         </div>
         <div class="span3">

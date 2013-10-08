@@ -72,10 +72,10 @@ in the <code>Array</code> module. Most importantly, F# 3.0 does not know that ar
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '810', 810)" onmouseover="showTip(event, '810', 810)">
+          <code onmouseout="hideTip(event, '242', 242)" onmouseover="showTip(event, '242', 242)">
             ofArray array
           </code>
-          <div class="tip" id="810">
+          <div class="tip" id="242">
             <strong>Signature:</strong>array:&#39;T [] -&gt; IReadOnlyList&lt;&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
@@ -86,10 +86,10 @@ know that array implements IReadOnlyList, so this is just boxing/unboxing.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '811', 811)" onmouseover="showTip(event, '811', 811)">
+          <code onmouseout="hideTip(event, '243', 243)" onmouseover="showTip(event, '243', 243)">
             ofSeq array
           </code>
-          <div class="tip" id="811">
+          <div class="tip" id="243">
             <strong>Signature:</strong>array:seq&lt;&#39;T&gt; -&gt; IReadOnlyList&lt;&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
@@ -99,12 +99,12 @@ know that array implements IReadOnlyList, so this is just boxing/unboxing.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '812', 812)" onmouseover="showTip(event, '812', 812)">
+          <code onmouseout="hideTip(event, '244', 244)" onmouseover="showTip(event, '244', 244)">
             sum list
           </code>
-          <div class="tip" id="812">
-            <strong>Signature:</strong>list:IReadOnlyList&lt;^T&gt; -&gt; ^?6847<br />
-                          <strong>Type parameters:</strong> ^T, ^?6847          </div>
+          <div class="tip" id="244">
+            <strong>Signature:</strong>list:IReadOnlyList&lt;^T&gt; -&gt; ^?7109<br />
+                          <strong>Type parameters:</strong> ^T, ^?7109          </div>
         </td>
         <td class="xmldoc"><p>Sum elements of the IReadOnlyList</p>
 </td>
@@ -112,10 +112,23 @@ know that array implements IReadOnlyList, so this is just boxing/unboxing.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '813', 813)" onmouseover="showTip(event, '813', 813)">
+          <code onmouseout="hideTip(event, '245', 245)" onmouseover="showTip(event, '245', 245)">
+            reduce op list
+          </code>
+          <div class="tip" id="245">
+            <strong>Signature:</strong>op:(&#39;T -&gt; &#39;T -&gt; &#39;T) -&gt; list:IReadOnlyList&lt;&#39;T&gt; -&gt; &#39;T<br />
+                          <strong>Type parameters:</strong> 'T          </div>
+        </td>
+        <td class="xmldoc"><p>Reduce elements of the IReadOnlyList</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '246', 246)" onmouseover="showTip(event, '246', 246)">
             length list
           </code>
-          <div class="tip" id="813">
+          <div class="tip" id="246">
             <strong>Signature:</strong>list:IReadOnlyList&lt;&#39;T&gt; -&gt; int<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
@@ -125,49 +138,62 @@ know that array implements IReadOnlyList, so this is just boxing/unboxing.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '814', 814)" onmouseover="showTip(event, '814', 814)">
+          <code onmouseout="hideTip(event, '247', 247)" onmouseover="showTip(event, '247', 247)">
             average list
           </code>
-          <div class="tip" id="814">
-            <strong>Signature:</strong>list:IReadOnlyList&lt;^T&gt; -&gt; ^?6852<br />
-                          <strong>Type parameters:</strong> ^T, ^?6852          </div>
+          <div class="tip" id="247">
+            <strong>Signature:</strong>list:IReadOnlyList&lt;^T&gt; -&gt; ^?7116<br />
+                          <strong>Type parameters:</strong> ^T, ^?7116          </div>
         </td>
-        <td class="xmldoc"><p>Sum elements of the IReadOnlyList</p>
+        <td class="xmldoc"><p>Average elements of the IReadOnlyList</p>
 </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '815', 815)" onmouseover="showTip(event, '815', 815)">
+          <code onmouseout="hideTip(event, '248', 248)" onmouseover="showTip(event, '248', 248)">
             sumOptional list
           </code>
-          <div class="tip" id="815">
-            <strong>Signature:</strong>list:IReadOnlyList&lt;OptionalValue&lt;^T&gt;&gt; -&gt; ^?6855<br />
-                          <strong>Type parameters:</strong> ^T, ^?6855          </div>
+          <div class="tip" id="248">
+            <strong>Signature:</strong>list:IReadOnlyList&lt;OptionalValue&lt;^T&gt;&gt; -&gt; ^?7119<br />
+                          <strong>Type parameters:</strong> ^T, ^?7119          </div>
         </td>
-        <td class="xmldoc"><p>Sum elements of the IReadOnlyList</p>
+        <td class="xmldoc"><p>Sum elements of the IReadOnlyList, skipping over missing values</p>
 </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '816', 816)" onmouseover="showTip(event, '816', 816)">
+          <code onmouseout="hideTip(event, '249', 249)" onmouseover="showTip(event, '249', 249)">
+            reduceOptional op list
+          </code>
+          <div class="tip" id="249">
+            <strong>Signature:</strong>op:(&#39;T -&gt; &#39;T -&gt; &#39;T) -&gt; list:IReadOnlyList&lt;OptionalValue&lt;&#39;T&gt;&gt; -&gt; &#39;T<br />
+                          <strong>Type parameters:</strong> 'T          </div>
+        </td>
+        <td class="xmldoc"><p>Reduce elements of the IReadOnlyList, skipping over missing values</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '250', 250)" onmouseover="showTip(event, '250', 250)">
             averageOptional list
           </code>
-          <div class="tip" id="816">
-            <strong>Signature:</strong>list:IReadOnlyList&lt;OptionalValue&lt;^T&gt;&gt; -&gt; ^?6858<br />
-                          <strong>Type parameters:</strong> ^T, ^?6858          </div>
+          <div class="tip" id="250">
+            <strong>Signature:</strong>list:IReadOnlyList&lt;OptionalValue&lt;^T&gt;&gt; -&gt; ^?7124<br />
+                          <strong>Type parameters:</strong> ^T, ^?7124          </div>
         </td>
-        <td class="xmldoc"><p>Sum elements of the IReadOnlyList</p>
+        <td class="xmldoc"><p>Average elements of the IReadOnlyList, skipping over missing values</p>
 </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '817', 817)" onmouseover="showTip(event, '817', 817)">
+          <code onmouseout="hideTip(event, '251', 251)" onmouseover="showTip(event, '251', 251)">
             lengthOptional list
           </code>
-          <div class="tip" id="817">
+          <div class="tip" id="251">
             <strong>Signature:</strong>list:IReadOnlyList&lt;OptionalValue&lt;&#39;T&gt;&gt; -&gt; int<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
