@@ -9,7 +9,31 @@ using FSharp.DataFrame;
 
 namespace FSharp.DataFrame.CSharp.Tests
 {
-	class SeriesAggregation
+	/* ----------------------------------------------------------------------------------
+	 * Test series builder
+	 * --------------------------------------------------------------------------------*/
+	class SeriesBuilderTests
+	{
+		[Test]
+		public static void SeriesBuilderSupportsDynamic()
+		{
+			dynamic sb = new SeriesBuilder<string>();
+			sb.ID = 1;
+			sb.Value = 3.4;
+			sb.Date = DateTime.Today;
+
+			var actual = sb.Series;
+			var expected =
+				new SeriesBuilder<string, object> 
+					{ { "ID", 1 }, { "Value", 3.4 }, { "Date", DateTime.Today} }.Series;
+			Assert.AreEqual(expected, actual);
+		}
+	}
+
+	/* ----------------------------------------------------------------------------------
+	 * Test aggregation
+	 * --------------------------------------------------------------------------------*/
+	class SeriesAggregationTests
 	{
 		[Test]
 		public static void CanAggregateLettersUsingFloatingWindow()

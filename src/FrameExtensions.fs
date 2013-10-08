@@ -292,6 +292,13 @@ module FrameBuilder =
 
 [<Extension>]
 type FrameExtensions =
+  [<Extension>]
+  static member Window(frame:Frame<'R, 'C>, size) = Frame.window size frame
+
+  [<Extension>]
+  static member Window(frame:Frame<'R, 'C>, size, aggregate:Func<_, _>) = 
+    Frame.windowInto size aggregate.Invoke frame
+
   /// Returns the total number of row keys in the specified frame. This returns
   /// the total length of the row series, including keys for which there is no 
   /// value available.
@@ -350,6 +357,10 @@ type FrameExtensions =
   [<Extension>]
   static member Shift(frame:Frame<'TRowKey, 'TColumnKey>, offset) = 
     frame |> Frame.shift offset
+
+  [<Extension>]
+  static member Diff(frame:Frame<'TRowKey, 'TColumnKey>, offset) = 
+    frame.SeriesApply<float>(false, fun s -> Series.diff offset s :> ISeries<_>)
 
   [<Extension>]
   static member Reduce(frame:Frame<'TRowKey, 'TColumnKey>, aggregation:Func<'T, 'T, 'T>) = 
@@ -426,7 +437,7 @@ type FrameExtensions =
   ///
   /// [category:Missing values]
   [<Extension>]
-  static member FillMissingWith(frame:Frame<'TRowKey, 'TColumnKey>, value:'T) = 
+  static member FillMissing(frame:Frame<'TRowKey, 'TColumnKey>, value:'T) = 
     Frame.fillMissingWith value frame
 
   /// Fill missing values in the data frame with the nearest available value
@@ -464,7 +475,7 @@ type FrameExtensions =
   ///
   /// [category:Missing values]
   [<Extension>]
-  static member FillMissingUsing(frame:Frame<'TRowKey, 'TColumnKey>, f:Func<_, _, 'T>) = 
+  static member FillMissing(frame:Frame<'TRowKey, 'TColumnKey>, f:Func<_, _, 'T>) = 
     Frame.fillMissingUsing (fun s k -> f.Invoke(s, k)) frame
 
   /// Creates a new data frame that contains only those rows of the original 

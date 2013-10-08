@@ -422,9 +422,9 @@ starting from the first one gives you the current price:
 // Sliding window with incomplete segment at the beginning 
 hf |> Series.windowSizeInto (2, Boundary.AtBeginning) (function
   // Return the first value for the first segment
-  | DataSegment.Incomplete s -> s.GetAt(0).Value
+  | DataSegment.Incomplete s -> s.GetAt(0)
   // Calculate difference for all later segments
-  | DataSegment.Complete s -> s.GetAt(1).Value - s.GetAt(0).Value)
+  | DataSegment.Complete s -> s.GetAt(1) - s.GetAt(0))
 
 (**
 
@@ -567,7 +567,7 @@ let days =
     "10/6/2013 15:00:00"; "10/6/2013 21:00:00" ]
 let nu = 
   stock1 (TimeSpan(24,0,0)) 10 |> series
-  |> Series.indexKeys days |> Series.mapKeys DateTimeOffset.Parse
+  |> Series.indexWith days |> Series.mapKeys DateTimeOffset.Parse
 
 // Generate uniform resampling based on dates. Fill
 // missing chunks with nearest smaller observations.
@@ -582,7 +582,7 @@ nu.ResampleUniform((fun dt -> dt.Date), (fun dt -> dt.AddDays(1.0)))
 // Turn into frame with multiple columns for each day
 // (to format the result in a readable way)
 sampled 
-|> Series.mapValues Series.indexOrdinal
+|> Series.mapValues Series.indexOrdinally
 |> Frame.ofRows
 // [fsi:val it : Frame<DateTime,int> =]
 // [fsi:             0      1          2                ]

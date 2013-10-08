@@ -12,6 +12,7 @@ open FSharp.DataFrame.Vectors
 
 open System
 open System.ComponentModel
+open System.Collections.Generic
 open System.Runtime.InteropServices
 open VectorHelpers
 
@@ -171,21 +172,21 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   // Frame accessors
   // ----------------------------------------------------------------------------------------------
 
-  /// [category:Accessors]
+  /// [category:Accessors and slicing]
   member frame.IsEmpty = 
     rowIndex.Mappings |> Seq.isEmpty
 
-  /// [category:Accessors]
+  /// [category:Accessors and slicing]
   member frame.RowKeys = rowIndex.Keys
-  /// [category:Accessors]
+  /// [category:Accessors and slicing]
   member frame.ColumnKeys = columnIndex.Keys
 
-  /// [category:Accessors]
+  /// [category:Accessors and slicing]
   member frame.Columns = 
     ColumnSeries(Series.Create(columnIndex, data.Select(fun vect -> 
       Series.CreateUntyped(rowIndex, boxVector vect))))
 
-  /// [category:Accessors]
+  /// [category:Accessors and slicing]
   member frame.ColumnsDense = 
     ColumnSeries(Series.Create(columnIndex, data.SelectMissing(fun vect -> 
       // Assuming that the data has all values - which should be an invariant...
@@ -193,7 +194,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
       if all then OptionalValue(Series.CreateUntyped(rowIndex, boxVector vect.Value))
       else OptionalValue.Missing )))
 
-  /// [category:Accessors]
+  /// [category:Accessors and slicing]
   member frame.Rows = 
     let emptySeries = Series<_, _>(rowIndex, Vector.ofValues [], vectorBuilder, indexBuilder)
     let res = emptySeries.SelectOptional (fun row ->
@@ -202,7 +203,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
       else OptionalValue(Series.CreateUntyped(columnIndex, createRowReader (snd rowAddress.Value))))
     RowSeries(res)
 
-  /// [category:Accessors]
+  /// [category:Accessors and slicing]
   member frame.RowsDense = 
     let emptySeries = Series<_, _>(rowIndex, Vector.ofValues [], vectorBuilder, indexBuilder)
     let res = emptySeries.SelectOptional (fun row ->
@@ -214,9 +215,19 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
         else OptionalValue.Missing )
     RowSeries(res)
 
-  /// [category:Accessors]
+  /// [category:Accessors and slicing]
   member frame.Item 
     with get(column:'TColumnKey, row:'TRowKey) = frame.Columns.[column].[row]
+
+  /// [category:Accessors and slicing]
+  member frame.TryGetRowAt(index) = 
+    frame.Rows.Vector.GetValue(Addressing.Int index)
+  /// [category:Accessors and slicing]
+  member frame.GetRowKeyAt(index) = 
+    frame.RowIndex.KeyAt(Addressing.Int index)
+  /// [category:Accessors and slicing]
+  member frame.GetRowAt(index) = 
+    frame.TryGetRowAt(index).Value
 
   // ----------------------------------------------------------------------------------------------
   // More accessors
@@ -235,6 +246,13 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     let row = frame.Rows.Get(row, lookup)
     Series.Create(columnIndex, changeType row.Vector)
 
+  /// [category:Fancy accessors]
+  member frame.GetAllValues<'R>() = frame.GetAllValues<'R>(false)
+
+  /// [category:Fancy accessors]
+  member frame.GetAllValues<'R>(strict) =
+    seq { for (KeyValue(_, v)) in frame.GetAllSeries<'R>() do yield! v |> Series.values }
+
   // ----------------------------------------------------------------------------------------------
   // Series related operations - add, drop, get, ?, ?<-, etc.
   // ----------------------------------------------------------------------------------------------
@@ -245,7 +263,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     and set(column:'TColumnKey) (series:Series<'TRowKey, float>) = frame.ReplaceSeries(column, series)
 
   /// [category:Series operations]
-  member frame.SeriesApply<'T>(f) = frame.SeriesApply(false, f)
+  member frame.SeriesApply<'T>(f) = frame.SeriesApply<'T>(false, f)
 
   /// [category:Series operations]
   member frame.SeriesApply<'T>(strict, f:Func<Series<'TRowKey, 'T>, ISeries<_>>) = 
@@ -331,6 +349,16 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   /// [category:Series operations]
   member frame.GetSeries<'R>(column:'TColumnKey) : Series<'TRowKey, 'R> = 
     frame.GetSeries(column, Lookup.Exact)
+
+  /// [category:Series operations]
+  member frame.GetAllSeries<'R>() = frame.GetAllSeries<'R>(false)
+
+  /// [category:Series operations]
+  member frame.GetAllSeries<'R>(strict) =
+    frame.Columns.Observations |> Seq.choose (fun os -> 
+      match os.Value.TryAs<'R>(strict) with
+      | OptionalValue.Present s -> Some (KeyValuePair(os.Key, s))
+      | _ -> None)
 
   /// [category:Series operations]
   static member (?<-) (frame:Frame<_, _>, column, series:Series<'T, 'V>) =

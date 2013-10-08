@@ -399,14 +399,14 @@ let obsDaysExact = daysFrame.Join(obsFrame, kind=JoinKind.Left)
 // time in the frame indexed by later times in the day
 let obsDaysPrev = 
   (daysFrame, obsFrame) 
-  ||> Frame.joinAlign JoinKind.Left Lookup.NearestSmaller
+  ||> Frame.align JoinKind.Left Lookup.NearestSmaller
 
 // The first value is missing (because there is no nearest 
 // value with greater key - the first one has the smallest 
 // key) but the rest is available
 let obsDaysNext =
   (daysFrame, obsFrame) 
-  ||> Frame.joinAlign JoinKind.Left Lookup.NearestGreater
+  ||> Frame.align JoinKind.Left Lookup.NearestGreater
 
 (**
 In general, the same operation can usually be achieved using a function from the 

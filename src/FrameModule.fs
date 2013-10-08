@@ -62,6 +62,14 @@ module Frame =
   let takeLast count (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.takeLast count |> FrameUtils.fromRows
 
+
+
+  let window size (frame:Frame<'R, 'C>) = 
+    frame.Rows |> Series.windowInto size FrameUtils.fromRows
+
+  let windowInto size f (frame:Frame<'R, 'C>) = 
+    frame.Rows |> Series.windowInto size (FrameUtils.fromRows >> f)
+
   // ----------------------------------------------------------------------------------------------
   // Wrappers that simply call member functions of the data frame
   // ----------------------------------------------------------------------------------------------
@@ -268,9 +276,6 @@ module Frame =
   let countKeys (frame:Frame<'R, 'C>) = 
     frame.RowIndex.Keys |> Seq.length
 
-  let inline diff offset (frame:Frame<'R, 'C>) = 
-    frame.Columns |> Series.mapValues (fun s -> Series.diff offset (s.As<float>())) |> FrameUtils.fromColumns
-
   // ----------------------------------------------------------------------------------------------
   // Hierarchical aggregation
   // ----------------------------------------------------------------------------------------------
@@ -313,7 +318,10 @@ module Frame =
 
   let shift offset (frame:Frame<'R, 'C>) = 
     frame |> mapColValues (Series.shift offset)
-    
+
+  let diff offset (frame:Frame<'R, 'C>) = 
+    frame.SeriesApply<float>(false, fun s -> Series.diff offset s :> ISeries<_>)
+
   // ----------------------------------------------------------------------------------------------
   // Missing values
   // ----------------------------------------------------------------------------------------------
@@ -347,7 +355,7 @@ module Frame =
   ///
   /// [category:Missing values]
   let fillMissing direction (frame:Frame<'R, 'C>) =
-    frame.Columns |> Series.mapValues (fun s -> Series.fillMissing direction s)
+    frame.Columns |> Series.mapValues (fun s -> Series.fillMissing direction s) |> FrameUtils.fromColumns
 
   /// Fill missing values in the frame using the specified function. The specified
   /// function is called with all series and keys for which the frame does not 
@@ -390,7 +398,7 @@ module Frame =
   ///
   /// [category:Missing values]
   let dropSparseCols (frame:Frame<'R, 'C>) = 
-    frame.ColumnsDense |> Series.dropMissing |> FrameUtils.fromRows
+    frame.ColumnsDense |> Series.dropMissing |> FrameUtils.fromColumns
 
   /// Returns the columns of the data frame that do not have any missing values.
   /// The operation returns a series (indexed by the column keys of the source frame) 

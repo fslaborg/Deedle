@@ -265,10 +265,82 @@ module Series =
   let unionUsing behavior (series1:Series<'K, 'V>) (series2:Series<'K, 'V>) = 
     series1.Union(series2, behavior)
 
+  // Counting & checking if values are present
+
+  /// Returns the total number of values in the specified series. This excludes
+  /// missing values or not available values (such as values created from `null`,
+  /// `Double.NaN`, or those that are missing due to outer join etc.).
+  let countValues (series:Series<'K, 'T>) = series.Values |> Seq.length
+
+  /// Returns the total number of keys in the specified series. This returns
+  /// the total length of the series, including keys for which there is no 
+  /// value available.
+  let countKeys (series:Series<'K, 'T>) = series.Keys |> Seq.length
+
+  let hasAll keys (series:Series<'K, 'T>) = 
+    keys |> Seq.forall (fun k -> series.TryGet(k).HasValue)
+  let hasSome keys (series:Series<'K, 'T>) = 
+    keys |> Seq.exists (fun k -> series.TryGet(k).HasValue)
+  let hasNone keys (series:Series<'K, 'T>) = 
+    keys |> Seq.forall (fun k -> series.TryGet(k).HasValue |> not)
+  let has key (series:Series<'K, 'T>) = series.TryGet(key).HasValue
+  let hasNot key (series:Series<'K, 'T>) = series.TryGet(key).HasValue
+
+  let lastKey (series:Series< 'K , 'V >) = series.KeyRange |> snd
+  let firstKey (series:Series< 'K , 'V >) = series.KeyRange |> fst
+  let lastValue (series:Series< 'K , 'V >) = series |> get (series.KeyRange |> snd)
+  let firstValue (series:Series< 'K , 'V >) = series |> get (series.KeyRange |> fst)
+
+  let values (series:Series<'K, 'T>) = series.Values
+  let keys (series:Series<'K, 'T>) = series.Keys
+
+
+
+  // ??
+
+  // TODO: This can be simplified using fancier aggregate?
+
+  let shift offset (series:Series<'K, 'T>) = 
+    let shifted = 
+      if offset < 0 then
+        let offset = -offset
+        series |> aggregateInto (WindowSize(offset + 1, Boundary.Skip)) 
+          (fun s -> s.Data.Keys.First())
+          (fun s -> s.Data.Values |> Seq.nth offset)          
+      else
+        series |> aggregateInto (WindowSize(offset + 1, Boundary.Skip)) 
+          (fun s -> s.Data.Keys.Last())
+          (fun s -> s.Data.Values |> Seq.head)           
+    shifted.GetItems(series.Keys)
+
+  let takeLast count (series:Series<'K, 'T>) = 
+    let keys = series.Keys |> Seq.lastFew count 
+    Series(keys, seq { for k in keys -> series.[k] })
+
+  let inline maxBy f (series:Series<'K, 'T>) = 
+    series |> observations |> Seq.maxBy (snd >> f)
+
+  let inline minBy f (series:Series<'K, 'T>) = 
+    series |> observations |> Seq.maxBy (snd >> f)
+
+
   // ----------------------------------------------------------------------------------------------
   // Handling of missing values
   // ----------------------------------------------------------------------------------------------
 
+  /// Drop missing values from the specified series. The returned series contains 
+  /// only those keys for which there is a value available in the original one.
+  ///
+  /// ## Parameters
+  ///  - `series` - An input series to be filtered
+  ///
+  /// ## Example
+  ///
+  ///     let s = series [ 1 => 1.0; 2 => Double.NaN ]
+  ///     s |> Series.dropMissing 
+  ///     [fsi:val it : Series<int,float> = series [ 1 => 1]
+  ///
+  /// [category:Missing values]
   let dropMissing (series:Series<'K, 'T>) = 
     series.WhereOptional(fun (KeyValue(k, v)) -> v.HasValue)
 
@@ -285,6 +357,8 @@ module Series =
   /// ## Remarks
   /// This function can be used to implement more complex interpolation.
   /// For example see [handling missing values in the tutorial](../features.html#missing)
+  ///
+  /// [category:Missing values]
   let fillMissingUsing f (series:Series<'K, 'T>) = 
     series |> mapAll (fun k -> function 
       | None -> Some(f k)
@@ -295,6 +369,8 @@ module Series =
   /// ## Parameters
   ///  - `series` - An input series that is to be filled
   ///  - `value` - A constant value that is used to fill all missing values
+  ///
+  /// [category:Missing values]
   let fillMissingWith value (series:Series<'K, 'T>) = 
     series |> mapAll (fun k -> function 
       | None -> Some(value)
@@ -322,6 +398,7 @@ module Series =
   ///     // Returns a series consisting of [<missing>; 1; 1; 3]
   ///     sample |> Series.fillMissing Direction.Forward 
   ///
+  /// [category:Missing values]
   let fillMissing direction (series:Series<'K, 'T>) = 
     let lookup = if direction = Direction.Forward then Lookup.NearestSmaller else Lookup.NearestGreater
     series |> mapAll (fun k -> function 
@@ -530,76 +607,145 @@ module Series =
     let sampleTimeIntoInternal add startOpt (interval:'T) dir f (series:Series<'K , 'V>) =
       resampleInto (generateKeys add startOpt interval dir series) dir f series
 
+    /// Given a specified starting time and time span, generates all keys that fit in the
+    /// range of the series (and one additional, if `dir = Backward`) and then performs lookup
+    /// for each key using the specified direction
     let lookupTimeInternal add startOpt (interval:'T) dir lookup (series:Series<'K , 'V>) =
       lookupAll (generateKeys add startOpt interval dir series) lookup series
 
-  /// TODO
+  /// Performs sampling by time and aggregates chunks obtained by time-sampling into a single
+  /// value using a specified function. The operation generates keys starting at the first
+  /// key in the source series, using the specified `interval` and then obtains chunks based on 
+  /// these keys in a fashion similar to the `Series.resample` function.
+  ///
+  /// ## Parameters
+  ///  - `series` - An input series to be resampled
+  ///  - `interval` - The interval between the individual samples 
+  ///  - `dir` - If this parameter is `Direction.Forward`, then each key is
+  ///    used as the smallest key in a chunk; for `Direction.Backward`, the keys are
+  ///    used as the greatest keys in a chunk.
+  ///  - `f` - A function that is called to aggregate each chunk into a single value.
+  ///
+  /// ## Remarks
+  /// This operation is only supported on ordered series. The method throws
+  /// `InvalidOperationException` when the series is not ordered. 
+  /// 
   /// [category:Lookup, resampling and scaling]
   let inline sampleTimeInto interval dir f (series:Series< ^K , ^V >) = 
     let add dt ts = (^K: (static member (+) : ^K * TimeSpan -> ^K) (dt, ts))
     Implementation.sampleTimeIntoInternal add None interval dir (fun _ -> f) series
 
-  /// TODO
+  /// Performs sampling by time and aggregates chunks obtained by time-sampling into a single
+  /// value using a specified function. The operation generates keys starting at the given
+  /// `start` time, using the specified `interval` and then obtains chunks based on these
+  /// keys in a fashion similar to the `Series.resample` function.
+  ///
+  /// ## Parameters
+  ///  - `series` - An input series to be resampled
+  ///  - `start` - The initial time to be used for sampling
+  ///  - `interval` - The interval between the individual samples 
+  ///  - `dir` - If this parameter is `Direction.Forward`, then each key is
+  ///    used as the smallest key in a chunk; for `Direction.Backward`, the keys are
+  ///    used as the greatest keys in a chunk.
+  ///  - `f` - A function that is called to aggregate each chunk into a single value.
+  ///
+  /// ## Remarks
+  /// This operation is only supported on ordered series. The method throws
+  /// `InvalidOperationException` when the series is not ordered. 
+  /// 
+  /// [category:Lookup, resampling and scaling]
+  let inline sampleTimeAtInto start interval dir f (series:Series< ^K , ^V >) = 
+    let add dt ts = (^K: (static member (+) : ^K * TimeSpan -> ^K) (dt, ts))
+    Implementation.sampleTimeIntoInternal add (Some start) interval dir (fun _ -> f) series
+
+  /// Performs sampling by time and returns chunks obtained by time-sampling as a nested  
+  /// series. The operation generates keys starting at the first key in the source series,
+  /// using the specified `interval` and then obtains chunks based on these
+  /// keys in a fashion similar to the `Series.resample` function.
+  ///
+  /// ## Parameters
+  ///  - `series` - An input series to be resampled
+  ///  - `interval` - The interval between the individual samples 
+  ///  - `dir` - If this parameter is `Direction.Forward`, then each key is
+  ///    used as the smallest key in a chunk; for `Direction.Backward`, the keys are
+  ///    used as the greatest keys in a chunk.
+  ///
+  /// ## Remarks
+  /// This operation is only supported on ordered series. The method throws
+  /// `InvalidOperationException` when the series is not ordered. 
+  /// 
   /// [category:Lookup, resampling and scaling]
   let inline sampleTime interval dir series = sampleTimeInto interval dir id series
-  //*)
 
-  let lastKey (series:Series< 'K , 'V >) = series.KeyRange |> snd
-  let firstKey (series:Series< 'K , 'V >) = series.KeyRange |> fst
-  let lastValue (series:Series< 'K , 'V >) = series |> get (series.KeyRange |> snd)
-  let firstValue (series:Series< 'K , 'V >) = series |> get (series.KeyRange |> fst)
+  /// Performs sampling by time and returns chunks obtained by time-sampling as a nested  
+  /// series. The operation generates keys starting at the given `start` time, using the 
+  /// specified `interval` and then obtains chunks based on these
+  /// keys in a fashion similar to the `Series.resample` function.
+  ///
+  /// ## Parameters
+  ///  - `series` - An input series to be resampled
+  ///  - `start` - The initial time to be used for sampling
+  ///  - `interval` - The interval between the individual samples 
+  ///  - `dir` - If this parameter is `Direction.Forward`, then each key is
+  ///    used as the smallest key in a chunk; for `Direction.Backward`, the keys are
+  ///    used as the greatest keys in a chunk.
+  ///
+  /// ## Remarks
+  /// This operation is only supported on ordered series. The method throws
+  /// `InvalidOperationException` when the series is not ordered. 
+  /// 
+  /// [category:Lookup, resampling and scaling]
+  let inline sampleTimeAt start interval dir series = sampleTimeAtInto start interval dir id series
 
-  // ----------------------------------------------------------------------------------------------
-  // Counting & checking if values are present
-  // ----------------------------------------------------------------------------------------------
+  /// Finds values at, or near, the specified times in a given series. The operation generates
+  /// keys starting from the smallest key of the original series, using the specified `interval`
+  /// and then finds values close to such keys using the specified `lookup` and `dir`.
+  /// 
+  /// ## Parameters
+  ///  - `series` - An input series to be resampled
+  ///  - `interval` - The interval between the individual samples 
+  ///  - `dir` - Specifies how the keys should be generated. `Direction.Forward` means that the 
+  ///    key is the smallest value of each chunk (and so first key of the series is returned and 
+  ///    the last is not, unless it matches exactly _start + k*interval_); `Direction.Backward`
+  ///    means that the first key is skipped and sample is generated at, or just before the end 
+  ///    of interval and at the end of the series.
+  ///  - `lookup` - Specifies how the lookup based on keys is performed. `Exact` means that the
+  ///    values at exact keys will be returned; `NearestGreater` returns the nearest greater key value
+  ///    (starting at the first key) and `NearestSmaller` returns the nearest smaller key value
+  ///    (starting at most `interval` after the end of the series)
+  /// 
+  /// ## Remarks
+  /// This operation is only supported on ordered series. The method throws
+  /// `InvalidOperationException` when the series is not ordered. 
+  /// 
+  /// [category:Lookup, resampling and scaling]
+  let inline lookupTime interval dir lookup (series:Series< ^K , ^V >) = 
+    let add dt ts = (^K: (static member (+) : ^K * TimeSpan -> ^K) (dt, ts))
+    Implementation.lookupTimeInternal add None interval dir lookup series
 
-  /// Returns the total number of values in the specified series. This excludes
-  /// missing values or not available values (such as values created from `null`,
-  /// `Double.NaN`, or those that are missing due to outer join etc.).
-  let countValues (series:Series<'K, 'T>) = series.Values |> Seq.length
-
-  /// Returns the total number of keys in the specified series. This returns
-  /// the total length of the series, including keys for which there is no 
-  /// value available.
-  let countKeys (series:Series<'K, 'T>) = series.Keys |> Seq.length
-
-  let hasAll keys (series:Series<'K, 'T>) = 
-    keys |> Seq.forall (fun k -> series.TryGet(k).HasValue)
-  let hasSome keys (series:Series<'K, 'T>) = 
-    keys |> Seq.exists (fun k -> series.TryGet(k).HasValue)
-  let hasNone keys (series:Series<'K, 'T>) = 
-    keys |> Seq.forall (fun k -> series.TryGet(k).HasValue |> not)
-  let has key (series:Series<'K, 'T>) = series.TryGet(key).HasValue
-  let hasNot key (series:Series<'K, 'T>) = series.TryGet(key).HasValue
-
-
-
-  let values (series:Series<'K, 'T>) = series.Values
-  let keys (series:Series<'K, 'T>) = series.Keys
-
-
-  // TODO: This can be simplified using fancier aggregate?
-
-  let shift offset (series:Series<'K, 'T>) = 
-    let shifted = 
-      if offset < 0 then
-        let offset = -offset
-        series |> aggregateInto (WindowSize(offset + 1, Boundary.Skip)) 
-          (fun s -> s.Data.Keys.First())
-          (fun s -> s.Data.Values |> Seq.nth offset)          
-      else
-        series |> aggregateInto (WindowSize(offset + 1, Boundary.Skip)) 
-          (fun s -> s.Data.Keys.Last())
-          (fun s -> s.Data.Values |> Seq.head)           
-    shifted.GetItems(series.Keys)
-
-  let takeLast count (series:Series<'K, 'T>) = 
-    let keys = series.Keys |> Seq.lastFew count 
-    Series(keys, seq { for k in keys -> series.[k] })
-
-  let inline maxBy f (series:Series<'K, 'T>) = 
-    series |> observations |> Seq.maxBy (snd >> f)
-
-  let inline minBy f (series:Series<'K, 'T>) = 
-    series |> observations |> Seq.maxBy (snd >> f)
-
+  /// Finds values at, or near, the specified times in a given series. The operation generates
+  /// keys starting at the specified `start` time, using the specified `interval`
+  /// and then finds values close to such keys using the specified `lookup` and `dir`.
+  /// 
+  /// ## Parameters
+  ///  - `series` - An input series to be resampled
+  ///  - `start` - The initial time to be used for sampling
+  ///  - `interval` - The interval between the individual samples 
+  ///  - `dir` - Specifies how the keys should be generated. `Direction.Forward` means that the 
+  ///    key is the smallest value of each chunk (and so first key of the series is returned and 
+  ///    the last is not, unless it matches exactly _start + k*interval_); `Direction.Backward`
+  ///    means that the first key is skipped and sample is generated at, or just before the end 
+  ///    of interval and at the end of the series.
+  ///  - `lookup` - Specifies how the lookup based on keys is performed. `Exact` means that the
+  ///    values at exact keys will be returned; `NearestGreater` returns the nearest greater key value
+  ///    (starting at the first key) and `NearestSmaller` returns the nearest smaller key value
+  ///    (starting at most `interval` after the end of the series)
+  /// 
+  /// ## Remarks
+  /// This operation is only supported on ordered series. The method throws
+  /// `InvalidOperationException` when the series is not ordered. 
+  /// 
+  /// [category:Lookup, resampling and scaling]
+  let inline lookupTimeAt start interval dir lookup (series:Series< ^K , ^V >) = 
+    let add dt ts = (^K: (static member (+) : ^K * TimeSpan -> ^K) (dt, ts))
+    Implementation.lookupTimeInternal add (Some start) interval dir lookup series

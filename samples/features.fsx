@@ -473,7 +473,7 @@ The frame contains the number of visits to each country by each person:
 travels
 |> Series.mapValues (Seq.countBy id >> series)
 |> Frame.ofRows
-|> Frame.withMissingVal 0
+|> Frame.fillMissingWith 0
 // [fsi:val it : Frame<string,string> =  ]
 // [fsi:             CZ FR UK US ]
 // [fsi:  Joe     -> 0  0  2  1  ]
@@ -587,7 +587,7 @@ byClassAndPort
 
 // Count number of survivors in each group
 byClassAndPort.GetSeries<bool>("Survived")
-|> Series.foldBy Pair.get1And2Of3 (Series.values >> Seq.countBy id >> series)
+|> Series.reduceBy Pair.get1And2Of3 (Series.values >> Seq.countBy id >> series)
 |> Frame.ofRows
 
 (**

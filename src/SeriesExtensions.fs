@@ -50,6 +50,39 @@ type internal Series =
   static member internal CreateUntyped(index:IIndex<'K>, data:IVector<obj>) = 
     ObjectSeries<'K>(index, data, Series.vectorBuilder, Series.indexBuilder)
 
+
+open Microsoft.FSharp.Quotations
+
+[<AutoOpen>]
+module ExpressionHelpers =
+  open System.Linq.Expressions
+
+  type WrappedExpression(expr:Expression) =
+    member x.Expression = expr
+
+  type System.Linq.Expressions.Expression with
+    member x.Wrap() = Expr.Value(WrappedExpression x, typeof<obj>)
+
+  let rec asExpr : _ -> Expression = function
+    | Patterns.Value((:? WrappedExpression as w), _) -> w.Expression
+    | Patterns.Sequential(e1, e2) ->
+        Expression.Block(asExpr e1, asExpr e2) :> Expression
+    | Patterns.Value(v, typ) -> upcast Expression.Constant(v, typ) 
+    | Patterns.Call(None, mi, args) -> 
+        let args = (List.map asExpr args, mi.GetParameters()) ||> Seq.map2 (fun expr par ->
+          Expression.Convert(expr, par.ParameterType) :> Expression)
+        upcast Expression.Call(mi, args)
+    | Patterns.Call(Some inst, mi, args) -> 
+        let args = (List.map asExpr args, mi.GetParameters()) ||> Seq.map2 (fun expr par ->
+          Expression.Convert(expr, par.ParameterType) :> Expression)
+        upcast Expression.Call(asExpr inst, mi, args)
+    | expr -> failwithf "ExpressionHelpers.asExpr: Not supported expression!\n%A" expr
+
+  type Microsoft.FSharp.Quotations.Expr with
+    member x.AsExpression() = asExpr x
+
+open System.Dynamic      
+
 type SeriesBuilder<'K, 'V when 'K : equality>() = 
   let mutable keys = []
   let mutable values = []
@@ -65,20 +98,25 @@ type SeriesBuilder<'K, 'V when 'K : equality>() =
     builder.Add(name, value)
   
   interface System.Collections.IEnumerable with
-    member x.GetEnumerator() = (x :> seq<_>).GetEnumerator() :> Collections.IEnumerator
+    member builder.GetEnumerator() = (builder :> seq<_>).GetEnumerator() :> Collections.IEnumerator
   interface seq<KeyValuePair<'K, 'V>> with
-    member x.GetEnumerator() = 
+    member builder.GetEnumerator() = 
       (Seq.zip keys values |> Seq.map (fun (k, v) -> KeyValuePair(k, v))).GetEnumerator()
+
+  interface System.Dynamic.IDynamicMetaObjectProvider with 
+    member builder.GetMetaObject(expr) = 
+      let a = 10
+      { new System.Dynamic.DynamicMetaObject(expr, System.Dynamic.BindingRestrictions.Empty, builder) with
+          override x.BindSetMember(binder, value) = 
+            let call = <@ builder.Add(%%(Expr.Value(binder.Name)), %%(value.Expression.Wrap())); null @>
+            let restrictions = BindingRestrictions.GetTypeRestriction(x.Expression, x.LimitType);
+            new DynamicMetaObject(call.AsExpression(), restrictions)}
 
 type SeriesBuilder<'K when 'K : equality>() =
   inherit SeriesBuilder<'K, obj>()
 
 [<Extension>]
 type SeriesExtensions =
-  [<Extension>]
-  static member DropMissing(series:Series<'K, 'V>) =
-    Series.dropMissing series
-
   [<Extension; EditorBrowsable(EditorBrowsableState.Never)>]
   static member GetSlice(series:Series<'K1 * 'K2, 'V>, lo1:option<'K1>, hi1:option<'K1>, lo2:option<'K2>, hi2:option<'K2>) =
     if lo1 <> None || hi1 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
@@ -136,47 +174,8 @@ type SeriesExtensions =
   static member Sum(series:Series<'K, decimal>) = Series.sum series
 
   [<Extension>]
-  static member FillMissing(series:Series<'K, 'T>, value:'T) = 
-    Series.fillMissingWith value series
-
-  [<Extension>]
   static member ContainsKey(series:Series<'K, 'T>, key:'K) = 
     series.Keys.Contains(key)
-
-  /// Fill missing values in the series with the nearest available value
-  /// (using the specified direction). The default direction is `Direction.Backward`.
-  /// Note that the series may still contain missing values after call to this 
-  /// function. This operation can only be used on ordered series. 
-  ///
-  /// ## Example
-  ///
-  ///     let sample = Series.ofValues [ Double.NaN; 1.0; Double.NaN; 3.0 ]
-  ///
-  ///     // Returns a series consisting of [1; 1; 3; 3]
-  ///     sample.FillMissing(Direction.Backward)
-  ///
-  ///     // Returns a series consisting of [<missing>; 1; 1; 3]
-  ///     sample.FillMissing(Direction.Forward)
-  ///
-  /// ## Parameters
-  ///
-  ///  * `direction` - Specifies the direction used when searching for 
-  ///    the nearest available value. `Backward` means that we want to
-  ///    look for the first value with a smaller key while `Forward` searches
-  ///    for the nearest greater key.
-  [<Extension>]
-  static member FillMissing(series:Series<'K, 'T>, [<Optional>] direction) = 
-    Series.fillMissing direction series
-
-  /// Fill missing values in the series using the specified function.
-  ///
-  /// ## Parameters
-  ///
-  ///  * `filler` - A `Func` delegate that calculates the filling value
-  ///    based on the key in the series.
-  [<Extension>]
-  static member FillMissing(series:Series<'K, 'T>, filler:Func<_, _>) = 
-    Series.fillMissingUsing filler.Invoke series
 
   /// Returns all keys from the sequence, together with the associated (optional)
   /// values. The values are returned using the `OptionalValue<T>` struct which
@@ -228,6 +227,96 @@ type SeriesExtensions =
   static member Window(series:Series<'K, 'V>, size:int): Series<'K, Series<'K, 'V>> = 
     Series.window size series
 
+
+  // --- end
+
+  [<Extension>]
+  static member FirstKey(series:Series<'K, 'V>) = series.KeyRange |> fst
+
+  [<Extension>]
+  static member LastKey(series:Series<'K, 'V>) = series.KeyRange |> snd
+
+  // ----------------------------------------------------------------------------------------------
+  // Missing values
+  // ----------------------------------------------------------------------------------------------
+
+  /// Drop missing values from the specified series. The returned series contains 
+  /// only those keys for which there is a value available in the original one.
+  ///
+  /// ## Parameters
+  ///  - `series` - An input series to be filtered
+  ///
+  /// ## Example
+  ///
+  ///     let s = series [ 1 => 1.0; 2 => Double.NaN ]
+  ///     s.DropMissing()
+  ///     [fsi:val it : Series<int,float> = series [ 1 => 1]
+  ///
+  /// [category:Missing values]
+  [<Extension>]
+  static member DropMissing(series:Series<'K, 'V>) =
+    Series.dropMissing series
+
+  /// Fill missing values in the series with a constant value.
+  ///
+  /// ## Parameters
+  ///  - `series` - An input series that is to be filled
+  ///  - `value` - A constant value that is used to fill all missing values
+  ///
+  /// [category:Missing values]
+  [<Extension>]
+  static member FillMissing(series:Series<'K, 'T>, value:'T) = 
+    Series.fillMissingWith value series
+
+  /// Fill missing values in the series with the nearest available value
+  /// (using the specified direction). The default direction is `Direction.Backward`.
+  /// Note that the series may still contain missing values after call to this 
+  /// function. This operation can only be used on ordered series. 
+  ///
+  /// ## Example
+  ///
+  ///     let sample = Series.ofValues [ Double.NaN; 1.0; Double.NaN; 3.0 ]
+  ///
+  ///     // Returns a series consisting of [1; 1; 3; 3]
+  ///     sample.FillMissing(Direction.Backward)
+  ///
+  ///     // Returns a series consisting of [<missing>; 1; 1; 3]
+  ///     sample.FillMissing(Direction.Forward)
+  ///
+  /// ## Parameters
+  ///  - `direction` - Specifies the direction used when searching for 
+  ///    the nearest available value. `Backward` means that we want to
+  ///    look for the first value with a smaller key while `Forward` searches
+  ///    for the nearest greater key.
+  ///
+  /// [category:Missing values]
+  [<Extension>]
+  static member FillMissing(series:Series<'K, 'T>, [<Optional>] direction) = 
+    Series.fillMissing direction series
+
+  /// Fill missing values in the series using the specified function.
+  /// The specified function is called with all keys for which the series
+  /// does not contain value and the result of the call is used in place 
+  /// of the missing value. 
+  ///
+  /// ## Parameters
+  ///  - `series` - An input series that is to be filled
+  ///  - `filler` - A function that takes key `K` and generates a value to be
+  ///    used in a place where the original series contains a missing value.
+  ///
+  /// ## Remarks
+  /// This function can be used to implement more complex interpolation.
+  /// For example see [handling missing values in the tutorial](../features.html#missing)
+  ///
+  /// [category:Missing values]
+  [<Extension>]
+  static member FillMissing(series:Series<'K, 'T>, filler:Func<_, _>) = 
+    Series.fillMissingUsing filler.Invoke series
+
+  // ----------------------------------------------------------------------------------------------
+  // Lookup, resampling and scaling
+  // ----------------------------------------------------------------------------------------------
+
   /// Resample the series based on equivalence class on the keys. A specified function
   /// `keyProj` is used to project keys to another space and the observations for which the 
   /// projected keys are equivalent are grouped into chunks. The chunks are then returned
@@ -242,6 +331,8 @@ type SeriesExtensions =
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered. For unordered
   /// series, similar functionality can be implemented using `GroupBy`.
+  /// 
+  /// [category:Lookup, resampling and scaling]
   [<Extension>]
   static member ResampleEquivalence(series:Series<'K, 'V>, keyProj:Func<_, _>) =
     Series.resampleEquiv keyProj.Invoke series
@@ -262,6 +353,8 @@ type SeriesExtensions =
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered. For unordered
   /// series, similar functionality can be implemented using `GroupBy`.
+  /// 
+  /// [category:Lookup, resampling and scaling]
   [<Extension>]
   static member ResampleEquivalence(series:Series<'K, 'V>, keyProj:Func<_, _>, aggregate:Func<_, _>) =
     Series.resampleEquivInto keyProj.Invoke aggregate.Invoke series
@@ -288,6 +381,8 @@ type SeriesExtensions =
   /// ## Remarks
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered. 
+  /// 
+  /// [category:Lookup, resampling and scaling]
   [<Extension>]
   static member ResampleUniform(series:Series<'K, 'V>, keyProj:Func<_, _>, nextKey:Func<_, _>) =
     Series.resampleUniformInto Lookup.NearestSmaller keyProj.Invoke nextKey.Invoke Series.lastValue series
@@ -316,49 +411,175 @@ type SeriesExtensions =
   /// ## Remarks
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered. 
+  /// 
+  /// [category:Lookup, resampling and scaling]
   [<Extension>]
   static member ResampleUniform(series:Series<'K1, 'V>, keyProj:Func<'K1, 'K2>, nextKey:Func<'K2, 'K2>, fillMode:Lookup, aggregate) =
     Series.resampleUniformInto fillMode keyProj.Invoke nextKey.Invoke aggregate series
 
-
-
-
+  /// Finds values at, or near, the specified times in a given series. The operation generates
+  /// keys starting at the specified `start` time, using the specified `interval`
+  /// and then finds nearest smaller values close to such keys according to `dir`.
+  /// 
+  /// ## Parameters
+  ///  - `series` - An input series to be resampled
+  ///  - `start` - The initial time to be used for sampling
+  ///  - `interval` - The interval between the individual samples 
+  ///  - `lookup` - Specifies how the lookup based on keys is performed. `Exact` means that the
+  ///    values at exact keys will be returned; `NearestGreater` returns the nearest greater key value
+  ///    (starting at the first key) and `NearestSmaller` returns the nearest smaller key value
+  ///    (starting at most `interval` after the end of the series)
+  /// 
+  /// ## Remarks
+  /// This operation is only supported on ordered series. The method throws
+  /// `InvalidOperationException` when the series is not ordered. 
+  /// 
+  /// [category:Lookup, resampling and scaling]
   [<Extension>]
   static member Sample<'V>(series:Series<DateTime, 'V>, start:DateTime, interval:TimeSpan, dir) =
     series |> Series.Implementation.lookupTimeInternal (+) (Some start) interval dir Lookup.NearestSmaller
 
+  /// Finds values at, or near, the specified times in a given series. The operation generates
+  /// keys starting at the specified `start` time, using the specified `interval`
+  /// and then finds nearest smaller values close to such keys according to `dir`.
+  /// 
+  /// ## Parameters
+  ///  - `series` - An input series to be resampled
+  ///  - `start` - The initial time to be used for sampling
+  ///  - `interval` - The interval between the individual samples 
+  ///  - `lookup` - Specifies how the lookup based on keys is performed. `Exact` means that the
+  ///    values at exact keys will be returned; `NearestGreater` returns the nearest greater key value
+  ///    (starting at the first key) and `NearestSmaller` returns the nearest smaller key value
+  ///    (starting at most `interval` after the end of the series)
+  /// 
+  /// ## Remarks
+  /// This operation is only supported on ordered series. The method throws
+  /// `InvalidOperationException` when the series is not ordered. 
+  /// 
+  /// [category:Lookup, resampling and scaling]
   [<Extension>]
   static member Sample<'V>(series:Series<DateTimeOffset, 'V>, start:DateTimeOffset, interval:TimeSpan, dir) =
     series |> Series.Implementation.lookupTimeInternal (+) (Some start) interval dir Lookup.NearestSmaller
 
+  /// Finds values at, or near, the specified times in a given series. The operation generates
+  /// keys starting from the smallest key of the original series, using the specified `interval`
+  /// and then finds nearest smaller values close to such keys according to `dir`.
+  /// 
+  /// ## Parameters
+  ///  - `series` - An input series to be resampled
+  ///  - `interval` - The interval between the individual samples 
+  ///  - `lookup` - Specifies how the lookup based on keys is performed. `Exact` means that the
+  ///    values at exact keys will be returned; `NearestGreater` returns the nearest greater key value
+  ///    (starting at the first key) and `NearestSmaller` returns the nearest smaller key value
+  ///    (starting at most `interval` after the end of the series)
+  /// 
+  /// ## Remarks
+  /// This operation is only supported on ordered series. The method throws
+  /// `InvalidOperationException` when the series is not ordered. 
+  /// 
+  /// [category:Lookup, resampling and scaling]
   [<Extension>]
   static member Sample<'V>(series:Series<DateTime, 'V>, interval:TimeSpan, dir) =
     series |> Series.Implementation.lookupTimeInternal (+) None interval dir Lookup.NearestSmaller
 
+  /// Finds values at, or near, the specified times in a given series. The operation generates
+  /// keys starting from the smallest key of the original series, using the specified `interval`
+  /// and then finds nearest smaller values close to such keys according to `dir`.
+  /// 
+  /// ## Parameters
+  ///  - `series` - An input series to be resampled
+  ///  - `interval` - The interval between the individual samples 
+  ///  - `dir` - Specifies how the keys should be generated. `Direction.Forward` means that the 
+  ///    key is the smallest value of each chunk (and so first key of the series is returned and 
+  ///    the last is not, unless it matches exactly _start + k*interval_); `Direction.Backward`
+  ///    means that the first key is skipped and sample is generated at, or just before the end 
+  ///    of interval and at the end of the series.
+  /// 
+  /// ## Remarks
+  /// This operation is only supported on ordered series. The method throws
+  /// `InvalidOperationException` when the series is not ordered. 
+  /// 
+  /// [category:Lookup, resampling and scaling]
   [<Extension>]
   static member Sample<'V>(series:Series<DateTimeOffset, 'V>, interval:TimeSpan, dir) =
     series |> Series.Implementation.lookupTimeInternal (+) None interval dir Lookup.NearestSmaller
 
+  /// Finds values at, or near, the specified times in a given series. The operation generates
+  /// keys starting from the smallest key of the original series, using the specified `interval`
+  /// and then finds nearest smaller values close to such keys. The function generates samples
+  /// at, or just before the end of an interval and at, or after, the end of the series.
+  /// 
+  /// ## Parameters
+  ///  - `series` - An input series to be resampled
+  ///  - `interval` - The interval between the individual samples 
+  /// 
+  /// ## Remarks
+  /// This operation is only supported on ordered series. The method throws
+  /// `InvalidOperationException` when the series is not ordered. 
+  /// 
+  /// [category:Lookup, resampling and scaling]
   [<Extension>]
   static member Sample<'V>(series:Series<DateTime, 'V>, interval:TimeSpan) =
     SeriesExtensions.Sample(series, interval, Direction.Backward)
 
+  /// Finds values at, or near, the specified times in a given series. The operation generates
+  /// keys starting from the smallest key of the original series, using the specified `interval`
+  /// and then finds nearest smaller values close to such keys. The function generates samples
+  /// at, or just before the end of an interval and at, or after, the end of the series.
+  /// 
+  /// ## Parameters
+  ///  - `series` - An input series to be resampled
+  ///  - `interval` - The interval between the individual samples 
+  /// 
+  /// ## Remarks
+  /// This operation is only supported on ordered series. The method throws
+  /// `InvalidOperationException` when the series is not ordered. 
+  /// 
+  /// [category:Lookup, resampling and scaling]
   [<Extension>]
   static member Sample<'V>(series:Series<DateTimeOffset, 'V>, interval:TimeSpan) =
     SeriesExtensions.Sample(series, interval, Direction.Backward)
 
+  /// Performs sampling by time and aggregates chunks obtained by time-sampling into a single
+  /// value using a specified function. The operation generates keys starting at the first
+  /// key in the source series, using the specified `interval` and then obtains chunks based on 
+  /// these keys in a fashion similar to the `Series.resample` function.
+  ///
+  /// ## Parameters
+  ///  - `series` - An input series to be resampled
+  ///  - `interval` - The interval between the individual samples 
+  ///  - `dir` - If this parameter is `Direction.Forward`, then each key is
+  ///    used as the smallest key in a chunk; for `Direction.Backward`, the keys are
+  ///    used as the greatest keys in a chunk.
+  ///  - `aggregate` - A function that is called to aggregate each chunk into a single value.
+  ///
+  /// ## Remarks
+  /// This operation is only supported on ordered series. The method throws
+  /// `InvalidOperationException` when the series is not ordered. 
+  /// 
+  /// [category:Lookup, resampling and scaling]
   [<Extension>]
-  static member SampleInto<'V>(series:Series<DateTime, 'V>, interval:TimeSpan, dir, func:Func<_, _>) =
-    series |> Series.Implementation.sampleTimeIntoInternal (+) None interval dir func.Invoke
+  static member SampleInto<'V>(series:Series<DateTime, 'V>, interval:TimeSpan, dir, aggregate:Func<_, _>) =
+    series |> Series.Implementation.sampleTimeIntoInternal (+) None interval dir aggregate.Invoke
 
+  /// Performs sampling by time and aggregates chunks obtained by time-sampling into a single
+  /// value using a specified function. The operation generates keys starting at the first
+  /// key in the source series, using the specified `interval` and then obtains chunks based on 
+  /// these keys in a fashion similar to the `Series.resample` function.
+  ///
+  /// ## Parameters
+  ///  - `series` - An input series to be resampled
+  ///  - `interval` - The interval between the individual samples 
+  ///  - `dir` - If this parameter is `Direction.Forward`, then each key is
+  ///    used as the smallest key in a chunk; for `Direction.Backward`, the keys are
+  ///    used as the greatest keys in a chunk.
+  ///  - `aggregate` - A function that is called to aggregate each chunk into a single value.
+  ///
+  /// ## Remarks
+  /// This operation is only supported on ordered series. The method throws
+  /// `InvalidOperationException` when the series is not ordered. 
+  /// 
+  /// [category:Lookup, resampling and scaling]
   [<Extension>]
-  static member SampleInto<'V>(series:Series<DateTimeOffset, 'V>, interval:TimeSpan, dir, func:Func<_, _>) =
-    series |> Series.Implementation.sampleTimeIntoInternal (+) None interval dir func.Invoke
-
-  // --- end
-
-  [<Extension>]
-  static member FirstKey(series:Series<'K, 'V>) = series.KeyRange |> fst
-
-  [<Extension>]
-  static member LastKey(series:Series<'K, 'V>) = series.KeyRange |> snd
+  static member SampleInto<'V>(series:Series<DateTimeOffset, 'V>, interval:TimeSpan, dir, aggregate:Func<_, _>) =
+    series |> Series.Implementation.sampleTimeIntoInternal (+) None interval dir aggregate.Invoke
