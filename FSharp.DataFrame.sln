@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.20827.3
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.DataFrame", "src\FSharp.DataFrame.fsproj", "{22729065-4C30-4E43-A63F-4F3338A03878}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0ACC5440-2ECD-4D02-88D3-E0F1A1E0FC89}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{245F1283-32FA-4B38-AC76-448B8AE5F7AC}"
 	ProjectSection(SolutionItems) = preProject
@@ -14,6 +14,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{245F1283-3
 		samples\samples.fsx = samples\samples.fsx
 		samples\timeseries.fsx = samples\timeseries.fsx
 		samples\tutorial.fsx = samples\tutorial.fsx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project", "Project", "{B6AFD701-8A05-4A18-A3F3-EDAF8D7530E8}"
+	ProjectSection(SolutionItems) = preProject
+		build.fsx = build.fsx
+		RELEASE_NOTES.md = RELEASE_NOTES.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{B6AFD701-8A05-4A18-A3F3-EDAF8D7530ED}"
@@ -31,10 +37,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API Reference", "API Refere
 		tools\reference\type.cshtml = tools\reference\type.cshtml
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{3257BB99-93F9-4331-9DFA-D3D3E962626C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{3257BB99-93F9-4331-9DFA-D3D3E962626C}"
 	ProjectSection(SolutionItems) = preProject
+		samples\samples\titanic.fsx = samples\samples\titanic.fsx
 		samples\samples\volatility.fsx = samples\samples\volatility.fsx
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{02D16867-6E15-47AD-B987-7E88D6E862B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,9 +60,10 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{245F1283-32FA-4B38-AC76-448B8AE5F7AC} = {0ACC5440-2ECD-4D02-88D3-E0F1A1E0FC89}
-		{B6AFD701-8A05-4A18-A3F3-EDAF8D7530ED} = {0ACC5440-2ECD-4D02-88D3-E0F1A1E0FC89}
-		{3257BB99-93F9-4331-9DFA-D3D3E962626C} = {0ACC5440-2ECD-4D02-88D3-E0F1A1E0FC89}
+		{3257BB99-93F9-4331-9DFA-D3D3E962626C} = {245F1283-32FA-4B38-AC76-448B8AE5F7AC}
 		{497092F5-654F-45A3-AAA7-C72CC725DF5E} = {B6AFD701-8A05-4A18-A3F3-EDAF8D7530ED}
+		{245F1283-32FA-4B38-AC76-448B8AE5F7AC} = {02D16867-6E15-47AD-B987-7E88D6E862B6}
+		{B6AFD701-8A05-4A18-A3F3-EDAF8D7530E8} = {02D16867-6E15-47AD-B987-7E88D6E862B6}
+		{B6AFD701-8A05-4A18-A3F3-EDAF8D7530ED} = {02D16867-6E15-47AD-B987-7E88D6E862B6}
 	EndGlobalSection
 EndGlobal

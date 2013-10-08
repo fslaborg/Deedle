@@ -286,9 +286,9 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     if isEmpty then
       if typeof<'TRowKey> = typeof<int> then
         let series = unbox<Series<'TRowKey, 'V>> (Series.ofValues series)
-        frame.AddSeries(column, series)
+        frame.AddSeries(column, series, lookup)
       else
-        invalidOp "Adding sequence to an empty frame with non-integer columns is not supported."
+        invalidOp "Adding data sequence to an empty frame with non-integer columns is not supported."
     else
       let count = Seq.length series
       let rowCount = Seq.length frame.RowIndex.Keys
@@ -324,15 +324,22 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     data <- vectorBuilder.Build(colCmd, [| data |])
 
   /// [category:Series operations]
-  member frame.ReplaceSeries(column:'TColumnKey, series:ISeries<_>, ?lookup) = 
-    let lookup = defaultArg lookup Lookup.Exact
-    if columnIndex.Lookup(column, lookup, fun _ -> true).HasValue then
+  member frame.ReplaceSeries(column:'TColumnKey, series:ISeries<_>, lookup) = 
+    if columnIndex.Lookup(column, Lookup.Exact, fun _ -> true).HasValue then
       frame.DropSeries(column)
-    frame.AddSeries(column, series)
+    frame.AddSeries(column, series, lookup)
+
+  /// [category:Series operations]
+  member frame.ReplaceSeries(column, data:seq<'V>, lookup) = 
+    frame.ReplaceSeries(column, Series.Create(frame.RowIndex, Vector.ofValues data), lookup)
+
+  /// [category:Series operations]
+  member frame.ReplaceSeries(column:'TColumnKey, series:ISeries<_>) = 
+    frame.ReplaceSeries(column, series, Lookup.Exact)
 
   /// [category:Series operations]
   member frame.ReplaceSeries(column, data:seq<'V>) = 
-    frame.ReplaceSeries(column, Series.Create(frame.RowIndex, Vector.ofValues data))
+    frame.ReplaceSeries(column, data, Lookup.Exact)
 
   /// [category:Series operations]
   member frame.GetSeries<'R>(column:'TColumnKey, lookup) : Series<'TRowKey, 'R> = 

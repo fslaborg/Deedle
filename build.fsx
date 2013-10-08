@@ -31,11 +31,17 @@ let description = """
 let tags = "F# fsharp data frame series statistics science"
 
 // Read additional information from the release notes document
-let releaseNotes, version = 
+// Expected format: "0.9.0-beta - Foo bar." or just "0.9.0 - Foo bar."
+// (We need to extract just the number for AssemblyInfo & all version for NuGet
+let versionAsm, versionNuGet, releaseNotes = 
     let lastItem = File.ReadLines "RELEASE_NOTES.md" |> Seq.last
-    let firstDash = lastItem.IndexOf('-')
-    ( lastItem.Substring(firstDash + 1 ).Trim(), 
-      lastItem.Substring(0, firstDash).Trim([|'*'|]).Trim() )
+    let firstDash = lastItem.IndexOf(" - ")
+    let notes = lastItem.Substring(firstDash + 2).Trim()
+    let version = lastItem.Substring(0, firstDash).Trim([|'*'|]).Trim()
+    // Get just numeric version, if it contains dash
+    let versionDash = version.IndexOf('-')
+    if versionDash = -1 then version, version, notes
+    else version.Substring(0, versionDash), version, notes
 
 // --------------------------------------------------------------------------------------
 // Generate assembly info files with the right version & up-to-date information
@@ -46,8 +52,8 @@ Target "AssemblyInfo" (fun _ ->
       [ Attribute.Title project
         Attribute.Product project
         Attribute.Description summary
-        Attribute.Version version
-        Attribute.FileVersion version] 
+        Attribute.Version versionAsm
+        Attribute.FileVersion versionAsm ] 
 )
 
 // --------------------------------------------------------------------------------------
@@ -111,7 +117,7 @@ Target "NuGet" (fun _ ->
             Project = project
             Summary = summary
             Description = description
-            Version = version
+            Version = versionNuGet
             ReleaseNotes = releaseNotes
             Tags = tags
             OutputPath = "bin"
@@ -141,7 +147,7 @@ Target "ReleaseDocs" (fun _ ->
     Branches.checkoutBranch "gh-pages" "gh-pages"
     CopyRecursive "docs" "gh-pages" true |> printfn "%A"
     CommandHelper.runSimpleGitCommand "gh-pages" "add ." |> printfn "%s"
-    CommandHelper.runSimpleGitCommand "gh-pages" (sprintf """commit -a -m "Update generated documentation for version %s""" version) |> printfn "%s"
+    CommandHelper.runSimpleGitCommand "gh-pages" (sprintf """commit -a -m "Update generated documentation for version %s""" versionNuGet) |> printfn "%s"
     Branches.push "gh-pages"
 )
 

@@ -192,6 +192,9 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
   static member Instance = indexBuilder :> IIndexBuilder
 
   interface IIndexBuilder with
+    /// Linear index is always fully evaluated - just return it
+    member builder.Project(index) = index
+
     /// Create an index from the specified data
     member builder.Create<'K when 'K : equality>(keys, ordered) = 
       upcast LinearIndex<'K>(keys, builder, ?ordered=ordered)

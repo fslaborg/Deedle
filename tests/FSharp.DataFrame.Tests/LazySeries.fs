@@ -1,10 +1,11 @@
-﻿module FSharp.DataFrame.Tests.LazySeries
-
-#if INTERACTIVE
-#r "../../bin/FSharp.DataFrame.dll"
+﻿#if INTERACTIVE
+#I "../../bin/"
+#load "FSharp.DataFrame.fsx"
 #r "../../packages/NUnit.2.6.2/lib/nunit.framework.dll"
 #r "../../packages/FsCheck.0.9.1.0/lib/net40-Client/FsCheck.dll"
 #load "../Common/FsUnit.fs"
+#else
+module FSharp.DataFrame.Tests.LazySeries
 #endif
 
 open System
@@ -87,6 +88,14 @@ let ``Created series does not contain out-of-range keys, even if the source prov
   ls.[100 ..] |> Series.keys |> List.ofSeq |> shouldEqual [100]
   ls.[10 .. 20] |> Series.keys |> List.ofSeq |> shouldEqual [10 .. 20]
   SeriesExtensions.After(ls, 90) |> Series.keys |> List.ofSeq |> shouldEqual [91 .. 100]
+
+[<Test>]
+let ``Can add projection of a lazy vector to a data frame`` () = 
+  let ls = DelayedSeries.Create(0, 100, fun _ _ -> async { 
+    return seq { for i in 0 .. 100 -> i, i }  })
+  let df = Frame.ofColumns [ "Lazy" => ls ]
+  df?Test <- ((+) 1) $ ls 
+  df?Lazy - df?Test |> Series.sum |> int |> shouldEqual -101
 
 // ------------------------------------------------------------------------------------------------
 // Random testing

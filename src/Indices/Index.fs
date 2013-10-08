@@ -179,7 +179,13 @@ and IIndexBuilder =
   /// if the index keys are ordered or not. When the value is not set, the construction
   /// should check and infer this from the data.
   abstract Create : seq<'K> * Option<bool> -> IIndex<'K>
-    
+  
+  /// When we perform some projection on the vector (e.g. `Series.map`), then we may also
+  /// need to perform some transformation on the index (because it will typically turn delayed
+  /// index into an evaluated index). This operation represents that - it should return 
+  /// (evaluated) index with the same keys.
+  abstract Project : IIndex<'K> -> IIndex<'K>
+
   /// Create a new index that represents sub-range of an existing index. The range is specified
   /// as a pair of options (when `None`, the original left/right boundary should be used) 
   /// that contain boundary behavior and the boundary key.

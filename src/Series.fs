@@ -272,7 +272,8 @@ and Series<'K, 'V when 'K : equality>
            vector.GetValue(addr) |> OptionalValue.bind (fun v -> 
              // If a required value is missing, then skip over this
              OptionalValue(f.Invoke(KeyValuePair(key, v))) ) |]
-    Series<'K, 'R>(index, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder )
+    let newIndex = indexBuilder.Project(index)
+    Series<'K, 'R>(newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder )
 
   /// [category:Projection and filtering]
   member x.SelectKeys<'R when 'R : equality>(f:System.Func<KeyValuePair<'K, OptionalValue<'V>>, 'R>) = 
@@ -287,7 +288,8 @@ and Series<'K, 'V when 'K : equality>
     let newVector =
       index.Mappings |> Array.ofSeq |> Array.map (fun (key, addr) ->
            f.Invoke(KeyValuePair(key, vector.GetValue(addr))))
-    Series<'K, 'R>(index, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
+    let newIndex = indexBuilder.Project(index)
+    Series<'K, 'R>(newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
 
   // ----------------------------------------------------------------------------------------------
   // Appending, joining etc
@@ -756,16 +758,21 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
 
   member x.TryAs<'R>(strict) =
     match box vector with
-    | :? IVector<'R> as vec -> OptionalValue(Series(index, vec, vectorBuilder, indexBuilder))
+    | :? IVector<'R> as vec -> 
+        let newIndex = indexBuilder.Project(index)
+        OptionalValue(Series(newIndex, vec, vectorBuilder, indexBuilder))
     | _ -> 
         ( if strict then VectorHelpers.tryCastType vector
           else VectorHelpers.tryChangeType vector )
-        |> OptionalValue.map (fun vec -> Series(index, vec, vectorBuilder, indexBuilder))
+        |> OptionalValue.map (fun vec -> 
+          let newIndex = indexBuilder.Project(index)
+          Series(newIndex, vec, vectorBuilder, indexBuilder))
 
   member x.TryAs<'R>() =
     x.TryAs<'R>(false)
 
   member x.As<'R>() =
+    let newIndex = indexBuilder.Project(index)
     match box vector with
-    | :? IVector<'R> as vec -> Series(index, vec, vectorBuilder, indexBuilder)
-    | _ -> Series(index, VectorHelpers.changeType vector, vectorBuilder, indexBuilder)
+    | :? IVector<'R> as vec -> Series(newIndex, vec, vectorBuilder, indexBuilder)
+    | _ -> Series(newIndex, VectorHelpers.changeType vector, vectorBuilder, indexBuilder)

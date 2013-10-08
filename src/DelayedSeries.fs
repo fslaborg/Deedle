@@ -181,11 +181,14 @@ type internal DelayedIndex<'K, 'V when 'K : equality> internal (source:DelayedSo
     member x.Comparer = source.Index.Comparer
   interface IDelayedIndex<'K> with
     member x.Invoke(func) = func.Invoke<'V>(x)
+    member x.SourceIndex = source.Index
 
 /// In the DelayedIndexBuilder, we do not know the type of values, so this 
 /// is a less generic interface that gives us a way for accessing it...
 and internal IDelayedIndex<'K when 'K : equality> =
   abstract Invoke<'R> : DelayedIndexFunction<'K, 'R> -> 'R
+  abstract SourceIndex : IIndex<'K>
+  
 /// A polymorphic function that is passed to IDelayedIndex.Invoke
 and internal DelayedIndexFunction<'K, 'R when 'K : equality> = 
   abstract Invoke<'V> : DelayedIndex<'K, 'V> -> 'R
@@ -209,6 +212,13 @@ and internal DelayedIndexBuilder() =
     member x.Reindex(index1, index2, semantics, vector) = builder.Reindex(index1, index2, semantics, vector)
     member x.DropItem(sc, key) = builder.DropItem(sc, key)
     member x.Resample(index, keys, close, vect, ks, vs) = builder.Resample(index, keys, close, vect, ks, vs)
+    
+    member x.Project(index:IIndex<'K>) = 
+      // If the index is delayed, then projection evaluates it
+      match index with
+      | :? IDelayedIndex<'K> as index -> index.SourceIndex
+      | _ -> index
+
     member x.GetRange(index, optLo:option<'K * _>, optHi:option<'K * _>, vector) = 
       match index with
       | :? IDelayedIndex<'K> as index ->
@@ -241,6 +251,10 @@ and internal DelayedIndexBuilder() =
                       let source = restrictSource lv.Source.Ranges lv.Source.Loader
                       DelayedVector(source) :> IVector
                 | _ -> 
+                    //let  = builder.GetRange(index, optLo, optHi, Vectors.Return 0)
+                    //ArrayVector.ArrayVectorBuilder.Instance.Build(cmd, [| vector |])
+                    
+
                     failwith "TODO: This should probably be supported?")
               newIndex :> IIndex<'K>, cmd }
         |> index.Invoke
