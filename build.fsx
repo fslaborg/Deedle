@@ -6,6 +6,7 @@
 
 open System
 open System.IO
+open System.Text.RegularExpressions
 open Fake 
 open Fake.AssemblyInfoFile
 open Fake.Git
@@ -54,6 +55,18 @@ Target "AssemblyInfo" (fun _ ->
         Attribute.Description summary
         Attribute.Version versionAsm
         Attribute.FileVersion versionAsm ] 
+)
+
+// --------------------------------------------------------------------------------------
+// Update the assembly version numbers in the script file.
+
+Target "UpdateFsxVersions" (fun _ ->
+    let pattern = @"#I ""../../packages/FSharp.DataFrame.(.*)/lib/net40"""
+    let replacement = sprintf @"#I ""../../packages/FSharp.DataFrame.%s/lib/net40""" versionNuGet
+    let path = @".\src\FSharp.DataFrame.fsx"
+    let text = File.ReadAllText(path)
+    let text = Regex.Replace(text, pattern, replacement)
+    File.WriteAllText(path, text)
 )
 
 // --------------------------------------------------------------------------------------
@@ -141,33 +154,31 @@ Target "GenerateDocs" DoNothing
 // --------------------------------------------------------------------------------------
 // Release Scripts
 
+let gitHome = "https://github.com/BlueMountainCapital"
+
 Target "ReleaseDocs" (fun _ ->
     CleanDirs ["gh-pages"]
-    Repository.clone "" "https://github.com/BlueMountainCapital/FSharp.DataFrame.git" "gh-pages"
+    Repository.clone "" (gitHome + "/FSharp.DataFrame.git") "gh-pages"
     Branches.checkoutBranch "gh-pages" "gh-pages"
     CopyRecursive "docs" "gh-pages" true |> printfn "%A"
     CommandHelper.runSimpleGitCommand "gh-pages" "add ." |> printfn "%s"
-    CommandHelper.runSimpleGitCommand "gh-pages" (sprintf """commit -a -m "Update generated documentation for version %s""" versionNuGet) |> printfn "%s"
+    let cmd = sprintf """commit -a -m "Update generated documentation for version %s""" versionNuGet
+    CommandHelper.runSimpleGitCommand "gh-pages" cmd |> printfn "%s"
     Branches.push "gh-pages"
 )
 
-(*
-Target "UpdateBinaries" (fun _ ->
+Target "ReleaseBinaries" (fun _ ->
     DeleteDir "release"
-    Repository.clone "" "https://github.com/fsharp/FSharp.Data.git" "release"
+    Repository.clone "" (gitHome + "/FSharp.DataFrame.git") "release"
     Branches.checkoutBranch "release" "release"
     CopyRecursive "bin" "release/bin" true |> printfn "%A"
-    CommandHelper.runSimpleGitCommand "release" (sprintf """commit -a -m "Update binaries for version %s""" version) |> printfn "%s"
+    MoveFile "release/bin/FSharp.DataFrame.fsx" "release/FSharp.DataFrame.fsx"
+    let cmd = sprintf """commit -a -m "Update binaries for version %s""" versionNuGet
+    CommandHelper.runSimpleGitCommand "release" cmd |> printfn "%s"
     Branches.push "release"
 )
-*)
+
 Target "Release" DoNothing
-(*
-"GenerateDocs" ==> "UpdateDocs"
-"UpdateDocs" ==> "Release"
-"NuGet" ==> "Release"
-"UpdateBinaries" ==> "Release"
-*)
 
 // --------------------------------------------------------------------------------------
 // Run all targets by default. Invoke 'build <Target>' to override
@@ -177,9 +188,16 @@ Target "All" DoNothing
 "Clean"
   ==> "RestorePackages"
   ==> "AssemblyInfo"
+  ==> "UpdateFsxVersions"
   ==> "Build"
   ==> "GenerateDocs"
   ==> "RunTests"
   ==> "All"
+
+"All" 
+  ==> "ReleaseDocs"
+  ==> "ReleaseBinaries"
+  ==> "NuGet"
+  ==> "Release"
 
 RunTargetOrDefault "All"

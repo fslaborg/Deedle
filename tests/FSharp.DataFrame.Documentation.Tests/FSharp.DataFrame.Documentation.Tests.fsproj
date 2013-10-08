@@ -67,10 +67,6 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FSharp.Charting">
-      <HintPath>..\..\packages\FSharp.Charting.0.86\lib\net40\FSharp.Charting.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="FSharp.CodeFormat">
       <HintPath>..\..\packages\FSharp.Formatting.1.0.15\lib\net40\FSharp.CodeFormat.dll</HintPath>
       <Private>True</Private>
