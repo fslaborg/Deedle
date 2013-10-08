@@ -121,20 +121,20 @@ to create a series:</p>
   [ <span onmouseout="hideTip(event, 'fs6', 17)" onmouseover="showTip(event, 'fs6', 17)" class="i">DateTime</span>(<span class="n">2013</span>,<span class="n">1</span>,<span class="n">1</span>) <span class="o">=&gt;</span> <span class="n">10.0</span>
     <span onmouseout="hideTip(event, 'fs6', 18)" onmouseover="showTip(event, 'fs6', 18)" class="i">DateTime</span>(<span class="n">2013</span>,<span class="n">1</span>,<span class="n">4</span>) <span class="o">=&gt;</span> <span class="n">20.0</span>
     <span onmouseout="hideTip(event, 'fs6', 19)" onmouseover="showTip(event, 'fs6', 19)" class="i">DateTime</span>(<span class="n">2013</span>,<span class="n">1</span>,<span class="n">8</span>) <span class="o">=&gt;</span> <span class="n">30.0</span> ]
-<span class="fsi">val it : Series<DateTime,float> =</span>
-<span class="fsi">  1/1/2013 12:00:00 AM -> 10 </span>
-<span class="fsi">  1/4/2013 12:00:00 AM -> 20 </span>
-<span class="fsi">  1/8/2013 12:00:00 AM -> 30 </span>
+<span class="fsi">val it : Series&lt;DateTime,float&gt; =</span>
+<span class="fsi">  1/1/2013 12:00:00 AM -&gt; 10 </span>
+<span class="fsi">  1/4/2013 12:00:00 AM -&gt; 20 </span>
+<span class="fsi">  1/8/2013 12:00:00 AM -&gt; 30 </span>
 
 <span class="c">// Shorter alternative to &#39;Series.ofObservations&#39;</span>
 <span onmouseout="hideTip(event, 'fs11', 20)" onmouseover="showTip(event, 'fs11', 20)" class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">1.0</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="n">2.0</span> ]
 
 <span class="c">// Create series with implicit (ordinal) keys</span>
 <span onmouseout="hideTip(event, 'fs9', 21)" onmouseover="showTip(event, 'fs9', 21)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs12', 22)" onmouseover="showTip(event, 'fs12', 22)" class="i">ofValues</span> [ <span class="n">10.0</span>; <span class="n">20.0</span>; <span class="n">30.0</span> ]
-<span class="fsi">val it : Series<int,float> =</span>
-<span class="fsi">  0 -> 10 </span>
-<span class="fsi">  1 -> 20 </span>
-<span class="fsi">  2 -> 30 </span></pre>
+<span class="fsi">val it : Series&lt;int,float&gt; =</span>
+<span class="fsi">  0 -&gt; 10 </span>
+<span class="fsi">  1 -&gt; 20 </span>
+<span class="fsi">  2 -&gt; 30 </span></pre>
 </td>
 </tr>
 </table><p>Note that the series type is generic. <code>Series&lt;K, T&gt;</code> represents a series
@@ -166,12 +166,12 @@ with 10 day value range and random values:</p>
 
 <span class="c">// A series with values for 10 days </span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs19', 32)" onmouseover="showTip(event, 'fs19', 32)" class="i">second</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 33)" onmouseover="showTip(event, 'fs9', 33)" class="i">Series</span>(<span onmouseout="hideTip(event, 'fs13', 34)" onmouseover="showTip(event, 'fs13', 34)" class="i">dateRange</span> (<span onmouseout="hideTip(event, 'fs6', 35)" onmouseover="showTip(event, 'fs6', 35)" class="i">DateTime</span>(<span class="n">2013</span>,<span class="n">1</span>,<span class="n">1</span>)) <span class="n">10</span>, <span onmouseout="hideTip(event, 'fs17', 36)" onmouseover="showTip(event, 'fs17', 36)" class="i">rand</span> <span class="n">10</span>)
-<span class="fsi">val it : Series<DateTime,float> =</span>
-<span class="fsi">  1/1/2013  12:00:00 AM -> 0.957571796121808  </span>
-<span class="fsi">  1/2/2013  12:00:00 AM -> 0.424694305017914  </span>
+<span class="fsi">val it : Series&lt;DateTime,float&gt; =</span>
+<span class="fsi">  1/1/2013  12:00:00 AM -&gt; 0.957571796121808  </span>
+<span class="fsi">  1/2/2013  12:00:00 AM -&gt; 0.424694305017914  </span>
 <span class="fsi">  ...                      ...              </span>
-<span class="fsi">  1/9/2013  12:00:00 AM -> 0.874667080526551  </span>
-<span class="fsi">  1/10/2013 12:00:00 AM -> 0.308210378656262 </span></pre>
+<span class="fsi">  1/9/2013  12:00:00 AM -&gt; 0.874667080526551  </span>
+<span class="fsi">  1/10/2013 12:00:00 AM -&gt; 0.308210378656262 </span></pre>
 </td>
 </tr>
 </table><p>Now we can easily construct a data frame that has two columns - one representing
@@ -188,12 +188,12 @@ the <code>first</code> series and another representing the <code>second</code> s
 </td>
 <td class="snippet"><pre class="fssnip">
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs20', 37)" onmouseover="showTip(event, 'fs20', 37)" class="i">df1</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs21', 38)" onmouseover="showTip(event, 'fs21', 38)" class="i">Frame</span>([<span class="s">&quot;</span><span class="s">first</span><span class="s">&quot;</span>; <span class="s">&quot;</span><span class="s">second</span><span class="s">&quot;</span>], [<span onmouseout="hideTip(event, 'fs8', 39)" onmouseover="showTip(event, 'fs8', 39)" class="i">first</span>; <span onmouseout="hideTip(event, 'fs19', 40)" onmouseover="showTip(event, 'fs19', 40)" class="i">second</span>])
-<span class="fsi">val it : Frame<DateTime,strubg> =</span>
+<span class="fsi">val it : Frame&lt;DateTime,strubg&gt; =</span>
 <span class="fsi">                           first     second             </span>
-<span class="fsi">  1/1/2013 12:00:00 AM ->  10        0.287487044598668  </span>
-<span class="fsi">  1/2/2013 12:00:00 AM ->  <missing> 0.66628182011949   </span>
+<span class="fsi">  1/1/2013 12:00:00 AM -&gt;  10        0.287487044598668  </span>
+<span class="fsi">  1/2/2013 12:00:00 AM -&gt;  &lt;missing&gt; 0.66628182011949   </span>
 <span class="fsi">  ...                      ...       ...              </span>
-<span class="fsi">  1/10/2013 12:00:00 AM -> <missing> 0.104357822846788  </span></pre>
+<span class="fsi">  1/10/2013 12:00:00 AM -&gt; &lt;missing&gt; 0.104357822846788  </span></pre>
 </td>
 </tr>
 </table><p>The type representing a data frame has two generic parameters:
@@ -283,13 +283,13 @@ names and types of properties of a record and creates a data frame with the same
 <td class="snippet"><pre class="fssnip">
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs37', 72)" onmouseover="showTip(event, 'fs37', 72)" class="i">msftCsv</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs21', 73)" onmouseover="showTip(event, 'fs21', 73)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 74)" onmouseover="showTip(event, 'fs38', 74)" class="i">readCsv</span>(<span class="k">__SOURCE_DIRECTORY__</span> <span class="o">+</span> <span class="s">&quot;</span><span class="s">/</span><span class="s">data</span><span class="s">/</span><span class="s">MSFT</span><span class="s">.</span><span class="s">csv</span><span class="s">&quot;</span>)
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs39', 75)" onmouseover="showTip(event, 'fs39', 75)" class="i">fbCsv</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs21', 76)" onmouseover="showTip(event, 'fs21', 76)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 77)" onmouseover="showTip(event, 'fs38', 77)" class="i">readCsv</span>(<span class="k">__SOURCE_DIRECTORY__</span> <span class="o">+</span> <span class="s">&quot;</span><span class="s">/</span><span class="s">data</span><span class="s">/</span><span class="s">FB</span><span class="s">.</span><span class="s">csv</span><span class="s">&quot;</span>)
-<span class="fsi">val fbCsv : Frame<int,string> =</span>
+<span class="fsi">val fbCsv : Frame&lt;int,string&gt; =</span>
 <span class="fsi">         Date       Open  High  Low   Close Volume    Adj Close </span>
-<span class="fsi">  0 ->   2013-08-30 42.02 42.26 41.06 41.29 67587400  41.29     </span>
-<span class="fsi">  1 ->   2013-08-29 40.89 41.78 40.80 41.28 58303400  41.28     </span>
+<span class="fsi">  0 -&gt;   2013-08-30 42.02 42.26 41.06 41.29 67587400  41.29     </span>
+<span class="fsi">  1 -&gt;   2013-08-29 40.89 41.78 40.80 41.28 58303400  41.28     </span>
 <span class="fsi">  :      ...        ...   ...   ...   ...   ...       ...       </span>
-<span class="fsi">  321 -> 2012-05-21 36.53 36.66 33.00 34.03 168192700 34.03     </span>
-<span class="fsi">  322 -> 2012-05-18 42.05 45.00 38.00 38.23 573576400 38.23     </span></pre>
+<span class="fsi">  321 -&gt; 2012-05-21 36.53 36.66 33.00 34.03 168192700 34.03     </span>
+<span class="fsi">  322 -&gt; 2012-05-18 42.05 45.00 38.00 38.23 573576400 38.23     </span></pre>
 </td>
 </tr>
 </table><p>When loading the data, data frame analyses the values and automatically converts
@@ -463,13 +463,13 @@ slicing operators on the series:</p>
 <td class="snippet"><pre class="fssnip">
 <span class="c">// Look for a row at a specific date</span>
 <span onmouseout="hideTip(event, 'fs60', 149)" onmouseover="showTip(event, 'fs60', 149)" class="i">joinedIn</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs63', 150)" onmouseover="showTip(event, 'fs63', 150)" class="i">Rows</span><span class="o">.</span>[<span onmouseout="hideTip(event, 'fs6', 151)" onmouseover="showTip(event, 'fs6', 151)" class="i">DateTime</span>(<span class="n">2013</span>, <span class="n">1</span>, <span class="n">2</span>)]
-<span class="fsi">val it : ObjectSeries<string> =</span>
-<span class="fsi">  FbOpen    -> 28.00            </span>
-<span class="fsi">  FbClose   -> 27.44   </span>
-<span class="fsi">  FbDiff    -> -0.5599 </span>
-<span class="fsi">  MsftOpen  -> 27.62   </span>
-<span class="fsi">  MsftClose -> 27.25    </span>
-<span class="fsi">  MsftDiff  -> -0.3700 </span>
+<span class="fsi">val it : ObjectSeries&lt;string&gt; =</span>
+<span class="fsi">  FbOpen    -&gt; 28.00            </span>
+<span class="fsi">  FbClose   -&gt; 27.44   </span>
+<span class="fsi">  FbDiff    -&gt; -0.5599 </span>
+<span class="fsi">  MsftOpen  -&gt; 27.62   </span>
+<span class="fsi">  MsftClose -&gt; 27.25    </span>
+<span class="fsi">  MsftDiff  -&gt; -0.3700 </span>
 
 <span class="c">// Get opening Facebook price for 2 Jan 2013</span>
 <span onmouseout="hideTip(event, 'fs60', 152)" onmouseover="showTip(event, 'fs60', 152)" class="i">joinedIn</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs63', 153)" onmouseover="showTip(event, 'fs63', 153)" class="i">Rows</span><span class="o">.</span>[<span onmouseout="hideTip(event, 'fs6', 154)" onmouseover="showTip(event, 'fs6', 154)" class="i">DateTime</span>(<span class="n">2013</span>, <span class="n">1</span>, <span class="n">2</span>)]<span class="o">?</span><span class="i">FbOpen</span>
@@ -517,13 +517,13 @@ keys (using a list) or a range (using the slicing syntax):</p>
 
 <span class="c">// Get values corresponding to entire January 2013</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs68', 166)" onmouseover="showTip(event, 'fs68', 166)" class="i">jan</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs60', 167)" onmouseover="showTip(event, 'fs60', 167)" class="i">joinedIn</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs63', 168)" onmouseover="showTip(event, 'fs63', 168)" class="i">Rows</span><span class="o">.</span>[<span onmouseout="hideTip(event, 'fs6', 169)" onmouseover="showTip(event, 'fs6', 169)" class="i">DateTime</span>(<span class="n">2013</span>, <span class="n">1</span>, <span class="n">1</span>) <span class="o">..</span> <span onmouseout="hideTip(event, 'fs6', 170)" onmouseover="showTip(event, 'fs6', 170)" class="i">DateTime</span>(<span class="n">2013</span>, <span class="n">1</span>, <span class="n">31</span>)] 
-<span class="fsi">val jan : Frame<DateTime,string> =</span>
+<span class="fsi">val jan : Frame&lt;DateTime,string&gt; =</span>
 <span class="fsi">               FbOpen FbClose FbDiff MsftOpen MsftClose MsftDiff </span>
-<span class="fsi">  1/2/2013  -> 28.00  27.44   -0.55  27.62    27.25     -0.37 </span>
-<span class="fsi">  1/3/2013  -> 27.77  27.88   0.10   27.25    27.63     0.37 </span>
-<span class="fsi">  ...       -> ...    ...     ...    ...      ...       ... </span>
-<span class="fsi">  1/30/2013 -> 31.24  30.98   -0.25  27.85    28.01     0.16 </span>
-<span class="fsi">  1/31/2013 -> 30.98  29.15   -1.83  27.45    27.79     0.34  </span>
+<span class="fsi">  1/2/2013  -&gt; 28.00  27.44   -0.55  27.62    27.25     -0.37 </span>
+<span class="fsi">  1/3/2013  -&gt; 27.77  27.88   0.10   27.25    27.63     0.37 </span>
+<span class="fsi">  ...       -&gt; ...    ...     ...    ...      ...       ... </span>
+<span class="fsi">  1/30/2013 -&gt; 31.24  30.98   -0.25  27.85    28.01     0.16 </span>
+<span class="fsi">  1/31/2013 -&gt; 30.98  29.15   -1.83  27.45    27.79     0.34  </span>
 
 <span class="c">// Calculate means over the period</span>
 <span onmouseout="hideTip(event, 'fs68', 171)" onmouseover="showTip(event, 'fs68', 171)" class="i">jan</span><span class="o">?</span><span class="i">FbOpen</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 172)" onmouseover="showTip(event, 'fs9', 172)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs67', 173)" onmouseover="showTip(event, 'fs67', 173)" class="i">mean</span>
@@ -578,17 +578,17 @@ can be used to ilustrate the idea):</p>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs69', 177)" onmouseover="showTip(event, 'fs69', 177)" class="i">daysSeries</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 178)" onmouseover="showTip(event, 'fs9', 178)" class="i">Series</span>(<span onmouseout="hideTip(event, 'fs13', 179)" onmouseover="showTip(event, 'fs13', 179)" class="i">dateRange</span> <span onmouseout="hideTip(event, 'fs6', 180)" onmouseover="showTip(event, 'fs6', 180)" class="i">DateTime</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs70', 181)" onmouseover="showTip(event, 'fs70', 181)" class="i">Today</span> <span class="n">10</span>, <span onmouseout="hideTip(event, 'fs17', 182)" onmouseover="showTip(event, 'fs17', 182)" class="i">rand</span> <span class="n">10</span>)
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs71', 183)" onmouseover="showTip(event, 'fs71', 183)" class="i">obsSeries</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 184)" onmouseover="showTip(event, 'fs9', 184)" class="i">Series</span>(<span onmouseout="hideTip(event, 'fs13', 185)" onmouseover="showTip(event, 'fs13', 185)" class="i">dateRange</span> <span onmouseout="hideTip(event, 'fs6', 186)" onmouseover="showTip(event, 'fs6', 186)" class="i">DateTime</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs33', 187)" onmouseover="showTip(event, 'fs33', 187)" class="i">Now</span> <span class="n">10</span>, <span onmouseout="hideTip(event, 'fs17', 188)" onmouseover="showTip(event, 'fs17', 188)" class="i">rand</span> <span class="n">10</span>)
 <span class="fsi">  </span>
-<span class="fsi">val daysSeries : Series<DateTime,float> =</span>
-<span class="fsi">  9/12/2013 12:00:00 AM -> 0.834164640323336  </span>
-<span class="fsi">  9/13/2013 12:00:00 AM -> 0.871085483520797  </span>
-<span class="fsi">  ...                   -> ...                </span>
-<span class="fsi">  9/21/2013 12:00:00 AM -> 0.939047194523293  </span>
+<span class="fsi">val daysSeries : Series&lt;DateTime,float&gt; =</span>
+<span class="fsi">  9/12/2013 12:00:00 AM -&gt; 0.834164640323336  </span>
+<span class="fsi">  9/13/2013 12:00:00 AM -&gt; 0.871085483520797  </span>
+<span class="fsi">  ...                   -&gt; ...                </span>
+<span class="fsi">  9/21/2013 12:00:00 AM -&gt; 0.939047194523293  </span>
 <span class="fsi">  </span>
-<span class="fsi">val obsSeries : Series<DateTime,float> =</span>
-<span class="fsi">  9/12/2013 2:38:27 PM -> 0.433889241625503 </span>
-<span class="fsi">  9/13/2013 2:38:27 PM -> 0.318957257233075 </span>
-<span class="fsi">  ...                   -> ...               </span>
-<span class="fsi">  9/21/2013 2:38:27 PM -> 0.227506533836716 </span></pre>
+<span class="fsi">val obsSeries : Series&lt;DateTime,float&gt; =</span>
+<span class="fsi">  9/12/2013 2:38:27 PM -&gt; 0.433889241625503 </span>
+<span class="fsi">  9/13/2013 2:38:27 PM -&gt; 0.318957257233075 </span>
+<span class="fsi">  ...                   -&gt; ...               </span>
+<span class="fsi">  9/21/2013 2:38:27 PM -&gt; 0.227506533836716 </span></pre>
 </td>
 </tr>
 </table><p>The indexing operation written as <code>daysSeries.[date]</code> uses <em>exact</em> semantics so it will 
@@ -803,16 +803,16 @@ for each row. If you want to group data using a value in a column, you can use
   <span onmouseout="hideTip(event, 'fs60', 277)" onmouseover="showTip(event, 'fs60', 277)" class="i">joinedIn</span>
   <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 278)" onmouseover="showTip(event, 'fs21', 278)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs94', 279)" onmouseover="showTip(event, 'fs94', 279)" class="i">groupRowsUsing</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs95', 280)" onmouseover="showTip(event, 'fs95', 280)" class="i">k</span> _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs6', 281)" onmouseover="showTip(event, 'fs6', 281)" class="i">DateTime</span>(<span onmouseout="hideTip(event, 'fs95', 282)" onmouseover="showTip(event, 'fs95', 282)" class="i">k</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs96', 283)" onmouseover="showTip(event, 'fs96', 283)" class="i">Year</span>, <span onmouseout="hideTip(event, 'fs95', 284)" onmouseover="showTip(event, 'fs95', 284)" class="i">k</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs97', 285)" onmouseover="showTip(event, 'fs97', 285)" class="i">Month</span>, <span class="n">1</span>))
 
-<span class="fsi">val monthly : Frame<(DateTime * DateTime),string> =</span>
+<span class="fsi">val monthly : Frame&lt;(DateTime * DateTime),string&gt; =</span>
 <span class="fsi"> </span>
 <span class="fsi">                        FbOpen  MsftOpen </span>
-<span class="fsi">  5/1/2012 5/18/2012 -> 38.23   29.27    </span>
-<span class="fsi">           5/21/2012 -> 34.03   29.75    </span>
-<span class="fsi">           5/22/2012 -> 31.00   29.76    </span>
+<span class="fsi">  5/1/2012 5/18/2012 -&gt; 38.23   29.27    </span>
+<span class="fsi">           5/21/2012 -&gt; 34.03   29.75    </span>
+<span class="fsi">           5/22/2012 -&gt; 31.00   29.76    </span>
 <span class="fsi">  :                     ...              </span>
-<span class="fsi">  8/1/2013 8/12/2013 -> 38.22   32.87    </span>
-<span class="fsi">           8/13/2013 -> 37.02   32.23    </span>
-<span class="fsi">           8/14/2013 -> 36.65   32.35    </span></pre>
+<span class="fsi">  8/1/2013 8/12/2013 -&gt; 38.22   32.87    </span>
+<span class="fsi">           8/13/2013 -&gt; 37.02   32.23    </span>
+<span class="fsi">           8/14/2013 -&gt; 36.65   32.35    </span></pre>
 </td>
 </tr>
 </table><p>The output is trimmed to fit on the page. As you can see, we get back a frame that has
@@ -835,13 +835,13 @@ rows in a specified group (say, May 2013) and calculate means of columns in the 
 </td>
 <td class="snippet"><pre class="fssnip">
 <span onmouseout="hideTip(event, 'fs93', 286)" onmouseover="showTip(event, 'fs93', 286)" class="i">monthly</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs98', 287)" onmouseover="showTip(event, 'fs98', 287)" class="i">Rows</span><span class="o">.</span>[<span onmouseout="hideTip(event, 'fs6', 288)" onmouseover="showTip(event, 'fs6', 288)" class="i">DateTime</span>(<span class="n">2013</span>,<span class="n">5</span>,<span class="n">1</span>), <span class="o">*</span>] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 289)" onmouseover="showTip(event, 'fs21', 289)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs99', 290)" onmouseover="showTip(event, 'fs99', 290)" class="i">mean</span>
-<span class="fsi">val it : Series<string,float> =</span>
-<span class="fsi">  FbOpen    -> 26.14 </span>
-<span class="fsi">  FbClose   -> 26.35 </span>
-<span class="fsi">  FbDiff    -> 0.20 </span>
-<span class="fsi">  MsftOpen  -> 33.95 </span>
-<span class="fsi">  MsftClose -> 33.76 </span>
-<span class="fsi">  MsftDiff  -> -0.19 </span></pre>
+<span class="fsi">val it : Series&lt;string,float&gt; =</span>
+<span class="fsi">  FbOpen    -&gt; 26.14 </span>
+<span class="fsi">  FbClose   -&gt; 26.35 </span>
+<span class="fsi">  FbDiff    -&gt; 0.20 </span>
+<span class="fsi">  MsftOpen  -&gt; 33.95 </span>
+<span class="fsi">  MsftClose -&gt; 33.76 </span>
+<span class="fsi">  MsftDiff  -&gt; -0.19 </span></pre>
 </td>
 </tr>
 </table><p>The above snippet uses slicing notation that is only available in F# 3.1 (Visual Studio 2013).
