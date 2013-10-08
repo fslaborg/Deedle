@@ -20,6 +20,6 @@
     <file src="..\bin\FSharp.DataFrame.dll" target="lib/net40" />
     <file src="..\bin\FSharp.DataFrame.pdb" target="lib/net40" />
     <file src="..\bin\FSharp.DataFrame.xml" target="lib/net40" />
-    <file src="..\bin\FSharp.DataFrame.fsx" target="lib/net40" />
+    <file src="..\bin\FSharp.DataFrame.fsx" target="." />
   </files>
 </package>

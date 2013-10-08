@@ -78,7 +78,7 @@ Target "RestorePackages" (fun _ ->
 )
 
 Target "Clean" (fun _ ->
-    CleanDirs ["bin"]
+    CleanDirs ["bin"; "gh-pages"; "release" ]
 )
 
 Target "CleanDocs" (fun _ ->
@@ -157,7 +157,6 @@ Target "GenerateDocs" DoNothing
 let gitHome = "https://github.com/BlueMountainCapital"
 
 Target "ReleaseDocs" (fun _ ->
-    CleanDirs ["gh-pages"]
     Repository.clone "" (gitHome + "/FSharp.DataFrame.git") "gh-pages"
     Branches.checkoutBranch "gh-pages" "gh-pages"
     CopyRecursive "docs" "gh-pages" true |> printfn "%A"
@@ -168,11 +167,10 @@ Target "ReleaseDocs" (fun _ ->
 )
 
 Target "ReleaseBinaries" (fun _ ->
-    DeleteDir "release"
     Repository.clone "" (gitHome + "/FSharp.DataFrame.git") "release"
     Branches.checkoutBranch "release" "release"
     CopyRecursive "bin" "release/bin" true |> printfn "%A"
-    MoveFile "release/bin/FSharp.DataFrame.fsx" "release/FSharp.DataFrame.fsx"
+    MoveFile "./release/" "./release/bin/FSharp.DataFrame.fsx"
     let cmd = sprintf """commit -a -m "Update binaries for version %s""" versionNuGet
     CommandHelper.runSimpleGitCommand "release" cmd |> printfn "%s"
     Branches.push "release"
