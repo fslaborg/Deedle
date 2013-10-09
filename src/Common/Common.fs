@@ -243,6 +243,7 @@ open System.Linq
 open System.Drawing
 open FSharp.DataFrame
 open System.Collections.Generic
+open System.Collections.ObjectModel
 
 /// Utility functions for identifying missing values. The `isNA` function 
 /// can be used to test whether a value represents a missing value - this includes
@@ -286,47 +287,47 @@ module MissingValues =
 // Internals - various functions for working with collections
 // --------------------------------------------------------------------------------------
 
-/// Provides helper functions for working with `IReadOnlyList<T>` similar to those 
+/// Provides helper functions for working with `ReadOnlyCollection<T>` similar to those 
 /// in the `Array` module. Most importantly, F# 3.0 does not know that array implements
-/// `IReadOnlyList<T>`, so the `ofArray` function performs boxing & unboxing to convert.
-module IReadOnlyList =
-  /// Converts an array to IReadOnlyList. In F# 3.0, the language does not
-  /// know that array implements IReadOnlyList, so this is just boxing/unboxing.
-  let inline ofArray (array:'T[]) : IReadOnlyList<'T> = unbox (box array)
+/// `IList<T>`.
+module ReadOnlyCollection =
+  /// Converts an array to ReadOnlyCollection. In F# 3.0, the language does not
+  /// know that array implements IList<'T>, so this is just boxing/unboxing and wrapping by ReadOnlyCollection.
+  let inline ofArray (array:'T[]) : ReadOnlyCollection<'T> = Array.AsReadOnly(array)
 
-  /// Converts a lazy sequence to fully evaluated IReadOnlyList
-  let inline ofSeq (array:seq<'T>) : IReadOnlyList<'T> = unbox (box (Array.ofSeq array))
+  /// Converts a lazy sequence to fully evaluated ReadOnlyCollection
+  let inline ofSeq (seq:seq<'T>) : ReadOnlyCollection<'T> = Array.AsReadOnly(Array.ofSeq seq)
   
-  /// Sum elements of the IReadOnlyList
-  let inline sum (list:IReadOnlyList<'T>) = 
+  /// Sum elements of the ReadOnlyCollection
+  let inline sum (list:ReadOnlyCollection<'T>) = 
     let mutable total = LanguagePrimitives.GenericZero
     for i in 0 .. list.Count - 1 do total <- total + list.[i]
     total
 
-  /// Reduce elements of the IReadOnlyList
-  let inline reduce op (list:IReadOnlyList<'T>) = 
+  /// Reduce elements of the ReadOnlyCollection
+  let inline reduce op (list:ReadOnlyCollection<'T>) = 
     let mutable res = list.[0]
     for i in 1 .. list.Count - 1 do res <- op res list.[i]
     res
 
-  /// Count elements of the IReadOnlyList
-  let inline length (list:IReadOnlyList<'T>) = list.Count
+  /// Count elements of the ReadOnlyCollection
+  let inline length (list:ReadOnlyCollection<'T>) = list.Count
 
-  /// Average elements of the IReadOnlyList
-  let inline average (list:IReadOnlyList<'T>) = 
+  /// Average elements of the ReadOnlyCollection
+  let inline average (list:ReadOnlyCollection<'T>) = 
     let mutable total = LanguagePrimitives.GenericZero
     for i in 0 .. list.Count - 1 do total <- total + list.[i]
     LanguagePrimitives.DivideByInt total list.Count
 
-  /// Sum elements of the IReadOnlyList, skipping over missing values
-  let inline sumOptional (list:IReadOnlyList<OptionalValue<'T>>) = 
+  /// Sum elements of the ReadOnlyCollection, skipping over missing values
+  let inline sumOptional (list:ReadOnlyCollection<OptionalValue<'T>>) = 
     let mutable total = LanguagePrimitives.GenericZero
     for i in 0 .. list.Count - 1 do 
       if list.[i].HasValue then total <- total + list.[i].Value
     total
 
-  /// Reduce elements of the IReadOnlyList, skipping over missing values
-  let inline reduceOptional op (list:IReadOnlyList<OptionalValue<'T>>) = 
+  /// Reduce elements of the ReadOnlyCollection, skipping over missing values
+  let inline reduceOptional op (list:ReadOnlyCollection<OptionalValue<'T>>) = 
     let mutable res = None
     for i in 0 .. list.Count - 1 do 
       match res, list.[i] with
@@ -335,8 +336,8 @@ module IReadOnlyList =
       | _ -> ()
     res.Value
 
-  /// Average elements of the IReadOnlyList, skipping over missing values
-  let inline averageOptional (list:IReadOnlyList<OptionalValue<'T>>) = 
+  /// Average elements of the ReadOnlyCollection, skipping over missing values
+  let inline averageOptional (list:ReadOnlyCollection<OptionalValue<'T>>) = 
     let mutable total = LanguagePrimitives.GenericZero
     let mutable count = 0 
     for i in 0 .. list.Count - 1 do 
@@ -345,11 +346,12 @@ module IReadOnlyList =
         count <- count + 1
     LanguagePrimitives.DivideByInt total count
 
-  /// Count elements of the IReadOnlyList that are not missing
-  let inline lengthOptional (list:IReadOnlyList<OptionalValue<'T>>) = 
+  /// Count elements of the ReadOnlyCollection that are not missing
+  let inline lengthOptional (list:ReadOnlyCollection<OptionalValue<'T>>) = 
     let mutable total = 0
     for i in 0 .. list.Count - 1 do if list.[i].HasValue then total <- total + 1
     total
+
 
 /// This module contains additional functions for working with arrays. 
 /// `FSharp.DataFrame.Internals` is opened, it extends the standard `Array` module.

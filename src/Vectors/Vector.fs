@@ -1,16 +1,17 @@
 ﻿namespace FSharp.DataFrame.Vectors
 
 open FSharp.DataFrame
-open System.Collections.Generic
+//open System.Collections.Generic
+open System.Collections.ObjectModel
 
 /// Provides a way to get the data of an arbitrary vector. This is a concrete type used 
 /// by functions that operate on vectors (like `Series.sum`, etc.). The vector may choose
-/// to return the data as `IReadOnlyList` (with or without N/A values) which is more
+/// to return the data as `ReadOnlyCollection` (with or without N/A values) which is more
 /// efficient to use or as a lazy sequence (slower, but more general).
 [<RequireQualifiedAccess>]
 type VectorData<'T> = 
-  | DenseList of IReadOnlyList<'T>
-  | SparseList of IReadOnlyList<OptionalValue<'T>>
+  | DenseList of ReadOnlyCollection<'T>
+  | SparseList of ReadOnlyCollection<OptionalValue<'T>>
   | Sequence of seq<OptionalValue<'T>>
 
 // --------------------------------------------------------------------------------------
@@ -20,6 +21,7 @@ namespace FSharp.DataFrame
 
 open System
 open System.Collections.Generic
+open System.Collections.ObjectModel
 open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Vectors
 open FSharp.DataFrame.Addressing
@@ -57,7 +59,7 @@ type IVector<'T> =
 
   /// Returns all data of the vector in one of the supported formats. Depending
   /// on the vector, data may be returned as a continuous block of memory using
-  /// `IReadOnlyList<T>` or as a lazy sequence `seq<T>`.
+  /// `ReadOnlyCollection<T>` or as a lazy sequence `seq<T>`.
   abstract Data : VectorData<'T>
 
   /// Apply the specified function to all values stored in the vector and return

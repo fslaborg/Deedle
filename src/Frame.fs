@@ -53,7 +53,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
             else vector.Value.GetObject(rowAddress) 
           member x.Data = 
             [| for _, addr in columnIndex.Mappings -> x.GetValue(addr) |]
-            |> IReadOnlyList.ofArray |> VectorData.SparseList          
+            |> ReadOnlyCollection.ofArray |> VectorData.SparseList          
           member x.Select(f) = materializeVector(); virtualVector.Value.Select(f)
           member x.SelectMissing(f) = materializeVector(); virtualVector.Value.SelectMissing(f)
         
