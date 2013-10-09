@@ -98,7 +98,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     let lookup = defaultArg lookup Lookup.Exact
 
     let restrictToRowIndex (restriction:IIndex<_>) (sourceIndex:IIndex<_>) vector = 
-      if restriction.Ordered && sourceIndex.Ordered then
+      if lookup = Lookup.Exact && restriction.Ordered && sourceIndex.Ordered then
         let min, max = rowIndex.KeyRange
         sourceIndex.Builder.GetRange(sourceIndex, Some(min, BoundaryBehavior.Inclusive), Some(max, BoundaryBehavior.Inclusive), vector)
       else sourceIndex, vector
