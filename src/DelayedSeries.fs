@@ -157,6 +157,7 @@ type internal DelayedVector<'K, 'V when 'K : equality> internal (source:DelayedS
     member val ElementType = typeof<'V>
     member x.SuppressPrinting = true
     member x.GetObject(index) = source.Values.GetObject(index)
+    member x.ObjectSequence = source.Values.ObjectSequence
   interface IVector<'V> with
     member x.GetValue(index) = source.Values.GetValue(index)
     member x.Data = source.Values.Data

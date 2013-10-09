@@ -40,8 +40,9 @@ type Frame =
   static member ReadCsv
     ( location:string, [<Optional>] skipTypeInference, [<Optional>] inferRows, 
       [<Optional>] schema, [<Optional>] separators, [<Optional>] culture) =
+    use reader = new StreamReader(location)
     FrameUtils.readCsv 
-      (new StreamReader(location)) (Some (not skipTypeInference)) (Some inferRows) (Some schema) "NaN,NA,#N/A,:" 
+      reader (Some (not skipTypeInference)) (Some inferRows) (Some schema) "NaN,NA,#N/A,:" 
       (if separators = null then None else Some separators) (Some culture)
 
   /// Load data frame from a CSV file. The operation automatically reads column names from the 
@@ -163,7 +164,7 @@ module FSharpFrameExtensions =
     ///
     /// ## Parameters
     ///
-    ///  * `location` - Specifies a file name or an web location of the resource.
+    ///  * `path` - Specifies a file name or an web location of the resource.
     ///  * `inferTypes` - Specifies whether the method should attempt to infer types
     ///    of columns automatically (set this to `false` if you want to specify schema)
     ///  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
@@ -175,8 +176,9 @@ module FSharpFrameExtensions =
     ///    parse semicolon separated files.
     ///  * `culture` - Specifies the name of the culture that is used when parsing 
     ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
-    static member readCsv(location:string, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture) =
-      FrameUtils.readCsv (new StreamReader(location)) inferTypes inferRows schema "NaN,NA,#N/A,:" separators culture
+    static member ReadCsv(path:string, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture) =
+      use reader = new StreamReader(path)
+      FrameUtils.readCsv reader inferTypes inferRows schema "NaN,NA,#N/A,:" separators culture
 
     /// Load data frame from a CSV file. The operation automatically reads column names from the 
     /// CSV file (if they are present) and infers the type of values for each column. Columns
@@ -197,7 +199,7 @@ module FSharpFrameExtensions =
     ///    parse semicolon separated files.
     ///  * `culture` - Specifies the name of the culture that is used when parsing 
     ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
-    static member readCsv(stream:Stream, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture) =
+    static member ReadCsv(stream:Stream, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture) =
       FrameUtils.readCsv (new StreamReader(stream)) inferTypes inferRows schema "NaN,NA,#N/A,:" separators culture
       
     /// Creates a data frame with ordinal Integer index from a sequence of rows.
@@ -246,6 +248,58 @@ module FSharpFrameExtensions =
 
 
   type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality> with
+    /// Save data frame to a CSV file or to a `Stream`. When calling the operation,
+    /// you can specify whether you want to save the row keys or not (and headers for the keys)
+    /// and you can also specify the separator (use `\t` for writing TSV files). When specifying
+    /// file name ending with `.tsv`, the `\t` separator is used automatically.
+    ///
+    /// ## Parameters
+    ///  - `stream` - Specifies the output stream where the CSV data should be written
+    ///  - `includeRowKeys` - When set to `true`, the row key is also written to the output file
+    ///  - `keyNames` - Can be used to specify the CSV headers for row key (or keys, for multi-level index)
+    ///  - `separator` - Specify the column separator in the file (the default is `\t` for 
+    ///    TSV files and `,` for CSV files)
+    ///  - `culture` - Specify the `CultureInfo` object used for formatting numerical data
+    ///
+    /// [category:Input and output]
+    member frame.SaveCsv(stream:Stream, ?includeRowKeys, ?keyNames, ?separator, ?culture) = 
+      FrameUtils.writeCsv (new StreamWriter(stream)) None separator culture includeRowKeys keyNames frame
+
+    /// Save data frame to a CSV file or to a `Stream`. When calling the operation,
+    /// you can specify whether you want to save the row keys or not (and headers for the keys)
+    /// and you can also specify the separator (use `\t` for writing TSV files). When specifying
+    /// file name ending with `.tsv`, the `\t` separator is used automatically.
+    ///
+    /// ## Parameters
+    ///  - `path` - Specifies the output file name where the CSV data should be written
+    ///  - `includeRowKeys` - When set to `true`, the row key is also written to the output file
+    ///  - `keyNames` - Can be used to specify the CSV headers for row key (or keys, for multi-level index)
+    ///  - `separator` - Specify the column separator in the file (the default is `\t` for 
+    ///    TSV files and `,` for CSV files)
+    ///  - `culture` - Specify the `CultureInfo` object used for formatting numerical data
+    ///
+    /// [category:Input and output]
+    member frame.SaveCsv(path:string, ?includeRowKeys, ?keyNames, ?separator, ?culture) = 
+      use writer = new StreamWriter(path)
+      FrameUtils.writeCsv writer (Some path) separator culture includeRowKeys keyNames frame
+
+    /// Save data frame to a CSV file or to a `Stream`. When calling the operation,
+    /// you can specify whether you want to save the row keys or not (and headers for the keys)
+    /// and you can also specify the separator (use `\t` for writing TSV files). When specifying
+    /// file name ending with `.tsv`, the `\t` separator is used automatically.
+    ///
+    /// ## Parameters
+    ///  - `path` - Specifies the output file name where the CSV data should be written
+    ///  - `keyNames` - Specifies the CSV headers for row key (or keys, for multi-level index)
+    ///  - `separator` - Specify the column separator in the file (the default is `\t` for 
+    ///    TSV files and `,` for CSV files)
+    ///  - `culture` - Specify the `CultureInfo` object used for formatting numerical data
+    ///
+    /// [category:Input and output]
+    member frame.SaveCsv(path:string, keyNames, ?separator, ?culture) = 
+      use writer = new StreamWriter(path)
+      FrameUtils.writeCsv writer (Some path) separator culture (Some true) (Some keyNames) frame
+
     member frame.Append(rowKey, row) = frame.Append(Frame.ofRows [ rowKey => row ])
     member frame.WithColumnIndex(columnKeys:seq<'TNewColumnKey>) = Frame.renameCols columnKeys frame
     member frame.WithRowIndex<'TNewRowIndex when 'TNewRowIndex : equality>(col) : Frame<'TNewRowIndex, _> = 
@@ -292,6 +346,70 @@ module FrameBuilder =
 
 [<Extension>]
 type FrameExtensions =
+  /// Save data frame to a CSV file or to a `Stream`. When calling the operation,
+  /// you can specify whether you want to save the row keys or not (and headers for the keys)
+  /// and you can also specify the separator (use `\t` for writing TSV files). When specifying
+  /// file name ending with `.tsv`, the `\t` separator is used automatically.
+  ///
+  /// ## Parameters
+  ///  - `stream` - Specifies the output stream where the CSV data should be written
+  ///  - `includeRowKeys` - When set to `true`, the row key is also written to the output file
+  ///  - `keyNames` - Can be used to specify the CSV headers for row key (or keys, for multi-level index)
+  ///  - `separator` - Specify the column separator in the file (the default is `\t` for 
+  ///    TSV files and `,` for CSV files)
+  ///  - `culture` - Specify the `CultureInfo` object used for formatting numerical data
+  ///
+  /// [category:Input and output]
+  [<Extension>]
+  static member SaveCsv(frame:Frame<'R, 'C>, stream:Stream, [<Optional>] includeRowKeys, [<Optional>] keyNames, [<Optional>] separator, [<Optional>] culture) = 
+    let separator = if separator = '\000' then None else Some separator
+    let culture = if culture = null then None else Some culture
+    let keyNames = if keyNames = Unchecked.defaultof<_> then None else Some keyNames
+    FrameUtils.writeCsv (new StreamWriter(stream)) None separator culture (Some includeRowKeys) keyNames frame
+
+  /// Save data frame to a CSV file or to a `Stream`. When calling the operation,
+  /// you can specify whether you want to save the row keys or not (and headers for the keys)
+  /// and you can also specify the separator (use `\t` for writing TSV files). When specifying
+  /// file name ending with `.tsv`, the `\t` separator is used automatically.
+  ///
+  /// ## Parameters
+  ///  - `path` - Specifies the output file name where the CSV data should be written
+  ///  - `includeRowKeys` - When set to `true`, the row key is also written to the output file
+  ///  - `keyNames` - Can be used to specify the CSV headers for row key (or keys, for multi-level index)
+  ///  - `separator` - Specify the column separator in the file (the default is `\t` for 
+  ///    TSV files and `,` for CSV files)
+  ///  - `culture` - Specify the `CultureInfo` object used for formatting numerical data
+  ///
+  /// [category:Input and output]
+  [<Extension>]
+  static member SaveCsv(frame:Frame<'R, 'C>, path:string, [<Optional>] includeRowKeys, [<Optional>] keyNames, [<Optional>] separator, [<Optional>] culture) = 
+    let separator = if separator = '\000' then None else Some separator
+    let culture = if culture = null then None else Some culture
+    let keyNames = if keyNames = Unchecked.defaultof<_> then None else Some keyNames
+    use writer = new StreamWriter(path)
+    FrameUtils.writeCsv writer (Some path) separator culture (Some includeRowKeys) keyNames frame
+
+  /// Save data frame to a CSV file or to a `Stream`. When calling the operation,
+  /// you can specify whether you want to save the row keys or not (and headers for the keys)
+  /// and you can also specify the separator (use `\t` for writing TSV files). When specifying
+  /// file name ending with `.tsv`, the `\t` separator is used automatically.
+  ///
+  /// ## Parameters
+  ///  - `path` - Specifies the output file name where the CSV data should be written
+  ///  - `keyNames` - Specifies the CSV headers for row key (or keys, for multi-level index)
+  ///  - `separator` - Specify the column separator in the file (the default is `\t` for 
+  ///    TSV files and `,` for CSV files)
+  ///  - `culture` - Specify the `CultureInfo` object used for formatting numerical data
+  ///
+  /// [category:Input and output]
+  [<Extension>]
+  static member SaveCsv(frame:Frame<'R, 'C>, path:string, keyNames, [<Optional>] separator, [<Optional>] culture) = 
+    use writer = new StreamWriter(path)
+    let separator = if separator = '\000' then None else Some separator
+    let culture = if culture = null then None else Some culture
+    FrameUtils.writeCsv writer (Some path) separator culture (Some true) (Some keyNames) frame
+
+
   [<Extension>]
   static member Window(frame:Frame<'R, 'C>, size) = Frame.window size frame
 

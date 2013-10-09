@@ -4,6 +4,7 @@
 #load "../packages/FSharp.Charting.0.87/FSharp.Charting.fsx"
 #r "../packages/FSharp.Data.1.1.10/lib/net40/FSharp.Data.dll"
 open System
+open System.IO
 open FSharp.Data
 open FSharp.DataFrame
 open FSharp.Charting
@@ -26,31 +27,30 @@ Creating frames & loading data
 ------------------------------
 
 <a name="creating-csv"></a>
-### Loading CSV files
+### Loading and saving CSV files
 
-The easiest way to get data into data frame is to use a CSV file. The `Frame.readCsv`
+The easiest way to get data into data frame is to use a CSV file. The `Frame.ReadCsv`
 function exposes this functionality:
 *)
 
 // Assuming 'root' is a directory containing the file
-let titanic = Frame.readCsv(root + "Titanic.csv")
+let titanic = Frame.ReadCsv(root + "Titanic.csv")
 
 // Read data and set the index column & order rows
 let msft = 
-  Frame.readCsv(root + "msft.csv") 
+  Frame.ReadCsv(root + "msft.csv") 
   |> Frame.indexRowsDate "Date"
   |> Frame.orderRows
 
 // Specify column separator
-let air = Frame.readCsv(root + "AirQuality.csv", separators=";")
-
+let air = Frame.ReadCsv(root + "AirQuality.csv", separators=";")
 (**
-The `readCsv` method has a number of optional arguments that you can use to control 
+The `ReadCsv` method has a number of optional arguments that you can use to control 
 the loading. It supports both CSV files, TSV files and other formats. If the file name
 ends with `tsv`, the Tab is used automatically, but you can set `separator` explicitly.
 The following parameters can be used:
 
- * `location` - Specifies a file name or an web location of the resource.
+ * `path` - Specifies a file name or an web location of the resource.
  * `inferTypes` - Specifies whether the method should attempt to infer types
    of columns automatically (set this to `false` if you want to specify schema)
  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
@@ -65,6 +65,21 @@ The following parameters can be used:
 
 The parameters are the same as those used by the [CSV type provider in F# Data](http://fsharp.github.io/FSharp.Data/library/CsvProvider.html),
 so you can find additional documentation there.
+
+Once you have a data frame, you can also save it to a CSV file using the 
+`SaveCsv` method. For example:
+*)
+// Save CSV with semicolon separator
+air.SaveCsv(Path.GetTempFileName(), separator=';')
+// Save as CSV and include row key as "Date" column
+msft.SaveCsv(Path.GetTempFileName(), ["Date"], separator='\t')
+
+(**
+By default, the `SaveCsv` method does not include the key from the data frame. This can be
+overriden by calling `SaveCsv` with the optional argument `includeRowKeys=true`, or with an
+additional argument `keyNames` (demonstrated above) which sets the headers for the key columns(s)
+in the CSV file. Usually, there is just a single row key, but there may be multiple when 
+[hierarchical indexing](#indexing) is used.
 
 <a name="creating-recd"></a>
 ### Loading F# records or .NET objects
@@ -696,7 +711,7 @@ decades * 1.0e9 |> Frame.meanBy fst
 
 (**
 So far, we were working with data frames that only had one hierarchical index. However,
-it is perfectly possible to have hieararchical index for both rows and columns. The following
+it is perfectly possible to have hierarchical index for both rows and columns. The following
 snippet groups countries by their average GDP (in addition to grouping rows by decades):
 *)
 

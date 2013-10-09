@@ -706,7 +706,6 @@ module Seq =
     for (KeyValue(k, (l, r))) in dict do
       yield k, l, r }
 
-
 /// An interface implemented by types that support nice formatting for F# Interactive
 /// (The `FSharp.DataFrame.fsx` file registers an FSI printer using this interface.)
 type IFsiFormattable =

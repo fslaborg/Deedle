@@ -58,6 +58,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
           member x.SelectMissing(f) = materializeVector(); virtualVector.Value.SelectMissing(f)
         
         interface IVector with
+          member x.ObjectSequence = (x :?> IVector<obj>).DataSequence
           member x.SuppressPrinting = false
           member x.ElementType = typeof<obj>
           member x.GetObject(i) = (x :?> IVector<obj>).GetValue(i) }
@@ -613,6 +614,23 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     let (++) h1 h2 = ((h1 <<< 5) + h1) ^^^ h2
     frame.RowIndex.GetHashCode() ++ frame.ColumnIndex.GetHashCode() ++ frame.Data.GetHashCode()
 
+  member internal frame.GetFrameData() = 
+    // Get keys (as object lists with multiple levels)
+    let getKeys (index:IIndex<_>) = seq { 
+      let maxLevel = 
+        match index.Keys |> Seq.headOrNone with 
+        | Some colKey -> CustomKey.Get(colKey).Levels | _ -> 1
+      for key, _ in index.Mappings ->
+        [ for level in 0 .. maxLevel - 1 -> 
+            if level = 0 && maxLevel = 0 then box key
+            else CustomKey.Get(key).GetLevel(level) ] }
+    let rowKeys = getKeys frame.RowIndex 
+    let colKeys = getKeys frame.ColumnIndex
+    // Get columns as object options
+    let columns = data.DataSequence |> Seq.map (fun col ->
+      col.Value.ElementType, col.Value.ObjectSequence)
+    colKeys, rowKeys, columns
+
   interface IFsiFormattable with
     member frame.Format() = 
       try
@@ -622,7 +640,6 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
         let rowLevels = 
           match frame.RowIndex.Keys |> Seq.headOrNone with 
           Some rowKey -> CustomKey.Get(rowKey).Levels | _ -> 1
-
         let getLevel ordered previous reset maxLevel level (key:'K) = 
           let levelKey = 
             if level = 0 && maxLevel = 0 then box key

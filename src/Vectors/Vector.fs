@@ -29,6 +29,8 @@ open FSharp.DataFrame.Addressing
 /// extending the DataFrame library and adding a new way of storing or loading data.
 /// To allow invocation via Reflection, the vector exposes type of elements as `System.Type`.
 type IVector = 
+  /// Returns all values of the vector as a sequence of optional objects
+  abstract ObjectSequence : seq<OptionalValue<obj>>
 
   /// Returns the type of elements stored in the current vector as `System.Type`.
   /// This member is mainly used for internal purposes (to invoke a generic function

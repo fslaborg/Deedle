@@ -41,6 +41,7 @@ let delegatedVector (vector:IVector<'TValue> ref) =
       member x.Select(f) = vector.Value.Select(f)
       member x.SelectMissing(f) = vector.Value.SelectMissing(f)
     interface IVector with
+      member x.ObjectSequence = vector.Value.ObjectSequence
       member x.SuppressPrinting = vector.Value.SuppressPrinting
       member x.ElementType = vector.Value.ElementType
       member x.GetObject(i) = vector.Value.GetObject(i) }

@@ -149,6 +149,10 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
 
   // Implement the untyped vector interface
   interface IVector with
+    member x.ObjectSequence = 
+      match representation with
+      | VectorOptional opts -> opts |> Seq.map (OptionalValue.map box)
+      | VectorNonOptional opts -> opts |> Seq.map (fun v -> OptionalValue(box v))
     member x.ElementType = typeof<'T>
     member x.SuppressPrinting = false
 

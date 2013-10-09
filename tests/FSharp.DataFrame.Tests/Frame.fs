@@ -17,11 +17,11 @@ open NUnit.Framework
 open FSharp.DataFrame
 
 // ------------------------------------------------------------------------------------------------
-// Indexing and accessing values
+// Input and output (CSV files)
 // ------------------------------------------------------------------------------------------------
 
 let msft() = 
-  Frame.readCsv(__SOURCE_DIRECTORY__ + "/data/MSFT.csv", true, 10) 
+  Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/MSFT.csv", inferRows=10) 
   |> Frame.indexRowsDate "Date"
 
 [<Test>]
@@ -29,6 +29,29 @@ let ``Can read MSFT data from CSV file`` () =
   let df = msft()
   df.RowKeys |> Seq.length |> shouldEqual 6527
   df.ColumnKeys |> Seq.length |> shouldEqual 7
+
+[<Test>]
+let ``Can save MSFT data as CSV file and read it afterwards (with default args)`` () =
+  let file = System.IO.Path.GetTempFileName()
+  let expected = msft()
+  expected.SaveCsv(file)
+  let actual = Frame.ReadCsv(file) |> Frame.indexRowsDate "Date"
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Can save MSFT data as CSV file and read it afterwards (with custom format)`` () =
+  let file = System.IO.Path.GetTempFileName()
+  let expected = msft()
+  expected.DropSeries("Date")
+  expected.SaveCsv(file, ["Date"], separator=';', culture=System.Globalization.CultureInfo.GetCultureInfo("cs-CZ"))
+  let actual = 
+    Frame.ReadCsv(file, separators=";", culture="cs-CZ")
+    |> Frame.indexRowsDate "Date" |> Frame.dropCol "Date"
+  actual |> shouldEqual expected
+
+// ------------------------------------------------------------------------------------------------
+// Indexing and accessing values
+// ------------------------------------------------------------------------------------------------
 
 [<Test>]
 let ``Applying numerical operation to frame does not affect non-numeric series`` () =
