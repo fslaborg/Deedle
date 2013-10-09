@@ -706,11 +706,14 @@ module Seq =
     for (KeyValue(k, (l, r))) in dict do
       yield k, l, r }
 
+/// [omit]
 /// An interface implemented by types that support nice formatting for F# Interactive
 /// (The `FSharp.DataFrame.fsx` file registers an FSI printer using this interface.)
 type IFsiFormattable =
   abstract Format : unit -> string
 
+/// [omit]
+/// Contains helper functions and configuration constants for pretty printing
 module Formatting = 
   /// Maximal number of items to be printed at the beginning of a series/frame
   let StartItemCount = 15
@@ -743,3 +746,64 @@ module Formatting =
       wr.WriteLine()
 
     sb.ToString()
+
+/// [omit]
+/// 
+[<AutoOpen>]
+module DynamicExtensions =
+  open System.Dynamic
+  open System.Linq.Expressions
+  open Microsoft.FSharp.Quotations
+
+  type WrappedExpression(expr:Expression) =
+    member x.Expression = expr
+
+  type System.Linq.Expressions.Expression with
+    member x.Wrap() = Expr.Value(WrappedExpression x, typeof<obj>)
+
+  let rec private asExpr : _ -> Expression = function
+    | Patterns.Coerce(expr, typ) -> upcast Expression.Convert(asExpr expr, typ)
+    | Patterns.Value((:? WrappedExpression as w), _) -> w.Expression
+    | Patterns.Sequential(e1, e2) ->
+        Expression.Block(asExpr e1, asExpr e2) :> Expression
+    | Patterns.Value(v, typ) -> upcast Expression.Constant(v, typ) 
+    | Patterns.Call(None, mi, args) -> 
+        let args = (List.map asExpr args, mi.GetParameters()) ||> Seq.map2 (fun expr par ->
+          Expression.Convert(expr, par.ParameterType) :> Expression)
+        upcast Expression.Call(mi, args)
+    | Patterns.Call(Some inst, mi, args) -> 
+        let args = (List.map asExpr args, mi.GetParameters()) ||> Seq.map2 (fun expr par ->
+          Expression.Convert(expr, par.ParameterType) :> Expression)
+        upcast Expression.Call(asExpr inst, mi, args)
+    | expr -> failwithf "ExpressionHelpers.asExpr: Not supported expression!\n%A" expr
+
+  type Microsoft.FSharp.Quotations.Expr with
+    member x.AsExpression() = asExpr x
+
+  type SetterWrapper(f:string -> obj -> unit) =
+    member x.Invoke(name, value) = f name value
+
+  type GetterWrapper(f:string -> obj) =
+    member x.Invoke(name) = f name
+
+  module Dynamic = 
+    let createPropertyMetaObject expr owner getter setter =
+      { new System.Dynamic.DynamicMetaObject(expr, System.Dynamic.BindingRestrictions.Empty, owner) with
+          override x.BindGetMember(binder) = 
+            let getter = GetterWrapper(getter)
+            let call = Expr.Coerce(<@@ getter.Invoke(%%(Expr.Value(binder.Name))) @@>, binder.ReturnType)
+            let restrictions = BindingRestrictions.GetTypeRestriction(x.Expression, x.LimitType);
+            new DynamicMetaObject(call.AsExpression(), restrictions)
+          override x.BindSetMember(binder, value) = 
+            let setter = SetterWrapper(setter)
+            let call = <@@ setter.Invoke(%%(Expr.Value(binder.Name)), %%(value.Expression.Wrap())); null @@>
+            let restrictions = BindingRestrictions.GetTypeRestriction(x.Expression, x.LimitType);
+            new DynamicMetaObject(call.AsExpression(), restrictions) }
+
+    let createSetterMetaObject expr owner (setter:string -> obj -> unit) =
+      { new System.Dynamic.DynamicMetaObject(expr, System.Dynamic.BindingRestrictions.Empty, owner) with
+          override x.BindSetMember(binder, value) = 
+            let setter = SetterWrapper(setter)
+            let call = <@@ setter.Invoke(%%(Expr.Value(binder.Name)), %%(value.Expression.Wrap())); null @@>
+            let restrictions = BindingRestrictions.GetTypeRestriction(x.Expression, x.LimitType);
+            new DynamicMetaObject(call.AsExpression(), restrictions) }

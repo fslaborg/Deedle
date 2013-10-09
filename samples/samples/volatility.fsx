@@ -62,7 +62,7 @@ let intervals =
 // Get values for the specified interval & calculate logs
 // Then take difference between previous and the next log value
 let logs1 = hfq1 |> Series.lookupAll intervals Lookup.Exact |> log
-let diffs = logs1 |> Series.pairwiseWith (fun _ (v1, v2) -> v2 - v1)
+let diffs = logs1 |> Series.pairwiseInto (fun _ (v1, v2) -> v2 - v1)
 
 Chart.Rows 
   [ Chart.Line(logs1 |> Series.observations);

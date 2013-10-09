@@ -6,9 +6,11 @@ open System.Collections.Generic
 open System.ComponentModel
 open System.Runtime.InteropServices
 open System.Runtime.CompilerServices
+open Microsoft.FSharp.Quotations
 
 open FSharp.DataFrame.Keys
 open FSharp.DataFrame.Indices
+open FSharp.DataFrame.Internal
 
 [<AutoOpen>]
 module FSharpSeriesExtensions =
@@ -51,38 +53,6 @@ type internal Series =
     ObjectSeries<'K>(index, data, Series.vectorBuilder, Series.indexBuilder)
 
 
-open Microsoft.FSharp.Quotations
-
-[<AutoOpen>]
-module ExpressionHelpers =
-  open System.Linq.Expressions
-
-  type WrappedExpression(expr:Expression) =
-    member x.Expression = expr
-
-  type System.Linq.Expressions.Expression with
-    member x.Wrap() = Expr.Value(WrappedExpression x, typeof<obj>)
-
-  let rec asExpr : _ -> Expression = function
-    | Patterns.Value((:? WrappedExpression as w), _) -> w.Expression
-    | Patterns.Sequential(e1, e2) ->
-        Expression.Block(asExpr e1, asExpr e2) :> Expression
-    | Patterns.Value(v, typ) -> upcast Expression.Constant(v, typ) 
-    | Patterns.Call(None, mi, args) -> 
-        let args = (List.map asExpr args, mi.GetParameters()) ||> Seq.map2 (fun expr par ->
-          Expression.Convert(expr, par.ParameterType) :> Expression)
-        upcast Expression.Call(mi, args)
-    | Patterns.Call(Some inst, mi, args) -> 
-        let args = (List.map asExpr args, mi.GetParameters()) ||> Seq.map2 (fun expr par ->
-          Expression.Convert(expr, par.ParameterType) :> Expression)
-        upcast Expression.Call(asExpr inst, mi, args)
-    | expr -> failwithf "ExpressionHelpers.asExpr: Not supported expression!\n%A" expr
-
-  type Microsoft.FSharp.Quotations.Expr with
-    member x.AsExpression() = asExpr x
-
-open System.Dynamic      
-
 type SeriesBuilder<'K, 'V when 'K : equality>() = 
   let mutable keys = []
   let mutable values = []
@@ -105,12 +75,9 @@ type SeriesBuilder<'K, 'V when 'K : equality>() =
 
   interface System.Dynamic.IDynamicMetaObjectProvider with 
     member builder.GetMetaObject(expr) = 
-      let a = 10
-      { new System.Dynamic.DynamicMetaObject(expr, System.Dynamic.BindingRestrictions.Empty, builder) with
-          override x.BindSetMember(binder, value) = 
-            let call = <@ builder.Add(%%(Expr.Value(binder.Name)), %%(value.Expression.Wrap())); null @>
-            let restrictions = BindingRestrictions.GetTypeRestriction(x.Expression, x.LimitType);
-            new DynamicMetaObject(call.AsExpression(), restrictions)}
+      Dynamic.createSetterMetaObject expr builder (fun name value -> 
+        let converted = System.Convert.ChangeType(value, typeof<'V>) |> unbox<'V>
+        builder.Add(unbox<'K> name, converted))
 
 type SeriesBuilder<'K when 'K : equality>() =
   inherit SeriesBuilder<'K, obj>()

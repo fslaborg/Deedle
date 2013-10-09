@@ -409,7 +409,7 @@ is the key of the later element). For example:
 hf |> Series.pairwise 
 
 // Calculate differences between the current and previous values
-hf |> Series.pairwiseWith (fun k (v1, v2) -> v2 - v1)
+hf |> Series.pairwiseInto (fun k (v1, v2) -> v2 - v1)
 
 (** 
 The `pairwise` operation always returns a series that has no value for

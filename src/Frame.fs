@@ -614,6 +614,14 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     let (++) h1 h2 = ((h1 <<< 5) + h1) ^^^ h2
     frame.RowIndex.GetHashCode() ++ frame.ColumnIndex.GetHashCode() ++ frame.Data.GetHashCode()
 
+  interface System.Dynamic.IDynamicMetaObjectProvider with 
+    member frame.GetMetaObject(expr) = 
+      Dynamic.createPropertyMetaObject expr frame
+        (fun name -> 
+          frame.GetSeries(unbox<'TColumnKey> name) |> box)
+        (fun name value -> 
+          frame.AddSeries(unbox<'TColumnKey> name, unbox<seq<int>> value))
+
   member internal frame.GetFrameData() = 
     // Get keys (as object lists with multiple levels)
     let getKeys (index:IIndex<_>) = seq { 

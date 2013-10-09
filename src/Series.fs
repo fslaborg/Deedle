@@ -470,10 +470,45 @@ and Series<'K, 'V when 'K : equality>
   // Aggregation
   // ----------------------------------------------------------------------------------------------
 
-  /// [category:Aggregation]
-  member x.Pairwise(?boundary, ?direction) =
-    let boundary = defaultArg boundary Boundary.Skip
-    let direction = defaultArg direction Direction.Backward
+  /// Returns a series containing the predecessor and an element for each input, except
+  /// for the first one. The returned series is one key shorter (it does not contain a 
+  /// value for the first key).
+  ///
+  /// ## Parameters
+  ///  - `series` - The input series to be aggregated.
+  ///
+  /// ## Example
+  ///
+  ///     let input = series [ 1 => 'a'; 2 => 'b'; 3 => 'c']
+  ///     let res = input.Pairwise()
+  ///     res = series [2 => ('a', 'b'); 3 => ('b', 'c') ]
+  ///
+  /// [category:Windowing, chunking and grouping]
+  member x.Pairwise() =
+    x.Pairwise(Boundary.Skip)
+
+  /// Returns a series containing an element and its neighbor for each input.
+  /// The returned series is one key shorter (it does not contain a 
+  /// value for the first or last key depending on `boundary`). If `boundary` is 
+  /// other than `Boundary.Skip`, then the key is included in the returned series, 
+  /// but its value is missing.
+  ///
+  /// ## Parameters
+  ///  - `series` - The input series to be aggregated.
+  ///  - `boundary` - Specifies the direction in which the series is aggregated and 
+  ///    how the corner case is handled. If the value is `Boundary.AtEnding`, then the
+  ///    function returns value and its successor, otherwise it returns value and its
+  ///    predecessor.
+  ///
+  /// ## Example
+  ///
+  ///     let input = series [ 1 => 'a'; 2 => 'b'; 3 => 'c']
+  ///     let res = input.Pairwise()
+  ///     res = series [2 => ('a', 'b'); 3 => ('b', 'c') ]
+  ///
+  /// [category:Windowing, chunking and grouping]
+  member x.Pairwise(boundary) =
+    let dir = if boundary = Boundary.AtEnding then Direction.Forward else Direction.Backward
     let newIndex, newVector = 
       indexBuilder.Aggregate
         ( x.Index, WindowSize(2, boundary), Vectors.Return 0, 
@@ -486,11 +521,22 @@ and Series<'K, 'V when 'K : equality>
               | [ _; _ ] -> OptionalValue.Missing
               | _ -> failwith "Pairwise: failed - expected two values" ),
           (fun (kind, (index, vector)) -> 
-              if direction = Direction.Backward then index.Keys |> Seq.last
+              if dir = Direction.Backward then index.Keys |> Seq.last
               else index.Keys |> Seq.head ) )
     Series<'K, DataSegment<'V * 'V>>(newIndex, newVector, vectorBuilder, indexBuilder)
 
-  // [category:Aggregation]
+  /// Aggregates an ordered series using the method specified by `Aggregation<K>` and then
+  /// applies the provided `valueSelector` on each window or chunk to produce the result
+  /// which is returned as a new series. A key for each window or chunk is
+  /// selected using the specified `keySelector`.
+  ///
+  /// ## Parameters
+  ///  - `aggregation` - Specifies the aggregation method using `Aggregation<K>`. This is
+  ///    a discriminated union listing various chunking and windowing conditions.
+  ///  - `keySelector` - A function that is called on each chunk to obtain a key.
+  ///  - `valueSelector` - A value selector function that is called to aggregate each chunk or window.
+  ///
+  /// [category:Windowing, chunking and grouping]
   member x.Aggregate<'TNewKey, 'R when 'TNewKey : equality>(aggregation, keySelector:Func<_, _>, valueSelector:Func<_, _>) =
     let newIndex, newVector = 
       indexBuilder.Aggregate
@@ -502,7 +548,17 @@ and Series<'K, 'V when 'K : equality>
               keySelector.Invoke(DataSegment(kind, Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)))) )
     Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
 
-  /// [category:Aggregation]
+  /// Groups a series (ordered or unordered) using the specified key selector (`keySelector`) 
+  /// and then aggregates each group into a single value, returned in the resulting series,
+  /// using the provided `valueSelector` function.
+  ///
+  /// ## Parameters
+  ///  - `keySelector` - Generates a new key that is used for aggregation, based on the original 
+  ///    key and value. The new key must support equality testing.
+  ///  - `valueSelector` - A value selector function that is called to aggregate 
+  ///    each group of collected elements.
+  ///
+  /// [category:Windowing, chunking and grouping]
   member x.GroupBy(keySelector, valueSelector) =
     let newIndex, newVector = 
       indexBuilder.GroupBy

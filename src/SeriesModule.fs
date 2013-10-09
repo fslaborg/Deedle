@@ -5,10 +5,10 @@ open FSharp.DataFrame.Keys
 
 /// Series module comment..
 /// 
-/// ## Example
-/// Not really
-///
 /// ## Lookup, resampling and scaling
+/// More stuff here
+///
+/// ## Missing values
 /// More stuff here
 ///
 /// ## Windowing, chunking and grouping
@@ -165,12 +165,6 @@ module Series =
     series.SelectOptional(fun kvp -> 
       f kvp.Key (OptionalValue.asOption kvp.Value) |> OptionalValue.ofOption)
 
-  let pairwise (series:Series<'K, 'T>) = 
-    series.Pairwise() |> map (fun k v -> v.Data)
-  
-  let pairwiseWith f (series:Series<'K, 'T>) = 
-    series.Pairwise() |> map (fun k v -> f k v.Data)
-
   /// `result[k] = series[k] - series[k - offset]`
   let inline diff offset (series:Series<'K, 'T>) = 
     series.Aggregate
@@ -180,82 +174,6 @@ module Series =
           let h, t = ds.Data.Values.First(), ds.Data.Values.Last() in 
           if offset < 0 then h - t else t - h) )
 
-  /// Stuff
-  /// [category:Windowing, chunking and grouping]
-  let aggregate aggregation keySelector (series:Series<'K, 'T>) : Series<'TNewKey, _> =
-    series.Aggregate
-      ( aggregation, System.Func<_, _>(keySelector), System.Func<_, _>(id))
-
-  let aggregateInto aggregation keySelector valueSelector (series:Series<'K, 'T>) : Series<'TNewKey, 'R> =
-    series.Aggregate
-      ( aggregation, System.Func<_, _>(keySelector), System.Func<_, _>(valueSelector))
-
-  // Window based on size
-
-  let windowSizeInto bounds f (series:Series<'K, 'T>) : Series<'K, 'R> =
-    let dir = if snd bounds = Boundary.AtEnding then Direction.Forward else Direction.Backward
-    let keySel = System.Func<DataSegment<Series<_, _>>, _>(fun data -> 
-      if dir = Direction.Backward then data.Data.Index.Keys |> Seq.last
-      else data.Data.Index.Keys |> Seq.head )
-    series.Aggregate(WindowSize(bounds), keySel, (fun ds -> f ds))
-
-  let inline windowSize bounds (series:Series<'K, 'T>) = 
-    windowSizeInto bounds DataSegment.data series 
-
-  // Based on distance
-
-  let inline windowDistInto distance f (series:Series<'K, 'T>) =
-    series.Aggregate(WindowWhile(fun skey ekey -> (ekey - skey) < distance), (fun d -> d.Data.Keys |> Seq.head), fun ds -> f ds.Data)
-  let inline windowDist distance (series:Series<'K, 'T>) = 
-    windowDistInto distance id series 
-
-  // Window using while
-
-  let inline windowWhileInto cond f (series:Series<'K, 'T>) =
-    series.Aggregate(WindowWhile(cond), (fun d -> d.Data.Keys |> Seq.head), fun ds -> f ds.Data)
-  let inline windowWhile cond (series:Series<'K, 'T>) = 
-    windowWhileInto cond id series 
-
-  // Chunk based on size
-
-  let inline chunkSizeInto bounds f (series:Series<'K, 'T>) : Series<'K, 'R> =
-    series.Aggregate(ChunkSize(bounds), (fun d -> d.Data.Keys |> Seq.head), fun ds -> f ds)
-  let inline chunkSize bounds (series:Series<'K, 'T>) = 
-    chunkSizeInto bounds DataSegment.data series 
-
-  // Chunk based on distance
-
-  let inline chunkDistInto (distance:^D) f (series:Series<'K, 'T>) : Series<'K, 'R> =
-    series.Aggregate(ChunkWhile(fun skey ekey -> (ekey - skey) < distance), (fun d -> d.Data.Keys |> Seq.head), fun ds -> f ds.Data)
-  let inline chunkDist (distance:^D) (series:Series<'K, 'T>) = 
-    chunkDistInto distance id series 
-
-  // Chunk while
-
-  let inline chunkWhileInto cond f (series:Series<'K, 'T>) =
-    series.Aggregate(ChunkWhile(cond), (fun d -> d.Data.Keys |> Seq.head), fun ds -> f ds.Data)
-  let inline chunkWhile cond (series:Series<'K, 'T>) = 
-    chunkWhileInto cond id series 
-
-  // Skipping most-common case functions
-
-  let inline windowInto size f (series:Series<'K, 'T>) : Series<'K, 'R> =
-    windowSizeInto (size, Boundary.Skip) (DataSegment.data >> f) series
-  let inline window size (series:Series<'K, 'T>) =
-    windowSize (size, Boundary.Skip) series
-
-  let inline chunkInto size f (series:Series<'K, 'T>) : Series<'K, 'R> =
-    chunkSizeInto (size, Boundary.Skip) (DataSegment.data >> f) series
-  let inline chunk size (series:Series<'K, 'T>) =
-    chunkSize (size, Boundary.Skip) series
-
-  // Grouping
-
-  let groupInto (keySelector:'K -> 'T -> 'TNewKey) f (series:Series<'K, 'T>) : Series<'TNewKey, 'TNewValue> =
-    series.GroupBy(keySelector, fun k s -> OptionalValue(f k s))
-
-  let groupBy (keySelector:'K -> 'T -> 'TNewKey) (series:Series<'K, 'T>) =
-    groupInto keySelector (fun k s -> s) series
 
   // Unioning
 
@@ -294,23 +212,18 @@ module Series =
   let values (series:Series<'K, 'T>) = series.Values
   let keys (series:Series<'K, 'T>) = series.Keys
 
-
-
-  // ??
-
-  // TODO: This can be simplified using fancier aggregate?
-
   let shift offset (series:Series<'K, 'T>) = 
+    let win = WindowSize(offset + 1, Boundary.Skip)
     let shifted = 
       if offset < 0 then
         let offset = -offset
-        series |> aggregateInto (WindowSize(offset + 1, Boundary.Skip)) 
-          (fun s -> s.Data.Keys.First())
-          (fun s -> s.Data.Values |> Seq.nth offset)          
+        series.Aggregate
+          ( win, (fun s -> s.Data.Keys.First()),
+            (fun s -> s.Data.Values |> Seq.nth offset) ) 
       else
-        series |> aggregateInto (WindowSize(offset + 1, Boundary.Skip)) 
-          (fun s -> s.Data.Keys.Last())
-          (fun s -> s.Data.Values |> Seq.head)           
+        series.Aggregate
+          ( win, (fun s -> s.Data.Keys.Last()),
+            (fun s -> s.Data.Values |> Seq.head) )
     shifted.GetItems(series.Keys)
 
   let takeLast count (series:Series<'K, 'T>) = 
@@ -323,6 +236,351 @@ module Series =
   let inline minBy f (series:Series<'K, 'T>) = 
     series |> observations |> Seq.maxBy (snd >> f)
 
+  // ----------------------------------------------------------------------------------------------
+  // Windowing, chunking and grouping
+  // ----------------------------------------------------------------------------------------------
+
+  /// Aggregates an ordered series using the method specified by `Aggregation<K>` and 
+  /// returns the windows or chunks as nested series. A key for each window or chunk is
+  /// selected using the specified `keySelector`.
+  ///
+  /// ## Parameters
+  ///  - `aggregation` - Specifies the aggregation method using `Aggregation<K>`. This is
+  ///    a discriminated union listing various chunking and windowing conditions.
+  ///  - `keySelector` - A function that is called on each chunk to obtain a key.
+  ///  - `series` - The input series to be aggregated.
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let aggregate aggregation keySelector (series:Series<'K, 'T>) : Series<'TNewKey, _> =
+    series.Aggregate
+      ( aggregation, System.Func<_, _>(keySelector), System.Func<_, _>(id))
+
+  /// Aggregates an ordered series using the method specified by `Aggregation<K>` and then
+  /// applies the provided value selector `f` on each window or chunk to produce the result
+  /// which is returned as a new series. A key for each window or chunk is
+  /// selected using the specified `keySelector`.
+  ///
+  /// ## Parameters
+  ///  - `aggregation` - Specifies the aggregation method using `Aggregation<K>`. This is
+  ///    a discriminated union listing various chunking and windowing conditions.
+  ///  - `keySelector` - A function that is called on each chunk to obtain a key.
+  ///  - `f` - A value selector function that is called to aggregate each chunk or window.
+  ///  - `series` - The input series to be aggregated.
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let aggregateInto aggregation keySelector f (series:Series<'K, 'T>) : Series<'TNewKey, 'R> =
+    series.Aggregate
+      ( aggregation, System.Func<_, _>(keySelector), System.Func<_, _>(f))
+
+  /// Creates a sliding window using the specified size and boundary behavior and then
+  /// applies the provided value selector `f` on each window to produce the result
+  /// which is returned as a new series. The key is the last key of the window, unless
+  /// boundary behavior is `Boundary.AtEnding` (in which case it is the first key).
+  ///
+  /// ## Parameters
+  ///  - `bounds` - Specifies the window size and bounary behavior. The boundary behavior
+  ///    can be `Boundary.Skip` (meaning that no incomplete windows are produced), 
+  ///    `Boundary.AtBeginning` (meaning that incomplete windows are produced at the beginning)
+  ///    or `Boundary.AtEnding` (to produce incomplete windows at the end of series)
+  ///  - `f` - A value selector that is called to aggregate each window.
+  ///  - `series` - The input series to be aggregated.
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let windowSizeInto bounds f (series:Series<'K, 'T>) : Series<'K, 'R> =
+    let dir = if snd bounds = Boundary.AtEnding then Direction.Forward else Direction.Backward
+    let keySel = System.Func<DataSegment<Series<_, _>>, _>(fun data -> 
+      if dir = Direction.Backward then data.Data.Index.Keys |> Seq.last
+      else data.Data.Index.Keys |> Seq.head )
+    series.Aggregate(WindowSize(bounds), keySel, (fun ds -> f ds))
+
+  /// Creates a sliding window using the specified size and boundary behavior and returns
+  /// the produced windows as a nested series. The key is the last key of the window, unless
+  /// boundary behavior is `Boundary.AtEnding` (in which case it is the first key).
+  ///
+  /// ## Parameters
+  ///  - `bounds` - Specifies the window size and bounary behavior. The boundary behavior
+  ///    can be `Boundary.Skip` (meaning that no incomplete windows are produced), 
+  ///    `Boundary.AtBeginning` (meaning that incomplete windows are produced at the beginning)
+  ///    or `Boundary.AtEnding` (to produce incomplete windows at the end of series)
+  ///  - `series` - The input series to be aggregated.
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let inline windowSize bounds (series:Series<'K, 'T>) = 
+    windowSizeInto bounds DataSegment.data series 
+
+  // Based on distance
+
+  /// Creates a sliding window based on distance between keys. A window is started at each
+  /// input element and ends once the distance between the first and the last key is greater
+  /// than the specified `distance`. Each window is then aggregated into a value using the
+  /// specified function `f`. The key of each window is the key of the first element in the window.
+  ///
+  /// ## Parameters
+  ///  - `distance` - The maximal allowed distance between keys of a window. Note that this
+  ///    is an inline function - there must be `-` operator defined between `distance` and the
+  ///    keys of the series.
+  ///  - `f` - A function that is used to aggregate each window into a single value.
+  ///  - `series` - The input series to be aggregated.
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let inline windowDistInto distance f (series:Series<'K, 'T>) =
+    series.Aggregate(WindowWhile(fun skey ekey -> (ekey - skey) < distance), (fun d -> d.Data.Keys |> Seq.head), fun ds -> f ds.Data)
+
+  /// Creates a sliding window based on distance between keys. A window is started at each
+  /// input element and ends once the distance between the first and the last key is greater
+  /// than the specified `distance`. The windows are then returned as a nested series.
+  /// The key of each window is the key of the first element in the window.
+  ///
+  /// ## Parameters
+  ///  - `distance` - The maximal allowed distance between keys of a window. Note that this
+  ///    is an inline function - there must be `-` operator defined between `distance` and the
+  ///    keys of the series.
+  ///  - `series` - The input series to be aggregated.
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let inline windowDist (distance:'D) (series:Series<'K, 'T>) = 
+    windowDistInto distance id series 
+
+  // Window using while
+
+  /// Creates a sliding window based on a condition on keys. A window is started at each
+  /// input element and ends once the specified `cond` function returns `false` when called on 
+  /// the first and the last key of the window. Each window is then aggregated into a value using the
+  /// specified function `f`. The key of each window is the key of the first element in the window.
+  ///
+  /// ## Parameters
+  ///  - `cond` - A function that is called on the first and the last key of a window
+  ///    to determine when a window should end.
+  ///  - `f` - A function that is used to aggregate each window into a single value.
+  ///  - `series` - The input series to be aggregated.
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let inline windowWhileInto cond f (series:Series<'K, 'T>) =
+    series.Aggregate(WindowWhile(cond), (fun d -> d.Data.Keys |> Seq.head), fun ds -> f ds.Data)
+
+  /// Creates a sliding window based on a condition on keys. A window is started at each
+  /// input element and ends once the specified `cond` function returns `false` when called on 
+  /// the first and the last key of the window. The windows are then returned as a nested series.
+  /// The key of each window is the key of the first element in the window.
+  ///
+  /// ## Parameters
+  ///  - `cond` - A function that is called on the first and the last key of a window
+  ///    to determine when a window should end.
+  ///  - `series` - The input series to be aggregated.
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let inline windowWhile cond (series:Series<'K, 'T>) = 
+    windowWhileInto cond id series 
+
+  // Chunk based on size
+
+  /// Aggregates the input into a series of adacent chunks using the specified size and boundary behavior and then
+  /// applies the provided value selector `f` on each chunk to produce the result
+  /// which is returned as a new series. The key is the last key of the chunk, unless
+  /// boundary behavior is `Boundary.AtEnding` (in which case it is the first key).
+  ///
+  /// ## Parameters
+  ///  - `bounds` - Specifies the chunk size and bounary behavior. The boundary behavior
+  ///    can be `Boundary.Skip` (meaning that no incomplete chunks are produced), 
+  ///    `Boundary.AtBeginning` (meaning that incomplete chunks are produced at the beginning)
+  ///    or `Boundary.AtEnding` (to produce incomplete chunks at the end of series)
+  ///  - `f` - A value selector that is called to aggregate each chunk.
+  ///  - `series` - The input series to be aggregated.
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let inline chunkSizeInto bounds f (series:Series<'K, 'T>) : Series<'K, 'R> =
+    series.Aggregate(ChunkSize(bounds), (fun d -> d.Data.Keys |> Seq.head), fun ds -> f ds)
+
+  /// Aggregates the input into a series of adacent chunks using the specified size and boundary behavior and returns
+  /// the produced chunks as a nested series. The key is the last key of the chunk, unless
+  /// boundary behavior is `Boundary.AtEnding` (in which case it is the first key).
+  ///
+  /// ## Parameters
+  ///  - `bounds` - Specifies the chunk size and bounary behavior. The boundary behavior
+  ///    can be `Boundary.Skip` (meaning that no incomplete chunks are produced), 
+  ///    `Boundary.AtBeginning` (meaning that incomplete chunks are produced at the beginning)
+  ///    or `Boundary.AtEnding` (to produce incomplete chunks at the end of series)
+  ///  - `series` - The input series to be aggregated.
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let inline chunkSize bounds (series:Series<'K, 'T>) = 
+    chunkSizeInto bounds DataSegment.data series 
+
+  // Chunk based on distance
+
+  /// Aggregates the input into a series of adacent chunks. A chunk is started once
+  /// the distance between the first and the last key of a previous chunk is greater
+  /// than the specified `distance`. Each chunk is then aggregated into a value using the
+  /// specified function `f`. The key of each chunk is the key of the first element in the chunk.
+  ///
+  /// ## Parameters
+  ///  - `distance` - The maximal allowed distance between keys of a chunk. Note that this
+  ///    is an inline function - there must be `-` operator defined between `distance` and the
+  ///    keys of the series.
+  ///  - `f` - A value selector that is called to aggregate each chunk.
+  ///  - `series` - The input series to be aggregated.
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let inline chunkDistInto (distance:^D) f (series:Series<'K, 'T>) : Series<'K, 'R> =
+    series.Aggregate(ChunkWhile(fun skey ekey -> (ekey - skey) < distance), (fun d -> d.Data.Keys |> Seq.head), fun ds -> f ds.Data)
+
+  /// Aggregates the input into a series of adacent chunks. A chunk is started once
+  /// the distance between the first and the last key of a previous chunk is greater
+  /// than the specified `distance`. The chunks are then returned as a nested series.
+  /// The key of each chunk is the key of the first element in the chunk.
+  ///
+  /// ## Parameters
+  ///  - `distance` - The maximal allowed distance between keys of a chunk. Note that this
+  ///    is an inline function - there must be `-` operator defined between `distance` and the
+  ///    keys of the series.
+  ///  - `series` - The input series to be aggregated.
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let inline chunkDist (distance:^D) (series:Series<'K, 'T>) = 
+    chunkDistInto distance id series 
+
+  // Chunk while
+
+  /// Aggregates the input into a series of adacent chunks based on a condition on keys. A chunk is started 
+  /// once the specified `cond` function returns `false` when called on  the first and the last key of the 
+  /// previous chunk. Each chunk is then aggregated into a value using the
+  /// specified function `f`. The key of each chunk is the key of the first element in the chunk.
+  ///
+  /// ## Parameters
+  ///  - `cond` - A function that is called on the first and the last key of a chunk
+  ///    to determine when a window should end.
+  ///  - `f` - A value selector that is called to aggregate each chunk.
+  ///  - `series` - The input series to be aggregated.
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let inline chunkWhileInto cond f (series:Series<'K, 'T>) =
+    series.Aggregate(ChunkWhile(cond), (fun d -> d.Data.Keys |> Seq.head), fun ds -> f ds.Data)
+
+  /// Aggregates the input into a series of adacent chunks based on a condition on keys. A chunk is started 
+  /// once the specified `cond` function returns `false` when called on  the first and the last key of the 
+  /// previous chunk. The chunks are then returned as a nested series.
+  /// The key of each chunk is the key of the first element in the chunk.
+  ///
+  /// ## Parameters
+  ///  - `cond` - A function that is called on the first and the last key of a chunk
+  ///    to determine when a window should end.
+  ///  - `series` - The input series to be aggregated.
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let inline chunkWhile cond (series:Series<'K, 'T>) = 
+    chunkWhileInto cond id series 
+
+  // Most common-case functions
+
+  /// Creates a sliding window using the specified size and then applies the provided 
+  /// value selector `f` on each window to produce the result which is returned as a new series. 
+  /// This function skips incomplete chunks - you can use `Series.windowSizeInto` for more options.
+  ///
+  /// ## Parameters
+  ///  - `size` - The size of the sliding window.
+  ///  - `series` - The input series to be aggregated.
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let inline windowInto size f (series:Series<'K, 'T>) : Series<'K, 'R> =
+    windowSizeInto (size, Boundary.Skip) (DataSegment.data >> f) series
+
+  /// Creates a sliding window using the specified size and returns the produced windows as 
+  /// a nested series. The key in the new series is the last key of the window. This function
+  /// skips incomplete chunks - you can use `Series.windowSize` for more options.
+  ///
+  /// ## Parameters
+  ///  - `size` - The size of the sliding window.
+  ///  - `series` - The input series to be aggregated.
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let inline window size (series:Series<'K, 'T>) =
+    windowSize (size, Boundary.Skip) series
+
+  /// Aggregates the input into a series of adacent chunks and then applies the provided 
+  /// value selector `f` on each chunk to produce the result which is returned as a new series. 
+  /// The key in the new series is the last key of the chunk. This function
+  /// skips incomplete chunks - you can use `Series.chunkSizeInto` for more options.
+  ///
+  /// ## Parameters
+  ///  - `size` - The size of the chunk.
+  ///  - `series` - The input series to be aggregated.
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let inline chunkInto size f (series:Series<'K, 'T>) : Series<'K, 'R> =
+    chunkSizeInto (size, Boundary.Skip) (DataSegment.data >> f) series
+
+  /// Aggregates the input into a series of adacent chunks and returns the produced chunks as
+  /// a nested series. The key in the new series is the last key of the chunk. This function
+  /// skips incomplete chunks - you can use `Series.chunkSize` for more options.
+  ///
+  /// ## Parameters
+  ///  - `size` - The size of the chunk.
+  ///  - `series` - The input series to be aggregated.
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let inline chunk size (series:Series<'K, 'T>) =
+    chunkSize (size, Boundary.Skip) series
+
+  // Pairwise
+
+  /// Returns a series containing the predecessor and an element for each input, except
+  /// for the first one. The returned series is one key shorter (it does not contain a 
+  /// value for the first key).
+  ///
+  /// ## Parameters
+  ///  - `series` - The input series to be aggregated.
+  ///
+  /// ## Example
+  ///
+  ///     let input = series [ 1 => 'a'; 2 => 'b'; 3 => 'c']
+  ///     let res = input |> Series.pairwise
+  ///     res = series [2 => ('a', 'b'); 3 => ('b', 'c') ]
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let pairwise (series:Series<'K, 'T>) = 
+    series.Pairwise() |> map (fun k v -> v.Data)
+
+  /// Aggregates the input into pairs containing the predecessor and an element for each input, except
+  /// for the first one. Then calls the specified aggregation function `f` with a tuple and a key.
+  /// The returned series is one key shorter (it does not contain a  value for the first key).
+  ///
+  /// ## Parameters
+  ///  - `f` - A function that is called for each pair to produce result in the final series.
+  ///  - `series` - The input series to be aggregated.
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let pairwiseWith f (series:Series<'K, 'T>) = 
+    series.Pairwise() |> map (fun k v -> f k v.Data)
+
+  // Grouping
+
+  /// Groups a series (ordered or unordered) using the specified key selector (`keySelector`) 
+  /// and then aggregates each group into a single value, returned in the resulting series,
+  /// using the provided `valueSelector` function.
+  ///
+  /// ## Parameters
+  ///  - `keySelector` - Generates a new key that is used for aggregation, based on the original 
+  ///    key and value. The new key must support equality testing.
+  ///  - `valueSelector` - A value selector function that is called to aggregate 
+  ///    each group of collected elements.
+  ///  - `series` - An input series to be grouped. 
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let groupInto (keySelector:'K -> 'T -> 'TNewKey) f (series:Series<'K, 'T>) : Series<'TNewKey, 'TNewValue> =
+    series.GroupBy(keySelector, fun k s -> OptionalValue(f k s))
+
+  /// Groups a series (ordered or unordered) using the specified key selector (`keySelector`) 
+  /// and then returns a series of (nested) series as the result. The outer series is indexed by
+  /// the newly produced keys, the nested series are indexed with the original keys.
+  ///
+  /// ## Parameters
+  ///  - `keySelector` - Generates a new key that is used for aggregation, based on the original 
+  ///    key and value. The new key must support equality testing.
+  ///  - `series` - An input series to be grouped. 
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let groupBy (keySelector:'K -> 'T -> 'TNewKey) (series:Series<'K, 'T>) =
+    groupInto keySelector (fun k s -> s) series
 
   // ----------------------------------------------------------------------------------------------
   // Handling of missing values
