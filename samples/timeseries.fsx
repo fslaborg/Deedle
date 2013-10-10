@@ -68,7 +68,7 @@ Chart.Combine
   [ stock1 (TimeSpan(0, 1, 0)) 1000 |> Chart.FastLine
     stock2 (TimeSpan(0, 1, 0)) 1000 |> Chart.FastLine ]
 (**
-The above snippet generates 1k of prices in one minutte intervals and plots them using the
+The above snippet generates 1k of prices in one minute intervals and plots them using the
 [F# Charting library](https://github.com/fsharp/FSharp.Charting). When you run the code
 and tweak the chart look, you should see something like this:
 
@@ -85,7 +85,7 @@ _automatic alignment_ based on the keys. When we have multiple time series with 
 as the key (here, we use `DateTimeOffset`, but any type of date will do), we can combine
 multiple series and align them automatically to specified date keys.
 
-To demonstrate this feature, we generate random prices in 60 minut, 30 minute and 
+To demonstrate this feature, we generate random prices in 60 minute, 30 minute and 
 65 minute intervals:
 *)
 
@@ -305,7 +305,7 @@ When you specify `Boundary.AtBeginning` (this example) or `Boundary.Skip`
 (default value used in the previous example), the function uses the last key
 of the window as the key of the aggregated value. When you specify 
 `Boundary.AtEnding`, the last key is used, so the values can be nicely 
-aligned wiht original values. When you want to specify custom key selector,
+aligned with original values. When you want to specify custom key selector,
 you can use a more general function `Series.aggregate`. 
 
 In the previous sample, the code that performs aggregation is no longer
@@ -732,7 +732,7 @@ adjust $ sample.Diff(1)
 // The $ operator is a shorthand for
 sample.Diff(1) |> Series.mapValues adjust
 
-(***
+(**
 In general, the best way to apply custom functions to all values in a series is to 
 align the series (using either `Series.join` or `Series.align`) into a single series
 containing tuples and then apply `Series.mapValues`. The library also provides the `$` operator
