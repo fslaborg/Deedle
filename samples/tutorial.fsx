@@ -411,7 +411,7 @@ let obsDaysNext =
 (**
 In general, the same operation can usually be achieved using a function from the 
 `Series` or `Frame` module and using a member (or an extension member) on the object.
-The previous sample shows both options - it uses `Join` as a member wiht optional
+The previous sample shows both options - it uses `Join` as a member with optional
 argument first, and then it uses `joinAlign` function. Choosing between the two is
 a matter of preference - here, we are using `joinAlign` so that we can write code
 using pipelining (rather than long expression that would not fit on the page).

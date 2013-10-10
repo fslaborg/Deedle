@@ -17,7 +17,7 @@ Data frame features
 
 In this section, we look at various features of the F# data frame library (using both
 `Series` and `Frame` types and modules). Feel free to jump to the section you are interested
-in, but note that some sections refer back to values built in "Createing & loading".
+in, but note that some sections refer back to values built in "Creating & loading".
 
 You can also get this page as an [F# script file](https://github.com/BlueMountainCapital/FSharp.DataFrame/blob/master/samples/features.fsx)
 from GitHub and run the samples interactively.
@@ -206,7 +206,7 @@ people.Columns
 (**
 A series `s` of type `Series<string, V>` supports the question mark operator `s?Foo` to get
 a value of type `V` associated with the key `Foo`. For other key types, you can sue the `Get` 
-method. Note that, unlike wiht frames, there is no implicit conversion:
+method. Note that, unlike with frames, there is no implicit conversion:
 *)
 // Get Series<string, float> 
 let numAges = people?Age
@@ -297,7 +297,7 @@ people?AgePlusOne <- add1
 // Add new series from a list of values
 people?Siblings <- [0; 2; 1; 3]
 
-// Repalce existing series with new values
+// Replace existing series with new values
 // (Equivalent to people?Siblings <- ...)
 people.ReplaceSeries("Siblings", [3; 2; 1; 0])
 
@@ -387,7 +387,7 @@ ages |> Series.observationsAll
 (**
 The previous examples were always looking for an exact key. If we have an ordered
 series, we can search for a nearest available key and we can also perform slicing.
-We use MSFT stock prices [from earlier example(#creating-csv):
+We use MSFT stock prices [from earlier example](#creating-csv):
 *)
 
 // Get series with opening prices
@@ -502,7 +502,7 @@ The problem can be solved just using `Series.mapValues`, together with standard 
 country list, we generate a series that contains individual countries and the count
 of visits (this is done by composing `Seq.countBy` and a function `series` to build
 a series of observations). Then we turn the result to a data frame and fill missing
-values with the constant zero (see a section about (handling missing values)[#missing]).
+values with the constant zero (see a section about [handling missing values](#missing)).
 
 ### Grouping data frames
 
