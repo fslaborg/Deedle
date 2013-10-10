@@ -144,16 +144,16 @@ module Series =
     series.IndexWith(keys)
 
   let filter f (series:Series<'K, 'T>) = 
-    series.Where(fun kvp -> f kvp.Key kvp.Value)
+    series.Where(Func<_, _>(fun (KeyValue(k,v)) -> f k v))
 
   let filterValues f (series:Series<'K, 'T>) = 
-    series.Where(fun kvp -> f kvp.Value)
+    series.Where(Func<_, _>(fun (KeyValue(k,v)) -> f v))
 
   let map (f:'K -> 'T -> 'R) (series:Series<'K, 'T>) = 
-    series.Select(fun kvp -> f kvp.Key kvp.Value)
+    series.Select(fun (KeyValue(k,v)) -> f k v)
 
   let mapValues (f:'T -> 'R) (series:Series<'K, 'T>) = 
-    series.Select(fun kvp -> f kvp.Value)
+    series.Select(fun (KeyValue(k,v)) -> f v)
 
   let mapKeys (f:'K -> 'R) (series:Series<'K, 'T>) = 
     series.SelectKeys(fun kvp -> f kvp.Key)

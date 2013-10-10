@@ -90,6 +90,26 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   member internal frame.Data = data
 
   // ----------------------------------------------------------------------------------------------
+  // Indexing
+  // ----------------------------------------------------------------------------------------------
+
+  /// Returns a data frame whose rows are indexed based on the specified column of the original
+  /// data frame. The generic type parameter is (typically) needed to specify the type of the 
+  /// values in the required index column.
+  ///
+  /// ## Parameters
+  ///  - `column` - The name of a column in the original data frame that will be used for the new
+  ///    index. Note that the values in the column need to be unique.
+  ///
+  /// [category:Indexing]
+  member frame.IndexRows<'TNewRowIndex when 'TNewRowIndex : equality>(column) : Frame<'TNewRowIndex, _> = 
+    let columnVec = frame.GetSeries<'TNewRowIndex>(column)
+    let lookup addr = columnVec.Vector.GetValue(addr)
+    let newRowIndex, rowCmd = frame.IndexBuilder.WithIndex(frame.RowIndex, lookup, Vectors.Return 0)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
+    Frame<'TNewRowIndex, 'TColumnKey>(newRowIndex, frame.ColumnIndex, newData)
+
+  // ----------------------------------------------------------------------------------------------
   // Joining and appending
   // ----------------------------------------------------------------------------------------------
 
@@ -562,26 +582,6 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   /// [category:Operators]
   static member (/) (scalar:int, frame:Frame<'TRowKey, 'TColumnKey>) =
     Frame<'TRowKey, 'TColumnKey>.ScalarOperationL<float>(frame, float scalar, (/))
-
-  // ----------------------------------------------------------------------------------------------
-  // Indexing
-  // ----------------------------------------------------------------------------------------------
-
-  /// [category:Indexing]
-  member frame.RealignRows(keys) = 
-    // Create empty frame with the required keys    
-    let empty = Frame<_, _>(frame.IndexBuilder.Create(keys, None), frame.IndexBuilder.Create([], None), frame.VectorBuilder.Create [||])
-    for key, series in frame.Columns |> Series.observations do 
-      empty.AddSeries(key, series)
-    empty
-
-  /// [category:Indexing]
-  member frame.IndexRowsWith<'TNewRowIndex when 'TNewRowIndex : equality>(keys:seq<'TNewRowIndex>) =
-    let newRowIndex = frame.IndexBuilder.Create(keys, None)
-    let getRange = VectorHelpers.getVectorRange frame.VectorBuilder frame.RowIndex.Range
-    let newData = frame.Data.Select(getRange)
-    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
-
 
   // ----------------------------------------------------------------------------------------------
   // Constructor

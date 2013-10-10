@@ -1,5 +1,12 @@
 ﻿namespace FSharp.DataFrame
 
+/// Frame module comment
+///
+/// ## Index manipulation
+/// More documentation here
+///
+/// ## Missing values
+/// More documentation here
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]    
 module Frame = 
   open System
@@ -143,46 +150,188 @@ module Frame =
   [<CompiledName("LookupRow")>]
   let lookupRow row lookup (frame:Frame<'R, 'C>) = frame.GetRow(row, lookup)
 
-  /// Returns a data frame that contains the same data as the argument, 
-  /// but whose rows are ordered series. This allows using inexact lookup
-  /// for rows (e.g. using `lookupRow`) or inexact left/right joins.
+  // ----------------------------------------------------------------------------------------------
+  // Index operations
+  // ----------------------------------------------------------------------------------------------
+
+  /// Align the existing data to a specified collection of row keys. Values in the data frame
+  /// that do not match any new key are dropped, new keys (that were not in the original data 
+  /// frame) are assigned missing values.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame that is to be realigned.
+  ///  - `keys` - A sequence of new row keys. The keys must have the same type as the original
+  ///    frame keys (because the rows are realigned).
+  ///
+  /// [category:Index manipulation]
+  [<CompiledName("RealignRows")>]
+  let realignRows keys (frame:Frame<'R, 'C>) = 
+    // Create empty frame with the required keys & left join all series
+    let nf = Frame<_, _>(frame.IndexBuilder.Create(keys, None), frame.IndexBuilder.Create([], None), frame.VectorBuilder.Create [||])
+    frame.Columns |> Series.observations |> Seq.iter nf.AddSeries
+    nf
+
+  /// Replace the row index of the frame with ordinarilly generated integers starting from zero.
+  /// The rows of the frame are assigned index according to the current order, or in a
+  /// non-deterministic way, if the current row index is not ordered.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame whose row index are to be replaced.
+  ///
+  /// [category:Index manipulation]
+  [<CompiledName("IndexRowsOrdinally")>]
+  let indexRowsOrdinally (frame:Frame<'TRowKey, 'TColumnKey>) = 
+    frame.Columns |> Series.mapValues Series.indexOrdinally |> FrameUtils.fromColumns
+
+  /// Returns a data frame whose rows are indexed based on the specified column of the original
+  /// data frame. The generic type parameter is specifies the type of the values in the required 
+  /// index column (and usually needs to be specified using a type annotation).
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame whose row index is to be replaced.
+  ///  - `column` - The name of a column in the original data frame that will be used for the new
+  ///    index. Note that the values in the column need to be unique.
+  ///
+  /// [category:Index manipulation]
+  [<CompiledName("IndexRows")>]
+  let indexRows column (frame:Frame<'R1, 'C>) : Frame<'R2, _> = 
+    frame.IndexRows<'R2>(column)
+
+  /// Returns a data frame whose rows are indexed based on the specified column of the original
+  /// data frame. This function casts (or converts) the column key to values of type `obj`
+  /// (a generic variant that may require some type annotation is `Frame.indexRows`)
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame whose row index is to be replaced.
+  ///  - `column` - The name of a column in the original data frame that will be used for the new
+  ///    index. Note that the values in the column need to be unique.
+  ///
+  /// [category:Index manipulation]
+  [<CompiledName("IndexRowsByObject")>]
+  let indexRowsObj column (frame:Frame<'R1, 'C>) : Frame<obj, _> = indexRows column frame
+
+  /// Returns a data frame whose rows are indexed based on the specified column of the original
+  /// data frame. This function casts (or converts) the column key to values of type `int`
+  /// (a generic variant that may require some type annotation is `Frame.indexRows`)
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame whose row index is to be replaced.
+  ///  - `column` - The name of a column in the original data frame that will be used for the new
+  ///    index. Note that the values in the column need to be unique.
+  ///
+  /// [category:Index manipulation]
+  [<CompiledName("IndexRowsByInt")>]
+  let indexRowsInt column (frame:Frame<'R1, 'C>) : Frame<int, _> = indexRows column frame
+
+  /// Returns a data frame whose rows are indexed based on the specified column of the original
+  /// data frame. This function casts (or converts) the column key to values of type `DateTime`
+  /// (a generic variant that may require some type annotation is `Frame.indexRows`)
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame whose row index is to be replaced.
+  ///  - `column` - The name of a column in the original data frame that will be used for the new
+  ///    index. Note that the values in the column need to be unique.
+  ///
+  /// [category:Index manipulation]
+  [<CompiledName("IndexRowsByDateTime")>]
+  let indexRowsDate column (frame:Frame<'R1, 'C>) : Frame<DateTime, _> = indexRows column frame
+
+  /// Returns a data frame whose rows are indexed based on the specified column of the original
+  /// data frame. This function casts (or converts) the column key to values of type `DateTimeOffset`
+  /// (a generic variant that may require some type annotation is `Frame.indexRows`)
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame whose row index is to be replaced.
+  ///  - `column` - The name of a column in the original data frame that will be used for the new
+  ///    index. Note that the values in the column need to be unique.
+  ///
+  /// [category:Index manipulation]
+  [<CompiledName("IndexRowsByDateTimeOffset")>]
+  let indexRowsDateOffs column (frame:Frame<'R1, 'C>) : Frame<DateTimeOffset, _> = indexRows column frame
+
+  /// Returns a data frame whose rows are indexed based on the specified column of the original
+  /// data frame. This function casts (or converts) the column key to values of type `string`
+  /// (a generic variant that may require some type annotation is `Frame.indexRows`)
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame whose row index is to be replaced.
+  ///  - `column` - The name of a column in the original data frame that will be used for the new
+  ///    index. Note that the values in the column need to be unique.
+  ///
+  /// [category:Index manipulation]
+  [<CompiledName("IndexRowsByString")>]
+  let indexRowsString column (frame:Frame<'R1, 'C>) : Frame<string, _> = indexRows column frame
+
+  /// Replace the column index of the frame with the provided sequence of column keys.
+  /// The columns of the frame are assigned keys according to the current order, or in a
+  /// non-deterministic way, if the current column index is not ordered.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame whose column index are to be replaced.
+  ///  - `keys` - A collection of new column keys.
+  ///
+  /// [category:Index manipulation]
+  [<CompiledName("IndexColumnsWith")>]
+  let indexColsWith (keys:seq<'C2>) (frame:Frame<'R, 'C1>) = 
+    let columns = seq { for v in frame.Columns.Values -> v :> ISeries<_> }
+    Frame<_, _>(keys, columns)
+
+  /// Replace the row index of the frame with the provided sequence of row keys.
+  /// The rows of the frame are assigned keys according to the current order, or in a
+  /// non-deterministic way, if the current row index is not ordered.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame whose row index are to be replaced.
+  ///  - `keys` - A collection of new row keys.
+  ///
+  /// [category:Index manipulation]
+  [<CompiledName("IndexRowsWith")>]
+  let indexRowsWith (keys:seq<'R2>) (frame:Frame<'R1, 'C>) = 
+    let newRowIndex = frame.IndexBuilder.Create(keys, None)
+    let getRange = VectorHelpers.getVectorRange frame.VectorBuilder frame.RowIndex.Range
+    let newData = frame.Data.Select(getRange)
+    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
+
+  /// Returns a transposed data frame. The rows of the original data frame are used as the
+  /// columns of the new one (and vice versa). Use this operation if you have a data frame
+  /// and you mostly need to access its rows as a series (because accessing columns as a 
+  /// series is more efficient).
+  /// 
+  /// ## Parameters
+  ///  - `frame` - Source data frame to be transposed.
+  /// 
+  /// [category:Index manipulation]
+  [<CompiledName("Transpose")>]
+  let transpose (frame:Frame<'R, 'TColumnKey>) = 
+    frame.Columns |> FrameUtils.fromRows
+
+  /// Returns a data frame that contains the same data as the input, 
+  /// but whose rows are an ordered series. This allows using operations that are
+  /// only available on indexed series such as alignment and inexact lookup.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame to be ordered.
+  /// 
+  /// [category:Index manipulation]
   [<CompiledName("OrderRows")>]
   let orderRows (frame:Frame<'R, 'C>) = 
     let newRowIndex, rowCmd = frame.IndexBuilder.OrderIndex(frame.RowIndex, Vectors.Return 0)
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
 
-  /// Returns a data frame that contains the same data as the argument, 
-  /// but whose columns are ordered series. This allows using inexact lookup
-  /// for columns (e.g. using `lookupCol`) or inexact left/right joins.
+  /// Returns a data frame that contains the same data as the input, 
+  /// but whose columns are an ordered series. This allows using operations that are
+  /// only available on indexed series such as alignment and inexact lookup.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame to be ordered.
+  /// 
+  /// [category:Index manipulation]
   [<CompiledName("OrderColumns")>]
   let orderCols (frame:Frame<'R, 'C>) = 
     let newColIndex, rowCmd = frame.IndexBuilder.OrderIndex(frame.ColumnIndex, Vectors.Return 0)
     let newData = frame.VectorBuilder.Build(rowCmd, [| frame.Data |])
     Frame<_, _>(frame.RowIndex, newColIndex, newData)
-
-  // ----------------------------------------------------------------------------------------------
-  // Index operations
-  // ----------------------------------------------------------------------------------------------
-
-  /// Creates a new data frame that uses the specified column as an row index.
-  let indexRows column (frame:Frame<'R1, 'C>) : Frame<'R2, _> = 
-    let columnVec = frame.GetSeries<'R2>(column)
-    let lookup addr = columnVec.Vector.GetValue(addr)
-    let newRowIndex, rowCmd = frame.IndexBuilder.WithIndex(frame.RowIndex, lookup, Vectors.Return 0)
-    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
-    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
-
-  let indexRowsObj column (frame:Frame<'R1, 'C>) : Frame<obj, _> = indexRows column frame
-  let indexRowsInt column (frame:Frame<'R1, 'C>) : Frame<int, _> = indexRows column frame
-  let indexRowsDate column (frame:Frame<'R1, 'C>) : Frame<DateTime, _> = indexRows column frame
-  let indexRowsDateOffs column (frame:Frame<'R1, 'C>) : Frame<DateTimeOffset, _> = indexRows column frame
-  let indexRowsString column (frame:Frame<'R1, 'C>) : Frame<string, _> = indexRows column frame
-
-  /// Creates a new data frame that uses the specified list of keys as a new column index.
-  let renameCols (keys:seq<'TNewColKey>) (frame:Frame<'R, 'C>) = 
-    let columns = seq { for v in frame.Columns.Values -> v :> ISeries<_> }
-    Frame<_, _>(keys, columns)
 
   // ----------------------------------------------------------------------------------------------
   // TBD
@@ -229,10 +378,6 @@ module Frame =
 
   let inline mapColKeys f (frame:Frame<'TColumnKey, 'C>) = 
     frame.Columns |> Series.mapKeys f |> FrameUtils.fromColumns
-
-
-  let transpose (frame:Frame<'R, 'TColumnKey>) = 
-    frame.Columns |> FrameUtils.fromRows
 
 
 

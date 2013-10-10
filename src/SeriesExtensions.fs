@@ -24,7 +24,7 @@ module FSharpSeriesExtensions =
       Series(keys, values)
     static member ofNullables(values:seq<Nullable<_>>) = 
       let keys = values |> Seq.mapi (fun i _ -> i)
-      Series(keys, values).Select(fun kvp -> kvp.Value.Value)
+      Series(keys, values).Select(fun (KeyValue(_, v:Nullable<_>)) -> v.Value)
 
   let series observations = Series.ofObservations observations
 
@@ -76,7 +76,9 @@ type SeriesBuilder<'K, 'V when 'K : equality>() =
   interface System.Dynamic.IDynamicMetaObjectProvider with 
     member builder.GetMetaObject(expr) = 
       Dynamic.createSetterMetaObject expr builder (fun name value -> 
-        let converted = System.Convert.ChangeType(value, typeof<'V>) |> unbox<'V>
+        let converted = 
+          if value :? 'V then unbox<'V> value
+          else System.Convert.ChangeType(value, typeof<'V>) |> unbox<'V>
         builder.Add(unbox<'K> name, converted))
 
 type SeriesBuilder<'K when 'K : equality>() =

@@ -361,6 +361,7 @@ module Array =
     if first < 0 || last >= data.Length then invalidArg "first" "The index must be within the array range."
     Array.append (data.[.. first - 1]) (data.[last + 1 ..])
 
+  /// Implementation of binary search
   let inline private binarySearch key (comparer:System.Collections.Generic.IComparer<'T>) (array:'T[]) =
     let rec search (lo, hi) =
       if lo = hi then lo else
@@ -388,6 +389,15 @@ module Array =
     if comparer.Compare(array.[loc], key) <= 0 then Some loc
     elif loc - 1 >= 0 && comparer.Compare(array.[loc - 1], key) <= 0 then Some (loc - 1)
     else None
+
+  /// Returns a new array containing only the elements for which the specified function returns `Some`.
+  /// The predicate is called with the index in the source array and the element.
+  let inline choosei f (array:_[]) = 
+    let res = new System.Collections.Generic.List<_>() // ResizeArray
+    for i = 0 to array.Length - 1 do 
+        let x = f i (array.[i])
+        if Option.isSome x then res.Add(x.Value)
+    res.ToArray()
 
 
 /// This module contains additional functions for working with sequences. 

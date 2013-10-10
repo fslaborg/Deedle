@@ -17,6 +17,11 @@ open FSharp.DataFrame.Keys
 open FSharp.DataFrame.Vectors 
 
 type Frame =
+  // ----------------------------------------------------------------------------------------------
+  // Reading CSV files
+  // ----------------------------------------------------------------------------------------------
+  
+
   /// Load data frame from a CSV file. The operation automatically reads column names from the 
   /// CSV file (if they are present) and infers the type of values for each column. Columns
   /// of primitive types (`int`, `float`, etc.) are converted to the right type. Columns of other
@@ -72,13 +77,34 @@ type Frame =
       (new StreamReader(stream)) (Some (not skipTypeInference)) (Some inferRows) (Some schema) "NaN,NA,#N/A,:" 
       (if separators = null then None else Some separators) (Some culture)
 
-  /// Creates a data frame with ordinal Integer index from a sequence of rows.
-  /// The column indices of individual rows are unioned, so if a row has fewer
-  /// columns, it will be successfully added, but there will be missing values.
-  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
-  static member FromRows(rows:seq<Series<'ColKey,'V>>) = 
-    FrameUtils.fromRows(Series(rows |> Seq.mapi (fun i _ -> i), rows))
+  // ----------------------------------------------------------------------------------------------
+  // Creating from rows or from columns
+  // ----------------------------------------------------------------------------------------------
 
+  // Creates a data frame with ordinal Integer index from a sequence of rows.
+  // The column indices of individual rows are unioned, so if a row has fewer
+  // columns, it will be successfully added, but there will be missing values.
+
+  // sequence of (series / kvps / kvps with object series)
+
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member FromColumns(rows:seq<Series<'ColKey,'V>>) = 
+    FrameUtils.fromColumns(Series(rows |> Seq.mapi (fun i _ -> i), rows))
+
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member FromColumns(columns:seq<KeyValuePair<'ColKey, Series<'RowKey, 'V>>>) = 
+    let colKeys = columns |> Seq.map (fun kvp -> kvp.Key)
+    let colSeries = columns |> Seq.map (fun kvp -> kvp.Value)
+    FrameUtils.fromColumns(Series(colKeys, colSeries))
+
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member FromColumns(columns:seq<KeyValuePair<'ColKey, ObjectSeries<'RowKey>>>) = 
+    let colKeys = columns |> Seq.map (fun kvp -> kvp.Key)
+    let colSeries = columns |> Seq.map (fun kvp -> kvp.Value)
+    FrameUtils.fromColumns(Series(colKeys, colSeries))
+
+  // series of (series / object series)
+  
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member FromColumns(cols:Series<'TColKey, ObjectSeries<'TRowKey>>) = 
     FrameUtils.fromColumns(cols)
@@ -87,24 +113,11 @@ type Frame =
   static member FromColumns(cols:Series<'TColKey, Series<'TRowKey, 'V>>) = 
     FrameUtils.fromColumns(cols)
 
-  /// Creates a data frame with ordinal Integer index from a sequence of rows.
-  /// The column indices of individual rows are unioned, so if a row has fewer
-  /// columns, it will be successfully added, but there will be missing values.
-  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
-  static member FromColumns(keys:seq<'RowKey>, columns:seq<KeyValuePair<'ColKey, Series<'RowKey, 'V>>>) = 
-    let rowIndex = FrameUtils.indexBuilder.Create(keys, None)
-    let colIndex = FrameUtils.indexBuilder.Create([], None)
-    let df = Frame<_, _>(rowIndex, colIndex, FrameUtils.vectorBuilder.Create [||])
-    let other = Frame.FromColumns(columns)
-    df.Join(other, kind=JoinKind.Left)
-
-  // TODO: Add the above to F# API
+  // sequence of series / sequence of kvps / sequence of kvps with object series
 
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
-  static member FromColumns<'RowKey,'ColKey, 'V when 'RowKey: equality and 'ColKey: equality>(cols:seq<KeyValuePair<'ColKey, Series<'RowKey, 'V>>>) = 
-    let colKeys = cols |> Seq.map (fun kvp -> kvp.Key)
-    let colSeries = cols |> Seq.map (fun kvp -> kvp.Value)
-    FrameUtils.fromColumns(Series(colKeys, colSeries))
+  static member FromRows(rows:seq<Series<'ColKey,'V>>) = 
+    FrameUtils.fromRows(Series(rows |> Seq.mapi (fun i _ -> i), rows))
 
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member FromRows(rows:seq<KeyValuePair<'RowKey, Series<'ColKey, 'V>>>) = 
@@ -117,6 +130,60 @@ type Frame =
     let rowKeys = rows |> Seq.map (fun kvp -> kvp.Key)
     let rowSeries = rows |> Seq.map (fun kvp -> kvp.Value)
     FrameUtils.fromRows(Series(rowKeys, rowSeries))
+
+  // series of (series / object series)
+  
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member FromRows(rows:Series<'TColKey, ObjectSeries<'TRowKey>>) = 
+    FrameUtils.fromRows(rows)
+
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member FromRows(rows:Series<'TColKey, Series<'TRowKey, 'V>>) = 
+    FrameUtils.fromRows(rows)
+
+  // ----------------------------------------------------------------------------------------------
+  // Creating frame from values or from records
+  // ----------------------------------------------------------------------------------------------
+
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member FromValues(values, colSel:Func<_, _>, rowSel:Func<_, _>, valSel:Func<_, _>) =
+    values 
+    |> Seq.groupBy colSel.Invoke
+    |> Seq.map (fun (col, items) -> 
+        let items = Array.ofSeq items
+        col, Series(Array.map rowSel.Invoke items, Array.map valSel.Invoke items) )
+    |> Series.ofObservations
+    |> FrameUtils.fromColumns
+
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member FromValues (values) =
+    values 
+    |> Seq.groupBy (fun (row, col, value) -> col)
+    |> Seq.map (fun (col, items) -> 
+        let keys, _, values = Array.ofSeq items |> Array.unzip3
+        col, Series(keys, values) )
+    |> Series.ofObservations
+    |> FrameUtils.fromColumns
+
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member FromRecords (series:Series<'K, 'R>) =
+    let keyValuePairs = 
+      seq { for k, v in Series.observationsAll series do 
+              if v.IsSome then yield k, v.Value }
+    let recordsToConvert = Seq.map snd keyValuePairs
+    let frame = Reflection.convertRecordSequence<'R>(recordsToConvert)
+    frame |> Frame.indexRowsWith (Seq.map fst keyValuePairs)
+
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member FromRecords (values:seq<'T>) =
+    Reflection.convertRecordSequence<'T>(values)    
+
+
+
+  // ----------------------------------------------------------------------------------------------
+  // Creating other frames
+  // ----------------------------------------------------------------------------------------------
+
 
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member CreateEmpty() =
@@ -226,22 +293,10 @@ module FSharpFrameExtensions =
       FrameUtils.fromColumns(Series(names, values))
     
     static member ofValues(values) =
-      values 
-      |> Seq.groupBy (fun (row, col, value) -> col)
-      |> Seq.map (fun (col, items) -> 
-          let keys, _, values = Array.ofSeq items |> Array.unzip3
-          col, Series(keys, values) )
-      |> Frame.ofColumns
+      Frame.FromValues(values)
 
     static member ofRecords (series:Series<'K, 'R>) =
-      let keyValuePairs = 
-        seq { for k, v in Series.observationsAll series do 
-                if v.IsSome then yield k, v.Value }
-      let recordsToConvert = Seq.map snd keyValuePairs
-      let frame = Reflection.convertRecordSequence<'R>(recordsToConvert)
-      let frame = frame.IndexRowsWith(Seq.map fst keyValuePairs)
-      //frame.RealignRows(series.Keys) - huh, why was this here?
-      frame
+      Frame.FromRecords(series)
 
     static member ofRecords (values:seq<'T>) =
       Reflection.convertRecordSequence<'T>(values)    
@@ -301,9 +356,6 @@ module FSharpFrameExtensions =
       FrameUtils.writeCsv writer (Some path) separator culture (Some true) (Some keyNames) frame
 
     member frame.Append(rowKey, row) = frame.Append(Frame.ofRows [ rowKey => row ])
-    member frame.WithColumnIndex(columnKeys:seq<'TNewColumnKey>) = Frame.renameCols columnKeys frame
-    member frame.WithRowIndex<'TNewRowIndex when 'TNewRowIndex : equality>(col) : Frame<'TNewRowIndex, _> = 
-      Frame.indexRows col frame
 
     // Grouping
     member frame.GroupRowsBy<'TGroup when 'TGroup : equality>(key) =
@@ -344,8 +396,118 @@ module FrameBuilder =
       member x.GetEnumerator() = 
         (series |> List.rev |> Seq.map (fun (k, v) -> KeyValuePair(k, v))).GetEnumerator()
 
+
+type KeyValue =
+  static member Create<'K, 'V>(key:'K, value:'V) = KeyValuePair(key, value)
+
+
+/// Some comment
+///
+/// ## Index manipulation
+/// Summary 1
+///
+/// ## Input and output
+/// Summary 2
+///
+/// ## Missing values
+/// Summary 3
 [<Extension>]
 type FrameExtensions =
+  // ----------------------------------------------------------------------------------------------
+  // Index manipulation
+  // ----------------------------------------------------------------------------------------------
+
+  /// Align the existing data to a specified collection of row keys. Values in the data frame
+  /// that do not match any new key are dropped, new keys (that were not in the original data 
+  /// frame) are assigned missing values.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame that is to be realigned.
+  ///  - `keys` - A sequence of new row keys. The keys must have the same type as the original
+  ///    frame keys (because the rows are realigned).
+  ///
+  /// [category:Index manipulation]
+  [<Extension>]
+  static member RealignRows(frame:Frame<'R, 'C>, keys) = 
+    frame |> Frame.realignRows keys
+
+  /// Replace the row index of the frame with ordinarilly generated integers starting from zero.
+  /// The rows of the frame are assigned index according to the current order, or in a
+  /// non-deterministic way, if the current row index is not ordered.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame whose row index are to be replaced.
+  ///
+  /// [category:Index manipulation]
+  [<Extension>]
+  static member IndexRowsOrdinally(frame:Frame<'TRowKey, 'TColumnKey>) = 
+    frame |> Frame.indexRowsOrdinally
+
+  /// Replace the row index of the frame with the provided sequence of row keys.
+  /// The rows of the frame are assigned keys according to the current order, or in a
+  /// non-deterministic way, if the current row index is not ordered.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame whose row index are to be replaced.
+  ///  - `keys` - A collection of new row keys.
+  ///
+  /// [category:Index manipulation]
+  [<Extension>]
+  static member IndexRowsWith(frame:Frame<'R, 'C>, keys:seq<'TNewRowIndex>) =
+    frame |> Frame.indexRowsWith keys
+
+  /// Replace the column index of the frame with the provided sequence of column keys.
+  /// The columns of the frame are assigned keys according to the current order, or in a
+  /// non-deterministic way, if the current column index is not ordered.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame whose column index are to be replaced.
+  ///  - `keys` - A collection of new column keys.
+  ///
+  /// [category:Index manipulation]
+  [<Extension>]
+  static member IndexColumnsWith(frame:Frame<'R, 'C>, keys:seq<'TNewRowIndex>) =
+    frame |> Frame.indexColsWith keys
+
+  /// Returns a data frame that contains the same data as the input, 
+  /// but whose rows are an ordered series. This allows using operations that are
+  /// only available on indexed series such as alignment and inexact lookup.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame to be ordered.
+  /// 
+  /// [category:Index manipulation]
+  [<Extension>]
+  static member OrderRows(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.orderRows frame
+
+  /// Returns a data frame that contains the same data as the input, 
+  /// but whose columns are an ordered series. This allows using operations that are
+  /// only available on indexed series such as alignment and inexact lookup.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame to be ordered.
+  /// 
+  /// [category:Index manipulation]
+  [<Extension>]
+  static member OrderColumns(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.orderCols frame
+
+  /// Returns a transposed data frame. The rows of the original data frame are used as the
+  /// columns of the new one (and vice versa). Use this operation if you have a data frame
+  /// and you mostly need to access its rows as a series (because accessing columns as a 
+  /// series is more efficient).
+  /// 
+  /// ## Parameters
+  ///  - `frame` - Source data frame to be transposed.
+  /// 
+  /// [category:Index manipulation]
+  [<Extension>]
+  static member Transpose(frame:Frame<'TRowKey, 'TColumnKey>) = 
+    frame.Columns |> Frame.ofRows
+
+  // ----------------------------------------------------------------------------------------------
+  // Input and output
+  // ----------------------------------------------------------------------------------------------
+
   /// Save data frame to a CSV file or to a `Stream`. When calling the operation,
   /// you can specify whether you want to save the row keys or not (and headers for the keys)
   /// and you can also specify the separator (use `\t` for writing TSV files). When specifying
@@ -409,6 +571,9 @@ type FrameExtensions =
     let culture = if culture = null then None else Some culture
     FrameUtils.writeCsv writer (Some path) separator culture (Some true) (Some keyNames) frame
 
+  // ----------------------------------------------------------------------------------------------
+  // Assorted stuff
+  // ----------------------------------------------------------------------------------------------
 
   [<Extension>]
   static member Window(frame:Frame<'R, 'C>, size) = Frame.window size frame
@@ -439,11 +604,28 @@ type FrameExtensions =
   ///  * `frame` - A data frame to invoke the filtering function on.
   ///  * `condition` - A delegate that specifies the filtering condition.
   [<Extension>]
-  static member Where(frame:Frame<'TRowKey, 'TColumnKey>, condition) = 
+  static member Where(frame:Frame<'TRowKey, 'TColumnKey>, condition:Func<_, _>) = 
+    frame.Rows.Where(condition) |> Frame.ofRows
+
+  /// Filters frame rows using the specified condtion. Returns a new data frame
+  /// that contains rows for which the provided function returned false. The function
+  /// is called with `KeyValuePair` containing the row key as the `Key` and `Value`
+  /// gives access to the row series and a row index.
+  ///
+  /// ## Parameters
+  ///
+  ///  * `frame` - A data frame to invoke the filtering function on.
+  ///  * `condition` - A delegate that specifies the filtering condition.
+  [<Extension>]
+  static member Where(frame:Frame<'TRowKey, 'TColumnKey>, condition:Func<_, _, _>) = 
     frame.Rows.Where(condition) |> Frame.ofRows
 
   [<Extension>]
-  static member Select(frame:Frame<'TRowKey, 'TColumnKey>, projection) = 
+  static member Select(frame:Frame<'TRowKey, 'TColumnKey>, projection:Func<_, _>) = 
+    frame.Rows.Select(projection) |> Frame.ofRows
+
+  [<Extension>]
+  static member Select(frame:Frame<'TRowKey, 'TColumnKey>, projection:Func<_, _, _>) = 
     frame.Rows.Select(projection) |> Frame.ofRows
 
   [<Extension>]
@@ -457,20 +639,6 @@ type FrameExtensions =
   [<Extension>]
   static member Append(frame:Frame<'TRowKey, 'TColumnKey>, rowKey, row) = 
     frame.Append(Frame.ofRows [ rowKey => row ])
-
-  [<Extension>]
-  static member OrderRows(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.orderRows frame
-
-  [<Extension>]
-  static member OrderColumns(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.orderCols frame
-
-  [<Extension>]
-  static member Transpose(frame:Frame<'TRowKey, 'TColumnKey>) = 
-    frame.Columns |> Frame.ofRows
-
-  [<Extension>]
-  static member IndexRowsOrdinally(frame:Frame<'TRowKey, 'TColumnKey>) = 
-    frame.Columns |> Series.mapValues Series.indexOrdinally |> Frame.ofColumns
 
   [<Extension>]
   static member Shift(frame:Frame<'TRowKey, 'TColumnKey>, offset) = 
@@ -619,7 +787,3 @@ type FrameExtensions =
   /// [category:Missing values]
   [<Extension>]
   static member DropSparseColumns(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.dropSparseCols frame
-
-type KeyValue =
-  static member Create<'K, 'V>(key:'K, value:'V) = KeyValuePair(key, value)
-

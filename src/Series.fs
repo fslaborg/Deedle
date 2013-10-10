@@ -241,18 +241,22 @@ and Series<'K, 'V when 'K : equality>
   // ----------------------------------------------------------------------------------------------
 
   /// [category:Projection and filtering]
-  member x.Where(f:System.Func<KeyValuePair<'K, 'V>, bool>) = 
+  member x.Where(f:System.Func<KeyValuePair<'K, 'V>, int, bool>) = 
     let keys, optValues =
-      [| for key, addr in index.Mappings do
+      index.Mappings 
+      |> Array.ofSeq |> Array.choosei (fun i (key, addr) ->
           let opt = vector.GetValue(addr)
-          let included = 
-            // If a required value is missing, then skip over this
-            opt.HasValue && f.Invoke (KeyValuePair(key, opt.Value)) 
-          if included then yield key, opt  |]
+          // If a required value is missing, then skip over this
+          if opt.HasValue && f.Invoke (KeyValuePair(key, opt.Value), i)
+            then Some(key, opt) else None)
       |> Array.unzip
     Series<_, _>
       ( indexBuilder.Create<_>(keys, None), vectorBuilder.CreateMissing(optValues),
         vectorBuilder, indexBuilder )
+
+  /// [category:Projection and filtering]
+  member x.Where(f:System.Func<KeyValuePair<'K, 'V>, bool>) = 
+    x.Where(fun kvp _ -> f.Invoke kvp)
 
   /// [category:Projection and filtering]
   member x.WhereOptional(f:System.Func<KeyValuePair<'K, OptionalValue<'V>>, bool>) = 
@@ -266,14 +270,18 @@ and Series<'K, 'V when 'K : equality>
         vectorBuilder, indexBuilder )
 
   /// [category:Projection and filtering]
-  member x.Select<'R>(f:System.Func<KeyValuePair<'K, 'V>, 'R>) = 
+  member x.Select<'R>(f:System.Func<KeyValuePair<'K, 'V>, int, 'R>) = 
     let newVector =
-      [| for key, addr in index.Mappings -> 
+      index.Mappings |> Array.ofSeq |> Array.mapi (fun i (key, addr) ->
            vector.GetValue(addr) |> OptionalValue.bind (fun v -> 
              // If a required value is missing, then skip over this
-             OptionalValue(f.Invoke(KeyValuePair(key, v))) ) |]
+             OptionalValue(f.Invoke(KeyValuePair(key, v), i)) ))
     let newIndex = indexBuilder.Project(index)
     Series<'K, 'R>(newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder )
+
+  /// [category:Projection and filtering]
+  member x.Select<'R>(f:System.Func<KeyValuePair<'K, 'V>, 'R>) = 
+    x.Select(fun kvp _ -> f.Invoke kvp)
 
   /// [category:Projection and filtering]
   member x.SelectKeys<'R when 'R : equality>(f:System.Func<KeyValuePair<'K, OptionalValue<'V>>, 'R>) = 
@@ -584,6 +592,10 @@ and Series<'K, 'V when 'K : equality>
       | KeyValue(k, OptionalValue.Present(_, v)) -> v
       | _ -> OptionalValue.Missing )
 
+  /// Replace the index of the series with ordinarilly generated integers starting from zero.
+  /// The elements of the series are assigned index according to the current order, or in a
+  /// non-deterministic way, if the current index is not ordered.
+  ///
   /// [category:Indexing]
   member x.IndexOrdinally() = 
     let newIndex = indexBuilder.Create(x.Index.Keys |> Seq.mapi (fun i _ -> i), Some true)
