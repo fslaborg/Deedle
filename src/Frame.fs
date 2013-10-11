@@ -78,6 +78,27 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
       invalidOp "column" (sprintf "Column with a key '%O' is present, but does not contain a value" column)
     columnVector.Value
   
+  let restrictToRowIndex lookup (restriction:IIndex<_>) (sourceIndex:IIndex<_>) vector = 
+    if lookup = Lookup.Exact && restriction.IsOrdered && sourceIndex.IsOrdered then
+      let min, max = rowIndex.KeyRange
+      sourceIndex.Builder.GetRange(sourceIndex, Some(min, BoundaryBehavior.Inclusive), Some(max, BoundaryBehavior.Inclusive), vector)
+    else sourceIndex, vector
+
+  let createJoinTransformation kind lookup otherIndex vector1 vector2 =
+    match kind with 
+    | JoinKind.Inner ->
+        indexBuilder.Intersect( (rowIndex, vector1), (otherIndex, vector2) )
+    | JoinKind.Left ->
+        let otherRowIndex, vector = restrictToRowIndex lookup rowIndex otherIndex vector2
+        let otherRowCmd = indexBuilder.Reindex(otherRowIndex, rowIndex, lookup, vector)
+        rowIndex, vector1, otherRowCmd
+    | JoinKind.Right ->
+        let thisRowIndex, vector = restrictToRowIndex lookup otherIndex rowIndex vector1
+        let thisRowCmd = indexBuilder.Reindex(thisRowIndex, otherIndex, lookup, vector)
+        otherIndex, thisRowCmd, vector2
+    | JoinKind.Outer | _ ->
+        indexBuilder.Union( (rowIndex, vector1), (otherIndex, vector2) )
+
   member private x.tryGetColVector column = 
     let columnIndex = columnIndex.Lookup(column)
     if not columnIndex.HasValue then OptionalValue.Missing else
@@ -93,57 +114,55 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   // Joining and appending
   // ----------------------------------------------------------------------------------------------
 
-  // This is very similar to PointwiseFrameFrame, but the function is T1 -> T2 -> T3
-  // and so it has to throw away all mismatching columns
+  // Note - this has to be actual member and not an extension so that C# callers can specify
+  // generic type arguments using `df.Zip<double, double, double>(...)` (doesn't work for extensions)
 
-  member frame1.Zip<'T1, 'T2, 'T3>(frame2:Frame<'TRowKey, 'TColumnKey>, op:Func<'T1, 'T2, 'T3>) =
-    let rowIndex, f1cmd, f2cmd = frame1.IndexBuilder.Union( (frame1.RowIndex, Vectors.Return 0), (frame2.RowIndex, Vectors.Return 1) )
-    (frame1.Columns:ColumnSeries<_, _>).Join(frame2.Columns).SelectOptional(fun (KeyValue(_, lr)) ->
-      let (|TryGetAsT1|_|) (lv:ObjectSeries<'TRowKey>) = lv.TryAs<'T1>() |> OptionalValue.asOption
-      let (|TryGetAsT2|_|) (lv:ObjectSeries<'TRowKey>) = lv.TryAs<'T2>() |> OptionalValue.asOption
-      match lr with
-      | OptionalValue.Present(OptionalValue.Present (TryGetAsT1 lv), OptionalValue.Present (TryGetAsT2 rv)) ->
-          let lvVect = lv.Vector.Select(Choice1Of3)
-          let lrVect = rv.Vector.Select(Choice2Of3)
-          let res = Vectors.Combine(f1cmd, f2cmd, VectorValueTransform.CreateLifted (fun l r ->
-            match l, r with
-            | Choice1Of3 l, Choice2Of3 r -> op.Invoke(l, r) |> Choice3Of3
-            | _ -> failwith "Zip: Got invalid vector while zipping" ))
-          let newVector : IVector<'T3> = 
+  /// [category:Joining, zipping and appending]
+  member frame1.Zip<'V1, 'V2, 'V3>(frame2:Frame<'TRowKey, 'TColumnKey>, columnKind, rowKind, lookup, op:Func<'V1, 'V2, 'V3>) =
+    
+    // Create transformations to join the rows (using the same logic as Join)
+    // and make functions that transform vectors (when they are only available in first/second frame)
+    let rowIndex, f1cmd, f2cmd = createJoinTransformation rowKind lookup frame2.RowIndex (Vectors.Return 0) (Vectors.Return 1)
+    let f1trans = VectorHelpers.transformColumn vectorBuilder f1cmd
+    let f2trans = VectorHelpers.transformColumn vectorBuilder (VectorHelpers.substitute (1, 0) f2cmd)
+
+    // To join columns using 'Series.join', we create series containing raw "IVector" data 
+    // (so that we do not convert each series to objects series)
+    let s1 = Series(frame1.ColumnIndex, frame1.Data, frame1.VectorBuilder, frame1.IndexBuilder)
+    let s2 = Series(frame2.ColumnIndex, frame2.Data, frame2.VectorBuilder, frame2.IndexBuilder)
+
+    // Operations that try converting vectors to the required types for 'op'
+    let asV1 = VectorHelpers.tryChangeType<'V1>
+    let asV2 = VectorHelpers.tryChangeType<'V2>
+    let (|TryConvert|_|) f inp = OptionalValue.asOption (f inp)
+
+    let newColumns = 
+      s1.Zip(s2, columnKind).Select(fun (KeyValue(_, (l, r))) -> 
+        match l, r with
+        | OptionalValue.Present (TryConvert asV1 lv), OptionalValue.Present (TryConvert asV2 rv) ->
+            let lvVect : IVector<Choice<'V1, 'V2, 'V3>> = lv.Select(Choice1Of3)
+            let lrVect : IVector<Choice<'V1, 'V2, 'V3>> = rv.Select(Choice2Of3)
+            let res = Vectors.Combine(f1cmd, f2cmd, VectorValueTransform.CreateLifted (fun l r ->
+              match l, r with
+              | Choice1Of3 l, Choice2Of3 r -> op.Invoke(l, r) |> Choice3Of3
+              | _ -> failwith "Zip: Got invalid vector while zipping" ))
             frame1.VectorBuilder.Build(res, [| lvVect; lrVect |]).
-              Select(function Choice3Of3 v -> v | _ -> failwith "Zip: Produced invalid vector")
-          let s = Series<_, _>(rowIndex, newVector, frame1.VectorBuilder, frame1.IndexBuilder) :> ISeries<_>
-          OptionalValue(s)
-      | _ -> 
-          OptionalValue.Missing )
-    |> Frame<'TRowKey, 'TColumnKey>.FromColumnsNonGeneric
+              Select(function Choice3Of3 v -> v | _ -> failwith "Zip: Produced invalid vector") :> IVector
+        | OptionalValue.Present v, _ -> f1trans v
+        | _, OptionalValue.Present v -> f2trans v
+        | _ -> failwith "zipAlignInto: join failed." )
+    Frame<_, _>(rowIndex, newColumns.Index, newColumns.Vector)
 
-  /// [category:Joining]
-  member frame.Join(otherFrame:Frame<'TRowKey, 'TColumnKey>, ?kind, ?lookup) =    
-    let lookup = defaultArg lookup Lookup.Exact
 
-    let restrictToRowIndex (restriction:IIndex<_>) (sourceIndex:IIndex<_>) vector = 
-      if lookup = Lookup.Exact && restriction.IsOrdered && sourceIndex.IsOrdered then
-        let min, max = rowIndex.KeyRange
-        sourceIndex.Builder.GetRange(sourceIndex, Some(min, BoundaryBehavior.Inclusive), Some(max, BoundaryBehavior.Inclusive), vector)
-      else sourceIndex, vector
+  /// [category:Joining, zipping and appending]
+  member frame1.Zip<'V1, 'V2, 'V3>(frame2:Frame<'TRowKey, 'TColumnKey>, op:Func<'V1, 'V2, 'V3>) =
+    frame1.Zip(frame2, JoinKind.Outer, JoinKind.Outer, Lookup.Exact, op)
 
-    // Union row indices and get transformations to apply to left/right vectors
-    let newRowIndex, thisRowCmd, otherRowCmd = 
-      match kind with 
-      | Some JoinKind.Inner ->
-          indexBuilder.Intersect( (rowIndex, Vectors.Return 0), (otherFrame.RowIndex, Vectors.Return 0) )
-      | Some JoinKind.Left ->
-          let otherRowIndex, vector = restrictToRowIndex rowIndex otherFrame.RowIndex (Vectors.Return 0)
-          let otherRowCmd = indexBuilder.Reindex(otherRowIndex, rowIndex, lookup, vector)
-          rowIndex, Vectors.Return 0, otherRowCmd
-      | Some JoinKind.Right ->
-          let thisRowIndex, vector = restrictToRowIndex otherFrame.RowIndex rowIndex (Vectors.Return 0)
-          let thisRowCmd = indexBuilder.Reindex(thisRowIndex, otherFrame.RowIndex, lookup, vector)
-          otherFrame.RowIndex, thisRowCmd, Vectors.Return 0
-      | Some JoinKind.Outer | None | Some _ ->
-          indexBuilder.Union( (rowIndex, Vectors.Return 0), (otherFrame.RowIndex, Vectors.Return 0) )
 
+  /// [category:Joining, zipping and appending]
+  member frame.Join(otherFrame:Frame<'TRowKey, 'TColumnKey>, kind, lookup) =    
+    // Union/intersect/align row indices and get transformations to apply to left/right vectors
+    let newRowIndex, thisRowCmd, otherRowCmd = createJoinTransformation kind lookup otherFrame.RowIndex (Vectors.Return 0) (Vectors.Return 0)
     // Append the column indices and get transformation to combine them
     // (LeftOrRight - specifies that when column exist in both data frames then fail)
     let newColumnIndex, colCmd = 
@@ -155,7 +174,16 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     let newData = vectorBuilder.Build(colCmd, [| newThisData; newOtherData |])
     Frame(newRowIndex, newColumnIndex, newData)
 
-  /// [category:Joining]
+  /// [category:Joining, zipping and appending]
+  member frame.Join(otherFrame:Frame<'TRowKey, 'TColumnKey>, kind) =    
+    frame.Join(otherFrame, kind, Lookup.Exact)
+
+  /// [category:Joining, zipping and appending]
+  member frame.Join(otherFrame:Frame<'TRowKey, 'TColumnKey>) =    
+    frame.Join(otherFrame, JoinKind.Outer, Lookup.Exact)
+
+
+  /// [category:Joining, zipping and appending]
   member frame.Append(otherFrame:Frame<'TRowKey, 'TColumnKey>) = 
     // Union the column indices and get transformations for both
     let newColumnIndex, thisColCmd, otherColCmd = 
@@ -430,14 +458,14 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   static member inline private PointwiseFrameSeriesR<'T>(frame:Frame<'TRowKey, 'TColumnKey>, series:Series<'TRowKey, 'T>, op:'T -> 'T -> 'T) =
     frame.Columns |> Series.mapValues (fun os ->
       match os.TryAs<'T>(false) with
-      | OptionalValue.Present s -> s.JoinInner(series) |> Series.mapValues (fun (v1, v2) -> op v1 v2) :> ISeries<_>
+      | OptionalValue.Present s -> s.ZipInner(series) |> Series.mapValues (fun (v1, v2) -> op v1 v2) :> ISeries<_>
       | _ -> os :> ISeries<_>)
     |> Frame<'TRowKey, 'TColumnKey>.FromColumnsNonGeneric
 
   // Apply operation 'op' to all columns that exist in both frames and are convertible to 'T
   static member inline internal PointwiseFrameFrame<'T>(frame1:Frame<'TRowKey, 'TColumnKey>, frame2:Frame<'TRowKey, 'TColumnKey>, op:'T -> 'T -> 'T) =
     let rowIndex, f1cmd, f2cmd = frame1.IndexBuilder.Union( (frame1.RowIndex, Vectors.Return 0), (frame2.RowIndex, Vectors.Return 1) )
-    frame1.Columns.Join(frame2.Columns).Select(fun (KeyValue(_, (l, r))) ->
+    frame1.Columns.Zip(frame2.Columns).Select(fun (KeyValue(_, (l, r))) ->
       let (|TryGetAsT|_|) (lv:ObjectSeries<'TRowKey>) = lv.TryAs<'T>() |> OptionalValue.asOption
       match l, r with
       | OptionalValue.Present (TryGetAsT lv), OptionalValue.Present (TryGetAsT rv) ->

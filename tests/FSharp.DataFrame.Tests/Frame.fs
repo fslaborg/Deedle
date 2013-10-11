@@ -120,15 +120,31 @@ let ``Can perform pointwise numerical operations on two frames`` () =
 // Operations - append
 // ------------------------------------------------------------------------------------------------
 
+[<Test>]
 let ``Can append two frames with single rows and keys with comparison that fails at runtime`` () = 
   let df1 = Frame.ofColumns [ "A" => series [ ([| 0 |], 0) => "A" ] ]
   let df2 = Frame.ofColumns [ "A" => series [ ([| 0 |], 1) => "A" ] ]
-  df1.Append(df2)
+  df1.Append(df2).RowKeys |> Seq.length |> shouldEqual 2
  
 // ------------------------------------------------------------------------------------------------
 // Operations - zip
 // ------------------------------------------------------------------------------------------------
 
+[<Test>]
+let ``Can inner/outer/left/right join row keys when aligning``()  =
+  let df1 = Frame.ofColumns [ "A" => series [ 1=>1; 2=>2 ]]
+  let df2 = Frame.ofColumns [ "A" => series [ 2=>2; 3=>3 ]]
+
+  let actualI = (df1, df2) ||> Frame.zipAlignInto JoinKind.Inner JoinKind.Inner Lookup.Exact (+)
+  actualI.RowKeys |> List.ofSeq |> shouldEqual [2]
+  let actualO = (df1, df2) ||> Frame.zipAlignInto JoinKind.Inner JoinKind.Outer Lookup.Exact (+)
+  actualO.RowKeys |> List.ofSeq |> shouldEqual [1;2;3]
+  let actualL = (df1, df2) ||> Frame.zipAlignInto JoinKind.Inner JoinKind.Left Lookup.Exact (+)
+  actualL.RowKeys |> List.ofSeq |> shouldEqual [1;2]
+  let actualR = (df1, df2) ||> Frame.zipAlignInto JoinKind.Inner JoinKind.Right Lookup.Exact (+)
+  actualR.RowKeys |> List.ofSeq |> shouldEqual [2;3]
+
+[<Test>]
 let ``Can zip and subtract numerical values in MSFT data set``() = 
   let df1 = msft()
   let df2 = msft()
@@ -136,6 +152,7 @@ let ``Can zip and subtract numerical values in MSFT data set``() =
   values |> Seq.length |> shouldEqual (6 * (df1 |> Frame.countRows))
   values |> Seq.forall ((=) 0) |> shouldEqual true
 
+[<Test>]
 let ``Can zip and subtract numerical values in MSFT data set, with some rows dropped``() = 
   let df1 = (msft() |> Frame.orderRows).Rows.[DateTime(2000, 1, 1) ..]
   let df2 = msft()
@@ -143,13 +160,14 @@ let ``Can zip and subtract numerical values in MSFT data set, with some rows dro
   values |> Seq.length |> shouldEqual (6 * (df1 |> Frame.countRows))
   values |> Seq.forall ((=) 0) |> shouldEqual true
 
+[<Test>]
 let ``Can zip and subtract numerical values in MSFT data set, with some columns dropped``() = 
   let df1 = msft()
   df1.DropSeries("Adj Close")
   let df2 = msft()
-  let values = df1.Zip(df2, fun a b -> a - b).GetAllValues<int>()
-  values |> Seq.length |> shouldEqual (5 * (df1 |> Frame.countRows))
-  values |> Seq.forall ((=) 0) |> shouldEqual true
+  let zipped = df1.Zip(df2, fun a b -> a - b)
+  zipped?``Adj Close`` |> Series.sum |> should (be greaterThan) 0.0
+  zipped?Low |> Series.sum |> shouldEqual 0.0
 
 // ------------------------------------------------------------------------------------------------
 // Operations - join, align
@@ -175,7 +193,7 @@ let ``Can left-align ordered frames - nearest smaller returns missing if no smal
   // after left join with NearestSmaller option
   let daysTimesPrevL = 
       (daysFrame, timesFrame) 
-      ||> Frame.align JoinKind.Left Lookup.NearestSmaller
+      ||> Frame.joinAlign JoinKind.Left Lookup.NearestSmaller
 
   daysTimesPrevL?Times.TryGetAt(0) |> shouldEqual OptionalValue.Missing
   daysTimesPrevL?Times.TryGetAt(1) |> shouldEqual (OptionalValue 0.5)
@@ -188,7 +206,7 @@ let ``Can left-align ordered frames - nearest greater always finds greater value
   // all values in Times must be as in original series
   let daysTimesNextL = 
       (daysFrame, timesFrame) 
-      ||> Frame.align JoinKind.Left Lookup.NearestGreater
+      ||> Frame.joinAlign JoinKind.Left Lookup.NearestGreater
         
   daysTimesNextL?Times.TryGetAt(0) |> shouldEqual (OptionalValue 0.5)
   daysTimesNextL?Times.TryGetAt(1) |> shouldEqual (OptionalValue 1.5)
@@ -200,7 +218,7 @@ let ``Can right-align ordered frames - nearest smaller always finds smaller valu
   // all values in Days must be as in original series
   let daysTimesPrevR = 
       (daysFrame, timesFrame) 
-      ||> Frame.align JoinKind.Right Lookup.NearestSmaller
+      ||> Frame.joinAlign JoinKind.Right Lookup.NearestSmaller
   
   daysTimesPrevR?Days.TryGetAt(0) |> shouldEqual (OptionalValue 0.0)
   daysTimesPrevR?Days.TryGetAt(1) |> shouldEqual (OptionalValue 1.0)
@@ -212,9 +230,206 @@ let ``Can right-align ordered frames - nearest greater returns missing if no gre
   // last point in Days must be missing after joining
   let daysTimesNextR = 
       (daysFrame, timesFrame) 
-      ||> Frame.align JoinKind.Right Lookup.NearestGreater
+      ||> Frame.joinAlign JoinKind.Right Lookup.NearestGreater
   
   daysTimesNextR?Days.TryGetAt(0) |> shouldEqual (OptionalValue 1.0)
   daysTimesNextR?Days.TryGetAt(1) |> shouldEqual (OptionalValue 2.0)
   daysTimesNextR?Days.TryGetAt(2) |> shouldEqual OptionalValue.Missing
 
+// ------------------------------------------------------------------------------------------------
+// Operations - zip
+// ------------------------------------------------------------------------------------------------
+
+let test =
+  let df = msft()
+  (df,df) ||> Frame.zipInto (fun (v1:float) v2 -> v1 + v2)
+
+// company A has common and preferred stocks, company B only common
+// company A trades in US, company B common shares trade in US, while B prefs trade in Israel/GCC 
+//   (e.g. B comm is ADR, B pref only local)
+// company B did a 1:2 split on Sep-14
+
+// Prices
+let pxA =
+  [ DateTime(2013,9,10) => 100.0;
+    DateTime(2013,9,11) => 101.0;
+    DateTime(2013,9,12) => 101.0; // Sat - // for US keep Sat and Sun values until Series.Join supports lookup option with full outer join
+    DateTime(2013,9,13) => 101.0; // Sun - // 
+    DateTime(2013,9,14) => 102.0; 
+    DateTime(2013,9,15) => 103.0; 
+    DateTime(2013,9,16) => 104.0;] 
+    |> series
+
+let pxB =
+  [ DateTime(2013,9,10) => 200.0;
+    DateTime(2013,9,11) => 200.0; // Fri
+    DateTime(2013,9,12) => 200.0; // Sat
+    DateTime(2013,9,13) => 201.0; 
+    DateTime(2013,9,14) => 101.0; 
+    DateTime(2013,9,15) => 101.5; 
+    DateTime(2013,9,16) => 102.0;] 
+    |> series
+
+let pxCommons = 
+  [ "A" => pxA;
+    "B" => pxB;] 
+    |> Frame.ofColumns
+
+let pxBpref =
+  [ DateTime(2013,9,10) => 20.0;
+    //DateTime(2013,9,11) => 20.0; // Fri - // not traded
+    //DateTime(2013,9,12) => 20.0; // Sat - // omit these values to illustrate how lookup works in Frame.zipAlignInto
+    DateTime(2013,9,13) => 21.0; 
+    DateTime(2013,9,14) => 22.0; 
+    DateTime(2013,9,15) => 23.0; 
+    DateTime(2013,9,16) => 24.0;] 
+    |> series
+
+let pxPrefs = 
+  [ "B" => pxBpref;] 
+    |> Frame.ofColumns
+
+// Shares outstanding
+let sharesA =
+  [ DateTime(2012,12,31) => 10.0;] 
+    |> series
+
+let sharesB =
+  [ DateTime(2012,12,31) => 20.0;
+    DateTime(2013,9,14) => 40.0; ] // split
+    |> series
+
+let sharesCommons = 
+  [ "A" => sharesA;
+    "B" => sharesB;] 
+    |> Frame.ofColumns
+
+
+let sharesBpref =
+  [ DateTime(2012,12,31) => 20.0; ]
+    |> series
+
+let sharesPrefs = 
+  [ "B" => sharesBpref;] 
+    |> Frame.ofColumns
+
+// Net debt forecast 2013
+let ndA =
+  [ DateTime(2013,12,31) => 100.0;] 
+    |> series
+
+let ndB =
+  [ DateTime(2013,12,31) => 1000.0; ]
+    |> series
+
+let netDebt = 
+  [ "A" => ndA;
+    "B" => ndB;] 
+    |> Frame.ofColumns
+
+
+[<Test>]
+let ``Can zip-align frames with inner-join left-join nearest-smaller options`` () =
+  
+  let mktcapA = 
+    (pxA, sharesA)
+    ||> Series.zipAlignInto JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+  
+  let mktcapB = 
+    (pxB, sharesB)
+    ||> Series.zipAlignInto JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+  
+  // calculate stock mktcap 
+  let mktCapCommons = 
+    (pxCommons, sharesCommons)
+    ||> Frame.zipAlignInto JoinKind.Inner JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+  
+  mktCapCommons?A.GetAt(0) |> shouldEqual 1000.0
+  mktCapCommons?A.GetAt(1) |> shouldEqual 1010.0
+  mktCapCommons?A.GetAt(2) |> shouldEqual 1010.0
+  mktCapCommons?A.GetAt(3) |> shouldEqual 1010.0
+  mktCapCommons?A.GetAt(4) |> shouldEqual 1020.0
+  mktCapCommons?A.GetAt(5) |> shouldEqual 1030.0
+  mktCapCommons?A.GetAt(6) |> shouldEqual 1040.0
+
+  mktCapCommons?B.GetAt(0) |> shouldEqual 4000.0
+  mktCapCommons?B.GetAt(1) |> shouldEqual 4000.0
+  mktCapCommons?B.GetAt(2) |> shouldEqual 4000.0
+  mktCapCommons?B.GetAt(3) |> shouldEqual 4020.0
+  mktCapCommons?B.GetAt(4) |> shouldEqual 4040.0
+  mktCapCommons?B.GetAt(5) |> shouldEqual 4060.0
+  mktCapCommons?B.GetAt(6) |> shouldEqual 4080.0
+
+
+
+
+
+[<Test>]
+let ``Can zip-align frames with different set of columns`` () =
+  
+  // calculate stock mktcap 
+  let mktCapCommons = 
+    (pxCommons, sharesCommons)
+    ||> Frame.zipAlignInto JoinKind.Inner JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+  // calculate stock mktcap for prefs
+  let mktCapPrefs = 
+    (pxPrefs, sharesPrefs)
+    ||> Frame.zipAlignInto JoinKind.Inner JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+  // calculate company mktcap 
+  let mktCap = 
+    (mktCapCommons, mktCapPrefs)
+    ||> Frame.zipAlignInto JoinKind.Left JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l+r) 
+  
+  mktCap?A.GetAt(0) |> shouldEqual 1000.0
+  mktCap?A.GetAt(1) |> shouldEqual 1010.0
+  mktCap?A.GetAt(2) |> shouldEqual 1010.0
+  mktCap?A.GetAt(3) |> shouldEqual 1010.0
+  mktCap?A.GetAt(4) |> shouldEqual 1020.0
+  mktCap?A.GetAt(5) |> shouldEqual 1030.0
+  mktCap?A.GetAt(6) |> shouldEqual 1040.0
+
+  mktCap?B.GetAt(0) |> shouldEqual 4400.0
+  mktCap?B.GetAt(1) |> shouldEqual 4400.0
+  mktCap?B.GetAt(2) |> shouldEqual 4400.0
+  mktCap?B.GetAt(3) |> shouldEqual 4440.0
+  mktCap?B.GetAt(4) |> shouldEqual 4480.0
+  mktCap?B.GetAt(5) |> shouldEqual 4520.0
+  mktCap?B.GetAt(6) |> shouldEqual 4560.0
+
+
+
+[<Test>]
+let ``Can zip-align frames with inner-join left-join nearest-greater options`` () =
+    // calculate stock mktcap 
+  let mktCapCommons = 
+    (pxCommons, sharesCommons)
+    ||> Frame.zipAlignInto JoinKind.Inner JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+  // calculate stock mktcap for prefs
+  let mktCapPrefs = 
+    (pxPrefs, sharesPrefs)
+    ||> Frame.zipAlignInto JoinKind.Inner JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+  // calculate company mktcap 
+  let mktCap = 
+    (mktCapCommons, mktCapPrefs)
+    ||> Frame.zipAlignInto JoinKind.Left JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l+r) 
+  
+  // calculate enterprice value
+  let ev = 
+    (mktCap, netDebt)
+    ||> Frame.zipAlignInto JoinKind.Inner JoinKind.Left Lookup.NearestGreater (fun (l:float) r -> l+r) // net debt is at the year end
+  
+  ev?A.GetAt(0) |> shouldEqual 1100.0
+  ev?A.GetAt(1) |> shouldEqual 1110.0
+  ev?A.GetAt(2) |> shouldEqual 1110.0
+  ev?A.GetAt(3) |> shouldEqual 1110.0
+  ev?A.GetAt(4) |> shouldEqual 1120.0
+  ev?A.GetAt(5) |> shouldEqual 1130.0
+  ev?A.GetAt(6) |> shouldEqual 1140.0
+
+  ev?B.GetAt(0) |> shouldEqual 5400.0
+  ev?B.GetAt(1) |> shouldEqual 5400.0
+  ev?B.GetAt(2) |> shouldEqual 5400.0
+  ev?B.GetAt(3) |> shouldEqual 5440.0
+  ev?B.GetAt(4) |> shouldEqual 5480.0
+  ev?B.GetAt(5) |> shouldEqual 5520.0
+  ev?B.GetAt(6) |> shouldEqual 5560.0

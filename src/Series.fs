@@ -306,7 +306,7 @@ and Series<'K, 'V when 'K : equality>
   // Appending, joining etc
   // ----------------------------------------------------------------------------------------------
 
-  /// [category:Appending and joining]
+  /// [category:Appending, joining and zipping]
   member series.Append(otherSeries:Series<'K, 'V>) =
     // Append the row indices and get transformation that combines two column vectors
     // (LeftOrRight - specifies that when column exist in both data frames then fail)
@@ -316,20 +316,19 @@ and Series<'K, 'V when 'K : equality>
     let newVector = vectorBuilder.Build(cmd, [| series.Vector; otherSeries.Vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
- // TODO: Avoid duplicating code here and in Frame.Join
+  /// [category:Appending, joining and zipping]
+  member series.Zip<'V2>(otherSeries:Series<'K, 'V2>) =
+    series.Zip(otherSeries, JoinKind.Outer, Lookup.Exact)
 
-  /// [category:Appending and joining]
-  member series.Join<'V2>(otherSeries:Series<'K, 'V2>) =
-    series.Join(otherSeries, JoinKind.Outer, Lookup.Exact)
+  /// [category:Appending, joining and zipping]
+  member series.Zip<'V2>(otherSeries:Series<'K, 'V2>, kind) =
+    series.Zip(otherSeries, kind, Lookup.Exact)
 
-  /// [category:Appending and joining]
-  member series.Join<'V2>(otherSeries:Series<'K, 'V2>, kind) =
-    series.Join(otherSeries, kind, Lookup.Exact)
-
-  /// [category:Appending and joining]
-  member series.Join<'V2>(otherSeries:Series<'K, 'V2>, kind, lookup) =
+  /// [category:Appending, joining and zipping]
+  member series.Zip<'V2>(otherSeries:Series<'K, 'V2>, kind, lookup) =
+    // TODO: Avoid duplicating code here and in Frame.Join ?? 
     let restrictToThisIndex (restriction:IIndex<_>) (sourceIndex:IIndex<_>) vector = 
-      if restriction.IsOrdered && sourceIndex.IsOrdered then
+      if lookup = Lookup.Exact && restriction.IsOrdered && sourceIndex.IsOrdered then
         let min, max = index.KeyRange
         sourceIndex.Builder.GetRange(sourceIndex, Some(min, BoundaryBehavior.Inclusive), Some(max, BoundaryBehavior.Inclusive), vector)
       else sourceIndex, vector
@@ -371,19 +370,19 @@ and Series<'K, 'V when 'K : equality>
       | Choice2Of3(r) -> OptionalValue.Missing, OptionalValue(r))
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
-  /// [category:Appending and joining]
-  member series.JoinInner<'V2>(otherSeries:Series<'K, 'V2>) : Series<'K, 'V * 'V2> =
-    let joined = series.Join(otherSeries, JoinKind.Inner, Lookup.Exact)
+  /// [category:Appending, joining and zipping]
+  member series.ZipInner<'V2>(otherSeries:Series<'K, 'V2>) : Series<'K, 'V * 'V2> =
+    let joined = series.Zip(otherSeries, JoinKind.Inner, Lookup.Exact)
     joined.Select(fun (KeyValue(_, v)) ->
       match v with
       | OptionalValue.Present l, OptionalValue.Present r -> l, r 
       | _ -> failwith "JoinInner: Unexpected missing value")
 
-  /// [category:Appending and joining]
+  /// [category:Appending, joining and zipping]
   member series.Union(another:Series<'K, 'V>) = 
     series.Union(another, UnionBehavior.PreferLeft)
   
-  /// [category:Appending and joining]
+  /// [category:Appending, joining and zipping]
   member series.Union(another:Series<'K, 'V>, behavior) = 
     let newIndex, vec1, vec2 = indexBuilder.Union( (series.Index, Vectors.Return 0), (another.Index, Vectors.Return 1) )
     let transform = 
@@ -590,7 +589,7 @@ and Series<'K, 'V when 'K : equality>
     let ns = 
       Series( Index.ofKeys newKeys, vectorBuilder.Create (Array.ofSeq newKeys),
               vectorBuilder, indexBuilder )
-    ns.Join(x, JoinKind.Left).SelectOptional(fun kvp ->
+    ns.Zip(x, JoinKind.Left).SelectOptional(fun kvp ->
       match kvp with
       | KeyValue(k, OptionalValue.Present(_, v)) -> v
       | _ -> OptionalValue.Missing )
@@ -624,7 +623,7 @@ and Series<'K, 'V when 'K : equality>
     series.Select(fun (KeyValue(k, v)) -> op scalar v)
 
   static member inline internal VectorOperation<'T>(series1:Series<'K, 'T>, series2:Series<'K, 'T>, op) : Series<_, 'T> =
-    let joined = series1.Join(series2)
+    let joined = series1.Zip(series2)
     joined.SelectOptional(fun (KeyValue(_, v)) -> 
       match v with
       | OptionalValue.Present(OptionalValue.Present a, OptionalValue.Present b) -> 

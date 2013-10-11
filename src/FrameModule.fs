@@ -334,18 +334,6 @@ module Frame =
   // TBD
   // ----------------------------------------------------------------------------------------------
 
-  /// Join two frames using the specified kind of join. This function uses
-  /// exact matching on keys. If you want to align nearest smaller or greater
-  /// keys in left or outer join, use `joinAlign`. 
-  [<CompiledName("Join")>]
-  let join kind (frame1:Frame<'R, 'C>) frame2 = frame1.Join(frame2, kind)
-
-  /// Join two frames using the specified kind of join and 
-  /// the specified lookup semantics.
-  [<CompiledName("JoinAlign")>]
-  let align kind lookup (frame1:Frame<'R, 'C>) frame2 = frame1.Join(frame2, kind, lookup)
-
-  
   let inline filterRows f (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.filter f |> FrameUtils.fromRows
 
@@ -564,4 +552,39 @@ module Frame =
   ///
   /// [category:Missing values]
   let rowsDense (frame:Frame<'R, 'C>) = frame.RowsDense
+
+
+  // ----------------------------------------------------------------------------------------------
+  // Appending and joining
+  // ----------------------------------------------------------------------------------------------
+
+  /// Join two frames using the specified kind of join. This function uses
+  /// exact matching on keys. If you want to align nearest smaller or greater
+  /// keys in left or outer join, use `joinAlign`. 
+  ///
+  /// [category:Joining, zipping and appending]
+  [<CompiledName("Join")>]
+  let join kind (frame1:Frame<'R, 'C>) frame2 = frame1.Join(frame2, kind)
+
+  /// Join two frames using the specified kind of join and 
+  /// the specified lookup semantics.
+  ///
+  /// [category:Joining, zipping and appending]
+  [<CompiledName("JoinAlign")>]
+  let joinAlign kind lookup (frame1:Frame<'R, 'C>) frame2 = frame1.Join(frame2, kind, lookup)
+  
+  /// [category:Joining, zipping and appending]
+  [<CompiledName("ZipAlignInto")>]
+  let zipAlignInto columnKind rowKind lookup (op:'V1->'V2->'VRes) (frame1:Frame<'R, 'C>) (frame2:Frame<'R, 'C>) : Frame<'R, 'C> =
+    frame1.Zip(frame2, columnKind, rowKind, lookup, fun a b -> op a b)
+
+  /// [category:Joining, zipping and appending]
+  [<CompiledName("ZipInto")>]
+  let zipInto (op:'V1->'V2->'VRes) (frame1:Frame<'R, 'C>) (frame2:Frame<'R, 'C>) : Frame<'R, 'C> =
+    zipAlignInto JoinKind.Inner JoinKind.Inner Lookup.Exact op frame1 frame2
+
+
+
+
+
 

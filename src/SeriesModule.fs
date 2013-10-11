@@ -175,14 +175,6 @@ module Series =
           if offset < 0 then h - t else t - h) )
 
 
-  // Unioning
-
-  let union (series1:Series<'K, 'V>) (series2:Series<'K, 'V>) = 
-    series1.Union(series2)
-
-  let unionUsing behavior (series1:Series<'K, 'V>) (series2:Series<'K, 'V>) = 
-    series1.Union(series2, behavior)
-
   // Counting & checking if values are present
 
   /// Returns the total number of values in the specified series. This excludes
@@ -1007,3 +999,45 @@ module Series =
   let inline lookupTimeAt start interval dir lookup (series:Series< ^K , ^V >) = 
     let add dt ts = (^K: (static member (+) : ^K * TimeSpan -> ^K) (dt, ts))
     Implementation.lookupTimeInternal add (Some start) interval dir lookup series
+
+
+  // ----------------------------------------------------------------------------------------------
+  // Appending, joining and zipping
+  // ----------------------------------------------------------------------------------------------
+
+  /// [category:Appending, joining and zipping]
+  let append (series1:Series<'K, 'V>) (series2:Series<'K, 'V>) =
+   series1.Append(series2)
+
+  /// [category:Appending, joining and zipping]
+  let zipAlign kind lookup (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>) =
+   series1.Zip(series2, kind, lookup)
+
+  /// [category:Appending, joining and zipping]
+  let zip (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>) =
+   series1.Zip(series2)
+
+  /// [category:Appending, joining and zipping]
+  let zipInner (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>) =
+   series1.ZipInner(series2)
+    
+  /// [category:Joining, zipping and appending]
+  let inline zipAlignInto kind lookup (op:'V1->'V2->'R) (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>) : Series<'K, 'R> =
+    let joined = series1.Zip(series2, kind, lookup)
+    joined.SelectOptional(fun (KeyValue(_, v)) -> 
+      match v with
+      | OptionalValue.Present(OptionalValue.Present a, OptionalValue.Present b) -> 
+          OptionalValue(op a b)
+      | _ -> OptionalValue.Missing )
+
+  /// [category:Joining, zipping and appending]
+  let inline zipInto (op:'V1->'V2->'R) (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>) : Series<'K, 'R> =
+    zipAlignInto JoinKind.Inner Lookup.Exact op (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>)
+
+  /// [category:Joining, zipping and appending]
+  let union (series1:Series<'K, 'V>) (series2:Series<'K, 'V>) = 
+    series1.Union(series2)
+
+  /// [category:Joining, zipping and appending]
+  let unionUsing behavior (series1:Series<'K, 'V>) (series2:Series<'K, 'V>) = 
+    series1.Union(series2, behavior)

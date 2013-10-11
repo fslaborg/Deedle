@@ -777,3 +777,4 @@ type FrameExtensions =
   /// [category:Missing values]
   [<Extension>]
   static member DropSparseColumns(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.dropSparseCols frame
+  
