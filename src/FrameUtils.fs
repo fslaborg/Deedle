@@ -71,7 +71,7 @@ module internal FrameUtils =
 
   let writeCsv (writer:TextWriter) fileNameOpt separatorOpt cultureOpt includeRowKeys (rowKeyNames:seq<_> option) (frame:Frame<_, _>) = 
     let ci = defaultArg cultureOpt CultureInfo.InvariantCulture
-    let includeRowKeys = defaultArg includeRowKeys false
+    let includeRowKeys = defaultArg includeRowKeys (rowKeyNames.IsSome)
     let separator = 
       // Automatically use \t if the file name ends with .tsv
       match separatorOpt, fileNameOpt with 

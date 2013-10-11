@@ -213,7 +213,7 @@ module Series =
   let keys (series:Series<'K, 'T>) = series.Keys
 
   let shift offset (series:Series<'K, 'T>) = 
-    let win = WindowSize(offset + 1, Boundary.Skip)
+    let win = WindowSize((abs offset) + 1, Boundary.Skip)
     let shifted = 
       if offset < 0 then
         let offset = -offset
@@ -224,7 +224,7 @@ module Series =
         series.Aggregate
           ( win, (fun s -> s.Data.Keys.Last()),
             (fun s -> s.Data.Values |> Seq.head) )
-    shifted.GetItems(series.Keys)
+    shifted //.GetItems(series.Keys)
 
   let takeLast count (series:Series<'K, 'T>) = 
     let keys = series.Keys |> Seq.lastFew count 

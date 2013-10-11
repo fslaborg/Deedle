@@ -42,7 +42,7 @@ let ``Can save MSFT data as CSV file and read it afterwards (with custom format)
   let file = System.IO.Path.GetTempFileName()
   let expected = msft()
   expected.DropSeries("Date")
-  expected.SaveCsv(file, ["Date"], separator=';', culture=System.Globalization.CultureInfo.GetCultureInfo("cs-CZ"))
+  expected.SaveCsv(file, keyNames=["Date"], separator=';', culture=System.Globalization.CultureInfo.GetCultureInfo("cs-CZ"))
   let actual = 
     Frame.ReadCsv(file, separators=";", culture="cs-CZ")
     |> Frame.indexRowsDate "Date" |> Frame.dropCol "Date"
@@ -116,7 +116,40 @@ let ``Can perform pointwise numerical operations on two frames`` () =
   (df2 * df1)?Open.GetAt(66) |> shouldEqual (opens2.GetAt(66) * opens1.GetAt(66))
   (df2 / df1)?Open.GetAt(66) |> shouldEqual (opens2.GetAt(66) / opens1.GetAt(66))
 
+// ------------------------------------------------------------------------------------------------
+// Operations - append
+// ------------------------------------------------------------------------------------------------
 
+let ``Can append two frames with single rows and keys with comparison that fails at runtime`` () = 
+  let df1 = Frame.ofColumns [ "A" => series [ ([| 0 |], 0) => "A" ] ]
+  let df2 = Frame.ofColumns [ "A" => series [ ([| 0 |], 1) => "A" ] ]
+  df1.Append(df2)
+ 
+// ------------------------------------------------------------------------------------------------
+// Operations - zip
+// ------------------------------------------------------------------------------------------------
+
+let ``Can zip and subtract numerical values in MSFT data set``() = 
+  let df1 = msft()
+  let df2 = msft()
+  let values = df1.Zip(df2, fun a b -> a - b).GetAllValues<int>()
+  values |> Seq.length |> shouldEqual (6 * (df1 |> Frame.countRows))
+  values |> Seq.forall ((=) 0) |> shouldEqual true
+
+let ``Can zip and subtract numerical values in MSFT data set, with some rows dropped``() = 
+  let df1 = (msft() |> Frame.orderRows).Rows.[DateTime(2000, 1, 1) ..]
+  let df2 = msft()
+  let values = df1.Zip(df2, fun a b -> a - b).GetAllValues<int>()
+  values |> Seq.length |> shouldEqual (6 * (df1 |> Frame.countRows))
+  values |> Seq.forall ((=) 0) |> shouldEqual true
+
+let ``Can zip and subtract numerical values in MSFT data set, with some columns dropped``() = 
+  let df1 = msft()
+  df1.DropSeries("Adj Close")
+  let df2 = msft()
+  let values = df1.Zip(df2, fun a b -> a - b).GetAllValues<int>()
+  values |> Seq.length |> shouldEqual (5 * (df1 |> Frame.countRows))
+  values |> Seq.forall ((=) 0) |> shouldEqual true
 
 // ------------------------------------------------------------------------------------------------
 // Operations - join, align
@@ -184,3 +217,4 @@ let ``Can right-align ordered frames - nearest greater returns missing if no gre
   daysTimesNextR?Days.TryGetAt(0) |> shouldEqual (OptionalValue 1.0)
   daysTimesNextR?Days.TryGetAt(1) |> shouldEqual (OptionalValue 2.0)
   daysTimesNextR?Days.TryGetAt(2) |> shouldEqual OptionalValue.Missing
+

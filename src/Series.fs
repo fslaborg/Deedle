@@ -115,6 +115,9 @@ and Series<'K, 'V when 'K : equality>
   member x.IsEmpty = Seq.isEmpty index.Mappings
 
   /// [category:Series data]
+  member x.IsOrdered = index.IsOrdered
+
+  /// [category:Series data]
   member x.KeyRange = index.KeyRange
 
   // ----------------------------------------------------------------------------------------------
@@ -326,7 +329,7 @@ and Series<'K, 'V when 'K : equality>
   /// [category:Appending and joining]
   member series.Join<'V2>(otherSeries:Series<'K, 'V2>, kind, lookup) =
     let restrictToThisIndex (restriction:IIndex<_>) (sourceIndex:IIndex<_>) vector = 
-      if restriction.Ordered && sourceIndex.Ordered then
+      if restriction.IsOrdered && sourceIndex.IsOrdered then
         let min, max = index.KeyRange
         sourceIndex.Builder.GetRange(sourceIndex, Some(min, BoundaryBehavior.Inclusive), Some(max, BoundaryBehavior.Inclusive), vector)
       else sourceIndex, vector
@@ -786,7 +789,7 @@ and Series<'K, 'V when 'K : equality>
                         yield [ 
                           // Yield all row keys
                           for level in 0 .. levels - 1 do 
-                            yield getLevel series.Index.Ordered previous.[level] (reset level) levels level k
+                            yield getLevel series.Index.IsOrdered previous.[level] (reset level) levels level k
                           yield "->"
                           yield v.ToString() ]
                     | Choice2Of3() -> 
@@ -817,7 +820,10 @@ and Series<'K, 'V when 'K : equality>
 
 type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vectorBuilder, indexBuilder) = 
   inherit Series<'K, obj>(index, vector, vectorBuilder, indexBuilder)
-  
+
+  new(series:Series<'K, obj>) = 
+    ObjectSeries<_>(series.Index, series.Vector, series.VectorBuilder, series.IndexBuilder)
+
   member x.GetAs<'R>(column) : 'R = 
     System.Convert.ChangeType(x.Get(column), typeof<'R>) |> unbox
   member x.TryGetAs<'R>(column) : OptionalValue<'R> = 

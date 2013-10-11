@@ -90,35 +90,40 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   member internal frame.Data = data
 
   // ----------------------------------------------------------------------------------------------
-  // Indexing
-  // ----------------------------------------------------------------------------------------------
-
-  /// Returns a data frame whose rows are indexed based on the specified column of the original
-  /// data frame. The generic type parameter is (typically) needed to specify the type of the 
-  /// values in the required index column.
-  ///
-  /// ## Parameters
-  ///  - `column` - The name of a column in the original data frame that will be used for the new
-  ///    index. Note that the values in the column need to be unique.
-  ///
-  /// [category:Indexing]
-  member frame.IndexRows<'TNewRowIndex when 'TNewRowIndex : equality>(column) : Frame<'TNewRowIndex, _> = 
-    let columnVec = frame.GetSeries<'TNewRowIndex>(column)
-    let lookup addr = columnVec.Vector.GetValue(addr)
-    let newRowIndex, rowCmd = frame.IndexBuilder.WithIndex(frame.RowIndex, lookup, Vectors.Return 0)
-    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
-    Frame<'TNewRowIndex, 'TColumnKey>(newRowIndex, frame.ColumnIndex, newData)
-
-  // ----------------------------------------------------------------------------------------------
   // Joining and appending
   // ----------------------------------------------------------------------------------------------
+
+  // This is very similar to PointwiseFrameFrame, but the function is T1 -> T2 -> T3
+  // and so it has to throw away all mismatching columns
+
+  member frame1.Zip<'T1, 'T2, 'T3>(frame2:Frame<'TRowKey, 'TColumnKey>, op:Func<'T1, 'T2, 'T3>) =
+    let rowIndex, f1cmd, f2cmd = frame1.IndexBuilder.Union( (frame1.RowIndex, Vectors.Return 0), (frame2.RowIndex, Vectors.Return 1) )
+    (frame1.Columns:ColumnSeries<_, _>).Join(frame2.Columns).SelectOptional(fun (KeyValue(_, lr)) ->
+      let (|TryGetAsT1|_|) (lv:ObjectSeries<'TRowKey>) = lv.TryAs<'T1>() |> OptionalValue.asOption
+      let (|TryGetAsT2|_|) (lv:ObjectSeries<'TRowKey>) = lv.TryAs<'T2>() |> OptionalValue.asOption
+      match lr with
+      | OptionalValue.Present(OptionalValue.Present (TryGetAsT1 lv), OptionalValue.Present (TryGetAsT2 rv)) ->
+          let lvVect = lv.Vector.Select(Choice1Of3)
+          let lrVect = rv.Vector.Select(Choice2Of3)
+          let res = Vectors.Combine(f1cmd, f2cmd, VectorValueTransform.CreateLifted (fun l r ->
+            match l, r with
+            | Choice1Of3 l, Choice2Of3 r -> op.Invoke(l, r) |> Choice3Of3
+            | _ -> failwith "Zip: Got invalid vector while zipping" ))
+          let newVector : IVector<'T3> = 
+            frame1.VectorBuilder.Build(res, [| lvVect; lrVect |]).
+              Select(function Choice3Of3 v -> v | _ -> failwith "Zip: Produced invalid vector")
+          let s = Series<_, _>(rowIndex, newVector, frame1.VectorBuilder, frame1.IndexBuilder) :> ISeries<_>
+          OptionalValue(s)
+      | _ -> 
+          OptionalValue.Missing )
+    |> Frame<'TRowKey, 'TColumnKey>.FromColumnsNonGeneric
 
   /// [category:Joining]
   member frame.Join(otherFrame:Frame<'TRowKey, 'TColumnKey>, ?kind, ?lookup) =    
     let lookup = defaultArg lookup Lookup.Exact
 
     let restrictToRowIndex (restriction:IIndex<_>) (sourceIndex:IIndex<_>) vector = 
-      if lookup = Lookup.Exact && restriction.Ordered && sourceIndex.Ordered then
+      if lookup = Lookup.Exact && restriction.IsOrdered && sourceIndex.IsOrdered then
         let min, max = rowIndex.KeyRange
         sourceIndex.Builder.GetRange(sourceIndex, Some(min, BoundaryBehavior.Inclusive), Some(max, BoundaryBehavior.Inclusive), vector)
       else sourceIndex, vector
@@ -430,7 +435,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     |> Frame<'TRowKey, 'TColumnKey>.FromColumnsNonGeneric
 
   // Apply operation 'op' to all columns that exist in both frames and are convertible to 'T
-  static member inline private PointwiseFrameFrame<'T>(frame1:Frame<'TRowKey, 'TColumnKey>, frame2:Frame<'TRowKey, 'TColumnKey>, op:'T -> 'T -> 'T) =
+  static member inline internal PointwiseFrameFrame<'T>(frame1:Frame<'TRowKey, 'TColumnKey>, frame2:Frame<'TRowKey, 'TColumnKey>, op:'T -> 'T -> 'T) =
     let rowIndex, f1cmd, f2cmd = frame1.IndexBuilder.Union( (frame1.RowIndex, Vectors.Return 0), (frame2.RowIndex, Vectors.Return 1) )
     frame1.Columns.Join(frame2.Columns).Select(fun (KeyValue(_, (l, r))) ->
       let (|TryGetAsT|_|) (lv:ObjectSeries<'TRowKey>) = lv.TryAs<'T>() |> OptionalValue.asOption
@@ -664,7 +669,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
               yield ""
               let previous = ref None
               for colKey, _ in frame.ColumnIndex.Mappings do 
-                yield getLevel frame.ColumnIndex.Ordered previous ignore colLevels colLevel colKey ]
+                yield getLevel frame.ColumnIndex.IsOrdered previous ignore colLevels colLevel colKey ]
 
           // Yield row data
           let rows = frame.Rows
@@ -683,7 +688,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
                 yield [
                   // Yield all row keys
                   for rowLevel in 0 .. rowLevels - 1 do 
-                    yield getLevel frame.RowIndex.Ordered previous.[rowLevel] (reset rowLevel) rowLevels rowLevel rowKey
+                    yield getLevel frame.RowIndex.IsOrdered previous.[rowLevel] (reset rowLevel) rowLevels rowLevel rowKey
                   yield "->"
                   for KeyValue(_, value) in SeriesExtensions.GetAllObservations(row) do  // TODO: is this good?
                     yield value.ToString() ] }
@@ -696,6 +701,10 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
 // ColumnSeries/RowSeries (below) which are referenced by df.Rows, df.Columns (above)
 // ------------------------------------------------------------------------------------------------
 
+/// [omit]
+/// Module with helper functions and operations that are needed by Frame<R, C>, but
+/// are easier to write in a separate type (having them inside generic type 
+/// can confuse the type inference in various ways).
 and FrameUtils = 
   // Current vector builder to be used for creating frames
   static member vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance 
@@ -764,6 +773,49 @@ and FrameUtils =
     let initial = Frame(Index.ofKeys [], Index.ofUnorderedKeys [], Vector.ofValues [| |])
     (initial, Series.observations nested) ||> Seq.fold (fun df (name, series) -> 
       df.Join(FrameUtils.createColumn(name, series), JoinKind.Outer))
+
+  /// Given a series of frames, build a frame with multi-level row index
+  static member collapseRows (series:Series<'R1, Frame<'R2, 'C>>) = 
+    series 
+    |> Series.map (fun k1 df -> df.Rows |> Series.mapKeys(fun k2 -> (k1, k2)) |> FrameUtils.fromRows)
+    |> Series.values |> Seq.reduce (fun df1 df2 -> df1.Append(df2))
+
+// ------------------------------------------------------------------------------------------------
+// These should really be extensions, but they take generic type parameter
+// ------------------------------------------------------------------------------------------------
+
+and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality> with
+
+  member frame.GroupRowsBy<'TGroup when 'TGroup : equality>(key) =
+    frame.Rows 
+    |> Series.groupInto (fun _ (v:ObjectSeries<_>) -> v.GetAs<'TGroup>(key)) (fun k g -> g |> FrameUtils.fromRows)
+    |> FrameUtils.collapseRows
+
+  member frame.GroupRowsInto<'TGroup when 'TGroup : equality>(key, f:System.Func<_, _, _>) =
+    frame.Rows 
+    |> Series.groupInto (fun _ v -> v.GetAs<'TGroup>(key)) (fun k g -> f.Invoke(k, g |> FrameUtils.fromRows))
+    |> FrameUtils.collapseRows
+
+  member frame.GroupRowsUsing<'TGroup when 'TGroup : equality>(f:System.Func<_, _, 'TGroup>) =
+    frame.Rows 
+    |> Series.groupInto (fun k v -> f.Invoke(k, v)) (fun k g -> g |> FrameUtils.fromRows)
+    |> FrameUtils.collapseRows
+
+  /// Returns a data frame whose rows are indexed based on the specified column of the original
+  /// data frame. The generic type parameter is (typically) needed to specify the type of the 
+  /// values in the required index column.
+  ///
+  /// ## Parameters
+  ///  - `column` - The name of a column in the original data frame that will be used for the new
+  ///    index. Note that the values in the column need to be unique.
+  ///
+  /// [category:Indexing]
+  member frame.IndexRows<'TNewRowIndex when 'TNewRowIndex : equality>(column) : Frame<'TNewRowIndex, _> = 
+    let columnVec = frame.GetSeries<'TNewRowIndex>(column)
+    let lookup addr = columnVec.Vector.GetValue(addr)
+    let newRowIndex, rowCmd = frame.IndexBuilder.WithIndex(frame.RowIndex, lookup, Vectors.Return 0)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
+    Frame<'TNewRowIndex, 'TColumnKey>(newRowIndex, frame.ColumnIndex, newData)
 
 // ------------------------------------------------------------------------------------------------
 // 

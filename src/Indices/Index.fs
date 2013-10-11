@@ -143,7 +143,7 @@ type IIndex<'K when 'K : equality> =
   /// (the operation may fail for unordered indices)
   abstract KeyRange : 'K * 'K
   /// Returns `true` if the index is ordered and `false` otherwise
-  abstract Ordered : bool
+  abstract IsOrdered : bool
   /// Returns a comparer associated with the values used by the current index.
   abstract Comparer : System.Collections.Generic.Comparer<'K>
   /// Returns an index builder that canbe used for constructing new indices of the

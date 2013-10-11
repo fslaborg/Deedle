@@ -244,6 +244,11 @@ open System.Drawing
 open FSharp.DataFrame
 open System.Collections.Generic
 
+/// An internal exception that is used to handle the case when comparison fails
+/// (even though the type implements IComparable and everything...)
+type ComparisonFailedException() =
+  inherit Exception() 
+
 /// Utility functions for identifying missing values. The `isNA` function 
 /// can be used to test whether a value represents a missing value - this includes
 /// the `null` value, `Nullable<T>` value with `HasValue = false` and 
@@ -686,7 +691,9 @@ module Seq =
       elif not en2HasNext.Value then yield! returnAll en1 en1HasNext.Value (fun (k, i) -> k, Some i, None)
       else
         let en1Val, en2Val = fst en1.Current, fst en2.Current
-        let comparison = comparer.Compare(en1Val, en2Val)
+        let comparison = 
+          try comparer.Compare(en1Val, en2Val)
+          with _ -> raise <| ComparisonFailedException()
         if comparison = 0 then 
           yield en1Val, Some(snd en1.Current), Some(snd en2.Current)
           en1HasNext := en1.MoveNext()

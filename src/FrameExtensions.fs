@@ -351,27 +351,9 @@ module FSharpFrameExtensions =
     ///  - `culture` - Specify the `CultureInfo` object used for formatting numerical data
     ///
     /// [category:Input and output]
-    member frame.SaveCsv(path:string, keyNames, ?separator, ?culture) = 
+    member frame.SaveCsv(path:string, keyNames) = 
       use writer = new StreamWriter(path)
-      FrameUtils.writeCsv writer (Some path) separator culture (Some true) (Some keyNames) frame
-
-    member frame.Append(rowKey, row) = frame.Append(Frame.ofRows [ rowKey => row ])
-
-    // Grouping
-    member frame.GroupRowsBy<'TGroup when 'TGroup : equality>(key) =
-      frame.Rows 
-      |> Series.groupInto (fun _ v -> v.GetAs<'TGroup>(key)) (fun k g -> g |> Frame.ofRows)      
-      |> Frame.collapseRows
-
-    member frame.GroupRowsInto<'TGroup when 'TGroup : equality>(key, f:System.Func<_, _, _>) =
-      frame.Rows 
-      |> Series.groupInto (fun _ v -> v.GetAs<'TGroup>(key)) (fun k g -> f.Invoke(k, g |> Frame.ofRows))
-      |> Frame.collapseRows
-
-    member frame.GroupRowsUsing<'TGroup when 'TGroup : equality>(f:System.Func<_, _, 'TGroup>) =
-      frame.Rows 
-      |> Series.groupInto (fun k v -> f.Invoke(k, v)) (fun k g -> g |> Frame.ofRows)
-      |> Frame.collapseRows
+      FrameUtils.writeCsv writer (Some path) None None (Some true) (Some keyNames) frame
 
 module FrameBuilder =
   type Columns<'R, 'C when 'C : equality and 'R : equality>() = 
@@ -651,6 +633,14 @@ type FrameExtensions =
   [<Extension>]
   static member Reduce(frame:Frame<'TRowKey, 'TColumnKey>, aggregation:Func<'T, 'T, 'T>) = 
     frame |> Frame.reduce (fun a b -> aggregation.Invoke(a, b))
+
+  [<Extension>]
+  static member ReduceBy(frame:Frame<'R1, 'C1>, keySelector:Func<_, 'K>, valueSelector:Func<_, 'V>) =
+    frame |> Frame.reduceBy keySelector.Invoke valueSelector.Invoke
+
+  [<Extension>]
+  static member ReduceRowsBy(frame:Frame<'R, 'C>, keySelector:Func<'R, 'K>, op:Func<_, 'V>) =
+    frame |> Frame.reduceRowsBy keySelector.Invoke op.Invoke
 
   /// [category:Fancy accessors]
   [<Extension>]

@@ -30,11 +30,8 @@ module Frame =
     series 
     |> Series.map (fun k1 df -> df.Columns |> Series.mapKeys(fun k2 -> (k1, k2)) |> FrameUtils.fromColumns)
     |> Series.values |> Seq.reduce (fun df1 df2 -> df1.Append(df2))
-  let collapseRows (series:Series<'K, Frame<'K1, 'K2>>) = 
-    series 
-    |> Series.map (fun k1 df -> df.Rows |> Series.mapKeys(fun k2 -> (k1, k2)) |> FrameUtils.fromRows)
-    |> Series.values |> Seq.reduce (fun df1 df2 -> df1.Append(df2))
 
+  let collapseRows (series:Series<'K, Frame<'K1, 'K2>>) = FrameUtils.collapseRows series
 
   let groupRowsUsing selector (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.groupInto selector (fun k g -> g |> FrameUtils.fromRows) |> collapseRows
@@ -444,9 +441,10 @@ module Frame =
     frame.GetColumns<float>() |> Series.map (fun _ -> Series.statBy keySelector op) |> FrameUtils.fromColumns
 
   let reduceBy keySelector op (frame:Frame<'R, 'C>) = 
-    frame.Columns |> Series.map (fun _ -> Series.reduceBy keySelector op) |> FrameUtils.fromColumns
+    frame.Columns |> Series.map (fun _ -> Series.reduceBy keySelector (fun s -> op (ObjectSeries<_> s))) |> FrameUtils.fromColumns
 
-
+  let reduceRowsBy (keySelector:'R -> 'K) (op:_ -> 'V) (frame:Frame<'R, 'C>) = 
+    frame.Rows |> Series.reduceBy keySelector (FrameUtils.fromRows >> op)
 
   let unstackBy keySelector (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.groupInto (fun k _ -> keySelector k) (fun nk s -> FrameUtils.fromRows s)

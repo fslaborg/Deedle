@@ -178,7 +178,7 @@ type internal DelayedIndex<'K, 'V when 'K : equality> internal (source:DelayedSo
     member x.Lookup(key, semantics, check) = source.Index.Lookup(key, semantics, check)
     member x.Mappings = source.Index.Mappings
     member x.Range = source.Index.Range
-    member x.Ordered = true // source.Index.Ordered
+    member x.IsOrdered = true // source.Index.Ordered
     member x.Comparer = source.Index.Comparer
   interface IDelayedIndex<'K> with
     member x.Invoke(func) = func.Invoke<'V>(x)

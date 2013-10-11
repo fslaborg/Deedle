@@ -31,11 +31,16 @@ type LinearIndex<'K when 'K : equality>
     | Some ord -> ord
     | _ when 
           typeof<IComparable>.IsAssignableFrom(typeof<'K>) ||
-          typeof<IComparable<'K>>.IsAssignableFrom(typeof<'K>) -> Seq.isSorted keys comparer
+          typeof<IComparable<'K>>.IsAssignableFrom(typeof<'K>) -> 
+            // This can still fail :-( for example, if the type is a tuple
+            // with incomparable values. So, let's just have a fallback returning false...
+            try Seq.isSorted keys comparer
+            with _ -> false
     | _ when
           typeof<'K>.IsGenericTypeDefinition && typeof<'K>.GetGenericTypeDefinition() = typedefof<Nullable<_>> ->
-            Seq.isSorted keys comparer
-    | _ -> false)
+            try Seq.isSorted keys comparer 
+            with _ -> false
+    | _ -> false )
 
   // These are used for NearestSmaller/NearestGreater lookup and 
   // might not work for big data sets...
@@ -147,7 +152,7 @@ type LinearIndex<'K when 'K : equality>
     /// Returns the range used by the index
     member x.Range = Address.rangeOf(keys)
     /// Are the keys of the index ordered?
-    member x.Ordered = ordered.Value
+    member x.IsOrdered = ordered.Value
     member x.Comparer = comparer
 
 
@@ -202,7 +207,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
     /// Aggregate ordered index
     member builder.Aggregate<'K, 'R, 'TNewKey when 'K : equality and 'TNewKey : equality>
         (index:IIndex<'K>, aggregation, vector, valueSel:_ * _ -> OptionalValue<'R>, keySel:_ * _ -> 'TNewKey) =
-      if not index.Ordered then 
+      if not index.IsOrdered then 
         invalidOp "Floating window aggregation and chunking is only supported on ordered indices."
       let builder = (builder :> IIndexBuilder)
       let ranges =
@@ -255,7 +260,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
     member builder.Resample<'K, 'TNewKey, 'R when 'K : equality and 'TNewKey : equality> 
         (index:IIndex<'K>, keys:seq<'K>, dir:Direction, vector, valueSel:_ * _ -> OptionalValue<'R>, keySel:_ * _ -> 'TNewKey) =
 
-      if not index.Ordered then 
+      if not index.IsOrdered then 
         invalidOp "Resampling is only supported on ordered indices"
 
       let builder = (builder :> IIndexBuilder)
@@ -295,8 +300,10 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
     member builder.Union<'K when 'K : equality >
         ( (index1:IIndex<'K>, vector1), (index2, vector2) )= 
       let joined, ordered =
-        if index1.Ordered && index2.Ordered then
-          Seq.alignWithOrdering index1.Mappings index2.Mappings index1.Comparer |> Array.ofSeq, Some true
+        if index1.IsOrdered && index2.IsOrdered then
+          try Seq.alignWithOrdering index1.Mappings index2.Mappings index1.Comparer |> Array.ofSeq, Some true
+          with :? ComparisonFailedException ->
+            Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq, None
         else
           Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq, None
       returnUsingAlignedSequence joined vector1 vector2 ordered 
@@ -306,8 +313,10 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
     member builder.Append<'K when 'K : equality >
         ( (index1:IIndex<'K>, vector1), (index2, vector2), transform) = 
       let joined, ordered = 
-        if index1.Ordered && index2.Ordered then
-          Seq.alignWithOrdering index1.Mappings index2.Mappings index1.Comparer |> Array.ofSeq, Some true
+        if index1.IsOrdered && index2.IsOrdered then
+          try Seq.alignWithOrdering index1.Mappings index2.Mappings index1.Comparer |> Array.ofSeq, Some true
+          with :? ComparisonFailedException ->
+            Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq, None
         else
           Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq, None
       let newIndex, vec1Cmd, vec2Cmd = returnUsingAlignedSequence joined vector1 vector2 ordered
@@ -318,8 +327,10 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
     member builder.Intersect<'K when 'K : equality >
         ( (index1:IIndex<'K>, vector1), (index2, vector2) ) = 
       let joined, ordered = 
-        if index1.Ordered && index2.Ordered then
-          Seq.alignWithOrdering index1.Mappings index2.Mappings index1.Comparer |> Array.ofSeq, Some true
+        if index1.IsOrdered && index2.IsOrdered then
+          try Seq.alignWithOrdering index1.Mappings index2.Mappings index1.Comparer |> Array.ofSeq, Some true
+          with :? ComparisonFailedException ->
+            Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq, None
         else
           Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq, None
       let joined = joined |> Seq.filter (function _, Some _, Some _ -> true | _ -> false)
@@ -354,7 +365,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
              if searchKey.Matches(key) then yield addr, key |]
       let range = Address.rangeOf(matching)
       let relocs = Seq.zip (Address.generateRange(range)) (Seq.map fst matching)
-      let newIndex = LinearIndex<_>(Seq.map snd matching, builder, index.Ordered)
+      let newIndex = LinearIndex<_>(Seq.map snd matching, builder, index.IsOrdered)
       let newVector = Vectors.Relocate(vector, range, relocs)
       upcast newIndex, newVector
 
@@ -365,7 +376,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       | OptionalValue.Present(addr) ->
           let newVector = Vectors.DropRange(vector, (snd addr, snd addr))
           let newKeys = index.Keys |> Seq.filter ((<>) key)
-          let newIndex = LinearIndex<_>(newKeys, builder, index.Ordered)
+          let newIndex = LinearIndex<_>(newKeys, builder, index.IsOrdered)
           upcast newIndex, newVector
       | _ ->
           invalidArg "key" (sprintf "The key '%O' is not present in the index." key)
@@ -396,8 +407,8 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
           let newKeys = Address.getRange(index.KeysArray.Value, lo, hi) |> Array.ofSeq
           let newVector = Vectors.GetRange(vector, (lo, hi))
-          upcast LinearIndex<_>(newKeys, builder, (index :> IIndex<_>).Ordered), newVector
-      | _ -> upcast LinearIndex<_>([], builder, index.Ordered), Vectors.Empty
+          upcast LinearIndex<_>(newKeys, builder, (index :> IIndex<_>).IsOrdered), newVector
+      | _ -> upcast LinearIndex<_>([], builder, index.IsOrdered), Vectors.Empty
 
 // --------------------------------------------------------------------------------------
 // Functions for creatin linear indices
