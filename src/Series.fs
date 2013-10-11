@@ -318,7 +318,7 @@ and Series<'K, 'V when 'K : equality>
   /// [category:Appending and joining]
   member series.Join<'V2>(otherSeries:Series<'K, 'V2>, kind, lookup) =
     let restrictToThisIndex (restriction:IIndex<_>) (sourceIndex:IIndex<_>) vector = 
-      if restriction.Ordered && sourceIndex.Ordered then
+      if lookup = Lookup.Exact && restriction.Ordered && sourceIndex.Ordered then
         let min, max = index.KeyRange
         sourceIndex.Builder.GetRange(sourceIndex, Some(min, BoundaryBehavior.Inclusive), Some(max, BoundaryBehavior.Inclusive), vector)
       else sourceIndex, vector

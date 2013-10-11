@@ -268,3 +268,71 @@ let ``Slicing of ordered series works when keys are out of series key range``() 
   s.[0.0 .. 5.0].Values |> List.ofSeq |> shouldEqual []
   s.[25.0 .. 35.0].Values |> List.ofSeq |> shouldEqual []
   s.[20.0 .. 5.0].Values |> List.ofSeq |> shouldEqual []
+
+
+// ------------------------------------------------------------------------------------------------
+// Appending and joining
+// ------------------------------------------------------------------------------------------------
+  
+let a =
+  [ DateTime(2013,9,9) => 1.0; // no matching point in b
+    DateTime(2013,9,10) => 2.0; // no matching point in b
+    DateTime(2013,9,11) => 3.0;
+    DateTime(2013,9,12) => 4.0; ]  // no matching point in b
+    |> series
+
+let b = 
+  [ DateTime(2013,9,8) => 8.0; // no matching point in a
+    DateTime(2013,9,11) => 11.0 ] |> series
+
+[<Test>]
+let ``ZipInto correctly zips series with missing values and custom operation``() =
+  let res = (a, b) ||> Series.zipInto (fun l r -> (l**2.0) * r)
+  res.GetAt(0) |> shouldEqual (99.0)
+
+
+[<Test>]
+let ``ZipAlignInto correctly left-aligns and zips series with nearest smaller option``() =
+  let res = (a, b) ||> Series.zipAlignInto (fun l r -> (l**2.0) * r) JoinKind.Left Lookup.NearestSmaller
+  res.GetAt(0) |> shouldEqual 8.0
+  res.GetAt(1) |> shouldEqual 32.0
+  res.GetAt(2) |> shouldEqual 99.0
+  res.GetAt(3) |> shouldEqual (16.0 * 11.0)
+
+
+[<Test>]
+let ``ZipAlignInto correctly left-aligns and zips series with nearest greater option``() =
+  let res = (a, b) ||> Series.zipAlignInto (fun l r -> (l**2.0) * r) JoinKind.Left Lookup.NearestGreater
+  res.GetAt(0) |> shouldEqual 11.0
+  res.GetAt(1) |> shouldEqual 44.0
+  res.GetAt(2) |> shouldEqual 99.0
+  res.TryGetAt(3) |> shouldEqual OptionalValue.Missing
+
+
+[<Test>]
+let ``ZipAlignInto correctly right-aligns and zips series with nearest smaller option``() =
+  let res = (b, a) ||> Series.zipAlignInto (fun l r -> (l**2.0) * r) JoinKind.Right Lookup.NearestSmaller
+  res.GetAt(0) |> shouldEqual ((8.0 ** 2.0) * 1.0)
+  res.GetAt(1) |> shouldEqual ((8.0 ** 2.0) * 2.0)
+  res.GetAt(2) |> shouldEqual ((11.0 ** 2.0) * 3.0)
+  res.GetAt(3) |> shouldEqual ((11.0 ** 2.0) * 4.0)
+
+
+[<Test>]
+let ``ZipAlignInto correctly right-aligns and zips series with nearest greater option``() =
+  let res = (b, a) ||> Series.zipAlignInto (fun l r -> (l**2.0) * r) JoinKind.Right Lookup.NearestGreater
+  res.GetAt(0) |> shouldEqual ((11.0 ** 2.0) * 1.0)
+  res.GetAt(1) |> shouldEqual ((11.0 ** 2.0) * 2.0)
+  res.GetAt(2) |> shouldEqual ((11.0 ** 2.0) * 3.0)
+  res.TryGetAt(3) |> shouldEqual OptionalValue.Missing
+
+
+  //Outer join currently ignores lookup option
+//[<Test>]
+//let ``ZipAlignInto correctly outer-aligns and zips series with nearest smaller option``() =
+//  let res = (a, b) ||> Series.zipAlignInto (fun l r -> (l**2.0) * r) JoinKind.Outer Lookup.NearestSmaller
+//  res.TryGetAt(0) |> shouldEqual OptionalValue.Missing // 9/8 -> (None, 8) no point in a smaller than first in b
+//  res.GetAt(1) |> shouldEqual ((1.0 ** 2.0) * 9.0) // 9/9 -> (1, 9)
+//  res.GetAt(2) |> shouldEqual ((2.0 ** 2.0) * 9.0) // 9/10 -> (2, 9) - get smaller from b
+//  res.GetAt(3) |> shouldEqual ((11.0 ** 2.0) * 3.0) // 9/11 -> (3, 11)
+//  res.GetAt(4) |> shouldEqual ((11.0 ** 2.0) * 3.0) // 9/12 -> (4, 11) - get smaller from b
