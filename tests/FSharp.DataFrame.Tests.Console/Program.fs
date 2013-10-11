@@ -19,6 +19,6 @@ do
     timed(fun () -> 
       //Tests.Frame.``Can perform numerical operation with a scalar on data frames``()
       //Tests.Frame.``Can perform pointwise numerical operations on two frames`` ()
-      Tests.Series.``Can create minute samples over one year of items``()
+      Tests.Frame.``Can perform pointwise numerical operations on two frames``()
     )
 

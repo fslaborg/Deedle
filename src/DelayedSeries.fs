@@ -210,7 +210,7 @@ and internal DelayedIndexBuilder() =
     member x.Intersect(sc1, sc2) = builder.Intersect(sc1, sc2)
     member x.LookupLevel(sc, key) = builder.LookupLevel(sc, key)
     member x.WithIndex(index1, f, vector) = builder.WithIndex(index1, f, vector)
-    member x.Reindex(index1, index2, semantics, vector) = builder.Reindex(index1, index2, semantics, vector)
+    member x.Reindex(index1, index2, semantics, vector, cond) = builder.Reindex(index1, index2, semantics, vector, cond)
     member x.DropItem(sc, key) = builder.DropItem(sc, key)
     member x.Resample(index, keys, close, vect, ks, vs) = builder.Resample(index, keys, close, vect, ks, vs)
     

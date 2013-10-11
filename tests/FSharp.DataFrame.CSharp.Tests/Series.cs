@@ -10,34 +10,6 @@ using FSharp.DataFrame;
 namespace FSharp.DataFrame.CSharp.Tests
 {
 	/* ----------------------------------------------------------------------------------
-	 * Test data frame dynamic 
-	 * --------------------------------------------------------------------------------*/
-	class DynamicFrameTests
-	{
-		[Test, Ignore]
-		public static void CanAddSeriesDynamically()
-		{
-			var df =
-				new FrameBuilder.Columns<int, string> {
-					{ "Test", new SeriesBuilder<int> { {1, 11.1}, {2,22.2} }.Series }
-				}.Frame;
-			dynamic dfd = df;
-			dfd.Test2 = df.GetSeries<float>("Test");
-		}
-
-		[Test, Ignore]
-		public static void CanGetSeriesDynamically()
-		{
-			var df =
-				new FrameBuilder.Columns<int, string> {
-					{ "Test", new SeriesBuilder<int> { {1, 11.1}, {2,22.2} }.Series }
-				}.Frame;
-			dynamic dfd = df;
-			Series<int, double> s = dfd.Test;
-		}
-	}
-
-	/* ----------------------------------------------------------------------------------
 	 * Test series builder
 	 * --------------------------------------------------------------------------------*/
 	class SeriesBuilderTests

@@ -163,9 +163,9 @@ and Series<'K, 'V when 'K : equality>
   ///    can be used when the current series is ordered.
   ///
   /// [category:Accessors and slicing]
-  member x.GetItems(keys, lookup) =    
+  member series.GetItems(keys, lookup) =    
     let newIndex = indexBuilder.Create<_>(keys, None)
-    let newVector = vectorBuilder.Build(indexBuilder.Reindex(index, newIndex, lookup, Vectors.Return 0), [| vector |])
+    let newVector = vectorBuilder.Build(indexBuilder.Reindex(index, newIndex, lookup, Vectors.Return 0, fun addr -> series.Vector.GetValue(addr).HasValue), [| vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
   ///
@@ -326,7 +326,9 @@ and Series<'K, 'V when 'K : equality>
 
   /// [category:Appending, joining and zipping]
   member series.Zip<'V2>(otherSeries:Series<'K, 'V2>, kind, lookup) =
-    // TODO: Avoid duplicating code here and in Frame.Join ?? 
+    
+    // TODO: Avoid duplicating code here and in Frame.Join!!
+
     let restrictToThisIndex (restriction:IIndex<_>) (sourceIndex:IIndex<_>) vector = 
       if lookup = Lookup.Exact && restriction.IsOrdered && sourceIndex.IsOrdered then
         let min, max = index.KeyRange
@@ -340,11 +342,11 @@ and Series<'K, 'V when 'K : equality>
           indexBuilder.Intersect( (index, Vectors.Return 0), (otherSeries.Index, Vectors.Return 1) )
       | JoinKind.Left ->
           let otherRowIndex, vector = restrictToThisIndex index otherSeries.Index (Vectors.Return 1)
-          let otherRowCmd = indexBuilder.Reindex(otherRowIndex, index, lookup, vector)
+          let otherRowCmd = indexBuilder.Reindex(otherRowIndex, index, lookup, vector, fun addr -> otherSeries.Vector.GetValue(addr).HasValue)
           index, Vectors.Return 0, otherRowCmd
       | JoinKind.Right ->
           let thisRowIndex, vector = restrictToThisIndex otherSeries.Index index (Vectors.Return 0)
-          let thisRowCmd = indexBuilder.Reindex(thisRowIndex, otherSeries.Index, lookup, vector)
+          let thisRowCmd = indexBuilder.Reindex(thisRowIndex, otherSeries.Index, lookup, vector, fun addr -> series.Vector.GetValue(addr).HasValue)
           otherSeries.Index, thisRowCmd, Vectors.Return 1
       | JoinKind.Outer | _ ->
           indexBuilder.Union( (index, Vectors.Return 0), (otherSeries.Index, Vectors.Return 1) )

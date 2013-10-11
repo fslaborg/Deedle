@@ -90,11 +90,11 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
         indexBuilder.Intersect( (rowIndex, vector1), (otherIndex, vector2) )
     | JoinKind.Left ->
         let otherRowIndex, vector = restrictToRowIndex lookup rowIndex otherIndex vector2
-        let otherRowCmd = indexBuilder.Reindex(otherRowIndex, rowIndex, lookup, vector)
+        let otherRowCmd = indexBuilder.Reindex(otherRowIndex, rowIndex, lookup, vector, fun _ -> true)
         rowIndex, vector1, otherRowCmd
     | JoinKind.Right ->
         let thisRowIndex, vector = restrictToRowIndex lookup otherIndex rowIndex vector1
-        let thisRowCmd = indexBuilder.Reindex(thisRowIndex, otherIndex, lookup, vector)
+        let thisRowCmd = indexBuilder.Reindex(thisRowIndex, otherIndex, lookup, vector, fun _ -> true)
         otherIndex, thisRowCmd, vector2
     | JoinKind.Outer | _ ->
         indexBuilder.Union( (rowIndex, vector1), (otherIndex, vector2) )
@@ -464,22 +464,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
 
   // Apply operation 'op' to all columns that exist in both frames and are convertible to 'T
   static member inline internal PointwiseFrameFrame<'T>(frame1:Frame<'TRowKey, 'TColumnKey>, frame2:Frame<'TRowKey, 'TColumnKey>, op:'T -> 'T -> 'T) =
-    let rowIndex, f1cmd, f2cmd = frame1.IndexBuilder.Union( (frame1.RowIndex, Vectors.Return 0), (frame2.RowIndex, Vectors.Return 1) )
-    frame1.Columns.Zip(frame2.Columns).Select(fun (KeyValue(_, (l, r))) ->
-      let (|TryGetAsT|_|) (lv:ObjectSeries<'TRowKey>) = lv.TryAs<'T>() |> OptionalValue.asOption
-      match l, r with
-      | OptionalValue.Present (TryGetAsT lv), OptionalValue.Present (TryGetAsT rv) ->
-          let res = Vectors.Combine(f1cmd, f2cmd, VectorValueTransform.CreateLifted op)
-          let newVector = frame1.VectorBuilder.Build(res, [| lv.Vector; rv.Vector |]) 
-          Series<_, _>(rowIndex, newVector, frame1.VectorBuilder, frame1.IndexBuilder) :> ISeries<_>
-      | OptionalValue.Present v, _ -> 
-          let newVector = frame1.VectorBuilder.Build(f1cmd, [| v.Vector |])
-          Series<_, _>(rowIndex, newVector, frame1.VectorBuilder, frame1.IndexBuilder) :> ISeries<_>
-      | _, OptionalValue.Present v -> 
-          let newVector = frame2.VectorBuilder.Build(substitute (1, 0) f2cmd, [| v.Vector |])
-          Series<_, _>(rowIndex, newVector, frame2.VectorBuilder, frame2.IndexBuilder) :> ISeries<_>
-      | _ -> failwith "PointwiseFrameFrame: Join failed."  )      
-    |> Frame<'TRowKey, 'TColumnKey>.FromColumnsNonGeneric
+    frame1.Zip<'T, 'T, 'T>(frame2, JoinKind.Outer, JoinKind.Outer, Lookup.Exact, fun a b -> op a b)
 
   // Apply operation 'op' with 'scalar' on the right to all columns convertible to 'T
   static member inline private ScalarOperationR<'T>(frame:Frame<'TRowKey, 'TColumnKey>, scalar:'T, op:'T -> 'T -> 'T) : Frame<'TRowKey, 'TColumnKey> =

@@ -269,7 +269,6 @@ let ``Slicing of ordered series works when keys are out of series key range``() 
   s.[25.0 .. 35.0].Values |> List.ofSeq |> shouldEqual []
   s.[20.0 .. 5.0].Values |> List.ofSeq |> shouldEqual []
 
-
 // ------------------------------------------------------------------------------------------------
 // Appending and joining
 // ------------------------------------------------------------------------------------------------
@@ -327,12 +326,20 @@ let ``ZipAlignInto correctly right-aligns and zips series with nearest greater o
   res.TryGetAt(3) |> shouldEqual OptionalValue.Missing
 
 
-  //Outer join currently ignores lookup option
-//[<Test>]
-//let ``ZipAlignInto correctly outer-aligns and zips series with nearest smaller option``() =
-//  let res = (a, b) ||> Series.zipAlignInto (fun l r -> (l**2.0) * r) JoinKind.Outer Lookup.NearestSmaller
-//  res.TryGetAt(0) |> shouldEqual OptionalValue.Missing // 9/8 -> (None, 8) no point in a smaller than first in b
-//  res.GetAt(1) |> shouldEqual ((1.0 ** 2.0) * 9.0) // 9/9 -> (1, 9)
-//  res.GetAt(2) |> shouldEqual ((2.0 ** 2.0) * 9.0) // 9/10 -> (2, 9) - get smaller from b
-//  res.GetAt(3) |> shouldEqual ((11.0 ** 2.0) * 3.0) // 9/11 -> (3, 11)
-//  res.GetAt(4) |> shouldEqual ((11.0 ** 2.0) * 3.0) // 9/12 -> (4, 11) - get smaller from b
+[<Test>]
+let ``Can zip series with lookup and skip over missing values ``() =
+  // join with lookup is not skipping over NaN values
+  let l = [ 1 => 1.0;  2 => 2.0;        3 => 3.0;        4 => 4.0;  ] |> series
+  let r = [ 1 => 10.0; 2 => Double.NaN; 3 => Double.NaN; 4 => 40.0; ] |> series
+
+  let res1 = l.Zip(r, JoinKind.Left, Lookup.NearestSmaller)
+  res1.GetAt(0) |> shouldEqual (OptionalValue 1.0, OptionalValue 10.0)
+  res1.GetAt(1) |> shouldEqual (OptionalValue 2.0, OptionalValue 10.0) // second values is missing instead of 10
+  res1.GetAt(2) |> shouldEqual (OptionalValue 3.0, OptionalValue 10.0) // second values is missing instead of 10
+  res1.GetAt(3) |> shouldEqual (OptionalValue 4.0, OptionalValue 40.0)
+
+  let res2 = l.Zip(r, JoinKind.Left, Lookup.NearestGreater)
+  res2.GetAt(0) |> shouldEqual (OptionalValue 1.0, OptionalValue 10.0)
+  res2.GetAt(1) |> shouldEqual (OptionalValue 2.0, OptionalValue 40.0) // second values is missing instead of 40
+  res2.GetAt(2) |> shouldEqual (OptionalValue 3.0, OptionalValue 40.0) // second values is missing instead of 40
+  res2.GetAt(3) |> shouldEqual (OptionalValue 4.0, OptionalValue 40.0)

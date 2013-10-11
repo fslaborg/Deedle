@@ -219,8 +219,12 @@ and IIndexBuilder =
   /// index. When finding element location in the new index, the provided `Lookup` strategy
   /// is used. This is used, for example, when doing left/right join (to align the new data
   /// with another index) or when selecting multiple keys (`Series.lookupAll`).
+  ///
+  /// The proivded `condition` is used when searching for a value in the old index
+  /// (when lookup is not exact). It is called to check that the address contains an
+  /// appropriate value (e.g. when we need to skip over missing values).
   abstract Reindex :
-    IIndex<'K> * IIndex<'K> * Lookup * VectorConstruction -> VectorConstruction
+    IIndex<'K> * IIndex<'K> * Lookup * VectorConstruction * (Address -> bool) -> VectorConstruction
 
   /// Create a new index by picking a new key value for each key in the original index
   /// (used e.g. when we have a frame and want to use specified column as a new index).

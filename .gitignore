@@ -24,3 +24,4 @@ TestResult.xml
 *.bak
 gh-pages/
 release/
+*.psess
