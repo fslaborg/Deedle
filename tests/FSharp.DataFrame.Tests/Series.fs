@@ -268,3 +268,33 @@ let ``Slicing of ordered series works when keys are out of series key range``() 
   s.[0.0 .. 5.0].Values |> List.ofSeq |> shouldEqual []
   s.[25.0 .. 35.0].Values |> List.ofSeq |> shouldEqual []
   s.[20.0 .. 5.0].Values |> List.ofSeq |> shouldEqual []
+
+
+[<Test>]
+let ``Can join series with lookup and skip over missing values ``() =
+  let l =
+      [ 1 => 1.0;
+        2 => 2.0;
+        3 => 3.0;
+        4 => 4.0; ]
+        |> series
+  let r =
+      [ 1 => 10.0;
+        2 => Double.NaN; // join with lookup is not skipping over these values
+        3 => Double.NaN;
+        4 => 40.0; ]
+        |> series
+
+  let res1 = l.Join(r, JoinKind.Left, Lookup.NearestSmaller)
+  res1.GetAt(0) |> shouldEqual (OptionalValue 1.0, OptionalValue 10.0)
+  res1.GetAt(1) |> shouldEqual (OptionalValue 2.0, OptionalValue 10.0) // second values is missing instead of 10
+  res1.GetAt(2) |> shouldEqual (OptionalValue 3.0, OptionalValue 10.0) // second values is missing instead of 10
+  res1.GetAt(3) |> shouldEqual (OptionalValue 4.0, OptionalValue 40.0)
+
+  let res2 = l.Join(r, JoinKind.Left, Lookup.NearestGreater)
+  res2.GetAt(0) |> shouldEqual (OptionalValue 1.0, OptionalValue 10.0)
+  res2.GetAt(1) |> shouldEqual (OptionalValue 2.0, OptionalValue 40.0) // second values is missing instead of 40
+  res2.GetAt(2) |> shouldEqual (OptionalValue 3.0, OptionalValue 40.0) // second values is missing instead of 40
+  res2.GetAt(3) |> shouldEqual (OptionalValue 4.0, OptionalValue 40.0)
+
+
