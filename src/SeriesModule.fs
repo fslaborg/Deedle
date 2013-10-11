@@ -1007,3 +1007,22 @@ module Series =
   let inline lookupTimeAt start interval dir lookup (series:Series< ^K , ^V >) = 
     let add dt ts = (^K: (static member (+) : ^K * TimeSpan -> ^K) (dt, ts))
     Implementation.lookupTimeInternal add (Some start) interval dir lookup series
+
+
+// ------------------------------------------------------------------------------------------------
+// Appending and joining
+// ------------------------------------------------------------------------------------------------
+  
+  /// [category:Appending and joining]
+  let inline zipAlignInto (op:'V1->'V2->'R) kind lookup (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>) : Series<'K, 'R> =
+    let joined = series1.Join(series2, kind, lookup)
+    joined.SelectOptional(fun (KeyValue(_, v)) -> 
+      match v with
+      | OptionalValue.Present(OptionalValue.Present a, OptionalValue.Present b) -> 
+          OptionalValue(op a b)
+      | _ -> OptionalValue.Missing )
+
+  /// [category:Appending and joining]
+  let inline zipInto (op:'V1->'V2->'R) (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>) : Series<'K, 'R> =
+    zipAlignInto op JoinKind.Inner Lookup.Exact (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>)
+

@@ -620,6 +620,25 @@ type FrameExtensions =
   [<Extension>]
   static member DropSparseColumns(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.dropSparseCols frame
 
+    
+// ------------------------------------------------------------------------------------------------
+// Appending and joining
+// ------------------------------------------------------------------------------------------------
+  
+  /// [category:Appending and joining]
+  [<Extension>]
+  static member ZipInto<'KRow,'KColumn, 'TLeft,'TRight,'TResult when 'KRow : equality and 'KColumn : equality>(frameLeft:Frame<'KRow, 'KColumn>, frameRight:Frame<'KRow, 'KColumn>, resultSelector:Func<'TLeft,'TRight,'TResult>) =
+    (frameLeft, frameRight) 
+    ||> Frame.zipInto (resultSelector.Invoke |> FuncConvert.FuncFromTupled)
+
+  /// [category:Appending and joining]
+  [<Extension>]
+  static member ZipAlignInto<'KRow,'KColumn, 'TLeft,'TRight,'TResult when 'KRow : equality and 'KColumn : equality>(frameLeft:Frame<'KRow, 'KColumn>, frameRight:Frame<'KRow, 'KColumn>, resultSelector:Func<'TLeft,'TRight,'TResult>, columnKind, rowKind, lookup) =
+    (frameLeft, frameRight) 
+    ||> Frame.zipAlignInto (resultSelector.Invoke |> FuncConvert.FuncFromTupled) columnKind rowKind lookup
+
+
+
 type KeyValue =
   static member Create<'K, 'V>(key:'K, value:'V) = KeyValuePair(key, value)
 

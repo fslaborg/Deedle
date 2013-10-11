@@ -422,3 +422,39 @@ module Frame =
   /// [category:Missing values]
   let rowsDense (frame:Frame<'R, 'C>) = frame.RowsDense
 
+
+
+  
+// ------------------------------------------------------------------------------------------------
+// Appending and joining
+// ------------------------------------------------------------------------------------------------
+  
+  /// [category:Appending and joining]
+  let zipAlignInto (op:'V1->'V2->'VRes) columnKind rowKind lookup (frame1:Frame<'R, 'C>) (frame2:Frame<'R, 'C>) : Frame<'R, 'C> =
+    let rowIndex, f1cmd, f2cmd = frame1.IndexBuilder.Union( (frame1.RowIndex, Vectors.Return 0), (frame2.RowIndex, Vectors.Return 1) )
+    frame1.Columns.Join(frame2.Columns, columnKind).Select(fun (KeyValue(_, (l, r))) -> 
+      let (|TryGetAsV1|_|) (lv:ObjectSeries<'R>) = lv.TryAs<'V1>() |> OptionalValue.asOption
+      let (|TryGetAsV2|_|) (lv:ObjectSeries<'R>) = lv.TryAs<'V2>() |> OptionalValue.asOption
+
+      match l, r with
+      | OptionalValue.Present (TryGetAsV1 lv), OptionalValue.Present (TryGetAsV2 rv) ->
+          Series.zipAlignInto op rowKind lookup (Series.dropMissing lv) (Series.dropMissing rv) :> ISeries<'R> // TODO Series.Join with lookup doesn't check if nearest value is OptionalValue.Missing and returns missing value (threfore need Series.dropMissing here)
+      | OptionalValue.Present v, _ -> 
+          let newVector = frame1.VectorBuilder.Build(f1cmd, [| v.Vector |])
+          Series<'R, _>(rowIndex, newVector, frame1.VectorBuilder, frame1.IndexBuilder) :> ISeries<'R>
+      | _, OptionalValue.Present v -> 
+          let newVector = frame2.VectorBuilder.Build(VectorHelpers.substitute (1, 0) f2cmd, [| v.Vector |])
+          Series<_, _>(rowIndex, newVector, frame2.VectorBuilder, frame2.IndexBuilder)  :> ISeries<_>
+      | _ -> failwith "zipAlignInto: join failed."  
+    )
+    |> FrameUtils.fromColumns
+
+
+  /// [category:Appending and joining]
+  let zipInto (op:'V1->'V2->'VRes) (frame1:Frame<'R, 'C>) (frame2:Frame<'R, 'C>) : Frame<'R, 'C> =
+    zipAlignInto op JoinKind.Inner JoinKind.Inner Lookup.Exact frame1 frame2
+
+
+
+
+
