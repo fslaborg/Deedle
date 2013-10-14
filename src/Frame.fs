@@ -9,6 +9,7 @@ open FSharp.DataFrame.Keys
 open FSharp.DataFrame.Internal
 open FSharp.DataFrame.Indices
 open FSharp.DataFrame.Vectors
+open FSharp.DataFrame.JoinHelpers
 
 open System
 open System.ComponentModel
@@ -78,38 +79,6 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
       invalidOp "column" (sprintf "Column with a key '%O' is present, but does not contain a value" column)
     columnVector.Value
   
-  let restrictToRowIndex lookup (restriction:IIndex<_>) (sourceIndex:IIndex<_>) vector = 
-    if lookup = Lookup.Exact && restriction.IsOrdered && sourceIndex.IsOrdered then
-      let min, max = rowIndex.KeyRange
-      sourceIndex.Builder.GetRange(sourceIndex, Some(min, BoundaryBehavior.Inclusive), Some(max, BoundaryBehavior.Inclusive), vector)
-    else sourceIndex, vector
-
-  let fillMissing vector lookup = 
-    match lookup with
-    | Lookup.NearestSmaller -> Vectors.FillMissing(vector, VectorFillMissing.Direction Direction.Forward)
-    | Lookup.NearestGreater -> Vectors.FillMissing(vector, VectorFillMissing.Direction Direction.Backward)
-    | Lookup.Exact | _ -> vector
-
-  let createJoinTransformation kind lookup otherIndex vector1 vector2 =
-    // Inner join only makes sense with exact lookup
-    if lookup <> Lookup.Exact && kind = JoinKind.Inner then
-      invalidOp "Join/Zip - Inner join does can only be used with Lookup.Exact."
-    match kind with 
-    | JoinKind.Inner ->
-        indexBuilder.Intersect( (rowIndex, vector1), (otherIndex, vector2) )
-    | JoinKind.Left ->
-        let otherRowIndex, vector2 = restrictToRowIndex lookup rowIndex otherIndex vector2
-        let vector2 = fillMissing vector2 lookup
-        let otherRowCmd = indexBuilder.Reindex(otherRowIndex, rowIndex, lookup, vector2, fun _ -> true)
-        rowIndex, vector1, otherRowCmd
-    | JoinKind.Right ->
-        let thisRowIndex, vector1 = restrictToRowIndex lookup otherIndex rowIndex vector1
-        let vector1 = fillMissing vector1 lookup
-        let thisRowCmd = indexBuilder.Reindex(thisRowIndex, otherIndex, lookup, vector1, fun _ -> true)
-        otherIndex, thisRowCmd, vector2
-    | JoinKind.Outer | _ ->
-        indexBuilder.Union( (rowIndex, vector1), (otherIndex, vector2) )
-
   member private x.tryGetColVector column = 
     let columnIndex = columnIndex.Lookup(column)
     if not columnIndex.HasValue then OptionalValue.Missing else
@@ -133,7 +102,8 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     
     // Create transformations to join the rows (using the same logic as Join)
     // and make functions that transform vectors (when they are only available in first/second frame)
-    let rowIndex, f1cmd, f2cmd = createJoinTransformation rowKind lookup frame2.RowIndex (Vectors.Return 0) (Vectors.Return 1)
+    let rowIndex, f1cmd, f2cmd = 
+      createJoinTransformation indexBuilder rowKind lookup rowIndex frame2.RowIndex (Vectors.Return 0) (Vectors.Return 1)
     let f1trans = VectorHelpers.transformColumn vectorBuilder f1cmd
     let f2trans = VectorHelpers.transformColumn vectorBuilder (VectorHelpers.substitute (1, 0) f2cmd)
 
@@ -173,7 +143,8 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   /// [category:Joining, zipping and appending]
   member frame.Join(otherFrame:Frame<'TRowKey, 'TColumnKey>, kind, lookup) =    
     // Union/intersect/align row indices and get transformations to apply to left/right vectors
-    let newRowIndex, thisRowCmd, otherRowCmd = createJoinTransformation kind lookup otherFrame.RowIndex (Vectors.Return 0) (Vectors.Return 0)
+    let newRowIndex, thisRowCmd, otherRowCmd = 
+      createJoinTransformation indexBuilder kind lookup rowIndex otherFrame.RowIndex (Vectors.Return 0) (Vectors.Return 0)
     // Append the column indices and get transformation to combine them
     // (LeftOrRight - specifies that when column exist in both data frames then fail)
     let newColumnIndex, colCmd = 

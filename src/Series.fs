@@ -3,32 +3,13 @@
 open System
 open System.ComponentModel
 open System.Collections.Generic
+
 open FSharp.DataFrame.Internal
+open FSharp.DataFrame.JoinHelpers
 open FSharp.DataFrame.Indices
 open FSharp.DataFrame.Keys
 open FSharp.DataFrame.Vectors
 open FSharp.DataFrame.VectorHelpers
-
-/// This enumeration specifies joining behavior for `Join` method provided
-/// by `Series` and `Frame`. Outer join unions the keys (and may introduce
-/// missing values), inner join takes the intersection of keys; left and
-/// right joins take the keys of the first or the second series/frame.
-type JoinKind = 
-  /// Combine the keys available in both structures, align the values that
-  /// are available in both of them and mark the remaining values as missing.
-  | Outer = 0
-  /// Take the intersection of the keys available in both structures and align the 
-  /// values of the two structures. The resulting structure cannot contain missing values.
-  | Inner = 1
-  /// Take the keys of the left (first) structure and align values from the right (second)
-  /// structure with the keys of the first one. Values for keys not available in the second
-  /// structure will be missing.
-  | Left = 2
-  /// Take the keys of the right (second) structure and align values from the left (first)
-  /// structure with the keys of the second one. Values for keys not available in the first
-  /// structure will be missing.
-  | Right = 3
-
 
 /// This enumeration specifeis the behavior of `Union` operation on series when there are
 /// overlapping keys in two series that are being unioned. The options include prefering values
@@ -326,32 +307,15 @@ and Series<'K, 'V when 'K : equality>
 
   /// [category:Appending, joining and zipping]
   member series.Zip<'V2>(otherSeries:Series<'K, 'V2>, kind, lookup) =
-    
-    // TODO: Avoid duplicating code here and in Frame.Join!!
-
-    let restrictToThisIndex (restriction:IIndex<_>) (sourceIndex:IIndex<_>) vector = 
-      if lookup = Lookup.Exact && restriction.IsOrdered && sourceIndex.IsOrdered then
-        let min, max = index.KeyRange
-        sourceIndex.Builder.GetRange(sourceIndex, Some(min, BoundaryBehavior.Inclusive), Some(max, BoundaryBehavior.Inclusive), vector)
-      else sourceIndex, vector
-
     // Union row indices and get transformations to apply to left/right vectors
     let newIndex, thisRowCmd, otherRowCmd = 
-      match kind with 
-      | JoinKind.Inner ->
-          indexBuilder.Intersect( (index, Vectors.Return 0), (otherSeries.Index, Vectors.Return 1) )
-      | JoinKind.Left ->
-          let otherRowIndex, vector = restrictToThisIndex index otherSeries.Index (Vectors.Return 1)
-          let otherRowCmd = indexBuilder.Reindex(otherRowIndex, index, lookup, vector, fun addr -> otherSeries.Vector.GetValue(addr).HasValue)
-          index, Vectors.Return 0, otherRowCmd
-      | JoinKind.Right ->
-          let thisRowIndex, vector = restrictToThisIndex otherSeries.Index index (Vectors.Return 0)
-          let thisRowCmd = indexBuilder.Reindex(thisRowIndex, otherSeries.Index, lookup, vector, fun addr -> series.Vector.GetValue(addr).HasValue)
-          otherSeries.Index, thisRowCmd, Vectors.Return 1
-      | JoinKind.Outer | _ ->
-          indexBuilder.Union( (index, Vectors.Return 0), (otherSeries.Index, Vectors.Return 1) )
+      createJoinTransformation indexBuilder kind lookup index otherSeries.Index (Vectors.Return 0) (Vectors.Return 1)
 
-    // ....
+    // Wrap the values in choice, so that we can combine them
+    let inputThis : IVector<Choice<'V, 'V2, 'V * 'V2>> = vector.Select Choice1Of3 
+    let inputThat : IVector<Choice<'V, 'V2, 'V * 'V2>> = otherSeries.Vector.Select Choice2Of3
+
+    // Combine vectors and unwrap from the choice type
     let combine =
       VectorValueTransform.Create<Choice<'V, 'V2, 'V * 'V2>>(fun left right ->
         match left, right with 
@@ -360,10 +324,6 @@ and Series<'K, 'V when 'K : equality>
         | OptionalValue.Present(v), _
         | _, OptionalValue.Present(v) -> OptionalValue(v)
         | _ -> failwith "Series.Join: Unexpected vector structure")
-
-    let inputThis : IVector<Choice<'V, 'V2, 'V * 'V2>> = vector.Select Choice1Of3 
-    let inputThat : IVector<Choice<'V, 'V2, 'V * 'V2>> = otherSeries.Vector.Select Choice2Of3
-
     let combinedCmd = Vectors.Combine(thisRowCmd, otherRowCmd, combine)
     let newVector = vectorBuilder.Build(combinedCmd, [| inputThis; inputThat |])
     let newVector : IVector<_ opt * _ opt> = newVector.Select(function 

@@ -82,11 +82,19 @@ type ArrayVectorBuilder() =
               let mutable prev = OptionalValue.Missing
               let mutable optionals = false
               let newData = Array.map id data
-              for i in 0 .. newData.Length - 1 do
-                let it = newData.[i]
-                if it.HasValue then prev <- it
-                else newData.[i] <- prev
-                optionals <- optionals || (not newData.[i].HasValue)
+
+              if dir = Direction.Forward then
+                for i in 0 .. newData.Length - 1 do
+                  let it = newData.[i]
+                  if it.HasValue then prev <- it
+                  else newData.[i] <- prev
+                  optionals <- optionals || (not newData.[i].HasValue)
+              else 
+                for i in newData.Length-1 .. -1 .. 0 do
+                  let it = newData.[i]
+                  if it.HasValue then prev <- it
+                  else newData.[i] <- prev
+                  optionals <- optionals || (not newData.[i].HasValue)
 
               // Return as optional/non-optional, depending on if we filled everything
               if optionals then av <| VectorOptional(newData)
