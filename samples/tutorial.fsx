@@ -237,10 +237,10 @@ can do this, we need to rename their columns, because duplicate keys are not all
 
 // Change the column names so that they are unique
 let msftNames = ["MsftOpen"; "MsftClose"; "MsftDiff"]
-let msftRen = msft |> Frame.renameCols msftNames
+let msftRen = msft |> Frame.indexColsWith msftNames
 
 let fbNames = ["FbOpen"; "FbClose"; "FbDiff"]
-let fbRen = fb |> Frame.renameCols fbNames
+let fbRen = fb |> Frame.indexColsWith fbNames
 
 // Outer join (align & fill with missing values)
 let joinedOut = msftRen.Join(fbRen, kind=JoinKind.Outer)
@@ -399,14 +399,14 @@ let obsDaysExact = daysFrame.Join(obsFrame, kind=JoinKind.Left)
 // time in the frame indexed by later times in the day
 let obsDaysPrev = 
   (daysFrame, obsFrame) 
-  ||> Frame.align JoinKind.Left Lookup.NearestSmaller
+  ||> Frame.joinAlign JoinKind.Left Lookup.NearestSmaller
 
 // The first value is missing (because there is no nearest 
 // value with greater key - the first one has the smallest 
 // key) but the rest is available
 let obsDaysNext =
   (daysFrame, obsFrame) 
-  ||> Frame.align JoinKind.Left Lookup.NearestGreater
+  ||> Frame.joinAlign JoinKind.Left Lookup.NearestGreater
 
 (**
 In general, the same operation can usually be achieved using a function from the 

@@ -77,7 +77,7 @@ and tweak the chart look, you should see something like this:
 </div>
 
 <a name="alignment"></a>
-Data alignment and joining
+Data alignment and zipping
 --------------------------
 
 One of the key features of the data frame library for working with time series data is 
@@ -107,17 +107,17 @@ let s3 = series <| stock1 (TimeSpan(1, 5, 0)) 6
 // [fsi:            3:15:00 AM => 23.92; 4:20:00 AM => 22.72; 5:25:00 AM => 22.79 ]
 
 (**
-### Joining time series 
+### Zipping time series 
 
 Let's first look at operations that are available on the `Series<K, V>` type. A series
-exposes `Join` operation that can combine multiple series into a single series of pairs.
+exposes `Zip` operation that can combine multiple series into a single series of pairs.
 This is not as convenient as working with data frames (which we'll see later), but it 
 is useful if you only need to work with one or two columns without missing values:
 
 *)
 // Match values from right series to keys of the left one
 // (this creates series with no missing values)
-s1.Join(s2, JoinKind.Left)
+s1.Zip(s2, JoinKind.Left)
 // [fsi:val it : Series<DateTimeOffset,float opt * float opt>]
 // [fsi:  12:00:00 AM -> (21.32, 21.61) ]
 // [fsi:   1:00:00 AM -> (22.62, 21.86) ]
@@ -126,7 +126,7 @@ s1.Join(s2, JoinKind.Left)
 
 // Match values from the left series to keys of the right one
 // (right has higher resolution, so half of left values are missing)
-s1.Join(s2, JoinKind.Right)
+s1.Zip(s2, JoinKind.Right)
 // [fsi:val it : Series<DateTimeOffset,float opt * float opt>]
 // [fsi:  12:00:00 AM -> (21.32,     21.61) ]
 // [fsi:  12:30:00 AM -> (<missing>, 21.64)  ]      
@@ -135,7 +135,7 @@ s1.Join(s2, JoinKind.Right)
 
 // Use left series key and find the nearest previous
 // (smaller) value from the right series
-s1.Join(s2, JoinKind.Left, Lookup.NearestSmaller)
+s1.Zip(s2, JoinKind.Left, Lookup.NearestSmaller)
 // [fsi:val it : Series<DateTimeOffset,float opt * float opt>]
 // [fsi:  12:00:00 AM -04:00 -> (21.32, 21.61) ]
 // [fsi:   1:00:00 AM -04:00 -> (22.62, 21.86) ]
@@ -143,7 +143,7 @@ s1.Join(s2, JoinKind.Left, Lookup.NearestSmaller)
 // [fsi:  (...)]
 
 (**
-Using `Join` on series is somewhat complicated. The result is a series of tuples, but each 
+Using `Zip` on series is somewhat complicated. The result is a series of tuples, but each 
 component of the tuple may be missing. To represent this, the library uses the `T opt` type
 (a type alias for `OptionalValue<T>`). This is not necessary when we use data frame to 
 work with multiple columns.
@@ -165,7 +165,7 @@ let f3 = Frame.ofColumns ["S3" => s3]
 (**
 Similarly to `Series<K, V>`, the type `Frame<R, C>` has an instance method `Join` that can be
 used for joining (for unordered) or aligning (for ordered) data. The same operation is also
-exposed as `Frame.join` and `Frame.align` functions, but it is usually more convenient to use 
+exposed as `Frame.join` and `Frame.joinAlign` functions, but it is usually more convenient to use 
 the member syntax in this case:
 *)
 
@@ -211,7 +211,7 @@ f2.Join(f3, JoinKind.Left, Lookup.Exact)
 Frame.join JoinKind.Outer f1 f2
 
 // Equivalent to line 20, using function syntax
-Frame.align JoinKind.Left Lookup.NearestSmaller f1 f2
+Frame.joinAlign JoinKind.Left Lookup.NearestSmaller f1 f2
 
 (**
 The automatic alignment is extremely useful when you have multiple data series with different
@@ -734,7 +734,7 @@ sample.Diff(1) |> Series.mapValues adjust
 
 (**
 In general, the best way to apply custom functions to all values in a series is to 
-align the series (using either `Series.join` or `Series.align`) into a single series
+align the series (using either `Series.join` or `Series.joinAlign`) into a single series
 containing tuples and then apply `Series.mapValues`. The library also provides the `$` operator
 that simplifies the last step - `f $ s` applies the function `f` to all values of the series `s`.
 

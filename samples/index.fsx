@@ -4,7 +4,7 @@
 open System
 open FSharp.DataFrame
 /// Titanic data set loaded from a CSV file
-let titanic = Frame.readCsv(__SOURCE_DIRECTORY__ + "/data/Titanic.csv")
+let titanic = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/Titanic.csv")
 
 (**
 F# DataFrame: Easy data manipulation
@@ -49,7 +49,7 @@ let bySex =
       df.GetSeries<bool>("Survived") |> Series.groupBy (fun k v -> v) 
       |> Frame.ofColumns |> Frame.countValues )
   |> Frame.ofRows
-  |> Frame.renameCols ["Died"; "Survived"]
+  |> Frame.indexColsWith ["Died"; "Survived"]
 
 // Add column with Total number of males/females on Titanic
 bySex?Total <- Frame.countKeys $ grouped

@@ -135,13 +135,13 @@ let ``Can inner/outer/left/right join row keys when aligning``()  =
   let df1 = Frame.ofColumns [ "A" => series [ 1=>1; 2=>2 ]]
   let df2 = Frame.ofColumns [ "A" => series [ 2=>2; 3=>3 ]]
 
-  let actualI = (df1, df2) ||> Frame.zipAlignInto JoinKind.Inner JoinKind.Inner Lookup.Exact (+)
+  let actualI = (df1, df2) ||> Frame.zipAlign JoinKind.Inner JoinKind.Inner Lookup.Exact (+)
   actualI.RowKeys |> List.ofSeq |> shouldEqual [2]
-  let actualO = (df1, df2) ||> Frame.zipAlignInto JoinKind.Inner JoinKind.Outer Lookup.Exact (+)
+  let actualO = (df1, df2) ||> Frame.zipAlign JoinKind.Inner JoinKind.Outer Lookup.Exact (+)
   actualO.RowKeys |> List.ofSeq |> shouldEqual [1;2;3]
-  let actualL = (df1, df2) ||> Frame.zipAlignInto JoinKind.Inner JoinKind.Left Lookup.Exact (+)
+  let actualL = (df1, df2) ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.Exact (+)
   actualL.RowKeys |> List.ofSeq |> shouldEqual [1;2]
-  let actualR = (df1, df2) ||> Frame.zipAlignInto JoinKind.Inner JoinKind.Right Lookup.Exact (+)
+  let actualR = (df1, df2) ||> Frame.zipAlign JoinKind.Inner JoinKind.Right Lookup.Exact (+)
   actualR.RowKeys |> List.ofSeq |> shouldEqual [2;3]
 
 [<Test>]
@@ -308,7 +308,7 @@ let ``Left zip only fills missing values in joined series`` () =
 [<Test>]
 let ``Can ZIP and subtract MSFT stock prices``() =
   let df = msft()
-  let actual = (df,df) ||> Frame.zipInto (fun (v1:float) v2 -> v1 - v2)
+  let actual = (df,df) ||> Frame.zip (fun (v1:float) v2 -> v1 - v2)
   let values = actual.GetAllValues<float>() 
   values |> Seq.length |> should (be greaterThan) 10000
   values |> Seq.sum |> shouldEqual 0.0
@@ -348,7 +348,7 @@ let pxCommons =
 let pxBpref =
   [ DateTime(2013,9,10) => 20.0;
     //DateTime(2013,9,11) => 20.0; // Fri - // not traded
-    //DateTime(2013,9,12) => 20.0; // Sat - // omit these values to illustrate how lookup works in Frame.zipAlignInto
+    //DateTime(2013,9,12) => 20.0; // Sat - // omit these values to illustrate how lookup works in Frame.zipAlign
     DateTime(2013,9,13) => 21.0; 
     DateTime(2013,9,14) => 22.0; 
     DateTime(2013,9,15) => 23.0; 
@@ -382,7 +382,7 @@ let ``Can zip-align frames with inner-join left-join nearest-smaller options`` (
   // calculate stock mktcap 
   let mktCapCommons = 
     (pxCommons, sharesCommons)
-    ||> Frame.zipAlignInto JoinKind.Inner JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
   
   mktCapCommons?A.GetAt(0) |> shouldEqual 1000.0
   mktCapCommons?A.GetAt(1) |> shouldEqual 1010.0
@@ -406,15 +406,15 @@ let ``Can zip-align frames with different set of columns`` () =
   // calculate stock mktcap 
   let mktCapCommons = 
     (pxCommons, sharesCommons)
-    ||> Frame.zipAlignInto JoinKind.Inner JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
   // calculate stock mktcap for prefs
   let mktCapPrefs = 
     (pxPrefs, sharesPrefs)
-    ||> Frame.zipAlignInto JoinKind.Inner JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
   // calculate company mktcap 
   let mktCap = 
     (mktCapCommons, mktCapPrefs)
-    ||> Frame.zipAlignInto JoinKind.Left JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l+r) 
+    ||> Frame.zipAlign JoinKind.Left JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l+r) 
   
   mktCap?A.GetAt(0) |> shouldEqual 1000.0
   mktCap?A.GetAt(1) |> shouldEqual 1010.0
@@ -438,20 +438,20 @@ let ``Can zip-align frames with inner-join left-join nearest-greater options`` (
     // calculate stock mktcap 
   let mktCapCommons = 
     (pxCommons, sharesCommons)
-    ||> Frame.zipAlignInto JoinKind.Inner JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
   // calculate stock mktcap for prefs
   let mktCapPrefs = 
     (pxPrefs, sharesPrefs)
-    ||> Frame.zipAlignInto JoinKind.Inner JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
   // calculate company mktcap 
   let mktCap = 
     (mktCapCommons, mktCapPrefs)
-    ||> Frame.zipAlignInto JoinKind.Left JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l+r) 
+    ||> Frame.zipAlign JoinKind.Left JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l+r) 
   
   // calculate enterprice value
   let ev = 
     (mktCap, netDebt)
-    ||> Frame.zipAlignInto JoinKind.Inner JoinKind.Left Lookup.NearestGreater (fun (l:float) r -> l+r) // net debt is at the year end
+    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.NearestGreater (fun (l:float) r -> l+r) // net debt is at the year end
   
   ev?A.GetAt(0) |> shouldEqual 1100.0
   ev?A.GetAt(1) |> shouldEqual 1110.0

@@ -575,13 +575,13 @@ module Frame =
   
   /// [category:Joining, zipping and appending]
   [<CompiledName("ZipAlignInto")>]
-  let zipAlignInto columnKind rowKind lookup (op:'V1->'V2->'VRes) (frame1:Frame<'R, 'C>) (frame2:Frame<'R, 'C>) : Frame<'R, 'C> =
+  let zipAlign columnKind rowKind lookup (op:'V1->'V2->'VRes) (frame1:Frame<'R, 'C>) (frame2:Frame<'R, 'C>) : Frame<'R, 'C> =
     frame1.Zip(frame2, columnKind, rowKind, lookup, fun a b -> op a b)
 
   /// [category:Joining, zipping and appending]
   [<CompiledName("ZipInto")>]
-  let zipInto (op:'V1->'V2->'VRes) (frame1:Frame<'R, 'C>) (frame2:Frame<'R, 'C>) : Frame<'R, 'C> =
-    zipAlignInto JoinKind.Inner JoinKind.Inner Lookup.Exact op frame1 frame2
+  let zip (op:'V1->'V2->'VRes) (frame1:Frame<'R, 'C>) (frame2:Frame<'R, 'C>) : Frame<'R, 'C> =
+    zipAlign JoinKind.Inner JoinKind.Inner Lookup.Exact op frame1 frame2
 
 
 

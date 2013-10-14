@@ -14,7 +14,7 @@ Analyzing Titanic data set
 ==========================
 *)
 
-let titanic = Frame.readCsv(root + "Titanic.csv")
+let titanic = Frame.ReadCsv(root + "Titanic.csv")
 
 (**
 
@@ -71,7 +71,7 @@ Count number of survived/died in each group
 *)
 
 survivedByClassAndPort 
-|> Series.foldBy Pair.get1And2Of3 (fun sr -> 
+|> Series.reduceBy Pair.get1And2Of3 (fun sr -> 
     series (sr.Values |> Seq.countBy id))
 |> Frame.ofRows
 
@@ -82,5 +82,5 @@ Count total number of passangers in each group
 *)
 
 byClassAndPort
-|> Frame.foldBy Pair.get1And2Of3 (fun sr -> sr |> Series.countValues)
+|> Frame.reduceBy Pair.get1And2Of3 (fun sr -> sr |> Series.countValues)
 
