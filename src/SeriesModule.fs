@@ -49,11 +49,11 @@ module Series =
 
   [<CompiledName("Sum")>]
   let inline sum (series:Series<_, _>) = 
-    series |> fastAggregation IReadOnlyList.sum IReadOnlyList.sumOptional Seq.sum
+    series |> fastAggregation ReadOnlyCollection.sum ReadOnlyCollection.sumOptional Seq.sum
 
   [<CompiledName("Mean")>]
   let inline mean (series:Series<_, _>) = 
-    series |> fastAggregation IReadOnlyList.average IReadOnlyList.averageOptional Seq.average
+    series |> fastAggregation ReadOnlyCollection.average ReadOnlyCollection.averageOptional Seq.average
 
   [<CompiledName("StandardDeviation")>]
   let inline sdv (series:Series<'K, float>) = series |> stat Statistics.StandardDeviation 
@@ -62,7 +62,7 @@ module Series =
   let inline median (series:Series<'K, float>) = series |> stat Statistics.Median
 
   let reduce op (series:Series<'K, 'T>) = 
-    series |> fastAggregation (IReadOnlyList.reduce op) (IReadOnlyList.reduceOptional op) (Seq.reduce op)
+    series |> fastAggregation (ReadOnlyCollection.reduce op) (ReadOnlyCollection.reduceOptional op) (Seq.reduce op)
 
 
   [<CompiledName("StatisticBy")>]
@@ -73,15 +73,15 @@ module Series =
 
   [<CompiledName("SumBy")>]
   let inline sumBy keySelector (series:Series<_, _>) = 
-    series |> fastStatBy keySelector IReadOnlyList.sum IReadOnlyList.sumOptional Seq.sum
+    series |> fastStatBy keySelector ReadOnlyCollection.sum ReadOnlyCollection.sumOptional Seq.sum
 
   [<CompiledName("CountBy")>]
   let inline countBy keySelector (series:Series<_, _>) = 
-    series |> fastStatBy keySelector IReadOnlyList.length IReadOnlyList.lengthOptional Seq.length
+    series |> fastStatBy keySelector ReadOnlyCollection.length ReadOnlyCollection.lengthOptional Seq.length
 
   [<CompiledName("MeanBy")>]
   let inline meanBy keySelector (series:Series<_, _>) = 
-    series |> fastStatBy keySelector IReadOnlyList.average IReadOnlyList.averageOptional Seq.average
+    series |> fastStatBy keySelector ReadOnlyCollection.average ReadOnlyCollection.averageOptional Seq.average
 
   [<CompiledName("StandardDeviationBy")>]
   let inline sdvBy keySelector (series:Series<_, float>) = 
