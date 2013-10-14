@@ -171,8 +171,8 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
       | _ -> OptionalValue.Missing
     member vector.Data = 
       match representation with 
-      | VectorNonOptional data -> VectorData.DenseList (IReadOnlyList.ofArray data)
-      | VectorOptional data -> VectorData.SparseList (IReadOnlyList.ofArray data)
+      | VectorNonOptional data -> VectorData.DenseList (ReadOnlyCollection.ofArray data)
+      | VectorOptional data -> VectorData.SparseList (ReadOnlyCollection.ofArray data)
 
     // A version of Select that can transform missing values to actual values (we always 
     // end up with array that may contain missing values, so use CreateMissing)
