@@ -72,7 +72,7 @@ Once you have a data frame, you can also save it to a CSV file using the
 // Save CSV with semicolon separator
 air.SaveCsv(Path.GetTempFileName(), separator=';')
 // Save as CSV and include row key as "Date" column
-msft.SaveCsv(Path.GetTempFileName(), ["Date"], separator='\t')
+msft.SaveCsv(Path.GetTempFileName(), keyNames=["Date"], separator='\t')
 
 (**
 By default, the `SaveCsv` method does not include the key from the data frame. This can be
