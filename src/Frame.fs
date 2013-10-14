@@ -84,17 +84,28 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
       sourceIndex.Builder.GetRange(sourceIndex, Some(min, BoundaryBehavior.Inclusive), Some(max, BoundaryBehavior.Inclusive), vector)
     else sourceIndex, vector
 
+  let fillMissing vector lookup = 
+    match lookup with
+    | Lookup.NearestSmaller -> Vectors.FillMissing(vector, VectorFillMissing.Direction Direction.Forward)
+    | Lookup.NearestGreater -> Vectors.FillMissing(vector, VectorFillMissing.Direction Direction.Backward)
+    | Lookup.Exact | _ -> vector
+
   let createJoinTransformation kind lookup otherIndex vector1 vector2 =
+    // Inner join only makes sense with exact lookup
+    if lookup <> Lookup.Exact && kind = JoinKind.Inner then
+      invalidOp "Join/Zip - Inner join does can only be used with Lookup.Exact."
     match kind with 
     | JoinKind.Inner ->
         indexBuilder.Intersect( (rowIndex, vector1), (otherIndex, vector2) )
     | JoinKind.Left ->
-        let otherRowIndex, vector = restrictToRowIndex lookup rowIndex otherIndex vector2
-        let otherRowCmd = indexBuilder.Reindex(otherRowIndex, rowIndex, lookup, vector, fun _ -> true)
+        let otherRowIndex, vector2 = restrictToRowIndex lookup rowIndex otherIndex vector2
+        let vector2 = fillMissing vector2 lookup
+        let otherRowCmd = indexBuilder.Reindex(otherRowIndex, rowIndex, lookup, vector2, fun _ -> true)
         rowIndex, vector1, otherRowCmd
     | JoinKind.Right ->
-        let thisRowIndex, vector = restrictToRowIndex lookup otherIndex rowIndex vector1
-        let thisRowCmd = indexBuilder.Reindex(thisRowIndex, otherIndex, lookup, vector, fun _ -> true)
+        let thisRowIndex, vector1 = restrictToRowIndex lookup otherIndex rowIndex vector1
+        let vector1 = fillMissing vector1 lookup
+        let thisRowCmd = indexBuilder.Reindex(thisRowIndex, otherIndex, lookup, vector1, fun _ -> true)
         otherIndex, thisRowCmd, vector2
     | JoinKind.Outer | _ ->
         indexBuilder.Union( (rowIndex, vector1), (otherIndex, vector2) )

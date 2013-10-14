@@ -231,6 +231,11 @@ module OptionalValue =
     if optional.HasValue then Present(optional.Value)
     else Missing
 
+  /// Get the value stored in the specified optional value. If a value is not
+  /// available, throws an exception. (This is equivalent to the `Value` property)
+  let inline get (optional:'T opt) = optional.Value
+    
+
 
 // --------------------------------------------------------------------------------------
 // Internals - working with missing values   
@@ -296,8 +301,7 @@ module MissingValues =
 /// in the `Array` module. Most importantly, F# 3.0 does not know that array implements
 /// `IList<T>`.
 module ReadOnlyCollection =
-  /// Converts an array to ReadOnlyCollection. In F# 3.0, the language does not
-  /// know that array implements IList<'T>, so this is just boxing/unboxing and wrapping by ReadOnlyCollection.
+  /// Converts an array to ReadOnlyCollection. 
   let inline ofArray (array:'T[]) : ReadOnlyCollection<'T> = Array.AsReadOnly(array)
 
   /// Converts a lazy sequence to fully evaluated ReadOnlyCollection

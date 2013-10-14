@@ -72,6 +72,32 @@ type ArrayVectorBuilder() =
       match command with
       | Return vectorVar -> arguments.[vectorVar]
       | Empty -> vectorBuilder.Create [||]
+      | FillMissing(source, dir) ->
+          // The nice thing is that this is no-op on dense vectors!
+          // On sparse vectors, we have some work to do...
+          match builder.buildArrayVector source arguments, dir with
+          | (VectorNonOptional _) as it, _ -> it |> av
+          | VectorOptional data, VectorFillMissing.Direction dir -> 
+              // There may still be NAs, if the first value is missing..
+              let mutable prev = OptionalValue.Missing
+              let mutable optionals = false
+              let newData = Array.map id data
+              for i in 0 .. newData.Length - 1 do
+                let it = newData.[i]
+                if it.HasValue then prev <- it
+                else newData.[i] <- prev
+                optionals <- optionals || (not newData.[i].HasValue)
+
+              // Return as optional/non-optional, depending on if we filled everything
+              if optionals then av <| VectorOptional(newData)
+              else av <| VectorNonOptional(newData |> Array.map OptionalValue.get)
+
+          | VectorOptional data, VectorFillMissing.Constant (:? 'T as fill) -> 
+              av <| VectorNonOptional(data |> Array.map (fun v -> if v.HasValue then v.Value else fill))
+          | VectorOptional data, VectorFillMissing.Constant _ -> 
+              invalidOp "Type mismatch - cannot fill values of the vector!"
+              
+
       | Relocate(source, (IntAddress loRange, IntAddress hiRange), relocations) ->
           // Create a new array with specified size and move values from the
           // old array (source) to the new, according to 'relocations'

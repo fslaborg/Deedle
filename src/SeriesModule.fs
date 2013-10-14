@@ -622,9 +622,9 @@ module Series =
   ///
   /// [category:Missing values]
   let fillMissingWith value (series:Series<'K, 'T>) = 
-    series |> mapAll (fun k -> function 
-      | None -> Some(value)
-      | value -> value)
+    let fillCmd = Vectors.FillMissing(Vectors.Return 0, VectorFillMissing.Constant value)
+    let newVector = series.VectorBuilder.Build(fillCmd, [|series.Vector|])
+    Series<_, _>(series.Index, newVector, series.VectorBuilder, series.IndexBuilder)
 
   /// Fill missing values in the series with the nearest available value
   /// (using the specified direction). Note that the series may still contain
@@ -650,10 +650,9 @@ module Series =
   ///
   /// [category:Missing values]
   let fillMissing direction (series:Series<'K, 'T>) = 
-    let lookup = if direction = Direction.Forward then Lookup.NearestSmaller else Lookup.NearestGreater
-    series |> mapAll (fun k -> function 
-      | None -> series.TryGet(k, lookup) |> OptionalValue.asOption
-      | value -> value)
+    let fillCmd = Vectors.FillMissing(Vectors.Return 0, VectorFillMissing.Direction direction)
+    let newVector = series.VectorBuilder.Build(fillCmd, [|series.Vector|])
+    Series<_, _>(series.Index, newVector, series.VectorBuilder, series.IndexBuilder)
 
   // ----------------------------------------------------------------------------------------------
   // Resampling and similar stuff

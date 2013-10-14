@@ -112,6 +112,14 @@ type IVectorValueTransform =
   /// the type cannot be statically propagated.
   abstract GetFunction<'T> : unit -> (OptionalValue<'T> -> OptionalValue<'T> -> OptionalValue<'T>)
 
+/// Specifies how to fill missing values in a vector (when using the 
+/// `VectorConstruction.FillMissing` command). This can only fill missing
+/// values using strategy that does not require access to index keys - 
+/// either using constant or by propagating values.
+type VectorFillMissing =
+  | Direction of Direction
+  | Constant of obj
+
 /// A "mini-DSL" that describes construction of a vector. Vector can be constructed
 /// from various range operations (relocate, drop, slicing, appending), by combination
 /// of two vectors or by taking a vector from a list of variables.
@@ -152,6 +160,11 @@ type VectorConstruction =
   /// specifies how to merge values (in case there is a value at a given address
   /// in both of the vectors).
   | Combine of VectorConstruction * VectorConstruction * IVectorValueTransform
+
+  /// Create a vector that has missing values filled using the specified direction
+  /// (forward means that n-th value will contain (n-i)-th value where (n-i) is the
+  /// first index that contains a value).
+  | FillMissing of VectorConstruction * VectorFillMissing
 
   /// Apply a custom command to a vector - this can be used by special indices (e.g. index
   /// for a lazy vector) to provide a custom operations to be used. The first parameter

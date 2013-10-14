@@ -1,7 +1,7 @@
 ﻿#if INTERACTIVE
 #I "../../bin"
 #load "../../bin/FSharp.DataFrame.fsx"
-#r "../../packages/NUnit.2.6.2/lib/nunit.framework.dll"
+#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #r "../../packages/FsCheck.0.9.1.0/lib/net40-Client/FsCheck.dll"
 #load "../Common/FsUnit.fs"
 #else
@@ -153,7 +153,7 @@ let ``Can zip and subtract numerical values in MSFT data set``() =
   values |> Seq.forall ((=) 0) |> shouldEqual true
 
 [<Test>]
-let ``Can zip and subtract numerical values in MSFT data set, with some rows dropped``() = 
+let ``Can zip and subtract numerical values in MSFT data set; with some rows dropped``() = 
   let df1 = (msft() |> Frame.orderRows).Rows.[DateTime(2000, 1, 1) ..]
   let df2 = msft()
   let values = df1.Zip(df2, fun a b -> a - b).GetAllValues<int>()
@@ -161,7 +161,7 @@ let ``Can zip and subtract numerical values in MSFT data set, with some rows dro
   values |> Seq.forall ((=) 0) |> shouldEqual true
 
 [<Test>]
-let ``Can zip and subtract numerical values in MSFT data set, with some columns dropped``() = 
+let ``Can zip and subtract numerical values in MSFT data set; with some columns dropped``() = 
   let df1 = msft()
   df1.DropSeries("Adj Close")
   let df2 = msft()
@@ -237,12 +237,82 @@ let ``Can right-align ordered frames - nearest greater returns missing if no gre
   daysTimesNextR?Days.TryGetAt(2) |> shouldEqual OptionalValue.Missing
 
 // ------------------------------------------------------------------------------------------------
+// Operations - fill
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Fill missing values using the specified direction``() = 
+  let df = 
+    [ "A" => series [ for i in 0 .. 100 -> i => if i%3=0 then Double.NaN else float i ] 
+      "B" => series [ for i in 0 .. 100 -> i => if i%5=0 then Double.NaN else float i ]
+      "C" => series [ for i in 0 .. 100 -> i => if i%20=0 then Double.NaN else float i ]
+      "D" => series [ for i in 0 .. 100 -> i => float i ] ]
+    |> Frame.ofColumns
+  let filled = df |> Frame.fillMissing Direction.Forward
+  filled.Rows.[0].As<float>() |> shouldEqual <| series ["A" => Double.NaN; "B" => Double.NaN; "C" => Double.NaN; "D" => 0.0 ]
+  filled.Rows.[10].As<float>() |> shouldEqual <| series ["A" => 10.0; "B" => 9.0; "C" => 10.0; "D" => 10.0 ]
+
+[<Test>]
+let ``Fill missing values using the specified constant``() = 
+  let df = 
+    [ "A" => series [ for i in 0 .. 100 -> i => if i%3=0 then Double.NaN else float i ] 
+      "B" => series [ for i in 0 .. 100 -> i => if i%5=0 then Double.NaN else float i ]
+      "C" => series [ for i in 0 .. 100 -> i => if i%20=0 then Double.NaN else float i ]
+      "D" => series [ for i in 0 .. 100 -> i => float i ] ]
+    |> Frame.ofColumns
+  let filled = df |> Frame.fillMissingWith 0.0
+  filled.Rows.[0].As<float>() |> shouldEqual <| series ["A" => 0.0; "B" => 0.0; "C" => 0.0; "D" => 0.0 ]
+  filled.Rows.[10].As<float>() |> shouldEqual <| series ["A" => 10.0; "B" => 0.0; "C" => 10.0; "D" => 10.0 ]
+
+
+// ------------------------------------------------------------------------------------------------
+// Operations - join & zip (handling missing values)
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Left join fills missing values - search for previous when there is no exact key`` () =
+  let miss = Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => Double.NaN; ] ]
+  let full = Frame.ofColumns [ "B" => series [ 1 => 2.0; 3 => 3.0 ] ]
+  let joined = full.Join(miss, JoinKind.Left, Lookup.NearestSmaller)
+  let expected = series [ 1 => 1.0; 3 => 1.0 ]
+  joined?A |> shouldEqual expected
+
+[<Test>]
+let ``Left join fills missing values - search for previous when there is missing at the exact key`` () =
+  let miss = Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => Double.NaN; ] ]
+  let full = Frame.ofColumns [ "B" => series [ 1 => 2.0; 2 => 3.0 ] ]
+  let joined = full.Join(miss, JoinKind.Left, Lookup.NearestSmaller)
+  let expected = series [ 1 => 1.0; 2 => 1.0 ]
+  joined?A |> shouldEqual expected
+
+[<Test>]
+let ``Left zip fills missing values - search for previous when there is no exact key`` () =
+  let miss = Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => Double.NaN; ] ]
+  let full = Frame.ofColumns [ "A" => series [ 1 => 2.0; 3 => 3.0 ] ]
+  let joined = full.Zip(miss, JoinKind.Inner, JoinKind.Left, Lookup.NearestSmaller, fun a b -> a + b)
+  let expected = series [ 1 => 3.0; 3 => 4.0 ]
+  joined?A |> shouldEqual expected
+
+[<Test>]
+let ``Left zip only fills missing values in joined series`` () =
+  let miss = Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => Double.NaN; ] ]
+  let full = Frame.ofColumns [ "A" => series [ 1 => 2.0; 2 => 3.0 ] ]
+  let joined = miss.Zip(full, JoinKind.Inner, JoinKind.Left, Lookup.NearestSmaller, fun a b -> a + b)
+  let expected = series [ 1 => 3.0; 2 => Double.NaN ]
+  joined?A |> shouldEqual expected
+
+// ------------------------------------------------------------------------------------------------
 // Operations - zip
 // ------------------------------------------------------------------------------------------------
 
-let test =
+[<Test>]
+let ``Can ZIP and subtract MSFT stock prices``() =
   let df = msft()
-  (df,df) ||> Frame.zipInto (fun (v1:float) v2 -> v1 + v2)
+  let actual = (df,df) ||> Frame.zipInto (fun (v1:float) v2 -> v1 - v2)
+  let values = actual.GetAllValues<float>() 
+  values |> Seq.length |> should (be greaterThan) 10000
+  values |> Seq.sum |> shouldEqual 0.0
+
 
 // company A has common and preferred stocks, company B only common
 // company A trades in US, company B common shares trade in US, while B prefs trade in Israel/GCC 
@@ -300,7 +370,7 @@ let ndA = [ DateTime(2013,12,31) => 100.0] |> series
 let ndB = [ DateTime(2013,12,31) => 1000.0 ] |> series
 let netDebt =  [ "A" => ndA; "B" => ndB ] |> Frame.ofColumns
 
-[<Test; Ignore>]
+[<Test>]
 let ``Can zip-align frames with inner-join left-join nearest-smaller options`` () =
   let mktcapA = 
     (pxA, sharesA)
@@ -331,7 +401,7 @@ let ``Can zip-align frames with inner-join left-join nearest-smaller options`` (
   mktCapCommons?B.GetAt(6) |> shouldEqual 4080.0
 
 
-[<Test; Ignore>]
+[<Test>]
 let ``Can zip-align frames with different set of columns`` () =
   // calculate stock mktcap 
   let mktCapCommons = 
@@ -363,7 +433,7 @@ let ``Can zip-align frames with different set of columns`` () =
   mktCap?B.GetAt(6) |> shouldEqual 4560.0
 
 
-[<Test; Ignore>]
+[<Test>]
 let ``Can zip-align frames with inner-join left-join nearest-greater options`` () =
     // calculate stock mktcap 
   let mktCapCommons = 

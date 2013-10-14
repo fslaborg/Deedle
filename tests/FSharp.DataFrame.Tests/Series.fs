@@ -1,7 +1,7 @@
 ﻿#if INTERACTIVE
 #I "../../bin"
 #load "../../bin/FSharp.DataFrame.fsx"
-#r "../../packages/NUnit.2.6.2/lib/nunit.framework.dll"
+#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #r "../../packages/FsCheck.0.9.1.0/lib/net40-Client/FsCheck.dll"
 #load "../Common/FsUnit.fs"
 #else

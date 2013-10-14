@@ -254,6 +254,7 @@ let rec substitute ((oldVar, newVar) as subst) = function
   | Return v when v = oldVar -> Return newVar
   | Return v -> Return v
   | Empty -> Empty
+  | FillMissing(vc, d) -> FillMissing(substitute subst vc, d)
   | Relocate(vc, r, l) -> Relocate(substitute subst vc, r, l)
   | DropRange(vc, r) -> DropRange(substitute subst vc, r)
   | GetRange(vc, r) -> GetRange(substitute subst vc, r)
