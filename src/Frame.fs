@@ -15,6 +15,7 @@ open System
 open System.ComponentModel
 open System.Collections.Generic
 open System.Runtime.InteropServices
+open Microsoft.FSharp.Quotations
 open VectorHelpers
 
 /// A frame contains one Index, with multiple Vecs
@@ -614,14 +615,6 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     let (++) h1 h2 = ((h1 <<< 5) + h1) ^^^ h2
     frame.RowIndex.GetHashCode() ++ frame.ColumnIndex.GetHashCode() ++ frame.Data.GetHashCode()
 
-  interface System.Dynamic.IDynamicMetaObjectProvider with 
-    member frame.GetMetaObject(expr) = 
-      Dynamic.createPropertyMetaObject expr frame
-        (fun name -> 
-          frame.GetSeries(unbox<'TColumnKey> name) |> box)
-        (fun name value -> 
-          frame.AddSeries(unbox<'TColumnKey> name, unbox<seq<int>> value))
-
   member internal frame.GetFrameData() = 
     // Get keys (as object lists with multiple levels)
     let getKeys (index:IIndex<_>) = seq { 
@@ -690,6 +683,51 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
         |> array2D
         |> Formatting.formatTable
       with e -> sprintf "Formatting failed: %A" e
+
+  // ----------------------------------------------------------------------------------------------
+  // Interfaces (2.) - support the C# dynamic keyword
+  // ----------------------------------------------------------------------------------------------
+
+  interface System.Dynamic.IDynamicMetaObjectProvider with 
+    member frame.GetMetaObject(expr) = 
+      DynamicExtensions.createPropertyMetaObject expr frame
+        (fun frame name retTyp -> 
+          // Cast column key to the right type
+          let colKey =
+            if typeof<'TColumnKey> = typeof<string> then unbox<'TColumnKey> name
+            else invalidOp "Dynamic operations are not supported on frames with non-string column key!"
+          // In principle, 'retType' could be something else than 'obj', but C# never does this (?)
+          <@@ box ((%%frame : Frame<'TRowKey, 'TColumnKey>).GetSeries<float>(colKey)) @@>)
+
+        (fun frame name argTyp argExpr -> 
+          // Cast column key to the right type
+          let colKey =
+            if typeof<'TColumnKey> = typeof<string> then unbox<'TColumnKey> name
+            else invalidOp "Dynamic operations are not supported on frames with non-string column key!"
+          // If it is a series, then we can just call ReplaceSeries using quotation
+          if typeof<ISeries<'TRowKey>>.IsAssignableFrom argTyp then
+            <@@ (%%frame : Frame<'TRowKey, 'TColumnKey>).ReplaceSeries(colKey, (%%(Expr.Coerce(argExpr, typeof<ISeries<'TRowKey>>)) : ISeries<'TRowKey>)) @@>
+          else 
+            // Try to find seq<'T> implementation
+            let elemTy = 
+              argTyp.GetInterfaces() 
+              |> Seq.tryFind (fun inf -> 
+                inf.IsGenericType && inf.GetGenericTypeDefinition() = typedefof<seq<_>>)
+              |> Option.map (fun ty -> ty.GetGenericArguments().[0])
+            match elemTy with
+            | None -> invalidOp (sprintf "Cannot add value of type %s as a series!" argTyp.Name)
+            | Some elemTy ->
+                // Find the ReplaceSeries method taking seq<'T>
+                let addSeriesSeq = 
+                  typeof<Frame<'TRowKey, 'TColumnKey>>.GetMethods() |> Seq.find (fun mi -> 
+                    mi.Name = "ReplaceSeries" && 
+                      ( let pars = mi.GetParameters()
+                        pars.Length = 2 && pars.[1].ParameterType.GetGenericTypeDefinition() = typedefof<seq<_>> ))
+                // Generate call for the right generic specialization
+                let seqTyp = typedefof<seq<_>>.MakeGenericType(elemTy)
+                Expr.Call(frame, addSeriesSeq.MakeGenericMethod(elemTy), [Expr.Value name; Expr.Coerce(argExpr, seqTyp)] ) )
+
+
 
 // ------------------------------------------------------------------------------------------------
 // Building frame from series of rows/columns (this has to be here, because we need it in 

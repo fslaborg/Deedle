@@ -75,7 +75,7 @@ type SeriesBuilder<'K, 'V when 'K : equality>() =
 
   interface System.Dynamic.IDynamicMetaObjectProvider with 
     member builder.GetMetaObject(expr) = 
-      Dynamic.createSetterMetaObject expr builder (fun name value -> 
+      DynamicExtensions.createSetterFromFunc expr builder (fun builder name value -> 
         let converted = 
           if value :? 'V then unbox<'V> value
           else System.Convert.ChangeType(value, typeof<'V>) |> unbox<'V>

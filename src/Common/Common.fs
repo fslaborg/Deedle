@@ -770,22 +770,32 @@ module Formatting =
 
     sb.ToString()
 
+// --------------------------------------------------------------------------------------
+// Support for C# dynamic
+// --------------------------------------------------------------------------------------
+
 /// [omit]
-/// 
-[<AutoOpen>]
+/// Module that implements various helpers for supporting C# dynamic type.
+/// (this takes care of some of the complexity around building `DynamicMetaObject`
+/// and it is used by `SeriesBuilder` and `Frame`)
 module DynamicExtensions =
   open System.Dynamic
   open System.Linq.Expressions
   open Microsoft.FSharp.Quotations
 
+  /// A C# expression tree, embedded in a value (in a quotation)
   type WrappedExpression(expr:Expression) =
     member x.Expression = expr
 
+  /// Wrap C# expressionm tree into an F# quotation
   type System.Linq.Expressions.Expression with
     member x.Wrap() = Expr.Value(WrappedExpression x, typeof<obj>)
+    member x.Wrap<'T>() = Expr.Value(WrappedExpression (Expression.Convert(x, typeof<'T>)), typeof<'T>)
 
+  /// Translate simple F# quotation to C# expression & handle wrapped values
   let rec private asExpr : _ -> Expression = function
     | Patterns.Coerce(expr, typ) -> upcast Expression.Convert(asExpr expr, typ)
+    | Patterns.NewObject(ci, args) -> upcast Expression.New(ci, Seq.map asExpr args)
     | Patterns.Value((:? WrappedExpression as w), _) -> w.Expression
     | Patterns.Sequential(e1, e2) ->
         Expression.Block(asExpr e1, asExpr e2) :> Expression
@@ -803,30 +813,35 @@ module DynamicExtensions =
   type Microsoft.FSharp.Quotations.Expr with
     member x.AsExpression() = asExpr x
 
-  type SetterWrapper(f:string -> obj -> unit) =
-    member x.Invoke(name, value) = f name value
+  type SetterWrapper<'T>(f:'T -> string -> obj -> unit) =
+    member x.Invoke(owner, name, value) = f owner name value
 
-  type GetterWrapper(f:string -> obj) =
-    member x.Invoke(name) = f name
+  /// This can be used when getter/setter are generic (in some way) - the caller
+  /// is responsible for generating the right expression tree (this cannot easily
+  /// be done using quotations)
+  let createPropertyMetaObject expr (owner:'T) getter setter =
+    { new System.Dynamic.DynamicMetaObject(expr, System.Dynamic.BindingRestrictions.Empty, owner) with
+        override x.BindGetMember(binder) = 
+          let call : Expr = getter (x.Expression.Wrap<'T>()) binder.Name binder.ReturnType
+          let restrictions = BindingRestrictions.GetTypeRestriction(x.Expression, x.LimitType);
+          new DynamicMetaObject(call.AsExpression(), restrictions)
 
-  module Dynamic = 
-    let createPropertyMetaObject expr owner getter setter =
-      { new System.Dynamic.DynamicMetaObject(expr, System.Dynamic.BindingRestrictions.Empty, owner) with
-          override x.BindGetMember(binder) = 
-            let getter = GetterWrapper(getter)
-            let call = Expr.Coerce(<@@ getter.Invoke(%%(Expr.Value(binder.Name))) @@>, binder.ReturnType)
-            let restrictions = BindingRestrictions.GetTypeRestriction(x.Expression, x.LimitType);
-            new DynamicMetaObject(call.AsExpression(), restrictions)
-          override x.BindSetMember(binder, value) = 
-            let setter = SetterWrapper(setter)
-            let call = <@@ setter.Invoke(%%(Expr.Value(binder.Name)), %%(value.Expression.Wrap())); null @@>
-            let restrictions = BindingRestrictions.GetTypeRestriction(x.Expression, x.LimitType);
-            new DynamicMetaObject(call.AsExpression(), restrictions) }
+        override x.BindSetMember(binder, value) = 
+          let call : Expr = setter (x.Expression.Wrap<'T>()) binder.Name value.LimitType (value.Expression.Wrap())
+          let call = 
+            if binder.ReturnType = typeof<System.Void> then call
+            elif binder.ReturnType = typeof<obj> then <@@ %%call; new obj() @@>
+            else failwith "createPropertyMetaObject: Expected void or object return type"              
+          let restrictions = BindingRestrictions.GetTypeRestriction(x.Expression, x.LimitType);
+          new DynamicMetaObject(call.AsExpression(), restrictions) }
 
-    let createSetterMetaObject expr owner (setter:string -> obj -> unit) =
-      { new System.Dynamic.DynamicMetaObject(expr, System.Dynamic.BindingRestrictions.Empty, owner) with
-          override x.BindSetMember(binder, value) = 
-            let setter = SetterWrapper(setter)
-            let call = <@@ setter.Invoke(%%(Expr.Value(binder.Name)), %%(value.Expression.Wrap())); null @@>
-            let restrictions = BindingRestrictions.GetTypeRestriction(x.Expression, x.LimitType);
-            new DynamicMetaObject(call.AsExpression(), restrictions) }
+  /// This can be used when the setter is a simple non-generic function that 
+  /// takes the name as string & argument as object (and returns nothing)
+  let createSetterFromFunc expr (owner:'T) (setter:'T -> string -> obj -> unit) =
+    { new System.Dynamic.DynamicMetaObject(expr, System.Dynamic.BindingRestrictions.Empty, owner) with
+        override x.BindSetMember(binder, value) = 
+          if binder.ReturnType <> typeof<obj> then failwith "createSetterFromFunc: Expected object return type"
+          let setter = SetterWrapper<'T>(setter)
+          let call = <@@ setter.Invoke(%%(x.Expression.Wrap<'T>()), %%(Expr.Value(binder.Name)), %%(value.Expression.Wrap())); null @@>
+          let restrictions = BindingRestrictions.GetTypeRestriction(x.Expression, x.LimitType);
+          new DynamicMetaObject(call.AsExpression(), restrictions) }

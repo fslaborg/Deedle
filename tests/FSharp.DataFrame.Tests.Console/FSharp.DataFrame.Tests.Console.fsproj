@@ -60,6 +60,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FSharp.DataFrame.CSharp.Tests\FSharp.DataFrame.CSharp.Tests.csproj">
+      <Name>FSharp.DataFrame.CSharp.Tests</Name>
+      <Project>{b0584275-6e9d-4db8-a35d-4f37b623f97e}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\FSharp.DataFrame.Tests\FSharp.DataFrame.Tests.fsproj">
       <Name>FSharp.DataFrame.Tests</Name>
       <Project>{484a96e6-d217-47ee-974c-5d7b3cfb401e}</Project>

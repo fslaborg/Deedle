@@ -17,16 +17,18 @@ namespace FSharp.DataFrame.CSharp.Tests
 		[Test]
 		public static void SeriesBuilderSupportsDynamic()
 		{
-			dynamic sb = new SeriesBuilder<string>();
-			sb.ID = 1;
-			sb.Value = 3.4;
-			sb.Date = DateTime.Today;
+			for (int i = 1; i <= 2; i++) // Run this twice, to check that instance references are right
+			{
+				dynamic sb = new SeriesBuilder<string>();
+				sb.ID = 1;
+				sb.Value = 3.4;
+				sb.Date = DateTime.Today;
 
-			var actual = sb.Series;
-			var expected =
-				new SeriesBuilder<string, object> 
-					{ { "ID", 1 }, { "Value", 3.4 }, { "Date", DateTime.Today} }.Series;
-			Assert.AreEqual(expected, actual);
+				var actual = sb.Series;
+				var expected =
+					new SeriesBuilder<string, object> { { "ID", 1 }, { "Value", 3.4 }, { "Date", DateTime.Today } }.Series;
+				Assert.AreEqual(expected, actual);
+			}
 		}
 	}
 

@@ -67,9 +67,8 @@ let testAll () =
 let testOne() =
   for i in 1 .. 6 do
     timed(fun () -> 
-      for i in 1 .. 100 do
-        Tests.Frame.``Fill missing values using the specified direction``()
-        Tests.Frame.``Fill missing values using the specified constant``() 
+      CSharp.Tests.DynamicFrameTests.CanAddSeriesDynamically()
+      CSharp.Tests.DynamicFrameTests.CanGetSeriesDynamically()
     )
 
 //do testAll()
