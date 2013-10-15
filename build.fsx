@@ -86,8 +86,7 @@ Target "CleanDocs" (fun _ ->
 )
 
 // --------------------------------------------------------------------------------------
-// Build library (builds Visual Studio solution, which builds multiple versions
-// of the runtime library & desktop + Silverlight version of design time library)
+// Build library & test project
 
 Target "Build" (fun _ ->
     (files ["FSharp.DataFrame.sln"; "FSharp.DataFrame.Tests.sln"])

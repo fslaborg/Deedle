@@ -111,7 +111,7 @@ the [F# data science and machine learning][fsharp-dwg] working group, which coor
 work on data science projects for F#.
 
 The library has been developed by [BlueMountain Capital](https://www.bluemountaincapital.com/)
-and contributors. It is available under an open-source license that allows modification and 
+and contributors. It is available under the BSD license, which allows modification and 
 redistribution for both commercial and non-commercial purposes. For more information see the 
 [License file][license] in the GitHub repository. 
 
