@@ -10,10 +10,7 @@ tests/FSharp.DataFrame.CSharp.Tests/obj
 tests/FSharp.DataFrame.CSharp.Tests/bin
 tests/FSharp.DataFrame.Tests.Console/obj
 tests/FSharp.DataFrame.Tests.Console/bin
-packages/NUnit*
-packages/FsCheck*
-packages/FSharp*
-packages/MathNet*
+packages/*
 docs
 tools/FAKE
 *.vsp

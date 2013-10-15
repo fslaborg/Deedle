@@ -257,7 +257,7 @@ Chart.Rows
 As a result, you should see a chart that looks something like this:
 
 <div style="text-align:center">
-<img src="content/images/tutorial-chart.png" />
+<img src="images/tutorial-chart.png" />
 </div>
 
 <a name="selecting"></a>

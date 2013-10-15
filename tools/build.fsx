@@ -3,8 +3,9 @@
 // (the documentation is stored in the 'docs' directory)
 // --------------------------------------------------------------------------------------
 
-#I "../packages/FSharp.Formatting.1.0.15/lib/net40"
-#load "../packages/FSharp.Formatting.1.0.15/literate/literate.fsx"
+#I "../packages/FSharp.Formatting.2.0.2/lib/net40"
+#r "FSharp.Literate.dll"
+#r "FSharp.CodeFormat.dll"
 #r "FSharp.MetadataFormat.dll"
 open System.IO
 open FSharp.Literate
@@ -17,8 +18,8 @@ let sources  = __SOURCE_DIRECTORY__ ++ "../samples"
 let output   = __SOURCE_DIRECTORY__ ++ "../docs"
 
 // When running locally, you can use your path
-//let root = @"file://C:\dev\FSharp.DataFrame\docs"
-//let root = @"file://C:\Tomas\Projects\FSharp.DataFrame\docs"
+//let root = @"file://C:/dev/FSharp.DataFrame/docs"
+//let root = @"file://C:/Tomas/Projects/FSharp.DataFrame/docs"
 let root = "http://BlueMountainCapital.github.io/FSharp.DataFrame"
 
 let buildReference () = 
@@ -32,8 +33,8 @@ let buildReference () =
 let build () =
   // Copy all sample data files to the "data" directory
   let copy = [ sources ++ "data", output ++ "data"
-               sources ++ "../tools/content", output ++ "content"
-               sources ++ "../tools/content/images", output ++ "content/images" ]
+               sources ++ "../packages/FSharp.Formatting.2.0.2/literate/content", output ++ "content"
+               sources ++ "../samples/images", output ++ "images" ]
   for source, target in copy do
     if Directory.Exists target then Directory.Delete(target, true)
     Directory.CreateDirectory target |> ignore

@@ -73,7 +73,7 @@ The above snippet generates 1k of prices in one minute intervals and plots them 
 and tweak the chart look, you should see something like this:
 
 <div style="text-align:center;margin-right:100px;">
-<img src="content/images/ts-chart.png" />
+<img src="images/ts-chart.png" />
 </div>
 
 <a name="alignment"></a>
