@@ -73,9 +73,6 @@
     <Compile Include="FrameExtensions.fs" />
     <Compile Include="DelayedSeries.fs" />
     <None Include="packages.config" />
-    <None Include="FSharp.DataFrame.fsx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">

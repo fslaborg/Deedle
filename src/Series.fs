@@ -40,7 +40,9 @@ type ISeries<'K when 'K : equality> =
 
 /// The type `Series<K, V>` represents a data series consisting of values `V` indexed by
 /// keys `K`. The keys of a series may or may not be ordered 
-and Series<'K, 'V when 'K : equality>
+and
+  [<StructuredFormatDisplay("{Format}")>]
+  Series<'K, 'V when 'K : equality>
     ( index:IIndex<'K>, vector:IVector<'V>,
       vectorBuilder : IVectorBuilder, indexBuilder : IIndexBuilder ) as this =
   
@@ -726,41 +728,44 @@ and Series<'K, 'V when 'K : equality>
       |> String.concat "; "
       |> sprintf "series [ %s]" 
 
-  interface IFsiFormattable with
-    member series.Format() = 
-      let getLevel ordered previous reset maxLevel level (key:'K) = 
-        let levelKey = 
-          if level = 0 && maxLevel = 0 then box key
-          else CustomKey.Get(key).GetLevel(level)
-        if ordered && (Some levelKey = !previous) then "" 
-        else previous := Some levelKey; reset(); levelKey.ToString()
+  /// Shows the data frame content in a human-readable format. The resulting string
+  /// shows all columns, but a limited number of rows. The property is used 
+  /// automatically by F# Interactive.
+  member series.Format = 
+    let getLevel ordered previous reset maxLevel level (key:'K) = 
+      let levelKey = 
+        if level = 0 && maxLevel = 0 then box key
+        else CustomKey.Get(key).GetLevel(level)
+      if ordered && (Some levelKey = !previous) then "" 
+      else previous := Some levelKey; reset(); levelKey.ToString()
 
-      if vector.SuppressPrinting then "(Suppressed)" else
-        let key = series.Index.Keys |> Seq.headOrNone
-        match key with 
-        | None -> "(Empty)"
-        | Some key ->
-            let levels = CustomKey.Get(key).Levels
-            let previous = Array.init levels (fun _ -> ref None)
-            let reset i () = for j in i + 1 .. levels - 1 do previous.[j] := None
-            seq { for item in index.Mappings |> Seq.startAndEnd Formatting.StartItemCount Formatting.EndItemCount  do
-                    match item with 
-                    | Choice1Of3(k, a) | Choice3Of3(k, a) -> 
-                        let v = vector.GetValue(a)
-                        yield [ 
-                          // Yield all row keys
-                          for level in 0 .. levels - 1 do 
-                            yield getLevel series.Index.IsOrdered previous.[level] (reset level) levels level k
-                          yield "->"
-                          yield v.ToString() ]
-                    | Choice2Of3() -> 
-                        yield [ 
-                          yield "..."
-                          for level in 1 .. levels - 1 do yield ""
-                          yield "->"
-                          yield "..." ] }
-            |> array2D
-            |> Formatting.formatTable
+    if vector.SuppressPrinting then "(Suppressed)" else
+      let key = series.Index.Keys |> Seq.headOrNone
+      match key with 
+      | None -> "(Empty)"
+      | Some key ->
+          let levels = CustomKey.Get(key).Levels
+          let previous = Array.init levels (fun _ -> ref None)
+          let reset i () = for j in i + 1 .. levels - 1 do previous.[j] := None
+          seq { for item in index.Mappings |> Seq.startAndEnd Formatting.StartItemCount Formatting.EndItemCount  do
+                  match item with 
+                  | Choice1Of3(k, a) | Choice3Of3(k, a) -> 
+                      let v = vector.GetValue(a)
+                      yield [ 
+                        // Yield all row keys
+                        for level in 0 .. levels - 1 do 
+                          yield getLevel series.Index.IsOrdered previous.[level] (reset level) levels level k
+                        yield "->"
+                        yield v.ToString() ]
+                  | Choice2Of3() -> 
+                      yield [ 
+                        yield "..."
+                        for level in 1 .. levels - 1 do yield ""
+                        yield "->"
+                        yield "..." ] }
+          |> array2D
+          |> Formatting.formatTable
+          |> sprintf "\n%s"
 
   // ----------------------------------------------------------------------------------------------
   // Nicer constructor

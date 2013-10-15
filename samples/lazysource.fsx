@@ -1,6 +1,5 @@
 ﻿(*** hide ***)
-#I "../bin"
-#load "FSharp.DataFrame.fsx"
+#r "../bin/FSharp.DataFrame.dll"
 open System
 
 (**

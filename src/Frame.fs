@@ -20,6 +20,7 @@ open VectorHelpers
 
 /// A frame contains one Index, with multiple Vecs
 /// (because this is dynamic, we need to store them as IVec)
+[<StructuredFormatDisplay("{Format}")>]
 type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>
     internal ( rowIndex:IIndex<'TRowKey>, columnIndex:IIndex<'TColumnKey>, 
                data:IVector<IVector>) =
@@ -632,57 +633,60 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
       col.Value.ElementType, col.Value.ObjectSequence)
     colKeys, rowKeys, columns
 
-  interface IFsiFormattable with
-    member frame.Format() = 
-      try
-        let colLevels = 
-          match frame.ColumnIndex.Keys |> Seq.headOrNone with 
-          Some colKey -> CustomKey.Get(colKey).Levels | _ -> 1
-        let rowLevels = 
-          match frame.RowIndex.Keys |> Seq.headOrNone with 
-          Some rowKey -> CustomKey.Get(rowKey).Levels | _ -> 1
-        let getLevel ordered previous reset maxLevel level (key:'K) = 
-          let levelKey = 
-            if level = 0 && maxLevel = 0 then box key
-            else CustomKey.Get(key).GetLevel(level)
-          if ordered && (Some levelKey = !previous) then "" 
-          else previous := Some levelKey; reset(); levelKey.ToString()
+  /// Shows the data frame content in a human-readable format. The resulting string
+  /// shows all columns, but a limited number of rows. The property is used 
+  /// automatically by F# Interactive.
+  member frame.Format = 
+    try
+      let colLevels = 
+        match frame.ColumnIndex.Keys |> Seq.headOrNone with 
+        Some colKey -> CustomKey.Get(colKey).Levels | _ -> 1
+      let rowLevels = 
+        match frame.RowIndex.Keys |> Seq.headOrNone with 
+        Some rowKey -> CustomKey.Get(rowKey).Levels | _ -> 1
+      let getLevel ordered previous reset maxLevel level (key:'K) = 
+        let levelKey = 
+          if level = 0 && maxLevel = 0 then box key
+          else CustomKey.Get(key).GetLevel(level)
+        if ordered && (Some levelKey = !previous) then "" 
+        else previous := Some levelKey; reset(); levelKey.ToString()
         
-        seq { 
-          // Yield headers (for all column levels)
-          for colLevel in 0 .. colLevels - 1 do 
-            yield [
-              // Prefix with appropriate number of (empty) row keys
-              for i in 0 .. rowLevels - 1 do yield "" 
-              yield ""
-              let previous = ref None
-              for colKey, _ in frame.ColumnIndex.Mappings do 
-                yield getLevel frame.ColumnIndex.IsOrdered previous ignore colLevels colLevel colKey ]
+      seq { 
+        // Yield headers (for all column levels)
+        for colLevel in 0 .. colLevels - 1 do 
+          yield [
+            // Prefix with appropriate number of (empty) row keys
+            for i in 0 .. rowLevels - 1 do yield "" 
+            yield ""
+            let previous = ref None
+            for colKey, _ in frame.ColumnIndex.Mappings do 
+              yield getLevel frame.ColumnIndex.IsOrdered previous ignore colLevels colLevel colKey ]
 
-          // Yield row data
-          let rows = frame.Rows
-          let previous = Array.init rowLevels (fun _ -> ref None)
-          let reset i () = for j in i + 1 .. rowLevels - 1 do previous.[j] := None
-          for item in frame.RowIndex.Mappings |> Seq.startAndEnd Formatting.StartItemCount Formatting.EndItemCount do
-            match item with 
-            | Choice2Of3() ->
-                yield [
-                  // Prefix with appropriate number of (empty) row keys
-                  for i in 0 .. rowLevels - 1 do yield if i = 0 then ":" else ""
-                  yield ""
-                  for i in 1 .. data.DataSequence |> Seq.length -> "..." ]
-            | Choice1Of3(rowKey, addr) | Choice3Of3(rowKey, addr) ->
-                let row = rows.[rowKey]
-                yield [
-                  // Yield all row keys
-                  for rowLevel in 0 .. rowLevels - 1 do 
-                    yield getLevel frame.RowIndex.IsOrdered previous.[rowLevel] (reset rowLevel) rowLevels rowLevel rowKey
-                  yield "->"
-                  for KeyValue(_, value) in SeriesExtensions.GetAllObservations(row) do  // TODO: is this good?
-                    yield value.ToString() ] }
-        |> array2D
-        |> Formatting.formatTable
-      with e -> sprintf "Formatting failed: %A" e
+        // Yield row data
+        let rows = frame.Rows
+        let previous = Array.init rowLevels (fun _ -> ref None)
+        let reset i () = for j in i + 1 .. rowLevels - 1 do previous.[j] := None
+        for item in frame.RowIndex.Mappings |> Seq.startAndEnd Formatting.StartItemCount Formatting.EndItemCount do
+          match item with 
+          | Choice2Of3() ->
+              yield [
+                // Prefix with appropriate number of (empty) row keys
+                for i in 0 .. rowLevels - 1 do yield if i = 0 then ":" else ""
+                yield ""
+                for i in 1 .. data.DataSequence |> Seq.length -> "..." ]
+          | Choice1Of3(rowKey, addr) | Choice3Of3(rowKey, addr) ->
+              let row = rows.[rowKey]
+              yield [
+                // Yield all row keys
+                for rowLevel in 0 .. rowLevels - 1 do 
+                  yield getLevel frame.RowIndex.IsOrdered previous.[rowLevel] (reset rowLevel) rowLevels rowLevel rowKey
+                yield "->"
+                for KeyValue(_, value) in SeriesExtensions.GetAllObservations(row) do  // TODO: is this good?
+                  yield value.ToString() ] }
+      |> array2D
+      |> Formatting.formatTable
+      |> sprintf "\n%s"
+    with e -> sprintf "Formatting failed: %A" e
 
   // ----------------------------------------------------------------------------------------------
   // Interfaces (2.) - support the C# dynamic keyword

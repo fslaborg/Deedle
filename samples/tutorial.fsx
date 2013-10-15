@@ -14,9 +14,8 @@ we also need  [F# Charting](http://fsharp.github.io/FSharp.Charting), which
 works similarly:
 
 *)
-#I "../bin"
+#r "../bin/FSharp.DataFrame.dll"
 #I "../packages/FSharp.Charting.0.87"
-#load "FSharp.DataFrame.fsx"
 #load "FSharp.Charting.fsx"
 
 open System

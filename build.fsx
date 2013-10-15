@@ -58,18 +58,6 @@ Target "AssemblyInfo" (fun _ ->
 )
 
 // --------------------------------------------------------------------------------------
-// Update the assembly version numbers in the script file.
-
-Target "UpdateFsxVersions" (fun _ ->
-    let pattern = @"#I ""../../packages/FSharp.DataFrame.(.*)/lib/net40"""
-    let replacement = sprintf @"#I ""../../packages/FSharp.DataFrame.%s/lib/net40""" versionNuGet
-    let path = @".\src\FSharp.DataFrame.fsx"
-    let text = File.ReadAllText(path)
-    let text = Regex.Replace(text, pattern, replacement)
-    File.WriteAllText(path, text)
-)
-
-// --------------------------------------------------------------------------------------
 // Clean build results & restore NuGet packages
 
 Target "RestorePackages" (fun _ ->
@@ -185,7 +173,6 @@ Target "All" DoNothing
 "Clean"
   ==> "RestorePackages"
   ==> "AssemblyInfo"
-  ==> "UpdateFsxVersions"
   ==> "Build"
   ==> "GenerateDocs"
   ==> "RunTests"
