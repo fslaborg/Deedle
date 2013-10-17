@@ -1,13 +1,20 @@
 ﻿namespace FSharp.DataFrame
 
 module internal Reflection = 
+  open System
   open System.Linq
   open System.Linq.Expressions
   open Microsoft.FSharp.Reflection
   open Microsoft.FSharp
+  open Microsoft.FSharp.Quotations
+  open System.Collections.Generic
 
   let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
   let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
+
+  let createTypedVectorHelper<'T> (input:seq<OptionalValue<obj>>) =
+    input |> Seq.map (OptionalValue.map unbox<'T>) |> Vector.ofOptionalValues :> IVector
+
 
   let enumerableSelect =
     match <@@ Enumerable.Select([0], fun v -> v) @@> with
@@ -21,6 +28,11 @@ module internal Reflection =
     match <@@ vectorBuilder.Create([| |]) @@> with
     | Quotations.Patterns.Call(_, mi, _) -> mi.GetGenericMethodDefinition() 
     | _ -> failwith "Could not find vectorBuilder.Create"
+  let createTypedVectorMi =
+    match <@@ createTypedVectorHelper @@> with
+    | Patterns.Lambda(_, Patterns.Call(_, mi, _)) -> mi.GetGenericMethodDefinition()
+    | _ -> failwith "Failed to get method info for 'createTypedVector'"
+
 
   let getRecordConvertors<'T>() = 
     let recdTy = typeof<'T>
@@ -50,6 +62,18 @@ module internal Reflection =
           convFunc.DynamicInvoke( [| box data |] ) :?> IVector |]
       |> vectorBuilder.Create
     Frame<int, string>(Index.ofKeys [0 .. (Seq.length data) - 1], colIndex, frameData)
+
+  let createTypedVector : _ -> seq<OptionalValue<obj>> -> _ =
+    let cache = Dictionary<_, _>()
+    (fun typ -> 
+      match cache.TryGetValue(typ) with
+      | true, res -> res 
+      | false, _ -> 
+          let par = Expression.Parameter(typeof<seq<OptionalValue<obj>>>)
+          let body = Expression.Call(createTypedVectorMi.MakeGenericMethod([| typ |]), par)
+          let f = Expression.Lambda<Func<seq<OptionalValue<obj>>, IVector>>(body, par).Compile()
+          cache.Add(typ, f.Invoke)
+          f.Invoke )
 
 // ------------------------------------------------------------------------------------------------
 //
@@ -154,20 +178,29 @@ module internal FrameUtils =
         writeColumns ()
     writeColumns ()
 
-(*
-    let transformed = 
-      headers
-      |> Seq.map (Seq.map (Array.create 1))
-      |> Seq.reduce (Seq.map2 Array.append)
-    let flatHeaders = 
-      transformed |> Seq.map (fun sub -> 
-        sub |> Seq.map (fun o -> if o = null then "" else o.ToString()) |> String.concat " - ")
-            
-    let writeLine seq = writer.WriteLine(String.concat (separator.ToString()) seq)
+
+  /// Load data frame from a data reader (and cast the values of columns
+  /// to their actual types to create IVector<T> with the right T)
+  let readReader (reader:System.Data.IDataReader) =
+    let fields = reader.FieldCount
+    let lists = Array.init fields (fun _ -> ResizeArray<_>(1000))
+    let mutable count = 0
+    while reader.Read() do
+      count <- count + 1
+      for i in 0 .. fields - 1 do
+        let value = 
+          if reader.IsDBNull(i) then OptionalValue.Missing
+          else OptionalValue(reader.GetValue(i))
+        lists.[i].Add(value)
     
-    writeLine flatHeaders
-    data |> Seq.iter (Seq.map formatOptional >> writeLine)
-*)
+    let frameData =
+      lists 
+      |> Array.mapi (reader.GetFieldType >> Reflection.createTypedVector)
+      |> Vector.ofValues
+    let rowIndex = Index.ofKeys [ 0 .. count - 1 ]
+    let colIndex = Index.ofKeys [ for i in 0 .. fields - 1 -> reader.GetName(i) ]
+    Frame<int, string>(rowIndex, colIndex, frameData)
+
 
   /// Load data from a CSV file using F# Data API
   let readCsv (reader:TextReader) inferTypes inferRows schema (missingValues:string) separators culture =

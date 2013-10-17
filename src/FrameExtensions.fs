@@ -178,6 +178,10 @@ type Frame =
   static member FromRecords (values:seq<'T>) =
     Reflection.convertRecordSequence<'T>(values)    
 
+  // Also used from F#
+
+  static member ReadReader (reader) =
+    FrameUtils.readReader reader
 
 
   // ----------------------------------------------------------------------------------------------
@@ -300,7 +304,6 @@ module FSharpFrameExtensions =
 
     static member ofRecords (values:seq<'T>) =
       Reflection.convertRecordSequence<'T>(values)    
-
 
   type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality> with
     /// Save data frame to a CSV file or to a `Stream`. When calling the operation,
@@ -634,13 +637,16 @@ type FrameExtensions =
   static member Reduce(frame:Frame<'TRowKey, 'TColumnKey>, aggregation:Func<'T, 'T, 'T>) = 
     frame |> Frame.reduce (fun a b -> aggregation.Invoke(a, b))
 
-  [<Extension>]
-  static member ReduceBy(frame:Frame<'R1, 'C1>, keySelector:Func<_, 'K>, valueSelector:Func<_, 'V>) =
-    frame |> Frame.reduceBy keySelector.Invoke valueSelector.Invoke
+
+  // hierarchical indexing 
 
   [<Extension>]
-  static member ReduceRowsBy(frame:Frame<'R, 'C>, keySelector:Func<'R, 'K>, op:Func<_, 'V>) =
-    frame |> Frame.reduceRowsBy keySelector.Invoke op.Invoke
+  static member Flatten(frame:Frame<'R1, 'C1>, keySelector:Func<_, 'K>, valueSelector:Func<_, 'V>) =
+    frame |> Frame.flatten keySelector.Invoke valueSelector.Invoke
+
+  [<Extension>]
+  static member FlattenRows(frame:Frame<'R, 'C>, keySelector:Func<'R, 'K>, op:Func<_, 'V>) =
+    frame |> Frame.flattenRows keySelector.Invoke op.Invoke
 
   /// [category:Fancy accessors]
   [<Extension>]

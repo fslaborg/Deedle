@@ -44,6 +44,11 @@ module FSharpVectorExtensions =
 // C# frienly operations for creating vectors
 // ------------------------------------------------------------------------------------------------
 
+namespace FSharp.DataFrame.Vectors
+
+open FSharp.DataFrame
+open FSharp.DataFrame.Vectors.ArrayVector
+
 /// Type that provides access to creating vectors (represented as arrays)
 type Vector = 
   /// Creates a vector that stores the specified data in an array.

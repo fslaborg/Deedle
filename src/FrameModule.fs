@@ -394,8 +394,8 @@ module Frame =
   let median (frame:Frame<'R, 'C>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Series.median)
 
-  let stat op (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.stat op)
+  let apply op (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.apply op)
 
   let reduce (op:'T -> 'T -> 'T) (frame:Frame<'R, 'C>) = 
     frame.GetColumns<'T>() |> Series.map (fun _ -> Series.reduce op) 
@@ -410,29 +410,35 @@ module Frame =
   // Hierarchical aggregation
   // ----------------------------------------------------------------------------------------------
 
-  let meanBy keySelector (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.meanBy keySelector) |> FrameUtils.fromColumns
+  let meanLevel keySelector (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.meanLevel keySelector) |> FrameUtils.fromColumns
 
-  let sumBy keySelector (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sumBy keySelector) |> FrameUtils.fromColumns
+  let sumLevel keySelector (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sumLevel keySelector) |> FrameUtils.fromColumns
 
-  let countBy keySelector (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<obj>() |> Series.map (fun _ -> Series.countBy keySelector) |> FrameUtils.fromColumns
+  let countLevel keySelector (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<obj>() |> Series.map (fun _ -> Series.countLevel keySelector) |> FrameUtils.fromColumns
 
-  let sdvBy keySelector (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sdvBy keySelector) |> FrameUtils.fromColumns
+  let sdvLevel keySelector (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sdvLevel keySelector) |> FrameUtils.fromColumns
 
-  let medianBy keySelector (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.medianBy keySelector) |> FrameUtils.fromColumns
+  let medianLevel keySelector (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.medianLevel keySelector) |> FrameUtils.fromColumns
 
-  let statBy keySelector op (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.statBy keySelector op) |> FrameUtils.fromColumns
+  let applyLevel keySelector op (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.applyLevel keySelector op) |> FrameUtils.fromColumns
 
-  let reduceBy keySelector op (frame:Frame<'R, 'C>) = 
-    frame.Columns |> Series.map (fun _ -> Series.reduceBy keySelector (fun s -> op (ObjectSeries<_> s))) |> FrameUtils.fromColumns
+  let reduceLevel keySelector (op:'T -> 'T -> 'T) (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<'T>() |> Series.map (fun _ -> Series.reduceLevel keySelector op) |> FrameUtils.fromColumns
 
-  let reduceRowsBy (keySelector:'R -> 'K) (op:_ -> 'V) (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.reduceBy keySelector (FrameUtils.fromRows >> op)
+
+  // hierarchical indexing
+
+  let flatten (level:'R -> 'K) (op:_ -> 'V) (frame:Frame<'R, 'C>) = 
+    frame.Columns |> Series.map (fun _ -> Series.flattenLevel level op)
+
+  let flattenRows (level:'R -> 'K) op (frame:Frame<'R, 'C>) : Series<'K, 'V> = 
+    frame.Rows |> Series.groupInto (fun k _ -> level k) (fun _ -> FrameUtils.fromRows >> op)
 
   let unstackBy keySelector (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.groupInto (fun k _ -> keySelector k) (fun nk s -> FrameUtils.fromRows s)
@@ -446,6 +452,8 @@ module Frame =
     |> Series.map (fun k1 s -> s.Rows |> Series.mapKeys (fun k2 -> k1, k2) |> FrameUtils.fromRows)
     |> Series.values
     |> Seq.reduce append
+
+  // other stuff
 
   let shift offset (frame:Frame<'R, 'C>) = 
     frame |> mapColValues (Series.shift offset)

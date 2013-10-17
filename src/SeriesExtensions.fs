@@ -131,18 +131,6 @@ type SeriesExtensions =
   static member Shift(series:Series<'K, 'V>, offset) = Series.shift offset series
 
   [<Extension>]
-  static member Sum(series:Series<'K, float>) = Series.sum series
-
-  [<Extension>]
-  static member Sum(series:Series<'K, int>) = Series.sum series
-
-  [<Extension>]
-  static member Sum(series:Series<'K, float32>) = Series.sum series
-
-  [<Extension>]
-  static member Sum(series:Series<'K, decimal>) = Series.sum series
-
-  [<Extension>]
   static member ContainsKey(series:Series<'K, 'T>, key:'K) = 
     series.Keys.Contains(key)
 
@@ -204,6 +192,356 @@ type SeriesExtensions =
 
   [<Extension>]
   static member LastKey(series:Series<'K, 'V>) = series.KeyRange |> snd
+
+  // ----------------------------------------------------------------------------------------------
+  // Statistics
+  // ----------------------------------------------------------------------------------------------
+
+  /// Returns the mean of the elements of the series. The operation skips over
+  /// missing values and so the result will never be `NaN`.
+  /// [category:Statistics]
+  [<Extension>]
+  static member Mean(series:Series<'K, float>) = Series.mean series
+
+  /// Returns the mean of the elements of the series. The operation skips over
+  /// missing values and so the result will never be `NaN`.
+  /// [category:Statistics]
+  [<Extension>]
+  static member Mean(series:Series<'K, float32>) = Series.mean series
+
+  /// Returns the mean of the elements of the series. 
+  /// [category:Statistics]
+  [<Extension>]
+  static member Mean(series:Series<'K, decimal>) = Series.mean series
+
+  /// Returns the standard deviation of the elements of the series. The operation skips over
+  /// missing values and so the result will never be `NaN`.
+  /// [category:Statistics]
+  [<Extension>]
+  static member StandardDeviation(series:Series<'K, float>) = Series.sdv series
+
+  /// Returns the median of the elements of the series. The operation skips over
+  /// missing values and so the result will never be `NaN`.
+  /// [category:Statistics]
+  [<Extension>]
+  static member Median(series:Series<'K, float>) = Series.median series
+
+  /// Returns the sum of the elements of the series. The operation skips over
+  /// missing values and so the result will never be `NaN`.
+  /// [category:Statistics]
+  [<Extension>]
+  static member Sum(series:Series<'K, float>) = Series.sum series
+
+  /// Returns the sum of the elements of the series. The operation skips over
+  /// missing values and so the result will never be `NaN`.
+  /// [category:Statistics]
+  [<Extension>]
+  static member Sum(series:Series<'K, float32>) = Series.sum series
+
+  /// Returns the sum of the elements of the series. 
+  /// [category:Statistics]
+  [<Extension>]
+  static member Sum(series:Series<'K, int>) = Series.sum series
+
+  /// Returns the sum of the elements of the series. 
+  /// [category:Statistics]
+  [<Extension>]
+  static member Sum(series:Series<'K, decimal>) = Series.sum series
+
+  /// Returns the smallest of all elements of the series. The operation 
+  /// skips over missing values and so the result will never be `NaN`.
+  /// [category:Statistics]
+  [<Extension>]
+  static member Min(series:Series<'K, float>) = Series.min series
+
+  /// Returns the smallest of all elements of the series. The operation 
+  /// skips over missing values and so the result will never be `NaN`.
+  /// [category:Statistics]
+  [<Extension>]
+  static member Min(series:Series<'K, float32>) = Series.min series
+
+  /// Returns the smallest of all elements of the series. 
+  /// [category:Statistics]
+  [<Extension>]
+  static member Min(series:Series<'K, int>) = Series.min series
+
+  /// Returns the smallest of all elements of the series. 
+  /// [category:Statistics]
+  [<Extension>]
+  static member Min(series:Series<'K, decimal>) = Series.min series
+
+  /// Returns the greatest of all elements of the series. The operation 
+  /// skips over missing values and so the result will never be `NaN`.
+  /// [category:Statistics]
+  [<Extension>]
+  static member Max(series:Series<'K, float>) = Series.max series
+
+  /// Returns the greatest of all elements of the series. The operation 
+  /// skips over missing values and so the result will never be `NaN`.
+  /// [category:Statistics]
+  [<Extension>]
+  static member Max(series:Series<'K, float32>) = Series.max series
+
+  /// Returns the greatest of all elements of the series. 
+  /// [category:Statistics]
+  [<Extension>]
+  static member Max(series:Series<'K, int>) = Series.max series
+
+  /// Returns the greatest of all elements of the series. 
+  /// [category:Statistics]
+  [<Extension>]
+  static member Max(series:Series<'K, decimal>) = Series.max series
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `groupSelector` and then returns a new series containing
+  /// the mean of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - A series of values that are used to calculate the means
+  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<Extension>]
+  static member MeanLevel(series:Series<'K1, float>, groupSelector:Func<'K1, 'K2>) = Series.meanLevel groupSelector.Invoke series
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `groupSelector` and then returns a new series containing
+  /// the mean of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - A series of values that are used to calculate the means
+  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<Extension>]
+  static member MeanLevel(series:Series<'K1, float32>, groupSelector:Func<'K1, 'K2>) = Series.meanLevel groupSelector.Invoke series
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `groupSelector` and then returns a new series containing
+  /// the mean of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - A series of values that are used to calculate the means
+  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<Extension>]
+  static member MeanLevel(series:Series<'K1, decimal>, groupSelector:Func<'K1, 'K2>) = Series.meanLevel groupSelector.Invoke series
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `groupSelector` and then returns a new series containing
+  /// the standard deviation of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - A series of values that are used to calculate the standard deviations
+  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  static member StandardDeviationLevel(series:Series<'K1, float>, groupSelector:Func<'K1, 'K2>) = Series.sdvLevel groupSelector.Invoke series
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `groupSelector` and then returns a new series containing
+  /// the median of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - A series of values that are used to calculate the medians
+  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<Extension>]
+  static member MedianLevel(series:Series<'K1, float>, groupSelector:Func<'K1, 'K2>) = Series.medianLevel groupSelector.Invoke series
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `groupSelector` and then returns a new series containing
+  /// the sum of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - A series of values that are used to calculate the sums
+  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<Extension>]
+  static member SumLevel(series:Series<'K1, float>, groupSelector:Func<'K1, 'K2>) = Series.sumLevel groupSelector.Invoke series
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `groupSelector` and then returns a new series containing
+  /// the sum of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - A series of values that are used to calculate the sums
+  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<Extension>]
+  static member SumLevel(series:Series<'K1, float32>, groupSelector:Func<'K1, 'K2>) = Series.sumLevel groupSelector.Invoke series
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `groupSelector` and then returns a new series containing
+  /// the sum of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - A series of values that are used to calculate the sums
+  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<Extension>]
+  static member SumLevel(series:Series<'K1, int>, groupSelector:Func<'K1, 'K2>) = Series.sumLevel groupSelector.Invoke series
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `groupSelector` and then returns a new series containing
+  /// the sum of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - A series of values that are used to calculate the sums
+  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<Extension>]
+  static member SumLevel(series:Series<'K1, decimal>, groupSelector:Func<'K1, 'K2>) = Series.sumLevel groupSelector.Invoke series
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `groupSelector` and then returns a new series containing
+  /// the smallest element of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - A series of values that are used to calculate the smallest elements
+  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<Extension>]
+  static member MinLevel(series:Series<'K1, float>, groupSelector:Func<'K1, 'K2>) = Series.minLevel groupSelector.Invoke series
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `groupSelector` and then returns a new series containing
+  /// the smallest element of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - A series of values that are used to calculate the smallest elements
+  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<Extension>]
+  static member MinLevel(series:Series<'K1, float32>, groupSelector:Func<'K1, 'K2>) = Series.minLevel groupSelector.Invoke series
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `groupSelector` and then returns a new series containing
+  /// the smallest element of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - A series of values that are used to calculate the smallest elements
+  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<Extension>]
+  static member MinLevel(series:Series<'K1, int>, groupSelector:Func<'K1, 'K2>) = Series.minLevel groupSelector.Invoke series
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `groupSelector` and then returns a new series containing
+  /// the smallest element of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - A series of values that are used to calculate the smallest elements
+  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<Extension>]
+  static member MinLevel(series:Series<'K1, decimal>, groupSelector:Func<'K1, 'K2>) = Series.minLevel groupSelector.Invoke series
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `groupSelector` and then returns a new series containing
+  /// the greatest element of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - A series of values that are used to calculate the greatest elements
+  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<Extension>]
+  static member MaxLevel(series:Series<'K1, float>, groupSelector:Func<'K1, 'K2>) = Series.maxLevel groupSelector.Invoke series
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `groupSelector` and then returns a new series containing
+  /// the greatest element of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - A series of values that are used to calculate the greatest elements
+  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<Extension>]
+  static member MaxLevel(series:Series<'K1, float32>, groupSelector:Func<'K1, 'K2>) = Series.maxLevel groupSelector.Invoke series
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `groupSelector` and then returns a new series containing
+  /// the greatest element of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - A series of values that are used to calculate the greatest elements
+  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<Extension>]
+  static member MaxLevel(series:Series<'K1, int>, groupSelector:Func<'K1, 'K2>) = Series.maxLevel groupSelector.Invoke series
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `groupSelector` and then returns a new series containing
+  /// the greatest element of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - A series of values that are used to calculate the greatest elements
+  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<Extension>]
+  static member MaxLevel(series:Series<'K1, decimal>, groupSelector:Func<'K1, 'K2>) = Series.maxLevel groupSelector.Invoke series
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `groupSelector` and then returns a new series containing
+  /// the counts of elements in each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - A series of values that are used to calculate the counts
+  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<Extension>]
+  static member CountLevel(series:Series<'K1, decimal>, groupSelector:Func<'K1, 'K2>) = Series.countLevel groupSelector.Invoke series
 
   // ----------------------------------------------------------------------------------------------
   // Missing values
@@ -360,7 +698,7 @@ type SeriesExtensions =
   /// for all keys of the target space that are between the minimal and maximal key of the
   /// specified series (e.g. generate value for all days in the range covered by the series).
   /// A specified function `keyProj` is used to project keys to another space and `nextKey`
-  /// is used to generate all keys in the range. The chunk is then aggregated using `aggregate`.
+  /// is used to generate all keys in the range. The last value of each chunk is returned.
   ///
   /// When there are no values for a (generated) key, then the function attempts to get the
   /// greatest value from the previous smaller chunk (i.e. value for the previous date time).
@@ -373,9 +711,6 @@ type SeriesExtensions =
   ///  - `keyProj` - A function that transforms keys from original space to a new 
   ///    space (which is then used for grouping based on equivalence)
   ///  - `nextKey` - A function that gets the next key in the transformed space
-  ///  - `aggregate` - A function that is used to collapse a generated chunk into a 
-  ///    single value. The function may be called on empty series when `fillMode` is
-  ///    `Lookup.Exact`.
   ///    
   /// ## Remarks
   /// This operation is only supported on ordered series. The method throws
@@ -383,8 +718,8 @@ type SeriesExtensions =
   /// 
   /// [category:Lookup, resampling and scaling]
   [<Extension>]
-  static member ResampleUniform(series:Series<'K1, 'V>, keyProj:Func<'K1, 'K2>, nextKey:Func<'K2, 'K2>, fillMode:Lookup, aggregate) =
-    Series.resampleUniformInto fillMode keyProj.Invoke nextKey.Invoke aggregate series
+  static member ResampleUniform(series:Series<'K1, 'V>, keyProj:Func<'K1, 'K2>, nextKey:Func<'K2, 'K2>, fillMode:Lookup) =
+    Series.resampleUniformInto fillMode keyProj.Invoke nextKey.Invoke Series.lastValue series
 
   /// Finds values at, or near, the specified times in a given series. The operation generates
   /// keys starting at the specified `start` time, using the specified `interval`

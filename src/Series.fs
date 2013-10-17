@@ -792,6 +792,10 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
 
   member x.GetAs<'R>(column) : 'R = 
     System.Convert.ChangeType(x.Get(column), typeof<'R>) |> unbox
+
+  member x.GetAtAs<'R>(index) : 'R = 
+    System.Convert.ChangeType(x.GetAt(index), typeof<'R>) |> unbox
+
   member x.TryGetAs<'R>(column) : OptionalValue<'R> = 
     x.TryGet(column) |> OptionalValue.map (fun v -> System.Convert.ChangeType(v, typeof<'R>) |> unbox)
   static member (?) (series:ObjectSeries<_>, name:string) = series.GetAs<float>(name)

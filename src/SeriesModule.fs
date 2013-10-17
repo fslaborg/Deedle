@@ -1,4 +1,5 @@
 ﻿#nowarn "77" // Static constraint in Series.sample requires special + operator
+#nowarn "10002" // Custom CompilerMessage used to hide internals that are inlined
 
 namespace FSharp.DataFrame
 open FSharp.DataFrame.Keys
@@ -15,6 +16,8 @@ open FSharp.DataFrame.Keys
 /// The functions with name starting with `windowed` take a series and generate floating 
 /// (overlapping) windows. The `chunk` functions 
 ///
+/// ## Statistics
+/// Here
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Series = 
   open System
@@ -22,81 +25,6 @@ module Series =
   open FSharp.DataFrame.Internal
   open FSharp.DataFrame.Vectors
   open MathNet.Numerics.Statistics
-
-  // Non-public helper
-  let inline private streamingAggregation f (series:Series<_, _>) =
-    match series.Vector.Data with
-    | VectorData.DenseList list -> f (list :> seq<_>)
-    | VectorData.SparseList list -> f (Seq.choose OptionalValue.asOption list)
-    | VectorData.Sequence seq -> f (Seq.choose OptionalValue.asOption seq)
-
-  let inline private fastAggregation flist foptlist fseq (series:Series<_, _>) =
-    match series.Vector.Data with
-    | VectorData.DenseList list -> flist list
-    | VectorData.SparseList list -> foptlist list
-    | VectorData.Sequence seq -> fseq (Seq.choose OptionalValue.asOption seq)
-
-  /// [omit]
-  /// Does stuff
-  let inline fastStatBy keySelector flist foptlist fseq (series:Series<_, _>) : Series<_, _> = 
-    series.GroupBy
-      ( (fun key ser -> keySelector key),
-        (fun key ser -> OptionalValue(fastAggregation flist foptlist fseq ser)))
-
-  [<CompiledName("Statistic")>]
-  let inline stat op (series:Series<'K, _>) = 
-    series |> streamingAggregation op
-
-  [<CompiledName("Sum")>]
-  let inline sum (series:Series<_, _>) = 
-    series |> fastAggregation ReadOnlyCollection.sum ReadOnlyCollection.sumOptional Seq.sum
-
-  [<CompiledName("Mean")>]
-  let inline mean (series:Series<_, _>) = 
-    series |> fastAggregation ReadOnlyCollection.average ReadOnlyCollection.averageOptional Seq.average
-
-  [<CompiledName("StandardDeviation")>]
-  let inline sdv (series:Series<'K, float>) = series |> stat Statistics.StandardDeviation 
-
-  [<CompiledName("Median")>]
-  let inline median (series:Series<'K, float>) = series |> stat Statistics.Median
-
-  let reduce op (series:Series<'K, 'T>) = 
-    series |> fastAggregation (ReadOnlyCollection.reduce op) (ReadOnlyCollection.reduceOptional op) (Seq.reduce op)
-
-
-  [<CompiledName("StatisticBy")>]
-  let inline statBy keySelector op (series:Series<_, _>) : Series<_, _> = 
-    series.GroupBy
-      ( (fun key ser -> keySelector key),
-        (fun key ser -> OptionalValue(stat op ser)))
-
-  [<CompiledName("SumBy")>]
-  let inline sumBy keySelector (series:Series<_, _>) = 
-    series |> fastStatBy keySelector ReadOnlyCollection.sum ReadOnlyCollection.sumOptional Seq.sum
-
-  [<CompiledName("CountBy")>]
-  let inline countBy keySelector (series:Series<_, _>) = 
-    series |> fastStatBy keySelector ReadOnlyCollection.length ReadOnlyCollection.lengthOptional Seq.length
-
-  [<CompiledName("MeanBy")>]
-  let inline meanBy keySelector (series:Series<_, _>) = 
-    series |> fastStatBy keySelector ReadOnlyCollection.average ReadOnlyCollection.averageOptional Seq.average
-
-  [<CompiledName("StandardDeviationBy")>]
-  let inline sdvBy keySelector (series:Series<_, float>) = 
-    series |> statBy keySelector Statistics.StandardDeviation 
-
-  [<CompiledName("MedianBy")>]
-  let inline medianBy keySelector (series:Series<_, float>) = 
-    series |> statBy keySelector Statistics.Median
-
-
-  let reduceBy keySelector op (series:Series<_, _>) = 
-    series.GroupBy
-      ( (fun key ser -> keySelector key),
-        (fun key ser -> OptionalValue(op ser)))
-    
 
   /// Return observations with available values. The operation skips over 
   /// all keys with missing values (such as values created from `null`,
@@ -227,6 +155,256 @@ module Series =
 
   let inline minBy f (series:Series<'K, 'T>) = 
     series |> observations |> Seq.maxBy (snd >> f)
+
+  // bit like applyLevel
+
+  /// [category:Statistics]
+  [<CompiledName("FlattenLevel")>]
+  let inline flattenLevel (level:'K1 -> 'K2) op (series:Series<_, 'S>) : Series<_, 'V> = 
+    series.GroupBy
+      ( (fun key ser -> level key),
+        (fun key ser -> OptionalValue(op ser)))
+
+
+
+  // ----------------------------------------------------------------------------------------------
+  // Statistics
+  // ----------------------------------------------------------------------------------------------
+  
+  /// Aggregates non-missing values using the specified function working on seq<'T>
+  [<CompiledName("InternalStreamingAggregation")>]
+  let inline private streamingAggregation f (series:Series<_, _>) =
+    match series.Vector.Data with
+    | VectorData.DenseList list -> f (list :> seq<_>)
+    | VectorData.SparseList list -> f (Seq.choose OptionalValue.asOption list)
+    | VectorData.Sequence seq -> f (Seq.choose OptionalValue.asOption seq)
+
+  /// Aggregates non-missing values using the specified functions working 
+  /// on either ReadOnlyCollection<'T>, ReadOnlyCollection<OptionalValue<'T>> or seq<'T>
+  [<CompiledName("InternalFastAggregation")>]
+  let inline private fastAggregation flist foptlist fseq (series:Series<_, _>) =
+    match series.Vector.Data with
+    | VectorData.DenseList list -> flist list
+    | VectorData.SparseList list -> foptlist list
+    | VectorData.Sequence seq -> fseq (Seq.choose OptionalValue.asOption seq)
+
+  /// Aggregates the values of the specified series using a function that operates on
+  /// sequence (`IEnumerable<T>`). This simply reads all non-missing values and passes
+  /// them to the specified operation.
+  ///
+  /// ## Parameters
+  ///  - `series` - An input series to be aggregated
+  ///  - `op` - A function that takes a sequence and produces an aggregated result
+  ///
+  /// [category:Statistics]
+  [<CompiledName("Apply")>]
+  let inline apply (op:_ -> 'V2) (series:Series<'K, 'V1>) = 
+    series |> streamingAggregation op
+
+  /// Returns the sum of the elements of the series. The operation skips over
+  /// missing values and so the result will never be `NaN`.
+  /// [category:Statistics]
+  [<CompiledName("Sum")>]
+  let inline sum (series:Series<'K, ^V>) = 
+    series |> fastAggregation ReadOnlyCollection.sum ReadOnlyCollection.sumOptional Seq.sum
+
+  /// Returns the mean of the elements of the series. The operation skips over
+  /// missing values and so the result will never be `NaN`.
+  /// [category:Statistics]
+  [<CompiledName("Mean")>]
+  let inline mean (series:Series<'K, ^V>) = 
+    series |> fastAggregation ReadOnlyCollection.average ReadOnlyCollection.averageOptional Seq.average
+
+  /// Returns the standard deviation of the elements of the series. The operation skips over
+  /// missing values and so the result will never be `NaN`.
+  /// [category:Statistics]
+  [<CompiledName("StandardDeviation")>]
+  let inline sdv (series:Series<'K, float>) = series |> apply Statistics.StandardDeviation 
+
+  /// Returns the median of the elements of the series. The operation skips over
+  /// missing values and so the result will never be `NaN`.
+  /// [category:Statistics]
+  [<CompiledName("Median")>]
+  let inline median (series:Series<'K, float>) = series |> apply Statistics.Median
+
+  /// Returns the smallest of all elements of the series. The operation 
+  /// skips over missing values and so the result will never be `NaN`.
+  /// [category:Statistics]
+  [<CompiledName("Max")>]
+  let inline max (series:Series<'K, ^V>) = 
+    series |> fastAggregation ReadOnlyCollection.max (ReadOnlyCollection.maxOptional >> OptionalValue.get) Seq.max
+
+  /// Returns the greatest of all elements of the series. The operation 
+  /// skips over missing values and so the result will never be `NaN`.
+  /// [category:Statistics]
+  [<CompiledName("Min")>]
+  let inline min (series:Series<'K, ^V>) = 
+    series |> fastAggregation ReadOnlyCollection.min (ReadOnlyCollection.minOptional >> OptionalValue.get) Seq.min
+
+
+  /// [omit]
+  /// Applies `fastAggregation` to each group produced using the specified `keySelector`
+  [<CompilerMessageAttribute("This is an internal function and should not be used directly", 10002, IsHidden=true)>]
+  [<CompiledName("InternalApplyLevel")>]
+  let inline fastApplyLevel keySelector flist foptlist fseq (series:Series<_, _>) : Series<_, _> = 
+    series.GroupBy
+      ( (fun key ser -> keySelector key),
+        (fun key ser -> OptionalValue(fastAggregation flist foptlist fseq ser)))
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `level` and then aggregates elements in each group
+  /// using the specified function `op`. The result is a new series containing
+  /// the aggregates of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - An input series to be aggregated
+  ///  - `op` - A function that takes a sequence and produces an aggregated result
+  ///  - `level` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<CompiledName("ApplyLevel")>]
+  let inline applyLevel (level:'K1 -> 'K2) op (series:Series<_, 'V>) : Series<_, 'V> = 
+    series.GroupBy
+      ( (fun key ser -> level key),
+        (fun key ser -> OptionalValue(apply op ser)))
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `level` and then returns a new series containing
+  /// the mean of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - A series of values that are used to calculate the means
+  ///  - `level` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<CompiledName("MeanLevel")>]
+  let inline meanLevel (level:'K1 -> 'K2) (series:Series<_, 'V>) = 
+    series |> fastApplyLevel level ReadOnlyCollection.average ReadOnlyCollection.averageOptional Seq.average
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `level` and then returns a new series containing
+  /// the standard deviation of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - A series of values that are used to calculate the standard deviations
+  ///  - `level` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<CompiledName("StandardDeviationLevel")>]
+  let inline sdvLevel (level:'K1 -> 'K2) (series:Series<_, float>) = 
+    series |> applyLevel level Statistics.StandardDeviation 
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `level` and then returns a new series containing
+  /// the median of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - A series of values that are used to calculate the medians
+  ///  - `level` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<CompiledName("MedianLevel")>]
+  let inline medianLevel level (series:Series<_, float>) = 
+    series |> applyLevel level Statistics.Median
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `level` and then returns a new series containing
+  /// the sum of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - A series of values that are used to calculate the sums
+  ///  - `level` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<CompiledName("SumLevel")>]
+  let inline sumLevel (level:'K1 -> 'K2) (series:Series<_, 'V>) = 
+    series |> fastApplyLevel level ReadOnlyCollection.sum ReadOnlyCollection.sumOptional Seq.sum
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `level` and then returns a new series containing
+  /// the greatest element of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - A series of values that are used to calculate the greatest elements
+  ///  - `level` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<CompiledName("MinLevel")>]
+  let inline minLevel (level:'K1 -> 'K2) (series:Series<_, 'V>) = 
+    series |> fastApplyLevel level ReadOnlyCollection.min (ReadOnlyCollection.minOptional >> OptionalValue.get) Seq.min
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `level` and then returns a new series containing
+  /// the greatest element of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - A series of values that are used to calculate the greatest elements
+  ///  - `level` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<CompiledName("MaxLevel")>]
+  let inline maxLevel (level:'K1 -> 'K2) (series:Series<_, 'V>) = 
+    series |> fastApplyLevel level ReadOnlyCollection.max (ReadOnlyCollection.maxOptional >> OptionalValue.get) Seq.max
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `level` and then returns a new series containing
+  /// the counts of elements in each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - A series of values that are used to calculate the counts
+  ///  - `level` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<CompiledName("CountLevel")>]
+  let inline countLevel (level:'K1 -> 'K2) (series:Series<_, 'V>) = 
+    series |> fastApplyLevel level ReadOnlyCollection.length ReadOnlyCollection.lengthOptional Seq.length
+
+  /// Aggregates the values of the specified series using a function that can combine
+  /// individual values. 
+  ///
+  /// ## Parameters
+  ///  - `series` - An input series to be aggregated
+  ///  - `op` - A function that is used to aggregate elements of the series
+  ///
+  /// [category:Statistics]
+  [<CompiledName("Reduce")>]
+  let reduce op (series:Series<'K, 'T>) = 
+    series |> fastAggregation (ReadOnlyCollection.reduce op) (ReadOnlyCollection.reduceOptional op) (Seq.reduce op)
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `level` and then aggregates elements in each group
+  /// using the specified function `op`. The result is a new series containing
+  /// the aggregates of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - An input series to be aggregated
+  ///  - `op` - A function that is used to aggregate elements of each group
+  ///  - `level` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
+  [<CompiledName("ReduceLevel")>]
+  let reduceLevel (level:'K1 -> 'K2) op (series:Series<_, 'T>) = 
+    series.GroupBy
+      ( (fun key ser -> level key),
+        (fun key ser -> OptionalValue(reduce op ser)))
 
   // ----------------------------------------------------------------------------------------------
   // Windowing, chunking and grouping

@@ -1,6 +1,6 @@
 ﻿#if INTERACTIVE
 #I "../../bin"
-#load "../../bin/FSharp.DataFrame.fsx"
+#r "../../bin/FSharp.DataFrame.dll"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #r "../../packages/FsCheck.0.9.1.0/lib/net40-Client/FsCheck.dll"
 #load "../Common/FsUnit.fs"
@@ -9,6 +9,7 @@ module FSharp.DataFrame.Tests.Frame
 #endif
 
 open System
+open System.Data
 open System.Collections.Generic
 open FsUnit
 open FsCheck
@@ -47,6 +48,23 @@ let ``Can save MSFT data as CSV file and read it afterwards (with custom format)
     Frame.ReadCsv(file, separators=";", culture="cs-CZ")
     |> Frame.indexRowsDate "Date" |> Frame.dropCol "Date"
   actual |> shouldEqual expected
+
+[<Test>]
+let ``Can create frame from IDataReader``() =
+  let dt = new DataTable()
+  dt.Columns.Add(new DataColumn("First", typeof<int>))
+  dt.Columns.Add(new DataColumn("Second", typeof<DateTimeOffset>))
+  for i in 0 .. 10 do 
+    dt.Rows.Add [| box i; box (DateTimeOffset(DateTime.Today.AddDays(float i))) |] |> ignore
+
+  let expected = 
+    Frame.ofColumns 
+      [ "First" =?> Series.ofValues [ 0 .. 10 ] 
+        "Second" =?> Series.ofValues [ for i in 0 .. 10 -> DateTimeOffset(DateTime.Today.AddDays(float i)) ] ]
+  
+  Frame.ReadReader(dt.CreateDataReader())
+  |> shouldEqual expected
+
 
 // ------------------------------------------------------------------------------------------------
 // Indexing and accessing values

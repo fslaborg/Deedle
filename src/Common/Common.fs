@@ -313,6 +313,18 @@ module ReadOnlyCollection =
     for i in 0 .. list.Count - 1 do total <- total + list.[i]
     total
 
+  /// Return the smallest element of the ReadOnlyCollection
+  let inline min (list:ReadOnlyCollection<'T>) = 
+    let mutable res = list.[0]
+    for i in 1 .. list.Count - 1 do res <- min res list.[i]
+    res
+
+  /// Return the greatest element of the ReadOnlyCollection
+  let inline max (list:ReadOnlyCollection<'T>) = 
+    let mutable res = list.[0]
+    for i in 1 .. list.Count - 1 do res <- max res list.[i]
+    res
+
   /// Reduce elements of the ReadOnlyCollection
   let inline reduce op (list:ReadOnlyCollection<'T>) = 
     let mutable res = list.[0]
@@ -346,7 +358,7 @@ module ReadOnlyCollection =
     res.Value
 
   /// Average elements of the ReadOnlyCollection, skipping over missing values
-  let inline averageOptional (list:ReadOnlyCollection<OptionalValue<'T>>) = 
+  let inline averageOptional (list:ReadOnlyCollection<OptionalValue< ^T >>) = 
     let mutable total = LanguagePrimitives.GenericZero
     let mutable count = 0 
     for i in 0 .. list.Count - 1 do 
@@ -360,6 +372,14 @@ module ReadOnlyCollection =
     let mutable total = 0
     for i in 0 .. list.Count - 1 do if list.[i].HasValue then total <- total + 1
     total
+
+  /// Return the smallest element, skipping over missing values
+  let inline minOptional (list:ReadOnlyCollection<OptionalValue< ^T >>) = 
+    reduce Operators.min list
+
+  /// Return the greatest element, skipping over missing values
+  let inline maxOptional (list:ReadOnlyCollection<OptionalValue< ^T >>) = 
+    reduce Operators.max list
 
 
 /// This module contains additional functions for working with arrays. 
