@@ -14,7 +14,7 @@ open System.Runtime.CompilerServices
 /// standard F# `option<T>` type instead. However, there the `OptionalValue` module
 /// contains helper functions for using this type from F# as well as `Missing` and
 /// `Present` active patterns.
-[<Struct>]
+[<Struct; CustomEquality; NoComparison>]
 type OptionalValue<'T> private (hasValue:bool, value:'T) = 
   /// Gets a value indicating whether the current `OptionalValue<T>` has a value
   member x.HasValue = hasValue
@@ -45,6 +45,17 @@ type OptionalValue<'T> private (hasValue:bool, value:'T) =
       else value.ToString() 
     else "<missing>"
 
+  /// Support structural equality      
+  override x.GetHashCode() = 
+    match box x.ValueOrDefault with null -> 0 | o -> o.GetHashCode()
+
+  /// Support structural equality      
+  override x.Equals(y) =
+    match y with 
+    | null -> false
+    | :? OptionalValue<'T> as y -> Object.Equals(x.ValueOrDefault, y.ValueOrDefault)
+    | _ -> false
+    
 /// A type alias for the `OptionalValue<T>` type. The type alias can be used
 /// to make F# type definitions that use optional values directly more succinct.
 type 'T opt = OptionalValue<'T>
@@ -355,7 +366,7 @@ module ReadOnlyCollection =
       | Some r, OptionalValue.Present v -> res <- Some (op r v)
       | None, OptionalValue.Present v -> res <- Some v
       | _ -> ()
-    res.Value
+    res |> OptionalValue.ofOption
 
   /// Average elements of the ReadOnlyCollection, skipping over missing values
   let inline averageOptional (list:ReadOnlyCollection<OptionalValue< ^T >>) = 
@@ -375,11 +386,11 @@ module ReadOnlyCollection =
 
   /// Return the smallest element, skipping over missing values
   let inline minOptional (list:ReadOnlyCollection<OptionalValue< ^T >>) = 
-    reduce Operators.min list
+    reduceOptional Operators.min list
 
   /// Return the greatest element, skipping over missing values
   let inline maxOptional (list:ReadOnlyCollection<OptionalValue< ^T >>) = 
-    reduce Operators.max list
+    reduceOptional Operators.max list
 
 
 /// This module contains additional functions for working with arrays. 

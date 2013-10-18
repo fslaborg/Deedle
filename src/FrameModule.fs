@@ -270,8 +270,8 @@ module Frame =
   /// [category:Index manipulation]
   [<CompiledName("IndexColumnsWith")>]
   let indexColsWith (keys:seq<'C2>) (frame:Frame<'R, 'C1>) = 
-    let columns = seq { for v in frame.Columns.Values -> v :> ISeries<_> }
-    Frame<_, _>(keys, columns)
+    if Seq.length frame.ColumnKeys <> Seq.length keys then invalidArg "keys" "New keys do not match current column index length"
+    Frame<_, _>(frame.RowIndex, Index.ofKeys keys, frame.Data)
 
   /// Replace the row index of the frame with the provided sequence of row keys.
   /// The rows of the frame are assigned keys according to the current order, or in a

@@ -30,6 +30,8 @@ type Frame =
   /// ## Parameters
   ///
   ///  * `location` - Specifies a file name or an web location of the resource.
+  ///  * `hasHeaders` - Specifies whether the input CSV file has header row
+  ///     (when not set, the default value is `true`)
   ///  * `skipTypeInference` - Specifies whether the method should skip inferring types
   ///    of columns automatically (when set to `true` you need to provide explicit `schema`)
   ///  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
@@ -43,11 +45,12 @@ type Frame =
   ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member ReadCsv
-    ( location:string, [<Optional>] skipTypeInference, [<Optional>] inferRows, 
+    ( location:string, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] skipTypeInference, [<Optional>] inferRows, 
       [<Optional>] schema, [<Optional>] separators, [<Optional>] culture) =
     use reader = new StreamReader(location)
     FrameUtils.readCsv 
-      reader (Some (not skipTypeInference)) (Some inferRows) (Some schema) "NaN,NA,#N/A,:" 
+      reader (if hasHeaders.HasValue then Some hasHeaders.Value else None)
+      (Some (not skipTypeInference)) (Some inferRows) (Some schema) "NaN,NA,#N/A,:" 
       (if separators = null then None else Some separators) (Some culture)
 
   /// Load data frame from a CSV file. The operation automatically reads column names from the 
@@ -58,6 +61,8 @@ type Frame =
   /// ## Parameters
   ///
   ///  * `stream` - Specifies the input stream, opened at the beginning of CSV data
+  ///  * `hasHeaders` - Specifies whether the input CSV file has header row
+  ///     (when not set, the default value is `true`)
   ///  * `skipTypeInference` - Specifies whether the method should skip inferring types
   ///    of columns automatically (when set to `true` you need to provide explicit `schema`)
   ///  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
@@ -71,10 +76,11 @@ type Frame =
   ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member ReadCsv
-    ( stream:Stream, [<Optional>] skipTypeInference, [<Optional>] inferRows, 
+    ( stream:Stream, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] skipTypeInference, [<Optional>] inferRows, 
       [<Optional>] schema, [<Optional>] separators, [<Optional>] culture) =
     FrameUtils.readCsv 
-      (new StreamReader(stream)) (Some (not skipTypeInference)) (Some inferRows) (Some schema) "NaN,NA,#N/A,:" 
+      (new StreamReader(stream)) (if hasHeaders.HasValue then Some hasHeaders.Value else None)
+      (Some (not skipTypeInference)) (Some inferRows) (Some schema) "NaN,NA,#N/A,:" 
       (if separators = null then None else Some separators) (Some culture)
 
   // ----------------------------------------------------------------------------------------------
@@ -236,6 +242,7 @@ module FSharpFrameExtensions =
     /// ## Parameters
     ///
     ///  * `path` - Specifies a file name or an web location of the resource.
+    ///  * `hasHeaders` - Specifies whether the input CSV file has header row
     ///  * `inferTypes` - Specifies whether the method should attempt to infer types
     ///    of columns automatically (set this to `false` if you want to specify schema)
     ///  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
@@ -247,9 +254,9 @@ module FSharpFrameExtensions =
     ///    parse semicolon separated files.
     ///  * `culture` - Specifies the name of the culture that is used when parsing 
     ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
-    static member ReadCsv(path:string, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture) =
+    static member ReadCsv(path:string, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture) =
       use reader = new StreamReader(path)
-      FrameUtils.readCsv reader inferTypes inferRows schema "NaN,NA,#N/A,:" separators culture
+      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema "NaN,NA,#N/A,:" separators culture
 
     /// Load data frame from a CSV file. The operation automatically reads column names from the 
     /// CSV file (if they are present) and infers the type of values for each column. Columns
@@ -259,6 +266,7 @@ module FSharpFrameExtensions =
     /// ## Parameters
     ///
     ///  * `stream` - Specifies the input stream, opened at the beginning of CSV data
+    ///  * `hasHeaders` - Specifies whether the input CSV file has header row
     ///  * `inferTypes` - Specifies whether the method should attempt to infer types
     ///    of columns automatically (set this to `false` if you want to specify schema)
     ///  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
@@ -270,8 +278,8 @@ module FSharpFrameExtensions =
     ///    parse semicolon separated files.
     ///  * `culture` - Specifies the name of the culture that is used when parsing 
     ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
-    static member ReadCsv(stream:Stream, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture) =
-      FrameUtils.readCsv (new StreamReader(stream)) inferTypes inferRows schema "NaN,NA,#N/A,:" separators culture
+    static member ReadCsv(stream:Stream, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture) =
+      FrameUtils.readCsv (new StreamReader(stream)) hasHeaders inferTypes inferRows schema "NaN,NA,#N/A,:" separators culture
       
     /// Creates a data frame with ordinal Integer index from a sequence of rows.
     /// The column indices of individual rows are unioned, so if a row has fewer
@@ -357,6 +365,9 @@ module FSharpFrameExtensions =
     member frame.SaveCsv(path:string, keyNames) = 
       use writer = new StreamWriter(path)
       FrameUtils.writeCsv writer (Some path) None None (Some true) (Some keyNames) frame
+
+    member frame.ToDataTable(rowKeyNames) = 
+      FrameUtils.toDataTable rowKeyNames frame
 
 module FrameBuilder =
   type Columns<'R, 'C when 'C : equality and 'R : equality>() = 
@@ -556,9 +567,16 @@ type FrameExtensions =
     let culture = if culture = null then None else Some culture
     FrameUtils.writeCsv writer (Some path) separator culture (Some true) (Some keyNames) frame
 
+  [<Extension>]
+  static member ToDataTable(frame:Frame<'R, 'C>, rowKeyNames) = 
+      FrameUtils.toDataTable rowKeyNames frame
+
   // ----------------------------------------------------------------------------------------------
   // Assorted stuff
   // ----------------------------------------------------------------------------------------------
+
+  [<Extension>]
+  static member Sum(frame:Frame<'R, 'C>) = Frame.sum frame
 
   [<Extension>]
   static member Window(frame:Frame<'R, 'C>, size) = Frame.window size frame

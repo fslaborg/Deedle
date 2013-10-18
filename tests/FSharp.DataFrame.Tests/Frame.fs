@@ -24,11 +24,25 @@ let msft() =
   Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/MSFT.csv", inferRows=10) 
   |> Frame.indexRowsDate "Date"
 
+let msftNoHeaders() = 
+  let noHeaders =
+    IO.File.ReadAllLines(__SOURCE_DIRECTORY__ + "/data/MSFT.csv") 
+    |> Seq.skip 1 |> String.concat "\n"
+  let data = System.Text.Encoding.UTF8.GetBytes(noHeaders)
+  Frame.ReadCsv(new IO.MemoryStream(data), false, inferRows=10)
+
 [<Test>]
 let ``Can read MSFT data from CSV file`` () =
   let df = msft()
   df.RowKeys |> Seq.length |> shouldEqual 6527
   df.ColumnKeys |> Seq.length |> shouldEqual 7
+
+[<Test>]
+let ``Can read MSFT data from CSV file without header row`` () =
+  let df = msftNoHeaders()
+  let expected = msft()  
+  let actual = df |> Frame.indexColsWith expected.ColumnKeys |> Frame.indexRowsDate "Date"
+  actual |> shouldEqual expected
 
 [<Test>]
 let ``Can save MSFT data as CSV file and read it afterwards (with default args)`` () =

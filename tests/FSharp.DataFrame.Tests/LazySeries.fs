@@ -31,7 +31,7 @@ let loadIntegers (lo, lob) (hi, hib) = async {
 let ``No call is made when series is created and formatted`` () =
   let r = Recorder()
   let ls = DelayedSeries.Create(0, 100, spy2 r loadIntegers)
-  (ls :> IFsiFormattable).Format() |> ignore
+  ls.Format |> ignore
   r.Values |> shouldEqual []
 
 [<Test>]

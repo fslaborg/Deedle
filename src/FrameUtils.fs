@@ -83,6 +83,7 @@ module internal Reflection =
 module internal FrameUtils = 
   open FSharp.Data
   open System
+  open System.Data
   open System.IO
   open System.Collections.Generic
   open System.Globalization
@@ -92,6 +93,29 @@ module internal FrameUtils =
 
   let internal formatter (f:'T -> string) = 
     typeof<'T>, (fun (o:obj) -> f (unbox o))
+
+  let writeFrameRows includeRowKeys (rowKeys:seq<_>) (columns:seq<_ * seq<_>>) writeLine =
+    // Generate CSV - start reading columns in parallel
+    let columnEns = [| for t, c in columns -> t, c.GetEnumerator() |]
+    let rowKeyEn = rowKeys.GetEnumerator()
+    let tryRead (en:IEnumerator<_>) = if en.MoveNext() then Some en.Current else None
+    // Generate CSV - iterate over columns and write them all
+    let rec loop () =
+      let values = [| for t, en in columnEns -> t, tryRead en |]
+      let anyNonEmpty = Seq.exists (snd >> Option.isSome) values
+      if anyNonEmpty then
+        let keys = tryRead rowKeyEn |> Option.get |> Seq.map (fun k -> k.GetType(), Some k)
+        let flatVals = values |> Seq.map (fun (t, v) -> t, match v with Some(OptionalValue.Present v) -> Some v | _ -> None) 
+        let data = if includeRowKeys then Seq.append keys flatVals else flatVals
+        writeLine data 
+        loop ()
+    loop ()
+
+  // Create flat headers (if there is a hierarchical column index)
+  let flattenKeys keys =
+    keys |> Seq.map (fun objs -> 
+      objs |> Seq.map (fun o -> if o = null then "" else o.ToString()) 
+            |> String.concat " - ")
 
   let writeCsv (writer:TextWriter) fileNameOpt separatorOpt cultureOpt includeRowKeys (rowKeyNames:seq<_> option) (frame:Frame<_, _>) = 
     let ci = defaultArg cultureOpt CultureInfo.InvariantCulture
@@ -133,22 +157,15 @@ module internal FrameUtils =
       | Some value, _ -> formatPlainString <| value.ToString()
         
 
-    // Create flat headers (if there is a hierarchical column index)
-    let flattenKeys keys =
-      keys |> Seq.map (fun objs -> 
-        objs |> Seq.map (fun o -> if o = null then "" else o.ToString()) 
-             |> String.concat " - ")
-
     // Get the data from the data frame
     let colKeys, rowKeys, columns = frame.GetFrameData()
-
     // Get number of row keys (or 1 if there are no values)
     let rowKeyCount = defaultArg (rowKeys |> Seq.map List.length |> Seq.tryPick Some) 1
     
     // Generate or get names for row keys & format header row
     let rowKeyNames = 
       match rowKeyNames with 
-      | Some keys when keys |> Seq.length <> rowKeyCount -> invalidArg "rowKeys" "Mismatching numbe of row keys"
+      | Some keys when keys |> Seq.length <> rowKeyCount -> invalidArg "rowKeyNames" "Mismatching numbe of row keys"
       | Some keys -> keys
       | None when rowKeyCount = 1 -> Seq.singleton "Key" 
       | None -> seq { for i in 1 .. rowKeyCount -> sprintf "Key #%d" i }
@@ -160,24 +177,32 @@ module internal FrameUtils =
     let sepStr = separator.ToString()
     let writeLine seq = writer.WriteLine(String.concat sepStr seq)
 
-    // Generate CSV - write headers
+    // Generate CSV - write headers & data 
     headers |> Seq.map (fun s -> formatPlainString s) |> writeLine
-    // Generate CSV - start reading columns in parallel
-    let columnEns = [| for t, c in columns -> t, c.GetEnumerator() |]
-    let rowKeyEn = rowKeys.GetEnumerator()
-    let tryRead (en:IEnumerator<_>) = if en.MoveNext() then Some en.Current else None
-    // Generate CSV - iterate over columns and write them all
-    let rec writeColumns () =
-      let values = [| for t, en in columnEns -> t, tryRead en |]
-      let anyNonEmpty = Seq.exists (snd >> Option.isSome) values
-      if anyNonEmpty then
-        let keys = tryRead rowKeyEn |> Option.get |> Seq.map (fun k -> k.GetType(), Some k)
-        let flatVals = values |> Seq.map (fun (t, v) -> t, match v with Some(OptionalValue.Present v) -> Some v | _ -> None) 
-        let data = if includeRowKeys then Seq.append keys flatVals else flatVals
-        data |> Seq.map formatOptional |> writeLine
-        writeColumns ()
-    writeColumns ()
+    writeFrameRows includeRowKeys rowKeys columns (fun data ->
+      data |> Seq.map formatOptional |> writeLine)
 
+
+  let toDataTable rowKeyNames (frame:Frame<_, _>) =
+    // Get the data from the data frame
+    let colKeys, rowKeys, columns = frame.GetFrameData()
+    // Get number of row keys (or 1 if there are no values)
+    let rowKeyCount = defaultArg (rowKeys |> Seq.map List.length |> Seq.tryPick Some) 1
+    let rowKeyTypes = defaultArg (rowKeys |> Seq.map (List.map (fun v -> v.GetType())) |> Seq.tryPick Some) [typeof<obj>]
+
+    if rowKeyNames |> Seq.length <> rowKeyCount then invalidArg "rowKeyNames" "Mismatching numbe of row keys"
+    
+    // Create data table & add index columns with their types, then add data columns with types
+    let dt = new DataTable()
+    (rowKeyNames, rowKeyTypes) ||> Seq.map2 (fun rk rt -> new DataColumn(rk, rt)) |> Seq.iter dt.Columns.Add
+    (flattenKeys colKeys, columns) ||> Seq.map2 (fun ck (ct, _) -> new DataColumn(ck, ct)) |> Seq.iter dt.Columns.Add
+
+    // 
+    writeFrameRows true rowKeys columns (fun data ->
+      dt.Rows.Add([| for _, v in data -> match v with Some o -> o | _ -> box System.DBNull.Value |])
+      |> ignore
+    )
+    dt
 
   /// Load data frame from a data reader (and cast the values of columns
   /// to their actual types to create IVector<T> with the right T)
@@ -203,7 +228,7 @@ module internal FrameUtils =
 
 
   /// Load data from a CSV file using F# Data API
-  let readCsv (reader:TextReader) inferTypes inferRows schema (missingValues:string) separators culture =
+  let readCsv (reader:TextReader) hasHeaders inferTypes inferRows schema (missingValues:string) separators culture =
     let schema = defaultArg schema ""
     let schema = if schema = null then "" else schema
     let missingValuesArr = missingValues.Split(',')
@@ -226,7 +251,7 @@ module internal FrameUtils =
     // to load information about types in the CSV file. By default, use the entire
     // content (but inferRows can be set to smaller number). Otherwise we just
     // "infer" all columns as string.
-    let data = Csv.CsvFile.Load(reader, ?separators=separators)
+    let data = Csv.CsvFile.Load(reader, ?separators=separators, ?hasHeaders=hasHeaders)
     let inferedProperties = 
       if not (inferTypes = Some false) then
         CsvInference.inferType 
@@ -239,10 +264,15 @@ module internal FrameUtils =
 
     // Load the data and convert the values to the appropriate type
     let data = data.Cache()
-    let columnIndex = Index.ofKeys data.Headers.Value
+    let headers = 
+      match data.Headers with
+      | Some headers -> headers
+      | None -> [| for i in 1 .. data.NumberOfColumns -> sprintf "Column %d" i |]
+      
+    let columnIndex = Index.ofKeys headers
     let columns = 
-      [| for name, prop in Seq.zip data.Headers.Value inferedProperties  ->
-            [| for row in data.Data -> row.GetColumn(name) |]
-            |> createVector prop.RuntimeType |]
+      Seq.zip headers inferedProperties |> Seq.mapi (fun i (name, prop) ->
+            [| for row in data.Data -> row.Columns.[i] |]
+            |> createVector prop.RuntimeType )
     let rowIndex = Index.ofKeys [ 0 .. (Seq.length data.Data) - 1 ]
     Frame(rowIndex, columnIndex, Vector.ofValues columns)

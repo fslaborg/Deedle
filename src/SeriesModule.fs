@@ -385,7 +385,7 @@ module Series =
   /// [category:Statistics]
   [<CompiledName("Reduce")>]
   let reduce op (series:Series<'K, 'T>) = 
-    series |> fastAggregation (ReadOnlyCollection.reduce op) (ReadOnlyCollection.reduceOptional op) (Seq.reduce op)
+    series |> fastAggregation (ReadOnlyCollection.reduce op) (ReadOnlyCollection.reduceOptional op >> OptionalValue.get) (Seq.reduce op)
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `level` and then aggregates elements in each group
