@@ -1,4 +1,4 @@
-﻿namespace FSharp.DataFrame
+﻿namespace Deedle
 
 module internal Reflection = 
   open System

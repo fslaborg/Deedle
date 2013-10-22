@@ -1,6 +1,6 @@
 @echo off
-if not exist tools\FAKE\tools\Fake.exe ( 
-  .nuget\nuget.exe install FAKE -OutputDirectory tools -ExcludeVersion -Prerelease
+if not exist packages\FAKE\tools\Fake.exe ( 
+  .nuget\nuget.exe install FAKE -OutputDirectory packages -ExcludeVersion -Prerelease
 )
-tools\FAKE\tools\FAKE.exe build.fsx %*
+packages\FAKE\tools\FAKE.exe build.fsx %*
 pause

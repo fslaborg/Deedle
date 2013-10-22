@@ -3,16 +3,16 @@
 // --------------------------------------------------------------------------------------
 
 /// A module with various utilities for working with vectors. 
-module internal FSharp.DataFrame.VectorHelpers
+module internal Deedle.VectorHelpers
 
 open System
 open System.Reflection
 open System.Linq.Expressions
 open System.Collections.Generic
-open FSharp.DataFrame
-open FSharp.DataFrame.Internal
-open FSharp.DataFrame.Vectors
-open FSharp.DataFrame.Addressing
+open Deedle
+open Deedle.Internal
+open Deedle.Vectors
+open Deedle.Addressing
 
 // --------------------------------------------------------------------------------------
 // Various

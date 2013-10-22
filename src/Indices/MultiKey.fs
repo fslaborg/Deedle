@@ -1,4 +1,4 @@
-﻿namespace FSharp.DataFrame
+﻿namespace Deedle
 
 // ------------------------------------------------------------------------------------------------
 // Support for multi-key indexing
@@ -16,9 +16,9 @@ type ICustomLookup<'K> =
 // Multi-key indexing internals
 // ------------------------------------------------------------------------------------------------
 
-namespace FSharp.DataFrame.Keys
+namespace Deedle.Keys
 
-open FSharp.DataFrame
+open Deedle
 open Microsoft.FSharp.Reflection
 
 /// Represents a special hierarchical key. This is mainly used in pretty printing (where we want to 
@@ -106,8 +106,8 @@ type SimpleLookup<'T>(patterns) =
 // F#-friendly functions for creating multi-level keys and lookups
 // ------------------------------------------------------------------------------------------------
 
-namespace FSharp.DataFrame
-open FSharp.DataFrame.Keys
+namespace Deedle
+open Deedle.Keys
 
 /// F#-friendly functions for creating multi-level keys and lookups
 [<AutoOpen>]

@@ -1,12 +1,12 @@
-﻿namespace FSharp.DataFrame
+﻿namespace Deedle
 
 // --------------------------------------------------------------------------------------
 // Operations and types related to joining - used by both Series and Frame
 // --------------------------------------------------------------------------------------
 
-open FSharp.DataFrame
-open FSharp.DataFrame.Indices
-open FSharp.DataFrame.Vectors
+open Deedle
+open Deedle.Indices
+open Deedle.Vectors
 
 /// This enumeration specifies joining behavior for `Join` method provided
 /// by `Series` and `Frame`. Outer join unions the keys (and may introduce

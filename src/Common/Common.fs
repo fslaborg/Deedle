@@ -1,5 +1,5 @@
 ﻿#nowarn "86" // Let me redefine <, >, <=, >= locally using comparator
-namespace FSharp.DataFrame
+namespace Deedle
 
 open System
 open System.Runtime.CompilerServices
@@ -106,7 +106,7 @@ type DataSegmentKind = Complete | Incomplete
 ///
 /// For example (using internal `windowed` function):
 ///
-///     open FSharp.DataFrame.Internal
+///     open Deedle.Internal
 ///
 ///     Seq.windowedWithBounds 3 Boundary.AtBeginning [ 1; 2; 3; 4 ]
 ///     [fsi:  [| DataSegment(Incomplete, [| 1 |])         ]
@@ -252,12 +252,12 @@ module OptionalValue =
 // Internals - working with missing values   
 // --------------------------------------------------------------------------------------
 
-namespace FSharp.DataFrame.Internal
+namespace Deedle.Internal
 
 open System
 open System.Linq
 open System.Drawing
-open FSharp.DataFrame
+open Deedle
 open System.Collections.Generic
 open System.Collections.ObjectModel
 
@@ -394,7 +394,7 @@ module ReadOnlyCollection =
 
 
 /// This module contains additional functions for working with arrays. 
-/// `FSharp.DataFrame.Internals` is opened, it extends the standard `Array` module.
+/// `Deedle.Internals` is opened, it extends the standard `Array` module.
 module Array = 
   /// Drop a specified range from a given array. The operation is inclusive on
   /// both sides. Given [ 1; 2; 3; 4 ] and indices (1, 2), the result is [ 1; 4 ]
@@ -443,7 +443,7 @@ module Array =
 
 
 /// This module contains additional functions for working with sequences. 
-/// `FSharp.DataFrame.Internals` is opened, it extends the standard `Seq` module.
+/// `Deedle.Internals` is opened, it extends the standard `Seq` module.
 module Seq = 
   open ExtCore.Collections
   open ExtCore.Collections.LazyListPatterns

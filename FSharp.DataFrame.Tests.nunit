@@ -1,7 +1,0 @@
-﻿<NUnitProject>
-  <Settings activeconfig="Default" />
-  <Config name="Default" binpathtype="Auto">
-    <assembly path="tests\FSharp.DataFrame.Tests\bin\Debug\FSharp.DataFrame.Tests.dll" />
-    <assembly path="tests\FSharp.DataFrame.CSharp.Tests\bin\Debug\FSharp.DataFrame.CSharp.Tests.dll" />
-  </Config>
-</NUnitProject>

@@ -1,4 +1,4 @@
-﻿namespace FSharp.DataFrame
+﻿namespace Deedle
 
 /// Frame module comment
 ///
@@ -10,7 +10,7 @@
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]    
 module Frame = 
   open System
-  open FSharp.DataFrame.Internal
+  open Deedle.Internal
 
   /// Returns the total number of row keys in the specified frame. This returns
   /// the total length of the row series, including keys for which there is no 

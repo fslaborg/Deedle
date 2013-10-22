@@ -1,14 +1,14 @@
-﻿namespace FSharp.DataFrame.Vectors.ArrayVector
+﻿namespace Deedle.Vectors.ArrayVector
 
 /// --------------------------------------------------------------------------------------
 /// ArrayVector - stores data of the vector in a continuous memory block. If the vector
 /// contains missing values, then uses `OptionalValue<'T>[]`, otherwise uses just `'T[]`.
 /// --------------------------------------------------------------------------------------
 
-open FSharp.DataFrame
-open FSharp.DataFrame.Addressing
-open FSharp.DataFrame.Internal
-open FSharp.DataFrame.Vectors
+open Deedle
+open Deedle.Addressing
+open Deedle.Internal
+open Deedle.Vectors
 
 /// Internal representation of the ArrayVector. To make this more 
 /// efficient, we distinguish between "sparse" vectors that have missing 

@@ -15,7 +15,7 @@
 /// The .NET encoding of this is a bit ugly. So instead, we just have `Address` which currently
 /// supports `Int` and `Int64`, but we keep all operations in the `Address` module, so that
 /// this can be easily extended.
-module FSharp.DataFrame.Addressing
+module Deedle.Addressing
 
 type Address = 
   | Int of int

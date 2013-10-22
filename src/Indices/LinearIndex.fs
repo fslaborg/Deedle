@@ -3,16 +3,16 @@
 // red in an array (or similar structure) with linearly ordered addresses without holes.
 // --------------------------------------------------------------------------------------
 
-namespace FSharp.DataFrame.Indices.Linear
+namespace Deedle.Indices.Linear
 
 open System
 open System.Linq
 open System.Collections.Generic
-open FSharp.DataFrame
-open FSharp.DataFrame.Keys
-open FSharp.DataFrame.Addressing
-open FSharp.DataFrame.Internal
-open FSharp.DataFrame.Indices
+open Deedle
+open Deedle.Keys
+open Deedle.Addressing
+open Deedle.Internal
+open Deedle.Indices
 open System.Diagnostics
 
 /// An index that maps keys `K` to offsets `Address`. The keys cannot be duplicated.
@@ -414,11 +414,11 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 // Functions for creatin linear indices
 // --------------------------------------------------------------------------------------
 
-namespace FSharp.DataFrame 
+namespace Deedle 
 
 open System.Collections.Generic
-open FSharp.DataFrame.Internal
-open FSharp.DataFrame.Indices.Linear
+open Deedle.Internal
+open Deedle.Indices.Linear
 
 /// Defines non-generic `Index` type that provides functions for building indices
 /// (hard-bound to `LinearIndexBuilder` type). In F#, the module is automatically opened

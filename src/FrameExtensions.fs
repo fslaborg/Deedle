@@ -1,5 +1,5 @@
 ﻿#nowarn "10001"
-namespace FSharp.DataFrame
+namespace Deedle
 
 // ------------------------------------------------------------------------------------------------
 // Construction
@@ -13,8 +13,8 @@ open System.Runtime.InteropServices
 open System.Runtime.CompilerServices
 open System.Collections.Generic
 
-open FSharp.DataFrame.Keys
-open FSharp.DataFrame.Vectors 
+open Deedle.Keys
+open Deedle.Vectors 
 
 type Frame =
   // ----------------------------------------------------------------------------------------------

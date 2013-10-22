@@ -1,4 +1,4 @@
-﻿namespace FSharp.DataFrame
+﻿namespace Deedle
 
 open System
 open System.Linq
@@ -8,9 +8,9 @@ open System.Runtime.InteropServices
 open System.Runtime.CompilerServices
 open Microsoft.FSharp.Quotations
 
-open FSharp.DataFrame.Keys
-open FSharp.DataFrame.Indices
-open FSharp.DataFrame.Internal
+open Deedle.Keys
+open Deedle.Indices
+open Deedle.Internal
 
 [<AutoOpen>]
 module FSharpSeriesExtensions =

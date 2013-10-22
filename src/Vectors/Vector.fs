@@ -1,6 +1,6 @@
-﻿namespace FSharp.DataFrame.Vectors
+﻿namespace Deedle.Vectors
 
-open FSharp.DataFrame
+open Deedle
 //open System.Collections.Generic
 open System.Collections.ObjectModel
 
@@ -17,14 +17,14 @@ type VectorData<'T> =
 // --------------------------------------------------------------------------------------
 // Interfaces (generic & non-generic) for representing vectors
 // --------------------------------------------------------------------------------------
-namespace FSharp.DataFrame
+namespace Deedle
 
 open System
 open System.Collections.Generic
 open System.Collections.ObjectModel
-open FSharp.DataFrame.Internal
-open FSharp.DataFrame.Vectors
-open FSharp.DataFrame.Addressing
+open Deedle.Internal
+open Deedle.Vectors
+open Deedle.Addressing
 
 /// Represents an (untyped) vector that stores some values and provides access
 /// to the values via a generic address. This type should be only used directly when
@@ -90,11 +90,11 @@ module VectorExtensions =
 // --------------------------------------------------------------------------------------
 // Types related to vectors that should not be exposed too directly
 // --------------------------------------------------------------------------------------
-namespace FSharp.DataFrame.Vectors
+namespace Deedle.Vectors
 
-open FSharp.DataFrame
-open FSharp.DataFrame.Internal
-open FSharp.DataFrame.Addressing
+open Deedle
+open Deedle.Internal
+open Deedle.Addressing
 
 /// Represents a range inside a vector
 type VectorRange = Address * Address

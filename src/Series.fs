@@ -1,15 +1,15 @@
-﻿namespace FSharp.DataFrame
+﻿namespace Deedle
 
 open System
 open System.ComponentModel
 open System.Collections.Generic
 
-open FSharp.DataFrame.Internal
-open FSharp.DataFrame.JoinHelpers
-open FSharp.DataFrame.Indices
-open FSharp.DataFrame.Keys
-open FSharp.DataFrame.Vectors
-open FSharp.DataFrame.VectorHelpers
+open Deedle.Internal
+open Deedle.JoinHelpers
+open Deedle.Indices
+open Deedle.Keys
+open Deedle.Vectors
+open Deedle.VectorHelpers
 
 /// This enumeration specifeis the behavior of `Union` operation on series when there are
 /// overlapping keys in two series that are being unioned. The options include prefering values
@@ -31,7 +31,7 @@ type UnionBehavior =
 /// to write code that works on a sequence of series of heterogeneous types).
 type ISeries<'K when 'K : equality> =
   /// Returns the vector containing data of the series (as an untyped vector)
-  abstract Vector : FSharp.DataFrame.IVector
+  abstract Vector : Deedle.IVector
   /// Returns the index containing keys of the series 
   abstract Index : IIndex<'K>
   /// Attempts to get the value at a specified key and return it as `obj`

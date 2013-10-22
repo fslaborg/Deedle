@@ -1,11 +1,11 @@
-﻿namespace FSharp.DataFrame
+﻿namespace Deedle
 
 /// Series module comment..
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Series = 
   open System.Linq
-  open FSharp.DataFrame.Common
-  open FSharp.DataFrame.Vectors
+  open Deedle.Common
+  open Deedle.Vectors
   open MathNet.Numerics.Statistics
 
   [<CompiledName("Sum")>]

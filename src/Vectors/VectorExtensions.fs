@@ -1,8 +1,8 @@
-﻿namespace FSharp.DataFrame 
+﻿namespace Deedle 
 
-open FSharp.DataFrame.Internal
-open FSharp.DataFrame.Vectors
-open FSharp.DataFrame.Vectors.ArrayVector
+open Deedle.Internal
+open Deedle.Vectors
+open Deedle.Vectors.ArrayVector
 
 // ------------------------------------------------------------------------------------------------
 // F# frienly operations for creating vectors
@@ -44,10 +44,10 @@ module FSharpVectorExtensions =
 // C# frienly operations for creating vectors
 // ------------------------------------------------------------------------------------------------
 
-namespace FSharp.DataFrame.Vectors
+namespace Deedle.Vectors
 
-open FSharp.DataFrame
-open FSharp.DataFrame.Vectors.ArrayVector
+open Deedle
+open Deedle.Vectors.ArrayVector
 
 /// Type that provides access to creating vectors (represented as arrays)
 type Vector = 

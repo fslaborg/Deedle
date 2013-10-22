@@ -1,4 +1,6 @@
 bin
+temp/
+docs/output
 src/bin
 src/obj
 *.suo
@@ -11,14 +13,9 @@ tests/FSharp.DataFrame.CSharp.Tests/bin
 tests/FSharp.DataFrame.Tests.Console/obj
 tests/FSharp.DataFrame.Tests.Console/bin
 packages/*
-docs
-tools/FAKE
 *.vsp
 TestResults.xml
 TestResult.xml
 *.VisualState.xml
-.backup/
 *.bak
-gh-pages/
-release/
 *.psess

@@ -2,47 +2,32 @@
 // FAKE build script 
 // --------------------------------------------------------------------------------------
 
-#r @"tools/FAKE/tools/FakeLib.dll"
-
+#r "packages/FAKE/tools/FakeLib.dll"
 open System
 open System.IO
-open System.Text.RegularExpressions
 open Fake 
-open Fake.AssemblyInfoFile
 open Fake.Git
+open Fake.AssemblyInfoFile
 
 Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
 
-let files includes = 
-  { BaseDirectories = [__SOURCE_DIRECTORY__]
-    Includes = includes
-    Excludes = [] } |> Scan
-
 // Information about the project to be used at NuGet and in AssemblyInfo files
-let project = "FSharp.DataFrame"
+let project = "Deedle"
 let authors = ["Blue Mountain Capital"]
-let summary = "Easy to use F# library for data manipulation and scientific programming"
+let summary = "Easy to use .NET library for data manipulation and scientific programming"
 let description = """
-  The F# DataFrame library (FSharp.DataFrame.dll) implements an efficient and robust 
+  Deedle (Dotnet Exploratory Data Library) implements an efficient and robust 
   data frame and series structures for manipulating with structured data. It supports
   handling of missing values, aggregations, grouping, joining, statistical functions and
   more. For frames and series with ordered indices (such as time series), automatic
   alignment is also available. """
 
-let tags = "F# fsharp data frame series statistics science"
+let tags = "F# fsharp deedle dataframe series statistics science"
 
-// Read additional information from the release notes document
-// Expected format: "0.9.0-beta - Foo bar." or just "0.9.0 - Foo bar."
-// (We need to extract just the number for AssemblyInfo & all version for NuGet
-let versionAsm, versionNuGet, releaseNotes = 
-    let lastItem = File.ReadLines "RELEASE_NOTES.md" |> Seq.last
-    let firstDash = lastItem.IndexOf(" - ")
-    let notes = lastItem.Substring(firstDash + 2).Trim()
-    let version = lastItem.Substring(0, firstDash).Trim([|'*'|]).Trim()
-    // Get just numeric version, if it contains dash
-    let versionDash = version.IndexOf('-')
-    if versionDash = -1 then version, version, notes
-    else version.Substring(0, versionDash), version, notes
+// Read release notes & version info from RELEASE_NOTES.md
+let release =
+  File.ReadLines "RELEASE_NOTES.md"
+  |> ReleaseNotesHelper.parseReleaseNotes
 
 // --------------------------------------------------------------------------------------
 // Generate assembly info files with the right version & up-to-date information
@@ -53,8 +38,8 @@ Target "AssemblyInfo" (fun _ ->
       [ Attribute.Title project
         Attribute.Product project
         Attribute.Description summary
-        Attribute.Version versionAsm
-        Attribute.FileVersion versionAsm ] 
+        Attribute.Version release.AssemblyVersion
+        Attribute.FileVersion release.AssemblyVersion] 
 )
 
 // --------------------------------------------------------------------------------------
@@ -66,20 +51,23 @@ Target "RestorePackages" (fun _ ->
 )
 
 Target "Clean" (fun _ ->
-    CleanDirs ["bin"; "gh-pages"; "release" ]
+    CleanDirs ["bin"; "temp" ]
 )
 
 Target "CleanDocs" (fun _ ->
-    CleanDirs ["docs"]
+    CleanDirs ["docs/output"]
 )
 
 // --------------------------------------------------------------------------------------
 // Build library & test project
 
 Target "Build" (fun _ ->
-    (files ["FSharp.DataFrame.sln"; "FSharp.DataFrame.Tests.sln"])
+    { BaseDirectories = [__SOURCE_DIRECTORY__]
+      Includes = ["Deedle.sln"; "Deedle.Tests.sln"]
+      Excludes = [] } 
+    |> Scan
     |> MSBuildRelease "" "Rebuild"
-    |> ignore
+    |> Log "AppBuild-Output: "
 )
 
 // --------------------------------------------------------------------------------------
@@ -91,7 +79,10 @@ Target "RunTests" (fun _ ->
 
     ActivateFinalTarget "CloseTestRunner"
 
-    (files ["tests/*/bin/Release/FSharp.DataFrame*Tests*.dll"])
+    { BaseDirectories = [__SOURCE_DIRECTORY__]
+      Includes = ["tests/*/bin/Release/Deedle*Tests*.dll"]
+      Excludes = [] } 
+    |> Scan
     |> NUnit (fun p ->
         { p with
             ToolPath = nunitPath
@@ -117,22 +108,21 @@ Target "NuGet" (fun _ ->
             Project = project
             Summary = summary
             Description = description
-            Version = versionNuGet
-            ReleaseNotes = releaseNotes
+            Version = release.NugetVersion
+            ReleaseNotes = String.concat " " release.Notes
             Tags = tags
             OutputPath = "bin"
             ToolPath = nugetPath
             AccessKey = getBuildParamOrDefault "nugetkey" ""
-            Publish = hasBuildParam "nugetkey"
-            Dependencies = [] })
-        "nuget/FSharp.DataFrame.nuspec"
+            Publish = hasBuildParam "nugetkey" })
+        "nuget/Deedle.nuspec"
 )
 
 // --------------------------------------------------------------------------------------
 // Generate the documentation
 
 Target "JustGenerateDocs" (fun _ ->
-    executeFSI "tools" "build.fsx" [] |> ignore
+    executeFSI "docs/tools" "generate.fsx" [] |> ignore
 )
 
 Target "GenerateDocs" DoNothing
@@ -144,23 +134,22 @@ Target "GenerateDocs" DoNothing
 let gitHome = "https://github.com/BlueMountainCapital"
 
 Target "ReleaseDocs" (fun _ ->
-    Repository.clone "" (gitHome + "/FSharp.DataFrame.git") "gh-pages"
-    Branches.checkoutBranch "gh-pages" "gh-pages"
-    CopyRecursive "docs" "gh-pages" true |> printfn "%A"
-    CommandHelper.runSimpleGitCommand "gh-pages" "add ." |> printfn "%s"
-    let cmd = sprintf """commit -a -m "Update generated documentation for version %s""" versionNuGet
-    CommandHelper.runSimpleGitCommand "gh-pages" cmd |> printfn "%s"
-    Branches.push "gh-pages"
+    Repository.clone "" (gitHome + "/Deedle.git") "temp/gh-pages"
+    Branches.checkoutBranch "temp/gh-pages" "gh-pages"
+    CopyRecursive "docs/output" "temp/gh-pages" true |> printfn "%A"
+    CommandHelper.runSimpleGitCommand "temp/gh-pages" "add ." |> printfn "%s"
+    let cmd = sprintf """commit -a -m "Update generated documentation for version %s""" release.NugetVersion
+    CommandHelper.runSimpleGitCommand "temp/gh-pages" cmd |> printfn "%s"
+    Branches.push "temp/gh-pages"
 )
 
 Target "ReleaseBinaries" (fun _ ->
-    Repository.clone "" (gitHome + "/FSharp.DataFrame.git") "release"
-    Branches.checkoutBranch "release" "release"
-    CopyRecursive "bin" "release/bin" true |> printfn "%A"
-    MoveFile "./release/" "./release/bin/FSharp.DataFrame.fsx"
-    let cmd = sprintf """commit -a -m "Update binaries for version %s""" versionNuGet
-    CommandHelper.runSimpleGitCommand "release" cmd |> printfn "%s"
-    Branches.push "release"
+    Repository.clone "" (gitHome + "/Deedle.git") "temp/release"
+    Branches.checkoutBranch "temp/release" "release"
+    CopyRecursive "bin" "temp/release/bin" true |> printfn "%A"
+    let cmd = sprintf """commit -a -m "Update binaries for version %s""" release.NugetVersion
+    CommandHelper.runSimpleGitCommand "temp/release" cmd |> printfn "%s"
+    Branches.push "temp/release"
 )
 
 Target "Release" DoNothing

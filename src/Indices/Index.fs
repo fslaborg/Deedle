@@ -1,4 +1,4 @@
-﻿namespace FSharp.DataFrame
+﻿namespace Deedle
 
 // --------------------------------------------------------------------------------------
 // Indexing - index provides access to data in vector via keys. Optionally, the keys
@@ -104,13 +104,13 @@ type Aggregation =
 
 // --------------------------------------------------------------------------------------
 
-namespace FSharp.DataFrame.Indices
+namespace Deedle.Indices
 
-open FSharp.DataFrame
-open FSharp.DataFrame.Keys
-open FSharp.DataFrame.Internal
-open FSharp.DataFrame.Addressing
-open FSharp.DataFrame.Vectors
+open Deedle
+open Deedle.Keys
+open Deedle.Internal
+open Deedle.Addressing
+open Deedle.Vectors
 
 /// Specifies the boundary behavior for the `IIndexBuilder.GetRange` operation
 /// (whether the boundary elements should be included or not)

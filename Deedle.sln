@@ -1,0 +1,66 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.20827.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle", "src\Deedle.fsproj", "{22729065-4C30-4E43-A63F-4F3338A03878}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{245F1283-32FA-4B38-AC76-448B8AE5F7AC}"
+	ProjectSection(SolutionItems) = preProject
+		docs\content\design.fsx = docs\content\design.fsx
+		docs\content\features.fsx = docs\content\features.fsx
+		docs\content\index.fsx = docs\content\index.fsx
+		docs\content\lazysource.fsx = docs\content\lazysource.fsx
+		docs\content\timeseries.fsx = docs\content\timeseries.fsx
+		docs\content\tutorial.fsx = docs\content\tutorial.fsx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{B6AFD701-8A05-4A18-A3F3-EDAF8D7530E8}"
+	ProjectSection(SolutionItems) = preProject
+		build.fsx = build.fsx
+		nuget\Deedle.nuspec = nuget\Deedle.nuspec
+		README.md = README.md
+		RELEASE_NOTES.md = RELEASE_NOTES.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{8BD8876A-28FC-4B7D-89E4-09AC07794D0E}"
+	ProjectSection(SolutionItems) = preProject
+		docs\content\samples\titanic.fsx = docs\content\samples\titanic.fsx
+		docs\content\samples\volatility.fsx = docs\content\samples\volatility.fsx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{C45F5ABF-7BCD-4C3A-BD51-81E0769E0F29}"
+	ProjectSection(SolutionItems) = preProject
+		docs\tools\generate.fsx = docs\tools\generate.fsx
+		docs\tools\template.html = docs\tools\template.html
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "reference", "reference", "{37609C0E-CFDC-4BFA-8C0D-E659127F37C1}"
+	ProjectSection(SolutionItems) = preProject
+		docs\tools\reference\default.cshtml = docs\tools\reference\default.cshtml
+		docs\tools\reference\members.cshtml = docs\tools\reference\members.cshtml
+		docs\tools\reference\module.cshtml = docs\tools\reference\module.cshtml
+		docs\tools\reference\namespaces.cshtml = docs\tools\reference\namespaces.cshtml
+		docs\tools\reference\type.cshtml = docs\tools\reference\type.cshtml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{22729065-4C30-4E43-A63F-4F3338A03878}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22729065-4C30-4E43-A63F-4F3338A03878}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22729065-4C30-4E43-A63F-4F3338A03878}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22729065-4C30-4E43-A63F-4F3338A03878}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8BD8876A-28FC-4B7D-89E4-09AC07794D0E} = {245F1283-32FA-4B38-AC76-448B8AE5F7AC}
+		{C45F5ABF-7BCD-4C3A-BD51-81E0769E0F29} = {245F1283-32FA-4B38-AC76-448B8AE5F7AC}
+		{37609C0E-CFDC-4BFA-8C0D-E659127F37C1} = {245F1283-32FA-4B38-AC76-448B8AE5F7AC}
+	EndGlobalSection
+EndGlobal

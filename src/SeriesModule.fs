@@ -1,8 +1,8 @@
 ﻿#nowarn "77" // Static constraint in Series.sample requires special + operator
 #nowarn "10002" // Custom CompilerMessage used to hide internals that are inlined
 
-namespace FSharp.DataFrame
-open FSharp.DataFrame.Keys
+namespace Deedle
+open Deedle.Keys
 
 /// Series module comment..
 /// 
@@ -22,8 +22,8 @@ open FSharp.DataFrame.Keys
 module Series = 
   open System
   open System.Linq
-  open FSharp.DataFrame.Internal
-  open FSharp.DataFrame.Vectors
+  open Deedle.Internal
+  open Deedle.Vectors
   open MathNet.Numerics.Statistics
 
   /// Return observations with available values. The operation skips over 
@@ -265,7 +265,7 @@ module Series =
   ///
   /// [category:Statistics]
   [<CompiledName("ApplyLevel")>]
-  let inline applyLevel (level:'K1 -> 'K2) op (series:Series<_, 'V>) : Series<_, 'V> = 
+  let inline applyLevel (level:'K1 -> 'K2) op (series:Series<_, 'V>) : Series<_, 'R> = 
     series.GroupBy
       ( (fun key ser -> level key),
         (fun key ser -> OptionalValue(apply op ser)))

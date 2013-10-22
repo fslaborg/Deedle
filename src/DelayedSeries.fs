@@ -1,12 +1,12 @@
 ﻿#nowarn "86" // Allow me to locally redefine the <=, <, >, >= operators to use IComparer
-namespace FSharp.DataFrame.Delayed
+namespace Deedle.Delayed
 
 open System
 open System.Linq
-open FSharp.DataFrame
-open FSharp.DataFrame.Addressing
-open FSharp.DataFrame.Vectors
-open FSharp.DataFrame.Indices
+open Deedle
+open Deedle.Addressing
+open Deedle.Vectors
+open Deedle.Indices
 
 // --------------------------------------------------------------------------------------
 // Ranges
@@ -266,14 +266,14 @@ and internal DelayedIndexBuilder() =
 // Public API for creating delayed series
 // --------------------------------------------------------------------------------------
 
-namespace FSharp.DataFrame
+namespace Deedle
 
 open System
 open System.Collections.Generic
 open System.Threading.Tasks
-open FSharp.DataFrame.Delayed
-open FSharp.DataFrame.Indices
-open FSharp.DataFrame.Vectors.ArrayVector
+open Deedle.Delayed
+open Deedle.Indices
+open Deedle.Vectors.ArrayVector
 
 /// This type exposes a single static method `DelayedSeries.Create` that can be used for
 /// constructing data series (of type `Series<K, V>`) with lazily loaded data. You can

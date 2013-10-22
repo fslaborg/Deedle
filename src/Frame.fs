@@ -1,15 +1,15 @@
-﻿namespace FSharp.DataFrame
+﻿namespace Deedle
 
 // --------------------------------------------------------------------------------------
 // Data frame
 // --------------------------------------------------------------------------------------
 
-open FSharp.DataFrame
-open FSharp.DataFrame.Keys
-open FSharp.DataFrame.Internal
-open FSharp.DataFrame.Indices
-open FSharp.DataFrame.Vectors
-open FSharp.DataFrame.JoinHelpers
+open Deedle
+open Deedle.Keys
+open Deedle.Internal
+open Deedle.Indices
+open Deedle.Vectors
+open Deedle.JoinHelpers
 
 open System
 open System.ComponentModel
