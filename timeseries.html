@@ -13,8 +13,8 @@
     <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
     <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
-    <link type="text/css" rel="stylesheet" href="http://BlueMountainCapital.github.io/FSharp.DataFrame/content/style.css" />
-    <script src="http://BlueMountainCapital.github.io/FSharp.DataFrame/content/tips.js" type="text/javascript"></script>
+    <link type="text/css" rel="stylesheet" href="http://BlueMountainCapital.github.io/Deedle/content/style.css" />
+    <script src="http://BlueMountainCapital.github.io/Deedle/content/tips.js" type="text/javascript"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -25,11 +25,11 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://github.com/BlueMountainCapital/FSharp.DataFrame">github page</a></li>
+          <li><a href="http://github.com/BlueMountainCapital/Deedle">github page</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Charting/">F# Charting</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Data/">F# Data</a></li>
         </ul>
-        <h3 class="muted">F# DataFrame Library</h3>
+        <h3 class="muted">.NET Explorative Data Library</h3>
       </div>
       <hr />
       <div class="row">
@@ -42,7 +42,7 @@ operations on the <code>Series</code> type, many of the operations can be applie
 containing multiple series. Furthermore, data frame provides an elegant way for aligning and
 joining series.</p>
 
-<p>You can also get this page as an <a href="https://github.com/BlueMountainCapital/FSharp.DataFrame/blob/master/samples/timeseries.fsx">F# script file</a>
+<p>You can also get this page as an <a href="https://github.com/BlueMountainCapital/Deedle/blob/master/samples/timeseries.fsx">F# script file</a>
 from GitHub and run the samples interactively.</p>
 
 <h2>Generating input data</h2>
@@ -91,7 +91,7 @@ The code is adapted from the <a href="http://www.tryfsharp.org/Learn/financial-c
 </td>
 </tr>
 </table><p>The implementation of the function is not particularly important for the purpose of this
-page, but you can find it in the <a href="https://github.com/BlueMountainCapital/FSharp.DataFrame/blob/master/samples/timeseries.fsx">script file with full source</a>.
+page, but you can find it in the <a href="https://github.com/BlueMountainCapital/Deedle/blob/master/samples/timeseries.fsx">script file with full source</a>.
 Once we have the function, we define a date <code>today</code> (representing today's midnight) and
 two helper functions that set basic properties for the <code>randomPrice</code> function.</p>
 
@@ -1202,17 +1202,17 @@ open-high-low-close values for a given stock).</p>
 <div class="tip" id="fs21">Multiple items<br />type TimeSpan =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;new : ticks:int64 -&gt; TimeSpan + 3 overloads<br />&#160;&#160;&#160;&#160;member Add : ts:TimeSpan -&gt; TimeSpan<br />&#160;&#160;&#160;&#160;member CompareTo : value:obj -&gt; int + 1 overload<br />&#160;&#160;&#160;&#160;member Days : int<br />&#160;&#160;&#160;&#160;member Duration : unit -&gt; TimeSpan<br />&#160;&#160;&#160;&#160;member Equals : value:obj -&gt; bool + 1 overload<br />&#160;&#160;&#160;&#160;member GetHashCode : unit -&gt; int<br />&#160;&#160;&#160;&#160;member Hours : int<br />&#160;&#160;&#160;&#160;member Milliseconds : int<br />&#160;&#160;&#160;&#160;member Minutes : int<br />&#160;&#160;&#160;&#160;...<br />&#160;&#160;end<br /><br />Full name: System.TimeSpan<br /><br />--------------------<br />TimeSpan()<br />TimeSpan(ticks: int64) : unit<br />TimeSpan(hours: int, minutes: int, seconds: int) : unit<br />TimeSpan(days: int, hours: int, minutes: int, seconds: int) : unit<br />TimeSpan(days: int, hours: int, minutes: int, seconds: int, milliseconds: int) : unit</div>
 <div class="tip" id="fs22">static member Chart.FastLine : data:seq&lt;#value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Drawing.Color * ?XTitle:string * ?YTitle:string -&gt; ChartTypes.GenericChart<br />static member Chart.FastLine : data:seq&lt;#key * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Drawing.Color * ?XTitle:string * ?YTitle:string -&gt; ChartTypes.GenericChart</div>
 <div class="tip" id="fs23">val s1 : Series&lt;DateTimeOffset,float&gt;<br /><br />Full name: Timeseries.s1</div>
-<div class="tip" id="fs24">val series : observations:seq&lt;&#39;a * &#39;b&gt; -&gt; Series&lt;&#39;a,&#39;b&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.FSharpSeriesExtensions.series</div>
+<div class="tip" id="fs24">val series : observations:seq&lt;&#39;a * &#39;b&gt; -&gt; Series&lt;&#39;a,&#39;b&gt; (requires equality)<br /><br />Full name: Deedle.FSharpSeriesExtensions.series</div>
 <div class="tip" id="fs25">val s2 : Series&lt;DateTimeOffset,float&gt;<br /><br />Full name: Timeseries.s2</div>
 <div class="tip" id="fs26">val s3 : Series&lt;DateTimeOffset,float&gt;<br /><br />Full name: Timeseries.s3</div>
 <div class="tip" id="fs27">member Series.Zip : otherSeries:Series&lt;&#39;K,&#39;V2&gt; -&gt; Series&lt;&#39;K,(&#39;V opt * &#39;V2 opt)&gt;<br />member Series.Zip : otherSeries:Series&lt;&#39;K,&#39;V2&gt; * kind:JoinKind -&gt; Series&lt;&#39;K,(&#39;V opt * &#39;V2 opt)&gt;<br />member Series.Zip : otherSeries:Series&lt;&#39;K,&#39;V2&gt; * kind:JoinKind * lookup:Lookup -&gt; Series&lt;&#39;K,(&#39;V opt * &#39;V2 opt)&gt;</div>
-<div class="tip" id="fs28">type JoinKind =<br />&#160;&#160;|  Outer  =  0<br />&#160;&#160;|  Inner  =  1<br />&#160;&#160;|  Left  =  2<br />&#160;&#160;|  Right  =  3<br /><br />Full name: FSharp.DataFrame.JoinKind</div>
+<div class="tip" id="fs28">type JoinKind =<br />&#160;&#160;|  Outer  =  0<br />&#160;&#160;|  Inner  =  1<br />&#160;&#160;|  Left  =  2<br />&#160;&#160;|  Right  =  3<br /><br />Full name: Deedle.JoinKind</div>
 <div class="tip" id="fs29">JoinKind.Left: JoinKind = 2</div>
 <div class="tip" id="fs30">JoinKind.Right: JoinKind = 3</div>
-<div class="tip" id="fs31">type Lookup =<br />&#160;&#160;|  Exact  =  0<br />&#160;&#160;|  NearestGreater  =  1<br />&#160;&#160;|  NearestSmaller  =  2<br /><br />Full name: FSharp.DataFrame.Lookup</div>
+<div class="tip" id="fs31">type Lookup =<br />&#160;&#160;|  Exact  =  0<br />&#160;&#160;|  NearestGreater  =  1<br />&#160;&#160;|  NearestSmaller  =  2<br /><br />Full name: Deedle.Lookup</div>
 <div class="tip" id="fs32">Lookup.NearestSmaller: Lookup = 2</div>
 <div class="tip" id="fs33">val f1 : Frame&lt;DateTimeOffset,string&gt;<br /><br />Full name: Timeseries.f1</div>
-<div class="tip" id="fs34">Multiple items<br />module Frame<br /><br />from FSharp.DataFrame<br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =<br />&#160;&#160;interface IDynamicMetaObjectProvider<br />&#160;&#160;new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;private new : rowIndex:IIndex&lt;&#39;TRowKey&gt; * columnIndex:IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member Append : otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member Clone : unit -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member DropSeries : column:&#39;TColumnKey -&gt; unit<br />&#160;&#160;...<br /><br />Full name: FSharp.DataFrame.Frame&lt;_,_&gt;<br /><br />--------------------<br />type Frame =<br />&#160;&#160;static member CreateEmpty : unit -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,ObjectSeries&lt;&#39;RowKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : rows:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;ColKey,int&gt; (requires equality)<br />&#160;&#160;static member FromRecords : values:seq&lt;&#39;T&gt; -&gt; Frame&lt;int,string&gt;<br />&#160;&#160;static member FromRecords : series:Series&lt;&#39;K,&#39;R&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRowKeys : keys:seq&lt;&#39;K&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRows : rows:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TColKey,&#39;TRowKey&gt; (requires equality and equality)<br />&#160;&#160;...<br /><br />Full name: FSharp.DataFrame.Frame<br /><br />--------------------<br />new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
+<div class="tip" id="fs34">Multiple items<br />module Frame<br /><br />from Deedle<br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =<br />&#160;&#160;interface IDynamicMetaObjectProvider<br />&#160;&#160;new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;private new : rowIndex:IIndex&lt;&#39;TRowKey&gt; * columnIndex:IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member Append : otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member Clone : unit -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member DropSeries : column:&#39;TColumnKey -&gt; unit<br />&#160;&#160;...<br /><br />Full name: Deedle.Frame&lt;_,_&gt;<br /><br />--------------------<br />type Frame =<br />&#160;&#160;static member CreateEmpty : unit -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,ObjectSeries&lt;&#39;RowKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : rows:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;ColKey,int&gt; (requires equality)<br />&#160;&#160;static member FromRecords : values:seq&lt;&#39;T&gt; -&gt; Frame&lt;int,string&gt;<br />&#160;&#160;static member FromRecords : series:Series&lt;&#39;K,&#39;R&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRowKeys : keys:seq&lt;&#39;K&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRows : rows:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TColKey,&#39;TRowKey&gt; (requires equality and equality)<br />&#160;&#160;...<br /><br />Full name: Deedle.Frame<br /><br />--------------------<br />new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
 <div class="tip" id="fs35">static member Frame.ofColumns : cols:Series&lt;&#39;a0,#ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a2,&#39;a0&gt; (requires equality and equality)<br />static member Frame.ofColumns : cols:seq&lt;&#39;a0 * #ISeries&lt;&#39;K&gt;&gt; -&gt; Frame&lt;&#39;K,&#39;a0&gt; (requires equality and equality)</div>
 <div class="tip" id="fs36">val f2 : Frame&lt;DateTimeOffset,string&gt;<br /><br />Full name: Timeseries.f2</div>
 <div class="tip" id="fs37">val f3 : Frame&lt;DateTimeOffset,string&gt;<br /><br />Full name: Timeseries.f3</div>
@@ -1220,48 +1220,48 @@ open-high-low-close values for a given stock).</p>
 <div class="tip" id="fs39">JoinKind.Outer: JoinKind = 0</div>
 <div class="tip" id="fs40">JoinKind.Inner: JoinKind = 1</div>
 <div class="tip" id="fs41">Lookup.Exact: Lookup = 0</div>
-<div class="tip" id="fs42">val join : kind:JoinKind -&gt; frame1:Frame&lt;&#39;R,&#39;C&gt; -&gt; frame2:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><br />Full name: FSharp.DataFrame.Frame.join</div>
-<div class="tip" id="fs43">val joinAlign : kind:JoinKind -&gt; lookup:Lookup -&gt; frame1:Frame&lt;&#39;R,&#39;C&gt; -&gt; frame2:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><br />Full name: FSharp.DataFrame.Frame.joinAlign</div>
+<div class="tip" id="fs42">val join : kind:JoinKind -&gt; frame1:Frame&lt;&#39;R,&#39;C&gt; -&gt; frame2:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.join</div>
+<div class="tip" id="fs43">val joinAlign : kind:JoinKind -&gt; lookup:Lookup -&gt; frame1:Frame&lt;&#39;R,&#39;C&gt; -&gt; frame2:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.joinAlign</div>
 <div class="tip" id="fs44">val lf : Series&lt;DateTimeOffset,float&gt;<br /><br />Full name: Timeseries.lf</div>
-<div class="tip" id="fs45">Multiple items<br />module Series<br /><br />from FSharp.DataFrame<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =<br />&#160;&#160;interface ISeries&lt;&#39;K&gt;<br />&#160;&#160;new : pairs:seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : index:IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * keySelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;R&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member Append : otherSeries:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;override Equals : another:obj -&gt; bool<br />&#160;&#160;member Get : key:&#39;K -&gt; &#39;V<br />&#160;&#160;member Get : key:&#39;K * lookup:Lookup -&gt; &#39;V<br />&#160;&#160;member GetAt : index:int -&gt; &#39;V<br />&#160;&#160;...<br /><br />Full name: FSharp.DataFrame.Series&lt;_,_&gt;<br /><br />--------------------<br />type Series =<br />&#160;&#160;static member ofNullables : values:seq&lt;Nullable&lt;&#39;a0&gt;&gt; -&gt; Series&lt;int,&#39;a0&gt; (requires default constructor and value type and &#39;a0 :&gt; ValueType)<br />&#160;&#160;static member ofObservations : observations:seq&lt;&#39;a0 * &#39;a1&gt; -&gt; Series&lt;&#39;a0,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofValues : values:seq&lt;&#39;a0&gt; -&gt; Series&lt;int,&#39;a0&gt;<br /><br />Full name: FSharp.DataFrame.FSharpSeriesExtensions.Series<br /><br />--------------------<br />new : pairs:seq&lt;Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : index:Indices.IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:Vectors.IVectorBuilder * indexBuilder:Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
-<div class="tip" id="fs46">val window : size:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.window</div>
-<div class="tip" id="fs47">val windowInto : size:int -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.windowInto</div>
-<div class="tip" id="fs48">val mean : series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V (requires equality and member ( + ) and member DivideByInt and member get_Zero)<br /><br />Full name: FSharp.DataFrame.Series.mean</div>
-<div class="tip" id="fs49">val firstValue : series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.firstValue</div>
+<div class="tip" id="fs45">Multiple items<br />module Series<br /><br />from Deedle<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =<br />&#160;&#160;interface ISeries&lt;&#39;K&gt;<br />&#160;&#160;new : pairs:seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : index:IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * keySelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;R&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member Append : otherSeries:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;override Equals : another:obj -&gt; bool<br />&#160;&#160;member Get : key:&#39;K -&gt; &#39;V<br />&#160;&#160;member Get : key:&#39;K * lookup:Lookup -&gt; &#39;V<br />&#160;&#160;member GetAt : index:int -&gt; &#39;V<br />&#160;&#160;...<br /><br />Full name: Deedle.Series&lt;_,_&gt;<br /><br />--------------------<br />type Series =<br />&#160;&#160;static member ofNullables : values:seq&lt;Nullable&lt;&#39;a0&gt;&gt; -&gt; Series&lt;int,&#39;a0&gt; (requires default constructor and value type and &#39;a0 :&gt; ValueType)<br />&#160;&#160;static member ofObservations : observations:seq&lt;&#39;a0 * &#39;a1&gt; -&gt; Series&lt;&#39;a0,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofOptionalObservations : observations:seq&lt;&#39;K * OptionalValue&lt;&#39;a1&gt;&gt; -&gt; Series&lt;&#39;K,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofValues : values:seq&lt;&#39;a0&gt; -&gt; Series&lt;int,&#39;a0&gt;<br /><br />Full name: Deedle.FSharpSeriesExtensions.Series<br /><br />--------------------<br />new : pairs:seq&lt;Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : index:Indices.IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:Vectors.IVectorBuilder * indexBuilder:Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
+<div class="tip" id="fs46">val window : size:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt; (requires equality)<br /><br />Full name: Deedle.Series.window</div>
+<div class="tip" id="fs47">val windowInto : size:int -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt; (requires equality)<br /><br />Full name: Deedle.Series.windowInto</div>
+<div class="tip" id="fs48">val mean : series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V (requires equality and member ( + ) and member DivideByInt and member get_Zero)<br /><br />Full name: Deedle.Series.mean</div>
+<div class="tip" id="fs49">val firstValue : series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V (requires equality)<br /><br />Full name: Deedle.Series.firstValue</div>
 <div class="tip" id="fs50">val lfm1 : Series&lt;DateTimeOffset,float&gt;<br /><br />Full name: Timeseries.lfm1</div>
 <div class="tip" id="fs51">val lfm2 : Series&lt;DateTimeOffset,float&gt;<br /><br />Full name: Timeseries.lfm2</div>
-<div class="tip" id="fs52">val windowSizeInto : int * Boundary -&gt; f:(DataSegment&lt;Series&lt;&#39;K,&#39;T&gt;&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.windowSizeInto</div>
-<div class="tip" id="fs53">type Boundary =<br />&#160;&#160;|  AtBeginning  =  1<br />&#160;&#160;|  AtEnding  =  2<br />&#160;&#160;|  Skip  =  4<br /><br />Full name: FSharp.DataFrame.Boundary</div>
+<div class="tip" id="fs52">val windowSizeInto : int * Boundary -&gt; f:(DataSegment&lt;Series&lt;&#39;K,&#39;T&gt;&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt; (requires equality)<br /><br />Full name: Deedle.Series.windowSizeInto</div>
+<div class="tip" id="fs53">type Boundary =<br />&#160;&#160;|  AtBeginning  =  1<br />&#160;&#160;|  AtEnding  =  2<br />&#160;&#160;|  Skip  =  4<br /><br />Full name: Deedle.Boundary</div>
 <div class="tip" id="fs54">Boundary.AtBeginning: Boundary = 1</div>
 <div class="tip" id="fs55">val ds : DataSegment&lt;Series&lt;DateTimeOffset,float&gt;&gt;</div>
 <div class="tip" id="fs56">property DataSegment.Data: Series&lt;DateTimeOffset,float&gt;</div>
 <div class="tip" id="fs57">val st : Series&lt;int,char&gt;<br /><br />Full name: Timeseries.st</div>
 <div class="tip" id="fs58">static member Series.ofValues : values:seq&lt;&#39;a0&gt; -&gt; Series&lt;int,&#39;a0&gt;</div>
 <div class="tip" id="fs59">Boundary.AtEnding: Boundary = 2</div>
-<div class="tip" id="fs60">Multiple items<br />union case DataSegment.DataSegment: DataSegmentKind * &#39;T -&gt; DataSegment&lt;&#39;T&gt;<br /><br />--------------------<br />module DataSegment<br /><br />from FSharp.DataFrame<br /><br />--------------------<br />type DataSegment&lt;&#39;T&gt; =<br />&#160;&#160;| DataSegment of DataSegmentKind * &#39;T<br />&#160;&#160;override ToString : unit -&gt; string<br />&#160;&#160;member Data : &#39;T<br />&#160;&#160;member Kind : DataSegmentKind<br /><br />Full name: FSharp.DataFrame.DataSegment&lt;_&gt;</div>
-<div class="tip" id="fs61">active recognizer Complete: DataSegment&lt;&#39;a&gt; -&gt; Choice&lt;&#39;a,&#39;a&gt;<br /><br />Full name: FSharp.DataFrame.DataSegment.( |Complete|Incomplete| )</div>
+<div class="tip" id="fs60">Multiple items<br />union case DataSegment.DataSegment: DataSegmentKind * &#39;T -&gt; DataSegment&lt;&#39;T&gt;<br /><br />--------------------<br />module DataSegment<br /><br />from Deedle<br /><br />--------------------<br />type DataSegment&lt;&#39;T&gt; =<br />&#160;&#160;| DataSegment of DataSegmentKind * &#39;T<br />&#160;&#160;override ToString : unit -&gt; string<br />&#160;&#160;member Data : &#39;T<br />&#160;&#160;member Kind : DataSegmentKind<br /><br />Full name: Deedle.DataSegment&lt;_&gt;</div>
+<div class="tip" id="fs61">active recognizer Complete: DataSegment&lt;&#39;a&gt; -&gt; Choice&lt;&#39;a,&#39;a&gt;<br /><br />Full name: Deedle.DataSegment.( |Complete|Incomplete| )</div>
 <div class="tip" id="fs62">val ser : Series&lt;int,char&gt;</div>
 <div class="tip" id="fs63">Multiple items<br />type String =<br />&#160;&#160;new : value:char -&gt; string + 7 overloads<br />&#160;&#160;member Chars : int -&gt; char<br />&#160;&#160;member Clone : unit -&gt; obj<br />&#160;&#160;member CompareTo : value:obj -&gt; int + 1 overload<br />&#160;&#160;member Contains : value:string -&gt; bool<br />&#160;&#160;member CopyTo : sourceIndex:int * destination:char[] * destinationIndex:int * count:int -&gt; unit<br />&#160;&#160;member EndsWith : value:string -&gt; bool + 2 overloads<br />&#160;&#160;member Equals : obj:obj -&gt; bool + 2 overloads<br />&#160;&#160;member GetEnumerator : unit -&gt; CharEnumerator<br />&#160;&#160;member GetHashCode : unit -&gt; int<br />&#160;&#160;...<br /><br />Full name: System.String<br /><br />--------------------<br />String(value: nativeptr&lt;char&gt;) : unit<br />String(value: nativeptr&lt;sbyte&gt;) : unit<br />String(value: char []) : unit<br />String(c: char, count: int) : unit<br />String(value: nativeptr&lt;char&gt;, startIndex: int, length: int) : unit<br />String(value: nativeptr&lt;sbyte&gt;, startIndex: int, length: int) : unit<br />String(value: char [], startIndex: int, length: int) : unit<br />String(value: nativeptr&lt;sbyte&gt;, startIndex: int, length: int, enc: Text.Encoding) : unit</div>
-<div class="tip" id="fs64">val values : series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;&#39;T&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.values</div>
+<div class="tip" id="fs64">val values : series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;&#39;T&gt; (requires equality)<br /><br />Full name: Deedle.Series.values</div>
 <div class="tip" id="fs65">type Array =<br />&#160;&#160;member Clone : unit -&gt; obj<br />&#160;&#160;member CopyTo : array:Array * index:int -&gt; unit + 1 overload<br />&#160;&#160;member GetEnumerator : unit -&gt; IEnumerator<br />&#160;&#160;member GetLength : dimension:int -&gt; int<br />&#160;&#160;member GetLongLength : dimension:int -&gt; int64<br />&#160;&#160;member GetLowerBound : dimension:int -&gt; int<br />&#160;&#160;member GetUpperBound : dimension:int -&gt; int<br />&#160;&#160;member GetValue : params indices:int[] -&gt; obj + 7 overloads<br />&#160;&#160;member Initialize : unit -&gt; unit<br />&#160;&#160;member IsFixedSize : bool<br />&#160;&#160;...<br /><br />Full name: System.Array</div>
 <div class="tip" id="fs66">val ofSeq : source:seq&lt;&#39;T&gt; -&gt; &#39;T []<br /><br />Full name: Microsoft.FSharp.Collections.Array.ofSeq</div>
-<div class="tip" id="fs67">active recognizer Incomplete: DataSegment&lt;&#39;a&gt; -&gt; Choice&lt;&#39;a,&#39;a&gt;<br /><br />Full name: FSharp.DataFrame.DataSegment.( |Complete|Incomplete| )</div>
+<div class="tip" id="fs67">active recognizer Incomplete: DataSegment&lt;&#39;a&gt; -&gt; Choice&lt;&#39;a,&#39;a&gt;<br /><br />Full name: Deedle.DataSegment.( |Complete|Incomplete| )</div>
 <div class="tip" id="fs68">val hourly : Series&lt;DateTimeOffset,float&gt;<br /><br />Full name: Timeseries.hourly</div>
-<div class="tip" id="fs69">val windowDist : distance:&#39;D -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt; (requires comparison and equality and member ( - ))<br /><br />Full name: FSharp.DataFrame.Series.windowDist</div>
-<div class="tip" id="fs70">val windowWhile : cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.windowWhile</div>
+<div class="tip" id="fs69">val windowDist : distance:&#39;D -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt; (requires comparison and equality and member ( - ))<br /><br />Full name: Deedle.Series.windowDist</div>
+<div class="tip" id="fs70">val windowWhile : cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt; (requires equality)<br /><br />Full name: Deedle.Series.windowWhile</div>
 <div class="tip" id="fs71">val d1 : DateTimeOffset</div>
 <div class="tip" id="fs72">val d2 : DateTimeOffset</div>
 <div class="tip" id="fs73">property DateTimeOffset.Date: DateTime</div>
 <div class="tip" id="fs74">val hf : Series&lt;DateTimeOffset,float&gt;<br /><br />Full name: Timeseries.hf</div>
-<div class="tip" id="fs75">val chunkSize : int * Boundary -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.chunkSize</div>
-<div class="tip" id="fs76">val chunkDistInto : distance:&#39;D -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt; (requires comparison and equality and member ( - ))<br /><br />Full name: FSharp.DataFrame.Series.chunkDistInto</div>
-<div class="tip" id="fs77">val chunkWhile : cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.chunkWhile</div>
+<div class="tip" id="fs75">val chunkSize : int * Boundary -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt; (requires equality)<br /><br />Full name: Deedle.Series.chunkSize</div>
+<div class="tip" id="fs76">val chunkDistInto : distance:&#39;D -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt; (requires comparison and equality and member ( - ))<br /><br />Full name: Deedle.Series.chunkDistInto</div>
+<div class="tip" id="fs77">val chunkWhile : cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt; (requires equality)<br /><br />Full name: Deedle.Series.chunkWhile</div>
 <div class="tip" id="fs78">val k1 : DateTimeOffset</div>
 <div class="tip" id="fs79">val k2 : DateTimeOffset</div>
 <div class="tip" id="fs80">property DateTimeOffset.Hour: int</div>
 <div class="tip" id="fs81">property DateTimeOffset.Minute: int</div>
-<div class="tip" id="fs82">val pairwise : series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,(&#39;T * &#39;T)&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.pairwise</div>
-<div class="tip" id="fs83">val pairwiseWith : f:(&#39;K -&gt; &#39;T * &#39;T -&gt; &#39;a) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;a&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.pairwiseWith</div>
+<div class="tip" id="fs82">val pairwise : series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,(&#39;T * &#39;T)&gt; (requires equality)<br /><br />Full name: Deedle.Series.pairwise</div>
+<div class="tip" id="fs83">val pairwiseWith : f:(&#39;K -&gt; &#39;T * &#39;T -&gt; &#39;a) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;a&gt; (requires equality)<br /><br />Full name: Deedle.Series.pairwiseWith</div>
 <div class="tip" id="fs84">val k : DateTimeOffset</div>
 <div class="tip" id="fs85">val v1 : float</div>
 <div class="tip" id="fs86">val v2 : float</div>
@@ -1272,41 +1272,41 @@ open-high-low-close values for a given stock).</p>
 <div class="tip" id="fs91">val keys : DateTimeOffset list<br /><br />Full name: Timeseries.keys</div>
 <div class="tip" id="fs92">val m : float</div>
 <div class="tip" id="fs93">DateTimeOffset.AddMinutes(minutes: float) : DateTimeOffset</div>
-<div class="tip" id="fs94">val lookupAll : keys:seq&lt;&#39;K&gt; -&gt; lookup:Lookup -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.lookupAll</div>
+<div class="tip" id="fs94">val lookupAll : keys:seq&lt;&#39;K&gt; -&gt; lookup:Lookup -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><br />Full name: Deedle.Series.lookupAll</div>
 <div class="tip" id="fs95">Lookup.NearestGreater: Lookup = 1</div>
-<div class="tip" id="fs96">val resample : keys:seq&lt;&#39;K&gt; -&gt; dir:Direction -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;V&gt;&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.resample</div>
-<div class="tip" id="fs97">type Direction =<br />&#160;&#160;|  Backward  =  0<br />&#160;&#160;|  Forward  =  1<br /><br />Full name: FSharp.DataFrame.Direction</div>
+<div class="tip" id="fs96">val resample : keys:seq&lt;&#39;K&gt; -&gt; dir:Direction -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;V&gt;&gt; (requires equality)<br /><br />Full name: Deedle.Series.resample</div>
+<div class="tip" id="fs97">type Direction =<br />&#160;&#160;|  Backward  =  0<br />&#160;&#160;|  Forward  =  1<br /><br />Full name: Deedle.Direction</div>
 <div class="tip" id="fs98">Direction.Forward: Direction = 1</div>
 <div class="tip" id="fs99">Direction.Backward: Direction = 0</div>
-<div class="tip" id="fs100">val resampleInto : keys:seq&lt;&#39;K&gt; -&gt; dir:Direction -&gt; f:(&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;a) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;a&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.resampleInto</div>
+<div class="tip" id="fs100">val resampleInto : keys:seq&lt;&#39;K&gt; -&gt; dir:Direction -&gt; f:(&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;a) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;a&gt; (requires equality)<br /><br />Full name: Deedle.Series.resampleInto</div>
 <div class="tip" id="fs101">member Series.Resample : keys:seq&lt;&#39;K&gt; * direction:Direction -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;V&gt;&gt;<br />member Series.Resample : keys:seq&lt;&#39;K&gt; * direction:Direction * valueSelector:Func&lt;&#39;K,Series&lt;&#39;K,&#39;V&gt;,&#39;a2&gt; -&gt; Series&lt;&#39;K,&#39;a2&gt;<br />member Series.Resample : keys:seq&lt;&#39;K&gt; * direction:Direction * valueSelector:Func&lt;&#39;TNewKey,Series&lt;&#39;K,&#39;V&gt;,&#39;R&gt; * keySelector:Func&lt;&#39;K,Series&lt;&#39;K,&#39;V&gt;,&#39;TNewKey&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)</div>
 <div class="tip" id="fs102">val ds : Series&lt;DateTimeOffset,float&gt;<br /><br />Full name: Timeseries.ds</div>
 <div class="tip" id="fs103">TimeSpan.FromHours(value: float) : TimeSpan</div>
-<div class="tip" id="fs104">val resampleEquiv : keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; series:Series&lt;&#39;K1,&#39;V1&gt; -&gt; Series&lt;&#39;K2,Series&lt;&#39;K1,&#39;V1&gt;&gt; (requires equality and equality)<br /><br />Full name: FSharp.DataFrame.Series.resampleEquiv</div>
+<div class="tip" id="fs104">val resampleEquiv : keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; series:Series&lt;&#39;K1,&#39;V1&gt; -&gt; Series&lt;&#39;K2,Series&lt;&#39;K1,&#39;V1&gt;&gt; (requires equality and equality)<br /><br />Full name: Deedle.Series.resampleEquiv</div>
 <div class="tip" id="fs105">val d : DateTimeOffset</div>
 <div class="tip" id="fs106">val days : string list<br /><br />Full name: Timeseries.days</div>
 <div class="tip" id="fs107">val nu : Series&lt;DateTimeOffset,float&gt;<br /><br />Full name: Timeseries.nu</div>
-<div class="tip" id="fs108">val indexWith : keys:seq&lt;&#39;K2&gt; -&gt; series:Series&lt;&#39;K1,&#39;T&gt; -&gt; Series&lt;&#39;K2,&#39;T&gt; (requires equality and equality)<br /><br />Full name: FSharp.DataFrame.Series.indexWith</div>
-<div class="tip" id="fs109">val mapKeys : f:(&#39;K -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;R,&#39;T&gt; (requires equality and equality)<br /><br />Full name: FSharp.DataFrame.Series.mapKeys</div>
+<div class="tip" id="fs108">val indexWith : keys:seq&lt;&#39;K2&gt; -&gt; series:Series&lt;&#39;K1,&#39;T&gt; -&gt; Series&lt;&#39;K2,&#39;T&gt; (requires equality and equality)<br /><br />Full name: Deedle.Series.indexWith</div>
+<div class="tip" id="fs109">val mapKeys : f:(&#39;K -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;R,&#39;T&gt; (requires equality and equality)<br /><br />Full name: Deedle.Series.mapKeys</div>
 <div class="tip" id="fs110">DateTimeOffset.Parse(input: string) : DateTimeOffset<br />DateTimeOffset.Parse(input: string, formatProvider: IFormatProvider) : DateTimeOffset<br />DateTimeOffset.Parse(input: string, formatProvider: IFormatProvider, styles: Globalization.DateTimeStyles) : DateTimeOffset</div>
 <div class="tip" id="fs111">val sampled : Series&lt;DateTime,Series&lt;DateTimeOffset,float&gt;&gt;<br /><br />Full name: Timeseries.sampled</div>
-<div class="tip" id="fs112">val resampleUniform : fillMode:Lookup -&gt; keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; nextKey:(&#39;K2 -&gt; &#39;K2) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,Series&lt;&#39;K1,&#39;V&gt;&gt; (requires equality and comparison)<br /><br />Full name: FSharp.DataFrame.Series.resampleUniform</div>
+<div class="tip" id="fs112">val resampleUniform : fillMode:Lookup -&gt; keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; nextKey:(&#39;K2 -&gt; &#39;K2) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,Series&lt;&#39;K1,&#39;V&gt;&gt; (requires equality and comparison)<br /><br />Full name: Deedle.Series.resampleUniform</div>
 <div class="tip" id="fs113">val dt : DateTimeOffset</div>
 <div class="tip" id="fs114">val dt : DateTime</div>
 <div class="tip" id="fs115">DateTime.AddDays(value: float) : DateTime</div>
-<div class="tip" id="fs116">val mapValues : f:(&#39;T -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.mapValues</div>
-<div class="tip" id="fs117">val indexOrdinally : series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;int,&#39;T&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.indexOrdinally</div>
+<div class="tip" id="fs116">val mapValues : f:(&#39;T -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt; (requires equality)<br /><br />Full name: Deedle.Series.mapValues</div>
+<div class="tip" id="fs117">val indexOrdinally : series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;int,&#39;T&gt; (requires equality)<br /><br />Full name: Deedle.Series.indexOrdinally</div>
 <div class="tip" id="fs118">static member Frame.ofRows : rows:seq&lt;&#39;a0 * #ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a0,&#39;a2&gt; (requires equality and equality)<br />static member Frame.ofRows : rows:Series&lt;&#39;a0,#ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a0,&#39;a2&gt; (requires equality and equality)</div>
 <div class="tip" id="fs119">val pr : Series&lt;DateTimeOffset,float&gt;<br /><br />Full name: Timeseries.pr</div>
-<div class="tip" id="fs120">val sampleTime : interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;&#39;a,&#39;b&gt; -&gt; Series&lt;&#39;a,Series&lt;&#39;a,&#39;b&gt;&gt; (requires equality and member ( + ))<br /><br />Full name: FSharp.DataFrame.Series.sampleTime</div>
-<div class="tip" id="fs121">val sampleTimeInto : interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;a) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;a&gt; (requires equality and member ( + ))<br /><br />Full name: FSharp.DataFrame.Series.sampleTimeInto</div>
-<div class="tip" id="fs122">val lastValue : series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.lastValue</div>
+<div class="tip" id="fs120">val sampleTime : interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;&#39;a,&#39;b&gt; -&gt; Series&lt;&#39;a,Series&lt;&#39;a,&#39;b&gt;&gt; (requires equality and member ( + ))<br /><br />Full name: Deedle.Series.sampleTime</div>
+<div class="tip" id="fs121">val sampleTimeInto : interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;a) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;a&gt; (requires equality and member ( + ))<br /><br />Full name: Deedle.Series.sampleTimeInto</div>
+<div class="tip" id="fs122">val lastValue : series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V (requires equality)<br /><br />Full name: Deedle.Series.lastValue</div>
 <div class="tip" id="fs123">val sample : Series&lt;DateTimeOffset,float&gt;<br /><br />Full name: Timeseries.sample</div>
 <div class="tip" id="fs124">val diff1 : Series&lt;DateTimeOffset,float&gt;<br /><br />Full name: Timeseries.diff1</div>
-<div class="tip" id="fs125">val diff : offset:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;a&gt; (requires equality and member ( - ))<br /><br />Full name: FSharp.DataFrame.Series.diff</div>
+<div class="tip" id="fs125">val diff : offset:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;a&gt; (requires equality and member ( - ))<br /><br />Full name: Deedle.Series.diff</div>
 <div class="tip" id="fs126">val diffM1 : Series&lt;DateTimeOffset,float&gt;<br /><br />Full name: Timeseries.diffM1</div>
 <div class="tip" id="fs127">val shift1 : Series&lt;DateTimeOffset,float&gt;<br /><br />Full name: Timeseries.shift1</div>
-<div class="tip" id="fs128">val shift : offset:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.Series.shift</div>
+<div class="tip" id="fs128">val shift : offset:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><br />Full name: Deedle.Series.shift</div>
 <div class="tip" id="fs129">val df : Frame&lt;DateTimeOffset,string&gt;<br /><br />Full name: Timeseries.df</div>
 <div class="tip" id="fs130">val log : value:&#39;T -&gt; &#39;T (requires member Log)<br /><br />Full name: Microsoft.FSharp.Core.Operators.log</div>
 <div class="tip" id="fs131">val abs : value:&#39;T -&gt; &#39;T (requires member Abs)<br /><br />Full name: Microsoft.FSharp.Core.Operators.abs</div>
@@ -1316,71 +1316,71 @@ open-high-low-close values for a given stock).</p>
 <div class="tip" id="fs135">val max : e1:&#39;T -&gt; e2:&#39;T -&gt; &#39;T (requires comparison)<br /><br />Full name: Microsoft.FSharp.Core.Operators.max</div>
 <div class="tip" id="fs136">val conv : x:float -&gt; float<br /><br />Full name: Timeseries.conv<br /><em><br /><br />&#160;Multiply all numeric columns by a given constant</em></div>
 <div class="tip" id="fs137">val x : float</div>
-<div class="tip" id="fs138">val mapRowValues : f:(ObjectSeries&lt;&#39;C&gt; -&gt; &#39;a) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;R,&#39;a&gt; (requires equality and equality)<br /><br />Full name: FSharp.DataFrame.Frame.mapRowValues</div>
+<div class="tip" id="fs138">val mapRowValues : f:(ObjectSeries&lt;&#39;C&gt; -&gt; &#39;a) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;R,&#39;a&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.mapRowValues</div>
 <div class="tip" id="fs139">val os : ObjectSeries&lt;string&gt;</div>
 <div class="tip" id="fs140">member ObjectSeries.As : unit -&gt; Series&lt;&#39;K,&#39;R&gt;</div>
 <div class="tip" id="fs141">Multiple items<br />val float : value:&#39;T -&gt; float (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.float<br /><br />--------------------<br />type float&lt;&#39;Measure&gt; = float<br /><br />Full name: Microsoft.FSharp.Core.float&lt;_&gt;<br /><br />--------------------<br />type float = Double<br /><br />Full name: Microsoft.FSharp.Core.float</div>
-<div class="tip" id="fs142">val sum : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt; (requires equality and equality)<br /><br />Full name: FSharp.DataFrame.Frame.sum</div>
-<div class="tip" id="fs143">val mean : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt; (requires equality and equality)<br /><br />Full name: FSharp.DataFrame.Frame.mean</div>
+<div class="tip" id="fs142">val sum : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.sum</div>
+<div class="tip" id="fs143">val mean : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.mean</div>
 
         </div>
         <div class="span3">
-          <a href="https://nuget.org/packages/FSharp.DataFrame">
-            <img src="http://BlueMountainCapital.github.io/FSharp.DataFrame/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          <a href="https://nuget.org/packages/Deedle">
+            <img src="http://BlueMountainCapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
           <ul class="nav nav-list" id="menu">
-            <li class="nav-header">F# DataFrame</li>
-            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/index.html">Home page</a></li>
+            <li class="nav-header">Deedle</li>
+            <li><a href="http://BlueMountainCapital.github.io/Deedle/index.html">Home page</a></li>
             <li class="divider"></li>
-            <li><a href="https://nuget.org/packages/FSharp.DataFrame">Get Library via NuGet</a></li>
-            <li><a href="https://github.com/BlueMountainCapital/FSharp.DataFrame">Source Code on GitHub</a></li>
-            <li><a href="https://github.com/BlueMountainCapital/FSharp.DataFrame/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="https://github.com/BlueMountainCapital/FSharp.DataFrame/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
-            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/design.html">Design notes</a></li>
+            <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
+            <li><a href="https://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
+            <li><a href="https://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
+            <li><a href="https://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            <li><a href="http://BlueMountainCapital.github.io/Deedle/design.html">Design notes</a></li>
             
             <li class="nav-header">Using from F#</li>
-            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/tutorial.html">Quick start tutorial</a>
+            <li><a href="http://BlueMountainCapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
               <ul class="nav nav-list">
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/tutorial.html#creating">Creating data frames</a></li>
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/tutorial.html#reindexing-and-joins">Using index & joining</a></li>
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/tutorial.html#selecting">Reading values, slicing</a></li>
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/tutorial.html#timeseries">Ordered time series</a></li>                
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/tutorial.html#projections">Projection and filtering</a></li>                
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/tutorial.html#grouping">Aggregating groups</a></li>                
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/tutorial.html#creating">Creating data frames</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/tutorial.html#reindexing-and-joins">Using index & joining</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/tutorial.html#selecting">Reading values, slicing</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/tutorial.html#timeseries">Ordered time series</a></li>                
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/tutorial.html#projections">Projection and filtering</a></li>                
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/tutorial.html#grouping">Aggregating groups</a></li>                
               </ul>
             </li>
-            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/features.html">Data frame features</a>
+            <li><a href="http://BlueMountainCapital.github.io/Deedle/features.html">Data frame features</a>
               <ul class="nav nav-list">
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/features.html#creating">Creating & loading</a></li>
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/features.html#dataframe">Frame manipulation</a></li>
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/features.html#slicing">Advanced slicing</a></li>
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/features.html#grouping">Grouping data</a></li>
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/features.html#indexing">Hierarchical indexing</a></li>
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/features.html#missing">Missing values</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/features.html#creating">Creating & loading</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/features.html#dataframe">Frame manipulation</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/features.html#slicing">Advanced slicing</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/features.html#grouping">Grouping data</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/features.html#indexing">Hierarchical indexing</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/features.html#missing">Missing values</a></li>
               </ul>
             </li>
-            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/timeseries.html">Time series features</a>
+            <li><a href="http://BlueMountainCapital.github.io/Deedle/timeseries.html">Time series features</a>
               <ul class="nav nav-list">
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/timeseries.html#alignment">Alignment & joining</a></li>
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/timeseries.html#windowing">Windows and chunks</a></li>
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/timeseries.html#sampling">Lookup and resampling</a></li>
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/timeseries.html#stats">Statistics & math</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/timeseries.html#alignment">Alignment & joining</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/timeseries.html#windowing">Windows and chunks</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/timeseries.html#sampling">Lookup and resampling</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/timeseries.html#stats">Statistics & math</a></li>
               </ul>
             </li>
 
             <li class="nav-header">Documentation</li>
-            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/reference/index.html">API Reference</a></li>
+            <li><a href="http://BlueMountainCapital.github.io/Deedle/reference/index.html">API Reference</a></li>
 
             <li class="nav-header">Samples</li>
-            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/lazysource.html">Lazy data loading</a></li>
-            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/samples/volatility.html">Price volatility</a></li>
-            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/samples/titanic.html">Titanic survivors</a></li>
+            <li><a href="http://BlueMountainCapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="http://BlueMountainCapital.github.io/Deedle/samples/volatility.html">Price volatility</a></li>
+            <li><a href="http://BlueMountainCapital.github.io/Deedle/samples/titanic.html">Titanic survivors</a></li>
           </ul>
 
         </div>
       </div>
     </div>
-    <a href="http://github.com/BlueMountainCapital/FSharp.DataFrame"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
+    <a href="http://github.com/BlueMountainCapital/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
   </body>
   </html>

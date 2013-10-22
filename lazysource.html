@@ -13,8 +13,8 @@
     <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
     <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
-    <link type="text/css" rel="stylesheet" href="http://BlueMountainCapital.github.io/FSharp.DataFrame/content/style.css" />
-    <script src="http://BlueMountainCapital.github.io/FSharp.DataFrame/content/tips.js" type="text/javascript"></script>
+    <link type="text/css" rel="stylesheet" href="http://BlueMountainCapital.github.io/Deedle/content/style.css" />
+    <script src="http://BlueMountainCapital.github.io/Deedle/content/tips.js" type="text/javascript"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -25,11 +25,11 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://github.com/BlueMountainCapital/FSharp.DataFrame">github page</a></li>
+          <li><a href="http://github.com/BlueMountainCapital/Deedle">github page</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Charting/">F# Charting</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Data/">F# Data</a></li>
         </ul>
-        <h3 class="muted">F# DataFrame Library</h3>
+        <h3 class="muted">.NET Explorative Data Library</h3>
       </div>
       <hr />
       <div class="row">
@@ -93,17 +93,17 @@ specify the minimal and maximal value of the series and use <code>DelayedSeries.
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">open</span> <span onmouseout="hideTip(event, 'fs15', 24)" onmouseover="showTip(event, 'fs15', 24)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 25)" onmouseover="showTip(event, 'fs16', 25)" class="i">DataFrame</span>
-<span class="k">open</span> <span onmouseout="hideTip(event, 'fs15', 26)" onmouseover="showTip(event, 'fs15', 26)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 27)" onmouseover="showTip(event, 'fs16', 27)" class="i">DataFrame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs17', 28)" onmouseover="showTip(event, 'fs17', 28)" class="i">Indices</span>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs15', 24)" onmouseover="showTip(event, 'fs15', 24)" class="i">Deedle</span>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs15', 25)" onmouseover="showTip(event, 'fs15', 25)" class="i">Deedle</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 26)" onmouseover="showTip(event, 'fs16', 26)" class="i">Indices</span>
 
 <span class="c">// Minimal and maximal values that can be loaded from the series</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs18', 29)" onmouseover="showTip(event, 'fs18', 29)" class="i">min</span>, <span onmouseout="hideTip(event, 'fs19', 30)" onmouseover="showTip(event, 'fs19', 30)" class="i">max</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 31)" onmouseover="showTip(event, 'fs3', 31)" class="i">DateTime</span>(<span class="n">2010</span>, <span class="n">1</span>, <span class="n">1</span>), <span onmouseout="hideTip(event, 'fs3', 32)" onmouseover="showTip(event, 'fs3', 32)" class="i">DateTime</span>(<span class="n">2013</span>, <span class="n">1</span>, <span class="n">1</span>)
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs17', 27)" onmouseover="showTip(event, 'fs17', 27)" class="i">min</span>, <span onmouseout="hideTip(event, 'fs18', 28)" onmouseover="showTip(event, 'fs18', 28)" class="i">max</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 29)" onmouseover="showTip(event, 'fs3', 29)" class="i">DateTime</span>(<span class="n">2010</span>, <span class="n">1</span>, <span class="n">1</span>), <span onmouseout="hideTip(event, 'fs3', 30)" onmouseover="showTip(event, 'fs3', 30)" class="i">DateTime</span>(<span class="n">2013</span>, <span class="n">1</span>, <span class="n">1</span>)
 
 <span class="c">// Create a lazy series for the given range</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs20', 33)" onmouseover="showTip(event, 'fs20', 33)" class="i">ls</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs21', 34)" onmouseover="showTip(event, 'fs21', 34)" class="i">DelayedSeries</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 35)" onmouseover="showTip(event, 'fs22', 35)" class="i">Create</span>(<span onmouseout="hideTip(event, 'fs18', 36)" onmouseover="showTip(event, 'fs18', 36)" class="i">min</span>, <span onmouseout="hideTip(event, 'fs19', 37)" onmouseover="showTip(event, 'fs19', 37)" class="i">max</span>, <span class="k">fun</span> (<span onmouseout="hideTip(event, 'fs23', 38)" onmouseover="showTip(event, 'fs23', 38)" class="i">lo</span>, <span onmouseout="hideTip(event, 'fs24', 39)" onmouseover="showTip(event, 'fs24', 39)" class="i">lob</span>) (<span onmouseout="hideTip(event, 'fs25', 40)" onmouseover="showTip(event, 'fs25', 40)" class="i">hi</span>, <span onmouseout="hideTip(event, 'fs26', 41)" onmouseover="showTip(event, 'fs26', 41)" class="i">hib</span>) <span class="k">-&gt;</span> 
-  <span onmouseout="hideTip(event, 'fs27', 42)" onmouseover="showTip(event, 'fs27', 42)" class="i">async</span> { 
-    <span onmouseout="hideTip(event, 'fs28', 43)" onmouseover="showTip(event, 'fs28', 43)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">Query</span><span class="s">:</span><span class="s"> </span><span class="s">%</span><span class="s">A</span><span class="s"> </span><span class="s">-</span><span class="s"> </span><span class="s">%</span><span class="s">A</span><span class="s">&quot;</span> (<span onmouseout="hideTip(event, 'fs23', 44)" onmouseover="showTip(event, 'fs23', 44)" class="i">lo</span>, <span onmouseout="hideTip(event, 'fs24', 45)" onmouseover="showTip(event, 'fs24', 45)" class="i">lob</span>) (<span onmouseout="hideTip(event, 'fs25', 46)" onmouseover="showTip(event, 'fs25', 46)" class="i">hi</span>, <span onmouseout="hideTip(event, 'fs26', 47)" onmouseover="showTip(event, 'fs26', 47)" class="i">hib</span>)
-    <span class="k">return</span> <span onmouseout="hideTip(event, 'fs1', 48)" onmouseover="showTip(event, 'fs1', 48)" class="i">generate</span> <span onmouseout="hideTip(event, 'fs23', 49)" onmouseover="showTip(event, 'fs23', 49)" class="i">lo</span> <span onmouseout="hideTip(event, 'fs25', 50)" onmouseover="showTip(event, 'fs25', 50)" class="i">hi</span> })</pre>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs19', 31)" onmouseover="showTip(event, 'fs19', 31)" class="i">ls</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs20', 32)" onmouseover="showTip(event, 'fs20', 32)" class="i">DelayedSeries</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 33)" onmouseover="showTip(event, 'fs21', 33)" class="i">Create</span>(<span onmouseout="hideTip(event, 'fs17', 34)" onmouseover="showTip(event, 'fs17', 34)" class="i">min</span>, <span onmouseout="hideTip(event, 'fs18', 35)" onmouseover="showTip(event, 'fs18', 35)" class="i">max</span>, <span class="k">fun</span> (<span onmouseout="hideTip(event, 'fs22', 36)" onmouseover="showTip(event, 'fs22', 36)" class="i">lo</span>, <span onmouseout="hideTip(event, 'fs23', 37)" onmouseover="showTip(event, 'fs23', 37)" class="i">lob</span>) (<span onmouseout="hideTip(event, 'fs24', 38)" onmouseover="showTip(event, 'fs24', 38)" class="i">hi</span>, <span onmouseout="hideTip(event, 'fs25', 39)" onmouseover="showTip(event, 'fs25', 39)" class="i">hib</span>) <span class="k">-&gt;</span> 
+  <span onmouseout="hideTip(event, 'fs26', 40)" onmouseover="showTip(event, 'fs26', 40)" class="i">async</span> { 
+    <span onmouseout="hideTip(event, 'fs27', 41)" onmouseover="showTip(event, 'fs27', 41)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">Query</span><span class="s">:</span><span class="s"> </span><span class="s">%</span><span class="s">A</span><span class="s"> </span><span class="s">-</span><span class="s"> </span><span class="s">%</span><span class="s">A</span><span class="s">&quot;</span> (<span onmouseout="hideTip(event, 'fs22', 42)" onmouseover="showTip(event, 'fs22', 42)" class="i">lo</span>, <span onmouseout="hideTip(event, 'fs23', 43)" onmouseover="showTip(event, 'fs23', 43)" class="i">lob</span>) (<span onmouseout="hideTip(event, 'fs24', 44)" onmouseover="showTip(event, 'fs24', 44)" class="i">hi</span>, <span onmouseout="hideTip(event, 'fs25', 45)" onmouseover="showTip(event, 'fs25', 45)" class="i">hib</span>)
+    <span class="k">return</span> <span onmouseout="hideTip(event, 'fs1', 46)" onmouseover="showTip(event, 'fs1', 46)" class="i">generate</span> <span onmouseout="hideTip(event, 'fs22', 47)" onmouseover="showTip(event, 'fs22', 47)" class="i">lo</span> <span onmouseout="hideTip(event, 'fs24', 48)" onmouseover="showTip(event, 'fs24', 48)" class="i">hi</span> })</pre>
 </td>
 </tr>
 </table><p>To make the diagnostics easier, we print the required range whenever a request
@@ -148,17 +148,17 @@ or lookup for a specific key) will force the evaluation of the series.</p>
 </td>
 <td class="snippet"><pre class="fssnip">
 <span class="c">// Get series representing January 2012</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs29', 51)" onmouseover="showTip(event, 'fs29', 51)" class="i">jan12</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs20', 52)" onmouseover="showTip(event, 'fs20', 52)" class="i">ls</span><span class="o">.</span>[<span onmouseout="hideTip(event, 'fs3', 53)" onmouseover="showTip(event, 'fs3', 53)" class="i">DateTime</span>(<span class="n">2012</span>, <span class="n">1</span>, <span class="n">1</span>) <span class="o">..</span> <span onmouseout="hideTip(event, 'fs3', 54)" onmouseover="showTip(event, 'fs3', 54)" class="i">DateTime</span>(<span class="n">2012</span>, <span class="n">2</span>, <span class="n">1</span>)]
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs28', 49)" onmouseover="showTip(event, 'fs28', 49)" class="i">jan12</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs19', 50)" onmouseover="showTip(event, 'fs19', 50)" class="i">ls</span><span class="o">.</span>[<span onmouseout="hideTip(event, 'fs3', 51)" onmouseover="showTip(event, 'fs3', 51)" class="i">DateTime</span>(<span class="n">2012</span>, <span class="n">1</span>, <span class="n">1</span>) <span class="o">..</span> <span onmouseout="hideTip(event, 'fs3', 52)" onmouseover="showTip(event, 'fs3', 52)" class="i">DateTime</span>(<span class="n">2012</span>, <span class="n">2</span>, <span class="n">1</span>)]
 
 <span class="c">// Further restriction - only first half of the month</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs30', 55)" onmouseover="showTip(event, 'fs30', 55)" class="i">janHalf</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs29', 56)" onmouseover="showTip(event, 'fs29', 56)" class="i">jan12</span><span class="o">.</span>[<span class="o">..</span> <span onmouseout="hideTip(event, 'fs3', 57)" onmouseover="showTip(event, 'fs3', 57)" class="i">DateTime</span>(<span class="n">2012</span>, <span class="n">1</span>, <span class="n">15</span>)]
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs29', 53)" onmouseover="showTip(event, 'fs29', 53)" class="i">janHalf</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs28', 54)" onmouseover="showTip(event, 'fs28', 54)" class="i">jan12</span><span class="o">.</span>[<span class="o">..</span> <span onmouseout="hideTip(event, 'fs3', 55)" onmouseover="showTip(event, 'fs3', 55)" class="i">DateTime</span>(<span class="n">2012</span>, <span class="n">1</span>, <span class="n">15</span>)]
 
 <span class="c">// Get value for a specific date</span>
-<span onmouseout="hideTip(event, 'fs30', 58)" onmouseover="showTip(event, 'fs30', 58)" class="i">janHalf</span><span class="o">.</span>[<span onmouseout="hideTip(event, 'fs3', 59)" onmouseover="showTip(event, 'fs3', 59)" class="i">DateTime</span>(<span class="n">2012</span>, <span class="n">1</span>, <span class="n">1</span>)]
+<span onmouseout="hideTip(event, 'fs29', 56)" onmouseover="showTip(event, 'fs29', 56)" class="i">janHalf</span><span class="o">.</span>[<span onmouseout="hideTip(event, 'fs3', 57)" onmouseover="showTip(event, 'fs3', 57)" class="i">DateTime</span>(<span class="n">2012</span>, <span class="n">1</span>, <span class="n">1</span>)]
 <span class="fsi"> Query: (1/1/2012, Inclusive) - (1/15/2012, Inclusive)</span>
 <span class="fsi"> val it : int = 1127670994</span>
 
-<span onmouseout="hideTip(event, 'fs30', 60)" onmouseover="showTip(event, 'fs30', 60)" class="i">janHalf</span><span class="o">.</span>[<span onmouseout="hideTip(event, 'fs3', 61)" onmouseover="showTip(event, 'fs3', 61)" class="i">DateTime</span>(<span class="n">2012</span>, <span class="n">1</span>, <span class="n">2</span>)]
+<span onmouseout="hideTip(event, 'fs29', 58)" onmouseover="showTip(event, 'fs29', 58)" class="i">janHalf</span><span class="o">.</span>[<span onmouseout="hideTip(event, 'fs3', 59)" onmouseover="showTip(event, 'fs3', 59)" class="i">DateTime</span>(<span class="n">2012</span>, <span class="n">1</span>, <span class="n">2</span>)]
 <span class="fsi"> val it : int = 560920727</span></pre>
 </td>
 </tr>
@@ -183,10 +183,10 @@ to a data frame with some existing key range:</p>
 </td>
 <td class="snippet"><pre class="fssnip">
 <span class="c">// Create empty data frame for days of December 2011</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs31', 62)" onmouseover="showTip(event, 'fs31', 62)" class="i">dec11</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs32', 63)" onmouseover="showTip(event, 'fs32', 63)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs33', 64)" onmouseover="showTip(event, 'fs33', 64)" class="i">ofRowKeys</span> [ <span class="k">for</span> <span onmouseout="hideTip(event, 'fs11', 65)" onmouseover="showTip(event, 'fs11', 65)" class="i">d</span> <span class="k">in</span> <span class="n">1</span> <span class="o">..</span> <span class="n">31</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs3', 66)" onmouseover="showTip(event, 'fs3', 66)" class="i">DateTime</span>(<span class="n">2011</span>, <span class="n">12</span>, <span onmouseout="hideTip(event, 'fs11', 67)" onmouseover="showTip(event, 'fs11', 67)" class="i">d</span>) ]
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs30', 60)" onmouseover="showTip(event, 'fs30', 60)" class="i">dec11</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs31', 61)" onmouseover="showTip(event, 'fs31', 61)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs32', 62)" onmouseover="showTip(event, 'fs32', 62)" class="i">ofRowKeys</span> [ <span class="k">for</span> <span onmouseout="hideTip(event, 'fs11', 63)" onmouseover="showTip(event, 'fs11', 63)" class="i">d</span> <span class="k">in</span> <span class="n">1</span> <span class="o">..</span> <span class="n">31</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs3', 64)" onmouseover="showTip(event, 'fs3', 64)" class="i">DateTime</span>(<span class="n">2011</span>, <span class="n">12</span>, <span onmouseout="hideTip(event, 'fs11', 65)" onmouseover="showTip(event, 'fs11', 65)" class="i">d</span>) ]
 
 <span class="c">// Add series as the &#39;Values&#39; column to the data frame</span>
-<span onmouseout="hideTip(event, 'fs31', 68)" onmouseover="showTip(event, 'fs31', 68)" class="i">dec11</span><span class="o">?</span><span class="i">Values</span> <span class="o">&lt;-</span> <span onmouseout="hideTip(event, 'fs20', 69)" onmouseover="showTip(event, 'fs20', 69)" class="i">ls</span>
+<span onmouseout="hideTip(event, 'fs30', 66)" onmouseover="showTip(event, 'fs30', 66)" class="i">dec11</span><span class="o">?</span><span class="i">Values</span> <span class="o">&lt;-</span> <span onmouseout="hideTip(event, 'fs19', 67)" onmouseover="showTip(event, 'fs19', 67)" class="i">ls</span>
 <span class="fsi"> Query: (12/1/2011, Inclusive) - (12/31/2011, Inclusive)</span></pre>
 </td>
 </tr>
@@ -208,84 +208,83 @@ data frame. In the above example, only one month of data is loaded.</p>
 <div class="tip" id="fs12">DateTime.AddDays(value: float) : DateTime</div>
 <div class="tip" id="fs13">Multiple items<br />val float : value:&#39;T -&gt; float (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.float<br /><br />--------------------<br />type float&lt;&#39;Measure&gt; = float<br /><br />Full name: Microsoft.FSharp.Core.float&lt;_&gt;<br /><br />--------------------<br />type float = Double<br /><br />Full name: Microsoft.FSharp.Core.float</div>
 <div class="tip" id="fs14">Random.Next() : int<br />Random.Next(maxValue: int) : int<br />Random.Next(minValue: int, maxValue: int) : int</div>
-<div class="tip" id="fs15">namespace FSharp</div>
-<div class="tip" id="fs16">namespace FSharp.DataFrame</div>
-<div class="tip" id="fs17">namespace FSharp.DataFrame.Indices</div>
-<div class="tip" id="fs18">val min : DateTime<br /><br />Full name: Lazysource.min</div>
-<div class="tip" id="fs19">val max : DateTime<br /><br />Full name: Lazysource.max</div>
-<div class="tip" id="fs20">val ls : Series&lt;DateTime,int&gt;<br /><br />Full name: Lazysource.ls</div>
-<div class="tip" id="fs21">type DelayedSeries =<br />&#160;&#160;static member Create : min:&#39;K * max:&#39;K * loader:(&#39;K * BoundaryBehavior -&gt; &#39;K * BoundaryBehavior -&gt; Async&lt;#seq&lt;&#39;K * &#39;V&gt;&gt;) -&gt; Series&lt;&#39;K,&#39;V&gt; (requires equality)<br />&#160;&#160;static member Create : min:&#39;K * max:&#39;K * loader:Func&lt;&#39;K,BoundaryBehavior,&#39;K,BoundaryBehavior,Task&lt;seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt;&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt; (requires equality)<br /><br />Full name: FSharp.DataFrame.DelayedSeries</div>
-<div class="tip" id="fs22">static member DelayedSeries.Create : min:&#39;K * max:&#39;K * loader:(&#39;K * BoundaryBehavior -&gt; &#39;K * BoundaryBehavior -&gt; Async&lt;#seq&lt;&#39;K * &#39;V&gt;&gt;) -&gt; Series&lt;&#39;K,&#39;V&gt; (requires equality)<br />static member DelayedSeries.Create : min:&#39;K * max:&#39;K * loader:Func&lt;&#39;K,BoundaryBehavior,&#39;K,BoundaryBehavior,Threading.Tasks.Task&lt;seq&lt;Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt;&gt;&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt; (requires equality)</div>
-<div class="tip" id="fs23">val lo : DateTime</div>
-<div class="tip" id="fs24">val lob : BoundaryBehavior</div>
-<div class="tip" id="fs25">val hi : DateTime</div>
-<div class="tip" id="fs26">val hib : BoundaryBehavior</div>
-<div class="tip" id="fs27">val async : AsyncBuilder<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.async</div>
-<div class="tip" id="fs28">val printfn : format:Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.printfn</div>
-<div class="tip" id="fs29">val jan12 : Series&lt;DateTime,int&gt;<br /><br />Full name: Lazysource.jan12</div>
-<div class="tip" id="fs30">val janHalf : Series&lt;DateTime,int&gt;<br /><br />Full name: Lazysource.janHalf</div>
-<div class="tip" id="fs31">val dec11 : Frame&lt;DateTime,string&gt;<br /><br />Full name: Lazysource.dec11</div>
-<div class="tip" id="fs32">Multiple items<br />module Frame<br /><br />from FSharp.DataFrame<br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =<br />&#160;&#160;interface IDynamicMetaObjectProvider<br />&#160;&#160;new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;private new : rowIndex:IIndex&lt;&#39;TRowKey&gt; * columnIndex:IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member Append : otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member Clone : unit -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member DropSeries : column:&#39;TColumnKey -&gt; unit<br />&#160;&#160;...<br /><br />Full name: FSharp.DataFrame.Frame&lt;_,_&gt;<br /><br />--------------------<br />type Frame =<br />&#160;&#160;static member CreateEmpty : unit -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,ObjectSeries&lt;&#39;RowKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : rows:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;ColKey,int&gt; (requires equality)<br />&#160;&#160;static member FromRecords : values:seq&lt;&#39;T&gt; -&gt; Frame&lt;int,string&gt;<br />&#160;&#160;static member FromRecords : series:Series&lt;&#39;K,&#39;R&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRowKeys : keys:seq&lt;&#39;K&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRows : rows:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TColKey,&#39;TRowKey&gt; (requires equality and equality)<br />&#160;&#160;...<br /><br />Full name: FSharp.DataFrame.Frame<br /><br />--------------------<br />new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
-<div class="tip" id="fs33">static member Frame.ofRowKeys : keys:seq&lt;&#39;a0&gt; -&gt; Frame&lt;&#39;a0,string&gt; (requires equality)</div>
+<div class="tip" id="fs15">namespace Deedle</div>
+<div class="tip" id="fs16">namespace Deedle.Indices</div>
+<div class="tip" id="fs17">val min : DateTime<br /><br />Full name: Lazysource.min</div>
+<div class="tip" id="fs18">val max : DateTime<br /><br />Full name: Lazysource.max</div>
+<div class="tip" id="fs19">val ls : Series&lt;DateTime,int&gt;<br /><br />Full name: Lazysource.ls</div>
+<div class="tip" id="fs20">type DelayedSeries =<br />&#160;&#160;static member Create : min:&#39;K * max:&#39;K * loader:(&#39;K * BoundaryBehavior -&gt; &#39;K * BoundaryBehavior -&gt; Async&lt;#seq&lt;&#39;K * &#39;V&gt;&gt;) -&gt; Series&lt;&#39;K,&#39;V&gt; (requires equality)<br />&#160;&#160;static member Create : min:&#39;K * max:&#39;K * loader:Func&lt;&#39;K,BoundaryBehavior,&#39;K,BoundaryBehavior,Task&lt;seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt;&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt; (requires equality)<br /><br />Full name: Deedle.DelayedSeries</div>
+<div class="tip" id="fs21">static member DelayedSeries.Create : min:&#39;K * max:&#39;K * loader:(&#39;K * BoundaryBehavior -&gt; &#39;K * BoundaryBehavior -&gt; Async&lt;#seq&lt;&#39;K * &#39;V&gt;&gt;) -&gt; Series&lt;&#39;K,&#39;V&gt; (requires equality)<br />static member DelayedSeries.Create : min:&#39;K * max:&#39;K * loader:Func&lt;&#39;K,BoundaryBehavior,&#39;K,BoundaryBehavior,Threading.Tasks.Task&lt;seq&lt;Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt;&gt;&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt; (requires equality)</div>
+<div class="tip" id="fs22">val lo : DateTime</div>
+<div class="tip" id="fs23">val lob : BoundaryBehavior</div>
+<div class="tip" id="fs24">val hi : DateTime</div>
+<div class="tip" id="fs25">val hib : BoundaryBehavior</div>
+<div class="tip" id="fs26">val async : AsyncBuilder<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.async</div>
+<div class="tip" id="fs27">val printfn : format:Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.printfn</div>
+<div class="tip" id="fs28">val jan12 : Series&lt;DateTime,int&gt;<br /><br />Full name: Lazysource.jan12</div>
+<div class="tip" id="fs29">val janHalf : Series&lt;DateTime,int&gt;<br /><br />Full name: Lazysource.janHalf</div>
+<div class="tip" id="fs30">val dec11 : Frame&lt;DateTime,string&gt;<br /><br />Full name: Lazysource.dec11</div>
+<div class="tip" id="fs31">Multiple items<br />module Frame<br /><br />from Deedle<br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =<br />&#160;&#160;interface IDynamicMetaObjectProvider<br />&#160;&#160;new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;private new : rowIndex:IIndex&lt;&#39;TRowKey&gt; * columnIndex:IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member Append : otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member Clone : unit -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member DropSeries : column:&#39;TColumnKey -&gt; unit<br />&#160;&#160;...<br /><br />Full name: Deedle.Frame&lt;_,_&gt;<br /><br />--------------------<br />type Frame =<br />&#160;&#160;static member CreateEmpty : unit -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,ObjectSeries&lt;&#39;RowKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : rows:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;ColKey,int&gt; (requires equality)<br />&#160;&#160;static member FromRecords : values:seq&lt;&#39;T&gt; -&gt; Frame&lt;int,string&gt;<br />&#160;&#160;static member FromRecords : series:Series&lt;&#39;K,&#39;R&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRowKeys : keys:seq&lt;&#39;K&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRows : rows:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TColKey,&#39;TRowKey&gt; (requires equality and equality)<br />&#160;&#160;...<br /><br />Full name: Deedle.Frame<br /><br />--------------------<br />new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
+<div class="tip" id="fs32">static member Frame.ofRowKeys : keys:seq&lt;&#39;a0&gt; -&gt; Frame&lt;&#39;a0,string&gt; (requires equality)</div>
 
         </div>
         <div class="span3">
-          <a href="https://nuget.org/packages/FSharp.DataFrame">
-            <img src="http://BlueMountainCapital.github.io/FSharp.DataFrame/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          <a href="https://nuget.org/packages/Deedle">
+            <img src="http://BlueMountainCapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
           <ul class="nav nav-list" id="menu">
-            <li class="nav-header">F# DataFrame</li>
-            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/index.html">Home page</a></li>
+            <li class="nav-header">Deedle</li>
+            <li><a href="http://BlueMountainCapital.github.io/Deedle/index.html">Home page</a></li>
             <li class="divider"></li>
-            <li><a href="https://nuget.org/packages/FSharp.DataFrame">Get Library via NuGet</a></li>
-            <li><a href="https://github.com/BlueMountainCapital/FSharp.DataFrame">Source Code on GitHub</a></li>
-            <li><a href="https://github.com/BlueMountainCapital/FSharp.DataFrame/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="https://github.com/BlueMountainCapital/FSharp.DataFrame/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
-            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/design.html">Design notes</a></li>
+            <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
+            <li><a href="https://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
+            <li><a href="https://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
+            <li><a href="https://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            <li><a href="http://BlueMountainCapital.github.io/Deedle/design.html">Design notes</a></li>
             
             <li class="nav-header">Using from F#</li>
-            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/tutorial.html">Quick start tutorial</a>
+            <li><a href="http://BlueMountainCapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
               <ul class="nav nav-list">
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/tutorial.html#creating">Creating data frames</a></li>
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/tutorial.html#reindexing-and-joins">Using index & joining</a></li>
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/tutorial.html#selecting">Reading values, slicing</a></li>
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/tutorial.html#timeseries">Ordered time series</a></li>                
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/tutorial.html#projections">Projection and filtering</a></li>                
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/tutorial.html#grouping">Aggregating groups</a></li>                
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/tutorial.html#creating">Creating data frames</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/tutorial.html#reindexing-and-joins">Using index & joining</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/tutorial.html#selecting">Reading values, slicing</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/tutorial.html#timeseries">Ordered time series</a></li>                
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/tutorial.html#projections">Projection and filtering</a></li>                
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/tutorial.html#grouping">Aggregating groups</a></li>                
               </ul>
             </li>
-            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/features.html">Data frame features</a>
+            <li><a href="http://BlueMountainCapital.github.io/Deedle/features.html">Data frame features</a>
               <ul class="nav nav-list">
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/features.html#creating">Creating & loading</a></li>
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/features.html#dataframe">Frame manipulation</a></li>
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/features.html#slicing">Advanced slicing</a></li>
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/features.html#grouping">Grouping data</a></li>
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/features.html#indexing">Hierarchical indexing</a></li>
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/features.html#missing">Missing values</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/features.html#creating">Creating & loading</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/features.html#dataframe">Frame manipulation</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/features.html#slicing">Advanced slicing</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/features.html#grouping">Grouping data</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/features.html#indexing">Hierarchical indexing</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/features.html#missing">Missing values</a></li>
               </ul>
             </li>
-            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/timeseries.html">Time series features</a>
+            <li><a href="http://BlueMountainCapital.github.io/Deedle/timeseries.html">Time series features</a>
               <ul class="nav nav-list">
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/timeseries.html#alignment">Alignment & joining</a></li>
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/timeseries.html#windowing">Windows and chunks</a></li>
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/timeseries.html#sampling">Lookup and resampling</a></li>
-                <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/timeseries.html#stats">Statistics & math</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/timeseries.html#alignment">Alignment & joining</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/timeseries.html#windowing">Windows and chunks</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/timeseries.html#sampling">Lookup and resampling</a></li>
+                <li><a href="http://BlueMountainCapital.github.io/Deedle/timeseries.html#stats">Statistics & math</a></li>
               </ul>
             </li>
 
             <li class="nav-header">Documentation</li>
-            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/reference/index.html">API Reference</a></li>
+            <li><a href="http://BlueMountainCapital.github.io/Deedle/reference/index.html">API Reference</a></li>
 
             <li class="nav-header">Samples</li>
-            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/lazysource.html">Lazy data loading</a></li>
-            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/samples/volatility.html">Price volatility</a></li>
-            <li><a href="http://BlueMountainCapital.github.io/FSharp.DataFrame/samples/titanic.html">Titanic survivors</a></li>
+            <li><a href="http://BlueMountainCapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="http://BlueMountainCapital.github.io/Deedle/samples/volatility.html">Price volatility</a></li>
+            <li><a href="http://BlueMountainCapital.github.io/Deedle/samples/titanic.html">Titanic survivors</a></li>
           </ul>
 
         </div>
       </div>
     </div>
-    <a href="http://github.com/BlueMountainCapital/FSharp.DataFrame"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
+    <a href="http://github.com/BlueMountainCapital/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
   </body>
   </html>
