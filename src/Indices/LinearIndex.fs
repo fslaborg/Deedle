@@ -305,7 +305,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           with :? ComparisonFailedException ->
             Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq, None
         else
-          Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq, None
+          Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq, Some false
       returnUsingAlignedSequence joined vector1 vector2 ordered 
         
     /// Append is similar to union, but it also combines the vectors using the specified
@@ -318,7 +318,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           with :? ComparisonFailedException ->
             Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq, None
         else
-          Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq, None
+          Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq, Some false
       let newIndex, vec1Cmd, vec2Cmd = returnUsingAlignedSequence joined vector1 vector2 ordered
       newIndex, Vectors.Combine(vec1Cmd, vec2Cmd, transform)
 
@@ -332,7 +332,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           with :? ComparisonFailedException ->
             Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq, None
         else
-          Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq, None
+          Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq, Some false
       let joined = joined |> Seq.filter (function _, Some _, Some _ -> true | _ -> false)
       returnUsingAlignedSequence joined vector1 vector2 ordered
 

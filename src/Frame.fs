@@ -406,6 +406,21 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
       | _ -> None)
 
   /// [category:Series operations]
+  member frame.RenameSeries(columnKeys) =
+    if Seq.length columnIndex.Keys <> Seq.length columnKeys then 
+      invalidArg "columnKeys" "The number of new column keys does not match with the number of columns"
+    columnIndex <- Index.ofKeys columnKeys
+
+  /// [category:Series operations]
+  member frame.RenameSeries(oldKey, newKey) =
+    let newKeys = columnIndex.Keys |> Seq.map (fun k -> if k = oldKey then newKey else k)
+    columnIndex <- Index.ofKeys newKeys
+
+  /// [category:Series operations]
+  member frame.RenameSeries(mapping:Func<_, _>) =
+    columnIndex <- Index.ofKeys (Seq.map mapping.Invoke columnIndex.Keys)
+
+  /// [category:Series operations]
   static member (?<-) (frame:Frame<_, _>, column, series:Series<'T, 'V>) =
     frame.ReplaceSeries(column, series)
 

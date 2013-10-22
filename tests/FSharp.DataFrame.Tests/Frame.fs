@@ -80,6 +80,15 @@ let ``Can create frame from IDataReader``() =
   |> shouldEqual expected
 
 
+[<Test>]
+let ``Construction of frame from columns respects specified order``() =
+  let df = 
+    Frame.ofColumns
+      [ "Z" => Series.ofValues [ 1 .. 10 ]
+        "X" => Series.ofValues [ 1 .. 10 ] ]
+  df.ColumnKeys |> List.ofSeq
+  |> shouldEqual ["Z"; "X"]
+
 // ------------------------------------------------------------------------------------------------
 // Indexing and accessing values
 // ------------------------------------------------------------------------------------------------
@@ -500,3 +509,18 @@ let ``Can zip-align frames with inner-join left-join nearest-greater options`` (
   ev?B.GetAt(4) |> shouldEqual 5480.0
   ev?B.GetAt(5) |> shouldEqual 5520.0
   ev?B.GetAt(6) |> shouldEqual 5560.0
+
+// ------------------------------------------------------------------------------------------------
+// Operations - transpose
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Transposed frame created from columns equals frame created from rows (and vice versa)``() =
+  let items =
+    [ "A" =?> series [1 => 10.0; 2 => 20.0 ]
+      "B" =?> series [1 => 30.0; 3 => 40.0 ]
+      "C" =?> series [1 => "One"; 2 => "Two" ] ]
+  let fromRows = Frame.ofRows items
+  let fromCols = Frame.ofColumns items
+  fromCols |> Frame.transpose |> shouldEqual fromRows
+  fromRows |> Frame.transpose |> shouldEqual fromCols

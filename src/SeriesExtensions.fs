@@ -25,6 +25,9 @@ module FSharpSeriesExtensions =
     static member ofNullables(values:seq<Nullable<_>>) = 
       let keys = values |> Seq.mapi (fun i _ -> i)
       Series(keys, values).Select(fun (KeyValue(_, v:Nullable<_>)) -> v.Value)
+    static member ofOptionalObservations(observations:seq<'K * OptionalValue<_>>) = 
+      Series(Seq.map fst observations, Seq.map snd observations)
+        .SelectOptional(fun kvp -> OptionalValue.bind id kvp.Value)
 
   let series observations = Series.ofObservations observations
 
@@ -33,6 +36,9 @@ type EnumerableExtensions =
   [<Extension>]
   static member ToSeries(observations:seq<KeyValuePair<'K, 'V>>) = 
     observations |> Seq.map (fun kvp -> kvp.Key, kvp.Value) |> Series.ofObservations
+  [<Extension>]
+  static member ToSparseSeries(observations:seq<KeyValuePair<'K, OptionalValue<'V>>>) = 
+    observations |> Seq.map (fun kvp -> kvp.Key, kvp.Value) |> Series.ofOptionalObservations
   [<Extension>]
   static member ToOrdinalSeries(observations:seq<'V>) = 
     observations |> Series.ofValues
