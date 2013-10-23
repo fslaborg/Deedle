@@ -20,6 +20,11 @@ open VectorHelpers
 
 /// A frame contains one Index, with multiple Vecs
 /// (because this is dynamic, we need to store them as IVec)
+///
+/// ## Joining, zipping and appending
+/// More info
+///
+///
 [<StructuredFormatDisplay("{Format}")>]
 type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>
     internal ( rowIndex:IIndex<'TRowKey>, columnIndex:IIndex<'TColumnKey>, 
@@ -93,26 +98,44 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   member internal frame.Data = data
 
   // ----------------------------------------------------------------------------------------------
-  // Joining and appending
+  // Joining, zipping and appending
   // ----------------------------------------------------------------------------------------------
 
   // Note - this has to be actual member and not an extension so that C# callers can specify
   // generic type arguments using `df.Zip<double, double, double>(...)` (doesn't work for extensions)
 
+  /// Aligns two data frames using both column index and row index and apply the specified operation
+  /// on values of a specified type that are available in both data frames. The parameters `columnKind`,
+  /// and `rowKind` can be specified to determine how the alginment works (similarly to `Join`).
+  /// Column keys are always matched using `Lookup.Exact`, but `lookup` determines lookup for rows.
+  ///
+  /// Once aligned, the call `df1.Zip<T>(df2, f)` applies the specifed function `f` on all `T` values
+  /// that are available in corresponding locations in both frames. For values of other types, the 
+  /// value from `df1` is returned.
+  ///
+  /// ## Parameters
+  ///  - `otherFrame` - Other frame to be aligned and zipped with the current instance
+  ///  - `columnKind` - Specifies how to align columns (inner, outer, left or right join)
+  ///  - `rowKind` - Specifies how to align rows (inner, outer, left or right join)
+  ///  - `lookup` - Specifies how to find matching value for a row (when using left or right join on rows)
+  ///  - `op` - A function that is applied to aligned values. The `Zip` operation is generic
+  ///    in the type of this function and the type of function is used to determine which 
+  ///    values in the frames are zipped and which are left unchanged.
+  ///
   /// [category:Joining, zipping and appending]
-  member frame1.Zip<'V1, 'V2, 'V3>(frame2:Frame<'TRowKey, 'TColumnKey>, columnKind, rowKind, lookup, op:Func<'V1, 'V2, 'V3>) =
+  member frame1.Zip<'V1, 'V2, 'V3>(otherFrame:Frame<'TRowKey, 'TColumnKey>, columnKind, rowKind, lookup, op:Func<'V1, 'V2, 'V3>) =
     
     // Create transformations to join the rows (using the same logic as Join)
     // and make functions that transform vectors (when they are only available in first/second frame)
     let rowIndex, f1cmd, f2cmd = 
-      createJoinTransformation indexBuilder rowKind lookup rowIndex frame2.RowIndex (Vectors.Return 0) (Vectors.Return 1)
+      createJoinTransformation indexBuilder rowKind lookup rowIndex otherFrame.RowIndex (Vectors.Return 0) (Vectors.Return 1)
     let f1trans = VectorHelpers.transformColumn vectorBuilder f1cmd
     let f2trans = VectorHelpers.transformColumn vectorBuilder (VectorHelpers.substitute (1, 0) f2cmd)
 
     // To join columns using 'Series.join', we create series containing raw "IVector" data 
     // (so that we do not convert each series to objects series)
     let s1 = Series(frame1.ColumnIndex, frame1.Data, frame1.VectorBuilder, frame1.IndexBuilder)
-    let s2 = Series(frame2.ColumnIndex, frame2.Data, frame2.VectorBuilder, frame2.IndexBuilder)
+    let s2 = Series(otherFrame.ColumnIndex, otherFrame.Data, otherFrame.VectorBuilder, otherFrame.IndexBuilder)
 
     // Operations that try converting vectors to the required types for 'op'
     let asV1 = VectorHelpers.tryChangeType<'V1>
@@ -136,12 +159,40 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
         | _ -> failwith "zipAlignInto: join failed." )
     Frame<_, _>(rowIndex, newColumns.Index, newColumns.Vector)
 
-
+  /// Aligns two data frames using both column index and row index and apply the specified operation
+  /// on values of a specified type that are available in both data frames. This overload uses
+  /// `JoinKind.Outer` for both columns and rows.
+  ///
+  /// Once aligned, the call `df1.Zip<T>(df2, f)` applies the specifed function `f` on all `T` values
+  /// that are available in corresponding locations in both frames. For values of other types, the 
+  /// value from `df1` is returned.
+  ///
+  /// ## Parameters
+  ///  - `otherFrame` - Other frame to be aligned and zipped with the current instance
+  ///  - `op` - A function that is applied to aligned values. The `Zip` operation is generic
+  ///    in the type of this function and the type of function is used to determine which 
+  ///    values in the frames are zipped and which are left unchanged.
+  ///
   /// [category:Joining, zipping and appending]
-  member frame1.Zip<'V1, 'V2, 'V3>(frame2:Frame<'TRowKey, 'TColumnKey>, op:Func<'V1, 'V2, 'V3>) =
-    frame1.Zip(frame2, JoinKind.Outer, JoinKind.Outer, Lookup.Exact, op)
+  member frame1.Zip<'V1, 'V2, 'V3>(otherFrame:Frame<'TRowKey, 'TColumnKey>, op:Func<'V1, 'V2, 'V3>) =
+    frame1.Zip(otherFrame, JoinKind.Outer, JoinKind.Outer, Lookup.Exact, op)
 
-
+  /// Join two data frames. The columns of the joined frames must not overlap and their
+  /// rows are aligned and transformed according to the specified join kind.
+  /// When the index of both frames is ordered, it is possible to specify `lookup` 
+  /// in order to align indices from other frame to the indices of the main frame
+  /// (typically, to find the nearest key with available value for a key).
+  ///
+  /// ## Parameters
+  ///  - `otherFrame` - Other frame (right) to be joined with the current instance (left)
+  ///  - `kind` - Specifies the joining behavior on row indices. Use `JoinKind.Outer` and 
+  ///    `JoinKind.Inner` to get the union and intersection of the row keys, respectively.
+  ///    Use `JoinKind.Left` and `JoinKind.Right` to use the current key of the left/right
+  ///    data frame.
+  ///  - `lookup` - When `kind` is `Left` or `Right` and the two frames have ordered row index,
+  ///    this parameter can be used to specify how to find value for a key when there is no
+  ///    exactly matching key or when there are missing values.
+  ///
   /// [category:Joining, zipping and appending]
   member frame.Join(otherFrame:Frame<'TRowKey, 'TColumnKey>, kind, lookup) =    
     // Union/intersect/align row indices and get transformations to apply to left/right vectors
@@ -158,28 +209,93 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     let newData = vectorBuilder.Build(colCmd, [| newThisData; newOtherData |])
     Frame(newRowIndex, newColumnIndex, newData)
 
+  /// Join two data frames. The columns of the joined frames must not overlap and their
+  /// rows are aligned and transformed according to the specified join kind.
+  /// For more alignment options on ordered frames, see overload taking `lookup`.
+  ///
+  /// ## Parameters
+  ///  - `otherFrame` - Other frame (right) to be joined with the current instance (left)
+  ///  - `kind` - Specifies the joining behavior on row indices. Use `JoinKind.Outer` and 
+  ///    `JoinKind.Inner` to get the union and intersection of the row keys, respectively.
+  ///    Use `JoinKind.Left` and `JoinKind.Right` to use the current key of the left/right
+  ///    data frame.
+  ///
   /// [category:Joining, zipping and appending]
   member frame.Join(otherFrame:Frame<'TRowKey, 'TColumnKey>, kind) =    
     frame.Join(otherFrame, kind, Lookup.Exact)
 
+  /// Performs outer join on two data frames. The columns of the joined frames must not 
+  /// overlap and their rows are aligned. The unavailable values are marked as missing.
+  ///
+  /// ## Parameters
+  ///  - `otherFrame` - Other frame (right) to be joined with the current instance (left)
+  ///
   /// [category:Joining, zipping and appending]
   member frame.Join(otherFrame:Frame<'TRowKey, 'TColumnKey>) =    
     frame.Join(otherFrame, JoinKind.Outer, Lookup.Exact)
 
+  /// Join data frame and a series. The column key for the joined series must not occur in the 
+  /// current data frame. The rows are aligned and transformed according to the specified join kind.
+  /// When the index of both objects is ordered, it is possible to specify `lookup` 
+  /// in order to align indices from other frame to the indices of the main frame
+  /// (typically, to find the nearest key with available value for a key).
+  ///
+  /// ## Parameters
+  ///  - `colKey` - Column key to be used for the joined series
+  ///  - `series` - Series to be joined with the current data frame
+  ///  - `kind` - Specifies the joining behavior on row indices. Use `JoinKind.Outer` and 
+  ///    `JoinKind.Inner` to get the union and intersection of the row keys, respectively.
+  ///    Use `JoinKind.Left` and `JoinKind.Right` to use the current key of the left/right
+  ///    data frame.
+  ///  - `lookup` - When `kind` is `Left` or `Right` and the two frames have ordered row index,
+  ///    this parameter can be used to specify how to find value for a key when there is no
+  ///    exactly matching key or when there are missing values.
+  ///
   /// [category:Joining, zipping and appending]
   member frame.Join<'V>(colKey, series:Series<'TRowKey, 'V>, kind, lookup) =    
     let otherFrame = Frame([colKey], [series])
     frame.Join(otherFrame, kind, lookup)
 
+  /// Join data frame and a series. The column key for the joined series must not occur in the 
+  /// current data frame. The rows are aligned and transformed according to the specified join kind.
+  ///
+  /// ## Parameters
+  ///  - `colKey` - Column key to be used for the joined series
+  ///  - `series` - Series to be joined with the current data frame
+  ///  - `kind` - Specifies the joining behavior on row indices. Use `JoinKind.Outer` and 
+  ///    `JoinKind.Inner` to get the union and intersection of the row keys, respectively.
+  ///    Use `JoinKind.Left` and `JoinKind.Right` to use the current key of the left/right
+  ///    data frame.
+  ///
   /// [category:Joining, zipping and appending]
   member frame.Join<'V>(colKey, series:Series<'TRowKey, 'V>, kind) =    
     frame.Join(colKey, series, kind, Lookup.Exact)
 
+  /// Performs outer join on data frame and a series. The column key for the joined
+  /// series must not occur in the current data frame. The rows are automatically aligned
+  /// and unavailable values are marked as missing.
+  ///
+  /// ## Parameters
+  ///  - `colKey` - Column key to be used for the joined series
+  ///  - `series` - Series to be joined with the current data frame
+  ///
   /// [category:Joining, zipping and appending]
   member frame.Join<'V>(colKey, series:Series<'TRowKey, 'V>) =    
     frame.Join(colKey, series, JoinKind.Outer, Lookup.Exact)
 
 
+  /// Append two data frames with non-overlapping values. The operation takes the union of columns
+  /// and rows of the source data frames and then unions the values. An exception is thrown when 
+  /// both data frames define value for a column/row location, but the operation succeeds if one
+  /// frame has a missing value at the location.
+  ///
+  /// Note that the rows are *not* automatically reindexed to avoid overlaps. This means that when
+  /// a frame has rows indexed with ordinal numbers, you may need to explicitly reindex the row
+  /// keys before calling append.
+  ///
+  /// ## Parameters
+  ///  - `otherFrame` - The other frame to be appended (combined) with the current instance
+  ///
   /// [category:Joining, zipping and appending]
   member frame.Append(otherFrame:Frame<'TRowKey, 'TColumnKey>) = 
     // Union the column indices and get transformations for both

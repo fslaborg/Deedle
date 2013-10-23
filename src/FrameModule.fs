@@ -5,8 +5,15 @@
 /// ## Index manipulation
 /// More documentation here
 ///
+/// ## Joining, zipping and appending
+/// More info
+///
 /// ## Missing values
 /// More documentation here
+///
+/// ## Projection and filtering
+/// TBD
+///
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]    
 module Frame = 
   open System
@@ -84,14 +91,6 @@ module Frame =
   let addCol column (series:Series<_, _>) (frame:Frame<'R, 'C>) = 
     let f = frame.Clone() in f.AddSeries(column, series); f
 
-  /// Append two data frames. The columns of the resulting data frame
-  /// will be the union of columns of the two data frames. The row keys
-  /// may overlap, but the values must not - if there is a value for a
-  /// certain column, at the same row index in both data frames, an exception
-  /// is thrown. 
-  [<CompiledName("Append")>]
-  let append (frame1:Frame<'R, 'C>) frame2 = frame1.Append(frame2)
-
   /// Returns the columns of the data frame as a series (indexed by 
   /// the column keys of the source frame) containing _series_ representing
   /// individual columns of the frame.
@@ -146,6 +145,13 @@ module Frame =
   /// nearest greater/smaller key. For exact semantics, you can use `getSeries`.
   [<CompiledName("LookupRow")>]
   let lookupRow row lookup (frame:Frame<'R, 'C>) = frame.GetRow(row, lookup)
+
+
+  let getCols (columns:seq<_>) (frame:Frame<'R, 'C>) = 
+    frame.Columns.[columns]
+
+  let getRows (rows:seq<_>) (frame:Frame<'R, 'C>) = 
+    frame.Rows.[rows]
 
   // ----------------------------------------------------------------------------------------------
   // Index operations
@@ -331,52 +337,143 @@ module Frame =
     Frame<_, _>(frame.RowIndex, newColIndex, newData)
 
   // ----------------------------------------------------------------------------------------------
-  // TBD
+  // Projection and filtering
   // ----------------------------------------------------------------------------------------------
 
+  /// Returns a new data frame containing only the rows of the input frame
+  /// for which the specified predicate returns `true`. The predicate is called
+  /// with the row key and object series that represents the row data.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Input data frame to be transformed
+  ///  - `f` - Function of two arguments that defines the predicate
+  ///
+  /// [category:Projection and filtering]
+  [<CompiledName("WhereRows")>]
   let inline filterRows f (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.filter f |> FrameUtils.fromRows
 
+  /// Returns a new data frame containing only the rows of the input frame
+  /// for which the specified predicate returns `true`. The predicate is called
+  /// with an object series that represents the row data (use `filterRows`
+  /// if you need to access the row key).
+  ///
+  /// ## Parameters
+  ///  - `frame` - Input data frame to be transformed
+  ///  - `f` - Function of one argument that defines the predicate
+  ///
+  /// [category:Projection and filtering]
+  [<CompiledName("WhereRowValues")>]
   let inline filterRowValues f (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.filterValues f |> FrameUtils.fromRows
 
+  /// Builds a new data frame whose rows are the results of applying the specified
+  /// function on the rows of the input data frame. The function is called
+  /// with the row key and object series that represents the row data.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Input data frame to be transformed
+  ///  - `f` - Function of two arguments that defines the row mapping
+  ///
+  /// [category:Projection and filtering]
+  [<CompiledName("SelectRows")>]
   let inline mapRows f (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.map f 
 
+  /// Builds a new data frame whose rows are the results of applying the specified
+  /// function on the rows of the input data frame. The function is called
+  /// with an object series that represents the row data (use `mapRows`
+  /// if you need to access the row key).
+  ///
+  /// ## Parameters
+  ///  - `frame` - Input data frame to be transformed
+  ///  - `f` - Function of one argument that defines the row mapping
+  ///
+  /// [category:Projection and filtering]
+  [<CompiledName("SelectRowValues")>]
   let inline mapRowValues f (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.mapValues f 
 
-  let inline mapRowKeys f (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.mapKeys f |> FrameUtils.fromRows
+  /// Builds a new data frame whose row keys are the results of applying the
+  /// specified function on the row keys of the original data frame.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Input data frame to be transformed
+  ///  - `f` - Function of one argument that defines the row key mapping
+  ///
+  /// [category:Projection and filtering]
+  [<CompiledName("SelectRowKeys")>]
+  let inline mapRowKeys (f:'R1 -> 'R2) (frame:Frame<_, 'C>) = 
+    let newRowIndex = frame.IndexBuilder.Create(frame.RowIndex.Keys |> Seq.map f, None)
+    Frame(newRowIndex, frame.ColumnIndex, frame.Data)
 
-  let inline filterCols f (frame:Frame<'TColumnKey, 'C>) = 
+
+  /// Returns a new data frame containing only the columns of the input frame
+  /// for which the specified predicate returns `true`. The predicate is called
+  /// with the column key and object series that represents the column data.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Input data frame to be transformed
+  ///  - `f` - Function of two arguments that defines the predicate
+  ///
+  /// [category:Projection and filtering]
+  [<CompiledName("WhereColumns")>]
+  let inline filterCols f (frame:Frame<'R, 'C>) = 
     frame.Columns |> Series.filter f |> FrameUtils.fromColumns
 
-  let inline filterColValues f (frame:Frame<'TColumnKey, 'C>) = 
+  /// Returns a new data frame containing only the columns of the input frame
+  /// for which the specified predicate returns `true`. The predicate is called
+  /// with an object series that represents the column data (use `filterCols`
+  /// if you need to access the column key).
+  ///
+  /// ## Parameters
+  ///  - `frame` - Input data frame to be transformed
+  ///  - `f` - Function of one argument that defines the predicate
+  ///
+  /// [category:Projection and filtering]
+  [<CompiledName("WhereColumnValues")>]
+  let inline filterColValues f (frame:Frame<'R, 'C>) = 
     frame.Columns |> Series.filterValues f |> FrameUtils.fromColumns
 
-  let inline mapCols f (frame:Frame<'TColumnKey, 'C>) = 
+  /// Builds a new data frame whose columns are the results of applying the specified
+  /// function on the columns of the input data frame. The function is called
+  /// with the column key and object series that represents the column data.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Input data frame to be transformed
+  ///  - `f` - Function of two arguments that defines the column mapping
+  ///
+  /// [category:Projection and filtering]
+  [<CompiledName("SelectColumns")>]
+  let inline mapCols f (frame:Frame<'R, 'C>) = 
     frame.Columns |> Series.map f |> FrameUtils.fromColumns
 
-  let inline mapColValues f (frame:Frame<'TColumnKey, 'C>) = 
+  /// Builds a new data frame whose columns are the results of applying the specified
+  /// function on the columns of the input data frame. The function is called
+  /// with an object series that represents the column data (use `mapCols`
+  /// if you need to access the column key).
+  ///
+  /// ## Parameters
+  ///  - `frame` - Input data frame to be transformed
+  ///  - `f` - Function of one argument that defines the column mapping
+  ///
+  /// [category:Projection and filtering]
+  [<CompiledName("SelectColumnValues")>]
+  let inline mapColValues f (frame:Frame<'R, 'C>) = 
     frame.Columns |> Series.mapValues f |> FrameUtils.fromColumns
 
-  let inline mapColKeys f (frame:Frame<'TColumnKey, 'C>) = 
-    frame.Columns |> Series.mapKeys f |> FrameUtils.fromColumns
-
-
-
-  let getCols (columns:seq<_>) (frame:Frame<'R, 'C>) = 
-    frame.Columns.[columns]
-
-  let getRows (rows:seq<_>) (frame:Frame<'R, 'C>) = 
-    frame.Rows.[rows]
-
-  let inline maxRowBy column (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.maxBy (fun row -> row.GetAs<float>(column))
-
-  let inline minRowBy column (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.minBy (fun row -> row.GetAs<float>(column))
+  /// Builds a new data frame whose column keys are the results of applying the
+  /// specified function on the column keys of the original data frame.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Input data frame to be transformed
+  ///  - `f` - Function of one argument that defines the column key mapping
+  ///
+  /// [category:Projection and filtering]
+  [<CompiledName("SelectColumnKeys")>]
+  let inline mapColKeys f (frame:Frame<'R, 'C>) = 
+    let newColIndex = frame.IndexBuilder.Create(frame.ColumnIndex.Keys |> Seq.map f, None)
+    Frame(frame.RowIndex, newColIndex, frame.Data)
 
   // ----------------------------------------------------------------------------------------------
   // Additional functions for working with data frames
@@ -406,6 +503,13 @@ module Frame =
   let countKeys (frame:Frame<'R, 'C>) = 
     frame.RowIndex.Keys |> Seq.length
 
+  let inline maxRowBy column (frame:Frame<'R, 'C>) = 
+    frame.Rows |> Series.maxBy (fun row -> row.GetAs<float>(column))
+
+  let inline minRowBy column (frame:Frame<'R, 'C>) = 
+    frame.Rows |> Series.minBy (fun row -> row.GetAs<float>(column))
+
+
   // ----------------------------------------------------------------------------------------------
   // Hierarchical aggregation
   // ----------------------------------------------------------------------------------------------
@@ -432,27 +536,6 @@ module Frame =
     frame.GetColumns<'T>() |> Series.map (fun _ -> Series.reduceLevel keySelector op) |> FrameUtils.fromColumns
 
 
-  // hierarchical indexing
-
-  let flatten (level:'R -> 'K) (op:_ -> 'V) (frame:Frame<'R, 'C>) = 
-    frame.Columns |> Series.map (fun _ -> Series.flattenLevel level op)
-
-  let flattenRows (level:'R -> 'K) op (frame:Frame<'R, 'C>) : Series<'K, 'V> = 
-    frame.Rows |> Series.groupInto (fun k _ -> level k) (fun _ -> FrameUtils.fromRows >> op)
-
-  let unstackBy keySelector (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.groupInto (fun k _ -> keySelector k) (fun nk s -> FrameUtils.fromRows s)
-
-  let unstack (frame:Frame<'R1 * 'R2, 'C>) = 
-    unstackBy fst frame
-    |> Series.mapValues (mapRowKeys snd)
-
-  let stack (series:Series<'R1, Frame<'R2, 'C>>) =
-    series
-    |> Series.map (fun k1 s -> s.Rows |> Series.mapKeys (fun k2 -> k1, k2) |> FrameUtils.fromRows)
-    |> Series.values
-    |> Seq.reduce append
-
   // other stuff
 
   let shift offset (frame:Frame<'R, 'C>) = 
@@ -476,6 +559,7 @@ module Frame =
   ///  - `value` - A constant value that is used to fill all missing values
   ///
   /// [category:Missing values]
+  [<CompiledName("FillMissingWith")>]
   let fillMissingWith (value:'T) (frame:Frame<'R, 'C>) =
     frame.SeriesApply(true, fun (s:Series<_, 'T>) -> Series.fillMissingWith value s :> ISeries<_>)
 
@@ -493,6 +577,7 @@ module Frame =
   ///    for the nearest greater key.
   ///
   /// [category:Missing values]
+  [<CompiledName("FillMissing")>]
   let fillMissing direction (frame:Frame<'R, 'C>) =
     frame.Columns |> Series.mapValues (fun s -> Series.fillMissing direction s) |> FrameUtils.fromColumns
 
@@ -512,6 +597,7 @@ module Frame =
   ///    series contains a missing value.
   ///
   /// [category:Missing values]
+  [<CompiledName("FillMissingUsing")>]
   let fillMissingUsing (f:Series<'R, 'T> -> 'R -> 'T) (frame:Frame<'R, 'C>) =
     frame.SeriesApply(false, fun (s:Series<_, 'T>) -> Series.fillMissingUsing (f s) s :> ISeries<_>)
 
@@ -524,6 +610,7 @@ module Frame =
   ///  - `frame` - An input data frame that is to be filtered
   ///
   /// [category:Missing values]
+  [<CompiledName("DropSparseRows")>]
   let dropSparseRows (frame:Frame<'R, 'C>) = 
     frame.RowsDense |> Series.dropMissing |> FrameUtils.fromRows
 
@@ -536,6 +623,7 @@ module Frame =
   ///  - `frame` - An input data frame that is to be filtered
   ///
   /// [category:Missing values]
+  [<CompiledName("DropSparseColumns")>]
   let dropSparseCols (frame:Frame<'R, 'C>) = 
     frame.ColumnsDense |> Series.dropMissing |> FrameUtils.fromColumns
 
@@ -548,6 +636,7 @@ module Frame =
   ///  - `frame` - An input data frame containing columns to be filtered
   ///
   /// [category:Missing values]
+  [<CompiledName("ColumnsDense")>]
   let colsDense (frame:Frame<'R, 'C>) = frame.ColumnsDense
 
   /// Returns the rows of the data frame that do not have any missing values. 
@@ -559,40 +648,134 @@ module Frame =
   ///  - `frame` - An input data frame containing rows to be filtered
   ///
   /// [category:Missing values]
+  [<CompiledName("RowsDense")>]
   let rowsDense (frame:Frame<'R, 'C>) = frame.RowsDense
 
 
   // ----------------------------------------------------------------------------------------------
-  // Appending and joining
+  // Joining, zipping and appending
   // ----------------------------------------------------------------------------------------------
 
-  /// Join two frames using the specified kind of join. This function uses
-  /// exact matching on keys. If you want to align nearest smaller or greater
-  /// keys in left or outer join, use `joinAlign`. 
+  /// Join two data frames. The columns of the joined frames must not overlap and their
+  /// rows are aligned and transformed according to the specified join kind.
+  /// For more alignment options on ordered frames, see `joinAlign`.
+  ///
+  /// ## Parameters
+  ///  - `frame1` - First data frame (left) to be used in the joining
+  ///  - `frame2` - Other frame (right) to be joined with `frame1`
+  ///  - `kind` - Specifies the joining behavior on row indices. Use `JoinKind.Outer` and 
+  ///    `JoinKind.Inner` to get the union and intersection of the row keys, respectively.
+  ///    Use `JoinKind.Left` and `JoinKind.Right` to use the current key of the left/right
+  ///    data frame.
   ///
   /// [category:Joining, zipping and appending]
   [<CompiledName("Join")>]
   let join kind (frame1:Frame<'R, 'C>) frame2 = frame1.Join(frame2, kind)
 
-  /// Join two frames using the specified kind of join and 
-  /// the specified lookup semantics.
+  /// Join two data frames. The columns of the joined frames must not overlap and their
+  /// rows are aligned and transformed according to the specified join kind.
+  /// When the index of both frames is ordered, it is possible to specify `lookup` 
+  /// in order to align indices from other frame to the indices of the main frame
+  /// (typically, to find the nearest key with available value for a key).
+  ///
+  /// ## Parameters
+  ///  - `frame1` - First data frame (left) to be used in the joining
+  ///  - `frame2` - Other frame (right) to be joined with `frame1`
+  ///  - `kind` - Specifies the joining behavior on row indices. Use `JoinKind.Outer` and 
+  ///    `JoinKind.Inner` to get the union and intersection of the row keys, respectively.
+  ///    Use `JoinKind.Left` and `JoinKind.Right` to use the current key of the left/right
+  ///    data frame.
+  ///  - `lookup` - When `kind` is `Left` or `Right` and the two frames have ordered row index,
+  ///    this parameter can be used to specify how to find value for a key when there is no
+  ///    exactly matching key or when there are missing values.
   ///
   /// [category:Joining, zipping and appending]
   [<CompiledName("JoinAlign")>]
   let joinAlign kind lookup (frame1:Frame<'R, 'C>) frame2 = frame1.Join(frame2, kind, lookup)
   
+  /// Append two data frames with non-overlapping values. The operation takes the union of columns
+  /// and rows of the source data frames and then unions the values. An exception is thrown when 
+  /// both data frames define value for a column/row location, but the operation succeeds if one
+  /// frame has a missing value at the location.
+  ///
+  /// Note that the rows are *not* automatically reindexed to avoid overlaps. This means that when
+  /// a frame has rows indexed with ordinal numbers, you may need to explicitly reindex the row
+  /// keys before calling append.
+  ///
+  /// ## Parameters
+  ///  - `otherFrame` - The other frame to be appended (combined) with the current instance
+  ///
+  /// [category:Joining, zipping and appending]
+  [<CompiledName("Append")>]
+  let append (frame1:Frame<'R, 'C>) frame2 = frame1.Append(frame2)
+
+  /// Aligns two data frames using both column index and row index and apply the specified operation
+  /// on values of a specified type that are available in both data frames. The parameters `columnKind`,
+  /// and `rowKind` can be specified to determine how the alginment works (similarly to `Join`).
+  /// Column keys are always matched using `Lookup.Exact`, but `lookup` determines lookup for rows.
+  ///
+  /// Once aligned, the call `df1.Zip<T>(df2, f)` applies the specifed function `f` on all `T` values
+  /// that are available in corresponding locations in both frames. For values of other types, the 
+  /// value from `df1` is returned.
+  ///
+  /// ## Parameters
+  ///  - `frame1` - First frame to be aligned and zipped with the other instance
+  ///  - `frame2` - Other frame to be aligned and zipped with the first  instance
+  ///  - `columnKind` - Specifies how to align columns (inner, outer, left or right join)
+  ///  - `rowKind` - Specifies how to align rows (inner, outer, left or right join)
+  ///  - `lookup` - Specifies how to find matching value for a row (when using left or right join on rows)
+  ///  - `op` - A function that is applied to aligned values. The `Zip` operation is generic
+  ///    in the type of this function and the type of function is used to determine which 
+  ///    values in the frames are zipped and which are left unchanged.
+  ///
   /// [category:Joining, zipping and appending]
   [<CompiledName("ZipAlignInto")>]
-  let zipAlign columnKind rowKind lookup (op:'V1->'V2->'VRes) (frame1:Frame<'R, 'C>) (frame2:Frame<'R, 'C>) : Frame<'R, 'C> =
+  let zipAlign columnKind rowKind lookup (op:'V1->'V2->'V) (frame1:Frame<'R, 'C>) (frame2:Frame<'R, 'C>) : Frame<'R, 'C> =
     frame1.Zip(frame2, columnKind, rowKind, lookup, fun a b -> op a b)
 
+  /// Aligns two data frames using both column index and row index and apply the specified operation
+  /// on values of a specified type that are available in both data frames. This overload uses
+  /// `JoinKind.Outer` for both columns and rows.
+  ///
+  /// Once aligned, the call `df1.Zip<T>(df2, f)` applies the specifed function `f` on all `T` values
+  /// that are available in corresponding locations in both frames. For values of other types, the 
+  /// value from `df1` is returned.
+  ///
+  /// ## Parameters
+  ///  - `frame1` - First frame to be aligned and zipped with the other instance
+  ///  - `frame2` - Other frame to be aligned and zipped with the first  instance
+  ///  - `columnKind` - Specifies how to align columns (inner, outer, left or right join)
+  ///  - `rowKind` - Specifies how to align rows (inner, outer, left or right join)
+  ///  - `lookup` - Specifies how to find matching value for a row (when using left or right join on rows)
+  ///  - `op` - A function that is applied to aligned values. The `Zip` operation is generic
+  ///    in the type of this function and the type of function is used to determine which 
+  ///    values in the frames are zipped and which are left unchanged.
+  ///
   /// [category:Joining, zipping and appending]
   [<CompiledName("ZipInto")>]
-  let zip (op:'V1->'V2->'VRes) (frame1:Frame<'R, 'C>) (frame2:Frame<'R, 'C>) : Frame<'R, 'C> =
+  let zip (op:'V1->'V2->'V) (frame1:Frame<'R, 'C>) (frame2:Frame<'R, 'C>) : Frame<'R, 'C> =
     zipAlign JoinKind.Inner JoinKind.Inner Lookup.Exact op frame1 frame2
 
+  // ----------------------------------------------------------------------------------------------
+  // Hierarchical indexing
+  // ----------------------------------------------------------------------------------------------
 
+  let flatten (level:'R -> 'K) (op:_ -> 'V) (frame:Frame<'R, 'C>) = 
+    frame.Columns |> Series.map (fun _ -> Series.flattenLevel level op)
 
+  let flattenRows (level:'R -> 'K) op (frame:Frame<'R, 'C>) : Series<'K, 'V> = 
+    frame.Rows |> Series.groupInto (fun k _ -> level k) (fun _ -> FrameUtils.fromRows >> op)
 
+  let unstackBy keySelector (frame:Frame<'R, 'C>) = 
+    frame.Rows |> Series.groupInto (fun k _ -> keySelector k) (fun nk s -> FrameUtils.fromRows s)
 
+  let unstack (frame:Frame<'R1 * 'R2, 'C>) = 
+    unstackBy fst frame
+    |> Series.mapValues (mapRowKeys snd)
+
+  let stack (series:Series<'R1, Frame<'R2, 'C>>) =
+    series
+    |> Series.map (fun k1 s -> s.Rows |> Series.mapKeys (fun k2 -> k1, k2) |> FrameUtils.fromRows)
+    |> Series.values
+    |> Seq.reduce append
 

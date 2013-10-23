@@ -162,6 +162,40 @@ let ``Can perform pointwise numerical operations on two frames`` () =
 // ------------------------------------------------------------------------------------------------
 
 [<Test>]
+let ``Can append two frames with disjoint columns`` () = 
+  let df1 = Frame.ofColumns [ "A" => series [ for i in 1 .. 5 -> i, i ] ]
+  let df2 = Frame.ofColumns [ "B" => series [ for i in 1 .. 5 -> i, i ] ]
+  let actual = df1.Append(df2) 
+  actual.Rows.[3].GetAt(0) |> shouldEqual (box 3)
+  actual.Rows.[3].GetAt(1) |> shouldEqual (box 3)
+
+[<Test>]
+let ``Appending works on overlapping frames with missing values`` () =
+  let df1 = Frame.ofColumns [ "A" => series [1 => Double.NaN; 2 => 1.0] ]
+  let df2 = Frame.ofColumns [ "A" => series [2 => Double.NaN; 1 => 1.0] ]
+  let actual = df1.Append(df2)
+  actual.Columns.["A"] |> Series.mapValues (unbox<float>) 
+  |> shouldEqual (series [1 => 1.0; 2 => 1.0])
+
+[<Test>]
+let ``Appending fails on overlapping frames with overlapping values`` () =
+  let df1 = Frame.ofColumns [ "A" => series [1 => Double.NaN; 2 => 1.0] ]
+  let df2 = Frame.ofColumns [ "A" => series [2 => 1.0] ]
+  (fun () -> df1.Append(df2) |> ignore) |> should throw (typeof<InvalidOperationException>)
+
+[<Test>]
+let ``Can append two frames with partially overlapping columns`` () = 
+  let df1 = Frame.ofColumns [ "A" => series [ for i in 1 .. 5 -> i, i ] ]
+  let df2 = Frame.ofColumns 
+              [ "A" => series [ 6 => 10 ]
+                "B" => series [ for i in 1 .. 5 -> i, i ] ]
+  let actual = df1.Append(df2)
+  actual.Rows.[3].GetAt(0) |> shouldEqual (box 3)
+  actual.Rows.[3].GetAt(1) |> shouldEqual (box 3)
+  actual.Rows.[6].GetAt(0) |> shouldEqual (box 10)
+  actual.Rows.[6].TryGetAt(1).HasValue |> shouldEqual false
+
+[<Test>]
 let ``Can append two frames with single rows and keys with comparison that fails at runtime`` () = 
   let df1 = Frame.ofColumns [ "A" => series [ ([| 0 |], 0) => "A" ] ]
   let df2 = Frame.ofColumns [ "A" => series [ ([| 0 |], 1) => "A" ] ]
@@ -189,7 +223,8 @@ let ``Can inner/outer/left/right join row keys when aligning``()  =
 let ``Can zip and subtract numerical values in MSFT data set``() = 
   let df1 = msft()
   let df2 = msft()
-  let values = df1.Zip(df2, fun a b -> a - b).GetAllValues<int>()
+  let actual = df1.Zip(df2, fun a b -> a - b)
+  let values = actual.GetAllValues<int>()
   values |> Seq.length |> shouldEqual (6 * (df1 |> Frame.countRows))
   values |> Seq.forall ((=) 0) |> shouldEqual true
 
