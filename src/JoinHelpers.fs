@@ -40,7 +40,9 @@ module internal JoinHelpers =
   /// When doing exact join on ordered indices, restrict the new index
   /// so that we do not have to load all data for lazy indices
   let restrictToRowIndex lookup (restriction:IIndex<_>) (sourceIndex:IIndex<_>) vector = 
-    if lookup = Lookup.Exact && restriction.IsOrdered && sourceIndex.IsOrdered then
+    if lookup = Lookup.Exact && 
+       restriction.IsOrdered && sourceIndex.IsOrdered &&
+       not restriction.IsEmpty then
       let min, max = restriction.KeyRange
       sourceIndex.Builder.GetRange(sourceIndex, Some(min, BoundaryBehavior.Inclusive), Some(max, BoundaryBehavior.Inclusive), vector)
     else sourceIndex, vector
@@ -53,12 +55,17 @@ module internal JoinHelpers =
     | Lookup.Exact | _ -> vector
 
   /// Create transformation on indices/vectors representing the join operation
-  let createJoinTransformation (indexBuilder:IIndexBuilder) kind lookup thisIndex otherIndex vector1 vector2 =
+  let createJoinTransformation 
+        (indexBuilder:IIndexBuilder) kind lookup (thisIndex:IIndex<_>) 
+        (otherIndex:IIndex<_>) vector1 vector2 =
     // Inner/outer join only makes sense with exact lookup
     if lookup <> Lookup.Exact && kind = JoinKind.Inner then
-      invalidOp "Join/Zip - Inner join does can only be used with Lookup.Exact."
+      invalidOp "Join/Zip - Inner join can only be used with Lookup.Exact."
     if lookup <> Lookup.Exact && kind = JoinKind.Outer then
-      invalidOp "Join/Zip - Outer join does can only be used with Lookup.Exact."
+      invalidOp "Join/Zip - Outer join can only be used with Lookup.Exact."
+    // Only Lookup.Exact makes sense for unordered series
+    if not (thisIndex.IsOrdered && otherIndex.IsOrdered) && lookup <> Lookup.Exact then
+      invalidOp "Join/Zip - Lookup can be only used when joining/zipping ordered series/frames."
 
     match kind with 
     | JoinKind.Inner ->

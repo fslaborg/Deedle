@@ -1,6 +1,5 @@
 ﻿#if INTERACTIVE
-#I "../../bin"
-#load "../../bin/Deedle.fsx"
+#r "../../bin/Deedle.dll"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #r "../../packages/FsCheck.0.9.1.0/lib/net40-Client/FsCheck.dll"
 #load "../Common/FsUnit.fs"
@@ -350,3 +349,10 @@ let ``Can zip series with lookup and skip over missing values ``() =
   res2.GetAt(1) |> shouldEqual (OptionalValue 2.0, OptionalValue 40.0) // second values is missing instead of 40
   res2.GetAt(2) |> shouldEqual (OptionalValue 3.0, OptionalValue 40.0) // second values is missing instead of 40
   res2.GetAt(3) |> shouldEqual (OptionalValue 4.0, OptionalValue 40.0)
+
+
+[<Test>]
+let ``Can left-zip two empty series`` () =
+  let s1 = series ([] : list<int * int>)
+  let s2 = s1.Zip(s1, JoinKind.Left)
+  s2 |> shouldEqual (series [])

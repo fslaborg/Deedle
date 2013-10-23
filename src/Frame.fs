@@ -166,6 +166,19 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   member frame.Join(otherFrame:Frame<'TRowKey, 'TColumnKey>) =    
     frame.Join(otherFrame, JoinKind.Outer, Lookup.Exact)
 
+  /// [category:Joining, zipping and appending]
+  member frame.Join<'V>(colKey, series:Series<'TRowKey, 'V>, kind, lookup) =    
+    let otherFrame = Frame([colKey], [series])
+    frame.Join(otherFrame, kind, lookup)
+
+  /// [category:Joining, zipping and appending]
+  member frame.Join<'V>(colKey, series:Series<'TRowKey, 'V>, kind) =    
+    frame.Join(colKey, series, kind, Lookup.Exact)
+
+  /// [category:Joining, zipping and appending]
+  member frame.Join<'V>(colKey, series:Series<'TRowKey, 'V>) =    
+    frame.Join(colKey, series, JoinKind.Outer, Lookup.Exact)
+
 
   /// [category:Joining, zipping and appending]
   member frame.Append(otherFrame:Frame<'TRowKey, 'TColumnKey>) = 

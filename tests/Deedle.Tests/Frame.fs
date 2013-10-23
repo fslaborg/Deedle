@@ -277,6 +277,17 @@ let ``Can right-align ordered frames - nearest greater returns missing if no gre
   daysTimesNextR?Days.TryGetAt(1) |> shouldEqual (OptionalValue 2.0)
   daysTimesNextR?Days.TryGetAt(2) |> shouldEqual OptionalValue.Missing
 
+[<Test>]
+let ``Can join frame with series`` () =
+  Check.QuickThrowOnFailure(fun (kind:JoinKind) (lookup:Lookup) (keys1:int[]) (keys2:int[]) (data1:float[]) (data2:float[]) -> 
+    let s1 = Series(Seq.distinct (Seq.sort keys1), data1)
+    let s2 = Series(Seq.distinct (Seq.sort keys2), data2)
+    let f1 = Frame.ofColumns ["S1" => s1]
+    let f2 = Frame.ofColumns ["S2" => s2]
+    let lookup = match kind with JoinKind.Inner | JoinKind.Outer -> Lookup.Exact | _ -> lookup
+    f1.Join(f2, kind, lookup) = f1.Join("S2", s2, kind, lookup)
+  )
+
 // ------------------------------------------------------------------------------------------------
 // Operations - fill
 // ------------------------------------------------------------------------------------------------
