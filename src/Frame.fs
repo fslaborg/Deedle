@@ -811,7 +811,7 @@ and FrameUtils =
                 v.TryGetObject(key) |> OptionalValue.asOption)
             let someValue = defaultArg someValue (obj())
             columnCreator key someValue
-          with :? System.InvalidCastException ->
+          with :? System.InvalidCastException | :? System.FormatException ->
             // If that failes, the sequence is heterogeneous
             // so we try again and pass object as a witness
             columnCreator key (obj()) )

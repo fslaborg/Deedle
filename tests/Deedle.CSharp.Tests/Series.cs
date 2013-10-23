@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
-using FSharp.DataFrame;
+using Deedle;
 
-namespace FSharp.DataFrame.CSharp.Tests
+namespace Deedle.CSharp.Tests
 {
 	/* ----------------------------------------------------------------------------------
 	 * Test series builder
@@ -122,7 +122,7 @@ namespace FSharp.DataFrame.CSharp.Tests
 		Console.WriteLine(s2.Sum());
 
     var df = Frame.FromColumns(new[] { 1, 2, 3 }, new[] { new KeyValuePair<string, Series<int, double>>("Test", s2) });
-    Console.WriteLine(((FSharp.DataFrame.Internal.IFsiFormattable)df).Format());
+    Console.WriteLine(((Deedle.Internal.IFsiFormattable)df).Format());
 
 
 		// Aggregation.WindowSize(0, Boundary.AtBeginning)

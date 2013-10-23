@@ -3,8 +3,8 @@ open System.Reflection
 
 [<assembly: AssemblyTitleAttribute("Deedle")>]
 [<assembly: AssemblyProductAttribute("Deedle")>]
-[<assembly: AssemblyDescriptionAttribute("Easy to use F# library for data manipulation and scientific programming")>]
-[<assembly: AssemblyVersionAttribute("0.9.3")>]
-[<assembly: AssemblyFileVersionAttribute("0.9.3")>]
+[<assembly: AssemblyDescriptionAttribute("Easy to use .NET library for data manipulation and scientific programming")>]
+[<assembly: AssemblyVersionAttribute("0.9.4")>]
+[<assembly: AssemblyFileVersionAttribute("0.9.4")>]
 
 ()

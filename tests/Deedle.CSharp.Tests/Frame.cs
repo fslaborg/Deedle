@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
-using FSharp.DataFrame;
+using Deedle;
 using System.Runtime.CompilerServices;
 using System.IO;
 
-namespace FSharp.DataFrame.CSharp.Tests
+namespace Deedle.CSharp.Tests
 {
 	/* ----------------------------------------------------------------------------------
 	 * Test calling Frame.Zip from C#
@@ -18,7 +18,7 @@ namespace FSharp.DataFrame.CSharp.Tests
 	{
 		public static Frame<int, string> LoadMSFT([CallerFilePath] string source = "")
 		{
-			var file = Path.Combine(Path.GetDirectoryName(source), @"..\FSharp.DataFrame.Tests\data\MSFT.csv");
+			var file = Path.Combine(Path.GetDirectoryName(source), @"..\Deedle.Tests\data\MSFT.csv");
 			return Frame.ReadCsv(file, inferRows:10);
 		}
 
