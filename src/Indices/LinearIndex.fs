@@ -52,7 +52,9 @@ type LinearIndex<'K when 'K : equality>
   let mappings = Seq.zip keys addresses
   do for k, v in mappings do 
        match lookup.TryGetValue(k) with
-       | true, list -> invalidArg "keys" "Duplicate keys are not allowed in the index."
+       | true, list -> 
+          let info = sprintf "Duplicate key '%A'. Duplicate keys are not allowed in the index." k
+          invalidArg "keys" info
        | _ -> lookup.[k] <- v  
 
   /// Exposes keys array for use in the index builder

@@ -66,6 +66,13 @@ let ``Series with different data are not considered equal``() =
   input1 |> should notEqual input2
   input1 |> should notEqual input3
 
+[<Test>] 
+let ``Should throw useful message when there are duplicate keys`` () =
+  let actual =
+    try let s = series [ 42 => "A"; 42 => "B" ] in ""
+    with e -> e.Message
+  actual |> should contain "42"
+
 // ------------------------------------------------------------------------------------------------
 // Operations - union, grouping, diff, etc.
 // ------------------------------------------------------------------------------------------------

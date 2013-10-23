@@ -90,7 +90,7 @@ let ``Construction of frame from columns respects specified order``() =
   |> shouldEqual ["Z"; "X"]
 
 // ------------------------------------------------------------------------------------------------
-// Indexing and accessing values
+// Numerical operators
 // ------------------------------------------------------------------------------------------------
 
 [<Test>]
