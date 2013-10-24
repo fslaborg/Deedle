@@ -6,16 +6,17 @@ open Deedle
 let titanic = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/Titanic.csv")
 
 (**
-F# DataFrame: Easy data manipulation
-=====================================
+Deedle: Exploratory data library for .NET
+=========================================
 
-The F# DataFrame library (`Deedle.dll`) is an easy to use library for data 
-and time series manipulation and for scientific programming. It supports working with 
-structured data frames, ordered and unordered data, as well as time series.
+Deedle is an easy to use library for data and time series manipulation and for scientific 
+programming. It supports working with structured data frames, ordered and unordered data, 
+as well as time series. Deedle is designed to work well for exploratory programming using 
+F# and C# interactive console, but can be also used in efficient compiled .NET code.
 
 The library implements a wide range of operations for data manipulation including 
 advanced indexing and slicing, joining and aligning data, handling of missing values,
-grouping and aggregation, statistics and more. The library can be used from F# and C#.
+grouping and aggregation, statistics and more. 
 
 <div class="row">
   <div class="span1"></div>
@@ -38,7 +39,7 @@ into a data frame called `titanic` (the data frame has numerous columns includin
 <div id="hp-snippet">
 *)
 // Group the data frame by sex 
-let grouped = titanic |> Frame.groupRowsByString "Sex" |> Frame.unstack
+let grouped = titanic |> Frame.groupRowsByString "Sex" |> Frame.nest
 
 // For each group, calculate the total number of survived & died
 let bySex =
@@ -51,7 +52,7 @@ let bySex =
   |> Frame.indexColsWith ["Died"; "Survived"]
 
 // Add column with Total number of males/females on Titanic
-bySex?Total <- Frame.countKeys $ grouped
+bySex?Total <- Frame.countRows $ grouped
 
 // Build a data frame with nice summary of rates in percents
 [ "Died (%)" => bySex?Died / bySex?Total * 100.0

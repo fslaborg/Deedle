@@ -181,7 +181,7 @@ type VectorValueTransform =
 
 
 // A "generic function" that boxes all values of a vector (IVector<int, 'T> -> IVector<int, obj>)
-let boxVector<'T> = 
+let boxVector () = 
   { new VectorCallSite1<IVector<obj>> with
       override x.Invoke<'T>(col:IVector<'T>) = col.Select(box) }
   |> createVectorDispatcher

@@ -2,6 +2,9 @@
 
 /// Frame module comment
 ///
+/// ## Accessing frame data and lookup
+/// basics
+///
 /// ## Index manipulation
 /// More documentation here
 ///
@@ -19,18 +22,139 @@ module Frame =
   open System
   open Deedle.Internal
 
+  // ----------------------------------------------------------------------------------------------
+  // Accessing frame data and lookup
+  // ----------------------------------------------------------------------------------------------
+
   /// Returns the total number of row keys in the specified frame. This returns
   /// the total length of the row series, including keys for which there is no 
   /// value available.
-  let countRows (frame:Frame<'R, 'C>) = frame.RowIndex.Mappings |> Seq.length
+  ///
+  /// [category:Accessing frame data and lookup]
+  [<CompiledName("CountRows")>]
+  let countRows (frame:Frame<'R, 'C>) = frame.RowIndex.KeyCount |> int
 
   /// Returns the total number of column keys in the specified frame. This returns
   /// the total length of columns, including keys for which there is no 
   /// data available.
-  let countCols (frame:Frame<'R, 'C>) = frame.ColumnIndex.Mappings |> Seq.length
+  ///
+  /// [category:Accessing frame data and lookup]
+  [<CompiledName("CountColumns")>]
+  let countCols (frame:Frame<'R, 'C>) = frame.ColumnIndex.KeyCount |> int
+
+  /// Returns the columns of the data frame as a series (indexed by 
+  /// the column keys of the source frame) containing untyped series representing
+  /// individual columns of the frame.
+  ///
+  /// [category:Accessing frame data and lookup]
+  [<CompiledName("Columns")>]
+  let cols (frame:Frame<'R, 'C>) = frame.Columns
+
+  /// Returns the rows of the data frame as a series (indexed by 
+  /// the row keys of the source frame) containing untyped series representing
+  /// individual row of the frame.
+  ///
+  /// [category:Accessing frame data and lookup]
+  [<CompiledName("Rows")>]
+  let rows (frame:Frame<'R, 'C>) = frame.Rows
+
+  /// Returns a specified column from a data frame. This function uses exact matching 
+  /// semantics on the key. Use `lookupSeries` if you want to use inexact 
+  /// matching (e.g. on dates)
+  ///
+  /// [category:Accessing frame data and lookup]
+  [<CompiledName("GetColumn")>]
+  let getCol column (frame:Frame<'R, 'C>) = frame.GetSeries(column)
+
+  /// Returns a specified row from a data frame. This function uses exact matching 
+  /// semantics on the key. Use `lookupRow` if you want to use inexact matching 
+  /// (e.g. on dates)
+  ///
+  /// [category:Accessing frame data and lookup]
+  [<CompiledName("GetRow")>]
+  let getRow row (frame:Frame<'R, 'C>) = frame.GetRow(row)
+
+  /// Returns a specified series (column) from a data frame. If the data frame has 
+  /// ordered column index, the lookup semantics can be used to get series
+  /// with nearest greater/smaller key. For exact semantics, you can use `getCol`.
+  ///
+  /// [category:Accessing frame data and lookup]
+  [<CompiledName("LookupColumn")>]
+  let lookupCol column lookup (frame:Frame<'R, 'C>) = frame.GetSeries(column, lookup)
+
+  /// Returns a specified row from a data frame. If the data frame has 
+  /// ordered row index, the lookup semantics can be used to get row with 
+  /// nearest greater/smaller key. For exact semantics, you can use `getRow`.
+  ///
+  /// [category:Accessing frame data and lookup]
+  [<CompiledName("LookupRow")>]
+  let lookupRow row lookup (frame:Frame<'R, 'C>) = frame.GetRow(row, lookup)
+
+  /// Returns a frame consisting of the specified columns from the original
+  /// data frame. The function uses exact key matching semantics.
+  ///
+  /// [category:Accessing frame data and lookup]
+  [<CompiledName("GetColumns")>]
+  let getCols (columns:seq<_>) (frame:Frame<'R, 'C>) = 
+    frame.Columns.[columns]
+
+  /// Returns a frame consisting of the specified rows from the original
+  /// data frame. The function uses exact key matching semantics.
+  ///
+  /// [category:Accessing frame data and lookup]
+  [<CompiledName("GetRows")>]
+  let getRows (rows:seq<_>) (frame:Frame<'R, 'C>) = 
+    frame.Rows.[rows]
 
   // ----------------------------------------------------------------------------------------------
-  // Grouping
+  // Series operations 
+  // ----------------------------------------------------------------------------------------------
+
+  /// Creates a new data frame that contains all data from 
+  /// the original data frame, together with an additional series.
+  /// The operation uses left join and aligns new series to the 
+  /// existing frame keys.
+  ///
+  /// ## Parameters
+  ///  - `column` - A key (or name) for the newly added column
+  ///  - `series` - A data series to be added (the row key type has to match)
+  ///  - `frame` - Source data frame (which is not mutated by the operation)
+  ///
+  /// [category:Series operations]
+  [<CompiledName("AddSeries")>]
+  let addSeries column (series:Series<_, 'V>) (frame:Frame<'R, 'C>) = 
+    let f = frame.Clone() in f.AddSeries(column, series); f
+
+  /// Creates a new data frame that contains all data from the original
+  /// data frame without the specified series (column). The operation throws
+  /// if the column key is not found.
+  ///
+  /// ## Parameters
+  ///  - `column` - The key (or name) to be dropped from the frame
+  ///  - `frame` - Source data frame (which is not mutated by the operation)
+  ///
+  /// [category:Series operations]
+  [<CompiledName("DropSeries")>]
+  let dropSeries column (frame:Frame<'R, 'C>) = 
+    let f = frame.Clone() in f.DropSeries(column); f
+
+  /// Creates a new data frame where the specified column is repalced
+  /// with a new series. (If the series does not exist, only the new
+  /// series is added.)
+  ///
+  /// ## Parameters
+  ///  - `column` - A key (or name) for the column to be replaced or added
+  ///  - `series` - A data series to be used (the row key type has to match)
+  ///  - `frame` - Source data frame (which is not mutated by the operation)
+  ///
+  /// [category:Series operations]
+  [<CompiledName("ReplaceColumn")>]
+  let replaceSeries column series (frame:Frame<'R, 'C>) = 
+    let f = frame.Clone() in f.ReplaceSeries(column, series); f
+
+
+  // ----------------------------------------------------------------------------------------------
+  // Grouping and hierarchical indexing
   // ----------------------------------------------------------------------------------------------
 
   let collapseCols (series:Series<'K, Frame<'K1, 'K2>>) = 
@@ -38,7 +162,8 @@ module Frame =
     |> Series.map (fun k1 df -> df.Columns |> Series.mapKeys(fun k2 -> (k1, k2)) |> FrameUtils.fromColumns)
     |> Series.values |> Seq.reduce (fun df1 df2 -> df1.Append(df2))
 
-  let collapseRows (series:Series<'K, Frame<'K1, 'K2>>) = FrameUtils.collapseRows series
+  let collapseRows (series:Series<'K, Frame<'K1, 'K2>>) = 
+    FrameUtils.collapseRows series
 
   let groupRowsUsing selector (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.groupInto selector (fun k g -> g |> FrameUtils.fromRows) |> collapseRows
@@ -64,16 +189,18 @@ module Frame =
   let groupColsByInt column frame : Frame<_, int * _> = groupColsBy column frame
   let groupColsByString column frame : Frame<_, string * _> = groupColsBy column frame
 
+  // ----------------------------------------------------------------------------------------------
+  // Operations
+  // ----------------------------------------------------------------------------------------------
 
-  //let shiftRows offset (frame:Frame<'R, 'C>) = 
-  //  frame.Columns 
-  //  |> Series.map (fun k col -> Series.shift offset col)
-  //  |> Frame.ofColumns
+
+//  let shiftRows offset (frame:Frame<'R, 'C>) = 
+//    frame.Columns 
+//    |> Series.map (fun k col -> Series.shift offset col)
+//    |> Frame.ofColumns
 
   let takeLast count (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.takeLast count |> FrameUtils.fromRows
-
-
 
   let window size (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.windowInto size FrameUtils.fromRows
@@ -81,77 +208,6 @@ module Frame =
   let windowInto size f (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.windowInto size (FrameUtils.fromRows >> f)
 
-  // ----------------------------------------------------------------------------------------------
-  // Wrappers that simply call member functions of the data frame
-  // ----------------------------------------------------------------------------------------------
-
-  /// Creates a new data frame that contains all data from 
-  /// the original data frame, together with additional series.
-  [<CompiledName("AddColumn")>]
-  let addCol column (series:Series<_, _>) (frame:Frame<'R, 'C>) = 
-    let f = frame.Clone() in f.AddSeries(column, series); f
-
-  /// Returns the columns of the data frame as a series (indexed by 
-  /// the column keys of the source frame) containing _series_ representing
-  /// individual columns of the frame.
-  [<CompiledName("Columns")>]
-  let cols (frame:Frame<'R, 'C>) = frame.Columns
-
-  /// Returns the rows of the data frame as a series (indexed by 
-  /// the row keys of the source frame) containing _series_ representing
-  /// individual row of the frame.
-  [<CompiledName("Rows")>]
-  let rows (frame:Frame<'R, 'C>) = frame.Rows
-
-  /// Creates a new data frame that contains all data from the original
-  /// data frame without the specified series (column).
-  [<CompiledName("DropColumn")>]
-  let dropCol column (frame:Frame<'R, 'C>) = 
-    let f = frame.Clone() in f.DropSeries(column); f
-
-  /// Creates a new data frame where the specified column is repalced
-  /// with a new series. (If the series does not exist, only the new
-  /// series is added.)
-  [<CompiledName("ReplaceColumn")>]
-  let replaceCol column series (frame:Frame<'R, 'C>) = 
-    let f = frame.Clone() in f.ReplaceSeries(column, series); f
-
-  /// Returns a specified series (column) from a data frame. This 
-  /// function uses exact matching semantics. Use `lookupSeries` if you
-  /// want to use inexact matching (e.g. on dates)
-  [<CompiledName("GetColumn")>]
-  let getCol column (frame:Frame<'R, 'C>) = frame.GetSeries(column)
-
-  /// Returns a specified row from a data frame. This 
-  /// function uses exact matching semantics. Use `lookupRow` if you
-  /// want to use inexact matching (e.g. on dates)
-  [<CompiledName("GetRow")>]
-  let getRow row (frame:Frame<'R, 'C>) = frame.GetRow(row)
-
-  let getRowLevel (key) (frame:Frame<'R, 'C>) = 
-    frame.Rows.GetByLevel(key)
-
-  let getColLevel (key) (frame:Frame<'R, 'C>) = 
-    frame.Columns.GetByLevel(key)
-
-  /// Returns a specified series (column) from a data frame. If the data frame has 
-  /// ordered column index, the lookup semantics can be used to get series
-  /// with nearest greater/smaller key. For exact semantics, you can use `getSeries`.
-  [<CompiledName("LookupColumn")>]
-  let lookupCol column lookup (frame:Frame<'R, 'C>) = frame.GetSeries(column, lookup)
-
-  /// Returns a specified row from a data frame. If the data frame has 
-  /// ordered row index, the lookup semantics can be used to get row with 
-  /// nearest greater/smaller key. For exact semantics, you can use `getSeries`.
-  [<CompiledName("LookupRow")>]
-  let lookupRow row lookup (frame:Frame<'R, 'C>) = frame.GetRow(row, lookup)
-
-
-  let getCols (columns:seq<_>) (frame:Frame<'R, 'C>) = 
-    frame.Columns.[columns]
-
-  let getRows (rows:seq<_>) (frame:Frame<'R, 'C>) = 
-    frame.Rows.[rows]
 
   // ----------------------------------------------------------------------------------------------
   // Index operations
@@ -403,7 +459,7 @@ module Frame =
   ///
   /// [category:Projection and filtering]
   [<CompiledName("SelectRowKeys")>]
-  let inline mapRowKeys (f:'R1 -> 'R2) (frame:Frame<_, 'C>) = 
+  let mapRowKeys (f:'R1 -> 'R2) (frame:Frame<_, 'C>) = 
     let newRowIndex = frame.IndexBuilder.Create(frame.RowIndex.Keys |> Seq.map f, None)
     Frame(newRowIndex, frame.ColumnIndex, frame.Data)
 
@@ -471,7 +527,7 @@ module Frame =
   ///
   /// [category:Projection and filtering]
   [<CompiledName("SelectColumnKeys")>]
-  let inline mapColKeys f (frame:Frame<'R, 'C>) = 
+  let mapColKeys f (frame:Frame<'R, 'C>) = 
     let newColIndex = frame.IndexBuilder.Create(frame.ColumnIndex.Keys |> Seq.map f, None)
     Frame(frame.RowIndex, newColIndex, frame.Data)
 
@@ -498,10 +554,7 @@ module Frame =
     frame.GetColumns<'T>() |> Series.map (fun _ -> Series.reduce op) 
 
   let inline countValues (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<obj>() |> Series.map (fun _ -> Series.countValues)
-
-  let countKeys (frame:Frame<'R, 'C>) = 
-    frame.RowIndex.Keys |> Seq.length
+    frame.Columns |> Series.map (fun _ -> Series.countValues)
 
   let inline maxRowBy column (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.maxBy (fun row -> row.GetAs<float>(column))
@@ -766,16 +819,35 @@ module Frame =
   let flattenRows (level:'R -> 'K) op (frame:Frame<'R, 'C>) : Series<'K, 'V> = 
     frame.Rows |> Series.groupInto (fun k _ -> level k) (fun _ -> FrameUtils.fromRows >> op)
 
-  let unstackBy keySelector (frame:Frame<'R, 'C>) = 
+  let nestBy keySelector (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.groupInto (fun k _ -> keySelector k) (fun nk s -> FrameUtils.fromRows s)
 
-  let unstack (frame:Frame<'R1 * 'R2, 'C>) = 
-    unstackBy fst frame
+  let nest (frame:Frame<'R1 * 'R2, 'C>) = 
+    nestBy fst frame
     |> Series.mapValues (mapRowKeys snd)
 
-  let stack (series:Series<'R1, Frame<'R2, 'C>>) =
+  let unnest (series:Series<'R1, Frame<'R2, 'C>>) =
     series
     |> Series.map (fun k1 s -> s.Rows |> Series.mapKeys (fun k2 -> k1, k2) |> FrameUtils.fromRows)
     |> Series.values
     |> Seq.reduce append
 
+
+  /// Implements R-like 'stack' (returns frame whose 
+  /// columns are named Row/Column/Value)
+  let stack (frame:Frame<'R, 'C>) =
+    frame.Rows.Observations |> Seq.collect (fun (KeyValue(rowKey, row)) ->
+      row.Observations |> Seq.map (fun (KeyValue(colKey, value)) -> 
+        Series.ofValues [box rowKey; box colKey; box value ]))
+    |> Series.ofValues
+    |> FrameUtils.fromRows
+    |> indexColsWith ["Row"; "Column"; "Value"]
+
+  // Unstack is easier, we just need to get three-element tuples from the frame and use Frame.ofValues
+  let unstack (frame:Frame<'O, string>) : Frame<'R, 'C> =
+    FrameUtils.fromValues frame.Rows.Values 
+      (fun row -> row.GetAs<'C>("Column"))
+      (fun row -> row.GetAs<'R>("Row"))
+      (fun row -> row.GetAs<obj>("Value"))
+
+    

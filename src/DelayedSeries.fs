@@ -171,6 +171,7 @@ type internal DelayedIndex<'K, 'V when 'K : equality> internal (source:DelayedSo
   member x.Source = source
   interface IIndex<'K> with
     member x.KeyAt index = source.Index.KeyAt index
+    member x.KeyCount = source.Index.KeyCount
     member x.IsEmpty = false
     member x.Builder = DelayedIndexBuilder() :> IIndexBuilder
     member x.KeyRange = source.Index.KeyRange

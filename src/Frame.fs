@@ -18,6 +18,23 @@ open System.Runtime.InteropServices
 open Microsoft.FSharp.Quotations
 open VectorHelpers
 
+/// Represents the underlying (raw) data of the frame in a format that can
+/// be used for exporting data frame to other formats etc. (DataTable, CSV, Excel)
+type FrameData =
+  { /// A sequence of keys for all column. Individual key is an array
+    /// which contains multiple values for hierarchical indices
+    ColumnKeys : seq<obj[]>
+    
+    /// A sequence of keys for all rows. Individual key is an array
+    /// which contains multiple values for hierarchical indices
+    RowKeys : seq<obj[]>
+
+    /// Represents the data of the frame as a sequence of columns containing
+    /// type and array with column values. `OptionalValue.Missing` is used to
+    /// represent missing data.
+    Columns : seq<Type * IVector<obj>> }  
+
+
 /// A frame contains one Index, with multiple Vecs
 /// (because this is dynamic, we need to store them as IVec)
 ///
@@ -350,15 +367,17 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
 
   /// [category:Accessors and slicing]
   member frame.Columns = 
+    let boxer = boxVector ()
     ColumnSeries(Series.Create(columnIndex, data.Select(fun vect -> 
-      Series.CreateUntyped(rowIndex, boxVector vect))))
+      Series.CreateUntyped(rowIndex, boxer vect))))
 
   /// [category:Accessors and slicing]
   member frame.ColumnsDense = 
+    let boxer = boxVector ()
     ColumnSeries(Series.Create(columnIndex, data.SelectMissing(fun vect -> 
       // Assuming that the data has all values - which should be an invariant...
       let all = rowIndex.Mappings |> Seq.forall (fun (key, addr) -> vect.Value.GetObject(addr).HasValue)
-      if all then OptionalValue(Series.CreateUntyped(rowIndex, boxVector vect.Value))
+      if all then OptionalValue(Series.CreateUntyped(rowIndex, boxer vect.Value))
       else OptionalValue.Missing )))
 
   /// [category:Accessors and slicing]
@@ -424,30 +443,44 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   // Series related operations - add, drop, get, ?, ?<-, etc.
   // ----------------------------------------------------------------------------------------------
 
-  /// [category:Series operations]
-  member frame.Item 
-    with get(column:'TColumnKey) = frame.GetSeries<float>(column)
-    and set(column:'TColumnKey) (series:Series<'TRowKey, float>) = frame.ReplaceSeries(column, series)
-
-  /// [category:Series operations]
-  member frame.SeriesApply<'T>(f) = frame.SeriesApply<'T>(false, f)
-
-  /// [category:Series operations]
-  member frame.SeriesApply<'T>(strict, f:Func<Series<'TRowKey, 'T>, ISeries<_>>) = 
-    frame.Columns |> Series.mapValues (fun os ->
-      match os.TryAs<'T>(strict) with
-      | OptionalValue.Present s -> f.Invoke s
-      | _ -> os :> ISeries<_>)
-    |> Frame<'TRowKey, 'TColumnKey>.FromColumnsNonGeneric
-
+  /// Mutates the data frame by adding an additional data series
+  /// as a new column with the specified column key. The sequence is
+  /// aligned to the data frame based on ordering. If it is longer, it is
+  /// trimmed and if it is shorter, missing values will be added.
+  ///
+  /// ## Parameters
+  ///  - `column` - A key (or name) for the newly added column
+  ///  - `series` - A sequence of values to be added
+  ///
   /// [category:Series operations]
   member frame.AddSeries(column:'TColumnKey, series:seq<_>) = 
     frame.AddSeries(column, series, Lookup.Exact)
 
+  /// Mutates the data frame by adding an additional data series
+  /// as a new column with the specified column key. The operation 
+  /// uses left join and aligns new series to the existing frame keys.
+  ///
+  /// ## Parameters
+  ///  - `series` - A data series to be added (the row key type has to match)
+  ///  - `column` - A key (or name) for the newly added column
+  ///
   /// [category:Series operations]
   member frame.AddSeries(column:'TColumnKey, series:ISeries<_>) = 
     frame.AddSeries(column, series, Lookup.Exact)
 
+  /// Mutates the data frame by adding an additional data series
+  /// as a new column with the specified column key. The sequence is
+  /// aligned to the data frame based on ordering. If it is longer, it is
+  /// trimmed and if it is shorter, missing values will be added.
+  /// A parameter `lookup` can be used to specify how to find a value in the
+  /// added series (if the sequence contains invalid values like `null` or `NaN`). 
+  ///
+  /// ## Parameters
+  ///  - `column` - A key (or name) for the newly added column
+  ///  - `series` - A sequence of values to be added
+  ///  - `lookup` - Specify how to find value in the added series (look for 
+  ///    nearest available value with the smaller/greater key).
+  ///
   /// [category:Series operations]
   member frame.AddSeries(column:'TColumnKey, series:seq<'V>, lookup) = 
     if isEmpty then
@@ -470,6 +503,19 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
       let series = Series(frame.RowIndex, vector, vectorBuilder, indexBuilder)
       frame.AddSeries(column, series, lookup)
 
+  /// Mutates the data frame by adding an additional data series
+  /// as a new column with the specified column key. The operation 
+  /// uses left join and aligns new series to the existing frame keys.
+  /// A parameter `lookup` can be used to specify how to find a value in the
+  /// added series (if an exact key is not available). The `lookup` parameter
+  /// can only be used with ordered indices.
+  ///
+  /// ## Parameters
+  ///  - `series` - A data series to be added (the row key type has to match)
+  ///  - `column` - A key (or name) for the newly added column
+  ///  - `lookup` - Specify how to find value in the added series (look for 
+  ///    nearest available value with the smaller/greater key).
+  ///
   /// [category:Series operations]
   member frame.AddSeries<'V>(column:'TColumnKey, series:ISeries<'TRowKey>, lookup) = 
     if isEmpty then
@@ -484,29 +530,93 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
       columnIndex <- joined.ColumnIndex
       data <- joined.Data
 
+  /// Mutates the data frame by removing the specified series from the 
+  /// frame columns. The operation throws if the column key is not found.
+  ///
+  /// ## Parameters
+  ///  - `column` - The key (or name) to be dropped from the frame
+  ///  - `frame` - Source data frame (which is not mutated by the operation)
+  ///
   /// [category:Series operations]
   member frame.DropSeries(column:'TColumnKey) = 
     let newColumnIndex, colCmd = indexBuilder.DropItem( (columnIndex, Vectors.Return 0), column)
     columnIndex <- newColumnIndex
     data <- vectorBuilder.Build(colCmd, [| data |])
 
+  /// Mutates the data frame by replacing the specified series with
+  /// a new series. (If the series does not exist, only the new series is added.) 
+  /// When adding a series, the specified `lookup` parameter is used for matching 
+  /// keys. The parameter can only be used for frame with ordered indices.
+  ///
+  /// ## Parameters
+  ///  - `column` - A key (or name) for the column to be replaced or added
+  ///  - `series` - A data series to be used (the row key type has to match)
+  ///  - `lookup` - Specify how to find value in the added series (look for 
+  ///    nearest available value with the smaller/greater key).
+  ///
   /// [category:Series operations]
   member frame.ReplaceSeries(column:'TColumnKey, series:ISeries<_>, lookup) = 
     if columnIndex.Lookup(column, Lookup.Exact, fun _ -> true).HasValue then
       frame.DropSeries(column)
     frame.AddSeries(column, series, lookup)
 
+  /// Mutates the data frame by replacing the specified series with
+  /// a new data sequence. (If the series does not exist, only the new series is added.) 
+  /// When adding a series, the specified `lookup` parameter is used for filling
+  /// missing values (e.g. `null` or `NaN`). The parameter can only be used for 
+  /// frame with ordered indices.
+  ///
+  /// ## Parameters
+  ///  - `column` - A key (or name) for the column to be replaced or added
+  ///  - `series` - A data series to be used (the row key type has to match)
+  ///  - `lookup` - Specify how to find value in the added series (look for 
+  ///    nearest available value with the smaller/greater key).
+  ///
   /// [category:Series operations]
   member frame.ReplaceSeries(column, data:seq<'V>, lookup) = 
     frame.ReplaceSeries(column, Series.Create(frame.RowIndex, Vector.ofValues data), lookup)
 
+  /// Mutates the data frame by replacing the specified series with
+  /// a new series. (If the series does not exist, only the new
+  /// series is added.)
+  ///
+  /// ## Parameters
+  ///  - `column` - A key (or name) for the column to be replaced or added
+  ///  - `series` - A data series to be used (the row key type has to match)
+  ///
   /// [category:Series operations]
   member frame.ReplaceSeries(column:'TColumnKey, series:ISeries<_>) = 
     frame.ReplaceSeries(column, series, Lookup.Exact)
 
+  /// Mutates the data frame by replacing the specified series with
+  /// a new data sequence . (If the series does not exist, only the new
+  /// series is added.)
+  ///
+  /// ## Parameters
+  ///  - `column` - A key (or name) for the column to be replaced or added
+  ///  - `series` - A sequence of values to be added
+  ///
   /// [category:Series operations]
   member frame.ReplaceSeries(column, data:seq<'V>) = 
     frame.ReplaceSeries(column, data, Lookup.Exact)
+
+
+
+  /// [category:Series operations]
+  member frame.Item 
+    with get(column:'TColumnKey) = frame.GetSeries<float>(column)
+    and set(column:'TColumnKey) (series:Series<'TRowKey, float>) = frame.ReplaceSeries(column, series)
+
+  /// [category:Series operations]
+  member frame.SeriesApply<'T>(f) = frame.SeriesApply<'T>(false, f)
+
+  /// [category:Series operations]
+  member frame.SeriesApply<'T>(strict, f:Func<Series<'TRowKey, 'T>, ISeries<_>>) = 
+    frame.Columns |> Series.mapValues (fun os ->
+      match os.TryAs<'T>(strict) with
+      | OptionalValue.Present s -> f.Invoke s
+      | _ -> os :> ISeries<_>)
+    |> Frame<'TRowKey, 'TColumnKey>.FromColumnsNonGeneric
 
   /// [category:Series operations]
   member frame.GetSeries<'R>(column:'TColumnKey, lookup) : Series<'TRowKey, 'R> = 
@@ -760,22 +870,29 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     let (++) h1 h2 = ((h1 <<< 5) + h1) ^^^ h2
     frame.RowIndex.GetHashCode() ++ frame.ColumnIndex.GetHashCode() ++ frame.Data.GetHashCode()
 
-  member internal frame.GetFrameData() = 
+  // ----------------------------------------------------------------------------------------------
+  // Frame data and formatting
+  // ----------------------------------------------------------------------------------------------
+
+  member frame.GetFrameData() = 
     // Get keys (as object lists with multiple levels)
     let getKeys (index:IIndex<_>) = seq { 
       let maxLevel = 
         match index.Keys |> Seq.headOrNone with 
         | Some colKey -> CustomKey.Get(colKey).Levels | _ -> 1
       for key, _ in index.Mappings ->
-        [ for level in 0 .. maxLevel - 1 -> 
-            if level = 0 && maxLevel = 0 then box key
-            else CustomKey.Get(key).GetLevel(level) ] }
+        [| for level in 0 .. maxLevel - 1 -> 
+             if level = 0 && maxLevel = 0 then box key
+             else CustomKey.Get(key).GetLevel(level) |] }
     let rowKeys = getKeys frame.RowIndex 
     let colKeys = getKeys frame.ColumnIndex
     // Get columns as object options
+    let boxVector = VectorHelpers.boxVector ()
     let columns = data.DataSequence |> Seq.map (fun col ->
-      col.Value.ElementType, col.Value.ObjectSequence)
-    colKeys, rowKeys, columns
+      let boxedVec = boxVector col.Value
+      col.Value.ElementType, boxedVec)
+    // Return as VectorData
+    { ColumnKeys = colKeys; RowKeys = rowKeys; Columns = columns }
 
   /// Shows the data frame content in a human-readable format. The resulting string
   /// shows all columns, but a limited number of rows. The property is used 

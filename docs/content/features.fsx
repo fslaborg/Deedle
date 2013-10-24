@@ -559,13 +559,13 @@ titanic |> Frame.groupRowsByString "Sex"
 As you can see, the pretty printer understands multi-level indices and 
 outputs the first level (sex) followed by the second level (passanger id).
 You can turn frame with two-level index into a series of data frames
-(and vice versa) using `Frame.stack` and `Frame.unstack`:
+(and vice versa) using `Frame.unnest` and `Frame.nest`:
 *)
 let bySex = titanic |> Frame.groupRowsByString "Sex" 
 // Returns series with two frames as values
-let bySex1 = bySex |> Frame.unstack
+let bySex1 = bySex |> Frame.nest
 // Converts unstacked data back to a single frame
-let bySex2 = bySex |> Frame.unstack |> Frame.stack
+let bySex2 = bySex |> Frame.nest |> Frame.unnest
 (**
 
 ### Grouping by multiple keys

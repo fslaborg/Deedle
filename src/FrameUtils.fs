@@ -94,9 +94,9 @@ module internal FrameUtils =
   let internal formatter (f:'T -> string) = 
     typeof<'T>, (fun (o:obj) -> f (unbox o))
 
-  let writeFrameRows includeRowKeys (rowKeys:seq<_>) (columns:seq<_ * seq<_>>) writeLine =
+  let writeFrameRows includeRowKeys (rowKeys:seq<_>) (columns:seq<_ * IVector<_>>) writeLine =
     // Generate CSV - start reading columns in parallel
-    let columnEns = [| for t, c in columns -> t, c.GetEnumerator() |]
+    let columnEns = [| for t, c in columns -> t, c.DataSequence.GetEnumerator() |]
     let rowKeyEn = rowKeys.GetEnumerator()
     let tryRead (en:IEnumerator<_>) = if en.MoveNext() then Some en.Current else None
     // Generate CSV - iterate over columns and write them all
@@ -158,9 +158,9 @@ module internal FrameUtils =
         
 
     // Get the data from the data frame
-    let colKeys, rowKeys, columns = frame.GetFrameData()
+    let { ColumnKeys = colKeys; RowKeys = rowKeys; Columns = columns } = frame.GetFrameData()
     // Get number of row keys (or 1 if there are no values)
-    let rowKeyCount = defaultArg (rowKeys |> Seq.map List.length |> Seq.tryPick Some) 1
+    let rowKeyCount = defaultArg (rowKeys |> Seq.map Array.length |> Seq.tryPick Some) 1
     
     // Generate or get names for row keys & format header row
     let rowKeyNames = 
@@ -185,10 +185,10 @@ module internal FrameUtils =
 
   let toDataTable rowKeyNames (frame:Frame<_, _>) =
     // Get the data from the data frame
-    let colKeys, rowKeys, columns = frame.GetFrameData()
+    let { ColumnKeys = colKeys; RowKeys = rowKeys; Columns = columns } = frame.GetFrameData()
     // Get number of row keys (or 1 if there are no values)
-    let rowKeyCount = defaultArg (rowKeys |> Seq.map List.length |> Seq.tryPick Some) 1
-    let rowKeyTypes = defaultArg (rowKeys |> Seq.map (List.map (fun v -> v.GetType())) |> Seq.tryPick Some) [typeof<obj>]
+    let rowKeyCount = defaultArg (rowKeys |> Seq.map Array.length |> Seq.tryPick Some) 1
+    let rowKeyTypes = defaultArg (rowKeys |> Seq.map (Array.map (fun v -> v.GetType())) |> Seq.tryPick Some) [| typeof<obj> |]
 
     if rowKeyNames |> Seq.length <> rowKeyCount then invalidArg "rowKeyNames" "Mismatching numbe of row keys"
     
@@ -276,3 +276,13 @@ module internal FrameUtils =
             |> createVector prop.RuntimeType )
     let rowIndex = Index.ofKeys [ 0 .. (Seq.length data.Data) - 1 ]
     Frame(rowIndex, columnIndex, Vector.ofValues columns)
+
+  let fromValues values colSel rowSel valSel =
+    values 
+    |> Seq.groupBy colSel
+    |> Seq.map (fun (col, items) -> 
+        let items = Array.ofSeq items
+        // TODO: "infer" type for the column
+        col, Series(Array.map rowSel items, Array.map valSel items) )
+    |> Series.ofObservations
+    |> FrameUtils.fromColumns

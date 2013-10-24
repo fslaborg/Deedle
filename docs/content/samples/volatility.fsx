@@ -1,8 +1,7 @@
 ﻿(*** hide ***)
-#I "../../packages/FSharp.Charting.0.87"
-#I "../../packages/FSharp.Charting.0.87"
-#r "../../bin/MathNet.Numerics.dll"
-#r "../../bin/Deedle.dll"
+#I "../../../packages/FSharp.Charting.0.87"
+#r "../../../bin/MathNet.Numerics.dll"
+#r "../../../bin/Deedle.dll"
 #load "FSharp.Charting.fsx"
 
 open System

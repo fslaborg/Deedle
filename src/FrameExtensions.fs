@@ -153,23 +153,11 @@ type Frame =
 
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member FromValues(values, colSel:Func<_, _>, rowSel:Func<_, _>, valSel:Func<_, _>) =
-    values 
-    |> Seq.groupBy colSel.Invoke
-    |> Seq.map (fun (col, items) -> 
-        let items = Array.ofSeq items
-        col, Series(Array.map rowSel.Invoke items, Array.map valSel.Invoke items) )
-    |> Series.ofObservations
-    |> FrameUtils.fromColumns
+    FrameUtils.fromValues values colSel.Invoke rowSel.Invoke valSel.Invoke
 
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member FromValues (values) =
-    values 
-    |> Seq.groupBy (fun (row, col, value) -> col)
-    |> Seq.map (fun (col, items) -> 
-        let keys, _, values = Array.ofSeq items |> Array.unzip3
-        col, Series(keys, values) )
-    |> Series.ofObservations
-    |> FrameUtils.fromColumns
+    FrameUtils.fromValues values (fun (_, col, _) -> col) (fun (row, _, _) -> row) (fun (_, _, v) -> v)
 
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member FromRecords (series:Series<'K, 'R>) =

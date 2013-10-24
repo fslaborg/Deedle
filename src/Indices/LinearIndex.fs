@@ -73,6 +73,7 @@ type LinearIndex<'K when 'K : equality>
 
   interface IIndex<'K> with
     member x.Keys = keys
+    member x.KeyCount = int64 lookup.Count
     member x.Builder = builder
 
     /// Perform reverse lookup and return key for an address

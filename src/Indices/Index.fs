@@ -124,31 +124,44 @@ type BoundaryBehavior = Inclusive | Exclusive
 type IIndex<'K when 'K : equality> = 
   /// Returns a sequence of all keys in the index.
   abstract Keys : seq<'K>
+
   /// Performs reverse lookup - and returns key for a specified address
   abstract KeyAt : Address -> 'K
+
+  /// Returns the number of keys in the index
+  abstract KeyCount : int64
+
   /// Returns whether the specified index is empty. This is equivalent to 
   /// testing if `Keys` are empty, but it does not have to evaluate delayed index.
   abstract IsEmpty : bool
+
   /// Find the address associated with the specified key, or with the nearest
   /// key as specifeid by the `lookup` argument. The `condition` function is called
   /// when searching for keys to ask the caller whether the address should be returned
   /// (or whether to continue searching). This is used when searching for previous element
   /// in a series (where we need to check if a value at the address is available)
   abstract Lookup : key:'K * lookup:Lookup * condition:(Address -> bool) -> OptionalValue<'K * Address>  
+
   /// Returns all key-address mappings in the index
   abstract Mappings : seq<'K * Address>
+
   /// Returns the minimal and maximal address used in the index.
   abstract Range : Address * Address
+
   /// Returns the minimal and maximal key associated with the index.
   /// (the operation may fail for unordered indices)
   abstract KeyRange : 'K * 'K
+
   /// Returns `true` if the index is ordered and `false` otherwise
   abstract IsOrdered : bool
+
   /// Returns a comparer associated with the values used by the current index.
   abstract Comparer : System.Collections.Generic.Comparer<'K>
+
   /// Returns an index builder that canbe used for constructing new indices of the
   /// same kind as the current index (e.g. a lazy index returns a lazy index builder)
   abstract Builder : IIndexBuilder
+
 
 /// Represents a pair of index and vector construction 
 /// (many of the index operations take/return an index together with a construction
@@ -233,8 +246,7 @@ and IIndexBuilder =
     SeriesConstruction<'TNewKey>
 
   /// Drop an item associated with the specified key from the index. 
-  abstract DropItem : SeriesConstruction<'K> * 'K -> 
-    SeriesConstruction<'K> 
+  abstract DropItem : SeriesConstruction<'K> * 'K -> SeriesConstruction<'K> 
 
   /// Get items associated with the specified key from the index. This method takes
   /// `ICustomLookup<K>` which provides an implementation of `ICustomKey<K>`. This 
