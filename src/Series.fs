@@ -731,7 +731,7 @@ and
   /// Shows the data frame content in a human-readable format. The resulting string
   /// shows all columns, but a limited number of rows. The property is used 
   /// automatically by F# Interactive.
-  member series.Format = 
+  member series.Format() = 
     let getLevel ordered previous reset maxLevel level (key:'K) = 
       let levelKey = 
         if level = 0 && maxLevel = 0 then box key
@@ -766,6 +766,9 @@ and
           |> array2D
           |> Formatting.formatTable
           |> sprintf "\n%s"
+
+  interface IFsiFormattable with
+    member x.Format() = (x :> Series<_, _>).Format()
 
   // ----------------------------------------------------------------------------------------------
   // Nicer constructor

@@ -60,7 +60,7 @@ let ``Can save MSFT data as CSV file and read it afterwards (with custom format)
   expected.SaveCsv(file, keyNames=["Date"], separator=';', culture=System.Globalization.CultureInfo.GetCultureInfo("cs-CZ"))
   let actual = 
     Frame.ReadCsv(file, separators=";", culture="cs-CZ")
-    |> Frame.indexRowsDate "Date" |> Frame.dropCol "Date"
+    |> Frame.indexRowsDate "Date" |> Frame.dropSeries "Date"
   actual |> shouldEqual expected
 
 [<Test>]

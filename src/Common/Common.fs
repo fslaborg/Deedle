@@ -761,6 +761,12 @@ module Seq =
       yield k, l, r }
 
 /// [omit]
+/// An interface implemented by types that support nice formatting for F# Interactive
+/// (The `FSharp.DataFrame.fsx` file registers an FSI printer using this interface.)
+type IFsiFormattable =
+  abstract Format : unit -> string
+
+/// [omit]
 /// Contains helper functions and configuration constants for pretty printing
 module Formatting = 
   /// Maximal number of items to be printed at the beginning of a series/frame

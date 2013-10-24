@@ -15,6 +15,7 @@ open System
 open System.ComponentModel
 open System.Collections.Generic
 open System.Runtime.InteropServices
+open System.Collections.Specialized
 open Microsoft.FSharp.Quotations
 open VectorHelpers
 
@@ -42,7 +43,6 @@ type FrameData =
 /// More info
 ///
 ///
-[<StructuredFormatDisplay("{Format}")>]
 type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>
     internal ( rowIndex:IIndex<'TRowKey>, columnIndex:IIndex<'TColumnKey>, 
                data:IVector<IVector>) =
@@ -60,10 +60,14 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   // TODO: Perhaps assert that the 'data' vector has all things required by column index
   // (to simplify various handling below)
 
-  let mutable rowIndex = rowIndex
+  // NOTE: Row index is only mutated when adding the first series to a data
+  // frame that has been created as empty, otherwise it is immutable
+  let mutable rowIndex = rowIndex       
   let mutable columnIndex = columnIndex
   let mutable data = data
 
+  let frameColumnsChanged = new DelegateEvent<NotifyCollectionChangedEventHandler>()
+  
   let createRowReader rowAddress =
     // 'let rec' would be more elegant, but it is slow...
     let virtualVector = ref (Unchecked.defaultof<_>)
@@ -107,6 +111,12 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     let columnIndex = columnIndex.Lookup(column)
     if not columnIndex.HasValue then OptionalValue.Missing else
     data.GetValue (snd columnIndex.Value)
+
+  member private x.setColumnIndex newColumnIndex = 
+    columnIndex <- newColumnIndex
+    let args = NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset)
+    frameColumnsChanged.Trigger([| x; args |])
+
   member internal x.IndexBuilder = indexBuilder
   member internal x.VectorBuilder = vectorBuilder
 
@@ -521,14 +531,14 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     if isEmpty then
       // If the frame was empty, then initialize both indices
       rowIndex <- series.Index
-      columnIndex <- Index.ofKeys [column]
-      data <- Vector.ofValues [series.Vector]
       isEmpty <- false
+      data <- Vector.ofValues [series.Vector]
+      frame.setColumnIndex (Index.ofKeys [column])
     else
       let other = Frame(series.Index, Index.ofUnorderedKeys [column], Vector.ofValues [series.Vector])
       let joined = frame.Join(other, JoinKind.Left, lookup)
-      columnIndex <- joined.ColumnIndex
       data <- joined.Data
+      frame.setColumnIndex joined.ColumnIndex
 
   /// Mutates the data frame by removing the specified series from the 
   /// frame columns. The operation throws if the column key is not found.
@@ -540,8 +550,8 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   /// [category:Series operations]
   member frame.DropSeries(column:'TColumnKey) = 
     let newColumnIndex, colCmd = indexBuilder.DropItem( (columnIndex, Vectors.Return 0), column)
-    columnIndex <- newColumnIndex
     data <- vectorBuilder.Build(colCmd, [| data |])
+    frame.setColumnIndex newColumnIndex
 
   /// Mutates the data frame by replacing the specified series with
   /// a new series. (If the series does not exist, only the new series is added.) 
@@ -648,16 +658,16 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   member frame.RenameSeries(columnKeys) =
     if Seq.length columnIndex.Keys <> Seq.length columnKeys then 
       invalidArg "columnKeys" "The number of new column keys does not match with the number of columns"
-    columnIndex <- Index.ofKeys columnKeys
+    frame.setColumnIndex (Index.ofKeys columnKeys)
 
   /// [category:Series operations]
   member frame.RenameSeries(oldKey, newKey) =
     let newKeys = columnIndex.Keys |> Seq.map (fun k -> if k = oldKey then newKey else k)
-    columnIndex <- Index.ofKeys newKeys
+    frame.setColumnIndex (Index.ofKeys newKeys)
 
   /// [category:Series operations]
   member frame.RenameSeries(mapping:Func<_, _>) =
-    columnIndex <- Index.ofKeys (Seq.map mapping.Invoke columnIndex.Keys)
+    frame.setColumnIndex (Index.ofKeys (Seq.map mapping.Invoke columnIndex.Keys))
 
   /// [category:Series operations]
   static member (?<-) (frame:Frame<_, _>, column, series:Series<'T, 'V>) =
@@ -897,7 +907,7 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   /// Shows the data frame content in a human-readable format. The resulting string
   /// shows all columns, but a limited number of rows. The property is used 
   /// automatically by F# Interactive.
-  member frame.Format = 
+  member frame.Format() = 
     try
       let colLevels = 
         match frame.ColumnIndex.Keys |> Seq.headOrNone with 
@@ -950,8 +960,15 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
     with e -> sprintf "Formatting failed: %A" e
 
   // ----------------------------------------------------------------------------------------------
-  // Interfaces (2.) - support the C# dynamic keyword
+  // Interfaces - support the C# dynamic keyword
   // ----------------------------------------------------------------------------------------------
+
+  interface IFsiFormattable with
+    member x.Format() = (x :> Frame<_, _>).Format()
+
+  interface INotifyCollectionChanged with
+    [<CLIEvent>]
+    member x.CollectionChanged = frameColumnsChanged.Publish
 
   interface System.Dynamic.IDynamicMetaObjectProvider with 
     member frame.GetMetaObject(expr) = 
