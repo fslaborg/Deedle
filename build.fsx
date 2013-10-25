@@ -39,7 +39,7 @@ let release = parseReleaseNotes (IO.File.ReadAllLines "RELEASE_NOTES.md")
 
 // Generate assembly info files with the right version & up-to-date information
 Target "AssemblyInfo" (fun _ ->
-  let fileName = "src/Common/AssemblyInfo.fs"
+  let fileName = "src/Deedle/Common/AssemblyInfo.fs"
   CreateFSharpAssemblyInfo fileName
       [ Attribute.Title project
         Attribute.Product project
@@ -56,7 +56,7 @@ open System.IO
 Target "UpdateFsxVersions" (fun _ ->
     let pattern = "packages/Deedle.(.*)/lib/net40"
     let replacement = sprintf "packages/Deedle.%s/lib/net40" release.NugetVersion
-    let path = "./src/Deedle.fsx"
+    let path = "./src/Deedle/Deedle.fsx"
     let text = File.ReadAllText(path)
     let text = Text.RegularExpressions.Regex.Replace(text, pattern, replacement)
     File.WriteAllText(path, text)

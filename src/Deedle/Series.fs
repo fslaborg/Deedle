@@ -581,6 +581,8 @@ and
     let! newVector = vectorBuilder.AsyncBuild(cmd, [| vector |])
     return Series<_, _>(newIndex, newVector, vectorBuilder, indexBuilder) }
 
+  member x.MaterializeAsync() = 
+    x.AsyncMaterialize() |> Async.StartAsTask
     
   // ----------------------------------------------------------------------------------------------
   // Operators and F# functions
@@ -774,7 +776,6 @@ and
                         yield "..." ] }
           |> array2D
           |> Formatting.formatTable
-          |> sprintf "\n%s"
 
   interface IFsiFormattable with
     member x.Format() = (x :> Series<_, _>).Format()

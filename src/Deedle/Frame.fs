@@ -956,7 +956,6 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
                   yield value.ToString() ] }
       |> array2D
       |> Formatting.formatTable
-      |> sprintf "\n%s"
     with e -> sprintf "Formatting failed: %A" e
 
   // ----------------------------------------------------------------------------------------------
