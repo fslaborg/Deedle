@@ -173,6 +173,10 @@ type VectorConstruction =
   /// supposed to create the new vector.
   | CustomCommand of list<VectorConstruction> * (list<IVector> -> IVector)
 
+  /// Same as `CustomCommand` with the difference that the resulting vector is returned
+  /// asynchronously (this is useful for lazy loading and it is used by `AsyncBuild`).
+  | AsyncCustomCommand of list<VectorConstruction> * (list<IVector> -> Async<IVector>)
+
 
 /// Represents an object that can construct vector values by processing 
 /// the "mini-DSL" representation `VectorConstruction`.
@@ -192,3 +196,7 @@ type IVectorBuilder =
   /// is an array of arguments ("variables") that may be referenced from the
   /// `VectorConstruction` using the `Return 0` construct.
   abstract Build<'T> : VectorConstruction * IVector<'T>[] -> IVector<'T>
+
+  /// Asynchronous version of `Build` operation. This is mainly used for 
+  /// `AsyncMaterialize` and it does not handle fully general vector constructions (yet)
+  abstract AsyncBuild<'T> : VectorConstruction * IVector<'T>[] -> Async<IVector<'T>>

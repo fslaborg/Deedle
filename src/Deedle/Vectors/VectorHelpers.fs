@@ -261,3 +261,4 @@ let rec substitute ((oldVar, newVar) as subst) = function
   | Append(l, r) -> Append(substitute subst l, substitute subst r)
   | Combine(l, r, c) -> Combine(substitute subst l, substitute subst r, c)
   | CustomCommand(vcs, f) -> CustomCommand(List.map (substitute subst) vcs, f)
+  | AsyncCustomCommand(vcs, f) -> AsyncCustomCommand(List.map (substitute subst) vcs, f)

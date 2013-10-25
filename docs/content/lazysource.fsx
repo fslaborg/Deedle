@@ -21,6 +21,7 @@ delayed internal representation.
 We will not use a real database in this tutorial, but let's say that you have the
 following function which loads data for a given day range: 
 *)
+open Deedle
 
 /// Given a time range, generates random values for dates (at 12:00 AM)
 /// starting with the day of the first date time and ending with the 
@@ -29,7 +30,7 @@ let generate (low:DateTime) (high:DateTime) =
   let rnd = Random()
   let days = int (high.Date - low.Date).TotalDays + 1
   seq { for d in 0 .. days -> 
-          low.Date.AddDays(float d), rnd.Next() }
+          KeyValue.Create(low.Date.AddDays(float d), rnd.Next()) }
 
 (**
 Using random numbers as the source in this example is not entirely correct, because
@@ -39,15 +40,13 @@ is required - but it will suffice for the demonstration.
 Now, to create a lazily loaded series, we need to open the `Indices` namespace,
 specify the minimal and maximal value of the series and use `DelayedSeries.Create`:
 *)
-open Deedle
 open Deedle.Indices
 
 // Minimal and maximal values that can be loaded from the series
 let min, max = DateTime(2010, 1, 1), DateTime(2013, 1, 1)
 
 // Create a lazy series for the given range
-let ls = DelayedSeries.Create(min, max, fun (lo, lob) (hi, hib) -> 
-  async { 
+let ls = DelayedSeries.Create(min, max, fun (lo, lob) (hi, hib) -> async { 
     printfn "Query: %A - %A" (lo, lob) (hi, hib)
     return generate lo hi })
 

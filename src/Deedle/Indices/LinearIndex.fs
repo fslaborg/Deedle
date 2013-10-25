@@ -202,6 +202,8 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
   interface IIndexBuilder with
     /// Linear index is always fully evaluated - just return it
     member builder.Project(index) = index
+    /// Linear index is always fully evaluated - just return it asynchronously
+    member builder.AsyncMaterialize( (index, vector) ) = async.Return(index), vector
 
     /// Create an index from the specified data
     member builder.Create<'K when 'K : equality>(keys, ordered) = 

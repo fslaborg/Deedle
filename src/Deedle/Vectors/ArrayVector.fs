@@ -66,6 +66,17 @@ type ArrayVectorBuilder() =
       if hasNAs then av <| VectorOptional(MissingValues.createMissingOrNAArray optValues)
       else av <| VectorNonOptional(optValues |> Array.map (fun v -> v.Value))
 
+    /// Asynchronous version - limited implementation for AsyncMaterialize
+    member builder.AsyncBuild<'T>(command:VectorConstruction, arguments:IVector<'T>[]) = async {
+      match command with
+      | AsyncCustomCommand(vectors, f) ->
+          let vectors = List.map (fun v -> vectorBuilder.Build(v, arguments) :> IVector) vectors
+          let! res = f vectors
+          return res :?> IVector<_>
+      | cmd ->  
+          // Fall back to the synchronous mode for anything more complicated
+          return (builder :> IVectorBuilder).Build<'T>(cmd, arguments) }
+
     /// Given a vector construction command(s) produces a new IVector
     /// (the result is typically ArrayVector, but this is not guaranteed)
     member builder.Build<'T>(command:VectorConstruction, arguments:IVector<'T>[]) = 
@@ -163,6 +174,10 @@ type ArrayVectorBuilder() =
       | CustomCommand(vectors, f) ->
           let vectors = List.map (fun v -> vectorBuilder.Build(v, arguments) :> IVector) vectors
           f vectors :?> IVector<_>
+
+      | AsyncCustomCommand(vectors, f) ->
+          let vectors = List.map (fun v -> vectorBuilder.Build(v, arguments) :> IVector) vectors
+          Async.RunSynchronously(f vectors) :?> IVector<_>
 
 /// --------------------------------------------------------------------------------------
 

@@ -2,7 +2,6 @@
 namespace Deedle.Delayed
 
 open System
-open System.Linq
 open Deedle
 open Deedle.Addressing
 open Deedle.Vectors
@@ -57,13 +56,13 @@ module internal Ranges =
           yield! getBoundaries l
           yield! getBoundaries r }
     let allRanges = Seq.concat [seq [overallMin; overallMax]; getBoundaries ranges]
-    let sorted = allRanges.Distinct() |> Array.ofSeq
+    let sorted = System.Linq.Enumerable.Distinct(allRanges) |> Array.ofSeq
     Array.sortInPlaceWith (fun a b -> comparer.Compare(a, b)) sorted
 
     // Now we iterate over all regions and check if we want to include them
     // include the last point twice, otherwise we will not handle end correctly
     let includes = sorted |> Array.map (fun v -> v, if contains comparer v ranges then Inclusive else Exclusive)
-    let includes = seq { yield! includes; yield includes.Last() }
+    let includes = seq { yield! includes; yield System.Linq.Enumerable.Last(includes) }
     let regions = 
       [ for ((lo, loinc), (hi, hiinc)) as reg in Seq.pairwise includes ->
           (containsSub comparer lo hi ranges), reg ]
@@ -110,7 +109,8 @@ open System.Collections.Generic
 /// a delayed series, use `DelayedSeries.Create` (this creates index and vector 
 /// linked to this `DelayedSource`).
 type internal DelayedSource<'K, 'V when 'K : equality>
-    (rangeMin:'K, rangeMax:'K, ranges:Ranges<'K>, loader:System.Func<'K, BoundaryBehavior, 'K, BoundaryBehavior, Task<seq<KeyValuePair<'K, 'V>>>>) =
+    ( rangeMin:'K, rangeMax:'K, ranges:Ranges<'K>, 
+      loader:('K * BoundaryBehavior) -> ('K * BoundaryBehavior) -> Async<seq<KeyValuePair<'K, 'V>>>) =
 
   static let vectorBuilder = ArrayVector.ArrayVectorBuilder.Instance
   static let indexBuilder = Linear.LinearIndexBuilder.Instance
@@ -121,27 +121,29 @@ type internal DelayedSource<'K, 'V when 'K : equality>
   let (<=) a b = comparer.Compare(a, b) <= 0
   let (>=) a b = comparer.Compare(a, b) >= 0
 
-  // Lazy value that loads the data when needed
-  let seriesData = Lazy.Create(fun () ->
-    let ranges = flattenRanges rangeMin rangeMax comparer ranges
-    let data = 
-      [| for (lo, lob), (hi, hib) in ranges do
-           let dataTask = loader.Invoke(lo, lob, hi, hib)
-           for KeyValue(k, v) in dataTask.Result do
-             if (k > lo || (k >= lo && lob = Inclusive)) &&
-                (k < hi || (k <= hi && hib = Inclusive)) then
-               yield k, v |] 
-    let vector = vectorBuilder.Create(Array.map snd data)
-    let index = indexBuilder.Create(Seq.map fst data, Some true)
-    index, vector )
+  // Lazy computation that returns started task whil loads the data 
+  // (we use task here so that we can cache the result)
+  let asyncData = Lazy.Create(fun () -> 
+    async {
+      let ranges = flattenRanges rangeMin rangeMax comparer ranges
+      let data = new ResizeArray<_>(1000)
+      for (lo, lob), (hi, hib) in ranges do
+        let! rangeValues = loader (lo, lob) (hi, hib)
+        for KeyValue(k, v) in rangeValues do
+          if (k > lo || (k >= lo && lob = Inclusive)) &&
+             (k < hi || (k <= hi && hib = Inclusive)) then data.Add( (k, v) )
+      let vector = vectorBuilder.Create(data.ToArray() |> Array.map snd)
+      let index = indexBuilder.Create(Seq.map fst data, Some true)
+      return index, vector } |> Async.StartAsTask)
 
   member x.Ranges = ranges
   member x.RangeMax = rangeMax
   member x.RangeMin = rangeMin
 
   member x.Loader = loader
-  member x.Index = fst seriesData.Value
-  member x.Values = snd seriesData.Value
+  member x.AsyncData = asyncData.Value
+  member x.Index = fst asyncData.Value.Result
+  member x.Values = snd asyncData.Value.Result
 
 // --------------------------------------------------------------------------------------
 // Delayed vector, index & index builder
@@ -220,6 +222,31 @@ and internal DelayedIndexBuilder() =
       match index with
       | :? IDelayedIndex<'K> as index -> index.SourceIndex
       | _ -> index
+
+    member x.AsyncMaterialize( (index:IIndex<'K>, vector) ) =
+      match index with
+      | :? IDelayedIndex<'K> as index ->
+        // See comment below for how DelayedIndexFunction works
+        { new DelayedIndexFunction<'K, _> with
+            member x.Invoke<'V>(index:DelayedIndex<'K, 'V>) =
+              // Start the task and return the index
+              let asyncIndex = async {
+                let! index, _ = Async.AwaitTask index.Source.AsyncData
+                return index }
+
+              // Return asynchronous vector construction that awaits for vector data
+              // of the associated vector, or just returns any other vectors
+              let cmd = Vectors.AsyncCustomCommand([vector], fun vectors -> async {
+                match List.head vectors with
+                | (:? DelayedVector<'K, 'V> as lv) when lv.Source = index.Source ->
+                    let! _, vect = Async.AwaitTask index.Source.AsyncData
+                    return vect  :> IVector
+                | other -> 
+                    return other })                    
+              asyncIndex, cmd }
+        |> index.Invoke
+      | _ ->
+        builder.AsyncMaterialize((index, vector))
 
     member x.GetRange(index, optLo:option<'K * _>, optHi:option<'K * _>, vector) = 
       match index with
@@ -314,14 +341,8 @@ type DelayedSeries =
   ///
   /// For more information see the [lazy data loading tutorial](../lazysource.html).
   static member Create(min, max, loader:Func<_, _, _, _, Task<seq<KeyValuePair<'K, 'V>>>>) : Series<'K, 'V> =
-    let initRange = Ranges.Range((min, BoundaryBehavior.Inclusive), (max, BoundaryBehavior.Inclusive))
-    let series = DelayedSource<'K, 'V>(min, max, initRange, loader)
-    let index = DelayedIndex(series)
-    let vector = DelayedVector(series)
-    // DelayedIndex never issues any special commands, 
-    // so we can just use ArrayVector builder
-    let vectorBuilder = ArrayVectorBuilder.Instance
-    Series<'K, 'V>(index, vector, vectorBuilder, DelayedIndexBuilder())
+    DelayedSeries.Create(min, max, fun (l, lb) (h, hb) ->
+      Async.AwaitTask (loader.Invoke(l, lb, h, hb)))
 
   /// An F#-friendly function that creates lazily loaded series. The method requires
   /// the overall range of the series (smallest and greatest key) and a function that
@@ -341,9 +362,9 @@ type DelayedSeries =
   ///
   /// For more information see the [lazy data loading tutorial](../lazysource.html).
   static member Create(min, max, loader) : Series<'K, 'V> =
-    DelayedSeries.Create<'K, 'V>(min, max, fun lo lob hi hib -> 
-      async { 
-        let! res = loader (lo, lob) (hi, hib) 
-        let proj = res |> Seq.map KeyValue.Create 
-        return proj } |> Async.StartAsTask )
-
+    let initRange = Ranges.Range((min, BoundaryBehavior.Inclusive), (max, BoundaryBehavior.Inclusive))
+    let series = DelayedSource<'K, 'V>(min, max, initRange, loader)
+    let index = DelayedIndex(series)
+    let vector = DelayedVector(series)
+    let vectorBuilder = ArrayVectorBuilder.Instance
+    Series<'K, 'V>(index, vector, vectorBuilder, DelayedIndexBuilder())

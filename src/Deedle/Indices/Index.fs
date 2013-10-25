@@ -169,6 +169,10 @@ type IIndex<'K when 'K : equality> =
 /// makes this more obvious)
 and SeriesConstruction<'K when 'K : equality> = IIndex<'K> * VectorConstruction
 
+/// Asynchronous version of `SeriesConstruction<'K>`. Returns a workflow that evaluates
+/// the index, together with a construction to apply (asynchronously) on vectors
+and AsyncSeriesConstruction<'K when 'K : equality> = Async<IIndex<'K>> * VectorConstruction
+
 /// A builder represents various ways of constructing index, either from keys or from
 /// other indices. The operations that build a new index from an existing index also 
 /// build `VectorConstruction` which specifies how to transform vectors aligned with the
@@ -289,3 +293,8 @@ and IIndexBuilder =
   abstract Resample : IIndex<'K> * seq<'K> * Direction * source:VectorConstruction *
     valueSelector:('TNewKey * SeriesConstruction<'K> -> OptionalValue<'R>) *
     keySelector:('K * SeriesConstruction<'K> -> 'TNewKey) -> IIndex<'TNewKey> * IVector<'R>
+
+  /// Given an index and vector construction, return a new index asynchronously
+  /// to allow composing evaluation of lazy series. The command to be applied to
+  /// vectors can be applied asynchronously using `vectorBuilder.AsyncBuild`
+  abstract AsyncMaterialize : SeriesConstruction<'K> -> AsyncSeriesConstruction<'K>

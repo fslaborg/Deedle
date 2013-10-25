@@ -41,7 +41,6 @@ type ISeries<'K when 'K : equality> =
 /// The type `Series<K, V>` represents a data series consisting of values `V` indexed by
 /// keys `K`. The keys of a series may or may not be ordered 
 and
-  [<StructuredFormatDisplay("{Format}")>]
   Series<'K, 'V when 'K : equality>
     ( index:IIndex<'K>, vector:IVector<'V>,
       vectorBuilder : IVectorBuilder, indexBuilder : IIndexBuilder ) as this =
@@ -572,7 +571,17 @@ and
     let newIndex = indexBuilder.Create(keys, None)
     Series<'TNewKey, _>(newIndex, vector, vectorBuilder, indexBuilder)
 
+  // ----------------------------------------------------------------------------------------------
+  // Asynchronous support 
+  // ----------------------------------------------------------------------------------------------
+    
+  member x.AsyncMaterialize() = async {
+    let newIndexAsync, cmd = indexBuilder.AsyncMaterialize(index, Vectors.Return 0)
+    let! newIndex = newIndexAsync
+    let! newVector = vectorBuilder.AsyncBuild(cmd, [| vector |])
+    return Series<_, _>(newIndex, newVector, vectorBuilder, indexBuilder) }
 
+    
   // ----------------------------------------------------------------------------------------------
   // Operators and F# functions
   // ----------------------------------------------------------------------------------------------
@@ -769,6 +778,8 @@ and
 
   interface IFsiFormattable with
     member x.Format() = (x :> Series<_, _>).Format()
+
+
 
   // ----------------------------------------------------------------------------------------------
   // Nicer constructor

@@ -25,7 +25,7 @@ open Deedle.Indices
 let loadIntegers (lo, lob) (hi, hib) = async { 
   let lo = if lob = Inclusive then lo else lo + 1
   let hi = if hib = Inclusive then hi else hi - 1
-  return seq { for x in lo .. hi -> x, x } }
+  return seq { for x in lo .. hi -> KeyValue.Create(x, x) } }
 
 [<Test>]
 let ``No call is made when series is created and formatted`` () =
@@ -82,7 +82,7 @@ let ``Adding to data frame creates restriction based on data frame key range`` (
 [<Test>]
 let ``Created series does not contain out-of-range keys, even if the source provides them`` () = 
   let ls = DelayedSeries.Create(0, 100, fun _ _ -> async { 
-    return seq { for i in 0 .. 100 -> i, i }  })
+    return seq { for i in 0 .. 100 -> KeyValue.Create(i, i) }  })
   ls.[0 .. 0] |> Series.keys |> List.ofSeq |> shouldEqual [0]
   ls.[.. 0] |> Series.keys |> List.ofSeq |> shouldEqual [0]
   ls.[100 ..] |> Series.keys |> List.ofSeq |> shouldEqual [100]
@@ -92,10 +92,39 @@ let ``Created series does not contain out-of-range keys, even if the source prov
 [<Test>]
 let ``Can add projection of a lazy vector to a data frame`` () = 
   let ls = DelayedSeries.Create(0, 100, fun _ _ -> async { 
-    return seq { for i in 0 .. 100 -> i, i }  })
+    return seq { for i in 0 .. 100 -> KeyValue.Create(i, i) }  })
   let df = Frame.ofColumns [ "Lazy" => ls ]
   df?Test <- ((+) 1) $ ls 
   df?Lazy - df?Test |> Series.sum |> int |> shouldEqual -101
+
+// ------------------------------------------------------------------------------------------------
+// Materialization
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can materialize series asynchronously`` () =
+  let r = Recorder()
+  let ls = DelayedSeries.Create(0, 100, spy2 r loadIntegers).[40 .. 60]
+  let ms = ls.AsyncMaterialize() |> Async.RunSynchronously 
+  r.Values |> shouldEqual [(40, Inclusive), (60, Inclusive)]
+  ms |> shouldEqual (series [ for i in 40 .. 60 -> i, i] )
+
+[<Test>]
+let ``Discarding async materialization does not call the loader`` () =
+  let r = Recorder()
+  let ls = DelayedSeries.Create(0, 100, spy2 r loadIntegers).[40 .. 60]
+  ls.AsyncMaterialize() |> ignore
+  System.Threading.Thread.Sleep(100)
+  r.Values |> shouldEqual []
+
+[<Test>]
+let ``Materializing materialized series is a no-op`` () =
+  let r = Recorder()
+  let ls = DelayedSeries.Create(0, 100, spy2 r loadIntegers).[40 .. 60]
+  let ms = ls.AsyncMaterialize() |> Async.RunSynchronously 
+  r.Values |> shouldEqual [(40, Inclusive), (60, Inclusive)]
+  let ms2 = ms.AsyncMaterialize() |> Async.RunSynchronously
+  r.Values |> shouldEqual [(40, Inclusive), (60, Inclusive)]
 
 // ------------------------------------------------------------------------------------------------
 // Random testing

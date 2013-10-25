@@ -1,8 +1,10 @@
 bin
 temp/
 docs/output
-src/bin
-src/obj
+src/Deedle/bin
+src/Deedle/obj
+src/Deedle.RProvider.Plugin/bin
+src/Deedle.RProvider.Plugin/obj
 *.suo
 tests/Deedle.Tests/obj
 tests/Deedle.Tests/bin

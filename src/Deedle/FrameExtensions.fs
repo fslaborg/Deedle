@@ -200,7 +200,7 @@ module FSharpFrameExtensions =
   /// or frames from key-row or key-column pairs. The operator simply returns a 
   /// tuple, but it provides a more convenient syntax. For example:
   ///
-  ///     Series.ofObservations [ "k1" => 1; "k2" => 15 ]
+  ///     series [ "k1" => 1; "k2" => 15 ]
   ///
   let (=>) a b = a, b
 
@@ -218,6 +218,19 @@ module FSharpFrameExtensions =
   ///     adjust $ (s1 + s1)
   ///
   let ($) f series = Series.mapValues f series
+
+  /// A function for constructing data frame from a sequence of name - column pairs.
+  /// This provides a nicer syntactic sugar for `Frame.ofColumns`.
+  ///
+  /// ## Example
+  /// To create a simple frame with two columns, you can write:
+  /// 
+  ///     frame [ "A" => series [ 1 => 30.0; 2 => 35.0 ]
+  ///             "B" => series [ 1 => 30.0; 3 => 40.0 ] ]
+  ///
+  let frame columns = 
+    let names, values = columns |> Array.ofSeq |> Array.unzip
+    FrameUtils.fromColumns(Series(names, values))
 
   type Frame with
     // NOTE: When changing the parameters below, do not forget to update 'features.fsx'!
