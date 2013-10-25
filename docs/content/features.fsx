@@ -1,5 +1,5 @@
 ﻿(*** hide ***)
-#r "../../bin/Deedle.dll"
+#load "../../bin/Deedle.fsx"
 #load "../../packages/FSharp.Charting.0.87/FSharp.Charting.fsx"
 #r "../../packages/FSharp.Data.1.1.10/lib/net40/FSharp.Data.dll"
 open System

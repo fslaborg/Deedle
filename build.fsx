@@ -4,34 +4,40 @@
 
 #r "packages/FAKE/tools/FakeLib.dll"
 open System
-open System.IO
 open Fake 
 open Fake.Git
+open Fake.ReleaseNotesHelper
 open Fake.AssemblyInfoFile
 
-Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
-
+// --------------------------------------------------------------------------------------
 // Information about the project to be used at NuGet and in AssemblyInfo files
+// --------------------------------------------------------------------------------------
+
 let project = "Deedle"
-let authors = ["Blue Mountain Capital"]
+let authors = ["BlueMountain Capital"]
 let summary = "Easy to use .NET library for data manipulation and scientific programming"
 let description = """
-  Deedle (Dotnet Exploratory Data Library) implements an efficient and robust 
-  data frame and series structures for manipulating with structured data. It supports
-  handling of missing values, aggregations, grouping, joining, statistical functions and
-  more. For frames and series with ordered indices (such as time series), automatic
-  alignment is also available. """
+  Deedle implements an efficient and robust frame and series data structures for 
+  manipulating with structured data. It supports handling of missing values, 
+  aggregations, grouping, joining, statistical functions and more. For frames and 
+  series with ordered indices (such as time series), automatic alignment is also 
+  available. """
 
-let tags = "F# fsharp deedle dataframe series statistics science"
+let tags = "F# fsharp deedle dataframe series statistics data science"
 
-// Read release notes & version info from RELEASE_NOTES.md
-let release =
-  File.ReadLines "RELEASE_NOTES.md"
-  |> ReleaseNotesHelper.parseReleaseNotes
+let gitHome = "https://github.com/BlueMountainCapital"
+let gitName = "Deedle"
+let testAssemblies = ["tests/*/bin/Release/Deedle*Tests*.dll"]
 
 // --------------------------------------------------------------------------------------
-// Generate assembly info files with the right version & up-to-date information
+// The rest of the code is standard F# build script 
+// --------------------------------------------------------------------------------------
 
+// Read release notes & version info from RELEASE_NOTES.md
+Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
+let release = parseReleaseNotes (IO.File.ReadAllLines "RELEASE_NOTES.md")
+
+// Generate assembly info files with the right version & up-to-date information
 Target "AssemblyInfo" (fun _ ->
   let fileName = "src/Common/AssemblyInfo.fs"
   CreateFSharpAssemblyInfo fileName
@@ -40,6 +46,20 @@ Target "AssemblyInfo" (fun _ ->
         Attribute.Description summary
         Attribute.Version release.AssemblyVersion
         Attribute.FileVersion release.AssemblyVersion] 
+)
+
+// --------------------------------------------------------------------------------------
+// Update the assembly version numbers in the script file.
+
+open System.IO
+
+Target "UpdateFsxVersions" (fun _ ->
+    let pattern = "packages/Deedle.(.*)/lib/net40"
+    let replacement = sprintf "packages/Deedle.%s/lib/net40" release.NugetVersion
+    let path = "./src/Deedle.fsx"
+    let text = File.ReadAllText(path)
+    let text = Text.RegularExpressions.Regex.Replace(text, pattern, replacement)
+    File.WriteAllText(path, text)
 )
 
 // --------------------------------------------------------------------------------------
@@ -63,7 +83,7 @@ Target "CleanDocs" (fun _ ->
 
 Target "Build" (fun _ ->
     { BaseDirectories = [__SOURCE_DIRECTORY__]
-      Includes = ["Deedle.sln"; "Deedle.Tests.sln"]
+      Includes = [project + ".sln"; project + ".Tests.sln"]
       Excludes = [] } 
     |> Scan
     |> MSBuildRelease "" "Rebuild"
@@ -76,11 +96,10 @@ Target "Build" (fun _ ->
 Target "RunTests" (fun _ ->
     let nunitVersion = GetPackageVersion "packages" "NUnit.Runners"
     let nunitPath = sprintf "packages/NUnit.Runners.%s/Tools" nunitVersion
-
     ActivateFinalTarget "CloseTestRunner"
 
     { BaseDirectories = [__SOURCE_DIRECTORY__]
-      Includes = ["tests/*/bin/Release/Deedle*Tests*.dll"]
+      Includes = testAssemblies
       Excludes = [] } 
     |> Scan
     |> NUnit (fun p ->
@@ -115,26 +134,25 @@ Target "NuGet" (fun _ ->
             ToolPath = nugetPath
             AccessKey = getBuildParamOrDefault "nugetkey" ""
             Publish = hasBuildParam "nugetkey" })
-        "nuget/Deedle.nuspec"
+        ("nuget/" + project + ".nuspec")
 )
 
 // --------------------------------------------------------------------------------------
 // Generate the documentation
 
-Target "JustGenerateDocs" (fun _ ->
-    executeFSI "docs/tools" "generate.fsx" [] |> ignore
+Target "GenerateDocs" (fun _ ->
+    // HACK: Assuming the system has F# 3.1 (which is used in the docs)
+    // we delete the fsi.exe that comes with FAKE and use system one instead
+    // (once FAKE includes F# 3.1, the next line can be deleted)
+    DeleteFile "packages/FAKE/tools/Fsi.exe"
+    executeFSIWithArgs "docs/tools" "generate.fsx" ["--define:RELEASE"] [] |> ignore
 )
-
-Target "GenerateDocs" DoNothing
-"CleanDocs" ==> "JustGenerateDocs" ==> "GenerateDocs"
 
 // --------------------------------------------------------------------------------------
 // Release Scripts
 
-let gitHome = "https://github.com/BlueMountainCapital"
-
 Target "ReleaseDocs" (fun _ ->
-    Repository.clone "" (gitHome + "/Deedle.git") "temp/gh-pages"
+    Repository.clone "" (gitHome + "/" + gitName + ".git") "temp/gh-pages"
     Branches.checkoutBranch "temp/gh-pages" "gh-pages"
     CopyRecursive "docs/output" "temp/gh-pages" true |> printfn "%A"
     CommandHelper.runSimpleGitCommand "temp/gh-pages" "add ." |> printfn "%s"
@@ -144,7 +162,7 @@ Target "ReleaseDocs" (fun _ ->
 )
 
 Target "ReleaseBinaries" (fun _ ->
-    Repository.clone "" (gitHome + "/Deedle.git") "temp/release"
+    Repository.clone "" (gitHome + "/" + gitName + ".git") "temp/release"
     Branches.checkoutBranch "temp/release" "release"
     CopyRecursive "bin" "temp/release/bin" true |> printfn "%A"
     let cmd = sprintf """commit -a -m "Update binaries for version %s""" release.NugetVersion
@@ -161,13 +179,15 @@ Target "All" DoNothing
 
 "Clean"
   ==> "RestorePackages"
+  ==> "UpdateFsxVersions"
   ==> "AssemblyInfo"
   ==> "Build"
-  ==> "GenerateDocs"
   ==> "RunTests"
   ==> "All"
 
 "All" 
+  ==> "CleanDocs"
+  ==> "GenerateDocs"
   ==> "ReleaseDocs"
   ==> "ReleaseBinaries"
   ==> "NuGet"

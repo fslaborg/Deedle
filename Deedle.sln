@@ -32,6 +32,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{C45F5ABF-7BCD-4C3A-BD51-81E0769E0F29}"
 	ProjectSection(SolutionItems) = preProject
 		docs\tools\generate.fsx = docs\tools\generate.fsx
+		docs\tools\packages.config = docs\tools\packages.config
 		docs\tools\template.html = docs\tools\template.html
 	EndProjectSection
 EndProject
@@ -42,6 +43,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "reference", "reference", "{
 		docs\tools\reference\module.cshtml = docs\tools\reference\module.cshtml
 		docs\tools\reference\namespaces.cshtml = docs\tools\reference\namespaces.cshtml
 		docs\tools\reference\type.cshtml = docs\tools\reference\type.cshtml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{839C977B-55D4-4EFC-8B81-290357C836D3}"
+	ProjectSection(SolutionItems) = preProject
+		docs\tools\templates\template.cshtml = docs\tools\templates\template.cshtml
 	EndProjectSection
 EndProject
 Global
@@ -62,5 +68,6 @@ Global
 		{8BD8876A-28FC-4B7D-89E4-09AC07794D0E} = {245F1283-32FA-4B38-AC76-448B8AE5F7AC}
 		{C45F5ABF-7BCD-4C3A-BD51-81E0769E0F29} = {245F1283-32FA-4B38-AC76-448B8AE5F7AC}
 		{37609C0E-CFDC-4BFA-8C0D-E659127F37C1} = {245F1283-32FA-4B38-AC76-448B8AE5F7AC}
+		{839C977B-55D4-4EFC-8B81-290357C836D3} = {C45F5ABF-7BCD-4C3A-BD51-81E0769E0F29}
 	EndGlobalSection
 EndGlobal

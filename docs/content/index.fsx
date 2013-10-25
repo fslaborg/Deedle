@@ -1,5 +1,5 @@
 (*** hide ***)
-#r "../../bin/Deedle.dll"
+#load "../../bin/Deedle.fsx"
 open System
 open Deedle
 /// Titanic data set loaded from a CSV file

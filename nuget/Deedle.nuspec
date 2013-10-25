@@ -22,5 +22,6 @@
     <file src="..\bin\Deedle.dll" target="lib/net40" />
     <file src="..\bin\Deedle.pdb" target="lib/net40" />
     <file src="..\bin\Deedle.xml" target="lib/net40" />
+    <file src="..\bin\Deedle.fsx" target="." />
   </files>
 </package>

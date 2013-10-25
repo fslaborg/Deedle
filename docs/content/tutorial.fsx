@@ -1,4 +1,7 @@
-﻿(**
+﻿(*** hide ***)
+#I "../../bin/"
+
+(**
 F# DataFrame in 10 minutes
 ==========================
 
@@ -14,9 +17,10 @@ we also need  [F# Charting](http://fsharp.github.io/FSharp.Charting), which
 works similarly:
 
 *)
-#r "../../bin/Deedle.dll"
 #I "../../packages/FSharp.Charting.0.87"
+#I "../../packages/Deedle.0.9.5"
 #load "FSharp.Charting.fsx"
+#load "Deedle.fsx"
 
 open System
 open Deedle
