@@ -12,8 +12,8 @@
     <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
     <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
-    <link type="text/css" rel="stylesheet" href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/content/style.css" />
-    <script type="text/javascript" src="file://C:\dev\FSharp.DataFrame\docs\tools\../output/content/tips.js"></script>
+    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/style.css" />
+    <script type="text/javascript" src="http://bluemountaincapital.github.io/Deedle/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -260,7 +260,7 @@
 <div class="tip" id="fs12">val femaleSurvivors : obj<br /><br />Full name: Titanic.femaleSurvivors</div>
 <div class="tip" id="fs13">val femaleBySurvived : obj<br /><br />Full name: Titanic.femaleBySurvived</div>
 <div class="tip" id="fs14">val femaleSurvivorsPc : float<br /><br />Full name: Titanic.femaleSurvivorsPc</div>
-<div class="tip" id="fs15">Multiple items<br />val float : value:&#39;T -&gt; float (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.float<br /><br />--------------------<br />type float = System.Double<br /><br />Full name: Microsoft.FSharp.Core.float<br /><br />--------------------<br />type float&lt;&#39;Measure&gt; = float<br /><br />Full name: Microsoft.FSharp.Core.float&lt;_&gt;</div>
+<div class="tip" id="fs15">Multiple items<br />val float : value:&#39;T -&gt; float (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.float<br /><br />--------------------<br />type float&lt;&#39;Measure&gt; = float<br /><br />Full name: Microsoft.FSharp.Core.float&lt;_&gt;<br /><br />--------------------<br />type float = System.Double<br /><br />Full name: Microsoft.FSharp.Core.float</div>
 <div class="tip" id="fs16">val children : key:&#39;a -&gt; passenger:Passenger -&gt; bool<br /><br />Full name: Titanic.children</div>
 <div class="tip" id="fs17">val over30 : key:&#39;a -&gt; passenger:Passenger -&gt; bool<br /><br />Full name: Titanic.over30</div>
 <div class="tip" id="fs18">val classy : key:&#39;a -&gt; passenger:Passenger -&gt; bool<br /><br />Full name: Titanic.classy</div>
@@ -292,7 +292,7 @@
 <div class="tip" id="fs44">val createTree : dataSet:obj [] [] * labels:string [] -&gt; Tree<br /><br />Full name: DecisionTree.createTree</div>
 <div class="tip" id="fs45">val test : p:Passenger -&gt; bool<br /><br />Full name: Titanic.test</div>
 <div class="tip" id="fs46">val classify : inputTree:Tree * featLabels:string [] * testVec:obj [] -&gt; Value option<br /><br />Full name: DecisionTree.classify</div>
-<div class="tip" id="fs47">union case Option.Some: Value: &#39;T -&gt; Option&lt;&#39;T&gt;</div>
+<div class="tip" id="fs47">union case Option.Some: &#39;T -&gt; Option&lt;&#39;T&gt;</div>
 <div class="tip" id="fs48">val x : Value</div>
 <div class="tip" id="fs49">union case Option.None: Option&lt;&#39;T&gt;</div>
 <div class="tip" id="fs50">val mode : dataSet:obj [] [] -&gt; obj<br /><br />Full name: DecisionTree.mode</div>
@@ -302,59 +302,59 @@
         </div>
         <div class="span3">
           <a href="https://nuget.org/packages/Deedle">
-            <img src="{root}/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+            <img src="http://bluemountaincapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
           <ul class="nav nav-list" id="menu">
             <li class="nav-header">Deedle</li>
-            <li><a href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/index.html">Home page</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/index.html">Home page</a></li>
             <li class="divider"></li>
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
             <li><a href="http://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
             <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
             <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
-            <li><a href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/design.html">Design notes</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/design.html">Design notes</a></li>
             
             <li class="nav-header">Using from F#</li>
             <li>
-              <a href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/tutorial.html">Quick start tutorial</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
               <ul class="nav nav-list">
-                <li><a href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/tutorial.html#creating">Creating data frames</a></li>
-                <li><a href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/tutorial.html#reindexing-and-joins">Using index & joining</a></li>
-                <li><a href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/tutorial.html#selecting">Reading values, slicing</a></li>
-                <li><a href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/tutorial.html#timeseries">Ordered time series</a></li>
-                <li><a href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/tutorial.html#projections">Projection and filtering</a></li>
-                <li><a href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/tutorial.html#grouping">Aggregating groups</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#creating">Creating data frames</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#reindexing-and-joins">Using index & joining</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#selecting">Reading values, slicing</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#timeseries">Ordered time series</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#projections">Projection and filtering</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#grouping">Aggregating groups</a></li>
               </ul>
             </li>
             <li>
-              <a href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/features.html">Data frame features</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/features.html">Data frame features</a>
               <ul class="nav nav-list">
-                <li><a href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/features.html#creating">Creating & loading</a></li>
-                <li><a href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/features.html#dataframe">Frame manipulation</a></li>
-                <li><a href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/features.html#slicing">Advanced slicing</a></li>
-                <li><a href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/features.html#grouping">Grouping data</a></li>
-                <li><a href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/features.html#indexing">Hierarchical indexing</a></li>
-                <li><a href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/features.html#missing">Missing values</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#creating">Creating & loading</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#dataframe">Frame manipulation</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#slicing">Advanced slicing</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#grouping">Grouping data</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#indexing">Hierarchical indexing</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#missing">Missing values</a></li>
               </ul>
             </li>
             <li>
-              <a href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/timeseries.html">Time series features</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/timeseries.html">Time series features</a>
               <ul class="nav nav-list">
-                <li><a href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/timeseries.html#alignment">Alignment & joining</a></li>
-                <li><a href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/timeseries.html#windowing">Windows and chunks</a></li>
-                <li><a href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/timeseries.html#sampling">Lookup and resampling</a></li>
-                <li><a href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/timeseries.html#stats">Statistics & math</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/timeseries.html#alignment">Alignment & joining</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/timeseries.html#windowing">Windows and chunks</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/timeseries.html#sampling">Lookup and resampling</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/timeseries.html#stats">Statistics & math</a></li>
               </ul>
             </li>
 
             <li class="nav-header">Documentation</li>
-            <li><a href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/reference/index.html">API Reference</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
 
             <li class="nav-header">Samples</li>
-            <li><a href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/lazysource.html">Lazy data loading</a></li>
-            <li><a href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/samples/volatility.html">Price volatility</a></li>
-            <li><a href="file://C:\dev\FSharp.DataFrame\docs\tools\../output/samples/titanic.html">Titanic survivors</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/samples/volatility.html">Price volatility</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/samples/titanic.html">Titanic survivors</a></li>
           </ul>
         </div>
       </div>
