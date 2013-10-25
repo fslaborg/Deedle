@@ -2,9 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>ComparisonFailedException - Deedle</title>
+    <title>R Provider interoperabilit
+</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
+    <meta name="description" content="Easy to use .NET library for data manipulation and scientific programming">
     <meta name="author" content="BlueMountain Capital">
 
     <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
@@ -35,34 +36,36 @@
       <div class="row">
         <div class="span9" id="main">
           
+<h1>R Provider interoperabilit</h1>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+<span class="l">8: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="prep">#I</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">packages</span><span class="s">/</span><span class="s">RProvider</span><span class="s">.</span><span class="s">1</span><span class="s">.</span><span class="s">0</span><span class="s">.</span><span class="s">3</span><span class="s">/</span><span class="s">lib</span><span class="s">&quot;</span>
+<span class="prep">#r</span> <span class="s">&quot;</span><span class="s">RProvider</span><span class="s">.</span><span class="s">dll</span><span class="s">&quot;</span>
+<span class="prep">#r</span> <span class="s">&quot;</span><span class="s">RDotNet</span><span class="s">.</span><span class="s">dll</span><span class="s">&quot;</span>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">RProvider</span>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">RProvider</span><span class="o">.</span><span class="i">``base``</span>
 
-
-
-<h1>ComparisonFailedException</h1>
-<div class="xmldoc">
-<p>An internal exception that is used to handle the case when comparison fails
-(even though the type implements IComparable and everything...)</p>
-</div>
-  <h3>Constructors</h3>
-  <table class="table table-bordered member-list">
-    <thead>
-      <tr><td>Constructor</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '303', 303)" onmouseover="showTip(event, '303', 303)">
-            new ComparisonFailedException
-          </code>
-          <div class="tip" id="303">
-            <strong>Signature:</strong>unit -&gt; ComparisonFailedException<br />
-                      </div>
-        </td>
-        <td class="xmldoc"></td>
-      </tr>
-    </tbody>
-  </table>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">df</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="i">frame</span> [ <span class="s">&quot;</span><span class="s">A</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">10.0</span>]]
+<span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="i">assign</span>(<span class="s">&quot;</span><span class="s">x</span><span class="s">&quot;</span>,  <span onmouseout="hideTip(event, 'fs3', 8)" onmouseover="showTip(event, 'fs3', 8)" class="i">df</span>)</pre>
+</td>
+</tr>
+</table>
+<div class="tip" id="fs1">namespace RProvider</div>
+<div class="tip" id="fs2">Multiple items<br />namespace RProvider<br /><br />--------------------<br />type RProvider =<br />&#160;&#160;inherit TypeProviderForNamespaces<br />&#160;&#160;new : cfg:TypeProviderConfig -&gt; RProvider<br /><br />Full name: RProvider.RProvider<br /><br />--------------------<br />new : cfg:CompilerServices.TypeProviderConfig -&gt; RProvider</div>
+<div class="tip" id="fs3">val df : Frame&lt;int,string&gt;<br /><br />Full name: Rinterop.df</div>
+<div class="tip" id="fs4">val frame : columns:seq&lt;&#39;a * #ISeries&lt;&#39;c&gt;&gt; -&gt; Frame&lt;&#39;c,&#39;a&gt; (requires equality and equality)<br /><br />Full name: Deedle.FSharpFrameExtensions.frame</div>
+<div class="tip" id="fs5">val series : observations:seq&lt;&#39;a * &#39;b&gt; -&gt; Series&lt;&#39;a,&#39;b&gt; (requires equality)<br /><br />Full name: Deedle.FSharpSeriesExtensions.series</div>
+<div class="tip" id="fs6"></div>
 
         </div>
         <div class="span3">

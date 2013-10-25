@@ -65,10 +65,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '97', 97)" onmouseover="showTip(event, '97', 97)">
+          <code onmouseout="hideTip(event, '96', 96)" onmouseover="showTip(event, '96', 96)">
             frame.SaveCsv(...)
           </code>
-          <div class="tip" id="97">
+          <div class="tip" id="96">
             <strong>Signature:</strong>(stream:Stream * ?includeRowKeys:bool option * ?keyNames:seq&lt;string&gt; option * ?separator:char option * ?culture:CultureInfo option) -&gt; unit<br />
                       </div>
         </td>
@@ -92,10 +92,10 @@ TSV files and <code>,</code> for CSV files)</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '98', 98)" onmouseover="showTip(event, '98', 98)">
+          <code onmouseout="hideTip(event, '97', 97)" onmouseover="showTip(event, '97', 97)">
             frame.SaveCsv(...)
           </code>
-          <div class="tip" id="98">
+          <div class="tip" id="97">
             <strong>Signature:</strong>(path:string * ?includeRowKeys:bool option * ?keyNames:seq&lt;string&gt; option * ?separator:char option * ?culture:CultureInfo option) -&gt; unit<br />
                       </div>
         </td>
@@ -119,10 +119,10 @@ TSV files and <code>,</code> for CSV files)</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '99', 99)" onmouseover="showTip(event, '99', 99)">
+          <code onmouseout="hideTip(event, '98', 98)" onmouseover="showTip(event, '98', 98)">
             frame.SaveCsv(path, keyNames)
           </code>
-          <div class="tip" id="99">
+          <div class="tip" id="98">
             <strong>Signature:</strong>(path:string * keyNames:seq&lt;string&gt;) -&gt; unit<br />
                       </div>
         </td>
@@ -158,8 +158,8 @@ TSV files and <code>,</code> for CSV files)</li>
             ( $ ) f series
           </code>
           <div class="tip" id="104">
-            <strong>Signature:</strong>f:(&#39;?8859 -&gt; &#39;?8860) -&gt; series:Series&lt;&#39;?8861,&#39;?8859&gt; -&gt; Series&lt;&#39;?8861,&#39;?8860&gt;<br />
-                          <strong>Type parameters:</strong> '?8859, '?8860, '?8861          </div>
+            <strong>Signature:</strong>f:(&#39;?8879 -&gt; &#39;?8880) -&gt; series:Series&lt;&#39;?8881,&#39;?8879&gt; -&gt; Series&lt;&#39;?8881,&#39;?8880&gt;<br />
+                          <strong>Type parameters:</strong> '?8879, '?8880, '?8881          </div>
         </td>
         <td class="xmldoc"><p>Custom operator that can be used for applying fuction to all elements of 
 a series. This provides a nicer syntactic sugar for the <code>Series.mapValues</code> 
@@ -181,8 +181,8 @@ adjust $ (s1 + s1)
             ( =?&gt; ) a b
           </code>
           <div class="tip" id="105">
-            <strong>Signature:</strong>a:&#39;?8856 -&gt; b:ISeries&lt;&#39;?8857&gt; -&gt; &#39;?8856 * ISeries&lt;&#39;?8857&gt;<br />
-                          <strong>Type parameters:</strong> '?8856, '?8857          </div>
+            <strong>Signature:</strong>a:&#39;?8876 -&gt; b:ISeries&lt;&#39;?8877&gt; -&gt; &#39;?8876 * ISeries&lt;&#39;?8877&gt;<br />
+                          <strong>Type parameters:</strong> '?8876, '?8877          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
@@ -193,14 +193,36 @@ adjust $ (s1 + s1)
             ( =&gt; ) a b
           </code>
           <div class="tip" id="106">
-            <strong>Signature:</strong>a:&#39;?8853 -&gt; b:&#39;?8854 -&gt; &#39;?8853 * &#39;?8854<br />
-                          <strong>Type parameters:</strong> '?8853, '?8854          </div>
+            <strong>Signature:</strong>a:&#39;?8873 -&gt; b:&#39;?8874 -&gt; &#39;?8873 * &#39;?8874<br />
+                          <strong>Type parameters:</strong> '?8873, '?8874          </div>
         </td>
         <td class="xmldoc"><p>Custom operator that can be used when constructing series from observations
 or frames from key-row or key-column pairs. The operator simply returns a 
 tuple, but it provides a more convenient syntax. For example:</p>
 
-<pre><code>Series.ofObservations [ "k1" =&gt; 1; "k2" =&gt; 15 ]
+<pre><code>series [ "k1" =&gt; 1; "k2" =&gt; 15 ]
+</code></pre>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '107', 107)" onmouseover="showTip(event, '107', 107)">
+            frame columns
+          </code>
+          <div class="tip" id="107">
+            <strong>Signature:</strong>columns:seq&lt;&#39;?8883 * &#39;?8884&gt; -&gt; Frame&lt;&#39;?8885,&#39;?8883&gt;<br />
+                          <strong>Type parameters:</strong> '?8883, '?8884, '?8885          </div>
+        </td>
+        <td class="xmldoc"><p>A function for constructing data frame from a sequence of name - column pairs.
+This provides a nicer syntactic sugar for <code>Frame.ofColumns</code>.</p>
+
+<h2>Example</h2>
+
+<p>To create a simple frame with two columns, you can write:</p>
+
+<pre><code>frame [ "A" =&gt; series [ 1 =&gt; 30.0; 2 =&gt; 35.0 ]
+        "B" =&gt; series [ 1 =&gt; 30.0; 3 =&gt; 40.0 ] ]
 </code></pre>
 </td>
       </tr>
@@ -215,24 +237,12 @@ tuple, but it provides a more convenient syntax. For example:</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '124', 124)" onmouseover="showTip(event, '124', 124)">
-            Frame.ofColumns(cols)
-          </code>
-          <div class="tip" id="124">
-            <strong>Signature:</strong>cols:Series&lt;&#39;?8879,&#39;?8880&gt; -&gt; Frame&lt;&#39;?8881,&#39;?8879&gt;<br />
-                          <strong>Type parameters:</strong> '?8879, '?8880, '?8881          </div>
-        </td>
-        <td class="xmldoc"></td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
           <code onmouseout="hideTip(event, '125', 125)" onmouseover="showTip(event, '125', 125)">
             Frame.ofColumns(cols)
           </code>
           <div class="tip" id="125">
-            <strong>Signature:</strong>(cols:seq&lt;&#39;?8883 * &#39;?8884&gt;) -&gt; Frame&lt;&#39;K,&#39;?8883&gt;<br />
-                          <strong>Type parameters:</strong> '?8883, '?8884, 'K          </div>
+            <strong>Signature:</strong>cols:Series&lt;&#39;?8903,&#39;?8904&gt; -&gt; Frame&lt;&#39;?8905,&#39;?8903&gt;<br />
+                          <strong>Type parameters:</strong> '?8903, '?8904, '?8905          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
@@ -240,9 +250,21 @@ tuple, but it provides a more convenient syntax. For example:</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '126', 126)" onmouseover="showTip(event, '126', 126)">
-            Frame.ofRecords(series)
+            Frame.ofColumns(cols)
           </code>
           <div class="tip" id="126">
+            <strong>Signature:</strong>(cols:seq&lt;&#39;?8907 * &#39;?8908&gt;) -&gt; Frame&lt;&#39;K,&#39;?8907&gt;<br />
+                          <strong>Type parameters:</strong> '?8907, '?8908, 'K          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '127', 127)" onmouseover="showTip(event, '127', 127)">
+            Frame.ofRecords(series)
+          </code>
+          <div class="tip" id="127">
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;R&gt; -&gt; Frame&lt;&#39;K,string&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'R          </div>
         </td>
@@ -251,10 +273,10 @@ tuple, but it provides a more convenient syntax. For example:</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '127', 127)" onmouseover="showTip(event, '127', 127)">
+          <code onmouseout="hideTip(event, '128', 128)" onmouseover="showTip(event, '128', 128)">
             Frame.ofRecords(values)
           </code>
-          <div class="tip" id="127">
+          <div class="tip" id="128">
             <strong>Signature:</strong>values:seq&lt;&#39;T&gt; -&gt; Frame&lt;int,string&gt;<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
@@ -263,24 +285,12 @@ tuple, but it provides a more convenient syntax. For example:</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '128', 128)" onmouseover="showTip(event, '128', 128)">
+          <code onmouseout="hideTip(event, '129', 129)" onmouseover="showTip(event, '129', 129)">
             Frame.ofRowKeys(keys)
           </code>
-          <div class="tip" id="128">
-            <strong>Signature:</strong>keys:seq&lt;&#39;?8877&gt; -&gt; Frame&lt;&#39;?8877,string&gt;<br />
-                          <strong>Type parameters:</strong> '?8877          </div>
-        </td>
-        <td class="xmldoc"></td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '129', 129)" onmouseover="showTip(event, '129', 129)">
-            Frame.ofRows(rows)
-          </code>
           <div class="tip" id="129">
-            <strong>Signature:</strong>(rows:seq&lt;&#39;?8869 * &#39;?8870&gt;) -&gt; Frame&lt;&#39;?8869,&#39;?8871&gt;<br />
-                          <strong>Type parameters:</strong> '?8869, '?8870, '?8871          </div>
+            <strong>Signature:</strong>keys:seq&lt;&#39;?8901&gt; -&gt; Frame&lt;&#39;?8901,string&gt;<br />
+                          <strong>Type parameters:</strong> '?8901          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
@@ -291,8 +301,8 @@ tuple, but it provides a more convenient syntax. For example:</p>
             Frame.ofRows(rows)
           </code>
           <div class="tip" id="130">
-            <strong>Signature:</strong>rows:Series&lt;&#39;?8873,&#39;?8874&gt; -&gt; Frame&lt;&#39;?8873,&#39;?8875&gt;<br />
-                          <strong>Type parameters:</strong> '?8873, '?8874, '?8875          </div>
+            <strong>Signature:</strong>(rows:seq&lt;&#39;?8893 * &#39;?8894&gt;) -&gt; Frame&lt;&#39;?8893,&#39;?8895&gt;<br />
+                          <strong>Type parameters:</strong> '?8893, '?8894, '?8895          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
@@ -300,11 +310,23 @@ tuple, but it provides a more convenient syntax. For example:</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '131', 131)" onmouseover="showTip(event, '131', 131)">
-            Frame.ofRowsOrdinal(rows)
+            Frame.ofRows(rows)
           </code>
           <div class="tip" id="131">
-            <strong>Signature:</strong>rows:seq&lt;&#39;?8865&gt; -&gt; Frame&lt;int,&#39;?8866&gt;<br />
-                          <strong>Type parameters:</strong> '?8865, '?8866, '?8867          </div>
+            <strong>Signature:</strong>rows:Series&lt;&#39;?8897,&#39;?8898&gt; -&gt; Frame&lt;&#39;?8897,&#39;?8899&gt;<br />
+                          <strong>Type parameters:</strong> '?8897, '?8898, '?8899          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '132', 132)" onmouseover="showTip(event, '132', 132)">
+            Frame.ofRowsOrdinal(rows)
+          </code>
+          <div class="tip" id="132">
+            <strong>Signature:</strong>rows:seq&lt;&#39;?8889&gt; -&gt; Frame&lt;int,&#39;?8890&gt;<br />
+                          <strong>Type parameters:</strong> '?8889, '?8890, '?8891          </div>
         </td>
         <td class="xmldoc"><p>Creates a data frame with ordinal Integer index from a sequence of rows.
 The column indices of individual rows are unioned, so if a row has fewer
@@ -314,22 +336,22 @@ columns, it will be successfully added, but there will be missing values.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '132', 132)" onmouseover="showTip(event, '132', 132)">
+          <code onmouseout="hideTip(event, '133', 133)" onmouseover="showTip(event, '133', 133)">
             Frame.ofValues(values)
           </code>
-          <div class="tip" id="132">
-            <strong>Signature:</strong>(values:seq&lt;&#39;?8887 * &#39;?8888 * &#39;?8889&gt;) -&gt; Frame&lt;&#39;?8887,&#39;?8888&gt;<br />
-                          <strong>Type parameters:</strong> '?8887, '?8888, '?8889          </div>
+          <div class="tip" id="133">
+            <strong>Signature:</strong>(values:seq&lt;&#39;?8911 * &#39;?8912 * &#39;?8913&gt;) -&gt; Frame&lt;&#39;?8911,&#39;?8912&gt;<br />
+                          <strong>Type parameters:</strong> '?8911, '?8912, '?8913          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '133', 133)" onmouseover="showTip(event, '133', 133)">
+          <code onmouseout="hideTip(event, '134', 134)" onmouseover="showTip(event, '134', 134)">
             Frame.ReadCsv(...)
           </code>
-          <div class="tip" id="133">
+          <div class="tip" id="134">
             <strong>Signature:</strong>(path:string * ?hasHeaders:bool option * ?inferTypes:bool option * ?inferRows:int option * ?schema:string option * ?separators:string option * ?culture:string option) -&gt; Frame&lt;int,string&gt;<br />
                       </div>
         </td>
@@ -360,10 +382,10 @@ values in the CSV file (such as <code>"en-US"</code>). The default is invariant 
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '134', 134)" onmouseover="showTip(event, '134', 134)">
+          <code onmouseout="hideTip(event, '135', 135)" onmouseover="showTip(event, '135', 135)">
             Frame.ReadCsv(...)
           </code>
-          <div class="tip" id="134">
+          <div class="tip" id="135">
             <strong>Signature:</strong>(stream:Stream * ?hasHeaders:bool option * ?inferTypes:bool option * ?inferRows:int option * ?schema:string option * ?separators:string option * ?culture:string option) -&gt; Frame&lt;int,string&gt;<br />
                       </div>
         </td>
@@ -394,10 +416,10 @@ values in the CSV file (such as <code>"en-US"</code>). The default is invariant 
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '135', 135)" onmouseover="showTip(event, '135', 135)">
+          <code onmouseout="hideTip(event, '136', 136)" onmouseover="showTip(event, '136', 136)">
             frame.ToDataTable(rowKeyNames)
           </code>
-          <div class="tip" id="135">
+          <div class="tip" id="136">
             <strong>Signature:</strong>rowKeyNames:seq&lt;string&gt; -&gt; DataTable<br />
                       </div>
         </td>

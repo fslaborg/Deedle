@@ -52,10 +52,25 @@ the "mini-DSL" representation <code>VectorConstruction</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '341', 341)" onmouseover="showTip(event, '341', 341)">
+          <code onmouseout="hideTip(event, '316', 316)" onmouseover="showTip(event, '316', 316)">
+            iVectorBuilder.AsyncBuild(arg1, arg2)
+          </code>
+          <div class="tip" id="316">
+            <strong>Signature:</strong>(VectorConstruction * IVector&lt;&#39;T&gt; []) -&gt; Async&lt;IVector&lt;&#39;T&gt;&gt;<br />
+              <strong>Modifiers:</strong> abstract<br />
+                          <strong>Type parameters:</strong> 'T          </div>
+        </td>
+        <td class="xmldoc"><p>Asynchronous version of <code>Build</code> operation. This is mainly used for 
+<code>AsyncMaterialize</code> and it does not handle fully general vector constructions (yet)</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '325', 325)" onmouseover="showTip(event, '325', 325)">
             iVectorBuilder.Build(arg1, arg2)
           </code>
-          <div class="tip" id="341">
+          <div class="tip" id="325">
             <strong>Signature:</strong>(VectorConstruction * IVector&lt;&#39;T&gt; []) -&gt; IVector&lt;&#39;T&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'T          </div>
@@ -68,10 +83,10 @@ is an array of arguments ("variables") that may be referenced from the
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '344', 344)" onmouseover="showTip(event, '344', 344)">
+          <code onmouseout="hideTip(event, '326', 326)" onmouseover="showTip(event, '326', 326)">
             iVectorBuilder.Create(arg1)
           </code>
-          <div class="tip" id="344">
+          <div class="tip" id="326">
             <strong>Signature:</strong>(&#39;T []) -&gt; IVector&lt;&#39;T&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'T          </div>
@@ -85,10 +100,10 @@ value in the returned vector.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '345', 345)" onmouseover="showTip(event, '345', 345)">
+          <code onmouseout="hideTip(event, '327', 327)" onmouseover="showTip(event, '327', 327)">
             iVectorBuilder.CreateMissing(arg1)
           </code>
-          <div class="tip" id="345">
+          <div class="tip" id="327">
             <strong>Signature:</strong>(OptionalValue&lt;&#39;T&gt; []) -&gt; IVector&lt;&#39;T&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'T          </div>
