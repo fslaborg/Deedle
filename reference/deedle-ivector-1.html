@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>IVector - Deedle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="BlueMountain Capital">
+
+    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/FSharp.Deedle/content/style.css" />
+    <script type="text/javascript" src="http://bluemountaincapital.github.io/FSharp.Deedle/content/tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://github.com/BlueMountainCapital/Deedle">github page</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/">F# Charting</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider">R Type Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data/">F# Data</a></li>
+        </ul>
+        <h3 class="muted">Deedle</h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+
+
+
+<h1>IVector</h1>
+<div class="xmldoc">
+<p>A generic, typed vector. Represents mapping from addresses to values of type <code>T</code>. 
+The vector provides a minimal interface that is required by series and can be
+implemented in a number of ways to provide vector backed by database or an
+alternative representation of data.</p>
+</div>
+  <h3>Instance members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Instance member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '309', 309)" onmouseover="showTip(event, '309', 309)">
+            iVector.Data
+          </code>
+          <div class="tip" id="309">
+            <strong>Signature:</strong>VectorData&lt;&#39;T&gt;<br />
+              <strong>Modifiers:</strong> abstract<br />
+                      </div>
+        </td>
+        <td class="xmldoc"><p>Returns all data of the vector in one of the supported formats. Depending
+on the vector, data may be returned as a continuous block of memory using
+<code>ReadOnlyCollection&lt;T&gt;</code> or as a lazy sequence <code>seq&lt;T&gt;</code>.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '311', 311)" onmouseover="showTip(event, '311', 311)">
+            iVector.GetValue(arg1)
+          </code>
+          <div class="tip" id="311">
+            <strong>Signature:</strong>Address -&gt; OptionalValue&lt;&#39;T&gt;<br />
+              <strong>Modifiers:</strong> abstract<br />
+                      </div>
+        </td>
+        <td class="xmldoc"><p>Returns value stored in the vector at a specified address.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '312', 312)" onmouseover="showTip(event, '312', 312)">
+            iVector.Select(arg1)
+          </code>
+          <div class="tip" id="312">
+            <strong>Signature:</strong>((&#39;T -&gt; &#39;TNew)) -&gt; IVector&lt;&#39;TNew&gt;<br />
+              <strong>Modifiers:</strong> abstract<br />
+                          <strong>Type parameters:</strong> 'TNew          </div>
+        </td>
+        <td class="xmldoc"><p>Apply the specified function to all values stored in the vector and return
+a new vector (not necessarily of the same representation) with the results.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '313', 313)" onmouseover="showTip(event, '313', 313)">
+            iVector.SelectMissing(arg1)
+          </code>
+          <div class="tip" id="313">
+            <strong>Signature:</strong>((OptionalValue&lt;&#39;T&gt; -&gt; OptionalValue&lt;&#39;TNew&gt;)) -&gt; IVector&lt;&#39;TNew&gt;<br />
+              <strong>Modifiers:</strong> abstract<br />
+                          <strong>Type parameters:</strong> 'TNew          </div>
+        </td>
+        <td class="xmldoc"><p>Apply the specified function to all values stored in the vector and return
+a new vector (not necessarily of the same representation) with the results.
+The function handles missing values - it is called with optional values and
+may return a missing value as a result of the transformation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+        </div>
+        <div class="span3">
+          <a href="https://nuget.org/packages/Deedle">
+            <img src="{root}/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          </a>
+
+          <ul class="nav nav-list" id="menu">
+            <li class="nav-header">Deedle</li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/index.html">Home page</a></li>
+            <li class="divider"></li>
+            <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/design.html">Design notes</a></li>
+            
+            <li class="nav-header">Using from F#</li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html">Quick start tutorial</a>
+              <ul class="nav nav-list">
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#creating">Creating data frames</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#reindexing-and-joins">Using index & joining</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#selecting">Reading values, slicing</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#timeseries">Ordered time series</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#projections">Projection and filtering</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#grouping">Aggregating groups</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html">Data frame features</a>
+              <ul class="nav nav-list">
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#creating">Creating & loading</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#dataframe">Frame manipulation</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#slicing">Advanced slicing</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#grouping">Grouping data</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#indexing">Hierarchical indexing</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#missing">Missing values</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/FSharp.Deedle/timeseries.html">Time series features</a>
+              <ul class="nav nav-list">
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/timeseries.html#alignment">Alignment & joining</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/timeseries.html#windowing">Windows and chunks</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/timeseries.html#sampling">Lookup and resampling</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/timeseries.html#stats">Statistics & math</a></li>
+              </ul>
+            </li>
+
+            <li class="nav-header">Documentation</li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/reference/index.html">API Reference</a></li>
+
+            <li class="nav-header">Samples</li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/samples/volatility.html">Price volatility</a></li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/samples/titanic.html">Titanic survivors</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/BlueMountainCapital/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+  </body>
+  </html>

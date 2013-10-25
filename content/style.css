@@ -85,6 +85,10 @@ body {
   padding-bottom: 40px;
 }
 
+pre {
+    word-wrap: inherit;
+}
+
 /* Format the heading - nicer spacing etc. */
 .masthead {
   overflow: hidden;

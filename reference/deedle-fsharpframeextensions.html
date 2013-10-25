@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>FSharpFrameExtensions - Deedle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="BlueMountain Capital">
+
+    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/FSharp.Deedle/content/style.css" />
+    <script type="text/javascript" src="http://bluemountaincapital.github.io/FSharp.Deedle/content/tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://github.com/BlueMountainCapital/Deedle">github page</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/">F# Charting</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider">R Type Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data/">F# Data</a></li>
+        </ul>
+        <h3 class="muted">Deedle</h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+
+
+
+<h1>FSharpFrameExtensions</h1>
+<div class="xmldoc">
+</div>
+  <h2>Table of contents</h2>
+  <ul>
+      <li><a href="#section0">Input and output</a></li>            
+      <li><a href="#section1">Other module members</a></li>            
+  </ul>
+
+<!-- TODO: Refactor me - copy & paste from 'namespaces.cshtml' -->
+
+
+
+<!-- END TODO -->
+
+
+
+    <h2>Input and output<a name="section0">&#160;</a></h2>    
+  <h3>Type extensions</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Type extension</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '97', 97)" onmouseover="showTip(event, '97', 97)">
+            frame.SaveCsv(...)
+          </code>
+          <div class="tip" id="97">
+            <strong>Signature:</strong>(stream:Stream * ?includeRowKeys:bool option * ?keyNames:seq&lt;string&gt; option * ?separator:char option * ?culture:CultureInfo option) -&gt; unit<br />
+                      </div>
+        </td>
+        <td class="xmldoc"><p>Save data frame to a CSV file or to a <code>Stream</code>. When calling the operation,
+you can specify whether you want to save the row keys or not (and headers for the keys)
+and you can also specify the separator (use <code>\t</code> for writing TSV files). When specifying
+file name ending with <code>.tsv</code>, the <code>\t</code> separator is used automatically.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>stream</code> - Specifies the output stream where the CSV data should be written</li>
+<li><code>includeRowKeys</code> - When set to <code>true</code>, the row key is also written to the output file</li>
+<li><code>keyNames</code> - Can be used to specify the CSV headers for row key (or keys, for multi-level index)</li>
+<li><code>separator</code> - Specify the column separator in the file (the default is <code>\t</code> for 
+TSV files and <code>,</code> for CSV files)</li>
+<li><code>culture</code> - Specify the <code>CultureInfo</code> object used for formatting numerical data</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '98', 98)" onmouseover="showTip(event, '98', 98)">
+            frame.SaveCsv(...)
+          </code>
+          <div class="tip" id="98">
+            <strong>Signature:</strong>(path:string * ?includeRowKeys:bool option * ?keyNames:seq&lt;string&gt; option * ?separator:char option * ?culture:CultureInfo option) -&gt; unit<br />
+                      </div>
+        </td>
+        <td class="xmldoc"><p>Save data frame to a CSV file or to a <code>Stream</code>. When calling the operation,
+you can specify whether you want to save the row keys or not (and headers for the keys)
+and you can also specify the separator (use <code>\t</code> for writing TSV files). When specifying
+file name ending with <code>.tsv</code>, the <code>\t</code> separator is used automatically.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>path</code> - Specifies the output file name where the CSV data should be written</li>
+<li><code>includeRowKeys</code> - When set to <code>true</code>, the row key is also written to the output file</li>
+<li><code>keyNames</code> - Can be used to specify the CSV headers for row key (or keys, for multi-level index)</li>
+<li><code>separator</code> - Specify the column separator in the file (the default is <code>\t</code> for 
+TSV files and <code>,</code> for CSV files)</li>
+<li><code>culture</code> - Specify the <code>CultureInfo</code> object used for formatting numerical data</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '99', 99)" onmouseover="showTip(event, '99', 99)">
+            frame.SaveCsv(path, keyNames)
+          </code>
+          <div class="tip" id="99">
+            <strong>Signature:</strong>(path:string * keyNames:seq&lt;string&gt;) -&gt; unit<br />
+                      </div>
+        </td>
+        <td class="xmldoc"><p>Save data frame to a CSV file or to a <code>Stream</code>. When calling the operation,
+you can specify whether you want to save the row keys or not (and headers for the keys)
+and you can also specify the separator (use <code>\t</code> for writing TSV files). When specifying
+file name ending with <code>.tsv</code>, the <code>\t</code> separator is used automatically.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>path</code> - Specifies the output file name where the CSV data should be written</li>
+<li><code>keyNames</code> - Specifies the CSV headers for row key (or keys, for multi-level index)</li>
+<li><code>separator</code> - Specify the column separator in the file (the default is <code>\t</code> for 
+TSV files and <code>,</code> for CSV files)</li>
+<li><code>culture</code> - Specify the <code>CultureInfo</code> object used for formatting numerical data</li>
+</ul>
+</td>
+      </tr>
+    </tbody>
+  </table>
+    <h2>Other module members<a name="section1">&#160;</a></h2>    
+  <h3>Functions and values</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Function or value</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '104', 104)" onmouseover="showTip(event, '104', 104)">
+            ( $ ) f series
+          </code>
+          <div class="tip" id="104">
+            <strong>Signature:</strong>f:(&#39;?8859 -&gt; &#39;?8860) -&gt; series:Series&lt;&#39;?8861,&#39;?8859&gt; -&gt; Series&lt;&#39;?8861,&#39;?8860&gt;<br />
+                          <strong>Type parameters:</strong> '?8859, '?8860, '?8861          </div>
+        </td>
+        <td class="xmldoc"><p>Custom operator that can be used for applying fuction to all elements of 
+a series. This provides a nicer syntactic sugar for the <code>Series.mapValues</code> 
+function. For example:</p>
+
+<pre><code>// Given a float series and a function on floats
+let s1 = Series.ofValues [ 1.0 .. 10.0 ]
+let adjust v = max 10.0 v
+
+// Apply "adjust (v + v)" to all elements
+adjust $ (s1 + s1)
+</code></pre>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '105', 105)" onmouseover="showTip(event, '105', 105)">
+            ( =?&gt; ) a b
+          </code>
+          <div class="tip" id="105">
+            <strong>Signature:</strong>a:&#39;?8856 -&gt; b:ISeries&lt;&#39;?8857&gt; -&gt; &#39;?8856 * ISeries&lt;&#39;?8857&gt;<br />
+                          <strong>Type parameters:</strong> '?8856, '?8857          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '106', 106)" onmouseover="showTip(event, '106', 106)">
+            ( =&gt; ) a b
+          </code>
+          <div class="tip" id="106">
+            <strong>Signature:</strong>a:&#39;?8853 -&gt; b:&#39;?8854 -&gt; &#39;?8853 * &#39;?8854<br />
+                          <strong>Type parameters:</strong> '?8853, '?8854          </div>
+        </td>
+        <td class="xmldoc"><p>Custom operator that can be used when constructing series from observations
+or frames from key-row or key-column pairs. The operator simply returns a 
+tuple, but it provides a more convenient syntax. For example:</p>
+
+<pre><code>Series.ofObservations [ "k1" =&gt; 1; "k2" =&gt; 15 ]
+</code></pre>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>Type extensions</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Type extension</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '124', 124)" onmouseover="showTip(event, '124', 124)">
+            Frame.ofColumns(cols)
+          </code>
+          <div class="tip" id="124">
+            <strong>Signature:</strong>cols:Series&lt;&#39;?8879,&#39;?8880&gt; -&gt; Frame&lt;&#39;?8881,&#39;?8879&gt;<br />
+                          <strong>Type parameters:</strong> '?8879, '?8880, '?8881          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '125', 125)" onmouseover="showTip(event, '125', 125)">
+            Frame.ofColumns(cols)
+          </code>
+          <div class="tip" id="125">
+            <strong>Signature:</strong>(cols:seq&lt;&#39;?8883 * &#39;?8884&gt;) -&gt; Frame&lt;&#39;K,&#39;?8883&gt;<br />
+                          <strong>Type parameters:</strong> '?8883, '?8884, 'K          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '126', 126)" onmouseover="showTip(event, '126', 126)">
+            Frame.ofRecords(series)
+          </code>
+          <div class="tip" id="126">
+            <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;R&gt; -&gt; Frame&lt;&#39;K,string&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'R          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '127', 127)" onmouseover="showTip(event, '127', 127)">
+            Frame.ofRecords(values)
+          </code>
+          <div class="tip" id="127">
+            <strong>Signature:</strong>values:seq&lt;&#39;T&gt; -&gt; Frame&lt;int,string&gt;<br />
+                          <strong>Type parameters:</strong> 'T          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '128', 128)" onmouseover="showTip(event, '128', 128)">
+            Frame.ofRowKeys(keys)
+          </code>
+          <div class="tip" id="128">
+            <strong>Signature:</strong>keys:seq&lt;&#39;?8877&gt; -&gt; Frame&lt;&#39;?8877,string&gt;<br />
+                          <strong>Type parameters:</strong> '?8877          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '129', 129)" onmouseover="showTip(event, '129', 129)">
+            Frame.ofRows(rows)
+          </code>
+          <div class="tip" id="129">
+            <strong>Signature:</strong>(rows:seq&lt;&#39;?8869 * &#39;?8870&gt;) -&gt; Frame&lt;&#39;?8869,&#39;?8871&gt;<br />
+                          <strong>Type parameters:</strong> '?8869, '?8870, '?8871          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '130', 130)" onmouseover="showTip(event, '130', 130)">
+            Frame.ofRows(rows)
+          </code>
+          <div class="tip" id="130">
+            <strong>Signature:</strong>rows:Series&lt;&#39;?8873,&#39;?8874&gt; -&gt; Frame&lt;&#39;?8873,&#39;?8875&gt;<br />
+                          <strong>Type parameters:</strong> '?8873, '?8874, '?8875          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '131', 131)" onmouseover="showTip(event, '131', 131)">
+            Frame.ofRowsOrdinal(rows)
+          </code>
+          <div class="tip" id="131">
+            <strong>Signature:</strong>rows:seq&lt;&#39;?8865&gt; -&gt; Frame&lt;int,&#39;?8866&gt;<br />
+                          <strong>Type parameters:</strong> '?8865, '?8866, '?8867          </div>
+        </td>
+        <td class="xmldoc"><p>Creates a data frame with ordinal Integer index from a sequence of rows.
+The column indices of individual rows are unioned, so if a row has fewer
+columns, it will be successfully added, but there will be missing values.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '132', 132)" onmouseover="showTip(event, '132', 132)">
+            Frame.ofValues(values)
+          </code>
+          <div class="tip" id="132">
+            <strong>Signature:</strong>(values:seq&lt;&#39;?8887 * &#39;?8888 * &#39;?8889&gt;) -&gt; Frame&lt;&#39;?8887,&#39;?8888&gt;<br />
+                          <strong>Type parameters:</strong> '?8887, '?8888, '?8889          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '133', 133)" onmouseover="showTip(event, '133', 133)">
+            Frame.ReadCsv(...)
+          </code>
+          <div class="tip" id="133">
+            <strong>Signature:</strong>(path:string * ?hasHeaders:bool option * ?inferTypes:bool option * ?inferRows:int option * ?schema:string option * ?separators:string option * ?culture:string option) -&gt; Frame&lt;int,string&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc"><p>Load data frame from a CSV file. The operation automatically reads column names from the 
+CSV file (if they are present) and infers the type of values for each column. Columns
+of primitive types (<code>int</code>, <code>float</code>, etc.) are converted to the right type. Columns of other
+types (such as dates) are not converted automatically.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>path</code> - Specifies a file name or an web location of the resource.</li>
+<li><code>hasHeaders</code> - Specifies whether the input CSV file has header row</li>
+<li><code>inferTypes</code> - Specifies whether the method should attempt to infer types
+of columns automatically (set this to <code>false</code> if you want to specify schema)</li>
+<li><code>inferRows</code> - If <code>inferTypes=true</code>, this parameter specifies the number of
+rows to use for type inference. The default value is 0, meaninig all rows.</li>
+<li><code>schema</code> - A string that specifies CSV schema. See the documentation for 
+information about the schema format.</li>
+<li><code>separators</code> - A string that specifies one or more (single character) separators
+that are used to separate columns in the CSV file. Use for example <code>";"</code> to
+parse semicolon separated files.</li>
+<li><code>culture</code> - Specifies the name of the culture that is used when parsing 
+values in the CSV file (such as <code>"en-US"</code>). The default is invariant culture.</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '134', 134)" onmouseover="showTip(event, '134', 134)">
+            Frame.ReadCsv(...)
+          </code>
+          <div class="tip" id="134">
+            <strong>Signature:</strong>(stream:Stream * ?hasHeaders:bool option * ?inferTypes:bool option * ?inferRows:int option * ?schema:string option * ?separators:string option * ?culture:string option) -&gt; Frame&lt;int,string&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc"><p>Load data frame from a CSV file. The operation automatically reads column names from the 
+CSV file (if they are present) and infers the type of values for each column. Columns
+of primitive types (<code>int</code>, <code>float</code>, etc.) are converted to the right type. Columns of other
+types (such as dates) are not converted automatically.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>stream</code> - Specifies the input stream, opened at the beginning of CSV data</li>
+<li><code>hasHeaders</code> - Specifies whether the input CSV file has header row</li>
+<li><code>inferTypes</code> - Specifies whether the method should attempt to infer types
+of columns automatically (set this to <code>false</code> if you want to specify schema)</li>
+<li><code>inferRows</code> - If <code>inferTypes=true</code>, this parameter specifies the number of
+rows to use for type inference. The default value is 0, meaninig all rows.</li>
+<li><code>schema</code> - A string that specifies CSV schema. See the documentation for 
+information about the schema format.</li>
+<li><code>separators</code> - A string that specifies one or more (single character) separators
+that are used to separate columns in the CSV file. Use for example <code>";"</code> to
+parse semicolon separated files.</li>
+<li><code>culture</code> - Specifies the name of the culture that is used when parsing 
+values in the CSV file (such as <code>"en-US"</code>). The default is invariant culture.</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '135', 135)" onmouseover="showTip(event, '135', 135)">
+            frame.ToDataTable(rowKeyNames)
+          </code>
+          <div class="tip" id="135">
+            <strong>Signature:</strong>rowKeyNames:seq&lt;string&gt; -&gt; DataTable<br />
+                      </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+    </tbody>
+  </table>
+
+        </div>
+        <div class="span3">
+          <a href="https://nuget.org/packages/Deedle">
+            <img src="{root}/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          </a>
+
+          <ul class="nav nav-list" id="menu">
+            <li class="nav-header">Deedle</li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/index.html">Home page</a></li>
+            <li class="divider"></li>
+            <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/design.html">Design notes</a></li>
+            
+            <li class="nav-header">Using from F#</li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html">Quick start tutorial</a>
+              <ul class="nav nav-list">
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#creating">Creating data frames</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#reindexing-and-joins">Using index & joining</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#selecting">Reading values, slicing</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#timeseries">Ordered time series</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#projections">Projection and filtering</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#grouping">Aggregating groups</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html">Data frame features</a>
+              <ul class="nav nav-list">
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#creating">Creating & loading</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#dataframe">Frame manipulation</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#slicing">Advanced slicing</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#grouping">Grouping data</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#indexing">Hierarchical indexing</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#missing">Missing values</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/FSharp.Deedle/timeseries.html">Time series features</a>
+              <ul class="nav nav-list">
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/timeseries.html#alignment">Alignment & joining</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/timeseries.html#windowing">Windows and chunks</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/timeseries.html#sampling">Lookup and resampling</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/timeseries.html#stats">Statistics & math</a></li>
+              </ul>
+            </li>
+
+            <li class="nav-header">Documentation</li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/reference/index.html">API Reference</a></li>
+
+            <li class="nav-header">Samples</li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/samples/volatility.html">Price volatility</a></li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/samples/titanic.html">Titanic survivors</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/BlueMountainCapital/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+  </body>
+  </html>

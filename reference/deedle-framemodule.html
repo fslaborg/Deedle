@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Frame - Deedle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="BlueMountain Capital">
+
+    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/FSharp.Deedle/content/style.css" />
+    <script type="text/javascript" src="http://bluemountaincapital.github.io/FSharp.Deedle/content/tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://github.com/BlueMountainCapital/Deedle">github page</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/">F# Charting</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider">R Type Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data/">F# Data</a></li>
+        </ul>
+        <h3 class="muted">Deedle</h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+
+
+
+<h1>Frame</h1>
+<div class="xmldoc">
+<p>Frame module comment</p>
+</div>
+  <h2>Table of contents</h2>
+  <ul>
+      <li><a href="#section0">Accessing frame data and lookup</a></li>            
+      <li><a href="#section1">Index manipulation</a></li>            
+      <li><a href="#section2">Joining, zipping and appending</a></li>            
+      <li><a href="#section3">Missing values</a></li>            
+      <li><a href="#section4">Projection and filtering</a></li>            
+      <li><a href="#section5">Series operations</a></li>            
+      <li><a href="#section6">Other module members</a></li>            
+  </ul>
+
+<!-- TODO: Refactor me - copy & paste from 'namespaces.cshtml' -->
+
+
+
+<!-- END TODO -->
+
+
+
+    <h2>Accessing frame data and lookup<a name="section0">&#160;</a></h2>    
+      <div class="xmldoc">
+        <p>basics</p>
+
+      </div>
+  <h3>Functions and values</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Function or value</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '10', 10)" onmouseover="showTip(event, '10', 10)">
+            cols frame
+          </code>
+          <div class="tip" id="10">
+            <strong>Signature:</strong>frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; ColumnSeries&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Returns the columns of the data frame as a series (indexed by 
+the column keys of the source frame) containing untyped series representing
+individual columns of the frame.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '87', 87)" onmouseover="showTip(event, '87', 87)">
+            countCols frame
+          </code>
+          <div class="tip" id="87">
+            <strong>Signature:</strong>frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; int<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Returns the total number of column keys in the specified frame. This returns
+the total length of columns, including keys for which there is no 
+data available.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '88', 88)" onmouseover="showTip(event, '88', 88)">
+            countRows frame
+          </code>
+          <div class="tip" id="88">
+            <strong>Signature:</strong>frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; int<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Returns the total number of row keys in the specified frame. This returns
+the total length of the row series, including keys for which there is no 
+value available.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '89', 89)" onmouseover="showTip(event, '89', 89)">
+            getCol column frame
+          </code>
+          <div class="tip" id="89">
+            <strong>Signature:</strong>column:&#39;C -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;R,&#39;?8304&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R, '?8304          </div>
+        </td>
+        <td class="xmldoc"><p>Returns a specified column from a data frame. This function uses exact matching 
+semantics on the key. Use <code>lookupSeries</code> if you want to use inexact 
+matching (e.g. on dates)</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '90', 90)" onmouseover="showTip(event, '90', 90)">
+            getCols columns frame
+          </code>
+          <div class="tip" id="90">
+            <strong>Signature:</strong>columns:seq&lt;&#39;C&gt; -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R          </div>
+        </td>
+        <td class="xmldoc"><p>Returns a frame consisting of the specified columns from the original
+data frame. The function uses exact key matching semantics.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '91', 91)" onmouseover="showTip(event, '91', 91)">
+            getRow row frame
+          </code>
+          <div class="tip" id="91">
+            <strong>Signature:</strong>row:&#39;R -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?8308&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?8308          </div>
+        </td>
+        <td class="xmldoc"><p>Returns a specified row from a data frame. This function uses exact matching 
+semantics on the key. Use <code>lookupRow</code> if you want to use inexact matching 
+(e.g. on dates)</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '92', 92)" onmouseover="showTip(event, '92', 92)">
+            getRows rows frame
+          </code>
+          <div class="tip" id="92">
+            <strong>Signature:</strong>rows:seq&lt;&#39;R&gt; -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Returns a frame consisting of the specified rows from the original
+data frame. The function uses exact key matching semantics.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '93', 93)" onmouseover="showTip(event, '93', 93)">
+            lookupCol column lookup frame
+          </code>
+          <div class="tip" id="93">
+            <strong>Signature:</strong>column:&#39;C -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;R,&#39;?8312&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R, '?8312          </div>
+        </td>
+        <td class="xmldoc"><p>Returns a specified series (column) from a data frame. If the data frame has 
+ordered column index, the lookup semantics can be used to get series
+with nearest greater/smaller key. For exact semantics, you can use <code>getCol</code>.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '94', 94)" onmouseover="showTip(event, '94', 94)">
+            lookupRow row lookup frame
+          </code>
+          <div class="tip" id="94">
+            <strong>Signature:</strong>row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?8316&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?8316          </div>
+        </td>
+        <td class="xmldoc"><p>Returns a specified row from a data frame. If the data frame has 
+ordered row index, the lookup semantics can be used to get row with 
+nearest greater/smaller key. For exact semantics, you can use <code>getRow</code>.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '95', 95)" onmouseover="showTip(event, '95', 95)">
+            rows frame
+          </code>
+          <div class="tip" id="95">
+            <strong>Signature:</strong>frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; RowSeries&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Returns the rows of the data frame as a series (indexed by 
+the row keys of the source frame) containing untyped series representing
+individual row of the frame.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+    <h2>Index manipulation<a name="section1">&#160;</a></h2>    
+      <div class="xmldoc">
+        <p>More documentation here</p>
+
+      </div>
+  <h3>Functions and values</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Function or value</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '111', 111)" onmouseover="showTip(event, '111', 111)">
+            indexColsWith keys frame
+          </code>
+          <div class="tip" id="111">
+            <strong>Signature:</strong>keys:seq&lt;&#39;C2&gt; -&gt; frame:Frame&lt;&#39;R,&#39;C1&gt; -&gt; Frame&lt;&#39;R,&#39;C2&gt;<br />
+                          <strong>Type parameters:</strong> 'C2, 'R, 'C1          </div>
+        </td>
+        <td class="xmldoc"><p>Replace the column index of the frame with the provided sequence of column keys.
+The columns of the frame are assigned keys according to the current order, or in a
+non-deterministic way, if the current column index is not ordered.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - Source data frame whose column index are to be replaced.</li>
+<li><code>keys</code> - A collection of new column keys.</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '112', 112)" onmouseover="showTip(event, '112', 112)">
+            indexRows column frame
+          </code>
+          <div class="tip" id="112">
+            <strong>Signature:</strong>column:&#39;C -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;&#39;R2,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R1, 'R2          </div>
+        </td>
+        <td class="xmldoc"><p>Returns a data frame whose rows are indexed based on the specified column of the original
+data frame. The generic type parameter is specifies the type of the values in the required 
+index column (and usually needs to be specified using a type annotation).</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - Source data frame whose row index is to be replaced.</li>
+<li><code>column</code> - The name of a column in the original data frame that will be used for the new
+index. Note that the values in the column need to be unique.</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '113', 113)" onmouseover="showTip(event, '113', 113)">
+            indexRowsDate column frame
+          </code>
+          <div class="tip" id="113">
+            <strong>Signature:</strong>column:&#39;C -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;DateTime,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R1          </div>
+        </td>
+        <td class="xmldoc"><p>Returns a data frame whose rows are indexed based on the specified column of the original
+data frame. This function casts (or converts) the column key to values of type <code>DateTime</code>
+(a generic variant that may require some type annotation is <code>Frame.indexRows</code>)</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - Source data frame whose row index is to be replaced.</li>
+<li><code>column</code> - The name of a column in the original data frame that will be used for the new
+index. Note that the values in the column need to be unique.</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '114', 114)" onmouseover="showTip(event, '114', 114)">
+            indexRowsDateOffs column frame
+          </code>
+          <div class="tip" id="114">
+            <strong>Signature:</strong>column:&#39;C -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;DateTimeOffset,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R1          </div>
+        </td>
+        <td class="xmldoc"><p>Returns a data frame whose rows are indexed based on the specified column of the original
+data frame. This function casts (or converts) the column key to values of type <code>DateTimeOffset</code>
+(a generic variant that may require some type annotation is <code>Frame.indexRows</code>)</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - Source data frame whose row index is to be replaced.</li>
+<li><code>column</code> - The name of a column in the original data frame that will be used for the new
+index. Note that the values in the column need to be unique.</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '115', 115)" onmouseover="showTip(event, '115', 115)">
+            indexRowsInt column frame
+          </code>
+          <div class="tip" id="115">
+            <strong>Signature:</strong>column:&#39;C -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;int,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R1          </div>
+        </td>
+        <td class="xmldoc"><p>Returns a data frame whose rows are indexed based on the specified column of the original
+data frame. This function casts (or converts) the column key to values of type <code>int</code>
+(a generic variant that may require some type annotation is <code>Frame.indexRows</code>)</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - Source data frame whose row index is to be replaced.</li>
+<li><code>column</code> - The name of a column in the original data frame that will be used for the new
+index. Note that the values in the column need to be unique.</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '116', 116)" onmouseover="showTip(event, '116', 116)">
+            indexRowsObj column frame
+          </code>
+          <div class="tip" id="116">
+            <strong>Signature:</strong>column:&#39;C -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;obj,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R1          </div>
+        </td>
+        <td class="xmldoc"><p>Returns a data frame whose rows are indexed based on the specified column of the original
+data frame. This function casts (or converts) the column key to values of type <code>obj</code>
+(a generic variant that may require some type annotation is <code>Frame.indexRows</code>)</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - Source data frame whose row index is to be replaced.</li>
+<li><code>column</code> - The name of a column in the original data frame that will be used for the new
+index. Note that the values in the column need to be unique.</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '117', 117)" onmouseover="showTip(event, '117', 117)">
+            indexRowsOrdinally frame
+          </code>
+          <div class="tip" id="117">
+            <strong>Signature:</strong>frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;int,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
+        </td>
+        <td class="xmldoc"><p>Replace the row index of the frame with ordinarilly generated integers starting from zero.
+The rows of the frame are assigned index according to the current order, or in a
+non-deterministic way, if the current row index is not ordered.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - Source data frame whose row index are to be replaced.</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '118', 118)" onmouseover="showTip(event, '118', 118)">
+            indexRowsString column frame
+          </code>
+          <div class="tip" id="118">
+            <strong>Signature:</strong>column:&#39;C -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;string,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R1          </div>
+        </td>
+        <td class="xmldoc"><p>Returns a data frame whose rows are indexed based on the specified column of the original
+data frame. This function casts (or converts) the column key to values of type <code>string</code>
+(a generic variant that may require some type annotation is <code>Frame.indexRows</code>)</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - Source data frame whose row index is to be replaced.</li>
+<li><code>column</code> - The name of a column in the original data frame that will be used for the new
+index. Note that the values in the column need to be unique.</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '119', 119)" onmouseover="showTip(event, '119', 119)">
+            indexRowsWith keys frame
+          </code>
+          <div class="tip" id="119">
+            <strong>Signature:</strong>keys:seq&lt;&#39;R2&gt; -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;&#39;R2,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R2, 'R1, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Replace the row index of the frame with the provided sequence of row keys.
+The rows of the frame are assigned keys according to the current order, or in a
+non-deterministic way, if the current row index is not ordered.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - Source data frame whose row index are to be replaced.</li>
+<li><code>keys</code> - A collection of new row keys.</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '120', 120)" onmouseover="showTip(event, '120', 120)">
+            orderCols frame
+          </code>
+          <div class="tip" id="120">
+            <strong>Signature:</strong>frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Returns a data frame that contains the same data as the input, 
+but whose columns are an ordered series. This allows using operations that are
+only available on indexed series such as alignment and inexact lookup.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - Source data frame to be ordered.</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '121', 121)" onmouseover="showTip(event, '121', 121)">
+            orderRows frame
+          </code>
+          <div class="tip" id="121">
+            <strong>Signature:</strong>frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Returns a data frame that contains the same data as the input, 
+but whose rows are an ordered series. This allows using operations that are
+only available on indexed series such as alignment and inexact lookup.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - Source data frame to be ordered.</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '122', 122)" onmouseover="showTip(event, '122', 122)">
+            realignRows keys frame
+          </code>
+          <div class="tip" id="122">
+            <strong>Signature:</strong>keys:seq&lt;&#39;R&gt; -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Align the existing data to a specified collection of row keys. Values in the data frame
+that do not match any new key are dropped, new keys (that were not in the original data 
+frame) are assigned missing values.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - Source data frame that is to be realigned.</li>
+<li><code>keys</code> - A sequence of new row keys. The keys must have the same type as the original
+frame keys (because the rows are realigned).</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '123', 123)" onmouseover="showTip(event, '123', 123)">
+            transpose frame
+          </code>
+          <div class="tip" id="123">
+            <strong>Signature:</strong>frame:Frame&lt;&#39;R,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TColumnKey,&#39;R&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'TColumnKey          </div>
+        </td>
+        <td class="xmldoc"><p>Returns a transposed data frame. The rows of the original data frame are used as the
+columns of the new one (and vice versa). Use this operation if you have a data frame
+and you mostly need to access its rows as a series (because accessing columns as a 
+series is more efficient).</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - Source data frame to be transposed.</li>
+</ul>
+</td>
+      </tr>
+    </tbody>
+  </table>
+    <h2>Joining, zipping and appending<a name="section2">&#160;</a></h2>    
+      <div class="xmldoc">
+        <p>More info</p>
+
+      </div>
+  <h3>Functions and values</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Function or value</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '137', 137)" onmouseover="showTip(event, '137', 137)">
+            append frame1 frame2
+          </code>
+          <div class="tip" id="137">
+            <strong>Signature:</strong>frame1:Frame&lt;&#39;R,&#39;C&gt; -&gt; frame2:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Append two data frames with non-overlapping values. The operation takes the union of columns
+and rows of the source data frames and then unions the values. An exception is thrown when 
+both data frames define value for a column/row location, but the operation succeeds if one
+frame has a missing value at the location.</p>
+
+<p>Note that the rows are <em>not</em> automatically reindexed to avoid overlaps. This means that when
+a frame has rows indexed with ordinal numbers, you may need to explicitly reindex the row
+keys before calling append.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>otherFrame</code> - The other frame to be appended (combined) with the current instance</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '149', 149)" onmouseover="showTip(event, '149', 149)">
+            join kind frame1 frame2
+          </code>
+          <div class="tip" id="149">
+            <strong>Signature:</strong>kind:JoinKind -&gt; frame1:Frame&lt;&#39;R,&#39;C&gt; -&gt; frame2:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Join two data frames. The columns of the joined frames must not overlap and their
+rows are aligned and transformed according to the specified join kind.
+For more alignment options on ordered frames, see <code>joinAlign</code>.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame1</code> - First data frame (left) to be used in the joining</li>
+<li><code>frame2</code> - Other frame (right) to be joined with <code>frame1</code></li>
+<li><code>kind</code> - Specifies the joining behavior on row indices. Use <code>JoinKind.Outer</code> and 
+<code>JoinKind.Inner</code> to get the union and intersection of the row keys, respectively.
+Use <code>JoinKind.Left</code> and <code>JoinKind.Right</code> to use the current key of the left/right
+data frame.</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '150', 150)" onmouseover="showTip(event, '150', 150)">
+            joinAlign kind lookup frame1 frame2
+          </code>
+          <div class="tip" id="150">
+            <strong>Signature:</strong>kind:JoinKind -&gt; lookup:Lookup -&gt; frame1:Frame&lt;&#39;R,&#39;C&gt; -&gt; frame2:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Join two data frames. The columns of the joined frames must not overlap and their
+rows are aligned and transformed according to the specified join kind.
+When the index of both frames is ordered, it is possible to specify <code>lookup</code> 
+in order to align indices from other frame to the indices of the main frame
+(typically, to find the nearest key with available value for a key).</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame1</code> - First data frame (left) to be used in the joining</li>
+<li><code>frame2</code> - Other frame (right) to be joined with <code>frame1</code></li>
+<li><code>kind</code> - Specifies the joining behavior on row indices. Use <code>JoinKind.Outer</code> and 
+<code>JoinKind.Inner</code> to get the union and intersection of the row keys, respectively.
+Use <code>JoinKind.Left</code> and <code>JoinKind.Right</code> to use the current key of the left/right
+data frame.</li>
+<li><code>lookup</code> - When <code>kind</code> is <code>Left</code> or <code>Right</code> and the two frames have ordered row index,
+this parameter can be used to specify how to find value for a key when there is no
+exactly matching key or when there are missing values.</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '151', 151)" onmouseover="showTip(event, '151', 151)">
+            zip op frame1 frame2
+          </code>
+          <div class="tip" id="151">
+            <strong>Signature:</strong>op:(&#39;V1 -&gt; &#39;V2 -&gt; &#39;V) -&gt; frame1:Frame&lt;&#39;R,&#39;C&gt; -&gt; frame2:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'V1, 'V2, 'V, 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Aligns two data frames using both column index and row index and apply the specified operation
+on values of a specified type that are available in both data frames. This overload uses
+<code>JoinKind.Outer</code> for both columns and rows.</p>
+
+<p>Once aligned, the call <code>df1.Zip&lt;T&gt;(df2, f)</code> applies the specifed function <code>f</code> on all <code>T</code> values
+that are available in corresponding locations in both frames. For values of other types, the 
+value from <code>df1</code> is returned.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame1</code> - First frame to be aligned and zipped with the other instance</li>
+<li><code>frame2</code> - Other frame to be aligned and zipped with the first  instance</li>
+<li><code>columnKind</code> - Specifies how to align columns (inner, outer, left or right join)</li>
+<li><code>rowKind</code> - Specifies how to align rows (inner, outer, left or right join)</li>
+<li><code>lookup</code> - Specifies how to find matching value for a row (when using left or right join on rows)</li>
+<li><code>op</code> - A function that is applied to aligned values. The <code>Zip</code> operation is generic
+in the type of this function and the type of function is used to determine which
+values in the frames are zipped and which are left unchanged.</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '152', 152)" onmouseover="showTip(event, '152', 152)">
+            zipAlign (...)
+          </code>
+          <div class="tip" id="152">
+            <strong>Signature:</strong>columnKind:JoinKind -&gt; rowKind:JoinKind -&gt; lookup:Lookup -&gt; op:(&#39;V1 -&gt; &#39;V2 -&gt; &#39;V) -&gt; frame1:Frame&lt;&#39;R,&#39;C&gt; -&gt; frame2:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'V1, 'V2, 'V, 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Aligns two data frames using both column index and row index and apply the specified operation
+on values of a specified type that are available in both data frames. The parameters <code>columnKind</code>,
+and <code>rowKind</code> can be specified to determine how the alginment works (similarly to <code>Join</code>).
+Column keys are always matched using <code>Lookup.Exact</code>, but <code>lookup</code> determines lookup for rows.</p>
+
+<p>Once aligned, the call <code>df1.Zip&lt;T&gt;(df2, f)</code> applies the specifed function <code>f</code> on all <code>T</code> values
+that are available in corresponding locations in both frames. For values of other types, the 
+value from <code>df1</code> is returned.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame1</code> - First frame to be aligned and zipped with the other instance</li>
+<li><code>frame2</code> - Other frame to be aligned and zipped with the first  instance</li>
+<li><code>columnKind</code> - Specifies how to align columns (inner, outer, left or right join)</li>
+<li><code>rowKind</code> - Specifies how to align rows (inner, outer, left or right join)</li>
+<li><code>lookup</code> - Specifies how to find matching value for a row (when using left or right join on rows)</li>
+<li><code>op</code> - A function that is applied to aligned values. The <code>Zip</code> operation is generic
+in the type of this function and the type of function is used to determine which
+values in the frames are zipped and which are left unchanged.</li>
+</ul>
+</td>
+      </tr>
+    </tbody>
+  </table>
+    <h2>Missing values<a name="section3">&#160;</a></h2>    
+      <div class="xmldoc">
+        <p>More documentation here</p>
+
+      </div>
+  <h3>Functions and values</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Function or value</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '154', 154)" onmouseover="showTip(event, '154', 154)">
+            colsDense frame
+          </code>
+          <div class="tip" id="154">
+            <strong>Signature:</strong>frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; ColumnSeries&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Returns the columns of the data frame that do not have any missing values.
+The operation returns a series (indexed by the column keys of the source frame) 
+containing <em>series</em> representing individual columns of the frame. This is similar 
+to <code>Columns</code>, but it skips columns that contain missing value in <em>any</em> row.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - An input data frame containing columns to be filtered</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '158', 158)" onmouseover="showTip(event, '158', 158)">
+            dropSparseCols frame
+          </code>
+          <div class="tip" id="158">
+            <strong>Signature:</strong>frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Creates a new data frame that contains only those columns of the original 
+data frame that are <em>dense</em>, meaning that they have a value for each row.
+The resulting data frame has the same number of rows, but may have 
+fewer columns (or no columns at all).</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - An input data frame that is to be filtered</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '159', 159)" onmouseover="showTip(event, '159', 159)">
+            dropSparseRows frame
+          </code>
+          <div class="tip" id="159">
+            <strong>Signature:</strong>frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Creates a new data frame that contains only those rows of the original 
+data frame that are <em>dense</em>, meaning that they have a value for each column.
+The resulting data frame has the same number of columns, but may have 
+fewer rows (or no rows at all).</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - An input data frame that is to be filtered</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '160', 160)" onmouseover="showTip(event, '160', 160)">
+            fillMissing direction frame
+          </code>
+          <div class="tip" id="160">
+            <strong>Signature:</strong>direction:Direction -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Fill missing values in the data frame with the nearest available value
+(using the specified direction). Note that the frame may still contain
+missing values after call to this function (e.g. if the first value is not available
+and we attempt to fill series with previous values). This operation can only be
+used on ordered frames.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - An input data frame that is to be filled</li>
+<li><code>direction</code> - Specifies the direction used when searching for 
+the nearest available value. <code>Backward</code> means that we want to
+look for the first value with a smaller key while <code>Forward</code> searches
+for the nearest greater key.</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '161', 161)" onmouseover="showTip(event, '161', 161)">
+            fillMissingUsing f frame
+          </code>
+          <div class="tip" id="161">
+            <strong>Signature:</strong>f:(Series&lt;&#39;R,&#39;T&gt; -&gt; &#39;R -&gt; &#39;T) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'T, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Fill missing values in the frame using the specified function. The specified
+function is called with all series and keys for which the frame does not 
+contain value and the result of the call is used in place of the missing value.</p>
+
+<p>The operation is only applied to columns (series) that contain values of the
+same type as the return type of the provided filling function. The operation 
+does not attempt to convert between numeric values (so a series containing 
+<code>float</code> will not be converted to a series of <code>int</code>).</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - An input data frame that is to be filled</li>
+<li><code>f</code> - A function that takes a series <code>Series&lt;R, T&gt;</code> together with a key <code>K</code> 
+in the series and generates a value to be used in a place where the original
+series contains a missing value.</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '162', 162)" onmouseover="showTip(event, '162', 162)">
+            fillMissingWith value frame
+          </code>
+          <div class="tip" id="162">
+            <strong>Signature:</strong>value:&#39;T -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'T, 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Fill missing values of a given type in the frame with a constant value.
+The operation is only applied to columns (series) that contain values of the
+same type as the provided filling value. The operation does not attempt to 
+convert between numeric values (so a series containing <code>float</code> will not be
+converted to a series of <code>int</code>).</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - An input data frame that is to be filled</li>
+<li><code>value</code> - A constant value that is used to fill all missing values</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '163', 163)" onmouseover="showTip(event, '163', 163)">
+            rowsDense frame
+          </code>
+          <div class="tip" id="163">
+            <strong>Signature:</strong>frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; RowSeries&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Returns the rows of the data frame that do not have any missing values. 
+The operation returns a series (indexed by the row keys of the source frame) 
+containing <em>series</em> representing individual row of the frame. This is similar 
+to <code>Rows</code>, but it skips rows that contain missing value in <em>any</em> column.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - An input data frame containing rows to be filtered</li>
+</ul>
+</td>
+      </tr>
+    </tbody>
+  </table>
+    <h2>Projection and filtering<a name="section4">&#160;</a></h2>    
+      <div class="xmldoc">
+        <p>TBD</p>
+
+      </div>
+  <h3>Functions and values</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Function or value</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '164', 164)" onmouseover="showTip(event, '164', 164)">
+            filterCols f frame
+          </code>
+          <div class="tip" id="164">
+            <strong>Signature:</strong>f:(&#39;C -&gt; ObjectSeries&lt;&#39;R&gt; -&gt; bool) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R          </div>
+        </td>
+        <td class="xmldoc"><p>Returns a new data frame containing only the columns of the input frame
+for which the specified predicate returns <code>true</code>. The predicate is called
+with the column key and object series that represents the column data.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - Input data frame to be transformed</li>
+<li><code>f</code> - Function of two arguments that defines the predicate</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '166', 166)" onmouseover="showTip(event, '166', 166)">
+            filterColValues f frame
+          </code>
+          <div class="tip" id="166">
+            <strong>Signature:</strong>f:(ObjectSeries&lt;&#39;R&gt; -&gt; bool) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Returns a new data frame containing only the columns of the input frame
+for which the specified predicate returns <code>true</code>. The predicate is called
+with an object series that represents the column data (use <code>filterCols</code>
+if you need to access the column key).</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - Input data frame to be transformed</li>
+<li><code>f</code> - Function of one argument that defines the predicate</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '167', 167)" onmouseover="showTip(event, '167', 167)">
+            filterRows f frame
+          </code>
+          <div class="tip" id="167">
+            <strong>Signature:</strong>f:(&#39;R -&gt; ObjectSeries&lt;&#39;C&gt; -&gt; bool) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Returns a new data frame containing only the rows of the input frame
+for which the specified predicate returns <code>true</code>. The predicate is called
+with the row key and object series that represents the row data.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - Input data frame to be transformed</li>
+<li><code>f</code> - Function of two arguments that defines the predicate</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '168', 168)" onmouseover="showTip(event, '168', 168)">
+            filterRowValues f frame
+          </code>
+          <div class="tip" id="168">
+            <strong>Signature:</strong>f:(ObjectSeries&lt;&#39;C&gt; -&gt; bool) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R          </div>
+        </td>
+        <td class="xmldoc"><p>Returns a new data frame containing only the rows of the input frame
+for which the specified predicate returns <code>true</code>. The predicate is called
+with an object series that represents the row data (use <code>filterRows</code>
+if you need to access the row key).</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - Input data frame to be transformed</li>
+<li><code>f</code> - Function of one argument that defines the predicate</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '170', 170)" onmouseover="showTip(event, '170', 170)">
+            mapColKeys f frame
+          </code>
+          <div class="tip" id="170">
+            <strong>Signature:</strong>f:(&#39;C -&gt; &#39;?8463) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;?8463&gt;<br />
+                          <strong>Type parameters:</strong> 'C, '?8463, 'R          </div>
+        </td>
+        <td class="xmldoc"><p>Builds a new data frame whose column keys are the results of applying the
+specified function on the column keys of the original data frame.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - Input data frame to be transformed</li>
+<li><code>f</code> - Function of one argument that defines the column key mapping</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '172', 172)" onmouseover="showTip(event, '172', 172)">
+            mapCols f frame
+          </code>
+          <div class="tip" id="172">
+            <strong>Signature:</strong>f:(&#39;C -&gt; ObjectSeries&lt;&#39;R&gt; -&gt; &#39;?8454) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?8455,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R, '?8454, '?8455          </div>
+        </td>
+        <td class="xmldoc"><p>Builds a new data frame whose columns are the results of applying the specified
+function on the columns of the input data frame. The function is called
+with the column key and object series that represents the column data.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - Input data frame to be transformed</li>
+<li><code>f</code> - Function of two arguments that defines the column mapping</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '174', 174)" onmouseover="showTip(event, '174', 174)">
+            mapColValues f frame
+          </code>
+          <div class="tip" id="174">
+            <strong>Signature:</strong>f:(ObjectSeries&lt;&#39;R&gt; -&gt; &#39;?8458) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?8459,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, '?8458, '?8459, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Builds a new data frame whose columns are the results of applying the specified
+function on the columns of the input data frame. The function is called
+with an object series that represents the column data (use <code>mapCols</code>
+if you need to access the column key).</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - Input data frame to be transformed</li>
+<li><code>f</code> - Function of one argument that defines the column mapping</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '176', 176)" onmouseover="showTip(event, '176', 176)">
+            mapRowKeys f frame
+          </code>
+          <div class="tip" id="176">
+            <strong>Signature:</strong>f:(&#39;R1 -&gt; &#39;R2) -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;&#39;R2,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R1, 'R2, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Builds a new data frame whose row keys are the results of applying the
+specified function on the row keys of the original data frame.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - Input data frame to be transformed</li>
+<li><code>f</code> - Function of one argument that defines the row key mapping</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '178', 178)" onmouseover="showTip(event, '178', 178)">
+            mapRows f frame
+          </code>
+          <div class="tip" id="178">
+            <strong>Signature:</strong>f:(&#39;R -&gt; ObjectSeries&lt;&#39;C&gt; -&gt; &#39;?8436) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;R,&#39;?8436&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?8436          </div>
+        </td>
+        <td class="xmldoc"><p>Builds a new data frame whose rows are the results of applying the specified
+function on the rows of the input data frame. The function is called
+with the row key and object series that represents the row data.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - Input data frame to be transformed</li>
+<li><code>f</code> - Function of two arguments that defines the row mapping</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '180', 180)" onmouseover="showTip(event, '180', 180)">
+            mapRowValues f frame
+          </code>
+          <div class="tip" id="180">
+            <strong>Signature:</strong>f:(ObjectSeries&lt;&#39;C&gt; -&gt; &#39;?8439) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;R,&#39;?8439&gt;<br />
+                          <strong>Type parameters:</strong> 'C, '?8439, 'R          </div>
+        </td>
+        <td class="xmldoc"><p>Builds a new data frame whose rows are the results of applying the specified
+function on the rows of the input data frame. The function is called
+with an object series that represents the row data (use <code>mapRows</code>
+if you need to access the row key).</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>frame</code> - Input data frame to be transformed</li>
+<li><code>f</code> - Function of one argument that defines the row mapping</li>
+</ul>
+</td>
+      </tr>
+    </tbody>
+  </table>
+    <h2>Series operations<a name="section5">&#160;</a></h2>    
+  <h3>Functions and values</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Function or value</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '192', 192)" onmouseover="showTip(event, '192', 192)">
+            addSeries column series frame
+          </code>
+          <div class="tip" id="192">
+            <strong>Signature:</strong>column:&#39;C -&gt; series:Series&lt;&#39;R,&#39;V&gt; -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R, 'V          </div>
+        </td>
+        <td class="xmldoc"><p>Creates a new data frame that contains all data from 
+the original data frame, together with an additional series.
+The operation uses left join and aligns new series to the 
+existing frame keys.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>column</code> - A key (or name) for the newly added column</li>
+<li><code>series</code> - A data series to be added (the row key type has to match)</li>
+<li><code>frame</code> - Source data frame (which is not mutated by the operation)</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '194', 194)" onmouseover="showTip(event, '194', 194)">
+            dropSeries column frame
+          </code>
+          <div class="tip" id="194">
+            <strong>Signature:</strong>column:&#39;C -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R          </div>
+        </td>
+        <td class="xmldoc"><p>Creates a new data frame that contains all data from the original
+data frame without the specified series (column). The operation throws
+if the column key is not found.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>column</code> - The key (or name) to be dropped from the frame</li>
+<li><code>frame</code> - Source data frame (which is not mutated by the operation)</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '195', 195)" onmouseover="showTip(event, '195', 195)">
+            replaceSeries column series frame
+          </code>
+          <div class="tip" id="195">
+            <strong>Signature:</strong>column:&#39;C -&gt; series:ISeries&lt;&#39;R&gt; -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R          </div>
+        </td>
+        <td class="xmldoc"><p>Creates a new data frame where the specified column is repalced
+with a new series. (If the series does not exist, only the new
+series is added.)</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>column</code> - A key (or name) for the column to be replaced or added</li>
+<li><code>series</code> - A data series to be used (the row key type has to match)</li>
+<li><code>frame</code> - Source data frame (which is not mutated by the operation)</li>
+</ul>
+</td>
+      </tr>
+    </tbody>
+  </table>
+    <h2>Other module members<a name="section6">&#160;</a></h2>    
+  <h3>Functions and values</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Function or value</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '217', 217)" onmouseover="showTip(event, '217', 217)">
+            apply op frame
+          </code>
+          <div class="tip" id="217">
+            <strong>Signature:</strong>op:(seq&lt;float&gt; -&gt; &#39;?8478) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?8478&gt;<br />
+                          <strong>Type parameters:</strong> '?8478, 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '218', 218)" onmouseover="showTip(event, '218', 218)">
+            applyLevel keySelector op frame
+          </code>
+          <div class="tip" id="218">
+            <strong>Signature:</strong>keySelector:(&#39;R -&gt; &#39;?8516) -&gt; op:(seq&lt;float&gt; -&gt; &#39;?8517) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?8516,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, '?8516, '?8517, 'C          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '219', 219)" onmouseover="showTip(event, '219', 219)">
+            collapseCols series
+          </code>
+          <div class="tip" id="219">
+            <strong>Signature:</strong>series:Series&lt;&#39;K,Frame&lt;&#39;K1,&#39;K2&gt;&gt; -&gt; Frame&lt;&#39;K1,(&#39;K * &#39;K2)&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'K1, 'K2          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '220', 220)" onmouseover="showTip(event, '220', 220)">
+            collapseRows series
+          </code>
+          <div class="tip" id="220">
+            <strong>Signature:</strong>series:Series&lt;&#39;K,Frame&lt;&#39;K1,&#39;K2&gt;&gt; -&gt; Frame&lt;(&#39;K * &#39;K1),&#39;K2&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'K1, 'K2          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '221', 221)" onmouseover="showTip(event, '221', 221)">
+            countLevel keySelector frame
+          </code>
+          <div class="tip" id="221">
+            <strong>Signature:</strong>keySelector:(&#39;R -&gt; &#39;?8504) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?8504,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, '?8504, 'C          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '222', 222)" onmouseover="showTip(event, '222', 222)">
+            countValues frame
+          </code>
+          <div class="tip" id="222">
+            <strong>Signature:</strong>frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,int&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '223', 223)" onmouseover="showTip(event, '223', 223)">
+            diff offset frame
+          </code>
+          <div class="tip" id="223">
+            <strong>Signature:</strong>offset:int -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '224', 224)" onmouseover="showTip(event, '224', 224)">
+            flatten level op frame
+          </code>
+          <div class="tip" id="224">
+            <strong>Signature:</strong>level:(&#39;R -&gt; &#39;K) -&gt; op:(Series&lt;&#39;R,obj&gt; -&gt; &#39;V) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,Series&lt;&#39;K,&#39;V&gt;&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'K, 'V, 'C          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '225', 225)" onmouseover="showTip(event, '225', 225)">
+            flattenRows level op frame
+          </code>
+          <div class="tip" id="225">
+            <strong>Signature:</strong>level:(&#39;R -&gt; &#39;K) -&gt; op:(Frame&lt;&#39;R,&#39;C&gt; -&gt; &#39;V) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'K, 'C, 'V          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '226', 226)" onmouseover="showTip(event, '226', 226)">
+            groupColsBy column frame
+          </code>
+          <div class="tip" id="226">
+            <strong>Signature:</strong>column:&#39;R -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,(&#39;K * &#39;C)&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, 'K          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '227', 227)" onmouseover="showTip(event, '227', 227)">
+            groupColsByInt column frame
+          </code>
+          <div class="tip" id="227">
+            <strong>Signature:</strong>column:&#39;?8370 -&gt; frame:Frame&lt;&#39;?8370,&#39;?8371&gt; -&gt; Frame&lt;&#39;?8370,(int * &#39;?8371)&gt;<br />
+                          <strong>Type parameters:</strong> '?8370, '?8371          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '228', 228)" onmouseover="showTip(event, '228', 228)">
+            groupColsByObj column frame
+          </code>
+          <div class="tip" id="228">
+            <strong>Signature:</strong>column:&#39;?8367 -&gt; frame:Frame&lt;&#39;?8367,&#39;?8368&gt; -&gt; Frame&lt;&#39;?8367,(obj * &#39;?8368)&gt;<br />
+                          <strong>Type parameters:</strong> '?8367, '?8368          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '229', 229)" onmouseover="showTip(event, '229', 229)">
+            groupColsByString column frame
+          </code>
+          <div class="tip" id="229">
+            <strong>Signature:</strong>column:&#39;?8373 -&gt; frame:Frame&lt;&#39;?8373,&#39;?8374&gt; -&gt; Frame&lt;&#39;?8373,(string * &#39;?8374)&gt;<br />
+                          <strong>Type parameters:</strong> '?8373, '?8374          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '230', 230)" onmouseover="showTip(event, '230', 230)">
+            groupColsUsing selector frame
+          </code>
+          <div class="tip" id="230">
+            <strong>Signature:</strong>selector:(&#39;C -&gt; ObjectSeries&lt;&#39;R&gt; -&gt; &#39;?8348) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,(&#39;?8348 * &#39;C)&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R, '?8348          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '231', 231)" onmouseover="showTip(event, '231', 231)">
+            groupRowsBy column frame
+          </code>
+          <div class="tip" id="231">
+            <strong>Signature:</strong>column:&#39;C -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;(&#39;K * &#39;R),&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R, 'K          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '232', 232)" onmouseover="showTip(event, '232', 232)">
+            groupRowsByInt column frame
+          </code>
+          <div class="tip" id="232">
+            <strong>Signature:</strong>column:&#39;?8361 -&gt; frame:Frame&lt;&#39;?8362,&#39;?8361&gt; -&gt; Frame&lt;(int * &#39;?8362),&#39;?8361&gt;<br />
+                          <strong>Type parameters:</strong> '?8361, '?8362          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '233', 233)" onmouseover="showTip(event, '233', 233)">
+            groupRowsByObj column frame
+          </code>
+          <div class="tip" id="233">
+            <strong>Signature:</strong>column:&#39;?8358 -&gt; frame:Frame&lt;&#39;?8359,&#39;?8358&gt; -&gt; Frame&lt;(obj * &#39;?8359),&#39;?8358&gt;<br />
+                          <strong>Type parameters:</strong> '?8358, '?8359          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '234', 234)" onmouseover="showTip(event, '234', 234)">
+            groupRowsByString column frame
+          </code>
+          <div class="tip" id="234">
+            <strong>Signature:</strong>column:&#39;?8364 -&gt; frame:Frame&lt;&#39;?8365,&#39;?8364&gt; -&gt; Frame&lt;(string * &#39;?8365),&#39;?8364&gt;<br />
+                          <strong>Type parameters:</strong> '?8364, '?8365          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '235', 235)" onmouseover="showTip(event, '235', 235)">
+            groupRowsUsing selector frame
+          </code>
+          <div class="tip" id="235">
+            <strong>Signature:</strong>selector:(&#39;R -&gt; ObjectSeries&lt;&#39;C&gt; -&gt; &#39;?8344) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;(&#39;?8344 * &#39;R),&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?8344          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '236', 236)" onmouseover="showTip(event, '236', 236)">
+            maxRowBy column frame
+          </code>
+          <div class="tip" id="236">
+            <strong>Signature:</strong>column:&#39;C -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; &#39;R * ObjectSeries&lt;&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '237', 237)" onmouseover="showTip(event, '237', 237)">
+            mean frame
+          </code>
+          <div class="tip" id="237">
+            <strong>Signature:</strong>frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '238', 238)" onmouseover="showTip(event, '238', 238)">
+            meanLevel keySelector frame
+          </code>
+          <div class="tip" id="238">
+            <strong>Signature:</strong>keySelector:(&#39;R -&gt; &#39;?8496) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?8496,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, '?8496, 'C          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '239', 239)" onmouseover="showTip(event, '239', 239)">
+            median frame
+          </code>
+          <div class="tip" id="239">
+            <strong>Signature:</strong>frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '240', 240)" onmouseover="showTip(event, '240', 240)">
+            medianLevel keySelector frame
+          </code>
+          <div class="tip" id="240">
+            <strong>Signature:</strong>keySelector:(&#39;R -&gt; &#39;?8512) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?8512,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, '?8512, 'C          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '241', 241)" onmouseover="showTip(event, '241', 241)">
+            minRowBy column frame
+          </code>
+          <div class="tip" id="241">
+            <strong>Signature:</strong>column:&#39;C -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; &#39;R * ObjectSeries&lt;&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '242', 242)" onmouseover="showTip(event, '242', 242)">
+            nest frame
+          </code>
+          <div class="tip" id="242">
+            <strong>Signature:</strong>frame:Frame&lt;(&#39;R1 * &#39;R2),&#39;C&gt; -&gt; Series&lt;&#39;R1,Frame&lt;&#39;R2,&#39;C&gt;&gt;<br />
+                          <strong>Type parameters:</strong> 'R1, 'R2, 'C          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '243', 243)" onmouseover="showTip(event, '243', 243)">
+            nestBy keySelector frame
+          </code>
+          <div class="tip" id="243">
+            <strong>Signature:</strong>keySelector:(&#39;R -&gt; &#39;?8586) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;?8586,Frame&lt;&#39;R,&#39;C&gt;&gt;<br />
+                          <strong>Type parameters:</strong> 'R, '?8586, 'C          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '244', 244)" onmouseover="showTip(event, '244', 244)">
+            reduce op frame
+          </code>
+          <div class="tip" id="244">
+            <strong>Signature:</strong>op:(&#39;T -&gt; &#39;T -&gt; &#39;T) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;T&gt;<br />
+                          <strong>Type parameters:</strong> 'T, 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '245', 245)" onmouseover="showTip(event, '245', 245)">
+            reduceLevel keySelector op frame
+          </code>
+          <div class="tip" id="245">
+            <strong>Signature:</strong>keySelector:(&#39;R -&gt; &#39;?8521) -&gt; op:(&#39;T -&gt; &#39;T -&gt; &#39;T) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?8521,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, '?8521, 'T, 'C          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '246', 246)" onmouseover="showTip(event, '246', 246)">
+            sdv frame
+          </code>
+          <div class="tip" id="246">
+            <strong>Signature:</strong>frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '247', 247)" onmouseover="showTip(event, '247', 247)">
+            sdvLevel keySelector frame
+          </code>
+          <div class="tip" id="247">
+            <strong>Signature:</strong>keySelector:(&#39;R -&gt; &#39;?8508) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?8508,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, '?8508, 'C          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '248', 248)" onmouseover="showTip(event, '248', 248)">
+            shift offset frame
+          </code>
+          <div class="tip" id="248">
+            <strong>Signature:</strong>offset:int -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '249', 249)" onmouseover="showTip(event, '249', 249)">
+            stack frame
+          </code>
+          <div class="tip" id="249">
+            <strong>Signature:</strong>frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;int,string&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"><p>Implements R-like 'stack' (returns frame whose 
+columns are named Row/Column/Value)</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '250', 250)" onmouseover="showTip(event, '250', 250)">
+            sum frame
+          </code>
+          <div class="tip" id="250">
+            <strong>Signature:</strong>frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '251', 251)" onmouseover="showTip(event, '251', 251)">
+            sumLevel keySelector frame
+          </code>
+          <div class="tip" id="251">
+            <strong>Signature:</strong>keySelector:(&#39;R -&gt; &#39;?8500) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?8500,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, '?8500, 'C          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '252', 252)" onmouseover="showTip(event, '252', 252)">
+            takeLast count frame
+          </code>
+          <div class="tip" id="252">
+            <strong>Signature:</strong>count:int -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '253', 253)" onmouseover="showTip(event, '253', 253)">
+            unnest series
+          </code>
+          <div class="tip" id="253">
+            <strong>Signature:</strong>series:Series&lt;&#39;R1,Frame&lt;&#39;R2,&#39;C&gt;&gt; -&gt; Frame&lt;(&#39;R1 * &#39;R2),&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R1, 'R2, 'C          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '254', 254)" onmouseover="showTip(event, '254', 254)">
+            unstack frame
+          </code>
+          <div class="tip" id="254">
+            <strong>Signature:</strong>frame:Frame&lt;&#39;O,string&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'O, 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '255', 255)" onmouseover="showTip(event, '255', 255)">
+            window size frame
+          </code>
+          <div class="tip" id="255">
+            <strong>Signature:</strong>size:int -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;R,Frame&lt;&#39;R,&#39;C&gt;&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '256', 256)" onmouseover="showTip(event, '256', 256)">
+            windowInto size f frame
+          </code>
+          <div class="tip" id="256">
+            <strong>Signature:</strong>size:int -&gt; f:(Frame&lt;&#39;R,&#39;C&gt; -&gt; &#39;?8384) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;R,&#39;?8384&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?8384          </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+    </tbody>
+  </table>
+
+        </div>
+        <div class="span3">
+          <a href="https://nuget.org/packages/Deedle">
+            <img src="{root}/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          </a>
+
+          <ul class="nav nav-list" id="menu">
+            <li class="nav-header">Deedle</li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/index.html">Home page</a></li>
+            <li class="divider"></li>
+            <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/design.html">Design notes</a></li>
+            
+            <li class="nav-header">Using from F#</li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html">Quick start tutorial</a>
+              <ul class="nav nav-list">
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#creating">Creating data frames</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#reindexing-and-joins">Using index & joining</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#selecting">Reading values, slicing</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#timeseries">Ordered time series</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#projections">Projection and filtering</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#grouping">Aggregating groups</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html">Data frame features</a>
+              <ul class="nav nav-list">
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#creating">Creating & loading</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#dataframe">Frame manipulation</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#slicing">Advanced slicing</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#grouping">Grouping data</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#indexing">Hierarchical indexing</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#missing">Missing values</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/FSharp.Deedle/timeseries.html">Time series features</a>
+              <ul class="nav nav-list">
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/timeseries.html#alignment">Alignment & joining</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/timeseries.html#windowing">Windows and chunks</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/timeseries.html#sampling">Lookup and resampling</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/timeseries.html#stats">Statistics & math</a></li>
+              </ul>
+            </li>
+
+            <li class="nav-header">Documentation</li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/reference/index.html">API Reference</a></li>
+
+            <li class="nav-header">Samples</li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/samples/volatility.html">Price volatility</a></li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/samples/titanic.html">Titanic survivors</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/BlueMountainCapital/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+  </body>
+  </html>

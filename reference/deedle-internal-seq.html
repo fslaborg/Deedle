@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Seq - Deedle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="BlueMountain Capital">
+
+    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/FSharp.Deedle/content/style.css" />
+    <script type="text/javascript" src="http://bluemountaincapital.github.io/FSharp.Deedle/content/tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://github.com/BlueMountainCapital/Deedle">github page</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/">F# Charting</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider">R Type Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data/">F# Data</a></li>
+        </ul>
+        <h3 class="muted">Deedle</h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+
+
+
+<h1>Seq</h1>
+<div class="xmldoc">
+<p>This module contains additional functions for working with sequences. 
+<code>Deedle.Internals</code> is opened, it extends the standard <code>Seq</code> module.</p>
+</div>
+
+<!-- TODO: Refactor me - copy & paste from 'namespaces.cshtml' -->
+
+
+
+<!-- END TODO -->
+
+
+
+  <h3>Functions and values</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Function or value</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '8', 8)" onmouseover="showTip(event, '8', 8)">
+            alignWithOrdering seq1 seq2 comparer
+          </code>
+          <div class="tip" id="8">
+            <strong>Signature:</strong>seq1:seq&lt;&#39;T * &#39;TAddress&gt; -&gt; seq2:seq&lt;&#39;T * &#39;TAddress&gt; -&gt; comparer:IComparer&lt;&#39;T&gt; -&gt; seq&lt;&#39;T * &#39;TAddress option * &#39;TAddress option&gt;<br />
+                          <strong>Type parameters:</strong> 'T, 'TAddress          </div>
+        </td>
+        <td class="xmldoc"><p>Align two ordered sequences of <code>Key * Address</code> pairs and produce a 
+collection that contains three-element tuples consisting of:</p>
+
+<ul>
+<li>ordered keys (from one or the ohter sequence)</li>
+<li>optional address of the key in the first sequence</li>
+<li>optional address of the key in the second sequence</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '69', 69)" onmouseover="showTip(event, '69', 69)">
+            alignWithoutOrdering seq1 seq2
+          </code>
+          <div class="tip" id="69">
+            <strong>Signature:</strong>seq1:seq&lt;&#39;T * &#39;TAddress&gt; -&gt; seq2:seq&lt;&#39;T * &#39;TAddress&gt; -&gt; seq&lt;&#39;T * &#39;TAddress option * &#39;TAddress option&gt;<br />
+                          <strong>Type parameters:</strong> 'T, 'TAddress          </div>
+        </td>
+        <td class="xmldoc"><p>Align two unordered sequences of <code>Key * Address</code> pairs and produce a collection
+that contains three-element tuples consisting of keys, optional address in the
+first sequence &amp; optional address in the second sequence. (See also <code>alignWithOrdering</code>)</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '70', 70)" onmouseover="showTip(event, '70', 70)">
+            chunkedUsing comparer dir keys input
+          </code>
+          <div class="tip" id="70">
+            <strong>Signature:</strong>comparer:Comparer&lt;&#39;?7661&gt; -&gt; dir:Direction -&gt; keys:seq&lt;&#39;?7661&gt; -&gt; input:seq&lt;&#39;?7661&gt; -&gt; seq&lt;&#39;?7661 * &#39;?7661 list&gt;<br />
+                          <strong>Type parameters:</strong> '?7661          </div>
+        </td>
+        <td class="xmldoc"><p>Generate non-overlapping chunks from the input sequence. Chunks are aligned
+to the specified keys. The <code>dir</code> parameter specifies the direction. If it is
+<code>Direction.Forward</code> than the key is the first element of a chunk; for 
+<code>Direction.Backward</code>, the key is the last element (note that this does not hold
+at the boundaries)</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '71', 71)" onmouseover="showTip(event, '71', 71)">
+            chunkedWhile f input
+          </code>
+          <div class="tip" id="71">
+            <strong>Signature:</strong>f:(&#39;?7659 -&gt; &#39;?7659 -&gt; bool) -&gt; input:seq&lt;&#39;?7659&gt; -&gt; seq&lt;&#39;?7659 []&gt;<br />
+                          <strong>Type parameters:</strong> '?7659          </div>
+        </td>
+        <td class="xmldoc"><p>Generate non-verlapping chunks from the input sequence. A chunk is started 
+at the beginning and then immediately after the end of the previous chunk.
+To find the end of the chunk, the function calls the provided argument <code>f</code> 
+with the first and the last elements of the chunk as arguments. A chunk 
+ends when <code>f</code> returns <code>false</code>.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '72', 72)" onmouseover="showTip(event, '72', 72)">
+            chunkedWithBounds size boundary input
+          </code>
+          <div class="tip" id="72">
+            <strong>Signature:</strong>size:int -&gt; boundary:Boundary -&gt; input:seq&lt;&#39;?7665&gt; -&gt; seq&lt;DataSegment&lt;&#39;?7665 []&gt;&gt;<br />
+                          <strong>Type parameters:</strong> '?7665          </div>
+        </td>
+        <td class="xmldoc"><p>Similar to <code>Seq.windowedWithBounds</code>, but generates non-overlapping chunks
+rather than floating windows. See that function for detailed documentation.
+The function may iterate over the sequence repeatedly.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '73', 73)" onmouseover="showTip(event, '73', 73)">
+            getEnumerator s
+          </code>
+          <div class="tip" id="73">
+            <strong>Signature:</strong>s:seq&lt;&#39;?7653&gt; -&gt; IEnumerator&lt;&#39;?7653&gt;<br />
+                          <strong>Type parameters:</strong> '?7653          </div>
+        </td>
+        <td class="xmldoc"><p>Calls the <code>GetEnumerator</code> method. Simple function to guide type inference.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '74', 74)" onmouseover="showTip(event, '74', 74)">
+            headOrNone input
+          </code>
+          <div class="tip" id="74">
+            <strong>Signature:</strong>input:seq&lt;&#39;?7649&gt; -&gt; &#39;?7649 option<br />
+                          <strong>Type parameters:</strong> '?7649          </div>
+        </td>
+        <td class="xmldoc"><p>If the input is non empty, returns <code>Some(head)</code> where <code>head</code> is 
+the first value. Otherwise, returns <code>None</code>.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '75', 75)" onmouseover="showTip(event, '75', 75)">
+            isSorted data comparer
+          </code>
+          <div class="tip" id="75">
+            <strong>Signature:</strong>data:seq&lt;&#39;T&gt; -&gt; comparer:IComparer&lt;&#39;T&gt; -&gt; bool<br />
+                          <strong>Type parameters:</strong> 'T          </div>
+        </td>
+        <td class="xmldoc"><p>Returns true if the specified sequence is sorted.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '76', 76)" onmouseover="showTip(event, '76', 76)">
+            lastFew count input
+          </code>
+          <div class="tip" id="76">
+            <strong>Signature:</strong>count:int -&gt; input:seq&lt;&#39;?7651&gt; -&gt; seq&lt;&#39;?7651&gt;<br />
+                          <strong>Type parameters:</strong> '?7651          </div>
+        </td>
+        <td class="xmldoc"><p>Returns the specified number of elements from the end of the sequence
+Note that this needs to store the specified number of elements in memory
+and it needs to iterate over the entire sequence.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '77', 77)" onmouseover="showTip(event, '77', 77)">
+            startAndEnd startCount endCount input
+          </code>
+          <div class="tip" id="77">
+            <strong>Signature:</strong>startCount:int -&gt; endCount:int -&gt; input:seq&lt;&#39;?7655&gt; -&gt; seq&lt;Choice&lt;&#39;?7655,unit,&#39;?7655&gt;&gt;<br />
+                          <strong>Type parameters:</strong> '?7655          </div>
+        </td>
+        <td class="xmldoc"><p>Given a sequence, returns <code>startCount</code> number of elements at the beginning 
+of the sequence (wrapped in <code>Choice1Of3</code>) followed by one <code>Choice2Of2()</code> value
+and then followed by <code>endCount</code> number of elements at the end of the sequence
+wrapped in <code>Choice3Of3</code>. If the input is shorter than <code>startCount + endCount</code>,
+then all values are returned and wrapped in <code>Choice1Of3</code>.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '78', 78)" onmouseover="showTip(event, '78', 78)">
+            structuralEquals s1 s2
+          </code>
+          <div class="tip" id="78">
+            <strong>Signature:</strong>s1:seq&lt;&#39;T&gt; -&gt; s2:seq&lt;&#39;T&gt; -&gt; bool<br />
+                          <strong>Type parameters:</strong> 'T          </div>
+        </td>
+        <td class="xmldoc"><p>Comapre two sequences using the <code>Equals</code> method. Returns true
+when all their elements are equal and they have the same size.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '79', 79)" onmouseover="showTip(event, '79', 79)">
+            structuralHash s
+          </code>
+          <div class="tip" id="79">
+            <strong>Signature:</strong>s:seq&lt;&#39;T&gt; -&gt; int<br />
+                          <strong>Type parameters:</strong> 'T          </div>
+        </td>
+        <td class="xmldoc"><p>Calculate hash code of a sequence, based on the values</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '80', 80)" onmouseover="showTip(event, '80', 80)">
+            tryFirstAndLast input
+          </code>
+          <div class="tip" id="80">
+            <strong>Signature:</strong>input:seq&lt;&#39;?7669&gt; -&gt; (&#39;?7669 * &#39;?7669) option<br />
+                          <strong>Type parameters:</strong> '?7669          </div>
+        </td>
+        <td class="xmldoc"><p>Returns the first and the last element from a sequence or 'None' if the sequence is empty</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '81', 81)" onmouseover="showTip(event, '81', 81)">
+            windowedWhile f input
+          </code>
+          <div class="tip" id="81">
+            <strong>Signature:</strong>f:(&#39;T -&gt; &#39;T -&gt; bool) -&gt; input:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;T []&gt;<br />
+                          <strong>Type parameters:</strong> 'T          </div>
+        </td>
+        <td class="xmldoc"><p>Generate floating windows from the input sequence. New floating window is 
+started for each element. To find the end of the window, the function calls
+the provided argument <code>f</code> with the first and the last elements of the window
+as arguments. A window ends when <code>f</code> returns <code>false</code>.</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '82', 82)" onmouseover="showTip(event, '82', 82)">
+            windowedWithBounds size boundary input
+          </code>
+          <div class="tip" id="82">
+            <strong>Signature:</strong>size:int -&gt; boundary:Boundary -&gt; input:seq&lt;&#39;T&gt; -&gt; seq&lt;DataSegment&lt;&#39;T []&gt;&gt;<br />
+                          <strong>Type parameters:</strong> 'T          </div>
+        </td>
+        <td class="xmldoc"><p>A version of <code>Seq.windowed</code> that allows specifying more complex boundary
+behaviour. The <code>boundary</code> argument can specify one of the following options:</p>
+
+<ul>
+<li><code>Boundary.Skip</code> - only full windows are returned (like <code>Seq.windowed</code>)</li>
+<li><code>Boundary.AtBeginning</code> - incomplete windows (smaller than the required
+size) are returned at the beginning.</li>
+<li><code>Boundary.AtEnding</code> - incomplete windows are returned at the end.</li>
+</ul>
+
+<p>The result is a sequence of <code>DataSegnebt&lt;T&gt;</code> values, which makes it 
+easy to distinguish between complete and incomplete windows.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+        </div>
+        <div class="span3">
+          <a href="https://nuget.org/packages/Deedle">
+            <img src="{root}/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          </a>
+
+          <ul class="nav nav-list" id="menu">
+            <li class="nav-header">Deedle</li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/index.html">Home page</a></li>
+            <li class="divider"></li>
+            <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/design.html">Design notes</a></li>
+            
+            <li class="nav-header">Using from F#</li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html">Quick start tutorial</a>
+              <ul class="nav nav-list">
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#creating">Creating data frames</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#reindexing-and-joins">Using index & joining</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#selecting">Reading values, slicing</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#timeseries">Ordered time series</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#projections">Projection and filtering</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#grouping">Aggregating groups</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html">Data frame features</a>
+              <ul class="nav nav-list">
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#creating">Creating & loading</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#dataframe">Frame manipulation</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#slicing">Advanced slicing</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#grouping">Grouping data</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#indexing">Hierarchical indexing</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#missing">Missing values</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/FSharp.Deedle/timeseries.html">Time series features</a>
+              <ul class="nav nav-list">
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/timeseries.html#alignment">Alignment & joining</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/timeseries.html#windowing">Windows and chunks</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/timeseries.html#sampling">Lookup and resampling</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/timeseries.html#stats">Statistics & math</a></li>
+              </ul>
+            </li>
+
+            <li class="nav-header">Documentation</li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/reference/index.html">API Reference</a></li>
+
+            <li class="nav-header">Samples</li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/samples/volatility.html">Price volatility</a></li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/samples/titanic.html">Titanic survivors</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/BlueMountainCapital/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+  </body>
+  </html>

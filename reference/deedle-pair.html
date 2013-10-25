@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Pair - Deedle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="BlueMountain Capital">
+
+    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/FSharp.Deedle/content/style.css" />
+    <script type="text/javascript" src="http://bluemountaincapital.github.io/FSharp.Deedle/content/tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://github.com/BlueMountainCapital/Deedle">github page</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/">F# Charting</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider">R Type Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data/">F# Data</a></li>
+        </ul>
+        <h3 class="muted">Deedle</h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+
+
+
+<h1>Pair</h1>
+<div class="xmldoc">
+<p>Module with helper functions for extracting values from hierarchical tuples</p>
+</div>
+
+<!-- TODO: Refactor me - copy & paste from 'namespaces.cshtml' -->
+
+
+
+<!-- END TODO -->
+
+
+
+  <h3>Functions and values</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Function or value</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '4', 4)" onmouseover="showTip(event, '4', 4)">
+            flatten3 (v1, arg2)
+          </code>
+          <div class="tip" id="4">
+            <strong>Signature:</strong>(v1:&#39;?7453 * (&#39;?7454 * &#39;?7455)) -&gt; &#39;?7453 * &#39;?7454 * &#39;?7455<br />
+                          <strong>Type parameters:</strong> '?7453, '?7454, '?7455          </div>
+        </td>
+        <td class="xmldoc"><p>Flatten a two-level nested tuple into a flat tuple of 3 elements</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '56', 56)" onmouseover="showTip(event, '56', 56)">
+            flatten4 (v1, arg2)
+          </code>
+          <div class="tip" id="56">
+            <strong>Signature:</strong>(v1:&#39;?7457 * (&#39;?7458 * (&#39;?7459 * &#39;?7460))) -&gt; &#39;?7457 * &#39;?7458 * &#39;?7459 * &#39;?7460<br />
+                          <strong>Type parameters:</strong> '?7457, '?7458, '?7459, '?7460          </div>
+        </td>
+        <td class="xmldoc"><p>Flatten a two-level nested tuple into a flat tuple of 4 elements</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '57', 57)" onmouseover="showTip(event, '57', 57)">
+            get1And2Of3 (v1, v2, arg3)
+          </code>
+          <div class="tip" id="57">
+            <strong>Signature:</strong>(v1:&#39;?7421 * v2:&#39;?7422 * &#39;?7423) -&gt; &#39;?7421 * &#39;?7422<br />
+                          <strong>Type parameters:</strong> '?7421, '?7422, '?7423          </div>
+        </td>
+        <td class="xmldoc"><p>Returns the first and the second value of a three-level hierarchical tuple</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '58', 58)" onmouseover="showTip(event, '58', 58)">
+            get1And3Of3 (v1, arg2, v2)
+          </code>
+          <div class="tip" id="58">
+            <strong>Signature:</strong>(v1:&#39;?7429 * &#39;?7430 * v2:&#39;?7431) -&gt; &#39;?7429 * &#39;?7431<br />
+                          <strong>Type parameters:</strong> '?7429, '?7430, '?7431          </div>
+        </td>
+        <td class="xmldoc"><p>Returns the first and the third value of a three-level hierarchical tuple</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '59', 59)" onmouseover="showTip(event, '59', 59)">
+            get1Of2 (v, arg2)
+          </code>
+          <div class="tip" id="59">
+            <strong>Signature:</strong>(v:&#39;?7403 * &#39;?7404) -&gt; &#39;?7403<br />
+                          <strong>Type parameters:</strong> '?7403, '?7404          </div>
+        </td>
+        <td class="xmldoc"><p>Returns the first value of a two-level hierarchical tuple</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '60', 60)" onmouseover="showTip(event, '60', 60)">
+            get1Of3 (v, arg2, arg3)
+          </code>
+          <div class="tip" id="60">
+            <strong>Signature:</strong>(v:&#39;?7409 * &#39;?7410 * &#39;?7411) -&gt; &#39;?7409<br />
+                          <strong>Type parameters:</strong> '?7409, '?7410, '?7411          </div>
+        </td>
+        <td class="xmldoc"><p>Returns the first value of a three-level hierarchical tuple</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '61', 61)" onmouseover="showTip(event, '61', 61)">
+            get1Of4 (v, arg2, arg3, arg4)
+          </code>
+          <div class="tip" id="61">
+            <strong>Signature:</strong>(v:&#39;?7433 * &#39;?7434 * &#39;?7435 * &#39;?7436) -&gt; &#39;?7433<br />
+                          <strong>Type parameters:</strong> '?7433, '?7434, '?7435, '?7436          </div>
+        </td>
+        <td class="xmldoc"><p>Returns the first value of a four-level hierarchical tuple</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '62', 62)" onmouseover="showTip(event, '62', 62)">
+            get2And3Of3 (arg1, v1, v2)
+          </code>
+          <div class="tip" id="62">
+            <strong>Signature:</strong>(&#39;?7425 * v1:&#39;?7426 * v2:&#39;?7427) -&gt; &#39;?7426 * &#39;?7427<br />
+                          <strong>Type parameters:</strong> '?7425, '?7426, '?7427          </div>
+        </td>
+        <td class="xmldoc"><p>Returns the second and the third value of a three-level hierarchical tuple</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '63', 63)" onmouseover="showTip(event, '63', 63)">
+            get2Of2 (arg1, v)
+          </code>
+          <div class="tip" id="63">
+            <strong>Signature:</strong>(&#39;?7406 * v:&#39;?7407) -&gt; &#39;?7407<br />
+                          <strong>Type parameters:</strong> '?7406, '?7407          </div>
+        </td>
+        <td class="xmldoc"><p>Returns the second value of a two-level hierarchical tuple</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '64', 64)" onmouseover="showTip(event, '64', 64)">
+            get2Of3 (arg1, v, arg3)
+          </code>
+          <div class="tip" id="64">
+            <strong>Signature:</strong>(&#39;?7413 * v:&#39;?7414 * &#39;?7415) -&gt; &#39;?7414<br />
+                          <strong>Type parameters:</strong> '?7413, '?7414, '?7415          </div>
+        </td>
+        <td class="xmldoc"><p>Returns the second value of a three-level hierarchical tuple</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '65', 65)" onmouseover="showTip(event, '65', 65)">
+            get2Of4 (arg1, v, arg3, arg4)
+          </code>
+          <div class="tip" id="65">
+            <strong>Signature:</strong>(&#39;?7438 * v:&#39;?7439 * &#39;?7440 * &#39;?7441) -&gt; &#39;?7439<br />
+                          <strong>Type parameters:</strong> '?7438, '?7439, '?7440, '?7441          </div>
+        </td>
+        <td class="xmldoc"><p>Returns the second value of a four-level hierarchical tuple</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '66', 66)" onmouseover="showTip(event, '66', 66)">
+            get3Of3 (arg1, arg2, v)
+          </code>
+          <div class="tip" id="66">
+            <strong>Signature:</strong>(&#39;?7417 * &#39;?7418 * v:&#39;?7419) -&gt; &#39;?7419<br />
+                          <strong>Type parameters:</strong> '?7417, '?7418, '?7419          </div>
+        </td>
+        <td class="xmldoc"><p>Returns the third value of a three-level hierarchical tuple</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '67', 67)" onmouseover="showTip(event, '67', 67)">
+            get3Of4 (arg1, arg2, v, arg4)
+          </code>
+          <div class="tip" id="67">
+            <strong>Signature:</strong>(&#39;?7443 * &#39;?7444 * v:&#39;?7445 * &#39;?7446) -&gt; &#39;?7445<br />
+                          <strong>Type parameters:</strong> '?7443, '?7444, '?7445, '?7446          </div>
+        </td>
+        <td class="xmldoc"><p>Returns the third value of a four-level hierarchical tuple</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '68', 68)" onmouseover="showTip(event, '68', 68)">
+            get4Of4 (arg1, arg2, arg3, v)
+          </code>
+          <div class="tip" id="68">
+            <strong>Signature:</strong>(&#39;?7448 * &#39;?7449 * &#39;?7450 * v:&#39;?7451) -&gt; &#39;?7451<br />
+                          <strong>Type parameters:</strong> '?7448, '?7449, '?7450, '?7451          </div>
+        </td>
+        <td class="xmldoc"><p>Returns the fourth value of a four-level hierarchical tuple</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+        </div>
+        <div class="span3">
+          <a href="https://nuget.org/packages/Deedle">
+            <img src="{root}/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          </a>
+
+          <ul class="nav nav-list" id="menu">
+            <li class="nav-header">Deedle</li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/index.html">Home page</a></li>
+            <li class="divider"></li>
+            <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/design.html">Design notes</a></li>
+            
+            <li class="nav-header">Using from F#</li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html">Quick start tutorial</a>
+              <ul class="nav nav-list">
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#creating">Creating data frames</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#reindexing-and-joins">Using index & joining</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#selecting">Reading values, slicing</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#timeseries">Ordered time series</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#projections">Projection and filtering</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/tutorial.html#grouping">Aggregating groups</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html">Data frame features</a>
+              <ul class="nav nav-list">
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#creating">Creating & loading</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#dataframe">Frame manipulation</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#slicing">Advanced slicing</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#grouping">Grouping data</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#indexing">Hierarchical indexing</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/features.html#missing">Missing values</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/FSharp.Deedle/timeseries.html">Time series features</a>
+              <ul class="nav nav-list">
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/timeseries.html#alignment">Alignment & joining</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/timeseries.html#windowing">Windows and chunks</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/timeseries.html#sampling">Lookup and resampling</a></li>
+                <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/timeseries.html#stats">Statistics & math</a></li>
+              </ul>
+            </li>
+
+            <li class="nav-header">Documentation</li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/reference/index.html">API Reference</a></li>
+
+            <li class="nav-header">Samples</li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/samples/volatility.html">Price volatility</a></li>
+            <li><a href="http://bluemountaincapital.github.io/FSharp.Deedle/samples/titanic.html">Titanic survivors</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/BlueMountainCapital/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+  </body>
+  </html>
