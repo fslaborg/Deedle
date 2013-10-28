@@ -64,7 +64,7 @@ module Frame =
   ///
   /// [category:Accessing frame data and lookup]
   [<CompiledName("GetColumn")>]
-  let getCol column (frame:Frame<'R, 'C>) = frame.GetSeries(column)
+  let getCol column (frame:Frame<'R, 'C>) : Series<'R, 'V> = frame.GetSeries(column)
 
   /// Returns a specified row from a data frame. This function uses exact matching 
   /// semantics on the key. Use `lookupRow` if you want to use inexact matching 
@@ -152,6 +152,13 @@ module Frame =
   let replaceSeries column series (frame:Frame<'R, 'C>) = 
     let f = frame.Clone() in f.ReplaceSeries(column, series); f
 
+  /// Returns a specified column from a data frame as a `float` series.
+  /// This function attempts to covnert the column to numeric and throws an exception
+  /// if that is not possible. For non-numeric types, use `getCol` instead.
+  ///
+  /// [category:Series operations]
+  [<CompiledName("GetSeries")>]
+  let getSeries column (frame:Frame<'R, 'C>) : Series<'R, float> = frame.GetSeries(column)
 
   // ----------------------------------------------------------------------------------------------
   // Grouping and hierarchical indexing
