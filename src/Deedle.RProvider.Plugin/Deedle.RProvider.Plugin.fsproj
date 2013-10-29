@@ -53,7 +53,6 @@
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <ItemGroup>
     <Compile Include="Convertors.fs" />
-    <Compile Include="Exports.fs" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

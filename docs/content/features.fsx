@@ -132,7 +132,7 @@ let loadRegion (region:WorldBankData.ServiceTypes.Region) =
       (region.Name, country.Name) => 
         // Create series from tuples returned by WorldBank
         Series.ofObservations country.Indicators.``GDP (current US$)`` ]
-  |> Frame.ofColumns
+  |> frame
 
 (**
 To make data manipulation more convenient, we read country information per region
@@ -159,6 +159,56 @@ let world = eu.Join(oecd) / 1e9
 (**
 The loaded data look something like the sample above. As you can see, the columns
 are grouped by the region and some data are not available.
+
+### Expanding objects in columns
+
+It is possible to create data frames that contain other .NET objects as members in a 
+series. This might be useful, for example, when you get multiple data sources producing
+objects and you want to align or join them before working with them. However, working
+with frames that contain complex .NET objects is less conveninet.
+
+For this reason, the data frame supports _expansion_. Given a data frame with some object
+in a column, you can use `Frame.expandCols` to create a new frame that contains properties
+of the object as new columns. For example: 
+*)
+// Create frame with single column 'People'
+let peopleNested = 
+  [ "People" => Series.ofValues peopleRecds ] |> frame
+
+// Expand the 'People' column
+peopleNested |> Frame.expandCols ["People"]
+// [fsi:val it : Frame<int,string> =]
+// [fsi:     People.Name People.Age People.Countries   ]
+// [fsi:0 -> Joe         51         [UK; US; UK]       ]
+// [fsi:1 -> Tomas       28         [CZ; UK; US; ... ] ]
+// [fsi:2 -> Eve         2          [FR]               ]
+// [fsi:3 -> Suzanne     15         [US]   ]
+
+(**
+As you can see, the operation generates columns based on the properties of the original 
+column type and generates new names by prefixing the property names with the name of the
+original column.
+
+Aside from properties of .NET objects, the expansion can also handle values of type
+`IDictionary<K, V>` and series that contain nested series with `string` keys 
+(i.e. `Series<string, T>`). If you have more complex structure, you can use
+`Frame.expandAllCols` to expand columns to a specified level recursively:
+
+*)
+// Series that contains dictionaries, containing tuples
+let tuples = 
+  [ dict ["A", box 1; "C", box (2, 3)]
+    dict ["B", box 1; "C", box (3, 4)] ] 
+  |> Series.ofValues
+
+// Expand dictionary keys (level 1) and tuple items (level 2)
+frame ["Tuples" => tuples]
+|> Frame.expandAllCols 2
+(**
+Here, the resulting data frame will have 4 columns including
+`Tuples.A` and `Tuples.B` (for the first keys) and `Tuples.C.Item1`
+together with `Tuples.C.Item2` representing the two items of the tuple
+nested in a dictionary.
 
 <a name="dataframe"></a>
 Manipulating data frames

@@ -5,7 +5,7 @@
 /// ## Accessing frame data and lookup
 /// basics
 ///
-/// ## Index manipulation
+/// ## Data structure manipulation
 /// More documentation here
 ///
 /// ## Joining, zipping and appending
@@ -229,7 +229,7 @@ module Frame =
   ///  - `keys` - A sequence of new row keys. The keys must have the same type as the original
   ///    frame keys (because the rows are realigned).
   ///
-  /// [category:Index manipulation]
+  /// [category:Data structure manipulation]
   [<CompiledName("RealignRows")>]
   let realignRows keys (frame:Frame<'R, 'C>) = 
     // Create empty frame with the required keys & left join all series
@@ -244,7 +244,7 @@ module Frame =
   /// ## Parameters
   ///  - `frame` - Source data frame whose row index are to be replaced.
   ///
-  /// [category:Index manipulation]
+  /// [category:Data structure manipulation]
   [<CompiledName("IndexRowsOrdinally")>]
   let indexRowsOrdinally (frame:Frame<'TRowKey, 'TColumnKey>) = 
     frame.Columns |> Series.mapValues Series.indexOrdinally |> FrameUtils.fromColumns
@@ -258,7 +258,7 @@ module Frame =
   ///  - `column` - The name of a column in the original data frame that will be used for the new
   ///    index. Note that the values in the column need to be unique.
   ///
-  /// [category:Index manipulation]
+  /// [category:Data structure manipulation]
   [<CompiledName("IndexRows")>]
   let indexRows column (frame:Frame<'R1, 'C>) : Frame<'R2, _> = 
     frame.IndexRows<'R2>(column)
@@ -272,7 +272,7 @@ module Frame =
   ///  - `column` - The name of a column in the original data frame that will be used for the new
   ///    index. Note that the values in the column need to be unique.
   ///
-  /// [category:Index manipulation]
+  /// [category:Data structure manipulation]
   [<CompiledName("IndexRowsByObject")>]
   let indexRowsObj column (frame:Frame<'R1, 'C>) : Frame<obj, _> = indexRows column frame
 
@@ -285,7 +285,7 @@ module Frame =
   ///  - `column` - The name of a column in the original data frame that will be used for the new
   ///    index. Note that the values in the column need to be unique.
   ///
-  /// [category:Index manipulation]
+  /// [category:Data structure manipulation]
   [<CompiledName("IndexRowsByInt")>]
   let indexRowsInt column (frame:Frame<'R1, 'C>) : Frame<int, _> = indexRows column frame
 
@@ -298,7 +298,7 @@ module Frame =
   ///  - `column` - The name of a column in the original data frame that will be used for the new
   ///    index. Note that the values in the column need to be unique.
   ///
-  /// [category:Index manipulation]
+  /// [category:Data structure manipulation]
   [<CompiledName("IndexRowsByDateTime")>]
   let indexRowsDate column (frame:Frame<'R1, 'C>) : Frame<DateTime, _> = indexRows column frame
 
@@ -311,7 +311,7 @@ module Frame =
   ///  - `column` - The name of a column in the original data frame that will be used for the new
   ///    index. Note that the values in the column need to be unique.
   ///
-  /// [category:Index manipulation]
+  /// [category:Data structure manipulation]
   [<CompiledName("IndexRowsByDateTimeOffset")>]
   let indexRowsDateOffs column (frame:Frame<'R1, 'C>) : Frame<DateTimeOffset, _> = indexRows column frame
 
@@ -324,7 +324,7 @@ module Frame =
   ///  - `column` - The name of a column in the original data frame that will be used for the new
   ///    index. Note that the values in the column need to be unique.
   ///
-  /// [category:Index manipulation]
+  /// [category:Data structure manipulation]
   [<CompiledName("IndexRowsByString")>]
   let indexRowsString column (frame:Frame<'R1, 'C>) : Frame<string, _> = indexRows column frame
 
@@ -336,7 +336,7 @@ module Frame =
   ///  - `frame` - Source data frame whose column index are to be replaced.
   ///  - `keys` - A collection of new column keys.
   ///
-  /// [category:Index manipulation]
+  /// [category:Data structure manipulation]
   [<CompiledName("IndexColumnsWith")>]
   let indexColsWith (keys:seq<'C2>) (frame:Frame<'R, 'C1>) = 
     if Seq.length frame.ColumnKeys <> Seq.length keys then invalidArg "keys" "New keys do not match current column index length"
@@ -350,7 +350,7 @@ module Frame =
   ///  - `frame` - Source data frame whose row index are to be replaced.
   ///  - `keys` - A collection of new row keys.
   ///
-  /// [category:Index manipulation]
+  /// [category:Data structure manipulation]
   [<CompiledName("IndexRowsWith")>]
   let indexRowsWith (keys:seq<'R2>) (frame:Frame<'R1, 'C>) = 
     let newRowIndex = frame.IndexBuilder.Create(keys, None)
@@ -366,7 +366,7 @@ module Frame =
   /// ## Parameters
   ///  - `frame` - Source data frame to be transposed.
   /// 
-  /// [category:Index manipulation]
+  /// [category:Data structure manipulation]
   [<CompiledName("Transpose")>]
   let transpose (frame:Frame<'R, 'TColumnKey>) = 
     frame.Columns |> FrameUtils.fromRows
@@ -378,7 +378,7 @@ module Frame =
   /// ## Parameters
   ///  - `frame` - Source data frame to be ordered.
   /// 
-  /// [category:Index manipulation]
+  /// [category:Data structure manipulation]
   [<CompiledName("OrderRows")>]
   let orderRows (frame:Frame<'R, 'C>) = 
     let newRowIndex, rowCmd = frame.IndexBuilder.OrderIndex(frame.RowIndex, Vectors.Return 0)
@@ -392,12 +392,47 @@ module Frame =
   /// ## Parameters
   ///  - `frame` - Source data frame to be ordered.
   /// 
-  /// [category:Index manipulation]
+  /// [category:Data structure manipulation]
   [<CompiledName("OrderColumns")>]
   let orderCols (frame:Frame<'R, 'C>) = 
     let newColIndex, rowCmd = frame.IndexBuilder.OrderIndex(frame.ColumnIndex, Vectors.Return 0)
     let newData = frame.VectorBuilder.Build(rowCmd, [| frame.Data |])
     Frame<_, _>(frame.RowIndex, newColIndex, newData)
+
+  /// Creates a new data frame where all columns are expanded based on runtime
+  /// structure of the objects they store. The expansion is performed recrusively
+  /// to the specified depth. A column can be expanded if it is `Series<string, T>` 
+  /// or `IDictionary<K, V>` or if it is any .NET object with readable
+  /// properties. 
+  ///
+  /// ## Parameters
+  ///  - `nesting` - The nesting level for expansion. When set to 0, nothing is done.
+  ///  - `frame` - Input data frame whose columns will be expanded
+  ///
+  /// [category:Data structure manipulation]
+  let expandAllCols nesting (frame:Frame<'R, string>) = 
+    FrameUtils.expandVectors nesting frame
+
+  /// Creates a new data frame where the specified columns are expanded based on runtime
+  /// structure of the objects they store. A column can be expanded if it is 
+  /// `Series<string, T>` or `IDictionary<K, V>` or if it is any .NET object with readable
+  /// properties. 
+  ///
+  /// ## Example
+  /// Given a data frame with a series that contains tuples, you can expand the
+  /// tuple members and get a frame with columns `S.Item1` and `S.Item2`:
+  /// 
+  ///     let df = frame [ "S" => series [ 1 => (1, "One"); 2 => (2, "Two") ] ]  
+  ///     df |> Frame.expandCols ["S"]
+  ///
+  /// ## Parameters
+  ///  - `names` - Names of columns in the original data frame to be expanded
+  ///  - `frame` - Input data frame whose columns will be expanded
+  ///
+  /// [category:Data structure manipulation]
+  [<CompiledName("ExpandColumns")>]
+  let expandCols names (frame:Frame<'R, string>) = 
+    FrameUtils.expandColumns (set names) frame
 
   // ----------------------------------------------------------------------------------------------
   // Projection and filtering
@@ -856,5 +891,3 @@ module Frame =
       (fun row -> row.GetAs<'C>("Column"))
       (fun row -> row.GetAs<'R>("Row"))
       (fun row -> row.GetAs<obj>("Value"))
-
-    

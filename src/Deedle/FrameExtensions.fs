@@ -400,7 +400,7 @@ type KeyValue =
 
 /// Some comment
 ///
-/// ## Index manipulation
+/// ## Data structure manipulation
 /// Summary 1
 ///
 /// ## Input and output
@@ -411,7 +411,7 @@ type KeyValue =
 [<Extension>]
 type FrameExtensions =
   // ----------------------------------------------------------------------------------------------
-  // Index manipulation
+  // Data structure manipulation
   // ----------------------------------------------------------------------------------------------
 
   /// Align the existing data to a specified collection of row keys. Values in the data frame
@@ -423,7 +423,7 @@ type FrameExtensions =
   ///  - `keys` - A sequence of new row keys. The keys must have the same type as the original
   ///    frame keys (because the rows are realigned).
   ///
-  /// [category:Index manipulation]
+  /// [category:Data structure manipulation]
   [<Extension>]
   static member RealignRows(frame:Frame<'R, 'C>, keys) = 
     frame |> Frame.realignRows keys
@@ -435,7 +435,7 @@ type FrameExtensions =
   /// ## Parameters
   ///  - `frame` - Source data frame whose row index are to be replaced.
   ///
-  /// [category:Index manipulation]
+  /// [category:Data structure manipulation]
   [<Extension>]
   static member IndexRowsOrdinally(frame:Frame<'TRowKey, 'TColumnKey>) = 
     frame |> Frame.indexRowsOrdinally
@@ -448,7 +448,7 @@ type FrameExtensions =
   ///  - `frame` - Source data frame whose row index are to be replaced.
   ///  - `keys` - A collection of new row keys.
   ///
-  /// [category:Index manipulation]
+  /// [category:Data structure manipulation]
   [<Extension>]
   static member IndexRowsWith(frame:Frame<'R, 'C>, keys:seq<'TNewRowIndex>) =
     frame |> Frame.indexRowsWith keys
@@ -461,7 +461,7 @@ type FrameExtensions =
   ///  - `frame` - Source data frame whose column index are to be replaced.
   ///  - `keys` - A collection of new column keys.
   ///
-  /// [category:Index manipulation]
+  /// [category:Data structure manipulation]
   [<Extension>]
   static member IndexColumnsWith(frame:Frame<'R, 'C>, keys:seq<'TNewRowIndex>) =
     frame |> Frame.indexColsWith keys
@@ -473,7 +473,7 @@ type FrameExtensions =
   /// ## Parameters
   ///  - `frame` - Source data frame to be ordered.
   /// 
-  /// [category:Index manipulation]
+  /// [category:Data structure manipulation]
   [<Extension>]
   static member OrderRows(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.orderRows frame
 
@@ -484,7 +484,7 @@ type FrameExtensions =
   /// ## Parameters
   ///  - `frame` - Source data frame to be ordered.
   /// 
-  /// [category:Index manipulation]
+  /// [category:Data structure manipulation]
   [<Extension>]
   static member OrderColumns(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.orderCols frame
 
@@ -496,10 +496,45 @@ type FrameExtensions =
   /// ## Parameters
   ///  - `frame` - Source data frame to be transposed.
   /// 
-  /// [category:Index manipulation]
+  /// [category:Data structure manipulation]
   [<Extension>]
   static member Transpose(frame:Frame<'TRowKey, 'TColumnKey>) = 
     frame.Columns |> Frame.ofRows
+
+  /// Creates a new data frame where all columns are expanded based on runtime
+  /// structure of the objects they store. The expansion is performed recrusively
+  /// to the specified depth. A column can be expanded if it is `Series<string, T>` 
+  /// or `IDictionary<K, V>` or if it is any .NET object with readable
+  /// properties. 
+  ///
+  /// ## Parameters
+  ///  - `nesting` - The nesting level for expansion. When set to 0, nothing is done.
+  ///
+  /// [category:Data structure manipulation]
+  [<Extension>]
+  static member ExpandColumns(frame:Frame<'R, string>, nesting) =
+    FrameUtils.expandVectors nesting frame
+
+  /// Creates a new data frame where the specified columns are expanded based on runtime
+  /// structure of the objects they store. A column can be expanded if it is 
+  /// `Series<string, T>` or `IDictionary<K, V>` or if it is any .NET object with readable
+  /// properties. 
+  ///
+  /// ## Example
+  /// Given a data frame with a series that contains tuples, you can expand the
+  /// tuple members and get a frame with columns `S.Item1` and `S.Item2`:
+  /// 
+  ///     let df = frame [ "S" => series [ 1 => (1, "One"); 2 => (2, "Two") ] ]  
+  ///     df.ExpandColumns ["S"]
+  ///
+  /// ## Parameters
+  ///  - `names` - Names of columns in the original data frame to be expanded
+  ///  - `frame` - Input data frame whose columns will be expanded
+  ///
+  /// [category:Data structure manipulation]
+  [<Extension>]
+  static member ExpandColumns(frame:Frame<'R, string>, names) =
+    FrameUtils.expandColumns (set names) frame
 
   // ----------------------------------------------------------------------------------------------
   // Input and output
