@@ -59,7 +59,7 @@ type internal Series =
     ObjectSeries<'K>(index, data, Series.vectorBuilder, Series.indexBuilder)
 
 
-type SeriesBuilder<'K, 'V when 'K : equality>() = 
+type SeriesBuilder<'K, 'V when 'K : equality and 'V : equality>() = 
   let mutable keys = []
   let mutable values = []
 
@@ -75,10 +75,53 @@ type SeriesBuilder<'K, 'V when 'K : equality>() =
   
   interface System.Collections.IEnumerable with
     member builder.GetEnumerator() = (builder :> seq<_>).GetEnumerator() :> Collections.IEnumerator
+
   interface seq<KeyValuePair<'K, 'V>> with
     member builder.GetEnumerator() = 
       (Seq.zip keys values |> Seq.map (fun (k, v) -> KeyValuePair(k, v))).GetEnumerator()
 
+  interface IDictionary<'K, 'V> with
+    member x.Keys = upcast ReadOnlyCollection.ofSeq keys
+    member x.Values = upcast ReadOnlyCollection.ofSeq values
+    member x.Clear() = keys <- []; values <- []
+    member x.Item 
+      with get key = failwith "!"
+      and set key value = failwith "!"
+    member x.Add(k, v) = x.Add(k, v)
+    member x.Add(kvp:KeyValuePair<_, _>) = x.Add(kvp.Key, kvp.Value)
+    member x.ContainsKey(k) = Seq.exists ((=) k) keys
+    member x.Contains(kvp) = (x :> seq<_>).Contains(kvp)
+    member x.Remove(kvp:KeyValuePair<_, _>) = 
+      let newPairs = List.zip keys values |> List.filter (fun (k, v) -> k <> kvp.Key || v <> kvp.Value) 
+      let res = newPairs.Length < keys.Length
+      keys <- List.map fst newPairs
+      values <- List.map snd newPairs
+      res
+    member x.Remove(key) = 
+      let newPairs = List.zip keys values |> List.filter (fun (k, v) -> k <> key) 
+      let res = newPairs.Length < keys.Length
+      keys <- List.map fst newPairs;
+      values <- List.map snd newPairs
+      res
+    member x.CopyTo(array, offset) = x |> Seq.iteri (fun i v -> array.[i + offset] <- v)
+    member x.Count = List.length keys
+    member x.IsReadOnly = false
+    member x.TryGetValue(key, value) = 
+      match Seq.zip keys values |> Seq.tryFind (fun (k, v) -> k = key) with
+      | Some (_, v) -> value <- v; true | _ -> false
+    
+
+(*
+ICollection<TKey> Keys { get; }
+ICollection<TValue> Values { get; }
+
+TValue this[TKey key] { get; set; }
+
+void Add(TKey key, TValue value);
+bool ContainsKey(TKey key);
+bool Remove(TKey key);
+bool TryGetValue(TKey key, out TValue value);
+*)
   interface System.Dynamic.IDynamicMetaObjectProvider with 
     member builder.GetMetaObject(expr) = 
       DynamicExtensions.createSetterFromFunc expr builder (fun builder name value -> 
