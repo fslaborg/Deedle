@@ -13,16 +13,17 @@ open MathNet.Numerics.Distributions
 R Provider interoperabilit
 ==========================
 *)
+//#I @"C:\Tomas\Projects\FSharp.RProvider\bin"
 #I "../../../src/deedle.rprovider.plugin/bin/debug/"
 #r "RProvider.dll"
 #r "RDotNet.dll"
 open RProvider
-//open RProvider.``base``
+open RProvider.``base``
 open RProvider.datasets
 
 let df = frame [ "A" => series [ 1 => 10.0]]
-R.assign("x",  df)
-
+R.assign("x",  df).Value
+R.eval(R.parse(text="x")).GetValue<Frame<int, string>>()
 
 R.eval(R.parse(text="mtcars")).Value :?> Frame<string, string>
 

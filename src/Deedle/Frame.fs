@@ -35,6 +35,14 @@ type FrameData =
     /// represent missing data.
     Columns : seq<Type * IVector<obj>> }  
 
+/// An empty interface that is implemented by `Frame<'R, 'C>`. The purpose of the
+/// interface is to allow writing code that works on arbitrary data frames, although
+/// you 
+type IFrame = 
+  abstract Apply : IFrameOperation<'V> -> 'V
+
+and IFrameOperation<'V> =
+  abstract Invoke : Frame<'R, 'C> -> 'V
 
 /// A frame contains one Index, with multiple Vecs
 /// (because this is dynamic, we need to store them as IVec)
@@ -43,7 +51,7 @@ type FrameData =
 /// More info
 ///
 ///
-type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>
+and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>
     internal ( rowIndex:IIndex<'TRowKey>, columnIndex:IIndex<'TColumnKey>, 
                data:IVector<IVector>) =
 
@@ -961,6 +969,9 @@ type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equa
   // ----------------------------------------------------------------------------------------------
   // Interfaces - support the C# dynamic keyword
   // ----------------------------------------------------------------------------------------------
+
+  interface IFrame with
+    member x.Apply(op) = op.Invoke(x)
 
   interface IFsiFormattable with
     member x.Format() = (x :> Frame<_, _>).Format()
