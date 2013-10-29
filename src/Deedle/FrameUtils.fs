@@ -81,15 +81,15 @@ module internal Reflection =
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module internal FrameUtils = 
-  open FSharp.Data
   open System
-  open System.Data
-  open System.IO
   open System.Collections.Generic
+  open System.Data
   open System.Globalization
-  open ProviderImplementation
-  open FSharp.Data.RuntimeImplementation
-  open FSharp.Data.RuntimeImplementation.StructuralTypes
+  open System.IO
+  open FSharp.Data
+  open FSharp.Data.Runtime
+  open FSharp.Data.Runtime.CsvInference
+  open FSharp.Data.Runtime.StructuralTypes
 
   let internal formatter (f:'T -> string) = 
     typeof<'T>, (fun (o:obj) -> f (unbox o))
@@ -228,10 +228,9 @@ module internal FrameUtils =
 
 
   /// Load data from a CSV file using F# Data API
-  let readCsv (reader:TextReader) hasHeaders inferTypes inferRows schema (missingValues:string) separators culture =
+  let readCsv (reader:TextReader) hasHeaders inferTypes inferRows schema (missingValues:string[]) separators culture =
     let schema = defaultArg schema ""
     let schema = if schema = null then "" else schema
-    let missingValuesArr = missingValues.Split(',')
     let inferRows = defaultArg inferRows 0
     let safeMode = false // Irrelevant - all DF values can be missing
     let preferOptionals = true // Ignored
@@ -240,11 +239,12 @@ module internal FrameUtils =
     let cultureInfo = System.Globalization.CultureInfo.GetCultureInfo(culture)
 
     let createVector typ (data:string[]) = 
-      if typ = typeof<bool> then Vector.ofOptionalValues (Array.map (fun s -> Operations.ConvertBoolean(culture, Some(s))) data) :> IVector
-      elif typ = typeof<decimal> then Vector.ofOptionalValues (Array.map (fun s -> Operations.ConvertDecimal(culture, Some(s))) data) :> IVector
-      elif typ = typeof<float> then Vector.ofOptionalValues (Array.map (fun s -> Operations.ConvertFloat(culture, missingValues, Some(s))) data) :> IVector
-      elif typ = typeof<int> then Vector.ofOptionalValues (Array.map (fun s -> Operations.ConvertInteger(culture, Some(s))) data) :> IVector
-      elif typ = typeof<int64> then Vector.ofOptionalValues (Array.map (fun s -> Operations.ConvertInteger64(culture, Some(s))) data) :> IVector
+      let missingValuesStr = String.Join(",", missingValues)
+      if typ = typeof<bool> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertBoolean(culture, Some(s))) data) :> IVector
+      elif typ = typeof<decimal> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertDecimal(culture, Some(s))) data) :> IVector
+      elif typ = typeof<float> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertFloat(culture, missingValuesStr, Some(s))) data) :> IVector
+      elif typ = typeof<int> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertInteger(culture, Some(s))) data) :> IVector
+      elif typ = typeof<int64> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertInteger64(culture, Some(s))) data) :> IVector
       else Vector.ofValues data :> IVector
 
     // If 'inferTypes' is specified (or by default), use the CSV type inference
@@ -254,9 +254,7 @@ module internal FrameUtils =
     let data = Csv.CsvFile.Load(reader, ?separators=separators, ?hasHeaders=hasHeaders)
     let inferedProperties = 
       if not (inferTypes = Some false) then
-        CsvInference.inferType 
-          data inferRows (missingValuesArr, cultureInfo) schema safeMode preferOptionals
-        ||> CsvInference.getFields preferOptionals
+        data.InferColumnTypes(inferRows, missingValues, cultureInfo, schema, safeMode, preferOptionals)
       else 
         if data.Headers.IsNone then failwith "CSV file is missing headers!"
         [ for c in data.Headers.Value -> 

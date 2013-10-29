@@ -12,7 +12,7 @@ open System.ComponentModel
 open System.Runtime.InteropServices
 open System.Runtime.CompilerServices
 open System.Collections.Generic
-
+open FSharp.Data.Runtime
 open Deedle.Keys
 open Deedle.Vectors 
 
@@ -50,7 +50,7 @@ type Frame =
     use reader = new StreamReader(location)
     FrameUtils.readCsv 
       reader (if hasHeaders.HasValue then Some hasHeaders.Value else None)
-      (Some (not skipTypeInference)) (Some inferRows) (Some schema) "NaN,NA,#N/A,:" 
+      (Some (not skipTypeInference)) (Some inferRows) (Some schema) TextConversions.DefaultMissingValues 
       (if separators = null then None else Some separators) (Some culture)
 
   /// Load data frame from a CSV file. The operation automatically reads column names from the 
@@ -80,7 +80,7 @@ type Frame =
       [<Optional>] schema, [<Optional>] separators, [<Optional>] culture) =
     FrameUtils.readCsv 
       (new StreamReader(stream)) (if hasHeaders.HasValue then Some hasHeaders.Value else None)
-      (Some (not skipTypeInference)) (Some inferRows) (Some schema) "NaN,NA,#N/A,:" 
+      (Some (not skipTypeInference)) (Some inferRows) (Some schema) TextConversions.DefaultMissingValues 
       (if separators = null then None else Some separators) (Some culture)
 
   // ----------------------------------------------------------------------------------------------
@@ -257,7 +257,7 @@ module FSharpFrameExtensions =
     ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
     static member ReadCsv(path:string, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture) =
       use reader = new StreamReader(path)
-      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema "NaN,NA,#N/A,:" separators culture
+      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema TextConversions.DefaultMissingValues separators culture
 
     /// Load data frame from a CSV file. The operation automatically reads column names from the 
     /// CSV file (if they are present) and infers the type of values for each column. Columns
@@ -280,7 +280,7 @@ module FSharpFrameExtensions =
     ///  * `culture` - Specifies the name of the culture that is used when parsing 
     ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
     static member ReadCsv(stream:Stream, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture) =
-      FrameUtils.readCsv (new StreamReader(stream)) hasHeaders inferTypes inferRows schema "NaN,NA,#N/A,:" separators culture
+      FrameUtils.readCsv (new StreamReader(stream)) hasHeaders inferTypes inferRows schema TextConversions.DefaultMissingValues separators culture
       
     /// Creates a data frame with ordinal Integer index from a sequence of rows.
     /// The column indices of individual rows are unioned, so if a row has fewer
