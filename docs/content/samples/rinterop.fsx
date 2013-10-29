@@ -4,10 +4,9 @@
 #load "../../bin/Deedle.fsx"
 #load "FSharp.Charting.fsx"
 
-open System
-open Deedle
-open FSharp.Charting
-open MathNet.Numerics.Distributions
+//open System
+//open FSharp.Charting
+//open MathNet.Numerics.Distributions
 
 (**
 R Provider interoperabilit
@@ -17,16 +16,26 @@ R Provider interoperabilit
 #I "../../../src/deedle.rprovider.plugin/bin/debug/"
 #r "RProvider.dll"
 #r "RDotNet.dll"
+
+open Deedle
 open RProvider
-open RProvider.``base``
 open RProvider.datasets
+open FSharp.Charting
+
+let mtcars : Frame<string, string> = R.mtcars.GetValue()
+mtcars
+|> Frame.groupRowsByInt "gear"
+|> Frame.meanLevel fst
+|> Frame.getSeries "mpg"
+|> Series.observations |> Chart.Column
+
+
+
+open RProvider.``base``
 
 let df = frame [ "A" => series [ 1 => 10.0]]
 R.assign("x",  df).Value
 R.eval(R.parse(text="x")).GetValue<Frame<int, string>>()
-
-R.eval(R.parse(text="mtcars")).Value :?> Frame<string, string>
-
 
 open RDotNet
 //open RProvider.zoo
