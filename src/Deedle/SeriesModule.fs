@@ -94,7 +94,7 @@ module Series =
       f kvp.Key (OptionalValue.asOption kvp.Value) |> OptionalValue.ofOption)
 
   /// `result[k] = series[k] - series[k - offset]`
-  let inline diff offset (series:Series<'K, 'T>) = 
+  let inline diff offset (series:Series<'K, ^T>) = 
     series.Aggregate
       ( WindowSize((abs offset) + 1, Boundary.Skip), 
         (fun ks -> if offset < 0 then ks.Data.Keys.First() else ks.Data.Keys.Last() ),
@@ -831,6 +831,15 @@ module Series =
     let fillCmd = Vectors.FillMissing(Vectors.Return 0, VectorFillMissing.Direction direction)
     let newVector = series.VectorBuilder.Build(fillCmd, [|series.Vector|])
     Series<_, _>(series.Index, newVector, series.VectorBuilder, series.IndexBuilder)
+
+  /// [category:Missing values]
+  let fillMissingBetween (startKey, endKey) direction (series:Series<'K, 'T>) = 
+    let filled = fillMissing direction series.[startKey .. endKey]
+    series.Zip(filled, JoinKind.Left).SelectOptional(fun kvp ->
+      match kvp.Value with
+      | OptionalValue.Present(_, OptionalValue.Present v2) -> OptionalValue v2
+      | OptionalValue.Present(OptionalValue.Present v1, _) -> OptionalValue v1
+      | _ -> OptionalValue.Missing )
 
   // ----------------------------------------------------------------------------------------------
   // Resampling and similar stuff

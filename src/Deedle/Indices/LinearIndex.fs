@@ -210,8 +210,8 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       upcast LinearIndex<'K>(keys, builder, ?ordered=ordered)
 
     /// Aggregate ordered index
-    member builder.Aggregate<'K, 'R, 'TNewKey when 'K : equality and 'TNewKey : equality>
-        (index:IIndex<'K>, aggregation, vector, valueSel:_ * _ -> OptionalValue<'R>, keySel:_ * _ -> 'TNewKey) =
+    member builder.Aggregate<'K, 'TNewKey, 'R when 'K : equality and 'TNewKey : equality>
+        (index:IIndex<'K>, aggregation, vector, selector:_ * _ -> 'TNewKey * OptionalValue<'R>) =
       if not index.IsOrdered then 
         invalidOp "Floating window aggregation and chunking is only supported on ordered indices."
       let builder = (builder :> IIndexBuilder)
@@ -232,9 +232,9 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           win.Kind, (index, cmd) ) |> Array.ofSeq
 
       /// Build a new index & vector by applying key/value selectors
-      let keys = ranges |> Array.map keySel
-      let newIndex = builder.Create(keys, None)
-      let vect = ranges |> Array.map valueSel |> vectorBuilder.CreateMissing
+      let keyValues = ranges |> Array.map selector
+      let newIndex = builder.Create(Seq.map fst keyValues, None)
+      let vect = vectorBuilder.CreateMissing(Array.map snd keyValues)
       newIndex, vect
 
 

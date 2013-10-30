@@ -268,14 +268,11 @@ and IIndexBuilder =
   ///  - `aggregation` - Defines the kind of aggregation to apply (the type 
   ///    is a discriminated union with a couple of cases)
   ///  - `source` - Source vector construction to be transformed 
-  ///  - `valueSelector` - Given information about window/chunk (including 
+  ///  - `selector` - Given information about window/chunk (including 
   ///    vector construction that can be used to build the data chunk), return
-  ///    a new value for the returned vector.
-  ///  - `keySelector` - Given information about window/chunk (including 
-  ///    vector construction that can be used to build the data chunk), return a key of the chunk/window.
+  ///    a new key, together with a new value for the returned vector.
   abstract Aggregate : index:IIndex<'K> * aggregation:Aggregation<'K> * source:VectorConstruction *
-    valueSelector:(DataSegmentKind * SeriesConstruction<'K> -> OptionalValue<'R>) *
-    keySelector:(DataSegmentKind * SeriesConstruction<'K> -> 'TNewKey) 
+    selector:(DataSegmentKind * SeriesConstruction<'K> -> 'TNewKey * OptionalValue<'R>)
       -> IIndex<'TNewKey> * IVector<'R>
 
   /// Group a (possibly unordered) index using the specified `keySelector` function.

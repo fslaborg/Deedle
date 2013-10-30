@@ -1,5 +1,5 @@
 ﻿#if INTERACTIVE
-#r "../../bin/Deedle.dll"
+#load "../../bin/Deedle.fsx"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #r "../../packages/FsCheck.0.9.1.0/lib/net40-Client/FsCheck.dll"
 #load "../Common/FsUnit.fs"
@@ -117,11 +117,37 @@ let ``Grouping series with missing values works on sample input``() =
   actual |> shouldEqual expected
 
 // ------------------------------------------------------------------------------------------------
-// Sampling and lookup
+// Fill missing values
 // ------------------------------------------------------------------------------------------------
 
 let generate (dt:DateTime) (ts:TimeSpan) count =
   Seq.init count (fun i -> dt.Add(TimeSpan(ts.Ticks * int64 i)), i) |> Series.ofObservations
+
+[<Test>]
+let ``Can do simple fill forward``() =
+  let n = Series.ofValues [ 0.0; Double.NaN; 1.0; Double.NaN; 2.0 ]
+  let actual = n |> Series.fillMissing Direction.Forward
+  actual |> shouldEqual (Series.ofValues [0.0; 0.0; 1.0; 1.0; 2.0])
+
+[<Test>]
+let ``Can do simple fill backward``() =
+  let n = Series.ofValues [ 0.0; Double.NaN; 1.0; Double.NaN; 2.0 ]
+  let actual = n |> Series.fillMissing Direction.Backward
+  actual |> shouldEqual (Series.ofValues [0.0; 1.0; 1.0; 2.0; 2.0 ])
+
+[<Test>]
+let ``Can fill missing values in a specified range``() =
+  let ts = generate DateTime.Today (TimeSpan.FromDays(1.0)) 20
+  let tsmiss = ts |> Series.mapValues (fun v -> if v % 3 = 0 then Double.NaN else float v)
+  let range = DateTime.Today.AddDays(5.0), DateTime.Today.AddDays(10.5)
+  let tsfill = tsmiss |> Series.fillMissingBetween range Direction.Forward
+  tsfill.KeyCount |> shouldEqual tsmiss.KeyCount
+  tsfill.ValueCount |> should (be greaterThan) tsmiss.ValueCount
+  tsfill.KeyCount |> should (be greaterThan) tsfill.ValueCount
+
+// ------------------------------------------------------------------------------------------------
+// Sampling and lookup
+// ------------------------------------------------------------------------------------------------
 
 [<Test>]
 let ``Sample by time - get value at or just before specified time`` () = 

@@ -226,13 +226,18 @@ type SeriesExtensions =
   static member Diff(series:Series<'K, int>, offset) = series |> Series.diff offset
 
   [<Extension>]
+  static member WindowInto(series:Series<'K1, 'V>, size:int, selector:Func<Series<'K1, 'V>, KeyValuePair<'K2, 'U>>): Series<'K2, 'U> = 
+    series.Aggregate(WindowSize(size, Boundary.Skip), (fun ds ->
+      let res = selector.Invoke ds.Data
+      KeyValuePair(res.Key, OptionalValue(res.Value)) ))
+
+  [<Extension>]
   static member WindowInto(series:Series<'K, 'V>, size:int, reduce:Func<Series<'K, 'V>,'U>): Series<'K, 'U> = 
     Series.windowInto size reduce.Invoke series
 
   [<Extension>]
   static member Window(series:Series<'K, 'V>, size:int): Series<'K, Series<'K, 'V>> = 
     Series.window size series
-
 
   // --- end
 
@@ -649,6 +654,10 @@ type SeriesExtensions =
   [<Extension>]
   static member FillMissing(series:Series<'K, 'T>, [<Optional>] direction) = 
     Series.fillMissing direction series
+
+  [<Extension>]
+  static member FillMissing(series:Series<'K, 'T>, startKey, endKey, [<Optional>] direction) = 
+    Series.fillMissingBetween (startKey, endKey) direction series
 
   /// Fill missing values in the series using the specified function.
   /// The specified function is called with all keys for which the series

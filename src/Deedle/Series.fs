@@ -336,7 +336,7 @@ and
             OptionalValue(Choice3Of3(l, r))
         | OptionalValue.Present(v), _
         | _, OptionalValue.Present(v) -> OptionalValue(v)
-        | _ -> failwith "Series.Join: Unexpected vector structure")
+        | _ -> OptionalValue.Missing)
     let combinedCmd = Vectors.Combine(thisRowCmd, otherRowCmd, combine)
     let newVector = vectorBuilder.Build(combinedCmd, [| inputThis; inputThat |])
     let newVector : IVector<_ opt * _ opt> = newVector.Select(function 
@@ -498,16 +498,21 @@ and
       indexBuilder.Aggregate
         ( x.Index, WindowSize(2, boundary), Vectors.Return 0, 
           (fun (kind, (index, cmd)) -> 
-              let actualVector = vectorBuilder.Build(cmd, [| vector |])
-              let obs = [ for k, addr in index.Mappings -> actualVector.GetValue(addr) ]
-              match obs with
-              | [ OptionalValue.Present v1; OptionalValue.Present v2 ] -> 
-                  OptionalValue( DataSegment(kind, (v1, v2)) )
-              | [ _; _ ] -> OptionalValue.Missing
-              | _ -> failwith "Pairwise: failed - expected two values" ),
-          (fun (kind, (index, vector)) -> 
-              if dir = Direction.Backward then index.Keys |> Seq.last
-              else index.Keys |> Seq.head ) )
+              // Calculate new key
+              let newKey = 
+                if dir = Direction.Backward then index.Keys |> Seq.last
+                else index.Keys |> Seq.head
+              // Calculate value for the chunk
+              let newValue = 
+                let actualVector = vectorBuilder.Build(cmd, [| vector |])
+                let obs = [ for k, addr in index.Mappings -> actualVector.GetValue(addr) ]
+                match obs with
+                | [ OptionalValue.Present v1; OptionalValue.Present v2 ] -> 
+                    OptionalValue( DataSegment(kind, (v1, v2)) )
+                | [ _; _ ] -> OptionalValue.Missing
+                | _ -> failwith "Pairwise: failed - expected two values"
+              // Return key value for the result
+              newKey, newValue )) 
     Series<'K, DataSegment<'V * 'V>>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   /// Aggregates an ordered series using the method specified by `Aggregation<K>` and then
@@ -522,15 +527,43 @@ and
   ///  - `valueSelector` - A value selector function that is called to aggregate each chunk or window.
   ///
   /// [category:Windowing, chunking and grouping]
-  member x.Aggregate<'TNewKey, 'R when 'TNewKey : equality>(aggregation, keySelector:Func<_, _>, valueSelector:Func<_, _>) =
+  member x.Aggregate<'TNewKey, 'R when 'TNewKey : equality>
+        (aggregation, keySelector:Func<_, _>, valueSelector:Func<_, _>) =
     let newIndex, newVector = 
       indexBuilder.Aggregate
         ( x.Index, aggregation, Vectors.Return 0, 
           (fun (kind, (index, cmd)) -> 
-              let window = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
-              OptionalValue(valueSelector.Invoke(DataSegment(kind, window)))),
+              // Create series for the chunk/window
+              let series = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
+              let segment = DataSegment(kind, series)
+              // Call key & value selectors to produce the result
+              let newKey = keySelector.Invoke segment
+              let newValue = OptionalValue(valueSelector.Invoke segment)
+              newKey, newValue ))
+    Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
+
+  /// Aggregates an ordered series using the method specified by `Aggregation<K>` and then
+  /// applies the provided `observationSelector` on each window or chunk to produce the result
+  /// which is returned as a new series. The selector returns both the key and the value.
+  ///
+  /// ## Parameters
+  ///  - `aggregation` - Specifies the aggregation method using `Aggregation<K>`. This is
+  ///    a discriminated union listing various chunking and windowing conditions.
+  ///  - `observationSelector` - A function that is called on each chunk to obtain a key and a value.
+  ///
+  /// [category:Windowing, chunking and grouping]
+  member x.Aggregate<'TNewKey, 'R when 'TNewKey : equality>
+        (aggregation, observationSelector:Func<_, KeyValuePair<_, _>>) =
+    let newIndex, newVector = 
+      indexBuilder.Aggregate
+        ( x.Index, aggregation, Vectors.Return 0, 
           (fun (kind, (index, cmd)) -> 
-              keySelector.Invoke(DataSegment(kind, Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)))) )
+              // Create series for the chunk/window
+              let series = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
+              let segment = DataSegment(kind, series)
+              // Call key & value selectors to produce the result
+              let (KeyValue(newKey, newValue)) = observationSelector.Invoke(segment)
+              newKey, newValue ))
     Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   /// Groups a series (ordered or unordered) using the specified key selector (`keySelector`) 
