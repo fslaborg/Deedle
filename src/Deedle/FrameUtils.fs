@@ -12,6 +12,7 @@ module internal Reflection =
   open Microsoft.FSharp.Reflection
   open Microsoft.FSharp
   open Microsoft.FSharp.Quotations
+  open System.Collections
   open System.Collections.Generic
 
   let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
@@ -46,6 +47,23 @@ module internal Reflection =
     match <@@ getDictionaryValues @@> with
     | Patterns.Lambda(_, Patterns.Call(_, mi, _)) -> mi.GetGenericMethodDefinition()
     | _ -> failwith "Failed to get method info for 'getDictionaryValues'"
+
+  /// Mutable collection of additional primitive types that we want to skip
+  let additionalPrimitiveTypes = 
+    HashSet [ typeof<string>; typeof<DateTimeOffset>; typeof<DateTime>; 
+              typeof<Nullable<float>>; typeof<Nullable<int>>; typeof<Nullable<float32>>;
+              typeof<Nullable<bool>>; typeof<Nullable<int64>>; typeof<obj> ]
+  /// Mutable collections of interfaces that we want to ignore 
+  let nonFlattenedTypes =
+    ResizeArray [ typeof<ICollection>; typeof<IList>; typeof<IDictionary> ]
+  /// Custom expanders that override default behavior
+  let customExpanders = Dictionary<Type, Func<obj, seq<string * Type * obj>>>()
+
+  let isSimpleType (typ:System.Type) =
+    typ.IsPrimitive || typ.IsEnum || additionalPrimitiveTypes.Contains(typ)
+
+  let isIgnoredInterface (typ:System.Type) =
+    nonFlattenedTypes |> Seq.exists (fun t -> t.IsAssignableFrom(typ))
 
   /// Helper function used when building frames from data tables
   let createTypedVector : _ -> seq<OptionalValue<obj>> -> _ =
@@ -99,18 +117,30 @@ module internal Reflection =
   /// - `ISeries<string>` is expanded 
   /// - .NET types with readable properties are expanded
   let expandVector (vector:IVector<'T>) =
+    // Skip primitve types that should not be expanded
+    if isSimpleType (typeof<'T>) then [] else
+
     // Compile all projections from the type, so that we can run them fast
-    let compiled = 
+    let compiled = Lazy.Create(fun () ->
       [| for name, fldTy, proj in getMemberProjections (typeof<'T>) -> 
-           name, fldTy, proj.Compile() |]    
+           name, fldTy, proj.Compile() |])
+
     // For each vector element, build a list of all expanded columns
     // The list includes all dictionary values, or all fields
     let expanded =
-      vector.Select(fun input ->
-        [ match expandDictionary input  with
+      vector.Select(fun (input:'T) ->
+        [ match expandDictionary input with
+          | _ when Object.ReferenceEquals(input, null) -> ()
           | Some dict -> yield! dict
-          | _ -> for name, fldTy, f in compiled do 
-                   yield name, (fldTy, f.DynamicInvoke(input)) ] |> dict)
+          | _ -> 
+          match input.GetType() with
+          | typ when isIgnoredInterface (input.GetType()) -> ()
+          | typ when customExpanders.ContainsKey(typ) ->
+              for a, b, c in customExpanders.[typ].Invoke (box input) do yield a, (b, c)
+          | _ -> 
+          for name, fldTy, f in compiled.Value do 
+            yield name, (fldTy, f.DynamicInvoke(input)) ] |> dict)
+
     // Get a dictionary of all fields that we want to get from the vector    
     let fields = Dictionary<_, _>()
     expanded.DataSequence |> Seq.iter (function
@@ -393,7 +423,10 @@ module internal FrameUtils =
         for name, col in cols do
           match Reflection.expandUntypedVector col with
           | [] -> yield name, col
-          | cols -> for newName, newCol in cols do yield name + "." + newName, newCol }
+          | cols -> 
+              for newName, newCol in cols do 
+                let name = if String.IsNullOrEmpty(newName) then name else (name + "." + newName)
+                yield name, newCol }
       |> loop (nesting - 1)
 
     let cols = Seq.zip frame.ColumnKeys (frame.Data.DataSequence |> Seq.map OptionalValue.get)

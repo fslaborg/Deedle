@@ -17,6 +17,10 @@ open Deedle.Keys
 open Deedle.Vectors 
 
 type Frame =
+  static member NonExpandableTypes = Reflection.additionalPrimitiveTypes
+  static member NonExpandableInterfaces = Reflection.nonFlattenedTypes
+  static member CustomExpanders = Reflection.customExpanders
+
   // ----------------------------------------------------------------------------------------------
   // Reading CSV files
   // ----------------------------------------------------------------------------------------------

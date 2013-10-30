@@ -29,7 +29,7 @@ let msft() =
 let msftNoHeaders() = 
   let noHeaders =
     IO.File.ReadAllLines(__SOURCE_DIRECTORY__ + "/data/MSFT.csv") 
-    |> Seq.skip 1 |> String.concat "/n"
+    |> Seq.skip 1 |> String.concat "\n"
   let data = System.Text.Encoding.UTF8.GetBytes(noHeaders)
   Frame.ReadCsv(new IO.MemoryStream(data), false, inferRows=10)
 
@@ -44,7 +44,7 @@ let ``Can read MSFT data from CSV file without header row`` () =
   let df = msftNoHeaders()
   let expected = msft()  
   let actual = df |> Frame.indexColsWith expected.ColumnKeys |> Frame.indexRowsDate "Date"
-  actual |> shouldEqual expected
+  actual |> shouldEqual expected 
 
 [<Test>]
 let ``Can save MSFT data as CSV file and read it afterwards (with default args)`` () =
@@ -99,22 +99,24 @@ type MSFT = FSharp.Data.CsvProvider<"data/MSFT.csv">
 type Price = { Open : decimal; High : decimal; Low : Decimal; Close : decimal }
 type Stock = { Date : DateTime; Volume : int; Price : Price }
 
-let typedRows = 
-  let msft = new MSFT()
+let typedRows () = 
+  let msft = MSFT.Load(__SOURCE_DIRECTORY__ + "/data/MSFT.csv")
   [| for r in msft.Data -> 
       let p = { Open = r.Open; Close = r.Close; High = r.High; Low = r.High }
       { Date = r.Date; Volume = r.Volume; Price = p } |]
-let typedPrices = [| for r in typedRows -> r.Price |]
+let typedPrices () = 
+  [| for r in typedRows () -> r.Price |]
 
 [<Test>]  
 let ``Can read simple sequence of records`` () =
-  let df = Frame.ofRecords typedPrices 
+  let prices = typedPrices ()
+  let df = Frame.ofRecords prices
   set df.ColumnKeys |> shouldEqual (set ["Open"; "High"; "Low"; "Close"])
-  df |> Frame.countRows |> shouldEqual typedPrices.Length
+  df |> Frame.countRows |> shouldEqual prices.Length
 
 [<Test>]  
 let ``Can expand properties of a simple record sequence`` () =
-  let df = frame [ "MSFT" => Series.ofValues typedRows ]
+  let df = frame [ "MSFT" => Series.ofValues (typedRows ()) ]
   let exp1 = df |> Frame.expandAllCols 1 
   exp1.Rows.[10]?``MSFT.Volume`` |> shouldEqual 49370800.0
   set exp1.ColumnKeys |> shouldEqual (set ["MSFT.Date"; "MSFT.Volume"; "MSFT.Price"])
@@ -125,9 +127,9 @@ let ``Can expand properties of a simple record sequence`` () =
 
 [<Test>]  
 let ``Can expand properties of specified columns`` () =
-  let df = frame [ "MSFT" => Series.ofValues typedRows ]
+  let df = frame [ "MSFT" => Series.ofValues (typedRows ()) ]
   let exp = df |> Frame.expandAllCols 1 |> Frame.expandCols ["MSFT.Price"]
-  set exp.ColumnKeys |> shouldEqual (set ["Close"; "High"; "Low"; "MSFT.Date"; "MSFT.Volume"; "Open"])
+  set exp.ColumnKeys |> shouldEqual (set ["MSFT.Price.Close"; "MSFT.Price.High"; "MSFT.Price.Low"; "MSFT.Date"; "MSFT.Volume"; "MSFT.Price.Open"])
 
 [<Test>]
 let ``Can expand vector that mixes ExpandoObjects, records and tuples``() =
@@ -161,7 +163,7 @@ let ``Can expand vector that contains SeriesBuilder objects``() =
 let ``Can expand vector that contains Series<string, T> and tuples``() =
   let df = frame [ "A" => Series.ofValues [ series ["First" => box 1; "Second" => box (1, "Test") ] ]]
   let exp = df |> Frame.expandAllCols 1000
-  set exp.ColumnKeys |> shouldEqual (set ["Close"; "High"; "Low"; "MSFT.Date"; "MSFT.Volume"; "Open"])
+  set exp.ColumnKeys |> shouldEqual (set ["A.First"; "A.Second.Item1"; "A.Second.Item2.Length"])
 
 // ------------------------------------------------------------------------------------------------
 // Numerical operators
