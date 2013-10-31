@@ -68,6 +68,9 @@ Target "UpdateFsxVersions" (fun _ ->
 Target "RestorePackages" (fun _ ->
     !! "./**/packages.config"
     |> Seq.iter (RestorePackage (fun p -> { p with ToolPath = "./.nuget/NuGet.exe" }))
+    // Restore packages does not run install script, so copy files for R provider by hand
+    !! "packages/R.NET.1.5.5/lib/net40/*" |> CopyFiles "packages/RProvider.1.0.3/lib/" 
+    !! "packages/RDotNet.FSharp.0.1.2.1/lib/net40/*" |> CopyFiles "packages/RProvider.1.0.3/lib/" 
 )
 
 Target "Clean" (fun _ ->
@@ -141,10 +144,6 @@ Target "NuGet" (fun _ ->
 // Generate the documentation
 
 Target "GenerateDocs" (fun _ ->
-    // HACK: Assuming the system has F# 3.1 (which is used in the docs)
-    // we delete the fsi.exe that comes with FAKE and use system one instead
-    // (once FAKE includes F# 3.1, the next line can be deleted)
-    DeleteFile "packages/FAKE/tools/Fsi.exe"
     executeFSIWithArgs "docs/tools" "generate.fsx" ["--define:RELEASE"] [] |> ignore
 )
 

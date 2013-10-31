@@ -1,8 +1,9 @@
 ﻿#if INTERACTIVE
 #I "../../bin"
-#r "../../bin/Deedle.dll"
+#load "Deedle.fsx"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #r "../../packages/FsCheck.0.9.1.0/lib/net40-Client/FsCheck.dll"
+#r "../../packages/FSharp.Data.1.1.10/lib/net40/FSharp.Data.dll"
 #load "../Common/FsUnit.fs"
 #else
 module Deedle.Tests.Frame
@@ -10,6 +11,7 @@ module Deedle.Tests.Frame
 
 open System
 open System.Data
+open System.Dynamic
 open System.Collections.Generic
 open FsUnit
 open FsCheck
@@ -42,7 +44,7 @@ let ``Can read MSFT data from CSV file without header row`` () =
   let df = msftNoHeaders()
   let expected = msft()  
   let actual = df |> Frame.indexColsWith expected.ColumnKeys |> Frame.indexRowsDate "Date"
-  actual |> shouldEqual expected
+  actual |> shouldEqual expected 
 
 [<Test>]
 let ``Can save MSFT data as CSV file and read it afterwards (with default args)`` () =
@@ -88,6 +90,80 @@ let ``Construction of frame from columns respects specified order``() =
         "X" => Series.ofValues [ 1 .. 10 ] ]
   df.ColumnKeys |> List.ofSeq
   |> shouldEqual ["Z"; "X"]
+
+// ------------------------------------------------------------------------------------------------
+// Input and output (from records)
+// ------------------------------------------------------------------------------------------------
+
+type MSFT = FSharp.Data.CsvProvider<"data/MSFT.csv">
+type Price = { Open : decimal; High : decimal; Low : Decimal; Close : decimal }
+type Stock = { Date : DateTime; Volume : int; Price : Price }
+
+let typedRows () = 
+  let msft = MSFT.Load(__SOURCE_DIRECTORY__ + "/data/MSFT.csv")
+  [| for r in msft.Data -> 
+      let p = { Open = r.Open; Close = r.Close; High = r.High; Low = r.High }
+      { Date = r.Date; Volume = r.Volume; Price = p } |]
+let typedPrices () = 
+  [| for r in typedRows () -> r.Price |]
+
+[<Test>]  
+let ``Can read simple sequence of records`` () =
+  let prices = typedPrices ()
+  let df = Frame.ofRecords prices
+  set df.ColumnKeys |> shouldEqual (set ["Open"; "High"; "Low"; "Close"])
+  df |> Frame.countRows |> shouldEqual prices.Length
+
+[<Test>]  
+let ``Can expand properties of a simple record sequence`` () =
+  let df = frame [ "MSFT" => Series.ofValues (typedRows ()) ]
+  let exp1 = df |> Frame.expandAllCols 1 
+  exp1.Rows.[10]?``MSFT.Volume`` |> shouldEqual 49370800.0
+  set exp1.ColumnKeys |> shouldEqual (set ["MSFT.Date"; "MSFT.Volume"; "MSFT.Price"])
+  
+  let exp2 = df |> Frame.expandAllCols 2
+  exp2.ColumnKeys |> should contain "MSFT.Price.Open"
+  exp2.Rows.[10]?``MSFT.Price.Open`` |> shouldEqual 27.87
+
+[<Test>]  
+let ``Can expand properties of specified columns`` () =
+  let df = frame [ "MSFT" => Series.ofValues (typedRows ()) ]
+  let exp = df |> Frame.expandAllCols 1 |> Frame.expandCols ["MSFT.Price"]
+  set exp.ColumnKeys |> shouldEqual (set ["MSFT.Price.Close"; "MSFT.Price.High"; "MSFT.Price.Low"; "MSFT.Date"; "MSFT.Volume"; "MSFT.Price.Open"])
+
+[<Test>]
+let ``Can expand vector that mixes ExpandoObjects, records and tuples``() =
+  let (?<-) (exp:ExpandoObject) k v = (exp :> IDictionary<_, _>).Add(k, v)
+  let exp1 = new ExpandoObject()
+  exp1?First <- 1
+  exp1?Second <- 2 
+  exp1?Nested <- { Open = 1.0M; Low = 0.0M; Close = 2.0M; High = 3.0M }
+  let exp2 = new ExpandoObject()
+  exp2?Second <- "Test"
+  exp2?Nested <- { Open = 1.5M; Low = 0.5M; Close = 2.5M; High = 3.5M }
+  let df = frame [ "Objects" => Series.ofValues [(exp1, 42); (exp2, 41)] ]  
+  let exp1 = df |> Frame.expandAllCols 1
+  set exp1.ColumnKeys |> shouldEqual (set ["Objects.Item1"; "Objects.Item2"])
+  let exp3 = df |> Frame.expandAllCols 3
+  set exp3.ColumnKeys |> shouldEqual
+    ( set ["Objects.Item1.First";       "Objects.Item1.Nested.Close";
+           "Objects.Item1.Nested.High"; "Objects.Item1.Nested.Low";
+           "Objects.Item1.Nested.Open"; "Objects.Item1.Second"; "Objects.Item2"] )
+
+[<Test>]
+let ``Can expand vector that contains SeriesBuilder objects``() =
+  let sb = SeriesBuilder<string>()
+  sb?Test <- 1
+  sb?Another <- "hi"
+  let df = frame [ "A" => Series.ofValues [sb]]
+  let exp1 = df |> Frame.expandAllCols 1 
+  set exp1.ColumnKeys |> shouldEqual (set ["A.Another"; "A.Test"])
+
+[<Test>]
+let ``Can expand vector that contains Series<string, T> and tuples``() =
+  let df = frame [ "A" => Series.ofValues [ series ["First" => box 1; "Second" => box (1, "Test") ] ]]
+  let exp = df |> Frame.expandAllCols 1000
+  set exp.ColumnKeys |> shouldEqual (set ["A.First"; "A.Second.Item1"; "A.Second.Item2.Length"])
 
 // ------------------------------------------------------------------------------------------------
 // Numerical operators

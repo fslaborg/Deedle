@@ -1,21 +1,32 @@
 ﻿namespace Deedle
 
+// ------------------------------------------------------------------------------------------------
+// Utilities that use reflection (flattening records etc.)
+// ------------------------------------------------------------------------------------------------
+
 module internal Reflection = 
   open System
   open System.Linq
+  open System.Reflection
   open System.Linq.Expressions
   open Microsoft.FSharp.Reflection
   open Microsoft.FSharp
   open Microsoft.FSharp.Quotations
+  open System.Collections
   open System.Collections.Generic
 
   let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
   let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
 
+  /// Helper function that creates IVector<'T> and casts it to IVector
   let createTypedVectorHelper<'T> (input:seq<OptionalValue<obj>>) =
     input |> Seq.map (OptionalValue.map unbox<'T>) |> Vector.ofOptionalValues :> IVector
 
+  /// Helper function that returns contents of IDictionary<'K, 'V>
+  let getDictionaryValues<'K, 'V> (input:IDictionary<'K, 'V>) =
+    seq { for (KeyValue(k, v)) in input -> k.ToString(), (v.GetType(), box v) }
 
+  // Functions called from emitted code
   let enumerableSelect =
     match <@@ Enumerable.Select([0], fun v -> v) @@> with
     | Quotations.Patterns.Call(_, mi, _) -> mi.GetGenericMethodDefinition() 
@@ -32,37 +43,29 @@ module internal Reflection =
     match <@@ createTypedVectorHelper @@> with
     | Patterns.Lambda(_, Patterns.Call(_, mi, _)) -> mi.GetGenericMethodDefinition()
     | _ -> failwith "Failed to get method info for 'createTypedVector'"
+  let getDictionaryValuesMi =
+    match <@@ getDictionaryValues @@> with
+    | Patterns.Lambda(_, Patterns.Call(_, mi, _)) -> mi.GetGenericMethodDefinition()
+    | _ -> failwith "Failed to get method info for 'getDictionaryValues'"
 
+  /// Mutable collection of additional primitive types that we want to skip
+  let additionalPrimitiveTypes = 
+    HashSet [ typeof<string>; typeof<DateTimeOffset>; typeof<DateTime>; 
+              typeof<Nullable<float>>; typeof<Nullable<int>>; typeof<Nullable<float32>>;
+              typeof<Nullable<bool>>; typeof<Nullable<int64>>; typeof<obj> ]
+  /// Mutable collections of interfaces that we want to ignore 
+  let nonFlattenedTypes =
+    ResizeArray [ typeof<ICollection>; typeof<IList>; typeof<IDictionary> ]
+  /// Custom expanders that override default behavior
+  let customExpanders = Dictionary<Type, Func<obj, seq<string * Type * obj>>>()
 
-  let getRecordConvertors<'T>() = 
-    let recdTy = typeof<'T>
-    let fields = recdTy.GetProperties() |> Seq.filter (fun p -> p.CanRead) 
-    let colIndex = indexBuilder.Create<string>([ for f in fields -> f.Name ], Some false)
-    let fieldConvertors = 
-      [| for f in fields ->
-          // Information about the types involved...
-          let fldTy = f.PropertyType
-          // Build: fun recd -> recd.<Field>
-          let recd = Expression.Parameter(recdTy)
-          let func = Expression.Lambda(Expression.Call(recd, f.GetGetMethod()), [recd])
-          // Build: Enumerable.ToArray(Enumerable.Select(<input>, fun recd -> recd.<Field>))
-          let input = Expression.Parameter(typeof<seq<'T>>)
-          let selected = Expression.Call(enumerableSelect.MakeGenericMethod [| recdTy; fldTy |], input, func)
-          let body = Expression.Call(enumerableToArray.MakeGenericMethod [| fldTy |], selected)
-          // Build: vectorBuilder.Create( ... body ... )
-          let conv = Expression.Call(Expression.Constant(vectorBuilder), createNonOpt.MakeGenericMethod [| fldTy |], body)
-          // Compile & run
-          Expression.Lambda(conv, [input]).Compile() |]
-    colIndex, fieldConvertors
+  let isSimpleType (typ:System.Type) =
+    typ.IsPrimitive || typ.IsEnum || additionalPrimitiveTypes.Contains(typ)
 
-  let convertRecordSequence<'T>(data:seq<'T>) =
-    let colIndex, convertors = getRecordConvertors<'T>()
-    let frameData = 
-      [| for convFunc in convertors ->
-          convFunc.DynamicInvoke( [| box data |] ) :?> IVector |]
-      |> vectorBuilder.Create
-    Frame<int, string>(Index.ofKeys [0 .. (Seq.length data) - 1], colIndex, frameData)
+  let isIgnoredInterface (typ:System.Type) =
+    nonFlattenedTypes |> Seq.exists (fun t -> t.IsAssignableFrom(typ))
 
+  /// Helper function used when building frames from data tables
   let createTypedVector : _ -> seq<OptionalValue<obj>> -> _ =
     let cache = Dictionary<_, _>()
     (fun typ -> 
@@ -75,8 +78,126 @@ module internal Reflection =
           cache.Add(typ, f.Invoke)
           f.Invoke )
 
+  /// Given System.Type for some .NET object, get a sequence of projections
+  /// that return the values of all readonly properties (together with their name & type)
+  let getMemberProjections (recdTy:System.Type) =
+    [| let fields = 
+         recdTy.GetProperties(BindingFlags.Instance ||| BindingFlags.Public) 
+         |> Seq.filter (fun p -> p.CanRead && p.GetIndexParameters().Length = 0) 
+       for f in fields ->
+         let fldTy = f.PropertyType
+         // Build: fun recd -> recd.<Field>
+         let recd = Expression.Parameter(recdTy)
+         let call = Expression.Call(recd, f.GetGetMethod())
+         f.Name, fldTy, Expression.Lambda(call, [recd]) |]
+
+  /// Given value, return names, types and values of all its IDictionary contents (or None)
+  let expandDictionary (value:obj) =
+    if value = null then None else
+    match value with 
+    | :? ISeries<string> as sstr ->
+        seq { for key in sstr.Index.Keys do
+                let obj = sstr.TryGetObject(key)
+                if obj.HasValue then
+                  yield key, (obj.Value.GetType(), obj.Value) } |> Some
+    | _ -> 
+    /// Get type arguments of the IDictionary<T1, T2> implementation or None
+    let optTyArgs =
+      value.GetType().GetInterfaces() |> Seq.tryPick (fun ityp ->
+        if ityp.IsGenericType && ityp.GetGenericTypeDefinition() = typedefof<IDictionary<_, _>> 
+        then Some(ityp.GetGenericArguments()) else None)
+    match optTyArgs with
+    | Some typs -> 
+        let res = getDictionaryValuesMi.MakeGenericMethod(typs).Invoke(null, [| value |]) 
+        Some(unbox<seq<string * (Type * obj)>> res)
+    | _ -> None
+
+  /// Given a single vector, expand its values into multiple vectors. This may be:
+  /// - `IDictionary` is expanded based on keys/values
+  /// - `ISeries<string>` is expanded 
+  /// - .NET types with readable properties are expanded
+  let expandVector (vector:IVector<'T>) =
+    // Skip primitve types that should not be expanded
+    if isSimpleType (typeof<'T>) then [] else
+
+    // Compile all projections from the type, so that we can run them fast
+    let compiled = Lazy.Create(fun () ->
+      [| for name, fldTy, proj in getMemberProjections (typeof<'T>) -> 
+           name, fldTy, proj.Compile() |])
+
+    // For each vector element, build a list of all expanded columns
+    // The list includes all dictionary values, or all fields
+    let expanded =
+      vector.Select(fun (input:'T) ->
+        [ match expandDictionary input with
+          | _ when Object.ReferenceEquals(input, null) -> ()
+          | Some dict -> yield! dict
+          | _ -> 
+          match input.GetType() with
+          | typ when isIgnoredInterface (input.GetType()) -> ()
+          | typ when customExpanders.ContainsKey(typ) ->
+              for a, b, c in customExpanders.[typ].Invoke (box input) do yield a, (b, c)
+          | _ -> 
+          for name, fldTy, f in compiled.Value do 
+            yield name, (fldTy, f.DynamicInvoke(input)) ] |> dict)
+
+    // Get a dictionary of all fields that we want to get from the vector    
+    let fields = Dictionary<_, _>()
+    expanded.DataSequence |> Seq.iter (function
+      | OptionalValue.Present(list) -> 
+          for KeyValue(fld, (typ, _)) in list do 
+            match fields.TryGetValue(fld) with
+            | true, typ2 when typ = typ2 || typ2 = typeof<obj> -> ()
+            | true, typ2 -> fields.[fld] <- typeof<obj>
+            | false, _ -> fields.[fld] <- typ 
+      | _ -> () )
+
+    // Iterate over all the fields and turn them into vectors
+    [ for (KeyValue(fieldName, fieldTyp)) in fields ->
+        let it = expanded.SelectMissing(OptionalValue.bind (fun lookup -> 
+          match lookup.TryGetValue(fieldName) with
+          | true, (_, v) -> OptionalValue(v)
+          | _ -> OptionalValue.Missing)).DataSequence
+        fieldName, createTypedVector fieldTyp it ]
+
+  let expandUntypedVector =
+    { new VectorHelpers.VectorCallSite1<_> with
+        member x.Invoke(vect) = expandVector vect }
+    |> VectorHelpers.createVectorDispatcher    
+
+  /// Given type 'T that represents some .NET object, generate an array of 
+  /// functions that take seq<'T> and generate IVector with each column:
+  ///
+  ///     vectorBuilder.Create(<input>.Select(fun (recd:'T) -> 
+  ///       recd.<field>).ToArray()) : IVector<'F>
+  ///
+  let getRecordConvertorExprs (recdTy:System.Type) = 
+    getMemberProjections recdTy |> Array.map (fun (name, fldTy, funcExpr) ->
+      // Build: Enumerable.ToArray(Enumerable.Select(<input>, fun recd -> recd.<Field>))
+      let input = Expression.Parameter(typedefof<seq<_>>.MakeGenericType(recdTy))
+      let selected = Expression.Call(enumerableSelect.MakeGenericMethod [| recdTy; fldTy |], input, funcExpr)
+      let body = Expression.Call(enumerableToArray.MakeGenericMethod [| fldTy |], selected)
+      // Build: vectorBuilder.Create( ... body ... )
+      let conv = Expression.Call(Expression.Constant(vectorBuilder), createNonOpt.MakeGenericMethod [| fldTy |], body)
+      // Compile & return
+      name, (input, conv))
+
+  /// Convert a sequence of records to a data frame - automatically 
+  /// get the columns based on information available using reflection
+  let convertRecordSequence<'T>(data:seq<'T>) =
+    let convertors = getRecordConvertorExprs (typeof<'T>)
+    let colIndex = indexBuilder.Create<string>(Seq.map fst convertors, Some false)
+    let convertors = 
+      [| for _, (input, body) in convertors -> 
+           let cast = Expression.Convert(body, typeof<IVector>)
+           Expression.Lambda<Func<seq<'T>, IVector>>(cast, input).Compile() |]
+    let frameData = 
+      [| for convFunc in convertors -> convFunc.Invoke(data) |]
+      |> vectorBuilder.Create
+    Frame<int, string>(Index.ofKeys [0 .. (Seq.length data) - 1], colIndex, frameData)
+
 // ------------------------------------------------------------------------------------------------
-//
+// Utilities, mostly dealing with construction & serialization of frames
 // ------------------------------------------------------------------------------------------------
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
@@ -117,6 +238,9 @@ module internal FrameUtils =
       objs |> Seq.map (fun o -> if o = null then "" else o.ToString()) 
             |> String.concat " - ")
 
+  /// Store data frame to a CSV file using the specified information
+  /// (use TSV format if file ends with .tsv, when including row keys, the
+  /// caller needs to provide headers)
   let writeCsv (writer:TextWriter) fileNameOpt separatorOpt cultureOpt includeRowKeys (rowKeyNames:seq<_> option) (frame:Frame<_, _>) = 
     let ci = defaultArg cultureOpt CultureInfo.InvariantCulture
     let includeRowKeys = defaultArg includeRowKeys (rowKeyNames.IsSome)
@@ -182,14 +306,15 @@ module internal FrameUtils =
     writeFrameRows includeRowKeys rowKeys columns (fun data ->
       data |> Seq.map formatOptional |> writeLine)
 
-
+      
+  /// Export the specified frame to 'DataTable'. Caller needs to specify
+  /// keys (headers) for the row keys (there may be more of them for multi-level index)
   let toDataTable rowKeyNames (frame:Frame<_, _>) =
     // Get the data from the data frame
     let { ColumnKeys = colKeys; RowKeys = rowKeys; Columns = columns } = frame.GetFrameData()
     // Get number of row keys (or 1 if there are no values)
     let rowKeyCount = defaultArg (rowKeys |> Seq.map Array.length |> Seq.tryPick Some) 1
     let rowKeyTypes = defaultArg (rowKeys |> Seq.map (Array.map (fun v -> v.GetType())) |> Seq.tryPick Some) [| typeof<obj> |]
-
     if rowKeyNames |> Seq.length <> rowKeyCount then invalidArg "rowKeyNames" "Mismatching numbe of row keys"
     
     // Create data table & add index columns with their types, then add data columns with types
@@ -197,7 +322,7 @@ module internal FrameUtils =
     (rowKeyNames, rowKeyTypes) ||> Seq.map2 (fun rk rt -> new DataColumn(rk, rt)) |> Seq.iter dt.Columns.Add
     (flattenKeys colKeys, columns) ||> Seq.map2 (fun ck (ct, _) -> new DataColumn(ck, ct)) |> Seq.iter dt.Columns.Add
 
-    // 
+    // Write all data to the data table
     writeFrameRows true rowKeys columns (fun data ->
       dt.Rows.Add([| for _, v in data -> match v with Some o -> o | _ -> box System.DBNull.Value |])
       |> ignore
@@ -277,6 +402,9 @@ module internal FrameUtils =
     let rowIndex = Index.ofKeys [ 0 .. (Seq.length data.Data) - 1 ]
     Frame(rowIndex, columnIndex, Vector.ofValues columns)
 
+
+  /// Create data frame from a sequence of values using
+  /// projections that return column/row keys and the value
   let fromValues values colSel rowSel valSel =
     values 
     |> Seq.groupBy colSel
@@ -286,3 +414,35 @@ module internal FrameUtils =
         col, Series(Array.map rowSel items, Array.map valSel items) )
     |> Series.ofObservations
     |> FrameUtils.fromColumns
+
+  /// Expand properties of vectors recursively. Nothing is done when `nesting = 0`.
+  let expandVectors nesting (frame:Frame<'R, string>) =
+    let rec loop nesting cols =      
+      if nesting = 0 then cols else
+      seq {
+        for name, col in cols do
+          match Reflection.expandUntypedVector col with
+          | [] -> yield name, col
+          | cols -> 
+              for newName, newCol in cols do 
+                let name = if String.IsNullOrEmpty(newName) then name else (name + "." + newName)
+                yield name, newCol }
+      |> loop (nesting - 1)
+
+    let cols = Seq.zip frame.ColumnKeys (frame.Data.DataSequence |> Seq.map OptionalValue.get)
+    let newCols = loop nesting cols |> Array.ofSeq
+    let newColIndex = Index.ofKeys (Seq.map fst newCols)
+    let newData = Vector.ofValues (Seq.map snd newCols)
+    Frame<_, _>(frame.RowIndex, newColIndex, newData)
+
+  /// Expand properties of vectors recursively. Nothing is done when `nesting = 0`.
+  let expandColumns expandNames (frame:Frame<'R, string>) =
+    let cols = Seq.zip frame.ColumnKeys (frame.Data.DataSequence |> Seq.map OptionalValue.get)
+    let expandName = set expandNames
+    let newCols = cols |> Seq.collect (fun (name, vector) ->
+      if Set.contains name expandNames then 
+        [ for n, v in Reflection.expandUntypedVector vector -> name + "." + n, v ]
+      else [name, vector]) |> Array.ofSeq
+    let newColIndex = Index.ofKeys (Seq.map fst newCols)
+    let newData = Vector.ofValues (Seq.map snd newCols)
+    Frame<_, _>(frame.RowIndex, newColIndex, newData)

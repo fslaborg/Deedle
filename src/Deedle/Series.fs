@@ -45,6 +45,12 @@ and
     ( index:IIndex<'K>, vector:IVector<'V>,
       vectorBuilder : IVectorBuilder, indexBuilder : IIndexBuilder ) as this =
   
+  // Lazy value to hold the number of elements (so that we do not recalculate this all the time)
+  let valueCount = Lazy.Create (fun () -> 
+    let mutable count = 0
+    for _, a in index.Mappings do if vector.GetValue(a).HasValue then count <- count + 1
+    count )
+
   member internal x.VectorBuilder = vectorBuilder
   member internal x.IndexBuilder = indexBuilder
 
@@ -101,6 +107,12 @@ and
 
   /// [category:Series data]
   member x.KeyRange = index.KeyRange
+
+  /// [category:Series data]
+  member x.KeyCount = int index.KeyCount
+
+  /// [category:Series data]
+  member x.ValueCount = valueCount.Value
 
   // ----------------------------------------------------------------------------------------------
   // Accessors and slicing
@@ -804,6 +816,14 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
 
   new(series:Series<'K, obj>) = 
     ObjectSeries<_>(series.Index, series.Vector, series.VectorBuilder, series.IndexBuilder)
+
+  member x.GetValues<'R>(strict) = 
+    if strict then System.Linq.Enumerable.OfType<'R>(x.Values)
+    else x.Values |> Seq.choose (fun v ->
+      try Some(System.Convert.ChangeType(v, typeof<'R>) :?> 'R) 
+      with _ -> None)
+
+  member x.GetValues<'R>() = x.GetValues<'R>(true)
 
   member x.GetAs<'R>(column) : 'R = 
     System.Convert.ChangeType(x.Get(column), typeof<'R>) |> unbox

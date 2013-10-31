@@ -6,3 +6,4 @@
 * 0.9.5-beta - Update documentation and tools, adding functionality
 * 0.9.6-beta - Load script automatically references F# data (for CSV reading)
 * 0.9.7-beta - Fix series formatting
+* 0.9.8-beta - Add reflection-based frame expansion
