@@ -74,7 +74,7 @@ let testOne() =
     timed(fun () -> 
       //CSharp.Tests.DynamicFrameTests.CanAddSeriesDynamically()
       //CSharp.Tests.DynamicFrameTests.CanGetSeriesDynamically()
-      Tests.Frame.slowStack()
+      Tests.Frame.``Can group 10x5k data frame by row of type string and nest it (in less than a few seconds)``()
 //      Series(d1, d2).[300000.0 .. 600000.0] |> Series.filter (fun k _ -> true) |> Series.mean
 //      |> ignore
 

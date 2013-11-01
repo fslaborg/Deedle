@@ -188,16 +188,24 @@ let ``Can create frame from 100k of three element tuples (in less than a few sec
 // Stack & unstack
 // ------------------------------------------------------------------------------------------------
 
-
+[<Test>]
 let slowStack() = 
   let big = frame [ for d in 0 .. 200 -> string d => series [ for i in 0 .. 500 -> string i => 1.0 ] ]
-  Frame.stack big |> ignore
+  let stacked = Frame.stack big 
+  stacked |> Frame.countRows |> shouldEqual 100701
 
 [<Test>]
 let ``Can group 10x5k data frame by row of type string (in less than a few seconds)`` () =
   let big = frame [ for d in 0 .. 10 -> string d => series [ for i in 0 .. 5000 -> string i => string (i % 1000) ] ]
   let grouped = big |> Frame.groupRowsByString "1"
   grouped.Rows.[ ("998","998") ].GetAs<int>("0") |> shouldEqual 998
+
+[<Test>]
+let ``Can group 10x5k data frame by row of type string and nest it (in less than a few seconds)`` () =
+  let big = frame [ for d in 0 .. 10 -> string d => series [ for i in 0 .. 5000 -> string i => string (i % 1000) ] ]
+  let grouped = big |> Frame.groupRowsByString "1" 
+  let nest = grouped |> Frame.nest
+  nest |> Series.countKeys |> shouldEqual 1000
 
 // ------------------------------------------------------------------------------------------------
 // Numerical operators

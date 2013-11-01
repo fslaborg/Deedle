@@ -1068,7 +1068,7 @@ and FrameUtils =
       (nested:Series<'TRowKey, 'TSeries>) =
 
     // Create column index from keys of all rows
-    let columnIndex = nested.Values |> Seq.collect (fun sr -> sr.Index.Keys) |> Seq.distinct |> Index.ofKeys
+    let columnIndex = nested.Values |> Seq.collect (fun sr -> sr.Index.Keys) |> Seq.distinct |> Array.ofSeq |> Index.ofKeys
 
     // Row index is just the index of the series
     let rowIndex = nested.Index
