@@ -883,8 +883,8 @@ module Frame =
         row.Observations 
         |> Seq.map (fun (KeyValue(colKey, value)) -> (box rowKey, box colKey, value))) |> Array.ofSeq
     
-    let rowIndex = Index.ofKeys ["Row"; "Column"; "Value"]
-    let colIndex = Index.ofKeys (Array.init vals.Length id)
+    let colIndex = Index.ofKeys ["Row"; "Column"; "Value"]
+    let rowIndex = Index.ofKeys (Array.init vals.Length id)
     let data = 
       [ for f in [ (fun (a, _, _) -> a); (fun (_, a, _) -> a); (fun (_, _, a) -> a) ] ->
           Vector.ofValues (Array.map f vals) :> IVector ]
