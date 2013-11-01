@@ -125,9 +125,7 @@ bool TryGetValue(TKey key, out TValue value);
   interface System.Dynamic.IDynamicMetaObjectProvider with 
     member builder.GetMetaObject(expr) = 
       DynamicExtensions.createSetterFromFunc expr builder (fun builder name value -> 
-        let converted = 
-          if value :? 'V then unbox<'V> value
-          else System.Convert.ChangeType(value, typeof<'V>) |> unbox<'V>
+        let converted = Convert.changeType<'V> value
         builder.Add(unbox<'K> name, converted))
 
 type SeriesBuilder<'K when 'K : equality>() =

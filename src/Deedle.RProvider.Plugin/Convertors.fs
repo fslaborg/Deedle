@@ -2,6 +2,7 @@
 
 open System
 open Deedle
+open Deedle.Internal
 open Deedle.Indices
 open RDotNet
 open RProvider
@@ -31,7 +32,7 @@ let (|NumericIndex|StringIndex|) (items:string[]) =
 let convertIndex (names:string[]) : option<IIndex<'R>> =
   try 
     names 
-    |> Array.map (fun v -> Convert.ChangeType(v, typeof<'R>) :?> 'R)
+    |> Array.map (Convert.changeType<'R>)
     |> Index.ofKeys |> Some
   with _ -> None
 

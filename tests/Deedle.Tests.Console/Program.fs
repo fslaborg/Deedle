@@ -70,13 +70,13 @@ let testOne() =
   let d1 = Array.init 1000000 float
   let d2 = Array.init 1000000 float
 
-  for i in 1 .. 6 do
+  for i in 1 .. 5 do
     timed(fun () -> 
       //CSharp.Tests.DynamicFrameTests.CanAddSeriesDynamically()
       //CSharp.Tests.DynamicFrameTests.CanGetSeriesDynamically()
-
-      Series(d1, d2).[300000.0 .. 600000.0] |> Series.filter (fun k _ -> true) |> Series.mean
-      |> ignore
+      Tests.Frame.slowStack()
+//      Series(d1, d2).[300000.0 .. 600000.0] |> Series.filter (fun k _ -> true) |> Series.mean
+//      |> ignore
 
     )
 

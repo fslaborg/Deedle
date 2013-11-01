@@ -516,8 +516,8 @@ type FrameExtensions =
   ///
   /// [category:Data structure manipulation]
   [<Extension>]
-  static member ExpandColumns(frame:Frame<'R, string>, nesting) =
-    FrameUtils.expandVectors nesting frame
+  static member ExpandColumns(frame:Frame<'R, string>, nesting, [<Optional>] dynamic) =
+    FrameUtils.expandVectors nesting dynamic frame
 
   /// Creates a new data frame where the specified columns are expanded based on runtime
   /// structure of the objects they store. A column can be expanded if it is 

@@ -24,22 +24,35 @@ let unordered = series [ 3 => "hi"; 2 => "bye"; 1 => "ciao"; 5 => "nazdar" ]
 let ordered = series [ 1 => "hi"; 2 => "bye"; 3 => "ciao"; 5 => "nazdar" ]
 let missing = series [ 1 => "hi"; 2 => null; 3 => "ciao"; 5 => "nazdar" ]
 
+[<Test>]  
 let ``Can access elements in ordered and unordered series`` () =
   unordered.[3] |> shouldEqual "hi"
   ordered.[3] |> shouldEqual "ciao"
 
+[<Test>]  
 let ``Accessing missing value or using out of range key throws`` () =
   (fun () -> missing.[2] |> ignore) |> should throw typeof<KeyNotFoundException>
   (fun () -> missing.[7] |> ignore) |> should throw typeof<KeyNotFoundException>
 
+[<Test>]  
 let ``Can access elements by address`` () =
   unordered.GetAt(0) |> shouldEqual "hi"
   ordered.GetAt(0) |> shouldEqual "hi"
   missing.TryGetAt(1).HasValue |> shouldEqual false
-  
+
+[<Test>]  
 let ``Can lookup previous and next elements in ordered series`` () =
   ordered.Get(4, Lookup.NearestGreater) |> shouldEqual "nazdar"
   ordered.Get(4, Lookup.NearestSmaller) |> shouldEqual "ciao"
+
+// ------------------------------------------------------------------------------------------------
+// Value conversions
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]  
+let ``Should be able to convert bool to nullable bool``() = 
+  let s = (frame ["A" => series [ 1 => true]]).Rows.[1]
+  s.GetAs<Nullable<bool>>("A") |> shouldEqual (Nullable true)
 
 // ------------------------------------------------------------------------------------------------
 // Construction & basics

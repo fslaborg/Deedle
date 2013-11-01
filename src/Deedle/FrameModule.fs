@@ -170,18 +170,16 @@ module Frame =
     |> Series.values |> Seq.reduce (fun df1 df2 -> df1.Append(df2))
 
   let collapseRows (series:Series<'K, Frame<'K1, 'K2>>) = 
-    FrameUtils.collapseRows series
+    FrameUtils.collapseFrameSeries series
 
   let groupRowsUsing selector (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.groupInto selector (fun k g -> g |> FrameUtils.fromRows) |> collapseRows
+    frame.Rows |> Series.groupInto selector (fun k g -> g) |> FrameUtils.collapseSeriesSeries
   let groupColsUsing selector (frame:Frame<'R, 'C>) = 
     frame.Columns |> Series.groupInto selector (fun k g -> g |> FrameUtils.fromColumns) |> collapseCols
 
   let groupRowsBy column (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.groupInto 
-      (fun _ v -> v.GetAs<'K>(column)) 
-      (fun k g -> g |> FrameUtils.fromRows)
-    |> collapseRows
+    frame.Rows |> Series.groupInto (fun _ v -> v.GetAs<'K>(column)) (fun _ g -> g)
+    |> FrameUtils.collapseSeriesSeries
 
   let groupColsBy column (frame:Frame<'R, 'C>) = 
     frame.Columns |> Series.groupInto 
@@ -411,7 +409,7 @@ module Frame =
   ///
   /// [category:Data structure manipulation]
   let expandAllCols nesting (frame:Frame<'R, string>) = 
-    FrameUtils.expandVectors nesting frame
+    FrameUtils.expandVectors nesting false frame
 
   /// Creates a new data frame where the specified columns are expanded based on runtime
   /// structure of the objects they store. A column can be expanded if it is 
@@ -589,8 +587,8 @@ module Frame =
   let median (frame:Frame<'R, 'C>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Series.median)
 
-  let apply op (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.apply op)
+  let stat op (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.stat op)
 
   let reduce (op:'T -> 'T -> 'T) (frame:Frame<'R, 'C>) = 
     frame.GetColumns<'T>() |> Series.map (fun _ -> Series.reduce op) 
@@ -624,12 +622,14 @@ module Frame =
   let medianLevel keySelector (frame:Frame<'R, 'C>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Series.medianLevel keySelector) |> FrameUtils.fromColumns
 
-  let applyLevel keySelector op (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.applyLevel keySelector op) |> FrameUtils.fromColumns
+  let statLevel keySelector op (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Series.statLevel keySelector op) |> FrameUtils.fromColumns
 
   let reduceLevel keySelector (op:'T -> 'T -> 'T) (frame:Frame<'R, 'C>) = 
     frame.GetColumns<'T>() |> Series.map (fun _ -> Series.reduceLevel keySelector op) |> FrameUtils.fromColumns
 
+  let applyLevel keySelector op (frame:Frame<'R, 'C>) = 
+    frame.Rows |> Series.applyLevel keySelector op
 
   // other stuff
 
@@ -878,12 +878,18 @@ module Frame =
   /// Implements R-like 'stack' (returns frame whose 
   /// columns are named Row/Column/Value)
   let stack (frame:Frame<'R, 'C>) =
-    frame.Rows.Observations |> Seq.collect (fun (KeyValue(rowKey, row)) ->
-      row.Observations |> Seq.map (fun (KeyValue(colKey, value)) -> 
-        Series.ofValues [box rowKey; box colKey; box value ]))
-    |> Series.ofValues
-    |> FrameUtils.fromRows
-    |> indexColsWith ["Row"; "Column"; "Value"]
+    let vals = 
+      frame.Rows.Observations |> Seq.collect (fun (KeyValue(rowKey, row)) ->
+        row.Observations 
+        |> Seq.map (fun (KeyValue(colKey, value)) -> (box rowKey, box colKey, value))) |> Array.ofSeq
+    
+    let rowIndex = Index.ofKeys ["Row"; "Column"; "Value"]
+    let colIndex = Index.ofKeys (Array.init vals.Length id)
+    let data = 
+      [ for f in [ (fun (a, _, _) -> a); (fun (_, a, _) -> a); (fun (_, _, a) -> a) ] ->
+          Vector.ofValues (Array.map f vals) :> IVector ]
+      |> Vector.ofValues
+    Frame(rowIndex, colIndex, data)
 
   // Unstack is easier, we just need to get three-element tuples from the frame and use Frame.ofValues
   let unstack (frame:Frame<'O, string>) : Frame<'R, 'C> =

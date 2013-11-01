@@ -126,6 +126,12 @@ let ``Can expand properties of a simple record sequence`` () =
   exp2.Rows.[10]?``MSFT.Price.Open`` |> shouldEqual 27.87
 
 [<Test>]  
+let ``Can expand properties based on runtime type information`` () =
+  let df = frame [ "A" => Series.ofValues [box (1,2); box {Open=1.0M; Close=1.0M; High=1.0M; Low=1.0M}] ]
+  let dfexp = FrameExtensions.ExpandColumns(df, 10, true)
+  set dfexp.ColumnKeys |> shouldEqual (set ["A.Item1"; "A.Item2"; "A.Open"; "A.High"; "A.Low"; "A.Close"])
+
+[<Test>]  
 let ``Can expand properties of specified columns`` () =
   let df = frame [ "MSFT" => Series.ofValues (typedRows ()) ]
   let exp = df |> Frame.expandAllCols 1 |> Frame.expandCols ["MSFT.Price"]
@@ -163,7 +169,35 @@ let ``Can expand vector that contains SeriesBuilder objects``() =
 let ``Can expand vector that contains Series<string, T> and tuples``() =
   let df = frame [ "A" => Series.ofValues [ series ["First" => box 1; "Second" => box (1, "Test") ] ]]
   let exp = df |> Frame.expandAllCols 1000
-  set exp.ColumnKeys |> shouldEqual (set ["A.First"; "A.Second.Item1"; "A.Second.Item2.Length"])
+  set exp.ColumnKeys |> shouldEqual (set ["A.First"; "A.Second.Item1"; "A.Second.Item2"])
+
+// ------------------------------------------------------------------------------------------------
+// From rows/columns
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can create frame from 100k of three element tuples (in less than a few seconds)`` () =
+  let values =
+    [| for d in 0 .. 100 do
+        for i in 0 .. 1000 do
+          yield DateTime.Today.AddDays(float d), i.ToString(), 1.0 |]
+  let df = Frame.ofValues values
+  df |> Frame.sum |> Series.sum |> int |> shouldEqual 101101
+
+// ------------------------------------------------------------------------------------------------
+// Stack & unstack
+// ------------------------------------------------------------------------------------------------
+
+
+let slowStack() = 
+  let big = frame [ for d in 0 .. 200 -> string d => series [ for i in 0 .. 500 -> string i => 1.0 ] ]
+  Frame.stack big |> ignore
+
+[<Test>]
+let ``Can group 10x5k data frame by row of type string (in less than a few seconds)`` () =
+  let big = frame [ for d in 0 .. 10 -> string d => series [ for i in 0 .. 5000 -> string i => string (i % 1000) ] ]
+  let grouped = big |> Frame.groupRowsByString "1"
+  grouped.Rows.[ ("998","998") ].GetAs<int>("0") |> shouldEqual 998
 
 // ------------------------------------------------------------------------------------------------
 // Numerical operators

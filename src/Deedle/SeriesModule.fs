@@ -197,8 +197,8 @@ module Series =
   ///  - `op` - A function that takes a sequence and produces an aggregated result
   ///
   /// [category:Statistics]
-  [<CompiledName("Apply")>]
-  let inline apply (op:_ -> 'V2) (series:Series<'K, 'V1>) = 
+  [<CompiledName("Stat")>]
+  let inline stat (op:_ -> 'V2) (series:Series<'K, 'V1>) = 
     series |> streamingAggregation op
 
   /// Returns the sum of the elements of the series. The operation skips over
@@ -219,13 +219,13 @@ module Series =
   /// missing values and so the result will never be `NaN`.
   /// [category:Statistics]
   [<CompiledName("StandardDeviation")>]
-  let inline sdv (series:Series<'K, float>) = series |> apply Statistics.StandardDeviation 
+  let inline sdv (series:Series<'K, float>) = series |> stat Statistics.StandardDeviation 
 
   /// Returns the median of the elements of the series. The operation skips over
   /// missing values and so the result will never be `NaN`.
   /// [category:Statistics]
   [<CompiledName("Median")>]
-  let inline median (series:Series<'K, float>) = series |> apply Statistics.Median
+  let inline median (series:Series<'K, float>) = series |> stat Statistics.Median
 
   /// Returns the smallest of all elements of the series. The operation 
   /// skips over missing values and so the result will never be `NaN`.
@@ -264,11 +264,30 @@ module Series =
   ///  - `level` - A delegate that returns a new group key, based on the key in the input series
   ///
   /// [category:Statistics]
+  [<CompiledName("StatisticsLevel")>]
+  let inline statLevel (level:'K1 -> 'K2) op (series:Series<_, 'V>) : Series<_, 'R> = 
+    series.GroupBy
+      ( (fun key ser -> level key),
+        (fun key ser -> OptionalValue(stat op ser)))
+
+  /// Groups the elements of the input series in groups based on the keys
+  /// produced by `level` and then aggregates series representing each group
+  /// using the specified function `op`. The result is a new series containing
+  /// the aggregates of each group. 
+  ///
+  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  ///
+  /// ## Parameters
+  ///  - `series` - An input series to be aggregated
+  ///  - `op` - A function that takes a series and produces an aggregated result
+  ///  - `level` - A delegate that returns a new group key, based on the key in the input series
+  ///
+  /// [category:Statistics]
   [<CompiledName("ApplyLevel")>]
   let inline applyLevel (level:'K1 -> 'K2) op (series:Series<_, 'V>) : Series<_, 'R> = 
     series.GroupBy
       ( (fun key ser -> level key),
-        (fun key ser -> OptionalValue(apply op ser)))
+        (fun key ser -> OptionalValue(op ser)))
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `level` and then returns a new series containing
@@ -298,7 +317,7 @@ module Series =
   /// [category:Statistics]
   [<CompiledName("StandardDeviationLevel")>]
   let inline sdvLevel (level:'K1 -> 'K2) (series:Series<_, float>) = 
-    series |> applyLevel level Statistics.StandardDeviation 
+    series |> statLevel level Statistics.StandardDeviation 
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `level` and then returns a new series containing
@@ -313,7 +332,7 @@ module Series =
   /// [category:Statistics]
   [<CompiledName("MedianLevel")>]
   let inline medianLevel level (series:Series<_, float>) = 
-    series |> applyLevel level Statistics.Median
+    series |> statLevel level Statistics.Median
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `level` and then returns a new series containing

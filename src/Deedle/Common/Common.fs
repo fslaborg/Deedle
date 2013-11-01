@@ -802,6 +802,22 @@ module Formatting =
     sb.ToString()
 
 // --------------------------------------------------------------------------------------
+// Type conversions
+// --------------------------------------------------------------------------------------
+
+/// [omit]
+module Convert =
+  let nullableType = typedefof<System.Nullable<_>>
+
+  /// Helper function that converts value to a specified type
+  /// (this aims to be as flexible as possible)
+  let changeType<'T> (value:obj) =
+    // Check if we can cast first - one would think that System.Convert
+    // should handle this, but it fails to convert nullables (e.g. bool to bool?)
+    if value :? 'T then value :?> 'T
+    else System.Convert.ChangeType(value, typeof<'T>) :?> 'T
+    
+// --------------------------------------------------------------------------------------
 // Support for C# dynamic
 // --------------------------------------------------------------------------------------
 

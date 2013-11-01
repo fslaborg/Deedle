@@ -78,12 +78,14 @@ module internal Reflection =
           cache.Add(typ, f.Invoke)
           f.Invoke )
 
+  let getExpandableProperties (ty:Type) =
+    ty.GetProperties(BindingFlags.Instance ||| BindingFlags.Public) 
+    |> Seq.filter (fun p -> p.CanRead && p.GetIndexParameters().Length = 0) 
+
   /// Given System.Type for some .NET object, get a sequence of projections
   /// that return the values of all readonly properties (together with their name & type)
   let getMemberProjections (recdTy:System.Type) =
-    [| let fields = 
-         recdTy.GetProperties(BindingFlags.Instance ||| BindingFlags.Public) 
-         |> Seq.filter (fun p -> p.CanRead && p.GetIndexParameters().Length = 0) 
+    [| let fields = getExpandableProperties recdTy
        for f in fields ->
          let fldTy = f.PropertyType
          // Build: fun recd -> recd.<Field>
@@ -112,18 +114,29 @@ module internal Reflection =
         Some(unbox<seq<string * (Type * obj)>> res)
     | _ -> None
 
+  /// Compile all projections from the type, so that we can run them fast
+  /// and cache the results with Type as the key, so that we don't have to recompile 
+  let getCachedCompileProjection = 
+    let cache = Dictionary<_, _>()
+    (fun typ ->
+      match cache.TryGetValue(typ) with
+      | true, res -> res
+      | _ ->
+          let res = [| for name, fldTy, proj in getMemberProjections typ -> 
+                         name, fldTy, proj.Compile() |]
+          cache.Add(typ, res)
+          res )
+
   /// Given a single vector, expand its values into multiple vectors. This may be:
   /// - `IDictionary` is expanded based on keys/values
   /// - `ISeries<string>` is expanded 
   /// - .NET types with readable properties are expanded
-  let expandVector (vector:IVector<'T>) =
+  let expandVector dynamic (vector:IVector<'T>) =
     // Skip primitve types that should not be expanded
-    if isSimpleType (typeof<'T>) then [] else
+    if (not dynamic) && (isSimpleType (typeof<'T>)) then [] else
 
-    // Compile all projections from the type, so that we can run them fast
-    let compiled = Lazy.Create(fun () ->
-      [| for name, fldTy, proj in getMemberProjections (typeof<'T>) -> 
-           name, fldTy, proj.Compile() |])
+    // Compiled projection for static access
+    let compiled = Lazy.Create(fun () -> getCachedCompileProjection typeof<'T>)
 
     // For each vector element, build a list of all expanded columns
     // The list includes all dictionary values, or all fields
@@ -137,9 +150,13 @@ module internal Reflection =
           | typ when isIgnoredInterface (input.GetType()) -> ()
           | typ when customExpanders.ContainsKey(typ) ->
               for a, b, c in customExpanders.[typ].Invoke (box input) do yield a, (b, c)
-          | _ -> 
-          for name, fldTy, f in compiled.Value do 
-            yield name, (fldTy, f.DynamicInvoke(input)) ] |> dict)
+          | typ when dynamic -> 
+              if not (isSimpleType typ) then
+                for name, fldTy, f in getCachedCompileProjection typ do
+                  yield name, (fldTy, f.DynamicInvoke(input))
+          | _ (*when not dynamic*) ->
+              for name, fldTy, f in compiled.Value do 
+                yield name, (fldTy, f.DynamicInvoke(input)) ] |> dict)
 
     // Get a dictionary of all fields that we want to get from the vector    
     let fields = Dictionary<_, _>()
@@ -161,9 +178,15 @@ module internal Reflection =
         fieldName, createTypedVector fieldTyp it ]
 
   let expandUntypedVector =
-    { new VectorHelpers.VectorCallSite1<_> with
-        member x.Invoke(vect) = expandVector vect }
-    |> VectorHelpers.createVectorDispatcher    
+    let staticExp =
+      { new VectorHelpers.VectorCallSite1<_> with
+          member x.Invoke(vect) = expandVector false vect }
+      |> VectorHelpers.createVectorDispatcher    
+    let dynamicExp =
+      { new VectorHelpers.VectorCallSite1<_> with
+          member x.Invoke(vect) = expandVector true vect }
+      |> VectorHelpers.createVectorDispatcher    
+    (fun dynamic col -> if dynamic then dynamicExp col else staticExp col)
 
   /// Given type 'T that represents some .NET object, generate an array of 
   /// functions that take seq<'T> and generate IVector with each column:
@@ -416,12 +439,12 @@ module internal FrameUtils =
     |> FrameUtils.fromColumns
 
   /// Expand properties of vectors recursively. Nothing is done when `nesting = 0`.
-  let expandVectors nesting (frame:Frame<'R, string>) =
+  let expandVectors nesting dynamic (frame:Frame<'R, string>) =
     let rec loop nesting cols =      
       if nesting = 0 then cols else
       seq {
         for name, col in cols do
-          match Reflection.expandUntypedVector col with
+          match Reflection.expandUntypedVector dynamic col with
           | [] -> yield name, col
           | cols -> 
               for newName, newCol in cols do 
@@ -441,7 +464,7 @@ module internal FrameUtils =
     let expandName = set expandNames
     let newCols = cols |> Seq.collect (fun (name, vector) ->
       if Set.contains name expandNames then 
-        [ for n, v in Reflection.expandUntypedVector vector -> name + "." + n, v ]
+        [ for n, v in Reflection.expandUntypedVector false vector -> name + "." + n, v ]
       else [name, vector]) |> Array.ofSeq
     let newColIndex = Index.ofKeys (Seq.map fst newCols)
     let newData = Vector.ofValues (Seq.map snd newCols)

@@ -197,7 +197,7 @@ let transformColumn (vectorBuilder:IVectorBuilder) rowCmd =
 let changeType<'R> : IVector -> IVector<'R> = 
   { new VectorCallSite1<IVector<'R>> with
       override x.Invoke<'T>(col:IVector<'T>) = 
-        col.Select(fun v -> System.Convert.ChangeType(v, typeof<'R>) :?> 'R) }
+        col.Select(Convert.changeType<'R>) }
   |> createVectorDispatcher
 
 // A "generic function" that tries to change the type of vector elements
@@ -212,7 +212,7 @@ let tryChangeType<'R> : IVector -> OptionalValue<IVector<'R>> =
         if first = Some(false) then OptionalValue.Missing
         else 
           // We still cannot be sure that it will actually work
-          try OptionalValue(col.Select(fun v -> System.Convert.ChangeType(v, typeof<'R>) :?> 'R))
+          try OptionalValue(col.Select(fun v -> Convert.changeType<'R> v))
           with :? InvalidCastException | :? FormatException -> OptionalValue.Missing }
   |> createVectorDispatcher
 

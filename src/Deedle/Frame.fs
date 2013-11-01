@@ -114,7 +114,37 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     if not columnVector.HasValue then
       invalidOp "column" (sprintf "Column with a key '%O' is present, but does not contain a value" column)
     columnVector.Value
-  
+
+  /// Create frame from a series of columns. This is used inside Frame and so we have to have it
+  /// as a static member here. The function is optimised for the case when all series share the
+  /// same index (by checking object reference equality)
+  static let fromColumnsNonGeneric (seriesConv:'S -> ISeries<_>) (nested:Series<_, 'S>) = 
+    let columns = Series.observations nested
+    let rowIndex = (Seq.head columns |> snd |> seriesConv).Index
+    if (columns |> Seq.forall (fun (_, s) -> Object.ReferenceEquals((seriesConv s).Index, rowIndex))) then
+      // OPTIMIZATION: If all series have the same index (same object), then no join is needed 
+      // (This is particularly valuable for things like +, *, /, - operators on Frame)
+      let vector = columns |> Seq.map (fun (_, s) -> (seriesConv s).Vector) |> Vector.ofValues
+      Frame<_, _>(rowIndex, Index.ofKeys (Seq.map fst columns), vector)
+    else
+      // Create new row index by unioning all keys
+      let rowKeys = columns |> Seq.collect (fun (_, s) -> (seriesConv s).Index.Keys) |> Seq.distinct |> Array.ofSeq
+      let rowIndex = nested.IndexBuilder.Create(rowKeys, None)
+      // Create column index by taking all column keys
+      let colKeys = nested |> Series.observationsAll |> Seq.map fst |> Array.ofSeq
+      let colIndex = nested.IndexBuilder.Create(colKeys, None)
+      // Build the data 
+      let data = 
+        nested |> Series.observationsAll |> Seq.map (fun (_, s) ->
+          let series = match s with Some s -> seriesConv s | _ -> Series.Create([], []) :> ISeries<_>
+          let cmd = nested.IndexBuilder.Reindex(series.Index, rowIndex, Lookup.Exact, Vectors.Return 0, fun _ -> true)
+          // TODO: Infer type of the vector ?? or preserve the type
+          VectorHelpers.transformColumn nested.VectorBuilder cmd series.Vector )
+        |> Vector.ofValues
+      Frame<_, _>(rowIndex, colIndex, data)
+
+  static member FromColumnsNonGeneric seriesConv nested = fromColumnsNonGeneric seriesConv nested
+    
   member private x.tryGetColVector column = 
     let columnIndex = columnIndex.Lookup(column)
     if not columnIndex.HasValue then OptionalValue.Missing else
@@ -634,7 +664,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       match os.TryAs<'T>(strict) with
       | OptionalValue.Present s -> f.Invoke s
       | _ -> os :> ISeries<_>)
-    |> Frame<'TRowKey, 'TColumnKey>.FromColumnsNonGeneric
+    |> fromColumnsNonGeneric id
 
   /// [category:Series operations]
   member frame.GetSeries<'R>(column:'TColumnKey, lookup) : Series<'TRowKey, 'R> = 
@@ -693,30 +723,13 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   // Some operators
   // ----------------------------------------------------------------------------------------------
 
-  /// This pretty much duplicates `FrameUtils.ofColumns`, but we need to inline it here,
-  /// otherwise the type inference breaks in very bad ways :-(
-  static member private FromColumnsNonGeneric (nested:Series<_, ISeries<_>>) = 
-    let columns = Series.observations nested
-    let rowIndex = (Seq.head columns |> snd).Index
-    if (columns |> Seq.forall (fun (_, s) -> Object.ReferenceEquals(s.Index, rowIndex))) then
-      // OPTIMIZATION: If all series have the same index (same object), then no join is needed 
-      // (This is particularly valuable for things like +, *, /, - operators on Frame)
-      let vector = columns |> Seq.map (fun (_, s) -> s.Vector) |> Vector.ofValues
-      Frame<_, _>(rowIndex, Index.ofKeys (Seq.map fst columns), vector)
-    else
-      let initial = Frame(Index.ofKeys [], Index.ofUnorderedKeys [], Vector.ofValues [| |])
-      (initial, Series.observations nested) ||> Seq.fold (fun df (column, (series:ISeries<_>)) -> 
-        let data = Vector.ofValues [| series.Vector |]
-        let df2 = Frame(series.Index, Index.ofKeys [column], data)
-        df.Join(df2, JoinKind.Outer))
-
   // Apply operation 'op' with 'series' on the right to all columns convertible to 'T
   static member inline private PointwiseFrameSeriesR<'T>(frame:Frame<'TRowKey, 'TColumnKey>, series:Series<'TRowKey, 'T>, op:'T -> 'T -> 'T) =
     frame.Columns |> Series.mapValues (fun os ->
       match os.TryAs<'T>(false) with
       | OptionalValue.Present s -> s.ZipInner(series) |> Series.mapValues (fun (v1, v2) -> op v1 v2) :> ISeries<_>
       | _ -> os :> ISeries<_>)
-    |> Frame<'TRowKey, 'TColumnKey>.FromColumnsNonGeneric
+    |> fromColumnsNonGeneric id
 
   // Apply operation 'op' to all columns that exist in both frames and are convertible to 'T
   static member inline internal PointwiseFrameFrame<'T>(frame1:Frame<'TRowKey, 'TColumnKey>, frame2:Frame<'TRowKey, 'TColumnKey>, op:'T -> 'T -> 'T) =
@@ -728,7 +741,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       match os.TryAs<'T>(false) with
       | OptionalValue.Present s -> (Series.mapValues (fun v -> op v scalar) s) :> ISeries<_>
       | _ -> os :> ISeries<_>)
-    |> Frame<'TRowKey, 'TColumnKey>.FromColumnsNonGeneric
+    |> fromColumnsNonGeneric id
 
   // Apply operation 'op' with 'series' on the left to all columns convertible to 'T
   static member inline private PointwiseFrameSeriesL<'T>(frame:Frame<'TRowKey, 'TColumnKey>, series:Series<'TRowKey, 'T>, op:'T -> 'T -> 'T) =
@@ -1054,10 +1067,9 @@ and FrameUtils =
         when 'TRowKey : equality and 'TColumnKey : equality and 'TSeries :> ISeries<'TColumnKey>>
       (nested:Series<'TRowKey, 'TSeries>) =
 
-    // Union column indices, ignoring the vector trasnformations
-    let columnIndex = nested.Values |> Seq.map (fun sr -> sr.Index) |> Seq.reduce (fun i1 i2 -> 
-      let index, _, _ = FrameUtils.indexBuilder.Union( (i1, Vectors.Return 0), (i2, Vectors.Return 0) )
-      index )
+    // Create column index from keys of all rows
+    let columnIndex = nested.Values |> Seq.collect (fun sr -> sr.Index.Keys) |> Seq.distinct |> Index.ofKeys
+
     // Row index is just the index of the series
     let rowIndex = nested.Index
 
@@ -1068,7 +1080,7 @@ and FrameUtils =
             let it = nested.SelectOptional(fun kvp ->
               if kvp.Value.HasValue then 
                 kvp.Value.Value.TryGetObject(key) 
-                |> OptionalValue.map (fun v -> System.Convert.ChangeType(v, typeof<'T>) |> unbox<'T>)
+                |> OptionalValue.map (Convert.changeType<'T>)
               else OptionalValue.Missing)
             it.Vector :> IVector }
       |> VectorHelpers.createValueDispatcher
@@ -1095,15 +1107,23 @@ and FrameUtils =
   static member fromColumns<'TRowKey, 'TColumnKey, 'TSeries when 'TSeries :> ISeries<'TRowKey> 
         and 'TRowKey : equality and 'TColumnKey : equality>
       (nested:Series<'TColumnKey, 'TSeries>) =
-    let initial = Frame(Index.ofKeys [], Index.ofUnorderedKeys [], Vector.ofValues [| |])
-    (initial, Series.observations nested) ||> Seq.fold (fun df (name, series) -> 
-      df.Join(FrameUtils.createColumn(name, series), JoinKind.Outer))
+      nested |> Frame<int, int>.FromColumnsNonGeneric (fun s -> s :> _)
 
   /// Given a series of frames, build a frame with multi-level row index
-  static member collapseRows (series:Series<'R1, Frame<'R2, 'C>>) = 
+  static member collapseFrameSeries (series:Series<'R1, Frame<'R2, 'C>>) = 
+    // TODO: Slow
     series 
     |> Series.map (fun k1 df -> df.Rows |> Series.mapKeys(fun k2 -> (k1, k2)) |> FrameUtils.fromRows)
     |> Series.values |> Seq.reduce (fun df1 df2 -> df1.Append(df2))
+
+  /// Given a series of frames, build a frame with multi-level row index
+  static member collapseSeriesSeries (series:Series<'R1, Series<'R2, ObjectSeries<'C>>>) = 
+    series 
+    |> Series.observations
+    |> Seq.collect (fun (k1, s) ->
+        s |> Series.observations |> Seq.map (fun (k2, row) -> (k1, k2), row))
+    |> Series.ofObservations
+    |> FrameUtils.fromRows
 
 // ------------------------------------------------------------------------------------------------
 // These should really be extensions, but they take generic type parameter
@@ -1113,18 +1133,18 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   member frame.GroupRowsBy<'TGroup when 'TGroup : equality>(key) =
     frame.Rows 
-    |> Series.groupInto (fun _ (v:ObjectSeries<_>) -> v.GetAs<'TGroup>(key)) (fun k g -> g |> FrameUtils.fromRows)
-    |> FrameUtils.collapseRows
+    |> Series.groupInto (fun _ (v:ObjectSeries<_>) -> v.GetAs<'TGroup>(key)) (fun k g -> g)
+    |> FrameUtils.collapseSeriesSeries
 
   member frame.GroupRowsInto<'TGroup when 'TGroup : equality>(key, f:System.Func<_, _, _>) =
     frame.Rows 
     |> Series.groupInto (fun _ v -> v.GetAs<'TGroup>(key)) (fun k g -> f.Invoke(k, g |> FrameUtils.fromRows))
-    |> FrameUtils.collapseRows
+    |> FrameUtils.collapseFrameSeries
 
   member frame.GroupRowsUsing<'TGroup when 'TGroup : equality>(f:System.Func<_, _, 'TGroup>) =
     frame.Rows 
-    |> Series.groupInto (fun k v -> f.Invoke(k, v)) (fun k g -> g |> FrameUtils.fromRows)
-    |> FrameUtils.collapseRows
+    |> Series.groupInto (fun k v -> f.Invoke(k, v)) (fun k g -> g)
+    |> FrameUtils.collapseSeriesSeries
 
   /// Returns a data frame whose rows are indexed based on the specified column of the original
   /// data frame. The generic type parameter is (typically) needed to specify the type of the 

@@ -853,19 +853,19 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
   member x.GetValues<'R>(strict) = 
     if strict then System.Linq.Enumerable.OfType<'R>(x.Values)
     else x.Values |> Seq.choose (fun v ->
-      try Some(System.Convert.ChangeType(v, typeof<'R>) :?> 'R) 
+      try Some(Convert.changeType<'R> v) 
       with _ -> None)
 
   member x.GetValues<'R>() = x.GetValues<'R>(true)
 
   member x.GetAs<'R>(column) : 'R = 
-    System.Convert.ChangeType(x.Get(column), typeof<'R>) |> unbox
+    Convert.changeType<'R> (x.Get(column))
 
   member x.GetAtAs<'R>(index) : 'R = 
-    System.Convert.ChangeType(x.GetAt(index), typeof<'R>) |> unbox
+    Convert.changeType<'R> (x.GetAt(index))
 
   member x.TryGetAs<'R>(column) : OptionalValue<'R> = 
-    x.TryGet(column) |> OptionalValue.map (fun v -> System.Convert.ChangeType(v, typeof<'R>) |> unbox)
+    x.TryGet(column) |> OptionalValue.map (fun v -> Convert.changeType<'R> v)
   static member (?) (series:ObjectSeries<_>, name:string) = series.GetAs<float>(name)
 
   member x.TryAs<'R>(strict) =
