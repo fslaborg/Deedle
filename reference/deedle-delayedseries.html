@@ -70,10 +70,10 @@ function passed to <code>Create</code> is called with minimal and maximal requir
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '447', 447)" onmouseover="showTip(event, '447', 447)">
+          <code onmouseout="hideTip(event, '372', 372)" onmouseover="showTip(event, '372', 372)">
             DelayedSeries.Create(min, max, loader)
           </code>
-          <div class="tip" id="447">
+          <div class="tip" id="372">
             <strong>Signature:</strong>(min:&#39;K * max:&#39;K * loader:(&#39;K * BoundaryBehavior -&gt; &#39;K * BoundaryBehavior -&gt; Async&lt;seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt;&gt;)) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
@@ -101,10 +101,10 @@ specified range. The function is called with two tuples consisting of key and
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '452', 452)" onmouseover="showTip(event, '452', 452)">
+          <code onmouseout="hideTip(event, '373', 373)" onmouseover="showTip(event, '373', 373)">
             DelayedSeries.Create(min, max, loader)
           </code>
-          <div class="tip" id="452">
+          <div class="tip" id="373">
             <strong>Signature:</strong>(min:&#39;K * max:&#39;K * loader:Func&lt;&#39;K,BoundaryBehavior,&#39;K,BoundaryBehavior,Task&lt;seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt;&gt;&gt;) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
@@ -126,7 +126,9 @@ high ranges are inclusive or exclusive.</li>
 
 <h2>Remarks</h2>
 
-<p>For more information see the <a href="../lazysource.html">lazy data loading tutorial</a>.</p>
+<p>For more information see the <a href="../lazysource.html">lazy data loading tutorial</a>.
+The operation calls <code>loader</code> (and so creates the tasks) on the thread that is
+requesting the result.</p>
 </td>
       </tr>
     </tbody>
@@ -193,5 +195,15 @@ high ranges are inclusive or exclusive.</li>
       </div>
     </div>
     <a href="http://github.com/BlueMountainCapital/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <script>
+      (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+          (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+      })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+      ga('create', 'UA-45379232-1', 'bluemountaincapital.github.io');
+      ga('send', 'pageview');
+    </script>
   </body>
-  </html>
+</html>
