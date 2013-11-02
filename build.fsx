@@ -22,8 +22,14 @@ let description = """
   aggregations, grouping, joining, statistical functions and more. For frames and 
   series with ordered indices (such as time series), automatic alignment is also 
   available. """
-
 let tags = "F# fsharp deedle dataframe series statistics data science"
+
+let rpluginProject = "Deedle.RPlugin"
+let rpluginSummary = "Easy to use .NET library for data manipulation with R project integration"
+let rpluginDescription = """
+  This package installs core Deedle package, together with an R type provider plugin 
+  which makes it possible to pass data frames and time series between R and Deedle"""
+let rpluginTags = "R RProvider"
 
 let gitHome = "https://github.com/BlueMountainCapital"
 let gitName = "Deedle"
@@ -123,6 +129,7 @@ FinalTarget "CloseTestRunner" (fun _ ->
 Target "NuGet" (fun _ ->
     // Format the description to fit on a single line (remove \r\n and double-spaces)
     let description = description.Replace("\r", "").Replace("\n", "").Replace("  ", " ")
+    let rpluginDescription = rpluginDescription.Replace("\r", "").Replace("\n", "").Replace("  ", " ")
     let nugetPath = ".nuget/nuget.exe"
     NuGet (fun p -> 
         { p with   
@@ -138,6 +145,20 @@ Target "NuGet" (fun _ ->
             AccessKey = getBuildParamOrDefault "nugetkey" ""
             Publish = hasBuildParam "nugetkey" })
         ("nuget/" + project + ".nuspec")
+    NuGet (fun p -> 
+        { p with   
+            Authors = authors
+            Project = rpluginProject
+            Summary = rpluginSummary
+            Description = description + "\n\n" + rpluginDescription
+            Version = release.NugetVersion
+            ReleaseNotes = String.concat " " release.Notes
+            Tags = tags
+            OutputPath = "bin"
+            ToolPath = nugetPath
+            AccessKey = getBuildParamOrDefault "nugetkey" ""
+            Publish = hasBuildParam "nugetkey" })
+        ("nuget/Deedle.RPlugin.nuspec")
 )
 
 // --------------------------------------------------------------------------------------

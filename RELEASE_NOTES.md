@@ -7,3 +7,4 @@
 * 0.9.6-beta - Load script automatically references F# data (for CSV reading)
 * 0.9.7-beta - Fix series formatting
 * 0.9.8-beta - Add reflection-based frame expansion
+* 0.9.9-beta - Performance improvements, API additions, experimental R plugin

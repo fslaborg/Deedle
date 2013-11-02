@@ -651,7 +651,7 @@ byClassAndPort
 
 // Count number of survivors in each group
 byClassAndPort.GetSeries<bool>("Survived")
-|> Series.applyLevel Pair.get1And2Of3 (Seq.countBy id >> series)
+|> Series.applyLevel Pair.get1And2Of3 (Series.values >> Seq.countBy id >> series)
 |> Frame.ofRows
 
 (**
