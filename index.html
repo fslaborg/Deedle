@@ -65,6 +65,7 @@ into a data frame called <code>titanic</code> (the data frame has numerous colum
 <code>Sex</code> and Boolean <code>Survived</code>). Now we can calculate the survival rates for males and females:</p>
 
 <div id="hp-snippet">
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
 <span class="l"> 2: </span>
@@ -111,7 +112,9 @@ into a data frame called <code>titanic</code> (the data frame has numerous colum
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs3', 37)" onmouseover="showTip(event, 'fs3', 37)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 38)" onmouseover="showTip(event, 'fs16', 38)" class="i">ofColumns</span></pre>
 </td>
 </tr>
-</table><p>We first group data by the <code>Sex</code> column and get a series (with rows <code>male</code> and <code>female</code>)
+</table>
+
+<p>We first group data by the <code>Sex</code> column and get a series (with rows <code>male</code> and <code>female</code>)
 containing data frames for individual groups. Then we count the number of survivors in
 each group, add the total number of males and females and, finally, build a new data frame
 with the summary:</p>

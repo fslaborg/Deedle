@@ -48,6 +48,7 @@ an <code>.fsx</code> file that loads the actual <code>.dll</code> with the libra
 pretty printers for types representing data frame and series. In this sample, 
 we also need  <a href="http://fsharp.github.io/FSharp.Charting">F# Charting</a>, which 
 works similarly:</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
 <span class="l">2: </span>
@@ -70,13 +71,16 @@ works similarly:</p>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="i">Charting</span></pre>
 </td>
 </tr>
-</table><a name="creating"></a>
+</table>
+
+<a name="creating"></a>
 
 <h2>Creating series and frames</h2>
 
 <p>A data frame is a collection of series with unique column names (although these
 do not actually have to be strings). So, to create a data frame, we first need
 to create a series:</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
 <span class="l"> 2: </span>
@@ -139,9 +143,12 @@ to create a series:</p>
 <span class="fsi">  2 -&gt; 30 </span></pre>
 </td>
 </tr>
-</table><p>Note that the series type is generic. <code>Series&lt;K, T&gt;</code> represents a series
+</table>
+
+<p>Note that the series type is generic. <code>Series&lt;K, T&gt;</code> represents a series
 with keys of type <code>K</code> and values of type <code>T</code>. Let's now generate series
 with 10 day value range and random values:</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
 <span class="l"> 2: </span>
@@ -176,8 +183,11 @@ with 10 day value range and random values:</p>
 <span class="fsi">  1/10/2013 12:00:00 AM -&gt; 0.308210378656262 </span></pre>
 </td>
 </tr>
-</table><p>Now we can easily construct a data frame that has two columns - one representing
+</table>
+
+<p>Now we can easily construct a data frame that has two columns - one representing
 the <code>first</code> series and another representing the <code>second</code> series:</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
 <span class="l">2: </span>
@@ -198,7 +208,9 @@ the <code>first</code> series and another representing the <code>second</code> s
 <span class="fsi">  1/10/2013 12:00:00 AM -&gt; &lt;missing&gt; 0.104357822846788  </span></pre>
 </td>
 </tr>
-</table><p>The type representing a data frame has two generic parameters:
+</table>
+
+<p>The type representing a data frame has two generic parameters:
 <code>Frame&lt;TRowKey, TColumnKey&gt;</code>. The first parameter is represents the type of
 row keys - this can be <code>int</code> if we do not give the keys explicitly or <code>DateTime</code>
 like in the example above. The second parameter is the type of column keys.
@@ -214,6 +226,7 @@ missing values.</p>
 
 <p>You can also use the following nicer syntax and create frame from rows as well as 
 individual values:</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
 <span class="l"> 2: </span>
@@ -242,9 +255,12 @@ individual values:</p>
   <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 51)" onmouseover="showTip(event, 'fs21', 51)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 52)" onmouseover="showTip(event, 'fs27', 52)" class="i">ofValues</span></pre>
 </td>
 </tr>
-</table><p>Data frame can be also easily created from a collection of F# record types (or of any classes
+</table>
+
+<p>Data frame can be also easily created from a collection of F# record types (or of any classes
 with public readable properties). The <code>Frame.ofRecords</code> function uses reflection to find the 
 names and types of properties of a record and creates a data frame with the same structure.</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
 <span class="l">2: </span>
@@ -269,7 +285,10 @@ names and types of properties of a record and creates a data frame with the same
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs35', 67)" onmouseover="showTip(event, 'fs35', 67)" class="i">df5</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs21', 68)" onmouseover="showTip(event, 'fs21', 68)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs36', 69)" onmouseover="showTip(event, 'fs36', 69)" class="i">ofRecords</span> <span onmouseout="hideTip(event, 'fs32', 70)" onmouseover="showTip(event, 'fs32', 70)" class="i">prices</span></pre>
 </td>
 </tr>
-</table><p>Finally, we can also load data frame from CSV:</p>
+</table>
+
+<p>Finally, we can also load data frame from CSV:</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
 <span class="l">2: </span>
@@ -294,7 +313,9 @@ names and types of properties of a record and creates a data frame with the same
 <span class="fsi">  322 -&gt; 2012-05-18 42.05 45.00 38.00 38.23 573576400 38.23     </span></pre>
 </td>
 </tr>
-</table><p>When loading the data, data frame analyses the values and automatically converts
+</table>
+
+<p>When loading the data, data frame analyses the values and automatically converts
 them to the most appropriate type. However, no conversion is automatically performed
 for dates and times - the user needs to decide what is the desirable representation
 of dates (e.g. <code>DateTime</code>, <code>DateTimeOffset</code> or some custom type).</p>
@@ -314,6 +335,7 @@ requires ascending ordering.</p>
 <p>When a frame has ordered index, we can use additional functionality that will 
 be needed later (for example, we can select sub-range by specifying dates that 
 are not explicitly included in the index).</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
 <span class="l">2: </span>
@@ -330,7 +352,9 @@ are not explicitly included in the index).</p>
   <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 81)" onmouseover="showTip(event, 'fs21', 81)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs42', 82)" onmouseover="showTip(event, 'fs42', 82)" class="i">orderRows</span></pre>
 </td>
 </tr>
-</table><p>The <code>indexRowsDate</code> function uses a column of type <code>DateTime</code> as a new index.
+</table>
+
+<p>The <code>indexRowsDate</code> function uses a column of type <code>DateTime</code> as a new index.
 The library provides other functions for common types of indices (like <code>indexRowsInt</code>)
 and you can also use a generic function - when using the generic function, some 
 type annotations may be needed, so it is better to use a specific function.
@@ -341,6 +365,7 @@ is a good idea to go through the list to get an idea of what is supported.</p>
 <p>Now that we have properly indexed stock prices, we can create a new data frame that
 only has the data we're interested (Open &amp; Close) prices and we add a new column 
 that shows their difference:</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
 <span class="l"> 2: </span>
@@ -383,7 +408,9 @@ that shows their difference:</p>
     <span onmouseout="hideTip(event, 'fs47', 107)" onmouseover="showTip(event, 'fs47', 107)" class="i">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs49', 108)" onmouseover="showTip(event, 'fs49', 108)" class="i">Line</span>(<span onmouseout="hideTip(event, 'fs45', 109)" onmouseover="showTip(event, 'fs45', 109)" class="i">fb</span><span class="o">?</span><span class="i">Difference</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 110)" onmouseover="showTip(event, 'fs9', 110)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs50', 111)" onmouseover="showTip(event, 'fs50', 111)" class="i">observations</span>) ]</pre>
 </td>
 </tr>
-</table><p>When selecting columns using <code>f.Columns.[ .. ]</code> it is possible to use a list of columns
+</table>
+
+<p>When selecting columns using <code>f.Columns.[ .. ]</code> it is possible to use a list of columns
 (as we did), a single column key, or a range (if the associated index is ordered). 
 Then we use the <code>df?Column &lt;- (...)</code> syntax to add a new column to the data frame. 
 This is the only mutating operation that is supported on data frames - all other 
@@ -392,6 +419,7 @@ operations create a new data frame and return it as the result.</p>
 <p>Next we would like to create a single data frame that contains (properly aligned) data
 for both Microsoft and Facebook. This is done using the <code>Join</code> method - but before we
 can do this, we need to rename their columns, because duplicate keys are not allowed:</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
 <span class="l"> 2: </span>
@@ -432,7 +460,9 @@ can do this, we need to rename their columns, because duplicate keys are not all
     <span onmouseout="hideTip(event, 'fs47', 143)" onmouseover="showTip(event, 'fs47', 143)" class="i">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs49', 144)" onmouseover="showTip(event, 'fs49', 144)" class="i">Line</span>(<span onmouseout="hideTip(event, 'fs60', 145)" onmouseover="showTip(event, 'fs60', 145)" class="i">joinedIn</span><span class="o">?</span><span class="i">FbDiff</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 146)" onmouseover="showTip(event, 'fs9', 146)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs50', 147)" onmouseover="showTip(event, 'fs50', 147)" class="i">observations</span>) ]</pre>
 </td>
 </tr>
-</table><p>As a result, you should see a chart that looks something like this:</p>
+</table>
+
+<p>As a result, you should see a chart that looks something like this:</p>
 
 <div style="text-align:center">
 <img src="images/tutorial-chart.png" />
@@ -446,6 +476,7 @@ can do this, we need to rename their columns, because duplicate keys are not all
 <code>Rows</code> property returns a series containing individual rows (as a series) and <code>Columns</code>
 returns a series containing columns (as a series). We can then use various indexing and
 slicing operators on the series:</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
 <span class="l"> 2: </span>
@@ -478,7 +509,9 @@ slicing operators on the series:</p>
 <span class="fsi">val it : float = 28.0</span></pre>
 </td>
 </tr>
-</table><p>The return type of the first expression is <code>ObjectSeries&lt;string&gt;</code> which is inherited from
+</table>
+
+<p>The return type of the first expression is <code>ObjectSeries&lt;string&gt;</code> which is inherited from
 <code>Series&lt;string, obj&gt;</code> and represents an untyped series. We can use <code>GetAs&lt;int&gt;("FbOpen")</code> to
 get a value for a specifed key and convert it to a required type (or <code>TryGetAs</code>). The untyped
 series also hides the default <code>?</code> operator (which returns the value using the statically known
@@ -486,6 +519,7 @@ value type) and provides <code>?</code> that automatically converts anything to 
 
 <p>In the previous example, we used an indexer with a single key. You can also specify multiple
 keys (using a list) or a range (using the slicing syntax):</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
 <span class="l"> 2: </span>
@@ -532,7 +566,9 @@ keys (using a list) or a range (using the slicing syntax):</p>
 <span onmouseout="hideTip(event, 'fs68', 173)" onmouseover="showTip(event, 'fs68', 173)" class="i">jan</span><span class="o">?</span><span class="i">MsftOpen</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 174)" onmouseover="showTip(event, 'fs9', 174)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs67', 175)" onmouseover="showTip(event, 'fs67', 175)" class="i">mean</span></pre>
 </td>
 </tr>
-</table><p>The result of the indexing operation is a single data series when you use just a single
+</table>
+
+<p>The result of the indexing operation is a single data series when you use just a single
 date (the previous example) or a new data frame when you specify multiple indices or a 
 range (this example).</p>
 
@@ -559,6 +595,7 @@ smaller (or greater) element when using direct lookup.</p>
 contains keys starting from <code>DateTime.Today</code> (12:00 AM) and <code>obsSeries</code> has dates
 with time component set to the current time (this is wrong representation, but it 
 can be used to ilustrate the idea):</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
 <span class="l"> 2: </span>
@@ -593,9 +630,12 @@ can be used to ilustrate the idea):</p>
 <span class="fsi">  9/21/2013 2:38:27 PM -&gt; 0.227506533836716 </span></pre>
 </td>
 </tr>
-</table><p>The indexing operation written as <code>daysSeries.[date]</code> uses <em>exact</em> semantics so it will 
+</table>
+
+<p>The indexing operation written as <code>daysSeries.[date]</code> uses <em>exact</em> semantics so it will 
 fail if the exact date is not available. When using <code>Get</code> method, we can provide an
 additional parameter to specify the required behaviour:</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
 <span class="l">2: </span>
@@ -618,13 +658,16 @@ additional parameter to specify the required behaviour:</p>
 <span onmouseout="hideTip(event, 'fs71', 200)" onmouseover="showTip(event, 'fs71', 200)" class="i">obsSeries</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs72', 201)" onmouseover="showTip(event, 'fs72', 201)" class="i">Get</span>(<span onmouseout="hideTip(event, 'fs6', 202)" onmouseover="showTip(event, 'fs6', 202)" class="i">DateTime</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs70', 203)" onmouseover="showTip(event, 'fs70', 203)" class="i">Today</span>, <span onmouseout="hideTip(event, 'fs73', 204)" onmouseover="showTip(event, 'fs73', 204)" class="i">Lookup</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs74', 205)" onmouseover="showTip(event, 'fs74', 205)" class="i">NearestSmaller</span>)</pre>
 </td>
 </tr>
-</table><p>Similarly, you can specify the semantics when calling <code>TryGet</code> (to get an optional value)
+</table>
+
+<p>Similarly, you can specify the semantics when calling <code>TryGet</code> (to get an optional value)
 or when using <code>GetItems</code> (to lookup multiple keys at once). Note that this behaviour is
 only supported for series or frames with ordered index. For unordered, all operations use
 the exact semantics.</p>
 
 <p>The semantics can be also specified when using left or right join on data frames. To 
 demonstrate this, let's create two data frames with columns indexed by 1 and 2, respectively:</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
 <span class="l"> 2: </span>
@@ -667,7 +710,9 @@ demonstrate this, let's create two data frames with columns indexed by 1 and 2, 
   <span class="o">||&gt;</span> <span onmouseout="hideTip(event, 'fs21', 232)" onmouseover="showTip(event, 'fs21', 232)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs80', 233)" onmouseover="showTip(event, 'fs80', 233)" class="i">joinAlign</span> <span onmouseout="hideTip(event, 'fs58', 234)" onmouseover="showTip(event, 'fs58', 234)" class="i">JoinKind</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs78', 235)" onmouseover="showTip(event, 'fs78', 235)" class="i">Left</span> <span onmouseout="hideTip(event, 'fs73', 236)" onmouseover="showTip(event, 'fs73', 236)" class="i">Lookup</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs82', 237)" onmouseover="showTip(event, 'fs82', 237)" class="i">NearestGreater</span></pre>
 </td>
 </tr>
-</table><p>In general, the same operation can usually be achieved using a function from the 
+</table>
+
+<p>In general, the same operation can usually be achieved using a function from the 
 <code>Series</code> or <code>Frame</code> module and using a member (or an extension member) on the object.
 The previous sample shows both options - it uses <code>Join</code> as a member with optional
 argument first, and then it uses <code>joinAlign</code> function. Choosing between the two is
@@ -691,6 +736,7 @@ and <code>Series.mapKeys</code> if you only want to transform one aspect).</p>
 or <code>df.Columns</code> (depending on which one you want). Correspondingly, the <code>Frame</code> module
 provides functions such as <code>Frame.mapRows</code>. The following adds a new Boolean column that is 
 true when the MSFT opening price is greater than FB:</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
 <span class="l">2: </span>
@@ -705,7 +751,9 @@ true when the MSFT opening price is greater than FB:</p>
   <span class="k">else</span> <span class="k">null</span> )</pre>
 </td>
 </tr>
-</table><p>When projecting or filtering rows, we need to be careful about missing data. The row
+</table>
+
+<p>When projecting or filtering rows, we need to be careful about missing data. The row
 accessor <code>row?MsftOpen</code> reads the specified column (and converts it to <code>float</code>), but when
 the column is not available, it throws an exception. In the snippet above, we use
 <code>Series.hasAll</code> to make sure that the series has all the values we need. We return <code>null</code>
@@ -715,6 +763,7 @@ operations).</p>
 
 <p>Now we can get the number of days when Microsoft stock prices were above Facebook and the
 other way round:</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
 <span class="l">2: </span>
@@ -735,9 +784,12 @@ other way round:</p>
 <span class="fsi">val it : int = 103</span></pre>
 </td>
 </tr>
-</table><p>In this same, we should probably have used <code>joinedIn</code> which only has rows where the 
+</table>
+
+<p>In this same, we should probably have used <code>joinedIn</code> which only has rows where the 
 values are always available. But you often want to work with data frame that has missing values, 
 so it is useful to see how this work. Here is another alternative:</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
 <span class="l">2: </span>
@@ -760,7 +812,9 @@ so it is useful to see how this work. Here is another alternative:</p>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 273)" onmouseover="showTip(event, 'fs9', 273)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs90', 274)" onmouseover="showTip(event, 'fs90', 274)" class="i">countValues</span></pre>
 </td>
 </tr>
-</table><p>The key is the use of <code>RowsDense</code> on line 6. It behaves similarly to <code>Rows</code>, but
+</table>
+
+<p>The key is the use of <code>RowsDense</code> on line 6. It behaves similarly to <code>Rows</code>, but
 only returns rows that have no missing values. This means that we can then perform
 the filtering safely without any checks.</p>
 
@@ -783,6 +837,7 @@ for each row. If you want to group data using a value in a column, you can use
 <code>Frame.groupRowsBy column</code>.</p>
 
 <p>The following snippet groups rows by month and year:</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
 <span class="l"> 2: </span>
@@ -817,13 +872,16 @@ for each row. If you want to group data using a value in a column, you can use
 <span class="fsi">           8/14/2013 -&gt; 36.65   32.35    </span></pre>
 </td>
 </tr>
-</table><p>The output is trimmed to fit on the page. As you can see, we get back a frame that has
+</table>
+
+<p>The output is trimmed to fit on the page. As you can see, we get back a frame that has
 a tuple <code>DateTime * DateTime</code> as the row key. This is treated in a special way as a 
 <em>hierarchical</em> (or multi-level) index. For example, the output automatically shows the 
 rows in groups (assuming they are correctly ordered).</p>
 
 <p>A number of operations can be used on hierarchical indices. For example, we can get
 rows in a specified group (say, May 2013) and calculate means of columns in the group:</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
 <span class="l">2: </span>
@@ -846,10 +904,13 @@ rows in a specified group (say, May 2013) and calculate means of columns in the 
 <span class="fsi">  MsftDiff  -&gt; -0.19 </span></pre>
 </td>
 </tr>
-</table><p>The above snippet uses slicing notation that is only available in F# 3.1 (Visual Studio 2013).
+</table>
+
+<p>The above snippet uses slicing notation that is only available in F# 3.1 (Visual Studio 2013).
 In earlier versions, you can get the same thing using <code>monthly.Rows.[Lookup1Of2 (DateTime(2013,5,1))]</code>.
 The syntax indicates that we only want to specify the first part of the key and do not match
 on the second component. We can also use <code>Frame.meanLevel</code> to get means for all first-level groups:</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
 </pre>
@@ -858,7 +919,9 @@ on the second component. We can also use <code>Frame.meanLevel</code> to get mea
 <span onmouseout="hideTip(event, 'fs93', 290)" onmouseover="showTip(event, 'fs93', 290)" class="i">monthly</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 291)" onmouseover="showTip(event, 'fs21', 291)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs100', 292)" onmouseover="showTip(event, 'fs100', 292)" class="i">meanLevel</span> <span onmouseout="hideTip(event, 'fs101', 293)" onmouseover="showTip(event, 'fs101', 293)" class="i">fst</span></pre>
 </td>
 </tr>
-</table><p>Here, we simply use the fact that the key is a tuple. The <code>fst</code> function projects the first 
+</table>
+
+<p>Here, we simply use the fact that the key is a tuple. The <code>fst</code> function projects the first 
 date from the key (month and year) and the result is a frame that contains the first-level keys,
 together with means for all available numeric columns.</p>
 

@@ -50,10 +50,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '307', 307)" onmouseover="showTip(event, '307', 307)">
+          <code onmouseout="hideTip(event, '304', 304)" onmouseover="showTip(event, '304', 304)">
             new ColumnSeries
           </code>
-          <div class="tip" id="307">
+          <div class="tip" id="304">
             <strong>Signature:</strong>series:Series&lt;&#39;TColumnKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; ColumnSeries&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
@@ -62,10 +62,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '309', 309)" onmouseover="showTip(event, '309', 309)">
+          <code onmouseout="hideTip(event, '308', 308)" onmouseover="showTip(event, '308', 308)">
             new ColumnSeries
           </code>
-          <div class="tip" id="309">
+          <div class="tip" id="308">
             <strong>Signature:</strong>(index:IIndex&lt;&#39;TColumnKey&gt; * vector:IVector&lt;ObjectSeries&lt;&#39;TRowKey&gt;&gt; * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder) -&gt; ColumnSeries&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
@@ -82,23 +82,11 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '332', 332)" onmouseover="showTip(event, '332', 332)">
+          <code onmouseout="hideTip(event, '336', 336)" onmouseover="showTip(event, '336', 336)">
             columnSeries.GetByLevel(level)
           </code>
-          <div class="tip" id="332">
+          <div class="tip" id="336">
             <strong>Signature:</strong>level:ICustomLookup&lt;&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc"></td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '345', 345)" onmouseover="showTip(event, '345', 345)">
-            columnSeries.GetSlice(lo, hi)
-          </code>
-          <div class="tip" id="345">
-            <strong>Signature:</strong>(lo:&#39;TColumnKey option * hi:&#39;TColumnKey option) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc"></td>
@@ -107,10 +95,10 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '346', 346)" onmouseover="showTip(event, '346', 346)">
-            columnSeries.[level]
+            columnSeries.GetSlice(lo, hi)
           </code>
           <div class="tip" id="346">
-            <strong>Signature:</strong>level:ICustomLookup&lt;&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong>(lo:&#39;TColumnKey option * hi:&#39;TColumnKey option) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc"></td>
@@ -119,9 +107,21 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '347', 347)" onmouseover="showTip(event, '347', 347)">
-            columnSeries.[items]
+            columnSeries.[level]
           </code>
           <div class="tip" id="347">
+            <strong>Signature:</strong>level:ICustomLookup&lt;&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc"></td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '348', 348)" onmouseover="showTip(event, '348', 348)">
+            columnSeries.[items]
+          </code>
+          <div class="tip" id="348">
             <strong>Signature:</strong>items:seq&lt;&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>

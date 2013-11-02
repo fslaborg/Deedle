@@ -83,10 +83,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '36', 36)" onmouseover="showTip(event, '36', 36)">
+          <code onmouseout="hideTip(event, '33', 33)" onmouseover="showTip(event, '33', 33)">
             zip series1 series2
           </code>
-          <div class="tip" id="36">
+          <div class="tip" id="33">
             <strong>Signature:</strong>series1:Series&lt;&#39;K,&#39;V1&gt; -&gt; series2:Series&lt;&#39;K,&#39;V2&gt; -&gt; Series&lt;&#39;K,(&#39;V1 opt * &#39;V2 opt)&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V1, 'V2          </div>
         </td>
@@ -95,10 +95,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '37', 37)" onmouseover="showTip(event, '37', 37)">
+          <code onmouseout="hideTip(event, '34', 34)" onmouseover="showTip(event, '34', 34)">
             zipAlign kind lookup series1 series2
           </code>
-          <div class="tip" id="37">
+          <div class="tip" id="34">
             <strong>Signature:</strong>kind:JoinKind -&gt; lookup:Lookup -&gt; series1:Series&lt;&#39;K,&#39;V1&gt; -&gt; series2:Series&lt;&#39;K,&#39;V2&gt; -&gt; Series&lt;&#39;K,(&#39;V1 opt * &#39;V2 opt)&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V1, 'V2          </div>
         </td>
@@ -107,10 +107,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '38', 38)" onmouseover="showTip(event, '38', 38)">
+          <code onmouseout="hideTip(event, '35', 35)" onmouseover="showTip(event, '35', 35)">
             zipInner series1 series2
           </code>
-          <div class="tip" id="38">
+          <div class="tip" id="35">
             <strong>Signature:</strong>series1:Series&lt;&#39;K,&#39;V1&gt; -&gt; series2:Series&lt;&#39;K,&#39;V2&gt; -&gt; Series&lt;&#39;K,(&#39;V1 * &#39;V2)&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V1, 'V2          </div>
         </td>
@@ -128,10 +128,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '105', 105)" onmouseover="showTip(event, '105', 105)">
+          <code onmouseout="hideTip(event, '108', 108)" onmouseover="showTip(event, '108', 108)">
             union series1 series2
           </code>
-          <div class="tip" id="105">
+          <div class="tip" id="108">
             <strong>Signature:</strong>series1:Series&lt;&#39;K,&#39;V&gt; -&gt; series2:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
@@ -366,8 +366,8 @@ series, similar functionality can be implemented using <code>Series.groupBy</cod
             resampleInto keys dir f series
           </code>
           <div class="tip" id="144">
-            <strong>Signature:</strong>keys:seq&lt;&#39;K&gt; -&gt; dir:Direction -&gt; f:(&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;?7274) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;?7274&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V, '?7274          </div>
+            <strong>Signature:</strong>keys:seq&lt;&#39;K&gt; -&gt; dir:Direction -&gt; f:(&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;?7295) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;?7295&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V, '?7295          </div>
         </td>
         <td class="xmldoc"><p>Resample the series based on a provided collection of keys. The values of the series
 are aggregated into chunks based on the specified keys. Depending on <code>direction</code>, the 
@@ -438,8 +438,8 @@ space (which is then used for grouping based on equivalence)</li>
             resampleUniformInto (...)
           </code>
           <div class="tip" id="146">
-            <strong>Signature:</strong>fillMode:Lookup -&gt; keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; nextKey:(&#39;K2 -&gt; &#39;K2) -&gt; f:(Series&lt;&#39;K1,&#39;V&gt; -&gt; &#39;?7291) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;?7291&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2, 'V, '?7291          </div>
+            <strong>Signature:</strong>fillMode:Lookup -&gt; keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; nextKey:(&#39;K2 -&gt; &#39;K2) -&gt; f:(Series&lt;&#39;K1,&#39;V&gt; -&gt; &#39;?7312) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;?7312&gt;<br />
+                          <strong>Type parameters:</strong> 'K1, 'K2, 'V, '?7312          </div>
         </td>
         <td class="xmldoc"><p>Resample the series based on equivalence class on the keys and also generate values 
 for all keys of the target space that are between the minimal and maximal key of the
@@ -479,8 +479,8 @@ single value. The function may be called on empty series when <code>fillMode</co
             sampleTime interval dir series
           </code>
           <div class="tip" id="147">
-            <strong>Signature:</strong>interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?7305,^?7306&gt; -&gt; Series&lt;^?7305,Series&lt;^?7305,^?7306&gt;&gt;<br />
-                          <strong>Type parameters:</strong> ^?7305, ^?7306          </div>
+            <strong>Signature:</strong>interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?7326,^?7327&gt; -&gt; Series&lt;^?7326,Series&lt;^?7326,^?7327&gt;&gt;<br />
+                          <strong>Type parameters:</strong> ^?7326, ^?7327          </div>
         </td>
         <td class="xmldoc"><p>Performs sampling by time and returns chunks obtained by time-sampling as a nested<br />
 series. The operation generates keys starting at the first key in the source series,
@@ -510,8 +510,8 @@ used as the greatest keys in a chunk.</li>
             sampleTimeAt start interval dir series
           </code>
           <div class="tip" id="148">
-            <strong>Signature:</strong>start:^?7308 -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?7308,^?7309&gt; -&gt; Series&lt;^?7308,Series&lt;^?7308,^?7309&gt;&gt;<br />
-                          <strong>Type parameters:</strong> ^?7308, ^?7309          </div>
+            <strong>Signature:</strong>start:^?7329 -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?7329,^?7330&gt; -&gt; Series&lt;^?7329,Series&lt;^?7329,^?7330&gt;&gt;<br />
+                          <strong>Type parameters:</strong> ^?7329, ^?7330          </div>
         </td>
         <td class="xmldoc"><p>Performs sampling by time and returns chunks obtained by time-sampling as a nested<br />
 series. The operation generates keys starting at the given <code>start</code> time, using the 
@@ -542,8 +542,8 @@ used as the greatest keys in a chunk.</li>
             sampleTimeAtInto (...)
           </code>
           <div class="tip" id="149">
-            <strong>Signature:</strong>start:^K -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?7303) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?7303&gt;<br />
-                          <strong>Type parameters:</strong> ^K, ^V, '?7303          </div>
+            <strong>Signature:</strong>start:^K -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?7324) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?7324&gt;<br />
+                          <strong>Type parameters:</strong> ^K, ^V, '?7324          </div>
         </td>
         <td class="xmldoc"><p>Performs sampling by time and aggregates chunks obtained by time-sampling into a single
 value using a specified function. The operation generates keys starting at the given
@@ -575,8 +575,8 @@ used as the greatest keys in a chunk.</li>
             sampleTimeInto interval dir f series
           </code>
           <div class="tip" id="150">
-            <strong>Signature:</strong>interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?7299) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?7299&gt;<br />
-                          <strong>Type parameters:</strong> ^K, ^V, '?7299          </div>
+            <strong>Signature:</strong>interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?7320) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?7320&gt;<br />
+                          <strong>Type parameters:</strong> ^K, ^V, '?7320          </div>
         </td>
         <td class="xmldoc"><p>Performs sampling by time and aggregates chunks obtained by time-sampling into a single
 value using a specified function. The operation generates keys starting at the first
@@ -643,10 +643,10 @@ s |&gt; Series.dropMissing
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '158', 158)" onmouseover="showTip(event, '158', 158)">
+          <code onmouseout="hideTip(event, '157', 157)" onmouseover="showTip(event, '157', 157)">
             fillMissing direction series
           </code>
-          <div class="tip" id="158">
+          <div class="tip" id="157">
             <strong>Signature:</strong>direction:Direction -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -680,10 +680,10 @@ sample |&gt; Series.fillMissing Direction.Forward
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '159', 159)" onmouseover="showTip(event, '159', 159)">
+          <code onmouseout="hideTip(event, '158', 158)" onmouseover="showTip(event, '158', 158)">
             fillMissingBetween (...)
           </code>
-          <div class="tip" id="159">
+          <div class="tip" id="158">
             <strong>Signature:</strong>(startKey:&#39;K * endKey:&#39;K) -&gt; direction:Direction -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -692,10 +692,10 @@ sample |&gt; Series.fillMissing Direction.Forward
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '160', 160)" onmouseover="showTip(event, '160', 160)">
+          <code onmouseout="hideTip(event, '159', 159)" onmouseover="showTip(event, '159', 159)">
             fillMissingUsing f series
           </code>
-          <div class="tip" id="160">
+          <div class="tip" id="159">
             <strong>Signature:</strong>f:(&#39;K -&gt; &#39;T) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -721,12 +721,12 @@ For example see <a href="../features.html#missing">handling missing values in th
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '161', 161)" onmouseover="showTip(event, '161', 161)">
+          <code onmouseout="hideTip(event, '160', 160)" onmouseover="showTip(event, '160', 160)">
             fillMissingWith value series
           </code>
-          <div class="tip" id="161">
-            <strong>Signature:</strong>value:&#39;?7262 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
-                          <strong>Type parameters:</strong> '?7262, 'K, 'T          </div>
+          <div class="tip" id="160">
+            <strong>Signature:</strong>value:&#39;?7283 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
+                          <strong>Type parameters:</strong> '?7283, 'K, 'T          </div>
         </td>
         <td class="xmldoc"><p>Fill missing values in the series with a constant value.</p>
 
@@ -754,37 +754,15 @@ For example see <a href="../features.html#missing">handling missing values in th
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '169', 169)" onmouseover="showTip(event, '169', 169)">
-            apply op series
-          </code>
-          <div class="tip" id="169">
-            <strong>Signature:</strong>op:(seq&lt;&#39;V1&gt; -&gt; &#39;V2) -&gt; series:Series&lt;&#39;K,&#39;V1&gt; -&gt; &#39;V2<br />
-                          <strong>Type parameters:</strong> 'V1, 'V2, 'K          </div>
-        </td>
-        <td class="xmldoc"><p>Aggregates the values of the specified series using a function that operates on
-sequence (<code>IEnumerable&lt;T&gt;</code>). This simply reads all non-missing values and passes
-them to the specified operation.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>series</code> - An input series to be aggregated</li>
-<li><code>op</code> - A function that takes a sequence and produces an aggregated result</li>
-</ul>
-</td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '173', 173)" onmouseover="showTip(event, '173', 173)">
+          <code onmouseout="hideTip(event, '168', 168)" onmouseover="showTip(event, '168', 168)">
             applyLevel level op series
           </code>
-          <div class="tip" id="173">
-            <strong>Signature:</strong>level:(&#39;K1 -&gt; &#39;K2) -&gt; op:(seq&lt;&#39;V&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;R&gt;<br />
+          <div class="tip" id="168">
+            <strong>Signature:</strong>level:(&#39;K1 -&gt; &#39;K2) -&gt; op:(Series&lt;&#39;K1,&#39;V&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V, 'R          </div>
         </td>
         <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
-produced by <code>level</code> and then aggregates elements in each group
+produced by <code>level</code> and then aggregates series representing each group
 using the specified function <code>op</code>. The result is a new series containing
 the aggregates of each group.</p>
 
@@ -794,7 +772,7 @@ the aggregates of each group.</p>
 
 <ul>
 <li><code>series</code> - An input series to be aggregated</li>
-<li><code>op</code> - A function that takes a sequence and produces an aggregated result</li>
+<li><code>op</code> - A function that takes a series and produces an aggregated result</li>
 <li><code>level</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
 </td>
@@ -802,10 +780,10 @@ the aggregates of each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '176', 176)" onmouseover="showTip(event, '176', 176)">
+          <code onmouseout="hideTip(event, '169', 169)" onmouseover="showTip(event, '169', 169)">
             countLevel level series
           </code>
-          <div class="tip" id="176">
+          <div class="tip" id="169">
             <strong>Signature:</strong>level:(&#39;K1 -&gt; &#39;K2) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,int&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V          </div>
         </td>
@@ -826,10 +804,10 @@ the counts of elements in each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '178', 178)" onmouseover="showTip(event, '178', 178)">
+          <code onmouseout="hideTip(event, '170', 170)" onmouseover="showTip(event, '170', 170)">
             flattenLevel level op series
           </code>
-          <div class="tip" id="178">
+          <div class="tip" id="170">
             <strong>Signature:</strong>level:(&#39;K1 -&gt; &#39;K2) -&gt; op:(Series&lt;&#39;K1,&#39;S&gt; -&gt; &#39;V) -&gt; series:Series&lt;&#39;K1,&#39;S&gt; -&gt; Series&lt;&#39;K2,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'S, 'V          </div>
         </td>
@@ -838,10 +816,10 @@ the counts of elements in each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '180', 180)" onmouseover="showTip(event, '180', 180)">
+          <code onmouseout="hideTip(event, '171', 171)" onmouseover="showTip(event, '171', 171)">
             max series
           </code>
-          <div class="tip" id="180">
+          <div class="tip" id="171">
             <strong>Signature:</strong>series:Series&lt;&#39;K,^V&gt; -&gt; ^V<br />
                           <strong>Type parameters:</strong> 'K, ^V          </div>
         </td>
@@ -852,10 +830,10 @@ skips over missing values and so the result will never be <code>NaN</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '182', 182)" onmouseover="showTip(event, '182', 182)">
+          <code onmouseout="hideTip(event, '172', 172)" onmouseover="showTip(event, '172', 172)">
             maxLevel level series
           </code>
-          <div class="tip" id="182">
+          <div class="tip" id="172">
             <strong>Signature:</strong>level:(&#39;K1 -&gt; &#39;K2) -&gt; series:Series&lt;&#39;K1,^V&gt; -&gt; Series&lt;&#39;K2,^V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, ^V          </div>
         </td>
@@ -876,10 +854,10 @@ the greatest element of each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '184', 184)" onmouseover="showTip(event, '184', 184)">
+          <code onmouseout="hideTip(event, '173', 173)" onmouseover="showTip(event, '173', 173)">
             mean series
           </code>
-          <div class="tip" id="184">
+          <div class="tip" id="173">
             <strong>Signature:</strong>series:Series&lt;&#39;K,^V&gt; -&gt; ^V<br />
                           <strong>Type parameters:</strong> 'K, ^V          </div>
         </td>
@@ -890,10 +868,10 @@ missing values and so the result will never be <code>NaN</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '185', 185)" onmouseover="showTip(event, '185', 185)">
+          <code onmouseout="hideTip(event, '174', 174)" onmouseover="showTip(event, '174', 174)">
             meanLevel level series
           </code>
-          <div class="tip" id="185">
+          <div class="tip" id="174">
             <strong>Signature:</strong>level:(&#39;K1 -&gt; &#39;K2) -&gt; series:Series&lt;&#39;K1,^V&gt; -&gt; Series&lt;&#39;K2,^V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, ^V          </div>
         </td>
@@ -914,10 +892,10 @@ the mean of each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '186', 186)" onmouseover="showTip(event, '186', 186)">
+          <code onmouseout="hideTip(event, '175', 175)" onmouseover="showTip(event, '175', 175)">
             median series
           </code>
-          <div class="tip" id="186">
+          <div class="tip" id="175">
             <strong>Signature:</strong>series:Series&lt;&#39;K,float&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -928,12 +906,12 @@ missing values and so the result will never be <code>NaN</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '187', 187)" onmouseover="showTip(event, '187', 187)">
+          <code onmouseout="hideTip(event, '176', 176)" onmouseover="showTip(event, '176', 176)">
             medianLevel level series
           </code>
-          <div class="tip" id="187">
-            <strong>Signature:</strong>level:(&#39;?7145 -&gt; &#39;?7146) -&gt; series:Series&lt;&#39;?7145,float&gt; -&gt; Series&lt;&#39;?7146,float&gt;<br />
-                          <strong>Type parameters:</strong> '?7145, '?7146          </div>
+          <div class="tip" id="176">
+            <strong>Signature:</strong>level:(&#39;?7166 -&gt; &#39;?7167) -&gt; series:Series&lt;&#39;?7166,float&gt; -&gt; Series&lt;&#39;?7167,float&gt;<br />
+                          <strong>Type parameters:</strong> '?7166, '?7167          </div>
         </td>
         <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
 produced by <code>level</code> and then returns a new series containing
@@ -952,10 +930,10 @@ the median of each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '188', 188)" onmouseover="showTip(event, '188', 188)">
+          <code onmouseout="hideTip(event, '177', 177)" onmouseover="showTip(event, '177', 177)">
             min series
           </code>
-          <div class="tip" id="188">
+          <div class="tip" id="177">
             <strong>Signature:</strong>series:Series&lt;&#39;K,^V&gt; -&gt; ^V<br />
                           <strong>Type parameters:</strong> 'K, ^V          </div>
         </td>
@@ -966,10 +944,10 @@ skips over missing values and so the result will never be <code>NaN</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '189', 189)" onmouseover="showTip(event, '189', 189)">
+          <code onmouseout="hideTip(event, '178', 178)" onmouseover="showTip(event, '178', 178)">
             minLevel level series
           </code>
-          <div class="tip" id="189">
+          <div class="tip" id="178">
             <strong>Signature:</strong>level:(&#39;K1 -&gt; &#39;K2) -&gt; series:Series&lt;&#39;K1,^V&gt; -&gt; Series&lt;&#39;K2,^V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, ^V          </div>
         </td>
@@ -990,10 +968,10 @@ the greatest element of each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '190', 190)" onmouseover="showTip(event, '190', 190)">
+          <code onmouseout="hideTip(event, '179', 179)" onmouseover="showTip(event, '179', 179)">
             reduce op series
           </code>
-          <div class="tip" id="190">
+          <div class="tip" id="179">
             <strong>Signature:</strong>op:(&#39;T -&gt; &#39;T -&gt; &#39;T) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;T<br />
                           <strong>Type parameters:</strong> 'T, 'K          </div>
         </td>
@@ -1011,10 +989,10 @@ individual values.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '191', 191)" onmouseover="showTip(event, '191', 191)">
+          <code onmouseout="hideTip(event, '180', 180)" onmouseover="showTip(event, '180', 180)">
             reduceLevel level op series
           </code>
-          <div class="tip" id="191">
+          <div class="tip" id="180">
             <strong>Signature:</strong>level:(&#39;K1 -&gt; &#39;K2) -&gt; op:(&#39;T -&gt; &#39;T -&gt; &#39;T) -&gt; series:Series&lt;&#39;K1,&#39;T&gt; -&gt; Series&lt;&#39;K2,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'T          </div>
         </td>
@@ -1037,10 +1015,10 @@ the aggregates of each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '192', 192)" onmouseover="showTip(event, '192', 192)">
+          <code onmouseout="hideTip(event, '181', 181)" onmouseover="showTip(event, '181', 181)">
             sdv series
           </code>
-          <div class="tip" id="192">
+          <div class="tip" id="181">
             <strong>Signature:</strong>series:Series&lt;&#39;K,float&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -1051,10 +1029,10 @@ missing values and so the result will never be <code>NaN</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '193', 193)" onmouseover="showTip(event, '193', 193)">
+          <code onmouseout="hideTip(event, '182', 182)" onmouseover="showTip(event, '182', 182)">
             sdvLevel level series
           </code>
-          <div class="tip" id="193">
+          <div class="tip" id="182">
             <strong>Signature:</strong>level:(&#39;K1 -&gt; &#39;K2) -&gt; series:Series&lt;&#39;K1,float&gt; -&gt; Series&lt;&#39;K2,float&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2          </div>
         </td>
@@ -1075,10 +1053,58 @@ the standard deviation of each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '194', 194)" onmouseover="showTip(event, '194', 194)">
+          <code onmouseout="hideTip(event, '183', 183)" onmouseover="showTip(event, '183', 183)">
+            stat op series
+          </code>
+          <div class="tip" id="183">
+            <strong>Signature:</strong>op:(seq&lt;&#39;V1&gt; -&gt; &#39;V2) -&gt; series:Series&lt;&#39;K,&#39;V1&gt; -&gt; &#39;V2<br />
+                          <strong>Type parameters:</strong> 'V1, 'V2, 'K          </div>
+        </td>
+        <td class="xmldoc"><p>Aggregates the values of the specified series using a function that operates on
+sequence (<code>IEnumerable&lt;T&gt;</code>). This simply reads all non-missing values and passes
+them to the specified operation.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>series</code> - An input series to be aggregated</li>
+<li><code>op</code> - A function that takes a sequence and produces an aggregated result</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '184', 184)" onmouseover="showTip(event, '184', 184)">
+            statLevel level op series
+          </code>
+          <div class="tip" id="184">
+            <strong>Signature:</strong>level:(&#39;K1 -&gt; &#39;K2) -&gt; op:(seq&lt;&#39;V&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;R&gt;<br />
+                          <strong>Type parameters:</strong> 'K1, 'K2, 'V, 'R          </div>
+        </td>
+        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+produced by <code>level</code> and then aggregates elements in each group
+using the specified function <code>op</code>. The result is a new series containing
+the aggregates of each group.</p>
+
+<p>This operation is designed to be used with <a href="../features.html#indexing">hierarchical indexing</a>.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>series</code> - An input series to be aggregated</li>
+<li><code>op</code> - A function that takes a sequence and produces an aggregated result</li>
+<li><code>level</code> - A delegate that returns a new group key, based on the key in the input series</li>
+</ul>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '185', 185)" onmouseover="showTip(event, '185', 185)">
             sum series
           </code>
-          <div class="tip" id="194">
+          <div class="tip" id="185">
             <strong>Signature:</strong>series:Series&lt;&#39;K,^V&gt; -&gt; ^V<br />
                           <strong>Type parameters:</strong> 'K, ^V          </div>
         </td>
@@ -1089,10 +1115,10 @@ missing values and so the result will never be <code>NaN</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '195', 195)" onmouseover="showTip(event, '195', 195)">
+          <code onmouseout="hideTip(event, '186', 186)" onmouseover="showTip(event, '186', 186)">
             sumLevel level series
           </code>
-          <div class="tip" id="195">
+          <div class="tip" id="186">
             <strong>Signature:</strong>level:(&#39;K1 -&gt; &#39;K2) -&gt; series:Series&lt;&#39;K1,^V&gt; -&gt; Series&lt;&#39;K2,^V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, ^V          </div>
         </td>
@@ -1151,10 +1177,10 @@ a discriminated union listing various chunking and windowing conditions.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '201', 201)" onmouseover="showTip(event, '201', 201)">
+          <code onmouseout="hideTip(event, '198', 198)" onmouseover="showTip(event, '198', 198)">
             aggregateInto (...)
           </code>
-          <div class="tip" id="201">
+          <div class="tip" id="198">
             <strong>Signature:</strong>aggregation:Aggregation&lt;&#39;K&gt; -&gt; keySelector:(DataSegment&lt;Series&lt;&#39;K,&#39;T&gt;&gt; -&gt; &#39;TNewKey) -&gt; f:(DataSegment&lt;Series&lt;&#39;K,&#39;T&gt;&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'TNewKey, 'R          </div>
         </td>
@@ -1177,10 +1203,10 @@ a discriminated union listing various chunking and windowing conditions.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '202', 202)" onmouseover="showTip(event, '202', 202)">
+          <code onmouseout="hideTip(event, '199', 199)" onmouseover="showTip(event, '199', 199)">
             chunk size series
           </code>
-          <div class="tip" id="202">
+          <div class="tip" id="199">
             <strong>Signature:</strong>size:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -1199,10 +1225,10 @@ skips incomplete chunks - you can use <code>Series.chunkSize</code> for more opt
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '203', 203)" onmouseover="showTip(event, '203', 203)">
+          <code onmouseout="hideTip(event, '200', 200)" onmouseover="showTip(event, '200', 200)">
             chunkDist distance series
           </code>
-          <div class="tip" id="203">
+          <div class="tip" id="200">
             <strong>Signature:</strong>distance:^D -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,Series&lt;^K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> ^D, ^K, 'T          </div>
         </td>
@@ -1224,10 +1250,10 @@ keys of the series.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '204', 204)" onmouseover="showTip(event, '204', 204)">
+          <code onmouseout="hideTip(event, '201', 201)" onmouseover="showTip(event, '201', 201)">
             chunkDistInto distance f series
           </code>
-          <div class="tip" id="204">
+          <div class="tip" id="201">
             <strong>Signature:</strong>distance:^D -&gt; f:(Series&lt;^K,&#39;T&gt; -&gt; &#39;R) -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> ^D, ^K, 'T, 'R          </div>
         </td>
@@ -1250,10 +1276,10 @@ keys of the series.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '205', 205)" onmouseover="showTip(event, '205', 205)">
+          <code onmouseout="hideTip(event, '202', 202)" onmouseover="showTip(event, '202', 202)">
             chunkInto size f series
           </code>
-          <div class="tip" id="205">
+          <div class="tip" id="202">
             <strong>Signature:</strong>size:int -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'R          </div>
         </td>
@@ -1273,10 +1299,10 @@ skips incomplete chunks - you can use <code>Series.chunkSizeInto</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '206', 206)" onmouseover="showTip(event, '206', 206)">
+          <code onmouseout="hideTip(event, '203', 203)" onmouseover="showTip(event, '203', 203)">
             chunkSize (arg1, arg2) series
           </code>
-          <div class="tip" id="206">
+          <div class="tip" id="203">
             <strong>Signature:</strong>(int * Boundary) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -1298,10 +1324,10 @@ or <code>Boundary.AtEnding</code> (to produce incomplete chunks at the end of se
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '207', 207)" onmouseover="showTip(event, '207', 207)">
+          <code onmouseout="hideTip(event, '204', 204)" onmouseover="showTip(event, '204', 204)">
             chunkSizeInto (arg1, arg2) f series
           </code>
-          <div class="tip" id="207">
+          <div class="tip" id="204">
             <strong>Signature:</strong>(int * Boundary) -&gt; f:(DataSegment&lt;Series&lt;&#39;K,&#39;T&gt;&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'R          </div>
         </td>
@@ -1325,10 +1351,10 @@ or <code>Boundary.AtEnding</code> (to produce incomplete chunks at the end of se
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '208', 208)" onmouseover="showTip(event, '208', 208)">
+          <code onmouseout="hideTip(event, '205', 205)" onmouseover="showTip(event, '205', 205)">
             chunkWhile cond series
           </code>
-          <div class="tip" id="208">
+          <div class="tip" id="205">
             <strong>Signature:</strong>cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -1349,12 +1375,12 @@ to determine when a window should end.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '209', 209)" onmouseover="showTip(event, '209', 209)">
+          <code onmouseout="hideTip(event, '206', 206)" onmouseover="showTip(event, '206', 206)">
             chunkWhileInto cond f series
           </code>
-          <div class="tip" id="209">
-            <strong>Signature:</strong>cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?7221) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?7221&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'T, '?7221          </div>
+          <div class="tip" id="206">
+            <strong>Signature:</strong>cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?7242) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?7242&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T, '?7242          </div>
         </td>
         <td class="xmldoc"><p>Aggregates the input into a series of adacent chunks based on a condition on keys. A chunk is started 
 once the specified <code>cond</code> function returns <code>false</code> when called on  the first and the last key of the 
@@ -1374,10 +1400,10 @@ to determine when a window should end.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '210', 210)" onmouseover="showTip(event, '210', 210)">
+          <code onmouseout="hideTip(event, '207', 207)" onmouseover="showTip(event, '207', 207)">
             groupBy keySelector series
           </code>
-          <div class="tip" id="210">
+          <div class="tip" id="207">
             <strong>Signature:</strong>keySelector:(&#39;K -&gt; &#39;T -&gt; &#39;TNewKey) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;TNewKey,Series&lt;&#39;K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'TNewKey          </div>
         </td>
@@ -1397,10 +1423,10 @@ key and value. The new key must support equality testing.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '211', 211)" onmouseover="showTip(event, '211', 211)">
+          <code onmouseout="hideTip(event, '208', 208)" onmouseover="showTip(event, '208', 208)">
             groupInto keySelector f series
           </code>
-          <div class="tip" id="211">
+          <div class="tip" id="208">
             <strong>Signature:</strong>keySelector:(&#39;K -&gt; &#39;T -&gt; &#39;TNewKey) -&gt; f:(&#39;TNewKey -&gt; Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;TNewValue) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;TNewKey,&#39;TNewValue&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'TNewKey, 'TNewValue          </div>
         </td>
@@ -1422,10 +1448,10 @@ each group of collected elements.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '212', 212)" onmouseover="showTip(event, '212', 212)">
+          <code onmouseout="hideTip(event, '209', 209)" onmouseover="showTip(event, '209', 209)">
             pairwise series
           </code>
-          <div class="tip" id="212">
+          <div class="tip" id="209">
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,(&#39;T * &#39;T)&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -1450,12 +1476,12 @@ res = series [2 =&gt; ('a', 'b'); 3 =&gt; ('b', 'c') ]
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '213', 213)" onmouseover="showTip(event, '213', 213)">
+          <code onmouseout="hideTip(event, '210', 210)" onmouseover="showTip(event, '210', 210)">
             pairwiseWith f series
           </code>
-          <div class="tip" id="213">
-            <strong>Signature:</strong>f:(&#39;K -&gt; &#39;T * &#39;T -&gt; &#39;?7245) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?7245&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'T, '?7245          </div>
+          <div class="tip" id="210">
+            <strong>Signature:</strong>f:(&#39;K -&gt; &#39;T * &#39;T -&gt; &#39;?7266) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?7266&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T, '?7266          </div>
         </td>
         <td class="xmldoc"><p>Aggregates the input into pairs containing the predecessor and an element for each input, except
 for the first one. Then calls the specified aggregation function <code>f</code> with a tuple and a key.
@@ -1472,10 +1498,10 @@ The returned series is one key shorter (it does not contain a  value for the fir
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '214', 214)" onmouseover="showTip(event, '214', 214)">
+          <code onmouseout="hideTip(event, '211', 211)" onmouseover="showTip(event, '211', 211)">
             window size series
           </code>
-          <div class="tip" id="214">
+          <div class="tip" id="211">
             <strong>Signature:</strong>size:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -1494,10 +1520,10 @@ skips incomplete chunks - you can use <code>Series.windowSize</code> for more op
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '215', 215)" onmouseover="showTip(event, '215', 215)">
+          <code onmouseout="hideTip(event, '212', 212)" onmouseover="showTip(event, '212', 212)">
             windowDist distance series
           </code>
-          <div class="tip" id="215">
+          <div class="tip" id="212">
             <strong>Signature:</strong>distance:^D -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,Series&lt;^K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> ^D, ^K, 'T          </div>
         </td>
@@ -1519,12 +1545,12 @@ keys of the series.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '216', 216)" onmouseover="showTip(event, '216', 216)">
+          <code onmouseout="hideTip(event, '213', 213)" onmouseover="showTip(event, '213', 213)">
             windowDistInto distance f series
           </code>
-          <div class="tip" id="216">
-            <strong>Signature:</strong>distance:^?7187 -&gt; f:(Series&lt;^K,&#39;T&gt; -&gt; &#39;?7190) -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,&#39;?7190&gt;<br />
-                          <strong>Type parameters:</strong> ^?7187, ^K, 'T, '?7190          </div>
+          <div class="tip" id="213">
+            <strong>Signature:</strong>distance:^?7208 -&gt; f:(Series&lt;^K,&#39;T&gt; -&gt; &#39;?7211) -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,&#39;?7211&gt;<br />
+                          <strong>Type parameters:</strong> ^?7208, ^K, 'T, '?7211          </div>
         </td>
         <td class="xmldoc"><p>Creates a sliding window based on distance between keys. A window is started at each
 input element and ends once the distance between the first and the last key is greater
@@ -1545,10 +1571,10 @@ keys of the series.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '217', 217)" onmouseover="showTip(event, '217', 217)">
+          <code onmouseout="hideTip(event, '214', 214)" onmouseover="showTip(event, '214', 214)">
             windowInto size f series
           </code>
-          <div class="tip" id="217">
+          <div class="tip" id="214">
             <strong>Signature:</strong>size:int -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'R          </div>
         </td>
@@ -1567,10 +1593,10 @@ This function skips incomplete chunks - you can use <code>Series.windowSizeInto<
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '218', 218)" onmouseover="showTip(event, '218', 218)">
+          <code onmouseout="hideTip(event, '215', 215)" onmouseover="showTip(event, '215', 215)">
             windowSize (arg1, arg2) series
           </code>
-          <div class="tip" id="218">
+          <div class="tip" id="215">
             <strong>Signature:</strong>(int * Boundary) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -1592,10 +1618,10 @@ or <code>Boundary.AtEnding</code> (to produce incomplete windows at the end of s
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '219', 219)" onmouseover="showTip(event, '219', 219)">
+          <code onmouseout="hideTip(event, '216', 216)" onmouseover="showTip(event, '216', 216)">
             windowSizeInto (arg1, arg2) f series
           </code>
-          <div class="tip" id="219">
+          <div class="tip" id="216">
             <strong>Signature:</strong>(int * Boundary) -&gt; f:(DataSegment&lt;Series&lt;&#39;K,&#39;T&gt;&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'R          </div>
         </td>
@@ -1619,10 +1645,10 @@ or <code>Boundary.AtEnding</code> (to produce incomplete windows at the end of s
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '220', 220)" onmouseover="showTip(event, '220', 220)">
+          <code onmouseout="hideTip(event, '217', 217)" onmouseover="showTip(event, '217', 217)">
             windowWhile cond series
           </code>
-          <div class="tip" id="220">
+          <div class="tip" id="217">
             <strong>Signature:</strong>cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -1643,12 +1669,12 @@ to determine when a window should end.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '221', 221)" onmouseover="showTip(event, '221', 221)">
+          <code onmouseout="hideTip(event, '218', 218)" onmouseover="showTip(event, '218', 218)">
             windowWhileInto cond f series
           </code>
-          <div class="tip" id="221">
-            <strong>Signature:</strong>cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?7198) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?7198&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'T, '?7198          </div>
+          <div class="tip" id="218">
+            <strong>Signature:</strong>cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?7219) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?7219&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T, '?7219          </div>
         </td>
         <td class="xmldoc"><p>Creates a sliding window based on a condition on keys. A window is started at each
 input element and ends once the specified <code>cond</code> function returns <code>false</code> when called on 
@@ -1692,10 +1718,10 @@ value available.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '263', 263)" onmouseover="showTip(event, '263', 263)">
+          <code onmouseout="hideTip(event, '224', 224)" onmouseover="showTip(event, '224', 224)">
             countValues series
           </code>
-          <div class="tip" id="263">
+          <div class="tip" id="224">
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;T&gt; -&gt; int<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -1707,12 +1733,12 @@ missing values or not available values (such as values created from <code>null</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '264', 264)" onmouseover="showTip(event, '264', 264)">
+          <code onmouseout="hideTip(event, '225', 225)" onmouseover="showTip(event, '225', 225)">
             diff offset series
           </code>
-          <div class="tip" id="264">
-            <strong>Signature:</strong>offset:int -&gt; series:Series&lt;&#39;K,^T&gt; -&gt; Series&lt;&#39;K,^?7040&gt;<br />
-                          <strong>Type parameters:</strong> 'K, ^T, ^?7040          </div>
+          <div class="tip" id="225">
+            <strong>Signature:</strong>offset:int -&gt; series:Series&lt;&#39;K,^T&gt; -&gt; Series&lt;&#39;K,^?7056&gt;<br />
+                          <strong>Type parameters:</strong> 'K, ^T, ^?7056          </div>
         </td>
         <td class="xmldoc"><p><code>result[k] = series[k] - series[k - offset]</code></p>
 </td>
@@ -1720,10 +1746,10 @@ missing values or not available values (such as values created from <code>null</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '265', 265)" onmouseover="showTip(event, '265', 265)">
+          <code onmouseout="hideTip(event, '226', 226)" onmouseover="showTip(event, '226', 226)">
             filter f series
           </code>
-          <div class="tip" id="265">
+          <div class="tip" id="226">
             <strong>Signature:</strong>f:(&#39;K -&gt; &#39;T -&gt; bool) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -1732,10 +1758,10 @@ missing values or not available values (such as values created from <code>null</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '266', 266)" onmouseover="showTip(event, '266', 266)">
+          <code onmouseout="hideTip(event, '227', 227)" onmouseover="showTip(event, '227', 227)">
             filterAll f series
           </code>
-          <div class="tip" id="266">
+          <div class="tip" id="227">
             <strong>Signature:</strong>f:(&#39;K -&gt; &#39;T option -&gt; bool) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -1744,10 +1770,10 @@ missing values or not available values (such as values created from <code>null</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '267', 267)" onmouseover="showTip(event, '267', 267)">
+          <code onmouseout="hideTip(event, '228', 228)" onmouseover="showTip(event, '228', 228)">
             filterValues f series
           </code>
-          <div class="tip" id="267">
+          <div class="tip" id="228">
             <strong>Signature:</strong>f:(&#39;T -&gt; bool) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'T, 'K          </div>
         </td>
@@ -1756,10 +1782,10 @@ missing values or not available values (such as values created from <code>null</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '268', 268)" onmouseover="showTip(event, '268', 268)">
+          <code onmouseout="hideTip(event, '229', 229)" onmouseover="showTip(event, '229', 229)">
             firstKey series
           </code>
-          <div class="tip" id="268">
+          <div class="tip" id="229">
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;K<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
@@ -1768,10 +1794,10 @@ missing values or not available values (such as values created from <code>null</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '269', 269)" onmouseover="showTip(event, '269', 269)">
+          <code onmouseout="hideTip(event, '230', 230)" onmouseover="showTip(event, '230', 230)">
             firstValue series
           </code>
-          <div class="tip" id="269">
+          <div class="tip" id="230">
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
@@ -1780,10 +1806,10 @@ missing values or not available values (such as values created from <code>null</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '270', 270)" onmouseover="showTip(event, '270', 270)">
+          <code onmouseout="hideTip(event, '231', 231)" onmouseover="showTip(event, '231', 231)">
             get key series
           </code>
-          <div class="tip" id="270">
+          <div class="tip" id="231">
             <strong>Signature:</strong>key:&#39;K -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;T<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -1794,10 +1820,10 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '271', 271)" onmouseover="showTip(event, '271', 271)">
+          <code onmouseout="hideTip(event, '232', 232)" onmouseover="showTip(event, '232', 232)">
             getAll keys series
           </code>
-          <div class="tip" id="271">
+          <div class="tip" id="232">
             <strong>Signature:</strong>keys:seq&lt;&#39;K&gt; -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -1808,10 +1834,10 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '272', 272)" onmouseover="showTip(event, '272', 272)">
+          <code onmouseout="hideTip(event, '233', 233)" onmouseover="showTip(event, '233', 233)">
             getAt index series
           </code>
-          <div class="tip" id="272">
+          <div class="tip" id="233">
             <strong>Signature:</strong>index:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;T<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -1820,10 +1846,10 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '273', 273)" onmouseover="showTip(event, '273', 273)">
+          <code onmouseout="hideTip(event, '234', 234)" onmouseover="showTip(event, '234', 234)">
             has key series
           </code>
-          <div class="tip" id="273">
+          <div class="tip" id="234">
             <strong>Signature:</strong>key:&#39;K -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; bool<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -1832,10 +1858,10 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '274', 274)" onmouseover="showTip(event, '274', 274)">
+          <code onmouseout="hideTip(event, '235', 235)" onmouseover="showTip(event, '235', 235)">
             hasAll keys series
           </code>
-          <div class="tip" id="274">
+          <div class="tip" id="235">
             <strong>Signature:</strong>keys:seq&lt;&#39;K&gt; -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; bool<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -1844,10 +1870,10 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '275', 275)" onmouseover="showTip(event, '275', 275)">
+          <code onmouseout="hideTip(event, '236', 236)" onmouseover="showTip(event, '236', 236)">
             hasNone keys series
           </code>
-          <div class="tip" id="275">
+          <div class="tip" id="236">
             <strong>Signature:</strong>keys:seq&lt;&#39;K&gt; -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; bool<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -1856,10 +1882,10 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '276', 276)" onmouseover="showTip(event, '276', 276)">
+          <code onmouseout="hideTip(event, '237', 237)" onmouseover="showTip(event, '237', 237)">
             hasNot key series
           </code>
-          <div class="tip" id="276">
+          <div class="tip" id="237">
             <strong>Signature:</strong>key:&#39;K -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; bool<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -1868,10 +1894,10 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '277', 277)" onmouseover="showTip(event, '277', 277)">
+          <code onmouseout="hideTip(event, '238', 238)" onmouseover="showTip(event, '238', 238)">
             hasSome keys series
           </code>
-          <div class="tip" id="277">
+          <div class="tip" id="238">
             <strong>Signature:</strong>keys:seq&lt;&#39;K&gt; -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; bool<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -1880,10 +1906,10 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '278', 278)" onmouseover="showTip(event, '278', 278)">
+          <code onmouseout="hideTip(event, '239', 239)" onmouseover="showTip(event, '239', 239)">
             indexOrdinally series
           </code>
-          <div class="tip" id="278">
+          <div class="tip" id="239">
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;int,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -1892,10 +1918,10 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '279', 279)" onmouseover="showTip(event, '279', 279)">
+          <code onmouseout="hideTip(event, '240', 240)" onmouseover="showTip(event, '240', 240)">
             indexWith keys series
           </code>
-          <div class="tip" id="279">
+          <div class="tip" id="240">
             <strong>Signature:</strong>keys:seq&lt;&#39;K2&gt; -&gt; series:Series&lt;&#39;K1,&#39;T&gt; -&gt; Series&lt;&#39;K2,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K2, 'K1, 'T          </div>
         </td>
@@ -1904,10 +1930,10 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '280', 280)" onmouseover="showTip(event, '280', 280)">
+          <code onmouseout="hideTip(event, '241', 241)" onmouseover="showTip(event, '241', 241)">
             keys series
           </code>
-          <div class="tip" id="280">
+          <div class="tip" id="241">
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;&#39;K&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -1916,10 +1942,10 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '281', 281)" onmouseover="showTip(event, '281', 281)">
+          <code onmouseout="hideTip(event, '242', 242)" onmouseover="showTip(event, '242', 242)">
             lastKey series
           </code>
-          <div class="tip" id="281">
+          <div class="tip" id="242">
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;K<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
@@ -1928,10 +1954,10 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '282', 282)" onmouseover="showTip(event, '282', 282)">
+          <code onmouseout="hideTip(event, '243', 243)" onmouseover="showTip(event, '243', 243)">
             lastValue series
           </code>
-          <div class="tip" id="282">
+          <div class="tip" id="243">
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
@@ -1940,10 +1966,10 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '283', 283)" onmouseover="showTip(event, '283', 283)">
+          <code onmouseout="hideTip(event, '244', 244)" onmouseover="showTip(event, '244', 244)">
             lookup key lookup series
           </code>
-          <div class="tip" id="283">
+          <div class="tip" id="244">
             <strong>Signature:</strong>key:&#39;K -&gt; lookup:Lookup -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;T<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -1954,10 +1980,10 @@ Use the specified lookup semantics - for exact matching, use <code>get</code></p
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '284', 284)" onmouseover="showTip(event, '284', 284)">
+          <code onmouseout="hideTip(event, '245', 245)" onmouseover="showTip(event, '245', 245)">
             lookupAll keys lookup series
           </code>
-          <div class="tip" id="284">
+          <div class="tip" id="245">
             <strong>Signature:</strong>keys:seq&lt;&#39;K&gt; -&gt; lookup:Lookup -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -1968,10 +1994,10 @@ Use the specified lookup semantics - for exact matching, use <code>getAll</code>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '285', 285)" onmouseover="showTip(event, '285', 285)">
+          <code onmouseout="hideTip(event, '246', 246)" onmouseover="showTip(event, '246', 246)">
             map f series
           </code>
-          <div class="tip" id="285">
+          <div class="tip" id="246">
             <strong>Signature:</strong>f:(&#39;K -&gt; &#39;T -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'R          </div>
         </td>
@@ -1980,10 +2006,10 @@ Use the specified lookup semantics - for exact matching, use <code>getAll</code>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '286', 286)" onmouseover="showTip(event, '286', 286)">
+          <code onmouseout="hideTip(event, '247', 247)" onmouseover="showTip(event, '247', 247)">
             mapAll f series
           </code>
-          <div class="tip" id="286">
+          <div class="tip" id="247">
             <strong>Signature:</strong>f:(&#39;K -&gt; &#39;T option -&gt; &#39;R option) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'R          </div>
         </td>
@@ -1992,10 +2018,10 @@ Use the specified lookup semantics - for exact matching, use <code>getAll</code>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '287', 287)" onmouseover="showTip(event, '287', 287)">
+          <code onmouseout="hideTip(event, '248', 248)" onmouseover="showTip(event, '248', 248)">
             mapKeys f series
           </code>
-          <div class="tip" id="287">
+          <div class="tip" id="248">
             <strong>Signature:</strong>f:(&#39;K -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;R,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'R, 'T          </div>
         </td>
@@ -2004,10 +2030,10 @@ Use the specified lookup semantics - for exact matching, use <code>getAll</code>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '288', 288)" onmouseover="showTip(event, '288', 288)">
+          <code onmouseout="hideTip(event, '249', 249)" onmouseover="showTip(event, '249', 249)">
             mapValues f series
           </code>
-          <div class="tip" id="288">
+          <div class="tip" id="249">
             <strong>Signature:</strong>f:(&#39;T -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'T, 'R, 'K          </div>
         </td>
@@ -2016,34 +2042,34 @@ Use the specified lookup semantics - for exact matching, use <code>getAll</code>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '289', 289)" onmouseover="showTip(event, '289', 289)">
+          <code onmouseout="hideTip(event, '250', 250)" onmouseover="showTip(event, '250', 250)">
             maxBy f series
           </code>
-          <div class="tip" id="289">
-            <strong>Signature:</strong>f:(&#39;T -&gt; &#39;?7088) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;K * &#39;T<br />
-                          <strong>Type parameters:</strong> 'T, '?7088, 'K          </div>
+          <div class="tip" id="250">
+            <strong>Signature:</strong>f:(&#39;T -&gt; &#39;?7104) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;K * &#39;T<br />
+                          <strong>Type parameters:</strong> 'T, '?7104, 'K          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '290', 290)" onmouseover="showTip(event, '290', 290)">
+          <code onmouseout="hideTip(event, '251', 251)" onmouseover="showTip(event, '251', 251)">
             minBy f series
           </code>
-          <div class="tip" id="290">
-            <strong>Signature:</strong>f:(&#39;T -&gt; &#39;?7092) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;K * &#39;T<br />
-                          <strong>Type parameters:</strong> 'T, '?7092, 'K          </div>
+          <div class="tip" id="251">
+            <strong>Signature:</strong>f:(&#39;T -&gt; &#39;?7108) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;K * &#39;T<br />
+                          <strong>Type parameters:</strong> 'T, '?7108, 'K          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '291', 291)" onmouseover="showTip(event, '291', 291)">
+          <code onmouseout="hideTip(event, '252', 252)" onmouseover="showTip(event, '252', 252)">
             observations series
           </code>
-          <div class="tip" id="291">
+          <div class="tip" id="252">
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;&#39;K * &#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -2055,10 +2081,10 @@ all keys with missing values (such as values created from <code>null</code>,
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '292', 292)" onmouseover="showTip(event, '292', 292)">
+          <code onmouseout="hideTip(event, '253', 253)" onmouseover="showTip(event, '253', 253)">
             observationsAll series
           </code>
-          <div class="tip" id="292">
+          <div class="tip" id="253">
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;&#39;K * &#39;T option&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -2068,10 +2094,10 @@ all keys with missing values (such as values created from <code>null</code>,
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '293', 293)" onmouseover="showTip(event, '293', 293)">
+          <code onmouseout="hideTip(event, '254', 254)" onmouseover="showTip(event, '254', 254)">
             realign keys series
           </code>
-          <div class="tip" id="293">
+          <div class="tip" id="254">
             <strong>Signature:</strong>keys:seq&lt;&#39;K&gt; -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -2080,10 +2106,10 @@ all keys with missing values (such as values created from <code>null</code>,
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '294', 294)" onmouseover="showTip(event, '294', 294)">
+          <code onmouseout="hideTip(event, '255', 255)" onmouseover="showTip(event, '255', 255)">
             shift offset series
           </code>
-          <div class="tip" id="294">
+          <div class="tip" id="255">
             <strong>Signature:</strong>offset:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -2092,10 +2118,10 @@ all keys with missing values (such as values created from <code>null</code>,
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '295', 295)" onmouseover="showTip(event, '295', 295)">
+          <code onmouseout="hideTip(event, '256', 256)" onmouseover="showTip(event, '256', 256)">
             takeLast count series
           </code>
-          <div class="tip" id="295">
+          <div class="tip" id="256">
             <strong>Signature:</strong>count:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -2104,10 +2130,10 @@ all keys with missing values (such as values created from <code>null</code>,
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '296', 296)" onmouseover="showTip(event, '296', 296)">
+          <code onmouseout="hideTip(event, '257', 257)" onmouseover="showTip(event, '257', 257)">
             tryGet key series
           </code>
-          <div class="tip" id="296">
+          <div class="tip" id="257">
             <strong>Signature:</strong>key:&#39;K -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;T option<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -2116,10 +2142,10 @@ all keys with missing values (such as values created from <code>null</code>,
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '297', 297)" onmouseover="showTip(event, '297', 297)">
+          <code onmouseout="hideTip(event, '258', 258)" onmouseover="showTip(event, '258', 258)">
             tryGetAt index series
           </code>
-          <div class="tip" id="297">
+          <div class="tip" id="258">
             <strong>Signature:</strong>index:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;T option<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -2128,10 +2154,10 @@ all keys with missing values (such as values created from <code>null</code>,
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '298', 298)" onmouseover="showTip(event, '298', 298)">
+          <code onmouseout="hideTip(event, '259', 259)" onmouseover="showTip(event, '259', 259)">
             tryLookup key lookup series
           </code>
-          <div class="tip" id="298">
+          <div class="tip" id="259">
             <strong>Signature:</strong>key:&#39;K -&gt; lookup:Lookup -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;T option<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -2140,10 +2166,10 @@ all keys with missing values (such as values created from <code>null</code>,
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '299', 299)" onmouseover="showTip(event, '299', 299)">
+          <code onmouseout="hideTip(event, '260', 260)" onmouseover="showTip(event, '260', 260)">
             values series
           </code>
-          <div class="tip" id="299">
+          <div class="tip" id="260">
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>

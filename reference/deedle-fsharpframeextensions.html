@@ -158,8 +158,8 @@ TSV files and <code>,</code> for CSV files)</li>
             ( $ ) f series
           </code>
           <div class="tip" id="104">
-            <strong>Signature:</strong>f:(&#39;?9059 -&gt; &#39;?9060) -&gt; series:Series&lt;&#39;?9061,&#39;?9059&gt; -&gt; Series&lt;&#39;?9061,&#39;?9060&gt;<br />
-                          <strong>Type parameters:</strong> '?9059, '?9060, '?9061          </div>
+            <strong>Signature:</strong>f:(&#39;?9093 -&gt; &#39;?9094) -&gt; series:Series&lt;&#39;?9095,&#39;?9093&gt; -&gt; Series&lt;&#39;?9095,&#39;?9094&gt;<br />
+                          <strong>Type parameters:</strong> '?9093, '?9094, '?9095          </div>
         </td>
         <td class="xmldoc"><p>Custom operator that can be used for applying fuction to all elements of 
 a series. This provides a nicer syntactic sugar for the <code>Series.mapValues</code> 
@@ -177,24 +177,24 @@ adjust $ (s1 + s1)
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '106', 106)" onmouseover="showTip(event, '106', 106)">
+          <code onmouseout="hideTip(event, '105', 105)" onmouseover="showTip(event, '105', 105)">
             ( =?&gt; ) a b
           </code>
-          <div class="tip" id="106">
-            <strong>Signature:</strong>a:&#39;?9056 -&gt; b:ISeries&lt;&#39;?9057&gt; -&gt; &#39;?9056 * ISeries&lt;&#39;?9057&gt;<br />
-                          <strong>Type parameters:</strong> '?9056, '?9057          </div>
+          <div class="tip" id="105">
+            <strong>Signature:</strong>a:&#39;?9090 -&gt; b:ISeries&lt;&#39;?9091&gt; -&gt; &#39;?9090 * ISeries&lt;&#39;?9091&gt;<br />
+                          <strong>Type parameters:</strong> '?9090, '?9091          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '107', 107)" onmouseover="showTip(event, '107', 107)">
+          <code onmouseout="hideTip(event, '106', 106)" onmouseover="showTip(event, '106', 106)">
             ( =&gt; ) a b
           </code>
-          <div class="tip" id="107">
-            <strong>Signature:</strong>a:&#39;?9053 -&gt; b:&#39;?9054 -&gt; &#39;?9053 * &#39;?9054<br />
-                          <strong>Type parameters:</strong> '?9053, '?9054          </div>
+          <div class="tip" id="106">
+            <strong>Signature:</strong>a:&#39;?9087 -&gt; b:&#39;?9088 -&gt; &#39;?9087 * &#39;?9088<br />
+                          <strong>Type parameters:</strong> '?9087, '?9088          </div>
         </td>
         <td class="xmldoc"><p>Custom operator that can be used when constructing series from observations
 or frames from key-row or key-column pairs. The operator simply returns a 
@@ -207,12 +207,12 @@ tuple, but it provides a more convenient syntax. For example:</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '108', 108)" onmouseover="showTip(event, '108', 108)">
+          <code onmouseout="hideTip(event, '107', 107)" onmouseover="showTip(event, '107', 107)">
             frame columns
           </code>
-          <div class="tip" id="108">
-            <strong>Signature:</strong>columns:seq&lt;&#39;?9063 * &#39;?9064&gt; -&gt; Frame&lt;&#39;?9065,&#39;?9063&gt;<br />
-                          <strong>Type parameters:</strong> '?9063, '?9064, '?9065          </div>
+          <div class="tip" id="107">
+            <strong>Signature:</strong>columns:seq&lt;&#39;?9097 * &#39;?9098&gt; -&gt; Frame&lt;&#39;?9099,&#39;?9097&gt;<br />
+                          <strong>Type parameters:</strong> '?9097, '?9098, '?9099          </div>
         </td>
         <td class="xmldoc"><p>A function for constructing data frame from a sequence of name - column pairs.
 This provides a nicer syntactic sugar for <code>Frame.ofColumns</code>.</p>
@@ -241,8 +241,8 @@ This provides a nicer syntactic sugar for <code>Frame.ofColumns</code>.</p>
             Frame.ofColumns(cols)
           </code>
           <div class="tip" id="127">
-            <strong>Signature:</strong>cols:Series&lt;&#39;?9083,&#39;?9084&gt; -&gt; Frame&lt;&#39;?9085,&#39;?9083&gt;<br />
-                          <strong>Type parameters:</strong> '?9083, '?9084, '?9085          </div>
+            <strong>Signature:</strong>cols:Series&lt;&#39;?9117,&#39;?9118&gt; -&gt; Frame&lt;&#39;?9119,&#39;?9117&gt;<br />
+                          <strong>Type parameters:</strong> '?9117, '?9118, '?9119          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
@@ -253,8 +253,8 @@ This provides a nicer syntactic sugar for <code>Frame.ofColumns</code>.</p>
             Frame.ofColumns(cols)
           </code>
           <div class="tip" id="128">
-            <strong>Signature:</strong>(cols:seq&lt;&#39;?9087 * &#39;?9088&gt;) -&gt; Frame&lt;&#39;K,&#39;?9087&gt;<br />
-                          <strong>Type parameters:</strong> '?9087, '?9088, 'K          </div>
+            <strong>Signature:</strong>(cols:seq&lt;&#39;?9121 * &#39;?9122&gt;) -&gt; Frame&lt;&#39;K,&#39;?9121&gt;<br />
+                          <strong>Type parameters:</strong> '?9121, '?9122, 'K          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
@@ -289,8 +289,8 @@ This provides a nicer syntactic sugar for <code>Frame.ofColumns</code>.</p>
             Frame.ofRowKeys(keys)
           </code>
           <div class="tip" id="131">
-            <strong>Signature:</strong>keys:seq&lt;&#39;?9081&gt; -&gt; Frame&lt;&#39;?9081,string&gt;<br />
-                          <strong>Type parameters:</strong> '?9081          </div>
+            <strong>Signature:</strong>keys:seq&lt;&#39;?9115&gt; -&gt; Frame&lt;&#39;?9115,string&gt;<br />
+                          <strong>Type parameters:</strong> '?9115          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
@@ -301,8 +301,8 @@ This provides a nicer syntactic sugar for <code>Frame.ofColumns</code>.</p>
             Frame.ofRows(rows)
           </code>
           <div class="tip" id="132">
-            <strong>Signature:</strong>(rows:seq&lt;&#39;?9073 * &#39;?9074&gt;) -&gt; Frame&lt;&#39;?9073,&#39;?9075&gt;<br />
-                          <strong>Type parameters:</strong> '?9073, '?9074, '?9075          </div>
+            <strong>Signature:</strong>(rows:seq&lt;&#39;?9107 * &#39;?9108&gt;) -&gt; Frame&lt;&#39;?9107,&#39;?9109&gt;<br />
+                          <strong>Type parameters:</strong> '?9107, '?9108, '?9109          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
@@ -313,8 +313,8 @@ This provides a nicer syntactic sugar for <code>Frame.ofColumns</code>.</p>
             Frame.ofRows(rows)
           </code>
           <div class="tip" id="133">
-            <strong>Signature:</strong>rows:Series&lt;&#39;?9077,&#39;?9078&gt; -&gt; Frame&lt;&#39;?9077,&#39;?9079&gt;<br />
-                          <strong>Type parameters:</strong> '?9077, '?9078, '?9079          </div>
+            <strong>Signature:</strong>rows:Series&lt;&#39;?9111,&#39;?9112&gt; -&gt; Frame&lt;&#39;?9111,&#39;?9113&gt;<br />
+                          <strong>Type parameters:</strong> '?9111, '?9112, '?9113          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
@@ -325,8 +325,8 @@ This provides a nicer syntactic sugar for <code>Frame.ofColumns</code>.</p>
             Frame.ofRowsOrdinal(rows)
           </code>
           <div class="tip" id="134">
-            <strong>Signature:</strong>rows:seq&lt;&#39;?9069&gt; -&gt; Frame&lt;int,&#39;?9070&gt;<br />
-                          <strong>Type parameters:</strong> '?9069, '?9070, '?9071          </div>
+            <strong>Signature:</strong>rows:seq&lt;&#39;?9103&gt; -&gt; Frame&lt;int,&#39;?9104&gt;<br />
+                          <strong>Type parameters:</strong> '?9103, '?9104, '?9105          </div>
         </td>
         <td class="xmldoc"><p>Creates a data frame with ordinal Integer index from a sequence of rows.
 The column indices of individual rows are unioned, so if a row has fewer
@@ -340,8 +340,8 @@ columns, it will be successfully added, but there will be missing values.</p>
             Frame.ofValues(values)
           </code>
           <div class="tip" id="135">
-            <strong>Signature:</strong>(values:seq&lt;&#39;?9091 * &#39;?9092 * &#39;?9093&gt;) -&gt; Frame&lt;&#39;?9091,&#39;?9092&gt;<br />
-                          <strong>Type parameters:</strong> '?9091, '?9092, '?9093          </div>
+            <strong>Signature:</strong>(values:seq&lt;&#39;?9125 * &#39;?9126 * &#39;?9127&gt;) -&gt; Frame&lt;&#39;?9125,&#39;?9126&gt;<br />
+                          <strong>Type parameters:</strong> '?9125, '?9126, '?9127          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>

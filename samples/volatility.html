@@ -41,6 +41,7 @@
 <p>References <code>FSharp.Charting</code> and <code>MathNet.Numerics.dll</code>.</p>
 
 <p>Generate data - same as in <a href="../timeseries.html">time series tutorial</a>.</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
 <span class="l"> 2: </span>
@@ -85,7 +86,10 @@
     <span onmouseout="hideTip(event, 'fs18', 33)" onmouseover="showTip(event, 'fs18', 33)" class="i">hfq2</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 34)" onmouseover="showTip(event, 'fs21', 34)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 35)" onmouseover="showTip(event, 'fs22', 35)" class="i">observations</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs19', 36)" onmouseover="showTip(event, 'fs19', 36)" class="i">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs23', 37)" onmouseover="showTip(event, 'fs23', 37)" class="i">FastLine</span> ]</pre>
 </td>
 </tr>
-</table><p>Calculate the means of the two series (and see that they are the same)</p>
+</table>
+
+<p>Calculate the means of the two series (and see that they are the same)</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
 <span class="l">2: </span>
@@ -96,7 +100,10 @@
 <span onmouseout="hideTip(event, 'fs16', 41)" onmouseover="showTip(event, 'fs16', 41)" class="i">hfq1</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 42)" onmouseover="showTip(event, 'fs21', 42)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs24', 43)" onmouseover="showTip(event, 'fs24', 43)" class="i">mean</span></pre>
 </td>
 </tr>
-</table><p>Get all day data in 1 minute intervals</p>
+</table>
+
+<p>Get all day data in 1 minute intervals</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
 <span class="l"> 2: </span>
@@ -125,8 +132,11 @@
     <span onmouseout="hideTip(event, 'fs19', 72)" onmouseover="showTip(event, 'fs19', 72)" class="i">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 73)" onmouseover="showTip(event, 'fs38', 73)" class="i">Line</span>(<span onmouseout="hideTip(event, 'fs33', 74)" onmouseover="showTip(event, 'fs33', 74)" class="i">diffs</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 75)" onmouseover="showTip(event, 'fs21', 75)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 76)" onmouseover="showTip(event, 'fs22', 76)" class="i">observations</span>) ]</pre>
 </td>
 </tr>
-</table><p>Get 1 hour chunks and build a data frame with one column
+</table>
+
+<p>Get 1 hour chunks and build a data frame with one column
 for each hour (containing 60 rows for 60 minutes in the hour)</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
 <span class="l">2: </span>
@@ -143,7 +153,10 @@ for each hour (containing 60 rows for 60 minutes in the hour)</p>
   <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs45', 88)" onmouseover="showTip(event, 'fs45', 88)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 89)" onmouseover="showTip(event, 'fs46', 89)" class="i">ofColumns</span></pre>
 </td>
 </tr>
-</table><p>Some statistics</p>
+</table>
+
+<p>Some statistics</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
 <span class="l">2: </span>
@@ -167,6 +180,7 @@ for each hour (containing 60 rows for 60 minutes in the hour)</p>
 </td>
 </tr>
 </table>
+
 <div class="tip" id="fs1">val randomPrice : seed:int -&gt; drift:float -&gt; volatility:float -&gt; initial:float -&gt; start:DateTimeOffset -&gt; span:TimeSpan -&gt; count:int -&gt; seq&lt;DateTimeOffset * float&gt;<br /><br />Full name: Volatility.randomPrice<br /><em><br /><br />&#160;Generates price using geometric Brownian motion<br />&#160;&#160;- &#39;seed&#39; specifies the seed for random number generator<br />&#160;&#160;- &#39;drift&#39; and &#39;volatility&#39; set properties of the price movement<br />&#160;&#160;- &#39;initial&#39; and &#39;start&#39; specify the initial price and date<br />&#160;&#160;- &#39;span&#39; specifies time span between individual observations<br />&#160;&#160;- &#39;count&#39; is the number of required values to generate</em></div>
 <div class="tip" id="fs2">val seed : int</div>
 <div class="tip" id="fs3">val drift : float</div>

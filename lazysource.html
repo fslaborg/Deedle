@@ -52,6 +52,7 @@ delayed internal representation.</p>
 
 <p>We will not use a real database in this tutorial, but let's say that you have the
 following function which loads data for a given day range:</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
 <span class="l"> 2: </span>
@@ -78,12 +79,15 @@ following function which loads data for a given day range:</p>
           <span onmouseout="hideTip(event, 'fs13', 18)" onmouseover="showTip(event, 'fs13', 18)" class="i">KeyValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs14', 19)" onmouseover="showTip(event, 'fs14', 19)" class="i">Create</span>(<span onmouseout="hideTip(event, 'fs3', 20)" onmouseover="showTip(event, 'fs3', 20)" class="i">low</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs10', 21)" onmouseover="showTip(event, 'fs10', 21)" class="i">Date</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs15', 22)" onmouseover="showTip(event, 'fs15', 22)" class="i">AddDays</span>(<span onmouseout="hideTip(event, 'fs16', 23)" onmouseover="showTip(event, 'fs16', 23)" class="i">float</span> <span onmouseout="hideTip(event, 'fs12', 24)" onmouseover="showTip(event, 'fs12', 24)" class="i">d</span>), <span onmouseout="hideTip(event, 'fs6', 25)" onmouseover="showTip(event, 'fs6', 25)" class="i">rnd</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs17', 26)" onmouseover="showTip(event, 'fs17', 26)" class="i">Next</span>()) }</pre>
 </td>
 </tr>
-</table><p>Using random numbers as the source in this example is not entirely correct, because
+</table>
+
+<p>Using random numbers as the source in this example is not entirely correct, because
 it means that we will get different values each time a new sub-range of the series
 is required - but it will suffice for the demonstration.</p>
 
 <p>Now, to create a lazily loaded series, we need to open the <code>Indices</code> namespace,
 specify the minimal and maximal value of the series and use <code>DelayedSeries.Create</code>:</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
 <span class="l">2: </span>
@@ -108,7 +112,9 @@ specify the minimal and maximal value of the series and use <code>DelayedSeries.
     <span class="k">return</span> <span onmouseout="hideTip(event, 'fs2', 48)" onmouseover="showTip(event, 'fs2', 48)" class="i">generate</span> <span onmouseout="hideTip(event, 'fs24', 49)" onmouseover="showTip(event, 'fs24', 49)" class="i">lo</span> <span onmouseout="hideTip(event, 'fs26', 50)" onmouseover="showTip(event, 'fs26', 50)" class="i">hi</span> })</pre>
 </td>
 </tr>
-</table><p>To make the diagnostics easier, we print the required range whenever a request
+</table>
+
+<p>To make the diagnostics easier, we print the required range whenever a request
 is made. After running this code, you should not see any output yet.
 The parameter to <code>DelayedSeries.Create</code> is a function that takes 4 arguments:</p>
 
@@ -132,6 +138,7 @@ Any operation that actually accesses values or keys of the series (such as <code
 or lookup for a specific key) will force the evaluation of the series.</p>
 
 <p>However, we can use range restrictions before accessing the data:</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
 <span class="l"> 2: </span>
@@ -164,7 +171,9 @@ or lookup for a specific key) will force the evaluation of the series.</p>
 <span class="fsi"> val it : int = 560920727</span></pre>
 </td>
 </tr>
-</table><p>As you can see from the output on line 9, the series obtained data for the
+</table>
+
+<p>As you can see from the output on line 9, the series obtained data for the
 15 day range that we created by restricting the original series. When we requested
 another value within the specified range, it was already available and it was
 returned immediately. Note that <code>janHalf</code> is restricted to the specified 15 day
@@ -174,6 +183,7 @@ multiple values, so it is likely cheaper to load the whole series.</p>
 
 <p>Another operation that can be performed on an unevaluated series is to add it
 to a data frame with some existing key range:</p>
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
 <span class="l">2: </span>
@@ -192,7 +202,9 @@ to a data frame with some existing key range:</p>
 <span class="fsi"> Query: (12/1/2011, Inclusive) - (12/31/2011, Inclusive)</span></pre>
 </td>
 </tr>
-</table><p>When adding lazy series to a data frame, the series has to be evaluated (so that
+</table>
+
+<p>When adding lazy series to a data frame, the series has to be evaluated (so that
 the values can be properly aligned) but it is first restricted to the range of the
 data frame. In the above example, only one month of data is loaded.</p>
 

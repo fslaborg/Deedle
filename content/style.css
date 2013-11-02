@@ -108,6 +108,11 @@ hr {
   margin:0px 0px 20px 0px;
 }
 
+/* Make table headings and td.title bold */
+td.title, thead {
+  font-weight:bold;
+}
+
 /* Format the right-side menu */
 #menu {
   margin-top:50px;
@@ -134,6 +139,34 @@ hr {
 #main li { font-size: 12pt; margin: 5px 0px 5px 0px; }
 
 /*-------------------------------------------------------------------------- 
+  Formatting for API reference
+/*--------------------------------------------------------------------------*/
+
+#main h2 {	       
+  font-size: 160%;
+  margin-top:40px;
+}
+#main h3 {
+  font-size: 130%;
+  font-weight: bold;
+  margin-top: 20px;
+}
+.type-list .type-name, .module-list .module-name {
+  width:25%;
+  font-weight:bold;
+}
+.member-list .member-name {
+  width:35%;
+}
+#main .xmldoc h2 {
+  font-size:14pt;
+  margin:10px 0px 0px 0px;
+}
+#main .xmldoc h3 {
+  font-size:12pt;
+  margin:10px 0px 0px 0px;
+}
+/*-------------------------------------------------------------------------- 
   Additional formatting for the homepage 
 /*--------------------------------------------------------------------------*/
 
@@ -154,14 +187,11 @@ hr {
   margin-top:15px;
 }
 
-
+/* Hide snippets on the home page snippet & nicely format table */
 #hp-snippet td.lines {
   display: none;
 }
 #hp-snippet .table {
   width:80%;
   margin-left:30px;
-}
-#hp-snippet thead, #hp-snippet .title {
-  font-weight:bold;
 }
