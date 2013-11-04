@@ -62,7 +62,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   let mutable isEmpty = rowIndex.IsEmpty && columnIndex.IsEmpty
 
   /// Vector builder
-  let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
+  let vectorBuilder = VectorBuilder.Instance
   let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
 
   // TODO: Perhaps assert that the 'data' vector has all things required by column index
@@ -90,7 +90,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
             else vector.Value.GetObject(rowAddress) 
           member x.Data = 
             [| for _, addr in columnIndex.Mappings -> x.GetValue(addr) |]
-            |> ReadOnlyCollection.ofArray |> VectorData.SparseList          
+            |> IList.ofArray |> VectorData.SparseList          
           member x.Select(f) = materializeVector(); virtualVector.Value.Select(f)
           member x.SelectMissing(f) = materializeVector(); virtualVector.Value.SelectMissing(f)
         
@@ -1045,7 +1045,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 /// can confuse the type inference in various ways).
 and FrameUtils = 
   // Current vector builder to be used for creating frames
-  static member vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance 
+  static member vectorBuilder = VectorBuilder.Instance 
   // Current index builder to be used for creating frames
   static member indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
 
@@ -1058,7 +1058,7 @@ and FrameUtils =
   /// Create data frame containing a single row
   static member createRow(row:'TRowKey, series:Series<'TColumnKey, 'TValue>) = 
     let data = series.Vector.SelectMissing(fun v -> 
-      let res = Vectors.ArrayVector.ArrayVectorBuilder.Instance.CreateMissing [| v |] 
+      let res = VectorBuilder.Instance.CreateMissing [| v |] 
       OptionalValue(res :> IVector))
     Frame(Index.ofKeys [row], series.Index, data)
 

@@ -835,7 +835,7 @@ and
     Series(pairs |> Seq.map (fun kvp -> kvp.Key), pairs |> Seq.map (fun kvp -> kvp.Value))
 
   new(keys:seq<_>, values:seq<_>) = 
-    let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
+    let vectorBuilder = VectorBuilder.Instance
     let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
     Series( Index.ofKeys keys, vectorBuilder.Create (Array.ofSeq values),
             vectorBuilder, indexBuilder )

@@ -56,13 +56,16 @@
     <Compile Include="Common\LazyList.fs" />
     <Compile Include="Common\Common.fs" />
     <Compile Include="Common\Address.fs" />
+    <Compile Include="Common\Solid.fs" />
     <Compile Include="Vectors\Vector.fs" />
     <Compile Include="Vectors\VectorHelpers.fs" />
     <Compile Include="Vectors\ArrayVector.fs" />
+    <Compile Include="Vectors\SolidVector.fs" />
     <Compile Include="Vectors\VectorExtensions.fs" />
     <Compile Include="Indices\MultiKey.fs" />
     <Compile Include="Indices\Index.fs" />
     <Compile Include="Indices\LinearIndex.fs" />
+    <Compile Include="Indices\SolidLinearIndex.fs" />
     <Compile Include="JoinHelpers.fs" />
     <Compile Include="Series.fs" />
     <Compile Include="SeriesModule.fs" />
@@ -88,6 +91,12 @@
       <HintPath>..\..\packages\MathNet.Numerics.2.6.1\lib\net40\MathNet.Numerics.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
+    <Reference Include="Solid">
+      <HintPath>..\..\lib\Solid.dll</HintPath>
+    </Reference>
+    <Reference Include="Solid.FSharp">
+      <HintPath>..\..\lib\Solid.FSharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
