@@ -99,9 +99,11 @@ module Series =
       ( WindowSize((abs offset) + 1, Boundary.Skip), 
         (fun ks -> if offset < 0 then ks.Data.Keys.First() else ks.Data.Keys.Last() ),
         (fun ds ->  
-          let h, t = ds.Data.Values.First(), ds.Data.Values.Last() in 
-          if offset < 0 then h - t else t - h) )
-
+          let fk, lk = ds.Data.KeyRange
+          match ds.Data.TryGet(fk), ds.Data.TryGet(lk) with
+          | OptionalValue.Present h, OptionalValue.Present t -> 
+              OptionalValue(if offset < 0 then h - t else t - h)
+          | _ -> OptionalValue.Missing ) )
 
   // Counting & checking if values are present
 
@@ -139,11 +141,11 @@ module Series =
         let offset = -offset
         series.Aggregate
           ( win, (fun s -> s.Data.Keys.First()),
-            (fun s -> s.Data.Values |> Seq.nth offset) ) 
+            (fun s -> OptionalValue(s.Data.Values |> Seq.nth offset)) ) 
       else
         series.Aggregate
           ( win, (fun s -> s.Data.Keys.Last()),
-            (fun s -> s.Data.Values |> Seq.head) )
+            (fun s -> OptionalValue(s.Data.Values |> Seq.head)) )
     shifted //.GetItems(series.Keys)
 
   let takeLast count (series:Series<'K, 'T>) = 
@@ -166,6 +168,8 @@ module Series =
         (fun key ser -> OptionalValue(op ser)))
 
 
+  let force (series:Series<'K, 'V>) = 
+    series.Materialize()
 
   // ----------------------------------------------------------------------------------------------
   // Statistics
@@ -442,7 +446,7 @@ module Series =
   /// [category:Windowing, chunking and grouping]
   let aggregate aggregation keySelector (series:Series<'K, 'T>) : Series<'TNewKey, _> =
     series.Aggregate
-      ( aggregation, System.Func<_, _>(keySelector), System.Func<_, _>(id))
+      ( aggregation, System.Func<_, _>(keySelector), System.Func<_, _>(fun v -> OptionalValue(v)))
 
   /// Aggregates an ordered series using the method specified by `Aggregation<K>` and then
   /// applies the provided value selector `f` on each window or chunk to produce the result
@@ -480,7 +484,7 @@ module Series =
     let keySel = System.Func<DataSegment<Series<_, _>>, _>(fun data -> 
       if dir = Direction.Backward then data.Data.Index.Keys |> Seq.last
       else data.Data.Index.Keys |> Seq.head )
-    series.Aggregate(WindowSize(bounds), keySel, (fun ds -> f ds))
+    series.Aggregate(WindowSize(bounds), keySel, (fun ds -> OptionalValue(f ds)))
 
   /// Creates a sliding window using the specified size and boundary behavior and returns
   /// the produced windows as a nested series. The key is the last key of the window, unless
@@ -513,7 +517,9 @@ module Series =
   ///
   /// [category:Windowing, chunking and grouping]
   let inline windowDistInto distance f (series:Series<'K, 'T>) =
-    series.Aggregate(WindowWhile(fun skey ekey -> (ekey - skey) < distance), (fun d -> d.Data.Keys |> Seq.head), fun ds -> f ds.Data)
+    series.Aggregate
+      ( WindowWhile(fun skey ekey -> (ekey - skey) < distance), 
+        (fun d -> d.Data.Keys |> Seq.head), fun ds -> OptionalValue(f ds.Data))
 
   /// Creates a sliding window based on distance between keys. A window is started at each
   /// input element and ends once the distance between the first and the last key is greater
@@ -545,7 +551,7 @@ module Series =
   ///
   /// [category:Windowing, chunking and grouping]
   let inline windowWhileInto cond f (series:Series<'K, 'T>) =
-    series.Aggregate(WindowWhile(cond), (fun d -> d.Data.Keys |> Seq.head), fun ds -> f ds.Data)
+    series.Aggregate(WindowWhile(cond), (fun d -> d.Data.Keys |> Seq.head), fun ds -> OptionalValue(f ds.Data))
 
   /// Creates a sliding window based on a condition on keys. A window is started at each
   /// input element and ends once the specified `cond` function returns `false` when called on 
@@ -578,7 +584,7 @@ module Series =
   ///
   /// [category:Windowing, chunking and grouping]
   let inline chunkSizeInto bounds f (series:Series<'K, 'T>) : Series<'K, 'R> =
-    series.Aggregate(ChunkSize(bounds), (fun d -> d.Data.Keys |> Seq.head), fun ds -> f ds)
+    series.Aggregate(ChunkSize(bounds), (fun d -> d.Data.Keys |> Seq.head), fun ds -> OptionalValue(f ds))
 
   /// Aggregates the input into a series of adacent chunks using the specified size and boundary behavior and returns
   /// the produced chunks as a nested series. The key is the last key of the chunk, unless
@@ -611,7 +617,7 @@ module Series =
   ///
   /// [category:Windowing, chunking and grouping]
   let inline chunkDistInto (distance:^D) f (series:Series<'K, 'T>) : Series<'K, 'R> =
-    series.Aggregate(ChunkWhile(fun skey ekey -> (ekey - skey) < distance), (fun d -> d.Data.Keys |> Seq.head), fun ds -> f ds.Data)
+    series.Aggregate(ChunkWhile(fun skey ekey -> (ekey - skey) < distance), (fun d -> d.Data.Keys |> Seq.head), fun ds -> OptionalValue(f ds.Data))
 
   /// Aggregates the input into a series of adacent chunks. A chunk is started once
   /// the distance between the first and the last key of a previous chunk is greater
@@ -643,7 +649,7 @@ module Series =
   ///
   /// [category:Windowing, chunking and grouping]
   let inline chunkWhileInto cond f (series:Series<'K, 'T>) =
-    series.Aggregate(ChunkWhile(cond), (fun d -> d.Data.Keys |> Seq.head), fun ds -> f ds.Data)
+    series.Aggregate(ChunkWhile(cond), (fun d -> d.Data.Keys |> Seq.head), fun ds -> OptionalValue(f ds.Data))
 
   /// Aggregates the input into a series of adacent chunks based on a condition on keys. A chunk is started 
   /// once the specified `cond` function returns `false` when called on  the first and the last key of the 

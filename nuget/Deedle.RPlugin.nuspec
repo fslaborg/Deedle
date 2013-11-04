@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <id>@project@</id>
+    <version>@build.number@</version>
+    <authors>@authors@</authors>
+    <owners>@authors@</owners>
+    <licenseUrl>http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md</licenseUrl>
+    <projectUrl>http://BlueMountainCapital.github.com/Deedle</projectUrl>
+    <iconUrl>https://raw.github.com/BlueMountainCapital/Deedle/master/misc/logo.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>@summary@</summary>
+    <description>@description@</description>
+    <releaseNotes>@releaseNotes@</releaseNotes>
+    <copyright>Copyright 2013</copyright>
+    <tags>@tags@</tags>
+    <dependencies>
+      <dependency id="Deedle" version="@build.number@" />
+      <dependency id="RProvider" version="1.0.3" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\bin\Deedle.RProvider.Plugin.dll" target="lib/net40" />
+    <file src="..\bin\Deedle.RProvider.Plugin.pdb" target="lib/net40" />
+    <file src="..\nuget\init.ps1" target="tools" />
+  </files>
+</package>

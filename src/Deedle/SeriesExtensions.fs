@@ -150,28 +150,6 @@ type SeriesExtensions =
     series.GetByLevel(SimpleLookup [|Some (box k1); Option.map box lo2|])
 
   [<Extension>]
-  static member Between(series:Series<'K, 'V>, lowerInclusive, upperInclusive) = 
-    series.GetSubrange
-      ( Some(lowerInclusive, BoundaryBehavior.Inclusive),
-        Some(upperInclusive, BoundaryBehavior.Inclusive) )
-
-  [<Extension>]
-  static member After(series:Series<'K, 'V>, lowerExclusive) = 
-    series.GetSubrange( Some(lowerExclusive, BoundaryBehavior.Exclusive), None )
-
-  [<Extension>]
-  static member Before(series:Series<'K, 'V>, upperExclusive) = 
-    series.GetSubrange( None, Some(upperExclusive, BoundaryBehavior.Exclusive) )
-
-  [<Extension>]
-  static member StartAt(series:Series<'K, 'V>, lowerInclusive) = 
-    series.GetSubrange( Some(lowerInclusive, BoundaryBehavior.Inclusive), None )
-
-  [<Extension>]
-  static member EndAt(series:Series<'K, 'V>, upperInclusive) = 
-    series.GetSubrange( None, Some(upperInclusive, BoundaryBehavior.Inclusive) )
-
-  [<Extension>]
   static member Log(series:Series<'K, float>) = log series
 
   [<Extension>]
@@ -197,19 +175,6 @@ type SeriesExtensions =
     for key, address in series.Index.Mappings do
       let v = series.Vector.GetValue(address)
       if v.HasValue then yield KeyValuePair(key, v.Value) }
-
-  /// Returns the total number of values in the specified series. This excludes
-  /// missing values or not available values (such as values created from `null`,
-  /// `Double.NaN`, or those that are missing due to outer join etc.).
-  [<Extension>]
-  static member CountValues(series:Series<'K, 'T>) = Series.countValues series
-
-  /// Returns the total number of keys in the specified series. This returns
-  /// the total length of the series, including keys for which there is no 
-  /// value available.
-  [<Extension>]
-  static member CountKeys(series:Series<'K, 'T>) = Series.countKeys series
-
 
   // static member Where(series:Series<'K, 'T>, f:System.Func<KeyValuePair<'K, 'V>, bool>) = 
 

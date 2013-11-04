@@ -99,6 +99,14 @@ let ``Series.diff and SeriesExtensions.Diff work on sample input``() =
   SeriesExtensions.Diff(input, -2) |> shouldEqual expectedBackward
   SeriesExtensions.Diff(input, 2) |> shouldEqual expectedForward
 
+[<Test>]
+let ``Series.diff correctly handles missing values``() =  
+  let s = Series.ofValues [ 0.0; Double.NaN; Double.NaN; 0.0; 2.0 ]
+  let actual1 = s |> Series.diff -1 |> Series.observationsAll |> List.ofSeq
+  actual1 |> shouldEqual [(0, None); (1, None); (2, None); (3, Some -2.0)]
+  let actual2 = s |> Series.diff 1 |> Series.observationsAll |> List.ofSeq
+  actual2 |> shouldEqual [(1, None); (2, None); (3, None); (4, Some 2.0)]
+
 [<Test>] 
 let ``Union correctly unions series, prefering left or right values``() = 
   let input1 = Series.ofObservations [ 'a' => 1; 'b' => 2; 'c' => 3 ]

@@ -36,7 +36,6 @@ open RProvider.``base``
 let df = frame [ "A" => series [ 1 => 10.0]]
 R.assign("x",  df).Value
 R.eval(R.parse(text="x")).GetValue<Frame<int, string>>()
-
 open RDotNet
 //open RProvider.zoo
 

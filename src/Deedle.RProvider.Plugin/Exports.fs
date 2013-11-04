@@ -25,6 +25,27 @@ type DataFrameToR() =
             R.data_frame(namedParams (rowNames::args)) }
       |> input.Apply
 
+  
+[<Export(typeof<IConvertToR<Series<int, double>>>)>]
+type IndexedSeriesDoubleConverter() =
+    interface IConvertToR<Series<int, double>> with
+        member x.Convert(engine, series) =
+            let v = engine.CreateNumericVector(series.Values)
+            v:> SymbolicExpression
+(*
+[<Export(typeof<IConvertToR<DateTime>>)>]
+type DateTimeConverter() =
+    interface IConvertToR<DateTime> with        
+        member this.Convert(engine: REngine, x: DateTime) =            
+            R.as_POSIXct(String.Format("{0:u}", x.ToUniversalTime(), "UTC"))
+
+[<Export(typeof<IConvertToR<seq<DateTime>>>)>]
+type DateTimeSeqConverter() =
+    interface IConvertToR<seq<DateTime>> with        
+        member this.Convert(engine: REngine, xs: seq<DateTime>) =            
+            let dts = xs |> Seq.map (fun dt -> String.Format("{0:u}", dt.ToUniversalTime()))
+            R.as_POSIXct(dts, "UTC")
+*)
 // ------------------------------------------------------------------------------------------------
 // IDefaultConvertFromR - convert R symexpr to some data frame and return
 // ------------------------------------------------------------------------------------------------
@@ -110,26 +131,3 @@ type DataFrameBoolDateFromR() =
 type DataFrameBoolBoolFromR() =
   interface IConvertFromR<Frame<bool, bool>> with member x.Convert(symExpr) = tryCreateFrame symExpr
 
-  
-(*
-[<Export(typeof<IConvertToR<TS2.Series<obj,double>>>)>]
-type IndexedSeriesDoubleConverter() =
-    interface IConvertToR<TS2.Series<obj,double>> with
-        member this.Convert(engine: RDotNet.REngine, series: TS2.Series<obj,double>) =
-            let v = engine.CreateNumericVector(series.Values)
-            v:> SymbolicExpression
-
-[<Export(typeof<IConvertToR<DateTime>>)>]
-type DateTimeConverter() =
-    interface IConvertToR<DateTime> with        
-        member this.Convert(engine: REngine, x: DateTime) =            
-            R.as_POSIXct(String.Format("{0:u}", x.ToUniversalTime(), "UTC"))
-
-[<Export(typeof<IConvertToR<seq<DateTime>>>)>]
-type DateTimeSeqConverter() =
-    interface IConvertToR<seq<DateTime>> with        
-        member this.Convert(engine: REngine, xs: seq<DateTime>) =            
-            let dts = xs |> Seq.map (fun dt -> String.Format("{0:u}", dt.ToUniversalTime()))
-            R.as_POSIXct(dts, "UTC")
-			
-*)			

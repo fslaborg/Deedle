@@ -45,13 +45,15 @@ and
     ( index:IIndex<'K>, vector:IVector<'V>,
       vectorBuilder : IVectorBuilder, indexBuilder : IIndexBuilder ) as this =
   
-  // Lazy value to hold the number of elements (so that we do not recalculate this all the time)
+  /// Lazy value to hold the number of elements (so that we do not recalculate this all the time)
   let valueCount = Lazy.Create (fun () -> 
     let mutable count = 0
     for _, a in index.Mappings do if vector.GetValue(a).HasValue then count <- count + 1
     count )
 
+  /// Returns the vector builder associated with this series
   member internal x.VectorBuilder = vectorBuilder
+  /// Returns the index builder associated with this series
   member internal x.IndexBuilder = indexBuilder
 
   // ----------------------------------------------------------------------------------------------
@@ -99,6 +101,8 @@ and
       let v = vector.GetValue(a)
       if v.HasValue then yield KeyValuePair(k, v.Value) }
 
+  /// 
+  ///
   /// [category:Series data]
   member x.IsEmpty = Seq.isEmpty index.Mappings
 
@@ -108,9 +112,17 @@ and
   /// [category:Series data]
   member x.KeyRange = index.KeyRange
 
+  /// Returns the total number of keys in the specified series. This returns
+  /// the total length of the series, including keys for which there is no 
+  /// value available.
+  ///
   /// [category:Series data]
   member x.KeyCount = int index.KeyCount
 
+  /// Returns the total number of values in the specified series. This excludes
+  /// missing values or not available values (such as values created from `null`,
+  /// `Double.NaN`, or those that are missing due to outer join etc.).
+  ///
   /// [category:Series data]
   member x.ValueCount = valueCount.Value
 
@@ -129,6 +141,23 @@ and
   member x.GetSlice(lo, hi) =
     let inclusive v = v |> Option.map (fun v -> v, BoundaryBehavior.Inclusive)
     x.GetSubrange(inclusive lo, inclusive hi)
+
+  member series.Between(lowerInclusive, upperInclusive) = 
+    series.GetSubrange
+      ( Some(lowerInclusive, BoundaryBehavior.Inclusive),
+        Some(upperInclusive, BoundaryBehavior.Inclusive) )
+
+  member series.After(lowerExclusive) = 
+    series.GetSubrange( Some(lowerExclusive, BoundaryBehavior.Exclusive), None )
+
+  member series.Before(upperExclusive) = 
+    series.GetSubrange( None, Some(upperExclusive, BoundaryBehavior.Exclusive) )
+
+  member series.StartAt(lowerInclusive) = 
+    series.GetSubrange( Some(lowerInclusive, BoundaryBehavior.Inclusive), None )
+
+  member series.EndAt(upperInclusive) = 
+    series.GetSubrange( None, Some(upperInclusive, BoundaryBehavior.Inclusive) )
 
   /// Returns a new series with an index containing the specified keys.
   /// When the key is not found in the current series, the newly returned
@@ -538,7 +567,7 @@ and
               let segment = DataSegment(kind, series)
               // Call key & value selectors to produce the result
               let newKey = keySelector.Invoke segment
-              let newValue = OptionalValue(valueSelector.Invoke segment)
+              let newValue = valueSelector.Invoke segment
               newKey, newValue ))
     Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
 
@@ -628,6 +657,11 @@ and
 
   member x.MaterializeAsync() = 
     x.AsyncMaterialize() |> Async.StartAsTask
+
+  member x.Materialize() = 
+    let newIndex = indexBuilder.Project(index)
+    let newVector = vector.Select id
+    Series<_, _>(newIndex, newVector, vectorBuilder, indexBuilder)
     
   // ----------------------------------------------------------------------------------------------
   // Operators and F# functions
