@@ -13,7 +13,8 @@ R Provider interoperabilit
 ==========================
 *)
 //#I @"C:\Tomas\Projects\FSharp.RProvider\bin"
-#I "../../../src/deedle.rprovider.plugin/bin/debug/"
+//#I "../../../src/deedle.rprovider.plugin/bin/debug/"
+#I @"../../../bin"
 #r "RProvider.dll"
 #r "RDotNet.dll"
 
@@ -37,7 +38,7 @@ let df = frame [ "A" => series [ 1 => 10.0]]
 R.assign("x",  df).Value
 R.eval(R.parse(text="x")).GetValue<Frame<int, string>>()
 open RDotNet
-//open RProvider.zoo
+open RProvider.zoo
 
 R.zoo([10;20;30], [1;2;3])
 

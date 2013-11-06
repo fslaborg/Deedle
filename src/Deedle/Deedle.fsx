@@ -1,5 +1,6 @@
 #nowarn "211"
 // Try including various folders where Deedle might be (version updated by FAKE)
+#I "../../bin"
 #I "../bin"
 #I "bin"
 #I "lib"
