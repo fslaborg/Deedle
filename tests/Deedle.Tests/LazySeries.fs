@@ -35,6 +35,13 @@ let ``No call is made when series is created and formatted`` () =
   r.Values |> shouldEqual []
 
 [<Test>]
+let ``No call is made when series is created and we get the key range`` () =
+  let r = Recorder()
+  let ls = DelayedSeries.Create(0, 100, spy2 r loadIntegers)
+  ls.KeyRange |> ignore
+  r.Values |> shouldEqual []
+
+[<Test>]
 let ``SeriesExtensions.After creates lower bound exclusive restriction`` () =
   let r = Recorder()
   let ls = DelayedSeries.Create(0, 100, spy2 r loadIntegers)
