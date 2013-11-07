@@ -749,6 +749,12 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   // Apply operation 'op' with 'scalar' on the left to all columns convertible to 'T
   static member inline private ScalarOperationL<'T>(frame:Frame<'TRowKey, 'TColumnKey>, scalar:'T, op:'T -> 'T -> 'T) : Frame<'TRowKey, 'TColumnKey> =
     Frame<'TRowKey, 'TColumnKey>.ScalarOperationR<'T>(frame, scalar, fun a b -> op b a)
+  // Apply operation 'op' to all values in all columns convertible to 'T
+  static member inline internal NullaryOperation<'T>(frame:Frame<'TRowKey, 'TColumnKey>, op : 'T -> 'T) = 
+    frame.SeriesApply(false, fun (s:Series<'TRowKey, 'T>) -> (Series.mapValues op s) :> ISeries<_>)
+  // Apply operation 'op' to all values in all columns convertible to 'T1 (the operation returns different type!)
+  static member inline internal NullaryGenericOperation<'T1, 'T2>(frame:Frame<'TRowKey, 'TColumnKey>, op : 'T1 -> 'T2) =
+    frame.SeriesApply(false, fun (s:Series<'TRowKey, 'T1>) -> (Series.mapValues op s) :> ISeries<_>)
 
   // Pointwise binary operations applied to two frames
 
@@ -844,6 +850,12 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// [category:Operators]
   static member (/) (scalar:float, frame:Frame<'TRowKey, 'TColumnKey>) =
     Frame<'TRowKey, 'TColumnKey>.ScalarOperationL<float>(frame, scalar, (/))
+  /// [category:Operators]
+  static member Pow (frame:Frame<'TRowKey, 'TColumnKey>, scalar:float) =
+    Frame<'TRowKey, 'TColumnKey>.ScalarOperationR<float>(frame, scalar, ( ** ))
+  /// [category:Operators]
+  static member Pow (scalar:float, frame:Frame<'TRowKey, 'TColumnKey>) =
+    Frame<'TRowKey, 'TColumnKey>.ScalarOperationL<float>(frame, scalar, ( ** ))
 
   /// [category:Operators]
   static member (+) (frame:Frame<'TRowKey, 'TColumnKey>, scalar:int) =
@@ -869,6 +881,50 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// [category:Operators]
   static member (/) (scalar:int, frame:Frame<'TRowKey, 'TColumnKey>) =
     Frame<'TRowKey, 'TColumnKey>.ScalarOperationL<float>(frame, float scalar, (/))
+
+  // Trigonometric
+  
+  /// [category:Operators]
+  static member Acos(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, acos)
+  /// [category:Operators]
+  static member Asin(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, asin)
+  /// [category:Operators]
+  static member Atan(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, atan)
+  /// [category:Operators]
+  static member Sin(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, sin)
+  /// [category:Operators]
+  static member Sinh(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, sinh)
+  /// [category:Operators]
+  static member Cos(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, cos)
+  /// [category:Operators]
+  static member Cosh(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, cosh)
+  /// [category:Operators]
+  static member Tan(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, tan)
+  /// [category:Operators]
+  static member Tanh(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, tanh)
+
+  // Actually useful
+
+  /// [category:Operators]
+  static member Abs(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, abs)
+  /// [category:Operators]
+  static member Ceiling(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, ceil)
+  /// [category:Operators]
+  static member Exp(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, exp)
+  /// [category:Operators]
+  static member Floor(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, floor)
+  /// [category:Operators]
+  static member Truncate(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, truncate)
+  /// [category:Operators]
+  static member Log(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, log)
+  /// [category:Operators]
+  static member Log10(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, log10)
+  /// [category:Operators]
+  static member Round(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, round)
+  /// [category:Operators]
+  static member Sign(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryGenericOperation<float, _>(frame, sign)
+  /// [category:Operators]
+  static member Sqrt(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryGenericOperation<float, _>(frame, sqrt)
 
   // ----------------------------------------------------------------------------------------------
   // Constructor

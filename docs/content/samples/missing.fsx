@@ -70,3 +70,13 @@ let errorDf = frame [ "Errors1" =?> errors1; "Errors2" =?> errors2; "NoErrors" =
 
 // 
 errorDf |> Frame.fillErrorsWith -1 |> Frame.fillErrorsWith (null:string)
+
+
+(**
+
+Other TODO things
+-----------------
+
+*)
+
+log (msftRen ** 2.0)
