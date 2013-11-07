@@ -143,7 +143,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
         |> Vector.ofValues
       Frame<_, _>(rowIndex, colIndex, data)
 
-  static member FromColumnsNonGeneric seriesConv nested = fromColumnsNonGeneric seriesConv nested
+  static member internal FromColumnsNonGeneric seriesConv nested = fromColumnsNonGeneric seriesConv nested
     
   member private x.tryGetColVector column = 
     let columnIndex = columnIndex.Lookup(column)
@@ -161,6 +161,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member internal frame.RowIndex = rowIndex
   member internal frame.ColumnIndex = columnIndex
   member internal frame.Data = data
+
+  member frame.RowCount = frame.RowIndex.KeyCount |> int
+  member frame.ColumnCount = frame.ColumnIndex.KeyCount |> int
 
   // ----------------------------------------------------------------------------------------------
   // Joining, zipping and appending

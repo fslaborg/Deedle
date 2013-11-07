@@ -270,6 +270,55 @@ let tryValues (vect:IVector) =
     mi.Invoke(null, [| vect |]) :?> TryValue<IVector>
   else TryValue.Success vect
 
+/// Helper functions and active patterns for type inference
+module Inference = 
+  /// Classsify type as one of the supported primitives
+  let (|Top|Bottom|String|Int|Float|) ty =
+    if ty = null then Top
+    elif ty = typeof<int> || ty = typeof<int16> || ty = typeof<byte> then Int
+    elif ty = typeof<string> || ty = typeof<char> then String
+    elif ty = typeof<float32> || ty = typeof<float> then Float
+    else Bottom
+
+  /// System.Type representing bottom
+  let Bottom = typeof<obj>
+  /// System.Type representing top
+  let Top : System.Type = null
+
+  /// Given two types, find their common supertype
+  let commonSupertype t1 t2 = 
+    match t1, t2 with
+    // Top and anything is the other thing
+    | Top, t | t, Top -> t
+    // Bottom and anything is Bottom
+    | Bottom, _ | _, Bottom -> Bottom
+    // A type with itself is a type
+    | String, String -> typeof<string>
+    | Int, Int -> typeof<int>
+    | Float, Float -> typeof<float>
+    // Ints can be converted to floats
+    | Int, Float | Float, Int -> typeof<float>
+    // String cannot be implicitly converted to anything else
+    | String, _ | _, String -> Bottom
+
+/// Helper object called by createTypedVector via reflection
+type CreateTypedVectorHelper = 
+  static member Create<'T>(builder:IVectorBuilder, data:obj[]) =
+    builder.Create(Array.map unbox<'T> data)
+
+/// Given object array, create a typed vector of the best possible type
+let createTypedVector (builder:IVectorBuilder) (data:obj[]) =
+  // Infer the vector type
+  let vectorType = 
+    data |> Array.map (fun v -> if v = null then Inference.Top else v.GetType()) 
+         |> Seq.reduce Inference.commonSupertype
+  let vectorType = if vectorType = Inference.Top then Inference.Bottom else vectorType
+
+  // Create specialized method info and invoke it
+  let flags = System.Reflection.BindingFlags.NonPublic ||| System.Reflection.BindingFlags.Static
+  let createMi = typeof<CreateTypedVectorHelper>.GetMethod("Create", flags).MakeGenericMethod [| vectorType |]
+  createMi.Invoke(null, [| builder; data |]) :?> IVector
+
 /// Substitute variable hole for another in a vector construction
 let rec substitute ((oldVar, newVar) as subst) = function
   | Return v when v = oldVar -> Return newVar

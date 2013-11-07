@@ -628,13 +628,13 @@ type FrameExtensions =
   /// Returns the total number of row keys in the specified frame. This returns
   /// the total length of the row series, including keys for which there is no 
   /// value available.
-  [<Extension>]
+  [<Extension; Obsolete("Use df.RowCount")>]
   static member CountRows(frame:Frame<'R, 'C>) = frame.RowIndex.Mappings |> Seq.length
 
   /// Returns the total number of row keys in the specified frame. This returns
   /// the total length of the row series, including keys for which there is no 
   /// value available.
-  [<Extension>]
+  [<Extension; Obsolete("Use df.ColumnCount")>]
   static member CountColumns(frame:Frame<'R, 'C>) = frame.ColumnIndex.Mappings |> Seq.length
 
   /// Filters frame rows using the specified condtion. Returns a new data frame
