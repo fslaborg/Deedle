@@ -473,7 +473,7 @@ module Frame =
   ///
   /// [category:Projection and filtering]
   [<CompiledName("SelectRows")>]
-  let inline mapRows f (frame:Frame<'R, 'C>) = 
+  let inline mapRows (f:_ -> _ -> 'V) (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.map f 
 
   /// Builds a new data frame whose rows are the results of applying the specified
@@ -487,7 +487,7 @@ module Frame =
   ///
   /// [category:Projection and filtering]
   [<CompiledName("SelectRowValues")>]
-  let inline mapRowValues f (frame:Frame<'R, 'C>) = 
+  let inline mapRowValues (f:_ -> 'V) (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.mapValues f 
 
   /// Builds a new data frame whose row keys are the results of applying the
@@ -574,6 +574,28 @@ module Frame =
   // ----------------------------------------------------------------------------------------------
   // Additional functions for working with data frames
   // ----------------------------------------------------------------------------------------------
+
+  let tryMapRows (f:_ -> _ -> 'V) (frame:Frame<'R, 'C>) = 
+    frame |> mapRows (fun k row -> try TryValue.Success(f k row) with e -> TryValue.Error e)
+
+  /// Throws `AggregateException` if something goes wrong
+  let tryValues (frame:Frame<'R, 'C>) = 
+    let newTryData = frame.Data.Select(VectorHelpers.tryValues)
+    let exceptions = newTryData.DataSequence |> Seq.choose OptionalValue.asOption |> Seq.choose (fun v ->
+      if v.HasValue then None else Some v.Exception) |> List.ofSeq
+    if List.isEmpty exceptions then 
+      // All succeeded, so we can build new data frame
+      let newData = newTryData.Select(fun v -> v.Value)
+      Frame<_, _>(frame.RowIndex, frame.ColumnIndex, newData)
+    else
+      // Some exceptions, aggregate all of them
+      let exceptions = exceptions |> List.collect (function
+        | :? AggregateException as ae -> ae.InnerExceptions |> List.ofSeq | e -> [e])
+      raise (new AggregateException(exceptions))
+
+  let fillErrorsWith (value:'T) (frame:Frame<'R, 'C>) = 
+    frame.SeriesApply(true, fun (s:Series<_, 'T tryval>) -> 
+      (Series.fillErrorsWith value s) :> ISeries<_>)
 
   let mean (frame:Frame<'R, 'C>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Series.mean)

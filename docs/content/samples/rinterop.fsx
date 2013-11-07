@@ -20,10 +20,15 @@ R Provider interoperabilit
 
 open Deedle
 open RProvider
+open RDotNet
+#r "RDotNet.NativeLibrary.dll"
 open RProvider.datasets
 open FSharp.Charting
 
+let foo (e:RDotNet.REngine) = e.CreateNumericVector(10)
+
 let mtcars : Frame<string, string> = R.mtcars.GetValue()
+
 mtcars
 |> Frame.groupRowsByInt "gear"
 |> Frame.meanLevel fst
@@ -31,11 +36,16 @@ mtcars
 |> Series.observations |> Chart.Column
 
 
-
 open RProvider.``base``
 
-let df = frame [ "A" => series [ 1 => 10.0]]
-R.assign("x",  df).Value
+let df = frame [ "A" =?> series [ 1 => 10.0; 2=> nan; 4 => 15.0]
+                 "B" =?> series [ 1 => "one"; 3=>"three"; 4=>"four" ] ]
+R.assign("x",  df).Print()
+
+R.assign("cars", mtcars).Print()
+
+//.Value
+
 R.eval(R.parse(text="x")).GetValue<Frame<int, string>>()
 open RDotNet
 open RProvider.zoo

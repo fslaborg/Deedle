@@ -28,6 +28,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{B6AF
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{8BD8876A-28FC-4B7D-89E4-09AC07794D0E}"
 	ProjectSection(SolutionItems) = preProject
+		docs\content\samples\missing.fsx = docs\content\samples\missing.fsx
 		docs\content\samples\rinterop.fsx = docs\content\samples\rinterop.fsx
 		docs\content\samples\titanic.fsx = docs\content\samples\titanic.fsx
 		docs\content\samples\volatility.fsx = docs\content\samples\volatility.fsx

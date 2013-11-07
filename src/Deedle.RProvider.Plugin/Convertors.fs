@@ -36,6 +36,33 @@ let convertIndex (names:string[]) : option<IIndex<'R>> =
     |> Index.ofKeys |> Some
   with _ -> None
 
+
+/// Convert vector to a boxed array that can be passed to the R provider
+let convertVector : IVector -> obj =
+  { new VectorHelpers.VectorCallSite1<obj> with
+      override x.Invoke<'T>(col:IVector<'T>) = 
+        // Figure out how to handle missing values - if we can pass NA or NaN to R
+        // then we just fill missing values with 'missingVal'
+        let missingVal = 
+          if typeof<'T> = typeof<string> then Some (Unchecked.defaultof<'T>)
+          elif typeof<'T> = typeof<double> then Some (unbox<'T> Double.NaN)
+          else None
+
+        // If there are missing values and we do not have filler, try converting to float
+        let hasMissing = col.DataSequence |> Seq.exists (fun v -> not v.HasValue)
+        if hasMissing && missingVal.IsNone then
+          let colNum = VectorHelpers.tryChangeType<float> col
+          if colNum.HasValue then
+            box [| for v in colNum.Value.DataSequence -> if v.HasValue then v.Value else nan  |]
+          else
+            invalidOp (sprintf "Cannot pass column with missing values to R. Missing values of type %s are not supported" (typeof<'T>.Name))
+
+        // Either there are no missing values, or we can fill them 
+        else 
+          box [| for v in col.DataSequence -> if v.HasValue then v.Value else missingVal.Value |] }
+  |> VectorHelpers.createVectorDispatcher 
+
+
 /// Creates data frame with the specified row & col indices
 let constructFrame (df:DataFrame) rowIndex colIndex =
   let rows = df.GetRows() |> Array.ofSeq

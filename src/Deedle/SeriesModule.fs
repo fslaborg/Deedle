@@ -93,6 +93,21 @@ module Series =
     series.SelectOptional(fun kvp -> 
       f kvp.Key (OptionalValue.asOption kvp.Value) |> OptionalValue.ofOption)
 
+  let tryMap (f:'K -> 'T -> 'R) (series:Series<'K, 'T>) : Series<_, _ tryval> = 
+    series.Select(fun (KeyValue(k,v)) -> 
+      try TryValue.Success(f k v) with e -> TryValue.Error e )
+
+  /// Throws `AggregateException` if something goes wrong
+  let tryValues (series:Series<'K, 'T tryval>) = 
+    let exceptions = series.Values |> Seq.choose (fun tv -> 
+      if tv.HasValue then None else Some tv.Exception) |> List.ofSeq
+    if List.isEmpty exceptions then
+      series |> mapValues (fun tv -> tv.Value)
+    else raise (new AggregateException(exceptions))
+
+  let fillErrorsWith value (series:Series<'K, 'T tryval>) = 
+    series |> mapValues (function TryValue.Error _ -> value | TryValue.Success v -> v)
+
   /// `result[k] = series[k] - series[k - offset]`
   let inline diff offset (series:Series<'K, ^T>) = 
     series.Aggregate

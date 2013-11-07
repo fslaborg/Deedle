@@ -249,6 +249,27 @@ let fillNA (def:obj) : IVector -> IVector =
           | OptionalValue.Present v -> OptionalValue(v)) :> IVector }
   |> createVectorDispatcher
 
+/// Helper type that is used via reflection
+type TryValuesHelper =
+  /// Turns IVector<TryValue<'T>> into TryValue<IVector<'T>> by aggregating all exceptions
+  /// (used via reflection by the `tryValues` function below)
+  static member TryValues<'T>(vector:IVector<'T tryval>) = 
+    let exceptions = vector.DataSequence |> Seq.choose OptionalValue.asOption |> Seq.choose (fun tv -> 
+      if tv.HasValue then None else Some tv.Exception) |> List.ofSeq
+    if List.isEmpty exceptions then TryValue.Success (vector.Select(fun v -> v.Value) :> IVector)
+    else TryValue.Error (new AggregateException(exceptions))
+
+/// Given an IVector, check if the vector contains `'T tryval` values and if it does,
+/// turn that into a vector of just `'T` values, or return aggregated exception
+let tryValues (vect:IVector) =
+  let elty = vect.ElementType
+  // Does the specified vector represent 'tryval' column?
+  if elty.IsGenericType && elty.GetGenericTypeDefinition() = typedefof<_ tryval> then
+    let tyarg = elty.GetGenericArguments().[0]
+    let mi = typeof<TryValuesHelper>.GetMethod("TryValues").MakeGenericMethod [|tyarg|]        
+    mi.Invoke(null, [| vect |]) :?> TryValue<IVector>
+  else TryValue.Success vect
+
 /// Substitute variable hole for another in a vector construction
 let rec substitute ((oldVar, newVar) as subst) = function
   | Return v when v = oldVar -> Return newVar

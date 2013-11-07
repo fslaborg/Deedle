@@ -19,8 +19,11 @@ type DataFrameToR() =
       { new IFrameOperation<_> with
           member x.Invoke(frame) =
             let args = 
-              [ for r, c in frame.Columns |> Series.observations do
-                  yield convertKey r, box [| 0 |] ] 
+              [ for r, addr in frame.ColumnIndex.Mappings do
+                  let c = frame.Data.GetValue(addr)
+                  if c.HasValue then 
+                    let data = convertVector c.Value
+                    yield convertKey r, data ] 
             let rowNames = "row.names", box (frame.RowKeys |> Seq.map convertKey)
             R.data_frame(namedParams (rowNames::args)) }
       |> input.Apply

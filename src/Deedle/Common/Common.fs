@@ -4,6 +4,14 @@ namespace Deedle
 open System
 open System.Runtime.CompilerServices
 
+/// Thrown when a value at the specified index does not exist in the data frame or series.
+/// This exception is thrown only when the key is defined, but the value is not available,
+/// in other situations `KeyNotFoundException` is thrown
+type MissingValueException(key:obj, message) =
+  inherit Exception(message)
+  /// The key that has been accessed
+  member x.Key = key
+
 /// Value type that represents a potentially missing value. This is similar to 
 /// `System.Nullable<T>`, but does not restrict the contained value to be a value
 /// type, so it can be used for storing values of any types. When obtained from
@@ -55,7 +63,40 @@ type OptionalValue<'T> private (hasValue:bool, value:'T) =
     | null -> false
     | :? OptionalValue<'T> as y -> Object.Equals(x.ValueOrDefault, y.ValueOrDefault)
     | _ -> false
+   
     
+/// Represents a value or an exception. This type is used by functions such as
+/// `Series.tryMap` and `Frame.tryMap` to capture the result of a lambda function,
+/// which may be either a value or an exception. The type is a discriminated union,
+/// so it can be processed using F# pattern matching, or using `Value`, `HasValue`
+/// and `Exception` properties
+type TryValue<'T> =
+  | Success of 'T
+  | Error of exn
+
+  /// Returns the value of `TryValue<T>` when the value is present; 
+  /// otherwise, throws an exception that was captured
+  member x.Value =
+    match x with Success v -> v | Error exn -> raise exn
+
+  /// Returns `true` when the `TryValue<T>` object represents a 
+  /// successfully calculated value 
+  member x.HasValue = 
+    match x with Success _ -> true | _ -> false
+
+  /// Returns the exception captured by this value. When `HasValue = true`, 
+  /// accessing the property throws `InvalidOperationException`.
+  member x.Exception = 
+    match x with Success _ -> invalidOp "The TryValue<T> does not represent an exception" | Error exn -> exn
+
+  /// Returns the string representation of the underlying value or `<error>`
+  override x.ToString() = 
+    match x with Success v -> v.ToString() | _ -> "<error>"
+
+/// A type alias for the `TryValue<T>` type. The type alias can be used
+/// to make F# type declarations that explcitly handle exceptions more succinct.
+type 'T tryval = TryValue<'T>
+
 /// A type alias for the `OptionalValue<T>` type. The type alias can be used
 /// to make F# type definitions that use optional values directly more succinct.
 type 'T opt = OptionalValue<'T>
@@ -265,6 +306,17 @@ open System.Collections.ObjectModel
 /// (even though the type implements IComparable and everything...)
 type ComparisonFailedException() =
   inherit Exception() 
+
+/// Simple helper functions for throwing exceptions
+[<AutoOpen>]
+module internal ExceptionHelpers =
+  /// Throws `MissingValueException` with a nicely formatted error message for the specified key
+  let inline missingVal key = 
+    raise (new MissingValueException(key, sprintf "Value at the key %O is missing" key))
+
+  /// Throws `KeyNotFoundException` with a nicely formatted error message for the specified key
+  let inline keyNotFound key = 
+    raise (new KeyNotFoundException(sprintf "The key %O is not present in the index" key))
 
 /// Utility functions for identifying missing values. The `isNA` function 
 /// can be used to test whether a value represents a missing value - this includes

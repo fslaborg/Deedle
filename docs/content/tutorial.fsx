@@ -435,22 +435,23 @@ and `Series.mapKeys` if you only want to transform one aspect).
 
 The methods are not available directly on data frame, so you always need to write `df.Rows` 
 or `df.Columns` (depending on which one you want). Correspondingly, the `Frame` module
-provides functions such as `Frame.mapRows`. The following adds a new Boolean column that is 
-true when the MSFT opening price is greater than FB:
+provides functions such as `Frame.mapRows`. The following adds a new column that contains
+the name of the stock with greater price ("FB" or "MSFT"):
 *)
 
 joinedOut?Comparison <- joinedOut |> Frame.mapRowValues (fun row -> 
-  if row |> Series.hasAll ["MsftOpen"; "FbOpen"] then
-    if row?MsftOpen > row?FbOpen then "MSFT" else "FB"
-  else null )
+  if row?MsftOpen > row?FbOpen then "MSFT" else "FB")
 
 (**
 When projecting or filtering rows, we need to be careful about missing data. The row
 accessor `row?MsftOpen` reads the specified column (and converts it to `float`), but when
-the column is not available, it throws an exception. In the snippet above, we use
-`Series.hasAll` to make sure that the series has all the values we need. We return `null`
-if this is not the case. The data frame library understands this and treats `null` as a 
-missing value (so it will show as `<missing>` in the output and it will be skipped by future
+the column is not available, it throws the `MissingValueException` exception. Projection
+functions such as `mapRowValues` automatically catch this exception (but no other types
+of exceptions) and mark the corresponding series value as missing.
+
+To make the missing value handling more explicit, you could use `Series.hasAll ["MsftOpen"; "FbOpen"]`
+to check that the series has all the values we need. If no, the lambda function could return
+`null`, which is automatically treated as a missing value (and it will be skipped by future
 operations).
 
 Now we can get the number of days when Microsoft stock prices were above Facebook and the
@@ -466,7 +467,7 @@ joinedOut.GetSeries<string>("Comparison")
 // [fsi:val it : int = 103]
 
 (**
-In this same, we should probably have used `joinedIn` which only has rows where the 
+In this case, we should probably have used `joinedIn` which only has rows where the 
 values are always available. But you often want to work with data frame that has missing values, 
 so it is useful to see how this work. Here is another alternative:
 *)

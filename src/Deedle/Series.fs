@@ -202,9 +202,11 @@ and
   ///
   /// [category:Accessors and slicing]
   member x.GetObservation(key, lookup) =
-    let res = x.TryGetObservation(key, lookup) 
-    if not res.HasValue then raise (KeyNotFoundException(key.ToString()))
-    else res.Value
+    let mapping = index.Lookup(key, lookup, fun addr -> vector.GetValue(addr).HasValue) 
+    if not mapping.HasValue then keyNotFound key
+    let value = vector.GetValue(snd mapping.Value) 
+    if not value.HasValue then missingVal key
+    KeyValuePair(fst mapping.Value, value.Value)
 
   ///
   /// [category:Accessors and slicing]
@@ -301,7 +303,8 @@ and
       index.Mappings |> Array.ofSeq |> Array.mapi (fun i (key, addr) ->
            vector.GetValue(addr) |> OptionalValue.bind (fun v -> 
              // If a required value is missing, then skip over this
-             OptionalValue(f.Invoke(KeyValuePair(key, v), i)) ))
+             try OptionalValue(f.Invoke(KeyValuePair(key, v), i))
+             with :? MissingValueException -> OptionalValue.Missing ))
     let newIndex = indexBuilder.Project(index)
     Series<'K, 'R>(newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder )
 
