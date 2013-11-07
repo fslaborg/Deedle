@@ -164,7 +164,7 @@ let fbCsv = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/FB.csv")
 // [fsi:  322 -> 2012-05-18 42.05 45.00 38.00 38.23 573576400 38.23     ]
 
 (**
-When loading the data, data frame analyses the values and automatically converts
+When loading the data, the data frame analyses the values and automatically converts
 them to the most appropriate type. However, no conversion is automatically performed
 for dates and times - the user needs to decide what is the desirable representation
 of dates (e.g. `DateTime`, `DateTimeOffset` or some custom type).
