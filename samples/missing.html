@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Missing data and exceptions
+</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Easy to use .NET library for data manipulation and scientific programming">
+    <meta name="author" content="BlueMountain Capital">
+
+    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/style.css" />
+    <script type="text/javascript" src="http://bluemountaincapital.github.io/Deedle/content/tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://github.com/BlueMountainCapital/Deedle">github page</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/">F# Charting</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider">R Type Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data/">F# Data</a></li>
+        </ul>
+        <h3 class="muted">Deedle</h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+<h1>Missing data and exceptions</h1>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+<span class="l">16: </span>
+<span class="l">17: </span>
+<span class="l">18: </span>
+<span class="l">19: </span>
+<span class="l">20: </span>
+<span class="l">21: </span>
+<span class="l">22: </span>
+<span class="l">23: </span>
+<span class="l">24: </span>
+<span class="l">25: </span>
+<span class="l">26: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">msftCsv</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">ReadCsv</span>(<span class="k">__SOURCE_DIRECTORY__</span> <span class="o">+</span> <span class="s">&quot;</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">data</span><span class="s">/</span><span class="s">MSFT</span><span class="s">.</span><span class="s">csv</span><span class="s">&quot;</span>)
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="i">fbCsv</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs2', 5)" onmouseover="showTip(event, 'fs2', 5)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs3', 6)" onmouseover="showTip(event, 'fs3', 6)" class="i">ReadCsv</span>(<span class="k">__SOURCE_DIRECTORY__</span> <span class="o">+</span> <span class="s">&quot;</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">data</span><span class="s">/</span><span class="s">FB</span><span class="s">.</span><span class="s">csv</span><span class="s">&quot;</span>)
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs5', 7)" onmouseover="showTip(event, 'fs5', 7)" class="i">msftOrd</span> <span class="o">=</span> 
+  <span onmouseout="hideTip(event, 'fs1', 8)" onmouseover="showTip(event, 'fs1', 8)" class="i">msftCsv</span>
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 9)" onmouseover="showTip(event, 'fs2', 9)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 10)" onmouseover="showTip(event, 'fs6', 10)" class="i">indexRowsDate</span> <span class="s">&quot;</span><span class="s">Date</span><span class="s">&quot;</span>
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 11)" onmouseover="showTip(event, 'fs2', 11)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 12)" onmouseover="showTip(event, 'fs7', 12)" class="i">orderRows</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs8', 13)" onmouseover="showTip(event, 'fs8', 13)" class="i">msft</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs5', 14)" onmouseover="showTip(event, 'fs5', 14)" class="i">msftOrd</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 15)" onmouseover="showTip(event, 'fs9', 15)" class="i">Columns</span><span class="o">.</span>[ [<span class="s">&quot;</span><span class="s">Open</span><span class="s">&quot;</span>; <span class="s">&quot;</span><span class="s">Close</span><span class="s">&quot;</span>] ]
+
+<span class="c">// Add new column with the difference between Open &amp; Close</span>
+<span onmouseout="hideTip(event, 'fs8', 16)" onmouseover="showTip(event, 'fs8', 16)" class="i">msft</span><span class="o">?</span><span class="i">Difference</span> <span class="o">&lt;-</span> <span onmouseout="hideTip(event, 'fs8', 17)" onmouseover="showTip(event, 'fs8', 17)" class="i">msft</span><span class="o">?</span><span class="i">Open</span> <span class="o">-</span> <span onmouseout="hideTip(event, 'fs8', 18)" onmouseover="showTip(event, 'fs8', 18)" class="i">msft</span><span class="o">?</span><span class="i">Close</span>
+
+<span class="c">// Do the same thing for Facebook</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs10', 19)" onmouseover="showTip(event, 'fs10', 19)" class="i">fb</span> <span class="o">=</span> 
+  <span onmouseout="hideTip(event, 'fs4', 20)" onmouseover="showTip(event, 'fs4', 20)" class="i">fbCsv</span>
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 21)" onmouseover="showTip(event, 'fs2', 21)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 22)" onmouseover="showTip(event, 'fs6', 22)" class="i">indexRowsDate</span> <span class="s">&quot;</span><span class="s">Date</span><span class="s">&quot;</span>
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 23)" onmouseover="showTip(event, 'fs2', 23)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 24)" onmouseover="showTip(event, 'fs7', 24)" class="i">orderRows</span>
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 25)" onmouseover="showTip(event, 'fs2', 25)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs11', 26)" onmouseover="showTip(event, 'fs11', 26)" class="i">getCols</span> [<span class="s">&quot;</span><span class="s">Open</span><span class="s">&quot;</span>; <span class="s">&quot;</span><span class="s">Close</span><span class="s">&quot;</span>]
+<span onmouseout="hideTip(event, 'fs10', 27)" onmouseover="showTip(event, 'fs10', 27)" class="i">fb</span><span class="o">?</span><span class="i">Difference</span> <span class="o">&lt;-</span> <span onmouseout="hideTip(event, 'fs10', 28)" onmouseover="showTip(event, 'fs10', 28)" class="i">fb</span><span class="o">?</span><span class="i">Open</span> <span class="o">-</span> <span onmouseout="hideTip(event, 'fs10', 29)" onmouseover="showTip(event, 'fs10', 29)" class="i">fb</span><span class="o">?</span><span class="i">Close</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs12', 30)" onmouseover="showTip(event, 'fs12', 30)" class="i">msftRen</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs8', 31)" onmouseover="showTip(event, 'fs8', 31)" class="i">msft</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 32)" onmouseover="showTip(event, 'fs2', 32)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs13', 33)" onmouseover="showTip(event, 'fs13', 33)" class="i">indexColsWith</span> [<span class="s">&quot;</span><span class="s">MsftOpen</span><span class="s">&quot;</span>; <span class="s">&quot;</span><span class="s">MsftClose</span><span class="s">&quot;</span>; <span class="s">&quot;</span><span class="s">MsftDiff</span><span class="s">&quot;</span>]
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs14', 34)" onmouseover="showTip(event, 'fs14', 34)" class="i">fbRen</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs10', 35)" onmouseover="showTip(event, 'fs10', 35)" class="i">fb</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 36)" onmouseover="showTip(event, 'fs2', 36)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs13', 37)" onmouseover="showTip(event, 'fs13', 37)" class="i">indexColsWith</span> [<span class="s">&quot;</span><span class="s">FbOpen</span><span class="s">&quot;</span>; <span class="s">&quot;</span><span class="s">FbClose</span><span class="s">&quot;</span>; <span class="s">&quot;</span><span class="s">FbDiff</span><span class="s">&quot;</span>]
+
+<span class="c">// Outer join (align &amp; fill with missing values)</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs15', 38)" onmouseover="showTip(event, 'fs15', 38)" class="i">joinedOut</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs12', 39)" onmouseover="showTip(event, 'fs12', 39)" class="i">msftRen</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 40)" onmouseover="showTip(event, 'fs16', 40)" class="i">Join</span>(<span onmouseout="hideTip(event, 'fs14', 41)" onmouseover="showTip(event, 'fs14', 41)" class="i">fbRen</span>, <span class="i">kind</span><span class="o">=</span><span onmouseout="hideTip(event, 'fs17', 42)" onmouseover="showTip(event, 'fs17', 42)" class="i">JoinKind</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs18', 43)" onmouseover="showTip(event, 'fs18', 43)" class="i">Outer</span>)</pre>
+</td>
+</tr>
+</table>
+
+<h2>Handling errors</h2>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+<span class="l">16: </span>
+<span class="l">17: </span>
+<span class="l">18: </span>
+<span class="l">19: </span>
+<span class="l">20: </span>
+<span class="l">21: </span>
+<span class="l">22: </span>
+<span class="l">23: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs19', 44)" onmouseover="showTip(event, 'fs19', 44)" class="i">errors1</span> <span class="o">=</span> 
+  <span onmouseout="hideTip(event, 'fs15', 45)" onmouseover="showTip(event, 'fs15', 45)" class="i">joinedOut</span><span class="o">?</span><span class="i">MsftOpen</span> 
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs20', 46)" onmouseover="showTip(event, 'fs20', 46)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 47)" onmouseover="showTip(event, 'fs21', 47)" class="i">tryMap</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs22', 48)" onmouseover="showTip(event, 'fs22', 48)" class="i">k</span> <span onmouseout="hideTip(event, 'fs23', 49)" onmouseover="showTip(event, 'fs23', 49)" class="i">v</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs24', 50)" onmouseover="showTip(event, 'fs24', 50)" class="i">int</span> <span onmouseout="hideTip(event, 'fs23', 51)" onmouseover="showTip(event, 'fs23', 51)" class="i">v</span> <span class="o">/</span> (<span onmouseout="hideTip(event, 'fs22', 52)" onmouseover="showTip(event, 'fs22', 52)" class="i">k</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs25', 53)" onmouseover="showTip(event, 'fs25', 53)" class="i">Day</span> <span class="o">%</span> <span class="n">5</span>))
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs26', 54)" onmouseover="showTip(event, 'fs26', 54)" class="i">errors2</span> <span class="o">=</span> 
+  <span onmouseout="hideTip(event, 'fs15', 55)" onmouseover="showTip(event, 'fs15', 55)" class="i">joinedOut</span><span class="o">?</span><span class="i">MsftOpen</span> 
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs20', 56)" onmouseover="showTip(event, 'fs20', 56)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 57)" onmouseover="showTip(event, 'fs21', 57)" class="i">tryMap</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs22', 58)" onmouseover="showTip(event, 'fs22', 58)" class="i">k</span> <span onmouseout="hideTip(event, 'fs23', 59)" onmouseover="showTip(event, 'fs23', 59)" class="i">v</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs24', 60)" onmouseover="showTip(event, 'fs24', 60)" class="i">int</span> <span onmouseout="hideTip(event, 'fs23', 61)" onmouseover="showTip(event, 'fs23', 61)" class="i">v</span> <span class="o">/</span> (<span onmouseout="hideTip(event, 'fs22', 62)" onmouseover="showTip(event, 'fs22', 62)" class="i">k</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs25', 63)" onmouseover="showTip(event, 'fs25', 63)" class="i">Day</span> <span class="o">%</span> <span class="n">5</span>) <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs27', 64)" onmouseover="showTip(event, 'fs27', 64)" class="i">string</span>)
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs28', 65)" onmouseover="showTip(event, 'fs28', 65)" class="i">noerrors</span> <span class="o">=</span> 
+  <span onmouseout="hideTip(event, 'fs15', 66)" onmouseover="showTip(event, 'fs15', 66)" class="i">joinedOut</span><span class="o">?</span><span class="i">MsftOpen</span> 
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs20', 67)" onmouseover="showTip(event, 'fs20', 67)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 68)" onmouseover="showTip(event, 'fs21', 68)" class="i">tryMap</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs22', 69)" onmouseover="showTip(event, 'fs22', 69)" class="i">k</span> <span onmouseout="hideTip(event, 'fs23', 70)" onmouseover="showTip(event, 'fs23', 70)" class="i">v</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs23', 71)" onmouseover="showTip(event, 'fs23', 71)" class="i">v</span> <span class="o">/</span> <span onmouseout="hideTip(event, 'fs29', 72)" onmouseover="showTip(event, 'fs29', 72)" class="i">float</span> (<span onmouseout="hideTip(event, 'fs22', 73)" onmouseover="showTip(event, 'fs22', 73)" class="i">k</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs25', 74)" onmouseover="showTip(event, 'fs25', 74)" class="i">Day</span> <span class="o">%</span> <span class="n">5</span>))
+
+<span class="c">// Throws loads</span>
+<span onmouseout="hideTip(event, 'fs19', 75)" onmouseover="showTip(event, 'fs19', 75)" class="i">errors1</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs20', 76)" onmouseover="showTip(event, 'fs20', 76)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs30', 77)" onmouseover="showTip(event, 'fs30', 77)" class="i">tryValues</span>
+<span class="c">// Works fine</span>
+<span onmouseout="hideTip(event, 'fs28', 78)" onmouseover="showTip(event, 'fs28', 78)" class="i">noerrors</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs20', 79)" onmouseover="showTip(event, 'fs20', 79)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs30', 80)" onmouseover="showTip(event, 'fs30', 80)" class="i">tryValues</span>
+
+<span onmouseout="hideTip(event, 'fs19', 81)" onmouseover="showTip(event, 'fs19', 81)" class="i">errors1</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs20', 82)" onmouseover="showTip(event, 'fs20', 82)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs31', 83)" onmouseover="showTip(event, 'fs31', 83)" class="i">fillErrorsWith</span> <span class="o">-</span><span class="n">1</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs32', 84)" onmouseover="showTip(event, 'fs32', 84)" class="i">errorDf</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs33', 85)" onmouseover="showTip(event, 'fs33', 85)" class="i">frame</span> [ <span class="s">&quot;</span><span class="s">Errors1</span><span class="s">&quot;</span> <span class="o">=?&gt;</span> <span onmouseout="hideTip(event, 'fs19', 86)" onmouseover="showTip(event, 'fs19', 86)" class="i">errors1</span>; <span class="s">&quot;</span><span class="s">Errors2</span><span class="s">&quot;</span> <span class="o">=?&gt;</span> <span onmouseout="hideTip(event, 'fs26', 87)" onmouseover="showTip(event, 'fs26', 87)" class="i">errors2</span>; <span class="s">&quot;</span><span class="s">NoErrors</span><span class="s">&quot;</span> <span class="o">=?&gt;</span> <span onmouseout="hideTip(event, 'fs28', 88)" onmouseover="showTip(event, 'fs28', 88)" class="i">noerrors</span> ]
+
+<span class="c">// </span>
+<span onmouseout="hideTip(event, 'fs32', 89)" onmouseover="showTip(event, 'fs32', 89)" class="i">errorDf</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 90)" onmouseover="showTip(event, 'fs2', 90)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs34', 91)" onmouseover="showTip(event, 'fs34', 91)" class="i">fillErrorsWith</span> <span class="o">-</span><span class="n">1</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 92)" onmouseover="showTip(event, 'fs2', 92)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs34', 93)" onmouseover="showTip(event, 'fs34', 93)" class="i">fillErrorsWith</span> (<span class="k">null</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs27', 94)" onmouseover="showTip(event, 'fs27', 94)" class="i">string</span>)</pre>
+</td>
+</tr>
+</table>
+
+<h2>Other TODO things</h2>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span onmouseout="hideTip(event, 'fs35', 95)" onmouseover="showTip(event, 'fs35', 95)" class="i">log</span> (<span onmouseout="hideTip(event, 'fs12', 96)" onmouseover="showTip(event, 'fs12', 96)" class="i">msftRen</span> <span class="o">**</span> <span class="n">2.0</span>)</pre>
+</td>
+</tr>
+</table>
+
+<div class="tip" id="fs1">val msftCsv : Frame&lt;int,string&gt;<br /><br />Full name: Missing.msftCsv</div>
+<div class="tip" id="fs2">Multiple items<br />module Frame<br /><br />from Deedle<br /><br />--------------------<br />type Frame =<br />&#160;&#160;static member CreateEmpty : unit -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,ObjectSeries&lt;&#39;RowKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : rows:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;ColKey,int&gt; (requires equality)<br />&#160;&#160;static member FromRecords : values:seq&lt;&#39;T&gt; -&gt; Frame&lt;int,string&gt;<br />&#160;&#160;static member FromRecords : series:Series&lt;&#39;K,&#39;R&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRowKeys : keys:seq&lt;&#39;K&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRows : rows:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TColKey,&#39;TRowKey&gt; (requires equality and equality)<br />&#160;&#160;...<br /><br />Full name: Deedle.Frame<br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =<br />&#160;&#160;interface IDynamicMetaObjectProvider<br />&#160;&#160;interface INotifyCollectionChanged<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface IFrame<br />&#160;&#160;new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;private new : rowIndex:IIndex&lt;&#39;TRowKey&gt; * columnIndex:IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;...<br /><br />Full name: Deedle.Frame&lt;_,_&gt;<br /><br />--------------------<br />new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
+<div class="tip" id="fs3">static member Frame.ReadCsv : path:string * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : stream:IO.Stream * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string -&gt; Frame&lt;int,string&gt;</div>
+<div class="tip" id="fs4">val fbCsv : Frame&lt;int,string&gt;<br /><br />Full name: Missing.fbCsv</div>
+<div class="tip" id="fs5">val msftOrd : Frame&lt;DateTime,string&gt;<br /><br />Full name: Missing.msftOrd</div>
+<div class="tip" id="fs6">val indexRowsDate : column:&#39;C -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;DateTime,&#39;C&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.indexRowsDate</div>
+<div class="tip" id="fs7">val orderRows : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.orderRows</div>
+<div class="tip" id="fs8">val msft : Frame&lt;DateTime,string&gt;<br /><br />Full name: Missing.msft</div>
+<div class="tip" id="fs9">property Frame.Columns: ColumnSeries&lt;DateTime,string&gt;</div>
+<div class="tip" id="fs10">val fb : Frame&lt;DateTime,string&gt;<br /><br />Full name: Missing.fb</div>
+<div class="tip" id="fs11">val getCols : columns:seq&lt;&#39;C&gt; -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.getCols</div>
+<div class="tip" id="fs12">val msftRen : Frame&lt;DateTime,string&gt;<br /><br />Full name: Missing.msftRen</div>
+<div class="tip" id="fs13">val indexColsWith : keys:seq&lt;&#39;C2&gt; -&gt; frame:Frame&lt;&#39;R,&#39;C1&gt; -&gt; Frame&lt;&#39;R,&#39;C2&gt; (requires equality and equality and equality)<br /><br />Full name: Deedle.Frame.indexColsWith</div>
+<div class="tip" id="fs14">val fbRen : Frame&lt;DateTime,string&gt;<br /><br />Full name: Missing.fbRen</div>
+<div class="tip" id="fs15">val joinedOut : Frame&lt;DateTime,string&gt;<br /><br />Full name: Missing.joinedOut</div>
+<div class="tip" id="fs16">member Frame.Join : otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />member Frame.Join : colKey:&#39;TColumnKey * series:Series&lt;&#39;TRowKey,&#39;V&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />member Frame.Join : otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * kind:JoinKind -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />member Frame.Join : colKey:&#39;TColumnKey * series:Series&lt;&#39;TRowKey,&#39;V&gt; * kind:JoinKind -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />member Frame.Join : otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * kind:JoinKind * lookup:Lookup -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />member Frame.Join : colKey:&#39;TColumnKey * series:Series&lt;&#39;TRowKey,&#39;V&gt; * kind:JoinKind * lookup:Lookup -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
+<div class="tip" id="fs17">type JoinKind =<br />&#160;&#160;|  Outer  =  0<br />&#160;&#160;|  Inner  =  1<br />&#160;&#160;|  Left  =  2<br />&#160;&#160;|  Right  =  3<br /><br />Full name: Deedle.JoinKind</div>
+<div class="tip" id="fs18">JoinKind.Outer: JoinKind = 0</div>
+<div class="tip" id="fs19">val errors1 : Series&lt;DateTime,int tryval&gt;<br /><br />Full name: Missing.errors1</div>
+<div class="tip" id="fs20">Multiple items<br />module Series<br /><br />from Deedle<br /><br />--------------------<br />type Series =<br />&#160;&#160;static member ofNullables : values:seq&lt;Nullable&lt;&#39;a0&gt;&gt; -&gt; Series&lt;int,&#39;a0&gt; (requires default constructor and value type and &#39;a0 :&gt; ValueType)<br />&#160;&#160;static member ofObservations : observations:seq&lt;&#39;a0 * &#39;a1&gt; -&gt; Series&lt;&#39;a0,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofOptionalObservations : observations:seq&lt;&#39;K * OptionalValue&lt;&#39;a1&gt;&gt; -&gt; Series&lt;&#39;K,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofValues : values:seq&lt;&#39;a0&gt; -&gt; Series&lt;int,&#39;a0&gt;<br /><br />Full name: Deedle.FSharpSeriesExtensions.Series<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface ISeries&lt;&#39;K&gt;<br />&#160;&#160;new : pairs:seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : index:IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member After : lowerExclusive:&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * observationSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,KeyValuePair&lt;&#39;TNewKey,OptionalValue&lt;&#39;R&gt;&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * keySelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,OptionalValue&lt;&#39;R&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member Append : otherSeries:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member AsyncMaterialize : unit -&gt; Async&lt;Series&lt;&#39;K,&#39;V&gt;&gt;<br />&#160;&#160;...<br /><br />Full name: Deedle.Series&lt;_,_&gt;<br /><br />--------------------<br />new : pairs:seq&lt;Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : index:Indices.IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:Vectors.IVectorBuilder * indexBuilder:Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
+<div class="tip" id="fs21">val tryMap : f:(&#39;K -&gt; &#39;T -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R tryval&gt; (requires equality)<br /><br />Full name: Deedle.Series.tryMap</div>
+<div class="tip" id="fs22">val k : DateTime</div>
+<div class="tip" id="fs23">val v : float</div>
+<div class="tip" id="fs24">Multiple items<br />val int : value:&#39;T -&gt; int (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.int<br /><br />--------------------<br />type int = int32<br /><br />Full name: Microsoft.FSharp.Core.int<br /><br />--------------------<br />type int&lt;&#39;Measure&gt; = int<br /><br />Full name: Microsoft.FSharp.Core.int&lt;_&gt;</div>
+<div class="tip" id="fs25">property DateTime.Day: int</div>
+<div class="tip" id="fs26">val errors2 : Series&lt;DateTime,string tryval&gt;<br /><br />Full name: Missing.errors2</div>
+<div class="tip" id="fs27">Multiple items<br />val string : value:&#39;T -&gt; string<br /><br />Full name: Microsoft.FSharp.Core.Operators.string<br /><br />--------------------<br />type string = String<br /><br />Full name: Microsoft.FSharp.Core.string</div>
+<div class="tip" id="fs28">val noerrors : Series&lt;DateTime,float tryval&gt;<br /><br />Full name: Missing.noerrors</div>
+<div class="tip" id="fs29">Multiple items<br />val float : value:&#39;T -&gt; float (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.float<br /><br />--------------------<br />type float = Double<br /><br />Full name: Microsoft.FSharp.Core.float<br /><br />--------------------<br />type float&lt;&#39;Measure&gt; = float<br /><br />Full name: Microsoft.FSharp.Core.float&lt;_&gt;</div>
+<div class="tip" id="fs30">val tryValues : series:Series&lt;&#39;K,&#39;T tryval&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><br />Full name: Deedle.Series.tryValues</div>
+<div class="tip" id="fs31">val fillErrorsWith : value:&#39;T -&gt; series:Series&lt;&#39;K,&#39;T tryval&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><br />Full name: Deedle.Series.fillErrorsWith</div>
+<div class="tip" id="fs32">val errorDf : Frame&lt;DateTime,string&gt;<br /><br />Full name: Missing.errorDf</div>
+<div class="tip" id="fs33">val frame : columns:seq&lt;&#39;a * #ISeries&lt;&#39;c&gt;&gt; -&gt; Frame&lt;&#39;c,&#39;a&gt; (requires equality and equality)<br /><br />Full name: Deedle.FSharpFrameExtensions.frame</div>
+<div class="tip" id="fs34">val fillErrorsWith : value:&#39;T -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.fillErrorsWith</div>
+<div class="tip" id="fs35">val log : value:&#39;T -&gt; &#39;T (requires member Log)<br /><br />Full name: Microsoft.FSharp.Core.Operators.log</div>
+
+        </div>
+        <div class="span3">
+          <a href="https://nuget.org/packages/Deedle">
+            <img src="http://bluemountaincapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          </a>
+
+          <ul class="nav nav-list" id="menu">
+            <li class="nav-header">Deedle</li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/index.html">Home page</a></li>
+            <li class="divider"></li>
+            <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/design.html">Design notes</a></li>
+            
+            <li class="nav-header">Using from F#</li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
+              <ul class="nav nav-list">
+                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#creating">Creating data frames</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#reindexing-and-joins">Using index & joining</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#selecting">Reading values, slicing</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#timeseries">Ordered time series</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#projections">Projection and filtering</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#grouping">Aggregating groups</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/features.html">Data frame features</a>
+              <ul class="nav nav-list">
+                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#creating">Creating & loading</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#dataframe">Frame manipulation</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#slicing">Advanced slicing</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#grouping">Grouping data</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#indexing">Hierarchical indexing</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#missing">Missing values</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/timeseries.html">Time series features</a>
+              <ul class="nav nav-list">
+                <li><a href="http://bluemountaincapital.github.io/Deedle/timeseries.html#alignment">Alignment & joining</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/timeseries.html#windowing">Windows and chunks</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/timeseries.html#sampling">Lookup and resampling</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/timeseries.html#stats">Statistics & math</a></li>
+              </ul>
+            </li>
+            <li class="nav-header">Using R from Deedle</li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html#setup">Getting started</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html#frames">Working with data frames</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html#series">Working with time series</a></li>
+
+            <li class="nav-header">Documentation</li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
+
+            <li class="nav-header">Samples</li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/samples/volatility.html">Price volatility</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/samples/titanic.html">Titanic survivors</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/BlueMountainCapital/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <script>
+      (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+          (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+      })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+      ga('create', 'UA-45379232-1', 'bluemountaincapital.github.io');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>

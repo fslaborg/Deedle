@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Addressing - Deedle</title>
+    <title>MissingValueException - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="BlueMountain Capital">
@@ -38,78 +38,49 @@
 
 
 
-<h1>Addressing</h1>
+<h1>MissingValueException</h1>
 <div class="xmldoc">
-<p>An <code>Address</code> value is used as an interface between vectors and indices. The index maps
-keys of various types to address, which is then used to get a value from the vector.</p>
-        <h2>Details</h2>
-<p>In the most common case, the address will be <code>int</code> (and can represent index in an array),
-but it is possible to imagine other addresses - <code>int64</code> could be used with arrays of 
-arrays (to handle very large data). A lazily loaded vector might use something completely
-different (perhaps a date?). In principle this should be generic, but that is hard to do - 
-we want something like:</p>
-
-<pre><code>Series.Create : \forall 'TKey, 'TValue. \exists 'TAddress. 
-  Index&lt;'TKey, 'TAddress&gt; * Vector&lt;'TAddress, 'TValue&gt; -&gt; Series&lt;'TKey, 'TValue&gt;
-</code></pre>
-
-<p>The .NET encoding of this is a bit ugly. So instead, we just have <code>Address</code> which currently
-supports <code>Int</code> and <code>Int64</code>, but we keep all operations in the <code>Address</code> module, so that
-this can be easily extended.</p>
+<p>Thrown when a value at the specified index does not exist in the data frame or series.
+This exception is thrown only when the key is defined, but the value is not available,
+in other situations <code>KeyNotFoundException</code> is thrown</p>
 </div>
-
-<!-- TODO: Refactor me - copy & paste from 'namespaces.cshtml' -->
-
-  <h2>Nested types and modules</h2>
-
-  <table class="table table-bordered type-list">
-    <thead>
-      <tr><td>Type</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td class="type-name">
-            <a href="deedle-addressing-address.html">Address</a>
-          </td>
-          <td class="xmldoc"></td>
-        </tr>
-    </tbody>
-  </table>
-  <table class="table table-bordered module-list">
-    <thead>
-      <tr><td>Module</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td class="module-name">
-            <a href="deedle-addressing-addressmodule.html">Address</a>
-          </td>
-          <td class="xmldoc"></td>
-        </tr>
-    </tbody>
-  </table>
-
-<!-- END TODO -->
-
-
-
-  <h3>Active patterns</h3>
+  <h3>Constructors</h3>
   <table class="table table-bordered member-list">
     <thead>
-      <tr><td>Active pattern</td><td>Description</td></tr>
+      <tr><td>Constructor</td><td>Description</td></tr>
     </thead>
     <tbody>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '100', 100)" onmouseover="showTip(event, '100', 100)">
-            ( |IntAddress| ) _arg1
+          <code onmouseout="hideTip(event, '312', 312)" onmouseover="showTip(event, '312', 312)">
+            new MissingValueException
           </code>
-          <div class="tip" id="100">
-            <strong>Signature:</strong>_arg1:Address -&gt; int<br />
+          <div class="tip" id="312">
+            <strong>Signature:</strong>(key:obj * message:string) -&gt; MissingValueException<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>ArrayVectors assume that the address is an integer</p>
+        <td class="xmldoc"></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>Instance members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Instance member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '344', 344)" onmouseover="showTip(event, '344', 344)">
+            missingValueException.Key
+          </code>
+          <div class="tip" id="344">
+            <strong>Signature:</strong>obj<br />
+                      </div>
+        </td>
+        <td class="xmldoc"><p>The key that has been accessed</p>
 </td>
       </tr>
     </tbody>

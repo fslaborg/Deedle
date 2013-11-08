@@ -258,6 +258,15 @@ a value. <code>Lookup.NearestSmaller</code> searches for the first smaller key.<
         </tr>
         <tr>
 		      <td class="type-name">
+            <a href="deedle-missingvalueexception.html">MissingValueException</a>
+		      </td>
+          <td class="xmldoc"><p>Thrown when a value at the specified index does not exist in the data frame or series.
+This exception is thrown only when the key is defined, but the value is not available,
+in other situations <code>KeyNotFoundException</code> is thrown</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
             <a href="deedle-objectseries-1.html">ObjectSeries</a>
 		      </td>
           <td class="xmldoc"></td>
@@ -321,6 +330,17 @@ keys <code>K</code>. The keys of a series may or may not be ordered</p>
         </tr>
         <tr>
 		      <td class="type-name">
+            <a href="deedle-tryvalue-1.html">TryValue</a>
+		      </td>
+          <td class="xmldoc"><p>Represents a value or an exception. This type is used by functions such as
+<code>Series.tryMap</code> and <code>Frame.tryMap</code> to capture the result of a lambda function,
+which may be either a value or an exception. The type is a discriminated union,
+so it can be processed using F# pattern matching, or using <code>Value</code>, <code>HasValue</code>
+and <code>Exception</code> properties</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
             <a href="deedle-unionbehavior.html">UnionBehavior</a>
 		      </td>
           <td class="xmldoc"><p>This enumeration specifeis the behavior of <code>Union</code> operation on series when there are
@@ -334,6 +354,14 @@ from the left/right series or throwing an exception when both values are availab
 		      </td>
           <td class="xmldoc"><p>A type alias for the <code>OptionalValue&lt;T&gt;</code> type. The type alias can be used
 to make F# type definitions that use optional values directly more succinct.</p>
+</td>
+        </tr>
+        <tr>
+		      <td class="type-name">
+            <a href="deedle-tryval-1.html">tryval</a>
+		      </td>
+          <td class="xmldoc"><p>A type alias for the <code>TryValue&lt;T&gt;</code> type. The type alias can be used
+to make F# type declarations that explcitly handle exceptions more succinct.</p>
 </td>
         </tr>
       </tbody>
@@ -792,6 +820,10 @@ uses <code>ArrayVectorData.VectorOptional</code>, otherwise it uses
                 <li><a href="http://bluemountaincapital.github.io/Deedle/timeseries.html#stats">Statistics & math</a></li>
               </ul>
             </li>
+            <li class="nav-header">Using R from Deedle</li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html#setup">Getting started</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html#frames">Working with data frames</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html#series">Working with time series</a></li>
 
             <li class="nav-header">Documentation</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
