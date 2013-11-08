@@ -31,7 +31,7 @@ let ``Can access elements in ordered and unordered series`` () =
 
 [<Test>]  
 let ``Accessing missing value or using out of range key throws`` () =
-  (fun () -> missing.[2] |> ignore) |> should throw typeof<KeyNotFoundException>
+  (fun () -> missing.[2] |> ignore) |> should throw typeof<MissingValueException>
   (fun () -> missing.[7] |> ignore) |> should throw typeof<KeyNotFoundException>
 
 [<Test>]  
@@ -294,18 +294,18 @@ let ``Can create minute samples over one year of items``() =
 [<Test>]
 let ``SeriesExtensions.EndAt works when the key is before, after or in range``() =
   let s = Series.ofObservations [ for i in 10.0 .. 20.0 -> i => int i ]
-  SeriesExtensions.EndAt(s, 15.5).Values |> List.ofSeq |> shouldEqual [ 10 .. 15 ]
-  SeriesExtensions.EndAt(s, 15.0).Values |> List.ofSeq |> shouldEqual [ 10 .. 15 ]
-  SeriesExtensions.EndAt(s, 5.00).Values |> List.ofSeq |> shouldEqual [ ]
-  SeriesExtensions.EndAt(s, 25.0).Values |> List.ofSeq |> shouldEqual [ 10 .. 20 ]
+  s.EndAt(15.5).Values |> List.ofSeq |> shouldEqual [ 10 .. 15 ]
+  s.EndAt(15.0).Values |> List.ofSeq |> shouldEqual [ 10 .. 15 ]
+  s.EndAt(5.00).Values |> List.ofSeq |> shouldEqual [ ]
+  s.EndAt(25.0).Values |> List.ofSeq |> shouldEqual [ 10 .. 20 ]
 
 [<Test>]
 let ``SeriesExtensions.StartAt works when the key is before, after or in range``() =
   let s = Series.ofObservations [ for i in 10.0 .. 20.0 -> i => int i ]
-  SeriesExtensions.StartAt(s, 15.5).Values |> List.ofSeq |> shouldEqual [ 16 .. 20 ]
-  SeriesExtensions.StartAt(s, 15.0).Values |> List.ofSeq |> shouldEqual [ 15 .. 20 ]
-  SeriesExtensions.StartAt(s, 5.00).Values |> List.ofSeq |> shouldEqual [ 10 .. 20 ]
-  SeriesExtensions.StartAt(s, 25.0).Values |> List.ofSeq |> shouldEqual [ ]
+  s.StartAt(15.5).Values |> List.ofSeq |> shouldEqual [ 16 .. 20 ]
+  s.StartAt(15.0).Values |> List.ofSeq |> shouldEqual [ 15 .. 20 ]
+  s.StartAt(5.00).Values |> List.ofSeq |> shouldEqual [ 10 .. 20 ]
+  s.StartAt(25.0).Values |> List.ofSeq |> shouldEqual [ ]
 
 [<Test>]
 let ``Slicing of ordered series works when using inexact keys (below, inside, above) key range``() =

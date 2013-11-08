@@ -120,13 +120,14 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// same index (by checking object reference equality)
   static let fromColumnsNonGeneric (seriesConv:'S -> ISeries<_>) (nested:Series<_, 'S>) = 
     let columns = Series.observations nested
-    let rowIndex = (Seq.head columns |> snd |> seriesConv).Index
-    if (columns |> Seq.forall (fun (_, s) -> Object.ReferenceEquals((seriesConv s).Index, rowIndex))) then
+    let rowIndex = Seq.headOrNone columns |> Option.map (fun (_, s) -> (seriesConv s).Index)
+    match rowIndex with 
+    | Some rowIndex when (columns |> Seq.forall (fun (_, s) -> Object.ReferenceEquals((seriesConv s).Index, rowIndex))) ->
       // OPTIMIZATION: If all series have the same index (same object), then no join is needed 
       // (This is particularly valuable for things like +, *, /, - operators on Frame)
       let vector = columns |> Seq.map (fun (_, s) -> (seriesConv s).Vector) |> Vector.ofValues
       Frame<_, _>(rowIndex, Index.ofKeys (Seq.map fst columns), vector)
-    else
+    | _ ->
       // Create new row index by unioning all keys
       let rowKeys = columns |> Seq.collect (fun (_, s) -> (seriesConv s).Index.Keys) |> Seq.distinct |> Array.ofSeq
       let rowIndex = nested.IndexBuilder.Create(rowKeys, None)
@@ -438,7 +439,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       let rowAddress = rowIndex.Lookup(row.Key, Lookup.Exact, fun _ -> true)
       if not rowAddress.HasValue then OptionalValue.Missing
       else OptionalValue(Series.CreateUntyped(columnIndex, createRowReader (snd rowAddress.Value))))
-    RowSeries(res)
+    RowSeries(Series.dropMissing res)
 
   /// [category:Accessors and slicing]
   member frame.RowsDense = 
@@ -450,7 +451,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
         let all = columnIndex.Mappings |> Seq.forall (fun (key, addr) -> rowVec.GetValue(addr).HasValue)
         if all then OptionalValue(Series.CreateUntyped(columnIndex, rowVec))
         else OptionalValue.Missing )
-    RowSeries(res)
+    RowSeries(Series.dropMissing res)
 
   /// [category:Accessors and slicing]
   member frame.Item 

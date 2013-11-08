@@ -16,7 +16,7 @@
     <tags>@tags@</tags>
     <dependencies>
       <dependency id="Deedle" version="@build.number@" />
-      <dependency id="RProvider" version="1.0.3" />
+      <dependency id="RProvider" version="1.0.4" />
     </dependencies>
   </metadata>
   <files>

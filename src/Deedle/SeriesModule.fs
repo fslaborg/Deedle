@@ -156,11 +156,11 @@ module Series =
         let offset = -offset
         series.Aggregate
           ( win, (fun s -> s.Data.Keys.First()),
-            (fun s -> OptionalValue(s.Data.Values |> Seq.nth offset)) ) 
+            (fun s -> s.Data.TryGet(s.Data.KeyRange |> snd)) ) 
       else
         series.Aggregate
           ( win, (fun s -> s.Data.Keys.Last()),
-            (fun s -> OptionalValue(s.Data.Values |> Seq.head)) )
+            (fun s -> s.Data.TryGet(s.Data.KeyRange |> fst)) )
     shifted //.GetItems(series.Keys)
 
   let takeLast count (series:Series<'K, 'T>) = 

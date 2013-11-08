@@ -8,6 +8,8 @@ src/Deedle.RProvider.Plugin/obj
 *.suo
 tests/Deedle.Tests/obj
 tests/Deedle.Tests/bin
+tests/Deedle.RPlugin.Tests/obj
+tests/Deedle.RPlugin.Tests/bin
 tests/Deedle.Documentation.Tests/obj
 tests/Deedle.Documentation.Tests/bin
 tests/Deedle.CSharp.Tests/obj
@@ -21,3 +23,4 @@ TestResult.xml
 *.VisualState.xml
 *.bak
 *.psess
+nuget/*.nuspec

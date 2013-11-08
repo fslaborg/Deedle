@@ -42,18 +42,18 @@ let ``No call is made when series is created and we get the key range`` () =
   r.Values |> shouldEqual []
 
 [<Test>]
-let ``SeriesExtensions.After creates lower bound exclusive restriction`` () =
+let ``After creates lower bound exclusive restriction`` () =
   let r = Recorder()
   let ls = DelayedSeries.Create(0, 100, spy2 r loadIntegers)
-  let actual = SeriesExtensions.After(ls, 90) |> Series.observations |> List.ofSeq 
+  let actual = ls.After(90) |> Series.observations |> List.ofSeq 
   actual |> shouldEqual [ for i in 91 .. 100 -> i, i ]
   r.Values |> shouldEqual [(90, Exclusive), (100, Inclusive)]
 
 [<Test>]
-let ``SeriesExtensions.Before creates upper bound exclusive restriction`` () =
+let ``Before creates upper bound exclusive restriction`` () =
   let r = Recorder()
   let ls = DelayedSeries.Create(0, 100, spy2 r loadIntegers)
-  let actual = SeriesExtensions.Before(ls, 10) |> Series.observations |> List.ofSeq 
+  let actual = ls.Before(10) |> Series.observations |> List.ofSeq 
   actual |> shouldEqual [ for i in 0 .. 9 -> i, i ]
   r.Values |> shouldEqual [(0, Inclusive), (10, Exclusive)]
 
@@ -61,8 +61,8 @@ let ``SeriesExtensions.Before creates upper bound exclusive restriction`` () =
 let ``Multiple range restrictions are combined for sample calls`` () =
   let r = Recorder()
   let ls = DelayedSeries.Create(0, 100, spy2 r loadIntegers)
-  let ls = SeriesExtensions.Before(ls, 90)
-  let ls = SeriesExtensions.After(ls, 10)
+  let ls = ls.Before(90)
+  let ls = ls.After(10)
   let actual = ls |> Series.observations |> List.ofSeq 
   actual |> shouldEqual [ for i in 11 .. 89 -> i, i ]
   r.Values |> shouldEqual [(10, Exclusive), (90, Exclusive)]
@@ -94,7 +94,7 @@ let ``Created series does not contain out-of-range keys, even if the source prov
   ls.[.. 0] |> Series.keys |> List.ofSeq |> shouldEqual [0]
   ls.[100 ..] |> Series.keys |> List.ofSeq |> shouldEqual [100]
   ls.[10 .. 20] |> Series.keys |> List.ofSeq |> shouldEqual [10 .. 20]
-  SeriesExtensions.After(ls, 90) |> Series.keys |> List.ofSeq |> shouldEqual [91 .. 100]
+  ls.After(90) |> Series.keys |> List.ofSeq |> shouldEqual [91 .. 100]
 
 [<Test>]
 let ``Can add projection of a lazy vector to a data frame`` () = 

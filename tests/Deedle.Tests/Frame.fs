@@ -34,6 +34,14 @@ let msftNoHeaders() =
   Frame.ReadCsv(new IO.MemoryStream(data), false, inferRows=10)
 
 [<Test>]
+let ``Can create empty data frame and empty series`` () =
+  let f : Frame<int, int> = frame []  
+  let s : Series<int, int> = series []
+  s.KeyCount |> shouldEqual 0
+  f.ColumnCount |> shouldEqual 0
+  f.RowCount |> shouldEqual 0
+
+[<Test>]
 let ``Can read MSFT data from CSV file`` () =
   let df = msft()
   df.RowKeys |> Seq.length |> shouldEqual 6527

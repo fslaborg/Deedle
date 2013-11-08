@@ -2,7 +2,7 @@
 param($installPath, $toolsPath, $package)
 
 # Destination "RProvider-X.Y\lib" (where RProivder.dll lives)
-$destPath = $installPath + "\..\RProvider.1.0.3\lib\"
+$destPath = $installPath + "\..\RProvider.1.0.4\lib\"
 
 # Copy the R provider plugin to the directory with RProvider.dll
 # Source path that contains R type provider plugin DLLs

@@ -75,8 +75,8 @@ Target "RestorePackages" (fun _ ->
     !! "./**/packages.config"
     |> Seq.iter (RestorePackage (fun p -> { p with ToolPath = "./.nuget/NuGet.exe" }))
     // Restore packages does not run install script, so copy files for R provider by hand
-    !! "packages/R.NET.1.5.5/lib/net40/*" |> CopyFiles "packages/RProvider.1.0.3/lib/" 
-    !! "packages/RDotNet.FSharp.0.1.2.1/lib/net40/*" |> CopyFiles "packages/RProvider.1.0.3/lib/" 
+    !! "packages/R.NET.1.5.5/lib/net40/*" |> CopyFiles "packages/RProvider.1.0.4/lib/" 
+    !! "packages/RDotNet.FSharp.0.1.2.1/lib/net40/*" |> CopyFiles "packages/RProvider.1.0.4/lib/" 
 )
 
 Target "Clean" (fun _ ->

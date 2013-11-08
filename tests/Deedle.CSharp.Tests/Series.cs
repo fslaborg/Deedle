@@ -44,10 +44,10 @@ namespace Deedle.CSharp.Tests
 				(from n in Enumerable.Range(0, 10)
 				 select KeyValue.Create(n, (char)('a' + n))).ToSeries();
 
-			var actual = 
-				nums.Aggregate(Aggregation.WindowSize<int>(5, Boundary.Skip), 
-					segment => segment.Data.Keys.First(),
-          segment => new string(segment.Data.Values.ToArray()));
+			var actual =
+				nums.Aggregate(Aggregation.WindowSize<int>(5, Boundary.Skip),
+					(segment => segment.Data.Keys.First()),
+					(segment => new OptionalValue<string>(new string(segment.Data.Values.ToArray()))));
 			
 			var expected =
 				new SeriesBuilder<int, string> {
@@ -71,7 +71,7 @@ namespace Deedle.CSharp.Tests
 			var actual =
 				nums.Aggregate(Aggregation.ChunkSize<int>(5, Boundary.Skip),
 					segment => segment.Data.Keys.First(),
-          segment => new string(segment.Data.Values.ToArray()));
+					segment => new OptionalValue<string>(new string(segment.Data.Values.ToArray())));
 
 			var expected =
 				new SeriesBuilder<int, string> {
@@ -91,7 +91,7 @@ namespace Deedle.CSharp.Tests
 			var actual =
 				nums.Aggregate(Aggregation.ChunkWhile<int>((k1, k2) => k2 - k1 < 10),
 					segment => segment.Data.Keys.First(),
-          segment => new string(segment.Data.Values.ToArray()));
+					segment => new OptionalValue<string>(new string(segment.Data.Values.ToArray())));
 
 			var expected =
 				new SeriesBuilder<int, string> {
