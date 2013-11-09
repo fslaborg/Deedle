@@ -23,7 +23,6 @@ Group by class and port
 
 let byClassAndPort1 = 
   titanic.GroupRowsBy<int>("Pclass").GroupRowsBy<string>("Embarked") 
-  |> Frame.mapRowKeys Pair.flatten3
 
 let byClassAndPort = 
   titanic
@@ -52,9 +51,6 @@ Mean & sum everything by class and port
 byClassAndPort
 |> Frame.meanLevel Pair.get1And2Of3
 
-byClassAndPort
-|> Frame.sumLevel Pair.get1And2Of3
-
 (**
 
 Look at survived column as booleans
@@ -69,17 +65,30 @@ Count number of survived/died in each group
 
 *)
 
-survivedByClassAndPort 
-|> Series.applyLevel Pair.get1And2Of3 (fun sr -> 
-    series (sr |> Seq.countBy id))
-|> Frame.ofRows
-
+let survivals = 
+  survivedByClassAndPort 
+  |> Series.applyLevel Pair.get1And2Of3 (fun sr -> 
+      sr.Values |> Seq.countBy id |> series)
+  |> Frame.ofRows
+  |> Frame.indexColsWith ["Survived"; "Died"]
 (**
 
 Count total number of passangers in each group
 
 *)
 
-byClassAndPort
-|> Frame.applyLevel Pair.get1And2Of3 Seq.length
+survivals?Total <- 
+  byClassAndPort
+  |> Frame.applyLevel Pair.get1And2Of3 Series.countKeys
 
+survivals
+
+let summary = 
+  [ "Survived (%)" => survivals?Survived / survivals?Total * 100.0
+    "Died (%)" => survivals?Died/ survivals?Total * 100.0 ] |> frame
+
+round summary
+
+summary |> Frame.meanLevel fst
+summary |> Frame.meanLevel snd
+  
