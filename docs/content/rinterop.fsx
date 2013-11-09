@@ -145,10 +145,10 @@ for each column (to do this, we need to open the `base` package):
 open RProvider.``base``
 
 // Pass air data to R and print the R output
-R.as_data_frame(air).Print()
+R.as_data_frame(air)
 
 // Pass air data to R and get column means
-R.colMeans(air).Print()
+R.colMeans(air)
 // [fsi:val it : string =]
 // [fsi:  Ozone  Solar.R  Wind  Temp  Month   Day ]
 // [fsi:    NaN      NaN  9.96 77.88   6.99  15.8]
@@ -169,7 +169,7 @@ When we pass the data frame to R, missing values in numeric columns are turned i
 and missing data for other columns are turned into `NA`. Here, we use `R.assign` which
 stores the data frame in a varaible available in the current R environment:
 *)
-R.assign("x",  df).Print()
+R.assign("x",  df)
 // [fsi:val it : string = ]
 // [fsi:     Floats   Names ]
 // [fsi: 1       10     one ] 
@@ -249,16 +249,15 @@ let ts =
   |> series
 (**
 Now that we have a time series, we can pass it to R using the `R.as_zoo` function or
-using `R.assign` to store it in an R variable. As previously, we can use the extension
-method `Print` to get the output that R prints for the value:
-more
+using `R.assign` to store it in an R variable. As previously, the R provider automatically
+shows the output that R prints for the value:
 *)
 open RProvider.zoo
 
 // Just convert time series to R
-R.as_zoo(ts).Print()
+R.as_zoo(ts)
 // Convert and assing to a variable 'ts'
-R.assign("ts", ts).Print()
+R.assign("ts", ts)
 // [fsi:val it : string =
 // [fsi: 2013-11-07 05:00:00 2013-11-07 06:00:00 2013-11-07 07:00:00 ...]
 // [fsi: 0.749946652         0.580584353         0.523962789         ...]
@@ -270,7 +269,7 @@ following snippet applies the rolling mean function with a window size 20 to the
 time series.
 *)
 // Rolling mean with window size 20
-R.rollmean(ts, 20).Print()
+R.rollmean(ts, 20)
 
 (**
 This is a simple example - in practice, you can achieve the same thing with `Series.window`
