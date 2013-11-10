@@ -18,7 +18,7 @@ namespace Deedle.CSharp.Tests
 	{
 		public static Frame<int, string> LoadMSFT([CallerFilePath] string source = "")
 		{
-			var file = Path.Combine(Path.GetDirectoryName(source), ".." + Path.DirectorySeparatorChar + "Deedle.Tests" + Path.DirectorySeparatorChar + "data" + Path.DirectorySeparatorChar + "MSFT.csv");
+			var file = Path.Combine(Path.GetDirectoryName(source), "..", "Deedle.Tests", "data", "MSFT.csv");
 			return Frame.ReadCsv(file, inferRows:10);
 		}
 
