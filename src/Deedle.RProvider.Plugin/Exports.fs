@@ -26,8 +26,23 @@ type DataFrameToR() =
                   if c.HasValue then 
                     let data = convertVector c.Value
                     yield convertKey r, data ] 
+            
+            // R.data_frame fails when the number of named parameters is too large
+            // Take the first 50 and pass them directly, add the rest one-by-one
+            let first50, other =
+              if List.length args > 50 then
+                List.ofSeq (Seq.take 50 args), List.ofSeq (Seq.skip 50 args)
+              else args, []
+
             let rowNames = "row.names", box (frame.RowKeys |> Seq.map convertKey)
-            R.data_frame(namedParams (rowNames::args)) }
+            let df = R.data_frame(namedParams (rowNames::first50)) 
+            if List.isEmpty other then df else
+              // Add remaining columns using __temp_df$ColName <- colData
+              let mutable dfTemp = R.assign("__temp_df", df)
+              for colKey, colData in other do 
+                dfTemp <- R.``$<-``(dfTemp, colKey, colData) 
+              dfTemp }
+
       |> input.Apply
 
 [<Export(typeof<IConvertToR<ISeries<DateTime>>>)>]
