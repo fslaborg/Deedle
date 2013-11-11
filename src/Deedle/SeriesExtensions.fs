@@ -133,6 +133,7 @@ type SeriesBuilder<'K when 'K : equality>() =
 
 [<Extension>]
 type SeriesExtensions =
+
   [<Extension; EditorBrowsable(EditorBrowsableState.Never)>]
   static member GetSlice(series:Series<'K1 * 'K2, 'V>, lo1:option<'K1>, hi1:option<'K1>, lo2:option<'K2>, hi2:option<'K2>) =
     if lo1 <> None || hi1 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
@@ -148,6 +149,9 @@ type SeriesExtensions =
   static member GetSlice(series:Series<'K1 * 'K2, 'V>, k1:'K1, lo2:option<'K2>, hi2:option<'K2>) =
     if lo2 <> None || hi2 <> None then invalidOp "Slicing on level of a hierarchical indices is not supported"
     series.GetByLevel(SimpleLookup [|Some (box k1); Option.map box lo2|])
+
+  [<Extension>]
+  static member Print(series:Series<'K, 'V>) = Console.WriteLine(series.Format())
 
   [<Extension>]
   static member Log(series:Series<'K, float>) = log series

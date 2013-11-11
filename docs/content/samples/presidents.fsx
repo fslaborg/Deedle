@@ -2,9 +2,9 @@
 // Load everything & add extensions for F# charting
 // ----------------------------------------------------------------------------
 #nowarn "58"
-#I @"C:\dev\FSharp.DataFrame\bin"
-#I @"C:\dev\FSharp.DataFrame\packages\FSharp.Data.1.1.10\lib\net40"
-#I @"C:\dev\FSharp.DataFrame\packages\FSharp.Charting.0.87"
+#I @"C:\Tomas\Projects\Deedle\bin"
+#I @"C:\Tomas\Projects\Deedle\packages\FSharp.Data.1.1.10\lib\net40"
+#I @"C:\Tomas\Projects\Deedle\packages\FSharp.Charting.0.87"
 
 #r "FSharp.Data.dll"
 #load "FSharp.Charting.fsx"
@@ -36,7 +36,7 @@ module FsLabExtensions =
 
 // Loading US debt data from CSV file & making the data set nicer
 let debtData = 
-  Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/us-debt.csv")
+  Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/../data/us-debt.csv")
   |> Frame.indexRowsInt "Year"
   |> Frame.indexColsWith ["Year"; "GDP"; "Population"; "Debt"; "?" ]
 
@@ -204,7 +204,7 @@ aligned?Difference <-
 let qd = 
   namedParams [
     "x", box aligned.RowKeys
-    "y", box (aligned?Difference.FillMissing(0.0).Values)
+    "y", box (aligned?Difference |> Series.fillMissingWith 0.0 |> Series.values)
     "fill", box (aligned.GetSeries<string>("Party").Values)
     "stat", box "identity"
     "geom",  box [| "bar" |] ]

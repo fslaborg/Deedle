@@ -10,8 +10,8 @@ open FSharp.Charting
 let root = __SOURCE_DIRECTORY__ + "/data/"
 
 (**
-Time series manipulation
-========================
+Time series manipulation in F#
+==============================
 
 In this section, we look at F# data frame library features that are useful when working
 with time series data or, more generally, any ordered series. Although we mainly look at
@@ -19,7 +19,7 @@ operations on the `Series` type, many of the operations can be applied to data f
 containing multiple series. Furthermore, data frame provides an elegant way for aligning and
 joining series. 
 
-You can also get this page as an [F# script file](https://github.com/BlueMountainCapital/Deedle/blob/master/samples/timeseries.fsx)
+You can also get this page as an [F# script file](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/timeseries.fsx)
 from GitHub and run the samples interactively.
 
 Generating input data

@@ -64,7 +64,23 @@ type OptionalValue<'T> private (hasValue:bool, value:'T) =
     | :? OptionalValue<'T> as y -> Object.Equals(x.ValueOrDefault, y.ValueOrDefault)
     | _ -> false
    
-    
+/// Non-generic type that makes it easier to create `OptionalValue<T>` values
+/// from C# by benefiting the type inference for generic method invocations.
+type OptionalValue =
+  /// Creates an `OptionalValue<T>` from a nullable value of type `T?`
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member OfNullable(v:Nullable<'T>) =  
+    if v.HasValue then OptionalValue(v.Value) else OptionalValue<'T>.Missing
+  
+  /// Creates an `OptionalValue<'T>` that contains a value `v`
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member Create(v) = 
+    OptionalValue(v)
+  
+  /// Creates an `OptionalValue<'T>` that does not contain a value
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member Empty<'T>() = OptionalValue<'T>.Missing
+
 /// Represents a value or an exception. This type is used by functions such as
 /// `Series.tryMap` and `Frame.tryMap` to capture the result of a lambda function,
 /// which may be either a value or an exception. The type is a discriminated union,

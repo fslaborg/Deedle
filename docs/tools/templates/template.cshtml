@@ -55,6 +55,7 @@
             <li class="nav-header">Using from F#</li>
             <li>
               <a href="@Root/tutorial.html">Quick start tutorial</a>
+              @if (Properties["page-source"].ToString().EndsWith("tutorial.fsx")) {
               <ul class="nav nav-list">
                 <li><a href="@Root/tutorial.html#creating">Creating data frames</a></li>
                 <li><a href="@Root/tutorial.html#reindexing-and-joins">Using index & joining</a></li>
@@ -63,9 +64,11 @@
                 <li><a href="@Root/tutorial.html#projections">Projection and filtering</a></li>
                 <li><a href="@Root/tutorial.html#grouping">Aggregating groups</a></li>
               </ul>
+              }
             </li>
             <li>
               <a href="@Root/features.html">Data frame features</a>
+              @if (Properties["page-source"].ToString().EndsWith("features.fsx")) {
               <ul class="nav nav-list">
                 <li><a href="@Root/features.html#creating">Creating & loading</a></li>
                 <li><a href="@Root/features.html#dataframe">Frame manipulation</a></li>
@@ -74,16 +77,38 @@
                 <li><a href="@Root/features.html#indexing">Hierarchical indexing</a></li>
                 <li><a href="@Root/features.html#missing">Missing values</a></li>
               </ul>
+              }
             </li>
             <li>
               <a href="@Root/timeseries.html">Time series features</a>
+              @if (Properties["page-source"].ToString().EndsWith("timeseries.fsx")) {
               <ul class="nav nav-list">
                 <li><a href="@Root/timeseries.html#alignment">Alignment & joining</a></li>
                 <li><a href="@Root/timeseries.html#windowing">Windows and chunks</a></li>
                 <li><a href="@Root/timeseries.html#sampling">Lookup and resampling</a></li>
                 <li><a href="@Root/timeseries.html#stats">Statistics & math</a></li>
               </ul>
+              }
             </li>
+            <li class="nav-header">Using from C#</li>
+            <li><a href="@Root/csharpintro.html">Getting started</a></li>
+            <li>
+              <a href="@Root/csharpseries.html">Time series features</a>
+              @if (Properties["page-source"].ToString().EndsWith("csharpseries.md")) {
+              <ul class="nav nav-list">
+                <li><a href="@Root/csharpseries.html#understanding">What is a series?</a></li>
+                <li><a href="@Root/csharpseries.html#creating">Creating & loading</a></li>
+                <li><a href="@Root/csharpseries.html#lookup">Lookup and slicing</a></li>
+                <li><a href="@Root/csharpseries.html#calc">Series-wise calculations</a></li>
+                <li><a href="@Root/csharpseries.html#missing">Missing values</a></li>
+                <li><a href="@Root/csharpseries.html#aggregation">Grouping & windowing</a></li>
+                <li><a href="@Root/csharpseries.html#linq">LINQ to Series</a></li>
+                <li><a href="@Root/csharpseries.html#sampling">Indexing & sampling</a></li>
+              </ul>
+              }
+            </li>
+            <li><a href="@Root/csharpframe.html">Data frame features</a></li>
+            
             <li class="nav-header">Using R from Deedle</li>
             <li><a href="@Root/rinterop.html">Deedle R provider plugin</a></li>
             <li><a href="@Root/rinterop.html#setup">Getting started</a></li>
