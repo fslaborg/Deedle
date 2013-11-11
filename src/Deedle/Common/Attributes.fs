@@ -6,4 +6,6 @@
 [<assembly:System.Runtime.CompilerServices.InternalsVisibleTo("Deedle.Tests")>]
 // The R plugin uses internals for more efficient conversions
 [<assembly:System.Runtime.CompilerServices.InternalsVisibleTo("Deedle.RProvider.Plugin")>]
+// This is required so that C# extension methods work
+[<assembly: System.Runtime.CompilerServices.Extension>]
 do ()
