@@ -59,19 +59,17 @@
 <span class="l">6: </span>
 <span class="l">7: </span>
 <span class="l">8: </span>
-<span class="l">9: </span>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">byClassAndPort1</span> <span class="o">=</span> 
   <span onmouseout="hideTip(event, 'fs1', 6)" onmouseover="showTip(event, 'fs1', 6)" class="i">titanic</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="i">GroupRowsBy</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="i">int</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Pclass</span><span class="s">&quot;</span>)<span class="o">.</span><span class="i">GroupRowsBy</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs8', 9)" onmouseover="showTip(event, 'fs8', 9)" class="i">string</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Embarked</span><span class="s">&quot;</span>) 
-  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 10)" onmouseover="showTip(event, 'fs2', 10)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 11)" onmouseover="showTip(event, 'fs9', 11)" class="i">mapRowKeys</span> <span onmouseout="hideTip(event, 'fs10', 12)" onmouseover="showTip(event, 'fs10', 12)" class="i">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs11', 13)" onmouseover="showTip(event, 'fs11', 13)" class="i">flatten3</span>
 
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs12', 14)" onmouseover="showTip(event, 'fs12', 14)" class="i">byClassAndPort</span> <span class="o">=</span> 
-  <span onmouseout="hideTip(event, 'fs1', 15)" onmouseover="showTip(event, 'fs1', 15)" class="i">titanic</span>
-  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 16)" onmouseover="showTip(event, 'fs2', 16)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs13', 17)" onmouseover="showTip(event, 'fs13', 17)" class="i">groupRowsByInt</span> <span class="s">&quot;</span><span class="s">Pclass</span><span class="s">&quot;</span>
-  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 18)" onmouseover="showTip(event, 'fs2', 18)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs14', 19)" onmouseover="showTip(event, 'fs14', 19)" class="i">groupRowsByString</span> <span class="s">&quot;</span><span class="s">Embarked</span><span class="s">&quot;</span>
-  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 20)" onmouseover="showTip(event, 'fs2', 20)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 21)" onmouseover="showTip(event, 'fs9', 21)" class="i">mapRowKeys</span> <span onmouseout="hideTip(event, 'fs10', 22)" onmouseover="showTip(event, 'fs10', 22)" class="i">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs11', 23)" onmouseover="showTip(event, 'fs11', 23)" class="i">flatten3</span></pre>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs9', 10)" onmouseover="showTip(event, 'fs9', 10)" class="i">byClassAndPort</span> <span class="o">=</span> 
+  <span onmouseout="hideTip(event, 'fs1', 11)" onmouseover="showTip(event, 'fs1', 11)" class="i">titanic</span>
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 12)" onmouseover="showTip(event, 'fs2', 12)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs10', 13)" onmouseover="showTip(event, 'fs10', 13)" class="i">groupRowsByInt</span> <span class="s">&quot;</span><span class="s">Pclass</span><span class="s">&quot;</span>
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 14)" onmouseover="showTip(event, 'fs2', 14)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs11', 15)" onmouseover="showTip(event, 'fs11', 15)" class="i">groupRowsByString</span> <span class="s">&quot;</span><span class="s">Embarked</span><span class="s">&quot;</span>
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 16)" onmouseover="showTip(event, 'fs2', 16)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs12', 17)" onmouseover="showTip(event, 'fs12', 17)" class="i">mapRowKeys</span> <span onmouseout="hideTip(event, 'fs13', 18)" onmouseover="showTip(event, 'fs13', 18)" class="i">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs14', 19)" onmouseover="showTip(event, 'fs14', 19)" class="i">flatten3</span></pre>
 </td>
 </tr>
 </table>
@@ -87,11 +85,11 @@
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs15', 24)" onmouseover="showTip(event, 'fs15', 24)" class="i">ageByClassAndPort</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs12', 25)" onmouseover="showTip(event, 'fs12', 25)" class="i">byClassAndPort</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 26)" onmouseover="showTip(event, 'fs16', 26)" class="i">Columns</span><span class="o">.</span>[<span class="s">&quot;</span><span class="s">Age</span><span class="s">&quot;</span>]<span class="o">.</span><span class="i">As</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs17', 27)" onmouseover="showTip(event, 'fs17', 27)" class="i">float</span><span class="o">&gt;</span>()
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs15', 20)" onmouseover="showTip(event, 'fs15', 20)" class="i">ageByClassAndPort</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 21)" onmouseover="showTip(event, 'fs9', 21)" class="i">byClassAndPort</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 22)" onmouseover="showTip(event, 'fs16', 22)" class="i">Columns</span><span class="o">.</span>[<span class="s">&quot;</span><span class="s">Age</span><span class="s">&quot;</span>]<span class="o">.</span><span class="i">As</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs17', 23)" onmouseover="showTip(event, 'fs17', 23)" class="i">float</span><span class="o">&gt;</span>()
 
-<span onmouseout="hideTip(event, 'fs2', 28)" onmouseover="showTip(event, 'fs2', 28)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs18', 29)" onmouseover="showTip(event, 'fs18', 29)" class="i">ofColumns</span>
-  [ <span class="s">&quot;</span><span class="s">AgeMeans</span><span class="s">&quot;</span>, <span onmouseout="hideTip(event, 'fs15', 30)" onmouseover="showTip(event, 'fs15', 30)" class="i">ageByClassAndPort</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs19', 31)" onmouseover="showTip(event, 'fs19', 31)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs20', 32)" onmouseover="showTip(event, 'fs20', 32)" class="i">meanLevel</span> <span onmouseout="hideTip(event, 'fs10', 33)" onmouseover="showTip(event, 'fs10', 33)" class="i">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 34)" onmouseover="showTip(event, 'fs21', 34)" class="i">get1And2Of3</span>
-    <span class="s">&quot;</span><span class="s">AgeCounts</span><span class="s">&quot;</span>, <span onmouseout="hideTip(event, 'fs17', 35)" onmouseover="showTip(event, 'fs17', 35)" class="i">float</span> <span class="o">$</span> (<span onmouseout="hideTip(event, 'fs15', 36)" onmouseover="showTip(event, 'fs15', 36)" class="i">ageByClassAndPort</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs19', 37)" onmouseover="showTip(event, 'fs19', 37)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 38)" onmouseover="showTip(event, 'fs22', 38)" class="i">countLevel</span> <span onmouseout="hideTip(event, 'fs10', 39)" onmouseover="showTip(event, 'fs10', 39)" class="i">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 40)" onmouseover="showTip(event, 'fs21', 40)" class="i">get1And2Of3</span>) ]</pre>
+<span onmouseout="hideTip(event, 'fs2', 24)" onmouseover="showTip(event, 'fs2', 24)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs18', 25)" onmouseover="showTip(event, 'fs18', 25)" class="i">ofColumns</span>
+  [ <span class="s">&quot;</span><span class="s">AgeMeans</span><span class="s">&quot;</span>, <span onmouseout="hideTip(event, 'fs15', 26)" onmouseover="showTip(event, 'fs15', 26)" class="i">ageByClassAndPort</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs19', 27)" onmouseover="showTip(event, 'fs19', 27)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs20', 28)" onmouseover="showTip(event, 'fs20', 28)" class="i">meanLevel</span> <span onmouseout="hideTip(event, 'fs13', 29)" onmouseover="showTip(event, 'fs13', 29)" class="i">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 30)" onmouseover="showTip(event, 'fs21', 30)" class="i">get1And2Of3</span>
+    <span class="s">&quot;</span><span class="s">AgeCounts</span><span class="s">&quot;</span>, <span onmouseout="hideTip(event, 'fs17', 31)" onmouseover="showTip(event, 'fs17', 31)" class="i">float</span> <span class="o">$</span> (<span onmouseout="hideTip(event, 'fs15', 32)" onmouseover="showTip(event, 'fs15', 32)" class="i">ageByClassAndPort</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs19', 33)" onmouseover="showTip(event, 'fs19', 33)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 34)" onmouseover="showTip(event, 'fs22', 34)" class="i">countLevel</span> <span onmouseout="hideTip(event, 'fs13', 35)" onmouseover="showTip(event, 'fs13', 35)" class="i">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 36)" onmouseover="showTip(event, 'fs21', 36)" class="i">get1And2Of3</span>) ]</pre>
 </td>
 </tr>
 </table>
@@ -101,17 +99,11 @@
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
 <span class="l">2: </span>
-<span class="l">3: </span>
-<span class="l">4: </span>
-<span class="l">5: </span>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span onmouseout="hideTip(event, 'fs12', 41)" onmouseover="showTip(event, 'fs12', 41)" class="i">byClassAndPort</span>
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 42)" onmouseover="showTip(event, 'fs2', 42)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs23', 43)" onmouseover="showTip(event, 'fs23', 43)" class="i">meanLevel</span> <span onmouseout="hideTip(event, 'fs10', 44)" onmouseover="showTip(event, 'fs10', 44)" class="i">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 45)" onmouseover="showTip(event, 'fs21', 45)" class="i">get1And2Of3</span>
-
-<span onmouseout="hideTip(event, 'fs12', 46)" onmouseover="showTip(event, 'fs12', 46)" class="i">byClassAndPort</span>
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 47)" onmouseover="showTip(event, 'fs2', 47)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs24', 48)" onmouseover="showTip(event, 'fs24', 48)" class="i">sumLevel</span> <span onmouseout="hideTip(event, 'fs10', 49)" onmouseover="showTip(event, 'fs10', 49)" class="i">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 50)" onmouseover="showTip(event, 'fs21', 50)" class="i">get1And2Of3</span></pre>
+<span onmouseout="hideTip(event, 'fs9', 37)" onmouseover="showTip(event, 'fs9', 37)" class="i">byClassAndPort</span>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 38)" onmouseover="showTip(event, 'fs2', 38)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs23', 39)" onmouseover="showTip(event, 'fs23', 39)" class="i">meanLevel</span> <span onmouseout="hideTip(event, 'fs13', 40)" onmouseover="showTip(event, 'fs13', 40)" class="i">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 41)" onmouseover="showTip(event, 'fs21', 41)" class="i">get1And2Of3</span></pre>
 </td>
 </tr>
 </table>
@@ -123,7 +115,7 @@
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs25', 51)" onmouseover="showTip(event, 'fs25', 51)" class="i">survivedByClassAndPort</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs12', 52)" onmouseover="showTip(event, 'fs12', 52)" class="i">byClassAndPort</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 53)" onmouseover="showTip(event, 'fs16', 53)" class="i">Columns</span><span class="o">.</span>[<span class="s">&quot;</span><span class="s">Survived</span><span class="s">&quot;</span>]<span class="o">.</span><span class="i">As</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs26', 54)" onmouseover="showTip(event, 'fs26', 54)" class="i">bool</span><span class="o">&gt;</span>()</pre>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs24', 42)" onmouseover="showTip(event, 'fs24', 42)" class="i">survivedByClassAndPort</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 43)" onmouseover="showTip(event, 'fs9', 43)" class="i">byClassAndPort</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 44)" onmouseover="showTip(event, 'fs16', 44)" class="i">Columns</span><span class="o">.</span>[<span class="s">&quot;</span><span class="s">Survived</span><span class="s">&quot;</span>]<span class="o">.</span><span class="i">As</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs25', 45)" onmouseover="showTip(event, 'fs25', 45)" class="i">bool</span><span class="o">&gt;</span>()</pre>
 </td>
 </tr>
 </table>
@@ -135,13 +127,17 @@
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span onmouseout="hideTip(event, 'fs25', 55)" onmouseover="showTip(event, 'fs25', 55)" class="i">survivedByClassAndPort</span> 
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs19', 56)" onmouseover="showTip(event, 'fs19', 56)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 57)" onmouseover="showTip(event, 'fs27', 57)" class="i">applyLevel</span> <span onmouseout="hideTip(event, 'fs10', 58)" onmouseover="showTip(event, 'fs10', 58)" class="i">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 59)" onmouseover="showTip(event, 'fs21', 59)" class="i">get1And2Of3</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs28', 60)" onmouseover="showTip(event, 'fs28', 60)" class="i">sr</span> <span class="k">-&gt;</span> 
-    <span onmouseout="hideTip(event, 'fs29', 61)" onmouseover="showTip(event, 'fs29', 61)" class="i">series</span> (<span onmouseout="hideTip(event, 'fs28', 62)" onmouseover="showTip(event, 'fs28', 62)" class="i">sr</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs30', 63)" onmouseover="showTip(event, 'fs30', 63)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs31', 64)" onmouseover="showTip(event, 'fs31', 64)" class="i">countBy</span> <span onmouseout="hideTip(event, 'fs32', 65)" onmouseover="showTip(event, 'fs32', 65)" class="i">id</span>))
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 66)" onmouseover="showTip(event, 'fs2', 66)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs33', 67)" onmouseover="showTip(event, 'fs33', 67)" class="i">ofRows</span></pre>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs26', 46)" onmouseover="showTip(event, 'fs26', 46)" class="i">survivals</span> <span class="o">=</span> 
+  <span onmouseout="hideTip(event, 'fs24', 47)" onmouseover="showTip(event, 'fs24', 47)" class="i">survivedByClassAndPort</span> 
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs19', 48)" onmouseover="showTip(event, 'fs19', 48)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 49)" onmouseover="showTip(event, 'fs27', 49)" class="i">applyLevel</span> <span onmouseout="hideTip(event, 'fs13', 50)" onmouseover="showTip(event, 'fs13', 50)" class="i">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 51)" onmouseover="showTip(event, 'fs21', 51)" class="i">get1And2Of3</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs28', 52)" onmouseover="showTip(event, 'fs28', 52)" class="i">sr</span> <span class="k">-&gt;</span> 
+      <span onmouseout="hideTip(event, 'fs28', 53)" onmouseover="showTip(event, 'fs28', 53)" class="i">sr</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs29', 54)" onmouseover="showTip(event, 'fs29', 54)" class="i">Values</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs30', 55)" onmouseover="showTip(event, 'fs30', 55)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs31', 56)" onmouseover="showTip(event, 'fs31', 56)" class="i">countBy</span> <span onmouseout="hideTip(event, 'fs32', 57)" onmouseover="showTip(event, 'fs32', 57)" class="i">id</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs33', 58)" onmouseover="showTip(event, 'fs33', 58)" class="i">series</span>)
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 59)" onmouseover="showTip(event, 'fs2', 59)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs34', 60)" onmouseover="showTip(event, 'fs34', 60)" class="i">ofRows</span>
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 61)" onmouseover="showTip(event, 'fs2', 61)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs35', 62)" onmouseover="showTip(event, 'fs35', 62)" class="i">indexColsWith</span> [<span class="s">&quot;</span><span class="s">Survived</span><span class="s">&quot;</span>; <span class="s">&quot;</span><span class="s">Died</span><span class="s">&quot;</span>]</pre>
 </td>
 </tr>
 </table>
@@ -149,13 +145,39 @@
 <p>Count total number of passangers in each group</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
-<span class="l">2: </span>
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span onmouseout="hideTip(event, 'fs12', 68)" onmouseover="showTip(event, 'fs12', 68)" class="i">byClassAndPort</span>
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 69)" onmouseover="showTip(event, 'fs2', 69)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs34', 70)" onmouseover="showTip(event, 'fs34', 70)" class="i">applyLevel</span> <span onmouseout="hideTip(event, 'fs10', 71)" onmouseover="showTip(event, 'fs10', 71)" class="i">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 72)" onmouseover="showTip(event, 'fs21', 72)" class="i">get1And2Of3</span> <span onmouseout="hideTip(event, 'fs30', 73)" onmouseover="showTip(event, 'fs30', 73)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs35', 74)" onmouseover="showTip(event, 'fs35', 74)" class="i">length</span></pre>
+<span onmouseout="hideTip(event, 'fs26', 63)" onmouseover="showTip(event, 'fs26', 63)" class="i">survivals</span><span class="o">?</span><span class="i">Total</span> <span class="o">&lt;-</span> 
+  <span onmouseout="hideTip(event, 'fs9', 64)" onmouseover="showTip(event, 'fs9', 64)" class="i">byClassAndPort</span>
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 65)" onmouseover="showTip(event, 'fs2', 65)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs36', 66)" onmouseover="showTip(event, 'fs36', 66)" class="i">applyLevel</span> <span onmouseout="hideTip(event, 'fs13', 67)" onmouseover="showTip(event, 'fs13', 67)" class="i">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 68)" onmouseover="showTip(event, 'fs21', 68)" class="i">get1And2Of3</span> <span onmouseout="hideTip(event, 'fs19', 69)" onmouseover="showTip(event, 'fs19', 69)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs37', 70)" onmouseover="showTip(event, 'fs37', 70)" class="i">countKeys</span>
+
+<span onmouseout="hideTip(event, 'fs26', 71)" onmouseover="showTip(event, 'fs26', 71)" class="i">survivals</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs38', 72)" onmouseover="showTip(event, 'fs38', 72)" class="i">summary</span> <span class="o">=</span> 
+  [ <span class="s">&quot;</span><span class="s">Survived</span><span class="s"> </span><span class="s">(</span><span class="s">%</span><span class="s">)</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs26', 73)" onmouseover="showTip(event, 'fs26', 73)" class="i">survivals</span><span class="o">?</span><span class="i">Survived</span> <span class="o">/</span> <span onmouseout="hideTip(event, 'fs26', 74)" onmouseover="showTip(event, 'fs26', 74)" class="i">survivals</span><span class="o">?</span><span class="i">Total</span> <span class="o">*</span> <span class="n">100.0</span>
+    <span class="s">&quot;</span><span class="s">Died</span><span class="s"> </span><span class="s">(</span><span class="s">%</span><span class="s">)</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs26', 75)" onmouseover="showTip(event, 'fs26', 75)" class="i">survivals</span><span class="o">?</span><span class="i">Died</span><span class="o">/</span> <span onmouseout="hideTip(event, 'fs26', 76)" onmouseover="showTip(event, 'fs26', 76)" class="i">survivals</span><span class="o">?</span><span class="i">Total</span> <span class="o">*</span> <span class="n">100.0</span> ] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs39', 77)" onmouseover="showTip(event, 'fs39', 77)" class="i">frame</span>
+
+<span onmouseout="hideTip(event, 'fs40', 78)" onmouseover="showTip(event, 'fs40', 78)" class="i">round</span> <span onmouseout="hideTip(event, 'fs38', 79)" onmouseover="showTip(event, 'fs38', 79)" class="i">summary</span>
+
+<span onmouseout="hideTip(event, 'fs38', 80)" onmouseover="showTip(event, 'fs38', 80)" class="i">summary</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 81)" onmouseover="showTip(event, 'fs2', 81)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs23', 82)" onmouseover="showTip(event, 'fs23', 82)" class="i">meanLevel</span> <span onmouseout="hideTip(event, 'fs41', 83)" onmouseover="showTip(event, 'fs41', 83)" class="i">fst</span>
+<span onmouseout="hideTip(event, 'fs38', 84)" onmouseover="showTip(event, 'fs38', 84)" class="i">summary</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 85)" onmouseover="showTip(event, 'fs2', 85)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs23', 86)" onmouseover="showTip(event, 'fs23', 86)" class="i">meanLevel</span> <span onmouseout="hideTip(event, 'fs42', 87)" onmouseover="showTip(event, 'fs42', 87)" class="i">snd</span>
+  </pre>
 </td>
 </tr>
 </table>
@@ -164,16 +186,16 @@
 <div class="tip" id="fs2">Multiple items<br />module Frame<br /><br />from Deedle<br /><br />--------------------<br />type Frame =<br />&#160;&#160;static member CreateEmpty : unit -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,ObjectSeries&lt;&#39;RowKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : rows:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;ColKey,int&gt; (requires equality)<br />&#160;&#160;static member FromRecords : values:seq&lt;&#39;T&gt; -&gt; Frame&lt;int,string&gt;<br />&#160;&#160;static member FromRecords : series:Series&lt;&#39;K,&#39;R&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRowKeys : keys:seq&lt;&#39;K&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRows : rows:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TColKey,&#39;TRowKey&gt; (requires equality and equality)<br />&#160;&#160;...<br /><br />Full name: Deedle.Frame<br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =<br />&#160;&#160;interface IDynamicMetaObjectProvider<br />&#160;&#160;interface INotifyCollectionChanged<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface IFrame<br />&#160;&#160;new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;private new : rowIndex:IIndex&lt;&#39;TRowKey&gt; * columnIndex:IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;...<br /><br />Full name: Deedle.Frame&lt;_,_&gt;<br /><br />--------------------<br />new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
 <div class="tip" id="fs3">static member Frame.ReadCsv : path:string * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : stream:IO.Stream * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string -&gt; Frame&lt;int,string&gt;</div>
 <div class="tip" id="fs4">val root : string<br /><br />Full name: Titanic.root</div>
-<div class="tip" id="fs5">val byClassAndPort1 : Frame&lt;(string * int * int),string&gt;<br /><br />Full name: Titanic.byClassAndPort1</div>
+<div class="tip" id="fs5">val byClassAndPort1 : Frame&lt;(string * (int * int)),string&gt;<br /><br />Full name: Titanic.byClassAndPort1</div>
 <div class="tip" id="fs6">member Frame.GroupRowsBy : key:&#39;TColumnKey -&gt; Frame&lt;(&#39;TGroup * &#39;TRowKey),&#39;TColumnKey&gt; (requires equality)</div>
 <div class="tip" id="fs7">Multiple items<br />val int : value:&#39;T -&gt; int (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.int<br /><br />--------------------<br />type int = int32<br /><br />Full name: Microsoft.FSharp.Core.int<br /><br />--------------------<br />type int&lt;&#39;Measure&gt; = int<br /><br />Full name: Microsoft.FSharp.Core.int&lt;_&gt;</div>
 <div class="tip" id="fs8">Multiple items<br />val string : value:&#39;T -&gt; string<br /><br />Full name: Microsoft.FSharp.Core.Operators.string<br /><br />--------------------<br />type string = String<br /><br />Full name: Microsoft.FSharp.Core.string</div>
-<div class="tip" id="fs9">val mapRowKeys : f:(&#39;R1 -&gt; &#39;R2) -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;&#39;R2,&#39;C&gt; (requires equality and equality and equality)<br /><br />Full name: Deedle.Frame.mapRowKeys</div>
-<div class="tip" id="fs10">module Pair<br /><br />from Deedle</div>
-<div class="tip" id="fs11">val flatten3 : v1:&#39;a * (&#39;b * &#39;c) -&gt; &#39;a * &#39;b * &#39;c<br /><br />Full name: Deedle.Pair.flatten3</div>
-<div class="tip" id="fs12">val byClassAndPort : Frame&lt;(string * int * int),string&gt;<br /><br />Full name: Titanic.byClassAndPort</div>
-<div class="tip" id="fs13">val groupRowsByInt : column:&#39;a -&gt; frame:Frame&lt;&#39;b,&#39;a&gt; -&gt; Frame&lt;(int * &#39;b),&#39;a&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.groupRowsByInt</div>
-<div class="tip" id="fs14">val groupRowsByString : column:&#39;a -&gt; frame:Frame&lt;&#39;b,&#39;a&gt; -&gt; Frame&lt;(string * &#39;b),&#39;a&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.groupRowsByString</div>
+<div class="tip" id="fs9">val byClassAndPort : Frame&lt;(string * int * int),string&gt;<br /><br />Full name: Titanic.byClassAndPort</div>
+<div class="tip" id="fs10">val groupRowsByInt : column:&#39;a -&gt; frame:Frame&lt;&#39;b,&#39;a&gt; -&gt; Frame&lt;(int * &#39;b),&#39;a&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.groupRowsByInt</div>
+<div class="tip" id="fs11">val groupRowsByString : column:&#39;a -&gt; frame:Frame&lt;&#39;b,&#39;a&gt; -&gt; Frame&lt;(string * &#39;b),&#39;a&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.groupRowsByString</div>
+<div class="tip" id="fs12">val mapRowKeys : f:(&#39;R1 -&gt; &#39;R2) -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;&#39;R2,&#39;C&gt; (requires equality and equality and equality)<br /><br />Full name: Deedle.Frame.mapRowKeys</div>
+<div class="tip" id="fs13">module Pair<br /><br />from Deedle</div>
+<div class="tip" id="fs14">val flatten3 : v1:&#39;a * (&#39;b * &#39;c) -&gt; &#39;a * &#39;b * &#39;c<br /><br />Full name: Deedle.Pair.flatten3</div>
 <div class="tip" id="fs15">val ageByClassAndPort : Series&lt;(string * int * int),float&gt;<br /><br />Full name: Titanic.ageByClassAndPort</div>
 <div class="tip" id="fs16">property Frame.Columns: ColumnSeries&lt;(string * int * int),string&gt;</div>
 <div class="tip" id="fs17">Multiple items<br />val float : value:&#39;T -&gt; float (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.float<br /><br />--------------------<br />type float = Double<br /><br />Full name: Microsoft.FSharp.Core.float<br /><br />--------------------<br />type float&lt;&#39;Measure&gt; = float<br /><br />Full name: Microsoft.FSharp.Core.float&lt;_&gt;</div>
@@ -183,18 +205,25 @@
 <div class="tip" id="fs21">val get1And2Of3 : v1:&#39;a * v2:&#39;b * &#39;c -&gt; &#39;a * &#39;b<br /><br />Full name: Deedle.Pair.get1And2Of3</div>
 <div class="tip" id="fs22">val countLevel : level:(&#39;K1 -&gt; &#39;K2) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,int&gt; (requires equality and equality)<br /><br />Full name: Deedle.Series.countLevel</div>
 <div class="tip" id="fs23">val meanLevel : keySelector:(&#39;R -&gt; &#39;a) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;a,&#39;C&gt; (requires equality and equality and equality)<br /><br />Full name: Deedle.Frame.meanLevel</div>
-<div class="tip" id="fs24">val sumLevel : keySelector:(&#39;R -&gt; &#39;a) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;a,&#39;C&gt; (requires equality and equality and equality)<br /><br />Full name: Deedle.Frame.sumLevel</div>
-<div class="tip" id="fs25">val survivedByClassAndPort : Series&lt;(string * int * int),bool&gt;<br /><br />Full name: Titanic.survivedByClassAndPort</div>
-<div class="tip" id="fs26">type bool = Boolean<br /><br />Full name: Microsoft.FSharp.Core.bool</div>
+<div class="tip" id="fs24">val survivedByClassAndPort : Series&lt;(string * int * int),bool&gt;<br /><br />Full name: Titanic.survivedByClassAndPort</div>
+<div class="tip" id="fs25">type bool = Boolean<br /><br />Full name: Microsoft.FSharp.Core.bool</div>
+<div class="tip" id="fs26">val survivals : Frame&lt;(string * int),string&gt;<br /><br />Full name: Titanic.survivals</div>
 <div class="tip" id="fs27">val applyLevel : level:(&#39;K1 -&gt; &#39;K2) -&gt; op:(Series&lt;&#39;K1,&#39;V&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;R&gt; (requires equality and equality)<br /><br />Full name: Deedle.Series.applyLevel</div>
 <div class="tip" id="fs28">val sr : Series&lt;(string * int * int),bool&gt;</div>
-<div class="tip" id="fs29">val series : observations:seq&lt;&#39;a * &#39;b&gt; -&gt; Series&lt;&#39;a,&#39;b&gt; (requires equality)<br /><br />Full name: Deedle.FSharpSeriesExtensions.series</div>
+<div class="tip" id="fs29">property Series.Values: seq&lt;bool&gt;</div>
 <div class="tip" id="fs30">module Seq<br /><br />from Microsoft.FSharp.Collections</div>
 <div class="tip" id="fs31">val countBy : projection:(&#39;T -&gt; &#39;Key) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;Key * int&gt; (requires equality)<br /><br />Full name: Microsoft.FSharp.Collections.Seq.countBy</div>
 <div class="tip" id="fs32">val id : x:&#39;T -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.Operators.id</div>
-<div class="tip" id="fs33">static member Frame.ofRows : rows:seq&lt;&#39;a0 * #ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a0,&#39;a2&gt; (requires equality and equality)<br />static member Frame.ofRows : rows:Series&lt;&#39;a0,#ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a0,&#39;a2&gt; (requires equality and equality)</div>
-<div class="tip" id="fs34">val applyLevel : keySelector:(&#39;R -&gt; &#39;a) -&gt; op:(Series&lt;&#39;R,ObjectSeries&lt;&#39;C&gt;&gt; -&gt; &#39;b) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;a,&#39;b&gt; (requires equality and equality and equality)<br /><br />Full name: Deedle.Frame.applyLevel</div>
-<div class="tip" id="fs35">val length : source:seq&lt;&#39;T&gt; -&gt; int<br /><br />Full name: Microsoft.FSharp.Collections.Seq.length</div>
+<div class="tip" id="fs33">val series : observations:seq&lt;&#39;a * &#39;b&gt; -&gt; Series&lt;&#39;a,&#39;b&gt; (requires equality)<br /><br />Full name: Deedle.FSharpSeriesExtensions.series</div>
+<div class="tip" id="fs34">static member Frame.ofRows : rows:seq&lt;&#39;a0 * #ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a0,&#39;a2&gt; (requires equality and equality)<br />static member Frame.ofRows : rows:Series&lt;&#39;a0,#ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a0,&#39;a2&gt; (requires equality and equality)</div>
+<div class="tip" id="fs35">val indexColsWith : keys:seq&lt;&#39;C2&gt; -&gt; frame:Frame&lt;&#39;R,&#39;C1&gt; -&gt; Frame&lt;&#39;R,&#39;C2&gt; (requires equality and equality and equality)<br /><br />Full name: Deedle.Frame.indexColsWith</div>
+<div class="tip" id="fs36">val applyLevel : keySelector:(&#39;R -&gt; &#39;a) -&gt; op:(Series&lt;&#39;R,ObjectSeries&lt;&#39;C&gt;&gt; -&gt; &#39;b) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;a,&#39;b&gt; (requires equality and equality and equality)<br /><br />Full name: Deedle.Frame.applyLevel</div>
+<div class="tip" id="fs37">val countKeys : series:Series&lt;&#39;K,&#39;T&gt; -&gt; int (requires equality)<br /><br />Full name: Deedle.Series.countKeys</div>
+<div class="tip" id="fs38">val summary : Frame&lt;(string * int),string&gt;<br /><br />Full name: Titanic.summary</div>
+<div class="tip" id="fs39">val frame : columns:seq&lt;&#39;a * #ISeries&lt;&#39;c&gt;&gt; -&gt; Frame&lt;&#39;c,&#39;a&gt; (requires equality and equality)<br /><br />Full name: Deedle.FSharpFrameExtensions.frame</div>
+<div class="tip" id="fs40">val round : value:&#39;T -&gt; &#39;T (requires member Round)<br /><br />Full name: Microsoft.FSharp.Core.Operators.round</div>
+<div class="tip" id="fs41">val fst : tuple:(&#39;T1 * &#39;T2) -&gt; &#39;T1<br /><br />Full name: Microsoft.FSharp.Core.Operators.fst</div>
+<div class="tip" id="fs42">val snd : tuple:(&#39;T1 * &#39;T2) -&gt; &#39;T2<br /><br />Full name: Microsoft.FSharp.Core.Operators.snd</div>
 
         </div>
         <div class="span3">
@@ -211,39 +240,25 @@
             <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
             <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/design.html">Design notes</a></li>
+            <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
             
             <li class="nav-header">Using from F#</li>
             <li>
               <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
-              <ul class="nav nav-list">
-                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#creating">Creating data frames</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#reindexing-and-joins">Using index & joining</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#selecting">Reading values, slicing</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#timeseries">Ordered time series</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#projections">Projection and filtering</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#grouping">Aggregating groups</a></li>
-              </ul>
             </li>
             <li>
               <a href="http://bluemountaincapital.github.io/Deedle/features.html">Data frame features</a>
-              <ul class="nav nav-list">
-                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#creating">Creating & loading</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#dataframe">Frame manipulation</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#slicing">Advanced slicing</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#grouping">Grouping data</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#indexing">Hierarchical indexing</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#missing">Missing values</a></li>
-              </ul>
             </li>
             <li>
               <a href="http://bluemountaincapital.github.io/Deedle/timeseries.html">Time series features</a>
-              <ul class="nav nav-list">
-                <li><a href="http://bluemountaincapital.github.io/Deedle/timeseries.html#alignment">Alignment & joining</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/timeseries.html#windowing">Windows and chunks</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/timeseries.html#sampling">Lookup and resampling</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/timeseries.html#stats">Statistics & math</a></li>
-              </ul>
             </li>
+            <li class="nav-header">Using from C#</li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/csharpintro.html">Getting started</a></li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html">Time series features</a>
+            </li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html">Data frame features</a></li>
+            
             <li class="nav-header">Using R from Deedle</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Deedle R provider plugin</a></li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html#setup">Getting started</a></li>

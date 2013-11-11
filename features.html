@@ -1664,7 +1664,7 @@ at all):</p>
 <div class="tip" id="fs160">val fillMissingUsing : f:(&#39;K -&gt; &#39;T) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)<br /><br />Full name: Deedle.Series.fillMissingUsing</div>
 <div class="tip" id="fs161">val prev : OptionalValue&lt;float&gt;</div>
 <div class="tip" id="fs162">val next : OptionalValue&lt;float&gt;</div>
-<div class="tip" id="fs163">Multiple items<br />module OptionalValue<br /><br />from Deedle<br /><br />--------------------<br />type OptionalValue&lt;&#39;T&gt; =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;new : value:&#39;T -&gt; OptionalValue&lt;&#39;T&gt;<br />&#160;&#160;&#160;&#160;private new : hasValue:bool * value:&#39;T -&gt; OptionalValue&lt;&#39;T&gt;<br />&#160;&#160;&#160;&#160;override Equals : y:obj -&gt; bool<br />&#160;&#160;&#160;&#160;override GetHashCode : unit -&gt; int<br />&#160;&#160;&#160;&#160;override ToString : unit -&gt; string<br />&#160;&#160;&#160;&#160;member HasValue : bool<br />&#160;&#160;&#160;&#160;member Value : &#39;T<br />&#160;&#160;&#160;&#160;member ValueOrDefault : &#39;T<br />&#160;&#160;&#160;&#160;static member Missing : OptionalValue&lt;&#39;T&gt;<br />&#160;&#160;end<br /><br />Full name: Deedle.OptionalValue&lt;_&gt;<br /><br />--------------------<br />OptionalValue()<br />new : value:&#39;T -&gt; OptionalValue&lt;&#39;T&gt;</div>
+<div class="tip" id="fs163">Multiple items<br />module OptionalValue<br /><br />from Deedle<br /><br />--------------------<br />type OptionalValue =<br />&#160;&#160;static member Create : v:&#39;a0 -&gt; OptionalValue&lt;&#39;a0&gt;<br />&#160;&#160;static member Empty : unit -&gt; OptionalValue&lt;&#39;T&gt;<br />&#160;&#160;static member OfNullable : v:Nullable&lt;&#39;T&gt; -&gt; OptionalValue&lt;&#39;T&gt; (requires default constructor and value type and &#39;T :&gt; ValueType)<br /><br />Full name: Deedle.OptionalValue<br /><br />--------------------<br />type OptionalValue&lt;&#39;T&gt; =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;new : value:&#39;T -&gt; OptionalValue&lt;&#39;T&gt;<br />&#160;&#160;&#160;&#160;private new : hasValue:bool * value:&#39;T -&gt; OptionalValue&lt;&#39;T&gt;<br />&#160;&#160;&#160;&#160;override Equals : y:obj -&gt; bool<br />&#160;&#160;&#160;&#160;override GetHashCode : unit -&gt; int<br />&#160;&#160;&#160;&#160;override ToString : unit -&gt; string<br />&#160;&#160;&#160;&#160;member HasValue : bool<br />&#160;&#160;&#160;&#160;member Value : &#39;T<br />&#160;&#160;&#160;&#160;member ValueOrDefault : &#39;T<br />&#160;&#160;&#160;&#160;static member Missing : OptionalValue&lt;&#39;T&gt;<br />&#160;&#160;end<br /><br />Full name: Deedle.OptionalValue&lt;_&gt;<br /><br />--------------------<br />OptionalValue()<br />new : value:&#39;T -&gt; OptionalValue&lt;&#39;T&gt;</div>
 <div class="tip" id="fs164">active recognizer Present: &#39;T opt -&gt; Choice&lt;unit,&#39;T&gt;<br /><br />Full name: Deedle.OptionalValue.( |Missing|Present| )</div>
 <div class="tip" id="fs165">val p : float</div>
 <div class="tip" id="fs166">val n : float</div>
@@ -1685,18 +1685,11 @@ at all):</p>
             <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
             <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/design.html">Design notes</a></li>
+            <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
             
             <li class="nav-header">Using from F#</li>
             <li>
               <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
-              <ul class="nav nav-list">
-                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#creating">Creating data frames</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#reindexing-and-joins">Using index & joining</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#selecting">Reading values, slicing</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#timeseries">Ordered time series</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#projections">Projection and filtering</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#grouping">Aggregating groups</a></li>
-              </ul>
             </li>
             <li>
               <a href="http://bluemountaincapital.github.io/Deedle/features.html">Data frame features</a>
@@ -1711,13 +1704,14 @@ at all):</p>
             </li>
             <li>
               <a href="http://bluemountaincapital.github.io/Deedle/timeseries.html">Time series features</a>
-              <ul class="nav nav-list">
-                <li><a href="http://bluemountaincapital.github.io/Deedle/timeseries.html#alignment">Alignment & joining</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/timeseries.html#windowing">Windows and chunks</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/timeseries.html#sampling">Lookup and resampling</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/timeseries.html#stats">Statistics & math</a></li>
-              </ul>
             </li>
+            <li class="nav-header">Using from C#</li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/csharpintro.html">Getting started</a></li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html">Time series features</a>
+            </li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html">Data frame features</a></li>
+            
             <li class="nav-header">Using R from Deedle</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Deedle R provider plugin</a></li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html#setup">Getting started</a></li>

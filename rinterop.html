@@ -245,10 +245,10 @@ for each column (to do this, we need to open the <code>base</code> package):</p>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs4', 34)" onmouseover="showTip(event, 'fs4', 34)" class="i">RProvider</span><span class="o">.</span><span class="i">``base``</span>
 
 <span class="c">// Pass air data to R and print the R output</span>
-<span onmouseout="hideTip(event, 'fs26', 35)" onmouseover="showTip(event, 'fs26', 35)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 36)" onmouseover="showTip(event, 'fs27', 36)" class="i">as_data_frame</span>(<span onmouseout="hideTip(event, 'fs23', 37)" onmouseover="showTip(event, 'fs23', 37)" class="i">air</span>)<span class="o">.</span><span class="i">Print</span>()
+<span onmouseout="hideTip(event, 'fs26', 35)" onmouseover="showTip(event, 'fs26', 35)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 36)" onmouseover="showTip(event, 'fs27', 36)" class="i">as_data_frame</span>(<span onmouseout="hideTip(event, 'fs23', 37)" onmouseover="showTip(event, 'fs23', 37)" class="i">air</span>)
 
 <span class="c">// Pass air data to R and get column means</span>
-<span onmouseout="hideTip(event, 'fs26', 38)" onmouseover="showTip(event, 'fs26', 38)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs28', 39)" onmouseover="showTip(event, 'fs28', 39)" class="i">colMeans</span>(<span onmouseout="hideTip(event, 'fs23', 40)" onmouseover="showTip(event, 'fs23', 40)" class="i">air</span>)<span class="o">.</span><span class="i">Print</span>()
+<span onmouseout="hideTip(event, 'fs26', 38)" onmouseover="showTip(event, 'fs26', 38)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs28', 39)" onmouseover="showTip(event, 'fs28', 39)" class="i">colMeans</span>(<span onmouseout="hideTip(event, 'fs23', 40)" onmouseover="showTip(event, 'fs23', 40)" class="i">air</span>)
 <span class="fsi">val it : string =</span>
 <span class="fsi">  Ozone  Solar.R  Wind  Temp  Month   Day </span>
 <span class="fsi">    NaN      NaN  9.96 77.88   6.99  15.8</span></pre>
@@ -294,7 +294,7 @@ stores the data frame in a varaible available in the current R environment:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span onmouseout="hideTip(event, 'fs26', 46)" onmouseover="showTip(event, 'fs26', 46)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs33', 47)" onmouseover="showTip(event, 'fs33', 47)" class="i">assign</span>(<span class="s">&quot;</span><span class="s">x</span><span class="s">&quot;</span>,  <span onmouseout="hideTip(event, 'fs29', 48)" onmouseover="showTip(event, 'fs29', 48)" class="i">df</span>)<span class="o">.</span><span class="i">Print</span>()
+<span onmouseout="hideTip(event, 'fs26', 46)" onmouseover="showTip(event, 'fs26', 46)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs33', 47)" onmouseover="showTip(event, 'fs33', 47)" class="i">assign</span>(<span class="s">&quot;</span><span class="s">x</span><span class="s">&quot;</span>,  <span onmouseout="hideTip(event, 'fs29', 48)" onmouseover="showTip(event, 'fs29', 48)" class="i">df</span>)
 <span class="fsi">val it : string = </span>
 <span class="fsi">     Floats   Names </span>
 <span class="fsi"> 1       10     one </span>
@@ -434,9 +434,8 @@ time series with 3 days of randomly generated values starting today:</p>
 </table>
 
 <p>Now that we have a time series, we can pass it to R using the <code>R.as_zoo</code> function or
-using <code>R.assign</code> to store it in an R variable. As previously, we can use the extension
-method <code>Print</code> to get the output that R prints for the value:
-more</p>
+using <code>R.assign</code> to store it in an R variable. As previously, the R provider automatically
+shows the output that R prints for the value:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -454,9 +453,9 @@ more</p>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs4', 103)" onmouseover="showTip(event, 'fs4', 103)" class="i">RProvider</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 104)" onmouseover="showTip(event, 'fs61', 104)" class="i">zoo</span>
 
 <span class="c">// Just convert time series to R</span>
-<span onmouseout="hideTip(event, 'fs62', 105)" onmouseover="showTip(event, 'fs62', 105)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs63', 106)" onmouseover="showTip(event, 'fs63', 106)" class="i">as_zoo</span>(<span onmouseout="hideTip(event, 'fs56', 107)" onmouseover="showTip(event, 'fs56', 107)" class="i">ts</span>)<span class="o">.</span><span class="i">Print</span>()
+<span onmouseout="hideTip(event, 'fs62', 105)" onmouseover="showTip(event, 'fs62', 105)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs63', 106)" onmouseover="showTip(event, 'fs63', 106)" class="i">as_zoo</span>(<span onmouseout="hideTip(event, 'fs56', 107)" onmouseover="showTip(event, 'fs56', 107)" class="i">ts</span>)
 <span class="c">// Convert and assing to a variable &#39;ts&#39;</span>
-<span onmouseout="hideTip(event, 'fs26', 108)" onmouseover="showTip(event, 'fs26', 108)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs33', 109)" onmouseover="showTip(event, 'fs33', 109)" class="i">assign</span>(<span class="s">&quot;</span><span class="s">ts</span><span class="s">&quot;</span>, <span onmouseout="hideTip(event, 'fs56', 110)" onmouseover="showTip(event, 'fs56', 110)" class="i">ts</span>)<span class="o">.</span><span class="i">Print</span>()
+<span onmouseout="hideTip(event, 'fs26', 108)" onmouseover="showTip(event, 'fs26', 108)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs33', 109)" onmouseover="showTip(event, 'fs33', 109)" class="i">assign</span>(<span class="s">&quot;</span><span class="s">ts</span><span class="s">&quot;</span>, <span onmouseout="hideTip(event, 'fs56', 110)" onmouseover="showTip(event, 'fs56', 110)" class="i">ts</span>)
 <span class="c">// [fsi:val it : string =</span>
 <span class="fsi"> 2013-11-07 05:00:00 2013-11-07 06:00:00 2013-11-07 07:00:00 ...</span>
 <span class="fsi"> 0.749946652         0.580584353         0.523962789         ...</span></pre>
@@ -476,7 +475,7 @@ time series.</p>
 </td>
 <td class="snippet"><pre class="fssnip">
 <span class="c">// Rolling mean with window size 20</span>
-<span onmouseout="hideTip(event, 'fs62', 111)" onmouseover="showTip(event, 'fs62', 111)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs64', 112)" onmouseover="showTip(event, 'fs64', 112)" class="i">rollmean</span>(<span onmouseout="hideTip(event, 'fs56', 113)" onmouseover="showTip(event, 'fs56', 113)" class="i">ts</span>, <span class="n">20</span>)<span class="o">.</span><span class="i">Print</span>()</pre>
+<span onmouseout="hideTip(event, 'fs62', 111)" onmouseover="showTip(event, 'fs62', 111)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs64', 112)" onmouseover="showTip(event, 'fs64', 112)" class="i">rollmean</span>(<span onmouseout="hideTip(event, 'fs56', 113)" onmouseover="showTip(event, 'fs56', 113)" class="i">ts</span>, <span class="n">20</span>)</pre>
 </td>
 </tr>
 </table>
@@ -610,39 +609,25 @@ and then draws a chart showing the results:</p>
             <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
             <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/design.html">Design notes</a></li>
+            <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
             
             <li class="nav-header">Using from F#</li>
             <li>
               <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
-              <ul class="nav nav-list">
-                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#creating">Creating data frames</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#reindexing-and-joins">Using index & joining</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#selecting">Reading values, slicing</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#timeseries">Ordered time series</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#projections">Projection and filtering</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#grouping">Aggregating groups</a></li>
-              </ul>
             </li>
             <li>
               <a href="http://bluemountaincapital.github.io/Deedle/features.html">Data frame features</a>
-              <ul class="nav nav-list">
-                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#creating">Creating & loading</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#dataframe">Frame manipulation</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#slicing">Advanced slicing</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#grouping">Grouping data</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#indexing">Hierarchical indexing</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#missing">Missing values</a></li>
-              </ul>
             </li>
             <li>
               <a href="http://bluemountaincapital.github.io/Deedle/timeseries.html">Time series features</a>
-              <ul class="nav nav-list">
-                <li><a href="http://bluemountaincapital.github.io/Deedle/timeseries.html#alignment">Alignment & joining</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/timeseries.html#windowing">Windows and chunks</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/timeseries.html#sampling">Lookup and resampling</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/timeseries.html#stats">Statistics & math</a></li>
-              </ul>
             </li>
+            <li class="nav-header">Using from C#</li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/csharpintro.html">Getting started</a></li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html">Time series features</a>
+            </li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html">Data frame features</a></li>
+            
             <li class="nav-header">Using R from Deedle</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Deedle R provider plugin</a></li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html#setup">Getting started</a></li>
