@@ -217,7 +217,7 @@ offset. Using `ser.Shift(1)` creates a new series where element at index _i_ is 
 from index _i - 1_ in `ser`. In the above example, this means that the value in 
 `msft2012.Shift(1)` for a certain day is the value for the previous day in `msft2012`. 
 This means that the code takes prices at a specified day and subtracts yesterday's prices
-from them.
+from them. 
 
 The operations available for series cover most of the standard operations, but if you
 need a more advanced functionality, you can always access the underlying data. For example,
@@ -272,13 +272,6 @@ the result  is `[NA; 0; 0; 1]` - the first value is still missing, because there
 preceeding available value. However, you can be sure that the only missing values are
 at the beginning (or the end) of the series.
 
-<a name="aggregation"></a>
-
-Grouping, windowing and chunking
---------------------------------
-
-TBD
-
 <a name="linq"></a>
 
 LINQ to series
@@ -311,6 +304,24 @@ The `Series<K, V>` type does not support all query operations, but you can certa
 `from`, `where` and `select` to transform and filter series. One tricky aspect is that the
 variable bound in the `from` clause is key value pair containing the key (index) and value
 (the value in the series) to allow projection/filtering based on both the key and the value.
+
+<a name="aggregation"></a>
+
+Grouping, windowing and chunking
+--------------------------------
+
+TBD
+
+    [lang=csharp,file=csharp/Series.cs,key=aggreg-group]
+
+    [lang=csharp,file=csharp/Series.cs,key=aggreg-win]
+
+    [lang=csharp,file=csharp/Series.cs,key=aggreg-chunk]
+
+    [lang=csharp,file=csharp/Series.cs,key=aggreg-pair]
+
+    [lang=csharp,file=csharp/Series.cs,key=aggreg-any]
+
 
 <a name="sampling"></a>
 

@@ -8,8 +8,8 @@ let airQuality = __SOURCE_DIRECTORY__ + "/data/AirQuality.csv"
 
 (**
 
-Using R from Deedle 
-===================
+Interoperating between R and Deedle
+===================================
 
 The [R type provider](http://bluemountaincapital.github.io/FSharpRProvider/) enables
 smooth interoperation between R and F#. The type provider automatically discovers 

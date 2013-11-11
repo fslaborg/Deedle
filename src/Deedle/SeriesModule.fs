@@ -179,8 +179,8 @@ module Series =
   [<CompiledName("FlattenLevel")>]
   let inline flattenLevel (level:'K1 -> 'K2) op (series:Series<_, 'S>) : Series<_, 'V> = 
     series.GroupBy
-      ( (fun key ser -> level key),
-        (fun key ser -> OptionalValue(op ser)))
+      ( (fun kvp -> level kvp.Key),
+        (fun kvp -> OptionalValue(op kvp.Value)))
 
 
   let force (series:Series<'K, 'V>) = 
@@ -267,8 +267,8 @@ module Series =
   [<CompiledName("InternalApplyLevel")>]
   let inline fastApplyLevel keySelector flist foptlist fseq (series:Series<_, _>) : Series<_, _> = 
     series.GroupBy
-      ( (fun key ser -> keySelector key),
-        (fun key ser -> OptionalValue(fastAggregation flist foptlist fseq ser)))
+      ( (fun kvp -> keySelector kvp.Key),
+        (fun kvp -> OptionalValue(fastAggregation flist foptlist fseq kvp.Value)))
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `level` and then aggregates elements in each group
@@ -286,8 +286,8 @@ module Series =
   [<CompiledName("StatisticsLevel")>]
   let inline statLevel (level:'K1 -> 'K2) op (series:Series<_, 'V>) : Series<_, 'R> = 
     series.GroupBy
-      ( (fun key ser -> level key),
-        (fun key ser -> OptionalValue(stat op ser)))
+      ( (fun kvp -> level kvp.Key),
+        (fun kvp -> OptionalValue(stat op kvp.Value)))
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `level` and then aggregates series representing each group
@@ -305,8 +305,8 @@ module Series =
   [<CompiledName("ApplyLevel")>]
   let inline applyLevel (level:'K1 -> 'K2) op (series:Series<_, 'V>) : Series<_, 'R> = 
     series.GroupBy
-      ( (fun key ser -> level key),
-        (fun key ser -> OptionalValue(op ser)))
+      ( (fun kvp -> level kvp.Key),
+        (fun kvp -> OptionalValue(op kvp.Value)))
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `level` and then returns a new series containing
@@ -441,8 +441,8 @@ module Series =
   [<CompiledName("ReduceLevel")>]
   let reduceLevel (level:'K1 -> 'K2) op (series:Series<_, 'T>) = 
     series.GroupBy
-      ( (fun key ser -> level key),
-        (fun key ser -> OptionalValue(reduce op ser)))
+      ( (fun (KeyValue(key, _)) -> level key),
+        (fun (KeyValue(_, ser)) -> OptionalValue(reduce op ser)))
 
   // ----------------------------------------------------------------------------------------------
   // Windowing, chunking and grouping
@@ -777,7 +777,7 @@ module Series =
   ///
   /// [category:Windowing, chunking and grouping]
   let groupInto (keySelector:'K -> 'T -> 'TNewKey) f (series:Series<'K, 'T>) : Series<'TNewKey, 'TNewValue> =
-    series.GroupBy(keySelector, fun k s -> OptionalValue(f k s))
+    series.GroupBy((fun (KeyValue(k,v)) -> keySelector k v), fun (KeyValue(k,s)) -> OptionalValue(f k s))
 
   /// Groups a series (ordered or unordered) using the specified key selector (`keySelector`) 
   /// and then returns a series of (nested) series as the result. The outer series is indexed by

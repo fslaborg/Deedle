@@ -206,6 +206,20 @@ type SeriesExtensions =
   static member Window(series:Series<'K, 'V>, size:int): Series<'K, Series<'K, 'V>> = 
     Series.window size series
 
+  [<Extension>]
+  static member ChunkInto(series:Series<'K1, 'V>, size:int, selector:Func<Series<'K1, 'V>, KeyValuePair<'K2, 'U>>): Series<'K2, 'U> = 
+    series.Aggregate(ChunkSize(size, Boundary.Skip), (fun ds ->
+      let res = selector.Invoke ds.Data
+      KeyValuePair(res.Key, OptionalValue(res.Value)) ))
+
+  [<Extension>]
+  static member ChunkInto(series:Series<'K, 'V>, size:int, reduce:Func<Series<'K, 'V>,'U>): Series<'K, 'U> = 
+    Series.chunkInto size reduce.Invoke series
+
+  [<Extension>]
+  static member Chunk(series:Series<'K, 'V>, size:int): Series<'K, Series<'K, 'V>> = 
+    Series.chunk size series
+
   // --- end
 
   [<Extension>]

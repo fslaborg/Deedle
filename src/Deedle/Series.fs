@@ -609,15 +609,18 @@ and
   ///    each group of collected elements.
   ///
   /// [category:Windowing, chunking and grouping]
-  member x.GroupBy(keySelector, valueSelector) =
+  member x.GroupBy(keySelector:Func<_, _>, valueSelector:Func<_, _>) =
     let newIndex, newVector = 
       indexBuilder.GroupBy
         ( x.Index, 
           (fun key -> 
-              x.TryGet(key) |> OptionalValue.map (keySelector key)), Vectors.Return 0, 
+              x.TryGet(key) |> OptionalValue.map (fun v -> 
+                let kvp = KeyValuePair(key, v)
+                keySelector.Invoke(kvp))), Vectors.Return 0, 
           (fun (newKey, (index, cmd)) -> 
               let group = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
-              valueSelector newKey group ) )
+              let kvp = KeyValuePair(newKey, group)
+              valueSelector.Invoke(kvp) ) )
     Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   // ----------------------------------------------------------------------------------------------

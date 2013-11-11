@@ -139,6 +139,9 @@ namespace CSharp
       // [calc-diff]
       // Subtract previous day value from current day
       var msftChange = msft2012 - msft2012.Shift(1);
+
+			// Use built-in Diff method to do the same
+			var msftChangeAlt = msft2012.Diff(1);
       
       // Get biggest loss and biggest gain
       var minMsChange = msftChange.Min();
@@ -178,8 +181,43 @@ namespace CSharp
       // Windows and chunks, grouping
       // ------------------------------------------------------------
 
-      // Window & Chunk
+			// [aggreg-group]
+			var buckets = randNums.GroupBy
+				( kvp => (int)(kvp.Value * 10), 
+				  kvp => OptionalValue.Create(kvp.Value.KeyCount) );
+			buckets.Print();
+			// [/aggreg-group]
 
+			// [aggreg-win]
+			var weeklyWinMean = msft2012.Window(5).Select(kvp =>
+				kvp.Value.Mean());
+
+			var monthlyWinMean = msft2012.WindowInto(25, win => win.Mean());
+			// [/aggreg-win]
+
+			// [aggreg-chunk]
+			var weeklyChunkMean = msft2012.Chunk(5).Select(kvp =>
+				kvp.Value.Mean());
+
+			var monthlyChunkMean = msft2012.ChunkInto(25, win => win.Mean());
+			// [/aggreg-win]
+
+			// [aggreg-pair]
+			var twoDayAvgs = msft2012.Pairwise().Select(kvp => 
+				(kvp.Value.Data.Item1 + kvp.Value.Data.Item2) / 2.0);
+			// [/aggreg-pair]
+
+			// [aggreg-any]
+			msft2012.Aggregate
+				(Aggregation.ChunkWhile<DateTime>((k1, k2) => (k2 - k1).TotalDays < 7.0),
+				 chunk => KeyValue.Create
+					 ( chunk.Data.FirstKey(),
+						 chunk.Data.ValueCount > 0 ?
+							OptionalValue.Create(chunk.Data.Mean()) :
+							OptionalValue.Empty<double>() ) );
+			// [/aggreg-any]
+
+			
       // ------------------------------------------------------------
       // Operations (Select, where)
       // ------------------------------------------------------------

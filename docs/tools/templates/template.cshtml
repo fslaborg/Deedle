@@ -48,7 +48,7 @@
             <li><a href="@Properties["project-nuget"]">Get Library via NuGet</a></li>
             <li><a href="@Properties["project-github"]">Source Code on GitHub</a></li>
             <li><a href="@Properties["project-github"]/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="@Properties["project-github"]/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            <li><a href="@Properties["project-github"]/blob/master/RELEASE_NOTES.md">Release notes</a></li>
             <li><a href="@Root/design.html">Design notes</a></li>
             <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
             
@@ -67,7 +67,7 @@
               }
             </li>
             <li>
-              <a href="@Root/features.html">Data frame features</a>
+              <a href="@Root/features.html">Advanced frame manipulation</a>
               @if (Properties["page-source"].ToString().EndsWith("features.fsx")) {
               <ul class="nav nav-list">
                 <li><a href="@Root/features.html#creating">Creating & loading</a></li>
@@ -80,7 +80,7 @@
               }
             </li>
             <li>
-              <a href="@Root/timeseries.html">Time series features</a>
+              <a href="@Root/timeseries.html">Working with time series</a>
               @if (Properties["page-source"].ToString().EndsWith("timeseries.fsx")) {
               <ul class="nav nav-list">
                 <li><a href="@Root/timeseries.html#alignment">Alignment & joining</a></li>
@@ -90,10 +90,21 @@
               </ul>
               }
             </li>
+            <li>
+              <a href="@Root/rinterop.html">Using R with Deedle</a>
+              @if (Properties["page-source"].ToString().EndsWith("rinterop.fsx")) {
+              <ul class="nav nav-list">
+                <li><a href="@Root/rinterop.html#setup">Getting started</a></li>
+                <li><a href="@Root/rinterop.html#frames">Working with data frames</a></li>
+                <li><a href="@Root/rinterop.html#series">Working with time series</a></li>
+              </ul>
+              }
+            </li>
+
             <li class="nav-header">Using from C#</li>
             <li><a href="@Root/csharpintro.html">Getting started</a></li>
             <li>
-              <a href="@Root/csharpseries.html">Time series features</a>
+              <a href="@Root/csharpseries.html">Working with data series</a>
               @if (Properties["page-source"].ToString().EndsWith("csharpseries.md")) {
               <ul class="nav nav-list">
                 <li><a href="@Root/csharpseries.html#understanding">What is a series?</a></li>
@@ -101,19 +112,13 @@
                 <li><a href="@Root/csharpseries.html#lookup">Lookup and slicing</a></li>
                 <li><a href="@Root/csharpseries.html#calc">Series-wise calculations</a></li>
                 <li><a href="@Root/csharpseries.html#missing">Missing values</a></li>
-                <li><a href="@Root/csharpseries.html#aggregation">Grouping & windowing</a></li>
                 <li><a href="@Root/csharpseries.html#linq">LINQ to Series</a></li>
+                <li><a href="@Root/csharpseries.html#aggregation">Grouping & windowing</a></li>
                 <li><a href="@Root/csharpseries.html#sampling">Indexing & sampling</a></li>
               </ul>
               }
             </li>
-            <li><a href="@Root/csharpframe.html">Data frame features</a></li>
-            
-            <li class="nav-header">Using R from Deedle</li>
-            <li><a href="@Root/rinterop.html">Deedle R provider plugin</a></li>
-            <li><a href="@Root/rinterop.html#setup">Getting started</a></li>
-            <li><a href="@Root/rinterop.html#frames">Working with data frames</a></li>
-            <li><a href="@Root/rinterop.html#series">Working with time series</a></li>
+            <li><a href="@Root/csharpframe.html">Working with data frames</a></li>
 
             <li class="nav-header">Documentation</li>
             <li><a href="@Root/reference/index.html">API Reference</a></li>
