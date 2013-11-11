@@ -314,11 +314,19 @@ TBD
 
     [lang=csharp,file=csharp/Series.cs,key=aggreg-group]
 
+a
+
     [lang=csharp,file=csharp/Series.cs,key=aggreg-win]
+
+a
 
     [lang=csharp,file=csharp/Series.cs,key=aggreg-chunk]
 
+a
+
     [lang=csharp,file=csharp/Series.cs,key=aggreg-pair]
+
+a
 
     [lang=csharp,file=csharp/Series.cs,key=aggreg-any]
 

@@ -748,7 +748,7 @@ module Series =
   ///
   /// [category:Windowing, chunking and grouping]
   let pairwise (series:Series<'K, 'T>) = 
-    series.Pairwise() |> map (fun k v -> v.Data)
+    series.Pairwise()
 
   /// Aggregates the input into pairs containing the predecessor and an element for each input, except
   /// for the first one. Then calls the specified aggregation function `f` with a tuple and a key.
@@ -760,7 +760,7 @@ module Series =
   ///
   /// [category:Windowing, chunking and grouping]
   let pairwiseWith f (series:Series<'K, 'T>) = 
-    series.Pairwise() |> map (fun k v -> f k v.Data)
+    series.Pairwise() |> map (fun k v -> f k v)
 
   // Grouping
 

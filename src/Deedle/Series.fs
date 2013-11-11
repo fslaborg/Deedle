@@ -487,23 +487,6 @@ and
   // Aggregation
   // ----------------------------------------------------------------------------------------------
 
-  /// Returns a series containing the predecessor and an element for each input, except
-  /// for the first one. The returned series is one key shorter (it does not contain a 
-  /// value for the first key).
-  ///
-  /// ## Parameters
-  ///  - `series` - The input series to be aggregated.
-  ///
-  /// ## Example
-  ///
-  ///     let input = series [ 1 => 'a'; 2 => 'b'; 3 => 'c']
-  ///     let res = input.Pairwise()
-  ///     res = series [2 => ('a', 'b'); 3 => ('b', 'c') ]
-  ///
-  /// [category:Windowing, chunking and grouping]
-  member x.Pairwise() =
-    x.Pairwise(Boundary.Skip)
-
   /// Returns a series containing an element and its neighbor for each input.
   /// The returned series is one key shorter (it does not contain a 
   /// value for the first or last key depending on `boundary`). If `boundary` is 
@@ -546,6 +529,23 @@ and
               // Return key value for the result
               newKey, newValue )) 
     Series<'K, DataSegment<'V * 'V>>(newIndex, newVector, vectorBuilder, indexBuilder)
+
+  /// Returns a series containing the predecessor and an element for each input, except
+  /// for the first one. The returned series is one key shorter (it does not contain a 
+  /// value for the first key).
+  ///
+  /// ## Parameters
+  ///  - `series` - The input series to be aggregated.
+  ///
+  /// ## Example
+  ///
+  ///     let input = series [ 1 => 'a'; 2 => 'b'; 3 => 'c']
+  ///     let res = input.Pairwise()
+  ///     res = series [2 => ('a', 'b'); 3 => ('b', 'c') ]
+  ///
+  /// [category:Windowing, chunking and grouping]
+  member x.Pairwise() =
+    x.Pairwise(Boundary.Skip).Select(fun kvp -> kvp.Value.Data)
 
   /// Aggregates an ordered series using the method specified by `Aggregation<K>` and then
   /// applies the provided `valueSelector` on each window or chunk to produce the result

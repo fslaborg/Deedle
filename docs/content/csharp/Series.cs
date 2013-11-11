@@ -200,11 +200,11 @@ namespace CSharp
 				kvp.Value.Mean());
 
 			var monthlyChunkMean = msft2012.ChunkInto(25, win => win.Mean());
-			// [/aggreg-win]
+			// [/aggreg-chunk]
 
 			// [aggreg-pair]
 			var twoDayAvgs = msft2012.Pairwise().Select(kvp => 
-				(kvp.Value.Data.Item1 + kvp.Value.Data.Item2) / 2.0);
+				(kvp.Value.Item1 + kvp.Value.Item2) / 2.0);
 			// [/aggreg-pair]
 
 			// [aggreg-any]
