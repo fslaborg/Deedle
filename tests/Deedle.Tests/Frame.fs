@@ -48,6 +48,12 @@ let ``Can read MSFT data from CSV file`` () =
   df.ColumnKeys |> Seq.length |> shouldEqual 7
 
 [<Test>]
+let ``Can read MSFT data from CSV file truncated`` () =
+  let df = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/MSFT.csv", inferRows=10, maxRows=27) 
+  df.RowKeys |> Seq.length |> shouldEqual 27
+  df.ColumnKeys |> Seq.length |> shouldEqual 7
+
+[<Test>]
 let ``Can read MSFT data from CSV file without header row`` () =
   let df = msftNoHeaders()
   let expected = msft()  

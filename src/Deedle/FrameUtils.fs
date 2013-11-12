@@ -376,7 +376,7 @@ module internal FrameUtils =
 
 
   /// Load data from a CSV file using F# Data API
-  let readCsv (reader:TextReader) hasHeaders inferTypes inferRows schema (missingValues:string) separators culture =
+  let readCsv (reader:TextReader) hasHeaders inferTypes inferRows schema (missingValues:string) separators culture maxRows =
     let schema = defaultArg schema ""
     let schema = if schema = null then "" else schema
     let missingValuesArr = missingValues.Split(',')
@@ -411,7 +411,10 @@ module internal FrameUtils =
             PrimitiveInferedProperty.Create(c, typeof<string>, true) ]
 
     // Load the data and convert the values to the appropriate type
-    let data = data.Cache()
+    let data = match maxRows with 
+               | Some(nrows) ->  data.Truncate(nrows).Cache() 
+               | None -> data.Cache()
+
     let headers = 
       match data.Headers with
       | Some headers -> headers
