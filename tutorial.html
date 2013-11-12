@@ -961,7 +961,7 @@ together with means for all available numeric columns.</p>
 <div class="tip" id="fs35">val df5 : Frame&lt;int,string&gt;<br /><br />Full name: Tutorial.df5</div>
 <div class="tip" id="fs36">static member Frame.ofRecords : series:Series&lt;&#39;K,&#39;R&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />static member Frame.ofRecords : values:seq&lt;&#39;T&gt; -&gt; Frame&lt;int,string&gt;</div>
 <div class="tip" id="fs37">val msftCsv : Frame&lt;int,string&gt;<br /><br />Full name: Tutorial.msftCsv</div>
-<div class="tip" id="fs38">static member Frame.ReadCsv : path:string * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : stream:IO.Stream * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string -&gt; Frame&lt;int,string&gt;</div>
+<div class="tip" id="fs38">static member Frame.ReadCsv : path:string * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : stream:IO.Stream * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int -&gt; Frame&lt;int,string&gt;</div>
 <div class="tip" id="fs39">val fbCsv : Frame&lt;int,string&gt;<br /><br />Full name: Tutorial.fbCsv</div>
 <div class="tip" id="fs40">val msftOrd : Frame&lt;DateTime,string&gt;<br /><br />Full name: Tutorial.msftOrd</div>
 <div class="tip" id="fs41">val indexRowsDate : column:&#39;C -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;DateTime,&#39;C&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.indexRowsDate</div>
@@ -1038,7 +1038,7 @@ together with means for all available numeric columns.</p>
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
             <li><a href="http://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
             <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/design.html">Design notes</a></li>
             <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
             
@@ -1055,23 +1055,23 @@ together with means for all available numeric columns.</p>
               </ul>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/features.html">Data frame features</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/features.html">Advanced frame manipulation</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/timeseries.html">Time series features</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/timeseries.html">Working with time series</a>
             </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using R with Deedle</a>
+            </li>
+
             <li class="nav-header">Using from C#</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/csharpintro.html">Getting started</a></li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html">Time series features</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html">Working with data series</a>
             </li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html">Data frame features</a></li>
-            
-            <li class="nav-header">Using R from Deedle</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Deedle R provider plugin</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html#setup">Getting started</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html#frames">Working with data frames</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html#series">Working with time series</a></li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html">Working with data frames</a>
+            </li>
 
             <li class="nav-header">Documentation</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>

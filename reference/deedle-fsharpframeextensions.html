@@ -92,10 +92,10 @@ TSV files and <code>,</code> for CSV files)</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '97', 97)" onmouseover="showTip(event, '97', 97)">
+          <code onmouseout="hideTip(event, '98', 98)" onmouseover="showTip(event, '98', 98)">
             frame.SaveCsv(...)
           </code>
-          <div class="tip" id="97">
+          <div class="tip" id="98">
             <strong>Signature:</strong>(path:string * ?includeRowKeys:bool option * ?keyNames:seq&lt;string&gt; option * ?separator:char option * ?culture:CultureInfo option) -&gt; unit<br />
                       </div>
         </td>
@@ -119,10 +119,10 @@ TSV files and <code>,</code> for CSV files)</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '98', 98)" onmouseover="showTip(event, '98', 98)">
+          <code onmouseout="hideTip(event, '99', 99)" onmouseover="showTip(event, '99', 99)">
             frame.SaveCsv(path, keyNames)
           </code>
-          <div class="tip" id="98">
+          <div class="tip" id="99">
             <strong>Signature:</strong>(path:string * keyNames:seq&lt;string&gt;) -&gt; unit<br />
                       </div>
         </td>
@@ -158,8 +158,8 @@ TSV files and <code>,</code> for CSV files)</li>
             ( $ ) f series
           </code>
           <div class="tip" id="104">
-            <strong>Signature:</strong>f:(&#39;?9303 -&gt; &#39;?9304) -&gt; series:Series&lt;&#39;?9305,&#39;?9303&gt; -&gt; Series&lt;&#39;?9305,&#39;?9304&gt;<br />
-                          <strong>Type parameters:</strong> '?9303, '?9304, '?9305          </div>
+            <strong>Signature:</strong>f:(&#39;?9344 -&gt; &#39;?9345) -&gt; series:Series&lt;&#39;?9346,&#39;?9344&gt; -&gt; Series&lt;&#39;?9346,&#39;?9345&gt;<br />
+                          <strong>Type parameters:</strong> '?9344, '?9345, '?9346          </div>
         </td>
         <td class="xmldoc"><p>Custom operator that can be used for applying fuction to all elements of 
 a series. This provides a nicer syntactic sugar for the <code>Series.mapValues</code> 
@@ -181,8 +181,8 @@ adjust $ (s1 + s1)
             ( =?&gt; ) a b
           </code>
           <div class="tip" id="105">
-            <strong>Signature:</strong>a:&#39;?9300 -&gt; b:ISeries&lt;&#39;?9301&gt; -&gt; &#39;?9300 * ISeries&lt;&#39;?9301&gt;<br />
-                          <strong>Type parameters:</strong> '?9300, '?9301          </div>
+            <strong>Signature:</strong>a:&#39;?9341 -&gt; b:ISeries&lt;&#39;?9342&gt; -&gt; &#39;?9341 * ISeries&lt;&#39;?9342&gt;<br />
+                          <strong>Type parameters:</strong> '?9341, '?9342          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
@@ -193,8 +193,8 @@ adjust $ (s1 + s1)
             ( =&gt; ) a b
           </code>
           <div class="tip" id="106">
-            <strong>Signature:</strong>a:&#39;?9297 -&gt; b:&#39;?9298 -&gt; &#39;?9297 * &#39;?9298<br />
-                          <strong>Type parameters:</strong> '?9297, '?9298          </div>
+            <strong>Signature:</strong>a:&#39;?9338 -&gt; b:&#39;?9339 -&gt; &#39;?9338 * &#39;?9339<br />
+                          <strong>Type parameters:</strong> '?9338, '?9339          </div>
         </td>
         <td class="xmldoc"><p>Custom operator that can be used when constructing series from observations
 or frames from key-row or key-column pairs. The operator simply returns a 
@@ -211,8 +211,8 @@ tuple, but it provides a more convenient syntax. For example:</p>
             frame columns
           </code>
           <div class="tip" id="107">
-            <strong>Signature:</strong>columns:seq&lt;&#39;?9307 * &#39;?9308&gt; -&gt; Frame&lt;&#39;?9309,&#39;?9307&gt;<br />
-                          <strong>Type parameters:</strong> '?9307, '?9308, '?9309          </div>
+            <strong>Signature:</strong>columns:seq&lt;&#39;?9348 * &#39;?9349&gt; -&gt; Frame&lt;&#39;?9350,&#39;?9348&gt;<br />
+                          <strong>Type parameters:</strong> '?9348, '?9349, '?9350          </div>
         </td>
         <td class="xmldoc"><p>A function for constructing data frame from a sequence of name - column pairs.
 This provides a nicer syntactic sugar for <code>Frame.ofColumns</code>.</p>
@@ -241,8 +241,8 @@ This provides a nicer syntactic sugar for <code>Frame.ofColumns</code>.</p>
             Frame.ofColumns(cols)
           </code>
           <div class="tip" id="127">
-            <strong>Signature:</strong>cols:Series&lt;&#39;?9327,&#39;?9328&gt; -&gt; Frame&lt;&#39;?9329,&#39;?9327&gt;<br />
-                          <strong>Type parameters:</strong> '?9327, '?9328, '?9329          </div>
+            <strong>Signature:</strong>cols:Series&lt;&#39;?9368,&#39;?9369&gt; -&gt; Frame&lt;&#39;?9370,&#39;?9368&gt;<br />
+                          <strong>Type parameters:</strong> '?9368, '?9369, '?9370          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
@@ -253,8 +253,8 @@ This provides a nicer syntactic sugar for <code>Frame.ofColumns</code>.</p>
             Frame.ofColumns(cols)
           </code>
           <div class="tip" id="128">
-            <strong>Signature:</strong>(cols:seq&lt;&#39;?9331 * &#39;?9332&gt;) -&gt; Frame&lt;&#39;K,&#39;?9331&gt;<br />
-                          <strong>Type parameters:</strong> '?9331, '?9332, 'K          </div>
+            <strong>Signature:</strong>(cols:seq&lt;&#39;?9372 * &#39;?9373&gt;) -&gt; Frame&lt;&#39;K,&#39;?9372&gt;<br />
+                          <strong>Type parameters:</strong> '?9372, '?9373, 'K          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
@@ -289,8 +289,8 @@ This provides a nicer syntactic sugar for <code>Frame.ofColumns</code>.</p>
             Frame.ofRowKeys(keys)
           </code>
           <div class="tip" id="131">
-            <strong>Signature:</strong>keys:seq&lt;&#39;?9325&gt; -&gt; Frame&lt;&#39;?9325,string&gt;<br />
-                          <strong>Type parameters:</strong> '?9325          </div>
+            <strong>Signature:</strong>keys:seq&lt;&#39;?9366&gt; -&gt; Frame&lt;&#39;?9366,string&gt;<br />
+                          <strong>Type parameters:</strong> '?9366          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
@@ -301,8 +301,8 @@ This provides a nicer syntactic sugar for <code>Frame.ofColumns</code>.</p>
             Frame.ofRows(rows)
           </code>
           <div class="tip" id="132">
-            <strong>Signature:</strong>(rows:seq&lt;&#39;?9317 * &#39;?9318&gt;) -&gt; Frame&lt;&#39;?9317,&#39;?9319&gt;<br />
-                          <strong>Type parameters:</strong> '?9317, '?9318, '?9319          </div>
+            <strong>Signature:</strong>(rows:seq&lt;&#39;?9358 * &#39;?9359&gt;) -&gt; Frame&lt;&#39;?9358,&#39;?9360&gt;<br />
+                          <strong>Type parameters:</strong> '?9358, '?9359, '?9360          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
@@ -313,8 +313,8 @@ This provides a nicer syntactic sugar for <code>Frame.ofColumns</code>.</p>
             Frame.ofRows(rows)
           </code>
           <div class="tip" id="133">
-            <strong>Signature:</strong>rows:Series&lt;&#39;?9321,&#39;?9322&gt; -&gt; Frame&lt;&#39;?9321,&#39;?9323&gt;<br />
-                          <strong>Type parameters:</strong> '?9321, '?9322, '?9323          </div>
+            <strong>Signature:</strong>rows:Series&lt;&#39;?9362,&#39;?9363&gt; -&gt; Frame&lt;&#39;?9362,&#39;?9364&gt;<br />
+                          <strong>Type parameters:</strong> '?9362, '?9363, '?9364          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
@@ -325,8 +325,8 @@ This provides a nicer syntactic sugar for <code>Frame.ofColumns</code>.</p>
             Frame.ofRowsOrdinal(rows)
           </code>
           <div class="tip" id="134">
-            <strong>Signature:</strong>rows:seq&lt;&#39;?9313&gt; -&gt; Frame&lt;int,&#39;?9314&gt;<br />
-                          <strong>Type parameters:</strong> '?9313, '?9314, '?9315          </div>
+            <strong>Signature:</strong>rows:seq&lt;&#39;?9354&gt; -&gt; Frame&lt;int,&#39;?9355&gt;<br />
+                          <strong>Type parameters:</strong> '?9354, '?9355, '?9356          </div>
         </td>
         <td class="xmldoc"><p>Creates a data frame with ordinal Integer index from a sequence of rows.
 The column indices of individual rows are unioned, so if a row has fewer
@@ -340,8 +340,8 @@ columns, it will be successfully added, but there will be missing values.</p>
             Frame.ofValues(values)
           </code>
           <div class="tip" id="135">
-            <strong>Signature:</strong>(values:seq&lt;&#39;?9335 * &#39;?9336 * &#39;?9337&gt;) -&gt; Frame&lt;&#39;?9335,&#39;?9336&gt;<br />
-                          <strong>Type parameters:</strong> '?9335, '?9336, '?9337          </div>
+            <strong>Signature:</strong>(values:seq&lt;&#39;?9376 * &#39;?9377 * &#39;?9378&gt;) -&gt; Frame&lt;&#39;?9376,&#39;?9377&gt;<br />
+                          <strong>Type parameters:</strong> '?9376, '?9377, '?9378          </div>
         </td>
         <td class="xmldoc"></td>
       </tr>
@@ -352,7 +352,7 @@ columns, it will be successfully added, but there will be missing values.</p>
             Frame.ReadCsv(...)
           </code>
           <div class="tip" id="136">
-            <strong>Signature:</strong>(path:string * ?hasHeaders:bool option * ?inferTypes:bool option * ?inferRows:int option * ?schema:string option * ?separators:string option * ?culture:string option) -&gt; Frame&lt;int,string&gt;<br />
+            <strong>Signature:</strong>(path:string * ?hasHeaders:bool option * ?inferTypes:bool option * ?inferRows:int option * ?schema:string option * ?separators:string option * ?culture:string option * ?maxRows:int option) -&gt; Frame&lt;int,string&gt;<br />
                       </div>
         </td>
         <td class="xmldoc"><p>Load data frame from a CSV file. The operation automatically reads column names from the 
@@ -386,7 +386,7 @@ values in the CSV file (such as <code>"en-US"</code>). The default is invariant 
             Frame.ReadCsv(...)
           </code>
           <div class="tip" id="137">
-            <strong>Signature:</strong>(stream:Stream * ?hasHeaders:bool option * ?inferTypes:bool option * ?inferRows:int option * ?schema:string option * ?separators:string option * ?culture:string option) -&gt; Frame&lt;int,string&gt;<br />
+            <strong>Signature:</strong>(stream:Stream * ?hasHeaders:bool option * ?inferTypes:bool option * ?inferRows:int option * ?schema:string option * ?separators:string option * ?culture:string option * ?maxRows:int option) -&gt; Frame&lt;int,string&gt;<br />
                       </div>
         </td>
         <td class="xmldoc"><p>Load data frame from a CSV file. The operation automatically reads column names from the 
@@ -441,46 +441,32 @@ values in the CSV file (such as <code>"en-US"</code>). The default is invariant 
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
             <li><a href="http://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
             <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/design.html">Design notes</a></li>
+            <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
             
             <li class="nav-header">Using from F#</li>
             <li>
               <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
-              <ul class="nav nav-list">
-                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#creating">Creating data frames</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#reindexing-and-joins">Using index & joining</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#selecting">Reading values, slicing</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#timeseries">Ordered time series</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#projections">Projection and filtering</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/tutorial.html#grouping">Aggregating groups</a></li>
-              </ul>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/features.html">Data frame features</a>
-              <ul class="nav nav-list">
-                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#creating">Creating & loading</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#dataframe">Frame manipulation</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#slicing">Advanced slicing</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#grouping">Grouping data</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#indexing">Hierarchical indexing</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/features.html#missing">Missing values</a></li>
-              </ul>
+              <a href="http://bluemountaincapital.github.io/Deedle/features.html">Advanced frame manipulation</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/timeseries.html">Time series features</a>
-              <ul class="nav nav-list">
-                <li><a href="http://bluemountaincapital.github.io/Deedle/timeseries.html#alignment">Alignment & joining</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/timeseries.html#windowing">Windows and chunks</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/timeseries.html#sampling">Lookup and resampling</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/timeseries.html#stats">Statistics & math</a></li>
-              </ul>
+              <a href="http://bluemountaincapital.github.io/Deedle/timeseries.html">Working with time series</a>
             </li>
-            <li class="nav-header">Using R from Deedle</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Deedle R provider plugin</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html#setup">Getting started</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html#frames">Working with data frames</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html#series">Working with time series</a></li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using R with Deedle</a>
+            </li>
+
+            <li class="nav-header">Using from C#</li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/csharpintro.html">Getting started</a></li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html">Working with data series</a>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html">Working with data frames</a>
+            </li>
 
             <li class="nav-header">Documentation</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>

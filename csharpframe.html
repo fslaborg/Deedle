@@ -38,7 +38,133 @@
           
 <h1>Data frame manipulation in C#</h1>
 
-<p>TBD</p>
+<a name="creating"></a>
+
+<h2>Creating and loading data frames</h2>
+
+<pre lang="csharp"><span class="c">// Create a collection of anonymous types</span>
+<span class="k">var</span> objects = Enumerable.Range(0, 100).Select(i =&gt;
+  <span class="k">new</span> { Group = <span class="s">"g"</span> + (i/10).ToString(), Number = i });
+
+<span class="c">// Create data frame with properties as column names</span>
+<span class="k">var</span> dfObjects = Frame.FromRecords(objects);
+dfObjects.Print();</pre>
+
+<p>a</p>
+
+<pre lang="csharp"><span class="c">// Generate collection of rows</span>
+<span class="k">var</span> rows = Enumerable.Range(0, 100).Select(i =&gt; {
+  <span class="c">// Build each row using series builder &amp; return </span>
+  <span class="c">// KeyValue representing row key with row data</span>
+  <span class="k">var</span> sb = <span class="k">new</span> SeriesBuilder&lt;<span class="k">string</span>&gt;();
+  sb.Add(<span class="s">"Index"</span>, i);
+  sb.Add(<span class="s">"Sin"</span>, Math.Sin(i / 100.0));
+  sb.Add(<span class="s">"Cos"</span>, Math.Cos(i / 100.0));
+  <span class="k">return</span> KeyValue.Create(i, sb.Series); 
+});
+
+<span class="c">// Turn sequence of row information into data frame</span>
+<span class="k">var</span> df = Frame.FromRows(rows);</pre>
+
+<p>a</p>
+
+<pre lang="csharp"><span class="c">// Read MSFT &amp; FB stock prices from a CSV file</span>
+<span class="k">var</span> msftRaw = Frame.ReadCsv(Path.Combine(root, <span class="s">"../data/stocks/msft.csv"</span>));
+<span class="k">var</span> fbRaw = Frame.ReadCsv(Path.Combine(root, <span class="s">"../data/stocks/fb.csv"</span>));</pre>
+
+<p>A</p>
+
+<a name="indices"></a>
+
+<h2>Working with row and column indices</h2>
+
+<pre lang="csharp"><span class="c">// Get MSFT &amp; FB stock prices indexed by data</span>
+<span class="k">var</span> msft = msftRaw.IndexRows&lt;DateTime&gt;(<span class="s">"Date"</span>).OrderRows();
+<span class="k">var</span> fb = fbRaw.IndexRows&lt;DateTime&gt;(<span class="s">"Date"</span>).OrderRows();
+
+<span class="c">// And rename columns to avoid overlap</span>
+msft.RenameSeries(s =&gt; <span class="s">"Msft"</span> + s);
+fb.RenameSeries(s =&gt; <span class="s">"Fb"</span> + s);</pre>
+
+<p>a</p>
+
+<pre lang="csharp"><span class="c">// Read US debt data from a CSV file</span>
+<span class="k">var</span> debt = Frame.ReadCsv(Path.Combine(root, <span class="s">"../data/us-debt.csv"</span>));
+<span class="c">// Index by Year column and</span>
+<span class="k">var</span> debtByYear = debt
+  .IndexRows&lt;<span class="k">int</span>&gt;(<span class="s">"Year"</span>)
+  .IndexColumnsWith(<span class="k">new</span>[] { <span class="s">"Year"</span>, <span class="s">"GDP"</span>, <span class="s">"Population"</span>, <span class="s">"Debt"</span>, <span class="s">"?"</span> });</pre>
+
+<a name="joining"></a>
+
+<h2>Joining and aligning data frames</h2>
+
+<pre lang="csharp"><span class="c">// Inner join (take intersection of dates)</span>
+<span class="k">var</span> joinIn = msft.Join(fb, JoinKind.Inner);
+<span class="c">// Outer join (take union &amp; fill with missing)</span>
+<span class="k">var</span> joinOut = msft.Join(fb, JoinKind.Outer);</pre>
+
+<p>a</p>
+
+<pre lang="csharp"><span class="c">// Shift MSFT observations by +1 hour for testing</span>
+<span class="k">var</span> msftShift = msft.SelectRowKeys(k =&gt; k.Key.AddHours(1.0));
+
+<span class="c">// MSFT data are missing because keys do not match</span>
+<span class="k">var</span> joinLeftWrong = fb.Join(msftShift, JoinKind.Left);
+
+<span class="c">// This works! Find the value for the nearest smaller key</span>
+<span class="c">// (that is, for the nearest earlier time with value)</span>
+<span class="k">var</span> joinLeft = fb.Join(msftShift, JoinKind.Left, Lookup.NearestSmaller);
+joinLeft.Print();</pre>
+
+<a name="data"></a>
+
+<h2>Accessing data and series operations</h2>
+
+<pre lang="csharp"><span class="c">// Drop series from a data frame</span>
+joinIn.DropSeries(<span class="s">"MsftAdj Close"</span>);
+joinIn.DropSeries(<span class="s">"FbAdj Close"</span>);
+
+<span class="c">// Add new series to a frame</span>
+joinIn.AddSeries(<span class="s">"MsftDiff"</span>, msDiff);
+joinIn.Print();</pre>
+
+<p>a</p>
+
+<pre lang="csharp"><span class="c">// Get MSFT and FB opening prices and calculate the difference</span>
+<span class="k">var</span> msOpen = joinIn.GetSeries&lt;<span class="k">double</span>&gt;(<span class="s">"MsftOpen"</span>);
+<span class="k">var</span> msClose = joinIn.GetSeries&lt;<span class="k">double</span>&gt;(<span class="s">"MsftClose"</span>);
+<span class="k">var</span> msDiff = msClose - msOpen;</pre>
+
+<p>a</p>
+
+<pre lang="csharp"><span class="c">// Get row and then look at row properties</span>
+<span class="k">var</span> row = joinIn.Rows[<span class="k">new</span> DateTime(2013, 1, 4)];
+<span class="k">var</span> msLo = row.GetAs&lt;<span class="k">double</span>&gt;(<span class="s">"MsftLow"</span>);
+<span class="k">var</span> msHi = row.GetAs&lt;<span class="k">double</span>&gt;(<span class="s">"MsftHigh"</span>);
+
+<span class="c">// Get value for a specified column &amp; row keys</span>
+<span class="k">var</span> diff = joinIn[<span class="s">"MsftDiff"</span>, <span class="k">new</span> DateTime(2013, 1, 4)];</pre>
+
+<a name="linq"></a>
+
+<h2>LINQ to data frame</h2>
+
+<pre lang="csharp"><span class="c">// Project rows into a new series using the Select method</span>
+<span class="k">var</span> diffs = joinIn.Rows.Select(kvp =&gt;
+  kvp.Value.GetAs&lt;<span class="k">double</span>&gt;(<span class="s">"MsftOpen"</span>) - 
+    kvp.Value.GetAs&lt;<span class="k">double</span>&gt;(<span class="s">"FbOpen"</span>));</pre>
+
+<p><code>SelectKeys</code>
+and <code>SelectOptional</code></p>
+
+<pre lang="csharp"><span class="c">// Filter rows using a specified condition </span>
+<span class="k">var</span> msftGreaterRows = joinIn.Rows.Where(kvp =&gt;
+  kvp.Value.GetAs&lt;<span class="k">double</span>&gt;(<span class="s">"MsftOpen"</span>) &gt; 
+    kvp.Value.GetAs&lt;<span class="k">double</span>&gt;(<span class="s">"FbOpen"</span>));
+
+<span class="c">// Transform row collection into a new data frame</span>
+<span class="k">var</span> msftGreaterDf = Frame.FromRows(msftGreaterRows);</pre>
 
 
         </div>
@@ -54,7 +180,7 @@
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
             <li><a href="http://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
             <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/design.html">Design notes</a></li>
             <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
             
@@ -63,23 +189,30 @@
               <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/features.html">Data frame features</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/features.html">Advanced frame manipulation</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/timeseries.html">Time series features</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/timeseries.html">Working with time series</a>
             </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using R with Deedle</a>
+            </li>
+
             <li class="nav-header">Using from C#</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/csharpintro.html">Getting started</a></li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html">Time series features</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html">Working with data series</a>
             </li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html">Data frame features</a></li>
-            
-            <li class="nav-header">Using R from Deedle</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Deedle R provider plugin</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html#setup">Getting started</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html#frames">Working with data frames</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html#series">Working with time series</a></li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html">Working with data frames</a>
+              <ul class="nav nav-list">
+                <li><a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html#creating">Creating data frames</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html#indices">Row and column indices</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html#joining">Joining &amp; aligning</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html#data">Series operations</a></li>
+                <li><a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html#linq">LINQ to Frames</a></li>
+              </ul>
+            </li>
 
             <li class="nav-header">Documentation</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>

@@ -38,7 +38,10 @@
           
 <h1>Using Deedle from C#</h1>
 
-<p>Is good</p>
+<p>Deedle is a .NET library for data manipulation and it can be used from both F# and C# as well as from
+other .NET languages. Deedle is a single managed library <code>Deedle.dll</code> that contains the core Deedle
+types, together with extension methods for convenient use from C#. To install Deedle, just use the
+Deedle NuGet package.</p>
 
 <div class="row">
   <div class="span1"></div>
@@ -53,13 +56,33 @@
 
 <h2>Overview</h2>
 
-<p>Works</p>
+<p>The Deedle library provides types for working with <em>series</em> and <em>data frames</em>. A series is a collection 
+mapping a set of keys to values. The keys are used for lookup in the series, but also for automatic 
+alignment when working with multiple series. For example, the keys can be ordinal numbers or strings 
+(when you use it to store different properties) or ordered dates or times (when you use series to 
+represent time series such as stock prices). When performing operations on multiple series (e.g. adding
+or zipping), the keys are used to automatically match corresponding values. Furthermore, series automatically
+handles missing data.</p>
+
+<p>A data frame is a structure containing multiple series (multiple columns) that share the same row keys.
+A typical example includes data frame that stores different properties about objects (each row represents
+a single object), or data frame that stores aligned time series data such as prices for multiple stocks.</p>
+
+<p>The best way to learn about using Deedle from C# is to go through the two tutorials below that disucss 
+working with series and frames, respectively.</p>
 
 <h2>Documentation</h2>
 
 <ul>
-<li><p><a href="csharpseries.html">Time series features</a></p></li>
-<li><a href="csharpframe.html">Data frame features</a></li>
+<li><p><a href="csharpseries.html"><strong>Working with data series</strong></a> explains the <code>Series&lt;K, V&gt;</code> type, discusses how to 
+build series, retrieve data from a series, perform series computations including aggregation
+and handle missing data and how to work with series values and indices.</p></li>
+<li><p><a href="csharpframe.html"><strong>Working with data frames</strong></a> discusses how to combine multiple series in a data
+frame, how to align data and time series using dates, how to work with rows and columns of a
+data frame and how to perform calculations over entire data frames.</p></li>
+<li><a href="http://bluemountaincapital.github.io/Deedle/design.html"><strong>Design notes document</strong></a> is worth checking
+out if you want to get better understanding of the library principles - how it has been designed and
+how the implementation works.</li>
 </ul>
 
 
@@ -76,7 +99,7 @@
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
             <li><a href="http://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
             <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/design.html">Design notes</a></li>
             <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
             
@@ -85,23 +108,23 @@
               <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/features.html">Data frame features</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/features.html">Advanced frame manipulation</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/timeseries.html">Time series features</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/timeseries.html">Working with time series</a>
             </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using R with Deedle</a>
+            </li>
+
             <li class="nav-header">Using from C#</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/csharpintro.html">Getting started</a></li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html">Time series features</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html">Working with data series</a>
             </li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html">Data frame features</a></li>
-            
-            <li class="nav-header">Using R from Deedle</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Deedle R provider plugin</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html#setup">Getting started</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html#frames">Working with data frames</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/rinterop.html#series">Working with time series</a></li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html">Working with data frames</a>
+            </li>
 
             <li class="nav-header">Documentation</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>

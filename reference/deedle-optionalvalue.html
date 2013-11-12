@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>VectorExtensions - Deedle</title>
+    <title>OptionalValue - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="BlueMountain Capital">
@@ -38,39 +38,54 @@
 
 
 
-<h1>VectorExtensions</h1>
+<h1>OptionalValue</h1>
 <div class="xmldoc">
-<p>Module with extensions for generic vector type. Given <code>vec</code> of type <code>IVector&lt;T&gt;</code>, 
-the extension property <code>vec.DataSequence</code> returns all data of the vector converted
-to the "least common denominator" data structure - <code>IEnumerable&lt;T&gt;</code>.</p>
+<p>Non-generic type that makes it easier to create <code>OptionalValue&lt;T&gt;</code> values
+from C# by benefiting the type inference for generic method invocations.</p>
 </div>
-
-<!-- TODO: Refactor me - copy & paste from 'namespaces.cshtml' -->
-
-
-
-<!-- END TODO -->
-
-
-
-  <h3>Type extensions</h3>
+  <h3>Static members</h3>
   <table class="table table-bordered member-list">
     <thead>
-      <tr><td>Type extension</td><td>Description</td></tr>
+      <tr><td>Static member</td><td>Description</td></tr>
     </thead>
     <tbody>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '97', 97)" onmouseover="showTip(event, '97', 97)">
-            iVector.DataSequence
+          <code onmouseout="hideTip(event, '411', 411)" onmouseover="showTip(event, '411', 411)">
+            OptionalValue.Create(v)
           </code>
-          <div class="tip" id="97">
-            <strong>Signature:</strong>seq&lt;OptionalValue&lt;&#39;T&gt;&gt;<br />
-                      </div>
+          <div class="tip" id="411">
+            <strong>Signature:</strong>v:&#39;?6571 -&gt; OptionalValue&lt;&#39;?6571&gt;<br />
+                          <strong>Type parameters:</strong> '?6571          </div>
         </td>
-        <td class="xmldoc"><p>Returns the data of the vector as a lazy sequence. (This preserves the 
-order of elements in the vector and so it also returns missing values.)</p>
+        <td class="xmldoc"><p>Creates an <code>OptionalValue&lt;'T&gt;</code> that contains a value <code>v</code></p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '421', 421)" onmouseover="showTip(event, '421', 421)">
+            OptionalValue.Empty()
+          </code>
+          <div class="tip" id="421">
+            <strong>Signature:</strong>unit -&gt; OptionalValue&lt;&#39;T&gt;<br />
+                          <strong>Type parameters:</strong> 'T          </div>
+        </td>
+        <td class="xmldoc"><p>Creates an <code>OptionalValue&lt;'T&gt;</code> that does not contain a value</p>
+</td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '422', 422)" onmouseover="showTip(event, '422', 422)">
+            OptionalValue.OfNullable(v)
+          </code>
+          <div class="tip" id="422">
+            <strong>Signature:</strong>v:Nullable&lt;&#39;T&gt; -&gt; OptionalValue&lt;&#39;T&gt;<br />
+                          <strong>Type parameters:</strong> 'T          </div>
+        </td>
+        <td class="xmldoc"><p>Creates an <code>OptionalValue&lt;T&gt;</code> from a nullable value of type <code>T?</code></p>
 </td>
       </tr>
     </tbody>
