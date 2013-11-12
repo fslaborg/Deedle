@@ -47,15 +47,18 @@ type Frame =
   ///    parse semicolon separated files.
   ///  * `culture` - Specifies the name of the culture that is used when parsing 
   ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
+  ///  * `maxRows` - Specifies the maximum number of rows that will be read from the CSV file
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member ReadCsv
     ( location:string, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] skipTypeInference, [<Optional>] inferRows, 
-      [<Optional>] schema, [<Optional>] separators, [<Optional>] culture) =
+      [<Optional>] schema, [<Optional>] separators, [<Optional>] culture, [<Optional>] maxRows:Nullable<int>) =
     use reader = new StreamReader(location)
     FrameUtils.readCsv 
       reader (if hasHeaders.HasValue then Some hasHeaders.Value else None)
       (Some (not skipTypeInference)) (Some inferRows) (Some schema) "NaN,NA,#N/A,:" 
       (if separators = null then None else Some separators) (Some culture)
+      (if maxRows.HasValue then Some maxRows.Value else None)
+
 
   /// Load data frame from a CSV file. The operation automatically reads column names from the 
   /// CSV file (if they are present) and infers the type of values for each column. Columns
@@ -81,11 +84,12 @@ type Frame =
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member ReadCsv
     ( stream:Stream, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] skipTypeInference, [<Optional>] inferRows, 
-      [<Optional>] schema, [<Optional>] separators, [<Optional>] culture) =
+      [<Optional>] schema, [<Optional>] separators, [<Optional>] culture, [<Optional>] maxRows:Nullable<int>) =
     FrameUtils.readCsv 
       (new StreamReader(stream)) (if hasHeaders.HasValue then Some hasHeaders.Value else None)
       (Some (not skipTypeInference)) (Some inferRows) (Some schema) "NaN,NA,#N/A,:" 
       (if separators = null then None else Some separators) (Some culture)
+      (if maxRows.HasValue then Some maxRows.Value else None)
 
   // ----------------------------------------------------------------------------------------------
   // Creating from rows or from columns
@@ -259,9 +263,9 @@ module FSharpFrameExtensions =
     ///    parse semicolon separated files.
     ///  * `culture` - Specifies the name of the culture that is used when parsing 
     ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
-    static member ReadCsv(path:string, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture) =
+    static member ReadCsv(path:string, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture, ?maxRows) =
       use reader = new StreamReader(path)
-      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema "NaN,NA,#N/A,:" separators culture
+      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema "NaN,NA,#N/A,:" separators culture maxRows
 
     /// Load data frame from a CSV file. The operation automatically reads column names from the 
     /// CSV file (if they are present) and infers the type of values for each column. Columns
@@ -283,8 +287,8 @@ module FSharpFrameExtensions =
     ///    parse semicolon separated files.
     ///  * `culture` - Specifies the name of the culture that is used when parsing 
     ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
-    static member ReadCsv(stream:Stream, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture) =
-      FrameUtils.readCsv (new StreamReader(stream)) hasHeaders inferTypes inferRows schema "NaN,NA,#N/A,:" separators culture
+    static member ReadCsv(stream:Stream, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture, ?maxRows) =
+      FrameUtils.readCsv (new StreamReader(stream)) hasHeaders inferTypes inferRows schema "NaN,NA,#N/A,:" separators culture maxRows
       
     /// Creates a data frame with ordinal Integer index from a sequence of rows.
     /// The column indices of individual rows are unioned, so if a row has fewer
