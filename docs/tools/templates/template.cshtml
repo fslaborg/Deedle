@@ -55,7 +55,8 @@
             <li class="nav-header">Using from F#</li>
             <li>
               <a href="@Root/tutorial.html">Quick start tutorial</a>
-              @if (Properties["page-source"].ToString().EndsWith("tutorial.fsx")) {
+              @if (Properties.Dictionary.ContainsKey("page-source") && Properties["page-source"].ToString().EndsWith("tutorial.fsx")) 
+              {
               <ul class="nav nav-list">
                 <li><a href="@Root/tutorial.html#creating">Creating data frames</a></li>
                 <li><a href="@Root/tutorial.html#reindexing-and-joins">Using index & joining</a></li>
@@ -68,7 +69,8 @@
             </li>
             <li>
               <a href="@Root/features.html">Advanced frame manipulation</a>
-              @if (Properties["page-source"].ToString().EndsWith("features.fsx")) {
+              @if (Properties.Dictionary.ContainsKey("page-source") && Properties["page-source"].ToString().EndsWith("features.fsx"))
+              {
               <ul class="nav nav-list">
                 <li><a href="@Root/features.html#creating">Creating & loading</a></li>
                 <li><a href="@Root/features.html#dataframe">Frame manipulation</a></li>
@@ -81,7 +83,8 @@
             </li>
             <li>
               <a href="@Root/timeseries.html">Working with time series</a>
-              @if (Properties["page-source"].ToString().EndsWith("timeseries.fsx")) {
+              @if (Properties.Dictionary.ContainsKey("page-source") && Properties["page-source"].ToString().EndsWith("timeseries.fsx"))
+              {
               <ul class="nav nav-list">
                 <li><a href="@Root/timeseries.html#alignment">Alignment & joining</a></li>
                 <li><a href="@Root/timeseries.html#windowing">Windows and chunks</a></li>
@@ -92,11 +95,12 @@
             </li>
             <li>
               <a href="@Root/rinterop.html">Using R with Deedle</a>
-              @if (Properties["page-source"].ToString().EndsWith("rinterop.fsx")) {
+              @if (Properties.Dictionary.ContainsKey("page-source") && Properties["page-source"].ToString().EndsWith("rinterop.fsx"))
+              {
               <ul class="nav nav-list">
                 <li><a href="@Root/rinterop.html#setup">Getting started</a></li>
                 <li><a href="@Root/rinterop.html#frames">Working with data frames</a></li>
-                <li><a href="@Root/rinterop.html#series">Working with time series</a></li>
+                <li><a href="@Root/rinterop.html#series">Working with time serie  s</a></li>
               </ul>
               }
             </li>
@@ -105,7 +109,8 @@
             <li><a href="@Root/csharpintro.html">Getting started</a></li>
             <li>
               <a href="@Root/csharpseries.html">Working with data series</a>
-              @if (Properties["page-source"].ToString().EndsWith("csharpseries.md")) {
+              @if (Properties.Dictionary.ContainsKey("page-source") && Properties["page-source"].ToString().EndsWith("csharpseries.md"))
+              {
               <ul class="nav nav-list">
                 <li><a href="@Root/csharpseries.html#understanding">What is a series?</a></li>
                 <li><a href="@Root/csharpseries.html#creating">Creating & loading</a></li>

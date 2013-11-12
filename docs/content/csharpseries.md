@@ -310,26 +310,67 @@ variable bound in the `from` clause is key value pair containing the key (index)
 Grouping, windowing and chunking
 --------------------------------
 
-TBD
+Deedle supports a number of operations that can be used to group or aggregate data. There
+are two operations - for any (possibly unordered) series, _grouping_ works by obtaining a new 
+key for each observation and then grouping the input by such keys; _aggregation_ works only
+on ordered series. It aggregates consecutive elements (possibly with overlap) of the series -
+a typical use of aggregation is getting floating windows of certain length.
+
+### Grouping series
+
+The grouping operation is similar to `GroupBy` from LINQ. It takes a _key selector_ that produces
+a new key and a _value selector_ that produces new value for a group of values with the same key.
+The following example uses `randNums` which is a series of 100 randomly generated values between
+0 and 1. We group them by the first digit and count number of elements in each group to get the 
+distribution of the random number generator:
 
     [lang=csharp,file=csharp/Series.cs,key=aggreg-group]
 
-a
+Note that the aggregation function needs to return `OptionalValue<T>`. This makes it possible to
+write aggregation that returns series with missing values for some key (e.g. when the group 
+does not contain any valid value).
+
+### Floating windows and chunking
+
+When working with time series (e.g. stock prices), floating windows can be used to take the 
+average value over certain number of previous values. The following example takes 5 last 
+values for each day and averages them (skipping over the first 4 items in the series where 
+there is not enough past values available):
 
     [lang=csharp,file=csharp/Series.cs,key=aggreg-win]
 
-a
+The chunking operation is similar to windowing, but it builds chunks that do not overlap. For
+example, given `[1; 2; 3; 4]` a floating window of size two returns `[[1; 2]; [2; 3]; [3; 4]]`
+while chunks of size two return `[[1; 2]; [3; 4]]`. The chunking operations look very similar
+to windowing operations:
 
     [lang=csharp,file=csharp/Series.cs,key=aggreg-chunk]
 
-a
+Finally, it is very common to use windows of size two, which gives us the current value together
+with the previous value. In Deedle, this is available via the `Pairwise` operation which turns
+a series of values into a series of tuples (type `Tuple<V, V>`). Here we take the average of the
+current and previous value:
 
     [lang=csharp,file=csharp/Series.cs,key=aggreg-pair]
 
-a
+### General (ordered) aggregation
+
+For chunking and windowing, previous examples always used a fixed number of elements to specify
+when a window/chunk ends. However, you might want to use more advanced conditions. This can be
+done using the fully general `Aggregate` operation. The `Aggregation` type in the following 
+example provides methods for specifying additional conditions. 
+
+The options include windowing and chunking of fixed size where boundaries are handled differently,
+and windowing/chunking where each window/chunk ends when a certain property holds between the 
+keys. For example, the following sample creates chunks such that the year and month are equal
+for each chunk:
 
     [lang=csharp,file=csharp/Series.cs,key=aggreg-any]
 
+The result of the operation is a series that has at most one value for each year/month which
+represents the average value in that month. When building the chunks, the aggregation calls
+the provided function (argument of `ChunkWhile`) on the first and the last key of the chunk
+until the function returns `false` and then it starts a new chunk.
 
 <a name="sampling"></a>
 
@@ -368,6 +409,20 @@ Just like the two previous operations, `IndexWith` also changes the type of the 
 It can also change whether the series is ordered or not (here, the resulting series has
 `DateTime` keys and is ordered).
 
-### Sampling 
+### Time series sampling 
 
-TBD
+When a series is ordered and the keys represent (typically) dates or times, we can use a number
+of sampling operations. There are two kinds of sampling operations:
+
+ * **Resampling** means that we aggregate values values into chunks based on a specified collection 
+   of keys (e.g. explicitly provided times), or based on some relation between keys (e.g. date times 
+   having the same date).
+
+ * **Uniform resampling** is similar to resampling, but we specify keys by providing functions that 
+   generate a uniform sequence of keys (e.g. days), the operation also fills value for days that 
+   have no corresponding observations in the input sequence.
+
+Given a series `ts`, the sampling operations are available via the extension methods `ts.Sample(..)`, 
+`ts.SampleInto(..)`, and `ts.ResampleUniform(..)`. For more information about these methods, 
+[see the API reference](reference/deedle-seriesextensions.html#section0) and also the [F# samples](timeseries.html#sampling)
+which are written using corresponding F# functions in the `Series` module.

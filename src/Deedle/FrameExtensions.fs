@@ -616,6 +616,9 @@ type FrameExtensions =
   // ----------------------------------------------------------------------------------------------
 
   [<Extension>]
+  static member Print(frame:Frame<'K, 'V>) = Console.WriteLine(frame.Format());
+
+  [<Extension>]
   static member Sum(frame:Frame<'R, 'C>) = Frame.sum frame
 
   [<Extension>]

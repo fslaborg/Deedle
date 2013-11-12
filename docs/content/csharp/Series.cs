@@ -9,7 +9,7 @@ using Deedle;
 
 namespace CSharp
 {
-  static class Series
+  static class SeriesSamples
   {
     public static void Samples([CallerFilePath] string file = "")
     {
@@ -182,6 +182,7 @@ namespace CSharp
       // ------------------------------------------------------------
 
 			// [aggreg-group]
+			// Group random numbers by the first digit & get distribution
 			var buckets = randNums.GroupBy
 				( kvp => (int)(kvp.Value * 10), 
 				  kvp => OptionalValue.Create(kvp.Value.KeyCount) );
@@ -189,28 +190,38 @@ namespace CSharp
 			// [/aggreg-group]
 
 			// [aggreg-win]
+			// Average over 25 element floating window
+			var monthlyWinMean = msft2012.WindowInto(25, win => win.Mean());
+
+			// Get floating window over 5 elements as series of series
+			// and then apply average on each series individually
 			var weeklyWinMean = msft2012.Window(5).Select(kvp =>
 				kvp.Value.Mean());
-
-			var monthlyWinMean = msft2012.WindowInto(25, win => win.Mean());
 			// [/aggreg-win]
 
 			// [aggreg-chunk]
+			// Get chunks of size 25 and mean each (disjoint) chunk
+			var monthlyChunkMean = msft2012.ChunkInto(25, win => win.Mean());
+
+			// Get series containing individual chunks (as series)
 			var weeklyChunkMean = msft2012.Chunk(5).Select(kvp =>
 				kvp.Value.Mean());
-
-			var monthlyChunkMean = msft2012.ChunkInto(25, win => win.Mean());
 			// [/aggreg-chunk]
 
 			// [aggreg-pair]
+			// For each key, get the previous value and average them
 			var twoDayAvgs = msft2012.Pairwise().Select(kvp => 
 				(kvp.Value.Item1 + kvp.Value.Item2) / 2.0);
 			// [/aggreg-pair]
 
 			// [aggreg-any]
 			msft2012.Aggregate
-				(Aggregation.ChunkWhile<DateTime>((k1, k2) => (k2 - k1).TotalDays < 7.0),
-				 chunk => KeyValue.Create
+				( // Get chunks while the month & year of the keys are the same
+				  Aggregation.ChunkWhile<DateTime>((k1, k2) => 
+						k1.Month == k2.Month && k2.Year == k1.Year ),
+				  // For each chunk, return the first key as the key and
+					// either average value or missing value if it was empty
+					chunk => KeyValue.Create
 					 ( chunk.Data.FirstKey(),
 						 chunk.Data.ValueCount > 0 ?
 							OptionalValue.Create(chunk.Data.Mean()) :
@@ -258,22 +269,11 @@ namespace CSharp
         DateTime.Today.AddDays(1.0),
         DateTime.Today.AddDays(2.0) });
       // [/index-with]
-
-
-
     }
 
     private static int? LookupEven(int i)
     {
       return i % 2 == 1 ? null : (int?)i;
-    }
-  }
-
-  class Program
-  {
-    static void Main(string[] args)
-    {
-      Series.Samples();
     }
   }
 }
