@@ -1,6 +1,8 @@
 Data frame manipulation in C#
 =============================
 
+<a name="creating"></a>
+
 Creating and loading data frames
 --------------------------------
 
@@ -17,6 +19,8 @@ a
 
 A
 
+<a name="indices"></a>
+
 Working with row and column indices
 -----------------------------------
 
@@ -27,6 +31,8 @@ a
     [lang=csharp,file=csharp/Frame.cs,key=index-cols]
 
 
+<a name="joining"></a>
+
 Joining and aligning data frames
 --------------------------------
 
@@ -36,6 +42,8 @@ a
 
     [lang=csharp,file=csharp/Frame.cs,key=join-lookup]
 
+
+<a name="data"></a>
 
 Accessing data and series operations
 ------------------------------------
@@ -49,6 +57,8 @@ a
 a
 
     [lang=csharp,file=csharp/Frame.cs,key=series-rows]
+
+<a name="linq"></a>
 
 LINQ to data frame
 ------------------

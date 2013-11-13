@@ -100,7 +100,7 @@
               <ul class="nav nav-list">
                 <li><a href="@Root/rinterop.html#setup">Getting started</a></li>
                 <li><a href="@Root/rinterop.html#frames">Working with data frames</a></li>
-                <li><a href="@Root/rinterop.html#series">Working with time serie  s</a></li>
+                <li><a href="@Root/rinterop.html#series">Working with time series</a></li>
               </ul>
               }
             </li>
@@ -112,7 +112,7 @@
               @if (Properties.Dictionary.ContainsKey("page-source") && Properties["page-source"].ToString().EndsWith("csharpseries.md"))
               {
               <ul class="nav nav-list">
-                <li><a href="@Root/csharpseries.html#understanding">What is a series?</a></li>
+                <li><a href="@Root/csharpseries.html#understanding">What is a series</a></li>
                 <li><a href="@Root/csharpseries.html#creating">Creating & loading</a></li>
                 <li><a href="@Root/csharpseries.html#lookup">Lookup and slicing</a></li>
                 <li><a href="@Root/csharpseries.html#calc">Series-wise calculations</a></li>
@@ -123,7 +123,19 @@
               </ul>
               }
             </li>
-            <li><a href="@Root/csharpframe.html">Working with data frames</a></li>
+            <li>
+              <a href="@Root/csharpframe.html">Working with data frames</a>
+              @if (Properties.Dictionary.ContainsKey("page-source") && Properties["page-source"].ToString().EndsWith("csharpframe.md"))
+              {
+              <ul class="nav nav-list">
+                <li><a href="@Root/csharpframe.html#creating">Creating data frames</a></li>
+                <li><a href="@Root/csharpframe.html#indices">Row and column indices</a></li>
+                <li><a href="@Root/csharpframe.html#joining">Joining &amp; aligning</a></li>
+                <li><a href="@Root/csharpframe.html#data">Series operations</a></li>
+                <li><a href="@Root/csharpframe.html#linq">LINQ to Frames</a></li>
+              </ul>
+              }
+            </li>
 
             <li class="nav-header">Documentation</li>
             <li><a href="@Root/reference/index.html">API Reference</a></li>

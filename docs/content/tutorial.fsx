@@ -153,8 +153,8 @@ let df5 = Frame.ofRecords prices
 (**
 Finally, we can also load data frame from CSV:
 *)
-let msftCsv = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/MSFT.csv")
-let fbCsv = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/FB.csv")
+let msftCsv = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/stocks/MSFT.csv")
+let fbCsv = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/stocks/FB.csv")
 // [fsi:val fbCsv : Frame<int,string> =]
 // [fsi:         Date       Open  High  Low   Close Volume    Adj Close ]
 // [fsi:  0 ->   2013-08-30 42.02 42.26 41.06 41.29 67587400  41.29     ]
