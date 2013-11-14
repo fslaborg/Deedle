@@ -12,8 +12,8 @@ from GitHub and run the samples.
 
 <a name="understanding"></a>
 
-What is a series?
------------------
+What is a series
+----------------
 
  * **Key value mapping** - a series is represented by a type `Series<K, V>` from the `Deedle` namespace. The type
   represents a data series mapping keys of type `K` to values of type `V`. There are no 

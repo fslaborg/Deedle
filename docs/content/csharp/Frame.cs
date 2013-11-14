@@ -21,8 +21,9 @@ namespace CSharp
 
 			// [create-records]
 			// Create a collection of anonymous types
-			var objects = Enumerable.Range(0, 100).Select(i =>
-				new { Group = "g" + (i/10).ToString(), Number = i });
+			var rnd = new Random();
+			var objects = Enumerable.Range(0, 10).Select(i =>
+				new { Key = "ID_" + i.ToString(), Number = rnd.Next() });
 
 			// Create data frame with properties as column names
 			var dfObjects = Frame.FromRecords(objects);
@@ -50,6 +51,8 @@ namespace CSharp
 			var msftRaw = Frame.ReadCsv(Path.Combine(root, "../data/stocks/msft.csv"));
 			var fbRaw = Frame.ReadCsv(Path.Combine(root, "../data/stocks/fb.csv"));
 			// [/create-csv]
+			
+			msftRaw.Print();
 
 			// ------------------------------------------------------------
 			// Working with row and column indices
