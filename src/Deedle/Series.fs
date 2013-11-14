@@ -545,7 +545,7 @@ and
   ///
   /// [category:Windowing, chunking and grouping]
   member x.Pairwise() =
-    x.Pairwise(Boundary.Skip).Select(fun kvp -> kvp.Value.Data)
+    x.Pairwise(Boundary.Skip).Select(fun (kvp:KeyValuePair<_, DataSegment<_>>) -> kvp.Value.Data)
 
   /// Aggregates an ordered series using the method specified by `Aggregation<K>` and then
   /// applies the provided `valueSelector` on each window or chunk to produce the result
