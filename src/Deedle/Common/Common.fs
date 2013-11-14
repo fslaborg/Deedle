@@ -313,7 +313,6 @@ namespace Deedle.Internal
 
 open System
 open System.Linq
-open System.Drawing
 open Deedle
 open System.Collections.Generic
 open System.Collections.ObjectModel

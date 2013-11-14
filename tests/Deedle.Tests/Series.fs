@@ -10,6 +10,7 @@ module Deedle.Tests.Series
 open System
 open System.Linq
 open System.Collections.Generic
+open System.Globalization
 open FsUnit
 open FsCheck
 open NUnit.Framework
@@ -23,6 +24,8 @@ open Deedle
 let unordered = series [ 3 => "hi"; 2 => "bye"; 1 => "ciao"; 5 => "nazdar" ]
 let ordered = series [ 1 => "hi"; 2 => "bye"; 3 => "ciao"; 5 => "nazdar" ]
 let missing = series [ 1 => "hi"; 2 => null; 3 => "ciao"; 5 => "nazdar" ]
+let usCulture = CultureInfo.GetCultureInfo("en-us")
+let parseDateUSA s = DateTime.Parse(s,usCulture)
 
 [<Test>]  
 let ``Can access elements in ordered and unordered series`` () =
@@ -178,7 +181,7 @@ let ``Sample by time - get value at or just before specified time`` () =
       "12/30/2011 3:00:00 PM" => 8; "12/31/2011 3:00:00 PM" => 10; "1/1/2012 3:00:00 PM" => 13;
       "1/2/2012 3:00:00 PM" => 15;  "1/3/2012 3:00:00 PM" => 17;   "1/4/2012 3:00:00 PM" => 19
       "1/5/2012 3:00:00 PM" => 20 ] 
-    |> series |> Series.mapKeys DateTime.Parse
+    |> series |> Series.mapKeys parseDateUSA
 
   let start = DateTime(2011, 12, 27).AddHours(15.0)
   let actual = SeriesExtensions.Sample(input, start, TimeSpan.FromDays(1.0), Direction.Backward)
@@ -190,7 +193,7 @@ let ``Resample uniform - get the latest available value for each date (TestDaySa
   let expected = 
     [ "12/2/2011" => 4;  "12/3/2011" => 9; "12/4/2011" => 13;
       "12/5/2011" => 18; "12/6/2011" => 19 ] 
-    |> series |> Series.mapKeys DateTime.Parse
+    |> series |> Series.mapKeys parseDateUSA
   let actual = SeriesExtensions.ResampleUniform(input, (fun (dt:DateTime) -> dt.Date), (fun dt -> dt.AddDays(1.0)))
   actual |> shouldEqual expected
 
@@ -200,7 +203,7 @@ let ``Sample by time span - get the first available sample for each minute (Test
   let expected = 
     [ "12/2/2011 12:00:00 AM" => 0; "12/2/2011 12:01:00 AM" => 24; 
       "12/2/2011 12:02:00 AM" => 48; "12/2/2011 12:03:00 AM" => 49 ]
-    |> series |> Series.mapKeys DateTime.Parse 
+    |> series |> Series.mapKeys parseDateUSA
 
   let actual = SeriesExtensions.Sample(input, TimeSpan.FromMinutes(1.0))
   actual |> shouldEqual expected
@@ -212,7 +215,7 @@ let ``Sample by time span - get the last available previous value for every hour
     [ "2/12/2012 12:00:00 AM" => 0;  "2/12/2012 1:00:00 AM" => 11
       "2/12/2012 2:00:00 AM" => 22; "2/12/2012 3:00:00 AM" => 33
       "2/12/2012 4:00:00 AM" => 44; "2/12/2012 5:00:00 AM" => 49 ]
-    |> series |> Series.mapKeys DateTime.Parse
+    |> series |> Series.mapKeys parseDateUSA
   let actual = input |> Series.sampleTimeInto (TimeSpan(1,0,0)) Direction.Backward Series.lastValue
   actual |> shouldEqual expected        
 
@@ -225,7 +228,7 @@ let ``Sample by keys - get the nearest previous key or <missing> (TestExplicitTi
   let expected = 
     [ "12/20/2011" => Double.NaN; "1/5/2012" => 2.0;
       "1/8/2012" => 3.0; "1/19/2012" => 7.0; "1/29/2012" => 10.0 ]
-    |> series |> Series.mapKeys DateTime.Parse |> Series.mapValues int
+    |> series |> Series.mapKeys parseDateUSA |> Series.mapValues int
   let actual = input.GetItems(dateSampels, Lookup.NearestSmaller)
   actual |> shouldEqual expected
 
@@ -233,11 +236,11 @@ let ``Sample by keys - get the nearest previous key or <missing> (TestExplicitTi
 let ``Reample uniform - select value of nearest previous key or fill with earlier (TestForwardFillSampling)`` () =
   let input = 
     [ "5/25/2012", 1.0; "5/26/2012", 2.0; "5/29/2012", 5.0; "5/30/2012", 6.0 ]
-    |> series |> Series.mapKeys DateTime.Parse 
+    |> series |> Series.mapKeys parseDateUSA 
   let expected = 
     [ "5/25/2012", 1.0; "5/26/2012", 2.0; "5/27/2012", 2.0;
       "5/28/2012", 2.0; "5/29/2012", 5.0; "5/30/2012", 6.0 ]
-    |> series |> Series.mapKeys DateTime.Parse 
+    |> series |> Series.mapKeys parseDateUSA 
   let actual = SeriesExtensions.ResampleUniform(input, (fun (dt:DateTime) -> dt.Date), (fun dt -> dt.AddDays(1.0)))
   actual |> shouldEqual expected
 
