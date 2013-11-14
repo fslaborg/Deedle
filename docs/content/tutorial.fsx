@@ -2,8 +2,8 @@
 #I "../../bin/"
 
 (**
-F# DataFrame in 10 minutes
-==========================
+Deedle in 10 minutes using F#
+=============================
 
 This document is a quick overview of the most important features of F# data frame library.
 You can also get this page as an [F# script file](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/tutorial.fsx)

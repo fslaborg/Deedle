@@ -10,3 +10,4 @@
 * 0.9.9-beta - Performance improvements, API additions, experimental R plugin
 * 0.9.10-beta - Support time series in the R plugin
 * 0.9.11-beta - Fix bug when creating empty data frame
+* 0.9.12 - Improved C# compatibility, added C# documentation
