@@ -22,6 +22,9 @@ open Deedle
 // ------------------------------------------------------------------------------------------------
 
 let unordered = series [ 3 => "hi"; 2 => "bye"; 1 => "ciao"; 5 => "nazdar" ]
+let sortedByKey = series [ 1 => "ciao"; 2 => "bye"; 3 => "hi"; 5 => "nazdar" ]
+let sortedByVal = series [ 2 => "bye"; 1 => "ciao"; 3 => "hi"; 5 => "nazdar" ]
+
 let ordered = series [ 1 => "hi"; 2 => "bye"; 3 => "ciao"; 5 => "nazdar" ]
 let missing = series [ 1 => "hi"; 2 => null; 3 => "ciao"; 5 => "nazdar" ]
 let usCulture = CultureInfo.GetCultureInfo("en-us")
@@ -168,6 +171,15 @@ let ``Can fill missing values in a specified range``() =
   tsfill.KeyCount |> shouldEqual tsmiss.KeyCount
   tsfill.ValueCount |> should (be greaterThan) tsmiss.ValueCount
   tsfill.KeyCount |> should (be greaterThan) tsfill.ValueCount
+
+// ------------------------------------------------------------------------------------------------
+// Sorting
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can order series``() =
+    let ord = unordered |> Series.order
+    ord |> shouldEqual sortedByKey
 
 // ------------------------------------------------------------------------------------------------
 // Sampling and lookup
