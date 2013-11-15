@@ -660,6 +660,20 @@ type SeriesExtensions =
     Series.fillMissingUsing filler.Invoke series
 
   // ----------------------------------------------------------------------------------------------
+  // Sorting
+  // ----------------------------------------------------------------------------------------------
+
+  /// Returns a new series whose entries are reordered according to index order
+  ///
+  /// ## Parameters
+  ///  - `series` - An input series to be used
+  ///
+  /// [category:Data structure manipulation]
+  [<Extension>]
+  static member Order(series:Series<'K, 'T>) = 
+    Series.order series
+
+  // ----------------------------------------------------------------------------------------------
   // Lookup, resampling and scaling
   // ----------------------------------------------------------------------------------------------
 
