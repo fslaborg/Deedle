@@ -190,9 +190,11 @@ module Frame =
   let groupRowsByObj column frame : Frame<obj * _, _> = groupRowsBy column frame
   let groupRowsByInt column frame : Frame<int * _, _> = groupRowsBy column frame
   let groupRowsByString column frame : Frame<string * _, _> = groupRowsBy column frame
+  let groupRowsByBool column frame : Frame<bool * _, _> = groupRowsBy column frame
   let groupColsByObj column frame : Frame<_, obj * _> = groupColsBy column frame
   let groupColsByInt column frame : Frame<_, int * _> = groupColsBy column frame
   let groupColsByString column frame : Frame<_, string * _> = groupColsBy column frame
+  let groupColsByBool column frame : Frame<_, bool * _> = groupColsBy column frame
 
   // ----------------------------------------------------------------------------------------------
   // Operations
