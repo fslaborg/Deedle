@@ -702,3 +702,20 @@ let ``Transposed frame created from columns equals frame created from rows (and 
   let fromCols = Frame.ofColumns items
   fromCols |> Frame.transpose |> shouldEqual fromRows
   fromRows |> Frame.transpose |> shouldEqual fromCols
+
+// ------------------------------------------------------------------------------------------------
+// Operations - group by
+// ------------------------------------------------------------------------------------------------
+
+let titanic() = 
+  Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/../../docs/content/data/Titanic.csv", inferRows=10) 
+
+[<Test>]
+let ``Can group titanic data by boolean column "Survived"``() =
+  let actual =
+    titanic()
+    |> Frame.groupRowsByBool "Survived"
+    |> Frame.nest
+    |> Series.mapValues Frame.countRows
+  actual |> shouldEqual (series [false => 549; true => 342])
+

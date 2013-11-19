@@ -17,6 +17,20 @@ let titanic = Frame.ReadCsv(root + "Titanic.csv")
 
 (**
 
+Draw a pie chart displaying the survival rate
+
+*)
+
+titanic
+|> Frame.groupRowsByBool "Survived"
+|> Frame.countLevel fst
+|> Frame.getSeries "PassengerId"
+|> Series.indexWith ["Died"; "Survived"]
+|> Series.observations
+|> Chart.Pie
+
+(**
+
 Group by class and port
 
 *)
