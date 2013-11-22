@@ -21,6 +21,7 @@ open Deedle.Keys
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Series = 
   open System
+  open System.Collections.Generic
   open System.Linq
   open Deedle.Internal
   open Deedle.Vectors
@@ -104,6 +105,22 @@ module Series =
     if List.isEmpty exceptions then
       series |> mapValues (fun tv -> tv.Value)
     else raise (new AggregateException(exceptions))
+
+  /// Return a Series of all exceptions 
+  let tryErrors (series: Series<'K, TryValue<'V>>) =
+    let errors = 
+      series.Observations
+      |> Seq.choose (function | KeyValue(k, Error(e)) -> Some(KeyValuePair(k, e))
+                              | _ -> None)
+    Series<_,_>(errors)
+
+  /// Return a Series of all successful tries 
+  let trySuccesses (series: Series<'K, TryValue<'V>>) =
+    let successes = 
+      series.Observations
+      |> Seq.choose (function | KeyValue(k, Success(v)) -> Some(KeyValuePair(k, v))
+                              | _ -> None)
+    Series<_,_>(successes)
 
   let fillErrorsWith value (series:Series<'K, 'T tryval>) = 
     series |> mapValues (function TryValue.Error _ -> value | TryValue.Success v -> v)

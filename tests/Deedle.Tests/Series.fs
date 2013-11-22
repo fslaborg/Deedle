@@ -406,3 +406,10 @@ let ``Can left-zip two empty series`` () =
   let s1 = series ([] : list<int * int>)
   let s2 = s1.Zip(s1, JoinKind.Left)
   s2 |> shouldEqual (series [])
+
+[<Test>]
+let ``TryMap can catch errors`` () =
+  let res = series ["a" => 0; "b" => 2; "c" => 3] 
+            |> Series.tryMap (fun _ x -> 1 / x) 
+  res |> Series.tryErrors |> Series.countKeys |> shouldEqual 1
+  res |> Series.trySuccesses |> Series.countKeys |> shouldEqual 2

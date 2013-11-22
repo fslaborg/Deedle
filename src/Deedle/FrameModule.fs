@@ -580,7 +580,8 @@ module Frame =
   let tryMapRows (f:_ -> _ -> 'V) (frame:Frame<'R, 'C>) = 
     frame |> mapRows (fun k row -> try TryValue.Success(f k row) with e -> TryValue.Error e)
 
-  /// Throws `AggregateException` if something goes wrong
+  /// Unwraps TryValues into regular values.
+  /// Throws `AggregateException` if any TryValues are Failures
   let tryValues (frame:Frame<'R, 'C>) = 
     let newTryData = frame.Data.Select(VectorHelpers.tryValues)
     let exceptions = newTryData.DataSequence |> Seq.choose OptionalValue.asOption |> Seq.choose (fun v ->
