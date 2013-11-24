@@ -16,7 +16,7 @@ module internal Reflection =
   open System.Collections.Generic
 
   let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
-  let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
+  let vectorBuilder = VectorBuilder.Instance
 
   /// Helper function that creates IVector<'T> and casts it to IVector
   let createTypedVectorHelper<'T> (input:seq<OptionalValue<obj>>) =

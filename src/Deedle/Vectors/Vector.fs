@@ -1,17 +1,17 @@
 ﻿namespace Deedle.Vectors
 
 open Deedle
-//open System.Collections.Generic
+open System.Collections.Generic
 open System.Collections.ObjectModel
 
 /// Provides a way to get the data of an arbitrary vector. This is a concrete type used 
 /// by functions that operate on vectors (like `Series.sum`, etc.). The vector may choose
-/// to return the data as `ReadOnlyCollection` (with or without N/A values) which is more
+/// to return the data as `IList` (with or without N/A values) which is more
 /// efficient to use or as a lazy sequence (slower, but more general).
 [<RequireQualifiedAccess>]
 type VectorData<'T> = 
-  | DenseList of ReadOnlyCollection<'T>
-  | SparseList of ReadOnlyCollection<OptionalValue<'T>>
+  | DenseList of IList<'T>
+  | SparseList of IList<OptionalValue<'T>>
   | Sequence of seq<OptionalValue<'T>>
 
 // --------------------------------------------------------------------------------------

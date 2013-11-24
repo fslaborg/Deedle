@@ -216,7 +216,7 @@ module Series =
     | VectorData.Sequence seq -> f (Seq.choose OptionalValue.asOption seq)
 
   /// Aggregates non-missing values using the specified functions working 
-  /// on either ReadOnlyCollection<'T>, ReadOnlyCollection<OptionalValue<'T>> or seq<'T>
+  /// on either IList<'T>, IList<OptionalValue<'T>> or seq<'T>
   [<CompiledName("InternalFastAggregation")>]
   let inline private fastAggregation flist foptlist fseq (series:Series<_, _>) =
     match series.Vector.Data with
@@ -242,14 +242,14 @@ module Series =
   /// [category:Statistics]
   [<CompiledName("Sum")>]
   let inline sum (series:Series<'K, ^V>) = 
-    series |> fastAggregation ReadOnlyCollection.sum ReadOnlyCollection.sumOptional Seq.sum
+    series |> fastAggregation IList.sum IList.sumOptional Seq.sum
 
   /// Returns the mean of the elements of the series. The operation skips over
   /// missing values and so the result will never be `NaN`.
   /// [category:Statistics]
   [<CompiledName("Mean")>]
   let inline mean (series:Series<'K, ^V>) = 
-    series |> fastAggregation ReadOnlyCollection.average ReadOnlyCollection.averageOptional Seq.average
+    series |> fastAggregation IList.average IList.averageOptional Seq.average
 
   /// Returns the standard deviation of the elements of the series. The operation skips over
   /// missing values and so the result will never be `NaN`.
@@ -268,14 +268,14 @@ module Series =
   /// [category:Statistics]
   [<CompiledName("Max")>]
   let inline max (series:Series<'K, ^V>) = 
-    series |> fastAggregation ReadOnlyCollection.max (ReadOnlyCollection.maxOptional >> OptionalValue.get) Seq.max
+    series |> fastAggregation IList.max (IList.maxOptional >> OptionalValue.get) Seq.max
 
   /// Returns the greatest of all elements of the series. The operation 
   /// skips over missing values and so the result will never be `NaN`.
   /// [category:Statistics]
   [<CompiledName("Min")>]
   let inline min (series:Series<'K, ^V>) = 
-    series |> fastAggregation ReadOnlyCollection.min (ReadOnlyCollection.minOptional >> OptionalValue.get) Seq.min
+    series |> fastAggregation IList.min (IList.minOptional >> OptionalValue.get) Seq.min
 
 
   /// [omit]
@@ -338,7 +338,7 @@ module Series =
   /// [category:Statistics]
   [<CompiledName("MeanLevel")>]
   let inline meanLevel (level:'K1 -> 'K2) (series:Series<_, 'V>) = 
-    series |> fastApplyLevel level ReadOnlyCollection.average ReadOnlyCollection.averageOptional Seq.average
+    series |> fastApplyLevel level IList.average IList.averageOptional Seq.average
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `level` and then returns a new series containing
@@ -383,7 +383,7 @@ module Series =
   /// [category:Statistics]
   [<CompiledName("SumLevel")>]
   let inline sumLevel (level:'K1 -> 'K2) (series:Series<_, 'V>) = 
-    series |> fastApplyLevel level ReadOnlyCollection.sum ReadOnlyCollection.sumOptional Seq.sum
+    series |> fastApplyLevel level IList.sum IList.sumOptional Seq.sum
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `level` and then returns a new series containing
@@ -398,7 +398,7 @@ module Series =
   /// [category:Statistics]
   [<CompiledName("MinLevel")>]
   let inline minLevel (level:'K1 -> 'K2) (series:Series<_, 'V>) = 
-    series |> fastApplyLevel level ReadOnlyCollection.min (ReadOnlyCollection.minOptional >> OptionalValue.get) Seq.min
+    series |> fastApplyLevel level IList.min (IList.minOptional >> OptionalValue.get) Seq.min
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `level` and then returns a new series containing
@@ -413,7 +413,7 @@ module Series =
   /// [category:Statistics]
   [<CompiledName("MaxLevel")>]
   let inline maxLevel (level:'K1 -> 'K2) (series:Series<_, 'V>) = 
-    series |> fastApplyLevel level ReadOnlyCollection.max (ReadOnlyCollection.maxOptional >> OptionalValue.get) Seq.max
+    series |> fastApplyLevel level IList.max (IList.maxOptional >> OptionalValue.get) Seq.max
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `level` and then returns a new series containing
@@ -428,7 +428,7 @@ module Series =
   /// [category:Statistics]
   [<CompiledName("CountLevel")>]
   let inline countLevel (level:'K1 -> 'K2) (series:Series<_, 'V>) = 
-    series |> fastApplyLevel level ReadOnlyCollection.length ReadOnlyCollection.lengthOptional Seq.length
+    series |> fastApplyLevel level IList.length IList.lengthOptional Seq.length
 
   /// Aggregates the values of the specified series using a function that can combine
   /// individual values. 
@@ -440,7 +440,7 @@ module Series =
   /// [category:Statistics]
   [<CompiledName("Reduce")>]
   let reduce op (series:Series<'K, 'T>) = 
-    series |> fastAggregation (ReadOnlyCollection.reduce op) (ReadOnlyCollection.reduceOptional op >> OptionalValue.get) (Seq.reduce op)
+    series |> fastAggregation (IList.reduce op) (IList.reduceOptional op >> OptionalValue.get) (Seq.reduce op)
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `level` and then aggregates elements in each group

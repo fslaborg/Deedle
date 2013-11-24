@@ -45,7 +45,7 @@ type EnumerableExtensions =
 
 type internal Series =
   /// Vector & index builders
-  static member internal vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
+  static member internal vectorBuilder = VectorBuilder.Instance
   static member internal indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
 
   static member internal Create(data:seq<'V>) =
@@ -81,8 +81,8 @@ type SeriesBuilder<'K, 'V when 'K : equality and 'V : equality>() =
       (Seq.zip keys values |> Seq.map (fun (k, v) -> KeyValuePair(k, v))).GetEnumerator()
 
   interface IDictionary<'K, 'V> with
-    member x.Keys = upcast ReadOnlyCollection.ofSeq keys
-    member x.Values = upcast ReadOnlyCollection.ofSeq values
+    member x.Keys = upcast IList.ofSeq keys
+    member x.Values = upcast IList.ofSeq values
     member x.Clear() = keys <- []; values <- []
     member x.Item 
       with get key = failwith "!"

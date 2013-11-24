@@ -120,7 +120,7 @@ type internal DelayedSource<'K, 'V when 'K : equality>
     ( rangeMin:'K, rangeMax:'K, ranges:Ranges<'K>, 
       loader:DelayedSourceRanges<'K> -> DelayedSourceData<'K, 'V>) =
 
-  static let vectorBuilder = ArrayVector.ArrayVectorBuilder.Instance
+  static let vectorBuilder = VectorBuilder.Instance
   static let indexBuilder = Linear.LinearIndexBuilder.Instance
 
   let comparer = System.Collections.Generic.Comparer<'K>.Default
@@ -290,7 +290,7 @@ and internal DelayedIndexBuilder() =
                       DelayedVector(source) :> IVector
                 | _ -> 
                     //let  = builder.GetRange(index, optLo, optHi, Vectors.Return 0)
-                    //ArrayVector.ArrayVectorBuilder.Instance.Build(cmd, [| vector |])
+                    //VectorBuilder.Instance.Build(cmd, [| vector |])
                     
 
                     failwith "TODO: This should probably be supported?")
@@ -377,5 +377,5 @@ type DelayedSeries =
       ranges |> Array.map (fun (l, h) -> loader l h))
     let index = DelayedIndex(series)
     let vector = DelayedVector(series)
-    let vectorBuilder = ArrayVectorBuilder.Instance
+    let vectorBuilder = VectorBuilder.Instance
     Series<'K, 'V>(index, vector, vectorBuilder, DelayedIndexBuilder())

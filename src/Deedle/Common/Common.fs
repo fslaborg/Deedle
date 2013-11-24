@@ -375,58 +375,58 @@ module MissingValues =
 // Internals - various functions for working with collections
 // --------------------------------------------------------------------------------------
 
-/// Provides helper functions for working with `ReadOnlyCollection<T>` similar to those 
+/// Provides helper functions for working with `IList<'T>` similar to those 
 /// in the `Array` module. Most importantly, F# 3.0 does not know that array implements
-/// `IList<T>`.
-module ReadOnlyCollection =
-  /// Converts an array to ReadOnlyCollection. 
-  let inline ofArray (array:'T[]) : ReadOnlyCollection<'T> = Array.AsReadOnly(array)
+/// `IList<T>`. Concrete implementation of IList<'T> is ReadOnlyCollection<'T>.
+module IList =
+  /// Converts an array to IList. 
+  let inline ofArray (array:'T[]) : IList<'T> = Array.AsReadOnly(array) :> IList<'T>
 
-  /// Converts a lazy sequence to fully evaluated ReadOnlyCollection
-  let inline ofSeq (seq:seq<'T>) : ReadOnlyCollection<'T> = Array.AsReadOnly(Array.ofSeq seq)
+  /// Converts a lazy sequence to fully evaluated IList
+  let inline ofSeq (seq:seq<'T>) : IList<'T> = Array.AsReadOnly(Array.ofSeq seq) :> IList<'T>
   
-  /// Sum elements of the ReadOnlyCollection
-  let inline sum (list:ReadOnlyCollection<'T>) = 
+  /// Sum elements of the IList
+  let inline sum (list:IList<'T>) = 
     let mutable total = LanguagePrimitives.GenericZero
     for i in 0 .. list.Count - 1 do total <- total + list.[i]
     total
 
-  /// Return the smallest element of the ReadOnlyCollection
-  let inline min (list:ReadOnlyCollection<'T>) = 
+  /// Return the smallest element of the IList
+  let inline min (list:IList<'T>) = 
     let mutable res = list.[0]
     for i in 1 .. list.Count - 1 do res <- min res list.[i]
     res
 
-  /// Return the greatest element of the ReadOnlyCollection
-  let inline max (list:ReadOnlyCollection<'T>) = 
+  /// Return the greatest element of the IList
+  let inline max (list:IList<'T>) = 
     let mutable res = list.[0]
     for i in 1 .. list.Count - 1 do res <- max res list.[i]
     res
 
-  /// Reduce elements of the ReadOnlyCollection
-  let inline reduce op (list:ReadOnlyCollection<'T>) = 
+  /// Reduce elements of the IList
+  let inline reduce op (list:IList<'T>) = 
     let mutable res = list.[0]
     for i in 1 .. list.Count - 1 do res <- op res list.[i]
     res
 
-  /// Count elements of the ReadOnlyCollection
-  let inline length (list:ReadOnlyCollection<'T>) = list.Count
+  /// Count elements of the IList
+  let inline length (list:IList<'T>) = list.Count
 
-  /// Average elements of the ReadOnlyCollection
-  let inline average (list:ReadOnlyCollection<'T>) = 
+  /// Average elements of the IList
+  let inline average (list:IList<'T>) = 
     let mutable total = LanguagePrimitives.GenericZero
     for i in 0 .. list.Count - 1 do total <- total + list.[i]
     LanguagePrimitives.DivideByInt total list.Count
 
-  /// Sum elements of the ReadOnlyCollection, skipping over missing values
-  let inline sumOptional (list:ReadOnlyCollection<OptionalValue<'T>>) = 
+  /// Sum elements of the IList, skipping over missing values
+  let inline sumOptional (list:IList<OptionalValue<'T>>) = 
     let mutable total = LanguagePrimitives.GenericZero
     for i in 0 .. list.Count - 1 do 
       if list.[i].HasValue then total <- total + list.[i].Value
     total
 
-  /// Reduce elements of the ReadOnlyCollection, skipping over missing values
-  let inline reduceOptional op (list:ReadOnlyCollection<OptionalValue<'T>>) = 
+  /// Reduce elements of the IList, skipping over missing values
+  let inline reduceOptional op (list:IList<OptionalValue<'T>>) = 
     let mutable res = None
     for i in 0 .. list.Count - 1 do 
       match res, list.[i] with
@@ -435,8 +435,8 @@ module ReadOnlyCollection =
       | _ -> ()
     res |> OptionalValue.ofOption
 
-  /// Average elements of the ReadOnlyCollection, skipping over missing values
-  let inline averageOptional (list:ReadOnlyCollection<OptionalValue< ^T >>) = 
+  /// Average elements of the IList, skipping over missing values
+  let inline averageOptional (list:IList<OptionalValue< ^T >>) = 
     let mutable total = LanguagePrimitives.GenericZero
     let mutable count = 0 
     for i in 0 .. list.Count - 1 do 
@@ -445,18 +445,18 @@ module ReadOnlyCollection =
         count <- count + 1
     LanguagePrimitives.DivideByInt total count
 
-  /// Count elements of the ReadOnlyCollection that are not missing
-  let inline lengthOptional (list:ReadOnlyCollection<OptionalValue<'T>>) = 
+  /// Count elements of the IList that are not missing
+  let inline lengthOptional (list:IList<OptionalValue<'T>>) = 
     let mutable total = 0
     for i in 0 .. list.Count - 1 do if list.[i].HasValue then total <- total + 1
     total
 
   /// Return the smallest element, skipping over missing values
-  let inline minOptional (list:ReadOnlyCollection<OptionalValue< ^T >>) = 
+  let inline minOptional (list:IList<OptionalValue< ^T >>) = 
     reduceOptional Operators.min list
 
   /// Return the greatest element, skipping over missing values
-  let inline maxOptional (list:ReadOnlyCollection<OptionalValue< ^T >>) = 
+  let inline maxOptional (list:IList<OptionalValue< ^T >>) = 
     reduceOptional Operators.max list
 
 
