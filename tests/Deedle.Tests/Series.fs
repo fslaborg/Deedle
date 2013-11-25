@@ -178,7 +178,7 @@ let ``Can fill missing values in a specified range``() =
 
 [<Test>]
 let ``Can order series``() =
-    let ord = unordered |> Series.order
+    let ord = unordered |> Series.orderByKey
     ord |> shouldEqual sortedByKey
 
 // ------------------------------------------------------------------------------------------------
