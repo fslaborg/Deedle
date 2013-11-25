@@ -899,6 +899,21 @@ module Series =
       | _ -> OptionalValue.Missing )
 
   // ----------------------------------------------------------------------------------------------
+  // Sorting
+  // ----------------------------------------------------------------------------------------------
+
+  /// Returns a new series whose entries are reordered according to index order
+  ///
+  /// ## Parameters
+  ///  - `series` - An input series to be used
+  ///
+  /// [category:Data structure manipulation]
+  let orderByKey (series:Series<'K, 'T>) =
+    let newRowIndex, rowCmd = series.IndexBuilder.OrderIndex(series.Index, Vectors.Return 0)
+    let newData = series.VectorBuilder.Build(rowCmd, [| series.Vector |])
+    Series(newRowIndex, newData, series.VectorBuilder, series.IndexBuilder)
+
+  // ----------------------------------------------------------------------------------------------
   // Resampling and similar stuff
   // ----------------------------------------------------------------------------------------------
 
