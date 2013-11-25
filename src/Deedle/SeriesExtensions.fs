@@ -670,8 +670,8 @@ type SeriesExtensions =
   ///
   /// [category:Data structure manipulation]
   [<Extension>]
-  static member Order(series:Series<'K, 'T>) = 
-    Series.order series
+  static member OrderByKey(series:Series<'K, 'T>) = 
+    Series.orderByKeys series
 
   // ----------------------------------------------------------------------------------------------
   // Lookup, resampling and scaling
