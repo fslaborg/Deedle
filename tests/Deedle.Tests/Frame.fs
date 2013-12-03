@@ -719,3 +719,16 @@ let ``Can group titanic data by boolean column "Survived"``() =
     |> Series.mapValues Frame.countRows
   actual |> shouldEqual (series [false => 549; true => 342])
 
+// ------------------------------------------------------------------------------------------------
+// Operations - pivot table
+// ------------------------------------------------------------------------------------------------
+ 
+[<Test>]
+let ``Can compute pivot table from titanic data``() =
+  let actual =
+    titanic()
+    |> Frame.pivotTable (fun r -> r.GetAs<string>("Sex")) (fun r -> r.GetAs<string>("Survived")) Frame.countRows
+  let expected =
+    (frame [ "False" => series [ "male" => 468;  "female" => 81  ]; 
+             "True"  => series [ "male" => 109;  "female" => 233 ] ])
+  actual |> shouldEqual expected

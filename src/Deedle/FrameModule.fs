@@ -138,7 +138,7 @@ module Frame =
   let dropSeries column (frame:Frame<'R, 'C>) = 
     let f = frame.Clone() in f.DropSeries(column); f
 
-  /// Creates a new data frame where the specified column is repalced
+  /// Creates a new data frame where the specified column is replaced
   /// with a new series. (If the series does not exist, only the new
   /// series is added.)
   ///
@@ -195,6 +195,29 @@ module Frame =
   let groupColsByInt column frame : Frame<_, int * _> = groupColsBy column frame
   let groupColsByString column frame : Frame<_, string * _> = groupColsBy column frame
   let groupColsByBool column frame : Frame<_, bool * _> = groupColsBy column frame
+
+  // ----------------------------------------------------------------------------------------------
+  // Pivot table
+  // ----------------------------------------------------------------------------------------------
+  
+  /// Creates a new data frame resulting from a 'pivot' operation. Consider a denormalized data 
+  /// frame representing a table: column labels are field names & table values are observations
+  /// of those fields. pivotTable buckets the rows along two axes, according to the results of 
+  /// the functions `rowGrp` and `colGrp; and then computes a value for the frame of rows that
+  /// land in each bucket.
+  ///
+  /// ## Parameters
+  ///  - `rowGrp` - A function from row to group value for the resulting row index
+  ///  - `colGrp` - A function from row to group value for the resulting col index
+  ///  - `op` - A function computing a value from the corresponding bucket frame 
+  ///
+  /// [category:Frame operations]
+  let pivotTable (rowGrp: ObjectSeries<'C> -> 'RNew) (colGrp: ObjectSeries<'C> -> 'CNew) (op: Frame<'R, 'C> -> 'T) (frame:Frame<'R, 'C>) : Frame<'RNew, 'CNew> =
+    frame.Rows                                                                    //    Series<'R,ObjectSeries<'C>>
+    |> Series.groupInto (fun _ g -> colGrp g) (fun _ g -> g)                      // -> Series<'CNew, Series<'R,ObjectSeries<'C>>>
+    |> Series.mapValues (Series.groupInto (fun _ g -> rowGrp g) (fun _ g -> g))   // -> Series<'CNew, Series<'RNew, Series<'R',ObjectSeries<'C>>>>
+    |> Series.mapValues (Series.mapValues (FrameUtils.fromRows >> op))            // -> Series<'CNew, Series<'RNew, 'T>>
+    |> FrameUtils.fromColumns                                                     // -> Frame<'RNew, 'CNew, 'T>
 
   // ----------------------------------------------------------------------------------------------
   // Operations
