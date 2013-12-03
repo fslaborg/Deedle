@@ -727,8 +727,8 @@ let ``Can group titanic data by boolean column "Survived"``() =
 let ``Can compute pivot table from titanic data``() =
   let actual =
     titanic()
-    |> Frame.pivotTable (fun r -> r.GetAs<string>("Sex")) (fun r -> r.GetAs<string>("Survived")) Frame.countRows
+    |> Frame.pivotTable (fun r -> r.GetAs<string>("Sex")) (fun r -> r.GetAs<bool>("Survived")) Frame.countRows
   let expected =
-    (frame [ "False" => series [ "male" => 468;  "female" => 81  ]; 
-             "True"  => series [ "male" => 109;  "female" => 233 ] ])
+    (frame [ false => series [ "male" => 468;  "female" => 81  ]; 
+             true  => series [ "male" => 109;  "female" => 233 ] ])
   actual |> shouldEqual expected
