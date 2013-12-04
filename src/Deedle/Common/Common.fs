@@ -927,6 +927,9 @@ module DynamicExtensions =
   type Microsoft.FSharp.Quotations.Expr with
     member x.AsExpression() = asExpr x
 
+  type GetterWrapper<'T>(f:'T -> string -> obj) =
+    member x.Invoke(owner, name) = f owner name
+
   type SetterWrapper<'T>(f:'T -> string -> obj -> unit) =
     member x.Invoke(owner, name, value) = f owner name value
 
@@ -951,10 +954,17 @@ module DynamicExtensions =
 
   /// This can be used when the setter is a simple non-generic function that 
   /// takes the name as string & argument as object (and returns nothing)
-  let createSetterFromFunc expr (owner:'T) (setter:'T -> string -> obj -> unit) =
+  let createGetterAndSetterFromFunc expr (owner:'T) (getter:'T -> string -> obj) (setter:'T -> string -> obj -> unit) =
     { new System.Dynamic.DynamicMetaObject(expr, System.Dynamic.BindingRestrictions.Empty, owner) with
+        override x.BindGetMember(binder) =
+          if binder.ReturnType <> typeof<obj> then failwith "createGetterAndSetterFromFunc: Expected object return type"
+          let getter = GetterWrapper<'T>(getter)
+          let call = <@@ getter.Invoke(%%(x.Expression.Wrap<'T>()), %%(Expr.Value(binder.Name))) @@>
+          let restrictions = BindingRestrictions.GetTypeRestriction(x.Expression, x.LimitType)
+          new DynamicMetaObject(call.AsExpression(), restrictions)
+
         override x.BindSetMember(binder, value) = 
-          if binder.ReturnType <> typeof<obj> then failwith "createSetterFromFunc: Expected object return type"
+          if binder.ReturnType <> typeof<obj> then failwith "createGetterAndSetterFromFunc: Expected object return type"
           let setter = SetterWrapper<'T>(setter)
           let call = <@@ setter.Invoke(%%(x.Expression.Wrap<'T>()), %%(Expr.Value(binder.Name)), %%(value.Expression.Wrap())); null @@>
           let restrictions = BindingRestrictions.GetTypeRestriction(x.Expression, x.LimitType);

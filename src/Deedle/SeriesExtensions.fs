@@ -124,9 +124,15 @@ bool TryGetValue(TKey key, out TValue value);
 *)
   interface System.Dynamic.IDynamicMetaObjectProvider with 
     member builder.GetMetaObject(expr) = 
-      DynamicExtensions.createSetterFromFunc expr builder (fun builder name value -> 
-        let converted = Convert.changeType<'V> value
-        builder.Add(unbox<'K> name, converted))
+      DynamicExtensions.createGetterAndSetterFromFunc expr builder
+        (fun builder name ->
+            let dict = builder :> IDictionary<'K, 'V>
+            match dict.TryGetValue(unbox<'K> name) with
+            | (true, v) -> v :> obj
+            | (false, _) -> failwithf "%s does not exist" name)
+        (fun builder name value ->
+            let converted = Convert.changeType<'V> value
+            builder.Add(unbox<'K> name, converted))
 
 type SeriesBuilder<'K when 'K : equality>() =
   inherit SeriesBuilder<'K, obj>()
