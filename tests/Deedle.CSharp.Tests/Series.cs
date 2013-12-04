@@ -24,7 +24,12 @@ namespace Deedle.CSharp.Tests
 				sb.Value = 3.4;
 				sb.Date = DateTime.Today;
 
-				var actual = sb.Series;
+				Assert.AreEqual(sb.ID, 1);
+				Assert.AreEqual(sb.Value, 3.4);
+				Assert.AreEqual(sb.Date, DateTime.Today);
+
+				SeriesBuilder<string> staticTypedSb = sb;
+				var actual = staticTypedSb.Series;
 				var expected =
 					new SeriesBuilder<string, object> { { "ID", 1 }, { "Value", 3.4 }, { "Date", DateTime.Today } }.Series;
 				Assert.AreEqual(expected, actual);
