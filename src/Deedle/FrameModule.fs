@@ -207,15 +207,15 @@ module Frame =
   /// land in each bucket.
   ///
   /// ## Parameters
-  ///  - `rowGrp` - A function from row to group value for the resulting row index
-  ///  - `colGrp` - A function from row to group value for the resulting col index
+  ///  - `rowGrp` - A function from rowkey & row to group value for the resulting row index
+  ///  - `colGrp` - A function from rowkey & row to group value for the resulting col index
   ///  - `op` - A function computing a value from the corresponding bucket frame 
   ///
   /// [category:Frame operations]
-  let pivotTable (rowGrp:ObjectSeries<'C> -> 'RNew) (colGrp:ObjectSeries<'C> -> 'CNew) (op:Frame<'R, 'C> -> 'T) (frame:Frame<'R, 'C>): Frame<'RNew, 'CNew> =
+  let pivotTable (rowGrp:'R -> ObjectSeries<'C> -> 'RNew) (colGrp:'R -> ObjectSeries<'C> -> 'CNew) (op:Frame<'R, 'C> -> 'T) (frame:Frame<'R, 'C>): Frame<'RNew, 'CNew> =
     frame.Rows                                                                    //    Series<'R,ObjectSeries<'C>>
-    |> Series.groupInto (fun _ g -> colGrp g) (fun _ g -> g)                      // -> Series<'CNew, Series<'R,ObjectSeries<'C>>>
-    |> Series.mapValues (Series.groupInto (fun _ g -> rowGrp g) (fun _ g -> g))   // -> Series<'CNew, Series<'RNew, Series<'R',ObjectSeries<'C>>>>
+    |> Series.groupInto (fun r g -> colGrp r g) (fun _ g -> g)                    // -> Series<'CNew, Series<'R,ObjectSeries<'C>>>
+    |> Series.mapValues (Series.groupInto (fun c g -> rowGrp c g) (fun _ g -> g)) // -> Series<'CNew, Series<'RNew, Series<'R',ObjectSeries<'C>>>>
     |> Series.mapValues (Series.mapValues (FrameUtils.fromRows >> op))            // -> Series<'CNew, Series<'RNew, 'T>>
     |> FrameUtils.fromColumns                                                     // -> Frame<'RNew, 'CNew, 'T>
 
