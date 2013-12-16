@@ -38,19 +38,70 @@
           
 <h1>Data frame manipulation in C#</h1>
 
+<p>In this section, we look at working with Deedle data frame. Data frame lets you manipulate and
+analyze data consisting of multiple features (properties) with multiple observations (records).
+You can think of data frame as a data table or a spreadsheet. When working with data frames, you'll
+often need to work on individual series (either rows or columns) of the frame, so it is recommended
+to look at the <a href="csharpseries.html">page discussing series</a> first.</p>
+
+<p>You can also get the samples on this page as a <a href="https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/csharp/Frame.cs">C# source file</a>
+from GitHub and run the samples.</p>
+
+<a name="understanding"></a>
+
+<h2>What is a data frame</h2>
+
+<ul>
+<li><p><strong>Row and column key to values</strong> - data frame is represented using a type <code>Frame&lt;TRowKey, TColKey&gt;</code> and
+you can view it as a mapping from row and column keys to values. Note that the values in data frame can
+be heterogeneous and Deedle does not track this information statically - when accessing column/row, you
+need to explicitly specify the type of values you want to get (although Deedle makes this easier when
+you work with numeric data).</p></li>
+<li><p><strong>Typical uses</strong> - although you can use any type for column and row keys, the typical use is having column 
+keys of type <code>string</code> representing different (named) properties and row keys of type <code>int</code> (unique IDs)
+or <code>DateTimeOffset</code> for time series data.</p></li>
+<li><p><strong>Series collection</strong> - another way to look at data frame is that it is a collection of series with 
+the same (row) index. This is also how frames are represented internally, so using this intuition will
+probably lead you to faster and more idiomatic code. For example, you can store multiple series with
+different stock prices in a data frame and they will all be aligned to the same (row) index.</p></li>
+<li><p><strong>Limited mutability</strong> - the internal data structures of data frame are immutable (i.e. series and a type
+representing indices). However, when working with data frame, you can mutate the frame and add/remove
+columns. When adding column, a new index is created and local field of the frame pointing to the index is
+updated, but no data series or indices (that may be shared by other types) are changed.
+This makes research-style operations more convenient and makes the library more practical.</p></li>
+</ul>
+
 <a name="creating"></a>
 
 <h2>Creating and loading data frames</h2>
 
+<p>Let's start with a number of examples showing how to create data frames. The most common scenario is that you
+already have some code that reads the data - perhaps from a database or some other source - and you want 
+to convert it to data frame. Any collection of .NET objects can be turned to data frame using <code>Frame.FromRecords</code>:</p>
+
 <pre lang="csharp"><span class="c">// Create a collection of anonymous types</span>
-<span class="k">var</span> objects = Enumerable.Range(0, 100).Select(i =&gt;
-  <span class="k">new</span> { Group = <span class="s">"g"</span> + (i/10).ToString(), Number = i });
+<span class="k">var</span> rnd = <span class="k">new</span> Random();
+<span class="k">var</span> objects = Enumerable.Range(0, 10).Select(i =&gt;
+  <span class="k">new</span> { Key = <span class="s">"ID_"</span> + i.ToString(), Number = rnd.Next() });
 
 <span class="c">// Create data frame with properties as column names</span>
 <span class="k">var</span> dfObjects = Frame.FromRecords(objects);
 dfObjects.Print();</pre>
 
-<p>a</p>
+<p>In this sample, we use simple LINQ construction to generate collection with anonymous types containing properties
+<code>Key</code> and <code>Number</code>. The <code>FromRecords</code> method uses reflection to get public readable properties of the type and
+so the result of the <code>Print</code> method looks as follows:</p>
+
+<pre lang="text">-    Key   Number
+0 -&gt; ID_0  997104221
+1 -&gt; ID_1  50365464
+2 -&gt; ID_2  1777994880
+(...)</pre>
+
+<p>As an alternative, you can also construct data frame by generating a collection of explicitly created rows. 
+A row is just a series of type <code>Series&lt;TColKey, TValue&gt;</code> so you can use any of the techniques described in 
+<a href="csharpseries.html#creating">creating series</a>. Here, we use <code>SeriesBuilder&lt;string&gt;</code> which is the easiest way
+to create series imperatively by adding columns:</p>
 
 <pre lang="csharp"><span class="c">// Generate collection of rows</span>
 <span class="k">var</span> rows = Enumerable.Range(0, 100).Select(i =&gt; {
@@ -66,17 +117,37 @@ dfObjects.Print();</pre>
 <span class="c">// Turn sequence of row information into data frame</span>
 <span class="k">var</span> df = Frame.FromRows(rows);</pre>
 
-<p>a</p>
+<p>Finally, you can also easily load data frames from a CSV file. The <code>Frame.ReadCsv</code> function</p>
 
 <pre lang="csharp"><span class="c">// Read MSFT &amp; FB stock prices from a CSV file</span>
 <span class="k">var</span> msftRaw = Frame.ReadCsv(Path.Combine(root, <span class="s">"../data/stocks/msft.csv"</span>));
 <span class="k">var</span> fbRaw = Frame.ReadCsv(Path.Combine(root, <span class="s">"../data/stocks/fb.csv"</span>));</pre>
 
-<p>A</p>
+<p>The function automatically recognizes the names of columns (if the CSV file does not have headers, you can
+specify optional parameter <code>hasHeaders:false</code>). It also infers the type of values, so that you can later work
+with numeric columns in a standard way. Here, we are reading Yahoo stock prices, so the resulting frame looks
+as follows:</p>
+
+<pre lang="text">-       Date       Open  High  Low   Close Volume     Adj Close
+0    -&gt; 2013-11-07 37.96 38.01 37.43 37.50 60437400   37.50
+1    -&gt; 2013-11-06 37.24 38.22 37.06 38.18 88615100   38.18
+:       ...        ...   ...   ...   ...   ...        ...
+6972 -&gt; 1986-03-17 29.00 29.75 29.00 29.50 133171200  0.08
+6973 -&gt; 1986-03-14 28.00 29.50 28.00 29.00 308160000  0.07
+6974 -&gt; 1986-03-13 25.50 29.25 25.50 28.00 1031788800 0.07</pre>
 
 <a name="indices"></a>
 
 <h2>Working with row and column indices</h2>
+
+<p>Reading data from CSV file or from .NET objects typically gives us data frame <code>Frame&lt;int, string&gt;</code> where the
+rows are indexed by <code>int</code> (representing the number of the row) and columns are names (<code>string</code> values). 
+When we want to combine data from multiple data sources or perform some further processing, this is not 
+always what we need.</p>
+
+<p>For example, for the MSFT and FB stock prices, we want the row index to be <code>DateTime</code> (so that we can 
+align the prices based on dates) and we also need to order the rows (because aligning that we'll do in
+the next step is only allowed on ordered frames and series):</p>
 
 <pre lang="csharp"><span class="c">// Get MSFT &amp; FB stock prices indexed by data</span>
 <span class="k">var</span> msft = msftRaw.IndexRows&lt;DateTime&gt;(<span class="s">"Date"</span>).OrderRows();
@@ -86,7 +157,14 @@ dfObjects.Print();</pre>
 msft.RenameSeries(s =&gt; <span class="s">"Msft"</span> + s);
 fb.RenameSeries(s =&gt; <span class="s">"Fb"</span> + s);</pre>
 
-<p>a</p>
+<p>The <code>IndexRows&lt;T&gt;(..)</code> method takes the name of the column that we want to use as an index and it also takes
+a type parameter <code>T</code> that specifies the type of the column (because this is not statically known). We use
+<code>DateTime</code> and benefit from the fact that the CSV reader already recognized the column type. Next, we sort
+the entire data frame by the new row index using <code>OrderRows</code>.</p>
+
+<p>The second part of the snippet renames the columns (using a mutating <code>RenameSeries</code> operation) so that the
+column name includes the name of the company. We need this, because we later want to join the two data frames
+and that is only possible when column keys do not overlap.</p>
 
 <pre lang="csharp"><span class="c">// Read US debt data from a CSV file</span>
 <span class="k">var</span> debt = Frame.ReadCsv(Path.Combine(root, <span class="s">"../data/us-debt.csv"</span>));
@@ -206,6 +284,7 @@ and <code>SelectOptional</code></p>
             <li>
               <a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html">Working with data frames</a>
               <ul class="nav nav-list">
+                <li><a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html#understanding">What is a data frame</a></li>
                 <li><a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html#creating">Creating data frames</a></li>
                 <li><a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html#indices">Row and column indices</a></li>
                 <li><a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html#joining">Joining &amp; aligning</a></li>
