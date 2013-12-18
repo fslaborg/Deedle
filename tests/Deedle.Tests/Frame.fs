@@ -333,6 +333,17 @@ let ``Can append two frames with single rows and keys with comparison that fails
   let df2 = Frame.ofColumns [ "A" => series [ ([| 0 |], 1) => "A" ] ]
   df1.Append(df2).RowKeys |> Seq.length |> shouldEqual 2
  
+[<Test>]
+let ``Can append multiple frames`` () =
+  let df1 = Frame.ofColumns [ "A" => series [ for i in 1 .. 5 -> i, i ] ]
+  let df2 = Frame.ofColumns [ "B" => series [ for i in 1 .. 5 -> i, i ] ]
+  let df3 = Frame.ofColumns [ "B" => series [ for i in 6 .. 9 -> i, i ] ]
+  let actual = Frame.appendN [df1;df2;df3]
+  actual.Rows.[3].GetAt(0) |> shouldEqual (box 3)
+  actual.Rows.[3].GetAt(1) |> shouldEqual (box 3)
+  actual.Rows.[8].GetAt(1) |> shouldEqual (box 8)
+  actual.Rows.[8].TryGetAt(0).HasValue |> shouldEqual false
+
 // ------------------------------------------------------------------------------------------------
 // Operations - zip
 // ------------------------------------------------------------------------------------------------

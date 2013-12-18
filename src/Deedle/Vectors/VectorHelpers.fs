@@ -179,6 +179,19 @@ type VectorValueTransform =
           if l.HasValue && r.HasValue then invalidOp "Combining vectors failed - both vectors have a value."
           if l.HasValue then l else r) }
 
+type VectorValueListTransform =
+  /// Creates a transformation that applies the specified function on `'T` values list
+  static member Create<'T>(operation:OptionalValue<'T> list -> OptionalValue<'T>) = 
+    { new IVectorValueListTransform with
+        member vt.GetFunction<'R>() = 
+          unbox<OptionalValue<'R> list -> OptionalValue<'R>> (box operation) }
+  /// A generic transformation that works when at most one value is defined
+  static member AtMostOne =
+    { new IVectorValueListTransform with
+        member vt.GetFunction<'R>() = (fun (l:OptionalValue<'R> list) ->
+          l |> List.fold (fun s v -> 
+            if s.HasValue && v.HasValue then invalidOp "Combining vectors failed - more than one vector has a value."
+            if v.HasValue then v else s) OptionalValue.Missing) }
 
 // A "generic function" that boxes all values of a vector (IVector<int, 'T> -> IVector<int, obj>)
 let boxVector () = 

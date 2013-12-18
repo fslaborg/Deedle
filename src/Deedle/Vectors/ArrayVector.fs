@@ -171,6 +171,20 @@ type ArrayVectorBuilder() =
                 merge lv rv)
               vectorBuilder.CreateMissing(filled)
 
+      | CombineN(vectors, op) ->
+          let data = 
+            vectors 
+            |> List.map (fun v -> builder.buildArrayVector v arguments) 
+            |> List.map (function AsVectorOptional o -> o)
+
+          let merge = op.GetFunction<'T>()
+          let filled = Array.init (data |> List.map (fun v -> v.Length) |> List.reduce max) (fun idx ->
+            data 
+            |> List.map (fun v -> if idx > v.Length then OptionalValue.Missing else v.[idx]) 
+            |> merge)  
+
+          vectorBuilder.CreateMissing(filled)
+
       | CustomCommand(vectors, f) ->
           let vectors = List.map (fun v -> vectorBuilder.Build(v, arguments) :> IVector) vectors
           f vectors :?> IVector<_>

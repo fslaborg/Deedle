@@ -21,6 +21,8 @@
 module Frame = 
   open System
   open Deedle.Internal
+  open Deedle.VectorHelpers
+  open Deedle.Vectors
 
   // ----------------------------------------------------------------------------------------------
   // Accessing frame data and lookup
@@ -828,6 +830,71 @@ module Frame =
   /// [category:Joining, zipping and appending]
   [<CompiledName("Append")>]
   let append (frame1:Frame<'R, 'C>) frame2 = frame1.Append(frame2)
+
+  /// Append a sequence of data frames with non-overlapping values. The operation takes the union of 
+  /// columns and rows of the source data frames and then unions the values. An exception is thrown when 
+  /// both data frames define value for a column/row location, but the operation succeeds if one
+  /// all frames but one has a missing value at the location.
+  ///
+  /// Note that the rows are *not* automatically reindexed to avoid overlaps. This means that when
+  /// a frame has rows indexed with ordinal numbers, you may need to explicitly reindex the row
+  /// keys before calling append.
+  ///
+  /// ## Parameters
+  ///  - `frames` - The seq of frames to be appended (combined) 
+  ///
+  /// [category:Joining, zipping and appending]
+  [<CompiledName("AppendN")>]
+  let appendN (frames:Frame<'R, 'C> seq) =
+    let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
+    let indexBuilder  = Indices.Linear.LinearIndexBuilder.Instance
+
+    // build the union of all row keys
+    let rowUnion ix (f:Frame<'R, 'C>) = 
+      let newIx, _, _ = indexBuilder.Union((ix, VectorConstruction.Empty), (f.RowIndex, VectorConstruction.Empty))
+      newIx
+
+    let allRowIx = frames |> Seq.fold rowUnion (Index.ofKeys [])
+
+    // Create a row command: steps to build a result column from a list of input rows
+    //  1) align each vector to the unioned row index
+    //  2) merge across all vectors
+    let rowCmd = 
+      frames
+      |> Seq.map (fun f -> f.RowIndex) 
+      |> Seq.mapi (fun i x -> indexBuilder.Reindex(x, allRowIx, Lookup.Exact, Vectors.Return(i), fun _ -> true))
+      |> fun vc -> Vectors.CombineN(Seq.toList vc, VectorValueListTransform.AtMostOne)
+
+    // Define a transform from the row command, which we will apply to an aligned column list
+    let append = VectorValueListTransform.Create(fun (lst: OptionalValue<IVector> list) ->
+      let input = [| for v in lst do 
+                      if v.HasValue 
+                      then yield VectorHelpers.changeType v.Value 
+                      else yield Vector.ofValues [] |]
+      let result = vectorBuilder.Build(rowCmd, input) :> IVector
+      OptionalValue(result))
+
+    // build the union of all column keys
+    let colUnion ix (f:Frame<'R, 'C>) = 
+      let newIx, _, _ = indexBuilder.Union((ix, VectorConstruction.Empty), (f.ColumnIndex, VectorConstruction.Empty))
+      newIx
+
+    let allColIx = frames |> Seq.fold colUnion (Index.ofKeys [])
+
+    // Create a frame command: steps to build a frame from a list of input frames
+    //  1) align each column to the unioned column index
+    //  2) merge the columns via the row command transform 
+    let frameCmd = 
+      frames 
+      |> Seq.map (fun f -> f.ColumnIndex) 
+      |> Seq.mapi (fun i x -> indexBuilder.Reindex(x, allColIx, Lookup.Exact, Vectors.Return(i), fun _ -> true))
+      |> fun vc -> Vectors.CombineN(Seq.toList vc, append)
+
+    let frameData = frames |> Seq.map (fun f -> f.Data) |> Seq.toArray
+    
+    let newData = vectorBuilder.Build(frameCmd, frameData)
+
+    Frame(allRowIx, allColIx, newData)
 
   /// Aligns two data frames using both column index and row index and apply the specified operation
   /// on values of a specified type that are available in both data frames. The parameters `columnKind`,

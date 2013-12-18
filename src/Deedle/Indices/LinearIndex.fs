@@ -312,6 +312,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
         else
           Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq, Some false
       returnUsingAlignedSequence joined vector1 vector2 ordered 
+
         
     /// Append is similar to union, but it also combines the vectors using the specified
     /// vector transformation.
