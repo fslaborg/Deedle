@@ -61,6 +61,24 @@ let ``Can read MSFT data from CSV file without header row`` () =
   actual |> shouldEqual expected 
 
 [<Test>]
+let ``Can read MSFT data from CSV with no headers & no type inference``() =
+  let df = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/MSFT.csv", hasHeaders=false, inferTypes=false) 
+  df.RowKeys |> Seq.length |> shouldEqual 6528
+  df.ColumnKeys |> List.ofSeq |> shouldEqual ["Column1"; "Column2"; "Column3"; "Column4"; "Column5"; "Column6"; "Column7"]
+
+[<Test>]
+let ``Can read MSFT data from CSV with explicit schema``() =
+  let df = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/MSFT.csv", schema="A (string),B,C,D,E,F,G (float)") 
+  let actual = List.ofSeq df.ColumnKeys
+  actual |> shouldEqual ["A";"B";"C";"D";"E";"F";"G"]
+
+[<Test>]
+let ``Can read MSFT data from CSV and rename``() =
+  let df = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/MSFT.csv", schema="Day,Adj Close->Adjusted") 
+  let actual = List.ofSeq df.ColumnKeys
+  actual |> shouldEqual ["Day"; "Open"; "High"; "Low"; "Close"; "Volume"; "Adjusted"]
+
+[<Test>]
 let ``Can save MSFT data as CSV file and read it afterwards (with default args)`` () =
   let file = System.IO.Path.GetTempFileName()
   let expected = msft()

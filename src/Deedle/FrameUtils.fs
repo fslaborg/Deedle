@@ -406,25 +406,24 @@ module internal FrameUtils =
           data inferRows (missingValuesArr, cultureInfo) schema safeMode preferOptionals
         ||> CsvInference.getFields preferOptionals
       else 
-        if data.Headers.IsNone then failwith "CSV file is missing headers!"
-        [ for c in data.Headers.Value -> 
-            PrimitiveInferedProperty.Create(c, typeof<string>, true) ]
+        let headers = 
+          match data.Headers with 
+          | None -> [| for i in 1 .. data.NumberOfColumns -> sprintf "Column%d" i |]
+          | Some headers -> headers
+        [ for c in headers -> PrimitiveInferedProperty.Create(c, typeof<string>, true) ]
 
     // Load the data and convert the values to the appropriate type
-    let data = match maxRows with 
-               | Some(nrows) ->  data.Truncate(nrows).Cache() 
-               | None -> data.Cache()
+    let data = 
+      match maxRows with 
+      | Some(nrows) ->  data.Truncate(nrows).Cache() 
+      | None -> data.Cache()
 
-    let headers = 
-      match data.Headers with
-      | Some headers -> headers
-      | None -> [| for i in 1 .. data.NumberOfColumns -> sprintf "Column %d" i |]
-      
-    let columnIndex = Index.ofKeys headers
+    // Generate columns using the inferred properties 
+    let columnIndex = Index.ofKeys [ for p in inferedProperties -> p.Name ]
     let columns = 
-      Seq.zip headers inferedProperties |> Seq.mapi (fun i (name, prop) ->
-            [| for row in data.Data -> row.Columns.[i] |]
-            |> createVector prop.RuntimeType )
+      inferedProperties |> Seq.mapi (fun i prop ->
+        [| for row in data.Data -> row.Columns.[i] |]
+        |> createVector prop.RuntimeType )
     let rowIndex = Index.ofKeys [ 0 .. (Seq.length data.Data) - 1 ]
     Frame(rowIndex, columnIndex, Vector.ofValues columns)
 
