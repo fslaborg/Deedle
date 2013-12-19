@@ -67,14 +67,32 @@ let testAll () =
 open Deedle
 
 let testOne() =
-  let d1 = Array.init 1000000 float
-  let d2 = Array.init 1000000 float
+  //let d1 = Array.init 1000000 float
+  //let d2 = Array.init 1000000 float
 
-  for i in 1 .. 5 do
-    timed(fun () -> 
+  let titanic = Frame.ReadCsv(__SOURCE_DIRECTORY__ + @"\..\..\docs\content\data\Titanic.csv")
+  for i in 1 .. 20 do
+    timed(fun () ->
+   
+        let bySex = titanic |> Frame.groupRowsByString "Sex"
+        let survivedBySex = bySex.Columns.["Survived"].As<bool>()
+        let survivals = 
+            survivedBySex
+            |> Series.applyLevel Pair.get1Of2 (fun sr -> 
+                sr.Values |> Seq.countBy id |> series)
+            |> Frame.ofRows
+            |> Frame.indexColsWith ["Survived"; "Died"]
+        survivals?Total <- 
+            bySex
+            |> Frame.applyLevel Pair.get1Of2 Series.countKeys
+        let summary = 
+              [ "Survived (%)" => survivals?Survived / survivals?Total * 100.0
+                "Died (%)" => survivals?Died/ survivals?Total * 100.0 ] |> frame
+
+        ()
       //CSharp.Tests.DynamicFrameTests.CanAddSeriesDynamically()
       //CSharp.Tests.DynamicFrameTests.CanGetSeriesDynamically()
-      Tests.Frame.``Can group 10x5k data frame by row of type string and nest it (in less than a few seconds)``()
+//      Tests.Frame.``Can group 10x5k data frame by row of type string and nest it (in less than a few seconds)``()
 //      Series(d1, d2).[300000.0 .. 600000.0] |> Series.filter (fun k _ -> true) |> Series.mean
 //      |> ignore
 
