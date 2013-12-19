@@ -343,5 +343,6 @@ let rec substitute ((oldVar, newVar) as subst) = function
   | GetRange(vc, r) -> GetRange(substitute subst vc, r)
   | Append(l, r) -> Append(substitute subst l, substitute subst r)
   | Combine(l, r, c) -> Combine(substitute subst l, substitute subst r, c)
+  | CombineN(lst, c) -> CombineN(List.map (substitute subst) lst, c)
   | CustomCommand(vcs, f) -> CustomCommand(List.map (substitute subst) vcs, f)
   | AsyncCustomCommand(vcs, f) -> AsyncCustomCommand(List.map (substitute subst) vcs, f)
