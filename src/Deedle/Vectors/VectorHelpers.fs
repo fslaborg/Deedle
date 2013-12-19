@@ -61,6 +61,11 @@ type ValueCallSite1<'R> =
 type VectorCallSite1<'R> =
   abstract Invoke<'T> : IVector<'T> -> 'R
 
+/// Represents a generic function `\forall.'T.(IVector<'T> list -> 'R)`. The function can be 
+/// generically invoked on an argument of type `IVector list` using `createVectorListDispatcher`
+type VectorListCallSite1<'R> =
+  abstract Invoke<'T> : IVector<'T> list -> 'R
+
 /// Represents a generic function `\forall.'T.(IVector<'T> * IVector<'T> -> 'R)`. The function 
 /// can be generically invoked on a pair of `IVector` values using `createTwoVectorDispatcher`
 type VectorCallSite2<'R> =
@@ -147,6 +152,42 @@ let createTwoVectorDispatcher<'R> (callSite:VectorCallSite2<'R>) =
           let func = expr.Compile()
           dict.Value.[code] <- func
           func.Invoke(callSite, vect1, vect2)
+
+/// Recursive function to cast `IVector list` to `IVector<'T> list`
+let rec convertVList<'T> (code:nativeint) (lst: IVector list) = 
+  match lst with
+  | []           -> []
+  | vect :: tail ->
+    if code <> vect.ElementType.TypeHandle.Value then
+      invalidOp "createVectorListDispatcher: All arguments should have the same element type"
+    (vect :?> IVector<'T>) :: convertVList code tail
+
+/// Creates a function `IVector list -> 'R` that dynamically invokes to 
+/// a generic `Invoke` method of the provided `VectorListCallSite1<'R>`
+let createVectorListDispatcher<'R> (callSite:VectorListCallSite1<'R>) =
+  let dict = lazy Dictionary<_, System.Func<VectorListCallSite1<'R>, IVector list, 'R>>()
+  fun (vlst:IVector list) -> 
+    match vlst with
+      | []           -> invalidOp "createVectorListDispatcher: List must be non-empty"
+      | vect :: tail -> 
+        let code = vect.ElementType.TypeHandle.Value
+        if code = doubleCode then callSite.Invoke<float>(convertVList doubleCode vlst)
+        elif code = intCode then callSite.Invoke<int>(convertVList intCode vlst)
+        elif code = stringCode then callSite.Invoke<string>(convertVList stringCode vlst)
+        else
+          match dict.Value.TryGetValue(code) with
+          | true, f -> f.Invoke(callSite, vlst)
+          | _ ->
+            let mi = typeof<VectorListCallSite1<'R>>.GetMethod("Invoke").MakeGenericMethod(vect.ElementType)
+            let inst = Expression.Parameter(typeof<VectorListCallSite1<'R>>)
+            let par = Expression.Parameter(typeof<IVector list>)
+            let ty = typedefof<IVector<_>>.MakeGenericType(vect.ElementType)
+            let expr =
+              Expression.Lambda<System.Func<VectorListCallSite1<'R>, IVector list, 'R>>
+                ( Expression.Call(inst, mi, Expression.Convert(par, ty)), [ inst; par ])
+            let func = expr.Compile()
+            dict.Value.[code] <- func
+            func.Invoke(callSite, vlst)
 
 /// A type that implements common vector value transformations and 
 /// a helper method for creating transformation on values of known types

@@ -865,14 +865,34 @@ module Frame =
       |> Seq.mapi (fun i x -> indexBuilder.Reindex(x, allRowIx, Lookup.Exact, Vectors.Return(i), fun _ -> true))
       |> fun vc -> Vectors.CombineN(Seq.toList vc, VectorValueListTransform.AtMostOne)
 
-    // Define a transform from the row command, which we will apply to an aligned column list
+    // Define a function to construct result vector via the above row command, which will dynamically
+    // dispatch to a type-specific generic implementation
+    let appendVectors = 
+      { new VectorHelpers.VectorListCallSite1<IVector> with
+          override x.Invoke<'T>(vlst: IVector<'T> list) = 
+            vectorBuilder.Build(rowCmd, vlst |> List.toArray) :> IVector }
+      |> VectorHelpers.createVectorListDispatcher
+
+    // all our vectors must be converted to the same witness type!
+    let convertAllVectors = 
+      { new VectorHelpers.VectorCallSite1<IVector list -> IVector list> with
+          override x.Invoke<'T>(v: IVector<'T>) = (fun vlst ->
+            vlst |> List.map (fun v -> VectorHelpers.changeType<'T> v :> IVector)) }
+      |> VectorHelpers.createVectorDispatcher
+
+    // define the transformation itself, piecing components together
     let append = VectorValueListTransform.Create(fun (lst: OptionalValue<IVector> list) ->
-      let input = [| for v in lst do 
-                      if v.HasValue 
-                      then yield VectorHelpers.changeType v.Value 
-                      else yield Vector.ofValues [] |]
-      let result = vectorBuilder.Build(rowCmd, input) :> IVector
-      OptionalValue(result))
+      let witnessVec = 
+        match lst |> Seq.tryFind (fun v -> v.HasValue) with
+        | Some(v) -> v.Value
+        | _       -> invalidOp "Logic error: could not find non-empty IVector ??"
+
+      let empty = Vector.ofValues []
+      let input = [ for v in lst do 
+                    if v.HasValue 
+                    then yield v.Value
+                    else yield upcast Vector.ofValues [] ]
+      input |> convertAllVectors(witnessVec) |> appendVectors |> fun r -> OptionalValue(r) )
 
     // build the union of all column keys
     let colUnion ix (f:Frame<'R, 'C>) = 
