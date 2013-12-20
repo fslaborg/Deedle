@@ -903,9 +903,8 @@ module Series =
   /// [category:Missing values]
   let fillMissingInside direction (series:Series<'K, 'T>) = 
     series.Observations |> Seq.tryFirstAndLast |> function
-    | None                   -> series
-    | Some (a, b) when a = b -> series
-    | Some (a, b)            -> series |> fillMissingBetween (a.Key, b.Key) direction
+    | Some (a, b) when a <> b -> series |> fillMissingBetween (a.Key, b.Key) direction
+    | _ -> series
 
   // ----------------------------------------------------------------------------------------------
   // Sorting
