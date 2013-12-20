@@ -732,3 +732,14 @@ let ``Can compute pivot table from titanic data``() =
     (frame [ false => series [ "male" => 468;  "female" => 81  ]; 
              true  => series [ "male" => 109;  "female" => 233 ] ])
   actual |> shouldEqual expected
+
+[<Test>]
+let ``Can compute pivot table from titanic data with nice syntax``() =
+  let actual =
+    let f = titanic()
+    f.PivotTable("Sex", "Survived", Frame.countRows)
+
+  let expected =
+    (frame [ false => series [ "male" => 468;  "female" => 81  ]; 
+             true  => series [ "male" => 109;  "female" => 233 ] ])
+  actual |> shouldEqual expected
