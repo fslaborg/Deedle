@@ -902,6 +902,7 @@ module Series =
   /// Fill missing values only between the first and last non-missing values
   /// [category:Missing values]
   let fillMissingInside direction (series:Series<'K, 'T>) = 
+    if not series.IsOrdered then invalidOp "Series must be sorted to use fillMissingBetween"
     series.Observations |> Seq.tryFirstAndLast |> function
     | Some (a, b) when a <> b -> series |> fillMissingBetween (a.Key, b.Key) direction
     | _ -> series

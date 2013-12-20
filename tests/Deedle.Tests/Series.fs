@@ -176,21 +176,24 @@ let ``Can do fill inside forward``() =
 
 [<Test>]
 let ``Fill inside corner cases work``() =
-  let n = Series.ofValues [ Double.NaN; 1.0; Double.NaN]
-  let actual = n |> Series.fillMissingInside Direction.Forward
-  actual |> shouldEqual n
+  let s = Series.ofValues [ Double.NaN; 1.0; Double.NaN]
+  let actual = s |> Series.fillMissingInside Direction.Forward
+  actual |> shouldEqual s
 
-  let n = Series.ofValues [ Double.NaN ]
-  let actual = n |> Series.fillMissingInside Direction.Forward
-  actual |> shouldEqual n
+  let s = Series.ofValues [ Double.NaN ]
+  let actual = s |> Series.fillMissingInside Direction.Forward
+  actual |> shouldEqual s
 
-  let n = Series.ofValues [ 1.0; Double.NaN ]
-  let actual = n |> Series.fillMissingInside Direction.Forward
-  actual |> shouldEqual n
+  let s = Series.ofValues [ 1.0; Double.NaN ]
+  let actual = s |> Series.fillMissingInside Direction.Forward
+  actual |> shouldEqual s
 
-  let n = Series.ofValues [ Double.NaN; 1.0 ]
-  let actual = n |> Series.fillMissingInside Direction.Forward
-  actual |> shouldEqual n
+  let s = Series.ofValues [ Double.NaN; 1.0 ]
+  let actual = s |> Series.fillMissingInside Direction.Forward
+  actual |> shouldEqual s
+
+  let s = series [ 2.0 => Double.NaN; 1.0 => 1.0 ]
+  (fun () -> s |> Series.fillMissingInside Direction.Forward |> ignore) |> should throw typeof<System.InvalidOperationException>
   
 [<Test>]
 let ``Can fill missing values in a specified range``() =
