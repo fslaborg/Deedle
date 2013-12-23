@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>ObjectSeries - Deedle</title>
+    <title>ObjectSeries<'K> - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="BlueMountain Capital">
@@ -38,7 +38,7 @@
 
 
 
-<h1>ObjectSeries</h1>
+<h1>ObjectSeries<'K></h1>
 <div class="xmldoc">
 </div>
   <h3>Constructors</h3>
@@ -50,26 +50,16 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '397', 397)" onmouseover="showTip(event, '397', 397)">
-            new ObjectSeries
+          <code onmouseout="hideTip(event, '513', 513)" onmouseover="showTip(event, '513', 513)">
+            new(series)
           </code>
-          <div class="tip" id="397">
+          <div class="tip" id="513">
             <strong>Signature:</strong>series:Series&lt;&#39;K,obj&gt; -&gt; ObjectSeries&lt;&#39;K&gt;<br />
                       </div>
         </td>
-        <td class="xmldoc"></td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '399', 399)" onmouseover="showTip(event, '399', 399)">
-            new ObjectSeries
-          </code>
-          <div class="tip" id="399">
-            <strong>Signature:</strong>(index:IIndex&lt;&#39;K&gt; * vector:IVector&lt;obj&gt; * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder) -&gt; ObjectSeries&lt;&#39;K&gt;<br />
-                      </div>
+        <td class="xmldoc">
+        
         </td>
-        <td class="xmldoc"></td>
       </tr>
     </tbody>
   </table>
@@ -82,98 +72,114 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '413', 413)" onmouseover="showTip(event, '413', 413)">
-            objectSeries.As()
+          <code onmouseout="hideTip(event, '533', 533)" onmouseover="showTip(event, '533', 533)">
+            As()
           </code>
-          <div class="tip" id="413">
+          <div class="tip" id="533">
             <strong>Signature:</strong>unit -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'R          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '416', 416)" onmouseover="showTip(event, '416', 416)">
-            objectSeries.GetAs(column)
+          <code onmouseout="hideTip(event, '534', 534)" onmouseover="showTip(event, '534', 534)">
+            GetAs(column)
           </code>
-          <div class="tip" id="416">
+          <div class="tip" id="534">
             <strong>Signature:</strong>column:&#39;K -&gt; &#39;R<br />
                           <strong>Type parameters:</strong> 'R          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '417', 417)" onmouseover="showTip(event, '417', 417)">
-            objectSeries.GetAtAs(index)
+          <code onmouseout="hideTip(event, '535', 535)" onmouseover="showTip(event, '535', 535)">
+            GetAtAs(index)
           </code>
-          <div class="tip" id="417">
+          <div class="tip" id="535">
             <strong>Signature:</strong>index:int -&gt; &#39;R<br />
                           <strong>Type parameters:</strong> 'R          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '418', 418)" onmouseover="showTip(event, '418', 418)">
-            objectSeries.GetValues()
+          <code onmouseout="hideTip(event, '536', 536)" onmouseover="showTip(event, '536', 536)">
+            GetValues()
           </code>
-          <div class="tip" id="418">
+          <div class="tip" id="536">
             <strong>Signature:</strong>unit -&gt; IEnumerable&lt;&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'R          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '419', 419)" onmouseover="showTip(event, '419', 419)">
-            objectSeries.GetValues(strict)
+          <code onmouseout="hideTip(event, '537', 537)" onmouseover="showTip(event, '537', 537)">
+            GetValues(strict)
           </code>
-          <div class="tip" id="419">
+          <div class="tip" id="537">
             <strong>Signature:</strong>strict:bool -&gt; IEnumerable&lt;&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'R          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '420', 420)" onmouseover="showTip(event, '420', 420)">
-            objectSeries.TryAs()
+          <code onmouseout="hideTip(event, '538', 538)" onmouseover="showTip(event, '538', 538)">
+            TryAs()
           </code>
-          <div class="tip" id="420">
+          <div class="tip" id="538">
             <strong>Signature:</strong>unit -&gt; OptionalValue&lt;Series&lt;&#39;K,&#39;R&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'R          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '421', 421)" onmouseover="showTip(event, '421', 421)">
-            objectSeries.TryAs(strict)
+          <code onmouseout="hideTip(event, '539', 539)" onmouseover="showTip(event, '539', 539)">
+            TryAs(strict)
           </code>
-          <div class="tip" id="421">
+          <div class="tip" id="539">
             <strong>Signature:</strong>strict:bool -&gt; OptionalValue&lt;Series&lt;&#39;K,&#39;R&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'R          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '422', 422)" onmouseover="showTip(event, '422', 422)">
-            objectSeries.TryGetAs(column)
+          <code onmouseout="hideTip(event, '540', 540)" onmouseover="showTip(event, '540', 540)">
+            TryGetAs(column)
           </code>
-          <div class="tip" id="422">
+          <div class="tip" id="540">
             <strong>Signature:</strong>column:&#39;K -&gt; OptionalValue&lt;&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'R          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
     </tbody>
   </table>
@@ -186,14 +192,16 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '435', 435)" onmouseover="showTip(event, '435', 435)">
-            ObjectSeries.( ? )(series, name)
+          <code onmouseout="hideTip(event, '603', 603)" onmouseover="showTip(event, '603', 603)">
+            ( ? )(series, name)
           </code>
-          <div class="tip" id="435">
+          <div class="tip" id="603">
             <strong>Signature:</strong>(series:ObjectSeries&lt;string&gt; * name:string) -&gt; float<br />
                       </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
     </tbody>
   </table>

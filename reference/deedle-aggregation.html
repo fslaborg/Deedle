@@ -53,14 +53,15 @@ strategies for ordered series.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '342', 342)" onmouseover="showTip(event, '342', 342)">
-            Aggregation.ChunkSize(size, boundary)
+          <code onmouseout="hideTip(event, '348', 348)" onmouseover="showTip(event, '348', 348)">
+            ChunkSize(size, boundary)
           </code>
-          <div class="tip" id="342">
+          <div class="tip" id="348">
             <strong>Signature:</strong>(size:int * boundary:Boundary) -&gt; Aggregation&lt;&#39;?6530&gt;<br />
                           <strong>Type parameters:</strong> '?6530          </div>
         </td>
-        <td class="xmldoc"><p>Aggregate data into non-overlapping chunks of a specified size 
+        <td class="xmldoc">
+        <p>Aggregate data into non-overlapping chunks of a specified size 
 and the provided handling of boundary elements.</p>
 
 <h2>Parameters</h2>
@@ -71,19 +72,21 @@ boundary behavior, the actual created windows may be smaller.</li>
 <li><code>boundary</code> - Specifies how to handle boundaries (when there is not
 enough data to create an entire window).</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '344', 344)" onmouseover="showTip(event, '344', 344)">
-            Aggregation.ChunkWhile(condition)
+          <code onmouseout="hideTip(event, '350', 350)" onmouseover="showTip(event, '350', 350)">
+            ChunkWhile(condition)
           </code>
-          <div class="tip" id="344">
+          <div class="tip" id="350">
             <strong>Signature:</strong>condition:Func&lt;&#39;K,&#39;K,bool&gt; -&gt; Aggregation&lt;&#39;K&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"><p>Aggregate data into non-overlapping chunks where each chunk ends as soon
+        <td class="xmldoc">
+        <p>Aggregate data into non-overlapping chunks where each chunk ends as soon
 as the specified function returns <code>false</code> when called with the 
 first key and the current key as arguments.</p>
 
@@ -94,19 +97,21 @@ first key and the current key as arguments.</p>
 (e.g. <code>(k1, k2) =&gt; k2 - k1 &lt; 10</code> means that the difference between keys
 in each chunk will be less than 10.</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '345', 345)" onmouseover="showTip(event, '345', 345)">
-            Aggregation.WindowSize(size, boundary)
+          <code onmouseout="hideTip(event, '351', 351)" onmouseover="showTip(event, '351', 351)">
+            WindowSize(size, boundary)
           </code>
-          <div class="tip" id="345">
+          <div class="tip" id="351">
             <strong>Signature:</strong>(size:int * boundary:Boundary) -&gt; Aggregation&lt;&#39;?6528&gt;<br />
                           <strong>Type parameters:</strong> '?6528          </div>
         </td>
-        <td class="xmldoc"><p>Aggregate data into floating windows of a specified size 
+        <td class="xmldoc">
+        <p>Aggregate data into floating windows of a specified size 
 and the provided handling of boundary elements.</p>
 
 <h2>Parameters</h2>
@@ -117,19 +122,21 @@ boundary behavior, the actual created windows may be smaller.</li>
 <li><code>boundary</code> - Specifies how to handle boundaries (when there is not
 enough data to create an entire window).</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '346', 346)" onmouseover="showTip(event, '346', 346)">
-            Aggregation.WindowWhile(condition)
+          <code onmouseout="hideTip(event, '352', 352)" onmouseover="showTip(event, '352', 352)">
+            WindowWhile(condition)
           </code>
-          <div class="tip" id="346">
+          <div class="tip" id="352">
             <strong>Signature:</strong>condition:Func&lt;&#39;K,&#39;K,bool&gt; -&gt; Aggregation&lt;&#39;K&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"><p>Aggregate data into floating windows where each window ends as soon
+        <td class="xmldoc">
+        <p>Aggregate data into floating windows where each window ends as soon
 as the specified function returns <code>false</code> when called with the 
 first key and the current key as arguments.</p>
 
@@ -140,7 +147,8 @@ first key and the current key as arguments.</p>
 (e.g. <code>(k1, k2) =&gt; k2 - k1 &lt; 10</code> means that the difference between keys
 in each window will be less than 10.</li>
 </ul>
-</td>
+
+        </td>
       </tr>
     </tbody>
   </table>

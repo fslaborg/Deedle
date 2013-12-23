@@ -54,6 +54,177 @@ different vector types. That would mean adding some more types, so we just model
 construction as an untyped operation and the typing is resquired by the <code>Build</code> method
 of the vector builder.</p>
 </div>
+  <h3>Union Cases</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Union Case</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '750', 750)" onmouseover="showTip(event, '750', 750)">
+            Append
+          </code>
+          <div class="tip" id="750">
+            <strong>Signature:</strong>VectorConstruction * VectorConstruction<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Append two vectors after each other</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '751', 751)" onmouseover="showTip(event, '751', 751)">
+            AsyncCustomCommand
+          </code>
+          <div class="tip" id="751">
+            <strong>Signature:</strong>VectorConstruction list * IVector list -&gt; Async&lt;IVector&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Same as <code>CustomCommand</code> with the difference that the resulting vector is returned
+asynchronously (this is useful for lazy loading and it is used by <code>AsyncBuild</code>).</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '752', 752)" onmouseover="showTip(event, '752', 752)">
+            Combine
+          </code>
+          <div class="tip" id="752">
+            <strong>Signature:</strong>VectorConstruction * VectorConstruction * IVectorValueTransform<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Combine two aligned vectors. The <code>IVectorValueTransform</code> object
+specifies how to merge values (in case there is a value at a given address
+in both of the vectors).</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '753', 753)" onmouseover="showTip(event, '753', 753)">
+            CustomCommand
+          </code>
+          <div class="tip" id="753">
+            <strong>Signature:</strong>VectorConstruction list * IVector list -&gt; IVector<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Apply a custom command to a vector - this can be used by special indices (e.g. index
+for a lazy vector) to provide a custom operations to be used. The first parameter
+is a list of sub-vectors to be combined (if as in e.g. <code>Append</code>) and the
+second argument is a function that will be called with evaluated vectors and is
+supposed to create the new vector.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '754', 754)" onmouseover="showTip(event, '754', 754)">
+            DropRange
+          </code>
+          <div class="tip" id="754">
+            <strong>Signature:</strong>VectorConstruction * VectorRange<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Drop the specified range of addresses from the vector 
+and return a new vector that excludes the range</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '755', 755)" onmouseover="showTip(event, '755', 755)">
+            Empty
+          </code>
+          <div class="tip" id="755">
+            <strong>Signature:</strong><br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Creates an empty vector of the requested type</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '756', 756)" onmouseover="showTip(event, '756', 756)">
+            FillMissing
+          </code>
+          <div class="tip" id="756">
+            <strong>Signature:</strong>VectorConstruction * VectorFillMissing<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Create a vector that has missing values filled using the specified direction
+(forward means that n-th value will contain (n-i)-th value where (n-i) is the
+first index that contains a value).</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '757', 757)" onmouseover="showTip(event, '757', 757)">
+            GetRange
+          </code>
+          <div class="tip" id="757">
+            <strong>Signature:</strong>VectorConstruction * VectorRange<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Get the specified range of addresses from the vector and return it as a new vector</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '758', 758)" onmouseover="showTip(event, '758', 758)">
+            Relocate
+          </code>
+          <div class="tip" id="758">
+            <strong>Signature:</strong>VectorConstruction * VectorRange * seq&lt;Address * Address&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Reorders elements of the vector. Carries a new required vector range and a list
+of relocations (each pair of addresses specifies that an element at a new address 
+should be filled with an element from an old address). THe addresses may be out of range!</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '759', 759)" onmouseover="showTip(event, '759', 759)">
+            Return
+          </code>
+          <div class="tip" id="759">
+            <strong>Signature:</strong>VectorHole<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>When constructing vectors, we get an array of vectors to be used as "variables"
+- this element represent getting one of the variables.</p>
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
         </div>
         <div class="span3">

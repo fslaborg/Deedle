@@ -46,6 +46,81 @@ fail or return missing value if the key is not available in the index. For order
 series <code>Lookup.NearestGreater</code> finds the first greater key (e.g. later date) with
 a value. <code>Lookup.NearestSmaller</code> searches for the first smaller key.</p>
 </div>
+  <h3>Record Fields</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Record Field</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '435', 435)" onmouseover="showTip(event, '435', 435)">
+            Exact
+          </code>
+          <div class="tip" id="435">
+            <strong>Signature:</strong>Lookup<br />
+              <strong>Modifiers:</strong> static<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Lookup a value associated with the exact specified key. 
+If the key is not available, then fail or return missing value.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '436', 436)" onmouseover="showTip(event, '436', 436)">
+            NearestGreater
+          </code>
+          <div class="tip" id="436">
+            <strong>Signature:</strong>Lookup<br />
+              <strong>Modifiers:</strong> static<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Lookup a value associated with the specified key or with the nearest
+greater key that has a value available. Fails (or returns missing value)
+only when the specified key is greater than all available keys.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '437', 437)" onmouseover="showTip(event, '437', 437)">
+            NearestSmaller
+          </code>
+          <div class="tip" id="437">
+            <strong>Signature:</strong>Lookup<br />
+              <strong>Modifiers:</strong> static<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Lookup a value associated with the specified key or with the nearest
+smaller key that has a value available. Fails (or returns missing value)
+only when the specified key is smaller than all available keys.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '438', 438)" onmouseover="showTip(event, '438', 438)">
+            value__
+          </code>
+          <div class="tip" id="438">
+            <strong>Signature:</strong>int<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
         </div>
         <div class="span3">

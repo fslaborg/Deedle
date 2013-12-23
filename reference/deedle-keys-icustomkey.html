@@ -52,47 +52,53 @@ get parts of the keys based on levels. <code>CustomKey.Get</code> provides a way
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '510', 510)" onmouseover="showTip(event, '510', 510)">
-            iCustomKey.GetLevel(arg1)
+          <code onmouseout="hideTip(event, '774', 774)" onmouseover="showTip(event, '774', 774)">
+            GetLevel(arg1)
           </code>
-          <div class="tip" id="510">
+          <div class="tip" id="774">
             <strong>Signature:</strong>int -&gt; obj<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Gets a value at the specified level (the levels are indexed from 1). 
+        <td class="xmldoc">
+        <p>Gets a value at the specified level (the levels are indexed from 1). 
 This is used for pretty printing only. If <code>Levels=1</code> then this method is not
 called and the pretty printer invokes <code>ToString</code> on the whole object instead.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '511', 511)" onmouseover="showTip(event, '511', 511)">
-            iCustomKey.GetLevels()
+          <code onmouseout="hideTip(event, '775', 775)" onmouseover="showTip(event, '775', 775)">
+            GetLevels()
           </code>
-          <div class="tip" id="511">
+          <div class="tip" id="775">
             <strong>Signature:</strong>unit -&gt; obj []<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Gets values of the key at all levels</p>
-</td>
+        <td class="xmldoc">
+        <p>Gets values of the key at all levels</p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '512', 512)" onmouseover="showTip(event, '512', 512)">
-            iCustomKey.Levels
+          <code onmouseout="hideTip(event, '776', 776)" onmouseover="showTip(event, '776', 776)">
+            Levels
           </code>
-          <div class="tip" id="512">
+          <div class="tip" id="776">
             <strong>Signature:</strong>int<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Returns the number of levels of a hierarchical key. For example, a tuple (1, 42) has 2 levels.
+        <td class="xmldoc">
+        <p>Returns the number of levels of a hierarchical key. For example, a tuple (1, 42) has 2 levels.
 This is used for pretty printing only.</p>
-</td>
+
+        </td>
       </tr>
     </tbody>
   </table>

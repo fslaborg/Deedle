@@ -44,13 +44,7 @@
 <code>Deedle.Internals</code> is opened, it extends the standard <code>Seq</code> module.</p>
 </div>
 
-<!-- TODO: Refactor me - copy & paste from 'namespaces.cshtml' -->
-
-
-
-<!-- END TODO -->
-
-
+<!-- Render nested types and modules, if there are any -->
 
   <h3>Functions and values</h3>
   <table class="table table-bordered member-list">
@@ -61,14 +55,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '62', 62)" onmouseover="showTip(event, '62', 62)">
+          <code onmouseout="hideTip(event, '120', 120)" onmouseover="showTip(event, '120', 120)">
             alignWithOrdering seq1 seq2 comparer
           </code>
-          <div class="tip" id="62">
+          <div class="tip" id="120">
             <strong>Signature:</strong>seq1:seq&lt;&#39;T * &#39;TAddress&gt; -&gt; seq2:seq&lt;&#39;T * &#39;TAddress&gt; -&gt; comparer:IComparer&lt;&#39;T&gt; -&gt; seq&lt;&#39;T * &#39;TAddress option * &#39;TAddress option&gt;<br />
                           <strong>Type parameters:</strong> 'T, 'TAddress          </div>
         </td>
-        <td class="xmldoc"><p>Align two ordered sequences of <code>Key * Address</code> pairs and produce a 
+        <td class="xmldoc">
+        <p>Align two ordered sequences of <code>Key * Address</code> pairs and produce a 
 collection that contains three-element tuples consisting of:</p>
 
 <ul>
@@ -76,211 +71,239 @@ collection that contains three-element tuples consisting of:</p>
 <li>optional address of the key in the first sequence</li>
 <li>optional address of the key in the second sequence</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '73', 73)" onmouseover="showTip(event, '73', 73)">
+          <code onmouseout="hideTip(event, '121', 121)" onmouseover="showTip(event, '121', 121)">
             alignWithoutOrdering seq1 seq2
           </code>
-          <div class="tip" id="73">
+          <div class="tip" id="121">
             <strong>Signature:</strong>seq1:seq&lt;&#39;T * &#39;TAddress&gt; -&gt; seq2:seq&lt;&#39;T * &#39;TAddress&gt; -&gt; seq&lt;&#39;T * &#39;TAddress option * &#39;TAddress option&gt;<br />
                           <strong>Type parameters:</strong> 'T, 'TAddress          </div>
         </td>
-        <td class="xmldoc"><p>Align two unordered sequences of <code>Key * Address</code> pairs and produce a collection
+        <td class="xmldoc">
+        <p>Align two unordered sequences of <code>Key * Address</code> pairs and produce a collection
 that contains three-element tuples consisting of keys, optional address in the
 first sequence &amp; optional address in the second sequence. (See also <code>alignWithOrdering</code>)</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '74', 74)" onmouseover="showTip(event, '74', 74)">
+          <code onmouseout="hideTip(event, '122', 122)" onmouseover="showTip(event, '122', 122)">
             chunkedUsing comparer dir keys input
           </code>
-          <div class="tip" id="74">
+          <div class="tip" id="122">
             <strong>Signature:</strong>comparer:Comparer&lt;&#39;?8044&gt; -&gt; dir:Direction -&gt; keys:seq&lt;&#39;?8044&gt; -&gt; input:seq&lt;&#39;?8044&gt; -&gt; seq&lt;&#39;?8044 * &#39;?8044 list&gt;<br />
                           <strong>Type parameters:</strong> '?8044          </div>
         </td>
-        <td class="xmldoc"><p>Generate non-overlapping chunks from the input sequence. Chunks are aligned
+        <td class="xmldoc">
+        <p>Generate non-overlapping chunks from the input sequence. Chunks are aligned
 to the specified keys. The <code>dir</code> parameter specifies the direction. If it is
 <code>Direction.Forward</code> than the key is the first element of a chunk; for 
 <code>Direction.Backward</code>, the key is the last element (note that this does not hold
 at the boundaries)</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '75', 75)" onmouseover="showTip(event, '75', 75)">
+          <code onmouseout="hideTip(event, '123', 123)" onmouseover="showTip(event, '123', 123)">
             chunkedWhile f input
           </code>
-          <div class="tip" id="75">
+          <div class="tip" id="123">
             <strong>Signature:</strong>f:(&#39;?8042 -&gt; &#39;?8042 -&gt; bool) -&gt; input:seq&lt;&#39;?8042&gt; -&gt; seq&lt;&#39;?8042 []&gt;<br />
                           <strong>Type parameters:</strong> '?8042          </div>
         </td>
-        <td class="xmldoc"><p>Generate non-verlapping chunks from the input sequence. A chunk is started 
+        <td class="xmldoc">
+        <p>Generate non-verlapping chunks from the input sequence. A chunk is started 
 at the beginning and then immediately after the end of the previous chunk.
 To find the end of the chunk, the function calls the provided argument <code>f</code> 
 with the first and the last elements of the chunk as arguments. A chunk 
 ends when <code>f</code> returns <code>false</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '76', 76)" onmouseover="showTip(event, '76', 76)">
+          <code onmouseout="hideTip(event, '124', 124)" onmouseover="showTip(event, '124', 124)">
             chunkedWithBounds size boundary input
           </code>
-          <div class="tip" id="76">
+          <div class="tip" id="124">
             <strong>Signature:</strong>size:int -&gt; boundary:Boundary -&gt; input:seq&lt;&#39;?8048&gt; -&gt; seq&lt;DataSegment&lt;&#39;?8048 []&gt;&gt;<br />
                           <strong>Type parameters:</strong> '?8048          </div>
         </td>
-        <td class="xmldoc"><p>Similar to <code>Seq.windowedWithBounds</code>, but generates non-overlapping chunks
+        <td class="xmldoc">
+        <p>Similar to <code>Seq.windowedWithBounds</code>, but generates non-overlapping chunks
 rather than floating windows. See that function for detailed documentation.
 The function may iterate over the sequence repeatedly.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '77', 77)" onmouseover="showTip(event, '77', 77)">
+          <code onmouseout="hideTip(event, '125', 125)" onmouseover="showTip(event, '125', 125)">
             getEnumerator s
           </code>
-          <div class="tip" id="77">
+          <div class="tip" id="125">
             <strong>Signature:</strong>s:seq&lt;&#39;?8036&gt; -&gt; IEnumerator&lt;&#39;?8036&gt;<br />
                           <strong>Type parameters:</strong> '?8036          </div>
         </td>
-        <td class="xmldoc"><p>Calls the <code>GetEnumerator</code> method. Simple function to guide type inference.</p>
-</td>
+        <td class="xmldoc">
+        <p>Calls the <code>GetEnumerator</code> method. Simple function to guide type inference.</p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '78', 78)" onmouseover="showTip(event, '78', 78)">
+          <code onmouseout="hideTip(event, '126', 126)" onmouseover="showTip(event, '126', 126)">
             headOrNone input
           </code>
-          <div class="tip" id="78">
+          <div class="tip" id="126">
             <strong>Signature:</strong>input:seq&lt;&#39;?8032&gt; -&gt; &#39;?8032 option<br />
                           <strong>Type parameters:</strong> '?8032          </div>
         </td>
-        <td class="xmldoc"><p>If the input is non empty, returns <code>Some(head)</code> where <code>head</code> is 
+        <td class="xmldoc">
+        <p>If the input is non empty, returns <code>Some(head)</code> where <code>head</code> is 
 the first value. Otherwise, returns <code>None</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '79', 79)" onmouseover="showTip(event, '79', 79)">
+          <code onmouseout="hideTip(event, '127', 127)" onmouseover="showTip(event, '127', 127)">
             isSorted data comparer
           </code>
-          <div class="tip" id="79">
+          <div class="tip" id="127">
             <strong>Signature:</strong>data:seq&lt;&#39;T&gt; -&gt; comparer:IComparer&lt;&#39;T&gt; -&gt; bool<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
-        <td class="xmldoc"><p>Returns true if the specified sequence is sorted.</p>
-</td>
+        <td class="xmldoc">
+        <p>Returns true if the specified sequence is sorted.</p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '80', 80)" onmouseover="showTip(event, '80', 80)">
+          <code onmouseout="hideTip(event, '128', 128)" onmouseover="showTip(event, '128', 128)">
             lastFew count input
           </code>
-          <div class="tip" id="80">
+          <div class="tip" id="128">
             <strong>Signature:</strong>count:int -&gt; input:seq&lt;&#39;?8034&gt; -&gt; seq&lt;&#39;?8034&gt;<br />
                           <strong>Type parameters:</strong> '?8034          </div>
         </td>
-        <td class="xmldoc"><p>Returns the specified number of elements from the end of the sequence
+        <td class="xmldoc">
+        <p>Returns the specified number of elements from the end of the sequence
 Note that this needs to store the specified number of elements in memory
 and it needs to iterate over the entire sequence.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '81', 81)" onmouseover="showTip(event, '81', 81)">
+          <code onmouseout="hideTip(event, '129', 129)" onmouseover="showTip(event, '129', 129)">
             startAndEnd startCount endCount input
           </code>
-          <div class="tip" id="81">
+          <div class="tip" id="129">
             <strong>Signature:</strong>startCount:int -&gt; endCount:int -&gt; input:seq&lt;&#39;?8038&gt; -&gt; seq&lt;Choice&lt;&#39;?8038,unit,&#39;?8038&gt;&gt;<br />
                           <strong>Type parameters:</strong> '?8038          </div>
         </td>
-        <td class="xmldoc"><p>Given a sequence, returns <code>startCount</code> number of elements at the beginning 
+        <td class="xmldoc">
+        <p>Given a sequence, returns <code>startCount</code> number of elements at the beginning 
 of the sequence (wrapped in <code>Choice1Of3</code>) followed by one <code>Choice2Of2()</code> value
 and then followed by <code>endCount</code> number of elements at the end of the sequence
 wrapped in <code>Choice3Of3</code>. If the input is shorter than <code>startCount + endCount</code>,
 then all values are returned and wrapped in <code>Choice1Of3</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '82', 82)" onmouseover="showTip(event, '82', 82)">
+          <code onmouseout="hideTip(event, '130', 130)" onmouseover="showTip(event, '130', 130)">
             structuralEquals s1 s2
           </code>
-          <div class="tip" id="82">
+          <div class="tip" id="130">
             <strong>Signature:</strong>s1:seq&lt;&#39;T&gt; -&gt; s2:seq&lt;&#39;T&gt; -&gt; bool<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
-        <td class="xmldoc"><p>Comapre two sequences using the <code>Equals</code> method. Returns true
+        <td class="xmldoc">
+        <p>Comapre two sequences using the <code>Equals</code> method. Returns true
 when all their elements are equal and they have the same size.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '83', 83)" onmouseover="showTip(event, '83', 83)">
+          <code onmouseout="hideTip(event, '131', 131)" onmouseover="showTip(event, '131', 131)">
             structuralHash s
           </code>
-          <div class="tip" id="83">
+          <div class="tip" id="131">
             <strong>Signature:</strong>s:seq&lt;&#39;T&gt; -&gt; int<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
-        <td class="xmldoc"><p>Calculate hash code of a sequence, based on the values</p>
-</td>
+        <td class="xmldoc">
+        <p>Calculate hash code of a sequence, based on the values</p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '84', 84)" onmouseover="showTip(event, '84', 84)">
+          <code onmouseout="hideTip(event, '132', 132)" onmouseover="showTip(event, '132', 132)">
             tryFirstAndLast input
           </code>
-          <div class="tip" id="84">
+          <div class="tip" id="132">
             <strong>Signature:</strong>input:seq&lt;&#39;?8052&gt; -&gt; (&#39;?8052 * &#39;?8052) option<br />
                           <strong>Type parameters:</strong> '?8052          </div>
         </td>
-        <td class="xmldoc"><p>Returns the first and the last element from a sequence or 'None' if the sequence is empty</p>
-</td>
+        <td class="xmldoc">
+        <p>Returns the first and the last element from a sequence or 'None' if the sequence is empty</p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '85', 85)" onmouseover="showTip(event, '85', 85)">
+          <code onmouseout="hideTip(event, '133', 133)" onmouseover="showTip(event, '133', 133)">
             windowedWhile f input
           </code>
-          <div class="tip" id="85">
+          <div class="tip" id="133">
             <strong>Signature:</strong>f:(&#39;T -&gt; &#39;T -&gt; bool) -&gt; input:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;T []&gt;<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
-        <td class="xmldoc"><p>Generate floating windows from the input sequence. New floating window is 
+        <td class="xmldoc">
+        <p>Generate floating windows from the input sequence. New floating window is 
 started for each element. To find the end of the window, the function calls
 the provided argument <code>f</code> with the first and the last elements of the window
 as arguments. A window ends when <code>f</code> returns <code>false</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '86', 86)" onmouseover="showTip(event, '86', 86)">
+          <code onmouseout="hideTip(event, '134', 134)" onmouseover="showTip(event, '134', 134)">
             windowedWithBounds size boundary input
           </code>
-          <div class="tip" id="86">
+          <div class="tip" id="134">
             <strong>Signature:</strong>size:int -&gt; boundary:Boundary -&gt; input:seq&lt;&#39;T&gt; -&gt; seq&lt;DataSegment&lt;&#39;T []&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
-        <td class="xmldoc"><p>A version of <code>Seq.windowed</code> that allows specifying more complex boundary
+        <td class="xmldoc">
+        <p>A version of <code>Seq.windowed</code> that allows specifying more complex boundary
 behaviour. The <code>boundary</code> argument can specify one of the following options:</p>
 
 <ul>
@@ -292,7 +315,8 @@ size) are returned at the beginning.</li>
 
 <p>The result is a sequence of <code>DataSegnebt&lt;T&gt;</code> values, which makes it 
 easy to distinguish between complete and incomplete windows.</p>
-</td>
+
+        </td>
       </tr>
     </tbody>
   </table>

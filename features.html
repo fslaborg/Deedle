@@ -394,12 +394,23 @@ a series from a frame.</p>
 <code>Age</code> of type <code>int</code> and <code>Countries</code> of type <code>string list</code> (we created it from F# records
 in <a href="#creating-recd">the previous section</a>):</p>
 
-<pre><code>           Name    Age Countries          
-Joe     -&gt; Joe     51  [UK; US; UK]       
-Tomas   -&gt; Tomas   28  [CZ; UK; US; ... ] 
-Eve     -&gt; Eve     2   [FR]               
-Suzanne -&gt; Suzanne 15  [US]   
-</code></pre>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+           <span class="i">Name</span>    <span class="i">Age</span> <span class="i">Countries</span>          
+<span class="i">Joe</span>     <span class="k">-&gt;</span> <span class="i">Joe</span>     <span class="n">51</span>  [<span class="i">UK</span>; <span class="i">US</span>; <span class="i">UK</span>]       
+<span class="i">Tomas</span>   <span class="k">-&gt;</span> <span class="i">Tomas</span>   <span class="n">28</span>  [<span class="i">CZ</span>; <span class="i">UK</span>; <span class="i">US</span>; <span class="o">..</span><span class="o">.</span> ] 
+<span class="i">Eve</span>     <span class="k">-&gt;</span> <span class="i">Eve</span>     <span class="n">2</span>   [<span class="i">FR</span>]               
+<span class="i">Suzanne</span> <span class="k">-&gt;</span> <span class="i">Suzanne</span> <span class="n">15</span>  [<span class="i">US</span>]   </pre>
+</td>
+</tr>
+</table>
 
 <p>To get a column (series) from a frame <code>df</code>, you can use operations that are exposed directly
 by the data frame, or you can use <code>df.Columns</code> which returns all columns of the frame as a
@@ -1146,14 +1157,27 @@ group, counts them (to get a number of <code>true</code> and <code>false</code> 
 a series with the results. The result looks as the following table (some values
 were omitted):</p>
 
-<pre><code>         True  False     
-C 1  -&gt;  59    26        
-  2  -&gt;  9     8         
-  3  -&gt;  25    41        
-S 1  -&gt;  74    53        
-  2  -&gt;  76    88        
-  3  -&gt;  67    286      
-</code></pre>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+         <span class="i">True</span>  <span class="i">False</span>     
+<span class="i">C</span> <span class="n">1</span>  <span class="k">-&gt;</span>  <span class="n">59</span>    <span class="n">26</span>        
+  <span class="n">2</span>  <span class="k">-&gt;</span>  <span class="n">9</span>     <span class="n">8</span>         
+  <span class="n">3</span>  <span class="k">-&gt;</span>  <span class="n">25</span>    <span class="n">41</span>        
+<span class="i">S</span> <span class="n">1</span>  <span class="k">-&gt;</span>  <span class="n">74</span>    <span class="n">53</span>        
+  <span class="n">2</span>  <span class="k">-&gt;</span>  <span class="n">76</span>    <span class="n">88</span>        
+  <span class="n">3</span>  <span class="k">-&gt;</span>  <span class="n">67</span>    <span class="n">286</span>      </pre>
+</td>
+</tr>
+</table>
 
 <a name="indexing"></a>
 

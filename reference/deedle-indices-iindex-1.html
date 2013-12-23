@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>IIndex - Deedle</title>
+    <title>IIndex<'K> - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="BlueMountain Capital">
@@ -38,7 +38,7 @@
 
 
 
-<h1>IIndex</h1>
+<h1>IIndex<'K></h1>
 <div class="xmldoc">
 <p>An interface that represents index mapping keys of some generic type <code>T</code> to locations
 of address <code>Address</code>. The <code>IIndex&lt;K&gt;</code> contains minimal set of operations that have to
@@ -55,163 +55,185 @@ Values of this type are constructed using the associated <code>IIndexBuilder</co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '518', 518)" onmouseover="showTip(event, '518', 518)">
-            iIndex.Builder
+          <code onmouseout="hideTip(event, '495', 495)" onmouseover="showTip(event, '495', 495)">
+            Builder
           </code>
-          <div class="tip" id="518">
+          <div class="tip" id="495">
             <strong>Signature:</strong>IIndexBuilder<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Returns an index builder that canbe used for constructing new indices of the
+        <td class="xmldoc">
+        <p>Returns an index builder that canbe used for constructing new indices of the
 same kind as the current index (e.g. a lazy index returns a lazy index builder)</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '519', 519)" onmouseover="showTip(event, '519', 519)">
-            iIndex.Comparer
+          <code onmouseout="hideTip(event, '496', 496)" onmouseover="showTip(event, '496', 496)">
+            Comparer
           </code>
-          <div class="tip" id="519">
+          <div class="tip" id="496">
             <strong>Signature:</strong>Comparer&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Returns a comparer associated with the values used by the current index.</p>
-</td>
+        <td class="xmldoc">
+        <p>Returns a comparer associated with the values used by the current index.</p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '520', 520)" onmouseover="showTip(event, '520', 520)">
-            iIndex.IsEmpty
+          <code onmouseout="hideTip(event, '497', 497)" onmouseover="showTip(event, '497', 497)">
+            IsEmpty
           </code>
-          <div class="tip" id="520">
+          <div class="tip" id="497">
             <strong>Signature:</strong>bool<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Returns whether the specified index is empty. This is equivalent to 
+        <td class="xmldoc">
+        <p>Returns whether the specified index is empty. This is equivalent to 
 testing if <code>Keys</code> are empty, but it does not have to evaluate delayed index.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '521', 521)" onmouseover="showTip(event, '521', 521)">
-            iIndex.IsOrdered
+          <code onmouseout="hideTip(event, '498', 498)" onmouseover="showTip(event, '498', 498)">
+            IsOrdered
           </code>
-          <div class="tip" id="521">
+          <div class="tip" id="498">
             <strong>Signature:</strong>bool<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Returns <code>true</code> if the index is ordered and <code>false</code> otherwise</p>
-</td>
+        <td class="xmldoc">
+        <p>Returns <code>true</code> if the index is ordered and <code>false</code> otherwise</p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '522', 522)" onmouseover="showTip(event, '522', 522)">
-            iIndex.KeyAt(arg1)
+          <code onmouseout="hideTip(event, '499', 499)" onmouseover="showTip(event, '499', 499)">
+            KeyAt(arg1)
           </code>
-          <div class="tip" id="522">
+          <div class="tip" id="499">
             <strong>Signature:</strong>Address -&gt; &#39;K<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Performs reverse lookup - and returns key for a specified address</p>
-</td>
+        <td class="xmldoc">
+        <p>Performs reverse lookup - and returns key for a specified address</p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '523', 523)" onmouseover="showTip(event, '523', 523)">
-            iIndex.KeyCount
+          <code onmouseout="hideTip(event, '500', 500)" onmouseover="showTip(event, '500', 500)">
+            KeyCount
           </code>
-          <div class="tip" id="523">
+          <div class="tip" id="500">
             <strong>Signature:</strong>int64<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Returns the number of keys in the index</p>
-</td>
+        <td class="xmldoc">
+        <p>Returns the number of keys in the index</p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '524', 524)" onmouseover="showTip(event, '524', 524)">
-            iIndex.KeyRange
+          <code onmouseout="hideTip(event, '501', 501)" onmouseover="showTip(event, '501', 501)">
+            KeyRange
           </code>
-          <div class="tip" id="524">
+          <div class="tip" id="501">
             <strong>Signature:</strong>&#39;K * &#39;K<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Returns the minimal and maximal key associated with the index.
+        <td class="xmldoc">
+        <p>Returns the minimal and maximal key associated with the index.
 (the operation may fail for unordered indices)</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '525', 525)" onmouseover="showTip(event, '525', 525)">
-            iIndex.Keys
+          <code onmouseout="hideTip(event, '502', 502)" onmouseover="showTip(event, '502', 502)">
+            Keys
           </code>
-          <div class="tip" id="525">
+          <div class="tip" id="502">
             <strong>Signature:</strong>seq&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Returns a sequence of all keys in the index.</p>
-</td>
+        <td class="xmldoc">
+        <p>Returns a sequence of all keys in the index.</p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '526', 526)" onmouseover="showTip(event, '526', 526)">
-            iIndex.Lookup(key, lookup, condition)
+          <code onmouseout="hideTip(event, '503', 503)" onmouseover="showTip(event, '503', 503)">
+            Lookup(key, lookup, condition)
           </code>
-          <div class="tip" id="526">
+          <div class="tip" id="503">
             <strong>Signature:</strong>(key:&#39;K * lookup:Lookup * condition:(Address -&gt; bool)) -&gt; OptionalValue&lt;&#39;K * Address&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Find the address associated with the specified key, or with the nearest
+        <td class="xmldoc">
+        <p>Find the address associated with the specified key, or with the nearest
 key as specifeid by the <code>lookup</code> argument. The <code>condition</code> function is called
 when searching for keys to ask the caller whether the address should be returned
 (or whether to continue searching). This is used when searching for previous element
 in a series (where we need to check if a value at the address is available)</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '527', 527)" onmouseover="showTip(event, '527', 527)">
-            iIndex.Mappings
+          <code onmouseout="hideTip(event, '504', 504)" onmouseover="showTip(event, '504', 504)">
+            Mappings
           </code>
-          <div class="tip" id="527">
+          <div class="tip" id="504">
             <strong>Signature:</strong>seq&lt;&#39;K * Address&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Returns all key-address mappings in the index</p>
-</td>
+        <td class="xmldoc">
+        <p>Returns all key-address mappings in the index</p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '528', 528)" onmouseover="showTip(event, '528', 528)">
-            iIndex.Range
+          <code onmouseout="hideTip(event, '505', 505)" onmouseover="showTip(event, '505', 505)">
+            Range
           </code>
-          <div class="tip" id="528">
+          <div class="tip" id="505">
             <strong>Signature:</strong>Address * Address<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Returns the minimal and maximal address used in the index.</p>
-</td>
+        <td class="xmldoc">
+        <p>Returns the minimal and maximal address used in the index.</p>
+
+        </td>
       </tr>
     </tbody>
   </table>

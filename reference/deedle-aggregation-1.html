@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Aggregation - Deedle</title>
+    <title>Aggregation<'K> - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="BlueMountain Capital">
@@ -38,7 +38,7 @@
 
 
 
-<h1>Aggregation</h1>
+<h1>Aggregation<'K></h1>
 <div class="xmldoc">
 <p>Represents a strategy for aggregating data in an ordered series into data segments.
 To create a value of this type from C#, use the non-generic <code>Aggregation</code> type.
@@ -46,6 +46,80 @@ Data can be aggregate using floating windows or chunks of a specified size or
 by specifying a condition on two keys (i.e. end a window/chunk when the condition
 no longer holds).</p>
 </div>
+  <h3>Union Cases</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Union Case</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '316', 316)" onmouseover="showTip(event, '316', 316)">
+            ChunkSize
+          </code>
+          <div class="tip" id="316">
+            <strong>Signature:</strong>int * Boundary<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Aggregate data into non-overlapping chunks of a specified size 
+and the provided handling of boundary elements.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '317', 317)" onmouseover="showTip(event, '317', 317)">
+            ChunkWhile
+          </code>
+          <div class="tip" id="317">
+            <strong>Signature:</strong>&#39;K -&gt; &#39;K -&gt; bool<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Aggregate data into non-overlapping chunks where each chunk ends as soon
+as the specified function returns <code>false</code> when called with the 
+first key and the current key as arguments.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '318', 318)" onmouseover="showTip(event, '318', 318)">
+            WindowSize
+          </code>
+          <div class="tip" id="318">
+            <strong>Signature:</strong>int * Boundary<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Aggregate data into floating windows of a specified size 
+and the provided handling of boundary elements.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '319', 319)" onmouseover="showTip(event, '319', 319)">
+            WindowWhile
+          </code>
+          <div class="tip" id="319">
+            <strong>Signature:</strong>&#39;K -&gt; &#39;K -&gt; bool<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Aggregate data into floating windows where each window ends as soon
+as the specified function returns <code>false</code> when called with the 
+first key and the current key as arguments.</p>
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
         </div>
         <div class="span3">

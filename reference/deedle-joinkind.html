@@ -45,6 +45,98 @@ by <code>Series</code> and <code>Frame</code>. Outer join unions the keys (and m
 missing values), inner join takes the intersection of keys; left and
 right joins take the keys of the first or the second series/frame.</p>
 </div>
+  <h3>Record Fields</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Record Field</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '410', 410)" onmouseover="showTip(event, '410', 410)">
+            Inner
+          </code>
+          <div class="tip" id="410">
+            <strong>Signature:</strong>JoinKind<br />
+              <strong>Modifiers:</strong> static<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Take the intersection of the keys available in both structures and align the 
+values of the two structures. The resulting structure cannot contain missing values.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '411', 411)" onmouseover="showTip(event, '411', 411)">
+            Left
+          </code>
+          <div class="tip" id="411">
+            <strong>Signature:</strong>JoinKind<br />
+              <strong>Modifiers:</strong> static<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Take the keys of the left (first) structure and align values from the right (second)
+structure with the keys of the first one. Values for keys not available in the second
+structure will be missing.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '412', 412)" onmouseover="showTip(event, '412', 412)">
+            Outer
+          </code>
+          <div class="tip" id="412">
+            <strong>Signature:</strong>JoinKind<br />
+              <strong>Modifiers:</strong> static<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Combine the keys available in both structures, align the values that
+are available in both of them and mark the remaining values as missing.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '413', 413)" onmouseover="showTip(event, '413', 413)">
+            Right
+          </code>
+          <div class="tip" id="413">
+            <strong>Signature:</strong>JoinKind<br />
+              <strong>Modifiers:</strong> static<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Take the keys of the right (second) structure and align values from the left (first)
+structure with the keys of the second one. Values for keys not available in the first
+structure will be missing.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '414', 414)" onmouseover="showTip(event, '414', 414)">
+            value__
+          </code>
+          <div class="tip" id="414">
+            <strong>Signature:</strong>int<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
         </div>
         <div class="span3">

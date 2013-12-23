@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>ICustomLookup - Deedle</title>
+    <title>ICustomLookup<'K> - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="BlueMountain Capital">
@@ -38,7 +38,7 @@
 
 
 
-<h1>ICustomLookup</h1>
+<h1>ICustomLookup<'K></h1>
 <div class="xmldoc">
 <p>Represents a special lookup. This can be used to support hierarchical or duplicate keys
 in an index. A key type <code>K</code> can come with associated <code>ICustomLookup&lt;K&gt;</code> to provide 
@@ -53,17 +53,19 @@ customized pattern matching (equality testing)</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '382', 382)" onmouseover="showTip(event, '382', 382)">
-            iCustomLookup.Matches(arg1)
+          <code onmouseout="hideTip(event, '399', 399)" onmouseover="showTip(event, '399', 399)">
+            Matches(arg1)
           </code>
-          <div class="tip" id="382">
+          <div class="tip" id="399">
             <strong>Signature:</strong>&#39;K -&gt; bool<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Tests whether a specified key matches the current key (for example, in hierarchical indexing
+        <td class="xmldoc">
+        <p>Tests whether a specified key matches the current key (for example, in hierarchical indexing
 based on tuples, if the current key represents a pair (1, _) then the value (1, 42) would match).</p>
-</td>
+
+        </td>
       </tr>
     </tbody>
   </table>

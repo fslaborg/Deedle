@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>ISeries - Deedle</title>
+    <title>ISeries<'K> - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="BlueMountain Capital">
@@ -38,7 +38,7 @@
 
 
 
-<h1>ISeries</h1>
+<h1>ISeries<'K></h1>
 <div class="xmldoc">
 <p>Represents an untyped series with keys of type <code>K</code> and values of some unknown type
 (This type should not generally be used directly, but it can be used when you need
@@ -53,44 +53,50 @@ to write code that works on a sequence of series of heterogeneous types).</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '402', 402)" onmouseover="showTip(event, '402', 402)">
-            iSeries.Index
+          <code onmouseout="hideTip(event, '425', 425)" onmouseover="showTip(event, '425', 425)">
+            Index
           </code>
-          <div class="tip" id="402">
+          <div class="tip" id="425">
             <strong>Signature:</strong>IIndex&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Returns the index containing keys of the series</p>
-</td>
+        <td class="xmldoc">
+        <p>Returns the index containing keys of the series</p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '403', 403)" onmouseover="showTip(event, '403', 403)">
-            iSeries.TryGetObject(arg1)
+          <code onmouseout="hideTip(event, '427', 427)" onmouseover="showTip(event, '427', 427)">
+            TryGetObject(arg1)
           </code>
-          <div class="tip" id="403">
+          <div class="tip" id="427">
             <strong>Signature:</strong>&#39;K -&gt; OptionalValue&lt;obj&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Attempts to get the value at a specified key and return it as <code>obj</code></p>
-</td>
+        <td class="xmldoc">
+        <p>Attempts to get the value at a specified key and return it as <code>obj</code></p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '404', 404)" onmouseover="showTip(event, '404', 404)">
-            iSeries.Vector
+          <code onmouseout="hideTip(event, '428', 428)" onmouseover="showTip(event, '428', 428)">
+            Vector
           </code>
-          <div class="tip" id="404">
+          <div class="tip" id="428">
             <strong>Signature:</strong>IVector<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Returns the vector containing data of the series (as an untyped vector)</p>
-</td>
+        <td class="xmldoc">
+        <p>Returns the vector containing data of the series (as an untyped vector)</p>
+
+        </td>
       </tr>
     </tbody>
   </table>

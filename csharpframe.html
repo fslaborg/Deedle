@@ -166,6 +166,9 @@ the entire data frame by the new row index using <code>OrderRows</code>.</p>
 column name includes the name of the company. We need this, because we later want to join the two data frames
 and that is only possible when column keys do not overlap.</p>
 
+<p>Before looking at the joining, let's look at one more example of loading data from a CSV file. This time,
+the source file has ordered rows, but has poor header names, so we reanme the column names:</p>
+
 <pre lang="csharp"><span class="c">// Read US debt data from a CSV file</span>
 <span class="k">var</span> debt = Frame.ReadCsv(Path.Combine(root, <span class="s">"../data/us-debt.csv"</span>));
 <span class="c">// Index by Year column and</span>
@@ -173,16 +176,43 @@ and that is only possible when column keys do not overlap.</p>
   .IndexRows&lt;<span class="k">int</span>&gt;(<span class="s">"Year"</span>)
   .IndexColumnsWith(<span class="k">new</span>[] { <span class="s">"Year"</span>, <span class="s">"GDP"</span>, <span class="s">"Population"</span>, <span class="s">"Debt"</span>, <span class="s">"?"</span> });</pre>
 
+<p>The <code>IndexColumnsWith</code> method takes a collection of names - here, we use C# array expression to specify
+the names explicitly. Note that the names do not have to be <code>string</code> values. It is perfectly fine to use
+other types as column indices. The resulting data set looks as follows:</p>
+
+<pre lang="text">-       Year GDP     Population Debt   ?
+1900 -&gt; 1900 20.567  76.212     19.60  i
+1901 -&gt; 1901 22.269  77.680     18.60  i
+:       ...  ...     ...        ...    ...
+2013 -&gt; 2013 16202.7 316.847    124.84 g
+2014 -&gt; 2014 17011.4 319.594    125.16 g</pre>
+
 <a name="joining"></a>
 
 <h2>Joining and aligning data frames</h2>
+
+<p>A common scenario is when you have multiple data sets from different data sources and want to join
+them into a single data frame. For example, we earlier loaded stock prices for Microsoft and Facebook
+into two data frames named <code>msft</code> and <code>fb</code>. To align the data, we can use one of the overloads of the
+<code>Join</code> method.</p>
+
+<p>The two data frames share the same keys (<code>DateTime</code> representing trading days), but their ranges
+are different, because we have more historical data for Microsoft. We can perform <em>inner</em> or 
+<em>outer</em> join as follows:</p>
 
 <pre lang="csharp"><span class="c">// Inner join (take intersection of dates)</span>
 <span class="k">var</span> joinIn = msft.Join(fb, JoinKind.Inner);
 <span class="c">// Outer join (take union &amp; fill with missing)</span>
 <span class="k">var</span> joinOut = msft.Join(fb, JoinKind.Outer);</pre>
 
-<p>a</p>
+<p>When using inner join, the resulting data frame will contain only keys that are available in both
+of the source frames. On the other hand, outer join takes the union of the keys and marks all 
+other values as missing. Note that the column keys of the two joined frames need to be distinct
+- we guaranteed this earlier by calling <code>RenameSeries</code>.</p>
+
+<p>Another option that is available lets you align (and join) two ordered data frames where the keys
+do not exactly match. The following snippet demonstrates this by shifting one of the data frames
+by 1 hour (the keys are always at 12:00am, representing just time)</p>
 
 <pre lang="csharp"><span class="c">// Shift MSFT observations by +1 hour for testing</span>
 <span class="k">var</span> msftShift = msft.SelectRowKeys(k =&gt; k.Key.AddHours(1.0));
@@ -195,9 +225,38 @@ and that is only possible when column keys do not overlap.</p>
 <span class="k">var</span> joinLeft = fb.Join(msftShift, JoinKind.Left, Lookup.NearestSmaller);
 joinLeft.Print();</pre>
 
+<p>After calculating the <code>msftShift</code> frame, we first try using just an ordinary left join. This should
+align data from the right frame to the keys in the left data frame (<code>fb</code>). However, this produces
+frame where all Microsoft values are missing, because the frame does not contain any data for exactly
+the same keys.</p>
+
+<p>The problem can be easily solved by using overload that takes <code>Lookup</code> - using <code>Lookup.NearestSmaller</code>,
+we specify that, for a given key, the join operation should find the nearest available value with a 
+smaller key. So for example, given a key 12:00am at 23 January 2012 (in the <code>fb</code> frame), the operation
+will find values for a key 1:00am at 22 January 2012 (because this is the nearest smaller key with
+a value). You can also use <code>Lookup.NearestGreater</code> to search in the opposite direction.</p>
+
 <a name="data"></a>
 
 <h2>Accessing data and series operations</h2>
+
+<p>Now that we looked at loading (or generating) data and combining data from multiple data sources,
+let's look how we can obtain data from the data frame. First, we look at getting data for a specified
+column - this allows you to get <code>Series&lt;K, V&gt;</code> where <code>K</code> is the row key and <code>V</code> is a type of values
+in the series. When getting a series, you need to specify the required type of values:</p>
+
+<pre lang="csharp"><span class="c">// Get MSFT and FB opening prices and calculate the difference</span>
+<span class="k">var</span> msOpen = joinIn.GetSeries&lt;<span class="k">double</span>&gt;(<span class="s">"MsftOpen"</span>);
+<span class="k">var</span> msClose = joinIn.GetSeries&lt;<span class="k">double</span>&gt;(<span class="s">"MsftClose"</span>);
+<span class="k">var</span> msDiff = msClose - msOpen;</pre>
+
+<p>Here, we get values as <code>double</code> (which matches with the internal representation), however data frame
+will attempt to automatically convert the data to the specified type, so we could get the series as
+a series of <code>decimal</code> or <code>single</code> values.</p>
+
+<p>The last line calculates the difference between opening and closing price. We can perform a few more
+mutations on the original data frame and remove two series we do not use (using <code>DropSeries</code>) and
+add the difference as a new series (using <code>AddSeries</code>):</p>
 
 <pre lang="csharp"><span class="c">// Drop series from a data frame</span>
 joinIn.DropSeries(<span class="s">"MsftAdj Close"</span>);
@@ -207,34 +266,66 @@ joinIn.DropSeries(<span class="s">"FbAdj Close"</span>);
 joinIn.AddSeries(<span class="s">"MsftDiff"</span>, msDiff);
 joinIn.Print();</pre>
 
-<p>a</p>
+<p>For more information about working with series, see <a href="csharpseries.html">tutorial on working with series</a>.
+Working with series is very common, so the data frame provides the operations discussed above. However,
+you can also work with columns and rows of the frame (more generally) using the <code>Rows</code> and <code>Columns</code>
+properties.</p>
 
-<pre lang="csharp"><span class="c">// Get MSFT and FB opening prices and calculate the difference</span>
-<span class="k">var</span> msOpen = joinIn.GetSeries&lt;<span class="k">double</span>&gt;(<span class="s">"MsftOpen"</span>);
-<span class="k">var</span> msClose = joinIn.GetSeries&lt;<span class="k">double</span>&gt;(<span class="s">"MsftClose"</span>);
-<span class="k">var</span> msDiff = msClose - msOpen;</pre>
-
-<p>a</p>
+<p>The following example shows different options for getting row representing a specified date:</p>
 
 <pre lang="csharp"><span class="c">// Get row and then look at row properties</span>
 <span class="k">var</span> row = joinIn.Rows[<span class="k">new</span> DateTime(2013, 1, 4)];
 <span class="k">var</span> msLo = row.GetAs&lt;<span class="k">double</span>&gt;(<span class="s">"MsftLow"</span>);
 <span class="k">var</span> msHi = row.GetAs&lt;<span class="k">double</span>&gt;(<span class="s">"MsftHigh"</span>);
 
+<span class="c">// Get row for the first available value after</span>
+<span class="c">// the specified key (1 January 2013)</span>
+<span class="k">var</span> firstJan = joinIn.Rows.Get(<span class="k">new</span> DateTime(2013, 1, 1), 
+  Lookup.NearestGreater);
+
 <span class="c">// Get value for a specified column &amp; row keys</span>
 <span class="k">var</span> diff = joinIn[<span class="s">"MsftDiff"</span>, <span class="k">new</span> DateTime(2013, 1, 4)];</pre>
+
+<p>We start by using indexer on <code>joinIn.Rows</code>. This can be used when the exact key (here January 4)
+exists in the data frame. The result is a series containing <code>object</code> values, because the contents
+of a row is often heterogeneous. To get a specified column, you can use <code>GetAs</code>, which casts the
+value to a specified type. You can access columns similarly using <code>joinIn.Columns</code>.</p>
+
+<p>The second part of the snippet shows the <code>Get</code> method, which behaves similarly to the indexer,
+but has an additional parameter that can be used to specify <code>Lookup</code>. Similarly to joining, this
+can be used (on an ordered frame) to find the nearest available value when the exact key is not
+present (or has no value).</p>
+
+<p>Finally, the data frame also supports indexer directly, which can be used to get a numeric value
+for a given pair of row and column keys. This is just a useful shortcut that can be used instead
+of the indexer and <code>GetAs</code> when you need to obtain a numeric value for a fixed pair of keys.</p>
 
 <a name="linq"></a>
 
 <h2>LINQ to data frame</h2>
+
+<p>The type representing a collection of rows and columns (obtained using <code>df.Rows</code> and <code>df.Columns</code>)
+implements some of the well-known LINQ operations. These can be used to transform data in the
+frame or filter the contents. The <code>Select</code> operation can be used when you need to perform some 
+operation that is not directly available on series. For example, to perform point-wise comparison
+of Microsoft and Facebook stock prices, you can write:</p>
 
 <pre lang="csharp"><span class="c">// Project rows into a new series using the Select method</span>
 <span class="k">var</span> diffs = joinIn.Rows.Select(kvp =&gt;
   kvp.Value.GetAs&lt;<span class="k">double</span>&gt;(<span class="s">"MsftOpen"</span>) - 
     kvp.Value.GetAs&lt;<span class="k">double</span>&gt;(<span class="s">"FbOpen"</span>));</pre>
 
-<p><code>SelectKeys</code>
-and <code>SelectOptional</code></p>
+<p>The result is a series of type <code>Series&lt;DateTime, bool&gt;</code> - the return type is inferred to be <code>bool</code>
+(because that's what the lambda function returns) and the <code>Select</code> method typically returns just
+a single value, so the result is a series. However, you could also return a new series and then
+use <code>Frame.FromRows</code> to re-create a frame.</p>
+
+<p>The library also provides <code>SelectKeys</code>, which can be used to transform the row (or column) keys
+and <code>SelectOptional</code> which can be used to explicitly handle missing values in the data frame.</p>
+
+<p>If we wanted to find only the days when Microsoft stock prices were more expensive than Facebook
+stock prices (and create a new frame containing such data), we can use the other familiar LINQ
+method, called <code>Where</code>:</p>
 
 <pre lang="csharp"><span class="c">// Filter rows using a specified condition </span>
 <span class="k">var</span> msftGreaterRows = joinIn.Rows.Where(kvp =&gt;
@@ -243,6 +334,70 @@ and <code>SelectOptional</code></p>
 
 <span class="c">// Transform row collection into a new data frame</span>
 <span class="k">var</span> msftGreaterDf = Frame.FromRows(msftGreaterRows);</pre>
+
+<p>The result of the filtering is a series containing individual rows. Such nested series can be turned
+back into data frame using <code>Frame.FromRows</code>. Now you could use the <code>RowCount</code> property to compare
+the number of days when Microsoft was more expensive with the number of days when Facebook price
+was higher.</p>
+
+<h2>Calculating with data frames</h2>
+
+<p>Finally, we can also write calculations that work over the entire data frame. The methods are
+similar to the methods for calculating with series <a href="csharpseries.html">discussed in another article</a>.
+We look at a single example that calculates daily returns of Microsoft stock prices and then applies
+rounding to all values in the resulting data frame.</p>
+
+<pre lang="csharp"><span class="c">// Calculate daily returns in percents</span>
+<span class="k">var</span> returns = msft.Diff(1) / msft * 100.0;
+
+<span class="c">// Transform all numerical series</span>
+<span class="c">// (round the values to 2 fractional digits)</span>
+<span class="k">var</span> round = 
+  returns.SeriesApply((Series&lt;DateTime, <span class="k">double</span>&gt; numeric) =&gt; 
+    numeric.Select(kvp =&gt; Math.Round(kvp.Value, 2)));</pre>
+
+<p>To calculate daily returns, we need to subtract the price on previous day from the price on the
+current day. This is done by using the <code>Diff</code> extension method (another option is to use <code>Shift</code> 
+together with the overloaded subtraction operator). Then we divide the difference by the current
+price and multiply the result by 100.0 to get value in percents.</p>
+
+<p>Implementing the rounding is slightly more complicated - there is no built-in function for doing
+this, so we need to implement it using other operations. The <code>SeriesApply</code> operation is similar
+to <code>Select</code>, but it transforms entire columns at once. The operation is applied to all columns of
+a specified type - in the above example, we specify the type <code>double</code> by using an explicit type
+specification on the lambda function. For each numeric series, we then use the <code>Select</code> method
+to round the value to two fractional digits.</p>
+
+<p>Ignoring a number of columns from the frame, the result looks something like follows:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="o">-</span>            <span class="i">MsftDate</span>    <span class="i">MsftOpen</span>   <span class="i">MsftClose</span>  
+<span class="n">3</span><span class="o">/</span><span class="n">13</span><span class="o">/</span><span class="n">1986</span> <span class="k">-&gt;</span> <span class="n">1986</span><span class="o">-</span><span class="n">03</span><span class="o">-</span><span class="n">13</span>  <span class="o">&lt;</span><span class="i">missing</span><span class="o">&gt;</span>  <span class="o">&lt;</span><span class="i">missing</span><span class="o">&gt;</span>  
+<span class="n">3</span><span class="o">/</span><span class="n">14</span><span class="o">/</span><span class="n">1986</span> <span class="k">-&gt;</span> <span class="n">1986</span><span class="o">-</span><span class="n">03</span><span class="o">-</span><span class="n">14</span>  <span class="n">8.93</span>       <span class="n">3.45</span>       
+<span class="n">3</span><span class="o">/</span><span class="n">17</span><span class="o">/</span><span class="n">1986</span> <span class="k">-&gt;</span> <span class="n">1986</span><span class="o">-</span><span class="n">03</span><span class="o">-</span><span class="n">17</span>  <span class="n">3.45</span>       <span class="n">1.69</span>       
+<span class="o">:</span>            <span class="o">..</span><span class="o">.</span>         <span class="o">..</span><span class="o">.</span>        <span class="o">..</span><span class="o">.</span>        
+<span class="n">11</span><span class="o">/</span><span class="n">6</span><span class="o">/</span><span class="n">2013</span> <span class="k">-&gt;</span> <span class="n">2013</span><span class="o">-</span><span class="n">11</span><span class="o">-</span><span class="n">06</span>  <span class="n">3.89</span>       <span class="n">4.03</span>       
+<span class="n">11</span><span class="o">/</span><span class="n">7</span><span class="o">/</span><span class="n">2013</span> <span class="k">-&gt;</span> <span class="n">2013</span><span class="o">-</span><span class="n">11</span><span class="o">-</span><span class="n">07</span>  <span class="n">1.9</span>        <span class="o">-</span><span class="n">1.81</span>      </pre>
+</td>
+</tr>
+</table>
+
+<p>It is worth noting that the <code>SeriesApply</code> function is applied on all numerical columns, but
+all other columns (such as <code>MsftDate</code>) are left unchanged. You can also see that the first 
+row does not contian any value (and is explicitly marked as missing). This is because there is
+no value for the previous day and so daily return is not defined.
+You could fill the missing values using the overloaded <code>FillMissing</code> method or drop the row
+using <code>DropSparseRows</code> method.</p>
 
 
         </div>

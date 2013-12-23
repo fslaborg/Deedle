@@ -43,26 +43,6 @@
 <p>Helper type that can be used to get <code>ICustomKey</code> for any object (including objects
 that actually implement the interface and tuples)</p>
 </div>
-  <h3>Constructors</h3>
-  <table class="table table-bordered member-list">
-    <thead>
-      <tr><td>Constructor</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '617', 617)" onmouseover="showTip(event, '617', 617)">
-            new CustomKey
-          </code>
-          <div class="tip" id="617">
-            <strong>Signature:</strong>unit -&gt; CustomKey<br />
-                      </div>
-        </td>
-        <td class="xmldoc"></td>
-      </tr>
-    </tbody>
-  </table>
   <h3>Static members</h3>
   <table class="table table-bordered member-list">
     <thead>
@@ -72,29 +52,33 @@ that actually implement the interface and tuples)</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '719', 719)" onmouseover="showTip(event, '719', 719)">
-            CustomKey.Get(key)
+          <code onmouseout="hideTip(event, '670', 670)" onmouseover="showTip(event, '670', 670)">
+            Get(key)
           </code>
-          <div class="tip" id="719">
+          <div class="tip" id="670">
             <strong>Signature:</strong>key:obj -&gt; ICustomKey<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Returns <code>ICustomKey</code> instance for the specified key. If the specified key implements
+        <td class="xmldoc">
+        <p>Returns <code>ICustomKey</code> instance for the specified key. If the specified key implements
 <code>ICustomKey</code>, then it is just returned; if it is a tuple, we use special key for tuples
 otherwise, it must be a primitive key so we just return it</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '720', 720)" onmouseover="showTip(event, '720', 720)">
-            CustomKey.GetForTuple(tuple)
+          <code onmouseout="hideTip(event, '671', 671)" onmouseover="showTip(event, '671', 671)">
+            GetForTuple(tuple)
           </code>
-          <div class="tip" id="720">
+          <div class="tip" id="671">
             <strong>Signature:</strong>tuple:obj -&gt; ICustomKey<br />
                       </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
     </tbody>
   </table>

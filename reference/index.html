@@ -38,17 +38,17 @@
 
 <h1>Deedle</h1>
 
-  <h2>Deedle</h2>
+  <h2>Deedle Namespace</h2>
   <div>
-    <table class="table table-bordered type-list">
-      <thead>
-        <tr><td>Type</td><td>Description</td></tr>
-      </thead>
-      <tbody>
+      <table class="table table-bordered type-list">
+    <thead>
+      <tr><td>Type</td><td>Description</td></tr>
+    </thead>
+    <tbody>
         <tr>
-		      <td class="type-name">
-            <a href="deedle-aggregation-1.html">Aggregation</a>
-		      </td>
+          <td class="type-name">
+            <a href="deedle-aggregation-1.html">Aggregation<'K></a>
+          </td>
           <td class="xmldoc"><p>Represents a strategy for aggregating data in an ordered series into data segments.
 To create a value of this type from C#, use the non-generic <code>Aggregation</code> type.
 Data can be aggregate using floating windows or chunks of a specified size or 
@@ -57,18 +57,18 @@ no longer holds).</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-aggregation.html">Aggregation</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>A non-generic type that simplifies the construction of <code>Aggregation&lt;K&gt;</code> values
 from C#. It provides methods for constructing different kinds of aggregation
 strategies for ordered series.</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-boundary.html">Boundary</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Represents boundary behaviour for operations such as floating window. The type
 specifies whether incomplete windows (of smaller than required length) should be
 produced at the beginning (<code>AtBeginning</code>) or at the end (<code>AtEnding</code>) or
@@ -77,15 +77,15 @@ chunk at the beginning, use <code>Boundary.Skip ||| Boundary.AtBeginning</code>.
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
-            <a href="deedle-columnseries-2.html">ColumnSeries</a>
-		      </td>
+          <td class="type-name">
+            <a href="deedle-columnseries-2.html">ColumnSeries<'TRowKey, 'TColumnKey></a>
+          </td>
           <td class="xmldoc"></td>
         </tr>
         <tr>
-		      <td class="type-name">
-            <a href="deedle-datasegment-1.html">DataSegment</a>
-		      </td>
+          <td class="type-name">
+            <a href="deedle-datasegment-1.html">DataSegment<'T></a>
+          </td>
           <td class="xmldoc"><p>Represents a segment of a series or sequence. The value is returned from 
 various functions that aggregate data into chunks or floating windows. The 
 <code>Complete</code> case represents complete segment (e.g. of the specified size) and
@@ -94,16 +94,16 @@ size).</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-datasegmentkind.html">DataSegmentKind</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Represents a kind of <code>DataSegment&lt;T&gt;</code>. See that type for more information.</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-delayedseries.html">DelayedSeries</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>This type exposes a single static method <code>DelayedSeries.Create</code> that can be used for
 constructing data series (of type <code>Series&lt;K, V&gt;</code>) with lazily loaded data. You can
 use this functionality to create series that represents e.g. an entire price history
@@ -127,85 +127,85 @@ function passed to <code>Create</code> is called with minimal and maximal requir
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-direction.html">Direction</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Specifies in which direction should we look when performing operations such as
 <code>Series.Pairwise</code>.</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-enumerableextensions.html">EnumerableExtensions</a>
-		      </td>
+          </td>
           <td class="xmldoc"></td>
         </tr>
         <tr>
-		      <td class="type-name">
-            <a href="deedle-frame-2.html">Frame</a>
-		      </td>
+          <td class="type-name">
+            <a href="deedle-frame-2.html">Frame<'TRowKey, 'TColumnKey></a>
+          </td>
           <td class="xmldoc"><p>A frame contains one Index, with multiple Vecs
 (because this is dynamic, we need to store them as IVec)</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-frame.html">Frame</a>
-		      </td>
+          </td>
           <td class="xmldoc"></td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-framedata.html">FrameData</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Represents the underlying (raw) data of the frame in a format that can
 be used for exporting data frame to other formats etc. (DataTable, CSV, Excel)</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-frameextensions.html">FrameExtensions</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Some comment</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
-            <a href="deedle-icustomlookup-1.html">ICustomLookup</a>
-		      </td>
+          <td class="type-name">
+            <a href="deedle-icustomlookup-1.html">ICustomLookup<'K></a>
+          </td>
           <td class="xmldoc"><p>Represents a special lookup. This can be used to support hierarchical or duplicate keys
 in an index. A key type <code>K</code> can come with associated <code>ICustomLookup&lt;K&gt;</code> to provide 
 customized pattern matching (equality testing)</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-iframe.html">IFrame</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>An empty interface that is implemented by <code>Frame&lt;'R, 'C&gt;</code>. The purpose of the
 interface is to allow writing code that works on arbitrary data frames, although
 you</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
-            <a href="deedle-iframeoperation-1.html">IFrameOperation</a>
-		      </td>
+          <td class="type-name">
+            <a href="deedle-iframeoperation-1.html">IFrameOperation<'V></a>
+          </td>
           <td class="xmldoc"></td>
         </tr>
         <tr>
-		      <td class="type-name">
-            <a href="deedle-iseries-1.html">ISeries</a>
-		      </td>
+          <td class="type-name">
+            <a href="deedle-iseries-1.html">ISeries<'K></a>
+          </td>
           <td class="xmldoc"><p>Represents an untyped series with keys of type <code>K</code> and values of some unknown type
 (This type should not generally be used directly, but it can be used when you need
 to write code that works on a sequence of series of heterogeneous types).</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
-            <a href="deedle-ivector-1.html">IVector</a>
-		      </td>
+          <td class="type-name">
+            <a href="deedle-ivector-1.html">IVector<'T></a>
+          </td>
           <td class="xmldoc"><p>A generic, typed vector. Represents mapping from addresses to values of type <code>T</code>. 
 The vector provides a minimal interface that is required by series and can be
 implemented in a number of ways to provide vector backed by database or an
@@ -213,9 +213,9 @@ alternative representation of data.</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-ivector.html">IVector</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Represents an (untyped) vector that stores some values and provides access
 to the values via a generic address. This type should be only used directly when
 extending the DataFrame library and adding a new way of storing or loading data.
@@ -223,16 +223,16 @@ To allow invocation via Reflection, the vector exposes type of elements as <code
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-index.html">Index</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Type that provides access to creating indices (represented as <code>LinearIndex</code> values)</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-joinkind.html">JoinKind</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>This enumeration specifies joining behavior for <code>Join</code> method provided
 by <code>Series</code> and <code>Frame</code>. Outer join unions the keys (and may introduce
 missing values), inner join takes the intersection of keys; left and
@@ -240,15 +240,15 @@ right joins take the keys of the first or the second series/frame.</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-keyvalue.html">KeyValue</a>
-		      </td>
+          </td>
           <td class="xmldoc"></td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-lookup.html">Lookup</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Represents different behaviors of key lookup in series. For unordered series,
 the only available option is <code>Lookup.Exact</code> which finds the exact key - methods
 fail or return missing value if the key is not available in the index. For ordered
@@ -257,24 +257,24 @@ a value. <code>Lookup.NearestSmaller</code> searches for the first smaller key.<
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-missingvalueexception.html">MissingValueException</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Thrown when a value at the specified index does not exist in the data frame or series.
 This exception is thrown only when the key is defined, but the value is not available,
 in other situations <code>KeyNotFoundException</code> is thrown</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
-            <a href="deedle-objectseries-1.html">ObjectSeries</a>
-		      </td>
+          <td class="type-name">
+            <a href="deedle-objectseries-1.html">ObjectSeries<'K></a>
+          </td>
           <td class="xmldoc"></td>
         </tr>
         <tr>
-		      <td class="type-name">
-            <a href="deedle-optionalvalue-1.html">OptionalValue</a>
-		      </td>
+          <td class="type-name">
+            <a href="deedle-optionalvalue-1.html">OptionalValue<'T></a>
+          </td>
           <td class="xmldoc"><p>Value type that represents a potentially missing value. This is similar to 
 <code>System.Nullable&lt;T&gt;</code>, but does not restrict the contained value to be a value
 type, so it can be used for storing values of any types. When obtained from
@@ -288,58 +288,58 @@ contains helper functions for using this type from F# as well as <code>Missing</
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-optionalvalue.html">OptionalValue</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Non-generic type that makes it easier to create <code>OptionalValue&lt;T&gt;</code> values
 from C# by benefiting the type inference for generic method invocations.</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-optionalvalueextensions.html">OptionalValueExtensions</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Extension methods for working with optional values from C#. These make
 it easier to provide default values and convert optional values to 
 <code>Nullable</code> (when the contained value is value type)</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
-            <a href="deedle-rowseries-2.html">RowSeries</a>
-		      </td>
+          <td class="type-name">
+            <a href="deedle-rowseries-2.html">RowSeries<'TRowKey, 'TColumnKey></a>
+          </td>
           <td class="xmldoc"></td>
         </tr>
         <tr>
-		      <td class="type-name">
-            <a href="deedle-series-2.html">Series</a>
-		      </td>
+          <td class="type-name">
+            <a href="deedle-series-2.html">Series<'K, 'V></a>
+          </td>
           <td class="xmldoc"><p>The type <code>Series&lt;K, V&gt;</code> represents a data series consisting of values <code>V</code> indexed by
 keys <code>K</code>. The keys of a series may or may not be ordered</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
-            <a href="deedle-seriesbuilder-2.html">SeriesBuilder</a>
-		      </td>
+          <td class="type-name">
+            <a href="deedle-seriesbuilder-2.html">SeriesBuilder<'K, 'V></a>
+          </td>
           <td class="xmldoc"></td>
         </tr>
         <tr>
-		      <td class="type-name">
-            <a href="deedle-seriesbuilder-1.html">SeriesBuilder</a>
-		      </td>
+          <td class="type-name">
+            <a href="deedle-seriesbuilder-1.html">SeriesBuilder<'K></a>
+          </td>
           <td class="xmldoc"></td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-seriesextensions.html">SeriesExtensions</a>
-		      </td>
+          </td>
           <td class="xmldoc"></td>
         </tr>
         <tr>
-		      <td class="type-name">
-            <a href="deedle-tryvalue-1.html">TryValue</a>
-		      </td>
+          <td class="type-name">
+            <a href="deedle-tryvalue-1.html">TryValue<'T></a>
+          </td>
           <td class="xmldoc"><p>Represents a value or an exception. This type is used by functions such as
 <code>Series.tryMap</code> and <code>Frame.tryMap</code> to capture the result of a lambda function,
 which may be either a value or an exception. The type is a discriminated union,
@@ -348,163 +348,164 @@ and <code>Exception</code> properties</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-unionbehavior.html">UnionBehavior</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>This enumeration specifeis the behavior of <code>Union</code> operation on series when there are
 overlapping keys in two series that are being unioned. The options include prefering values
 from the left/right series or throwing an exception when both values are available.</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
-            <a href="deedle-opt-1.html">opt</a>
-		      </td>
+          <td class="type-name">
+            <a href="deedle-opt-1.html">opt<'T></a>
+          </td>
           <td class="xmldoc"><p>A type alias for the <code>OptionalValue&lt;T&gt;</code> type. The type alias can be used
 to make F# type definitions that use optional values directly more succinct.</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
-            <a href="deedle-tryval-1.html">tryval</a>
-		      </td>
+          <td class="type-name">
+            <a href="deedle-tryval-1.html">tryval<'T></a>
+          </td>
           <td class="xmldoc"><p>A type alias for the <code>TryValue&lt;T&gt;</code> type. The type alias can be used
 to make F# type declarations that explcitly handle exceptions more succinct.</p>
 </td>
         </tr>
-      </tbody>
-    </table>
-      <table class="table table-bordered module-list">
-      <thead>
-        <tr><td>Module</td><td>Description</td></tr>
-      </thead>
-      <tbody>
+    </tbody>
+  </table>
+  <table class="table table-bordered module-list">
+    <thead>
+      <tr><td>Module</td><td>Description</td></tr>
+    </thead>
+    <tbody>
         <tr>
-		      <td class="module-name">
+          <td class="module-name">
             <a href="deedle-addressing.html">Addressing</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>An <code>Address</code> value is used as an interface between vectors and indices. The index maps
 keys of various types to address, which is then used to get a value from the vector.</p>
 </td>
         </tr>
         <tr>
-		      <td class="module-name">
+          <td class="module-name">
             <a href="deedle-datasegment.html">DataSegment</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Provides helper functions and active patterns for working with <code>DataSegment</code> values</p>
 </td>
         </tr>
         <tr>
-		      <td class="module-name">
+          <td class="module-name">
             <a href="deedle-fsharpframeextensions.html">FSharpFrameExtensions</a>
-		      </td>
+          </td>
           <td class="xmldoc"></td>
         </tr>
         <tr>
-		      <td class="module-name">
+          <td class="module-name">
             <a href="deedle-fsharpindexextensions.html">FSharpIndexExtensions</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Defines non-generic <code>Index</code> type that provides functions for building indices
 (hard-bound to <code>LinearIndexBuilder</code> type). In F#, the module is automatically opened
 using <code>AutoOpen</code>. The methods are not designed for the use from C#.</p>
 </td>
         </tr>
         <tr>
-		      <td class="module-name">
+          <td class="module-name">
             <a href="deedle-fsharpseriesextensions.html">FSharpSeriesExtensions</a>
-		      </td>
+          </td>
           <td class="xmldoc"></td>
         </tr>
         <tr>
-		      <td class="module-name">
+          <td class="module-name">
             <a href="deedle-fsharpvectorextensions.html">FSharpVectorExtensions</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Defines non-generic <code>Vector</code> type that provides functions for building vectors
 (hard-bound to <code>ArrayVectorBuilder</code> type). In F#, the module is automatically opened
 using <code>AutoOpen</code>. The methods are not designed for the use from C#.</p>
 </td>
         </tr>
         <tr>
-		      <td class="module-name">
+          <td class="module-name">
             <a href="deedle-framemodule.html">Frame</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Frame module comment</p>
 </td>
         </tr>
         <tr>
-		      <td class="module-name">
+          <td class="module-name">
             <a href="deedle-framebuilder.html">FrameBuilder</a>
-		      </td>
+          </td>
           <td class="xmldoc"></td>
         </tr>
         <tr>
-		      <td class="module-name">
+          <td class="module-name">
             <a href="deedle-multikeyextensions.html">MultiKeyExtensions</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>F#-friendly functions for creating multi-level keys and lookups</p>
 </td>
         </tr>
         <tr>
-		      <td class="module-name">
+          <td class="module-name">
             <a href="deedle-optionalvaluemodule.html">OptionalValue</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Provides various helper functions for using the <code>OptionalValue&lt;T&gt;</code> type from F#
 (The functions are similar to those in the standard <code>Option</code> module).</p>
 </td>
         </tr>
         <tr>
-		      <td class="module-name">
+          <td class="module-name">
             <a href="deedle-pair.html">Pair</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Module with helper functions for extracting values from hierarchical tuples</p>
 </td>
         </tr>
         <tr>
-		      <td class="module-name">
+          <td class="module-name">
             <a href="deedle-seriesmodule.html">Series</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Series module comment..</p>
 </td>
         </tr>
         <tr>
-		      <td class="module-name">
+          <td class="module-name">
             <a href="deedle-vectorextensions.html">VectorExtensions</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Module with extensions for generic vector type. Given <code>vec</code> of type <code>IVector&lt;T&gt;</code>, 
 the extension property <code>vec.DataSequence</code> returns all data of the vector converted
 to the "least common denominator" data structure - <code>IEnumerable&lt;T&gt;</code>.</p>
 </td>
         </tr>
-      </tbody>
-    </table>
+    </tbody>
+  </table>
+
   </div>
-  <h2>Deedle.Indices</h2>
+  <h2>Deedle.Indices Namespace</h2>
   <div>
-    <table class="table table-bordered type-list">
-      <thead>
-        <tr><td>Type</td><td>Description</td></tr>
-      </thead>
-      <tbody>
+      <table class="table table-bordered type-list">
+    <thead>
+      <tr><td>Type</td><td>Description</td></tr>
+    </thead>
+    <tbody>
         <tr>
-		      <td class="type-name">
-            <a href="deedle-indices-asyncseriesconstruction-1.html">AsyncSeriesConstruction</a>
-		      </td>
+          <td class="type-name">
+            <a href="deedle-indices-asyncseriesconstruction-1.html">AsyncSeriesConstruction<'K></a>
+          </td>
           <td class="xmldoc"><p>Asynchronous version of <code>SeriesConstruction&lt;'K&gt;</code>. Returns a workflow that evaluates
 the index, together with a construction to apply (asynchronously) on vectors</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-indices-boundarybehavior.html">BoundaryBehavior</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Specifies the boundary behavior for the <code>IIndexBuilder.GetRange</code> operation
 (whether the boundary elements should be included or not)</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
-            <a href="deedle-indices-iindex-1.html">IIndex</a>
-		      </td>
+          <td class="type-name">
+            <a href="deedle-indices-iindex-1.html">IIndex<'K></a>
+          </td>
           <td class="xmldoc"><p>An interface that represents index mapping keys of some generic type <code>T</code> to locations
 of address <code>Address</code>. The <code>IIndex&lt;K&gt;</code> contains minimal set of operations that have to
 be supported by an index. This type should be only used directly when
@@ -513,9 +514,9 @@ Values of this type are constructed using the associated <code>IIndexBuilder</co
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-indices-iindexbuilder.html">IIndexBuilder</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>A builder represents various ways of constructing index, either from keys or from
 other indices. The operations that build a new index from an existing index also 
 build <code>VectorConstruction</code> which specifies how to transform vectors aligned with the
@@ -524,79 +525,81 @@ as an input, apply necessary transformations to it and return a new <code>Vector
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
-            <a href="deedle-indices-seriesconstruction-1.html">SeriesConstruction</a>
-		      </td>
+          <td class="type-name">
+            <a href="deedle-indices-seriesconstruction-1.html">SeriesConstruction<'K></a>
+          </td>
           <td class="xmldoc"><p>Represents a pair of index and vector construction 
 (many of the index operations take/return an index together with a construction
 command that builds a vector matching with the index, so this type alias
 makes this more obvious)</p>
 </td>
         </tr>
-      </tbody>
-    </table>
-    </div>
-  <h2>Deedle.Indices.Linear</h2>
+    </tbody>
+  </table>
+
+  </div>
+  <h2>Deedle.Indices.Linear Namespace</h2>
   <div>
-    <table class="table table-bordered type-list">
-      <thead>
-        <tr><td>Type</td><td>Description</td></tr>
-      </thead>
-      <tbody>
+      <table class="table table-bordered type-list">
+    <thead>
+      <tr><td>Type</td><td>Description</td></tr>
+    </thead>
+    <tbody>
         <tr>
-		      <td class="type-name">
-            <a href="deedle-indices-linear-linearindex-1.html">LinearIndex</a>
-		      </td>
+          <td class="type-name">
+            <a href="deedle-indices-linear-linearindex-1.html">LinearIndex<'K></a>
+          </td>
           <td class="xmldoc"><p>An index that maps keys <code>K</code> to offsets <code>Address</code>. The keys cannot be duplicated.
 The construction checks if the keys are ordered (using the provided or the default
 comparer for <code>K</code>) and disallows certain operations on unordered indices.</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-indices-linear-linearindexbuilder.html">LinearIndexBuilder</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Index builder object that is associated with <code>LinearIndex&lt;K&gt;</code> type. The builder
 provides operations for manipulating linear indices (and the associated vectors).</p>
 </td>
         </tr>
-      </tbody>
-    </table>
-    </div>
-  <h2>Deedle.Internal</h2>
+    </tbody>
+  </table>
+
+  </div>
+  <h2>Deedle.Internal Namespace</h2>
   <div>
-    <table class="table table-bordered type-list">
-      <thead>
-        <tr><td>Type</td><td>Description</td></tr>
-      </thead>
-      <tbody>
+      <table class="table table-bordered type-list">
+    <thead>
+      <tr><td>Type</td><td>Description</td></tr>
+    </thead>
+    <tbody>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-internal-comparisonfailedexception.html">ComparisonFailedException</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>An internal exception that is used to handle the case when comparison fails
 (even though the type implements IComparable and everything...)</p>
 </td>
         </tr>
-      </tbody>
-    </table>
-      <table class="table table-bordered module-list">
-      <thead>
-        <tr><td>Module</td><td>Description</td></tr>
-      </thead>
-      <tbody>
+    </tbody>
+  </table>
+  <table class="table table-bordered module-list">
+    <thead>
+      <tr><td>Module</td><td>Description</td></tr>
+    </thead>
+    <tbody>
         <tr>
-		      <td class="module-name">
+          <td class="module-name">
             <a href="deedle-internal-array.html">Array</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>This module contains additional functions for working with arrays. 
 <code>Deedle.Internals</code> is opened, it extends the standard <code>Array</code> module.</p>
 </td>
         </tr>
         <tr>
-		      <td class="module-name">
+          <td class="module-name">
             <a href="deedle-internal-missingvalues.html">MissingValues</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Utility functions for identifying missing values. The <code>isNA</code> function 
 can be used to test whether a value represents a missing value - this includes
 the <code>null</code> value, <code>Nullable&lt;T&gt;</code> value with <code>HasValue = false</code> and 
@@ -606,94 +609,96 @@ the <code>null</code> value, <code>Nullable&lt;T&gt;</code> value with <code>Has
 </td>
         </tr>
         <tr>
-		      <td class="module-name">
+          <td class="module-name">
             <a href="deedle-internal-readonlycollection.html">ReadOnlyCollection</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Provides helper functions for working with <code>ReadOnlyCollection&lt;T&gt;</code> similar to those 
 in the <code>Array</code> module. Most importantly, F# 3.0 does not know that array implements
 <code>IList&lt;T&gt;</code>.</p>
 </td>
         </tr>
         <tr>
-		      <td class="module-name">
+          <td class="module-name">
             <a href="deedle-internal-seq.html">Seq</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>This module contains additional functions for working with sequences. 
 <code>Deedle.Internals</code> is opened, it extends the standard <code>Seq</code> module.</p>
 </td>
         </tr>
-      </tbody>
-    </table>
+    </tbody>
+  </table>
+
   </div>
-  <h2>Deedle.Keys</h2>
+  <h2>Deedle.Keys Namespace</h2>
   <div>
-    <table class="table table-bordered type-list">
-      <thead>
-        <tr><td>Type</td><td>Description</td></tr>
-      </thead>
-      <tbody>
+      <table class="table table-bordered type-list">
+    <thead>
+      <tr><td>Type</td><td>Description</td></tr>
+    </thead>
+    <tbody>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-keys-customkey.html">CustomKey</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Helper type that can be used to get <code>ICustomKey</code> for any object (including objects
 that actually implement the interface and tuples)</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-keys-icustomkey.html">ICustomKey</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Represents a special hierarchical key. This is mainly used in pretty printing (where we want to 
 get parts of the keys based on levels. <code>CustomKey.Get</code> provides a way of getting <code>ICustomKey</code>.</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
-            <a href="deedle-keys-simplelookup-1.html">SimpleLookup</a>
-		      </td>
+          <td class="type-name">
+            <a href="deedle-keys-simplelookup-1.html">SimpleLookup<'T></a>
+          </td>
           <td class="xmldoc"><p>Implements a simple lookup that matches any multi-level key against a specified array of
 optional objects (that represent missing/set parts of a key)</p>
 </td>
         </tr>
-      </tbody>
-    </table>
-    </div>
-  <h2>Deedle.Vectors</h2>
+    </tbody>
+  </table>
+
+  </div>
+  <h2>Deedle.Vectors Namespace</h2>
   <div>
-    <table class="table table-bordered type-list">
-      <thead>
-        <tr><td>Type</td><td>Description</td></tr>
-      </thead>
-      <tbody>
+      <table class="table table-bordered type-list">
+    <thead>
+      <tr><td>Type</td><td>Description</td></tr>
+    </thead>
+    <tbody>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-vectors-ivectorbuilder.html">IVectorBuilder</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Represents an object that can construct vector values by processing 
 the "mini-DSL" representation <code>VectorConstruction</code>.</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-vectors-ivectorvaluetransform.html">IVectorValueTransform</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Represent a transformation that is applied when combining two vectors
 (because we are combining untyped <code>IVector</code> values, the transformation
 is also untyped)</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-vectors-vector.html">Vector</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Type that provides access to creating vectors (represented as arrays)</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-vectors-vectorconstruction.html">VectorConstruction</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>A "mini-DSL" that describes construction of a vector. Vector can be constructed
 from various range operations (relocate, drop, slicing, appending), by combination
 of two vectors or by taking a vector from a list of variables.</p>
@@ -710,9 +715,9 @@ of the vector builder.</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
-            <a href="deedle-vectors-vectordata-1.html">VectorData</a>
-		      </td>
+          <td class="type-name">
+            <a href="deedle-vectors-vectordata-1.html">VectorData<'T></a>
+          </td>
           <td class="xmldoc"><p>Provides a way to get the data of an arbitrary vector. This is a concrete type used 
 by functions that operate on vectors (like <code>Series.sum</code>, etc.). The vector may choose
 to return the data as <code>ReadOnlyCollection</code> (with or without N/A values) which is more
@@ -720,9 +725,9 @@ efficient to use or as a lazy sequence (slower, but more general).</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-vectors-vectorfillmissing.html">VectorFillMissing</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Specifies how to fill missing values in a vector (when using the 
 <code>VectorConstruction.FillMissing</code> command). This can only fill missing
 values using strategy that does not require access to index keys - 
@@ -730,33 +735,34 @@ either using constant or by propagating values.</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-vectors-vectorhole.html">VectorHole</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Representes a "variable" in the mini-DSL below</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-vectors-vectorrange.html">VectorRange</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Represents a range inside a vector</p>
 </td>
         </tr>
-      </tbody>
-    </table>
-    </div>
-  <h2>Deedle.Vectors.ArrayVector</h2>
+    </tbody>
+  </table>
+
+  </div>
+  <h2>Deedle.Vectors.ArrayVector Namespace</h2>
   <div>
-    <table class="table table-bordered type-list">
-      <thead>
-        <tr><td>Type</td><td>Description</td></tr>
-      </thead>
-      <tbody>
+      <table class="table table-bordered type-list">
+    <thead>
+      <tr><td>Type</td><td>Description</td></tr>
+    </thead>
+    <tbody>
         <tr>
-		      <td class="type-name">
-            <a href="deedle-vectors-arrayvector-arrayvector-1.html">ArrayVector</a>
-		      </td>
+          <td class="type-name">
+            <a href="deedle-vectors-arrayvector-arrayvector-1.html">ArrayVector<'T></a>
+          </td>
           <td class="xmldoc"><hr />
 
 <p>Vector that stores data in an array. The data is stored using the
@@ -764,9 +770,9 @@ either using constant or by propagating values.</p>
 </td>
         </tr>
         <tr>
-		      <td class="type-name">
+          <td class="type-name">
             <a href="deedle-vectors-arrayvector-arrayvectorbuilder.html">ArrayVectorBuilder</a>
-		      </td>
+          </td>
           <td class="xmldoc"><p>Implements a builder object (<code>IVectorBuilder</code>) for creating
 vectors of type <code>ArrayVector&lt;'T&gt;</code>. This includes operations such as
 appending, relocating values, creating vectors from arrays etc.
@@ -776,9 +782,10 @@ uses <code>ArrayVectorData.VectorOptional</code>, otherwise it uses
 <code>ArrayVectorData.VectorNonOptional</code>.</p>
 </td>
         </tr>
-      </tbody>
-    </table>
-    </div>
+    </tbody>
+  </table>
+
+  </div>
 
         </div>
         <div class="span3">

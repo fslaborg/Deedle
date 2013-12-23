@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>OptionalValue - Deedle</title>
+    <title>OptionalValue<'T> - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="BlueMountain Capital">
@@ -38,7 +38,7 @@
 
 
 
-<h1>OptionalValue</h1>
+<h1>OptionalValue<'T></h1>
 <div class="xmldoc">
 <p>Value type that represents a potentially missing value. This is similar to 
 <code>System.Nullable&lt;T&gt;</code>, but does not restrict the contained value to be a value
@@ -60,28 +60,18 @@ contains helper functions for using this type from F# as well as <code>Missing</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '398', 398)" onmouseover="showTip(event, '398', 398)">
-            new OptionalValue
+          <code onmouseout="hideTip(event, '447', 447)" onmouseover="showTip(event, '447', 447)">
+            new(value)
           </code>
-          <div class="tip" id="398">
+          <div class="tip" id="447">
             <strong>Signature:</strong>value:&#39;T -&gt; OptionalValue&lt;&#39;T&gt;<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Creates a new instance of <code>OptionalValue&lt;T&gt;</code> that contains<br />
+        <td class="xmldoc">
+        <p>Creates a new instance of <code>OptionalValue&lt;T&gt;</code> that contains<br />
 the specified <code>T</code> value .</p>
-</td>
-      </tr>
-      <tr>
-        <td class="member-name">
 
-          <code onmouseout="hideTip(event, '401', 401)" onmouseover="showTip(event, '401', 401)">
-            new OptionalValue
-          </code>
-          <div class="tip" id="401">
-            <strong>Signature:</strong>(hasValue:bool * value:&#39;T) -&gt; OptionalValue&lt;&#39;T&gt;<br />
-                      </div>
         </td>
-        <td class="xmldoc"></td>
       </tr>
     </tbody>
   </table>
@@ -94,44 +84,50 @@ the specified <code>T</code> value .</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '415', 415)" onmouseover="showTip(event, '415', 415)">
-            optionalValue.HasValue
+          <code onmouseout="hideTip(event, '469', 469)" onmouseover="showTip(event, '469', 469)">
+            HasValue
           </code>
-          <div class="tip" id="415">
+          <div class="tip" id="469">
             <strong>Signature:</strong>bool<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Gets a value indicating whether the current <code>OptionalValue&lt;T&gt;</code> has a value</p>
-</td>
+        <td class="xmldoc">
+        <p>Gets a value indicating whether the current <code>OptionalValue&lt;T&gt;</code> has a value</p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '423', 423)" onmouseover="showTip(event, '423', 423)">
-            optionalValue.Value
+          <code onmouseout="hideTip(event, '470', 470)" onmouseover="showTip(event, '470', 470)">
+            Value
           </code>
-          <div class="tip" id="423">
+          <div class="tip" id="470">
             <strong>Signature:</strong>&#39;T<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Returns the value stored in the current <code>OptionalValue&lt;T&gt;</code>. 
+        <td class="xmldoc">
+        <p>Returns the value stored in the current <code>OptionalValue&lt;T&gt;</code>. 
 Exceptions:
   <code>InvalidOperationException</code> - Thrown when <code>HasValue</code> is <code>false</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '424', 424)" onmouseover="showTip(event, '424', 424)">
-            optionalValue.ValueOrDefault
+          <code onmouseout="hideTip(event, '471', 471)" onmouseover="showTip(event, '471', 471)">
+            ValueOrDefault
           </code>
-          <div class="tip" id="424">
+          <div class="tip" id="471">
             <strong>Signature:</strong>&#39;T<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Returns the value stored in the current <code>OptionalValue&lt;T&gt;</code> or 
+        <td class="xmldoc">
+        <p>Returns the value stored in the current <code>OptionalValue&lt;T&gt;</code> or 
 the default value of the type <code>T</code> when a value is not present.</p>
-</td>
+
+        </td>
       </tr>
     </tbody>
   </table>
@@ -144,15 +140,17 @@ the default value of the type <code>T</code> when a value is not present.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '436', 436)" onmouseover="showTip(event, '436', 436)">
-            OptionalValue.Missing
+          <code onmouseout="hideTip(event, '473', 473)" onmouseover="showTip(event, '473', 473)">
+            Missing
           </code>
-          <div class="tip" id="436">
+          <div class="tip" id="473">
             <strong>Signature:</strong>OptionalValue&lt;&#39;T&gt;<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Returns a new instance of <code>OptionalValue&lt;T&gt;</code> that does not contain a value.</p>
-</td>
+        <td class="xmldoc">
+        <p>Returns a new instance of <code>OptionalValue&lt;T&gt;</code> that does not contain a value.</p>
+
+        </td>
       </tr>
     </tbody>
   </table>

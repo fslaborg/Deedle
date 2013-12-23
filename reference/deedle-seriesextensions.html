@@ -41,6 +41,7 @@
 <h1>SeriesExtensions</h1>
 <div class="xmldoc">
 </div>
+  <!-- If there is more than 1 category in the type, generate TOC -->
   <h2>Table of contents</h2>
   <ul>
       <li><a href="#section0">Data structure manipulation</a></li>
@@ -59,21 +60,23 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '469', 469)" onmouseover="showTip(event, '469', 469)">
-            SeriesExtensions.OrderByKey(series)
+          <code onmouseout="hideTip(event, '636', 636)" onmouseover="showTip(event, '636', 636)">
+            OrderByKey(series)
           </code>
-          <div class="tip" id="469">
+          <div class="tip" id="636">
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Returns a new series whose entries are reordered according to index order</p>
+        <td class="xmldoc">
+        <p>Returns a new series whose entries are reordered according to index order</p>
 
 <h2>Parameters</h2>
 
 <ul>
 <li><code>series</code> - An input series to be used</li>
 </ul>
-</td>
+
+        </td>
       </tr>
     </tbody>
   </table>
@@ -87,14 +90,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '530', 530)" onmouseover="showTip(event, '530', 530)">
-            SeriesExtensions.ResampleEquivalence(...)
+          <code onmouseout="hideTip(event, '676', 676)" onmouseover="showTip(event, '676', 676)">
+            ResampleEquivalence(...)
           </code>
-          <div class="tip" id="530">
+          <div class="tip" id="676">
             <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;V&gt; * keyProj:Func&lt;&#39;K,&#39;?6048&gt; * aggregate:Func&lt;Series&lt;&#39;K,&#39;V&gt;,&#39;?6049&gt;) -&gt; Series&lt;&#39;?6048,&#39;?6049&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V, '?6048, '?6049          </div>
         </td>
-        <td class="xmldoc"><p>Resample the series based on equivalence class on the keys. A specified function
+        <td class="xmldoc">
+        <p>Resample the series based on equivalence class on the keys. A specified function
 <code>keyProj</code> is used to project keys to another space and the observations for which the 
 projected keys are equivalent are grouped into chunks. The chunks are then transformed
 to values using the provided function <code>f</code>.</p>
@@ -114,19 +118,21 @@ single value.</li>
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered. For unordered
 series, similar functionality can be implemented using <code>GroupBy</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '532', 532)" onmouseover="showTip(event, '532', 532)">
-            SeriesExtensions.ResampleEquivalence(...)
+          <code onmouseout="hideTip(event, '677', 677)" onmouseover="showTip(event, '677', 677)">
+            ResampleEquivalence(series, keyProj)
           </code>
-          <div class="tip" id="532">
+          <div class="tip" id="677">
             <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;V&gt; * keyProj:Func&lt;&#39;K,&#39;?6044&gt;) -&gt; Series&lt;&#39;?6044,Series&lt;&#39;K,&#39;V&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V, '?6044          </div>
         </td>
-        <td class="xmldoc"><p>Resample the series based on equivalence class on the keys. A specified function
+        <td class="xmldoc">
+        <p>Resample the series based on equivalence class on the keys. A specified function
 <code>keyProj</code> is used to project keys to another space and the observations for which the 
 projected keys are equivalent are grouped into chunks. The chunks are then returned
 as nested series.</p>
@@ -144,19 +150,21 @@ space (which is then used for grouping based on equivalence)</li>
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered. For unordered
 series, similar functionality can be implemented using <code>GroupBy</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '533', 533)" onmouseover="showTip(event, '533', 533)">
-            SeriesExtensions.ResampleUniform(...)
+          <code onmouseout="hideTip(event, '678', 678)" onmouseover="showTip(event, '678', 678)">
+            ResampleUniform(...)
           </code>
-          <div class="tip" id="533">
+          <div class="tip" id="678">
             <strong>Signature:</strong>(series:Series&lt;&#39;K1,&#39;V&gt; * keyProj:Func&lt;&#39;K1,&#39;K2&gt; * nextKey:Func&lt;&#39;K2,&#39;K2&gt; * fillMode:Lookup) -&gt; Series&lt;&#39;K2,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'V, 'K2          </div>
         </td>
-        <td class="xmldoc"><p>Resample the series based on equivalence class on the keys and also generate values 
+        <td class="xmldoc">
+        <p>Resample the series based on equivalence class on the keys and also generate values 
 for all keys of the target space that are between the minimal and maximal key of the
 specified series (e.g. generate value for all days in the range covered by the series).
 A specified function <code>keyProj</code> is used to project keys to another space and <code>nextKey</code>
@@ -181,19 +189,21 @@ space (which is then used for grouping based on equivalence)</li>
 
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '534', 534)" onmouseover="showTip(event, '534', 534)">
-            SeriesExtensions.ResampleUniform(...)
+          <code onmouseout="hideTip(event, '679', 679)" onmouseover="showTip(event, '679', 679)">
+            ResampleUniform(...)
           </code>
-          <div class="tip" id="534">
+          <div class="tip" id="679">
             <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;V&gt; * keyProj:Func&lt;&#39;K,&#39;?6053&gt; * nextKey:Func&lt;&#39;?6053,&#39;?6053&gt;) -&gt; Series&lt;&#39;?6053,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V, '?6053          </div>
         </td>
-        <td class="xmldoc"><p>Resample the series based on equivalence class on the keys and also generate values 
+        <td class="xmldoc">
+        <p>Resample the series based on equivalence class on the keys and also generate values 
 for all keys of the target space that are between the minimal and maximal key of the
 specified series (e.g. generate value for all days in the range covered by the series).
 For each equivalence class (e.g. date), select the latest value (with greatest key).
@@ -219,19 +229,21 @@ space (which is then used for grouping based on equivalence)</li>
 
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '535', 535)" onmouseover="showTip(event, '535', 535)">
-            SeriesExtensions.Sample(...)
+          <code onmouseout="hideTip(event, '680', 680)" onmouseover="showTip(event, '680', 680)">
+            Sample(series, interval)
           </code>
-          <div class="tip" id="535">
+          <div class="tip" id="680">
             <strong>Signature:</strong>(series:Series&lt;DateTimeOffset,&#39;V&gt; * interval:TimeSpan) -&gt; Series&lt;DateTimeOffset,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'V          </div>
         </td>
-        <td class="xmldoc"><p>Finds values at, or near, the specified times in a given series. The operation generates
+        <td class="xmldoc">
+        <p>Finds values at, or near, the specified times in a given series. The operation generates
 keys starting from the smallest key of the original series, using the specified <code>interval</code>
 and then finds nearest smaller values close to such keys. The function generates samples
 at, or just before the end of an interval and at, or after, the end of the series.</p>
@@ -247,19 +259,21 @@ at, or just before the end of an interval and at, or after, the end of the serie
 
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '537', 537)" onmouseover="showTip(event, '537', 537)">
-            SeriesExtensions.Sample(...)
+          <code onmouseout="hideTip(event, '681', 681)" onmouseover="showTip(event, '681', 681)">
+            Sample(series, interval)
           </code>
-          <div class="tip" id="537">
+          <div class="tip" id="681">
             <strong>Signature:</strong>(series:Series&lt;DateTime,&#39;V&gt; * interval:TimeSpan) -&gt; Series&lt;DateTime,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'V          </div>
         </td>
-        <td class="xmldoc"><p>Finds values at, or near, the specified times in a given series. The operation generates
+        <td class="xmldoc">
+        <p>Finds values at, or near, the specified times in a given series. The operation generates
 keys starting from the smallest key of the original series, using the specified <code>interval</code>
 and then finds nearest smaller values close to such keys. The function generates samples
 at, or just before the end of an interval and at, or after, the end of the series.</p>
@@ -275,19 +289,21 @@ at, or just before the end of an interval and at, or after, the end of the serie
 
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '538', 538)" onmouseover="showTip(event, '538', 538)">
-            SeriesExtensions.Sample(...)
+          <code onmouseout="hideTip(event, '682', 682)" onmouseover="showTip(event, '682', 682)">
+            Sample(series, interval, dir)
           </code>
-          <div class="tip" id="538">
+          <div class="tip" id="682">
             <strong>Signature:</strong>(series:Series&lt;DateTimeOffset,&#39;V&gt; * interval:TimeSpan * dir:Direction) -&gt; Series&lt;DateTimeOffset,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'V          </div>
         </td>
-        <td class="xmldoc"><p>Finds values at, or near, the specified times in a given series. The operation generates
+        <td class="xmldoc">
+        <p>Finds values at, or near, the specified times in a given series. The operation generates
 keys starting from the smallest key of the original series, using the specified <code>interval</code>
 and then finds nearest smaller values close to such keys according to <code>dir</code>.</p>
 
@@ -307,19 +323,21 @@ of interval and at the end of the series.</li>
 
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '540', 540)" onmouseover="showTip(event, '540', 540)">
-            SeriesExtensions.Sample(...)
+          <code onmouseout="hideTip(event, '683', 683)" onmouseover="showTip(event, '683', 683)">
+            Sample(series, interval, dir)
           </code>
-          <div class="tip" id="540">
+          <div class="tip" id="683">
             <strong>Signature:</strong>(series:Series&lt;DateTime,&#39;V&gt; * interval:TimeSpan * dir:Direction) -&gt; Series&lt;DateTime,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'V          </div>
         </td>
-        <td class="xmldoc"><p>Finds values at, or near, the specified times in a given series. The operation generates
+        <td class="xmldoc">
+        <p>Finds values at, or near, the specified times in a given series. The operation generates
 keys starting from the smallest key of the original series, using the specified <code>interval</code>
 and then finds nearest smaller values close to such keys according to <code>dir</code>.</p>
 
@@ -338,19 +356,21 @@ values at exact keys will be returned; <code>NearestGreater</code> returns the n
 
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '542', 542)" onmouseover="showTip(event, '542', 542)">
-            SeriesExtensions.Sample(...)
+          <code onmouseout="hideTip(event, '684', 684)" onmouseover="showTip(event, '684', 684)">
+            Sample(series, start, interval, dir)
           </code>
-          <div class="tip" id="542">
+          <div class="tip" id="684">
             <strong>Signature:</strong>(series:Series&lt;DateTimeOffset,&#39;V&gt; * start:DateTimeOffset * interval:TimeSpan * dir:Direction) -&gt; Series&lt;DateTimeOffset,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'V          </div>
         </td>
-        <td class="xmldoc"><p>Finds values at, or near, the specified times in a given series. The operation generates
+        <td class="xmldoc">
+        <p>Finds values at, or near, the specified times in a given series. The operation generates
 keys starting at the specified <code>start</code> time, using the specified <code>interval</code>
 and then finds nearest smaller values close to such keys according to <code>dir</code>.</p>
 
@@ -370,19 +390,21 @@ values at exact keys will be returned; <code>NearestGreater</code> returns the n
 
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '543', 543)" onmouseover="showTip(event, '543', 543)">
-            SeriesExtensions.Sample(...)
+          <code onmouseout="hideTip(event, '685', 685)" onmouseover="showTip(event, '685', 685)">
+            Sample(series, start, interval, dir)
           </code>
-          <div class="tip" id="543">
+          <div class="tip" id="685">
             <strong>Signature:</strong>(series:Series&lt;DateTime,&#39;V&gt; * start:DateTime * interval:TimeSpan * dir:Direction) -&gt; Series&lt;DateTime,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'V          </div>
         </td>
-        <td class="xmldoc"><p>Finds values at, or near, the specified times in a given series. The operation generates
+        <td class="xmldoc">
+        <p>Finds values at, or near, the specified times in a given series. The operation generates
 keys starting at the specified <code>start</code> time, using the specified <code>interval</code>
 and then finds nearest smaller values close to such keys according to <code>dir</code>.</p>
 
@@ -402,19 +424,21 @@ values at exact keys will be returned; <code>NearestGreater</code> returns the n
 
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '544', 544)" onmouseover="showTip(event, '544', 544)">
-            SeriesExtensions.SampleInto(...)
+          <code onmouseout="hideTip(event, '686', 686)" onmouseover="showTip(event, '686', 686)">
+            SampleInto(...)
           </code>
-          <div class="tip" id="544">
+          <div class="tip" id="686">
             <strong>Signature:</strong>(series:Series&lt;DateTimeOffset,&#39;V&gt; * interval:TimeSpan * dir:Direction * aggregate:Func&lt;DateTimeOffset,(Series&lt;DateTimeOffset,&#39;V&gt; -&gt; obj)&gt;) -&gt; Series&lt;DateTimeOffset,obj&gt;<br />
                           <strong>Type parameters:</strong> 'V          </div>
         </td>
-        <td class="xmldoc"><p>Performs sampling by time and aggregates chunks obtained by time-sampling into a single
+        <td class="xmldoc">
+        <p>Performs sampling by time and aggregates chunks obtained by time-sampling into a single
 value using a specified function. The operation generates keys starting at the first
 key in the source series, using the specified <code>interval</code> and then obtains chunks based on 
 these keys in a fashion similar to the <code>Series.resample</code> function.</p>
@@ -434,19 +458,21 @@ used as the greatest keys in a chunk.</li>
 
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '545', 545)" onmouseover="showTip(event, '545', 545)">
-            SeriesExtensions.SampleInto(...)
+          <code onmouseout="hideTip(event, '687', 687)" onmouseover="showTip(event, '687', 687)">
+            SampleInto(...)
           </code>
-          <div class="tip" id="545">
+          <div class="tip" id="687">
             <strong>Signature:</strong>(series:Series&lt;DateTime,&#39;V&gt; * interval:TimeSpan * dir:Direction * aggregate:Func&lt;DateTime,(Series&lt;DateTime,&#39;V&gt; -&gt; obj)&gt;) -&gt; Series&lt;DateTime,obj&gt;<br />
                           <strong>Type parameters:</strong> 'V          </div>
         </td>
-        <td class="xmldoc"><p>Performs sampling by time and aggregates chunks obtained by time-sampling into a single
+        <td class="xmldoc">
+        <p>Performs sampling by time and aggregates chunks obtained by time-sampling into a single
 value using a specified function. The operation generates keys starting at the first
 key in the source series, using the specified <code>interval</code> and then obtains chunks based on 
 these keys in a fashion similar to the <code>Series.resample</code> function.</p>
@@ -466,7 +492,8 @@ used as the greatest keys in a chunk.</li>
 
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
-</td>
+
+        </td>
       </tr>
     </tbody>
   </table>
@@ -480,14 +507,15 @@ used as the greatest keys in a chunk.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '612', 612)" onmouseover="showTip(event, '612', 612)">
-            SeriesExtensions.DropMissing(series)
+          <code onmouseout="hideTip(event, '769', 769)" onmouseover="showTip(event, '769', 769)">
+            DropMissing(series)
           </code>
-          <div class="tip" id="612">
+          <div class="tip" id="769">
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
-        <td class="xmldoc"><p>Drop missing values from the specified series. The returned series contains 
+        <td class="xmldoc">
+        <p>Drop missing values from the specified series. The returned series contains 
 only those keys for which there is a value available in the original one.</p>
 
 <h2>Parameters</h2>
@@ -502,19 +530,21 @@ only those keys for which there is a value available in the original one.</p>
 s.DropMissing()
 [fsi:val it : Series&lt;int,float&gt; = series [ 1 =&gt; 1]
 </code></pre>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '614', 614)" onmouseover="showTip(event, '614', 614)">
-            SeriesExtensions.FillMissing(...)
+          <code onmouseout="hideTip(event, '770', 770)" onmouseover="showTip(event, '770', 770)">
+            FillMissing(series, filler)
           </code>
-          <div class="tip" id="614">
+          <div class="tip" id="770">
             <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;T&gt; * filler:Func&lt;&#39;K,&#39;T&gt;) -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Fill missing values in the series using the specified function.
+        <td class="xmldoc">
+        <p>Fill missing values in the series using the specified function.
 The specified function is called with all keys for which the series
 does not contain value and the result of the call is used in place 
 of the missing value.</p>
@@ -531,19 +561,21 @@ used in a place where the original series contains a missing value.</li>
 
 <p>This function can be used to implement more complex interpolation.
 For example see <a href="../features.html#missing">handling missing values in the tutorial</a></p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '615', 615)" onmouseover="showTip(event, '615', 615)">
-            SeriesExtensions.FillMissing(...)
+          <code onmouseout="hideTip(event, '771', 771)" onmouseover="showTip(event, '771', 771)">
+            FillMissing(series, direction)
           </code>
-          <div class="tip" id="615">
+          <div class="tip" id="771">
             <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;T&gt; * direction:Direction) -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Fill missing values in the series with the nearest available value
+        <td class="xmldoc">
+        <p>Fill missing values in the series with the nearest available value
 (using the specified direction). The default direction is <code>Direction.Backward</code>.
 Note that the series may still contain missing values after call to this 
 function. This operation can only be used on ordered series.</p>
@@ -567,19 +599,21 @@ the nearest available value. <code>Backward</code> means that we want to
 look for the first value with a smaller key while <code>Forward</code> searches
 for the nearest greater key.</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '616', 616)" onmouseover="showTip(event, '616', 616)">
-            SeriesExtensions.FillMissing(...)
+          <code onmouseout="hideTip(event, '772', 772)" onmouseover="showTip(event, '772', 772)">
+            FillMissing(series, value)
           </code>
-          <div class="tip" id="616">
+          <div class="tip" id="772">
             <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;T&gt; * value:&#39;T) -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Fill missing values in the series with a constant value.</p>
+        <td class="xmldoc">
+        <p>Fill missing values in the series with a constant value.</p>
 
 <h2>Parameters</h2>
 
@@ -587,7 +621,8 @@ for the nearest greater key.</li>
 <li><code>series</code> - An input series that is to be filled</li>
 <li><code>value</code> - A constant value that is used to fill all missing values</li>
 </ul>
-</td>
+
+        </td>
       </tr>
     </tbody>
   </table>
@@ -601,14 +636,15 @@ for the nearest greater key.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '724', 724)" onmouseover="showTip(event, '724', 724)">
-            SeriesExtensions.CountLevel(...)
+          <code onmouseout="hideTip(event, '781', 781)" onmouseover="showTip(event, '781', 781)">
+            CountLevel(series, groupSelector)
           </code>
-          <div class="tip" id="724">
+          <div class="tip" id="781">
             <strong>Signature:</strong>(series:Series&lt;&#39;K1,decimal&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,int&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>groupSelector</code> and then returns a new series containing
 the counts of elements in each group.</p>
 
@@ -620,73 +656,83 @@ the counts of elements in each group.</p>
 <li><code>series</code> - A series of values that are used to calculate the counts</li>
 <li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '725', 725)" onmouseover="showTip(event, '725', 725)">
-            SeriesExtensions.Max(series)
+          <code onmouseout="hideTip(event, '782', 782)" onmouseover="showTip(event, '782', 782)">
+            Max(series)
           </code>
-          <div class="tip" id="725">
+          <div class="tip" id="782">
             <strong>Signature:</strong>series:Series&lt;&#39;K,decimal&gt; -&gt; decimal<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"><p>Returns the greatest of all elements of the series.</p>
-</td>
+        <td class="xmldoc">
+        <p>Returns the greatest of all elements of the series.</p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '726', 726)" onmouseover="showTip(event, '726', 726)">
-            SeriesExtensions.Max(series)
+          <code onmouseout="hideTip(event, '783', 783)" onmouseover="showTip(event, '783', 783)">
+            Max(series)
           </code>
-          <div class="tip" id="726">
+          <div class="tip" id="783">
             <strong>Signature:</strong>series:Series&lt;&#39;K,int&gt; -&gt; int<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"><p>Returns the greatest of all elements of the series.</p>
-</td>
+        <td class="xmldoc">
+        <p>Returns the greatest of all elements of the series.</p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '727', 727)" onmouseover="showTip(event, '727', 727)">
-            SeriesExtensions.Max(series)
+          <code onmouseout="hideTip(event, '784', 784)" onmouseover="showTip(event, '784', 784)">
+            Max(series)
           </code>
-          <div class="tip" id="727">
+          <div class="tip" id="784">
             <strong>Signature:</strong>series:Series&lt;&#39;K,float32&gt; -&gt; float32<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"><p>Returns the greatest of all elements of the series. The operation 
+        <td class="xmldoc">
+        <p>Returns the greatest of all elements of the series. The operation 
 skips over missing values and so the result will never be <code>NaN</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '728', 728)" onmouseover="showTip(event, '728', 728)">
-            SeriesExtensions.Max(series)
+          <code onmouseout="hideTip(event, '785', 785)" onmouseover="showTip(event, '785', 785)">
+            Max(series)
           </code>
-          <div class="tip" id="728">
+          <div class="tip" id="785">
             <strong>Signature:</strong>series:Series&lt;&#39;K,float&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"><p>Returns the greatest of all elements of the series. The operation 
+        <td class="xmldoc">
+        <p>Returns the greatest of all elements of the series. The operation 
 skips over missing values and so the result will never be <code>NaN</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '729', 729)" onmouseover="showTip(event, '729', 729)">
-            SeriesExtensions.MaxLevel(...)
+          <code onmouseout="hideTip(event, '786', 786)" onmouseover="showTip(event, '786', 786)">
+            MaxLevel(series, groupSelector)
           </code>
-          <div class="tip" id="729">
+          <div class="tip" id="786">
             <strong>Signature:</strong>(series:Series&lt;&#39;K1,decimal&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,decimal&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>groupSelector</code> and then returns a new series containing
 the greatest element of each group.</p>
 
@@ -698,19 +744,21 @@ the greatest element of each group.</p>
 <li><code>series</code> - A series of values that are used to calculate the greatest elements</li>
 <li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '730', 730)" onmouseover="showTip(event, '730', 730)">
-            SeriesExtensions.MaxLevel(...)
+          <code onmouseout="hideTip(event, '787', 787)" onmouseover="showTip(event, '787', 787)">
+            MaxLevel(series, groupSelector)
           </code>
-          <div class="tip" id="730">
+          <div class="tip" id="787">
             <strong>Signature:</strong>(series:Series&lt;&#39;K1,int&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,int&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>groupSelector</code> and then returns a new series containing
 the greatest element of each group.</p>
 
@@ -722,19 +770,21 @@ the greatest element of each group.</p>
 <li><code>series</code> - A series of values that are used to calculate the greatest elements</li>
 <li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '731', 731)" onmouseover="showTip(event, '731', 731)">
-            SeriesExtensions.MaxLevel(...)
+          <code onmouseout="hideTip(event, '788', 788)" onmouseover="showTip(event, '788', 788)">
+            MaxLevel(series, groupSelector)
           </code>
-          <div class="tip" id="731">
+          <div class="tip" id="788">
             <strong>Signature:</strong>(series:Series&lt;&#39;K1,float32&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float32&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>groupSelector</code> and then returns a new series containing
 the greatest element of each group.</p>
 
@@ -746,19 +796,21 @@ the greatest element of each group.</p>
 <li><code>series</code> - A series of values that are used to calculate the greatest elements</li>
 <li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '732', 732)" onmouseover="showTip(event, '732', 732)">
-            SeriesExtensions.MaxLevel(...)
+          <code onmouseout="hideTip(event, '789', 789)" onmouseover="showTip(event, '789', 789)">
+            MaxLevel(series, groupSelector)
           </code>
-          <div class="tip" id="732">
+          <div class="tip" id="789">
             <strong>Signature:</strong>(series:Series&lt;&#39;K1,float&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>groupSelector</code> and then returns a new series containing
 the greatest element of each group.</p>
 
@@ -770,60 +822,68 @@ the greatest element of each group.</p>
 <li><code>series</code> - A series of values that are used to calculate the greatest elements</li>
 <li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '733', 733)" onmouseover="showTip(event, '733', 733)">
-            SeriesExtensions.Mean(series)
+          <code onmouseout="hideTip(event, '790', 790)" onmouseover="showTip(event, '790', 790)">
+            Mean(series)
           </code>
-          <div class="tip" id="733">
+          <div class="tip" id="790">
             <strong>Signature:</strong>series:Series&lt;&#39;K,decimal&gt; -&gt; decimal<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"><p>Returns the mean of the elements of the series.</p>
-</td>
+        <td class="xmldoc">
+        <p>Returns the mean of the elements of the series.</p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '734', 734)" onmouseover="showTip(event, '734', 734)">
-            SeriesExtensions.Mean(series)
+          <code onmouseout="hideTip(event, '791', 791)" onmouseover="showTip(event, '791', 791)">
+            Mean(series)
           </code>
-          <div class="tip" id="734">
+          <div class="tip" id="791">
             <strong>Signature:</strong>series:Series&lt;&#39;K,float32&gt; -&gt; float32<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"><p>Returns the mean of the elements of the series. The operation skips over
+        <td class="xmldoc">
+        <p>Returns the mean of the elements of the series. The operation skips over
 missing values and so the result will never be <code>NaN</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '735', 735)" onmouseover="showTip(event, '735', 735)">
-            SeriesExtensions.Mean(series)
+          <code onmouseout="hideTip(event, '792', 792)" onmouseover="showTip(event, '792', 792)">
+            Mean(series)
           </code>
-          <div class="tip" id="735">
+          <div class="tip" id="792">
             <strong>Signature:</strong>series:Series&lt;&#39;K,float&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"><p>Returns the mean of the elements of the series. The operation skips over
+        <td class="xmldoc">
+        <p>Returns the mean of the elements of the series. The operation skips over
 missing values and so the result will never be <code>NaN</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '736', 736)" onmouseover="showTip(event, '736', 736)">
-            SeriesExtensions.MeanLevel(...)
+          <code onmouseout="hideTip(event, '793', 793)" onmouseover="showTip(event, '793', 793)">
+            MeanLevel(series, groupSelector)
           </code>
-          <div class="tip" id="736">
+          <div class="tip" id="793">
             <strong>Signature:</strong>(series:Series&lt;&#39;K1,decimal&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,decimal&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>groupSelector</code> and then returns a new series containing
 the mean of each group.</p>
 
@@ -835,19 +895,21 @@ the mean of each group.</p>
 <li><code>series</code> - A series of values that are used to calculate the means</li>
 <li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '737', 737)" onmouseover="showTip(event, '737', 737)">
-            SeriesExtensions.MeanLevel(...)
+          <code onmouseout="hideTip(event, '794', 794)" onmouseover="showTip(event, '794', 794)">
+            MeanLevel(series, groupSelector)
           </code>
-          <div class="tip" id="737">
+          <div class="tip" id="794">
             <strong>Signature:</strong>(series:Series&lt;&#39;K1,float32&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float32&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>groupSelector</code> and then returns a new series containing
 the mean of each group.</p>
 
@@ -859,19 +921,21 @@ the mean of each group.</p>
 <li><code>series</code> - A series of values that are used to calculate the means</li>
 <li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '738', 738)" onmouseover="showTip(event, '738', 738)">
-            SeriesExtensions.MeanLevel(...)
+          <code onmouseout="hideTip(event, '795', 795)" onmouseover="showTip(event, '795', 795)">
+            MeanLevel(series, groupSelector)
           </code>
-          <div class="tip" id="738">
+          <div class="tip" id="795">
             <strong>Signature:</strong>(series:Series&lt;&#39;K1,float&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>groupSelector</code> and then returns a new series containing
 the mean of each group.</p>
 
@@ -883,33 +947,37 @@ the mean of each group.</p>
 <li><code>series</code> - A series of values that are used to calculate the means</li>
 <li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '739', 739)" onmouseover="showTip(event, '739', 739)">
-            SeriesExtensions.Median(series)
+          <code onmouseout="hideTip(event, '796', 796)" onmouseover="showTip(event, '796', 796)">
+            Median(series)
           </code>
-          <div class="tip" id="739">
+          <div class="tip" id="796">
             <strong>Signature:</strong>series:Series&lt;&#39;K,float&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"><p>Returns the median of the elements of the series. The operation skips over
+        <td class="xmldoc">
+        <p>Returns the median of the elements of the series. The operation skips over
 missing values and so the result will never be <code>NaN</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '740', 740)" onmouseover="showTip(event, '740', 740)">
-            SeriesExtensions.MedianLevel(...)
+          <code onmouseout="hideTip(event, '797', 797)" onmouseover="showTip(event, '797', 797)">
+            MedianLevel(series, groupSelector)
           </code>
-          <div class="tip" id="740">
+          <div class="tip" id="797">
             <strong>Signature:</strong>(series:Series&lt;&#39;K1,float&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>groupSelector</code> and then returns a new series containing
 the median of each group.</p>
 
@@ -921,73 +989,83 @@ the median of each group.</p>
 <li><code>series</code> - A series of values that are used to calculate the medians</li>
 <li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '741', 741)" onmouseover="showTip(event, '741', 741)">
-            SeriesExtensions.Min(series)
+          <code onmouseout="hideTip(event, '798', 798)" onmouseover="showTip(event, '798', 798)">
+            Min(series)
           </code>
-          <div class="tip" id="741">
+          <div class="tip" id="798">
             <strong>Signature:</strong>series:Series&lt;&#39;K,decimal&gt; -&gt; decimal<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"><p>Returns the smallest of all elements of the series.</p>
-</td>
+        <td class="xmldoc">
+        <p>Returns the smallest of all elements of the series.</p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '742', 742)" onmouseover="showTip(event, '742', 742)">
-            SeriesExtensions.Min(series)
+          <code onmouseout="hideTip(event, '799', 799)" onmouseover="showTip(event, '799', 799)">
+            Min(series)
           </code>
-          <div class="tip" id="742">
+          <div class="tip" id="799">
             <strong>Signature:</strong>series:Series&lt;&#39;K,int&gt; -&gt; int<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"><p>Returns the smallest of all elements of the series.</p>
-</td>
+        <td class="xmldoc">
+        <p>Returns the smallest of all elements of the series.</p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '743', 743)" onmouseover="showTip(event, '743', 743)">
-            SeriesExtensions.Min(series)
+          <code onmouseout="hideTip(event, '800', 800)" onmouseover="showTip(event, '800', 800)">
+            Min(series)
           </code>
-          <div class="tip" id="743">
+          <div class="tip" id="800">
             <strong>Signature:</strong>series:Series&lt;&#39;K,float32&gt; -&gt; float32<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"><p>Returns the smallest of all elements of the series. The operation 
+        <td class="xmldoc">
+        <p>Returns the smallest of all elements of the series. The operation 
 skips over missing values and so the result will never be <code>NaN</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '744', 744)" onmouseover="showTip(event, '744', 744)">
-            SeriesExtensions.Min(series)
+          <code onmouseout="hideTip(event, '801', 801)" onmouseover="showTip(event, '801', 801)">
+            Min(series)
           </code>
-          <div class="tip" id="744">
+          <div class="tip" id="801">
             <strong>Signature:</strong>series:Series&lt;&#39;K,float&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"><p>Returns the smallest of all elements of the series. The operation 
+        <td class="xmldoc">
+        <p>Returns the smallest of all elements of the series. The operation 
 skips over missing values and so the result will never be <code>NaN</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '745', 745)" onmouseover="showTip(event, '745', 745)">
-            SeriesExtensions.MinLevel(...)
+          <code onmouseout="hideTip(event, '802', 802)" onmouseover="showTip(event, '802', 802)">
+            MinLevel(series, groupSelector)
           </code>
-          <div class="tip" id="745">
+          <div class="tip" id="802">
             <strong>Signature:</strong>(series:Series&lt;&#39;K1,decimal&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,decimal&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>groupSelector</code> and then returns a new series containing
 the smallest element of each group.</p>
 
@@ -999,19 +1077,21 @@ the smallest element of each group.</p>
 <li><code>series</code> - A series of values that are used to calculate the smallest elements</li>
 <li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '746', 746)" onmouseover="showTip(event, '746', 746)">
-            SeriesExtensions.MinLevel(...)
+          <code onmouseout="hideTip(event, '803', 803)" onmouseover="showTip(event, '803', 803)">
+            MinLevel(series, groupSelector)
           </code>
-          <div class="tip" id="746">
+          <div class="tip" id="803">
             <strong>Signature:</strong>(series:Series&lt;&#39;K1,int&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,int&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>groupSelector</code> and then returns a new series containing
 the smallest element of each group.</p>
 
@@ -1023,19 +1103,21 @@ the smallest element of each group.</p>
 <li><code>series</code> - A series of values that are used to calculate the smallest elements</li>
 <li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '747', 747)" onmouseover="showTip(event, '747', 747)">
-            SeriesExtensions.MinLevel(...)
+          <code onmouseout="hideTip(event, '804', 804)" onmouseover="showTip(event, '804', 804)">
+            MinLevel(series, groupSelector)
           </code>
-          <div class="tip" id="747">
+          <div class="tip" id="804">
             <strong>Signature:</strong>(series:Series&lt;&#39;K1,float32&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float32&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>groupSelector</code> and then returns a new series containing
 the smallest element of each group.</p>
 
@@ -1047,19 +1129,21 @@ the smallest element of each group.</p>
 <li><code>series</code> - A series of values that are used to calculate the smallest elements</li>
 <li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '748', 748)" onmouseover="showTip(event, '748', 748)">
-            SeriesExtensions.MinLevel(...)
+          <code onmouseout="hideTip(event, '805', 805)" onmouseover="showTip(event, '805', 805)">
+            MinLevel(series, groupSelector)
           </code>
-          <div class="tip" id="748">
+          <div class="tip" id="805">
             <strong>Signature:</strong>(series:Series&lt;&#39;K1,float&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>groupSelector</code> and then returns a new series containing
 the smallest element of each group.</p>
 
@@ -1071,33 +1155,37 @@ the smallest element of each group.</p>
 <li><code>series</code> - A series of values that are used to calculate the smallest elements</li>
 <li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '749', 749)" onmouseover="showTip(event, '749', 749)">
-            SeriesExtensions.StandardDeviation(...)
+          <code onmouseout="hideTip(event, '806', 806)" onmouseover="showTip(event, '806', 806)">
+            StandardDeviation(series)
           </code>
-          <div class="tip" id="749">
+          <div class="tip" id="806">
             <strong>Signature:</strong>series:Series&lt;&#39;K,float&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"><p>Returns the standard deviation of the elements of the series. The operation skips over
+        <td class="xmldoc">
+        <p>Returns the standard deviation of the elements of the series. The operation skips over
 missing values and so the result will never be <code>NaN</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '750', 750)" onmouseover="showTip(event, '750', 750)">
-            SeriesExtensions.StandardDeviationLevel(...)
+          <code onmouseout="hideTip(event, '807', 807)" onmouseover="showTip(event, '807', 807)">
+            StandardDeviationLevel(...)
           </code>
-          <div class="tip" id="750">
+          <div class="tip" id="807">
             <strong>Signature:</strong>(series:Series&lt;&#39;K1,float&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>groupSelector</code> and then returns a new series containing
 the standard deviation of each group.</p>
 
@@ -1109,73 +1197,83 @@ the standard deviation of each group.</p>
 <li><code>series</code> - A series of values that are used to calculate the standard deviations</li>
 <li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '751', 751)" onmouseover="showTip(event, '751', 751)">
-            SeriesExtensions.Sum(series)
+          <code onmouseout="hideTip(event, '808', 808)" onmouseover="showTip(event, '808', 808)">
+            Sum(series)
           </code>
-          <div class="tip" id="751">
+          <div class="tip" id="808">
             <strong>Signature:</strong>series:Series&lt;&#39;K,decimal&gt; -&gt; decimal<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"><p>Returns the sum of the elements of the series.</p>
-</td>
+        <td class="xmldoc">
+        <p>Returns the sum of the elements of the series.</p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '752', 752)" onmouseover="showTip(event, '752', 752)">
-            SeriesExtensions.Sum(series)
+          <code onmouseout="hideTip(event, '809', 809)" onmouseover="showTip(event, '809', 809)">
+            Sum(series)
           </code>
-          <div class="tip" id="752">
+          <div class="tip" id="809">
             <strong>Signature:</strong>series:Series&lt;&#39;K,int&gt; -&gt; int<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"><p>Returns the sum of the elements of the series.</p>
-</td>
+        <td class="xmldoc">
+        <p>Returns the sum of the elements of the series.</p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '753', 753)" onmouseover="showTip(event, '753', 753)">
-            SeriesExtensions.Sum(series)
+          <code onmouseout="hideTip(event, '810', 810)" onmouseover="showTip(event, '810', 810)">
+            Sum(series)
           </code>
-          <div class="tip" id="753">
+          <div class="tip" id="810">
             <strong>Signature:</strong>series:Series&lt;&#39;K,float32&gt; -&gt; float32<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"><p>Returns the sum of the elements of the series. The operation skips over
+        <td class="xmldoc">
+        <p>Returns the sum of the elements of the series. The operation skips over
 missing values and so the result will never be <code>NaN</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '754', 754)" onmouseover="showTip(event, '754', 754)">
-            SeriesExtensions.Sum(series)
+          <code onmouseout="hideTip(event, '811', 811)" onmouseover="showTip(event, '811', 811)">
+            Sum(series)
           </code>
-          <div class="tip" id="754">
+          <div class="tip" id="811">
             <strong>Signature:</strong>series:Series&lt;&#39;K,float&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"><p>Returns the sum of the elements of the series. The operation skips over
+        <td class="xmldoc">
+        <p>Returns the sum of the elements of the series. The operation skips over
 missing values and so the result will never be <code>NaN</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '755', 755)" onmouseover="showTip(event, '755', 755)">
-            SeriesExtensions.SumLevel(...)
+          <code onmouseout="hideTip(event, '812', 812)" onmouseover="showTip(event, '812', 812)">
+            SumLevel(series, groupSelector)
           </code>
-          <div class="tip" id="755">
+          <div class="tip" id="812">
             <strong>Signature:</strong>(series:Series&lt;&#39;K1,decimal&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,decimal&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>groupSelector</code> and then returns a new series containing
 the sum of each group.</p>
 
@@ -1187,19 +1285,21 @@ the sum of each group.</p>
 <li><code>series</code> - A series of values that are used to calculate the sums</li>
 <li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '756', 756)" onmouseover="showTip(event, '756', 756)">
-            SeriesExtensions.SumLevel(...)
+          <code onmouseout="hideTip(event, '813', 813)" onmouseover="showTip(event, '813', 813)">
+            SumLevel(series, groupSelector)
           </code>
-          <div class="tip" id="756">
+          <div class="tip" id="813">
             <strong>Signature:</strong>(series:Series&lt;&#39;K1,int&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,int&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>groupSelector</code> and then returns a new series containing
 the sum of each group.</p>
 
@@ -1211,19 +1311,21 @@ the sum of each group.</p>
 <li><code>series</code> - A series of values that are used to calculate the sums</li>
 <li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '757', 757)" onmouseover="showTip(event, '757', 757)">
-            SeriesExtensions.SumLevel(...)
+          <code onmouseout="hideTip(event, '814', 814)" onmouseover="showTip(event, '814', 814)">
+            SumLevel(series, groupSelector)
           </code>
-          <div class="tip" id="757">
+          <div class="tip" id="814">
             <strong>Signature:</strong>(series:Series&lt;&#39;K1,float32&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float32&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>groupSelector</code> and then returns a new series containing
 the sum of each group.</p>
 
@@ -1235,19 +1337,21 @@ the sum of each group.</p>
 <li><code>series</code> - A series of values that are used to calculate the sums</li>
 <li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '758', 758)" onmouseover="showTip(event, '758', 758)">
-            SeriesExtensions.SumLevel(...)
+          <code onmouseout="hideTip(event, '815', 815)" onmouseover="showTip(event, '815', 815)">
+            SumLevel(series, groupSelector)
           </code>
-          <div class="tip" id="758">
+          <div class="tip" id="815">
             <strong>Signature:</strong>(series:Series&lt;&#39;K1,float&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>groupSelector</code> and then returns a new series containing
 the sum of each group.</p>
 
@@ -1259,7 +1363,8 @@ the sum of each group.</p>
 <li><code>series</code> - A series of values that are used to calculate the sums</li>
 <li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
     </tbody>
   </table>
@@ -1273,272 +1378,316 @@ the sum of each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '790', 790)" onmouseover="showTip(event, '790', 790)">
-            SeriesExtensions.Chunk(series, size)
+          <code onmouseout="hideTip(event, '826', 826)" onmouseover="showTip(event, '826', 826)">
+            Chunk(series, size)
           </code>
-          <div class="tip" id="790">
+          <div class="tip" id="826">
             <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;V&gt; * size:int) -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;V&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '791', 791)" onmouseover="showTip(event, '791', 791)">
-            SeriesExtensions.ChunkInto(...)
+          <code onmouseout="hideTip(event, '827', 827)" onmouseover="showTip(event, '827', 827)">
+            ChunkInto(series, size, reduce)
           </code>
-          <div class="tip" id="791">
+          <div class="tip" id="827">
             <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;V&gt; * size:int * reduce:Func&lt;Series&lt;&#39;K,&#39;V&gt;,&#39;U&gt;) -&gt; Series&lt;&#39;K,&#39;U&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V, 'U          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '792', 792)" onmouseover="showTip(event, '792', 792)">
-            SeriesExtensions.ChunkInto(...)
+          <code onmouseout="hideTip(event, '828', 828)" onmouseover="showTip(event, '828', 828)">
+            ChunkInto(series, size, selector)
           </code>
-          <div class="tip" id="792">
+          <div class="tip" id="828">
             <strong>Signature:</strong>(series:Series&lt;&#39;K1,&#39;V&gt; * size:int * selector:Func&lt;Series&lt;&#39;K1,&#39;V&gt;,KeyValuePair&lt;&#39;K2,&#39;U&gt;&gt;) -&gt; Series&lt;&#39;K2,&#39;U&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'V, 'K2, 'U          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '793', 793)" onmouseover="showTip(event, '793', 793)">
-            SeriesExtensions.ContainsKey(...)
+          <code onmouseout="hideTip(event, '829', 829)" onmouseover="showTip(event, '829', 829)">
+            ContainsKey(series, key)
           </code>
-          <div class="tip" id="793">
+          <div class="tip" id="829">
             <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;T&gt; * key:&#39;K) -&gt; bool<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '794', 794)" onmouseover="showTip(event, '794', 794)">
-            SeriesExtensions.Diff(series, offset)
+          <code onmouseout="hideTip(event, '830', 830)" onmouseover="showTip(event, '830', 830)">
+            Diff(series, offset)
           </code>
-          <div class="tip" id="794">
+          <div class="tip" id="830">
             <strong>Signature:</strong>(series:Series&lt;&#39;K,int&gt; * offset:int) -&gt; Series&lt;&#39;K,int&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '795', 795)" onmouseover="showTip(event, '795', 795)">
-            SeriesExtensions.Diff(series, offset)
+          <code onmouseout="hideTip(event, '831', 831)" onmouseover="showTip(event, '831', 831)">
+            Diff(series, offset)
           </code>
-          <div class="tip" id="795">
+          <div class="tip" id="831">
             <strong>Signature:</strong>(series:Series&lt;&#39;K,decimal&gt; * offset:int) -&gt; Series&lt;&#39;K,decimal&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '796', 796)" onmouseover="showTip(event, '796', 796)">
-            SeriesExtensions.Diff(series, offset)
+          <code onmouseout="hideTip(event, '832', 832)" onmouseover="showTip(event, '832', 832)">
+            Diff(series, offset)
           </code>
-          <div class="tip" id="796">
+          <div class="tip" id="832">
             <strong>Signature:</strong>(series:Series&lt;&#39;K,float32&gt; * offset:int) -&gt; Series&lt;&#39;K,float32&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '797', 797)" onmouseover="showTip(event, '797', 797)">
-            SeriesExtensions.Diff(series, offset)
+          <code onmouseout="hideTip(event, '833', 833)" onmouseover="showTip(event, '833', 833)">
+            Diff(series, offset)
           </code>
-          <div class="tip" id="797">
+          <div class="tip" id="833">
             <strong>Signature:</strong>(series:Series&lt;&#39;K,float&gt; * offset:int) -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '798', 798)" onmouseover="showTip(event, '798', 798)">
-            SeriesExtensions.FillMissing(...)
+          <code onmouseout="hideTip(event, '834', 834)" onmouseover="showTip(event, '834', 834)">
+            FillMissing(...)
           </code>
-          <div class="tip" id="798">
+          <div class="tip" id="834">
             <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;T&gt; * startKey:&#39;K * endKey:&#39;K * direction:Direction) -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '799', 799)" onmouseover="showTip(event, '799', 799)">
-            SeriesExtensions.FirstKey(series)
+          <code onmouseout="hideTip(event, '835', 835)" onmouseover="showTip(event, '835', 835)">
+            FirstKey(series)
           </code>
-          <div class="tip" id="799">
+          <div class="tip" id="835">
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;K<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '800', 800)" onmouseover="showTip(event, '800', 800)">
-            SeriesExtensions.GetAllObservations(...)
+          <code onmouseout="hideTip(event, '836', 836)" onmouseover="showTip(event, '836', 836)">
+            GetAllObservations(series)
           </code>
-          <div class="tip" id="800">
+          <div class="tip" id="836">
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;KeyValuePair&lt;&#39;K,OptionalValue&lt;&#39;T&gt;&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Returns all keys from the sequence, together with the associated (optional)
+        <td class="xmldoc">
+        <p>Returns all keys from the sequence, together with the associated (optional)
 values. The values are returned using the <code>OptionalValue&lt;T&gt;</code> struct which
 provides <code>HasValue</code> for testing if the value is available.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '801', 801)" onmouseover="showTip(event, '801', 801)">
-            SeriesExtensions.GetObservations(series)
+          <code onmouseout="hideTip(event, '837', 837)" onmouseover="showTip(event, '837', 837)">
+            GetObservations(series)
           </code>
-          <div class="tip" id="801">
+          <div class="tip" id="837">
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;KeyValuePair&lt;&#39;K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Return observations with available values. The operation skips over 
+        <td class="xmldoc">
+        <p>Return observations with available values. The operation skips over 
 all keys with missing values (such as values created from <code>null</code>,
 <code>Double.NaN</code>, or those that are missing due to outer join etc.).</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '802', 802)" onmouseover="showTip(event, '802', 802)">
-            SeriesExtensions.GetSlice(...)
+          <code onmouseout="hideTip(event, '838', 838)" onmouseover="showTip(event, '838', 838)">
+            GetSlice(series, k1, lo2, hi2)
           </code>
-          <div class="tip" id="802">
+          <div class="tip" id="838">
             <strong>Signature:</strong>(series:Series&lt;(&#39;K1 * &#39;K2),&#39;V&gt; * k1:&#39;K1 * lo2:&#39;K2 option * hi2:&#39;K2 option) -&gt; Series&lt;(&#39;K1 * &#39;K2),&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '803', 803)" onmouseover="showTip(event, '803', 803)">
-            SeriesExtensions.GetSlice(...)
+          <code onmouseout="hideTip(event, '839', 839)" onmouseover="showTip(event, '839', 839)">
+            GetSlice(series, lo1, hi1, k2)
           </code>
-          <div class="tip" id="803">
+          <div class="tip" id="839">
             <strong>Signature:</strong>(series:Series&lt;(&#39;K1 * &#39;K2),&#39;V&gt; * lo1:&#39;K1 option * hi1:&#39;K1 option * k2:&#39;K2) -&gt; Series&lt;(&#39;K1 * &#39;K2),&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '804', 804)" onmouseover="showTip(event, '804', 804)">
-            SeriesExtensions.GetSlice(...)
+          <code onmouseout="hideTip(event, '840', 840)" onmouseover="showTip(event, '840', 840)">
+            GetSlice(series, lo1, hi1, lo2, hi2)
           </code>
-          <div class="tip" id="804">
+          <div class="tip" id="840">
             <strong>Signature:</strong>(series:Series&lt;(&#39;K1 * &#39;K2),&#39;V&gt; * lo1:&#39;K1 option * hi1:&#39;K1 option * lo2:&#39;K2 option * hi2:&#39;K2 option) -&gt; Series&lt;(&#39;K1 * &#39;K2),&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '805', 805)" onmouseover="showTip(event, '805', 805)">
-            SeriesExtensions.LastKey(series)
+          <code onmouseout="hideTip(event, '841', 841)" onmouseover="showTip(event, '841', 841)">
+            LastKey(series)
           </code>
-          <div class="tip" id="805">
+          <div class="tip" id="841">
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;K<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '806', 806)" onmouseover="showTip(event, '806', 806)">
-            SeriesExtensions.Log(series)
+          <code onmouseout="hideTip(event, '842', 842)" onmouseover="showTip(event, '842', 842)">
+            Log(series)
           </code>
-          <div class="tip" id="806">
+          <div class="tip" id="842">
             <strong>Signature:</strong>series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '807', 807)" onmouseover="showTip(event, '807', 807)">
-            SeriesExtensions.Print(series)
+          <code onmouseout="hideTip(event, '843', 843)" onmouseover="showTip(event, '843', 843)">
+            Print(series)
           </code>
-          <div class="tip" id="807">
+          <div class="tip" id="843">
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;V&gt; -&gt; unit<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '808', 808)" onmouseover="showTip(event, '808', 808)">
-            SeriesExtensions.Shift(series, offset)
+          <code onmouseout="hideTip(event, '844', 844)" onmouseover="showTip(event, '844', 844)">
+            Shift(series, offset)
           </code>
-          <div class="tip" id="808">
+          <div class="tip" id="844">
             <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;V&gt; * offset:int) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '809', 809)" onmouseover="showTip(event, '809', 809)">
-            SeriesExtensions.Window(series, size)
+          <code onmouseout="hideTip(event, '845', 845)" onmouseover="showTip(event, '845', 845)">
+            Window(series, size)
           </code>
-          <div class="tip" id="809">
+          <div class="tip" id="845">
             <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;V&gt; * size:int) -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;V&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '810', 810)" onmouseover="showTip(event, '810', 810)">
-            SeriesExtensions.WindowInto(...)
+          <code onmouseout="hideTip(event, '846', 846)" onmouseover="showTip(event, '846', 846)">
+            WindowInto(series, size, reduce)
           </code>
-          <div class="tip" id="810">
+          <div class="tip" id="846">
             <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;V&gt; * size:int * reduce:Func&lt;Series&lt;&#39;K,&#39;V&gt;,&#39;U&gt;) -&gt; Series&lt;&#39;K,&#39;U&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V, 'U          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '811', 811)" onmouseover="showTip(event, '811', 811)">
-            SeriesExtensions.WindowInto(...)
+          <code onmouseout="hideTip(event, '847', 847)" onmouseover="showTip(event, '847', 847)">
+            WindowInto(series, size, selector)
           </code>
-          <div class="tip" id="811">
+          <div class="tip" id="847">
             <strong>Signature:</strong>(series:Series&lt;&#39;K1,&#39;V&gt; * size:int * selector:Func&lt;Series&lt;&#39;K1,&#39;V&gt;,KeyValuePair&lt;&#39;K2,&#39;U&gt;&gt;) -&gt; Series&lt;&#39;K2,&#39;U&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'V, 'K2, 'U          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
     </tbody>
   </table>

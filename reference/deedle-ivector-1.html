@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>IVector - Deedle</title>
+    <title>IVector<'T> - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="BlueMountain Capital">
@@ -38,7 +38,7 @@
 
 
 
-<h1>IVector</h1>
+<h1>IVector<'T></h1>
 <div class="xmldoc">
 <p>A generic, typed vector. Represents mapping from addresses to values of type <code>T</code>. 
 The vector provides a minimal interface that is required by series and can be
@@ -54,64 +54,72 @@ alternative representation of data.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '405', 405)" onmouseover="showTip(event, '405', 405)">
-            iVector.Data
+          <code onmouseout="hideTip(event, '420', 420)" onmouseover="showTip(event, '420', 420)">
+            Data
           </code>
-          <div class="tip" id="405">
+          <div class="tip" id="420">
             <strong>Signature:</strong>VectorData&lt;&#39;T&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Returns all data of the vector in one of the supported formats. Depending
+        <td class="xmldoc">
+        <p>Returns all data of the vector in one of the supported formats. Depending
 on the vector, data may be returned as a continuous block of memory using
 <code>ReadOnlyCollection&lt;T&gt;</code> or as a lazy sequence <code>seq&lt;T&gt;</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '407', 407)" onmouseover="showTip(event, '407', 407)">
-            iVector.GetValue(arg1)
+          <code onmouseout="hideTip(event, '421', 421)" onmouseover="showTip(event, '421', 421)">
+            GetValue(arg1)
           </code>
-          <div class="tip" id="407">
+          <div class="tip" id="421">
             <strong>Signature:</strong>Address -&gt; OptionalValue&lt;&#39;T&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
-        <td class="xmldoc"><p>Returns value stored in the vector at a specified address.</p>
-</td>
+        <td class="xmldoc">
+        <p>Returns value stored in the vector at a specified address.</p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '408', 408)" onmouseover="showTip(event, '408', 408)">
-            iVector.Select(arg1)
+          <code onmouseout="hideTip(event, '422', 422)" onmouseover="showTip(event, '422', 422)">
+            Select(arg1)
           </code>
-          <div class="tip" id="408">
+          <div class="tip" id="422">
             <strong>Signature:</strong>((&#39;T -&gt; &#39;TNew)) -&gt; IVector&lt;&#39;TNew&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'TNew          </div>
         </td>
-        <td class="xmldoc"><p>Apply the specified function to all values stored in the vector and return
+        <td class="xmldoc">
+        <p>Apply the specified function to all values stored in the vector and return
 a new vector (not necessarily of the same representation) with the results.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '409', 409)" onmouseover="showTip(event, '409', 409)">
-            iVector.SelectMissing(arg1)
+          <code onmouseout="hideTip(event, '423', 423)" onmouseover="showTip(event, '423', 423)">
+            SelectMissing(arg1)
           </code>
-          <div class="tip" id="409">
+          <div class="tip" id="423">
             <strong>Signature:</strong>((OptionalValue&lt;&#39;T&gt; -&gt; OptionalValue&lt;&#39;TNew&gt;)) -&gt; IVector&lt;&#39;TNew&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'TNew          </div>
         </td>
-        <td class="xmldoc"><p>Apply the specified function to all values stored in the vector and return
+        <td class="xmldoc">
+        <p>Apply the specified function to all values stored in the vector and return
 a new vector (not necessarily of the same representation) with the results.
 The function handles missing values - it is called with optional values and
 may return a missing value as a result of the transformation.</p>
-</td>
+
+        </td>
       </tr>
     </tbody>
   </table>

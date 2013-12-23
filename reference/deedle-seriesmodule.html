@@ -42,6 +42,7 @@
 <div class="xmldoc">
 <p>Series module comment..</p>
 </div>
+  <!-- If there is more than 1 category in the type, generate TOC -->
   <h2>Table of contents</h2>
   <ul>
       <li><a href="#section0">Appending, joining and zipping</a></li>            
@@ -54,13 +55,7 @@
       <li><a href="#section7">Other module members</a></li>            
   </ul>
 
-<!-- TODO: Refactor me - copy & paste from 'namespaces.cshtml' -->
-
-
-
-<!-- END TODO -->
-
-
+<!-- Render nested types and modules, if there are any -->
 
     <h2>Appending, joining and zipping<a name="section0">&#160;</a></h2>    
   <h3>Functions and values</h3>
@@ -72,50 +67,58 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '42', 42)" onmouseover="showTip(event, '42', 42)">
+          <code onmouseout="hideTip(event, '44', 44)" onmouseover="showTip(event, '44', 44)">
             append series1 series2
           </code>
-          <div class="tip" id="42">
+          <div class="tip" id="44">
             <strong>Signature:</strong>series1:Series&lt;&#39;K,&#39;V&gt; -&gt; series2:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '70', 70)" onmouseover="showTip(event, '70', 70)">
+          <code onmouseout="hideTip(event, '45', 45)" onmouseover="showTip(event, '45', 45)">
             zip series1 series2
           </code>
-          <div class="tip" id="70">
+          <div class="tip" id="45">
             <strong>Signature:</strong>series1:Series&lt;&#39;K,&#39;V1&gt; -&gt; series2:Series&lt;&#39;K,&#39;V2&gt; -&gt; Series&lt;&#39;K,(&#39;V1 opt * &#39;V2 opt)&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V1, 'V2          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '71', 71)" onmouseover="showTip(event, '71', 71)">
+          <code onmouseout="hideTip(event, '46', 46)" onmouseover="showTip(event, '46', 46)">
             zipAlign kind lookup series1 series2
           </code>
-          <div class="tip" id="71">
+          <div class="tip" id="46">
             <strong>Signature:</strong>kind:JoinKind -&gt; lookup:Lookup -&gt; series1:Series&lt;&#39;K,&#39;V1&gt; -&gt; series2:Series&lt;&#39;K,&#39;V2&gt; -&gt; Series&lt;&#39;K,(&#39;V1 opt * &#39;V2 opt)&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V1, 'V2          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '72', 72)" onmouseover="showTip(event, '72', 72)">
+          <code onmouseout="hideTip(event, '47', 47)" onmouseover="showTip(event, '47', 47)">
             zipInner series1 series2
           </code>
-          <div class="tip" id="72">
+          <div class="tip" id="47">
             <strong>Signature:</strong>series1:Series&lt;&#39;K,&#39;V1&gt; -&gt; series2:Series&lt;&#39;K,&#39;V2&gt; -&gt; Series&lt;&#39;K,(&#39;V1 * &#39;V2)&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V1, 'V2          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
     </tbody>
   </table>
@@ -129,21 +132,23 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '108', 108)" onmouseover="showTip(event, '108', 108)">
+          <code onmouseout="hideTip(event, '135', 135)" onmouseover="showTip(event, '135', 135)">
             orderByKey series
           </code>
-          <div class="tip" id="108">
+          <div class="tip" id="135">
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Returns a new series whose entries are reordered according to index order</p>
+        <td class="xmldoc">
+        <p>Returns a new series whose entries are reordered according to index order</p>
 
 <h2>Parameters</h2>
 
 <ul>
 <li><code>series</code> - An input series to be used</li>
 </ul>
-</td>
+
+        </td>
       </tr>
     </tbody>
   </table>
@@ -157,50 +162,58 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '136', 136)" onmouseover="showTip(event, '136', 136)">
+          <code onmouseout="hideTip(event, '141', 141)" onmouseover="showTip(event, '141', 141)">
             union series1 series2
           </code>
-          <div class="tip" id="136">
+          <div class="tip" id="141">
             <strong>Signature:</strong>series1:Series&lt;&#39;K,&#39;V&gt; -&gt; series2:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '138', 138)" onmouseover="showTip(event, '138', 138)">
+          <code onmouseout="hideTip(event, '142', 142)" onmouseover="showTip(event, '142', 142)">
             unionUsing behavior series1 series2
           </code>
-          <div class="tip" id="138">
+          <div class="tip" id="142">
             <strong>Signature:</strong>behavior:UnionBehavior -&gt; series1:Series&lt;&#39;K,&#39;V&gt; -&gt; series2:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '139', 139)" onmouseover="showTip(event, '139', 139)">
+          <code onmouseout="hideTip(event, '143', 143)" onmouseover="showTip(event, '143', 143)">
             zipAlignInto (...)
           </code>
-          <div class="tip" id="139">
+          <div class="tip" id="143">
             <strong>Signature:</strong>kind:JoinKind -&gt; lookup:Lookup -&gt; op:(&#39;V1 -&gt; &#39;V2 -&gt; &#39;R) -&gt; series1:Series&lt;&#39;K,&#39;V1&gt; -&gt; series2:Series&lt;&#39;K,&#39;V2&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'V1, 'V2, 'R, 'K          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '140', 140)" onmouseover="showTip(event, '140', 140)">
+          <code onmouseout="hideTip(event, '144', 144)" onmouseover="showTip(event, '144', 144)">
             zipInto op series1 series2
           </code>
-          <div class="tip" id="140">
+          <div class="tip" id="144">
             <strong>Signature:</strong>op:(&#39;V1 -&gt; &#39;V2 -&gt; &#39;R) -&gt; series1:Series&lt;&#39;K,&#39;V1&gt; -&gt; series2:Series&lt;&#39;K,&#39;V2&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'V1, 'V2, 'R, 'K          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
     </tbody>
   </table>
@@ -218,14 +231,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '145', 145)" onmouseover="showTip(event, '145', 145)">
+          <code onmouseout="hideTip(event, '152', 152)" onmouseover="showTip(event, '152', 152)">
             lookupTime interval dir lookup series
           </code>
-          <div class="tip" id="145">
+          <div class="tip" id="152">
             <strong>Signature:</strong>interval:TimeSpan -&gt; dir:Direction -&gt; lookup:Lookup -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,^V&gt;<br />
                           <strong>Type parameters:</strong> ^K, ^V          </div>
         </td>
-        <td class="xmldoc"><p>Finds values at, or near, the specified times in a given series. The operation generates
+        <td class="xmldoc">
+        <p>Finds values at, or near, the specified times in a given series. The operation generates
 keys starting from the smallest key of the original series, using the specified <code>interval</code>
 and then finds values close to such keys using the specified <code>lookup</code> and <code>dir</code>.</p>
 
@@ -249,19 +263,21 @@ values at exact keys will be returned; <code>NearestGreater</code> returns the n
 
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '147', 147)" onmouseover="showTip(event, '147', 147)">
+          <code onmouseout="hideTip(event, '153', 153)" onmouseover="showTip(event, '153', 153)">
             lookupTimeAt (...)
           </code>
-          <div class="tip" id="147">
+          <div class="tip" id="153">
             <strong>Signature:</strong>start:^K -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; lookup:Lookup -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,^V&gt;<br />
                           <strong>Type parameters:</strong> ^K, ^V          </div>
         </td>
-        <td class="xmldoc"><p>Finds values at, or near, the specified times in a given series. The operation generates
+        <td class="xmldoc">
+        <p>Finds values at, or near, the specified times in a given series. The operation generates
 keys starting at the specified <code>start</code> time, using the specified <code>interval</code>
 and then finds values close to such keys using the specified <code>lookup</code> and <code>dir</code>.</p>
 
@@ -286,19 +302,21 @@ values at exact keys will be returned; <code>NearestGreater</code> returns the n
 
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '148', 148)" onmouseover="showTip(event, '148', 148)">
+          <code onmouseout="hideTip(event, '154', 154)" onmouseover="showTip(event, '154', 154)">
             resample keys dir series
           </code>
-          <div class="tip" id="148">
+          <div class="tip" id="154">
             <strong>Signature:</strong>keys:seq&lt;&#39;K&gt; -&gt; dir:Direction -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;V&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
-        <td class="xmldoc"><p>Resample the series based on a provided collection of keys. The values of the series
+        <td class="xmldoc">
+        <p>Resample the series based on a provided collection of keys. The values of the series
 are aggregated into chunks based on the specified keys. Depending on <code>direction</code>, the 
 specified key is either used as the smallest or as the greatest key of the chunk (with
 the exception of boundaries that are added to the first/last chunk).
@@ -318,19 +336,21 @@ used as the greatest keys in a chunk.</li>
 
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '149', 149)" onmouseover="showTip(event, '149', 149)">
+          <code onmouseout="hideTip(event, '155', 155)" onmouseover="showTip(event, '155', 155)">
             resampleEquiv keyProj series
           </code>
-          <div class="tip" id="149">
+          <div class="tip" id="155">
             <strong>Signature:</strong>keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; series:Series&lt;&#39;K1,&#39;V1&gt; -&gt; Series&lt;&#39;K2,Series&lt;&#39;K1,&#39;V1&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V1          </div>
         </td>
-        <td class="xmldoc"><p>Resample the series based on equivalence class on the keys. A specified function
+        <td class="xmldoc">
+        <p>Resample the series based on equivalence class on the keys. A specified function
 <code>keyProj</code> is used to project keys to another space and the observations for which the 
 projected keys are equivalent are grouped into chunks. The chunks are then returned
 as nested series.</p>
@@ -351,19 +371,21 @@ keys to a new space.</p>
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered. For unordered
 series, similar functionality can be implemented using <code>Series.groupBy</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '150', 150)" onmouseover="showTip(event, '150', 150)">
+          <code onmouseout="hideTip(event, '156', 156)" onmouseover="showTip(event, '156', 156)">
             resampleEquivInto keyProj f series
           </code>
-          <div class="tip" id="150">
+          <div class="tip" id="156">
             <strong>Signature:</strong>keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; f:(Series&lt;&#39;K1,&#39;V1&gt; -&gt; &#39;V2) -&gt; series:Series&lt;&#39;K1,&#39;V1&gt; -&gt; Series&lt;&#39;K2,&#39;V2&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V1, 'V2          </div>
         </td>
-        <td class="xmldoc"><p>Resample the series based on equivalence class on the keys. A specified function
+        <td class="xmldoc">
+        <p>Resample the series based on equivalence class on the keys. A specified function
 <code>keyProj</code> is used to project keys to another space and the observations for which the 
 projected keys are equivalent are grouped into chunks. The chunks are then transformed
 to values using the provided function <code>f</code>.</p>
@@ -386,19 +408,21 @@ keys to a new space.</p>
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered. For unordered
 series, similar functionality can be implemented using <code>Series.groupBy</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '151', 151)" onmouseover="showTip(event, '151', 151)">
+          <code onmouseout="hideTip(event, '157', 157)" onmouseover="showTip(event, '157', 157)">
             resampleInto keys dir f series
           </code>
-          <div class="tip" id="151">
+          <div class="tip" id="157">
             <strong>Signature:</strong>keys:seq&lt;&#39;K&gt; -&gt; dir:Direction -&gt; f:(&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;?7483) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;?7483&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V, '?7483          </div>
         </td>
-        <td class="xmldoc"><p>Resample the series based on a provided collection of keys. The values of the series
+        <td class="xmldoc">
+        <p>Resample the series based on a provided collection of keys. The values of the series
 are aggregated into chunks based on the specified keys. Depending on <code>direction</code>, the 
 specified key is either used as the smallest or as the greatest key of the chunk (with
 the exception of boundaries that are added to the first/last chunk).
@@ -420,19 +444,21 @@ single value. Note that this function may be called with empty series.</li>
 
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '152', 152)" onmouseover="showTip(event, '152', 152)">
+          <code onmouseout="hideTip(event, '158', 158)" onmouseover="showTip(event, '158', 158)">
             resampleUniform (...)
           </code>
-          <div class="tip" id="152">
+          <div class="tip" id="158">
             <strong>Signature:</strong>fillMode:Lookup -&gt; keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; nextKey:(&#39;K2 -&gt; &#39;K2) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,Series&lt;&#39;K1,&#39;V&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V          </div>
         </td>
-        <td class="xmldoc"><p>Resample the series based on equivalence class on the keys and also generate values 
+        <td class="xmldoc">
+        <p>Resample the series based on equivalence class on the keys and also generate values 
 for all keys of the target space that are between the minimal and maximal key of the
 specified series (e.g. generate value for all days in the range covered by the series).
 A specified function <code>keyProj</code> is used to project keys to another space and <code>nextKey</code>
@@ -458,19 +484,21 @@ space (which is then used for grouping based on equivalence)</li>
 
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '153', 153)" onmouseover="showTip(event, '153', 153)">
+          <code onmouseout="hideTip(event, '159', 159)" onmouseover="showTip(event, '159', 159)">
             resampleUniformInto (...)
           </code>
-          <div class="tip" id="153">
+          <div class="tip" id="159">
             <strong>Signature:</strong>fillMode:Lookup -&gt; keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; nextKey:(&#39;K2 -&gt; &#39;K2) -&gt; f:(Series&lt;&#39;K1,&#39;V&gt; -&gt; &#39;?7500) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;?7500&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V, '?7500          </div>
         </td>
-        <td class="xmldoc"><p>Resample the series based on equivalence class on the keys and also generate values 
+        <td class="xmldoc">
+        <p>Resample the series based on equivalence class on the keys and also generate values 
 for all keys of the target space that are between the minimal and maximal key of the
 specified series (e.g. generate value for all days in the range covered by the series).
 A specified function <code>keyProj</code> is used to project keys to another space and <code>nextKey</code>
@@ -499,19 +527,21 @@ single value. The function may be called on empty series when <code>fillMode</co
 
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '154', 154)" onmouseover="showTip(event, '154', 154)">
+          <code onmouseout="hideTip(event, '160', 160)" onmouseover="showTip(event, '160', 160)">
             sampleTime interval dir series
           </code>
-          <div class="tip" id="154">
+          <div class="tip" id="160">
             <strong>Signature:</strong>interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?7514,^?7515&gt; -&gt; Series&lt;^?7514,Series&lt;^?7514,^?7515&gt;&gt;<br />
                           <strong>Type parameters:</strong> ^?7514, ^?7515          </div>
         </td>
-        <td class="xmldoc"><p>Performs sampling by time and returns chunks obtained by time-sampling as a nested<br />
+        <td class="xmldoc">
+        <p>Performs sampling by time and returns chunks obtained by time-sampling as a nested<br />
 series. The operation generates keys starting at the first key in the source series,
 using the specified <code>interval</code> and then obtains chunks based on these
 keys in a fashion similar to the <code>Series.resample</code> function.</p>
@@ -530,19 +560,21 @@ used as the greatest keys in a chunk.</li>
 
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '155', 155)" onmouseover="showTip(event, '155', 155)">
+          <code onmouseout="hideTip(event, '161', 161)" onmouseover="showTip(event, '161', 161)">
             sampleTimeAt start interval dir series
           </code>
-          <div class="tip" id="155">
+          <div class="tip" id="161">
             <strong>Signature:</strong>start:^?7517 -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?7517,^?7518&gt; -&gt; Series&lt;^?7517,Series&lt;^?7517,^?7518&gt;&gt;<br />
                           <strong>Type parameters:</strong> ^?7517, ^?7518          </div>
         </td>
-        <td class="xmldoc"><p>Performs sampling by time and returns chunks obtained by time-sampling as a nested<br />
+        <td class="xmldoc">
+        <p>Performs sampling by time and returns chunks obtained by time-sampling as a nested<br />
 series. The operation generates keys starting at the given <code>start</code> time, using the 
 specified <code>interval</code> and then obtains chunks based on these
 keys in a fashion similar to the <code>Series.resample</code> function.</p>
@@ -562,19 +594,21 @@ used as the greatest keys in a chunk.</li>
 
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '156', 156)" onmouseover="showTip(event, '156', 156)">
+          <code onmouseout="hideTip(event, '162', 162)" onmouseover="showTip(event, '162', 162)">
             sampleTimeAtInto (...)
           </code>
-          <div class="tip" id="156">
+          <div class="tip" id="162">
             <strong>Signature:</strong>start:^K -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?7512) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?7512&gt;<br />
                           <strong>Type parameters:</strong> ^K, ^V, '?7512          </div>
         </td>
-        <td class="xmldoc"><p>Performs sampling by time and aggregates chunks obtained by time-sampling into a single
+        <td class="xmldoc">
+        <p>Performs sampling by time and aggregates chunks obtained by time-sampling into a single
 value using a specified function. The operation generates keys starting at the given
 <code>start</code> time, using the specified <code>interval</code> and then obtains chunks based on these
 keys in a fashion similar to the <code>Series.resample</code> function.</p>
@@ -595,19 +629,21 @@ used as the greatest keys in a chunk.</li>
 
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '157', 157)" onmouseover="showTip(event, '157', 157)">
+          <code onmouseout="hideTip(event, '163', 163)" onmouseover="showTip(event, '163', 163)">
             sampleTimeInto interval dir f series
           </code>
-          <div class="tip" id="157">
+          <div class="tip" id="163">
             <strong>Signature:</strong>interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?7508) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?7508&gt;<br />
                           <strong>Type parameters:</strong> ^K, ^V, '?7508          </div>
         </td>
-        <td class="xmldoc"><p>Performs sampling by time and aggregates chunks obtained by time-sampling into a single
+        <td class="xmldoc">
+        <p>Performs sampling by time and aggregates chunks obtained by time-sampling into a single
 value using a specified function. The operation generates keys starting at the first
 key in the source series, using the specified <code>interval</code> and then obtains chunks based on 
 these keys in a fashion similar to the <code>Series.resample</code> function.</p>
@@ -627,7 +663,8 @@ used as the greatest keys in a chunk.</li>
 
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
-</td>
+
+        </td>
       </tr>
     </tbody>
   </table>
@@ -645,14 +682,15 @@ used as the greatest keys in a chunk.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '164', 164)" onmouseover="showTip(event, '164', 164)">
+          <code onmouseout="hideTip(event, '174', 174)" onmouseover="showTip(event, '174', 174)">
             dropMissing series
           </code>
-          <div class="tip" id="164">
+          <div class="tip" id="174">
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Drop missing values from the specified series. The returned series contains 
+        <td class="xmldoc">
+        <p>Drop missing values from the specified series. The returned series contains 
 only those keys for which there is a value available in the original one.</p>
 
 <h2>Parameters</h2>
@@ -667,19 +705,21 @@ only those keys for which there is a value available in the original one.</p>
 s |&gt; Series.dropMissing 
 [fsi:val it : Series&lt;int,float&gt; = series [ 1 =&gt; 1]
 </code></pre>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '166', 166)" onmouseover="showTip(event, '166', 166)">
+          <code onmouseout="hideTip(event, '175', 175)" onmouseover="showTip(event, '175', 175)">
             fillMissing direction series
           </code>
-          <div class="tip" id="166">
+          <div class="tip" id="175">
             <strong>Signature:</strong>direction:Direction -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Fill missing values in the series with the nearest available value
+        <td class="xmldoc">
+        <p>Fill missing values in the series with the nearest available value
 (using the specified direction). Note that the series may still contain
 missing values after call to this function. This operation can only be
 used on ordered series.</p>
@@ -704,31 +744,35 @@ sample |&gt; Series.fillMissing Direction.Backward
 // Returns a series consisting of [&lt;missing&gt;; 1; 1; 3]
 sample |&gt; Series.fillMissing Direction.Forward 
 </code></pre>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '167', 167)" onmouseover="showTip(event, '167', 167)">
+          <code onmouseout="hideTip(event, '176', 176)" onmouseover="showTip(event, '176', 176)">
             fillMissingBetween (...)
           </code>
-          <div class="tip" id="167">
+          <div class="tip" id="176">
             <strong>Signature:</strong>(startKey:&#39;K * endKey:&#39;K) -&gt; direction:Direction -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '168', 168)" onmouseover="showTip(event, '168', 168)">
+          <code onmouseout="hideTip(event, '177', 177)" onmouseover="showTip(event, '177', 177)">
             fillMissingUsing f series
           </code>
-          <div class="tip" id="168">
+          <div class="tip" id="177">
             <strong>Signature:</strong>f:(&#39;K -&gt; &#39;T) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Fill missing values in the series using the specified function.
+        <td class="xmldoc">
+        <p>Fill missing values in the series using the specified function.
 The specified function is called with all keys for which the series
 does not contain value and the result of the call is used in place 
 of the missing value.</p>
@@ -745,19 +789,21 @@ used in a place where the original series contains a missing value.</li>
 
 <p>This function can be used to implement more complex interpolation.
 For example see <a href="../features.html#missing">handling missing values in the tutorial</a></p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '169', 169)" onmouseover="showTip(event, '169', 169)">
+          <code onmouseout="hideTip(event, '178', 178)" onmouseover="showTip(event, '178', 178)">
             fillMissingWith value series
           </code>
-          <div class="tip" id="169">
+          <div class="tip" id="178">
             <strong>Signature:</strong>value:&#39;?7468 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> '?7468, 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Fill missing values in the series with a constant value.</p>
+        <td class="xmldoc">
+        <p>Fill missing values in the series with a constant value.</p>
 
 <h2>Parameters</h2>
 
@@ -765,7 +811,8 @@ For example see <a href="../features.html#missing">handling missing values in th
 <li><code>series</code> - An input series that is to be filled</li>
 <li><code>value</code> - A constant value that is used to fill all missing values</li>
 </ul>
-</td>
+
+        </td>
       </tr>
     </tbody>
   </table>
@@ -783,14 +830,15 @@ For example see <a href="../features.html#missing">handling missing values in th
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '179', 179)" onmouseover="showTip(event, '179', 179)">
+          <code onmouseout="hideTip(event, '183', 183)" onmouseover="showTip(event, '183', 183)">
             applyLevel level op series
           </code>
-          <div class="tip" id="179">
+          <div class="tip" id="183">
             <strong>Signature:</strong>level:(&#39;K1 -&gt; &#39;K2) -&gt; op:(Series&lt;&#39;K1,&#39;V&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V, 'R          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>level</code> and then aggregates series representing each group
 using the specified function <code>op</code>. The result is a new series containing
 the aggregates of each group.</p>
@@ -804,19 +852,21 @@ the aggregates of each group.</p>
 <li><code>op</code> - A function that takes a series and produces an aggregated result</li>
 <li><code>level</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '181', 181)" onmouseover="showTip(event, '181', 181)">
+          <code onmouseout="hideTip(event, '184', 184)" onmouseover="showTip(event, '184', 184)">
             countLevel level series
           </code>
-          <div class="tip" id="181">
+          <div class="tip" id="184">
             <strong>Signature:</strong>level:(&#39;K1 -&gt; &#39;K2) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,int&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>level</code> and then returns a new series containing
 the counts of elements in each group.</p>
 
@@ -828,45 +878,51 @@ the counts of elements in each group.</p>
 <li><code>series</code> - A series of values that are used to calculate the counts</li>
 <li><code>level</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '182', 182)" onmouseover="showTip(event, '182', 182)">
+          <code onmouseout="hideTip(event, '185', 185)" onmouseover="showTip(event, '185', 185)">
             flattenLevel level op series
           </code>
-          <div class="tip" id="182">
+          <div class="tip" id="185">
             <strong>Signature:</strong>level:(&#39;K1 -&gt; &#39;K2) -&gt; op:(Series&lt;&#39;K1,&#39;S&gt; -&gt; &#39;V) -&gt; series:Series&lt;&#39;K1,&#39;S&gt; -&gt; Series&lt;&#39;K2,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'S, 'V          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '183', 183)" onmouseover="showTip(event, '183', 183)">
+          <code onmouseout="hideTip(event, '186', 186)" onmouseover="showTip(event, '186', 186)">
             max series
           </code>
-          <div class="tip" id="183">
+          <div class="tip" id="186">
             <strong>Signature:</strong>series:Series&lt;&#39;K,^V&gt; -&gt; ^V<br />
                           <strong>Type parameters:</strong> 'K, ^V          </div>
         </td>
-        <td class="xmldoc"><p>Returns the smallest of all elements of the series. The operation 
+        <td class="xmldoc">
+        <p>Returns the smallest of all elements of the series. The operation 
 skips over missing values and so the result will never be <code>NaN</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '184', 184)" onmouseover="showTip(event, '184', 184)">
+          <code onmouseout="hideTip(event, '187', 187)" onmouseover="showTip(event, '187', 187)">
             maxLevel level series
           </code>
-          <div class="tip" id="184">
+          <div class="tip" id="187">
             <strong>Signature:</strong>level:(&#39;K1 -&gt; &#39;K2) -&gt; series:Series&lt;&#39;K1,^V&gt; -&gt; Series&lt;&#39;K2,^V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, ^V          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>level</code> and then returns a new series containing
 the greatest element of each group.</p>
 
@@ -878,33 +934,37 @@ the greatest element of each group.</p>
 <li><code>series</code> - A series of values that are used to calculate the greatest elements</li>
 <li><code>level</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '185', 185)" onmouseover="showTip(event, '185', 185)">
+          <code onmouseout="hideTip(event, '188', 188)" onmouseover="showTip(event, '188', 188)">
             mean series
           </code>
-          <div class="tip" id="185">
+          <div class="tip" id="188">
             <strong>Signature:</strong>series:Series&lt;&#39;K,^V&gt; -&gt; ^V<br />
                           <strong>Type parameters:</strong> 'K, ^V          </div>
         </td>
-        <td class="xmldoc"><p>Returns the mean of the elements of the series. The operation skips over
+        <td class="xmldoc">
+        <p>Returns the mean of the elements of the series. The operation skips over
 missing values and so the result will never be <code>NaN</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '186', 186)" onmouseover="showTip(event, '186', 186)">
+          <code onmouseout="hideTip(event, '189', 189)" onmouseover="showTip(event, '189', 189)">
             meanLevel level series
           </code>
-          <div class="tip" id="186">
+          <div class="tip" id="189">
             <strong>Signature:</strong>level:(&#39;K1 -&gt; &#39;K2) -&gt; series:Series&lt;&#39;K1,^V&gt; -&gt; Series&lt;&#39;K2,^V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, ^V          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>level</code> and then returns a new series containing
 the mean of each group.</p>
 
@@ -916,33 +976,37 @@ the mean of each group.</p>
 <li><code>series</code> - A series of values that are used to calculate the means</li>
 <li><code>level</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '187', 187)" onmouseover="showTip(event, '187', 187)">
+          <code onmouseout="hideTip(event, '190', 190)" onmouseover="showTip(event, '190', 190)">
             median series
           </code>
-          <div class="tip" id="187">
+          <div class="tip" id="190">
             <strong>Signature:</strong>series:Series&lt;&#39;K,float&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"><p>Returns the median of the elements of the series. The operation skips over
+        <td class="xmldoc">
+        <p>Returns the median of the elements of the series. The operation skips over
 missing values and so the result will never be <code>NaN</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '188', 188)" onmouseover="showTip(event, '188', 188)">
+          <code onmouseout="hideTip(event, '191', 191)" onmouseover="showTip(event, '191', 191)">
             medianLevel level series
           </code>
-          <div class="tip" id="188">
+          <div class="tip" id="191">
             <strong>Signature:</strong>level:(&#39;?7351 -&gt; &#39;?7352) -&gt; series:Series&lt;&#39;?7351,float&gt; -&gt; Series&lt;&#39;?7352,float&gt;<br />
                           <strong>Type parameters:</strong> '?7351, '?7352          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>level</code> and then returns a new series containing
 the median of each group.</p>
 
@@ -954,33 +1018,37 @@ the median of each group.</p>
 <li><code>series</code> - A series of values that are used to calculate the medians</li>
 <li><code>level</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '189', 189)" onmouseover="showTip(event, '189', 189)">
+          <code onmouseout="hideTip(event, '192', 192)" onmouseover="showTip(event, '192', 192)">
             min series
           </code>
-          <div class="tip" id="189">
+          <div class="tip" id="192">
             <strong>Signature:</strong>series:Series&lt;&#39;K,^V&gt; -&gt; ^V<br />
                           <strong>Type parameters:</strong> 'K, ^V          </div>
         </td>
-        <td class="xmldoc"><p>Returns the greatest of all elements of the series. The operation 
+        <td class="xmldoc">
+        <p>Returns the greatest of all elements of the series. The operation 
 skips over missing values and so the result will never be <code>NaN</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '190', 190)" onmouseover="showTip(event, '190', 190)">
+          <code onmouseout="hideTip(event, '193', 193)" onmouseover="showTip(event, '193', 193)">
             minLevel level series
           </code>
-          <div class="tip" id="190">
+          <div class="tip" id="193">
             <strong>Signature:</strong>level:(&#39;K1 -&gt; &#39;K2) -&gt; series:Series&lt;&#39;K1,^V&gt; -&gt; Series&lt;&#39;K2,^V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, ^V          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>level</code> and then returns a new series containing
 the greatest element of each group.</p>
 
@@ -992,19 +1060,21 @@ the greatest element of each group.</p>
 <li><code>series</code> - A series of values that are used to calculate the greatest elements</li>
 <li><code>level</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '191', 191)" onmouseover="showTip(event, '191', 191)">
+          <code onmouseout="hideTip(event, '194', 194)" onmouseover="showTip(event, '194', 194)">
             reduce op series
           </code>
-          <div class="tip" id="191">
+          <div class="tip" id="194">
             <strong>Signature:</strong>op:(&#39;T -&gt; &#39;T -&gt; &#39;T) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;T<br />
                           <strong>Type parameters:</strong> 'T, 'K          </div>
         </td>
-        <td class="xmldoc"><p>Aggregates the values of the specified series using a function that can combine
+        <td class="xmldoc">
+        <p>Aggregates the values of the specified series using a function that can combine
 individual values.</p>
 
 <h2>Parameters</h2>
@@ -1013,19 +1083,21 @@ individual values.</p>
 <li><code>series</code> - An input series to be aggregated</li>
 <li><code>op</code> - A function that is used to aggregate elements of the series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '192', 192)" onmouseover="showTip(event, '192', 192)">
+          <code onmouseout="hideTip(event, '195', 195)" onmouseover="showTip(event, '195', 195)">
             reduceLevel level op series
           </code>
-          <div class="tip" id="192">
+          <div class="tip" id="195">
             <strong>Signature:</strong>level:(&#39;K1 -&gt; &#39;K2) -&gt; op:(&#39;T -&gt; &#39;T -&gt; &#39;T) -&gt; series:Series&lt;&#39;K1,&#39;T&gt; -&gt; Series&lt;&#39;K2,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>level</code> and then aggregates elements in each group
 using the specified function <code>op</code>. The result is a new series containing
 the aggregates of each group.</p>
@@ -1039,33 +1111,37 @@ the aggregates of each group.</p>
 <li><code>op</code> - A function that is used to aggregate elements of each group</li>
 <li><code>level</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '193', 193)" onmouseover="showTip(event, '193', 193)">
+          <code onmouseout="hideTip(event, '196', 196)" onmouseover="showTip(event, '196', 196)">
             sdv series
           </code>
-          <div class="tip" id="193">
+          <div class="tip" id="196">
             <strong>Signature:</strong>series:Series&lt;&#39;K,float&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
-        <td class="xmldoc"><p>Returns the standard deviation of the elements of the series. The operation skips over
+        <td class="xmldoc">
+        <p>Returns the standard deviation of the elements of the series. The operation skips over
 missing values and so the result will never be <code>NaN</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '194', 194)" onmouseover="showTip(event, '194', 194)">
+          <code onmouseout="hideTip(event, '197', 197)" onmouseover="showTip(event, '197', 197)">
             sdvLevel level series
           </code>
-          <div class="tip" id="194">
+          <div class="tip" id="197">
             <strong>Signature:</strong>level:(&#39;K1 -&gt; &#39;K2) -&gt; series:Series&lt;&#39;K1,float&gt; -&gt; Series&lt;&#39;K2,float&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>level</code> and then returns a new series containing
 the standard deviation of each group.</p>
 
@@ -1077,19 +1153,21 @@ the standard deviation of each group.</p>
 <li><code>series</code> - A series of values that are used to calculate the standard deviations</li>
 <li><code>level</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '195', 195)" onmouseover="showTip(event, '195', 195)">
+          <code onmouseout="hideTip(event, '198', 198)" onmouseover="showTip(event, '198', 198)">
             stat op series
           </code>
-          <div class="tip" id="195">
+          <div class="tip" id="198">
             <strong>Signature:</strong>op:(seq&lt;&#39;V1&gt; -&gt; &#39;V2) -&gt; series:Series&lt;&#39;K,&#39;V1&gt; -&gt; &#39;V2<br />
                           <strong>Type parameters:</strong> 'V1, 'V2, 'K          </div>
         </td>
-        <td class="xmldoc"><p>Aggregates the values of the specified series using a function that operates on
+        <td class="xmldoc">
+        <p>Aggregates the values of the specified series using a function that operates on
 sequence (<code>IEnumerable&lt;T&gt;</code>). This simply reads all non-missing values and passes
 them to the specified operation.</p>
 
@@ -1099,19 +1177,21 @@ them to the specified operation.</p>
 <li><code>series</code> - An input series to be aggregated</li>
 <li><code>op</code> - A function that takes a sequence and produces an aggregated result</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '196', 196)" onmouseover="showTip(event, '196', 196)">
+          <code onmouseout="hideTip(event, '199', 199)" onmouseover="showTip(event, '199', 199)">
             statLevel level op series
           </code>
-          <div class="tip" id="196">
+          <div class="tip" id="199">
             <strong>Signature:</strong>level:(&#39;K1 -&gt; &#39;K2) -&gt; op:(seq&lt;&#39;V&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V, 'R          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>level</code> and then aggregates elements in each group
 using the specified function <code>op</code>. The result is a new series containing
 the aggregates of each group.</p>
@@ -1125,33 +1205,37 @@ the aggregates of each group.</p>
 <li><code>op</code> - A function that takes a sequence and produces an aggregated result</li>
 <li><code>level</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '197', 197)" onmouseover="showTip(event, '197', 197)">
+          <code onmouseout="hideTip(event, '200', 200)" onmouseover="showTip(event, '200', 200)">
             sum series
           </code>
-          <div class="tip" id="197">
+          <div class="tip" id="200">
             <strong>Signature:</strong>series:Series&lt;&#39;K,^V&gt; -&gt; ^V<br />
                           <strong>Type parameters:</strong> 'K, ^V          </div>
         </td>
-        <td class="xmldoc"><p>Returns the sum of the elements of the series. The operation skips over
+        <td class="xmldoc">
+        <p>Returns the sum of the elements of the series. The operation skips over
 missing values and so the result will never be <code>NaN</code>.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '198', 198)" onmouseover="showTip(event, '198', 198)">
+          <code onmouseout="hideTip(event, '201', 201)" onmouseover="showTip(event, '201', 201)">
             sumLevel level series
           </code>
-          <div class="tip" id="198">
+          <div class="tip" id="201">
             <strong>Signature:</strong>level:(&#39;K1 -&gt; &#39;K2) -&gt; series:Series&lt;&#39;K1,^V&gt; -&gt; Series&lt;&#39;K2,^V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, ^V          </div>
         </td>
-        <td class="xmldoc"><p>Groups the elements of the input series in groups based on the keys
+        <td class="xmldoc">
+        <p>Groups the elements of the input series in groups based on the keys
 produced by <code>level</code> and then returns a new series containing
 the sum of each group.</p>
 
@@ -1163,7 +1247,8 @@ the sum of each group.</p>
 <li><code>series</code> - A series of values that are used to calculate the sums</li>
 <li><code>level</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
-</td>
+
+        </td>
       </tr>
     </tbody>
   </table>
@@ -1182,14 +1267,15 @@ the sum of each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '203', 203)" onmouseover="showTip(event, '203', 203)">
+          <code onmouseout="hideTip(event, '248', 248)" onmouseover="showTip(event, '248', 248)">
             aggregate aggregation keySelector series
           </code>
-          <div class="tip" id="203">
+          <div class="tip" id="248">
             <strong>Signature:</strong>aggregation:Aggregation&lt;&#39;K&gt; -&gt; keySelector:(DataSegment&lt;Series&lt;&#39;K,&#39;T&gt;&gt; -&gt; &#39;TNewKey) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;TNewKey,DataSegment&lt;Series&lt;&#39;K,&#39;T&gt;&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'TNewKey          </div>
         </td>
-        <td class="xmldoc"><p>Aggregates an ordered series using the method specified by <code>Aggregation&lt;K&gt;</code> and 
+        <td class="xmldoc">
+        <p>Aggregates an ordered series using the method specified by <code>Aggregation&lt;K&gt;</code> and 
 returns the windows or chunks as nested series. A key for each window or chunk is
 selected using the specified <code>keySelector</code>.</p>
 
@@ -1201,7 +1287,8 @@ a discriminated union listing various chunking and windowing conditions.</li>
 <li><code>keySelector</code> - A function that is called on each chunk to obtain a key.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1213,7 +1300,8 @@ a discriminated union listing various chunking and windowing conditions.</li>
             <strong>Signature:</strong>aggregation:Aggregation&lt;&#39;K&gt; -&gt; keySelector:(DataSegment&lt;Series&lt;&#39;K,&#39;T&gt;&gt; -&gt; &#39;TNewKey) -&gt; f:(DataSegment&lt;Series&lt;&#39;K,&#39;T&gt;&gt; -&gt; OptionalValue&lt;&#39;R&gt;) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'TNewKey, 'R          </div>
         </td>
-        <td class="xmldoc"><p>Aggregates an ordered series using the method specified by <code>Aggregation&lt;K&gt;</code> and then
+        <td class="xmldoc">
+        <p>Aggregates an ordered series using the method specified by <code>Aggregation&lt;K&gt;</code> and then
 applies the provided value selector <code>f</code> on each window or chunk to produce the result
 which is returned as a new series. A key for each window or chunk is
 selected using the specified <code>keySelector</code>.</p>
@@ -1227,7 +1315,8 @@ a discriminated union listing various chunking and windowing conditions.</li>
 <li><code>f</code> - A value selector function that is called to aggregate each chunk or window.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1239,7 +1328,8 @@ a discriminated union listing various chunking and windowing conditions.</li>
             <strong>Signature:</strong>size:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Aggregates the input into a series of adacent chunks and returns the produced chunks as
+        <td class="xmldoc">
+        <p>Aggregates the input into a series of adacent chunks and returns the produced chunks as
 a nested series. The key in the new series is the last key of the chunk. This function
 skips incomplete chunks - you can use <code>Series.chunkSize</code> for more options.</p>
 
@@ -1249,7 +1339,8 @@ skips incomplete chunks - you can use <code>Series.chunkSize</code> for more opt
 <li><code>size</code> - The size of the chunk.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1261,7 +1352,8 @@ skips incomplete chunks - you can use <code>Series.chunkSize</code> for more opt
             <strong>Signature:</strong>distance:^D -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,Series&lt;^K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> ^D, ^K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Aggregates the input into a series of adacent chunks. A chunk is started once
+        <td class="xmldoc">
+        <p>Aggregates the input into a series of adacent chunks. A chunk is started once
 the distance between the first and the last key of a previous chunk is greater
 than the specified <code>distance</code>. The chunks are then returned as a nested series.
 The key of each chunk is the key of the first element in the chunk.</p>
@@ -1274,7 +1366,8 @@ is an inline function - there must be <code>-</code> operator defined between <c
 keys of the series.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1286,7 +1379,8 @@ keys of the series.</li>
             <strong>Signature:</strong>distance:^D -&gt; f:(Series&lt;^K,&#39;T&gt; -&gt; &#39;R) -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> ^D, ^K, 'T, 'R          </div>
         </td>
-        <td class="xmldoc"><p>Aggregates the input into a series of adacent chunks. A chunk is started once
+        <td class="xmldoc">
+        <p>Aggregates the input into a series of adacent chunks. A chunk is started once
 the distance between the first and the last key of a previous chunk is greater
 than the specified <code>distance</code>. Each chunk is then aggregated into a value using the
 specified function <code>f</code>. The key of each chunk is the key of the first element in the chunk.</p>
@@ -1300,7 +1394,8 @@ keys of the series.</li>
 <li><code>f</code> - A value selector that is called to aggregate each chunk.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1312,7 +1407,8 @@ keys of the series.</li>
             <strong>Signature:</strong>size:int -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'R          </div>
         </td>
-        <td class="xmldoc"><p>Aggregates the input into a series of adacent chunks and then applies the provided 
+        <td class="xmldoc">
+        <p>Aggregates the input into a series of adacent chunks and then applies the provided 
 value selector <code>f</code> on each chunk to produce the result which is returned as a new series. 
 The key in the new series is the last key of the chunk. This function
 skips incomplete chunks - you can use <code>Series.chunkSizeInto</code> for more options.</p>
@@ -1323,7 +1419,8 @@ skips incomplete chunks - you can use <code>Series.chunkSizeInto</code> for more
 <li><code>size</code> - The size of the chunk.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1335,7 +1432,8 @@ skips incomplete chunks - you can use <code>Series.chunkSizeInto</code> for more
             <strong>Signature:</strong>(int * Boundary) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Aggregates the input into a series of adacent chunks using the specified size and boundary behavior and returns
+        <td class="xmldoc">
+        <p>Aggregates the input into a series of adacent chunks using the specified size and boundary behavior and returns
 the produced chunks as a nested series. The key is the last key of the chunk, unless
 boundary behavior is <code>Boundary.AtEnding</code> (in which case it is the first key).</p>
 
@@ -1348,7 +1446,8 @@ can be <code>Boundary.Skip</code> (meaning that no incomplete chunks are produce
 or <code>Boundary.AtEnding</code> (to produce incomplete chunks at the end of series)</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1360,7 +1459,8 @@ or <code>Boundary.AtEnding</code> (to produce incomplete chunks at the end of se
             <strong>Signature:</strong>(int * Boundary) -&gt; f:(DataSegment&lt;Series&lt;&#39;K,&#39;T&gt;&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'R          </div>
         </td>
-        <td class="xmldoc"><p>Aggregates the input into a series of adacent chunks using the specified size and boundary behavior and then
+        <td class="xmldoc">
+        <p>Aggregates the input into a series of adacent chunks using the specified size and boundary behavior and then
 applies the provided value selector <code>f</code> on each chunk to produce the result
 which is returned as a new series. The key is the last key of the chunk, unless
 boundary behavior is <code>Boundary.AtEnding</code> (in which case it is the first key).</p>
@@ -1375,7 +1475,8 @@ or <code>Boundary.AtEnding</code> (to produce incomplete chunks at the end of se
 <li><code>f</code> - A value selector that is called to aggregate each chunk.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1387,7 +1488,8 @@ or <code>Boundary.AtEnding</code> (to produce incomplete chunks at the end of se
             <strong>Signature:</strong>cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Aggregates the input into a series of adacent chunks based on a condition on keys. A chunk is started 
+        <td class="xmldoc">
+        <p>Aggregates the input into a series of adacent chunks based on a condition on keys. A chunk is started 
 once the specified <code>cond</code> function returns <code>false</code> when called on  the first and the last key of the 
 previous chunk. The chunks are then returned as a nested series.
 The key of each chunk is the key of the first element in the chunk.</p>
@@ -1399,7 +1501,8 @@ The key of each chunk is the key of the first element in the chunk.</p>
 to determine when a window should end.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1411,7 +1514,8 @@ to determine when a window should end.</li>
             <strong>Signature:</strong>cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?7427) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?7427&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, '?7427          </div>
         </td>
-        <td class="xmldoc"><p>Aggregates the input into a series of adacent chunks based on a condition on keys. A chunk is started 
+        <td class="xmldoc">
+        <p>Aggregates the input into a series of adacent chunks based on a condition on keys. A chunk is started 
 once the specified <code>cond</code> function returns <code>false</code> when called on  the first and the last key of the 
 previous chunk. Each chunk is then aggregated into a value using the
 specified function <code>f</code>. The key of each chunk is the key of the first element in the chunk.</p>
@@ -1424,7 +1528,8 @@ to determine when a window should end.</li>
 <li><code>f</code> - A value selector that is called to aggregate each chunk.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1436,7 +1541,8 @@ to determine when a window should end.</li>
             <strong>Signature:</strong>keySelector:(&#39;K -&gt; &#39;T -&gt; &#39;TNewKey) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;TNewKey,Series&lt;&#39;K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'TNewKey          </div>
         </td>
-        <td class="xmldoc"><p>Groups a series (ordered or unordered) using the specified key selector (<code>keySelector</code>) 
+        <td class="xmldoc">
+        <p>Groups a series (ordered or unordered) using the specified key selector (<code>keySelector</code>) 
 and then returns a series of (nested) series as the result. The outer series is indexed by
 the newly produced keys, the nested series are indexed with the original keys.</p>
 
@@ -1447,7 +1553,8 @@ the newly produced keys, the nested series are indexed with the original keys.</
 key and value. The new key must support equality testing.</li>
 <li><code>series</code> - An input series to be grouped.</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1459,7 +1566,8 @@ key and value. The new key must support equality testing.</li>
             <strong>Signature:</strong>keySelector:(&#39;K -&gt; &#39;T -&gt; &#39;TNewKey) -&gt; f:(&#39;TNewKey -&gt; Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;TNewValue) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;TNewKey,&#39;TNewValue&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'TNewKey, 'TNewValue          </div>
         </td>
-        <td class="xmldoc"><p>Groups a series (ordered or unordered) using the specified key selector (<code>keySelector</code>) 
+        <td class="xmldoc">
+        <p>Groups a series (ordered or unordered) using the specified key selector (<code>keySelector</code>) 
 and then aggregates each group into a single value, returned in the resulting series,
 using the provided <code>valueSelector</code> function.</p>
 
@@ -1472,7 +1580,8 @@ key and value. The new key must support equality testing.</li>
 each group of collected elements.</li>
 <li><code>series</code> - An input series to be grouped.</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1484,7 +1593,8 @@ each group of collected elements.</li>
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,(&#39;T * &#39;T)&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Returns a series containing the predecessor and an element for each input, except
+        <td class="xmldoc">
+        <p>Returns a series containing the predecessor and an element for each input, except
 for the first one. The returned series is one key shorter (it does not contain a 
 value for the first key).</p>
 
@@ -1500,7 +1610,8 @@ value for the first key).</p>
 let res = input |&gt; Series.pairwise
 res = series [2 =&gt; ('a', 'b'); 3 =&gt; ('b', 'c') ]
 </code></pre>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1512,7 +1623,8 @@ res = series [2 =&gt; ('a', 'b'); 3 =&gt; ('b', 'c') ]
             <strong>Signature:</strong>f:(&#39;K -&gt; &#39;T * &#39;T -&gt; &#39;?7451) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?7451&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, '?7451          </div>
         </td>
-        <td class="xmldoc"><p>Aggregates the input into pairs containing the predecessor and an element for each input, except
+        <td class="xmldoc">
+        <p>Aggregates the input into pairs containing the predecessor and an element for each input, except
 for the first one. Then calls the specified aggregation function <code>f</code> with a tuple and a key.
 The returned series is one key shorter (it does not contain a  value for the first key).</p>
 
@@ -1522,7 +1634,8 @@ The returned series is one key shorter (it does not contain a  value for the fir
 <li><code>f</code> - A function that is called for each pair to produce result in the final series.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1534,7 +1647,8 @@ The returned series is one key shorter (it does not contain a  value for the fir
             <strong>Signature:</strong>size:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Creates a sliding window using the specified size and returns the produced windows as 
+        <td class="xmldoc">
+        <p>Creates a sliding window using the specified size and returns the produced windows as 
 a nested series. The key in the new series is the last key of the window. This function
 skips incomplete chunks - you can use <code>Series.windowSize</code> for more options.</p>
 
@@ -1544,7 +1658,8 @@ skips incomplete chunks - you can use <code>Series.windowSize</code> for more op
 <li><code>size</code> - The size of the sliding window.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1556,7 +1671,8 @@ skips incomplete chunks - you can use <code>Series.windowSize</code> for more op
             <strong>Signature:</strong>distance:^D -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,Series&lt;^K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> ^D, ^K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Creates a sliding window based on distance between keys. A window is started at each
+        <td class="xmldoc">
+        <p>Creates a sliding window based on distance between keys. A window is started at each
 input element and ends once the distance between the first and the last key is greater
 than the specified <code>distance</code>. The windows are then returned as a nested series.
 The key of each window is the key of the first element in the window.</p>
@@ -1569,7 +1685,8 @@ is an inline function - there must be <code>-</code> operator defined between <c
 keys of the series.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1581,7 +1698,8 @@ keys of the series.</li>
             <strong>Signature:</strong>distance:^?7393 -&gt; f:(Series&lt;^K,&#39;T&gt; -&gt; &#39;?7396) -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,&#39;?7396&gt;<br />
                           <strong>Type parameters:</strong> ^?7393, ^K, 'T, '?7396          </div>
         </td>
-        <td class="xmldoc"><p>Creates a sliding window based on distance between keys. A window is started at each
+        <td class="xmldoc">
+        <p>Creates a sliding window based on distance between keys. A window is started at each
 input element and ends once the distance between the first and the last key is greater
 than the specified <code>distance</code>. Each window is then aggregated into a value using the
 specified function <code>f</code>. The key of each window is the key of the first element in the window.</p>
@@ -1595,7 +1713,8 @@ keys of the series.</li>
 <li><code>f</code> - A function that is used to aggregate each window into a single value.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1607,7 +1726,8 @@ keys of the series.</li>
             <strong>Signature:</strong>size:int -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'R          </div>
         </td>
-        <td class="xmldoc"><p>Creates a sliding window using the specified size and then applies the provided 
+        <td class="xmldoc">
+        <p>Creates a sliding window using the specified size and then applies the provided 
 value selector <code>f</code> on each window to produce the result which is returned as a new series. 
 This function skips incomplete chunks - you can use <code>Series.windowSizeInto</code> for more options.</p>
 
@@ -1617,7 +1737,8 @@ This function skips incomplete chunks - you can use <code>Series.windowSizeInto<
 <li><code>size</code> - The size of the sliding window.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1629,7 +1750,8 @@ This function skips incomplete chunks - you can use <code>Series.windowSizeInto<
             <strong>Signature:</strong>(int * Boundary) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Creates a sliding window using the specified size and boundary behavior and returns
+        <td class="xmldoc">
+        <p>Creates a sliding window using the specified size and boundary behavior and returns
 the produced windows as a nested series. The key is the last key of the window, unless
 boundary behavior is <code>Boundary.AtEnding</code> (in which case it is the first key).</p>
 
@@ -1642,7 +1764,8 @@ can be <code>Boundary.Skip</code> (meaning that no incomplete windows are produc
 or <code>Boundary.AtEnding</code> (to produce incomplete windows at the end of series)</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1654,7 +1777,8 @@ or <code>Boundary.AtEnding</code> (to produce incomplete windows at the end of s
             <strong>Signature:</strong>(int * Boundary) -&gt; f:(DataSegment&lt;Series&lt;&#39;K,&#39;T&gt;&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'R          </div>
         </td>
-        <td class="xmldoc"><p>Creates a sliding window using the specified size and boundary behavior and then
+        <td class="xmldoc">
+        <p>Creates a sliding window using the specified size and boundary behavior and then
 applies the provided value selector <code>f</code> on each window to produce the result
 which is returned as a new series. The key is the last key of the window, unless
 boundary behavior is <code>Boundary.AtEnding</code> (in which case it is the first key).</p>
@@ -1669,7 +1793,8 @@ or <code>Boundary.AtEnding</code> (to produce incomplete windows at the end of s
 <li><code>f</code> - A value selector that is called to aggregate each window.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1681,7 +1806,8 @@ or <code>Boundary.AtEnding</code> (to produce incomplete windows at the end of s
             <strong>Signature:</strong>cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Creates a sliding window based on a condition on keys. A window is started at each
+        <td class="xmldoc">
+        <p>Creates a sliding window based on a condition on keys. A window is started at each
 input element and ends once the specified <code>cond</code> function returns <code>false</code> when called on 
 the first and the last key of the window. The windows are then returned as a nested series.
 The key of each window is the key of the first element in the window.</p>
@@ -1693,7 +1819,8 @@ The key of each window is the key of the first element in the window.</p>
 to determine when a window should end.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1705,7 +1832,8 @@ to determine when a window should end.</li>
             <strong>Signature:</strong>cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?7404) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?7404&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, '?7404          </div>
         </td>
-        <td class="xmldoc"><p>Creates a sliding window based on a condition on keys. A window is started at each
+        <td class="xmldoc">
+        <p>Creates a sliding window based on a condition on keys. A window is started at each
 input element and ends once the specified <code>cond</code> function returns <code>false</code> when called on 
 the first and the last key of the window. Each window is then aggregated into a value using the
 specified function <code>f</code>. The key of each window is the key of the first element in the window.</p>
@@ -1718,7 +1846,8 @@ to determine when a window should end.</li>
 <li><code>f</code> - A function that is used to aggregate each window into a single value.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
-</td>
+
+        </td>
       </tr>
     </tbody>
   </table>
@@ -1739,10 +1868,12 @@ to determine when a window should end.</li>
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;T&gt; -&gt; int<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Returns the total number of keys in the specified series. This returns
+        <td class="xmldoc">
+        <p>Returns the total number of keys in the specified series. This returns
 the total length of the series, including keys for which there is no 
 value available.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1754,10 +1885,12 @@ value available.</p>
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;T&gt; -&gt; int<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Returns the total number of values in the specified series. This excludes
+        <td class="xmldoc">
+        <p>Returns the total number of values in the specified series. This excludes
 missing values or not available values (such as values created from <code>null</code>,
 <code>Double.NaN</code>, or those that are missing due to outer join etc.).</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1769,8 +1902,10 @@ missing values or not available values (such as values created from <code>null</
             <strong>Signature:</strong>offset:int -&gt; series:Series&lt;&#39;K,^T&gt; -&gt; Series&lt;&#39;K,^?7238&gt;<br />
                           <strong>Type parameters:</strong> 'K, ^T, ^?7238          </div>
         </td>
-        <td class="xmldoc"><p><code>result[k] = series[k] - series[k - offset]</code></p>
-</td>
+        <td class="xmldoc">
+        <p><code>result[k] = series[k] - series[k - offset]</code></p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1782,7 +1917,9 @@ missing values or not available values (such as values created from <code>null</
             <strong>Signature:</strong>value:&#39;T -&gt; series:Series&lt;&#39;K,&#39;T tryval&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'T, 'K          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1794,7 +1931,9 @@ missing values or not available values (such as values created from <code>null</
             <strong>Signature:</strong>f:(&#39;K -&gt; &#39;T -&gt; bool) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1806,7 +1945,9 @@ missing values or not available values (such as values created from <code>null</
             <strong>Signature:</strong>f:(&#39;K -&gt; &#39;T option -&gt; bool) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1818,7 +1959,9 @@ missing values or not available values (such as values created from <code>null</
             <strong>Signature:</strong>f:(&#39;T -&gt; bool) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'T, 'K          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1830,7 +1973,9 @@ missing values or not available values (such as values created from <code>null</
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;K<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1842,7 +1987,9 @@ missing values or not available values (such as values created from <code>null</
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1854,7 +2001,9 @@ missing values or not available values (such as values created from <code>null</
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1866,9 +2015,11 @@ missing values or not available values (such as values created from <code>null</
             <strong>Signature:</strong>key:&#39;K -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;T<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Get the value for the specified key.
+        <td class="xmldoc">
+        <p>Get the value for the specified key.
 Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more options</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1880,9 +2031,11 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
             <strong>Signature:</strong>keys:seq&lt;&#39;K&gt; -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Create a new series that contains values for all provided keys.
+        <td class="xmldoc">
+        <p>Create a new series that contains values for all provided keys.
 Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more options</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1894,7 +2047,9 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
             <strong>Signature:</strong>index:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;T<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1906,7 +2061,9 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
             <strong>Signature:</strong>key:&#39;K -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; bool<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1918,7 +2075,9 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
             <strong>Signature:</strong>keys:seq&lt;&#39;K&gt; -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; bool<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1930,7 +2089,9 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
             <strong>Signature:</strong>keys:seq&lt;&#39;K&gt; -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; bool<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1942,7 +2103,9 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
             <strong>Signature:</strong>key:&#39;K -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; bool<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1954,7 +2117,9 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
             <strong>Signature:</strong>keys:seq&lt;&#39;K&gt; -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; bool<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1966,7 +2131,9 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;int,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1978,7 +2145,9 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
             <strong>Signature:</strong>keys:seq&lt;&#39;K2&gt; -&gt; series:Series&lt;&#39;K1,&#39;T&gt; -&gt; Series&lt;&#39;K2,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K2, 'K1, 'T          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -1990,7 +2159,9 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;&#39;K&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -2002,7 +2173,9 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;K<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -2014,7 +2187,9 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -2026,9 +2201,11 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
             <strong>Signature:</strong>key:&#39;K -&gt; lookup:Lookup -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;T<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Get the value for the specified key.
+        <td class="xmldoc">
+        <p>Get the value for the specified key.
 Use the specified lookup semantics - for exact matching, use <code>get</code></p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -2040,9 +2217,11 @@ Use the specified lookup semantics - for exact matching, use <code>get</code></p
             <strong>Signature:</strong>keys:seq&lt;&#39;K&gt; -&gt; lookup:Lookup -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Create a new series that contains values for all provided keys.
+        <td class="xmldoc">
+        <p>Create a new series that contains values for all provided keys.
 Use the specified lookup semantics - for exact matching, use <code>getAll</code></p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -2054,7 +2233,9 @@ Use the specified lookup semantics - for exact matching, use <code>getAll</code>
             <strong>Signature:</strong>f:(&#39;K -&gt; &#39;T -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'R          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -2066,7 +2247,9 @@ Use the specified lookup semantics - for exact matching, use <code>getAll</code>
             <strong>Signature:</strong>f:(&#39;K -&gt; &#39;T option -&gt; &#39;R option) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'R          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -2078,7 +2261,9 @@ Use the specified lookup semantics - for exact matching, use <code>getAll</code>
             <strong>Signature:</strong>f:(&#39;K -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;R,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'R, 'T          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -2090,7 +2275,9 @@ Use the specified lookup semantics - for exact matching, use <code>getAll</code>
             <strong>Signature:</strong>f:(&#39;T -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'T, 'R, 'K          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -2102,7 +2289,9 @@ Use the specified lookup semantics - for exact matching, use <code>getAll</code>
             <strong>Signature:</strong>f:(&#39;T -&gt; &#39;?7286) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;K * &#39;T<br />
                           <strong>Type parameters:</strong> 'T, '?7286, 'K          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -2114,7 +2303,9 @@ Use the specified lookup semantics - for exact matching, use <code>getAll</code>
             <strong>Signature:</strong>f:(&#39;T -&gt; &#39;?7290) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;K * &#39;T<br />
                           <strong>Type parameters:</strong> 'T, '?7290, 'K          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -2126,10 +2317,12 @@ Use the specified lookup semantics - for exact matching, use <code>getAll</code>
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;&#39;K * &#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Return observations with available values. The operation skips over 
+        <td class="xmldoc">
+        <p>Return observations with available values. The operation skips over 
 all keys with missing values (such as values created from <code>null</code>,
 <code>Double.NaN</code>, or those that are missing due to outer join etc.).</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -2141,8 +2334,10 @@ all keys with missing values (such as values created from <code>null</code>,
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;&#39;K * &#39;T option&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Returns all keys from the sequence, together with the associated (optional) values.</p>
-</td>
+        <td class="xmldoc">
+        <p>Returns all keys from the sequence, together with the associated (optional) values.</p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -2154,7 +2349,9 @@ all keys with missing values (such as values created from <code>null</code>,
             <strong>Signature:</strong>keys:seq&lt;&#39;K&gt; -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -2166,7 +2363,9 @@ all keys with missing values (such as values created from <code>null</code>,
             <strong>Signature:</strong>offset:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -2178,7 +2377,9 @@ all keys with missing values (such as values created from <code>null</code>,
             <strong>Signature:</strong>count:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -2190,8 +2391,10 @@ all keys with missing values (such as values created from <code>null</code>,
             <strong>Signature:</strong>series:Series&lt;&#39;K,TryValue&lt;&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,exn&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
-        <td class="xmldoc"><p>Return a Series of all exceptions</p>
-</td>
+        <td class="xmldoc">
+        <p>Return a Series of all exceptions</p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -2203,7 +2406,9 @@ all keys with missing values (such as values created from <code>null</code>,
             <strong>Signature:</strong>key:&#39;K -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;T option<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -2215,7 +2420,9 @@ all keys with missing values (such as values created from <code>null</code>,
             <strong>Signature:</strong>index:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;T option<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -2227,7 +2434,9 @@ all keys with missing values (such as values created from <code>null</code>,
             <strong>Signature:</strong>key:&#39;K -&gt; lookup:Lookup -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;T option<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -2239,7 +2448,9 @@ all keys with missing values (such as values created from <code>null</code>,
             <strong>Signature:</strong>f:(&#39;K -&gt; &#39;T -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R tryval&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'R          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -2251,8 +2462,10 @@ all keys with missing values (such as values created from <code>null</code>,
             <strong>Signature:</strong>series:Series&lt;&#39;K,TryValue&lt;&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
-        <td class="xmldoc"><p>Return a Series of all successful tries</p>
-</td>
+        <td class="xmldoc">
+        <p>Return a Series of all successful tries</p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -2264,8 +2477,10 @@ all keys with missing values (such as values created from <code>null</code>,
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;T tryval&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"><p>Throws <code>AggregateException</code> if something goes wrong</p>
-</td>
+        <td class="xmldoc">
+        <p>Throws <code>AggregateException</code> if something goes wrong</p>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
@@ -2277,7 +2492,9 @@ all keys with missing values (such as values created from <code>null</code>,
             <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
-        <td class="xmldoc"></td>
+        <td class="xmldoc">
+        
+        </td>
       </tr>
     </tbody>
   </table>

@@ -44,13 +44,7 @@
 <code>Deedle.Internals</code> is opened, it extends the standard <code>Array</code> module.</p>
 </div>
 
-<!-- TODO: Refactor me - copy & paste from 'namespaces.cshtml' -->
-
-
-
-<!-- END TODO -->
-
-
+<!-- Render nested types and modules, if there are any -->
 
   <h3>Functions and values</h3>
   <table class="table table-bordered member-list">
@@ -61,58 +55,66 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1', 1)" onmouseover="showTip(event, '1', 1)">
+          <code onmouseout="hideTip(event, '84', 84)" onmouseover="showTip(event, '84', 84)">
             binarySearchNearestGreater (...)
           </code>
-          <div class="tip" id="1">
+          <div class="tip" id="84">
             <strong>Signature:</strong>key:&#39;T -&gt; comparer:IComparer&lt;&#39;T&gt; -&gt; array:&#39;T [] -&gt; int option<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
-        <td class="xmldoc"><p>Returns the index of 'key' or the index of immediately following value.
+        <td class="xmldoc">
+        <p>Returns the index of 'key' or the index of immediately following value.
 If the specified key is greater than all keys in the array, None is returned.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '3', 3)" onmouseover="showTip(event, '3', 3)">
+          <code onmouseout="hideTip(event, '85', 85)" onmouseover="showTip(event, '85', 85)">
             binarySearchNearestSmaller (...)
           </code>
-          <div class="tip" id="3">
+          <div class="tip" id="85">
             <strong>Signature:</strong>key:&#39;T -&gt; comparer:IComparer&lt;&#39;T&gt; -&gt; array:&#39;T [] -&gt; int option<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
-        <td class="xmldoc"><p>Returns the index of 'key' or the index of immediately preceeding value.
+        <td class="xmldoc">
+        <p>Returns the index of 'key' or the index of immediately preceeding value.
 If the specified key is smaller than all keys in the array, None is returned.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '4', 4)" onmouseover="showTip(event, '4', 4)">
+          <code onmouseout="hideTip(event, '86', 86)" onmouseover="showTip(event, '86', 86)">
             choosei f array
           </code>
-          <div class="tip" id="4">
+          <div class="tip" id="86">
             <strong>Signature:</strong>f:(int -&gt; &#39;?8024 -&gt; &#39;?8025 option) -&gt; array:&#39;?8024 [] -&gt; &#39;?8025 []<br />
                           <strong>Type parameters:</strong> '?8024, '?8025          </div>
         </td>
-        <td class="xmldoc"><p>Returns a new array containing only the elements for which the specified function returns <code>Some</code>.
+        <td class="xmldoc">
+        <p>Returns a new array containing only the elements for which the specified function returns <code>Some</code>.
 The predicate is called with the index in the source array and the element.</p>
-</td>
+
+        </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '5', 5)" onmouseover="showTip(event, '5', 5)">
+          <code onmouseout="hideTip(event, '87', 87)" onmouseover="showTip(event, '87', 87)">
             dropRange first last data
           </code>
-          <div class="tip" id="5">
+          <div class="tip" id="87">
             <strong>Signature:</strong>first:int -&gt; last:int -&gt; data:&#39;T [] -&gt; &#39;T []<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
-        <td class="xmldoc"><p>Drop a specified range from a given array. The operation is inclusive on
+        <td class="xmldoc">
+        <p>Drop a specified range from a given array. The operation is inclusive on
 both sides. Given [ 1; 2; 3; 4 ] and indices (1, 2), the result is [ 1; 4 ]</p>
-</td>
+
+        </td>
       </tr>
     </tbody>
   </table>
