@@ -264,6 +264,7 @@ to round the value to two fractional digits.
 
 Ignoring a number of columns from the frame, the result looks something like follows:
 
+    [lang=text]
     -            MsftDate    MsftOpen   MsftClose  
     3/13/1986 -> 1986-03-13  <missing>  <missing>  
     3/14/1986 -> 1986-03-14  8.93       3.45       
