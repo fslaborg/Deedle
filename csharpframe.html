@@ -370,27 +370,13 @@ to round the value to two fractional digits.</p>
 
 <p>Ignoring a number of columns from the frame, the result looks something like follows:</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
-<span class="l">2: </span>
-<span class="l">3: </span>
-<span class="l">4: </span>
-<span class="l">5: </span>
-<span class="l">6: </span>
-<span class="l">7: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="o">-</span>            <span class="i">MsftDate</span>    <span class="i">MsftOpen</span>   <span class="i">MsftClose</span>  
-<span class="n">3</span><span class="o">/</span><span class="n">13</span><span class="o">/</span><span class="n">1986</span> <span class="k">-&gt;</span> <span class="n">1986</span><span class="o">-</span><span class="n">03</span><span class="o">-</span><span class="n">13</span>  <span class="o">&lt;</span><span class="i">missing</span><span class="o">&gt;</span>  <span class="o">&lt;</span><span class="i">missing</span><span class="o">&gt;</span>  
-<span class="n">3</span><span class="o">/</span><span class="n">14</span><span class="o">/</span><span class="n">1986</span> <span class="k">-&gt;</span> <span class="n">1986</span><span class="o">-</span><span class="n">03</span><span class="o">-</span><span class="n">14</span>  <span class="n">8.93</span>       <span class="n">3.45</span>       
-<span class="n">3</span><span class="o">/</span><span class="n">17</span><span class="o">/</span><span class="n">1986</span> <span class="k">-&gt;</span> <span class="n">1986</span><span class="o">-</span><span class="n">03</span><span class="o">-</span><span class="n">17</span>  <span class="n">3.45</span>       <span class="n">1.69</span>       
-<span class="o">:</span>            <span class="o">..</span><span class="o">.</span>         <span class="o">..</span><span class="o">.</span>        <span class="o">..</span><span class="o">.</span>        
-<span class="n">11</span><span class="o">/</span><span class="n">6</span><span class="o">/</span><span class="n">2013</span> <span class="k">-&gt;</span> <span class="n">2013</span><span class="o">-</span><span class="n">11</span><span class="o">-</span><span class="n">06</span>  <span class="n">3.89</span>       <span class="n">4.03</span>       
-<span class="n">11</span><span class="o">/</span><span class="n">7</span><span class="o">/</span><span class="n">2013</span> <span class="k">-&gt;</span> <span class="n">2013</span><span class="o">-</span><span class="n">11</span><span class="o">-</span><span class="n">07</span>  <span class="n">1.9</span>        <span class="o">-</span><span class="n">1.81</span>      </pre>
-</td>
-</tr>
-</table>
+<pre lang="text">-            MsftDate    MsftOpen   MsftClose  
+3/13/1986 -&gt; 1986-03-13  &lt;missing&gt;  &lt;missing&gt;  
+3/14/1986 -&gt; 1986-03-14  8.93       3.45       
+3/17/1986 -&gt; 1986-03-17  3.45       1.69       
+:            ...         ...        ...        
+11/6/2013 -&gt; 2013-11-06  3.89       4.03       
+11/7/2013 -&gt; 2013-11-07  1.9        -1.81      </pre>
 
 <p>It is worth noting that the <code>SeriesApply</code> function is applied on all numerical columns, but
 all other columns (such as <code>MsftDate</code>) are left unchanged. You can also see that the first 
