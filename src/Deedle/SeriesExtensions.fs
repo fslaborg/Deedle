@@ -78,7 +78,7 @@ type SeriesBuilder<'K, 'V when 'K : equality and 'V : equality>() =
 
   interface seq<KeyValuePair<'K, 'V>> with
     member builder.GetEnumerator() = 
-      (Seq.zip keys values |> Seq.map (fun (k, v) -> KeyValuePair(k, v))).GetEnumerator()
+      (List.zip keys values |> List.rev |> Seq.map (fun (k, v) -> KeyValuePair(k, v))).GetEnumerator()
 
   interface IDictionary<'K, 'V> with
     member x.Keys = upcast ReadOnlyCollection.ofSeq keys
