@@ -226,8 +226,8 @@ let ``Can retrieve a series according to type parameter`` () =
   let s2 = series [| 1 => ("a",1.0); 2 => ("b",2.0) |]
   let f = frame [ "A" => s1 ]
   f?B <- s2
-  f.GetAllSeries<int*int>() |> shouldEqual ( seq { yield KeyValuePair("A", s1) } )
-  f.GetAllSeries<string*float>() |> shouldEqual ( seq { yield KeyValuePair("B", s2) } )
+  f.GetAllSeries<int*int>() |> shouldEqual ( seq [ KeyValuePair("A", s1) ] )
+  f.GetAllSeries<string*float>() |> shouldEqual ( seq [ KeyValuePair("B", s2) ] )
   f.GetAllSeries<int*float>() |> shouldEqual Seq.empty
 
 // ------------------------------------------------------------------------------------------------
