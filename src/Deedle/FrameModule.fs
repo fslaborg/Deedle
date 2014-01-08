@@ -206,6 +206,9 @@ module Frame =
 //    |> Series.map (fun k col -> Series.shift offset col)
 //    |> Frame.ofColumns
 
+  let take count (frame:Frame<'R, 'C>) =
+    frame.Rows |> Series.take count |> FrameUtils.fromRows
+
   let takeLast count (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.takeLast count |> FrameUtils.fromRows
 

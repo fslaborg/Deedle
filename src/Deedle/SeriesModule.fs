@@ -180,8 +180,12 @@ module Series =
             (fun s -> s.Data.TryGet(s.Data.KeyRange |> fst)) )
     shifted //.GetItems(series.Keys)
 
-  let takeLast count (series:Series<'K, 'T>) = 
-    let keys = series.Keys |> Seq.lastFew count 
+  let take count (series:Series<'K, 'T>) =
+    let keys = series.Keys |> Seq.take count
+    Series(keys, seq { for k in keys -> series.[k] })
+
+  let takeLast count (series:Series<'K, 'T>) =
+    let keys = series.Keys |> Seq.lastFew count
     Series(keys, seq { for k in keys -> series.[k] })
 
   let inline maxBy f (series:Series<'K, 'T>) = 
