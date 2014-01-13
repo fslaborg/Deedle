@@ -438,6 +438,19 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let res = emptySeries.SelectOptional (fun row ->
       let rowAddress = rowIndex.Lookup(row.Key, Lookup.Exact, fun _ -> true)
       if not rowAddress.HasValue then OptionalValue.Missing
+      else 
+        let reify (vec:IVector<'T>) = vec.DataSequence |> Array.ofSeq |> Vector.ofOptionalValues
+        let idx = indexBuilder.Create(columnIndex.Keys |> Array.ofSeq, Some columnIndex.IsOrdered)
+        let vec = reify <| createRowReader (snd rowAddress.Value)
+        OptionalValue(Series.CreateUntyped(idx, vec)))
+    RowSeries(Series.dropMissing res)
+
+  /// [category:Accessors and slicing]
+  member frame.RowsView = 
+    let emptySeries = Series<_, _>(rowIndex, Vector.ofValues [], vectorBuilder, indexBuilder)
+    let res = emptySeries.SelectOptional (fun row ->
+      let rowAddress = rowIndex.Lookup(row.Key, Lookup.Exact, fun _ -> true)
+      if not rowAddress.HasValue then OptionalValue.Missing
       else OptionalValue(Series.CreateUntyped(columnIndex, createRowReader (snd rowAddress.Value))))
     RowSeries(Series.dropMissing res)
 
