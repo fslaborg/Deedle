@@ -737,3 +737,27 @@ let ``Can group titanic data by boolean column "Survived"``() =
     |> Series.mapValues Frame.countRows
   actual |> shouldEqual (series [false => 549; true => 342])
 
+// ------------------------------------------------------------------------------------------------
+// Serialization check
+// ------------------------------------------------------------------------------------------------
+
+open System.Runtime.Serialization
+open System.Runtime.Serialization.Formatters.Binary
+open System.IO
+
+[<Serializable>]
+type FailsToSerialize(x: int) =
+  interface ISerializable with
+    override x.GetObjectData(info, context) =
+      raise <| NotImplementedException()
+
+[<Test>]
+let ``Serializing rows does not also serialize row keys``() =
+  let k1 = FailsToSerialize(1)
+  let k2 = FailsToSerialize(2)
+  let fr = frame [ "x" => series [ k1 => 1.0; k2 => 2.0 ] ]
+  use ms = new MemoryStream()
+  let f objSer = do BinaryFormatter().Serialize(ms, objSer)
+  fr.Rows |> Series.mapValues f |> ignore
+  fr.Rows.Values |> Seq.iter f |> ignore
+  (fun () -> fr.RowsView |> Series.mapValues f |> ignore) |> should throw typeof<NotImplementedException>
