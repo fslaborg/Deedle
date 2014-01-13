@@ -112,6 +112,11 @@ type IVectorValueTransform =
   /// the type cannot be statically propagated.
   abstract GetFunction<'T> : unit -> (OptionalValue<'T> -> OptionalValue<'T> -> OptionalValue<'T>)
 
+/// Represent a tranformation that is applied when combining N vectors
+type IVectorValueListTransform =
+  /// Returns a function that combines N values stored in vectors into a new vector value
+  abstract GetFunction<'T> : unit -> (OptionalValue<'T> list -> OptionalValue<'T>)
+
 /// Specifies how to fill missing values in a vector (when using the 
 /// `VectorConstruction.FillMissing` command). This can only fill missing
 /// values using strategy that does not require access to index keys - 
@@ -160,6 +165,11 @@ type VectorConstruction =
   /// specifies how to merge values (in case there is a value at a given address
   /// in both of the vectors).
   | Combine of VectorConstruction * VectorConstruction * IVectorValueTransform
+
+  /// Combine N aligned vectors. The `IVectorValueListTransform` object
+  /// specifies how to merge values (in case there is a value at a given address
+  /// in more than one of the vectors).
+  | CombineN of VectorConstruction list * IVectorValueListTransform
 
   /// Create a vector that has missing values filled using the specified direction
   /// (forward means that n-th value will contain (n-i)-th value where (n-i) is the
