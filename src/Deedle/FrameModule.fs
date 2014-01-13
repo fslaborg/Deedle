@@ -361,6 +361,18 @@ module Frame =
     let newData = frame.Data.Select(getRange)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
 
+  /// Replace the row index of the frame with a sequence of row keys generated using
+  /// a function invoked on each row.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame whose row index are to be replaced.
+  ///  - `f` - A function from row (as object series) to new row key value
+  ///
+  /// [category:Data structure manipulation]
+  [<CompiledName("IndexRowsUsing")>]
+  let indexRowsUsing (f: ObjectSeries<'C> -> 'R2) (frame:Frame<'R1,'C>) =
+    indexRowsWith (frame.Rows |> Series.map (fun k v -> f v) |> Series.values) frame
+
   /// Returns a transposed data frame. The rows of the original data frame are used as the
   /// columns of the new one (and vice versa). Use this operation if you have a data frame
   /// and you mostly need to access its rows as a series (because accessing columns as a 

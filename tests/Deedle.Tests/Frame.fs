@@ -737,3 +737,20 @@ let ``Can group titanic data by boolean column "Survived"``() =
     |> Series.mapValues Frame.countRows
   actual |> shouldEqual (series [false => 549; true => 342])
 
+  
+// ----------------------------------------------------------------------------------------------
+// Index operations
+// ----------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can index rows using transformation function``() =
+  let actual = 
+    Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => 2.0 ]; 
+                      "B" => series [ 1 => 2.0; 2 => 3.0 ] ]
+    |> Frame.indexRowsUsing (fun r -> r.GetAs<float>("A") + 2.0)
+
+  let expected = 
+    Frame.ofColumns [ "A" => series [ 3.0 => 1.0; 4.0 => 2.0 ]; 
+                      "B" => series [ 3.0 => 2.0; 4.0 => 3.0 ] ]
+
+  actual |> shouldEqual expected
