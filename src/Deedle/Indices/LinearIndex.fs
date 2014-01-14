@@ -77,10 +77,7 @@ type LinearIndex<'K when 'K : equality>
     member x.Builder = builder
 
     /// Perform reverse lookup and return key for an address
-    member x.KeyAt(address) =
-      match address with 
-      | Address.Int i -> keysArray.Value.[i]
-      | _ -> invalidOp "This type of index does not support reverse lookup"
+    member x.KeyAt(Addressing.IntAddress address) = keysArray.Value.[address]
 
     /// Returns whether the specified index is empty
     member x.IsEmpty = keys |> Seq.isEmpty
@@ -93,7 +90,7 @@ type LinearIndex<'K when 'K : equality>
     /// Get the address for the specified key.
     /// The 'semantics' specifies fancy lookup methods.
     member x.Lookup(key, semantics, check) = 
-      match lookup.TryGetValue(key), semantics, Address.int32Convertor with
+      match lookup.TryGetValue(key), semantics, Some Addressing.int32Convertor with
 
       // When the value exists directly and the user requires exact match, we 
       // just return it (ignoring the fact that Vector value may be missing)
@@ -190,7 +187,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
     match index with
     | :? LinearIndex<_> as lin -> lin, vector
     | _ ->
-      let relocs = index.Mappings |> Seq.mapi (fun i (k, a) -> Address.Int i, a)
+      let relocs = index.Mappings |> Seq.mapi (fun i (k, a) -> Addressing.int32Convertor i, a)
       let newVector = Vectors.Relocate(vector, Address.rangeOf(index.Mappings), relocs)
       LinearIndex(index.Mappings |> Seq.map fst, LinearIndexBuilder.Instance), newVector
 

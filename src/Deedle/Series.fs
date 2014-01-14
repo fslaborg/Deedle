@@ -242,10 +242,10 @@ and
   ///
   /// [category:Accessors and slicing]
   member x.TryGetAt(index) = 
-    x.Vector.GetValue(Addressing.Int index)
+    x.Vector.GetValue(Addressing.int32Convertor index)
   /// [category:Accessors and slicing]
   member x.GetKeyAt(index) = 
-    x.Index.KeyAt(Addressing.Int index)
+    x.Index.KeyAt(Addressing.int32Convertor index)
   /// [category:Accessors and slicing]
   member x.GetAt(index) = 
     x.TryGetAt(index).Value

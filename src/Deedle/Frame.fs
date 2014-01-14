@@ -459,10 +459,10 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Accessors and slicing]
   member frame.TryGetRowAt(index) = 
-    frame.Rows.Vector.GetValue(Addressing.Int index)
+    frame.Rows.Vector.GetValue(Addressing.int32Convertor index)
   /// [category:Accessors and slicing]
   member frame.GetRowKeyAt(index) = 
-    frame.RowIndex.KeyAt(Addressing.Int index)
+    frame.RowIndex.KeyAt(Addressing.int32Convertor index)
   /// [category:Accessors and slicing]
   member frame.GetRowAt(index) = 
     frame.TryGetRowAt(index).Value
