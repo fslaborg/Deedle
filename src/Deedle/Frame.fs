@@ -62,8 +62,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   let mutable isEmpty = rowIndex.IsEmpty && columnIndex.IsEmpty
 
   /// Vector builder
-  let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
-  let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
+  let vectorBuilder = VectorBuilder.Instance
+  let indexBuilder = IndexBuilder.Instance
 
   // TODO: Perhaps assert that the 'data' vector has all things required by column index
   // (to simplify various handling below)
@@ -459,10 +459,10 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Accessors and slicing]
   member frame.TryGetRowAt(index) = 
-    frame.Rows.Vector.GetValue(Addressing.Int index)
+    frame.Rows.Vector.GetValue(Addressing.int32Convertor index)
   /// [category:Accessors and slicing]
   member frame.GetRowKeyAt(index) = 
-    frame.RowIndex.KeyAt(Addressing.Int index)
+    frame.RowIndex.KeyAt(Addressing.int32Convertor index)
   /// [category:Accessors and slicing]
   member frame.GetRowAt(index) = 
     frame.TryGetRowAt(index).Value
@@ -1105,9 +1105,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 /// can confuse the type inference in various ways).
 and FrameUtils = 
   // Current vector builder to be used for creating frames
-  static member vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance 
+  static member vectorBuilder = VectorBuilder.Instance 
   // Current index builder to be used for creating frames
-  static member indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
+  static member indexBuilder = IndexBuilder.Instance
 
   /// Create data frame containing a single column
   static member createColumn<'TColumnKey, 'TRowKey when 'TColumnKey : equality and 'TRowKey : equality>
@@ -1118,7 +1118,7 @@ and FrameUtils =
   /// Create data frame containing a single row
   static member createRow(row:'TRowKey, series:Series<'TColumnKey, 'TValue>) = 
     let data = series.Vector.SelectMissing(fun v -> 
-      let res = Vectors.ArrayVector.ArrayVectorBuilder.Instance.CreateMissing [| v |] 
+      let res = VectorBuilder.Instance.CreateMissing [| v |] 
       OptionalValue(res :> IVector))
     Frame(Index.ofKeys [row], series.Index, data)
 

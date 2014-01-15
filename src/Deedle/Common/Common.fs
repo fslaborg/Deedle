@@ -827,6 +827,10 @@ module Seq =
     for (KeyValue(k, (l, r))) in dict do
       yield k, l, r }
 
+  /// Produce a sequence zipped with its offset within the sequence
+  let zipi (seq1:seq<'T>) = seq1 |> Seq.mapi (fun i v -> (v, int64 i))
+  let izip (seq1:seq<'T>) = seq1 |> Seq.mapi (fun i v -> (int64 i, v))
+
 /// [omit]
 /// An interface implemented by types that support nice formatting for F# Interactive
 /// (The `FSharp.DataFrame.fsx` file registers an FSI printer using this interface.)

@@ -893,6 +893,7 @@ module Series =
     let newVector = series.VectorBuilder.Build(fillCmd, [|series.Vector|])
     Series<_, _>(series.Index, newVector, series.VectorBuilder, series.IndexBuilder)
 
+  /// Fill missing values only between startKey and endKey, inclusive
   /// [category:Missing values]
   let fillMissingBetween (startKey, endKey) direction (series:Series<'K, 'T>) = 
     let filled = fillMissing direction series.[startKey .. endKey]
@@ -901,6 +902,14 @@ module Series =
       | OptionalValue.Present(_, OptionalValue.Present v2) -> OptionalValue v2
       | OptionalValue.Present(OptionalValue.Present v1, _) -> OptionalValue v1
       | _ -> OptionalValue.Missing )
+
+  /// Fill missing values only between the first and last non-missing values
+  /// [category:Missing values]
+  let fillMissingInside direction (series:Series<'K, 'T>) = 
+    if not series.IsOrdered then invalidOp "Series must be sorted to use fillMissingInside"
+    series.Observations |> Seq.tryFirstAndLast |> function
+    | Some (a, b) when a <> b -> series |> fillMissingBetween (a.Key, b.Key) direction
+    | _ -> series
 
   // ----------------------------------------------------------------------------------------------
   // Sorting

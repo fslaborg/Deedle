@@ -61,6 +61,11 @@ type ValueCallSite1<'R> =
 type VectorCallSite1<'R> =
   abstract Invoke<'T> : IVector<'T> -> 'R
 
+/// Represents a generic function `\forall.'T.(IVector<'T> list -> 'R)`. The function can be 
+/// generically invoked on an argument of type `IVector list` using `createVectorListDispatcher`
+type VectorListCallSite1<'R> =
+  abstract Invoke<'T> : IVector<'T> list -> 'R
+
 /// Represents a generic function `\forall.'T.(IVector<'T> * IVector<'T> -> 'R)`. The function 
 /// can be generically invoked on a pair of `IVector` values using `createTwoVectorDispatcher`
 type VectorCallSite2<'R> =
@@ -148,6 +153,42 @@ let createTwoVectorDispatcher<'R> (callSite:VectorCallSite2<'R>) =
           dict.Value.[code] <- func
           func.Invoke(callSite, vect1, vect2)
 
+/// Recursive function to cast `IVector list` to `IVector<'T> list`
+let rec convertVList<'T> (code:nativeint) (lst: IVector list) = 
+  match lst with
+  | []           -> []
+  | vect :: tail ->
+    if code <> vect.ElementType.TypeHandle.Value then
+      invalidOp "createVectorListDispatcher: All arguments should have the same element type"
+    (vect :?> IVector<'T>) :: convertVList code tail
+
+/// Creates a function `IVector list -> 'R` that dynamically invokes to 
+/// a generic `Invoke` method of the provided `VectorListCallSite1<'R>`
+let createVectorListDispatcher<'R> (callSite:VectorListCallSite1<'R>) =
+  let dict = lazy Dictionary<_, System.Func<VectorListCallSite1<'R>, IVector list, 'R>>()
+  fun (vlst:IVector list) -> 
+    match vlst with
+      | []           -> invalidOp "createVectorListDispatcher: List must be non-empty"
+      | vect :: tail -> 
+        let code = vect.ElementType.TypeHandle.Value
+        if code = doubleCode then callSite.Invoke<float>(convertVList doubleCode vlst)
+        elif code = intCode then callSite.Invoke<int>(convertVList intCode vlst)
+        elif code = stringCode then callSite.Invoke<string>(convertVList stringCode vlst)
+        else
+          match dict.Value.TryGetValue(code) with
+          | true, f -> f.Invoke(callSite, vlst)
+          | _ ->
+            let mi = typeof<VectorListCallSite1<'R>>.GetMethod("Invoke").MakeGenericMethod(vect.ElementType)
+            let inst = Expression.Parameter(typeof<VectorListCallSite1<'R>>)
+            let par = Expression.Parameter(typeof<IVector list>)
+            let ty = typedefof<IVector<_>>.MakeGenericType(vect.ElementType)
+            let expr =
+              Expression.Lambda<System.Func<VectorListCallSite1<'R>, IVector list, 'R>>
+                ( Expression.Call(inst, mi, Expression.Convert(par, ty)), [ inst; par ])
+            let func = expr.Compile()
+            dict.Value.[code] <- func
+            func.Invoke(callSite, vlst)
+
 /// A type that implements common vector value transformations and 
 /// a helper method for creating transformation on values of known types
 type VectorValueTransform =
@@ -179,6 +220,19 @@ type VectorValueTransform =
           if l.HasValue && r.HasValue then invalidOp "Combining vectors failed - both vectors have a value."
           if l.HasValue then l else r) }
 
+type VectorValueListTransform =
+  /// Creates a transformation that applies the specified function on `'T` values list
+  static member Create<'T>(operation:OptionalValue<'T> list -> OptionalValue<'T>) = 
+    { new IVectorValueListTransform with
+        member vt.GetFunction<'R>() = 
+          unbox<OptionalValue<'R> list -> OptionalValue<'R>> (box operation) }
+  /// A generic transformation that works when at most one value is defined
+  static member AtMostOne =
+    { new IVectorValueListTransform with
+        member vt.GetFunction<'R>() = (fun (l:OptionalValue<'R> list) ->
+          l |> List.fold (fun s v -> 
+            if s.HasValue && v.HasValue then invalidOp "Combining vectors failed - more than one vector has a value."
+            if v.HasValue then v else s) OptionalValue.Missing) }
 
 // A "generic function" that boxes all values of a vector (IVector<int, 'T> -> IVector<int, obj>)
 let boxVector () = 
@@ -330,5 +384,6 @@ let rec substitute ((oldVar, newVar) as subst) = function
   | GetRange(vc, r) -> GetRange(substitute subst vc, r)
   | Append(l, r) -> Append(substitute subst l, substitute subst r)
   | Combine(l, r, c) -> Combine(substitute subst l, substitute subst r, c)
+  | CombineN(lst, c) -> CombineN(List.map (substitute subst) lst, c)
   | CustomCommand(vcs, f) -> CustomCommand(List.map (substitute subst) vcs, f)
   | AsyncCustomCommand(vcs, f) -> AsyncCustomCommand(List.map (substitute subst) vcs, f)

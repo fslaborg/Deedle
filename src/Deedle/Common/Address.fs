@@ -17,41 +17,14 @@
 /// this can be easily extended.
 module Deedle.Addressing
 
-type Address = 
-  | Int of int
-  | Int64 of int64
+type Address = int64
 
 /// ArrayVectors assume that the address is an integer
-let (|IntAddress|) = function
-  | Address.Int n -> n
-  | _ -> failwith "ArrayVectorBuilder: Only int addresses are supported."
+let (|IntAddress|) = function _ : int64 as n -> int n
+let int32Convertor v = int64 v
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Address =
-  let increment = function
-    | Int lo -> Int (lo + 1)
-    | _ -> failwith "Not supported"
-  let decrement = function
-    | Int lo -> Int (lo - 1)
-    | _ -> failwith "Not supported"
-  let generateRange = function
-    | Int lo, Int hi -> 
-        ( if hi < lo then seq { lo .. -1 .. hi } 
-          else seq { lo .. hi } ) |> Seq.map Int
-    | _ -> failwith "Not supported"
-
-  let int32Convertor = 
-    Some(fun v -> Int v)
-
-  let add = function
-    | Int a, Int b -> Int (a + b)
-    | _ -> failwith "Not supported"
-
-  let rangeOf(seq) = 
-    Int 0, Int ((Seq.length seq) - 1)
-
-  let getRange = function 
-    | (seq:_[]), Int lo, Int hi ->
-        if hi >= lo then seq.[lo .. hi]
-        else [| |]
-    | _ -> failwith "Not supported"
+  let increment (x:Address) = (x + 1L)
+  let decrement (x:Address) = (x - 1L)
+  let add (a:Address, b:Address) = a + b

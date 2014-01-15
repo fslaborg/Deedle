@@ -378,6 +378,21 @@ module FSharpFrameExtensions =
     member frame.ToDataTable(rowKeyNames) = 
       FrameUtils.toDataTable rowKeyNames frame
 
+    /// Creates a new data frame resulting from a 'pivot' operation. Consider a denormalized data 
+    /// frame representing a table: column labels are field names & table values are observations
+    /// of those fields. pivotTable buckets the rows along two axes, according to the results of 
+    /// the functions `rowGrp` and `colGrp`; and then computes a value for the frame of rows that
+    /// land in each bucket.
+    ///
+    /// ## Parameters
+    ///  - `rowGrp` - A function from rowkey & row to group value for the resulting row index
+    ///  - `colGrp` - A function from rowkey & row to group value for the resulting col index
+    ///  - `op` - A function computing a value from the corresponding bucket frame 
+    ///
+    /// [category:Frame operations]
+    member frame.PivotTable<'R, 'C, 'T when 'R : equality and 'C : equality>(r:'TColumnKey, c:'TColumnKey, op:Frame<'TRowKey,'TColumnKey> -> 'T) =
+        frame |> Frame.pivotTable (fun k os -> os.GetAs<'R>(r)) (fun k os -> os.GetAs<'C>(c)) op
+
 module FrameBuilder =
   type Columns<'R, 'C when 'C : equality and 'R : equality>() = 
     let mutable series = []
@@ -460,6 +475,18 @@ type FrameExtensions =
   [<Extension>]
   static member IndexRowsWith(frame:Frame<'R, 'C>, keys:seq<'TNewRowIndex>) =
     frame |> Frame.indexRowsWith keys
+
+  /// Replace the row index of the frame with a sequence of row keys generated using
+  /// a function invoked on each row.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame whose row index are to be replaced.
+  ///  - `f` - A function from row (as object series) to new row key value
+  ///
+  /// [category:Data structure manipulation]
+  [<Extension>]
+  static member IndexRowsUsing(frame:Frame<'R, 'C>, f:Func<ObjectSeries<'C>,'R2>) =
+    frame |> Frame.indexRowsUsing f.Invoke
 
   /// Replace the column index of the frame with the provided sequence of column keys.
   /// The columns of the frame are assigned keys according to the current order, or in a

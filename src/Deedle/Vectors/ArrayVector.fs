@@ -117,10 +117,10 @@ type ArrayVectorBuilder() =
               invalidOp "Type mismatch - cannot fill values of the vector!"
               
 
-      | Relocate(source, (IntAddress loRange, IntAddress hiRange), relocations) ->
+      | Relocate(source, IntAddress len, relocations) ->
           // Create a new array with specified size and move values from the
           // old array (source) to the new, according to 'relocations'
-          let newData = Array.zeroCreate (hiRange - loRange + 1)
+          let newData = Array.zeroCreate len
           match builder.buildArrayVector source arguments with 
           | VectorOptional data ->
               for IntAddress newIndex, IntAddress oldIndex in relocations do
@@ -170,6 +170,20 @@ type ArrayVectorBuilder() =
                 let rv = if idx >= right.Length then OptionalValue.Missing else right.[idx]
                 merge lv rv)
               vectorBuilder.CreateMissing(filled)
+
+      | CombineN(vectors, op) ->
+          let data = 
+            vectors 
+            |> List.map (fun v -> builder.buildArrayVector v arguments) 
+            |> List.map (function AsVectorOptional o -> o)
+
+          let merge = op.GetFunction<'T>()
+          let filled = Array.init (data |> List.map (fun v -> v.Length) |> List.reduce max) (fun idx ->
+            data 
+            |> List.map (fun v -> if idx > v.Length then OptionalValue.Missing else v.[idx]) 
+            |> merge)  
+
+          vectorBuilder.CreateMissing(filled)
 
       | CustomCommand(vectors, f) ->
           let vectors = List.map (fun v -> vectorBuilder.Build(v, arguments) :> IVector) vectors
