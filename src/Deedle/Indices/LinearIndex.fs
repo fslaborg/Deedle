@@ -198,7 +198,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       LinearIndex(index.Mappings |> Seq.map fst |> ReadOnlyCollection.ofSeq, LinearIndexBuilder.Instance), newVector
 
   /// Instance of the index builder (specialized to Int32 addresses)
-  static let indexBuilder = LinearIndexBuilder(Vectors.ArrayVector.ArrayVectorBuilder.Instance)
+  static let indexBuilder = LinearIndexBuilder(VectorBuilder.Instance)
   /// Provides a global access to an instance of LinearIndexBuilder
   static member Instance = indexBuilder :> IIndexBuilder
 

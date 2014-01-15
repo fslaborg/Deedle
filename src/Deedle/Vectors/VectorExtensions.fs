@@ -5,8 +5,15 @@ open Deedle.Vectors
 open Deedle.Vectors.ArrayVector
 
 // ------------------------------------------------------------------------------------------------
-// F# frienly operations for creating vectors
+// F# friendly operations for creating vectors
 // ------------------------------------------------------------------------------------------------
+
+/// Set concrete IVectorBuilder implementation
+[<AutoOpen>]
+module FSharpVectorBuilderImplementation =
+  type VectorBuilder = 
+    /// Returns concrete implementation for IVectorBuilder
+    static member Instance = ArrayVectorBuilder.Instance
 
 /// Defines non-generic `Vector` type that provides functions for building vectors
 /// (hard-bound to `ArrayVectorBuilder` type). In F#, the module is automatically opened
@@ -22,23 +29,23 @@ module FSharpVectorExtensions =
     /// Creates a vector that stores the specified data in an array.
     /// Values such as `null` and `Double.NaN` are turned into missing values.
     static member inline ofValues<'T>(data:'T[]) = 
-      ArrayVectorBuilder.Instance.Create(data)
+      VectorBuilder.Instance.Create(data)
 
     /// Creates a vector that stores the specified data in an array.
     /// Values such as `null` and `Double.NaN` are turned into missing values.
     static member inline ofValues<'T>(data:seq<'T>) = 
-      ArrayVectorBuilder.Instance.Create(Array.ofSeq data)
+      VectorBuilder.Instance.Create(Array.ofSeq data)
 
     /// Creates a vector that stores the specified data in an array.
     /// Missing values can be specified explicitly as `None`, but other values 
     /// such as `null` and `Double.NaN` are turned into missing values too.
     static member inline ofOptionalValues<'T>(data:seq<option<'T>>) = 
-      ArrayVectorBuilder.Instance.CreateMissing(data |> Seq.map OptionalValue.ofOption |> Array.ofSeq)
+      VectorBuilder.Instance.CreateMissing(data |> Seq.map OptionalValue.ofOption |> Array.ofSeq)
 
     /// Missing values can be specified explicitly as `OptionalValue.Missing`, but 
     /// other values such as `null` and `Double.NaN` are turned into missing values too.
     static member inline ofOptionalValues<'T>(data:seq<OptionalValue<'T>>) = 
-      ArrayVectorBuilder.Instance.CreateMissing(data |> Array.ofSeq)
+      VectorBuilder.Instance.CreateMissing(data |> Array.ofSeq)
 
 // ------------------------------------------------------------------------------------------------
 // C# frienly operations for creating vectors
@@ -55,22 +62,22 @@ type Vector =
   /// Values such as `null` and `Double.NaN` are turned into missing values.
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member inline Create<'T>(data:'T[]) = 
-    ArrayVectorBuilder.Instance.Create(data)
+    VectorBuilder.Instance.Create(data)
 
   /// Creates a vector that stores the specified data in an array.
   /// Values such as `null` and `Double.NaN` are turned into missing values.
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member inline Create<'T>(data:seq<'T>) = 
-    ArrayVectorBuilder.Instance.Create(Array.ofSeq data)
+    VectorBuilder.Instance.Create(Array.ofSeq data)
 
   /// Creates a vector that stores the specified data in an array.
   /// Values such as `null` and `Double.NaN` are turned into missing values.
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member inline CreateMissing<'T>(data:seq<OptionalValue<'T>>) = 
-    ArrayVectorBuilder.Instance.CreateMissing(data |> Array.ofSeq)
+    VectorBuilder.Instance.CreateMissing(data |> Array.ofSeq)
 
   /// Creates a vector that stores the specified data in an array.
   /// Values such as `null` and `Double.NaN` are turned into missing values.
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member inline CreateMissing(data:seq<System.Nullable<'T>>) = 
-    ArrayVectorBuilder.Instance.CreateMissing(data |> Array.ofSeq |> Array.map OptionalValue.ofNullable)
+    VectorBuilder.Instance.CreateMissing(data |> Array.ofSeq |> Array.map OptionalValue.ofNullable)

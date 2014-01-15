@@ -120,8 +120,8 @@ type internal DelayedSource<'K, 'V when 'K : equality>
     ( rangeMin:'K, rangeMax:'K, ranges:Ranges<'K>, 
       loader:DelayedSourceRanges<'K> -> DelayedSourceData<'K, 'V>) =
 
-  static let vectorBuilder = ArrayVector.ArrayVectorBuilder.Instance
-  static let indexBuilder = Linear.LinearIndexBuilder.Instance
+  static let vectorBuilder = VectorBuilder.Instance
+  static let indexBuilder = IndexBuilder.Instance
 
   let comparer = System.Collections.Generic.Comparer<'K>.Default
   let (<) a b = comparer.Compare(a, b) < 0
@@ -211,7 +211,7 @@ and internal DelayedIndexFunction<'K, 'R when 'K : equality> =
 /// index and if it is DelayedIndex, then it uses the `Source` to build a new `Source`
 /// with a restricted range.
 and internal DelayedIndexBuilder() =
-  let builder = Linear.LinearIndexBuilder.Instance
+  let builder = IndexBuilder.Instance
   interface IIndexBuilder with
     member x.Create(keys, ordered) = builder.Create(keys, ordered)
     member x.Aggregate(index, aggregation, vector, selector) = builder.Aggregate(index, aggregation, vector, selector)
@@ -377,5 +377,5 @@ type DelayedSeries =
       ranges |> Array.map (fun (l, h) -> loader l h))
     let index = DelayedIndex(series)
     let vector = DelayedVector(series)
-    let vectorBuilder = ArrayVectorBuilder.Instance
+    let vectorBuilder = VectorBuilder.Instance
     Series<'K, 'V>(index, vector, vectorBuilder, DelayedIndexBuilder())
