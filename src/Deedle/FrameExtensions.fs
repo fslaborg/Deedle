@@ -476,6 +476,18 @@ type FrameExtensions =
   static member IndexRowsWith(frame:Frame<'R, 'C>, keys:seq<'TNewRowIndex>) =
     frame |> Frame.indexRowsWith keys
 
+  /// Replace the row index of the frame with a sequence of row keys generated using
+  /// a function invoked on each row.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame whose row index are to be replaced.
+  ///  - `f` - A function from row (as object series) to new row key value
+  ///
+  /// [category:Data structure manipulation]
+  [<Extension>]
+  static member IndexRowsUsing(frame:Frame<'R, 'C>, f:Func<ObjectSeries<'C>,'R2>) =
+    frame |> Frame.indexRowsUsing f.Invoke
+
   /// Replace the column index of the frame with the provided sequence of column keys.
   /// The columns of the frame are assigned keys according to the current order, or in a
   /// non-deterministic way, if the current column index is not ordered.

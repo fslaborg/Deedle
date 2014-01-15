@@ -764,7 +764,7 @@ let ``Can compute pivot table from titanic data``() =
 
 [<Test>]
 let ``Can compute pivot table from titanic data with nice syntax``() =
-  let actual =
+  let actual =  
     let f = titanic()
     f.PivotTable("Sex", "Survived", Frame.countRows)
 
@@ -772,3 +772,21 @@ let ``Can compute pivot table from titanic data with nice syntax``() =
     (frame [ false => series [ "male" => 468;  "female" => 81  ]; 
              true  => series [ "male" => 109;  "female" => 233 ] ])
   actual |> shouldEqual expected
+  
+// ----------------------------------------------------------------------------------------------
+// Index operations
+// ----------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can index rows using transformation function``() =
+  let actual = 
+    Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => 2.0 ]; 
+                      "B" => series [ 1 => 2.0; 2 => 3.0 ] ]
+    |> Frame.indexRowsUsing (fun r -> r.GetAs<float>("A") + 2.0)
+
+  let expected = 
+    Frame.ofColumns [ "A" => series [ 3.0 => 1.0; 4.0 => 2.0 ]; 
+                      "B" => series [ 3.0 => 2.0; 4.0 => 3.0 ] ]
+
+  actual |> shouldEqual expected
+  
