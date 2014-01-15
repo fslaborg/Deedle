@@ -629,13 +629,11 @@ and
 
   /// [category:Indexing]
   member x.Realign(newKeys) = 
-    let ns = 
-      Series( Index.ofKeys newKeys, vectorBuilder.Create (Array.ofSeq newKeys),
-              vectorBuilder, indexBuilder )
-    ns.Zip(x, JoinKind.Left).SelectOptional(fun kvp ->
-      match kvp with
-      | KeyValue(k, OptionalValue.Present(_, v)) -> v
-      | _ -> OptionalValue.Missing )
+    let newIndex = Index.ofKeys newKeys
+    let newIndex, thisRowCmd, otherRowCmd = 
+      createJoinTransformation indexBuilder JoinKind.Right Lookup.Exact x.Index newIndex (Vectors.Return 0) (Vectors.Return 1)
+    let newVector = vectorBuilder.Build(thisRowCmd, [| this.Vector |])
+    Series<_,_>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   /// Replace the index of the series with ordinarilly generated integers starting from zero.
   /// The elements of the series are assigned index according to the current order, or in a
