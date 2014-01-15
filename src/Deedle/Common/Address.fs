@@ -27,7 +27,4 @@ let int32Convertor v = int64 v
 module Address =
   let increment (x:Address) = (x + 1L)
   let decrement (x:Address) = (x - 1L)
-  let generateRange (lo:Address, hi:Address) = ( if hi < lo then seq { lo .. -1L .. hi } else seq { lo .. hi } )
   let add (a:Address, b:Address) = a + b
-  let rangeOf(seq) = 0L, ((Seq.length seq) - 1) |> int64
-  let getRange = function (seq:_[]), IntAddress lo, IntAddress hi -> if hi >= lo then seq.[lo .. hi] else [| |]

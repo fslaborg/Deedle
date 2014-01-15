@@ -145,9 +145,6 @@ type IIndex<'K when 'K : equality> =
   /// Returns all key-address mappings in the index
   abstract Mappings : seq<'K * Address>
 
-  /// Returns the minimal and maximal address used in the index.
-  abstract Range : Address * Address
-
   /// Returns the minimal and maximal key associated with the index.
   /// (the operation may fail for unordered indices)
   abstract KeyRange : 'K * 'K
