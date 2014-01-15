@@ -14,12 +14,13 @@ open Deedle.Addressing
 open Deedle.Internal
 open Deedle.Indices
 open System.Diagnostics
+open System.Collections.ObjectModel
 
 /// An index that maps keys `K` to offsets `Address`. The keys cannot be duplicated.
 /// The construction checks if the keys are ordered (using the provided or the default
 /// comparer for `K`) and disallows certain operations on unordered indices.
 type LinearIndex<'K when 'K : equality> 
-  internal (keys:seq<'K>, builder, ?ordered) =
+  internal (keys:ReadOnlyCollection<'K>, builder, ?ordered) =
 
   // Build a lookup table etc.
   let comparer = Comparer<'K>.Default
@@ -47,15 +48,20 @@ type LinearIndex<'K when 'K : equality>
   let keysArray = lazy Array.ofSeq keys
   let keysArrayRev = lazy (Array.ofSeq keys |> Array.rev)
 
-  let lookup = Dictionary<'K, Address>()
-  let addresses = Address.generateRange(Address.rangeOf(keys))
-  let mappings = Seq.zip keys addresses
-  do for k, v in mappings do 
-       match lookup.TryGetValue(k) with
-       | true, list -> 
+  let makeLookup () = 
+    let dict = Dictionary<'K, Address>()
+    let mutable idx = 0L
+    do for k in keys do 
+        match dict.TryGetValue(k) with
+        | true, list -> 
           let info = sprintf "Duplicate key '%A'. Duplicate keys are not allowed in the index." k
           invalidArg "keys" info
-       | _ -> lookup.[k] <- v  
+        | _ -> 
+          dict.[k] <- idx  
+          idx <- idx + 1L
+    dict
+
+  let lookup = lazy makeLookup()
 
   /// Exposes keys array for use in the index builder
   member internal index.KeysArray = keysArray
@@ -64,23 +70,20 @@ type LinearIndex<'K when 'K : equality>
   override index.Equals(another) = 
     match another with
     | null -> false
-    | :? IIndex<'K> as another -> Seq.structuralEquals mappings another.Mappings
+    | :? IIndex<'K> as another -> Seq.structuralEquals keys another.Keys
     | _ -> false
 
   /// Implement structural hashing against another index
   override index.GetHashCode() =
-    mappings |> Seq.structuralHash
+    keys |> Seq.structuralHash
 
   interface IIndex<'K> with
-    member x.Keys = keys
-    member x.KeyCount = int64 lookup.Count
+    member x.Keys = seq { for k in keys -> k }
+    member x.KeyCount = int64 keys.Count
     member x.Builder = builder
 
     /// Perform reverse lookup and return key for an address
-    member x.KeyAt(address) =
-      match address with 
-      | Address.Int i -> keysArray.Value.[i]
-      | _ -> invalidOp "This type of index does not support reverse lookup"
+    member x.KeyAt(Addressing.IntAddress address) = keysArray.Value.[address]
 
     /// Returns whether the specified index is empty
     member x.IsEmpty = keys |> Seq.isEmpty
@@ -93,7 +96,7 @@ type LinearIndex<'K when 'K : equality>
     /// Get the address for the specified key.
     /// The 'semantics' specifies fancy lookup methods.
     member x.Lookup(key, semantics, check) = 
-      match lookup.TryGetValue(key), semantics, Address.int32Convertor with
+      match lookup.Value.TryGetValue(key), semantics, Some Addressing.int32Convertor with
 
       // When the value exists directly and the user requires exact match, we 
       // just return it (ignoring the fact that Vector value may be missing)
@@ -151,7 +154,7 @@ type LinearIndex<'K when 'K : equality>
       | _ -> OptionalValue.Missing
 
     /// Returns all mappings of the index (key -> address) 
-    member x.Mappings = mappings
+    member x.Mappings = keys |> Seq.mapi (fun i k -> k, Addressing.int32Convertor i)
     /// Returns the range used by the index
     member x.Range = Address.rangeOf(keys)
     /// Are the keys of the index ordered?
@@ -172,7 +175,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
   /// and apply the transformations on two specified vector constructors
   let returnUsingAlignedSequence joined vector1 vector2 ordered : (IIndex<_> * _ * _) = 
     // Create a new index using the sorted keys
-    let newIndex = LinearIndex<_>(seq { for k, _, _ in joined -> k}, LinearIndexBuilder.Instance, ?ordered=ordered)
+    let newIndex = LinearIndex<_>(seq { for k, _, _ in joined -> k} |> ReadOnlyCollection.ofSeq, LinearIndexBuilder.Instance, ?ordered=ordered)
     let range = (newIndex :> IIndex<_>).Range
 
     // Create relocation transformations for both vectors
@@ -190,12 +193,12 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
     match index with
     | :? LinearIndex<_> as lin -> lin, vector
     | _ ->
-      let relocs = index.Mappings |> Seq.mapi (fun i (k, a) -> Address.Int i, a)
+      let relocs = index.Mappings |> Seq.mapi (fun i (k, a) -> Addressing.int32Convertor i, a)
       let newVector = Vectors.Relocate(vector, Address.rangeOf(index.Mappings), relocs)
-      LinearIndex(index.Mappings |> Seq.map fst, LinearIndexBuilder.Instance), newVector
+      LinearIndex(index.Mappings |> Seq.map fst |> ReadOnlyCollection.ofSeq, LinearIndexBuilder.Instance), newVector
 
   /// Instance of the index builder (specialized to Int32 addresses)
-  static let indexBuilder = LinearIndexBuilder(Vectors.ArrayVector.ArrayVectorBuilder.Instance)
+  static let indexBuilder = LinearIndexBuilder(VectorBuilder.Instance)
   /// Provides a global access to an instance of LinearIndexBuilder
   static member Instance = indexBuilder :> IIndexBuilder
 
@@ -207,7 +210,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
     /// Create an index from the specified data
     member builder.Create<'K when 'K : equality>(keys, ordered) = 
-      upcast LinearIndex<'K>(keys, builder, ?ordered=ordered)
+      upcast LinearIndex<'K>(ReadOnlyCollection.ofSeq keys, builder, ?ordered=ordered)
 
     /// Aggregate ordered index
     member builder.Aggregate<'K, 'TNewKey, 'R when 'K : equality and 'TNewKey : equality>
@@ -291,7 +294,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
     member builder.OrderIndex( (index, vector) ) =
       let keys = Array.ofSeq index.Keys
       Array.sortInPlaceWith (fun a b -> index.Comparer.Compare(a, b)) keys
-      let newIndex = LinearIndex(keys, builder, true) :> IIndex<_>
+      let newIndex = LinearIndex(ReadOnlyCollection.ofArray keys, builder, true) :> IIndex<_>
       let relocations = 
         seq { for key, oldAddress in index.Mappings ->
                 let newAddress = newIndex.Lookup(key, Lookup.Exact, fun _ -> true) 
@@ -350,7 +353,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
              let newKey = f oldAddress
              if newKey.HasValue then yield newKey.Value, oldAddress |]
       
-      let newIndex = LinearIndex<'TNewKey>(Seq.map fst newKeys, builder)
+      let newIndex = LinearIndex<'TNewKey>(Seq.map fst newKeys |> ReadOnlyCollection.ofSeq, builder)
       let newRange = (newIndex :> IIndex<_>).Range
       let relocations = Seq.zip (Address.generateRange(newRange)) (Seq.map snd newKeys)
       upcast newIndex, Vectors.Relocate(vector, newRange, relocations)
@@ -371,7 +374,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
              if searchKey.Matches(key) then yield addr, key |]
       let range = Address.rangeOf(matching)
       let relocs = Seq.zip (Address.generateRange(range)) (Seq.map fst matching)
-      let newIndex = LinearIndex<_>(Seq.map snd matching, builder, index.IsOrdered)
+      let newIndex = LinearIndex<_>(Seq.map snd matching |> ReadOnlyCollection.ofSeq, builder, index.IsOrdered)
       let newVector = Vectors.Relocate(vector, range, relocs)
       upcast newIndex, newVector
 
@@ -382,7 +385,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       | OptionalValue.Present(addr) ->
           let newVector = Vectors.DropRange(vector, (snd addr, snd addr))
           let newKeys = index.Keys |> Seq.filter ((<>) key)
-          let newIndex = LinearIndex<_>(newKeys, builder, index.IsOrdered)
+          let newIndex = LinearIndex<_>(newKeys |> ReadOnlyCollection.ofSeq, builder, index.IsOrdered)
           upcast newIndex, newVector
       | _ ->
           invalidArg "key" (sprintf "The key '%O' is not present in the index." key)
@@ -413,8 +416,8 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
           let newKeys = Address.getRange(index.KeysArray.Value, lo, hi) |> Array.ofSeq
           let newVector = Vectors.GetRange(vector, (lo, hi))
-          upcast LinearIndex<_>(newKeys, builder, (index :> IIndex<_>).IsOrdered), newVector
-      | _ -> upcast LinearIndex<_>([], builder, index.IsOrdered), Vectors.Empty
+          upcast LinearIndex<_>(ReadOnlyCollection.ofArray newKeys, builder, (index :> IIndex<_>).IsOrdered), newVector
+      | _ -> upcast LinearIndex<_>(ReadOnlyCollection.ofArray [||], builder, index.IsOrdered), Vectors.Empty
 
 // --------------------------------------------------------------------------------------
 // Functions for creatin linear indices
