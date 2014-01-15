@@ -217,6 +217,20 @@ let ``Can create frame from 100k of three element tuples (in less than a few sec
   df |> Frame.sum |> Series.sum |> int |> shouldEqual 101101
 
 // ------------------------------------------------------------------------------------------------
+// Accessor testing
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can retrieve a series according to type parameter`` () =
+  let s1 = series [| 1 => (1,2); 2 => (1,3) |]
+  let s2 = series [| 1 => ("a",1.0); 2 => ("b",2.0) |]
+  let f = frame [ "A" => s1 ]
+  f?B <- s2
+  f.GetAllSeries<int*int>() |> shouldEqual ( seq [ KeyValuePair("A", s1) ] )
+  f.GetAllSeries<string*float>() |> shouldEqual ( seq [ KeyValuePair("B", s2) ] )
+  f.GetAllSeries<int*float>() |> shouldEqual Seq.empty
+
+// ------------------------------------------------------------------------------------------------
 // Stack & unstack
 // ------------------------------------------------------------------------------------------------
 
