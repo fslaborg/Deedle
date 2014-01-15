@@ -146,9 +146,10 @@ type VectorConstruction =
   /// Creates an empty vector of the requested type
   | Empty 
 
-  /// Reorders elements of the vector. Carries a new required vector range and a list
+  /// Reorders elements of the vector. Carries a new required vector size and a list
   /// of relocations (each pair of addresses specifies that an element at a new address 
-  /// should be filled with an element from an old address). THe addresses may be out of range!
+  /// should be filled with an element from an old address). The addresses may be out of 
+  /// range!
   | Relocate of VectorConstruction * int64 * seq<Address * Address>
 
   /// Drop the specified range of addresses from the vector 
