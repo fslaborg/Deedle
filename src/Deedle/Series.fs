@@ -915,8 +915,13 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
         OptionalValue(Series(newIndex, vec, vectorBuilder, indexBuilder))
     | _ -> 
         ( if strict then VectorHelpers.tryCastType vector
-          else try VectorHelpers.tryCastType vector
-               with :? InvalidCastException -> VectorHelpers.tryChangeType vector )
+          else               
+            let attempt = VectorHelpers.tryChangeType vector
+            if not attempt.HasValue then 
+              try VectorHelpers.tryCastType vector
+              with :? InvalidCastException -> OptionalValue.Missing
+            else attempt
+        )
         |> OptionalValue.map (fun vec -> 
           let newIndex = indexBuilder.Project(index)
           Series(newIndex, vec, vectorBuilder, indexBuilder))
