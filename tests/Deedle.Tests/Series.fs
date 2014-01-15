@@ -163,6 +163,39 @@ let ``Can do simple fill backward``() =
   actual |> shouldEqual (Series.ofValues [0.0; 1.0; 1.0; 2.0; 2.0 ])
 
 [<Test>]
+let ``Can do fill inside backward``() =
+  let n = Series.ofValues [ Double.NaN; 1.0; Double.NaN; 2.0; Double.NaN ]
+  let actual = n |> Series.fillMissingInside Direction.Backward
+  actual |> shouldEqual (Series.ofValues [Double.NaN; 1.0; 2.0; 2.0; Double.NaN ])
+
+[<Test>]
+let ``Can do fill inside forward``() =
+  let n = Series.ofValues [ Double.NaN; 1.0; Double.NaN; 2.0; Double.NaN ]
+  let actual = n |> Series.fillMissingInside Direction.Forward
+  actual |> shouldEqual (Series.ofValues [Double.NaN; 1.0; 1.0; 2.0; Double.NaN ])
+
+[<Test>]
+let ``Fill inside corner cases work``() =
+  let s = Series.ofValues [ Double.NaN; 1.0; Double.NaN]
+  let actual = s |> Series.fillMissingInside Direction.Forward
+  actual |> shouldEqual s
+
+  let s = Series.ofValues [ Double.NaN ]
+  let actual = s |> Series.fillMissingInside Direction.Forward
+  actual |> shouldEqual s
+
+  let s = Series.ofValues [ 1.0; Double.NaN ]
+  let actual = s |> Series.fillMissingInside Direction.Forward
+  actual |> shouldEqual s
+
+  let s = Series.ofValues [ Double.NaN; 1.0 ]
+  let actual = s |> Series.fillMissingInside Direction.Forward
+  actual |> shouldEqual s
+
+  let s = series [ 2.0 => Double.NaN; 1.0 => 1.0 ]
+  (fun () -> s |> Series.fillMissingInside Direction.Forward |> ignore) |> should throw typeof<System.InvalidOperationException>
+  
+[<Test>]
 let ``Can fill missing values in a specified range``() =
   let ts = generate DateTime.Today (TimeSpan.FromDays(1.0)) 20
   let tsmiss = ts |> Series.mapValues (fun v -> if v % 3 = 0 then Double.NaN else float v)
