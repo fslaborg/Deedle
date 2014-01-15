@@ -242,10 +242,10 @@ and
   ///
   /// [category:Accessors and slicing]
   member x.TryGetAt(index) = 
-    x.Vector.GetValue(Addressing.Int index)
+    x.Vector.GetValue(Addressing.int32Convertor index)
   /// [category:Accessors and slicing]
   member x.GetKeyAt(index) = 
-    x.Index.KeyAt(Addressing.Int index)
+    x.Index.KeyAt(Addressing.int32Convertor index)
   /// [category:Accessors and slicing]
   member x.GetAt(index) = 
     x.TryGetAt(index).Value
@@ -875,8 +875,8 @@ and
     Series(pairs |> Seq.map (fun kvp -> kvp.Key), pairs |> Seq.map (fun kvp -> kvp.Value))
 
   new(keys:seq<_>, values:seq<_>) = 
-    let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
-    let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
+    let vectorBuilder = VectorBuilder.Instance
+    let indexBuilder = IndexBuilder.Instance
     Series( Index.ofKeys keys, vectorBuilder.Create (Array.ofSeq values),
             vectorBuilder, indexBuilder )
 

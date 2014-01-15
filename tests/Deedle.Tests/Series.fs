@@ -87,7 +87,7 @@ let ``Series with different data are not considered equal``() =
 [<Test>] 
 let ``Should throw useful message when there are duplicate keys`` () =
   let actual =
-    try let s = series [ 42 => "A"; 42 => "B" ] in ""
+    try let s = series [ 42 => "A"; 42 => "B" ] in s.Get(42)
     with e -> e.Message
   actual |> should contain "42"
 
