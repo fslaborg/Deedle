@@ -5,14 +5,14 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>e2aa33ec-5970-48a9-9750-1dd48eb344d7</ProjectGuid>
+    <ProjectGuid>371f8ce6-b031-4589-843f-583fe9180948</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Deedle.Tests.PerfTool</RootNamespace>
-    <AssemblyName>Deedle.Tests.PerfTool</AssemblyName>
+    <RootNamespace>Deedle.PerfTest</RootNamespace>
+    <AssemblyName>Deedle.PerfTest</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
-    <Name>Deedle.Tests.PerfTool</Name>
+    <Name>Deedle.PerfTest</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -23,7 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Debug\Deedle.Tests.PerfTool.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Deedle.PerfTest.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -34,7 +34,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Release\Deedle.Tests.PerfTool.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Deedle.PerfTest.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
@@ -47,7 +47,6 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attributes.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
   </ItemGroup>

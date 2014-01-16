@@ -14,7 +14,7 @@ open System
 open FsUnit
 open NUnit.Framework
 open Deedle
-open Deedle.Tests.PerfTool
+open Deedle.PerfTest.Core
 
 // ------------------------------------------------------------------------------------------------
 // Performance tests that are run & evaluated automatically against a baseline
