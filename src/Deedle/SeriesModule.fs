@@ -58,6 +58,11 @@ module Series =
 
   let tryLookup key lookup (series:Series<'K, 'T>) = series.TryGet(key, lookup) |> OptionalValue.asOption
 
+  let tryLookupObservation key lookup (series:Series<'K, 'T>) = 
+    series.TryGetObservation(key, lookup) 
+    |> OptionalValue.asOption 
+    |> Option.map (fun kvp -> (kvp.Key, kvp.Value))
+
   let tryGet key (series:Series<'K, 'T>) = series.TryGet(key) |> OptionalValue.asOption
 
   let tryGetAt index (series:Series<'K, 'T>) = series.TryGetAt(index) |> OptionalValue.asOption
