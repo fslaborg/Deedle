@@ -84,6 +84,22 @@ module Frame =
   [<CompiledName("LookupColumn")>]
   let lookupCol column lookup (frame:Frame<'R, 'C>) = frame.GetSeries(column, lookup)
 
+  /// Returns a specified series (column) from a data frame, or missing value if 
+  /// column doesn't exist.
+  ///
+  /// [category:Accessing frame data and lookup]
+  [<CompiledName("TryLookupColumn")>]
+  let tryLookupCol column lookup (frame:Frame<'R, 'C>) = 
+    frame.TryGetSeries(column, lookup) |> OptionalValue.asOption
+
+  /// Returns a specified key and series (column) from a data frame, or missing value if 
+  /// doesn't exist.
+  ///
+  /// [category:Accessing frame data and lookup]
+  [<CompiledName("TryLookupColObservation")>]
+  let tryLookupColObservation column lookup (frame:Frame<'R, 'C>) = 
+    frame.TryGetSeriesObservation(column, lookup) |> OptionalValue.asOption |> Option.map (fun kvp -> kvp.Key, kvp.Value)
+
   /// Returns a specified row from a data frame. If the data frame has 
   /// ordered row index, the lookup semantics can be used to get row with 
   /// nearest greater/smaller key. For exact semantics, you can use `getRow`.
@@ -91,6 +107,22 @@ module Frame =
   /// [category:Accessing frame data and lookup]
   [<CompiledName("LookupRow")>]
   let lookupRow row lookup (frame:Frame<'R, 'C>) = frame.GetRow(row, lookup)
+
+  /// Returns a specified series (row) from a data frame, or missing value if 
+  /// row doesn't exit.
+  ///
+  /// [category:Accessing frame data and lookup]
+  [<CompiledName("TryLookupRow")>]
+  let tryLookupRow row lookup (frame:Frame<'R, 'C>) = 
+    frame.TryGetRow(row, lookup) |> OptionalValue.asOption
+
+  /// Returns a specified series (row) and key from a data frame, or missing value if 
+  /// row doesn't exit.
+  ///
+  /// [category:Accessing frame data and lookup]
+  [<CompiledName("TryLookupRowObservation")>]
+  let tryLookupRowObservation row lookup (frame:Frame<'R, 'C>) = 
+    frame.TryGetRowObservation(row, lookup) |> OptionalValue.asOption |> Option.map (fun kvp -> kvp.Key, kvp.Value)
 
   /// Returns a frame consisting of the specified columns from the original
   /// data frame. The function uses exact key matching semantics.

@@ -230,6 +230,31 @@ let ``Can retrieve a series according to type parameter`` () =
   f.GetAllSeries<string*float>() |> shouldEqual ( seq [ KeyValuePair("B", s2) ] )
   f.GetAllSeries<int*float>() |> shouldEqual Seq.empty
 
+[<Test>]
+let ``Can do fuzzy lookup on frame rows and cols`` () =
+  let s1 = series [| "a" => 1.0; "c" => 2.0; "e" => 3.0 |]
+  let s2 = series [| "a" => 4.0; "c" => 5.0; "e" => 6.0 |]
+  let s3 = series [| "a" => 7.0; "c" => 8.0; "e" => 9.0 |]  
+  let f = frame [ 1 => s1; 3 => s2; 5 => s3 ]    
+
+  f |> Frame.tryLookupRow "b" Lookup.NearestSmaller |> shouldEqual ( Some <| series [ 1 => 1.0; 3 => 4.0; 5 => 7.0 ] )
+  f |> Frame.tryLookupRow "b" Lookup.NearestGreater |> shouldEqual ( Some <| series [ 1 => 2.0; 3 => 5.0; 5 => 8.0 ] )
+  f |> Frame.tryLookupRow "f" Lookup.NearestGreater |> shouldEqual None
+
+  f |> Frame.tryLookupRowObservation "b" Lookup.NearestSmaller |> shouldEqual (Some ("a", series [ 1 => 1.0; 3 => 4.0; 5 => 7.0 ]))
+  f |> Frame.tryLookupRowObservation "b" Lookup.NearestGreater |> shouldEqual (Some ("c", series [ 1 => 2.0; 3 => 5.0; 5 => 8.0 ]))
+  f |> Frame.tryLookupRowObservation "f" Lookup.NearestGreater |> shouldEqual None
+
+  f |> Frame.tryLookupCol 2 Lookup.NearestSmaller |> shouldEqual ( Some s1 )
+  f |> Frame.tryLookupCol 2 Lookup.NearestGreater |> shouldEqual ( Some s2 )
+  f |> Frame.tryLookupCol 6 Lookup.NearestGreater |> shouldEqual None
+
+  f |> Frame.tryLookupColObservation 2 Lookup.NearestSmaller |> shouldEqual (Some (1, s1))
+  f |> Frame.tryLookupColObservation 2 Lookup.NearestGreater |> shouldEqual (Some (3, s2))
+  f |> Frame.tryLookupColObservation 6 Lookup.NearestGreater |> shouldEqual None
+
+
+
 // ------------------------------------------------------------------------------------------------
 // Stack & unstack
 // ------------------------------------------------------------------------------------------------
