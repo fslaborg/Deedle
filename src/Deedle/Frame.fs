@@ -460,9 +460,11 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// [category:Accessors and slicing]
   member frame.TryGetRowAt(index) = 
     frame.Rows.Vector.GetValue(Addressing.int32Convertor index)
+
   /// [category:Accessors and slicing]
   member frame.GetRowKeyAt(index) = 
     frame.RowIndex.KeyAt(Addressing.int32Convertor index)
+
   /// [category:Accessors and slicing]
   member frame.GetRowAt(index) = 
     frame.TryGetRowAt(index).Value
@@ -483,6 +485,15 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member frame.GetRow<'R>(row, lookup) : Series<'TColumnKey, 'R> = 
     let row = frame.Rows.Get(row, lookup)
     Series.Create(columnIndex, changeType row.Vector)
+
+  /// [category:Fancy accessors]
+  member frame.TryGetRow<'R>(row, lookup) =
+    frame.Rows.TryGet(row, lookup) |> OptionalValue.map (fun v -> Series.Create(columnIndex, changeType<'R> v.Vector))
+
+  /// [category:Fancy accessors]
+  member frame.TryGetRowObservation(row, lookup) =
+    frame.Rows.TryGetObservation(row, lookup) 
+    |> OptionalValue.map (fun kvp -> KeyValuePair(kvp.Key, Series.Create(columnIndex, changeType<'R> kvp.Value.Vector)))
 
   /// [category:Fancy accessors]
   member frame.GetAllValues<'R>() = frame.GetAllValues<'R>(false)
@@ -688,6 +699,22 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Series operations]
   member frame.GetAllSeries<'R>() = frame.GetAllSeries<'R>(false)
+
+  /// [category:Series operations]
+  member frame.TryGetSeries<'R>(column:'TColumnKey, lookup) =
+    frame.tryGetColVector(column, lookup, fun _ -> true) |> 
+    OptionalValue.map(fun v -> Series.Create(rowIndex, changeType<'R> v))
+
+  /// [category:Series operations]
+  member frame.TryGetSeriesObservation<'R>(column:'TColumnKey, lookup) =
+    let columnIndex = columnIndex.Lookup(column, lookup, fun _ -> true)
+    if not columnIndex.HasValue then 
+      OptionalValue.Missing 
+    else
+      data.GetValue (snd columnIndex.Value) 
+      |> OptionalValue.map (fun vec ->
+        let ser = Series.Create(rowIndex, changeType<'R> vec)
+        KeyValuePair(fst columnIndex.Value, ser) )
 
   /// [category:Series operations]
   member frame.GetAllSeries<'R>(strict) =
