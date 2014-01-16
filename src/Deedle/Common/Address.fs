@@ -1,33 +1,19 @@
 ﻿/// An `Address` value is used as an interface between vectors and indices. The index maps
 /// keys of various types to address, which is then used to get a value from the vector.
-/// 
-/// ## Details
-///
-/// In the most common case, the address will be `int` (and can represent index in an array),
-/// but it is possible to imagine other addresses - `int64` could be used with arrays of 
-/// arrays (to handle very large data). A lazily loaded vector might use something completely
-/// different (perhaps a date?). In principle this should be generic, but that is hard to do - 
-/// we want something like:
-///
-///     Series.Create : \forall 'TKey, 'TValue. \exists 'TAddress. 
-///       Index<'TKey, 'TAddress> * Vector<'TAddress, 'TValue> -> Series<'TKey, 'TValue>
-///
-/// The .NET encoding of this is a bit ugly. So instead, we just have `Address` which currently
-/// supports `Int` and `Int64`, but we keep all operations in the `Address` module, so that
-/// this can be easily extended.
+/// In the current implementation, the address is just `int64`, but most address-related
+/// functionality is in a separate module to make this easy to change.
 module Deedle.Addressing
 
+/// Represents a type used for addressing values in a vector
 type Address = int64
-
-/// ArrayVectors assume that the address is an integer
-let (|IntAddress|) = function _ : int64 as n -> int n
-let int32Convertor v = int64 v
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Address =
-  let increment (x:Address) = (x + 1L)
-  let decrement (x:Address) = (x - 1L)
-  let generateRange (lo:Address, hi:Address) = ( if hi < lo then seq { lo .. -1L .. hi } else seq { lo .. hi } )
-  let add (a:Address, b:Address) = a + b
-  let rangeOf(seq) = 0L, ((Seq.length seq) - 1) |> int64
-  let getRange = function (seq:_[]), IntAddress lo, IntAddress hi -> if hi >= lo then seq.[lo .. hi] else [| |]
+  let zero = 0L
+  let inline asInt (x:Address) = int x
+  let inline ofInt (x:int) : Address = int64 x
+  let inline ofInt64 (x:int64) : Address = x
+  let inline increment (x:Address) = (x + 1L)
+  let inline decrement (x:Address) = (x - 1L)
+  let generateRange (lo:Address, hi:Address) = 
+    if hi < lo then seq { lo .. -1L .. hi } else seq { lo .. hi }

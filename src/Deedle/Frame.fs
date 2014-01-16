@@ -6,6 +6,7 @@
 
 open Deedle
 open Deedle.Keys
+open Deedle.Addressing
 open Deedle.Internal
 open Deedle.Indices
 open Deedle.Vectors
@@ -459,10 +460,10 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Accessors and slicing]
   member frame.TryGetRowAt(index) = 
-    frame.Rows.Vector.GetValue(Addressing.int32Convertor index)
+    frame.Rows.Vector.GetValue(Address.ofInt index)
   /// [category:Accessors and slicing]
   member frame.GetRowKeyAt(index) = 
-    frame.RowIndex.KeyAt(Addressing.int32Convertor index)
+    frame.RowIndex.KeyAt(Address.ofInt index)
   /// [category:Accessors and slicing]
   member frame.GetRowAt(index) = 
     frame.TryGetRowAt(index).Value
