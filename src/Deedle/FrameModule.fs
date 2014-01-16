@@ -98,7 +98,9 @@ module Frame =
   /// [category:Accessing frame data and lookup]
   [<CompiledName("TryLookupColObservation")>]
   let tryLookupColObservation column lookup (frame:Frame<'R, 'C>) = 
-    frame.TryGetSeriesObservation(column, lookup) |> OptionalValue.asOption |> Option.map (fun kvp -> kvp.Key, kvp.Value)
+    frame.TryGetSeriesObservation(column, lookup) 
+    |> OptionalValue.asOption 
+    |> Option.map (fun kvp -> kvp.Key, kvp.Value)
 
   /// Returns a specified row from a data frame. If the data frame has 
   /// ordered row index, the lookup semantics can be used to get row with 
