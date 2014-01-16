@@ -78,7 +78,15 @@
     <Compile Include="Series.fs" />
     <Compile Include="Frame.fs" />
     <Compile Include="LazySeries.fs" />
+    <Compile Include="Performance.fs" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Deedle.Tests.PerfTool\Deedle.Tests.PerfTool.fsproj">
+      <Name>Deedle.Tests.PerfTool</Name>
+      <Project>{e2aa33ec-5970-48a9-9750-1dd48eb344d7}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
