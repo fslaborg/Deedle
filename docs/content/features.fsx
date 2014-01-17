@@ -670,6 +670,61 @@ were omitted):
       2  ->  76    88        
       3  ->  67    286      
                   
+
+<a name="pivot"></a>
+Summarizing data with pivot table
+---------------------------------
+
+In the previous section, we looked at grouping, which is a very general 
+data manipulation operation. However, very often we want to perform two operations
+at the same time - group the data by certain keys and produce an aggregate. This
+combination is captured by the concept of a _pivot table_. 
+
+A pivot table is a useful tool if you want to summarize data in the frame based
+on two keys that are available in the rows of the data frame. 
+
+For example, given the titanic data set that [we loaded earlier](#creating-csv) and
+explored in the previous section, we might want to compare the survival rate for males 
+and females. The pivot table makes this possible using just a single call:
+*)
+titanic 
+|> Frame.pivotTable 
+    // Returns a new row key
+    (fun k r -> r.GetAs<string>("Sex")) 
+    // Returns a new column key
+    (fun k r -> r.GetAs<bool>("Survived")) 
+    // Specifies aggregation for sub-frames
+    Frame.countRows 
+(**
+The `pivotTable` function (and the corresponding `PivotTable` method) take three arguments.
+The first two specify functions that, given a row in the original frame, return a new
+row key and column key, respectively. In the above example, the new row key is
+the `Sex` value and the new column key is whether a person survived or not. As a result
+we get the following two by two table:
+
+              False True
+    male   -> 468   109      
+    female -> 81    233      
+
+The pivot table operation takes the source frame, partitions the data (rows) based on the 
+new row and column keys and then aggregates each frame using the specified aggregation. In the
+above example, we used `Frame.countRows` to simply return number of people in each sub-group.
+However, we could easily calculate other statistic - such as average age:
+*) 
+titanic 
+|> Frame.pivotTable 
+    (fun k r -> r.GetAs<string>("Sex")) 
+    (fun k r -> r.GetAs<bool>("Survived")) 
+    (fun frame -> frame?Age |> Series.mean)
+|> round
+(**
+The results suggest that older males were less likely survive than younger males, but 
+older females were more likely to survive then younger females:
+
+              False True 
+    male   -> 32    27   
+    female -> 25    29   
+
 <a name="indexing"></a>
 Hierarchical indexing
 ---------------------

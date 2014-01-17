@@ -9,6 +9,7 @@ module Deedle.Tests.Common
 
 open System
 open System.Collections.Generic
+open System.Collections.ObjectModel
 open FsUnit
 open FsCheck
 open NUnit.Framework
@@ -47,24 +48,32 @@ let ``Array.dropRange drops inclusive range from an array`` () =
 [<Test>]
 let ``Binary searching for nearest greater value works`` () =
   let comparer = System.Collections.Generic.Comparer<int>.Default
-  Array.binarySearchNearestGreater 5 comparer [| 1; 2; 4; 6 |] |> shouldEqual (Some 3)
-  Array.binarySearchNearestGreater 6 comparer [| 1; 2; 4; 6 |] |> shouldEqual (Some 3)
-  Array.binarySearchNearestGreater 7 comparer [| 1; 2; 4; 6 |] |> shouldEqual None
-  Array.binarySearchNearestGreater 5 comparer [| |] |> shouldEqual None
+  new ReadOnlyCollection<_> [| 1; 2; 4; 6 |]
+  |> Array.binarySearchNearestGreater 5 comparer |> shouldEqual (Some 3)
+  new ReadOnlyCollection<_> [| 1; 2; 4; 6 |]
+  |> Array.binarySearchNearestGreater 6 comparer |> shouldEqual (Some 3)
+  new ReadOnlyCollection<_> [| 1; 2; 4; 6 |]
+  |> Array.binarySearchNearestGreater 7 comparer |> shouldEqual None
+  new ReadOnlyCollection<_> [| |]
+  |> Array.binarySearchNearestGreater 5 comparer |> shouldEqual None
     
 [<Test>]
 let ``Binary searching for nearest smaller value works`` () =
   let comparer = System.Collections.Generic.Comparer<int>.Default
-  Array.binarySearchNearestSmaller 5 comparer [| 1; 2; 4; 6 |] |> shouldEqual (Some 2)
-  Array.binarySearchNearestSmaller 6 comparer [| 1; 2; 4; 6 |] |> shouldEqual (Some 3)
-  Array.binarySearchNearestSmaller 0 comparer [| 1; 2; 4; 6 |] |> shouldEqual None
-  Array.binarySearchNearestSmaller 5 comparer [| |] |> shouldEqual None
+  new ReadOnlyCollection<_> [| 1; 2; 4; 6 |]
+  |> Array.binarySearchNearestSmaller 5 comparer |> shouldEqual (Some 2)
+  new ReadOnlyCollection<_> [| 1; 2; 4; 6 |]
+  |> Array.binarySearchNearestSmaller 6 comparer |> shouldEqual (Some 3)
+  new ReadOnlyCollection<_> [| 1; 2; 4; 6 |]
+  |> Array.binarySearchNearestSmaller 0 comparer |> shouldEqual None
+  new ReadOnlyCollection<_> [| |]
+  |> Array.binarySearchNearestSmaller 5 comparer |> shouldEqual None
     
 [<Test>]
 let ``Binary searching for nearest greater value satisfies laws`` () =
   let comparer = System.Collections.Generic.Comparer<int>.Default
   Check.QuickThrowOnFailure(fun (input:int[]) (key:int) -> 
-    let input = Array.sort input
+    let input = new ReadOnlyCollection<_>(Array.sort input)
     match Array.binarySearchNearestGreater key comparer input with
     | Some idx -> input.[idx] >= key
     | None -> Seq.forall (fun v -> v < key) input )
@@ -73,7 +82,7 @@ let ``Binary searching for nearest greater value satisfies laws`` () =
 let ``Binary searching for nearest smaller value satisfies laws`` () =
   let comparer = System.Collections.Generic.Comparer<int>.Default
   Check.QuickThrowOnFailure(fun (input:int[]) (key:int) -> 
-    let input = Array.sort input
+    let input = new ReadOnlyCollection<_>(Array.sort input)
     match Array.binarySearchNearestSmaller key comparer input with
     | Some idx -> input.[idx] <= key
     | None -> Seq.forall (fun v -> v > key) input )

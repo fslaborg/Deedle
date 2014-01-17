@@ -217,6 +217,45 @@ let ``Can create frame from 100k of three element tuples (in less than a few sec
   df |> Frame.sum |> Series.sum |> int |> shouldEqual 101101
 
 // ------------------------------------------------------------------------------------------------
+// Accessor testing
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can retrieve a series according to type parameter`` () =
+  let s1 = series [| 1 => (1,2); 2 => (1,3) |]
+  let s2 = series [| 1 => ("a",1.0); 2 => ("b",2.0) |]
+  let f = frame [ "A" => s1 ]
+  f?B <- s2
+  f.GetAllSeries<int*int>() |> shouldEqual ( seq [ KeyValuePair("A", s1) ] )
+  f.GetAllSeries<string*float>() |> shouldEqual ( seq [ KeyValuePair("B", s2) ] )
+  f.GetAllSeries<int*float>() |> shouldEqual Seq.empty
+
+[<Test>]
+let ``Can do fuzzy lookup on frame rows and cols`` () =
+  let s1 = series [| "a" => 1.0; "c" => 2.0; "e" => 3.0 |]
+  let s2 = series [| "a" => 4.0; "c" => 5.0; "e" => 6.0 |]
+  let s3 = series [| "a" => 7.0; "c" => 8.0; "e" => 9.0 |]  
+  let f = frame [ 1 => s1; 3 => s2; 5 => s3 ]    
+
+  f |> Frame.tryLookupRow "b" Lookup.NearestSmaller |> shouldEqual ( Some <| series [ 1 => 1.0; 3 => 4.0; 5 => 7.0 ] )
+  f |> Frame.tryLookupRow "b" Lookup.NearestGreater |> shouldEqual ( Some <| series [ 1 => 2.0; 3 => 5.0; 5 => 8.0 ] )
+  f |> Frame.tryLookupRow "f" Lookup.NearestGreater |> shouldEqual None
+
+  f |> Frame.tryLookupRowObservation "b" Lookup.NearestSmaller |> shouldEqual (Some ("a", series [ 1 => 1.0; 3 => 4.0; 5 => 7.0 ]))
+  f |> Frame.tryLookupRowObservation "b" Lookup.NearestGreater |> shouldEqual (Some ("c", series [ 1 => 2.0; 3 => 5.0; 5 => 8.0 ]))
+  f |> Frame.tryLookupRowObservation "f" Lookup.NearestGreater |> shouldEqual None
+
+  f |> Frame.tryLookupCol 2 Lookup.NearestSmaller |> shouldEqual ( Some s1 )
+  f |> Frame.tryLookupCol 2 Lookup.NearestGreater |> shouldEqual ( Some s2 )
+  f |> Frame.tryLookupCol 6 Lookup.NearestGreater |> shouldEqual None
+
+  f |> Frame.tryLookupColObservation 2 Lookup.NearestSmaller |> shouldEqual (Some (1, s1))
+  f |> Frame.tryLookupColObservation 2 Lookup.NearestGreater |> shouldEqual (Some (3, s2))
+  f |> Frame.tryLookupColObservation 6 Lookup.NearestGreater |> shouldEqual None
+
+
+
+// ------------------------------------------------------------------------------------------------
 // Stack & unstack
 // ------------------------------------------------------------------------------------------------
 
@@ -351,6 +390,17 @@ let ``Can append two frames with single rows and keys with comparison that fails
   let df2 = Frame.ofColumns [ "A" => series [ ([| 0 |], 1) => "A" ] ]
   df1.Append(df2).RowKeys |> Seq.length |> shouldEqual 2
  
+[<Test>]
+let ``Can append multiple frames`` () =
+  let df1 = Frame.ofColumns [ "A" => series [ for i in 1 .. 5 -> i, i ] ]
+  let df2 = Frame.ofColumns [ "B" => series [ for i in 1 .. 5 -> i, i ] ]
+  let df3 = Frame.ofColumns [ "B" => series [ for i in 6 .. 9 -> i, i ] ]
+  let actual = Frame.appendN [df1;df2;df3]
+  actual.Rows.[3].GetAt(0) |> shouldEqual (box 3)
+  actual.Rows.[3].GetAt(1) |> shouldEqual (box 3)
+  actual.Rows.[8].GetAt(1) |> shouldEqual (box 8)
+  actual.Rows.[8].TryGetAt(0).HasValue |> shouldEqual false
+
 // ------------------------------------------------------------------------------------------------
 // Operations - zip
 // ------------------------------------------------------------------------------------------------
@@ -737,3 +787,45 @@ let ``Can group titanic data by boolean column "Survived"``() =
     |> Series.mapValues Frame.countRows
   actual |> shouldEqual (series [false => 549; true => 342])
 
+// ------------------------------------------------------------------------------------------------
+// Operations - pivot table
+// ------------------------------------------------------------------------------------------------
+ 
+[<Test>]
+let ``Can compute pivot table from titanic data``() =
+  let actual =
+    titanic()
+    |> Frame.pivotTable (fun k r -> r.GetAs<string>("Sex")) (fun k r -> r.GetAs<bool>("Survived")) Frame.countRows
+  let expected =
+    (frame [ false => series [ "male" => 468;  "female" => 81  ]; 
+             true  => series [ "male" => 109;  "female" => 233 ] ])
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Can compute pivot table from titanic data with nice syntax``() =
+  let actual =  
+    let f = titanic()
+    f.PivotTable("Sex", "Survived", Frame.countRows)
+
+  let expected =
+    (frame [ false => series [ "male" => 468;  "female" => 81  ]; 
+             true  => series [ "male" => 109;  "female" => 233 ] ])
+  actual |> shouldEqual expected
+  
+// ----------------------------------------------------------------------------------------------
+// Index operations
+// ----------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can index rows using transformation function``() =
+  let actual = 
+    Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => 2.0 ]; 
+                      "B" => series [ 1 => 2.0; 2 => 3.0 ] ]
+    |> Frame.indexRowsUsing (fun r -> r.GetAs<float>("A") + 2.0)
+
+  let expected = 
+    Frame.ofColumns [ "A" => series [ 3.0 => 1.0; 4.0 => 2.0 ]; 
+                      "B" => series [ 3.0 => 2.0; 4.0 => 3.0 ] ]
+
+  actual |> shouldEqual expected
+  

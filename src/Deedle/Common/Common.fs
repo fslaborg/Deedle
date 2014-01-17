@@ -375,6 +375,17 @@ module MissingValues =
 // Internals - various functions for working with collections
 // --------------------------------------------------------------------------------------
 
+[<AutoOpen>]
+module ReadOnlyCollectionExtensions = 
+  type ReadOnlyCollection<'T> with 
+    member x.GetSlice(lo, hi) =
+      let lo, hi = defaultArg lo 0, defaultArg hi (x.Count - 1)
+      if lo < 0 then invalidArg "lo" "Must be greater than zero"
+      if lo > hi then invalidOp "Slice must be from lower to higher index"
+      if hi >= x.Count then invalidArg "hi" "Must be lower than the length"
+      let arr = Array.init (hi - lo + 1) (fun i -> x.[i + lo])
+      new ReadOnlyCollection<_>(arr)
+
 /// Provides helper functions for working with `ReadOnlyCollection<T>` similar to those 
 /// in the `Array` module. Most importantly, F# 3.0 does not know that array implements
 /// `IList<T>`.
@@ -459,6 +470,9 @@ module ReadOnlyCollection =
   let inline maxOptional (list:ReadOnlyCollection<OptionalValue< ^T >>) = 
     reduceOptional Operators.max list
 
+  /// Returns empty readonly collection
+  let empty<'T> = new ReadOnlyCollection<'T>([||])
+
 
 /// This module contains additional functions for working with arrays. 
 /// `Deedle.Internals` is opened, it extends the standard `Array` module.
@@ -471,7 +485,7 @@ module Array =
     Array.append (data.[.. first - 1]) (data.[last + 1 ..])
 
   /// Implementation of binary search
-  let inline private binarySearch key (comparer:System.Collections.Generic.IComparer<'T>) (array:'T[]) =
+  let inline private binarySearch key (comparer:System.Collections.Generic.IComparer<'T>) (array:ReadOnlyCollection<'T>) =
     let rec search (lo, hi) =
       if lo = hi then lo else
       let mid = (lo + hi) / 2
@@ -479,21 +493,21 @@ module Array =
       | 0 -> mid
       | n when n < 0 -> search (lo, max lo (mid - 1))
       | _ -> search (min hi (mid + 1), hi) 
-    search (0, array.Length - 1) 
+    search (0, array.Count - 1) 
 
   /// Returns the index of 'key' or the index of immediately following value.
   /// If the specified key is greater than all keys in the array, None is returned.
-  let binarySearchNearestGreater key (comparer:System.Collections.Generic.IComparer<'T>) (array:'T[]) =
-    if array.Length = 0 then None else
+  let binarySearchNearestGreater key (comparer:System.Collections.Generic.IComparer<'T>) (array:ReadOnlyCollection<'T>) =
+    if array.Count = 0 then None else
     let loc = binarySearch key comparer array
     if comparer.Compare(array.[loc], key) >= 0 then Some loc
-    elif loc + 1 < array.Length && comparer.Compare(array.[loc + 1], key) >= 1 then Some (loc + 1)
+    elif loc + 1 < array.Count && comparer.Compare(array.[loc + 1], key) >= 1 then Some (loc + 1)
     else None
 
   /// Returns the index of 'key' or the index of immediately preceeding value.
   /// If the specified key is smaller than all keys in the array, None is returned.
-  let binarySearchNearestSmaller key (comparer:System.Collections.Generic.IComparer<'T>) (array:'T[]) =
-    if array.Length = 0 then None else
+  let binarySearchNearestSmaller key (comparer:System.Collections.Generic.IComparer<'T>) (array:ReadOnlyCollection<'T>) =
+    if array.Count = 0 then None else
     let loc = binarySearch key comparer array
     if comparer.Compare(array.[loc], key) <= 0 then Some loc
     elif loc - 1 >= 0 && comparer.Compare(array.[loc - 1], key) <= 0 then Some (loc - 1)

@@ -45,8 +45,8 @@ type EnumerableExtensions =
 
 type internal Series =
   /// Vector & index builders
-  static member internal vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
-  static member internal indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
+  static member internal vectorBuilder = VectorBuilder.Instance
+  static member internal indexBuilder = IndexBuilder.Instance
 
   static member internal Create(data:seq<'V>) =
     let lookup = data |> Seq.mapi (fun i _ -> i)
