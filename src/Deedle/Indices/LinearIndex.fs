@@ -129,7 +129,7 @@ type LinearIndex<'K when 'K : equality>
     /// Returns all mappings of the index (key -> address) 
     member x.Mappings = keys |> Seq.mapi (fun i k -> k, Address.ofInt i)
     /// Returns the range used by the index
-    member x.Range = Address.zero, Address.ofInt keys.Count
+    member x.Range = Address.zero, Address.ofInt (keys.Count - 1)
     /// Are the keys of the index ordered?
     member x.IsOrdered = ordered.Value
     member x.Comparer = comparer
@@ -372,7 +372,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
     member builder.GetRange<'K when 'K : equality >
         (index:IIndex<'K>, lo, hi, vector) =
       // Default values are specified by the entire range
-      let defaults = Address.zero, Address.ofInt64 index.KeyCount
+      let defaults = Address.zero, Address.ofInt64 (index.KeyCount - 1L)
       let getBound offs semantics proj = 
         let (|Lookup|_|) x = 
           match index.Lookup(x, semantics, fun _ -> true) with 
