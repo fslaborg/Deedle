@@ -705,7 +705,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Series operations]
   member frame.TryGetSeries<'R>(column:'TColumnKey, lookup) =
-    frame.tryGetColVector(column, lookup, fun _ -> true) 
+    tryGetColVector(column, lookup, fun _ -> true) 
     |> OptionalValue.map (fun v -> Series.Create(rowIndex, changeType<'R> v))
 
   /// [category:Series operations]
