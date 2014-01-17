@@ -1,7 +1,6 @@
 ﻿namespace Deedle.Vectors
 
 open Deedle
-//open System.Collections.Generic
 open System.Collections.ObjectModel
 
 /// Provides a way to get the data of an arbitrary vector. This is a concrete type used 

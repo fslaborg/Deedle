@@ -6,6 +6,7 @@
 
 open Deedle
 open Deedle.Keys
+open Deedle.Addressing
 open Deedle.Internal
 open Deedle.Indices
 open Deedle.Vectors
@@ -115,6 +116,11 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       invalidOp "column" (sprintf "Column with a key '%O' is present, but does not contain a value" column)
     columnVector.Value
 
+  let tryGetColVector column = 
+    let columnIndex = columnIndex.Lookup(column)
+    if not columnIndex.HasValue then OptionalValue.Missing else
+    data.GetValue (snd columnIndex.Value)
+
   /// Create frame from a series of columns. This is used inside Frame and so we have to have it
   /// as a static member here. The function is optimised for the case when all series share the
   /// same index (by checking object reference equality)
@@ -145,11 +151,6 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       Frame<_, _>(rowIndex, colIndex, data)
 
   static member internal FromColumnsNonGeneric seriesConv nested = fromColumnsNonGeneric seriesConv nested
-    
-  member private x.tryGetColVector column = 
-    let columnIndex = columnIndex.Lookup(column)
-    if not columnIndex.HasValue then OptionalValue.Missing else
-    data.GetValue (snd columnIndex.Value)
 
   member private x.setColumnIndex newColumnIndex = 
     columnIndex <- newColumnIndex
@@ -459,11 +460,11 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Accessors and slicing]
   member frame.TryGetRowAt(index) = 
-    frame.Rows.Vector.GetValue(Addressing.int32Convertor index)
+    frame.Rows.Vector.GetValue(Address.ofInt index)
 
   /// [category:Accessors and slicing]
   member frame.GetRowKeyAt(index) = 
-    frame.RowIndex.KeyAt(Addressing.int32Convertor index)
+    frame.RowIndex.KeyAt(Address.ofInt index)
 
   /// [category:Accessors and slicing]
   member frame.GetRowAt(index) = 
@@ -488,12 +489,14 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Fancy accessors]
   member frame.TryGetRow<'R>(row, lookup) =
-    frame.Rows.TryGet(row, lookup) |> OptionalValue.map (fun v -> Series.Create(columnIndex, changeType<'R> v.Vector))
+    frame.Rows.TryGet(row, lookup) 
+    |> OptionalValue.map (fun v -> Series.Create(columnIndex, changeType<'R> v.Vector))
 
   /// [category:Fancy accessors]
   member frame.TryGetRowObservation(row, lookup) =
     frame.Rows.TryGetObservation(row, lookup) 
-    |> OptionalValue.map (fun kvp -> KeyValuePair(kvp.Key, Series.Create(columnIndex, changeType<'R> kvp.Value.Vector)))
+    |> OptionalValue.map (fun kvp -> 
+      KeyValuePair(kvp.Key, Series.Create(columnIndex, changeType<'R> kvp.Value.Vector)))
 
   /// [category:Fancy accessors]
   member frame.GetAllValues<'R>() = frame.GetAllValues<'R>(false)
@@ -702,8 +705,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Series operations]
   member frame.TryGetSeries<'R>(column:'TColumnKey, lookup) =
-    frame.tryGetColVector(column, lookup, fun _ -> true) |> 
-    OptionalValue.map(fun v -> Series.Create(rowIndex, changeType<'R> v))
+    tryGetColVector(column, lookup, fun _ -> true) 
+    |> OptionalValue.map (fun v -> Series.Create(rowIndex, changeType<'R> v))
 
   /// [category:Series operations]
   member frame.TryGetSeriesObservation<'R>(column:'TColumnKey, lookup) =

@@ -4,6 +4,7 @@ open System
 open System.ComponentModel
 open System.Collections.Generic
 
+open Deedle.Addressing
 open Deedle.Internal
 open Deedle.JoinHelpers
 open Deedle.Indices
@@ -242,10 +243,10 @@ and
   ///
   /// [category:Accessors and slicing]
   member x.TryGetAt(index) = 
-    x.Vector.GetValue(Addressing.int32Convertor index)
+    x.Vector.GetValue(Address.ofInt index)
   /// [category:Accessors and slicing]
   member x.GetKeyAt(index) = 
-    x.Index.KeyAt(Addressing.int32Convertor index)
+    x.Index.KeyAt(Address.ofInt index)
   /// [category:Accessors and slicing]
   member x.GetAt(index) = 
     x.TryGetAt(index).Value
