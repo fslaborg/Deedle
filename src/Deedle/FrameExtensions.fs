@@ -523,6 +523,39 @@ type FrameExtensions =
   [<Extension>]
   static member OrderColumns(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.orderCols frame
 
+  /// Returns a data frame that contains the same data as the input, 
+  /// but whose rows are sorted by some column.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame to be ordered.
+  /// 
+  /// [category:Data structure manipulation]
+  [<Extension>]
+  static member SortedRows(frame:Frame<'TRowKey, 'TColumnKey>, key: 'TColumnKey) = 
+    frame |> Frame.sortedRows key
+
+  /// Returns a data frame that contains the same data as the input, 
+  /// but whose rows are sorted by some column.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame to be ordered.
+  /// 
+  /// [category:Data structure manipulation]
+  [<Extension>]
+  static member SortedRowsWith(frame:Frame<'TRowKey, 'TColumnKey>, key: 'TColumnKey, cmp: Comparer<'V>) = 
+    frame |> Frame.sortedRowsWith key (fun a b -> cmp.Compare(a,b))
+
+  /// Returns a data frame that contains the same data as the input, 
+  /// but whose rows are sorted by some column.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame to be ordered.
+  /// 
+  /// [category:Data structure manipulation]
+  [<Extension>]
+  static member SortedRowsBy(frame:Frame<'TRowKey, 'TColumnKey>, key: 'TColumnKey, f: Func<'V,'V2>) = 
+    frame |> Frame.sortedRowsBy key f.Invoke 
+
   /// Returns a transposed data frame. The rows of the original data frame are used as the
   /// columns of the new one (and vice versa). Use this operation if you have a data frame
   /// and you mostly need to access its rows as a series (because accessing columns as a 

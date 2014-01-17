@@ -69,7 +69,7 @@ module Series =
 
   let tryGetAt index (series:Series<'K, 'T>) = series.TryGetAt(index) |> OptionalValue.asOption
   
-  let internal sortedWithCommand comparer (series:Series<'K, 'T>) =
+  let internal sortedWithCommand compareFunc (series:Series<'K, 'T>) =
     let index = series.Index
     let values = series.Vector
 
@@ -77,7 +77,7 @@ module Series =
       let v1 = values.GetValue(snd a) |> OptionalValue.asOption
       let v2 = values.GetValue(snd b) |> OptionalValue.asOption 
       match v1, v2 with
-      | Some x, Some y -> comparer x y
+      | Some x, Some y -> compareFunc x y
       | None,   Some y -> -1
       | Some x, None   -> 1
       | None,   None   -> 0
@@ -92,22 +92,27 @@ module Series =
     let reordering = Seq.zip (Addressing.Address.generateRange(0L, len-1L)) newLocs
     newIndex, VectorConstruction.Relocate(VectorConstruction.Return 0, len, reordering)
 
-  let sortedWith comparer series =
-    let newIndex, cmd = sortedWithCommand comparer series
+  let internal sortedByCommand (f:'T -> 'V) (series:Series<'K, 'T>) =
+    let index = series.Index
+    let vector = series.Vector
+    let fseries = Series(index, vector.SelectMissing (OptionalValue.map f), series.VectorBuilder, series.IndexBuilder)
+    fseries |> sortedWithCommand compare
+
+  let sortedWith compareFunc series =
+    let newIndex, cmd = sortedWithCommand compareFunc series
     let vector = series.Vector
     Series(newIndex, series.VectorBuilder.Build(cmd, [| vector |]), series.VectorBuilder, series.IndexBuilder)
 
   let sortedBy (f:'T -> 'V) (series:Series<'K, 'T>) =
-    let index = series.Index
+    let newIndex, cmd = series |> sortedByCommand f
     let vector = series.Vector
-    let fvector = vector.Select f
-    let newIndex, cmd = 
-      Series(index, fvector, series.VectorBuilder, series.IndexBuilder) 
-      |> sortedWithCommand (fun a b -> if a < b then -1 else if a = b then 0 else 1)
     Series<'K,'T>(newIndex, series.VectorBuilder.Build(cmd, [| vector |]), series.VectorBuilder, series.IndexBuilder)
 
   let sorted series =
-    series |> sortedWith (fun x y -> if x < y then -1 else if x = y then 0 else 1)
+    series |> sortedWith compare
+
+  let rev (series:Series<'K,'T>) = 
+    series.Reversed
 
   let realign keys (series:Series<'K, 'T>) = 
     series.Realign(keys)
