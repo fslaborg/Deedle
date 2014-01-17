@@ -117,10 +117,10 @@ type ArrayVectorBuilder() =
               invalidOp "Type mismatch - cannot fill values of the vector!"
               
 
-      | Relocate(source, (IntAddress loRange, IntAddress hiRange), relocations) ->
+      | Relocate(source, IntAddress len, relocations) ->
           // Create a new array with specified size and move values from the
           // old array (source) to the new, according to 'relocations'
-          let newData = Array.zeroCreate (hiRange - loRange + 1)
+          let newData = Array.zeroCreate len
           match builder.buildArrayVector source arguments with 
           | VectorOptional data ->
               for IntAddress newIndex, IntAddress oldIndex in relocations do

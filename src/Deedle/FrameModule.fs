@@ -414,7 +414,7 @@ module Frame =
   [<CompiledName("IndexRowsWith")>]
   let indexRowsWith (keys:seq<'R2>) (frame:Frame<'R1, 'C>) = 
     let newRowIndex = frame.IndexBuilder.Create(keys, None)
-    let getRange = VectorHelpers.getVectorRange frame.VectorBuilder frame.RowIndex.Range
+    let getRange = VectorHelpers.getVectorRange frame.VectorBuilder (0L, frame.RowIndex.KeyCount - 1L)
     let newData = frame.Data.Select(getRange)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
 
