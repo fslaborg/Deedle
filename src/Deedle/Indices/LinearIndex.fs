@@ -128,8 +128,6 @@ type LinearIndex<'K when 'K : equality>
 
     /// Returns all mappings of the index (key -> address) 
     member x.Mappings = keys |> Seq.mapi (fun i k -> k, Address.ofInt i)
-    /// Returns the range used by the index
-    member x.Range = Address.zero, Address.ofInt (keys.Count - 1)
     /// Are the keys of the index ordered?
     member x.IsOrdered = ordered.Value
     member x.Comparer = comparer
@@ -149,14 +147,14 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
   let returnUsingAlignedSequence joined vector1 vector2 ordered : (IIndex<_> * _ * _) = 
     // Create a new index using the sorted keys
     let newIndex = LinearIndex<_>(seq { for k, _, _ in joined -> k} |> ReadOnlyCollection.ofSeq, LinearIndexBuilder.Instance, ?ordered=ordered)
-    let range = (newIndex :> IIndex<_>).Range
+    let len = (newIndex :> IIndex<_>).KeyCount
 
     // Create relocation transformations for both vectors
-    let joinedWithIndex = Seq.zip (Address.generateRange range) joined
+    let joinedWithIndex = Seq.zip (Address.generateRange (0L, len-1L)) joined
     let vect1Reloc = seq { for n, (_, o, _) in joinedWithIndex do if Option.isSome o then yield n, o.Value }
-    let newVector1 = Vectors.Relocate(vector1, range, vect1Reloc)
+    let newVector1 = Vectors.Relocate(vector1, len, vect1Reloc)
     let vect2Reloc = seq { for n, (_, _, o) in joinedWithIndex do if Option.isSome o then yield n, o.Value }
-    let newVector2 = Vectors.Relocate(vector2, range, vect2Reloc)
+    let newVector2 = Vectors.Relocate(vector2, len, vect2Reloc)
 
     // That's it! Return the result.
     ( upcast newIndex, newVector1, newVector2 )
@@ -167,8 +165,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
     | :? LinearIndex<_> as lin -> lin, vector
     | _ ->
       let relocs = index.Mappings |> Seq.mapi (fun i (k, a) -> Address.ofInt i, a)
-      let range = Address.zero, Address.ofInt64 (index.KeyCount - 1L)
-      let newVector = Vectors.Relocate(vector, range, relocs)
+      let newVector = Vectors.Relocate(vector, index.KeyCount, relocs)
       LinearIndex(index.Mappings |> Seq.map fst |> ReadOnlyCollection.ofSeq, LinearIndexBuilder.Instance), newVector
 
   /// Instance of the index builder (specialized to Int32 addresses)
@@ -225,12 +222,12 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           if k.HasValue then Some(k.Value, v) else None)
         windows 
         |> Seq.map (fun (key, win) ->
-          let winRange = Address.ofInt 0, Address.ofInt (Seq.length win - 1)
+          let len = Seq.length win |> int64
           let relocations = 
-            seq { for k, newAddr in Seq.zip win (Address.generateRange(winRange)) -> 
+            seq { for k, newAddr in Seq.zip win (Address.generateRange(0L, len-1L)) -> 
                     newAddr, index.Lookup(k, Lookup.Exact, fun _ -> true).Value |> snd }
           let newIndex = builder.Create(win, None)
-          key, (newIndex, Vectors.Relocate(vector, winRange, relocations)))
+          key, (newIndex, Vectors.Relocate(vector, len, relocations)))
         |> Array.ofSeq
 
       /// Build a new index & vector by applying value selector
@@ -252,12 +249,12 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
         let windows = index.Keys |> Seq.chunkedUsing index.Comparer dir keys 
         windows 
         |> Seq.map (fun (key, win) ->
-          let winRange = Address.ofInt 0, Address.ofInt (Seq.length win - 1)
+          let len = Seq.length win |> int64
           let relocations = 
-            seq { for k, newAddr in Seq.zip win (Address.generateRange(winRange)) -> 
+            seq { for k, newAddr in Seq.zip win (Address.generateRange(0L, len-1L)) -> 
                     newAddr, index.Lookup(k, Lookup.Exact, fun _ -> true).Value |> snd }
           let newIndex = builder.Create(win, None)
-          key, (newIndex, Vectors.Relocate(vector, winRange, relocations)))
+          key, (newIndex, Vectors.Relocate(vector, len, relocations)))
         |> Array.ofSeq
 
       /// Build a new index & vector by applying value selector
@@ -276,7 +273,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
                 let newAddress = newIndex.Lookup(key, Lookup.Exact, fun _ -> true) 
                 if not newAddress.HasValue then failwith "OrderIndex: key not found in the new index"
                 snd newAddress.Value, oldAddress }
-      newIndex, Vectors.Relocate(vector, newIndex.Range, relocations)
+      newIndex, Vectors.Relocate(vector, newIndex.KeyCount, relocations)
 
 
     /// Union the index with another. For sorted indices, this needs to align the keys;
@@ -330,9 +327,9 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
              if newKey.HasValue then yield newKey.Value, oldAddress |]
       
       let newIndex = LinearIndex<'TNewKey>(Seq.map fst newKeys |> ReadOnlyCollection.ofSeq, builder)
-      let newRange = (newIndex :> IIndex<_>).Range
-      let relocations = Seq.zip (Address.generateRange(newRange)) (Seq.map snd newKeys)
-      upcast newIndex, Vectors.Relocate(vector, newRange, relocations)
+      let len = (newIndex :> IIndex<_>).KeyCount
+      let relocations = Seq.zip (Address.generateRange(0L, len-1L)) (Seq.map snd newKeys)
+      upcast newIndex, Vectors.Relocate(vector, int64 newKeys.Length, relocations)
 
 
     /// Reorder elements in the index to match with another index ordering
@@ -342,16 +339,16 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           let oldAddress = index1.Lookup(key, semantics, condition)
           if oldAddress.HasValue then 
             yield newAddress, oldAddress.Value |> snd }
-      Vectors.Relocate(vector, index2.Range, relocations)
+      Vectors.Relocate(vector, index2.KeyCount, relocations)
 
     member builder.LookupLevel( (index, vector), searchKey:ICustomLookup<'K> ) =
       let matching = 
         [| for key, addr in index.Mappings do
              if searchKey.Matches(key) then yield addr, key |]
-      let range = Address.ofInt 0, Address.ofInt (matching.Length - 1)
-      let relocs = Seq.zip (Address.generateRange(range)) (Seq.map fst matching)
+      let len = matching.Length |> int64
+      let relocs = Seq.zip (Address.generateRange(0L, len-1L)) (Seq.map fst matching)
       let newIndex = LinearIndex<_>(Seq.map snd matching |> ReadOnlyCollection.ofSeq, builder, index.IsOrdered)
-      let newVector = Vectors.Relocate(vector, range, relocs)
+      let newVector = Vectors.Relocate(vector, len, relocs)
       upcast newIndex, newVector
 
     /// Drop the specified item from the index
