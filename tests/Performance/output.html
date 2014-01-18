@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+  <head>
+    <title>Vega Scaffold</title>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="http://trifacta.github.com/vega/vega.js"></script>
+    <!--<script src="http://trifacta.github.com/vega/d3.geo.projection.min.js"></script>-->
+  </head>
+
+  <body>
+    <div id="vis"></div>
+  </body>
+
+<script type="text/javascript">
+// parse a spec and create a visualization view
+function parse(spec) {
+  vg.parse.spec(spec, function(chart) { chart({el:"#vis"}).update(); });
+}
+  parse(JSON.parse('{\
+  "width": 600,\
+  "height": 240,\
+  "data": [\
+    {\
+      "name": "table",\
+      "values": [\
+          {"dir":"0.9.12-baseline", "test":"Numerical operators on 20x10k frame", "value":24159.000000}, {"dir":"0.9.12-baseline", "test":"Building a large (1M items) series from two arrays", "value":54799.000000}, {"dir":"0.9.12-baseline", "test":"Append 10 medium-size (1000) frames (by repeatedly calling Append)", "value":31270.000000}, {"dir":"0.9.12-baseline", "test":"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)", "value":58597.000000}, {"dir":"0.9.12-baseline", "test":"Realign a 1M element series according to a specified key array", "value":45733.000000}, {"dir":"0.9.13", "test":"Numerical operators on 20x10k frame", "value":25492.000000}, {"dir":"0.9.13", "test":"Building a large (1M items) series from two arrays", "value":55969.000000}, {"dir":"0.9.13", "test":"Append 10 medium-size (1000) frames (by repeatedly calling Append)", "value":31150.000000}, {"dir":"0.9.13", "test":"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)", "value":57990.000000}, {"dir":"0.9.13", "test":"Realign a 1M element series according to a specified key array", "value":47036.000000}\
+      ]\
+    }\
+  ],\
+  "legends": [\
+    {\
+      "fill": "color",\
+      "title": "Versions",\
+      "offset": 0,\
+      "properties": {\
+        "symbols": {\
+          "fillOpacity": {\
+            "value": 0.5\
+          },\
+          "stroke": {\
+            "value": "transparent"\
+          }\
+        }\
+      }\
+    }\
+  ],\
+  "scales": [\
+    {\
+      "name": "cat",\
+      "type": "ordinal",\
+      "range": "height",\
+      "padding": 0.2,\
+      "domain": {\
+        "data": "table",\
+        "field": "data.test"\
+      }\
+    },\
+    {\
+      "name": "val",\
+      "range": "width",\
+      "round": true,\
+      "nice": true,\
+      "domain": {\
+        "data": "table",\
+        "field": "data.value"\
+      }\
+    },\
+    {\
+      "name": "color",\
+      "type": "ordinal",\
+      "range": "category20"\
+    }\
+  ],\
+  "axes": [\
+    {\
+      "type": "y",\
+      "scale": "cat",\
+      "tickSize": 0,\
+      "tickPadding": 8\
+    },\
+    {\
+      "type": "x",\
+      "scale": "val",\
+      "title": "Time (ms)"\
+    }\
+  ],\
+  "marks": [\
+    {\
+      "type": "group",\
+      "from": {\
+        "data": "table",\
+        "transform": [\
+          {\
+            "type": "facet",\
+            "keys": [\
+              "data.test"\
+            ]\
+          }\
+        ]\
+      },\
+      "properties": {\
+        "enter": {\
+          "y": {\
+            "scale": "cat",\
+            "field": "key"\
+          },\
+          "height": {\
+            "scale": "cat",\
+            "band": true\
+          }\
+        }\
+      },\
+      "scales": [\
+        {\
+          "name": "pos",\
+          "type": "ordinal",\
+          "range": "height",\
+          "domain": {\
+            "field": "data.dir"\
+          }\
+        }\
+      ],\
+      "marks": [\
+        {\
+          "type": "rect",\
+          "properties": {\
+            "enter": {\
+              "y": {\
+                "scale": "pos",\
+                "field": "data.dir"\
+              },\
+              "height": {\
+                "scale": "pos",\
+                "band": true\
+              },\
+              "x": {\
+                "scale": "val",\
+                "field": "data.value"\
+              },\
+              "x2": {\
+                "scale": "val",\
+                "value": 0\
+              },\
+              "fill": {\
+                "scale": "color",\
+                "field": "data.dir"\
+              }\
+            }\
+          }\
+        },\
+        {\
+          "type": "text",\
+          "properties": {\
+            "enter": {\
+              "y": {\
+                "scale": "pos",\
+                "field": "data.dir"\
+              },\
+              "dy": {\
+                "scale": "pos",\
+                "band": true,\
+                "mult": 0.5\
+              },\
+              "x": {\
+                "scale": "val",\
+                "field": "data.value",\
+                "offset": -4\
+              },\
+              "fill": {\
+                "value": "white"\
+              },\
+              "align": {\
+                "value": "right"\
+              },\
+              "baseline": {\
+                "value": "middle"\
+              },\
+              "text": {\
+                "field": "data.value"\
+              }\
+            }\
+          }\
+        }\
+      ]\
+    }\
+  ]\
+}'));
+</script>

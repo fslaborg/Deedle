@@ -4,20 +4,19 @@ open System
 open System.IO
 open System.Linq.Expressions
 open System.Reflection
-open Deedle.PerfTest.Core
+open System.Diagnostics
 
 // ------------------------------------------------------------------------------------------------
 // Resolving and running performance tests
 // ------------------------------------------------------------------------------------------------
 
 /// Performance tests is a list of method infos with number of iterations
-type PerfTests = list<MethodInfo * int>
+type PerfTests = list<string * Action * int>
 
 /// Find all performance tests in a specified directory
 /// (we use reflection to avoid library version mismatch)
 let getPerformanceTests dir : PerfTests = 
   [ for library in Directory.GetFiles(dir, "*.dll") do
-      printfn "%A" library
       let asm = Assembly.LoadFrom(library)
       for typ in asm.GetTypes() do 
         for mi in typ.GetMethods() do
@@ -28,15 +27,21 @@ let getPerformanceTests dir : PerfTests =
                 Some (unbox<int> iter)
             | _ -> None)
           match List.ofSeq perfAttrs with
-          | [iters] -> yield mi, iters
+          | [iters] -> 
+              let f = Expression.Lambda<Action>(Expression.Call(mi)).Compile()
+              yield mi.Name, f, iters
           | _ -> () ] 
 
-let buildFunction mi = 
-  ()  
-
+/// Run the specified tests and output time to the console
+/// in a CSV format for furhter analysis
 let evalPerformance (tests:PerfTests) =
-  for it in tests do printfn "%A" it
-
+  for name, f, iter in tests do 
+    let sw = Stopwatch.StartNew()
+    printfn "RUNNING: %s" name
+    for i = 1 to iter * 10 do f.Invoke()
+    printfn "DONE: %d" sw.ElapsedMilliseconds
+  printfn "COMPLETED"
+    
 // ------------------------------------------------------------------------------------------------
 // Usage:
 //   perftest-runner.exe C:\directory\with\binaries\to\test

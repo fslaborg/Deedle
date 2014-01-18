@@ -26,6 +26,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.PerfTest.Runner", "t
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.PerfTest", "tests\Deedle.PerfTest\Deedle.PerfTest.fsproj", "{371F8CE6-B031-4589-843F-583FE9180948}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PerfTest", "PerfTest", "{0825E158-8D8B-498B-A9B5-05A458D673D4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,5 +67,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{371F8CE6-B031-4589-843F-583FE9180948} = {0825E158-8D8B-498B-A9B5-05A458D673D4}
+		{D1E7603A-AA82-4517-8605-360DC708B0E9} = {0825E158-8D8B-498B-A9B5-05A458D673D4}
+		{A4E64541-F296-4754-BE0F-A461BE22EE36} = {0825E158-8D8B-498B-A9B5-05A458D673D4}
 	EndGlobalSection
 EndGlobal

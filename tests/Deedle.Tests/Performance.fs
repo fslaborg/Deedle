@@ -4,7 +4,7 @@
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #r "../../packages/FsCheck.0.9.1.0/lib/net40-Client/FsCheck.dll"
 #r "../../packages/FSharp.Data.1.1.10/lib/net40/FSharp.Data.dll"
-#r "../Deedle.Tests.PerfTool/bin/Debug/Deedle.Tests.PerfTool.exe"
+#r "../Deedle.PerfTest.Core/bin/Debug/Deedle.PerfTest.Core.dll"
 #load "../Common/FsUnit.fs"
 #else
 module Deedle.Tests.Performance
@@ -31,6 +31,7 @@ let frame20x10000 = generateFrame (Seq.map string "ABCDEFGHIJKLMNOPQRSTUV") 1000
 let frames10x1000 =
   [ for i in 0 .. 9 -> generateFrame (Seq.map string "ABCDEFGHIJ") 1000 (i * 1000) ]
 let array1M = Array.init 1000000 id
+let series1M = Series.ofValues array1M
 
 // Load sample data sets
 let titanic = Frame.ReadCsv(__SOURCE_DIRECTORY__ + @"\..\Performance\data\Titanic.csv")
@@ -83,3 +84,17 @@ let ``Calculate survival rate for Titanic based on gender (using groupRowsBy & a
   let actual = round (survivals?Died / survivals?Total * 100.0)
   let expected = series ["male" => 19.0; "female" => 74.0]
   actual |> shouldEqual expected
+
+[<Test;PerfTest(Iterations=1)>]
+let ``Realign a 1M element series according to a specified key array`` () =
+  let newKeys = [|1 .. 1000000|]
+  let actual = series1M |> Series.realign newKeys
+
+  // Verify the results  
+  actual.TryGet(1).HasValue |> shouldEqual true
+  actual.TryGet(0).HasValue |> shouldEqual false
+  actual.FirstKey() |> shouldEqual 1
+
+
+
+
