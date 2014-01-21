@@ -56,6 +56,8 @@ module Series =
   /// Uses exact lookup semantics for key lookup - use `lookupAll` for more options
   let get key (series:Series<'K, 'T>) = series.Get(key)
 
+  let getAt index (series:Series<'K, 'T>) = series.GetAt(index)
+
   let tryLookup key lookup (series:Series<'K, 'T>) = series.TryGet(key, lookup) |> OptionalValue.asOption
 
   let tryLookupObservation key lookup (series:Series<'K, 'T>) = 
@@ -66,7 +68,51 @@ module Series =
   let tryGet key (series:Series<'K, 'T>) = series.TryGet(key) |> OptionalValue.asOption
 
   let tryGetAt index (series:Series<'K, 'T>) = series.TryGetAt(index) |> OptionalValue.asOption
-  let getAt index (series:Series<'K, 'T>) = series.GetAt(index)
+  
+  let internal sortWithCommand compareFunc (series:Series<'K, 'T>) =
+    let index = series.Index
+    let values = series.Vector
+
+    let missingCompare a b =
+      let v1 = values.GetValue(snd a) |> OptionalValue.asOption
+      let v2 = values.GetValue(snd b) |> OptionalValue.asOption 
+      match v1, v2 with
+      | Some x, Some y -> compareFunc x y
+      | None,   Some y -> -1
+      | Some x, None   -> 1
+      | None,   None   -> 0
+
+    let newKeys, newLocs =
+      index.Mappings |> Array.ofSeq 
+                     |> Array.sortWith missingCompare 
+                     |> (fun arr -> arr |> Array.map fst, arr |> Array.map snd)
+
+    let newIndex = Index.ofKeys newKeys
+    let len = int64 newKeys.Length
+    let reordering = Seq.zip (Addressing.Address.generateRange(0L, len-1L)) newLocs
+    newIndex, VectorConstruction.Relocate(VectorConstruction.Return 0, len, reordering)
+
+  let internal sortByCommand (f:'T -> 'V) (series:Series<'K, 'T>) =
+    let index = series.Index
+    let vector = series.Vector
+    let fseries = Series(index, vector.SelectMissing (OptionalValue.map f), series.VectorBuilder, series.IndexBuilder)
+    fseries |> sortWithCommand compare
+
+  let sortWith compareFunc series =
+    let newIndex, cmd = sortWithCommand compareFunc series
+    let vector = series.Vector
+    Series(newIndex, series.VectorBuilder.Build(cmd, [| vector |]), series.VectorBuilder, series.IndexBuilder)
+
+  let sortBy (f:'T -> 'V) (series:Series<'K, 'T>) =
+    let newIndex, cmd = series |> sortByCommand f
+    let vector = series.Vector
+    Series<'K,'T>(newIndex, series.VectorBuilder.Build(cmd, [| vector |]), series.VectorBuilder, series.IndexBuilder)
+
+  let sort series =
+    series |> sortWith compare
+
+  let rev (series:Series<'K,'T>) = 
+    series.Reversed
 
   let realign keys (series:Series<'K, 'T>) = 
     series.Realign(keys)

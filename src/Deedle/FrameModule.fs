@@ -460,6 +460,45 @@ module Frame =
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
 
   /// Returns a data frame that contains the same data as the input, 
+  /// but whose rows are ordered on a particular column of the frame. 
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame to be sorted.
+  /// 
+  /// [category:Data structure manipulation]
+  [<CompiledName("SortRows")>]
+  let sortRows colKey (frame:Frame<'R,'C>) =
+    let newRowIndex, rowCmd = frame.GetSeries(colKey) |> Series.sortWithCommand compare
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
+    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
+
+  /// Returns a data frame that contains the same data as the input, 
+  /// but whose rows are ordered on a particular column of the frame. 
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame to be sorted.
+  /// 
+  /// [category:Data structure manipulation]
+  [<CompiledName("SortRowsWith")>]
+  let sortRowsWith colKey compareFunc (frame:Frame<'R,'C>) =
+    let newRowIndex, rowCmd = frame.GetSeries(colKey) |> Series.sortWithCommand compareFunc
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
+    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
+
+  /// Returns a data frame that contains the same data as the input, 
+  /// but whose rows are ordered on a particular column of the frame. 
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame to be sorted.
+  /// 
+  /// [category:Data structure manipulation]
+  [<CompiledName("SortRowBy")>]
+  let sortRowsBy colKey (f:'T -> 'V) (frame:Frame<'R,'C>) =
+    let newRowIndex, rowCmd = frame.GetSeries(colKey) |> Series.sortByCommand f
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
+    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
+
+  /// Returns a data frame that contains the same data as the input, 
   /// but whose columns are an ordered series. This allows using operations that are
   /// only available on indexed series such as alignment and inexact lookup.
   ///

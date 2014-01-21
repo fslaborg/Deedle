@@ -329,6 +329,12 @@ and
     let newIndex = indexBuilder.Project(index)
     Series<'K, 'R>(newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
 
+  /// [category:Projection and filtering]
+  member x.Reversed =
+    let newIndex = index.Keys |> Array.ofSeq |> Array.rev
+    let newVector = vector.DataSequence |> Array.ofSeq |> Array.rev
+    Series(Index.ofKeys newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
+
   // ----------------------------------------------------------------------------------------------
   // Appending, joining etc
   // ----------------------------------------------------------------------------------------------
