@@ -536,23 +536,23 @@ let ``Can sort frame``() =
   let ascendingMissing   = frame [ "x" => Series.ascendingMissing ]
   let descendingMissing  = frame [ "x" => Series.descendingMissing ]
 
-  let ord1 = randomOrder |> Frame.sortedRows "x"
+  let ord1 = randomOrder |> Frame.sortRows "x"
   ord1 |> shouldEqual ascending
 
-  let ord2 = randomOrder |> Frame.sortedRowsBy "x" (fun v -> -v)
+  let ord2 = randomOrder |> Frame.sortRowsBy "x" (fun v -> -v)
   ord2 |> shouldEqual descending
 
-  let ord3 = randomOrder |> Frame.sortedRowsWith "x" (fun a b -> 
+  let ord3 = randomOrder |> Frame.sortRowsWith "x" (fun a b -> 
     if a < b then -1 else if a = b then 0 else 1)
   ord3 |> shouldEqual ascending
 
-  let ord4 = randomOrderMissing |> Frame.sortedRows "x"
+  let ord4 = randomOrderMissing |> Frame.sortRows "x"
   ord4 |> shouldEqual ascendingMissing
   
-  let ord5 = randomOrderMissing |> Frame.sortedRowsBy "x" (fun v -> -v)
+  let ord5 = randomOrderMissing |> Frame.sortRowsBy "x" (fun v -> -v)
   ord5 |> shouldEqual descendingMissing
 
-  let ord6 = randomOrderMissing |> Frame.sortedRowsWith "x" (fun a b -> 
+  let ord6 = randomOrderMissing |> Frame.sortRowsWith "x" (fun a b -> 
     if a < b then -1 else if a = b then 0 else 1)
   ord6 |> shouldEqual ascendingMissing
 

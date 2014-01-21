@@ -224,23 +224,23 @@ let ``Can order series``() =
 
 [<Test>]
 let ``Can sort series``() =
-  let ord1 = randomOrder |> Series.sorted
+  let ord1 = randomOrder |> Series.sort
   ord1 |> shouldEqual ascending
 
-  let ord2 = randomOrder |> Series.sortedBy (fun v -> -v)
+  let ord2 = randomOrder |> Series.sortBy (fun v -> -v)
   ord2 |> shouldEqual descending
 
-  let ord3 = randomOrder |> Series.sortedWith (fun a b -> 
+  let ord3 = randomOrder |> Series.sortWith (fun a b -> 
     if a < b then -1 else if a = b then 0 else 1)
   ord3 |> shouldEqual ascending
 
-  let ord4 = randomOrderMissing |> Series.sorted
+  let ord4 = randomOrderMissing |> Series.sort
   ord4 |> shouldEqual ascendingMissing
   
-  let ord5 = randomOrderMissing |> Series.sortedBy (fun v -> -v)
+  let ord5 = randomOrderMissing |> Series.sortBy (fun v -> -v)
   ord5 |> shouldEqual descendingMissing
 
-  let ord6 = randomOrderMissing |> Series.sortedWith (fun a b -> 
+  let ord6 = randomOrderMissing |> Series.sortWith (fun a b -> 
     if a < b then -1 else if a = b then 0 else 1)
   ord6 |> shouldEqual ascendingMissing
 
