@@ -69,7 +69,7 @@ module Series =
 
   let tryGetAt index (series:Series<'K, 'T>) = series.TryGetAt(index) |> OptionalValue.asOption
   
-  let internal sortedWithCommand compareFunc (series:Series<'K, 'T>) =
+  let internal sortWithCommand compareFunc (series:Series<'K, 'T>) =
     let index = series.Index
     let values = series.Vector
 
@@ -92,24 +92,24 @@ module Series =
     let reordering = Seq.zip (Addressing.Address.generateRange(0L, len-1L)) newLocs
     newIndex, VectorConstruction.Relocate(VectorConstruction.Return 0, len, reordering)
 
-  let internal sortedByCommand (f:'T -> 'V) (series:Series<'K, 'T>) =
+  let internal sortByCommand (f:'T -> 'V) (series:Series<'K, 'T>) =
     let index = series.Index
     let vector = series.Vector
     let fseries = Series(index, vector.SelectMissing (OptionalValue.map f), series.VectorBuilder, series.IndexBuilder)
-    fseries |> sortedWithCommand compare
+    fseries |> sortWithCommand compare
 
-  let sortedWith compareFunc series =
-    let newIndex, cmd = sortedWithCommand compareFunc series
+  let sortWith compareFunc series =
+    let newIndex, cmd = sortWithCommand compareFunc series
     let vector = series.Vector
     Series(newIndex, series.VectorBuilder.Build(cmd, [| vector |]), series.VectorBuilder, series.IndexBuilder)
 
-  let sortedBy (f:'T -> 'V) (series:Series<'K, 'T>) =
-    let newIndex, cmd = series |> sortedByCommand f
+  let sortBy (f:'T -> 'V) (series:Series<'K, 'T>) =
+    let newIndex, cmd = series |> sortByCommand f
     let vector = series.Vector
     Series<'K,'T>(newIndex, series.VectorBuilder.Build(cmd, [| vector |]), series.VectorBuilder, series.IndexBuilder)
 
-  let sorted series =
-    series |> sortedWith compare
+  let sort series =
+    series |> sortWith compare
 
   let rev (series:Series<'K,'T>) = 
     series.Reversed

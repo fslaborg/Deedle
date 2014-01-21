@@ -466,9 +466,9 @@ module Frame =
   ///  - `frame` - Source data frame to be sorted.
   /// 
   /// [category:Data structure manipulation]
-  [<CompiledName("SortedRows")>]
-  let sortedRows colKey (frame:Frame<'R,'C>) =
-    let newRowIndex, rowCmd = frame.GetSeries(colKey) |> Series.sortedWithCommand compare
+  [<CompiledName("SortRows")>]
+  let sortRows colKey (frame:Frame<'R,'C>) =
+    let newRowIndex, rowCmd = frame.GetSeries(colKey) |> Series.sortWithCommand compare
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
 
@@ -479,9 +479,9 @@ module Frame =
   ///  - `frame` - Source data frame to be sorted.
   /// 
   /// [category:Data structure manipulation]
-  [<CompiledName("SortedRowsWith")>]
-  let sortedRowsWith colKey compareFunc (frame:Frame<'R,'C>) =
-    let newRowIndex, rowCmd = frame.GetSeries(colKey) |> Series.sortedWithCommand compareFunc
+  [<CompiledName("SortRowsWith")>]
+  let sortRowsWith colKey compareFunc (frame:Frame<'R,'C>) =
+    let newRowIndex, rowCmd = frame.GetSeries(colKey) |> Series.sortWithCommand compareFunc
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
 
@@ -492,9 +492,9 @@ module Frame =
   ///  - `frame` - Source data frame to be sorted.
   /// 
   /// [category:Data structure manipulation]
-  [<CompiledName("SortedRowBy")>]
-  let sortedRowsBy colKey (f:'T -> 'V) (frame:Frame<'R,'C>) =
-    let newRowIndex, rowCmd = frame.GetSeries(colKey) |> Series.sortedByCommand f
+  [<CompiledName("SortRowBy")>]
+  let sortRowsBy colKey (f:'T -> 'V) (frame:Frame<'R,'C>) =
+    let newRowIndex, rowCmd = frame.GetSeries(colKey) |> Series.sortByCommand f
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
 

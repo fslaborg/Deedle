@@ -166,13 +166,13 @@ type SeriesExtensions =
   static member Shift(series:Series<'K, 'V>, offset) = Series.shift offset series
 
   [<Extension>]
-  static member Sorted(series:Series<'K, 'V>) = Series.sorted series
+  static member Sort(series:Series<'K, 'V>) = Series.sort series
 
   [<Extension>]
-  static member SortedBy(series:Series<'K, 'V>, f: Func<'V,'V2>) = Series.sortedBy f.Invoke series
+  static member sortBy(series:Series<'K, 'V>, f: Func<'V,'V2>) = Series.sortBy f.Invoke series
 
   [<Extension>]
-  static member SortedWith(series:Series<'K, 'V>, cmp: Comparer<'V>) = Series.sortedWith (fun x y -> cmp.Compare(x, y)) series
+  static member sortWith(series:Series<'K, 'V>, cmp: Comparer<'V>) = Series.sortWith (fun x y -> cmp.Compare(x, y)) series
 
   [<Extension>]
   static member ContainsKey(series:Series<'K, 'T>, key:'K) = 
