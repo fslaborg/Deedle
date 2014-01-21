@@ -440,7 +440,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       let rowAddress = rowIndex.Lookup(row.Key, Lookup.Exact, fun _ -> true)
       if not rowAddress.HasValue then OptionalValue.Missing
       else OptionalValue(Series.CreateUntyped(columnIndex, createRowReader (snd rowAddress.Value))))
-    RowSeries(Series.dropMissing res)
+    RowSeries(res)
 
   /// [category:Accessors and slicing]
   member frame.RowsDense = 

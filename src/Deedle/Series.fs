@@ -911,6 +911,7 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
 
   member x.TryGetAs<'R>(column) : OptionalValue<'R> = 
     x.TryGet(column) |> OptionalValue.map (fun v -> Convert.changeType<'R> v)
+
   static member (?) (series:ObjectSeries<_>, name:string) = series.GetAs<float>(name)
 
   member x.TryAs<'R>(strict) =
