@@ -255,15 +255,13 @@ let ``Can do fuzzy lookup on frame rows and cols`` () =
 
 [<Test>]
 let  ``Can access floats from ObjectSeries rows`` () =
-  let s1 = series [| "a" => 1.0; "c" => 2.0; "e" => 3.0 |]
-  let s2 = series [| "a" => 4.0; "c" => 5.0; "e" => 6.0 |]
-  let df = frame [ "X" => s1; "Y" => s2 ]    
+  let df = frame [ "X" => series [| "a" => 1.0; "c" => 2.0; "e" => 3.0 |]
+                   "Y" => series [| "a" => 4.0; "c" => nan; "e" => 6.0 |] ]    
 
-  let s1' = series [| "c" => 2.0; "e" => 3.0 |]
-  let s2' = series [| "c" => 5.0; "e" => 6.0 |]
-  let df' = frame [ "X" => s1'; "Y" => s2' ]    
+  let df' = frame [ "X" => series [| "e" => 3.0 |]
+                    "Y" => series [| "e" => 6.0 |] ]    
 
-  let filt = df |> Frame.filterRows(fun _ r -> r?X >= 2.0)
+  let filt = df |> Frame.filterRows(fun _ r -> r?X >= 2.0 && not(Double.IsNaN(r?Y)))
   filt |> shouldEqual df'
 
   let testInvalidKey() = df |> Frame.filterRows(fun _ r -> r?Z >= 2.0) |> ignore
