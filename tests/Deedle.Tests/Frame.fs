@@ -267,6 +267,18 @@ let  ``Can access floats from ObjectSeries rows`` () =
   let testInvalidKey() = df |> Frame.filterRows(fun _ r -> r?Z >= 2.0) |> ignore
   testInvalidKey |> should throw (typeof<KeyNotFoundException>)
 
+[<Test>]
+let ``Filter all rows keeps column keys`` () =
+  let df = frame [ "X" => series [| "a" => 1.0; "c" => 2.0; "e" => 3.0 |]
+                   "Y" => series [| "a" => 4.0; "c" => nan; "e" => 6.0 |] ]    
+
+  let filt = df |> Frame.filterRows (fun _ _ -> false)
+  filt.RowCount |> shouldEqual 0
+  filt.ColumnKeys |> shouldEqual (Seq.ofList ["X"; "Y"])
+  filt.["X"] |> shouldEqual (series [])
+  filt.["Y"] |> shouldEqual (series [])
+  (fun () -> filt.["Z"] |> ignore) |> should throw (typeof<ArgumentException>)
+
 // ------------------------------------------------------------------------------------------------
 // Stack & unstack
 // ------------------------------------------------------------------------------------------------

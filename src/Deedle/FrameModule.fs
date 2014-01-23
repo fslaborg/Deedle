@@ -266,16 +266,18 @@ module Frame =
 //    |> Frame.ofColumns
 
   let take count (frame:Frame<'R, 'C>) =
-    frame.Rows |> Series.take count |> FrameUtils.fromRows
+    frame.Rows |> Series.take count |> FrameUtils.fromRowsAndColumnKeys frame.ColumnKeys
 
   let takeLast count (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.takeLast count |> FrameUtils.fromRows
+    frame.Rows |> Series.takeLast count |> FrameUtils.fromRowsAndColumnKeys frame.ColumnKeys
 
   let window size (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.windowInto size FrameUtils.fromRows
+    let fromRows rs = rs |> FrameUtils.fromRowsAndColumnKeys frame.ColumnKeys
+    frame.Rows |> Series.windowInto size fromRows
 
   let windowInto size f (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.windowInto size (FrameUtils.fromRows >> f)
+    let fromRows rs = rs |> FrameUtils.fromRowsAndColumnKeys frame.ColumnKeys
+    frame.Rows |> Series.windowInto size (fromRows >> f)
 
 
   // ----------------------------------------------------------------------------------------------
@@ -562,7 +564,7 @@ module Frame =
   /// [category:Projection and filtering]
   [<CompiledName("WhereRows")>]
   let inline filterRows f (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.filter f |> FrameUtils.fromRows
+    frame.Rows |> Series.filter f |> FrameUtils.fromRowsAndColumnKeys frame.ColumnKeys
 
   /// Returns a new data frame containing only the rows of the input frame
   /// for which the specified predicate returns `true`. The predicate is called
@@ -576,7 +578,7 @@ module Frame =
   /// [category:Projection and filtering]
   [<CompiledName("WhereRowValues")>]
   let inline filterRowValues f (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.filterValues f |> FrameUtils.fromRows
+    frame.Rows |> Series.filterValues f |> FrameUtils.fromRowsAndColumnKeys frame.ColumnKeys
 
   /// Builds a new data frame whose rows are the results of applying the specified
   /// function on the rows of the input data frame. The function is called

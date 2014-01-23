@@ -1151,14 +1151,14 @@ and FrameUtils =
       let res = VectorBuilder.Instance.CreateMissing [| v |] 
       OptionalValue(res :> IVector))
     Frame(Index.ofKeys [row], series.Index, data)
-
+    
   /// Create data frame from a series of rows
-  static member fromRows<'TRowKey, 'TColumnKey, 'TSeries
-        when 'TRowKey : equality and 'TColumnKey : equality and 'TSeries :> ISeries<'TColumnKey>>
-      (nested:Series<'TRowKey, 'TSeries>) =
+  static member fromRowsAndColumnKeys<'TRowKey, 'TColumnKey, 'TSeries
+        when 'TRowKey : equality and 'TColumnKey : equality and 'TSeries :> ISeries<'TColumnKey>> 
+      colKeys (nested:Series<'TRowKey, 'TSeries>) =
 
     // Create column index from keys of all rows
-    let columnIndex = nested.Values |> Seq.collect (fun sr -> sr.Index.Keys) |> Seq.distinct |> Array.ofSeq |> Index.ofKeys
+    let columnIndex = colKeys |> Index.ofKeys
 
     // Row index is just the index of the series
     let rowIndex = nested.Index
@@ -1192,6 +1192,16 @@ and FrameUtils =
             columnCreator key (obj()) )
       |> Array.ofSeq |> FrameUtils.vectorBuilder.Create
     Frame(rowIndex, columnIndex, data)
+
+  /// Create data frame from a series of rows
+  static member fromRows<'TRowKey, 'TColumnKey, 'TSeries
+        when 'TRowKey : equality and 'TColumnKey : equality and 'TSeries :> ISeries<'TColumnKey>>
+      (nested:Series<'TRowKey, 'TSeries>) =
+
+    // Create column index from keys of all rows
+    let columnIndex = nested.Values |> Seq.collect (fun sr -> sr.Index.Keys) |> Seq.distinct |> Array.ofSeq
+
+    FrameUtils.fromRowsAndColumnKeys columnIndex nested
 
   /// Create data frame from a series of columns
   static member fromColumns<'TRowKey, 'TColumnKey, 'TSeries when 'TSeries :> ISeries<'TRowKey> 
