@@ -1246,10 +1246,13 @@ and FrameUtils =
 
   /// Given a series of frames, build a frame with multi-level row index
   static member collapseFrameSeries (series:Series<'R1, Frame<'R2, 'C>>) = 
-    // TODO: Slow
     series 
     |> Series.map (fun k1 df -> df.Rows |> Series.mapKeys(fun k2 -> (k1, k2)) |> FrameUtils.fromRows)
-    |> Series.values |> Seq.reduce (fun df1 df2 -> df1.Append(df2))
+    |> Series.values 
+    |> Seq.toList 
+    |> function
+       | head :: tail -> head.AppendN(tail)
+       | []           -> Frame([], [])
 
   /// Given a series of frames, build a frame with multi-level row index
   static member collapseSeriesSeries (series:Series<'R1, Series<'R2, ObjectSeries<'C>>>) = 

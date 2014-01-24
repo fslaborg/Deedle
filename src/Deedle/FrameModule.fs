@@ -203,7 +203,11 @@ module Frame =
   let collapseCols (series:Series<'K, Frame<'K1, 'K2>>) = 
     series 
     |> Series.map (fun k1 df -> df.Columns |> Series.mapKeys(fun k2 -> (k1, k2)) |> FrameUtils.fromColumns)
-    |> Series.values |> Seq.reduce (fun df1 df2 -> df1.Append(df2))
+    |> Series.values 
+    |> Seq.toList
+    |> function
+       | head :: tail -> head.AppendN(tail)
+       | []           -> Frame([], [])
 
   let collapseRows (series:Series<'K, Frame<'K1, 'K2>>) = 
     FrameUtils.collapseFrameSeries series
