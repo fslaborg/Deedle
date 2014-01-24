@@ -180,8 +180,8 @@ let createVectorListDispatcher<'R> (callSite:VectorListCallSite1<'R>) =
           | _ ->
             let mi = typeof<VectorListCallSite1<'R>>.GetMethod("Invoke").MakeGenericMethod(vect.ElementType)
             let inst = Expression.Parameter(typeof<VectorListCallSite1<'R>>)
-            let par = Expression.Parameter(typeof<IVector list>)
-            let ty = typedefof<IVector<_>>.MakeGenericType(vect.ElementType)
+            let ty = typedefof<list<_>>.MakeGenericType(typedefof<IVector<_>>.MakeGenericType(vect.ElementType))
+            let par = Expression.Parameter(typeof<list<IVector>>)
             let expr =
               Expression.Lambda<System.Func<VectorListCallSite1<'R>, IVector list, 'R>>
                 ( Expression.Call(inst, mi, Expression.Convert(par, ty)), [ inst; par ])
