@@ -7,6 +7,7 @@ module internal Deedle.VectorHelpers
 
 open System
 open System.Reflection
+open System.Linq 
 open System.Linq.Expressions
 open System.Collections.Generic
 open Deedle
@@ -64,7 +65,7 @@ type VectorCallSite1<'R> =
 /// Represents a generic function `\forall.'T.(IVector<'T> list -> 'R)`. The function can be 
 /// generically invoked on an argument of type `IVector list` using `createVectorListDispatcher`
 type VectorListCallSite1<'R> =
-  abstract Invoke<'T> : IVector<'T> list -> 'R
+  abstract Invoke<'T> : IVector<'T> seq -> 'R
 
 /// Represents a generic function `\forall.'T.(IVector<'T> * IVector<'T> -> 'R)`. The function 
 /// can be generically invoked on a pair of `IVector` values using `createTwoVectorDispatcher`
@@ -165,7 +166,7 @@ let rec convertVList<'T> (code:nativeint) (lst: IVector list) =
 /// Creates a function `IVector list -> 'R` that dynamically invokes to 
 /// a generic `Invoke` method of the provided `VectorListCallSite1<'R>`
 let createVectorListDispatcher<'R> (callSite:VectorListCallSite1<'R>) =
-  let dict = lazy Dictionary<_, System.Func<VectorListCallSite1<'R>, IVector list, 'R>>()
+  let dict = lazy Dictionary<_, System.Func<VectorListCallSite1<'R>, IVector seq, 'R>>()
   fun (vlst:IVector list) -> 
     match vlst with
       | []           -> invalidOp "createVectorListDispatcher: List must be non-empty"
@@ -180,11 +181,16 @@ let createVectorListDispatcher<'R> (callSite:VectorListCallSite1<'R>) =
           | _ ->
             let mi = typeof<VectorListCallSite1<'R>>.GetMethod("Invoke").MakeGenericMethod(vect.ElementType)
             let inst = Expression.Parameter(typeof<VectorListCallSite1<'R>>)
-            let ty = typedefof<list<_>>.MakeGenericType(typedefof<IVector<_>>.MakeGenericType(vect.ElementType))
-            let par = Expression.Parameter(typeof<list<IVector>>)
+            let tv = typedefof<IVector<_>>.MakeGenericType(vect.ElementType)
+            let ts = typedefof<seq<_>>.MakeGenericType(tv)
+            let par = Expression.Parameter(typeof<seq<IVector>>)
+
+            let caster = typeof<Enumerable>.GetMethod("Cast").MakeGenericMethod(tv)
+            let convrt = Expression.Convert(Expression.Call(caster, par), ts)
+
             let expr =
-              Expression.Lambda<System.Func<VectorListCallSite1<'R>, IVector list, 'R>>
-                ( Expression.Call(inst, mi, Expression.Convert(par, ty)), [ inst; par ])
+              Expression.Lambda<System.Func<VectorListCallSite1<'R>, IVector seq, 'R>>
+                ( Expression.Call(inst, mi, convrt), [ inst; par ])
             let func = expr.Compile()
             dict.Value.[code] <- func
             func.Invoke(callSite, vlst)

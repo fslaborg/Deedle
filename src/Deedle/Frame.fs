@@ -393,8 +393,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     // dispatch to a type-specific generic implementation
     let appendVectors = 
       { new VectorHelpers.VectorListCallSite1<IVector> with
-          override x.Invoke<'T>(vlst: IVector<'T> list) = 
-            vectorBuilder.Build(rowCmd, vlst |> List.toArray) :> IVector }
+          override x.Invoke<'T>(vlst: IVector<'T> seq) = 
+            vectorBuilder.Build(rowCmd, vlst |> Seq.toArray) :> IVector }
       |> VectorHelpers.createVectorListDispatcher
 
     // all our vectors must be converted to the same witness type!
