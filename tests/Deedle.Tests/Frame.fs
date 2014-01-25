@@ -425,6 +425,19 @@ let ``Can append multiple frames`` () =
   actual.Rows.[8].GetAt(1) |> shouldEqual (box 8)
   actual.Rows.[8].TryGetAt(0).HasValue |> shouldEqual false
 
+[<Test>]
+let ``AppendN works on non-primitives`` () =
+  let df = frame []
+  df?X <- series [ "a" => Decimal(1.0); "b" => Decimal(1.0); "c" => Decimal(2.0); "d" => Decimal(2.0)]
+  df?Y <- series [ "a" => 1; "b" => 1; "c" => 2; "d" => 2]
+
+
+  let df2 = df |> Frame.groupRowsByString("Y") 
+               |> Frame.nest
+               |> Frame.unnest
+
+  df2.RowCount |> shouldEqual df.RowCount
+
 // ------------------------------------------------------------------------------------------------
 // Operations - zip
 // ------------------------------------------------------------------------------------------------

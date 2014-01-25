@@ -368,42 +368,77 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   ///
   /// [category:Joining, zipping and appending]
   member frame.Append(otherFrame:Frame<'TRowKey, 'TColumnKey>) = 
-    // Union the column indices and get transformations for both
-    let newColumnIndex, thisColCmd, otherColCmd = 
-      indexBuilder.Union( (columnIndex, Vectors.Return 0), (otherFrame.ColumnIndex, Vectors.Return 1) )
+    frame.AppendN([ otherFrame ])
 
-    // Append the row indices and get transformation that combines two column vectors
-    // (LeftOrRight - specifies that when column exist in both data frames then fail)
-    let newRowIndex, rowCmd = 
-      indexBuilder.Append( (rowIndex, Vectors.Return 0), (otherFrame.RowIndex, Vectors.Return 1), VectorValueTransform.LeftOrRight)
+  member frame.AppendN(otherFrames:Frame<'TRowKey, 'TColumnKey> seq) = 
+    let frames = seq { yield frame; yield! otherFrames }
 
-    // Transform columns - if we have both vectors, we need to append them
-    let appendVector = 
-      { new VectorHelpers.VectorCallSite1<IVector -> IVector> with
-          override x.Invoke<'T>(col1:IVector<'T>) = (fun col2 ->
-            let col2 = VectorHelpers.changeType<'T> col2
-            vectorBuilder.Build(rowCmd, [| col1; col2 |]) :> IVector) }
+    // build the union of all row keys
+    let rowUnion ix (f:Frame<'R, 'C>) = 
+      let newIx, _, _ = indexBuilder.Union((ix, VectorConstruction.Empty), (f.RowIndex, VectorConstruction.Empty))
+      newIx
+
+    let allRowIx = frames |> Seq.fold rowUnion (Index.ofKeys [])
+
+    // Create a row command: steps to build a result column from a list of input rows
+    //  1) align each vector to the unioned row index
+    //  2) merge across all vectors
+    let rowCmd = 
+      frames
+      |> Seq.map (fun f -> f.RowIndex) 
+      |> Seq.mapi (fun i x -> indexBuilder.Reindex(x, allRowIx, Lookup.Exact, Vectors.Return(i), fun _ -> true))
+      |> fun vc -> Vectors.CombineN(Seq.toList vc, VectorValueListTransform.AtMostOne)
+
+    // Define a function to construct result vector via the above row command, which will dynamically
+    // dispatch to a type-specific generic implementation
+    let appendVectors = 
+      { new VectorHelpers.VectorListCallSite1<IVector> with
+          override x.Invoke<'T>(vlst: IVector<'T> seq) = 
+            vectorBuilder.Build(rowCmd, vlst |> Seq.toArray) :> IVector }
+      |> VectorHelpers.createVectorListDispatcher
+
+    // all our vectors must be converted to the same witness type!
+    let convertAllVectors = 
+      { new VectorHelpers.VectorCallSite1<IVector list -> IVector list> with
+          override x.Invoke<'T>(v: IVector<'T>) = (fun vlst ->
+            vlst |> List.map (fun v -> VectorHelpers.changeType<'T> v :> IVector)) }
       |> VectorHelpers.createVectorDispatcher
-    // .. if we only have one vector, we need to pad it 
-    let padVector isLeft = 
-      { new VectorHelpers.VectorCallSite1<IVector> with
-          override x.Invoke<'T>(col:IVector<'T>) = 
-            let empty = Vector.ofValues []
-            let args = if isLeft then [| col; empty |] else [| empty; col |]
-            vectorBuilder.Build(rowCmd, args) :> IVector }
-      |> VectorHelpers.createVectorDispatcher
-    let padLeftVector, padRightVector = padVector true, padVector false
 
-    let append = VectorValueTransform.Create(fun (l:OptionalValue<IVector>) r ->
-      if l.HasValue && r.HasValue then OptionalValue(appendVector l.Value r.Value)
-      elif l.HasValue then OptionalValue(padLeftVector l.Value)
-      elif r.HasValue then OptionalValue(padRightVector r.Value)
-      else OptionalValue.Missing )
+    // define the transformation itself, piecing components together
+    let append = VectorValueListTransform.Create(fun (lst: OptionalValue<IVector> list) ->
+      let witnessVec = 
+        match lst |> Seq.tryFind (fun v -> v.HasValue) with
+        | Some(v) -> v.Value
+        | _       -> invalidOp "Logic error: could not find non-empty IVector ??"
 
-    let newDataCmd = Vectors.Combine(thisColCmd, otherColCmd, append)
-    let newData = vectorBuilder.Build(newDataCmd, [| data; otherFrame.Data |])
+      let empty = Vector.ofValues []
+      let input = [ for v in lst do 
+                    if v.HasValue 
+                    then yield v.Value
+                    else yield upcast Vector.ofValues [] ]
+      input |> convertAllVectors(witnessVec) |> appendVectors |> fun r -> OptionalValue(r) )
 
-    Frame(newRowIndex, newColumnIndex, newData)
+    // build the union of all column keys
+    let colUnion ix (f:Frame<'R, 'C>) = 
+      let newIx, _, _ = indexBuilder.Union((ix, VectorConstruction.Empty), (f.ColumnIndex, VectorConstruction.Empty))
+      newIx
+
+    let allColIx = frames |> Seq.fold colUnion (Index.ofKeys [])
+
+    // Create a frame command: steps to build a frame from a list of input frames
+    //  1) align each column to the unioned column index
+    //  2) merge the columns via the row command transform 
+    let frameCmd = 
+      frames 
+      |> Seq.map (fun f -> f.ColumnIndex) 
+      |> Seq.mapi (fun i x -> indexBuilder.Reindex(x, allColIx, Lookup.Exact, Vectors.Return(i), fun _ -> true))
+      |> fun vc -> Vectors.CombineN(Seq.toList vc, append)
+
+    let frameData = frames |> Seq.map (fun f -> f.Data) |> Seq.toArray
+    
+    let newData = vectorBuilder.Build(frameCmd, frameData)
+
+    Frame(allRowIx, allColIx, newData)
 
   // ----------------------------------------------------------------------------------------------
   // Frame accessors
@@ -1211,10 +1246,13 @@ and FrameUtils =
 
   /// Given a series of frames, build a frame with multi-level row index
   static member collapseFrameSeries (series:Series<'R1, Frame<'R2, 'C>>) = 
-    // TODO: Slow
     series 
     |> Series.map (fun k1 df -> df.Rows |> Series.mapKeys(fun k2 -> (k1, k2)) |> FrameUtils.fromRows)
-    |> Series.values |> Seq.reduce (fun df1 df2 -> df1.Append(df2))
+    |> Series.values 
+    |> Seq.toList 
+    |> function
+       | head :: tail -> head.AppendN(tail)
+       | []           -> Frame([], [])
 
   /// Given a series of frames, build a frame with multi-level row index
   static member collapseSeriesSeries (series:Series<'R1, Series<'R2, ObjectSeries<'C>>>) = 
