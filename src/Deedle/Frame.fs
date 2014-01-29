@@ -1298,6 +1298,21 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     |> Series.groupInto (fun k v -> f.Invoke(k, v)) (fun k g -> g)
     |> FrameUtils.collapseSeriesSeries
 
+  member frame.GroupRowsWith<'TNewKey when 'TNewKey : equality>(labels:seq<'TNewKey>) =
+    let indexBuilder = frame.IndexBuilder
+    let vectorBuilder = frame.VectorBuilder
+
+    let cmd = frame.IndexBuilder.GroupWith(frame.RowIndex, labels, VectorConstruction.Return 0)
+    let newIndex  = Index.ofKeys (cmd |> Seq.map fst)
+
+    let groups    = cmd |> Seq.map snd |> Seq.map (fun sc ->
+      let newIndex = fst sc
+      let newData  = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder (snd sc))   
+      Frame<_, _>(newIndex, frame.ColumnIndex, newData)
+    )
+
+    Series<_, _>(newIndex, Vector.ofValues groups, vectorBuilder, indexBuilder)
+
   /// Returns a data frame whose rows are indexed based on the specified column of the original
   /// data frame. The generic type parameter is (typically) needed to specify the type of the 
   /// values in the required index column.

@@ -216,6 +216,7 @@ and internal DelayedIndexBuilder() =
     member x.Create(keys, ordered) = builder.Create(keys, ordered)
     member x.Aggregate(index, aggregation, vector, selector) = builder.Aggregate(index, aggregation, vector, selector)
     member x.GroupBy(index, keySel, vector, valueSel) = builder.GroupBy(index, keySel, vector, valueSel)
+    member x.GroupWith(index, keys, vec) = builder.GroupWith(index, keys, vec)
     member x.OrderIndex(sc) = builder.OrderIndex(sc)
     member x.Union(sc1, sc2) = builder.Union(sc1, sc2)
     member x.Append(sc1, sc2, transform) = builder.Append(sc1, sc2, transform)

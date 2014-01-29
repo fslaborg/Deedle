@@ -619,6 +619,13 @@ and
               valueSelector.Invoke(kvp) ) )
     Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
 
+  member x.GroupWith<'TNewKey when 'TNewKey : equality>(labels:seq<'TNewKey>) =
+    let cmd = indexBuilder.GroupWith(x.Index, labels, VectorConstruction.Return 0)
+    let newIndex  = Index.ofKeys (cmd |> Seq.map fst)
+    let newGroups = cmd |> Seq.map snd |> Seq.map (fun sc -> 
+        Series(fst sc, vectorBuilder.Build(snd sc, [| x.Vector |]), vectorBuilder, indexBuilder))
+    Series<'TNewKey, _>(newIndex, Vector.ofValues newGroups, vectorBuilder, indexBuilder)
+
   // ----------------------------------------------------------------------------------------------
   // Indexing
   // ----------------------------------------------------------------------------------------------
@@ -901,23 +908,12 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
   member x.GetAs<'R>(column) : 'R = 
     Convert.changeType<'R> (x.Get(column))
 
-  member x.GetAs<'R>(column, fallback) : 'R =
-    let address = index.Lookup(column, Lookup.Exact, fun _ -> true) 
-    match address with
-    | OptionalValue.Present a -> 
-        match (vector.GetValue(snd a)) with
-        | OptionalValue.Present v -> Convert.changeType<'R> v
-        | OptionalValue.Missing   -> fallback
-    | OptionalValue.Missing -> keyNotFound column
-
   member x.GetAtAs<'R>(index) : 'R = 
     Convert.changeType<'R> (x.GetAt(index))
 
   member x.TryGetAs<'R>(column) : OptionalValue<'R> = 
     x.TryGet(column) |> OptionalValue.map (fun v -> Convert.changeType<'R> v)
-
-  static member (?) (series:ObjectSeries<_>, name:string) = 
-    series.GetAs<float>(name, nan)
+  static member (?) (series:ObjectSeries<_>, name:string) = series.GetAs<float>(name)
 
   member x.TryAs<'R>(strict) =
     match box vector with

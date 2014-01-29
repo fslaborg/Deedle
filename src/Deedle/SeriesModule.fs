@@ -864,6 +864,19 @@ module Series =
   let groupBy (keySelector:'K -> 'T -> 'TNewKey) (series:Series<'K, 'T>) =
     groupInto keySelector (fun k s -> s) series
 
+  /// Groups a series (ordered or unordered) using the specified label sequence (`keys`) 
+  /// and then returns a series of (nested) series as the result. The outer series is indexed 
+  /// by the unique labels; the nested series are indexed by the original index keys.
+  ///
+  /// ## Parameters
+  ///  - `keys` - A list of labels that is used for aggregation. The new key must support equality 
+  ///    testing.
+  ///  - `series` - An input series to be grouped. 
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let groupWith keys (series:Series<'K, 'T>) =
+    series.GroupWith(keys)
+
   // ----------------------------------------------------------------------------------------------
   // Handling of missing values
   // ----------------------------------------------------------------------------------------------

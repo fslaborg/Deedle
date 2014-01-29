@@ -214,6 +214,7 @@ module Frame =
 
   let groupRowsUsing selector (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.groupInto selector (fun k g -> g) |> FrameUtils.collapseSeriesSeries
+  
   let groupColsUsing selector (frame:Frame<'R, 'C>) = 
     frame.Columns |> Series.groupInto selector (fun k g -> g |> FrameUtils.fromColumns) |> collapseCols
 
@@ -235,6 +236,8 @@ module Frame =
   let groupColsByInt column frame : Frame<_, int * _> = groupColsBy column frame
   let groupColsByString column frame : Frame<_, string * _> = groupColsBy column frame
   let groupColsByBool column frame : Frame<_, bool * _> = groupColsBy column frame
+
+  let groupRowsWith labels (frame:Frame<'R,'C>) : Series<'K, _> = frame.GroupRowsWith(labels)
 
   // ----------------------------------------------------------------------------------------------
   // Pivot table

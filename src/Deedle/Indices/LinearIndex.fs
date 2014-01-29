@@ -217,6 +217,20 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       let vect = vectorBuilder.CreateMissing(Array.map snd keyValues)
       newIndex, vect
 
+    /// Group an (un)ordered index
+    member builder.GroupWith<'K, 'TNewKey when 'K : equality and 'TNewKey : equality>
+        (index:IIndex<'K>, keys:seq<'TNewKey>, vector) =
+      let builder = (builder :> IIndexBuilder)
+      // Build a sequence of indices & vector constructions representing the groups
+      let windows = index.Keys |> Seq.zip keys |> Seq.groupBy (fun (k, _) -> k) |> Seq.map (fun (k, s) -> (k, s |> Seq.map snd))
+      windows 
+      |> Seq.map (fun (key, win) ->
+          let len = Seq.length win |> int64
+          let relocations = 
+            seq { for k, newAddr in Seq.zip win (Address.generateRange(0L, len-1L)) -> 
+                  newAddr, index.Lookup(k, Lookup.Exact, fun _ -> true).Value |> snd }
+          let newIndex = builder.Create(win, None)
+          key, (newIndex, Vectors.Relocate(vector, len, relocations)))
 
     /// Group an (un)ordered index
     member builder.GroupBy<'K, 'TNewKey, 'R when 'K : equality and 'TNewKey : equality>
