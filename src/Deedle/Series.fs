@@ -924,7 +924,7 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
     x.TryGet(column) |> OptionalValue.map (fun v -> Convert.changeType<'R> v)
 
   static member (?) (series:ObjectSeries<_>, name:string) = 
-    series.GetAs<float>(name)
+    series.GetAs<float>(name, nan)
 
   member x.TryAs<'R>(strict) =
     match box vector with
