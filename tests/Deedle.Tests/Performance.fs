@@ -146,5 +146,10 @@ let means = f |> Frame.groupRowsByString "s" |> Frame.applyLevel fst (fun r ->
 
 Whereas this code takes less than three seconds fairly consistently
 let means = f.GroupRowsWith x |> Series.mapValues (fun f -> f?n |> Series.mean)
+
+
+/// -------------------
+// also, the function where AppendN makes things faster is: collapseFrameSeries 
+// So add a test tracking that.
 *)
 
