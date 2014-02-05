@@ -370,6 +370,20 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member frame.Append(otherFrame:Frame<'TRowKey, 'TColumnKey>) = 
     frame.AppendN([ otherFrame ])
 
+  /// Append multiple data frames with non-overlapping values. The operation takes the union of columns
+  /// and rows of the source data frames and then unions the values. An exception is thrown when 
+  /// both data frames define value for a column/row location, but the operation succeeds if one
+  /// frame has a missing value at the location.
+  ///
+  /// Note that the rows are *not* automatically reindexed to avoid overlaps. This means that when
+  /// a frame has rows indexed with ordinal numbers, you may need to explicitly reindex the row
+  /// keys before calling append.
+  ///
+  /// ## Parameters
+  ///  - `otherFrames` - A collection containing other data frame to be appended 
+  ///    (combined) with the current instance
+  ///
+  /// [category:Joining, zipping and appending]
   member frame.AppendN(otherFrames:Frame<'TRowKey, 'TColumnKey> seq) = 
     let frames = seq { yield frame; yield! otherFrames }
 
