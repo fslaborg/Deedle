@@ -253,7 +253,31 @@ let ``Can do fuzzy lookup on frame rows and cols`` () =
   f |> Frame.tryLookupColObservation 2 Lookup.NearestGreater |> shouldEqual (Some (3, s2))
   f |> Frame.tryLookupColObservation 6 Lookup.NearestGreater |> shouldEqual None
 
+[<Test>]
+let  ``Can access floats from ObjectSeries rows`` () =
+  let df = frame [ "X" => series [| "a" => 1.0; "c" => 2.0; "e" => 3.0 |]
+                   "Y" => series [| "a" => 4.0; "c" => nan; "e" => 6.0 |] ]    
 
+  let df' = frame [ "X" => series [| "e" => 3.0 |]
+                    "Y" => series [| "e" => 6.0 |] ]    
+
+  let filt = df |> Frame.filterRows(fun _ r -> r?X >= 2.0 && not(Double.IsNaN(r?Y)))
+  filt |> shouldEqual df'
+
+  let testInvalidKey() = df |> Frame.filterRows(fun _ r -> r?Z >= 2.0) |> ignore
+  testInvalidKey |> should throw (typeof<KeyNotFoundException>)
+
+[<Test>]
+let ``Filter all rows keeps column keys`` () =
+  let df = frame [ "X" => series [| "a" => 1.0; "c" => 2.0; "e" => 3.0 |]
+                   "Y" => series [| "a" => 4.0; "c" => nan; "e" => 6.0 |] ]    
+
+  let filt = df |> Frame.filterRows (fun _ _ -> false)
+  filt.RowCount |> shouldEqual 0
+  filt.ColumnKeys |> shouldEqual (Seq.ofList ["X"; "Y"])
+  filt.["X"] |> shouldEqual (series [])
+  filt.["Y"] |> shouldEqual (series [])
+  (fun () -> filt.["Z"] |> ignore) |> should throw (typeof<ArgumentException>)
 
 // ------------------------------------------------------------------------------------------------
 // Stack & unstack
@@ -401,6 +425,19 @@ let ``Can append multiple frames`` () =
   actual.Rows.[8].GetAt(1) |> shouldEqual (box 8)
   actual.Rows.[8].TryGetAt(0).HasValue |> shouldEqual false
 
+[<Test>]
+let ``AppendN works on non-primitives`` () =
+  let df = frame []
+  df?X <- series [ "a" => Decimal(1.0); "b" => Decimal(1.0); "c" => Decimal(2.0); "d" => Decimal(2.0)]
+  df?Y <- series [ "a" => 1; "b" => 1; "c" => 2; "d" => 2]
+
+
+  let df2 = df |> Frame.groupRowsByString("Y") 
+               |> Frame.nest
+               |> Frame.unnest
+
+  df2.RowCount |> shouldEqual df.RowCount
+
 // ------------------------------------------------------------------------------------------------
 // Operations - zip
 // ------------------------------------------------------------------------------------------------
@@ -522,6 +559,39 @@ let ``Can join frame with series`` () =
     let lookup = match kind with JoinKind.Inner | JoinKind.Outer -> Lookup.Exact | _ -> lookup
     f1.Join(f2, kind, lookup) = f1.Join("S2", s2, kind, lookup)
   )
+
+// ------------------------------------------------------------------------------------------------
+// Operations - sorting
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can sort frame``() =
+  let randomOrder        = frame [ "x" => Series.randomOrder ]
+  let randomOrderMissing = frame [ "x" => Series.randomOrderMissing ]
+  let ascending          = frame [ "x" => Series.ascending ]
+  let descending         = frame [ "x" => Series.descending ]
+  let ascendingMissing   = frame [ "x" => Series.ascendingMissing ]
+  let descendingMissing  = frame [ "x" => Series.descendingMissing ]
+
+  let ord1 = randomOrder |> Frame.sortRows "x"
+  ord1 |> shouldEqual ascending
+
+  let ord2 = randomOrder |> Frame.sortRowsBy "x" (fun v -> -v)
+  ord2 |> shouldEqual descending
+
+  let ord3 = randomOrder |> Frame.sortRowsWith "x" (fun a b -> 
+    if a < b then -1 else if a = b then 0 else 1)
+  ord3 |> shouldEqual ascending
+
+  let ord4 = randomOrderMissing |> Frame.sortRows "x"
+  ord4 |> shouldEqual ascendingMissing
+  
+  let ord5 = randomOrderMissing |> Frame.sortRowsBy "x" (fun v -> -v)
+  ord5 |> shouldEqual descendingMissing
+
+  let ord6 = randomOrderMissing |> Frame.sortRowsWith "x" (fun a b -> 
+    if a < b then -1 else if a = b then 0 else 1)
+  ord6 |> shouldEqual ascendingMissing
 
 // ------------------------------------------------------------------------------------------------
 // Operations - fill

@@ -15,6 +15,15 @@ open Microsoft.FSharp.Reflection
 // Conversion helpers
 // ------------------------------------------------------------------------------------------------
 
+let invcult = System.Globalization.CultureInfo.InvariantCulture
+let dateFmt = "yyyy-MM-dd HH:mm:ss.ffffff"
+
+let dateTimeOffsetToStr (dt:DateTimeOffset) =
+    dt.ToUniversalTime().ToString(dateFmt, invcult)
+
+let dateTimeToStr (dt:DateTime) =
+    dt.ToUniversalTime().ToString(dateFmt, invcult)
+
 /// Convert Deedle frame key (or multi-level tuple) to string that can be passed to R
 let convertKey (key:obj) =
   if Object.ReferenceEquals(key, null) then ""
@@ -22,6 +31,10 @@ let convertKey (key:obj) =
     FSharpValue.GetTupleFields(key)
     |> Array.map string
     |> String.concat " - "
+  elif key :? DateTime then
+    dateTimeToStr (key :?> DateTime)
+  elif key :? DateTimeOffset then
+    dateTimeOffsetToStr (key :?> DateTimeOffset)
   else string key
 
 /// Turn columns/rows into an index with either int or string keys
@@ -109,7 +122,6 @@ let tryAsZooSeries (symExpr:SymbolicExpression) =
 
 /// Try convert the keys of a specified zoo time series to DateTime
 let tryGetDateTimeKeys (zoo:SymbolicExpression) fromDateTime =
-  let invcult = System.Globalization.CultureInfo.InvariantCulture
   try
     R.strftime(R.index(zoo), "%Y-%m-%d %H:%M:%S").AsCharacter()
     |> Seq.map (fun v -> DateTime.ParseExact(v, "yyyy-MM-dd HH:mm:ss", invcult))

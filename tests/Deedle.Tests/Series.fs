@@ -30,6 +30,14 @@ let missing = series [ 1 => "hi"; 2 => null; 3 => "ciao"; 5 => "nazdar" ]
 let usCulture = CultureInfo.GetCultureInfo("en-us")
 let parseDateUSA s = DateTime.Parse(s,usCulture)
 
+let ascending = series [ 1 => 1.0; 2 => 2.0; 3 => 3.0 ]
+let descending = series [ 3 => 3.0; 2 => 2.0; 1 => 1.0 ]
+let randomOrder = series [ 2 => 2.0; 3 => 3.0; 1 => 1.0 ]
+
+let ascendingMissing = series [ 0 => nan; 1 => 1.0; 2 => 2.0; 3 => 3.0 ]
+let descendingMissing = series [ 0 => nan; 3 => 3.0; 2 => 2.0; 1 => 1.0 ]
+let randomOrderMissing = series [ 2 => 2.0; 3 => 3.0; 0 => nan; 1 => 1.0 ]
+
 [<Test>]  
 let ``Can access elements in ordered and unordered series`` () =
   unordered.[3] |> shouldEqual "hi"
@@ -211,8 +219,31 @@ let ``Can fill missing values in a specified range``() =
 
 [<Test>]
 let ``Can order series``() =
-    let ord = unordered |> Series.orderByKey
-    ord |> shouldEqual sortedByKey
+  let ord = unordered |> Series.orderByKey
+  ord |> shouldEqual sortedByKey
+
+[<Test>]
+let ``Can sort series``() =
+  let ord1 = randomOrder |> Series.sort
+  ord1 |> shouldEqual ascending
+
+  let ord2 = randomOrder |> Series.sortBy (fun v -> -v)
+  ord2 |> shouldEqual descending
+
+  let ord3 = randomOrder |> Series.sortWith (fun a b -> 
+    if a < b then -1 else if a = b then 0 else 1)
+  ord3 |> shouldEqual ascending
+
+  let ord4 = randomOrderMissing |> Series.sort
+  ord4 |> shouldEqual ascendingMissing
+  
+  let ord5 = randomOrderMissing |> Series.sortBy (fun v -> -v)
+  ord5 |> shouldEqual descendingMissing
+
+  let ord6 = randomOrderMissing |> Series.sortWith (fun a b -> 
+    if a < b then -1 else if a = b then 0 else 1)
+  ord6 |> shouldEqual ascendingMissing
+
 
 // ------------------------------------------------------------------------------------------------
 // Sampling and lookup

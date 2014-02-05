@@ -329,6 +329,12 @@ and
     let newIndex = indexBuilder.Project(index)
     Series<'K, 'R>(newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
 
+  /// [category:Projection and filtering]
+  member x.Reversed =
+    let newIndex = index.Keys |> Array.ofSeq |> Array.rev
+    let newVector = vector.DataSequence |> Array.ofSeq |> Array.rev
+    Series(Index.ofKeys newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
+
   // ----------------------------------------------------------------------------------------------
   // Appending, joining etc
   // ----------------------------------------------------------------------------------------------
@@ -900,12 +906,23 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
   member x.GetAs<'R>(column) : 'R = 
     Convert.changeType<'R> (x.Get(column))
 
+  member x.GetAs<'R>(column, fallback) : 'R =
+    let address = index.Lookup(column, Lookup.Exact, fun _ -> true) 
+    match address with
+    | OptionalValue.Present a -> 
+        match (vector.GetValue(snd a)) with
+        | OptionalValue.Present v -> Convert.changeType<'R> v
+        | OptionalValue.Missing   -> fallback
+    | OptionalValue.Missing -> keyNotFound column
+
   member x.GetAtAs<'R>(index) : 'R = 
     Convert.changeType<'R> (x.GetAt(index))
 
   member x.TryGetAs<'R>(column) : OptionalValue<'R> = 
     x.TryGet(column) |> OptionalValue.map (fun v -> Convert.changeType<'R> v)
-  static member (?) (series:ObjectSeries<_>, name:string) = series.GetAs<float>(name)
+
+  static member (?) (series:ObjectSeries<_>, name:string) = 
+    series.GetAs<float>(name, nan)
 
   member x.TryAs<'R>(strict) =
     match box vector with
