@@ -96,5 +96,55 @@ let ``Realign a 1M element series according to a specified key array`` () =
   actual.FirstKey() |> shouldEqual 1
 
 
+(*
+TODO: https://github.com/BlueMountainCapital/Deedle/issues/142#issuecomment-33587885
 
+let genRandomNumbers count =
+    let rnd = System.Random()
+    List.init count (fun _ -> (float <| rnd.Next()) / (float Int32.MaxValue))
+
+let data : Frame<int,string> = frame [] |> Frame.indexRowsWith [1..1000000]
+data?S <- [for i in (genRandomNumbers 1000000) -> if i > 0.5 then "x" else "y" ]
+data?N <- [1 .. 1000000]
+
+
+data
+|> Frame.groupRowsByString "S"
+|> Frame.applyLevel fst (fun r -> 
+    let df = Frame.ofRows r
+    df - Series.mean df?N )
+|> Frame.collapseRows
+|> Frame.mapRowKeys snd
+
+
+let gped = data |> Frame.groupRowsUsing (fun k r -> r.GetAs<string>("S"))
+let gavg = gped |> Frame.meanLevel fst
+
+gped 
+|> Frame.nest
+|> Series.zipAlign JoinKind.Left Lookup.Exact gavg?N
+|> Series.mapValues (fun v -> (fst v) |> OptionalValue.asOption, (snd v) |> OptionalValue.asOption)
+|> Series.mapValues (function 
+   | Some avg, Some fr -> fr - avg
+   | _                 -> frame [])
+|> Frame.unnest
+|> Frame.mapRowKeys snd
+
+
+let r = genRandomNumbers 1000000
+let x = [for i in r -> if i > 0.5 then "x" else "y" ]
+let s = Series.ofValues(x)
+let n = Series.ofValues(r)
+let f = Frame.ofColumns ["s" => s]
+f?n <- n
+
+This code takes more than a minute (vast upward variance depending on how many gen2 GC's happen)
+let means = f |> Frame.groupRowsByString "s" |> Frame.applyLevel fst (fun r -> 
+  let df = Frame.ofRows r
+  Series.mean df?n )
+
+
+Whereas this code takes less than three seconds fairly consistently
+let means = f.GroupRowsWith x |> Series.mapValues (fun f -> f?n |> Series.mean)
+*)
 
