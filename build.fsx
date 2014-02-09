@@ -34,7 +34,7 @@ let rpluginTags = "R RProvider"
 
 let gitHome = "https://github.com/BlueMountainCapital"
 let gitName = "Deedle"
-let testAssemblies = ["tests/*/bin/Release/Deedle*Tests*.dll"]
+let testAssemblies = "tests/*/bin/Release/Deedle*Tests*.dll"
 
 // --------------------------------------------------------------------------------------
 // The rest of the code is standard F# build script 
@@ -92,10 +92,7 @@ Target "CleanDocs" (fun _ ->
 // Build library & test project
 
 Target "Build" (fun _ ->
-    { BaseDirectories = [__SOURCE_DIRECTORY__]
-      Includes = [project + ".sln"; project + ".Tests.sln"]
-      Excludes = [] } 
-    |> Scan
+    !! (project + "*.sln")
     |> MSBuildRelease "" "Rebuild"
     |> Log "AppBuild-Output: "
 )
@@ -108,10 +105,7 @@ Target "RunTests" (fun _ ->
     let nunitPath = sprintf "packages/NUnit.Runners.%s/Tools" nunitVersion
     ActivateFinalTarget "CloseTestRunner"
 
-    { BaseDirectories = [__SOURCE_DIRECTORY__]
-      Includes = testAssemblies
-      Excludes = [] } 
-    |> Scan
+    !! testAssemblies
     |> NUnit (fun p ->
         { p with
             ToolPath = nunitPath

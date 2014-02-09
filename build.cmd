@@ -1,6 +1,6 @@
 @echo off
 if not exist packages\FAKE\tools\Fake.exe ( 
-  .nuget\nuget.exe install FAKE -OutputDirectory packages -ExcludeVersion -Prerelease
+  .nuget\nuget.exe install FAKE -OutputDirectory packages -ExcludeVersion 
   REM we want to use whatever FSI.EXE is available on the current system
   REM hoping that this will be F# 3.1 which is needed to generate documentation
   del packages\FAKE\tools\fsi.exe*
