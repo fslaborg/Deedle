@@ -292,13 +292,13 @@ let slowStack() =
 [<Test>]
 let ``Can group 10x5k data frame by row of type string (in less than a few seconds)`` () =
   let big = frame [ for d in 0 .. 10 -> string d => series [ for i in 0 .. 5000 -> string i => string (i % 1000) ] ]
-  let grouped = big |> Frame.groupRowsByString "1"
+  let grouped = big |> Frame.groupRowsByString "1" |> Frame.unnest
   grouped.Rows.[ ("998","998") ].GetAs<int>("0") |> shouldEqual 998
 
 [<Test>]
 let ``Can group 10x5k data frame by row of type string and nest it (in less than a few seconds)`` () =
   let big = frame [ for d in 0 .. 10 -> string d => series [ for i in 0 .. 5000 -> string i => string (i % 1000) ] ]
-  let grouped = big |> Frame.groupRowsByString "1" 
+  let grouped = big |> Frame.groupRowsByString "1" |> Frame.unnest
   let nest = grouped |> Frame.nest
   nest |> Series.countKeys |> shouldEqual 1000
 
@@ -433,6 +433,7 @@ let ``AppendN works on non-primitives`` () =
 
 
   let df2 = df |> Frame.groupRowsByString("Y") 
+               |> Frame.unnest
                |> Frame.nest
                |> Frame.unnest
 
@@ -853,7 +854,6 @@ let ``Can group titanic data by boolean column "Survived"``() =
   let actual =
     titanic()
     |> Frame.groupRowsByBool "Survived"
-    |> Frame.nest
     |> Series.mapValues Frame.countRows
   actual |> shouldEqual (series [false => 549; true => 342])
 

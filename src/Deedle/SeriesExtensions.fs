@@ -58,7 +58,6 @@ type internal Series =
   static member internal CreateUntyped(index:IIndex<'K>, data:IVector<obj>) = 
     ObjectSeries<'K>(index, data, Series.vectorBuilder, Series.indexBuilder)
 
-
 type SeriesBuilder<'K, 'V when 'K : equality and 'V : equality>() = 
   let mutable keys = []
   let mutable values = []

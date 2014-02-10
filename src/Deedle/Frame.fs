@@ -1258,25 +1258,6 @@ and FrameUtils =
       (nested:Series<'TColumnKey, 'TSeries>) =
       nested |> Frame<int, int>.FromColumnsNonGeneric (fun s -> s :> _)
 
-  /// Given a series of frames, build a frame with multi-level row index
-  static member collapseFrameSeries (series:Series<'R1, Frame<'R2, 'C>>) = 
-    series 
-    |> Series.map (fun k1 df -> df.Rows |> Series.mapKeys(fun k2 -> (k1, k2)) |> FrameUtils.fromRows)
-    |> Series.values 
-    |> Seq.toList 
-    |> function
-       | head :: tail -> head.AppendN(tail)
-       | []           -> Frame([], [])
-
-  /// Given a series of frames, build a frame with multi-level row index
-  static member collapseSeriesSeries (series:Series<'R1, Series<'R2, ObjectSeries<'C>>>) = 
-    series 
-    |> Series.observations
-    |> Seq.collect (fun (k1, s) ->
-        s |> Series.observations |> Seq.map (fun (k2, row) -> (k1, k2), row))
-    |> Series.ofObservations
-    |> FrameUtils.fromRows
-
 // ------------------------------------------------------------------------------------------------
 // These should really be extensions, but they take generic type parameter
 // ------------------------------------------------------------------------------------------------
@@ -1284,28 +1265,49 @@ and FrameUtils =
 and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality> with
 
   member frame.GroupRowsBy<'TGroup when 'TGroup : equality>(key) =
-    frame.Rows 
-    |> Series.groupInto (fun _ (v:ObjectSeries<_>) -> v.GetAs<'TGroup>(key)) (fun k g -> g)
-    |> FrameUtils.collapseSeriesSeries
-
-  member frame.GroupRowsInto<'TGroup when 'TGroup : equality>(key, f:System.Func<_, _, _>) =
-    frame.Rows 
-    |> Series.groupInto (fun _ v -> v.GetAs<'TGroup>(key)) (fun k g -> f.Invoke(k, g |> FrameUtils.fromRows))
-    |> FrameUtils.collapseFrameSeries
-
-  member frame.GroupRowsUsing<'TGroup when 'TGroup : equality>(f:System.Func<_, _, 'TGroup>) =
-    frame.Rows 
-    |> Series.groupInto (fun k v -> f.Invoke(k, v)) (fun k g -> g)
-    |> FrameUtils.collapseSeriesSeries
-
-  member frame.GroupRowsWith<'TNewKey when 'TNewKey : equality>(labels:seq<'TNewKey>) =
     let indexBuilder = frame.IndexBuilder
     let vectorBuilder = frame.VectorBuilder
 
-    let cmd = frame.IndexBuilder.GroupWith(frame.RowIndex, labels, VectorConstruction.Return 0)
+    let col = frame.GetSeries<'TGroup>(key)
+    let cmd = frame.IndexBuilder.GroupBy(frame.RowIndex, col.TryGet, VectorConstruction.Return 0)
     let newIndex  = Index.ofKeys (cmd |> Seq.map fst)
 
     let groups    = cmd |> Seq.map snd |> Seq.map (fun sc ->
+      let newIndex = fst sc
+      let newData  = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder (snd sc))   
+      Frame<_, _>(newIndex, frame.ColumnIndex, newData)
+    )
+
+    Series<_, _>(newIndex, Vector.ofValues groups, vectorBuilder, indexBuilder)
+
+  member frame.GroupRowsInto<'TGroup when 'TGroup : equality>(key, f:System.Func<_, _, _>) =
+    let indexBuilder = frame.IndexBuilder
+    let vectorBuilder = frame.VectorBuilder
+
+    let col = frame.GetSeries<'TGroup>(key)
+    let cmd = frame.IndexBuilder.GroupBy(frame.RowIndex, col.TryGet, VectorConstruction.Return 0)
+    let newIndex  = Index.ofKeys (cmd |> Seq.map fst)
+
+    let groups    = cmd |> Seq.map (fun (k, sc) ->
+      let newIndex = fst sc
+      let newData  = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder (snd sc))   
+      f.Invoke(k, Frame<_, _>(newIndex, frame.ColumnIndex, newData))
+    )
+
+    Series<_, _>(newIndex, Vector.ofValues groups, vectorBuilder, indexBuilder)
+
+  member frame.GroupRowsUsing<'TGroup when 'TGroup : equality>(f: System.Func<_, _, 'TGroup>) =
+    let indexBuilder = frame.IndexBuilder
+    let vectorBuilder = frame.VectorBuilder
+
+    let userf k = 
+      frame.TryGetRow(k, Lookup.Exact)
+      |> OptionalValue.map (fun v -> f.Invoke(k, v))
+
+    let cmd = frame.IndexBuilder.GroupBy(frame.RowIndex, userf, VectorConstruction.Return 0)
+    let newIndex  = Index.ofKeys (cmd |> Seq.map fst)
+
+    let groups    = cmd |> Seq.map (fun (k, sc) ->
       let newIndex = fst sc
       let newData  = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder (snd sc))   
       Frame<_, _>(newIndex, frame.ColumnIndex, newData)

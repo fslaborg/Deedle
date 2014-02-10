@@ -279,15 +279,8 @@ and IIndexBuilder =
   /// Group a (possibly unordered) index according to a provided sequence of labels.
   /// The operation results in a sequence of unique labels along with corresponding 
   /// series construction objects which can be applied to arbitrary vectors/columns.
-  abstract GroupWith : index:IIndex<'K> * labels:seq<'TNewKey> * VectorConstruction -> 
+  abstract GroupBy : index:IIndex<'K> * keySelector:('K -> OptionalValue<'TNewKey>) * VectorConstruction -> 
     ('TNewKey * SeriesConstruction<'K>) seq when 'TNewKey : equality
-
-  /// Group a (possibly unordered) index using the specified `keySelector` function.
-  /// The operation builds a new index with the selected keys and a matching vector
-  /// with values produced by the `valueSelector` function.
-  abstract GroupBy : IIndex<'K> * keySelector:('K -> OptionalValue<'TNewKey>) * VectorConstruction *
-    valueSelector:('TNewKey * SeriesConstruction<'K> -> OptionalValue<'R>) -> IIndex<'TNewKey> * IVector<'R>
-
 
   /// Aggregate data into non-overlapping chunks by aligning them to the
   /// specified keys. The second parameter specifies the direction. If it is
