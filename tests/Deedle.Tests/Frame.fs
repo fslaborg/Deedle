@@ -293,7 +293,6 @@ let slowStack() =
 let ``Can group 10x5k data frame by row of type string (in less than a few seconds)`` () =
   let big = frame [ for d in 0 .. 10 -> string d => series [ for i in 0 .. 5000 -> string i => string (i % 1000) ] ]
   let grouped = big |> Frame.groupRowsByString "1"
-  grouped.RowKeys |> Seq.iter (fun rk -> System.Console.WriteLine("{0}", rk))
   grouped.Rows.[ ("998","998") ].GetAs<int>("0") |> shouldEqual 998
 
 [<Test>]
