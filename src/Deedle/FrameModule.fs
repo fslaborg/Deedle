@@ -209,17 +209,14 @@ module Frame =
        | head :: tail -> head.AppendN(tail)
        | []           -> Frame([], [])
 
-  let collapseRows (series:Series<'K, Frame<'K1, 'K2>>) = 
-    FrameUtils.collapseFrameSeries series
-
   let groupRowsUsing selector (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.groupInto selector (fun k g -> g) |> FrameUtils.collapseSeriesSeries
-  let groupColsUsing selector (frame:Frame<'R, 'C>) = 
+    frame.GroupRowsUsing(selector)    
+
+  let groupColsUsing selector (frame:Frame<'R, 'C>) =     
     frame.Columns |> Series.groupInto selector (fun k g -> g |> FrameUtils.fromColumns) |> collapseCols
 
   let groupRowsBy column (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.groupInto (fun _ v -> v.GetAs<'K>(column)) (fun _ g -> g)
-    |> FrameUtils.collapseSeriesSeries
+    frame.GroupRowsBy(column)
 
   let groupColsBy column (frame:Frame<'R, 'C>) = 
     frame.Columns |> Series.groupInto 
@@ -1024,18 +1021,24 @@ module Frame =
     frame.Columns |> Series.map (fun _ -> Series.flattenLevel level op)
 
   let flattenRows (level:'R -> 'K) op (frame:Frame<'R, 'C>) : Series<'K, 'V> = 
-    frame.Rows |> Series.groupInto (fun k _ -> level k) (fun _ -> FrameUtils.fromRows >> op)
-
-  let nestBy keySelector (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.groupInto (fun k _ -> keySelector k) (fun nk s -> FrameUtils.fromRows s)
+    let labels = frame.RowKeys |> Seq.map level
+    frame.NestRowsBy(labels) |> Series.map (fun _ df -> op df)
 
   let nest (frame:Frame<'R1 * 'R2, 'C>) = 
-    nestBy fst frame
-    |> Series.mapValues (mapRowKeys snd)
+    let labels = frame.RowKeys |> Seq.map fst
+    frame.NestRowsBy<'R1>(labels) 
+    |> Series.map (fun r df -> df |> indexRowsWith (df.RowKeys |> Seq.map snd))
+
+  let nestBy keySelector (frame:Frame<'R, 'C>) = 
+    let labels = (frame.RowKeys |> Seq.map keySelector)
+    frame.GroupByLabels labels frame.RowCount |> nest
 
   let unnest (series:Series<'R1, Frame<'R2, 'C>>) =
     series
-    |> Series.map (fun k1 s -> s.Rows |> Series.mapKeys (fun k2 -> k1, k2) |> FrameUtils.fromRows)
+    |> Series.map (fun k1 df -> 
+      df.RowKeys 
+      |> Seq.map (fun k2 -> (k1, k2)) 
+      |> (fun ix -> indexRowsWith ix df))
     |> Series.values
     |> appendN
 

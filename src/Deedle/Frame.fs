@@ -1258,45 +1258,69 @@ and FrameUtils =
       (nested:Series<'TColumnKey, 'TSeries>) =
       nested |> Frame<int, int>.FromColumnsNonGeneric (fun s -> s :> _)
 
-  /// Given a series of frames, build a frame with multi-level row index
-  static member collapseFrameSeries (series:Series<'R1, Frame<'R2, 'C>>) = 
-    series 
-    |> Series.map (fun k1 df -> df.Rows |> Series.mapKeys(fun k2 -> (k1, k2)) |> FrameUtils.fromRows)
-    |> Series.values 
-    |> Seq.toList 
-    |> function
-       | head :: tail -> head.AppendN(tail)
-       | []           -> Frame([], [])
-
-  /// Given a series of frames, build a frame with multi-level row index
-  static member collapseSeriesSeries (series:Series<'R1, Series<'R2, ObjectSeries<'C>>>) = 
-    series 
-    |> Series.observations
-    |> Seq.collect (fun (k1, s) ->
-        s |> Series.observations |> Seq.map (fun (k2, row) -> (k1, k2), row))
-    |> Series.ofObservations
-    |> FrameUtils.fromRows
-
 // ------------------------------------------------------------------------------------------------
 // These should really be extensions, but they take generic type parameter
 // ------------------------------------------------------------------------------------------------
 
 and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality> with
+  
+  member internal frame.GroupByLabels labels n =
+    let offsets = [0 .. n-1]
+
+    let relocs = 
+      labels 
+      |> Seq.zip offsets
+      |> Seq.zip frame.RowKeys
+      |> Seq.groupBy (fun (rk, (i, l)) -> l) 
+      |> Seq.map (fun (k, s) -> s) 
+      |> Seq.concat       
+      |> Seq.zip offsets
+      |> Seq.map (fun (dst, (rowkey, (src, grp))) -> (grp, rowkey), (dst, src))
+
+    let addressify (a, b) = (int64 a, int64 b)
+
+    let keys, locs = 
+      relocs |> (fun r -> 
+        Seq.map fst r, 
+        Seq.map (snd >> addressify) r)
+
+    let newIndex = Index.ofKeys keys
+    let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 n, locs)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder cmd)
+    Frame<_, _>(newIndex, frame.ColumnIndex, newData)
+
+  member internal frame.NestRowsBy<'TGroup when 'TGroup : equality>(labels:seq<'TGroup>) =
+    let indexBuilder = frame.IndexBuilder
+    let vectorBuilder = frame.VectorBuilder
+ 
+    let offsets = [0 .. frame.RowCount-1]
+    
+    let relocs = 
+      offsets      
+      |> Seq.zip frame.RowKeys
+      |> Seq.zip labels
+      |> Seq.groupBy (fun (g, (r, i)) -> g) 
+      |> Seq.map (fun (g, s) -> (g, s |> Seq.map snd))
+
+    let newIndex  = Index.ofKeys (relocs |> Seq.map fst)
+ 
+    let groups = relocs |> Seq.map (fun (g, idx) ->
+      let newIndex = Index.ofKeys(idx |> Seq.map fst)
+      let newLocs  = idx |> Seq.map snd
+      let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 newIndex.KeyCount, newLocs |> Seq.mapi (fun a b -> (int64 a, int64 b)))
+      let newData  = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder cmd)
+      Frame<_, _>(newIndex, frame.ColumnIndex, newData)
+    )
+ 
+    Series<_, _>(newIndex, Vector.ofValues groups, vectorBuilder, indexBuilder)
 
   member frame.GroupRowsBy<'TGroup when 'TGroup : equality>(key) =
-    frame.Rows 
-    |> Series.groupInto (fun _ (v:ObjectSeries<_>) -> v.GetAs<'TGroup>(key)) (fun k g -> g)
-    |> FrameUtils.collapseSeriesSeries
-
-  member frame.GroupRowsInto<'TGroup when 'TGroup : equality>(key, f:System.Func<_, _, _>) =
-    frame.Rows 
-    |> Series.groupInto (fun _ v -> v.GetAs<'TGroup>(key)) (fun k g -> f.Invoke(k, g |> FrameUtils.fromRows))
-    |> FrameUtils.collapseFrameSeries
+    let col = frame.GetSeries<'TGroup>(key)    
+    frame.GroupByLabels col.Values frame.RowCount
 
   member frame.GroupRowsUsing<'TGroup when 'TGroup : equality>(f:System.Func<_, _, 'TGroup>) =
-    frame.Rows 
-    |> Series.groupInto (fun k v -> f.Invoke(k, v)) (fun k g -> g)
-    |> FrameUtils.collapseSeriesSeries
+    let labels = frame.Rows |> Series.map (fun k v -> f.Invoke(k, v)) |> Series.values
+    frame.GroupByLabels labels frame.RowCount    
 
   /// Returns a data frame whose rows are indexed based on the specified column of the original
   /// data frame. The generic type parameter is (typically) needed to specify the type of the 
