@@ -340,11 +340,19 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
     /// Reorder elements in the index to match with another index ordering
     member builder.Reindex(index1, index2, semantics, vector, condition) = 
-      let relocations = seq {  
-        for key, newAddress in index2.Mappings do
-          let oldAddress = index1.Lookup(key, semantics, condition)
-          if oldAddress.HasValue then 
-            yield newAddress, oldAddress.Value |> snd }
+      let relocations = 
+        if semantics = Lookup.Exact then
+            seq {  
+              for key, newAddress in index2.Mappings do
+                let oldAddress = index1.Locate(key)
+                if oldAddress <> Address.Invalid && condition oldAddress then 
+                  yield newAddress, oldAddress }
+        else
+            seq {  
+              for key, newAddress in index2.Mappings do
+                let oldAddress = index1.Lookup(key, semantics, condition)
+                if oldAddress.HasValue then 
+                  yield newAddress, oldAddress.Value |> snd }
       Vectors.Relocate(vector, index2.KeyCount, relocations)
 
     member builder.LookupLevel( (index, vector), searchKey:ICustomLookup<'K> ) =

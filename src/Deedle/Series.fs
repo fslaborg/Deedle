@@ -357,40 +357,27 @@ and
   member series.Zip<'V2>(otherSeries:Series<'K, 'V2>, kind) =
     series.Zip(otherSeries, kind, Lookup.Exact)
 
-  /// [category:Appending, joining and zipping]
-  member series.Zip<'V2>(otherSeries:Series<'K, 'V2>, kind, lookup) =
+  member private series.ZipHelper(otherSeries:Series<'K, 'V2>, kind, lookup) =
     // Union row indices and get transformations to apply to left/right vectors
     let newIndex, thisRowCmd, otherRowCmd = 
-      createJoinTransformation indexBuilder kind lookup index otherSeries.Index (Vectors.Return 0) (Vectors.Return 1)
+      createJoinTransformation indexBuilder kind lookup index otherSeries.Index (Vectors.Return 0) (Vectors.Return 0)
 
-    // Wrap the values in choice, so that we can combine them
-    let inputThis : IVector<Choice<'V, 'V2, 'V * 'V2>> = vector.Select Choice1Of3 
-    let inputThat : IVector<Choice<'V, 'V2, 'V * 'V2>> = otherSeries.Vector.Select Choice2Of3
+    let lVec = vectorBuilder.Build(thisRowCmd, [| series.Vector |])
+    let rVec = vectorBuilder.Build(otherRowCmd, [| otherSeries.Vector |])
 
-    // Combine vectors and unwrap from the choice type
-    let combine =
-      VectorValueTransform.Create<Choice<'V, 'V2, 'V * 'V2>>(fun left right ->
-        match left, right with 
-        | OptionalValue.Present(Choice1Of3 l), OptionalValue.Present(Choice2Of3 r) -> 
-            OptionalValue(Choice3Of3(l, r))
-        | OptionalValue.Present(v), _
-        | _, OptionalValue.Present(v) -> OptionalValue(v)
-        | _ -> OptionalValue.Missing)
-    let combinedCmd = Vectors.Combine(thisRowCmd, otherRowCmd, combine)
-    let newVector = vectorBuilder.Build(combinedCmd, [| inputThis; inputThat |])
-    let newVector : IVector<_ opt * _ opt> = newVector.Select(function 
-      | Choice3Of3(l, r) -> OptionalValue(l), OptionalValue(r)
-      | Choice1Of3(l) -> OptionalValue(l), OptionalValue.Missing
-      | Choice2Of3(r) -> OptionalValue.Missing, OptionalValue(r))
-    Series(newIndex, newVector, vectorBuilder, indexBuilder)
+    newIndex, lVec, rVec
+
+  /// [category:Appending, joining and zipping]
+  member series.Zip<'V2>(otherSeries:Series<'K, 'V2>, kind, lookup) : Series<'K, 'V opt * 'V2 opt> =
+    let newIndex, lVec, rVec = series.ZipHelper(otherSeries, kind, lookup)
+    let zipv = rVec.DataSequence |> Seq.zip lVec.DataSequence |> Vector.ofValues
+    Series(newIndex, zipv, vectorBuilder, indexBuilder)
 
   /// [category:Appending, joining and zipping]
   member series.ZipInner<'V2>(otherSeries:Series<'K, 'V2>) : Series<'K, 'V * 'V2> =
-    let joined = series.Zip(otherSeries, JoinKind.Inner, Lookup.Exact)
-    joined.Select(fun (KeyValue(_, v)) ->
-      match v with
-      | OptionalValue.Present l, OptionalValue.Present r -> l, r 
-      | _ -> failwith "JoinInner: Unexpected missing value")
+    let newIndex, lVec, rVec = series.ZipHelper(otherSeries, JoinKind.Inner, Lookup.Exact)
+    let zipv = rVec.Data.Values |> Seq.zip lVec.Data.Values |> Vector.ofValues
+    Series(newIndex, zipv, vectorBuilder, indexBuilder)
 
   /// [category:Appending, joining and zipping]
   member series.Union(another:Series<'K, 'V>) = 
