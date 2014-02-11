@@ -301,11 +301,13 @@ and
   /// [category:Projection and filtering]
   member x.Select<'R>(f:System.Func<KeyValuePair<'K, 'V>, int, 'R>) = 
     let newVector =
-      index.Mappings |> Array.ofSeq |> Array.mapi (fun i (key, addr) ->
+      index.Mappings 
+      |> Seq.mapi (fun i (key, addr) ->
            vector.GetValue(addr) |> OptionalValue.bind (fun v -> 
              // If a required value is missing, then skip over this
              try OptionalValue(f.Invoke(KeyValuePair(key, v), i))
-             with :? MissingValueException -> OptionalValue.Missing ))
+             with :? MissingValueException -> OptionalValue.Missing )) 
+      |> Array.ofSeq
     let newIndex = indexBuilder.Project(index)
     Series<'K, 'R>(newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder )
 
@@ -357,40 +359,27 @@ and
   member series.Zip<'V2>(otherSeries:Series<'K, 'V2>, kind) =
     series.Zip(otherSeries, kind, Lookup.Exact)
 
-  /// [category:Appending, joining and zipping]
-  member series.Zip<'V2>(otherSeries:Series<'K, 'V2>, kind, lookup) =
+  member private series.ZipHelper(otherSeries:Series<'K, 'V2>, kind, lookup) =
     // Union row indices and get transformations to apply to left/right vectors
     let newIndex, thisRowCmd, otherRowCmd = 
-      createJoinTransformation indexBuilder kind lookup index otherSeries.Index (Vectors.Return 0) (Vectors.Return 1)
+      createJoinTransformation indexBuilder kind lookup index otherSeries.Index (Vectors.Return 0) (Vectors.Return 0)
 
-    // Wrap the values in choice, so that we can combine them
-    let inputThis : IVector<Choice<'V, 'V2, 'V * 'V2>> = vector.Select Choice1Of3 
-    let inputThat : IVector<Choice<'V, 'V2, 'V * 'V2>> = otherSeries.Vector.Select Choice2Of3
+    let lVec = vectorBuilder.Build(thisRowCmd, [| series.Vector |])
+    let rVec = vectorBuilder.Build(otherRowCmd, [| otherSeries.Vector |])
 
-    // Combine vectors and unwrap from the choice type
-    let combine =
-      VectorValueTransform.Create<Choice<'V, 'V2, 'V * 'V2>>(fun left right ->
-        match left, right with 
-        | OptionalValue.Present(Choice1Of3 l), OptionalValue.Present(Choice2Of3 r) -> 
-            OptionalValue(Choice3Of3(l, r))
-        | OptionalValue.Present(v), _
-        | _, OptionalValue.Present(v) -> OptionalValue(v)
-        | _ -> OptionalValue.Missing)
-    let combinedCmd = Vectors.Combine(thisRowCmd, otherRowCmd, combine)
-    let newVector = vectorBuilder.Build(combinedCmd, [| inputThis; inputThat |])
-    let newVector : IVector<_ opt * _ opt> = newVector.Select(function 
-      | Choice3Of3(l, r) -> OptionalValue(l), OptionalValue(r)
-      | Choice1Of3(l) -> OptionalValue(l), OptionalValue.Missing
-      | Choice2Of3(r) -> OptionalValue.Missing, OptionalValue(r))
-    Series(newIndex, newVector, vectorBuilder, indexBuilder)
+    newIndex, lVec, rVec
+
+  /// [category:Appending, joining and zipping]
+  member series.Zip<'V2>(otherSeries:Series<'K, 'V2>, kind, lookup) : Series<'K, 'V opt * 'V2 opt> =
+    let newIndex, lVec, rVec = series.ZipHelper(otherSeries, kind, lookup)
+    let zipv = rVec.DataSequence |> Seq.zip lVec.DataSequence |> Vector.ofValues
+    Series(newIndex, zipv, vectorBuilder, indexBuilder)
 
   /// [category:Appending, joining and zipping]
   member series.ZipInner<'V2>(otherSeries:Series<'K, 'V2>) : Series<'K, 'V * 'V2> =
-    let joined = series.Zip(otherSeries, JoinKind.Inner, Lookup.Exact)
-    joined.Select(fun (KeyValue(_, v)) ->
-      match v with
-      | OptionalValue.Present l, OptionalValue.Present r -> l, r 
-      | _ -> failwith "JoinInner: Unexpected missing value")
+    let newIndex, lVec, rVec = series.ZipHelper(otherSeries, JoinKind.Inner, Lookup.Exact)
+    let zipv = rVec.Data.Values |> Seq.zip lVec.Data.Values |> Vector.ofValues
+    Series(newIndex, zipv, vectorBuilder, indexBuilder)
 
   /// [category:Appending, joining and zipping]
   member series.Union(another:Series<'K, 'V>) = 
@@ -690,14 +679,17 @@ and
   static member inline internal ScalarOperationR<'T>(scalar, series:Series<'K, 'T>, op : 'T -> 'T -> 'T) = 
     series.Select(fun (KeyValue(k, v)) -> op scalar v)
 
-  static member inline internal VectorOperation<'T>(series1:Series<'K, 'T>, series2:Series<'K, 'T>, op) : Series<_, 'T> =
-    let joined = series1.Zip(series2)
-    joined.SelectOptional(fun (KeyValue(_, v)) -> 
-      match v with
-      | OptionalValue.Present(OptionalValue.Present a, OptionalValue.Present b) -> 
-          OptionalValue(op a b)
-      | _ -> OptionalValue.Missing )
+  static member inline internal VectorOperation<'T>(series1:Series<'K,'T>, series2:Series<'K,'T>, op): Series<_, 'T> =
+    let newIndex, lVec, rVec = series1.ZipHelper(series2, JoinKind.Outer, Lookup.Exact)
+    
+    let vector = 
+      Seq.zip lVec.DataSequence rVec.DataSequence 
+      |> Seq.map (function 
+        | OptionalValue.Present a, OptionalValue.Present b -> OptionalValue(op a b)
+        | _ -> OptionalValue.Missing)
+      |> Vector.ofOptionalValues
 
+    Series(newIndex, vector, series1.VectorBuilder, series1.IndexBuilder)
 
   /// [category:Operators]
   static member (+) (scalar, series) = Series<'K, _>.ScalarOperationR<int>(scalar, series, (+))
