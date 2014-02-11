@@ -92,7 +92,7 @@ type LinearIndex<'K when 'K : equality>
     member x.Locate(key) =
        match lookup.Value.TryGetValue(key) with
        | true, res -> res
-       | _         -> -1L  // sentinel value
+       | _         -> Address.Invalid
 
     /// Get the address for the specified key.
     /// The 'semantics' specifies fancy lookup methods.
