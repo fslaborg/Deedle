@@ -605,19 +605,20 @@ and
   ///    each group of collected elements.
   ///
   /// [category:Windowing, chunking and grouping]
-  member x.GroupBy(keySelector:Func<_, _>, valueSelector:Func<_, _>) =
-    let newIndex, newVector = 
-      indexBuilder.GroupBy
-        ( x.Index, 
-          (fun key -> 
-              x.TryGet(key) |> OptionalValue.map (fun v -> 
-                let kvp = KeyValuePair(key, v)
-                keySelector.Invoke(kvp))), Vectors.Return 0, 
-          (fun (newKey, (index, cmd)) -> 
-              let group = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
-              let kvp = KeyValuePair(newKey, group)
-              valueSelector.Invoke(kvp) ) )
-    Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
+  member x.GroupBy(keySelector:Func<_, _>) =
+    let cmd = 
+      indexBuilder.GroupBy(
+        x.Index, 
+        (fun key -> 
+          x.TryGet(key) 
+          |> OptionalValue.map (fun v -> 
+              let kvp = KeyValuePair(key, v)
+              keySelector.Invoke(kvp))), 
+        VectorConstruction.Return 0)
+    let newIndex  = Index.ofKeys (cmd |> Seq.map fst)
+    let newGroups = cmd |> Seq.map snd |> Seq.map (fun sc -> 
+        Series(fst sc, vectorBuilder.Build(snd sc, [| x.Vector |]), vectorBuilder, indexBuilder))
+    Series<'TNewKey, _>(newIndex, Vector.ofValues newGroups, vectorBuilder, indexBuilder)
 
   // ----------------------------------------------------------------------------------------------
   // Indexing

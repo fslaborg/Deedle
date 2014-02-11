@@ -183,9 +183,7 @@ namespace CSharp
 
 			// [aggreg-group]
 			// Group random numbers by the first digit & get distribution
-			var buckets = randNums.GroupBy
-				( kvp => (int)(kvp.Value * 10), 
-				  kvp => OptionalValue.Create(kvp.Value.KeyCount) );
+			var buckets = randNums.GroupBy(kvp => (int)(kvp.Value * 10)).Select(kvp => OptionalValue.Create(kvp.Value.KeyCount));
 			buckets.Print();
 			// [/aggreg-group]
 
