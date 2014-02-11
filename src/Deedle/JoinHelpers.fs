@@ -58,7 +58,7 @@ module internal JoinHelpers =
   let createJoinTransformation 
         (indexBuilder:IIndexBuilder) kind lookup (thisIndex:IIndex<_>) 
         (otherIndex:IIndex<_>) vector1 vector2 =
-    if thisIndex = otherIndex then
+    if thisIndex = otherIndex && lookup = Lookup.Exact then
       thisIndex, vector1, vector2
     else 
       // Inner/outer join only makes sense with exact lookup
