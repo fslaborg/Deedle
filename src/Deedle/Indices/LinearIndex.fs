@@ -88,6 +88,12 @@ type LinearIndex<'K when 'K : equality>
       if not ordered.Value then invalidOp "KeyRange is not supported for unordered index."
       keys.[0], keys.[keys.Count - 1]
 
+    /// Get the address for the specified key, low on ceremony
+    member x.Locate(key) =
+       match lookup.Value.TryGetValue(key) with
+       | true, res -> res
+       | _         -> Address.Invalid
+
     /// Get the address for the specified key.
     /// The 'semantics' specifies fancy lookup methods.
     member x.Lookup(key, semantics, check) = 

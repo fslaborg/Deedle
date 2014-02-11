@@ -636,10 +636,13 @@ and
 
   /// [category:Indexing]
   member x.Realign(newKeys) = 
+    let findAll getter = seq {
+      for k in newKeys -> 
+        match index.Locate(k) with
+        | addr when addr >= 0L -> getter addr
+        | _                    -> OptionalValue.Missing }
     let newIndex = Index.ofKeys newKeys
-    let newIndex, thisRowCmd, otherRowCmd = 
-      createJoinTransformation indexBuilder JoinKind.Right Lookup.Exact x.Index newIndex (Vectors.Return 0) (Vectors.Return 1)
-    let newVector = vectorBuilder.Build(thisRowCmd, [| this.Vector |])
+    let newVector = findAll x.Vector.GetValue |> Vector.ofOptionalValues
     Series<_,_>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   /// Replace the index of the series with ordinarilly generated integers starting from zero.
