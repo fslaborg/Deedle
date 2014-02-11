@@ -135,8 +135,12 @@ type IIndex<'K when 'K : equality> =
   /// testing if `Keys` are empty, but it does not have to evaluate delayed index.
   abstract IsEmpty : bool
 
+  // A fast lookup that returns the address, or an invalid address sentinel if
+  // the key is not found (eg, a negative offset)
+  abstract Locate : key:'K -> Address
+
   /// Find the address associated with the specified key, or with the nearest
-  /// key as specifeid by the `lookup` argument. The `condition` function is called
+  /// key as specified by the `lookup` argument. The `condition` function is called
   /// when searching for keys to ask the caller whether the address should be returned
   /// (or whether to continue searching). This is used when searching for previous element
   /// in a series (where we need to check if a value at the address is available)

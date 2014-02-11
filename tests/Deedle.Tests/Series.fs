@@ -489,3 +489,11 @@ let ``TryMap can catch errors`` () =
             |> Series.tryMap (fun _ x -> 1 / x) 
   res |> Series.tryErrors |> Series.countKeys |> shouldEqual 1
   res |> Series.trySuccesses |> Series.countKeys |> shouldEqual 2
+
+[<Test>]
+let ``Realign works and isn't terribly slow`` () =
+  let arr1 = [|0 .. 1000000|]
+  let arr2 = [|1 .. 1000001|]
+  let s1 = Array.zip arr1 arr1 |> series
+  let s2 = s1.Realign(arr2)
+  s2.Keys |> Seq.toArray |> shouldEqual arr2
