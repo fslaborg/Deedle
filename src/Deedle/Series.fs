@@ -301,11 +301,13 @@ and
   /// [category:Projection and filtering]
   member x.Select<'R>(f:System.Func<KeyValuePair<'K, 'V>, int, 'R>) = 
     let newVector =
-      index.Mappings |> Array.ofSeq |> Array.mapi (fun i (key, addr) ->
+      index.Mappings 
+      |> Seq.mapi (fun i (key, addr) ->
            vector.GetValue(addr) |> OptionalValue.bind (fun v -> 
              // If a required value is missing, then skip over this
              try OptionalValue(f.Invoke(KeyValuePair(key, v), i))
-             with :? MissingValueException -> OptionalValue.Missing ))
+             with :? MissingValueException -> OptionalValue.Missing )) 
+      |> Array.ofSeq
     let newIndex = indexBuilder.Project(index)
     Series<'K, 'R>(newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder )
 
