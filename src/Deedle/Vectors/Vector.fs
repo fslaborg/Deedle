@@ -17,10 +17,7 @@ type VectorData<'T> =
   member x.Values : seq<'T> =
     match x with
     | DenseList l -> 
-      seq { 
-        let enum = l.GetEnumerator()
-        while (enum.MoveNext()) do
-          yield enum.Current }
+      seq { yield! l }
     | SparseList l -> 
       seq { 
         for v in l do 

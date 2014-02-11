@@ -679,14 +679,17 @@ and
   static member inline internal ScalarOperationR<'T>(scalar, series:Series<'K, 'T>, op : 'T -> 'T -> 'T) = 
     series.Select(fun (KeyValue(k, v)) -> op scalar v)
 
-  static member inline internal VectorOperation<'T>(series1:Series<'K, 'T>, series2:Series<'K, 'T>, op) : Series<_, 'T> =
-    let joined = series1.Zip(series2)
-    joined.SelectOptional(fun (KeyValue(_, v)) -> 
-      match v with
-      | OptionalValue.Present(OptionalValue.Present a, OptionalValue.Present b) -> 
-          OptionalValue(op a b)
-      | _ -> OptionalValue.Missing )
+  static member inline internal VectorOperation<'T>(series1:Series<'K,'T>, series2:Series<'K,'T>, op): Series<_, 'T> =
+    let newIndex, lVec, rVec = series1.ZipHelper(series2, JoinKind.Outer, Lookup.Exact)
+    
+    let vector = 
+      Seq.zip lVec.DataSequence rVec.DataSequence 
+      |> Seq.map (function 
+        | OptionalValue.Present a, OptionalValue.Present b -> OptionalValue(op a b)
+        | _ -> OptionalValue.Missing)
+      |> Vector.ofOptionalValues
 
+    Series(newIndex, vector, series1.VectorBuilder, series1.IndexBuilder)
 
   /// [category:Operators]
   static member (+) (scalar, series) = Series<'K, _>.ScalarOperationR<int>(scalar, series, (+))
