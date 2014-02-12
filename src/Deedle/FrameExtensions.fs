@@ -604,6 +604,24 @@ type FrameExtensions =
   static member ExpandColumns(frame:Frame<'R, string>, names) =
     FrameUtils.expandColumns (set names) frame
 
+  /// Given a data frame whose row index has two levels, create a series
+  /// whose keys are the unique first level keys, and whose values are 
+  /// those corresponding frames selected from the original data.  
+  ///
+  /// [category:Data structure manipulation]
+  [<Extension>]
+  static member Nest(frame:Frame<Tuple<'TRowKey1, 'TRowKey2>, 'TColumnKey>) =
+    frame |> Frame.mapRowKeys (fun t -> (t.Item1, t.Item2)) |> Frame.nest
+
+  /// Given a series whose values are frames, create a frame resulting
+  /// from the concatenation of all the frames' rows, with the resulting 
+  /// keys having two levels. This is the inverse operation to nest.
+  ///
+  /// [category:Data structure manipulation]
+  [<Extension>]
+  static member Unnest(series:Series<'TRowKey1, Frame<'TRowKey2, 'TColumnKey>>) =
+    series |> Frame.unnest |> Frame.mapRowKeys (fun (k1, k2) -> Tuple<'TRowKey1, 'TRowKey2>(k1, k2))
+
   // ----------------------------------------------------------------------------------------------
   // Input and output
   // ----------------------------------------------------------------------------------------------

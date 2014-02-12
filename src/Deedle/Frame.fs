@@ -1269,20 +1269,20 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
     let relocs = 
       labels 
-      |> Seq.zip offsets
-      |> Seq.zip frame.RowKeys
-      |> Seq.groupBy (fun (rk, (i, l)) -> l) 
-      |> Seq.map (fun (k, s) -> s) 
-      |> Seq.concat       
-      |> Seq.zip offsets
-      |> Seq.map (fun (dst, (rowkey, (src, grp))) -> (grp, rowkey), (dst, src))
+      |> Seq.zip offsets                                // seq of (srcloc, label)
+      |> Seq.zip frame.RowKeys                          // seq of (rowkey, (srcloc, label))
+      |> Seq.groupBy (fun (rk, (i, l)) -> l)            // seq of (label, seq of (rowkey, (srcloc, label)))
+      |> Seq.map (fun (k, s) -> s)                      // seq of (seq of (rowkey, (srcloc, label)))
+      |> Seq.concat                                     // seq of (rowkey, (srcloc, label))
+      |> Seq.zip offsets                                // seq of (dstloc, (rowkey, (srcloc, label)))
+      |> Seq.map (fun (dst, (rowkey, (src, grp))) -> 
+         (grp, rowkey), (dst, src))                     // seq of (label, rowkey), (dstloc, srcloc)
 
-    let addressify (a, b) = (int64 a, int64 b)
+    let addressify (a, b) = (Address.ofInt a, Address.ofInt b)
 
-    let keys, locs = 
-      relocs |> (fun r -> 
-        Seq.map fst r, 
-        Seq.map (snd >> addressify) r)
+    let keys, locs = relocs |> (fun r ->                
+      Seq.map fst r, 
+      Seq.map (snd >> addressify) r)
 
     let newIndex = Index.ofKeys keys
     let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 n, locs)
@@ -1297,20 +1297,19 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     
     let relocs = 
       offsets      
-      |> Seq.zip frame.RowKeys
-      |> Seq.zip labels
-      |> Seq.groupBy (fun (g, (r, i)) -> g) 
-      |> Seq.map (fun (g, s) -> (g, s |> Seq.map snd))
+      |> Seq.zip frame.RowKeys                           // seq of (rowkey, offset) 
+      |> Seq.zip labels                                  // seq of (label, (rowkey, offset)) 
+      |> Seq.groupBy (fun (g, (r, i)) -> g)              // seq of (label, seq of (label * (rowkey * offset)
+      |> Seq.map (fun (g, s) -> (g, s |> Seq.map snd))   // seq of (label, seq of (rowkey, offset))
 
-    let newIndex  = Index.ofKeys (relocs |> Seq.map fst)
+    let newIndex  = Index.ofKeys (relocs |> Seq.map fst) // index of labels
  
     let groups = relocs |> Seq.map (fun (g, idx) ->
-      let newIndex = Index.ofKeys(idx |> Seq.map fst)
-      let newLocs  = idx |> Seq.map snd
+      let newIndex = Index.ofKeys(idx |> Seq.map fst)    // index of rowkeys
+      let newLocs  = idx |> Seq.map snd                  // seq of offsets
       let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 newIndex.KeyCount, newLocs |> Seq.mapi (fun a b -> (int64 a, int64 b)))
       let newData  = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder cmd)
-      Frame<_, _>(newIndex, frame.ColumnIndex, newData)
-    )
+      Frame<_, _>(newIndex, frame.ColumnIndex, newData) )
  
     Series<_, _>(newIndex, Vector.ofValues groups, vectorBuilder, indexBuilder)
 
