@@ -3,6 +3,7 @@
 
 namespace Deedle
 open Deedle.Keys
+open Deedle.Addressing
 
 /// Series module comment..
 /// 
@@ -232,12 +233,18 @@ module Series =
     shifted //.GetItems(series.Keys)
 
   let take count (series:Series<'K, 'T>) =
-    let keys = series.Keys |> Seq.take count
-    Series(keys, seq { for k in keys -> series.[k] })
+    let addrs = [for i in [0 .. count - 1] -> (Address.ofInt i, Address.ofInt i)]
+    let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 count, addrs)
+    let vec = series.VectorBuilder.Build(cmd, [| series.Vector |])
+    let idx = series.Index.Keys |> Seq.take count |> Index.ofKeys 
+    Series(idx, vec, series.VectorBuilder, series.IndexBuilder)
 
   let takeLast count (series:Series<'K, 'T>) =
-    let keys = series.Keys |> Seq.lastFew count
-    Series(keys, seq { for k in keys -> series.[k] })
+    let addrs = [for i in [0 .. count - 1] -> (Address.ofInt i, Address.ofInt (series.KeyCount - count + i))]
+    let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 count, addrs)
+    let vec = series.VectorBuilder.Build(cmd, [| series.Vector |])
+    let idx = series.Index.Keys |> Seq.skip (series.KeyCount - count) |> Index.ofKeys 
+    Series(idx, vec, series.VectorBuilder, series.IndexBuilder)
 
   let inline maxBy f (series:Series<'K, 'T>) = 
     series |> observations |> Seq.maxBy (snd >> f)

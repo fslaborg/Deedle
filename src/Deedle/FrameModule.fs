@@ -23,6 +23,7 @@ module Frame =
   open Deedle.Internal
   open Deedle.VectorHelpers
   open Deedle.Vectors
+  open Deedle.Addressing
 
   // ----------------------------------------------------------------------------------------------
   // Accessing frame data and lookup
@@ -267,10 +268,20 @@ module Frame =
 //    |> Frame.ofColumns
 
   let take count (frame:Frame<'R, 'C>) =
-    frame.Rows |> Series.take count |> FrameUtils.fromRowsAndColumnKeys frame.ColumnKeys
-
+    let addrs = [for i in [0 .. count - 1] -> (Address.ofInt i, Address.ofInt i)]
+    let reloc = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 count, addrs)
+    let cmd v = VectorHelpers.transformColumn frame.VectorBuilder reloc v
+    let dat = frame.Data.Select(cmd)
+    let idx = frame.RowIndex.Keys |> Seq.take count |> Index.ofKeys 
+    Frame<_,_>(idx, frame.ColumnIndex, dat)
+    
   let takeLast count (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.takeLast count |> FrameUtils.fromRowsAndColumnKeys frame.ColumnKeys
+    let addrs = [for i in [0 .. count - 1] -> (Address.ofInt i, Address.ofInt (frame.RowCount - count + i))]
+    let reloc = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 count, addrs)
+    let cmd v = VectorHelpers.transformColumn frame.VectorBuilder reloc v
+    let dat = frame.Data.Select(cmd)
+    let idx = frame.RowIndex.Keys |> Seq.skip (frame.RowCount - count) |> Index.ofKeys 
+    Frame<_,_>(idx, frame.ColumnIndex, dat)
 
   let window size (frame:Frame<'R, 'C>) = 
     let fromRows rs = rs |> FrameUtils.fromRowsAndColumnKeys frame.ColumnKeys
@@ -297,22 +308,11 @@ module Frame =
   /// [category:Data structure manipulation]
   [<CompiledName("RealignRows")>]
   let realignRows keys (frame:Frame<'R, 'C>) = 
-    // Create empty frame with the required keys & left join all series
-    let nf = Frame<_, _>(frame.IndexBuilder.Create(keys, None), frame.IndexBuilder.Create([], None), frame.VectorBuilder.Create [||])
-    frame.Columns |> Series.observations |> Seq.iter nf.AddSeries
-    nf
-
-  /// Replace the row index of the frame with ordinarilly generated integers starting from zero.
-  /// The rows of the frame are assigned index according to the current order, or in a
-  /// non-deterministic way, if the current row index is not ordered.
-  ///
-  /// ## Parameters
-  ///  - `frame` - Source data frame whose row index are to be replaced.
-  ///
-  /// [category:Data structure manipulation]
-  [<CompiledName("IndexRowsOrdinally")>]
-  let indexRowsOrdinally (frame:Frame<'TRowKey, 'TColumnKey>) = 
-    frame.Columns |> Series.mapValues Series.indexOrdinally |> FrameUtils.fromColumns
+    // form realignment on index, then apply column-wise
+    let newIdx = Index.ofKeys keys
+    let relocs = frame.IndexBuilder.Reindex(frame.RowIndex, newIdx, Lookup.Exact, VectorConstruction.Return 0, fun _ -> true)
+    let cmd v =  VectorHelpers.transformColumn frame.VectorBuilder relocs v
+    Frame<_, _>(newIdx, frame.ColumnIndex, frame.Data.Select(cmd))
 
   /// Returns a data frame whose rows are indexed based on the specified column of the original
   /// data frame. The generic type parameter is specifies the type of the values in the required 
@@ -325,8 +325,7 @@ module Frame =
   ///
   /// [category:Data structure manipulation]
   [<CompiledName("IndexRows")>]
-  let indexRows column (frame:Frame<'R1, 'C>) : Frame<'R2, _> = 
-    frame.IndexRows<'R2>(column)
+  let indexRows column (frame:Frame<'R1, 'C>) : Frame<'R2, _> = frame.IndexRows<'R2>(column)
 
   /// Returns a data frame whose rows are indexed based on the specified column of the original
   /// data frame. This function casts (or converts) the column key to values of type `obj`
@@ -394,8 +393,7 @@ module Frame =
   let indexRowsString column (frame:Frame<'R1, 'C>) : Frame<string, _> = indexRows column frame
 
   /// Replace the column index of the frame with the provided sequence of column keys.
-  /// The columns of the frame are assigned keys according to the current order, or in a
-  /// non-deterministic way, if the current column index is not ordered.
+  /// The columns of the frame are assigned keys according to the provided order.
   ///
   /// ## Parameters
   ///  - `frame` - Source data frame whose column index are to be replaced.
@@ -408,8 +406,7 @@ module Frame =
     Frame<_, _>(frame.RowIndex, Index.ofKeys keys, frame.Data)
 
   /// Replace the row index of the frame with the provided sequence of row keys.
-  /// The rows of the frame are assigned keys according to the current order, or in a
-  /// non-deterministic way, if the current row index is not ordered.
+  /// The rows of the frame are assigned keys according to the provided order.
   ///
   /// ## Parameters
   ///  - `frame` - Source data frame whose row index are to be replaced.
@@ -422,6 +419,18 @@ module Frame =
     let getRange = VectorHelpers.getVectorRange frame.VectorBuilder (0L, frame.RowIndex.KeyCount-1L)
     let newData = frame.Data.Select(getRange)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
+
+  /// Replace the row index of the frame with ordinarilly generated integers starting from zero.
+  /// The rows of the frame are assigned index according to the current order, or in a
+  /// non-deterministic way, if the current row index is not ordered.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame whose row index are to be replaced.
+  ///
+  /// [category:Data structure manipulation]
+  [<CompiledName("IndexRowsOrdinally")>]
+  let indexRowsOrdinally (frame:Frame<'TRowKey, 'TColumnKey>) = 
+    frame |> indexRowsWith [0 .. frame.RowCount]
 
   /// Replace the row index of the frame with a sequence of row keys generated using
   /// a function invoked on each row.

@@ -328,7 +328,6 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       let relocations = Seq.zip (Address.generateRange(0L, len-1L)) (Seq.map snd newKeys)
       upcast newIndex, Vectors.Relocate(vector, int64 newKeys.Length, relocations)
 
-
     /// Reorder elements in the index to match with another index ordering
     member builder.Reindex(index1, index2, semantics, vector, condition) = 
       let relocations = 
