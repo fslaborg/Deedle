@@ -74,7 +74,7 @@ let testOne() =
   for i in 1 .. 20 do
     timed(fun () ->
    
-        let bySex = titanic |> Frame.groupRowsByString "Sex"
+        let bySex = titanic |> Frame.groupRowsByString "Sex" |> Frame.unnest
         let survivedBySex = bySex.Columns.["Survived"].As<bool>()
         let survivals = 
             survivedBySex

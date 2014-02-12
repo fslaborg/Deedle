@@ -601,23 +601,21 @@ and
   /// ## Parameters
   ///  - `keySelector` - Generates a new key that is used for aggregation, based on the original 
   ///    key and value. The new key must support equality testing.
-  ///  - `valueSelector` - A value selector function that is called to aggregate 
-  ///    each group of collected elements.
   ///
-  /// [category:Windowing, chunking and grouping]
-  member x.GroupBy(keySelector:Func<_, _>, valueSelector:Func<_, _>) =
-    let newIndex, newVector = 
-      indexBuilder.GroupBy
-        ( x.Index, 
-          (fun key -> 
-              x.TryGet(key) |> OptionalValue.map (fun v -> 
-                let kvp = KeyValuePair(key, v)
-                keySelector.Invoke(kvp))), Vectors.Return 0, 
-          (fun (newKey, (index, cmd)) -> 
-              let group = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
-              let kvp = KeyValuePair(newKey, group)
-              valueSelector.Invoke(kvp) ) )
-    Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
+  member x.GroupBy(keySelector:Func<_, _>) =
+    let cmd = 
+      indexBuilder.GroupBy(
+        x.Index, 
+        (fun key -> 
+          x.TryGet(key) 
+          |> OptionalValue.map (fun v -> 
+              let kvp = KeyValuePair(key, v)
+              keySelector.Invoke(kvp))), 
+        VectorConstruction.Return 0)
+    let newIndex  = Index.ofKeys (cmd |> Seq.map fst)
+    let newGroups = cmd |> Seq.map snd |> Seq.map (fun sc -> 
+        Series(fst sc, vectorBuilder.Build(snd sc, [| x.Vector |]), vectorBuilder, indexBuilder))
+    Series<'TNewKey, _>(newIndex, Vector.ofValues newGroups, vectorBuilder, indexBuilder)
 
   // ----------------------------------------------------------------------------------------------
   // Indexing
@@ -908,7 +906,7 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
         match (vector.GetValue(snd a)) with
         | OptionalValue.Present v -> Convert.changeType<'R> v
         | OptionalValue.Missing   -> fallback
-    | OptionalValue.Missing -> keyNotFound column
+    | OptionalValue.Missing -> keyNotFound column 
 
   member x.GetAtAs<'R>(index) : 'R = 
     Convert.changeType<'R> (x.GetAt(index))

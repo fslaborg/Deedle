@@ -197,69 +197,6 @@ module Frame =
   let getSeries column (frame:Frame<'R, 'C>) : Series<'R, float> = frame.GetSeries(column)
 
   // ----------------------------------------------------------------------------------------------
-  // Grouping and hierarchical indexing
-  // ----------------------------------------------------------------------------------------------
-
-  let collapseCols (series:Series<'K, Frame<'K1, 'K2>>) = 
-    series 
-    |> Series.map (fun k1 df -> df.Columns |> Series.mapKeys(fun k2 -> (k1, k2)) |> FrameUtils.fromColumns)
-    |> Series.values 
-    |> Seq.toList
-    |> function
-       | head :: tail -> head.AppendN(tail)
-       | []           -> Frame([], [])
-
-  let collapseRows (series:Series<'K, Frame<'K1, 'K2>>) = 
-    FrameUtils.collapseFrameSeries series
-
-  let groupRowsUsing selector (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.groupInto selector (fun k g -> g) |> FrameUtils.collapseSeriesSeries
-  let groupColsUsing selector (frame:Frame<'R, 'C>) = 
-    frame.Columns |> Series.groupInto selector (fun k g -> g |> FrameUtils.fromColumns) |> collapseCols
-
-  let groupRowsBy column (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.groupInto (fun _ v -> v.GetAs<'K>(column)) (fun _ g -> g)
-    |> FrameUtils.collapseSeriesSeries
-
-  let groupColsBy column (frame:Frame<'R, 'C>) = 
-    frame.Columns |> Series.groupInto 
-      (fun _ v -> v.GetAs<'K>(column)) 
-      (fun k g -> g |> FrameUtils.fromColumns)
-    |> collapseCols
-
-  let groupRowsByObj column frame : Frame<obj * _, _> = groupRowsBy column frame
-  let groupRowsByInt column frame : Frame<int * _, _> = groupRowsBy column frame
-  let groupRowsByString column frame : Frame<string * _, _> = groupRowsBy column frame
-  let groupRowsByBool column frame : Frame<bool * _, _> = groupRowsBy column frame
-  let groupColsByObj column frame : Frame<_, obj * _> = groupColsBy column frame
-  let groupColsByInt column frame : Frame<_, int * _> = groupColsBy column frame
-  let groupColsByString column frame : Frame<_, string * _> = groupColsBy column frame
-  let groupColsByBool column frame : Frame<_, bool * _> = groupColsBy column frame
-
-  // ----------------------------------------------------------------------------------------------
-  // Pivot table
-  // ----------------------------------------------------------------------------------------------
-  
-  /// Creates a new data frame resulting from a 'pivot' operation. Consider a denormalized data 
-  /// frame representing a table: column labels are field names & table values are observations
-  /// of those fields. pivotTable buckets the rows along two axes, according to the results of 
-  /// the functions `rowGrp` and `colGrp`; and then computes a value for the frame of rows that
-  /// land in each bucket.
-  ///
-  /// ## Parameters
-  ///  - `rowGrp` - A function from rowkey & row to group value for the resulting row index
-  ///  - `colGrp` - A function from rowkey & row to group value for the resulting col index
-  ///  - `op` - A function computing a value from the corresponding bucket frame 
-  ///
-  /// [category:Frame operations]
-  let pivotTable (rowGrp:'R -> ObjectSeries<'C> -> 'RNew) (colGrp:'R -> ObjectSeries<'C> -> 'CNew) (op:Frame<'R, 'C> -> 'T) (frame:Frame<'R, 'C>): Frame<'RNew, 'CNew> =
-    frame.Rows                                                                    //    Series<'R,ObjectSeries<'C>>
-    |> Series.groupInto (fun r g -> colGrp r g) (fun _ g -> g)                    // -> Series<'CNew, Series<'R,ObjectSeries<'C>>>
-    |> Series.mapValues (Series.groupInto (fun c g -> rowGrp c g) (fun _ g -> g)) // -> Series<'CNew, Series<'RNew, Series<'R',ObjectSeries<'C>>>>
-    |> Series.mapValues (Series.mapValues (FrameUtils.fromRows >> op))            // -> Series<'CNew, Series<'RNew, 'T>>
-    |> FrameUtils.fromColumns                                                     // -> Frame<'RNew, 'CNew, 'T>
-
-  // ----------------------------------------------------------------------------------------------
   // Operations
   // ----------------------------------------------------------------------------------------------
 
@@ -746,6 +683,56 @@ module Frame =
   let inline minRowBy column (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.minBy (fun row -> row.GetAs<float>(column))
 
+
+  // ----------------------------------------------------------------------------------------------
+  // Grouping and hierarchical indexing
+  // ----------------------------------------------------------------------------------------------
+
+  let groupRowsUsing selector (frame:Frame<'R, 'C>) = 
+    frame.GroupRowsUsing selector
+  
+  let groupColsUsing selector (frame:Frame<'R, 'C>) = 
+    frame.Columns |> Series.groupInto selector (fun k g -> g |> FrameUtils.fromColumns) //|> collapseCols
+
+  let groupRowsBy column (frame:Frame<'R, 'C>) = 
+    frame.GroupRowsBy(column)
+
+  let groupColsBy column (frame:Frame<'R, 'C>) = 
+    frame.Columns |> Series.groupInto 
+      (fun _ v -> v.GetAs<'K>(column)) 
+      (fun k g -> g |> FrameUtils.fromColumns)
+
+  let groupRowsByObj column frame : Series<obj, _> = groupRowsBy column frame
+  let groupRowsByInt column frame : Series<int, _> = groupRowsBy column frame
+  let groupRowsByString column frame : Series<string, _> = groupRowsBy column frame
+  let groupRowsByBool column frame : Series<bool, _> = groupRowsBy column frame
+  let groupColsByObj column frame : Series<obj,  _> = groupColsBy column frame
+  let groupColsByInt column frame : Series<int, _> = groupColsBy column frame
+  let groupColsByString column frame : Series<string, _> = groupColsBy column frame
+  let groupColsByBool column frame : Series<bool, _> = groupColsBy column frame
+
+  // ----------------------------------------------------------------------------------------------
+  // Pivot table
+  // ----------------------------------------------------------------------------------------------
+  
+  /// Creates a new data frame resulting from a 'pivot' operation. Consider a denormalized data 
+  /// frame representing a table: column labels are field names & table values are observations
+  /// of those fields. pivotTable buckets the rows along two axes, according to the results of 
+  /// the functions `rowGrp` and `colGrp`; and then computes a value for the frame of rows that
+  /// land in each bucket.
+  ///
+  /// ## Parameters
+  ///  - `rowGrp` - A function from rowkey & row to group value for the resulting row index
+  ///  - `colGrp` - A function from rowkey & row to group value for the resulting col index
+  ///  - `op` - A function computing a value from the corresponding bucket frame 
+  ///
+  /// [category:Frame operations]
+  let pivotTable (rowGrp:'R -> ObjectSeries<'C> -> 'RNew) (colGrp:'R -> ObjectSeries<'C> -> 'CNew) (op:Frame<'R, 'C> -> 'T) (frame:Frame<'R, 'C>): Frame<'RNew, 'CNew> =
+    frame.Rows                                                                    //    Series<'R,ObjectSeries<'C>>
+    |> Series.groupInto (fun r g -> colGrp r g) (fun _ g -> g)                    // -> Series<'CNew, Series<'R,ObjectSeries<'C>>>
+    |> Series.mapValues (Series.groupInto (fun c g -> rowGrp c g) (fun _ g -> g)) // -> Series<'CNew, Series<'RNew, Series<'R',ObjectSeries<'C>>>>
+    |> Series.mapValues (Series.mapValues (FrameUtils.fromRows >> op))            // -> Series<'CNew, Series<'RNew, 'T>>
+    |> FrameUtils.fromColumns                                                     // -> Frame<'RNew, 'CNew, 'T>
 
   // ----------------------------------------------------------------------------------------------
   // Hierarchical aggregation
