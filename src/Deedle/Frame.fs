@@ -509,7 +509,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Accessors and slicing]
   member frame.TryGetRowAt(index) = 
-    frame.Rows.Vector.GetValue(Address.ofInt index)
+    let rowAddress = rowIndex.Lookup(index, Lookup.Exact, fun _ -> true)
+    if not rowAddress.HasValue then OptionalValue.Missing
+    else OptionalValue(Series.CreateUntyped(columnIndex, createRowReader (snd rowAddress.Value)))
 
   /// [category:Accessors and slicing]
   member frame.GetRowKeyAt(index) = 
