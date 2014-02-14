@@ -899,3 +899,14 @@ let ``Can index rows using transformation function``() =
 
   actual |> shouldEqual expected
   
+[<Test>]
+let ``Can reindex ordinally``() =
+  let actual = 
+    Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => 2.0 ]; 
+                      "B" => series [ 1 => 2.0; 2 => 3.0 ] ]
+    |> Frame.indexRowsOrdinally
+
+  let expected = [0; 1] |> Seq.ofList
+
+  actual.RowKeys |> shouldEqual expected
+    

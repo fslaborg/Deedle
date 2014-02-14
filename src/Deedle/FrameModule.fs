@@ -430,7 +430,7 @@ module Frame =
   /// [category:Data structure manipulation]
   [<CompiledName("IndexRowsOrdinally")>]
   let indexRowsOrdinally (frame:Frame<'TRowKey, 'TColumnKey>) = 
-    frame |> indexRowsWith [0 .. frame.RowCount]
+    frame |> indexRowsWith [0 .. frame.RowCount-1]
 
   /// Replace the row index of the frame with a sequence of row keys generated using
   /// a function invoked on each row.
