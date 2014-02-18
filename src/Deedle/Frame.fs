@@ -1319,6 +1319,10 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let col = frame.GetSeries<'TGroup>(key)    
     frame.GroupByLabels col.Values frame.RowCount
 
+  member frame.GroupRowsByIndex(keySelector:Func<_, _>) =
+    let labels = frame.RowIndex.Keys |> Seq.map keySelector.Invoke
+    frame.GroupByLabels labels frame.RowCount
+
   member frame.GroupRowsUsing<'TGroup when 'TGroup : equality>(f:System.Func<_, _, 'TGroup>) =
     let labels = frame.Rows |> Series.map (fun k v -> f.Invoke(k, v)) |> Series.values
     frame.GroupByLabels labels frame.RowCount    

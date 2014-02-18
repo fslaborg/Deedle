@@ -836,13 +836,12 @@ module Series =
 
   /// Groups a series (ordered or unordered) using the specified key selector (`keySelector`) 
   /// and then aggregates each group into a single value, returned in the resulting series,
-  /// using the provided `valueSelector` function.
+  /// using the provided `f` function.
   ///
   /// ## Parameters
   ///  - `keySelector` - Generates a new key that is used for aggregation, based on the original 
   ///    key and value. The new key must support equality testing.
-  ///  - `valueSelector` - A value selector function that is called to aggregate 
-  ///    each group of collected elements.
+  ///  - `f` - A function to aggregate each group of collected elements.
   ///  - `series` - An input series to be grouped. 
   ///
   /// [category:Windowing, chunking and grouping]

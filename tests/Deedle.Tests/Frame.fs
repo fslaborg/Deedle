@@ -857,6 +857,15 @@ let ``Can group titanic data by boolean column "Survived"``() =
     |> Series.mapValues Frame.countRows
   actual |> shouldEqual (series [false => 549; true => 342])
 
+[<Test>]
+let ``Can group on row keys``() =
+  let df = Frame.ofColumns [ "a" => Series.ofValues [1; 2; 3]; "b" => Series.ofValues [4; 5; 6] ]
+  let actual = 
+    df |> Frame.groupRowsByIndex (fun i -> i % 2) |> Frame.nest |> Series.map (fun _ v -> v.RowCount)
+  let expected =
+    Series.ofValues [2; 1]
+  actual |> shouldEqual expected
+
 // ------------------------------------------------------------------------------------------------
 // Operations - pivot table
 // ------------------------------------------------------------------------------------------------

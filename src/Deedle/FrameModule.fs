@@ -234,6 +234,12 @@ module Frame =
   let groupColsByString column frame : Frame<_, string * _> = groupColsBy column frame
   let groupColsByBool column frame : Frame<_, bool * _> = groupColsBy column frame
 
+  let groupRowsByIndex fn (frame:Frame<'R,'C>) = frame.GroupRowsByIndex (Func<_,_>(fn))
+  let groupColsByIndex fn (frame:Frame<'R,'C>) = 
+    frame.Columns 
+    |> Series.groupInto (fun k _ -> fn k) (fun k g -> g |> FrameUtils.fromColumns)
+    |> collapseCols
+
   // ----------------------------------------------------------------------------------------------
   // Pivot table
   // ----------------------------------------------------------------------------------------------
