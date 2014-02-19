@@ -202,7 +202,7 @@ module Frame =
   // ----------------------------------------------------------------------------------------------
 
   let groupRowsUsing selector (frame:Frame<'R, 'C>) = 
-    frame.GroupRowsUsing(selector)    
+    frame.GroupRowsUsing(Func<_,_,_>(selector))    
 
   let groupRowsBy column (frame:Frame<'R, 'C>) = 
     frame.GroupRowsBy(column)
