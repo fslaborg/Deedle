@@ -230,16 +230,40 @@ and
   /// Attempts to get a value at the specified 'key'
   ///
   /// [category:Accessors and slicing]
-  member x.TryGetObservation(key) = x.TryGetObservation(key, Lookup.Exact)
+  member x.TryGetObservation(key) = 
+    let addr = index.Locate(key) 
+    if addr = Address.Invalid then OptionalValue.Missing 
+    else
+      let value = vector.GetValue(addr) 
+      if not value.HasValue then OptionalValue.Missing
+      else OptionalValue(KeyValuePair(key, value))
+
   ///
   /// [category:Accessors and slicing]
-  member x.GetObservation(key) = x.GetObservation(key, Lookup.Exact)
+  member x.GetObservation(key) = 
+    let addr = index.Locate(key) 
+    if addr = Address.Invalid then keyNotFound key
+    let value = vector.GetValue(addr) 
+    if not value.HasValue then missingVal key
+    KeyValuePair(key, value)
+
   ///
   /// [category:Accessors and slicing]
-  member x.TryGet(key) = x.TryGet(key, Lookup.Exact)
+  member x.TryGet(key) = 
+    let addr = x.Index.Locate(key) 
+    if addr = Address.Invalid then OptionalValue.Missing 
+    else x.Vector.GetValue(addr)
+
   ///
   /// [category:Accessors and slicing]
-  member x.Get(key) = x.Get(key, Lookup.Exact)
+  member x.Get(key) = 
+    let addr = x.Index.Locate(key) 
+    if addr = Address.Invalid then keyNotFound key
+    else 
+      match x.Vector.GetValue(addr) with
+      | OptionalValue.Missing   -> missingVal key
+      | OptionalValue.Present v -> v
+
   ///
   /// [category:Accessors and slicing]
   member x.TryGetAt(index) = 
@@ -432,7 +456,7 @@ and
               let window = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
               OptionalValue(valueSelector.Invoke(key, window))),
           (fun (key, (index, cmd)) -> 
-              keySelector.Invoke(key, Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder))) )
+              keySelector.Invoke(key, fun () -> Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder))) )
     Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   /// Resample the series based on a provided collection of keys. The values of the series
@@ -595,20 +619,16 @@ and
     Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   /// Groups a series (ordered or unordered) using the specified key selector (`keySelector`) 
-  /// and then aggregates each group into a single value, returned in the resulting series,
-  /// using the provided `valueSelector` function.
   ///
   /// ## Parameters
   ///  - `keySelector` - Generates a new key that is used for aggregation, based on the original 
   ///    key and value. The new key must support equality testing.
-  ///  - `valueSelector` - A value selector function that is called to aggregate 
-  ///    each group of collected elements.
   ///
   /// [category:Windowing, chunking and grouping]
   member x.GroupBy(keySelector:Func<_, _>) =
     let cmd = 
       indexBuilder.GroupBy(
-        x.Index, 
+        x.Index,
         (fun key -> 
           x.TryGet(key) 
           |> OptionalValue.map (fun v -> 

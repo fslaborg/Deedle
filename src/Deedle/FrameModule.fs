@@ -201,44 +201,20 @@ module Frame =
   // Grouping and hierarchical indexing
   // ----------------------------------------------------------------------------------------------
 
-  let collapseCols (series:Series<'K, Frame<'K1, 'K2>>) = 
-    series 
-    |> Series.map (fun k1 df -> df.Columns |> Series.mapKeys(fun k2 -> (k1, k2)) |> FrameUtils.fromColumns)
-    |> Series.values 
-    |> Seq.toList
-    |> function
-       | head :: tail -> head.AppendN(tail)
-       | []           -> Frame([], [])
-
   let groupRowsUsing selector (frame:Frame<'R, 'C>) = 
     frame.GroupRowsUsing(selector)    
 
-  let groupColsUsing selector (frame:Frame<'R, 'C>) =     
-    frame.Columns |> Series.groupInto selector (fun k g -> g |> FrameUtils.fromColumns) |> collapseCols
-
   let groupRowsBy column (frame:Frame<'R, 'C>) = 
     frame.GroupRowsBy(column)
-
-  let groupColsBy column (frame:Frame<'R, 'C>) = 
-    frame.Columns |> Series.groupInto 
-      (fun _ v -> v.GetAs<'K>(column)) 
-      (fun k g -> g |> FrameUtils.fromColumns)
-    |> collapseCols
 
   let groupRowsByObj column frame : Frame<obj * _, _> = groupRowsBy column frame
   let groupRowsByInt column frame : Frame<int * _, _> = groupRowsBy column frame
   let groupRowsByString column frame : Frame<string * _, _> = groupRowsBy column frame
   let groupRowsByBool column frame : Frame<bool * _, _> = groupRowsBy column frame
-  let groupColsByObj column frame : Frame<_, obj * _> = groupColsBy column frame
-  let groupColsByInt column frame : Frame<_, int * _> = groupColsBy column frame
-  let groupColsByString column frame : Frame<_, string * _> = groupColsBy column frame
-  let groupColsByBool column frame : Frame<_, bool * _> = groupColsBy column frame
+  
+  let groupRowsByIndex keySelector (frame:Frame<'R,'C>) =
+    frame.GroupRowsByIndex (Func<_,_>(keySelector))
 
-  let groupRowsByIndex fn (frame:Frame<'R,'C>) = frame.GroupRowsByIndex (Func<_,_>(fn))
-  let groupColsByIndex fn (frame:Frame<'R,'C>) = 
-    frame.Columns 
-    |> Series.groupInto (fun k _ -> fn k) (fun k g -> g |> FrameUtils.fromColumns)
-    |> collapseCols
 
   // ----------------------------------------------------------------------------------------------
   // Pivot table

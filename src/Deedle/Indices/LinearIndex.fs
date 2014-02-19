@@ -229,7 +229,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
         let len = Seq.length win |> int64
         let relocations = 
             seq { for k, newAddr in Seq.zip win (Address.generateRange(0L, len-1L)) -> 
-                  newAddr, index.Lookup(k, Lookup.Exact, fun _ -> true).Value |> snd }
+                  newAddr, index.Locate(k) }
         let newIndex = builder.Create(win, None)
         key, (newIndex, Vectors.Relocate(vector, len, relocations)))
 
@@ -249,7 +249,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           let len = Seq.length win |> int64
           let relocations = 
             seq { for k, newAddr in Seq.zip win (Address.generateRange(0L, len-1L)) -> 
-                    newAddr, index.Lookup(k, Lookup.Exact, fun _ -> true).Value |> snd }
+                    newAddr, index.Locate(k) }
           let newIndex = builder.Create(win, None)
           key, (newIndex, Vectors.Relocate(vector, len, relocations)))
         |> Array.ofSeq

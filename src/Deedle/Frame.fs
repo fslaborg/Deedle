@@ -1315,8 +1315,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
  
     Series<_, _>(newIndex, Vector.ofValues groups, vectorBuilder, indexBuilder)
 
-  member frame.GroupRowsBy<'TGroup when 'TGroup : equality>(key) =
-    let col = frame.GetSeries<'TGroup>(key)    
+  member frame.GroupRowsBy<'TGroup when 'TGroup : equality>(colKey) =
+    let col = frame.GetSeries<'TGroup>(colKey)    
     frame.GroupByLabels col.Values frame.RowCount
 
   member frame.GroupRowsByIndex(keySelector:Func<_, _>) =
