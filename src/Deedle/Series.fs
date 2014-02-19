@@ -245,7 +245,7 @@ and
     if addr = Address.Invalid then keyNotFound key
     let value = vector.GetValue(addr) 
     if not value.HasValue then missingVal key
-    KeyValuePair(key, value)
+    KeyValuePair(key, value.Value)
 
   ///
   /// [category:Accessors and slicing]
