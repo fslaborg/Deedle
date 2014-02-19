@@ -1327,6 +1327,25 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let labels = frame.Rows |> Series.map (fun k v -> f.Invoke(k, v)) |> Series.values
     frame.GroupByLabels labels frame.RowCount    
 
+  /// Returns a data frame whose rows are grouped by `groupBy` and whose columns specified
+  /// in `aggBy` are aggregated according to `aggFunc`.
+  ///
+  /// ## Parameters
+  ///  - `groupOn` - sequence of columns to group by
+  ///  - `aggOn` - sequence of columns to apply aggFunc to
+  ///  - `aggFunc` - invoked in order to aggregate values
+  ///
+  /// [category:Windowing, chunking and grouping]
+  member frame.AggregateRowsBy(groupBy:seq<_>, aggBy:seq<_>, aggFunc:Func<_,_>) =
+    let keySet = HashSet(groupBy)
+    let labels = frame.Rows.Values |> Seq.map (Series.filter (fun k _ -> keySet.Contains(k)))
+    let nested = frame.NestRowsBy(labels)
+    nested
+    |> Series.map (fun _ f -> [for c in aggBy -> (c, aggFunc.Invoke(f.GetSeries<_>(c)) |> box)] )
+    |> Series.map (fun k v -> v |> Seq.append (k |> Series.observations) |> Series.ofObservations)
+    |> Series.indexOrdinally
+    |> FrameUtils.fromRows
+
   /// Returns a data frame whose rows are indexed based on the specified column of the original
   /// data frame. The generic type parameter is (typically) needed to specify the type of the 
   /// values in the required index column.

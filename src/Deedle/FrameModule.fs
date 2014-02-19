@@ -214,7 +214,9 @@ module Frame =
   
   let groupRowsByIndex keySelector (frame:Frame<'R,'C>) =
     frame.GroupRowsByIndex (Func<_,_>(keySelector))
-
+    
+  let aggregateRowsBy groupBy aggBy aggFunc (frame:Frame<'R,'C>) =
+    frame.AggregateRowsBy(groupBy, aggBy, Func<_,_>(aggFunc))
 
   // ----------------------------------------------------------------------------------------------
   // Pivot table
