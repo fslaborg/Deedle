@@ -1331,18 +1331,20 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// in `aggBy` are aggregated according to `aggFunc`.
   ///
   /// ## Parameters
-  ///  - `groupOn` - sequence of columns to group by
-  ///  - `aggOn` - sequence of columns to apply aggFunc to
+  ///  - `groupBy` - sequence of columns to group by
+  ///  - `aggBy` - sequence of columns to apply aggFunc to
   ///  - `aggFunc` - invoked in order to aggregate values
   ///
   /// [category:Windowing, chunking and grouping]
   member frame.AggregateRowsBy(groupBy:seq<_>, aggBy:seq<_>, aggFunc:Func<_,_>) =
     let keySet = HashSet(groupBy)
-    let labels = frame.Rows.Values |> Seq.map (Series.filter (fun k _ -> keySet.Contains(k)))
+    let filterFunc k = keySet.Contains(k)
+    let grpKeys = frame.ColumnKeys |> Seq.filter filterFunc
+    let labels = frame.Rows.Values |> Seq.map (Series.getAll grpKeys >> Series.values >> Array.ofSeq) 
     let nested = frame.NestRowsBy(labels)
     nested
     |> Series.map (fun _ f -> [for c in aggBy -> (c, aggFunc.Invoke(f.GetSeries<_>(c)) |> box)] )
-    |> Series.map (fun k v -> v |> Seq.append (k |> Series.observations) |> Series.ofObservations)
+    |> Series.map (fun k v -> v |> Seq.append (k |> Seq.zip grpKeys) |> Series.ofObservations)
     |> Series.indexOrdinally
     |> FrameUtils.fromRows
 
