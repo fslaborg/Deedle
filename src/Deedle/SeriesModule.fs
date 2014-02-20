@@ -259,7 +259,6 @@ module Series =
   let inline flattenLevel (level:'K1 -> 'K2) op (series:Series<_, 'S>) : Series<_, 'V> = 
     series.GroupBy(fun kvp -> level kvp.Key) |> mapValues op
 
-
   let force (series:Series<'K, 'V>) = 
     series.Materialize()
 
@@ -832,6 +831,31 @@ module Series =
   let pairwiseWith f (series:Series<'K, 'T>) = 
     series.Pairwise() |> map (fun k v -> f k v)
 
+  // Cumulative functions
+
+  [<CompiledName("CumCount")>]
+  let inline cumCount (series:Series<'K, 'V>) = 
+    let add a _ = a + 1
+    series.ScanValues(Func<_,_,_>(add), 0)
+
+  [<CompiledName("CumSum")>]
+  let inline cumSum (series:Series<'K, 'V>) = 
+    let add a b = a + b
+    series.ScanValues(Func<_,_,_>(add), LanguagePrimitives.GenericZero)
+
+  [<CompiledName("CumProd")>]
+  let inline cumProd (series:Series<'K, 'V>) = 
+    let mult a b = a * b
+    series.ScanValues(Func<_,_,_>(mult), LanguagePrimitives.GenericOne)
+ 
+  [<CompiledName("CumMin")>]
+  let inline cumMin (series:Series<'K, float>) = 
+    series.ScanValues(Func<_,_,_>(LanguagePrimitives.GenericMinimum), System.Double.PositiveInfinity)        
+
+  [<CompiledName("CumMax")>]
+  let inline cumMax (series:Series<'K, float>) = 
+    series.ScanValues(Func<_,_,_>(LanguagePrimitives.GenericMaximum), System.Double.NegativeInfinity)        
+
   // Grouping
 
   /// Groups a series (ordered or unordered) using the specified key selector (`keySelector`) 
@@ -860,6 +884,34 @@ module Series =
   /// [category:Windowing, chunking and grouping]
   let groupBy (keySelector:'K -> 'T -> 'TNewKey) (series:Series<'K, 'T>) =
     groupInto keySelector (fun k s -> s) series
+
+  /// Applies a folding function starting with some initial value and the first value of the series,
+  /// and continues to "scan" along the series, saving all values produced from the first function 
+  /// application, and yielding a new series having the original index and newly produced values.
+  /// Any application involving a missing value yields a missing value.
+  ///
+  /// ## Parameters
+  ///  - `foldFunc` - A folding function 
+  ///  - `init` - An initial value
+  ///  - `series` - The series over whose values to scan
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let scanValues foldFunc init (series:Series<'K,'T>) =
+    series.ScanValues(foldFunc, init)
+
+  /// Applies a folding function starting with some initial optional value and the first optional value of 
+  /// the series, and continues to "scan" along the series, saving all values produced from the first function 
+  /// application, and yielding a new series having the original index and newly produced values.
+  ///
+  /// ## Parameters
+  ///  - `foldFunc` - A folding function 
+  ///  - `init` - An initial value
+  ///  - `series` - The series over whose values to scan
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let scanAllValues foldFunc init (series:Series<'K,'T>) =
+    let liftedFunc a b = foldFunc (OptionalValue.asOption a) (OptionalValue.asOption b) |> OptionalValue.ofOption
+    series.ScanAllValues(Func<_,_,_>(liftedFunc), OptionalValue.ofOption init)
 
   // ----------------------------------------------------------------------------------------------
   // Handling of missing values

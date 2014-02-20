@@ -151,6 +151,36 @@ let ``Grouping series with missing values works on sample input``() =
   let expected = Series.ofObservations [ 1 => Series.ofObservations [1 => 1; 3 => 2]]
   actual |> shouldEqual expected
 
+[<Test>]
+let ``Cumulative sum works``() =
+  let s = series [0 => 1.0; 1 => nan; 2 => 2.0; 3 => 3.0 ]
+  let e = series [0 => 1.0; 1 => nan; 2 => 3.0; 3 => 6.0 ]
+  s |> Series.cumSum |> shouldEqual e
+
+[<Test>]
+let ``Cumulative count works``() =
+  let s = series [0 => 1.0; 1 => nan; 2 => 2.0; 3 => 3.0 ]
+  let e = Series.ofOptionalObservations [0 => OptionalValue(1); 1 => OptionalValue.Missing; 2 => OptionalValue(2); 3 => OptionalValue(3) ]
+  s |> Series.cumCount |> shouldEqual e
+
+[<Test>]
+let ``Cumulative prod works``() =
+  let s = series [0 => 1.0; 1 => nan; 2 => 2.0; 3 => 3.0 ]
+  let e = series [0 => 1.0; 1 => nan; 2 => 2.0; 3 => 6.0 ]
+  s |> Series.cumProd |> shouldEqual e
+
+[<Test>]
+let ``Cumulative min works``() =
+  let s = series [0 => 3.0; 1 => nan; 2 => 2.0; 3 => 5.0 ]
+  let e = series [0 => 3.0; 1 => nan; 2 => 2.0; 3 => 2.0 ]
+  s |> Series.cumMin |> shouldEqual e
+
+[<Test>]
+let ``Cumulative max works``() =
+  let s = series [0 => 3.0; 1 => nan; 2 => 2.0; 3 => 5.0 ]
+  let e = series [0 => 3.0; 1 => nan; 2 => 3.0; 3 => 5.0 ]
+  s |> Series.cumMax |> shouldEqual e
+
 // ------------------------------------------------------------------------------------------------
 // Fill missing values
 // ------------------------------------------------------------------------------------------------

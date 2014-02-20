@@ -361,6 +361,26 @@ and
     let newVector = vector.DataSequence |> Array.ofSeq |> Array.rev
     Series(Index.ofKeys newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
 
+  /// [category:Projection and filtering]
+  member x.ScanValues(foldFunc:System.Func<'a,'V,'a>, init) =   
+    let accum = ref init
+    let newVector = 
+      seq { 
+        for v in vector.DataSequence ->
+          if v.HasValue then
+            accum := foldFunc.Invoke(!accum, v.Value)
+            OptionalValue(!accum)
+          else
+            OptionalValue.Missing } 
+      |> Seq.toArray
+
+    Series(index, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
+
+  /// [category:Projection and filtering]
+  member x.ScanAllValues(foldFunc:System.Func<OptionalValue<'a>,OptionalValue<'V>,OptionalValue<'a>>, init) =   
+    let newVector = vector.DataSequence |> Seq.scan (fun x y -> foldFunc.Invoke(x, y)) init |> Seq.skip 1 |> Seq.toArray
+    Series(index, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
+
   // ----------------------------------------------------------------------------------------------
   // Appending, joining etc
   // ----------------------------------------------------------------------------------------------
