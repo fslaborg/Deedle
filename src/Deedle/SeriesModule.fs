@@ -897,7 +897,7 @@ module Series =
   ///
   /// [category:Windowing, chunking and grouping]
   let scanValues foldFunc init (series:Series<'K,'T>) =
-    series.ScanValues(foldFunc, init)
+    series.ScanValues(Func<_,_,_>(foldFunc), init)
 
   /// Applies a folding function starting with some initial optional value and the first optional value of 
   /// the series, and continues to "scan" along the series, saving all values produced from the first function 
