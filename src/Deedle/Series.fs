@@ -863,10 +863,16 @@ and
       |> String.concat "; "
       |> sprintf "series [ %s]" 
 
-  /// Shows the data frame content in a human-readable format. The resulting string
-  /// shows all columns, but a limited number of rows. The property is used 
-  /// automatically by F# Interactive.
-  member series.Format() = 
+  member series.Format() =
+    series.Format(Formatting.StartItemCount, Formatting.EndItemCount)
+
+  member series.Format(itemCount) =
+    let half = itemCount / 2
+    series.Format(half, half)
+
+  /// Shows the series content in a human-readable format. The resulting string
+  /// shows a limited number of rows.
+  member series.Format(startCount, endCount) = 
     let getLevel ordered previous reset maxLevel level (key:'K) = 
       let levelKey = 
         if level = 0 && maxLevel = 0 then box key
@@ -882,7 +888,7 @@ and
           let levels = CustomKey.Get(key).Levels
           let previous = Array.init levels (fun _ -> ref None)
           let reset i () = for j in i + 1 .. levels - 1 do previous.[j] := None
-          seq { for item in index.Mappings |> Seq.startAndEnd Formatting.StartItemCount Formatting.EndItemCount  do
+          seq { for item in index.Mappings |> Seq.startAndEnd startCount endCount  do
                   match item with 
                   | Choice1Of3(k, a) | Choice3Of3(k, a) -> 
                       let v = vector.GetValue(a)

@@ -1066,10 +1066,17 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     // Return as VectorData
     { ColumnKeys = colKeys; RowKeys = rowKeys; Columns = columns }
 
+  member frame.Format() =
+    frame.Format(Formatting.StartItemCount, Formatting.EndItemCount)
+
+  member frame.Format(count) =
+    let half = count / 2
+    frame.Format(count, count)
+
   /// Shows the data frame content in a human-readable format. The resulting string
   /// shows all columns, but a limited number of rows. The property is used 
   /// automatically by F# Interactive.
-  member frame.Format() = 
+  member frame.Format(startCount, endCount) = 
     try
       let colLevels = 
         match frame.ColumnIndex.Keys |> Seq.headOrNone with 
@@ -1099,7 +1106,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
         let rows = frame.Rows
         let previous = Array.init rowLevels (fun _ -> ref None)
         let reset i () = for j in i + 1 .. rowLevels - 1 do previous.[j] := None
-        for item in frame.RowIndex.Mappings |> Seq.startAndEnd Formatting.StartItemCount Formatting.EndItemCount do
+        for item in frame.RowIndex.Mappings |> Seq.startAndEnd startCount endCount do
           match item with 
           | Choice2Of3() ->
               yield [
