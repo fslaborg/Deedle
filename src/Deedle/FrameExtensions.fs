@@ -513,6 +513,17 @@ type FrameExtensions =
   static member OrderRows(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.orderRows frame
 
   /// Returns a data frame that contains the same data as the input, 
+  /// but whose rows are an ordered series. This allows using operations that are
+  /// only available on indexed series such as alignment and inexact lookup.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame to be ordered.
+  /// 
+  /// [category:Data structure manipulation]
+  [<Extension>]
+  static member SortByRowKey(frame:Frame<'TRowKey, 'TColumnKey>) = frame |> Frame.orderRows
+
+  /// Returns a data frame that contains the same data as the input, 
   /// but whose columns are an ordered series. This allows using operations that are
   /// only available on indexed series such as alignment and inexact lookup.
   ///
@@ -522,6 +533,17 @@ type FrameExtensions =
   /// [category:Data structure manipulation]
   [<Extension>]
   static member OrderColumns(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.orderCols frame
+
+  /// Returns a data frame that contains the same data as the input, 
+  /// but whose columns are an ordered series. This allows using operations that are
+  /// only available on indexed series such as alignment and inexact lookup.
+  ///
+  /// ## Parameters
+  ///  - `frame` - Source data frame to be ordered.
+  /// 
+  /// [category:Data structure manipulation]
+  [<Extension>]
+  static member SortByColKey(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.orderCols frame
 
   /// Returns a data frame that contains the same data as the input, 
   /// but whose rows are sorted by some column.

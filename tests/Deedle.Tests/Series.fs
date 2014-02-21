@@ -243,6 +243,13 @@ let ``Can fill missing values in a specified range``() =
   tsfill.ValueCount |> should (be greaterThan) tsmiss.ValueCount
   tsfill.KeyCount |> should (be greaterThan) tsfill.ValueCount
 
+[<Test>]
+let ``Can perform linear interpolation``() =
+  let s = series [ 0 => 0.0; 2 => 2.0; 4 => 4.0]
+  let i = s |> Series.interpolateLinear [0;1;2;3;4] (fun a b -> float <| a - b)
+  let e = series [ 0 => 0.0; 1 => 1.0; 2 => 2.0; 3 => 3.0; 4 => 4.0]
+  i |> shouldEqual e
+  
 // ------------------------------------------------------------------------------------------------
 // Sorting
 // ------------------------------------------------------------------------------------------------

@@ -658,6 +658,28 @@ and
         Series(fst sc, vectorBuilder.Build(snd sc, [| x.Vector |]), vectorBuilder, indexBuilder))
     Series<'TNewKey, _>(newIndex, Vector.ofValues newGroups, vectorBuilder, indexBuilder)
 
+  /// Interpolates an ordered series given a new sequence of keys. The function iterates through
+  /// each new key, and invokes a function on the current key, the nearest smaller and larger valid 
+  /// observations from the series argument. The function must return a new valid float. 
+  ///
+  /// ## Parameters
+  ///  - `keys` - Sequence of new keys that forms the index of interpolated results
+  ///  - `f` - Function to do the interpolating
+  ///
+  /// [category:Windowing, chunking and grouping]
+  member x.Interpolate(keys:'K seq, f:Func<'K, OptionalValue<KeyValuePair<'K,'V>>, OptionalValue<KeyValuePair<'K,'V>>, 'V>) =
+    let newObs = 
+      seq {
+        for k in keys do
+          let smaller = x.TryGetObservation(k, Lookup.NearestSmaller)
+          let bigger  = x.TryGetObservation(k, Lookup.NearestGreater)
+          yield f.Invoke(k, smaller, bigger) }
+      |> Seq.toArray
+
+    let newIndex = Index.ofKeys keys
+    let newValues = newObs
+    Series(newIndex, Vector.ofValues newValues, vectorBuilder, indexBuilder)
+
   // ----------------------------------------------------------------------------------------------
   // Indexing
   // ----------------------------------------------------------------------------------------------
