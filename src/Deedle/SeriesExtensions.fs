@@ -235,6 +235,10 @@ type SeriesExtensions =
   static member Chunk(series:Series<'K, 'V>, size:int): Series<'K, Series<'K, 'V>> = 
     Series.chunk size series
 
+  [<Extension>]
+  static member InterpolateLinear(series:Series<'K, float>, keys:'K seq, keyDiff:Func<'K,'K,float>): Series<'K,float> = 
+    series |> Series.interpolateLinear keys (fun a b -> keyDiff.Invoke(a,b))   
+
   // --- end
 
   [<Extension>]
