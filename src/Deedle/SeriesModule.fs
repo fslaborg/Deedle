@@ -913,6 +913,42 @@ module Series =
     let liftedFunc a b = foldFunc (OptionalValue.asOption a) (OptionalValue.asOption b) |> OptionalValue.ofOption
     series.ScanAllValues(Func<_,_,_>(liftedFunc), OptionalValue.ofOption init)
 
+  /// Interpolates an ordered series given a new sequence of keys. The function iterates through
+  /// each new key, and invokes a function on the current key, the nearest smaller and larger valid 
+  /// observations from the series argument. The function must return a new valid float. 
+  ///
+  /// ## Parameters
+  ///  - `keys` - Sequence of new keys that forms the index of interpolated results
+  ///  - `f` - Function to do the interpolating
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let interpolate keys f (series:Series<'K,'T>) =
+    let liftedf k (prev:KeyValuePair<_,_> opt) (next:KeyValuePair<_,_> opt) =
+      let t1 = prev |> OptionalValue.map (fun kvp -> kvp.Key, kvp.Value) |> OptionalValue.asOption
+      let t2 = next |> OptionalValue.map (fun kvp -> kvp.Key, kvp.Value) |> OptionalValue.asOption
+      f k t1 t2
+
+    series.Interpolate(keys, Func<_,_,_,_>(liftedf))
+
+  /// Linearly interpolates an ordered series given a new sequence of keys. 
+  ///
+  /// ## Parameters
+  ///  - `keys` - Sequence of new keys that forms the index of interpolated results
+  ///  - `keyDiff` - A function representing "subtraction" between two keys
+  ///
+  /// [category:Windowing, chunking and grouping]
+  let inline interpolateLinear keys (keyDiff:'K->'K->float) (series:Series<'K, float>) =
+    let linearF k a b =
+      match a, b with
+      | Some x, Some y -> 
+        if x = y then snd x 
+        else (snd x) + (keyDiff k (fst x)) / (keyDiff (fst y) (fst x)) * (snd y - snd x)
+      | Some x, _      -> snd x
+      | _, Some y      -> snd y
+      | _              -> raise <| new ArgumentException("Unexpected code path in interpolation")
+    series |> interpolate keys linearF   
+
+
   // ----------------------------------------------------------------------------------------------
   // Handling of missing values
   // ----------------------------------------------------------------------------------------------
@@ -1026,6 +1062,14 @@ module Series =
     let newData = series.VectorBuilder.Build(rowCmd, [| series.Vector |])
     Series(newRowIndex, newData, series.VectorBuilder, series.IndexBuilder)
 
+  /// Returns a new series whose entries are reordered according to index order
+  ///
+  /// ## Parameters
+  ///  - `series` - An input series to be used
+  ///
+  /// [category:Data structure manipulation]
+  let sortByKey series =
+    series |> orderByKey
   // ----------------------------------------------------------------------------------------------
   // Resampling and similar stuff
   // ----------------------------------------------------------------------------------------------

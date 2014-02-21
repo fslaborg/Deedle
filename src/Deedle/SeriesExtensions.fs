@@ -169,10 +169,10 @@ type SeriesExtensions =
   static member Sort(series:Series<'K, 'V>) = Series.sort series
 
   [<Extension>]
-  static member sortBy(series:Series<'K, 'V>, f: Func<'V,'V2>) = Series.sortBy f.Invoke series
+  static member SortBy(series:Series<'K, 'V>, f: Func<'V,'V2>) = Series.sortBy f.Invoke series
 
   [<Extension>]
-  static member sortWith(series:Series<'K, 'V>, cmp: Comparer<'V>) = Series.sortWith (fun x y -> cmp.Compare(x, y)) series
+  static member SortWith(series:Series<'K, 'V>, cmp: Comparer<'V>) = Series.sortWith (fun x y -> cmp.Compare(x, y)) series
 
   [<Extension>]
   static member ContainsKey(series:Series<'K, 'T>, key:'K) = 
@@ -234,6 +234,10 @@ type SeriesExtensions =
   [<Extension>]
   static member Chunk(series:Series<'K, 'V>, size:int): Series<'K, Series<'K, 'V>> = 
     Series.chunk size series
+
+  [<Extension>]
+  static member InterpolateLinear(series:Series<'K, float>, keys:'K seq, keyDiff:Func<'K,'K,float>): Series<'K,float> = 
+    series |> Series.interpolateLinear keys (fun a b -> keyDiff.Invoke(a,b))   
 
   // --- end
 
@@ -686,6 +690,16 @@ type SeriesExtensions =
   /// [category:Data structure manipulation]
   [<Extension>]
   static member OrderByKey(series:Series<'K, 'T>) = 
+    Series.orderByKey series
+
+  /// Returns a new series whose entries are reordered according to index order
+  ///
+  /// ## Parameters
+  ///  - `series` - An input series to be used
+  ///
+  /// [category:Data structure manipulation]
+  [<Extension>]
+  static member SortByKey(series:Series<'K, 'T>) = 
     Series.orderByKey series
 
   // ----------------------------------------------------------------------------------------------
