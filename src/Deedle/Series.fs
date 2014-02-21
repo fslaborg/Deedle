@@ -363,16 +363,14 @@ and
 
   /// [category:Projection and filtering]
   member x.ScanValues(foldFunc:System.Func<'a,'V,'a>, init) =   
-    let accum = ref init
-    let newVector = 
-      seq { 
-        for v in vector.DataSequence ->
-          if v.HasValue then
-            accum := foldFunc.Invoke(!accum, v.Value)
-            OptionalValue(!accum)
-          else
-            OptionalValue.Missing } 
-      |> Seq.toArray
+    let newVector = [| 
+      let accum = ref init
+      for v in vector.DataSequence ->
+        if v.HasValue then
+          accum := foldFunc.Invoke(!accum, v.Value)
+          OptionalValue(!accum)
+        else
+          OptionalValue.Missing |] 
 
     Series(index, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
 
