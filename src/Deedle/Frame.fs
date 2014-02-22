@@ -121,13 +121,6 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     if not columnIndex.HasValue then OptionalValue.Missing else
     data.GetValue (snd columnIndex.Value)
 
-  /// Given a vector, check whether it is `IBoxedVector` and if so, return the 
-  /// underlying unboxed vector (see `IBoxedVector` for more information)
-  static let unboxVector (v:IVector) = 
-    match v with 
-    | :? IBoxedVector as vec -> vec.UnboxedVector
-    | vec -> vec 
-
   /// Create frame from a series of columns. This is used inside Frame and so we have to have it
   /// as a static member here. The function is optimised for the case when all series share the
   /// same index (by checking object reference equality)

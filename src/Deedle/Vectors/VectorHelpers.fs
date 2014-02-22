@@ -280,6 +280,13 @@ let boxVector () =
       override x.Invoke<'T>(col:IVector<'T>) = createBoxedVector(col) :> IVector<obj> }
   |> createVectorDispatcher
 
+/// Given a vector, check whether it is `IBoxedVector` and if so, return the 
+/// underlying unboxed vector (see `IBoxedVector` for more information)
+let unboxVector (v:IVector) = 
+  match v with 
+  | :? IBoxedVector as vec -> vec.UnboxedVector
+  | vec -> vec 
+
 // A "generic function" that transforms a generic vector using specified transformation
 let transformColumn (vectorBuilder:IVectorBuilder) rowCmd = 
   { new VectorCallSite1<IVector> with
@@ -332,15 +339,6 @@ let getVectorRange (builder:IVectorBuilder) range =
       override x.Invoke<'T>(col:IVector<'T>) = 
         let cmd = VectorConstruction.GetRange(VectorConstruction.Return 0, range)
         builder.Build(cmd, [| col |]) :> IVector }
-  |> createVectorDispatcher
-
-// A "generic function" that fills NA values
-let fillNA (def:obj) : IVector -> IVector = 
-  { new VectorCallSite1<IVector> with
-      override x.Invoke<'T>(col:IVector<'T>) = 
-        col.SelectMissing(function
-          | OptionalValue.Missing -> OptionalValue(unbox def)
-          | OptionalValue.Present v -> OptionalValue(v)) :> IVector }
   |> createVectorDispatcher
 
 /// Helper type that is used via reflection

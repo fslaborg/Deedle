@@ -987,7 +987,7 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
     series.GetAs<float>(name, nan)
 
   member x.TryAs<'R>(strict) =
-    match box vector with
+    match unboxVector vector with
     | :? IVector<'R> as vec -> 
         let newIndex = indexBuilder.Project(index)
         OptionalValue(Series(newIndex, vec, vectorBuilder, indexBuilder))
@@ -1009,6 +1009,6 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
 
   member x.As<'R>() =
     let newIndex = indexBuilder.Project(index)
-    match box vector with
+    match unboxVector vector with
     | :? IVector<'R> as vec -> Series(newIndex, vec, vectorBuilder, indexBuilder)
     | _ -> Series(newIndex, VectorHelpers.changeType vector, vectorBuilder, indexBuilder)
