@@ -222,6 +222,7 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
       | VectorNonOptional opts -> opts |> Seq.map (fun v -> OptionalValue(box v))
     member x.ElementType = typeof<'T>
     member x.SuppressPrinting = false
+    member vector.Invoke(site) = site.Invoke<'T>(vector)
 
     member vector.GetObject(index) = 
       let index = Address.asInt index

@@ -64,11 +64,22 @@ type IVector =
   /// untyped version of `GetValue` method on a typed vector.
   abstract GetObject : Address -> OptionalValue<obj>
 
+  /// Invokes the specified generic function (vector call site) with the current 
+  /// instance of vector passed as a statically typed vector (ie. IVector<ElementType>)
+  abstract Invoke : VectorCallSite<'R> -> 'R
+
+
+/// Represents a generic function `\forall.'T.(IVector<'T> -> 'R)`. The function can be 
+/// generically invoked on an argument of type `IVector` using `IVector.Invoke`
+and VectorCallSite<'R> =
+  abstract Invoke<'T> : IVector<'T> -> 'R
+
+
 /// A generic, typed vector. Represents mapping from addresses to values of type `T`. 
 /// The vector provides a minimal interface that is required by series and can be
 /// implemented in a number of ways to provide vector backed by database or an
 /// alternative representation of data.
-type IVector<'T> = 
+and IVector<'T> = 
   inherit IVector 
   /// Returns value stored in the vector at a specified address. 
   abstract GetValue : Address -> OptionalValue<'T>

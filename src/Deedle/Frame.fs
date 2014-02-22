@@ -99,7 +99,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
           member x.ObjectSequence = (x :?> IVector<obj>).DataSequence
           member x.SuppressPrinting = false
           member x.ElementType = typeof<obj>
-          member x.GetObject(i) = (x :?> IVector<obj>).GetValue(i) }
+          member x.GetObject(i) = (x :?> IVector<obj>).GetValue(i) 
+          member x.Invoke(site) = site.Invoke(x :?> IVector<obj>) }
     VectorHelpers.delegatedVector virtualVector
 
   let safeGetRowVector row = 
@@ -408,18 +409,16 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
     // Define a function to construct result vector via the above row command, which will dynamically
     // dispatch to a type-specific generic implementation
-    let appendVectors = 
-      { new VectorHelpers.VectorListCallSite1<IVector> with
-          override x.Invoke<'T>(vlst: IVector<'T> seq) = 
-            vectorBuilder.Build(rowCmd, vlst |> Seq.toArray) :> IVector }
-      |> VectorHelpers.createVectorListDispatcher
-
-    // all our vectors must be converted to the same witness type!
-    let convertAllVectors = 
-      { new VectorHelpers.VectorCallSite1<IVector list -> IVector list> with
-          override x.Invoke<'T>(v: IVector<'T>) = (fun vlst ->
-            vlst |> List.map (fun v -> VectorHelpers.changeType<'T> v :> IVector)) }
-      |> VectorHelpers.createVectorDispatcher
+    //
+    // This uses the specified 'witnessVec' to invoke 'VectorCallSite' with the runtime
+    // type of the witness vector as a static type argument, then it converts all vectors
+    // to this specified type and appends them.
+    let convertAndAppendVectors (witnessVec:IVector) (vectors:IVector list) =
+      { new VectorCallSite<IVector> with
+          override x.Invoke<'T>(_:IVector<'T>) =
+            let typed = vectors |> Seq.map (VectorHelpers.changeType<'T>) |> Array.ofSeq
+            vectorBuilder.Build(rowCmd, typed) :> IVector }
+      |> witnessVec.Invoke
 
     // define the transformation itself, piecing components together
     let append = VectorValueListTransform.Create(fun (lst: OptionalValue<IVector> list) ->
@@ -433,7 +432,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
                     if v.HasValue 
                     then yield v.Value
                     else yield upcast Vector.ofValues [] ]
-      input |> convertAllVectors(witnessVec) |> appendVectors |> fun r -> OptionalValue(r) )
+      input |> convertAndAppendVectors witnessVec |> fun r -> OptionalValue(r) )
 
     // build the union of all column keys
     let colUnion ix (f:Frame<'R, 'C>) = 
@@ -472,17 +471,15 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Accessors and slicing]
   member frame.Columns = 
-    let boxer = boxVector ()
     ColumnSeries(Series.Create(columnIndex, data.Select(fun vect -> 
-      Series.CreateUntyped(rowIndex, boxer vect))))
+      Series.CreateUntyped(rowIndex, boxVector vect))))
 
   /// [category:Accessors and slicing]
   member frame.ColumnsDense = 
-    let boxer = boxVector ()
     ColumnSeries(Series.Create(columnIndex, data.SelectMissing(fun vect -> 
       // Assuming that the data has all values - which should be an invariant...
       let all = rowIndex.Mappings |> Seq.forall (fun (key, addr) -> vect.Value.GetObject(addr).HasValue)
-      if all then OptionalValue(Series.CreateUntyped(rowIndex, boxer vect.Value))
+      if all then OptionalValue(Series.CreateUntyped(rowIndex, boxVector vect.Value))
       else OptionalValue.Missing )))
 
   /// [category:Accessors and slicing]
@@ -1063,7 +1060,6 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let rowKeys = getKeys frame.RowIndex 
     let colKeys = getKeys frame.ColumnIndex
     // Get columns as object options
-    let boxVector = VectorHelpers.boxVector ()
     let columns = data.DataSequence |> Seq.map (fun col ->
       let boxedVec = boxVector col.Value
       col.Value.ElementType, boxedVec)
@@ -1291,7 +1287,7 @@ and FrameUtils =
 
     // Dispatcher that creates column vector of the right type
     let columnCreator key =
-      { new VectorHelpers.ValueCallSite1<IVector> with
+      { new VectorHelpers.ValueCallSite<IVector> with
           override x.Invoke<'T>(_:'T) = 
             let it = nested.SelectOptional(fun kvp ->
               if kvp.Value.HasValue then 

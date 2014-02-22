@@ -235,6 +235,7 @@ let ``Reconstructing frame from its columns does not break equals (#91)``() =
   let df' = df.Columns |> Frame.ofColumns
   df |> shouldEqual df'
 
+
 // ------------------------------------------------------------------------------------------------
 // Accessor testing
 // ------------------------------------------------------------------------------------------------
