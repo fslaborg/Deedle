@@ -62,3 +62,18 @@ let ``Can roundtrip time series with date times between Deedle and R`` () =
   R.get("x").GetValue<Series<System.DateTime, float>>() 
   |> shouldEqual ts
 
+[<Test>] 
+let ``Can manipulate columns of a frame and pass it to R`` () =
+  let cars1 : Frame<string, string> = R.mtcars.GetValue()
+
+  let recreated = cars1.Columns |> Frame.ofColumns
+  R.assign("x1", recreated) |> ignore
+  R.get("x1").GetValue<_>() |> shouldEqual cars1
+
+  let filtered = cars1.Columns.[ ["mpg"; "cyl"; "disp"] ]
+  R.assign("x2", filtered) |> ignore
+  R.get("x2").GetValue<_>() |> shouldEqual filtered
+
+  let take3 = cars1.Columns |> Series.take 3 |> Frame.ofColumns
+  R.assign("x3", take3) |> ignore
+  R.get("x3").GetValue<_>() |> shouldEqual take3

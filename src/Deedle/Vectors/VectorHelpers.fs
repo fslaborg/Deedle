@@ -34,6 +34,11 @@ let prettyPrintVector (vector:IVector<'T>) =
   | VectorData.SparseList list -> printSequence "sparse" (Seq.map (fun v -> v.ToString()) list) 
   | VectorData.Sequence list -> printSequence "seq" (Seq.map (fun v -> v.ToString()) list) 
 
+
+// --------------------------------------------------------------------------------------
+// Derived/wrapped implementations of the IVector<'T> interface
+// --------------------------------------------------------------------------------------
+
 /// Create a new vector that delegates all functionality to a ref vector
 let delegatedVector (vector:IVector<'TValue> ref) =
   { new IVector<'TValue> with
@@ -47,6 +52,35 @@ let delegatedVector (vector:IVector<'TValue> ref) =
       member x.ElementType = vector.Value.ElementType
       member x.GetObject(i) = vector.Value.GetObject(i) }
 
+/// Represents a vector containing objects, that has been created by "boxing" a vector
+/// containing values of any (likely more specific type). Given a boxed vector, we can 
+/// get the original vector containing original values via the 'UnboxedVector' property
+type IBoxedVector = 
+  inherit IVector<obj>
+  abstract UnboxedVector : IVector
+
+/// Creates a boxed vector - returns IBoxedVector that delegates all functionality to 
+/// the vector specified as an argument and boxes all values on the fly
+let createBoxedVector (vector:IVector<'TValue>) = 
+  { new IBoxedVector with
+      member x.UnboxedVector = vector :> IVector
+    interface IVector<obj> with
+      member x.GetValue(a) = vector.GetObject(a)
+      member x.Data = 
+        match vector.Data with
+        | VectorData.DenseList list -> 
+            VectorData.DenseList(ReadOnlyCollection.map box list)
+        | VectorData.SparseList list ->
+            VectorData.SparseList(ReadOnlyCollection.map (OptionalValue.map box) list)
+        | VectorData.Sequence list ->
+            VectorData.Sequence(Seq.map (OptionalValue.map box) list)
+      member x.Select(f) = vector.Select(f)
+      member x.SelectMissing(f) = vector.SelectMissing(OptionalValue.map box >> f)
+    interface IVector with
+      member x.ObjectSequence = vector.ObjectSequence
+      member x.SuppressPrinting = vector.SuppressPrinting
+      member x.ElementType = typeof<obj>
+      member x.GetObject(i) = vector.GetObject(i) }
 
 // --------------------------------------------------------------------------------------
 // Generic operations 
@@ -240,10 +274,10 @@ type VectorValueListTransform =
             if s.HasValue && v.HasValue then invalidOp "Combining vectors failed - more than one vector has a value."
             if v.HasValue then v else s) OptionalValue.Missing) }
 
-// A "generic function" that boxes all values of a vector (IVector<int, 'T> -> IVector<int, obj>)
+// A "generic function" that boxes all values of a vector (IVector<'T> -> IVector<obj>)
 let boxVector () = 
   { new VectorCallSite1<IVector<obj>> with
-      override x.Invoke<'T>(col:IVector<'T>) = col.Select(box) }
+      override x.Invoke<'T>(col:IVector<'T>) = createBoxedVector(col) :> IVector<obj> }
   |> createVectorDispatcher
 
 // A "generic function" that transforms a generic vector using specified transformation

@@ -121,6 +121,13 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     if not columnIndex.HasValue then OptionalValue.Missing else
     data.GetValue (snd columnIndex.Value)
 
+  /// Given a vector, check whether it is `IBoxedVector` and if so, return the 
+  /// underlying unboxed vector (see `IBoxedVector` for more information)
+  static let unboxVector (v:IVector) = 
+    match v with 
+    | :? IBoxedVector as vec -> vec.UnboxedVector
+    | vec -> vec 
+
   /// Create frame from a series of columns. This is used inside Frame and so we have to have it
   /// as a static member here. The function is optimised for the case when all series share the
   /// same index (by checking object reference equality)
@@ -129,26 +136,29 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let rowIndex = Seq.headOrNone columns |> Option.map (fun (_, s) -> (seriesConv s).Index)
     match rowIndex with 
     | Some rowIndex when (columns |> Seq.forall (fun (_, s) -> Object.ReferenceEquals((seriesConv s).Index, rowIndex))) ->
-      // OPTIMIZATION: If all series have the same index (same object), then no join is needed 
-      // (This is particularly valuable for things like +, *, /, - operators on Frame)
-      let vector = columns |> Seq.map (fun (_, s) -> (seriesConv s).Vector) |> Vector.ofValues
-      Frame<_, _>(rowIndex, Index.ofKeys (Seq.map fst columns), vector)
+        // OPTIMIZATION: If all series have the same index (same object), then no join is needed 
+        // (This is particularly valuable for things like +, *, /, - operators on Frame)
+        let vector = columns |> Seq.map (fun (_, s) -> 
+          // When the nested series data is in 'IBoxedVector', get the unboxed representation
+          unboxVector (seriesConv s).Vector) |> Vector.ofValues
+        Frame<_, _>(rowIndex, Index.ofKeys (Seq.map fst columns), vector)
+
     | _ ->
-      // Create new row index by unioning all keys
-      let rowKeys = columns |> Seq.collect (fun (_, s) -> (seriesConv s).Index.Keys) |> Seq.distinct |> Array.ofSeq
-      let rowIndex = nested.IndexBuilder.Create(rowKeys, None)
-      // Create column index by taking all column keys
-      let colKeys = nested |> Series.observationsAll |> Seq.map fst |> Array.ofSeq
-      let colIndex = nested.IndexBuilder.Create(colKeys, None)
-      // Build the data 
-      let data = 
-        nested |> Series.observationsAll |> Seq.map (fun (_, s) ->
-          let series = match s with Some s -> seriesConv s | _ -> Series.Create([], []) :> ISeries<_>
-          let cmd = nested.IndexBuilder.Reindex(series.Index, rowIndex, Lookup.Exact, Vectors.Return 0, fun _ -> true)
-          // TODO: Infer type of the vector ?? or preserve the type
-          VectorHelpers.transformColumn nested.VectorBuilder cmd series.Vector )
-        |> Vector.ofValues
-      Frame<_, _>(rowIndex, colIndex, data)
+        // Create new row index by unioning all keys
+        let rowKeys = columns |> Seq.collect (fun (_, s) -> (seriesConv s).Index.Keys) |> Seq.distinct |> Array.ofSeq
+        let rowIndex = nested.IndexBuilder.Create(rowKeys, None)
+        // Create column index by taking all column keys
+        let colKeys = nested |> Series.observationsAll |> Seq.map fst |> Array.ofSeq
+        let colIndex = nested.IndexBuilder.Create(colKeys, None)
+        // Build the data 
+        let data = 
+          nested |> Series.observationsAll |> Seq.map (fun (_, s) ->
+            let series = match s with Some s -> seriesConv s | _ -> Series.Create([], []) :> ISeries<_>
+            let cmd = nested.IndexBuilder.Reindex(series.Index, rowIndex, Lookup.Exact, Vectors.Return 0, fun _ -> true)
+            // When the nested series data is in 'IBoxedVector', get the unboxed representation
+            VectorHelpers.transformColumn nested.VectorBuilder cmd (unboxVector series.Vector) )
+          |> Vector.ofValues
+        Frame<_, _>(rowIndex, colIndex, data)
 
   static member internal FromColumnsNonGeneric seriesConv nested = fromColumnsNonGeneric seriesConv nested
 
@@ -1046,6 +1056,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   // Frame data and formatting
   // ----------------------------------------------------------------------------------------------
 
+  /// [category:Formatting and raw data access]
   member frame.GetFrameData() = 
     // Get keys (as object lists with multiple levels)
     let getKeys (index:IIndex<_>) = seq { 
@@ -1066,24 +1077,74 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     // Return as VectorData
     { ColumnKeys = colKeys; RowKeys = rowKeys; Columns = columns }
 
+  /// Shows the data frame content in a human-readable format. The resulting string
+  /// shows all columns, but a limited number of rows. 
+  /// [category:Formatting and raw data access]
   member frame.Format() =
     frame.Format(Formatting.StartItemCount, Formatting.EndItemCount)
 
+  /// Shows the data frame content in a human-readable format. The resulting string
+  /// shows all columns, but a limited number of rows. 
+  ///
+  /// ## Parameters
+  ///  - `startCount` - The number of rows at the beginning to be printed
+  ///  - `endCount` - The number of rows at the end of the frame to be printed
+  ///  - `printTypes` - When true, the types of vectors storing column data are printed
+  /// [category:Formatting and raw data access]
+  member frame.Format(printTypes) =
+    frame.Format(Formatting.StartItemCount, Formatting.EndItemCount, printTypes)
+
+  /// Shows the data frame content in a human-readable format. The resulting string
+  /// shows all columns, but a limited number of rows.
+  ///
+  /// ## Parameters
+  ///  - `count` - The maximal total number of rows to be printed
+  ///
+  /// [category:Formatting and raw data access]
   member frame.Format(count) =
     let half = count / 2
     frame.Format(count, count)
 
   /// Shows the data frame content in a human-readable format. The resulting string
-  /// shows all columns, but a limited number of rows. The property is used 
-  /// automatically by F# Interactive.
+  /// shows all columns, but a limited number of rows.
+  ///
+  /// ## Parameters
+  ///  - `startCount` - The number of rows at the beginning to be printed
+  ///  - `endCount` - The number of rows at the end of the frame to be printed
+  ///
+  /// [category:Formatting and raw data access]
   member frame.Format(startCount, endCount) = 
+    frame.Format(startCount, endCount, false)
+
+  /// Shows the data frame content in a human-readable format. The resulting string
+  /// shows all columns, but a limited number of rows.
+  ///
+  /// ## Parameters
+  ///  - `startCount` - The number of rows at the beginning to be printed
+  ///  - `endCount` - The number of rows at the end of the frame to be printed
+  ///  - `printTypes` - When true, the types of vectors storing column data are printed
+  ///
+  /// [category:Formatting and raw data access]
+  member frame.Format(startCount, endCount, printTypes) = 
     try
+      // Get the number of levels in column/row index
       let colLevels = 
         match frame.ColumnIndex.Keys |> Seq.headOrNone with 
         Some colKey -> CustomKey.Get(colKey).Levels | _ -> 1
       let rowLevels = 
         match frame.RowIndex.Keys |> Seq.headOrNone with 
         Some rowKey -> CustomKey.Get(rowKey).Levels | _ -> 1
+
+      /// Format type with a few special cases for common types
+      let formatType (typ:System.Type) =
+        if typ = typeof<obj> then "obj"
+        elif typ = typeof<float> then "float"
+        elif typ = typeof<int> then "int"
+        elif typ = typeof<string> then "string"
+        else typ.Name
+
+      /// Get annotation for the specified level of the given key 
+      /// (returns empty string if the value is the same as previous)
       let getLevel ordered previous reset maxLevel level (key:'K) = 
         let levelKey = 
           if level = 0 && maxLevel = 0 then box key
@@ -1102,6 +1163,20 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
             for colKey, _ in frame.ColumnIndex.Mappings do 
               yield getLevel frame.ColumnIndex.IsOrdered previous ignore colLevels colLevel colKey ]
 
+        // If we want to print types, add another line with type information
+        if printTypes then 
+          yield [
+            // Prefix with appropriate number of (empty) row keys
+            for i in 0 .. rowLevels - 1 do yield "" 
+            yield ""
+            let previous = ref None
+            for _, colAddr in frame.ColumnIndex.Mappings do 
+              let vector = frame.Data.GetValue(colAddr) 
+              let typ = 
+                if not vector.HasValue then "missing"
+                else formatType vector.Value.ElementType
+              yield String.Concat("(", typ, ")") ]
+              
         // Yield row data
         let rows = frame.Rows
         let previous = Array.init rowLevels (fun _ -> ref None)

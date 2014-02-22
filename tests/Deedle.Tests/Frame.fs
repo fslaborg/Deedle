@@ -216,6 +216,25 @@ let ``Can create frame from 100k of three element tuples (in less than a few sec
   let df = Frame.ofValues values
   df |> Frame.sum |> Series.sum |> int |> shouldEqual 101101
 
+[<Test>]
+let ``Reconstructing frame from its columns preserves types of vectors``() =
+  let df = 
+    frame [ "A" =?> series [ 1 => 1.0; 2 => 2.0 ]
+            "B" =?> series [ 1 => "a"; 2 => "b" ] ]
+  let df' = df.Columns |> Frame.ofColumns
+
+  let types = df.GetFrameData().Columns |> Seq.map (fun (t, _) -> t.Name) |> List.ofSeq
+  let types' = df'.GetFrameData().Columns |> Seq.map (fun (t, _) -> t.Name) |> List.ofSeq
+  types |> shouldEqual types'
+
+[<Test>]
+let ``Reconstructing frame from its columns does not break equals (#91)``() =
+  let df = 
+    frame [ "A" =?> series [ 1 => 1.0; 2 => 2.0 ]
+            "B" =?> series [ 1 => "a"; 2 => "b" ] ]
+  let df' = df.Columns |> Frame.ofColumns
+  df |> shouldEqual df'
+
 // ------------------------------------------------------------------------------------------------
 // Accessor testing
 // ------------------------------------------------------------------------------------------------
@@ -918,4 +937,3 @@ let ``Can reindex ordinally``() =
   let expected = [0; 1] |> Seq.ofList
 
   actual.RowKeys |> shouldEqual expected
-    
