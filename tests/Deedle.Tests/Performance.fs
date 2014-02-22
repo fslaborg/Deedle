@@ -151,5 +151,13 @@ let means = f.GroupRowsWith x |> Series.mapValues (fun f -> f?n |> Series.mean)
 /// -------------------
 // also, the function where AppendN makes things faster is: collapseFrameSeries 
 // So add a test tracking that.
+
+// The following should go from 3.8 sec to almost no-op
+// ~3.8sec
+for i in 0 .. 100 do
+  frame20x10000.Columns
+  |> Frame.ofColumns
+  |> ignore
+
 *)
 
