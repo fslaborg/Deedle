@@ -159,5 +159,14 @@ for i in 0 .. 100 do
   |> Frame.ofColumns
   |> ignore
 
+
+
+// Converting huge series to its own type via columns should be no-op
+let df = frame [ "A" => Series.ofValues [for i in 0 .. 1000000 -> float i ] ]
+df.Columns.["A"].As<float>() |> ignore
+
+(with conversion, it will take some time)
+
+
 *)
 
