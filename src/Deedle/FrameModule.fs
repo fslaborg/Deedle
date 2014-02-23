@@ -5,17 +5,26 @@
 /// ## Accessing frame data and lookup
 /// basics
 ///
+/// ## Series operations
+/// as series
+///
+/// ## Grouping and hierarchical indexing
+/// tbd
+///
 /// ## Data structure manipulation
+/// More documentation here
+///
+/// ## Projection and filtering
+/// TBD
+///
+/// ## Missing values
 /// More documentation here
 ///
 /// ## Joining, zipping and appending
 /// More info
 ///
-/// ## Missing values
-/// More documentation here
-///
-/// ## Projection and filtering
-/// TBD
+/// ## Conversions
+/// as array 2d
 ///
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]    
 module Frame = 
@@ -201,21 +210,48 @@ module Frame =
   // Grouping and hierarchical indexing
   // ----------------------------------------------------------------------------------------------
 
+  /// [category:Grouping and hierarchical indexing]
+  [<CompiledName("GroupRowsUsing")>]
   let groupRowsUsing selector (frame:Frame<'R, 'C>) = 
     frame.GroupRowsUsing(Func<_,_,_>(selector))    
 
+  /// [category:Grouping and hierarchical indexing]
+  [<CompiledName("GroupRowsBy")>]
   let groupRowsBy column (frame:Frame<'R, 'C>) = 
     frame.GroupRowsBy(column)
 
-  let groupRowsByObj column frame : Frame<obj * _, _> = groupRowsBy column frame
-  let groupRowsByInt column frame : Frame<int * _, _> = groupRowsBy column frame
-  let groupRowsByString column frame : Frame<string * _, _> = groupRowsBy column frame
-  let groupRowsByBool column frame : Frame<bool * _, _> = groupRowsBy column frame
+  /// [category:Grouping and hierarchical indexing]
+  [<CompiledName("GroupRowsByObj")>]
+  let groupRowsByObj column (frame:Frame<'R, 'C>) : Frame<obj * _, _> = groupRowsBy column frame
+
+  /// [category:Grouping and hierarchical indexing]
+  [<CompiledName("GroupRowsByInt")>]
+  let groupRowsByInt column (frame:Frame<'R, 'C>) : Frame<int * _, _> = groupRowsBy column frame
+
+  /// [category:Grouping and hierarchical indexing]
+  [<CompiledName("GroupRowsByString")>]
+  let groupRowsByString column (frame:Frame<'R, 'C>) : Frame<string * _, _> = groupRowsBy column frame
+
+  /// [category:Grouping and hierarchical indexing]
+  [<CompiledName("GroupRowsByBool")>]
+  let groupRowsByBool column (frame:Frame<'R, 'C>) : Frame<bool * _, _> = groupRowsBy column frame
   
-  let groupRowsByIndex keySelector (frame:Frame<'R,'C>) =
+  /// [category:Grouping and hierarchical indexing]
+  [<CompiledName("GroupRowsByIndex")>]
+  let groupRowsByIndex (keySelector:_ -> 'K) (frame:Frame<'R,'C>) =
     frame.GroupRowsByIndex (Func<_,_>(keySelector))
     
-  let aggregateRowsBy groupBy aggBy aggFunc (frame:Frame<'R,'C>) =
+  /// Returns a data frame whose rows are grouped by `groupBy` and whose columns specified
+  /// in `aggBy` are aggregated according to `aggFunc`.
+  ///
+  /// ## Parameters
+  ///  - `groupBy` - sequence of columns to group by
+  ///  - `aggBy` - sequence of columns to apply aggFunc to
+  ///  - `aggFunc` - invoked in order to aggregate values
+  ///
+  /// [category:Grouping and hierarchical indexing]
+  [<CompiledName("AggregateRowsBy")>]
+  let aggregateRowsBy groupBy aggBy (aggFunc:Series<'R, 'V1> -> 'V2) (frame:Frame<'R,'C>) =
     frame.AggregateRowsBy(groupBy, aggBy, Func<_,_>(aggFunc))
 
   // ----------------------------------------------------------------------------------------------
@@ -233,7 +269,7 @@ module Frame =
   ///  - `colGrp` - A function from rowkey & row to group value for the resulting col index
   ///  - `op` - A function computing a value from the corresponding bucket frame 
   ///
-  /// [category:Frame operations]
+  /// [category:Grouping and hierarchical indexing]
   let pivotTable (rowGrp:'R -> ObjectSeries<'C> -> 'RNew) (colGrp:'R -> ObjectSeries<'C> -> 'CNew) (op:Frame<'R, 'C> -> 'T) (frame:Frame<'R, 'C>): Frame<'RNew, 'CNew> =
     frame.Rows                                                                    //    Series<'R,ObjectSeries<'C>>
     |> Series.groupInto (fun r g -> colGrp r g) (fun _ g -> g)                    // -> Series<'CNew, Series<'R,ObjectSeries<'C>>>
@@ -277,7 +313,7 @@ module Frame =
 
 
   // ----------------------------------------------------------------------------------------------
-  // Index operations
+  // Data structure manipulation
   // ----------------------------------------------------------------------------------------------
 
   /// Align the existing data to a specified collection of row keys. Values in the data frame
@@ -1057,3 +1093,11 @@ module Frame =
       (fun row -> row.GetAs<'C>("Column"))
       (fun row -> row.GetAs<'R>("Row"))
       (fun row -> row.GetAs<obj>("Value"))
+
+  // ----------------------------------------------------------------------------------------------
+  // Conversions
+  // ----------------------------------------------------------------------------------------------
+
+  /// Returns data of the data frame as a 2D array containing data as `float` values.
+  /// Missing data are represented as `Double.NaN` in the returned array.
+  let toArray2D (frame:Frame<'R, 'C>) = frame.ToArray2D<float>()

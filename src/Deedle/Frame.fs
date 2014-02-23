@@ -556,6 +556,30 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member frame.GetAllValues<'R>(strict) =
     seq { for (KeyValue(_, v)) in frame.GetAllSeries<'R>() do yield! v |> Series.values }
 
+  /// Returns data of the data frame as a 2D array. The method attempts to convert
+  /// all values to the specified type 'R. When a value is missing, the specified 
+  /// `defaultValue` is used.
+  ///
+  /// ## Parameters
+  ///  - `defaultValue` - Default value used to fill all missing values
+  ///
+  /// [category:Fancy accessors]
+  member frame.ToArray2D<'R>(defaultValue) =
+    toArray2D<'R> frame.RowCount frame.ColumnCount frame.Data (lazy defaultValue)
+
+  /// Returns data of the data frame as a 2D array. The method attempts to convert
+  /// all values to the specified type 'R. If the specified type is 'float' or 'double'
+  /// then the method automatically uses NaN. For other values, the default value has to
+  /// be explicitly specified using another overload.
+  ///
+  /// [category:Fancy accessors]
+  member frame.ToArray2D<'R>() =
+    let defaultValue = 
+      if typeof<'R> = typeof<Double> then lazy unbox<'R> Double.NaN
+      elif typeof<'R> = typeof<Single> then lazy unbox<'R> Single.NaN
+      else lazy (invalidOp "ToArray2D: Frame contains missing data, but default value was not provided.")
+    toArray2D frame.RowCount frame.ColumnCount frame.Data defaultValue
+    
   // ----------------------------------------------------------------------------------------------
   // Series related operations - add, drop, get, ?, ?<-, etc.
   // ----------------------------------------------------------------------------------------------

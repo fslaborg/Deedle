@@ -181,7 +181,7 @@ let boxVector (vector:IVector) =
 
 /// Given a vector, check whether it is `IBoxedVector` and if so, return the 
 /// underlying unboxed vector (see `IBoxedVector` for more information)
-let unboxVector (v:IVector) = 
+let inline unboxVector (v:IVector) = 
   match v with 
   | :? IBoxedVector as vec -> vec.UnboxedVector
   | vec -> vec 
@@ -195,10 +195,13 @@ let transformColumn (vectorBuilder:IVectorBuilder) rowCmd (vector:IVector) =
 
 // A "generic function" that changes the type of vector elements
 let changeType<'R> (vector:IVector) = 
-  { new VectorCallSite<IVector<'R>> with
-      override x.Invoke<'T>(col:IVector<'T>) = 
-        col.Select(Convert.changeType<'R>) }
-  |> vector.Invoke
+  match unboxVector vector with
+  | :? IVector<'R> as res -> res
+  | vector ->
+      { new VectorCallSite<IVector<'R>> with
+          override x.Invoke<'T>(col:IVector<'T>) = 
+            col.Select(Convert.changeType<'R>) }
+      |> vector.Invoke
 
 // A "generic function" that tries to change the type of vector elements
 let tryChangeType<'R> (vector:IVector) : OptionalValue<IVector<'R>> = 
@@ -260,6 +263,19 @@ let tryValues (vect:IVector) =
     let mi = typeof<TryValuesHelper>.GetMethod("TryValues").MakeGenericMethod [|tyarg|]        
     mi.Invoke(null, [| vect |]) :?> TryValue<IVector>
   else TryValue.Success vect
+
+/// Return data from a (column-major) vector of vectors as 2D array of a specified type
+/// If value is missing, `defaultValue` is used (which may throw an exception)
+let toArray2D<'R> rowCount colCount (data:IVector<IVector>) (defaultValue:Lazy<'R>) =
+    let res = Array2D.zeroCreate rowCount colCount 
+    data.DataSequence
+    |> Seq.iteri (fun c vector ->
+      if vector.HasValue then
+        changeType(vector.Value).DataSequence
+        |> Seq.iteri (fun r v -> 
+            res.[r,c] <- if v.HasValue then v.Value else defaultValue.Value )
+      else for r = 0 to rowCount - 1 do res.[r, c] <- defaultValue.Value )
+    res
 
 /// Helper functions and active patterns for type inference
 module Inference = 

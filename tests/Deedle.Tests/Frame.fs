@@ -19,7 +19,7 @@ open NUnit.Framework
 open Deedle
 
 // ------------------------------------------------------------------------------------------------
-// Input and output (CSV files)
+// Input and output (CSV files, IDataReader)
 // ------------------------------------------------------------------------------------------------
 
 let msft() = 
@@ -113,15 +113,24 @@ let ``Can create frame from IDataReader``() =
   Frame.ReadReader(dt.CreateDataReader())
   |> shouldEqual expected
 
+// ------------------------------------------------------------------------------------------------
+// Constructing frames and getting frame data
+// ------------------------------------------------------------------------------------------------
 
 [<Test>]
 let ``Construction of frame from columns respects specified order``() =
   let df = 
-    Frame.ofColumns
+    frame
       [ "Z" => Series.ofValues [ 1 .. 10 ]
         "X" => Series.ofValues [ 1 .. 10 ] ]
   df.ColumnKeys |> List.ofSeq
   |> shouldEqual ["Z"; "X"]
+
+[<Test>]
+let ``Can create frame from float[,] and get data as float[,]``() =
+  let data = Array2D.init 5000 200 (fun x y -> float (x+y))
+  let data' = data |> Frame.ofArray2D |> Frame.toArray2D
+  data' |> shouldEqual data
 
 // ------------------------------------------------------------------------------------------------
 // Input and output (from records)

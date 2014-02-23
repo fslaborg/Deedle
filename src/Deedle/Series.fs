@@ -1009,6 +1009,4 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
 
   member x.As<'R>() =
     let newIndex = indexBuilder.Project(index)
-    match unboxVector vector with
-    | :? IVector<'R> as vec -> Series(newIndex, vec, vectorBuilder, indexBuilder)
-    | _ -> Series(newIndex, VectorHelpers.changeType vector, vectorBuilder, indexBuilder)
+    Series(newIndex, VectorHelpers.changeType<'R> vector, vectorBuilder, indexBuilder)
