@@ -52,8 +52,8 @@ let convertIndex (names:string[]) : option<IIndex<'R>> =
   with _ -> None
 
 /// Convert vector to a boxed array that can be passed to the R provider
-let convertVector : IVector -> obj =
-  { new VectorHelpers.VectorCallSite1<obj> with
+let convertVector (vector:IVector) : obj =
+  { new VectorCallSite<obj> with
       override x.Invoke<'T>(col:IVector<'T>) = 
         // Figure out how to handle missing values - if we can pass NA or NaN to R
         // then we just fill missing values with 'missingVal'
@@ -74,7 +74,7 @@ let convertVector : IVector -> obj =
         // Either there are no missing values, or we can fill them 
         else 
           box [| for v in col.DataSequence -> if v.HasValue then v.Value else missingVal.Value |] }
-  |> VectorHelpers.createVectorDispatcher 
+  |> vector.Invoke
 
 
 /// Creates data frame with the specified row & col indices

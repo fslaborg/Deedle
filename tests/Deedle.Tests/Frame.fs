@@ -19,7 +19,7 @@ open NUnit.Framework
 open Deedle
 
 // ------------------------------------------------------------------------------------------------
-// Input and output (CSV files)
+// Input and output (CSV files, IDataReader)
 // ------------------------------------------------------------------------------------------------
 
 let msft() = 
@@ -113,15 +113,24 @@ let ``Can create frame from IDataReader``() =
   Frame.ReadReader(dt.CreateDataReader())
   |> shouldEqual expected
 
+// ------------------------------------------------------------------------------------------------
+// Constructing frames and getting frame data
+// ------------------------------------------------------------------------------------------------
 
 [<Test>]
 let ``Construction of frame from columns respects specified order``() =
   let df = 
-    Frame.ofColumns
+    frame
       [ "Z" => Series.ofValues [ 1 .. 10 ]
         "X" => Series.ofValues [ 1 .. 10 ] ]
   df.ColumnKeys |> List.ofSeq
   |> shouldEqual ["Z"; "X"]
+
+[<Test>]
+let ``Can create frame from float[,] and get data as float[,]``() =
+  let data = Array2D.init 5000 200 (fun x y -> float (x+y))
+  let data' = data |> Frame.ofArray2D |> Frame.toArray2D
+  data' |> shouldEqual data
 
 // ------------------------------------------------------------------------------------------------
 // Input and output (from records)
@@ -216,6 +225,26 @@ let ``Can create frame from 100k of three element tuples (in less than a few sec
   let df = Frame.ofValues values
   df |> Frame.sum |> Series.sum |> int |> shouldEqual 101101
 
+[<Test>]
+let ``Reconstructing frame from its columns preserves types of vectors``() =
+  let df = 
+    frame [ "A" =?> series [ 1 => 1.0; 2 => 2.0 ]
+            "B" =?> series [ 1 => "a"; 2 => "b" ] ]
+  let df' = df.Columns |> Frame.ofColumns
+
+  let types = df.GetFrameData().Columns |> Seq.map (fun (t, _) -> t.Name) |> List.ofSeq
+  let types' = df'.GetFrameData().Columns |> Seq.map (fun (t, _) -> t.Name) |> List.ofSeq
+  types |> shouldEqual types'
+
+[<Test>]
+let ``Reconstructing frame from its columns does not break equals (#91)``() =
+  let df = 
+    frame [ "A" =?> series [ 1 => 1.0; 2 => 2.0 ]
+            "B" =?> series [ 1 => "a"; 2 => "b" ] ]
+  let df' = df.Columns |> Frame.ofColumns
+  df |> shouldEqual df'
+
+
 // ------------------------------------------------------------------------------------------------
 // Accessor testing
 // ------------------------------------------------------------------------------------------------
@@ -278,6 +307,39 @@ let ``Filter all rows keeps column keys`` () =
   filt.["X"] |> shouldEqual (series [])
   filt.["Y"] |> shouldEqual (series [])
   (fun () -> filt.["Z"] |> ignore) |> should throw (typeof<ArgumentException>)
+
+// ------------------------------------------------------------------------------------------------
+// Row access
+// ------------------------------------------------------------------------------------------------
+
+let rowSample() = 
+  frame [ "X" => series [| "a" => 1.0; "c" => 2.0; "e" => 3.0 |]
+          "Y" => series [| "a" => 4.0; "c" => nan; "e" => 6.0 |] ]    
+
+[<Test>]
+let ``Accessing row via row offset work`` () =
+  let actual = rowSample().GetRowAt<int>(2)
+  actual |> shouldEqual <| series [ "X" => 3; "Y" => 6 ]
+
+[<Test>]
+let ``Accessing row via invalid row offset throws an exception`` () =
+  (fun () -> rowSample().GetRowAt<int>(4) |> ignore)
+  |> should throw (typeof<ArgumentOutOfRangeException>)
+
+[<Test>]
+let ``Accessing row via row key works`` () =
+  let actual = rowSample().GetRow<int>("e")
+  actual |> shouldEqual <| series [ "X" => 3; "Y" => 6 ]
+
+[<Test>]
+let ``Accessing row via missing row key returns missing`` () =
+  let actual = rowSample().TryGetRow<int>("f")
+  actual.HasValue |> shouldEqual false
+
+[<Test>]
+let ``Accessing row via missing row key with lookup works`` () =
+  let actual = rowSample().GetRow<int>("f", Lookup.NearestSmaller)
+  actual |> shouldEqual <| series [ "X" => 3; "Y" => 6 ]
 
 // ------------------------------------------------------------------------------------------------
 // Stack & unstack
@@ -918,4 +980,3 @@ let ``Can reindex ordinally``() =
   let expected = [0; 1] |> Seq.ofList
 
   actual.RowKeys |> shouldEqual expected
-    

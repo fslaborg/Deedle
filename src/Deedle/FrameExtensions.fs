@@ -16,16 +16,51 @@ open System.Collections.Generic
 open Deedle.Keys
 open Deedle.Vectors 
 
+/// Provides static methods for creating frames, reading frame data
+/// from CSV files and database (via IDataReader). The type also provides
+/// global configuration for reflection-based expansion.
 type Frame =
+
+  // ----------------------------------------------------------------------------------------------
+  // Configuration
+  // ----------------------------------------------------------------------------------------------
+  
+  /// Configures how reflection-based expansion behaves - see also `df.ExpandColumns`.
+  /// This (mutable, non-thread-safe) collection specifies additional primitive (but reference)
+  /// types that should not be expaneded. By default, this includes DateTime, string, etc.
+  ///
+  /// [category:Configuration]
   static member NonExpandableTypes = Reflection.additionalPrimitiveTypes
+
+  /// Configures how reflection-based expansion behaves - see also `df.ExpandColumns`.
+  /// This (mutable, non-thread-safe) collection specifies interfaces whose implementations
+  /// should not be expanded. By default, this includes collections such as IList.
+  ///
+  /// [category:Configuration]
   static member NonExpandableInterfaces = Reflection.nonFlattenedTypes
+
+  /// Configures how reflection-based expansion behaves - see also `df.ExpandColumns`.
+  /// This (mutable, non-thread-safe) collection lets you specify custom expansion behavior
+  /// for any type. This is a dictionary with types as keys and functions that implement the
+  /// expansion as values.
+  ///
+  /// ## Example
+  /// For example, say you have a type `MyPair` with propreties `Item1` of type `int` and
+  /// `Item2` of type `string` (and perhaps other properties which makes the default behavior
+  /// inappropriate). You can register custom expander as:
+  ///
+  ///     Frame.CustomExpanders.Add(typeof<MyPair>, fun v -> 
+  ///       let a = v :?> MyPair
+  ///       [ "First", typeof<int>, box a.Item1; 
+  ///         "Second", typeof<string>, box a.Item2 ] :> seq<_> )
+  ///
+  /// [category:Configuration]
   static member CustomExpanders = Reflection.customExpanders
 
   // ----------------------------------------------------------------------------------------------
   // Reading CSV files
   // ----------------------------------------------------------------------------------------------
   
-
   /// Load data frame from a CSV file. The operation automatically reads column names from the 
   /// CSV file (if they are present) and infers the type of values for each column. Columns
   /// of primitive types (`int`, `float`, etc.) are converted to the right type. Columns of other
@@ -48,6 +83,8 @@ type Frame =
   ///  * `culture` - Specifies the name of the culture that is used when parsing 
   ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
   ///  * `maxRows` - Specifies the maximum number of rows that will be read from the CSV file
+  ///
+  /// [category:Input and output]
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member ReadCsv
     ( location:string, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] skipTypeInference, [<Optional>] inferRows, 
@@ -81,6 +118,8 @@ type Frame =
   ///    parse semicolon separated files.
   ///  * `culture` - Specifies the name of the culture that is used when parsing 
   ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
+  ///
+  /// [category:Input and output]
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member ReadCsv
     ( stream:Stream, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] skipTypeInference, [<Optional>] inferRows, 
@@ -90,6 +129,17 @@ type Frame =
       (Some (not skipTypeInference)) (Some inferRows) (Some schema) "NaN,NA,#N/A,:" 
       (if separators = null then None else Some separators) (Some culture)
       (if maxRows.HasValue then Some maxRows.Value else None)
+
+  // Note: The following is also used from F#
+
+  /// Read data from `IDataReader`. The method reads all rows from the data reader
+  /// and for each row, gets all the columns. When a value is `DBNull`, it is treated
+  /// as missing. The types of created vectors are determined by the field types reported
+  /// by the data reader.
+  /// 
+  /// [category:Input and output]
+  static member ReadReader (reader) =
+    FrameUtils.readReader reader
 
   // ----------------------------------------------------------------------------------------------
   // Creating from rows or from columns
@@ -156,17 +206,29 @@ type Frame =
     FrameUtils.fromRows(rows)
 
   // ----------------------------------------------------------------------------------------------
-  // Creating frame from values or from records
+  // Creating frame from values, records or from 2D array
   // ----------------------------------------------------------------------------------------------
 
+  /// Create a data frame from a sequence of objects and functions that return
+  /// row key, column key and value for each object in the input sequence.
+  ///
+  /// ## Parameters
+  ///  - `values` - Input sequence of objects 
+  ///  - `colSel` - A function that returns the column key of an object
+  ///  - `rowSel` - A function that returns the row key of an object
+  ///  - `valSel` - A function that returns the value of an object
+  ///
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
-  static member FromValues(values, colSel:Func<_, _>, rowSel:Func<_, _>, valSel:Func<_, _>) =
+  static member FromValues(values:seq<'T>, colSel:Func<_, 'C>, rowSel:Func<_, 'R>, valSel:Func<_, 'V>) =
     FrameUtils.fromValues values colSel.Invoke rowSel.Invoke valSel.Invoke
 
+  /// Create a data frame from a sequence of tuples containing row key, column key and a value
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member FromValues (values) =
     FrameUtils.fromValues values (fun (_, col, _) -> col) (fun (row, _, _) -> row) (fun (_, _, v) -> v)
 
+  /// Creates a data frame from a sequence of any .NET objects. The method uses reflection
+  /// over the specified type parameter `'T` and turns its properties to columns.
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member FromRecords (series:Series<'K, 'R>) =
     let keyValuePairs = 
@@ -176,20 +238,45 @@ type Frame =
     let frame = Reflection.convertRecordSequence<'R>(recordsToConvert)
     frame |> Frame.indexRowsWith (Seq.map fst keyValuePairs)
 
+  /// Creates a data frame from a sequence of any .NET objects. The method uses reflection
+  /// over the specified type parameter `'T` and turns its properties to columns. The
+  /// rows of the resulting frame are automatically indexed by `int`.
+  ///
+  /// ## Example
+  /// The method can be nicely used to create a data frame using C# anonymous types
+  /// (the result is a data frame with columns "A" and "B" containing two rows).
+  ///
+  ///    [lang=csharp]
+  ///    var df = Frame.FromRecords(new[] {
+  ///      new { A = 1, B = "Test" },
+  ///       new { A = 2, B = "Another"}
+  ///    });
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member FromRecords (values:seq<'T>) =
     Reflection.convertRecordSequence<'T>(values)    
 
-  // Also used from F#
-
-  static member ReadReader (reader) =
-    FrameUtils.readReader reader
-
+  /// Create data frame from a 2D array of values. The first dimension of the array
+  /// is used as rows and the second dimension is treated as columns. Rows and columns
+  /// of the returned frame are indexed with the element's offset in the array.
+  ///
+  /// ## Parameters
+  ///  - `array` - A two-dimensional array to be converted into a data frame
+  [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member FromArray2D(array:'T[,]) =
+    // Generate row index (int offsets) and column index (int offsets)
+    let rowIndex = IndexBuilder.Instance.Create(Array.init (array.GetLength(0)) id, Some true)
+    let colIndex = IndexBuilder.Instance.Create(Array.init (array.GetLength(1)) id, Some true)
+    // Generate vectors with column-based data
+    let vectors = Array.zeroCreate (array.GetLength(1))
+    for c = 0 to vectors.Length - 1 do
+      let col = Array.init (array.GetLength(0)) (fun r -> array.[r,c])
+      vectors.[c] <- VectorBuilder.Instance.Create(col) :> IVector
+    let data = VectorBuilder.Instance.Create(vectors)
+    Frame(rowIndex, colIndex, data)
 
   // ----------------------------------------------------------------------------------------------
   // Creating other frames
   // ----------------------------------------------------------------------------------------------
-
 
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member CreateEmpty() =
@@ -200,6 +287,7 @@ type Frame =
     let rowIndex = FrameUtils.indexBuilder.Create(keys, None)
     let colIndex = FrameUtils.indexBuilder.Create([], None)
     Frame<_, string>(rowIndex, colIndex, FrameUtils.vectorBuilder.Create [||])
+
 
 [<AutoOpen>]
 module FSharpFrameExtensions =
@@ -313,14 +401,28 @@ module FSharpFrameExtensions =
       let names, values = cols |> List.ofSeq |> List.unzip
       FrameUtils.fromColumns(Series(names, values))
     
+    /// Create a data frame from a sequence of tuples containing row key, column key and a value
     static member ofValues(values) =
       Frame.FromValues(values)
 
+    /// Creates a data frame from a series containing any .NET objects. The method uses reflection
+    /// over the specified type parameter `'T` and turns its properties to columns.
     static member ofRecords (series:Series<'K, 'R>) =
       Frame.FromRecords(series)
 
+    /// Creates a data frame from a sequence of any .NET objects. The method uses reflection
+    /// over the specified type parameter `'T` and turns its properties to columns.
     static member ofRecords (values:seq<'T>) =
       Reflection.convertRecordSequence<'T>(values)    
+
+    /// Create data frame from a 2D array of values. The first dimension of the array
+    /// is used as rows and the second dimension is treated as columns. Rows and columns
+    /// of the returned frame are indexed with the element's offset in the array.
+    ///
+    /// ## Parameters
+    ///  - `array` - A two-dimensional array to be converted into a data frame
+    static member ofArray2D (array:'T[,]) = 
+      Frame.FromArray2D(array)
 
   type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality> with
     /// Save data frame to a CSV file or to a `Stream`. When calling the operation,
@@ -713,7 +815,7 @@ type FrameExtensions =
 
   [<Extension>]
   static member ToDataTable(frame:Frame<'R, 'C>, rowKeyNames) = 
-      FrameUtils.toDataTable rowKeyNames frame
+    FrameUtils.toDataTable rowKeyNames frame
 
   // ----------------------------------------------------------------------------------------------
   // Assorted stuff
@@ -721,6 +823,9 @@ type FrameExtensions =
 
   [<Extension>]
   static member Print(frame:Frame<'K, 'V>) = Console.WriteLine(frame.Format());
+
+  [<Extension>]
+  static member Print(frame:Frame<'K, 'V>, printTypes:bool) = Console.WriteLine(frame.Format(printTypes));
 
   [<Extension>]
   static member Sum(frame:Frame<'R, 'C>) = Frame.sum frame

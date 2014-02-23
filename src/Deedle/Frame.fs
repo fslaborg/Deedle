@@ -77,36 +77,6 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   let frameColumnsChanged = new DelegateEvent<NotifyCollectionChangedEventHandler>()
   
-  let createRowReader rowAddress =
-    // 'let rec' would be more elegant, but it is slow...
-    let virtualVector = ref (Unchecked.defaultof<_>)
-    let materializeVector() =
-      let data = (virtualVector : ref<IVector<_>>).Value.DataSequence
-      virtualVector := Vector.ofOptionalValues(data)
-    virtualVector :=
-      { new IVector<obj> with
-          member x.GetValue(columnAddress) = 
-            let vector = data.GetValue(columnAddress)
-            if not vector.HasValue then OptionalValue.Missing
-            else vector.Value.GetObject(rowAddress) 
-          member x.Data = 
-            [| for _, addr in columnIndex.Mappings -> x.GetValue(addr) |]
-            |> ReadOnlyCollection.ofArray |> VectorData.SparseList          
-          member x.Select(f) = materializeVector(); virtualVector.Value.Select(f)
-          member x.SelectMissing(f) = materializeVector(); virtualVector.Value.SelectMissing(f)
-        
-        interface IVector with
-          member x.ObjectSequence = (x :?> IVector<obj>).DataSequence
-          member x.SuppressPrinting = false
-          member x.ElementType = typeof<obj>
-          member x.GetObject(i) = (x :?> IVector<obj>).GetValue(i) }
-    VectorHelpers.delegatedVector virtualVector
-
-  let safeGetRowVector row = 
-    let rowVect = rowIndex.Lookup(row)
-    if not rowVect.HasValue then invalidArg "index" (sprintf "The data frame does not contain row with index '%O'" row) 
-    else  createRowReader (snd rowVect.Value)
-
   let safeGetColVector column = 
     let columnIndex = columnIndex.Lookup(column)
     if not columnIndex.HasValue then 
@@ -129,26 +99,29 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let rowIndex = Seq.headOrNone columns |> Option.map (fun (_, s) -> (seriesConv s).Index)
     match rowIndex with 
     | Some rowIndex when (columns |> Seq.forall (fun (_, s) -> Object.ReferenceEquals((seriesConv s).Index, rowIndex))) ->
-      // OPTIMIZATION: If all series have the same index (same object), then no join is needed 
-      // (This is particularly valuable for things like +, *, /, - operators on Frame)
-      let vector = columns |> Seq.map (fun (_, s) -> (seriesConv s).Vector) |> Vector.ofValues
-      Frame<_, _>(rowIndex, Index.ofKeys (Seq.map fst columns), vector)
+        // OPTIMIZATION: If all series have the same index (same object), then no join is needed 
+        // (This is particularly valuable for things like +, *, /, - operators on Frame)
+        let vector = columns |> Seq.map (fun (_, s) -> 
+          // When the nested series data is in 'IBoxedVector', get the unboxed representation
+          unboxVector (seriesConv s).Vector) |> Vector.ofValues
+        Frame<_, _>(rowIndex, Index.ofKeys (Seq.map fst columns), vector)
+
     | _ ->
-      // Create new row index by unioning all keys
-      let rowKeys = columns |> Seq.collect (fun (_, s) -> (seriesConv s).Index.Keys) |> Seq.distinct |> Array.ofSeq
-      let rowIndex = nested.IndexBuilder.Create(rowKeys, None)
-      // Create column index by taking all column keys
-      let colKeys = nested |> Series.observationsAll |> Seq.map fst |> Array.ofSeq
-      let colIndex = nested.IndexBuilder.Create(colKeys, None)
-      // Build the data 
-      let data = 
-        nested |> Series.observationsAll |> Seq.map (fun (_, s) ->
-          let series = match s with Some s -> seriesConv s | _ -> Series.Create([], []) :> ISeries<_>
-          let cmd = nested.IndexBuilder.Reindex(series.Index, rowIndex, Lookup.Exact, Vectors.Return 0, fun _ -> true)
-          // TODO: Infer type of the vector ?? or preserve the type
-          VectorHelpers.transformColumn nested.VectorBuilder cmd series.Vector )
-        |> Vector.ofValues
-      Frame<_, _>(rowIndex, colIndex, data)
+        // Create new row index by unioning all keys
+        let rowKeys = columns |> Seq.collect (fun (_, s) -> (seriesConv s).Index.Keys) |> Seq.distinct |> Array.ofSeq
+        let rowIndex = nested.IndexBuilder.Create(rowKeys, None)
+        // Create column index by taking all column keys
+        let colKeys = nested |> Series.observationsAll |> Seq.map fst |> Array.ofSeq
+        let colIndex = nested.IndexBuilder.Create(colKeys, None)
+        // Build the data 
+        let data = 
+          nested |> Series.observationsAll |> Seq.map (fun (_, s) ->
+            let series = match s with Some s -> seriesConv s | _ -> Series.Create([], []) :> ISeries<_>
+            let cmd = nested.IndexBuilder.Reindex(series.Index, rowIndex, Lookup.Exact, Vectors.Return 0, fun _ -> true)
+            // When the nested series data is in 'IBoxedVector', get the unboxed representation
+            VectorHelpers.transformColumn nested.VectorBuilder cmd (unboxVector series.Vector) )
+          |> Vector.ofValues
+        Frame<_, _>(rowIndex, colIndex, data)
 
   static member internal FromColumnsNonGeneric seriesConv nested = fromColumnsNonGeneric seriesConv nested
 
@@ -405,18 +378,16 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
     // Define a function to construct result vector via the above row command, which will dynamically
     // dispatch to a type-specific generic implementation
-    let appendVectors = 
-      { new VectorHelpers.VectorListCallSite1<IVector> with
-          override x.Invoke<'T>(vlst: IVector<'T> seq) = 
-            vectorBuilder.Build(rowCmd, vlst |> Seq.toArray) :> IVector }
-      |> VectorHelpers.createVectorListDispatcher
-
-    // all our vectors must be converted to the same witness type!
-    let convertAllVectors = 
-      { new VectorHelpers.VectorCallSite1<IVector list -> IVector list> with
-          override x.Invoke<'T>(v: IVector<'T>) = (fun vlst ->
-            vlst |> List.map (fun v -> VectorHelpers.changeType<'T> v :> IVector)) }
-      |> VectorHelpers.createVectorDispatcher
+    //
+    // This uses the specified 'witnessVec' to invoke 'VectorCallSite' with the runtime
+    // type of the witness vector as a static type argument, then it converts all vectors
+    // to this specified type and appends them.
+    let convertAndAppendVectors (witnessVec:IVector) (vectors:IVector list) =
+      { new VectorCallSite<IVector> with
+          override x.Invoke<'T>(_:IVector<'T>) =
+            let typed = vectors |> Seq.map (VectorHelpers.changeType<'T>) |> Array.ofSeq
+            vectorBuilder.Build(rowCmd, typed) :> IVector }
+      |> witnessVec.Invoke
 
     // define the transformation itself, piecing components together
     let append = VectorValueListTransform.Create(fun (lst: OptionalValue<IVector> list) ->
@@ -430,7 +401,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
                     if v.HasValue 
                     then yield v.Value
                     else yield upcast Vector.ofValues [] ]
-      input |> convertAllVectors(witnessVec) |> appendVectors |> fun r -> OptionalValue(r) )
+      input |> convertAndAppendVectors witnessVec |> fun r -> OptionalValue(r) )
 
     // build the union of all column keys
     let colUnion ix (f:Frame<'R, 'C>) = 
@@ -469,17 +440,15 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Accessors and slicing]
   member frame.Columns = 
-    let boxer = boxVector ()
     ColumnSeries(Series.Create(columnIndex, data.Select(fun vect -> 
-      Series.CreateUntyped(rowIndex, boxer vect))))
+      Series.CreateUntyped(rowIndex, boxVector vect))))
 
   /// [category:Accessors and slicing]
   member frame.ColumnsDense = 
-    let boxer = boxVector ()
     ColumnSeries(Series.Create(columnIndex, data.SelectMissing(fun vect -> 
       // Assuming that the data has all values - which should be an invariant...
       let all = rowIndex.Mappings |> Seq.forall (fun (key, addr) -> vect.Value.GetObject(addr).HasValue)
-      if all then OptionalValue(Series.CreateUntyped(rowIndex, boxer vect.Value))
+      if all then OptionalValue(Series.CreateUntyped(rowIndex, boxVector vect.Value))
       else OptionalValue.Missing )))
 
   /// [category:Accessors and slicing]
@@ -488,7 +457,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let res = emptySeries.SelectOptional (fun row ->
       let rowAddress = rowIndex.Lookup(row.Key, Lookup.Exact, fun _ -> true)
       if not rowAddress.HasValue then OptionalValue.Missing
-      else OptionalValue(Series.CreateUntyped(columnIndex, createRowReader (snd rowAddress.Value))))
+      else 
+        let rowReader = createObjRowReader data vectorBuilder columnIndex.Mappings (snd rowAddress.Value)
+        OptionalValue(Series.CreateUntyped(columnIndex, rowReader)))
     RowSeries(res)
 
   /// [category:Accessors and slicing]
@@ -497,7 +468,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let res = emptySeries.SelectOptional (fun row ->
       let rowAddress = rowIndex.Lookup(row.Key, Lookup.Exact, fun _ -> true)
       if not rowAddress.HasValue then OptionalValue.Missing else 
-        let rowVec = createRowReader (snd rowAddress.Value)
+        let rowVec = createObjRowReader data vectorBuilder columnIndex.Mappings (snd rowAddress.Value)
         let all = columnIndex.Mappings |> Seq.forall (fun (key, addr) -> rowVec.GetValue(addr).HasValue)
         if all then OptionalValue(Series.CreateUntyped(columnIndex, rowVec))
         else OptionalValue.Missing )
@@ -506,23 +477,108 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// [category:Accessors and slicing]
   member frame.Item 
     with get(column:'TColumnKey, row:'TRowKey) = frame.Columns.[column].[row]
+ 
+  // ----------------------------------------------------------------------------------------------
+  // Accessing frame rows
+  // ----------------------------------------------------------------------------------------------
 
-  /// [category:Accessors and slicing]
-  member frame.TryGetRowAt(index) = 
-    let rowAddress = rowIndex.Lookup(index, Lookup.Exact, fun _ -> true)
-    if not rowAddress.HasValue then OptionalValue.Missing
-    else OptionalValue(Series.CreateUntyped(columnIndex, createRowReader (snd rowAddress.Value)))
-
+  /// Returns the row key that is located at the specified int offset.
+  /// If the index is invalid, `ArgumentOutOfRangeException` is thrown. 
+  /// You can get the corresponding row using `GetRowAt`.
+  ///
+  /// ## Parameters
+  ///  - `index` - Offset (integer) of the row key to be returned
+  ///
   /// [category:Accessors and slicing]
   member frame.GetRowKeyAt(index) = 
     frame.RowIndex.KeyAt(Address.ofInt index)
 
+  /// Returns a row of the data frame that is located at the specified int offset.
+  /// This does not use the row key and directly accesses the frame data. This method
+  /// is generic and returns the result as a series containing values of the specified type. 
+  /// To get heterogeneous series of type `ObjectSeries<'TCol>`, use the `frame.Rows` property.
+  /// If the index is invalid, `ArgumentOutOfRangeException` is thrown. You can get the 
+  /// matching key at a specified index using `GetRowKeyAt`.
+  ///
+  /// ## Parameters
+  ///  - `index` - Offset (integer) of the row to be returned
+  ///
   /// [category:Accessors and slicing]
-  member frame.GetRowAt(index) = 
-    frame.TryGetRowAt(index).Value
+  member frame.GetRowAt<'T>(index) : Series<_, 'T> = 
+    if index < 0 || int64 index >= rowIndex.KeyCount then
+      raise (new ArgumentOutOfRangeException("index", "Index must be positive and smaller than the number of rows."))
+    let rowAddress = Address.ofInt index
+    Series.Create(columnIndex, createRowReader data vectorBuilder columnIndex.Mappings rowAddress)
 
+  /// Returns a row with the specieifed key wrapped in `OptionalValue`. When the specified key 
+  /// is not found, the result is `OptionalValue.Missing`. This method is generic and returns the result 
+  /// as a series containing values of the specified type. To get heterogeneous series of 
+  /// type `ObjectSeries<'TCol>`, use the `frame.Rows` property.
+  ///
+  /// ## Parameters
+  ///  - `rowKey` - Specifies the key of the row to be returned
+  ///
+  /// [category:Accessors and slicing]
+  member frame.TryGetRow<'T>(rowKey) : OptionalValue<Series<_, 'T>> =
+    let rowAddress = rowIndex.Locate(rowKey)
+    if rowAddress = Address.Invalid then OptionalValue.Missing
+    else OptionalValue(Series.Create(columnIndex, createRowReader data vectorBuilder columnIndex.Mappings rowAddress))
+
+  /// Returns a row with the specieifed key wrapped in `OptionalValue`. When the specified key 
+  /// is not found, the result is `OptionalValue.Missing`. This method is generic and returns the result 
+  /// as a series containing values of the specified type. To get heterogeneous series of 
+  /// type `ObjectSeries<'TCol>`, use the `frame.Rows` property.
+  ///
+  /// ## Parameters
+  ///  - `rowKey` - Specifies the key of the row to be returned
+  ///  - `lookup` - Specifies how to find value in a frame with ordered rows when the key does 
+  ///               not exactly match (look for nearest available value with the smaller/greater key).
+  ///
+  /// [category:Accessors and slicing]
+  member frame.TryGetRow<'T>(rowKey, lookup) : OptionalValue<Series<_, 'T>> =
+    let rowAddress = rowIndex.Lookup(rowKey, lookup, fun _ -> true)
+    if not rowAddress.HasValue then OptionalValue.Missing
+    else OptionalValue(Series.Create(columnIndex, createRowReader data vectorBuilder columnIndex.Mappings (snd rowAddress.Value)))
+
+  /// Returns a row with the specieifed key. This method is generic and returns the result 
+  /// as a series containing values of the specified type. To get heterogeneous series of 
+  /// type `ObjectSeries<'TCol>`, use the `frame.Rows` property.
+  ///
+  /// ## Parameters
+  ///  - `rowKey` - Specifies the key of the row to be returned
+  ///
+  /// [category:Accessors and slicing]
+  member frame.GetRow<'T>(rowKey) : Series<_, 'T> = frame.TryGetRow(rowKey).Value
+
+  /// Returns a row with the specieifed key. This method is generic and returns the result 
+  /// as a series containing values of the specified type. To get heterogeneous series of 
+  /// type `ObjectSeries<'TCol>`, use the `frame.Rows` property.
+  ///
+  /// ## Parameters
+  ///  - `rowKey` - Specifies the key of the row to be returned
+  ///  - `lookup` - Specifies how to find value in a frame with ordered rows when the key does 
+  ///               not exactly match (look for nearest available value with the smaller/greater key).
+  ///
+  /// [category:Accessors and slicing]
+  member frame.GetRow<'T>(rowKey, lookup) : Series<_, 'T> =  frame.TryGetRow(rowKey, lookup).Value
+
+  /// Try to find a row with the specified row key, or using the specified `lookup` parameter,
+  /// and return the found row together with its actual key in case `lookup` was used. In case the
+  /// row is not found, `OptionalValue.Missing` is returned.
+  ///
+  /// ## Parameters
+  ///  - `rowKey` - Specifies the key of the row to be returned
+  ///  - `lookup` - Specifies how to find value in a frame with ordered rows when the key does 
+  ///               not exactly match (look for nearest available value with the smaller/greater key).
+  ///
+  /// [category:Accessors and slicing]
+  member frame.TryGetRowObservation<'T>(rowKey, lookup) =
+    frame.Rows.TryGetObservation(rowKey, lookup) 
+    |> OptionalValue.map (fun kvp -> 
+      KeyValuePair(kvp.Key, Series.Create(columnIndex, changeType<'T> kvp.Value.Vector)))
+  
   // ----------------------------------------------------------------------------------------------
-  // More accessors
+  // Fancy accessors for frame columns and frame data
   // ----------------------------------------------------------------------------------------------
 
   /// [category:Fancy accessors]
@@ -531,31 +587,36 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       vopt |> OptionalValue.bind (fun ser -> ser.TryAs<'R>(false)))
 
   /// [category:Fancy accessors]
-  member frame.GetRow<'R>(row) = frame.GetRow<'R>(row, Lookup.Exact)
-
-  /// [category:Fancy accessors]
-  member frame.GetRow<'R>(row, lookup) : Series<'TColumnKey, 'R> = 
-    let row = frame.Rows.Get(row, lookup)
-    Series.Create(columnIndex, changeType row.Vector)
-
-  /// [category:Fancy accessors]
-  member frame.TryGetRow<'R>(row, lookup) =
-    frame.Rows.TryGet(row, lookup) 
-    |> OptionalValue.map (fun v -> Series.Create(columnIndex, changeType<'R> v.Vector))
-
-  /// [category:Fancy accessors]
-  member frame.TryGetRowObservation(row, lookup) =
-    frame.Rows.TryGetObservation(row, lookup) 
-    |> OptionalValue.map (fun kvp -> 
-      KeyValuePair(kvp.Key, Series.Create(columnIndex, changeType<'R> kvp.Value.Vector)))
-
-  /// [category:Fancy accessors]
   member frame.GetAllValues<'R>() = frame.GetAllValues<'R>(false)
 
   /// [category:Fancy accessors]
   member frame.GetAllValues<'R>(strict) =
     seq { for (KeyValue(_, v)) in frame.GetAllSeries<'R>() do yield! v |> Series.values }
 
+  /// Returns data of the data frame as a 2D array. The method attempts to convert
+  /// all values to the specified type 'R. When a value is missing, the specified 
+  /// `defaultValue` is used.
+  ///
+  /// ## Parameters
+  ///  - `defaultValue` - Default value used to fill all missing values
+  ///
+  /// [category:Fancy accessors]
+  member frame.ToArray2D<'R>(defaultValue) =
+    toArray2D<'R> frame.RowCount frame.ColumnCount frame.Data (lazy defaultValue)
+
+  /// Returns data of the data frame as a 2D array. The method attempts to convert
+  /// all values to the specified type 'R. If the specified type is 'float' or 'double'
+  /// then the method automatically uses NaN. For other values, the default value has to
+  /// be explicitly specified using another overload.
+  ///
+  /// [category:Fancy accessors]
+  member frame.ToArray2D<'R>() =
+    let defaultValue = 
+      if typeof<'R> = typeof<Double> then lazy unbox<'R> Double.NaN
+      elif typeof<'R> = typeof<Single> then lazy unbox<'R> Single.NaN
+      else lazy (invalidOp "ToArray2D: Frame contains missing data, but default value was not provided.")
+    toArray2D frame.RowCount frame.ColumnCount frame.Data defaultValue
+    
   // ----------------------------------------------------------------------------------------------
   // Series related operations - add, drop, get, ?, ?<-, etc.
   // ----------------------------------------------------------------------------------------------
@@ -1046,6 +1107,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   // Frame data and formatting
   // ----------------------------------------------------------------------------------------------
 
+  /// [category:Formatting and raw data access]
   member frame.GetFrameData() = 
     // Get keys (as object lists with multiple levels)
     let getKeys (index:IIndex<_>) = seq { 
@@ -1059,31 +1121,80 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let rowKeys = getKeys frame.RowIndex 
     let colKeys = getKeys frame.ColumnIndex
     // Get columns as object options
-    let boxVector = VectorHelpers.boxVector ()
     let columns = data.DataSequence |> Seq.map (fun col ->
       let boxedVec = boxVector col.Value
       col.Value.ElementType, boxedVec)
     // Return as VectorData
     { ColumnKeys = colKeys; RowKeys = rowKeys; Columns = columns }
 
+  /// Shows the data frame content in a human-readable format. The resulting string
+  /// shows all columns, but a limited number of rows. 
+  /// [category:Formatting and raw data access]
   member frame.Format() =
     frame.Format(Formatting.StartItemCount, Formatting.EndItemCount)
 
+  /// Shows the data frame content in a human-readable format. The resulting string
+  /// shows all columns, but a limited number of rows. 
+  ///
+  /// ## Parameters
+  ///  - `startCount` - The number of rows at the beginning to be printed
+  ///  - `endCount` - The number of rows at the end of the frame to be printed
+  ///  - `printTypes` - When true, the types of vectors storing column data are printed
+  /// [category:Formatting and raw data access]
+  member frame.Format(printTypes) =
+    frame.Format(Formatting.StartItemCount, Formatting.EndItemCount, printTypes)
+
+  /// Shows the data frame content in a human-readable format. The resulting string
+  /// shows all columns, but a limited number of rows.
+  ///
+  /// ## Parameters
+  ///  - `count` - The maximal total number of rows to be printed
+  ///
+  /// [category:Formatting and raw data access]
   member frame.Format(count) =
     let half = count / 2
     frame.Format(count, count)
 
   /// Shows the data frame content in a human-readable format. The resulting string
-  /// shows all columns, but a limited number of rows. The property is used 
-  /// automatically by F# Interactive.
+  /// shows all columns, but a limited number of rows.
+  ///
+  /// ## Parameters
+  ///  - `startCount` - The number of rows at the beginning to be printed
+  ///  - `endCount` - The number of rows at the end of the frame to be printed
+  ///
+  /// [category:Formatting and raw data access]
   member frame.Format(startCount, endCount) = 
+    frame.Format(startCount, endCount, false)
+
+  /// Shows the data frame content in a human-readable format. The resulting string
+  /// shows all columns, but a limited number of rows.
+  ///
+  /// ## Parameters
+  ///  - `startCount` - The number of rows at the beginning to be printed
+  ///  - `endCount` - The number of rows at the end of the frame to be printed
+  ///  - `printTypes` - When true, the types of vectors storing column data are printed
+  ///
+  /// [category:Formatting and raw data access]
+  member frame.Format(startCount, endCount, printTypes) = 
     try
+      // Get the number of levels in column/row index
       let colLevels = 
         match frame.ColumnIndex.Keys |> Seq.headOrNone with 
         Some colKey -> CustomKey.Get(colKey).Levels | _ -> 1
       let rowLevels = 
         match frame.RowIndex.Keys |> Seq.headOrNone with 
         Some rowKey -> CustomKey.Get(rowKey).Levels | _ -> 1
+
+      /// Format type with a few special cases for common types
+      let formatType (typ:System.Type) =
+        if typ = typeof<obj> then "obj"
+        elif typ = typeof<float> then "float"
+        elif typ = typeof<int> then "int"
+        elif typ = typeof<string> then "string"
+        else typ.Name
+
+      /// Get annotation for the specified level of the given key 
+      /// (returns empty string if the value is the same as previous)
       let getLevel ordered previous reset maxLevel level (key:'K) = 
         let levelKey = 
           if level = 0 && maxLevel = 0 then box key
@@ -1102,6 +1213,20 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
             for colKey, _ in frame.ColumnIndex.Mappings do 
               yield getLevel frame.ColumnIndex.IsOrdered previous ignore colLevels colLevel colKey ]
 
+        // If we want to print types, add another line with type information
+        if printTypes then 
+          yield [
+            // Prefix with appropriate number of (empty) row keys
+            for i in 0 .. rowLevels - 1 do yield "" 
+            yield ""
+            let previous = ref None
+            for _, colAddr in frame.ColumnIndex.Mappings do 
+              let vector = frame.Data.GetValue(colAddr) 
+              let typ = 
+                if not vector.HasValue then "missing"
+                else formatType vector.Value.ElementType
+              yield String.Concat("(", typ, ")") ]
+              
         // Yield row data
         let rows = frame.Rows
         let previous = Array.init rowLevels (fun _ -> ref None)
@@ -1223,7 +1348,7 @@ and FrameUtils =
 
     // Dispatcher that creates column vector of the right type
     let columnCreator key =
-      { new VectorHelpers.ValueCallSite1<IVector> with
+      { new VectorHelpers.ValueCallSite<IVector> with
           override x.Invoke<'T>(_:'T) = 
             let it = nested.SelectOptional(fun kvp ->
               if kvp.Value.HasValue then 

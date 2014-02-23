@@ -177,16 +177,10 @@ module internal Reflection =
           | _ -> OptionalValue.Missing)).DataSequence
         fieldName, createTypedVector fieldTyp it ]
 
-  let expandUntypedVector =
-    let staticExp =
-      { new VectorHelpers.VectorCallSite1<_> with
-          member x.Invoke(vect) = expandVector false vect }
-      |> VectorHelpers.createVectorDispatcher    
-    let dynamicExp =
-      { new VectorHelpers.VectorCallSite1<_> with
-          member x.Invoke(vect) = expandVector true vect }
-      |> VectorHelpers.createVectorDispatcher    
-    (fun dynamic col -> if dynamic then dynamicExp col else staticExp col)
+  let expandUntypedVector dynamic (col:IVector) =
+    { new VectorCallSite<_> with
+        member x.Invoke(vect) = expandVector dynamic vect }
+    |> col.Invoke
 
   /// Given type 'T that represents some .NET object, generate an array of 
   /// functions that take seq<'T> and generate IVector with each column:

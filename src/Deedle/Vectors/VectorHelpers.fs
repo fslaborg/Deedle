@@ -34,9 +34,17 @@ let prettyPrintVector (vector:IVector<'T>) =
   | VectorData.SparseList list -> printSequence "sparse" (Seq.map (fun v -> v.ToString()) list) 
   | VectorData.Sequence list -> printSequence "seq" (Seq.map (fun v -> v.ToString()) list) 
 
+
+// --------------------------------------------------------------------------------------
+// Derived/wrapped implementations of the IVector<'T> interface
+// --------------------------------------------------------------------------------------
+
 /// Create a new vector that delegates all functionality to a ref vector
 let delegatedVector (vector:IVector<'TValue> ref) =
-  { new IVector<'TValue> with
+  { new System.Object() with
+      member x.Equals(another) = vector.Value.Equals(another)
+      member x.GetHashCode() = vector.Value.GetHashCode()
+    interface IVector<'TValue> with
       member x.GetValue(a) = vector.Value.GetValue(a)
       member x.Data = vector.Value.Data
       member x.Select(f) = vector.Value.Select(f)
@@ -45,8 +53,45 @@ let delegatedVector (vector:IVector<'TValue> ref) =
       member x.ObjectSequence = vector.Value.ObjectSequence
       member x.SuppressPrinting = vector.Value.SuppressPrinting
       member x.ElementType = vector.Value.ElementType
-      member x.GetObject(i) = vector.Value.GetObject(i) }
+      member x.GetObject(i) = vector.Value.GetObject(i) 
+      member x.Invoke(site) = vector.Value.Invoke(site) }
 
+/// Represents a vector containing objects, that has been created by "boxing" a vector
+/// containing values of any (likely more specific type). Given a boxed vector, we can 
+/// get the original vector containing original values via the 'UnboxedVector' property
+type IBoxedVector = 
+  inherit IVector<obj>
+  abstract UnboxedVector : IVector
+
+/// Creates a boxed vector - returns IBoxedVector that delegates all functionality to 
+/// the vector specified as an argument and boxes all values on the fly
+let createBoxedVector (vector:IVector<'TValue>) = 
+  { new System.Object() with
+      member x.Equals(another) = vector.Equals(another)
+      member x.GetHashCode() = vector.GetHashCode()
+    interface IBoxedVector with
+      member x.UnboxedVector = vector :> IVector
+    interface IVector<obj> with
+      member x.GetValue(a) = vector.GetObject(a)
+      member x.Data = 
+        match vector.Data with
+        | VectorData.DenseList list -> 
+            VectorData.DenseList(ReadOnlyCollection.map box list)
+        | VectorData.SparseList list ->
+            VectorData.SparseList(ReadOnlyCollection.map (OptionalValue.map box) list)
+        | VectorData.Sequence list ->
+            VectorData.Sequence(Seq.map (OptionalValue.map box) list)
+      member x.Select(f) = vector.Select(f)
+      member x.SelectMissing(f) = vector.SelectMissing(OptionalValue.map box >> f)
+    interface IVector with
+      member x.ObjectSequence = vector.ObjectSequence
+      member x.SuppressPrinting = vector.SuppressPrinting
+      member x.ElementType = typeof<obj>
+      member x.GetObject(i) = vector.GetObject(i) 
+      member x.Invoke(site) = 
+        // Note: This means that the call site will be invoked on the 
+        // underlying (more precisely typed) vector of this boxed vector!
+        vector.Invoke(site) }
 
 // --------------------------------------------------------------------------------------
 // Generic operations 
@@ -54,23 +99,8 @@ let delegatedVector (vector:IVector<'TValue> ref) =
 
 /// Represents a generic function `\forall.'T.('T -> 'R)`. The function can be 
 /// generically invoked on an argument of type `obj` using `createValueDispatcher`
-type ValueCallSite1<'R> =
+type ValueCallSite<'R> =
   abstract Invoke<'T> : 'T -> 'R
-
-/// Represents a generic function `\forall.'T.(IVector<'T> -> 'R)`. The function can be 
-/// generically invoked on an argument of type `IVector` using `createVectorDispatcher`
-type VectorCallSite1<'R> =
-  abstract Invoke<'T> : IVector<'T> -> 'R
-
-/// Represents a generic function `\forall.'T.(IVector<'T> list -> 'R)`. The function can be 
-/// generically invoked on an argument of type `IVector list` using `createVectorListDispatcher`
-type VectorListCallSite1<'R> =
-  abstract Invoke<'T> : IVector<'T> seq -> 'R
-
-/// Represents a generic function `\forall.'T.(IVector<'T> * IVector<'T> -> 'R)`. The function 
-/// can be generically invoked on a pair of `IVector` values using `createTwoVectorDispatcher`
-type VectorCallSite2<'R> =
-  abstract Invoke<'T> : IVector<'T> * IVector<'T> -> 'R
 
 /// Type code of the `float` type for efficient type equality test
 let doubleCode = typeof<float>.TypeHandle.Value
@@ -80,9 +110,9 @@ let intCode = typeof<int>.TypeHandle.Value
 let stringCode = typeof<string>.TypeHandle.Value
 
 /// Creates a function `obj -> 'R` that dynamically invokes to 
-/// a generic `Invoke` method of the provided `ValueCallSite1<'R>`
-let createValueDispatcher<'R> (callSite:ValueCallSite1<'R>) =
-  let dict = lazy Dictionary<_, System.Func<ValueCallSite1<'R>, obj, 'R>>()
+/// a generic `Invoke` method of the provided `ValueCallSite<'R>`
+let createValueDispatcher<'R> (callSite:ValueCallSite<'R>) =
+  let dict = lazy Dictionary<_, System.Func<ValueCallSite<'R>, obj, 'R>>()
   fun (value:obj) ->
     let ty = value.GetType()
     let code = ty.TypeHandle.Value
@@ -93,107 +123,16 @@ let createValueDispatcher<'R> (callSite:ValueCallSite1<'R>) =
       match dict.Value.TryGetValue(code) with
       | true, f -> f.Invoke(callSite, value)
       | _ ->
-          let mi = typeof<ValueCallSite1<'R>>.GetMethod("Invoke").MakeGenericMethod(ty)
-          let inst = Expression.Parameter(typeof<ValueCallSite1<'R>>)
+          let mi = typeof<ValueCallSite<'R>>.GetMethod("Invoke").MakeGenericMethod(ty)
+          let inst = Expression.Parameter(typeof<ValueCallSite<'R>>)
           let par = Expression.Parameter(typeof<obj>)
           let expr =
-            Expression.Lambda<System.Func<ValueCallSite1<'R>, obj, 'R>>
+            Expression.Lambda<System.Func<ValueCallSite<'R>, obj, 'R>>
               ( Expression.Call(inst, mi, Expression.Convert(par, ty)), [ inst; par ])
           let func = expr.Compile()
           dict.Value.[code] <- func
           func.Invoke(callSite, value)
 
-/// Creates a function `IVector -> 'R` that dynamically invokes to 
-/// a generic `Invoke` method of the provided `VectorCallSite1<'R>`
-let createVectorDispatcher<'R> (callSite:VectorCallSite1<'R>) =
-  let dict = lazy Dictionary<_, System.Func<VectorCallSite1<'R>, IVector, 'R>>()
-  fun (vect:IVector) ->
-    let code = vect.ElementType.TypeHandle.Value
-    if code = doubleCode then callSite.Invoke<float>(vect :?> IVector<float>)
-    elif code = intCode then callSite.Invoke<int>(vect :?> IVector<int>)
-    elif code = stringCode then callSite.Invoke<string>(vect :?> IVector<string>)
-    else
-      match dict.Value.TryGetValue(code) with
-      | true, f -> f.Invoke(callSite, vect)
-      | _ ->
-          let mi = typeof<VectorCallSite1<'R>>.GetMethod("Invoke").MakeGenericMethod(vect.ElementType)
-          let inst = Expression.Parameter(typeof<VectorCallSite1<'R>>)
-          let par = Expression.Parameter(typeof<IVector>)
-          let ty = typedefof<IVector<_>>.MakeGenericType(vect.ElementType)
-          let expr =
-            Expression.Lambda<System.Func<VectorCallSite1<'R>, IVector, 'R>>
-              ( Expression.Call(inst, mi, Expression.Convert(par, ty)), [ inst; par ])
-          let func = expr.Compile()
-          dict.Value.[code] <- func
-          func.Invoke(callSite, vect)
-
-/// Creates a function `IVector * IVector -> 'R` that dynamically invokes to 
-/// a generic `Invoke` method of the provided `VectorCallSite2<'R>`
-let createTwoVectorDispatcher<'R> (callSite:VectorCallSite2<'R>) =
-  let dict = lazy Dictionary<_, System.Func<VectorCallSite2<'R>, IVector, IVector, 'R>>()
-  fun (vect1:IVector, vect2:IVector) ->
-    let code = vect1.ElementType.TypeHandle.Value
-    if vect2.ElementType.TypeHandle.Value <> code then 
-      invalidOp "createTwoVectorDispatcher: Both arguments should have the same element type"
-    if code = doubleCode then callSite.Invoke<float>(vect1 :?> IVector<float>, vect2 :?> IVector<float>)
-    elif code = intCode then callSite.Invoke<int>(vect1 :?> IVector<int>, vect2 :?> IVector<int>)
-    elif code = stringCode then callSite.Invoke<string>(vect1 :?> IVector<string>, vect2 :?> IVector<string>)
-    else
-      match dict.Value.TryGetValue(code) with
-      | true, f -> f.Invoke(callSite, vect1, vect2)
-      | _ ->
-          let mi = typeof<VectorCallSite2<'R>>.GetMethod("Invoke").MakeGenericMethod(vect1.ElementType)
-          let inst = Expression.Parameter(typeof<VectorCallSite2<'R>>)
-          let par1 = Expression.Parameter(typeof<IVector>)
-          let par2 = Expression.Parameter(typeof<IVector>)
-          let ty = typedefof<IVector<_>>.MakeGenericType(vect1.ElementType)
-          let expr =
-            Expression.Lambda<System.Func<VectorCallSite2<'R>, IVector, IVector, 'R>>
-              ( Expression.Call(inst, mi, Expression.Convert(par1, ty), Expression.Convert(par2, ty)), [ inst; par1; par2 ])
-          let func = expr.Compile()
-          dict.Value.[code] <- func
-          func.Invoke(callSite, vect1, vect2)
-
-/// Recursive function to cast `IVector list` to `IVector<'T> list`
-let rec convertVList<'T> (code:nativeint) (lst: IVector list) = 
-  match lst with
-  | []           -> []
-  | vect :: tail ->
-    if code <> vect.ElementType.TypeHandle.Value then
-      invalidOp "createVectorListDispatcher: All arguments should have the same element type"
-    (vect :?> IVector<'T>) :: convertVList code tail
-
-/// Creates a function `IVector list -> 'R` that dynamically invokes to 
-/// a generic `Invoke` method of the provided `VectorListCallSite1<'R>`
-let createVectorListDispatcher<'R> (callSite:VectorListCallSite1<'R>) =
-  let dict = lazy Dictionary<_, System.Func<VectorListCallSite1<'R>, IVector seq, 'R>>()
-  fun (vlst:IVector list) -> 
-    match vlst with
-      | []           -> invalidOp "createVectorListDispatcher: List must be non-empty"
-      | vect :: tail -> 
-        let code = vect.ElementType.TypeHandle.Value
-        if code = doubleCode then callSite.Invoke<float>(convertVList doubleCode vlst)
-        elif code = intCode then callSite.Invoke<int>(convertVList intCode vlst)
-        elif code = stringCode then callSite.Invoke<string>(convertVList stringCode vlst)
-        else
-          match dict.Value.TryGetValue(code) with
-          | true, f -> f.Invoke(callSite, vlst)
-          | _ ->
-            let mi = typeof<VectorListCallSite1<'R>>.GetMethod("Invoke").MakeGenericMethod(vect.ElementType)
-            let inst = Expression.Parameter(typeof<VectorListCallSite1<'R>>)
-            let tv = typedefof<IVector<_>>.MakeGenericType(vect.ElementType)
-            let ts = typedefof<seq<_>>.MakeGenericType(tv)
-            let par = Expression.Parameter(typeof<seq<IVector>>)
-
-            let caster = typeof<Enumerable>.GetMethod("Cast").MakeGenericMethod(tv)
-            let convrt = Expression.Convert(Expression.Call(caster, par), ts)
-
-            let expr =
-              Expression.Lambda<System.Func<VectorListCallSite1<'R>, IVector seq, 'R>>
-                ( Expression.Call(inst, mi, convrt), [ inst; par ])
-            let func = expr.Compile()
-            dict.Value.[code] <- func
-            func.Invoke(callSite, vlst)
 
 /// A type that implements common vector value transformations and 
 /// a helper method for creating transformation on values of known types
@@ -240,30 +179,40 @@ type VectorValueListTransform =
             if s.HasValue && v.HasValue then invalidOp "Combining vectors failed - more than one vector has a value."
             if v.HasValue then v else s) OptionalValue.Missing) }
 
-// A "generic function" that boxes all values of a vector (IVector<int, 'T> -> IVector<int, obj>)
-let boxVector () = 
-  { new VectorCallSite1<IVector<obj>> with
-      override x.Invoke<'T>(col:IVector<'T>) = col.Select(box) }
-  |> createVectorDispatcher
+// A "generic function" that boxes all values of a vector (IVector<'T> -> IVector<obj>)
+let boxVector (vector:IVector) =
+  { new VectorCallSite<IVector<obj>> with
+      override x.Invoke<'T>(col:IVector<'T>) = createBoxedVector(col) :> IVector<obj> }
+  |> vector.Invoke
+
+/// Given a vector, check whether it is `IBoxedVector` and if so, return the 
+/// underlying unboxed vector (see `IBoxedVector` for more information)
+let inline unboxVector (v:IVector) = 
+  match v with 
+  | :? IBoxedVector as vec -> vec.UnboxedVector
+  | vec -> vec 
 
 // A "generic function" that transforms a generic vector using specified transformation
-let transformColumn (vectorBuilder:IVectorBuilder) rowCmd = 
-  { new VectorCallSite1<IVector> with
+let transformColumn (vectorBuilder:IVectorBuilder) rowCmd (vector:IVector) = 
+  { new VectorCallSite<IVector> with
       override x.Invoke<'T>(col:IVector<'T>) = 
         vectorBuilder.Build<'T>(rowCmd, [| col |]) :> IVector }
-  |> createVectorDispatcher
+  |> vector.Invoke
 
 // A "generic function" that changes the type of vector elements
-let changeType<'R> : IVector -> IVector<'R> = 
-  { new VectorCallSite1<IVector<'R>> with
-      override x.Invoke<'T>(col:IVector<'T>) = 
-        col.Select(Convert.changeType<'R>) }
-  |> createVectorDispatcher
+let changeType<'R> (vector:IVector) = 
+  match unboxVector vector with
+  | :? IVector<'R> as res -> res
+  | vector ->
+      { new VectorCallSite<IVector<'R>> with
+          override x.Invoke<'T>(col:IVector<'T>) = 
+            col.Select(Convert.changeType<'R>) }
+      |> vector.Invoke
 
 // A "generic function" that tries to change the type of vector elements
-let tryChangeType<'R> : IVector -> OptionalValue<IVector<'R>> = 
+let tryChangeType<'R> (vector:IVector) : OptionalValue<IVector<'R>> = 
   let shouldBeConvertible (o:obj) = o <> null && o :? IConvertible
-  { new VectorCallSite1<OptionalValue<IVector<'R>>> with
+  { new VectorCallSite<OptionalValue<IVector<'R>>> with
       override x.Invoke<'T>(col:IVector<'T>) = 
         // Check the first non-missing value to see if we should even try doing the conversion
         let first = 
@@ -274,12 +223,12 @@ let tryChangeType<'R> : IVector -> OptionalValue<IVector<'R>> =
           // We still cannot be sure that it will actually work
           try OptionalValue(col.Select(fun v -> Convert.changeType<'R> v))
           with :? InvalidCastException | :? FormatException -> OptionalValue.Missing }
-  |> createVectorDispatcher
+  |> vector.Invoke
 
 // A "generic function" that tries to cast the type of vector elements
-let tryCastType<'R> : IVector -> OptionalValue<IVector<'R>> = 
+let tryCastType<'R> (vector:IVector) : OptionalValue<IVector<'R>> = 
   let shouldBeConvertible (o:obj) = o <> null && o :? 'R
-  { new VectorCallSite1<OptionalValue<IVector<'R>>> with
+  { new VectorCallSite<OptionalValue<IVector<'R>>> with
       override x.Invoke<'T>(col:IVector<'T>) = 
         // Check the first non-missing value to see if we should even try doing the conversion
         let first = 
@@ -290,24 +239,57 @@ let tryCastType<'R> : IVector -> OptionalValue<IVector<'R>> =
           // We still cannot be sure that it will actually work
           try OptionalValue(col.Select(fun v -> unbox<'R> v))
           with :? InvalidCastException -> OptionalValue.Missing }
-  |> createVectorDispatcher
+  |> vector.Invoke
 
 // A "generic function" that drops 
-let getVectorRange (builder:IVectorBuilder) range = 
-  { new VectorCallSite1<IVector> with
+let getVectorRange (builder:IVectorBuilder) range (vector:IVector) = 
+  { new VectorCallSite<IVector> with
       override x.Invoke<'T>(col:IVector<'T>) = 
         let cmd = VectorConstruction.GetRange(VectorConstruction.Return 0, range)
         builder.Build(cmd, [| col |]) :> IVector }
-  |> createVectorDispatcher
+  |> vector.Invoke
 
-// A "generic function" that fills NA values
-let fillNA (def:obj) : IVector -> IVector = 
-  { new VectorCallSite1<IVector> with
-      override x.Invoke<'T>(col:IVector<'T>) = 
-        col.SelectMissing(function
-          | OptionalValue.Missing -> OptionalValue(unbox def)
-          | OptionalValue.Present v -> OptionalValue(v)) :> IVector }
-  |> createVectorDispatcher
+
+/// Creates a virtual vector for reading "row" of a data frame. The virtual vector accesses
+/// internal representation of the frame (specified by `data` and `columnMappings`) and is only
+/// fully materialized in certain cases (when `Select`, `SelectMissing`, `Equals` or `GetHashCode` is used)
+/// The function is generic and converts values to the specified type.
+let createRowReader (data:IVector<IVector>) (builder:IVectorBuilder) (columnMappings:seq<'K * _>) rowAddress =
+  // 'let rec' would be more elegant, but it is slow...
+  let virtualVector = ref (Unchecked.defaultof<_>)
+  let materializeVector() =
+    let data = (virtualVector : ref<IVector<'T>>).Value.DataSequence
+    virtualVector := builder.CreateMissing(Array.ofSeq data)
+  virtualVector :=
+    { // Comparison and get hash code is delegated to actual vector
+      new System.Object() with
+        member x.Equals(another) = materializeVector(); virtualVector.Value.Equals(another)
+        member x.GetHashCode() = materializeVector(); virtualVector.Value.GetHashCode()
+      
+      /// In generic interface, we read objects and perform conversion
+      interface IVector<'T> with
+        member x.GetValue(columnAddress) = 
+          let vector = data.GetValue(columnAddress)
+          if not vector.HasValue then OptionalValue.Missing
+          else vector.Value.GetObject(rowAddress) |> OptionalValue.map (Convert.changeType<'T>)
+        member x.Data = 
+          [| for _, addr in columnMappings -> x.GetValue(addr) |]
+          |> ReadOnlyCollection.ofArray |> VectorData.SparseList          
+        member x.Select(f) = materializeVector(); virtualVector.Value.Select(f)
+        member x.SelectMissing(f) = materializeVector(); virtualVector.Value.SelectMissing(f)
+
+      // Non-generic interface is fully implemented as "virtual"   
+      interface IVector with
+        member x.ObjectSequence = (x :?> IVector<obj>).DataSequence
+        member x.SuppressPrinting = false
+        member x.ElementType = typeof<'T>
+        member x.GetObject(i) = OptionalValue.map box ((x :?> IVector<'T>).GetValue(i))
+        member x.Invoke(site) = site.Invoke(x :?> IVector<'T>) }
+  delegatedVector virtualVector
+
+/// The same as `createRowReader`, but returns `obj` vector as the result
+let createObjRowReader data builder colmap addr : IVector<obj> = 
+  createRowReader data builder colmap addr
 
 /// Helper type that is used via reflection
 type TryValuesHelper =
@@ -329,6 +311,19 @@ let tryValues (vect:IVector) =
     let mi = typeof<TryValuesHelper>.GetMethod("TryValues").MakeGenericMethod [|tyarg|]        
     mi.Invoke(null, [| vect |]) :?> TryValue<IVector>
   else TryValue.Success vect
+
+/// Return data from a (column-major) vector of vectors as 2D array of a specified type
+/// If value is missing, `defaultValue` is used (which may throw an exception)
+let toArray2D<'R> rowCount colCount (data:IVector<IVector>) (defaultValue:Lazy<'R>) =
+    let res = Array2D.zeroCreate rowCount colCount 
+    data.DataSequence
+    |> Seq.iteri (fun c vector ->
+      if vector.HasValue then
+        changeType(vector.Value).DataSequence
+        |> Seq.iteri (fun r v -> 
+            res.[r,c] <- if v.HasValue then v.Value else defaultValue.Value )
+      else for r = 0 to rowCount - 1 do res.[r, c] <- defaultValue.Value )
+    res
 
 /// Helper functions and active patterns for type inference
 module Inference = 

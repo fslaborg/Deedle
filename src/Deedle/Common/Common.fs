@@ -395,6 +395,12 @@ module ReadOnlyCollection =
 
   /// Converts a lazy sequence to fully evaluated ReadOnlyCollection
   let inline ofSeq (seq:seq<'T>) : ReadOnlyCollection<'T> = Array.AsReadOnly(Array.ofSeq seq)
+
+  /// Transform all elements of ReadOnlyCollection using the specified function
+  let inline map f (list:ReadOnlyCollection<'T>) = 
+    let res = Array.zeroCreate list.Count
+    for i in 0 .. list.Count - 1 do res.[i] <- f list.[i]
+    Array.AsReadOnly(res)
   
   /// Sum elements of the ReadOnlyCollection
   let inline sum (list:ReadOnlyCollection<'T>) = 
