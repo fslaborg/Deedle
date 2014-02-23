@@ -77,37 +77,6 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   let frameColumnsChanged = new DelegateEvent<NotifyCollectionChangedEventHandler>()
   
-  let createRowReader rowAddress =
-    // 'let rec' would be more elegant, but it is slow...
-    let virtualVector = ref (Unchecked.defaultof<_>)
-    let materializeVector() =
-      let data = (virtualVector : ref<IVector<_>>).Value.DataSequence
-      virtualVector := Vector.ofOptionalValues(data)
-    virtualVector :=
-      { new IVector<obj> with
-          member x.GetValue(columnAddress) = 
-            let vector = data.GetValue(columnAddress)
-            if not vector.HasValue then OptionalValue.Missing
-            else vector.Value.GetObject(rowAddress) 
-          member x.Data = 
-            [| for _, addr in columnIndex.Mappings -> x.GetValue(addr) |]
-            |> ReadOnlyCollection.ofArray |> VectorData.SparseList          
-          member x.Select(f) = materializeVector(); virtualVector.Value.Select(f)
-          member x.SelectMissing(f) = materializeVector(); virtualVector.Value.SelectMissing(f)
-        
-        interface IVector with
-          member x.ObjectSequence = (x :?> IVector<obj>).DataSequence
-          member x.SuppressPrinting = false
-          member x.ElementType = typeof<obj>
-          member x.GetObject(i) = (x :?> IVector<obj>).GetValue(i) 
-          member x.Invoke(site) = site.Invoke(x :?> IVector<obj>) }
-    VectorHelpers.delegatedVector virtualVector
-
-  let safeGetRowVector row = 
-    let rowVect = rowIndex.Lookup(row)
-    if not rowVect.HasValue then invalidArg "index" (sprintf "The data frame does not contain row with index '%O'" row) 
-    else  createRowReader (snd rowVect.Value)
-
   let safeGetColVector column = 
     let columnIndex = columnIndex.Lookup(column)
     if not columnIndex.HasValue then 
@@ -488,7 +457,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let res = emptySeries.SelectOptional (fun row ->
       let rowAddress = rowIndex.Lookup(row.Key, Lookup.Exact, fun _ -> true)
       if not rowAddress.HasValue then OptionalValue.Missing
-      else OptionalValue(Series.CreateUntyped(columnIndex, createRowReader (snd rowAddress.Value))))
+      else 
+        let rowReader = createObjRowReader data vectorBuilder columnIndex.Mappings (snd rowAddress.Value)
+        OptionalValue(Series.CreateUntyped(columnIndex, rowReader)))
     RowSeries(res)
 
   /// [category:Accessors and slicing]
@@ -497,7 +468,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let res = emptySeries.SelectOptional (fun row ->
       let rowAddress = rowIndex.Lookup(row.Key, Lookup.Exact, fun _ -> true)
       if not rowAddress.HasValue then OptionalValue.Missing else 
-        let rowVec = createRowReader (snd rowAddress.Value)
+        let rowVec = createObjRowReader data vectorBuilder columnIndex.Mappings (snd rowAddress.Value)
         let all = columnIndex.Mappings |> Seq.forall (fun (key, addr) -> rowVec.GetValue(addr).HasValue)
         if all then OptionalValue(Series.CreateUntyped(columnIndex, rowVec))
         else OptionalValue.Missing )
@@ -506,48 +477,114 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// [category:Accessors and slicing]
   member frame.Item 
     with get(column:'TColumnKey, row:'TRowKey) = frame.Columns.[column].[row]
+ 
+  // ----------------------------------------------------------------------------------------------
+  // Accessing frame rows
+  // ----------------------------------------------------------------------------------------------
 
-  /// [category:Accessors and slicing]
-  member frame.TryGetRowAt(index) = 
-    let rowAddress = rowIndex.Lookup(index, Lookup.Exact, fun _ -> true)
-    if not rowAddress.HasValue then OptionalValue.Missing
-    else OptionalValue(Series.CreateUntyped(columnIndex, createRowReader (snd rowAddress.Value)))
-
+  /// Returns the row key that is located at the specified int offset.
+  /// If the index is invalid, `ArgumentOutOfRangeException` is thrown. 
+  /// You can get the corresponding row using `GetRowAt`.
+  ///
+  /// ## Parameters
+  ///  - `index` - Offset (integer) of the row key to be returned
+  ///
   /// [category:Accessors and slicing]
   member frame.GetRowKeyAt(index) = 
     frame.RowIndex.KeyAt(Address.ofInt index)
 
+  /// Returns a row of the data frame that is located at the specified int offset.
+  /// This does not use the row key and directly accesses the frame data. This method
+  /// is generic and returns the result as a series containing values of the specified type. 
+  /// To get heterogeneous series of type `ObjectSeries<'TCol>`, use the `frame.Rows` property.
+  /// If the index is invalid, `ArgumentOutOfRangeException` is thrown. You can get the 
+  /// matching key at a specified index using `GetRowKeyAt`.
+  ///
+  /// ## Parameters
+  ///  - `index` - Offset (integer) of the row to be returned
+  ///
   /// [category:Accessors and slicing]
-  member frame.GetRowAt(index) = 
-    frame.TryGetRowAt(index).Value
+  member frame.GetRowAt<'T>(index) : Series<_, 'T> = 
+    if index < 0 || int64 index >= rowIndex.KeyCount then
+      raise (new ArgumentOutOfRangeException("index", "Index must be positive and smaller than the number of rows."))
+    let rowAddress = Address.ofInt index
+    Series.Create(columnIndex, createRowReader data vectorBuilder columnIndex.Mappings rowAddress)
 
+  /// Returns a row with the specieifed key wrapped in `OptionalValue`. When the specified key 
+  /// is not found, the result is `OptionalValue.Missing`. This method is generic and returns the result 
+  /// as a series containing values of the specified type. To get heterogeneous series of 
+  /// type `ObjectSeries<'TCol>`, use the `frame.Rows` property.
+  ///
+  /// ## Parameters
+  ///  - `rowKey` - Specifies the key of the row to be returned
+  ///
+  /// [category:Accessors and slicing]
+  member frame.TryGetRow<'T>(rowKey) : OptionalValue<Series<_, 'T>> =
+    let rowAddress = rowIndex.Locate(rowKey)
+    if rowAddress = Address.Invalid then OptionalValue.Missing
+    else OptionalValue(Series.Create(columnIndex, createRowReader data vectorBuilder columnIndex.Mappings rowAddress))
+
+  /// Returns a row with the specieifed key wrapped in `OptionalValue`. When the specified key 
+  /// is not found, the result is `OptionalValue.Missing`. This method is generic and returns the result 
+  /// as a series containing values of the specified type. To get heterogeneous series of 
+  /// type `ObjectSeries<'TCol>`, use the `frame.Rows` property.
+  ///
+  /// ## Parameters
+  ///  - `rowKey` - Specifies the key of the row to be returned
+  ///  - `lookup` - Specifies how to find value in a frame with ordered rows when the key does 
+  ///               not exactly match (look for nearest available value with the smaller/greater key).
+  ///
+  /// [category:Accessors and slicing]
+  member frame.TryGetRow<'T>(rowKey, lookup) : OptionalValue<Series<_, 'T>> =
+    let rowAddress = rowIndex.Lookup(rowKey, lookup, fun _ -> true)
+    if not rowAddress.HasValue then OptionalValue.Missing
+    else OptionalValue(Series.Create(columnIndex, createRowReader data vectorBuilder columnIndex.Mappings (snd rowAddress.Value)))
+
+  /// Returns a row with the specieifed key. This method is generic and returns the result 
+  /// as a series containing values of the specified type. To get heterogeneous series of 
+  /// type `ObjectSeries<'TCol>`, use the `frame.Rows` property.
+  ///
+  /// ## Parameters
+  ///  - `rowKey` - Specifies the key of the row to be returned
+  ///
+  /// [category:Accessors and slicing]
+  member frame.GetRow<'T>(rowKey) : Series<_, 'T> = frame.TryGetRow(rowKey).Value
+
+  /// Returns a row with the specieifed key. This method is generic and returns the result 
+  /// as a series containing values of the specified type. To get heterogeneous series of 
+  /// type `ObjectSeries<'TCol>`, use the `frame.Rows` property.
+  ///
+  /// ## Parameters
+  ///  - `rowKey` - Specifies the key of the row to be returned
+  ///  - `lookup` - Specifies how to find value in a frame with ordered rows when the key does 
+  ///               not exactly match (look for nearest available value with the smaller/greater key).
+  ///
+  /// [category:Accessors and slicing]
+  member frame.GetRow<'T>(rowKey, lookup) : Series<_, 'T> =  frame.TryGetRow(rowKey, lookup).Value
+
+  /// Try to find a row with the specified row key, or using the specified `lookup` parameter,
+  /// and return the found row together with its actual key in case `lookup` was used. In case the
+  /// row is not found, `OptionalValue.Missing` is returned.
+  ///
+  /// ## Parameters
+  ///  - `rowKey` - Specifies the key of the row to be returned
+  ///  - `lookup` - Specifies how to find value in a frame with ordered rows when the key does 
+  ///               not exactly match (look for nearest available value with the smaller/greater key).
+  ///
+  /// [category:Accessors and slicing]
+  member frame.TryGetRowObservation<'T>(rowKey, lookup) =
+    frame.Rows.TryGetObservation(rowKey, lookup) 
+    |> OptionalValue.map (fun kvp -> 
+      KeyValuePair(kvp.Key, Series.Create(columnIndex, changeType<'T> kvp.Value.Vector)))
+  
   // ----------------------------------------------------------------------------------------------
-  // More accessors
+  // Fancy accessors for frame columns and frame data
   // ----------------------------------------------------------------------------------------------
 
   /// [category:Fancy accessors]
   member frame.GetColumns<'R>() = 
     frame.Columns.SelectOptional(fun (KeyValue(k, vopt)) ->
       vopt |> OptionalValue.bind (fun ser -> ser.TryAs<'R>(false)))
-
-  /// [category:Fancy accessors]
-  member frame.GetRow<'R>(row) = frame.GetRow<'R>(row, Lookup.Exact)
-
-  /// [category:Fancy accessors]
-  member frame.GetRow<'R>(row, lookup) : Series<'TColumnKey, 'R> = 
-    let row = frame.Rows.Get(row, lookup)
-    Series.Create(columnIndex, changeType row.Vector)
-
-  /// [category:Fancy accessors]
-  member frame.TryGetRow<'R>(row, lookup) =
-    frame.Rows.TryGet(row, lookup) 
-    |> OptionalValue.map (fun v -> Series.Create(columnIndex, changeType<'R> v.Vector))
-
-  /// [category:Fancy accessors]
-  member frame.TryGetRowObservation(row, lookup) =
-    frame.Rows.TryGetObservation(row, lookup) 
-    |> OptionalValue.map (fun kvp -> 
-      KeyValuePair(kvp.Key, Series.Create(columnIndex, changeType<'R> kvp.Value.Vector)))
 
   /// [category:Fancy accessors]
   member frame.GetAllValues<'R>() = frame.GetAllValues<'R>(false)

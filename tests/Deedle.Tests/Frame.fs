@@ -309,6 +309,39 @@ let ``Filter all rows keeps column keys`` () =
   (fun () -> filt.["Z"] |> ignore) |> should throw (typeof<ArgumentException>)
 
 // ------------------------------------------------------------------------------------------------
+// Row access
+// ------------------------------------------------------------------------------------------------
+
+let rowSample() = 
+  frame [ "X" => series [| "a" => 1.0; "c" => 2.0; "e" => 3.0 |]
+          "Y" => series [| "a" => 4.0; "c" => nan; "e" => 6.0 |] ]    
+
+[<Test>]
+let ``Accessing row via row offset work`` () =
+  let actual = rowSample().GetRowAt<int>(2)
+  actual |> shouldEqual <| series [ "X" => 3; "Y" => 6 ]
+
+[<Test>]
+let ``Accessing row via invalid row offset throws an exception`` () =
+  (fun () -> rowSample().GetRowAt<int>(4) |> ignore)
+  |> should throw (typeof<ArgumentOutOfRangeException>)
+
+[<Test>]
+let ``Accessing row via row key works`` () =
+  let actual = rowSample().GetRow<int>("e")
+  actual |> shouldEqual <| series [ "X" => 3; "Y" => 6 ]
+
+[<Test>]
+let ``Accessing row via missing row key returns missing`` () =
+  let actual = rowSample().TryGetRow<int>("f")
+  actual.HasValue |> shouldEqual false
+
+[<Test>]
+let ``Accessing row via missing row key with lookup works`` () =
+  let actual = rowSample().GetRow<int>("f", Lookup.NearestSmaller)
+  actual |> shouldEqual <| series [ "X" => 3; "Y" => 6 ]
+
+// ------------------------------------------------------------------------------------------------
 // Stack & unstack
 // ------------------------------------------------------------------------------------------------
 
