@@ -452,26 +452,22 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       else OptionalValue.Missing )))
 
   /// [category:Accessors and slicing]
-  member frame.Rows = 
-    let emptySeries = Series<_, _>(rowIndex, Vector.ofValues [], vectorBuilder, indexBuilder)
-    let res = emptySeries.SelectOptional (fun row ->
-      let rowAddress = rowIndex.Lookup(row.Key, Lookup.Exact, fun _ -> true)
-      if not rowAddress.HasValue then OptionalValue.Missing
-      else 
-        let rowReader = createObjRowReader data vectorBuilder columnIndex.Mappings (snd rowAddress.Value)
-        OptionalValue(Series.CreateUntyped(columnIndex, rowReader)))
-    RowSeries(res)
+  member frame.Rows =
+    let values = rowIndex.Keys |> Seq.map (fun k ->
+      let rowAddress = rowIndex.Locate(k)
+      let rowReader = createObjRowReader data vectorBuilder columnIndex.Mappings rowAddress
+      Series.CreateUntyped(columnIndex, rowReader))    
+    RowSeries(Series<_, _>(rowIndex, Vector.ofValues values, vectorBuilder, indexBuilder))
 
   /// [category:Accessors and slicing]
   member frame.RowsDense = 
     let emptySeries = Series<_, _>(rowIndex, Vector.ofValues [], vectorBuilder, indexBuilder)
     let res = emptySeries.SelectOptional (fun row ->
-      let rowAddress = rowIndex.Lookup(row.Key, Lookup.Exact, fun _ -> true)
-      if not rowAddress.HasValue then OptionalValue.Missing else 
-        let rowVec = createObjRowReader data vectorBuilder columnIndex.Mappings (snd rowAddress.Value)
-        let all = columnIndex.Mappings |> Seq.forall (fun (key, addr) -> rowVec.GetValue(addr).HasValue)
-        if all then OptionalValue(Series.CreateUntyped(columnIndex, rowVec))
-        else OptionalValue.Missing )
+      let rowAddress = rowIndex.Locate(row.Key)
+      let rowVec = createObjRowReader data vectorBuilder columnIndex.Mappings rowAddress
+      let all = columnIndex.Mappings |> Seq.forall (fun (key, addr) -> rowVec.GetValue(addr).HasValue)
+      if all then OptionalValue(Series.CreateUntyped(columnIndex, rowVec))
+      else OptionalValue.Missing )
     RowSeries(Series.dropMissing res)
 
   /// [category:Accessors and slicing]
