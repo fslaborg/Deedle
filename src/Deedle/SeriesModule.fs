@@ -1046,15 +1046,15 @@ module Series =
   let inline chunkWhile cond (series:Series<'K, 'T>) = 
     chunkWhileInto cond id series 
 
-  // Experimental sliding window logic -
+  // -- Experimental sliding window logic -
+  // TODO: does this belong here?
 
-  let internal third (_, _, x) = x
-
-  // adopted from Seq.windowed (F# code base)
-  // finit takes the first fully populated window to the initial state
-  // fupdate takes the current state, current observation, and previous observation to the next state
-  // ftransf takes the state to the output type
-  let internal slidingWindowFn winSz finit fupdate ftransf (source: seq<_>) =
+  // Helps create a moving window calculation
+  //   finit takes the first fully populated window array to an initial state
+  //   fupdate takes the current state, current observation, and previous observation to the next state
+  //   ftransf takes the current state to the current output
+  // (adopted from Seq.windowed in F# code base)  
+  let internal movingWindowHelper winSz finit fupdate ftransf (source: seq<_>) =
     seq {
        let arr = Array.zeroCreate winSz 
        let r = ref (winSz-1)
@@ -1064,6 +1064,7 @@ module Series =
        use e = source.GetEnumerator() 
        while e.MoveNext() do 
          let curr = e.Current
+         let prev = arr.[!i]
          arr.[!i] <- curr
          i := (!i+1) % winSz
          if !r = 0 then 
@@ -1071,60 +1072,102 @@ module Series =
              state := Array.copy arr |> finit
              isInit := true
            else 
-             state := fupdate !state curr arr.[!i]
+             state := fupdate !state curr prev
            yield !state |> ftransf
          else 
            r := (!r - 1) }
-       
-  let internal movingMeanSparse winSz minObs vals =
-    let finit (init: float option []) =
-      let filt = init |> Seq.filter Option.isSome |> Seq.map Option.get |> Seq.toArray
-      (Array.sum filt, Array.length filt |> float, None)
 
-    let fupdate s c p =
-      let sum, count, _ = s
-      let newsum, newcount = 
-        match c, p with
-        | Some x, Some y -> sum + x - y, count
-        | Some x, None   -> sum + x, count + 1.0
-        | None, Some y   -> sum - y, count - 1.0
-        | None, None     -> sum, count
-      newsum, newcount, (if (int newcount) > minObs then Some(newsum / newcount) else None)
+  let internal applyMovingWindow winSz minObs (densef: float seq -> float seq) (sparsef: float option seq -> float option seq) 
+    (series:Series<'K, float>) : Series<'K, float> =
     
-    vals |> slidingWindowFn winSz finit fupdate third
-
-  let internal movingMeanDense winSz vals =
-    let finit (init: float []) = 
-      let sum = init |> Array.sum
-      let len = init |> Array.length |> float
-      sum, len, sum / len
-
-    let fupdate s c p =
-      let sum, count, _ = s
-      let newsum = sum + c - p
-      newsum, count, newsum / count
-
-    vals |> slidingWindowFn winSz finit fupdate third
-
-  let movingMean winSz minObs (series:Series<'K, float>) : Series<'K, float> =
     if winSz <= 0 then invalidArg "windowSize" "Window must be non-negative"
     if winSz < minObs then invalidArg "windowSize" "Window must be at least the size of minObs"
     
-    if winSz = 1 then series else
-      let newKeys = series.Index.Keys |> Seq.skip (winSz - 1)
-      
-      let makeOptionalSeries x = 
-        let newVals = x |> Seq.map OptionalValue.asOption |> movingMeanSparse winSz minObs
-        Series(Index.ofKeys newKeys, Vector.ofOptionalValues newVals, series.VectorBuilder, series.IndexBuilder)
-      
-      match series.Vector.Data with
-      | VectorData.DenseList x -> 
-        let newVals = x |> movingMeanDense winSz
-        Series(Index.ofKeys newKeys, Vector.ofValues newVals, series.VectorBuilder, series.IndexBuilder)
-      | VectorData.SparseList x -> 
-        makeOptionalSeries x
-      | VectorData.Sequence x -> 
-        makeOptionalSeries x
+    let newKeys = series.Index.Keys |> Seq.skip (winSz - 1)
+    
+    let makeOptionalSeries x = 
+      let newVals = x |> Seq.map OptionalValue.asOption |> sparsef
+      Series(Index.ofKeys newKeys, Vector.ofOptionalValues newVals, series.VectorBuilder, series.IndexBuilder)
+
+    let makeSeries x =
+      let newVals = x |> densef
+      Series(Index.ofKeys newKeys, Vector.ofValues newVals, series.VectorBuilder, series.IndexBuilder)
+
+    match series.Vector.Data with
+    | VectorData.DenseList x  -> makeSeries x
+    | VectorData.SparseList x -> makeOptionalSeries x
+    | VectorData.Sequence x   -> makeOptionalSeries x
+    
+  type Moments = { nobs: float; sum: float; sumsq: float }
+
+  let internal initMomentsSparse (init: float option []) =
+    let filt = init |> Seq.filter Option.isSome |> Seq.map Option.get |> Seq.toArray
+    let count = filt |> Array.length |> float
+    let sum   = filt |> Array.sum 
+    let sumsq = filt |> Array.sumBy (fun x -> x * x)
+    { nobs = count; sum = sum; sumsq = sumsq }
+
+  let internal updateMomentsSparse state curr prev = 
+    let newcount, newsum, newsumsq = 
+      match curr, prev with
+      | Some x, Some y -> state.nobs,       state.sum + x - y, state.sumsq + x * x - y * y
+      | Some x, None   -> state.nobs + 1.0, state.sum + x,     state.sumsq + x * x
+      | None, Some y   -> state.nobs - 1.0, state.sum - y,     state.sumsq - y * y
+      | None, None     -> state.nobs,       state.sum,         state.sumsq
+    { nobs = newcount; sum = newsum; sumsq = newsumsq }
+
+  let internal initMomentsDense (init: float []) = 
+    let count = init |> Array.length |> float
+    let sum   = init |> Array.sum
+    let sumsq = init |> Array.sumBy (fun x -> x * x)
+    { nobs = count; sum = sum; sumsq = sumsq }
+  
+  let internal updateMomentsDense state curr prev =
+    let newsum   = state.sum + curr - prev
+    let newsumsq = state.sumsq + curr * curr - prev * prev
+    { state with sum = newsum; sumsq = newsumsq }
+    
+  // moving count
+  let movingCount winSz minObs (series:Series<'K, float>) : Series<'K, float> =
+    let count s = s.nobs
+    let filtCount s = if (int s.nobs) > minObs then Some(s.nobs) else None
+    let movingCountSparse = movingWindowHelper winSz initMomentsSparse updateMomentsSparse filtCount
+    let movingCountDense = movingWindowHelper winSz initMomentsDense updateMomentsDense count
+    applyMovingWindow winSz minObs movingCountDense movingCountSparse series
+
+  // moving sum
+  let movingSum winSz minObs (series:Series<'K, float>) : Series<'K, float> =
+    let sum s = s.sum
+    let filtSum s = if (int s.nobs) > minObs then Some(s.sum) else None
+    let movingSumSparse = movingWindowHelper winSz initMomentsSparse updateMomentsSparse filtSum
+    let movingSumDense = movingWindowHelper winSz initMomentsDense updateMomentsDense sum
+    applyMovingWindow winSz minObs movingSumDense movingSumSparse series
+
+  // moving mean
+  let movingMean winSz minObs (series:Series<'K, float>) : Series<'K, float> =
+    let mean s = s.sum / s.nobs
+    let filtMean s = if (int s.nobs) > minObs then Some(mean s) else None
+    let movingMeanSparse = movingWindowHelper winSz initMomentsSparse updateMomentsSparse filtMean
+    let movingMeanDense = movingWindowHelper winSz initMomentsDense updateMomentsDense mean
+    applyMovingWindow winSz minObs movingMeanDense movingMeanSparse series
+
+  // moving variance
+  let movingVariance winSz minObs (series:Series<'K, float>) : Series<'K, float> =
+    let var s = (s.nobs * s.sumsq - s.sum * s.sum) / (s.nobs * s.nobs - s.nobs)
+    let filtvar s = if (int s.nobs) > minObs then Some(var s) else None
+    let movingVarSparse = movingWindowHelper winSz initMomentsSparse updateMomentsSparse filtvar
+    let movingVarDense = movingWindowHelper winSz initMomentsDense updateMomentsDense var
+    applyMovingWindow winSz minObs movingVarDense movingVarSparse series
+
+  // moving std dev
+  let movingStdDev winSz minObs (series:Series<'K, float>) : Series<'K, float> =
+    let sdv s = (s.nobs * s.sumsq - s.sum * s.sum) / (s.nobs * s.nobs - s.nobs) |> sqrt
+    let filtsdv s = if (int s.nobs) > minObs then Some(sdv s) else None
+    let movingVarSparse = movingWindowHelper winSz initMomentsSparse updateMomentsSparse filtsdv
+    let movingVarDense = movingWindowHelper winSz initMomentsDense updateMomentsDense sdv
+    applyMovingWindow winSz minObs movingVarDense movingVarSparse series
+
+  // -- end sliding window logic
 
   // Most common-case functions  
 
