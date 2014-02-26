@@ -1046,35 +1046,35 @@ module Series =
   let internal third (_, _, x) = x
 
   // adopted from Seq.windowed (F# code base)
-  let internal slidingWindowFn size finit fupdate ftransf (source: seq<_>) =
-    if size <= 0 then invalidArg "windowSize" "Window must be non-negative"
-
+  // finit takes the first fully populated window to the initial state
+  // fupdate takes the current state, current observation, and previous observation to the next state
+  // ftransf takes the state to the output type
+  let internal slidingWindowFn winSz finit fupdate ftransf (source: seq<_>) =
     seq {
-       let arr = Array.zeroCreate size 
-       let r = ref (size-1)
+       let arr = Array.zeroCreate winSz 
+       let r = ref (winSz-1)
        let i = ref 0 
        let isInit = ref false
        let state = ref Unchecked.defaultof<_>
        use e = source.GetEnumerator() 
        while e.MoveNext() do 
-         arr.[!i] <- e.Current
+         let curr = e.Current
+         arr.[!i] <- curr
+         i := (!i+1) % winSz
          if !r = 0 then 
-           let curr = arr.[!i % size] 
-           let prev = arr.[(!i+1) % size] 
            if not !isInit then
-             state := finit arr
+             state := Array.copy arr |> finit
              isInit := true
            else 
-             state := fupdate !state curr prev
+             state := fupdate !state curr arr.[!i]
            yield !state |> ftransf
          else 
-           r := (!r - 1) 
-         i := (!i + 1) % size }
+           r := (!r - 1) }
        
-  let internal movingMeanSparse size vals =
+  let internal movingMeanSparse winSz minObs vals =
     let finit (init: float option []) =
-      let filt = init |> Seq.filter (fun v -> v.IsSome) |> Seq.map (fun v -> v.Value) |> Seq.toArray
-      (filt |> Array.sum, filt |> Array.length |> float, None)
+      let filt = init |> Seq.filter Option.isSome |> Seq.map Option.get |> Seq.toArray
+      (Array.sum filt, Array.length filt |> float, None)
 
     let fupdate s c p =
       let sum, count, _ = s
@@ -1084,11 +1084,11 @@ module Series =
         | Some x, None   -> sum + x, count + 1.0
         | None, Some y   -> sum - y, count - 1.0
         | None, None     -> sum, count
-      newsum, newcount, (if newcount > 0.0 && c.IsSome then Some(newsum / newcount) else None)
+      newsum, newcount, (if (int newcount) > minObs then Some(newsum / newcount) else None)
     
-    vals |> slidingWindowFn size finit fupdate third
+    vals |> slidingWindowFn winSz finit fupdate third
 
-  let internal movingMeanDense size vals =
+  let internal movingMeanDense winSz vals =
     let finit (init: float []) = 
       let sum = init |> Array.sum
       let len = init |> Array.length |> float
@@ -1099,23 +1099,26 @@ module Series =
       let newsum = sum + c - p
       newsum, count, newsum / count
 
-    vals |> slidingWindowFn size finit fupdate third
+    vals |> slidingWindowFn winSz finit fupdate third
 
-  let movingMean size (series:Series<'K, float>) : Series<'K, float> =
-    let newKeys = series.Index.Keys |> Seq.skip (size - 1)
+  let movingMean winSz minObs (series:Series<'K, float>) : Series<'K, float> =
+    if winSz <= 0 then invalidArg "windowSize" "Window must be non-negative"
+    if winSz < minObs then invalidArg "windowSize" "Window must be at least the size of minObs"
+    
+    let newKeys = series.Index.Keys |> Seq.skip (winSz - 1)
 
     let makeOptionalSeries x = 
-      let newVals = x |> Seq.map OptionalValue.asOption |> movingMeanSparse size
+      let newVals = x |> Seq.map OptionalValue.asOption |> movingMeanSparse winSz minObs
       Series(Index.ofKeys newKeys, Vector.ofOptionalValues newVals, series.VectorBuilder, series.IndexBuilder)
 
     match series.Vector.Data with
-      | VectorData.DenseList x -> 
-        let newVals = x |> movingMeanDense size
-        Series(Index.ofKeys newKeys, Vector.ofValues newVals, series.VectorBuilder, series.IndexBuilder)
-      | VectorData.SparseList x -> 
-        makeOptionalSeries x
-      | VectorData.Sequence x -> 
-        makeOptionalSeries x
+    | VectorData.DenseList x -> 
+      let newVals = x |> movingMeanDense winSz
+      Series(Index.ofKeys newKeys, Vector.ofValues newVals, series.VectorBuilder, series.IndexBuilder)
+    | VectorData.SparseList x -> 
+      makeOptionalSeries x
+    | VectorData.Sequence x -> 
+      makeOptionalSeries x
 
   // Most common-case functions  
 
