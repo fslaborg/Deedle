@@ -1110,20 +1110,21 @@ module Series =
     if winSz <= 0 then invalidArg "windowSize" "Window must be non-negative"
     if winSz < minObs then invalidArg "windowSize" "Window must be at least the size of minObs"
     
-    let newKeys = series.Index.Keys |> Seq.skip (winSz - 1)
-
-    let makeOptionalSeries x = 
-      let newVals = x |> Seq.map OptionalValue.asOption |> movingMeanSparse winSz minObs
-      Series(Index.ofKeys newKeys, Vector.ofOptionalValues newVals, series.VectorBuilder, series.IndexBuilder)
-
-    match series.Vector.Data with
-    | VectorData.DenseList x -> 
-      let newVals = x |> movingMeanDense winSz
-      Series(Index.ofKeys newKeys, Vector.ofValues newVals, series.VectorBuilder, series.IndexBuilder)
-    | VectorData.SparseList x -> 
-      makeOptionalSeries x
-    | VectorData.Sequence x -> 
-      makeOptionalSeries x
+    if winSz = 1 then series else
+      let newKeys = series.Index.Keys |> Seq.skip (winSz - 1)
+      
+      let makeOptionalSeries x = 
+        let newVals = x |> Seq.map OptionalValue.asOption |> movingMeanSparse winSz minObs
+        Series(Index.ofKeys newKeys, Vector.ofOptionalValues newVals, series.VectorBuilder, series.IndexBuilder)
+      
+      match series.Vector.Data with
+      | VectorData.DenseList x -> 
+        let newVals = x |> movingMeanDense winSz
+        Series(Index.ofKeys newKeys, Vector.ofValues newVals, series.VectorBuilder, series.IndexBuilder)
+      | VectorData.SparseList x -> 
+        makeOptionalSeries x
+      | VectorData.Sequence x -> 
+        makeOptionalSeries x
 
   // Most common-case functions  
 
