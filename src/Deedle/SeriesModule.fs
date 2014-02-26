@@ -1046,7 +1046,83 @@ module Series =
   let inline chunkWhile cond (series:Series<'K, 'T>) = 
     chunkWhileInto cond id series 
 
-  // Most common-case functions
+  // Experimental sliding window logic -
+
+  let internal third (_, _, x) = x
+
+  // adopted from Seq.windowed (F# code base)
+  let internal slidingWindowFn size finit fupdate ftransf (source: seq<_>) =
+    if size <= 0 then invalidArg "windowSize" "Window must be non-negative"
+
+    seq {
+       let arr = Array.zeroCreate size 
+       let r = ref (size-1)
+       let i = ref 0 
+       let isInit = ref false
+       let state = ref Unchecked.defaultof<_>
+       use e = source.GetEnumerator() 
+       while e.MoveNext() do 
+         arr.[!i] <- e.Current
+         if !r = 0 then 
+           let curr = arr.[!i % size] 
+           let prev = arr.[(!i+1) % size] 
+           if not !isInit then
+             state := finit arr
+             isInit := true
+           else 
+             state := fupdate !state curr prev
+           yield !state |> ftransf
+         else 
+           r := (!r - 1) 
+         i := (!i + 1) % size }
+       
+  let internal movingMeanSparse size vals =
+    let finit (init: float option []) =
+      let filt = init |> Seq.filter (fun v -> v.IsSome) |> Seq.map (fun v -> v.Value) |> Seq.toArray
+      (filt |> Array.sum, filt |> Array.length |> float, None)
+
+    let fupdate s c p =
+      let sum, count, _ = s
+      let newsum, newcount = 
+        match c, p with
+        | Some x, Some y -> sum + x - y, count
+        | Some x, None   -> sum + x, count + 1.0
+        | None, Some y   -> sum - y, count - 1.0
+        | None, None     -> sum, count
+      newsum, newcount, (if newcount > 0.0 && c.IsSome then Some(newsum / newcount) else None)
+    
+    vals |> slidingWindowFn size finit fupdate third
+
+  let internal movingMeanDense size vals =
+    let finit (init: float []) = 
+      let sum = init |> Array.sum
+      let len = init |> Array.length |> float
+      sum, len, sum / len
+
+    let fupdate s c p =
+      let sum, count, _ = s
+      let newsum = sum + c - p
+      newsum, count, newsum / count
+
+    vals |> slidingWindowFn size finit fupdate third
+
+  let movingMean size (series:Series<'K, float>) : Series<'K, float> =
+    let newKeys = series.Index.Keys |> Seq.skip (size - 1)
+
+    let makeOptionalSeries x = 
+      let newVals = x |> Seq.map OptionalValue.asOption |> movingMeanSparse size
+      Series(Index.ofKeys newKeys, Vector.ofOptionalValues newVals, series.VectorBuilder, series.IndexBuilder)
+
+    match series.Vector.Data with
+      | VectorData.DenseList x -> 
+        let newVals = x |> movingMeanDense size
+        Series(Index.ofKeys newKeys, Vector.ofValues newVals, series.VectorBuilder, series.IndexBuilder)
+      | VectorData.SparseList x -> 
+        makeOptionalSeries x
+      | VectorData.Sequence x -> 
+        makeOptionalSeries x
+
+  // Most common-case functions  
 
   /// Creates a sliding window using the specified size and then applies the provided 
   /// value selector `f` on each window to produce the result which is returned as a new series. 
