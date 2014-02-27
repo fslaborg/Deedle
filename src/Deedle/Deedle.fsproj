@@ -73,6 +73,7 @@
     <Compile Include="FrameModule.fs" />
     <Compile Include="FrameExtensions.fs" />
     <Compile Include="DelayedSeries.fs" />
+    <Compile Include="Stats.fs" />
     <None Include="packages.config" />
     <None Include="Deedle.fsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

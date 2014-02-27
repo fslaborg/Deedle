@@ -78,6 +78,7 @@
     <Compile Include="Series.fs" />
     <Compile Include="Frame.fs" />
     <Compile Include="LazySeries.fs" />
+    <Compile Include="Stats.fs" />
     <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup>
