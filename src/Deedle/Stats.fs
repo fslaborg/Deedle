@@ -119,15 +119,16 @@ module Stats =
      
   // Knuth/Welford algorithm for online updating
   // ref: http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#On-line_algorithm            
-  type Welford = { nobs: float; delta: float; mean: float; M2: float }
+  type Welford = { nobs: float; delta: float; mean: float; M2: float; sum: float }
 
   let internal updateWelford state curr =
-    let { nobs = nobs; delta = delta; mean = mean; M2 = M2 } = state
+    let { nobs = nobs; delta = delta; mean = mean; M2 = M2; sum = sum } = state
     let n = nobs + 1.0
     let delta = curr - mean
     let mean = mean + delta / n
     let M2 = M2 + delta * (curr - mean)
-    { nobs = n; delta = delta; mean = mean; M2 = M2 }   
+    let s = sum + curr 
+    { nobs = n; delta = delta; mean = mean; M2 = M2; sum = s }   
 
   let internal updateWelfordSparse state curr =     
     match curr with
@@ -137,13 +138,19 @@ module Stats =
   let internal applyExpandingWindowTransform minObs (proj: Welford -> float) series =
     if minObs < 1 then invalidArg "minObs" "minObs must be at least 1"
     let filtProj s = if (int s.nobs) > minObs then Some(proj s) else None
-    let initState = {nobs = 0.0; delta = 0.0; mean = 0.0; M2 = 0.0}
+    let initState = {nobs = 0.0; delta = 0.0; mean = 0.0; M2 = 0.0; sum = 0.0 }
     let keyFn = Seq.skip (minObs - 1)
     let movingCountDense = expandingWindowFn minObs initState updateWelford proj
     let movingCountSparse = expandingWindowFn minObs initState updateWelfordSparse filtProj
     applySeriesProj keyFn movingCountDense movingCountSparse series
 
   // expanding window functions
+
+  let expandingCount minObs (series:Series<'K, float>) : Series<'K, float> =
+    applyExpandingWindowTransform minObs (fun w -> w.nobs) series
+
+  let expandingSum minObs (series:Series<'K, float>) : Series<'K, float> =
+    applyExpandingWindowTransform minObs (fun w -> w.sum) series
 
   let expandingMean minObs (series:Series<'K, float>) : Series<'K, float> =
     applyExpandingWindowTransform minObs (fun w -> w.mean) series
