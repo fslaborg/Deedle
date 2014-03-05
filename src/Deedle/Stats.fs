@@ -95,9 +95,9 @@ module Stats =
     let calcSparse = movingWindowFn winSz (initSumsSparse moment) (updateSumsSparse moment) filtProj
     applySeriesProj keyFn calcDense calcSparse series
 
-  let internal stdev s =
+  let internal variance s =
     let v = (s.nobs * s.sump2 - s.sum * s.sum) / (s.nobs * s.nobs - s.nobs) 
-    if v < 0.0 then nan else sqrt v
+    if v < 0.0 then nan else v
 
   let internal skew s =
     let a = s.sum / s.nobs
@@ -132,10 +132,10 @@ module Stats =
     applyMovingStatsTransform 1 winSz minObs (fun s -> s.sum / s.nobs) series
 
   let movingVariance winSz minObs (series:Series<'K, float>) : Series<'K, float> =
-    applyMovingStatsTransform 2 winSz minObs (fun s -> (s.nobs * s.sump2 - s.sum * s.sum) / (s.nobs * s.nobs - s.nobs)) series
+    applyMovingStatsTransform 2 winSz minObs variance series
 
   let movingStdDev winSz minObs (series:Series<'K, float>) : Series<'K, float> =
-    applyMovingStatsTransform 2 winSz minObs stdev series
+    applyMovingStatsTransform 2 winSz minObs (variance >> sqrt) series
 
   let movingSkew winSz minObs (series:Series<'K, float>) : Series<'K, float> =
     applyMovingStatsTransform 3 winSz minObs skew series
