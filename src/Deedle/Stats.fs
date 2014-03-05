@@ -8,28 +8,21 @@ module Stats =
   // - TODO: 
   //    -- still to do, possibly: median, percentile, min, max, corr, cov
 
-  let internal applySeriesProj (denseProj:float seq -> float seq) (sparseProj:float option seq -> float option seq) 
-    (series:Series<'K, float>) : Series<'K, float> =
-    
-    let makeOptionalSeries x = 
-      let newVals = x |> Seq.map OptionalValue.asOption |> sparseProj
-      Series(series.Index, Vector.ofOptionalValues newVals, series.VectorBuilder, series.IndexBuilder)
+  let internal applySeriesProj (proj: float option seq -> float seq) (series:Series<'K, float>) : Series<'K, float> =
+    let newData = 
+      series.Vector.DataSequence 
+      |> Seq.map OptionalValue.asOption
+      |> proj 
+      |> Vector.ofValues
 
-    let makeSeries x =
-      let newVals = x |> denseProj
-      Series(series.Index, Vector.ofValues newVals, series.VectorBuilder, series.IndexBuilder)
+    Series(series.Index, newData, series.VectorBuilder, series.IndexBuilder)
 
-    match series.Vector.Data with
-    | VectorData.DenseList x  -> makeSeries x
-    | VectorData.SparseList x -> makeOptionalSeries x
-    | VectorData.Sequence x   -> makeOptionalSeries x
-    
   // Helps create a moving window calculation
   // nb. adopted from Seq.windowed in F# code base
   //   finit takes the first fully populated window array to an initial state
   //   fupdate takes the current state, incoming observation, and out-going observation to the next state
   //   ftransf takes the current state to the current output
-  let internal movingWindowFn winSz finit fupdate ftransf noVal (source: seq<_>) =
+  let internal movingWindowFn winSz finit fupdate ftransf (source: seq<_>) =
     seq {
        let arr = Array.zeroCreate winSz 
        let r = ref (winSz - 1)
@@ -51,7 +44,7 @@ module Stats =
            yield !state |> ftransf
          else 
            r := (!r - 1)
-           yield noVal }
+           yield nan }
 
   type Sums = { nobs: float; sum: float; sump2: float; sump3: float; sump4: float }
 
@@ -71,7 +64,11 @@ module Stats =
     { state with sum = sum; sump2 = sump2; sump3 = sump3; sump4 = sump4 }
 
   let internal initSumsSparse moment (init: float option []) =
-    init |> Seq.filter Option.isSome |> Seq.map Option.get |> Seq.toArray |> (initSumsDense moment)
+    init 
+    |> Seq.filter Option.isSome 
+    |> Seq.map Option.get 
+    |> Seq.toArray 
+    |> (initSumsDense moment)
 
   let internal updateSumsSparse moment state curr outg = 
     match curr, outg with
@@ -86,10 +83,9 @@ module Stats =
 
   let internal applyMovingStatsTransform moment winSz minObs (proj: Sums -> float) series =
     checkWinSz winSz minObs
-    let filtProj s = if (int s.nobs) >= minObs then Some(proj s) else None
-    let calcDense = movingWindowFn winSz (initSumsDense moment) (updateSumsDense moment) proj nan
-    let calcSparse = movingWindowFn winSz (initSumsSparse moment) (updateSumsSparse moment) filtProj None
-    applySeriesProj calcDense calcSparse series
+    let filtProj s = if (int s.nobs) >= minObs then proj s else nan
+    let calcSparse = movingWindowFn winSz (initSumsSparse moment) (updateSumsSparse moment) filtProj
+    applySeriesProj calcSparse series
 
   let internal variance s =
     let v = (s.nobs * s.sump2 - s.sum * s.sum) / (s.nobs * s.nobs - s.nobs) 
@@ -183,12 +179,10 @@ module Stats =
 
   let internal applyExpandingStatsTransform minObs (proj: Moments -> float) series =
     if minObs < 1 then invalidArg "minObs" "minObs must be at least 1"
-    let proj' s = if (int s.nobs) >= minObs then proj s else nan
-    let filtProj s = if (int s.nobs) >= minObs then Some(proj s) else None
-    let initState = {nobs = 0.0; sum = 0.0; M1 = 0.0; M2 = 0.0; M3 = 0.0; M4 = 0.0 }
-    let calcDense = expandingWindowFn minObs initState updateMoments proj' 
-    let calcSparse = expandingWindowFn minObs initState updateMomentsSparse filtProj
-    applySeriesProj calcDense calcSparse series
+    let filtProj s = if (int s.nobs) >= minObs then proj s else nan
+    let initMoments = {nobs = 0.0; sum = 0.0; M1 = 0.0; M2 = 0.0; M3 = 0.0; M4 = 0.0 }
+    let calcSparse = expandingWindowFn minObs initMoments updateMomentsSparse filtProj
+    applySeriesProj calcSparse series
 
   // expanding window functions
 
