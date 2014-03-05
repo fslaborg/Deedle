@@ -4,36 +4,32 @@ open Deedle.Vectors
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]    
 module Stats =
-  // -- Experimental window logic 
+  // -- Experimental fast sliding window logic 
   // - TODO: 
-  //    -- still to do, possibly: prod, min, max, median, quantile, corr, cov
+  //    -- still to do, possibly: median, percentile, min, max, corr, cov
 
-  let internal applySeriesProj keyProj (denseProj:float seq -> float seq) (sparseProj:float option seq -> float option seq) 
+  let internal applySeriesProj (denseProj:float seq -> float seq) (sparseProj:float option seq -> float option seq) 
     (series:Series<'K, float>) : Series<'K, float> =
-    
-    let newKeys = series.Index.Keys |> keyProj
     
     let makeOptionalSeries x = 
       let newVals = x |> Seq.map OptionalValue.asOption |> sparseProj
-      Series(Index.ofKeys newKeys, Vector.ofOptionalValues newVals, series.VectorBuilder, series.IndexBuilder)
+      Series(series.Index, Vector.ofOptionalValues newVals, series.VectorBuilder, series.IndexBuilder)
 
     let makeSeries x =
       let newVals = x |> denseProj
-      Series(Index.ofKeys newKeys, Vector.ofValues newVals, series.VectorBuilder, series.IndexBuilder)
+      Series(series.Index, Vector.ofValues newVals, series.VectorBuilder, series.IndexBuilder)
 
     match series.Vector.Data with
     | VectorData.DenseList x  -> makeSeries x
     | VectorData.SparseList x -> makeOptionalSeries x
     | VectorData.Sequence x   -> makeOptionalSeries x
     
-  // moving window functions:
-
   // Helps create a moving window calculation
   // nb. adopted from Seq.windowed in F# code base
   //   finit takes the first fully populated window array to an initial state
   //   fupdate takes the current state, incoming observation, and out-going observation to the next state
   //   ftransf takes the current state to the current output
-  let internal movingWindowFn winSz finit fupdate ftransf (source: seq<_>) =
+  let internal movingWindowFn winSz finit fupdate ftransf noVal (source: seq<_>) =
     seq {
        let arr = Array.zeroCreate winSz 
        let r = ref (winSz - 1)
@@ -54,7 +50,8 @@ module Stats =
              state := fupdate !state curr outg
            yield !state |> ftransf
          else 
-           r := (!r - 1) }
+           r := (!r - 1)
+           yield noVal }
 
   type Sums = { nobs: float; sum: float; sump2: float; sump3: float; sump4: float }
 
@@ -67,11 +64,11 @@ module Stats =
     { nobs = count; sum = sum; sump2 = sump2; sump3 = sump3; sump4 = sump4 }
   
   let internal updateSumsDense moment state curr outg =
-    let newsum   = if moment < 1 then 0.0 else state.sum + curr - outg
-    let newsump2 = if moment < 2 then 0.0 else state.sump2 + (pown curr 2) - (pown outg 2)
-    let newsump3 = if moment < 3 then 0.0 else state.sump3 + (pown curr 3) - (pown outg 3)
-    let newsump4 = if moment < 4 then 0.0 else state.sump4 + (pown curr 4) - (pown outg 4)
-    { state with sum = newsum; sump2 = newsump2; sump3 = newsump3; sump4 = newsump4 }
+    let sum   = if moment < 1 then 0.0 else state.sum + curr - outg
+    let sump2 = if moment < 2 then 0.0 else state.sump2 + (pown curr 2) - (pown outg 2)
+    let sump3 = if moment < 3 then 0.0 else state.sump3 + (pown curr 3) - (pown outg 3)
+    let sump4 = if moment < 4 then 0.0 else state.sump4 + (pown curr 4) - (pown outg 4)
+    { state with sum = sum; sump2 = sump2; sump3 = sump3; sump4 = sump4 }
 
   let internal initSumsSparse moment (init: float option []) =
     init |> Seq.filter Option.isSome |> Seq.map Option.get |> Seq.toArray |> (initSumsDense moment)
@@ -90,10 +87,9 @@ module Stats =
   let internal applyMovingStatsTransform moment winSz minObs (proj: Sums -> float) series =
     checkWinSz winSz minObs
     let filtProj s = if (int s.nobs) >= minObs then Some(proj s) else None
-    let keyFn = Seq.skip (winSz - 1)
-    let calcDense = movingWindowFn winSz (initSumsDense moment) (updateSumsDense moment) proj
-    let calcSparse = movingWindowFn winSz (initSumsSparse moment) (updateSumsSparse moment) filtProj
-    applySeriesProj keyFn calcDense calcSparse series
+    let calcDense = movingWindowFn winSz (initSumsDense moment) (updateSumsDense moment) proj nan
+    let calcSparse = movingWindowFn winSz (initSumsSparse moment) (updateSumsSparse moment) filtProj None
+    applySeriesProj calcDense calcSparse series
 
   let internal variance s =
     let v = (s.nobs * s.sump2 - s.sum * s.sum) / (s.nobs * s.nobs - s.nobs) 
@@ -146,17 +142,16 @@ module Stats =
   // end moving window functions
 
   // Helps create an expanding window calculation
-  //   minObs is the minimum number of observations 
+  //   winSz is the minimum window size
   //   fupdate takes the current state and incoming observation to the next state
   //   ftransf takes the current state to the current output
   let internal expandingWindowFn winSz initState fupdate ftransf (source: seq<_>) =
     source 
     |> Seq.scan fupdate initState 
-    |> Seq.skip winSz
     |> Seq.map ftransf 
 
   // Knuth/Welford algorithm for online stats updating
-  // ref: http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#On-line_algorithm            
+  // see: http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#On-line_algorithm            
   type Moments = { 
     nobs : float 
     sum  : float 
@@ -186,47 +181,49 @@ module Stats =
     | Some x -> updateMoments state x
     | None   -> state
 
-  let internal applyExpandingStatsTransform winSz (proj: Moments -> float) series =
-    if winSz < 1 then invalidArg "winSz" "winSz must be at least 1"
-    let filtProj s = if (int s.nobs) >= winSz then Some(proj s) else None
+  let internal applyExpandingStatsTransform minObs (proj: Moments -> float) series =
+    if minObs < 1 then invalidArg "minObs" "minObs must be at least 1"
+    let proj' s = if (int s.nobs) >= minObs then proj s else nan
+    let filtProj s = if (int s.nobs) >= minObs then Some(proj s) else None
     let initState = {nobs = 0.0; sum = 0.0; M1 = 0.0; M2 = 0.0; M3 = 0.0; M4 = 0.0 }
-    let keyFn = Seq.skip (winSz - 1)
-    let calcDense = expandingWindowFn winSz initState updateMoments proj
-    let calcSparse = expandingWindowFn winSz initState updateMomentsSparse filtProj
-    applySeriesProj keyFn calcDense calcSparse series
+    let calcDense = expandingWindowFn minObs initState updateMoments proj' 
+    let calcSparse = expandingWindowFn minObs initState updateMomentsSparse filtProj
+    applySeriesProj calcDense calcSparse series
 
   // expanding window functions
 
-  let expandingCount winSz (series:Series<'K, float>) : Series<'K, float> =
-    applyExpandingStatsTransform winSz (fun w -> w.nobs) series
+  let expandingCount minObs (series:Series<'K, float>) : Series<'K, float> =
+    applyExpandingStatsTransform minObs (fun w -> w.nobs) series
 
-  let expandingSum winSz (series:Series<'K, float>) : Series<'K, float> =
-    applyExpandingStatsTransform winSz (fun w -> w.sum) series
+  let expandingSum minObs (series:Series<'K, float>) : Series<'K, float> =
+    applyExpandingStatsTransform minObs (fun w -> w.sum) series
 
-  let expandingMean winSz (series:Series<'K, float>) : Series<'K, float> =
-    applyExpandingStatsTransform winSz (fun w -> w.M1) series
+  let expandingMean minObs (series:Series<'K, float>) : Series<'K, float> =
+    applyExpandingStatsTransform minObs (fun w -> w.M1) series
 
-  let expandingVariance winSz (series:Series<'K, float>) : Series<'K, float> =
+  let expandingVariance minObs (series:Series<'K, float>) : Series<'K, float> =
     let toVar w = w.M2 / (w.nobs - 1.0)
-    applyExpandingStatsTransform winSz toVar series
+    applyExpandingStatsTransform minObs toVar series
 
-  let expandingStdDev winSz (series:Series<'K, float>) : Series<'K, float> =
+  let expandingStdDev minObs (series:Series<'K, float>) : Series<'K, float> =
     let toStdDev w = w.M2 / (w.nobs - 1.0) |> sqrt
-    applyExpandingStatsTransform winSz toStdDev series
+    applyExpandingStatsTransform minObs toStdDev series
 
-  let expandingSkew winSz (series:Series<'K, float>) : Series<'K, float> =
+  let expandingSkew minObs (series:Series<'K, float>) : Series<'K, float> =
     // population -> sample estimate    
-    let toSkew w = 
-      let adjust = (sqrt (w.nobs * (w.nobs - 1.0))) / (w.nobs - 2.0)
-      adjust * (sqrt w.nobs) * w.M3 / (w.M2 ** 1.5) 
-    applyExpandingStatsTransform winSz toSkew series
+    let toEstSkew w = 
+      if w.nobs < 3.0 then nan else
+        let adjust = (sqrt (w.nobs * (w.nobs - 1.0))) / (w.nobs - 2.0)
+        adjust * (sqrt w.nobs) * w.M3 / (w.M2 ** 1.5) 
+    applyExpandingStatsTransform minObs toEstSkew series
 
-  let expandingKurt winSz (series:Series<'K, float>) : Series<'K, float> =
+  let expandingKurt minObs (series:Series<'K, float>) : Series<'K, float> =
     // population -> sample estimate
-    let toKurt w = 
-      let adjust p = (6.0 + p * (w.nobs + 1.0)) * (w.nobs - 1.0) / ((w.nobs - 2.0) * (w.nobs - 3.0))
-      adjust ((w.nobs * w.M4) / (w.M2 * w.M2) - 3.0)
-    applyExpandingStatsTransform winSz toKurt series
+    let toEstKurt w = 
+      if w.nobs < 4.0 then nan else
+        let adjust p = (6.0 + p * (w.nobs + 1.0)) * (w.nobs - 1.0) / ((w.nobs - 2.0) * (w.nobs - 3.0))
+        adjust ((w.nobs * w.M4) / (w.M2 * w.M2) - 3.0)
+    applyExpandingStatsTransform minObs toEstKurt series
 
   // end expanding window functions
 
