@@ -104,6 +104,7 @@ module internal Ranges =
 open Ranges
 open System.Threading.Tasks
 open System.Collections.Generic
+open System.Collections.ObjectModel
 
 /// Specifies the ranges for which data need to be provided
 type internal DelayedSourceRanges<'K> = (('K * BoundaryBehavior) * ('K * BoundaryBehavior))[]
@@ -214,7 +215,8 @@ and internal DelayedIndexFunction<'K, 'R when 'K : equality> =
 and internal DelayedIndexBuilder() =
   let builder = IndexBuilder.Instance
   interface IIndexBuilder with
-    member x.Create(keys, ordered) = builder.Create(keys, ordered)
+    member x.Create(keys:seq<_>, ordered) = builder.Create(keys, ordered)
+    member x.Create(keys:ReadOnlyCollection<_>, ordered) = builder.Create(keys, ordered)
     member x.Aggregate(index, aggregation, vector, selector) = builder.Aggregate(index, aggregation, vector, selector)
     member x.GroupBy(index, keySel, vector) = builder.GroupBy(index, keySel, vector)
     member x.OrderIndex(sc) = builder.OrderIndex(sc)

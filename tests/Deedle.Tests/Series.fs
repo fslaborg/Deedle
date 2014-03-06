@@ -100,6 +100,75 @@ let ``Should throw useful message when there are duplicate keys`` () =
   actual |> should contain "42"
 
 // ------------------------------------------------------------------------------------------------
+// Chunking and windowing functions
+// ------------------------------------------------------------------------------------------------
+
+// Generate series with letters for testing
+let letters n = series [ for k in 0 .. n - 1 -> k => char ((int 'A') + k) ]
+
+[<Test>]
+let ``Series.windowInto works correctly on sample input`` () =
+  let actual = letters 10 |> Series.windowInto 8 (fun s -> new String(Array.ofSeq s.Values))
+  let expected = series [7 => "ABCDEFGH"; 8 => "BCDEFGHI"; 9 => "CDEFGHIJ"]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Series.windowSizeInto with AtBeginning boundary works correctly on sample input`` () =
+  let actual = letters 5 |> Series.windowSizeInto (4, Boundary.AtBeginning) (fun s -> new String(Array.ofSeq s.Data.Values))
+  let expected = series [0 => "A"; 1 => "AB"; 2 => "ABC"; 3 => "ABCD"; 4 => "BCDE" ]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Series.windowSizeInto with AtEnding boundary works correctly on sample input`` () =
+  let actual = letters 5 |> Series.windowSizeInto (4, Boundary.AtEnding) (fun s -> new String(Array.ofSeq s.Data.Values))
+  let expected = series [0 => "ABCD"; 1 => "BCDE"; 2 => "CDE"; 3 => "DE"; 4 => "E" ]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Series.chunkInto works correctly on sample input`` () =
+  let actual = letters 10 |> Series.chunkInto 4 (fun s -> new String(Array.ofSeq s.Values))
+  let expected = series [0 => "ABCD"; 4 => "EFGH" ]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Series.chunkSizeInto with AtBeginning boundary works correctly on sample input`` () =
+  let actual = letters 10 |> Series.chunkSizeInto (4, Boundary.AtBeginning) (fun s -> new String(Array.ofSeq s.Data.Values))
+  let expected = series [0 => "AB"; 2 => "CDEF"; 6 => "GHIJ" ]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Series.chunkSizeInto with AtEnding boundary works correctly on sample input`` () =
+  let actual = letters 10 |> Series.chunkSizeInto (4, Boundary.AtEnding) (fun s -> new String(Array.ofSeq s.Data.Values))
+  let expected = series [0 => "ABCD"; 4 => "EFGH"; 8 => "IJ" ]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Series.chunkSizeInto with AtBeginning & Skip boundary works correctly on sample input`` () =
+  let actual = letters 10 |> Series.chunkSizeInto (4, Boundary.AtBeginning ||| Boundary.Skip) (fun s -> new String(Array.ofSeq s.Data.Values))
+  let expected = series [2 => "CDEF"; 6 => "GHIJ" ]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Series.chunkSizeInto with AtEnding & Skip boundary works correctly on sample input`` () =
+  let actual = letters 10 |> Series.chunkSizeInto (4, Boundary.AtEnding ||| Boundary.Skip) (fun s -> new String(Array.ofSeq s.Data.Values))
+  let expected = series [0 => "ABCD"; 4 => "EFGH" ]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Series.chunkWhileInto works on sample input`` () =
+  let s = series [ 01 => 01; 10 => 10; 11 => 11; 14 => 14; 21 => 21] 
+  let actual = s |> Series.chunkWhileInto (fun k1 k2 -> k1/10 = k2/10) (Series.values >> List.ofSeq)
+  let expected = series [ 1 => [1]; 10 => [10;11;14]; 21 => [21]]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Series.windowWhileInto works on sample input`` () =
+  let s = series [ 01 => 01; 10 => 10; 11 => 11; 14 => 14; 21 => 21] 
+  let actual = s |> Series.windowWhileInto (fun k1 k2 -> k1/10 = k2/10) (Series.values >> List.ofSeq)
+  let expected = series [ 1 => [1]; 10 => [10;11;14]; 11 => [11;14]; 14 => [14]; 21 => [21]]
+  actual |> shouldEqual expected
+
+// ------------------------------------------------------------------------------------------------
 // Operations - union, grouping, diff, etc.
 // ------------------------------------------------------------------------------------------------
 

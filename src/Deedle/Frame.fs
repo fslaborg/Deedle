@@ -434,9 +434,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     rowIndex.Mappings |> Seq.isEmpty
 
   /// [category:Accessors and slicing]
-  member frame.RowKeys = rowIndex.Keys
+  member frame.RowKeys = rowIndex.Keys :> seq<_>
   /// [category:Accessors and slicing]
-  member frame.ColumnKeys = columnIndex.Keys
+  member frame.ColumnKeys = columnIndex.Keys :> seq<_>
 
   /// [category:Accessors and slicing]
   member frame.Columns = 

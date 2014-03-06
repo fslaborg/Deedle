@@ -188,7 +188,7 @@ and
   ///
   /// [category:Accessors and slicing]
   member series.GetItems(keys, lookup) =    
-    let newIndex = indexBuilder.Create<_>(keys, None)
+    let newIndex = indexBuilder.Create<_>((keys:seq<_>), None)
     let newVector = vectorBuilder.Build(indexBuilder.Reindex(index, newIndex, lookup, Vectors.Return 0, fun addr -> series.Vector.GetValue(addr).HasValue), [| vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
@@ -705,7 +705,7 @@ and
     Series<int, _>(newIndex, vector, vectorBuilder, indexBuilder)
 
   /// [category:Indexing]
-  member x.IndexWith(keys) = 
+  member x.IndexWith(keys:seq<_>) = 
     let newIndex = indexBuilder.Create(keys, None)
     Series<'TNewKey, _>(newIndex, vector, vectorBuilder, indexBuilder)
 

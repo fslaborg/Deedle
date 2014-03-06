@@ -70,10 +70,22 @@ let testOne() =
   //let d1 = Array.init 1000000 float
   //let d2 = Array.init 1000000 float
 
-  let titanic = Frame.ReadCsv(__SOURCE_DIRECTORY__ + @"\..\..\docs\content\data\Titanic.csv")
-  for i in 1 .. 20 do
+  let s = series [ for k in 0 .. 100000 -> k => float k ]
+
+//  s |> Series.chunkInto 100 Series.mean |> ignore
+//  s |> Series.chunkWhileInto (fun k1 k2 -> k2 - k1 < 100) Series.mean |> ignore
+//  s |> Series.windowWhileInto (fun k1 k2 -> k2 - k1 < 100) Series.mean |> ignore
+
+  //let titanic = Frame.ReadCsv(__SOURCE_DIRECTORY__ + @"\..\..\docs\content\data\Titanic.csv")
+  for i in 1 .. 5 do
     timed(fun () ->
-   
+       //let nada = s |> Series.windowInto 100 Series.mean
+
+       let nada = s |> Series.windowInto 100 Series.mean |> ignore
+
+       ///let nada2 = s |> Series.windowSizeInto (5, Boundary.Skip) (DataSegment.data >> Series.mean)
+       ()
+       (*
         let bySex = titanic |> Frame.groupRowsByString "Sex"
         let survivedBySex = bySex.Columns.["Survived"].As<bool>()
         let survivals = 
@@ -88,8 +100,7 @@ let testOne() =
         let summary = 
               [ "Survived (%)" => survivals?Survived / survivals?Total * 100.0
                 "Died (%)" => survivals?Died/ survivals?Total * 100.0 ] |> frame
-
-        ()
+                *)
       //CSharp.Tests.DynamicFrameTests.CanAddSeriesDynamically()
       //CSharp.Tests.DynamicFrameTests.CanGetSeriesDynamically()
 //      Tests.Frame.``Can group 10x5k data frame by row of type string and nest it (in less than a few seconds)``()

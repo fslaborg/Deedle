@@ -566,8 +566,8 @@ module Series =
   let windowSizeInto bounds f (series:Series<'K, 'T>) : Series<'K, 'R> =
     let dir = if snd bounds = Boundary.AtEnding then Direction.Forward else Direction.Backward
     let keySel = System.Func<DataSegment<Series<_, _>>, _>(fun data -> 
-      if dir = Direction.Backward then data.Data.Index.Keys |> Seq.last
-      else data.Data.Index.Keys |> Seq.head )
+      if dir = Direction.Backward then data.Data.Index.KeyRange |> snd
+      else data.Data.Index.KeyRange |> fst )
     series.Aggregate(WindowSize(bounds), keySel, (fun ds -> OptionalValue(f ds)))
 
   /// Creates a sliding window using the specified size and boundary behavior and returns

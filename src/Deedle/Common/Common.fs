@@ -772,6 +772,133 @@ module Seq =
        yield DataSegment(Incomplete, !currentChunk |> Array.ofList |> Array.rev) }
 
 
+  /// Generates addresses of chunks in a collection of size 'length'. For example, consider
+  /// a collection with 7 elements (and indices 0 .. 6) and the requirement to create chunks
+  /// of length 4: 
+  ///
+  ///    0 1 2 3 4 5 6   
+  ///
+  ///    s
+  ///    s s
+  ///    s s s
+  ///    w w w w
+  ///      w w w w
+  ///        w w w w
+  ///          w w w w
+  ///            e e e 
+  ///              e e
+  ///                e
+  ///
+  /// The windows 's' are returned when `boundary = Boundary.AtBeginning` and the windows
+  /// 'e' are returned when `boundary = Boundary.AtEnding`. The middle is returned always.
+  /// The windows are specified by *inclusive* indices, so, e.g. the first window is returned
+  /// as a pair (0, 0).
+  let windowRangesWithBounds size boundary length = seq { 
+    // If we want incomplete windows at the beginning, 
+    // generate "size - 1" windows always starting from 0
+    if boundary = Boundary.AtBeginning then
+      for i in 1L .. size - 1L do yield DataSegmentKind.Incomplete, 0L, i - 1L
+    // Generate all windows in the middle. There is always length - size + 1 of those
+    for i in 0L .. length - size do yield DataSegmentKind.Complete, i, i + size - 1L 
+    // If we want incomplete windows at the ending
+    // gneerate "size - 1" windows, always ending with length-1
+    if boundary = Boundary.AtEnding then
+      for i in 1L .. size - 1L do yield DataSegmentKind.Incomplete, length - size + i, length - 1L }
+
+
+  /// Generates addresses of windows in a collection of size 'length'. For example, consider
+  /// a collection with 7 elements (and indices 0 .. 6) and the requirement to create windows
+  /// of length 3: 
+  ///
+  ///    0 1 2 3 4 5 6   
+  ///
+  /// When the `AtEnding` flag is set for `boundary`:
+  ///
+  ///    c c c
+  ///          c c c
+  ///                d
+  ///
+  /// The two chunks marked as 'c' are returned always. The incomplete chunk at the end is
+  /// returned unless the `Skip` flag is set for `boundary`. When the `AtBeginning` flag is
+  /// set, the incomplete chunk is (when not `Skip`) returned at the beginning:
+  ///
+  ///    d
+  ///      c c c 
+  ///            c c c 
+  ///
+  /// The chunks are specified by *inclusive* indices, so, e.g. the first chunk in 
+  /// the second example above is returned as a pair (0, 0).
+  let chunkRangesWithBounds size (boundary:Boundary) length = seq { 
+    if boundary.HasFlag(Boundary.AtBeginning) && boundary.HasFlag(Boundary.AtEnding) then
+      invalidOp "Only one kind of boundary must be specified (either AtBeginning or AtEnding)"
+
+    // How many chunk do we return? What is the length of the incomplete one?
+    let chunkCount = length / size
+    let incompleteSize = length % size
+    if boundary.HasFlag(Boundary.AtBeginning) then
+      // Generate one incomplete chunk if it is required
+      // and then chunkCount times chunks starting from incompleteSize
+      if not (boundary.HasFlag(Boundary.Skip)) then
+        yield DataSegmentKind.Incomplete, 0L, incompleteSize - 1L
+      for i in 0L .. chunkCount - 1L do 
+        yield DataSegmentKind.Complete, incompleteSize + i * size, incompleteSize + (i + 1L) * size - 1L
+    else // Assuming Boundary.AtEnding
+      // Generate chunkCount times chunks starting from zero
+      // and then one incomplete chunk if it is required
+      for i in 0L .. chunkCount - 1L do 
+        yield DataSegmentKind.Complete, i * size, (i + 1L) * size - 1L
+      if not (boundary.HasFlag(Boundary.Skip)) then
+        yield DataSegmentKind.Incomplete, chunkCount * size, length - 1L }
+
+  /// Generate floating windows from the input sequence. New floating window is 
+  /// started for each element. To find the end of the window, the function calls
+  /// the provided argument `f` with the first and the last elements of the window
+  /// as arguments. A window ends when `f` returns `false`.
+  /// The function returns the windows as pairs of their indices.
+  let windowRangesWhile (f:'T -> 'T -> bool) input = seq {
+    let windows = System.Collections.Generic.LinkedList()
+    let index = ref -1L
+    for v in input do
+      index := !index + 1L
+      windows.AddLast( (v, !index, !index) ) |> ignore
+      // Walk over all windows; use 'f' to determine if the item
+      // should be added - if so, add it, otherwise yield window
+      let win = ref windows.First
+      while win.Value <> null do 
+        let value, startIdx, endIdx = win.Value.Value
+        let next = win.Value.Next
+        if f value v then win.Value.Value <- value, startIdx, !index
+        else 
+          yield startIdx, endIdx
+          windows.Remove(win.Value)
+        win := next
+    for _, startIdx, endIdx in windows do
+      yield startIdx, endIdx }
+
+  
+  /// Generate non-verlapping chunks from the input sequence. A chunk is started 
+  /// at the beginning and then immediately after the end of the previous chunk.
+  /// To find the end of the chunk, the function calls the provided argument `f` 
+  /// with the first and the last elements of the chunk as arguments. A chunk 
+  /// ends when `f` returns `false`.
+  /// The function returns the chunks as pairs of their indices.
+  let chunkRangesWhile f input = seq {
+    let chunk = ref None
+    let index = ref -1L
+    for v in input do
+      index := !index + 1L
+      match chunk.Value with 
+      | None -> chunk := Some(v, !index, !index)
+      | Some(value, startIdx, endIdx) ->
+          if f value v then chunk := Some(value, startIdx, !index)
+          else
+            yield startIdx, endIdx
+            chunk := Some(v, !index, !index)
+    match chunk.Value with
+    | Some (_, startIdx, endIdx) -> yield startIdx, endIdx
+    | _ -> () }
+
+
   /// Returns true if the specified sequence is sorted.
   let isSorted (data:seq<_>) (comparer:IComparer<_>) =
     let rec isSorted past (en:IEnumerator<'T>) =
