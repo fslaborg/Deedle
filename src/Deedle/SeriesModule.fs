@@ -2,155 +2,337 @@
 #nowarn "10002" // Custom CompilerMessage used to hide internals that are inlined
 
 namespace Deedle
+open System
+open System.Collections.Generic
+open System.Linq
 open Deedle.Keys
 open Deedle.Addressing
+open Deedle.Internal
+open Deedle.Vectors
+open MathNet.Numerics.Statistics
 
-/// Series module comment..
+/// The `Series` module provides F#-friendly API for working with functions. The API
+/// follows the usual design for collection-processing in F#, so the functions work
+/// well with the pipelining (`|>`) operator. For example, given a series with ages,
+/// we can use `Series.filterValues` to filter outliers and then `Series.mean` to calculate
+/// the mean:
+///
+///     ages
+///     |> Series.filterValues (fun v -> v > 0.0 && v < 120.0)
+///     |> Series.mean
+///
+/// The module provides comprehensive set of functions for working with series. The same
+/// API is also exposed using C#-friendly extension methods. In C#, the above snippet could
+/// be written as:
+///
+///     [lang=csharp]
+///     ages
+///       .Where(kvp => kvp.Value > 0.0 && kvp.Value < 120.0)
+///       .Mean()
 /// 
-/// ## Lookup, resampling and scaling
-/// More stuff here
+/// For more information about similar frame-manipulation functions, see the `Frame` module.
+/// For more information about C#-friendly extensions, see `SeriesExtensions`. The functions 
+/// in the `Series` module are grouped in a number of categories and documented below.
+///
+/// ## Accessing series data and lookup
+///
+/// Functions in this category provide access to the values in the series.
+///
+///  - The term _observation_ is used for a key value pair in the series. 
+///  - When working with a sorted series, it is possible to perform lookup using
+///    keys that are not present in the series - you can specify to search for the
+///    previous or next available value using _lookup behavior_.
+///  - Functions such as `get` and `getAll` have their counterparts `lookup` and
+///    `lookupAll` that let you specify lookup behavior.
+///  - For most of the functions that may fail, there is a `try[Foo]` variant that
+///    returns `None` instead of failing.
+///  - Functions with a name ending with `At` perform lookup based on the absolute
+///    integer offset (and ignore the keys of the series)
+///
+/// ## Series transformations 
+///
+/// > **TODO** Write comment here  
+/// > **TODO** Document functions in this category
+/// 
+/// 
+/// ## Calculations, aggregation and statistics
+///
+/// > **TODO** Write comment here  
+/// > **TODO** Document functions in this category
+///
+/// 
+/// ## Hierarchical index operations
+///
+/// > **TODO** Write comment here
+///
+/// 
+/// ## Windowing, chunking and grouping
+///
+/// This category includes functions that group data from a series in some way. Two key
+/// concepts here are _window_ and _chunk_. Window refers to (overlapping) sliding windows
+/// over the input series while chunk refers to non-overlapping blocks of the series.
+///
+/// The boundary behavior can be specified using the `Boundary` flags. The value 
+/// `Skip` means that boundaries (incomplete windows or chunks) should be skipped. The value
+/// `AtBeginning` and `AtEnding` can be used to define at which side should the boundary be
+/// returned (or skipped). For chunking, `AtBeginning ||| Skip` makes sense and it means that
+/// the incomplete chunk at the beginning should be skipped (aligning the last chunk with the end).
+///
+/// The behavior may be specified in a number of ways (which is reflected in the name):
+///  - `dist` - using an absolute distance between the keys
+///  - `while` - using a condition on the first and last key
+///  - `size` - by specifying the absolute size of the window/chunk
+///
+/// The functions ending with `Into` take a function to be applied to the window/chunk. 
+/// The functions `window`, `windowInto` and `chunk`, `chunkInto` are simplified versions
+/// that take a size. There is also `pairwise` function for sliding window of size two.
 ///
 /// ## Missing values
-/// More stuff here
 ///
-/// ## Windowing, chunking and grouping
-/// The functions with name starting with `windowed` take a series and generate floating 
-/// (overlapping) windows. The `chunk` functions 
+/// > **TODO** Write comment here
 ///
-/// ## Statistics
-/// Here
+///
+/// ## Sorting and reindexing
+/// 
+/// > **TODO** Write comment here
+///
+///
+/// ## Sampling, resampling and advanced lookup
+///
+/// > **TODO** Write comment here
+///
+///
+/// ## Appending, joining and zipping
+///
+/// > **TODO** Write comment here
+///
+///
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Series = 
-  open System
-  open System.Collections.Generic
-  open System.Linq
-  open Deedle.Internal
-  open Deedle.Vectors
-  open MathNet.Numerics.Statistics
+
+  // ------------------------------------------------------------------------------------
+  // Accessing series data and lookup
+  // ------------------------------------------------------------------------------------
 
   /// Return observations with available values. The operation skips over 
   /// all keys with missing values (such as values created from `null`,
   /// `Double.NaN`, or those that are missing due to outer join etc.).
+  ///
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("GetObservations")>]
   let observations (series:Series<'K, 'T>) = seq { 
     for key, address in series.Index.Mappings do
       let v = series.Vector.GetValue(address)
       if v.HasValue then yield key, v.Value }
   
   /// Returns all keys from the sequence, together with the associated (optional) values. 
+  ///
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("GetAllObservations")>]
   let observationsAll (series:Series<'K, 'T>) = seq { 
     for key, address in series.Index.Mappings ->
       key, OptionalValue.asOption (series.Vector.GetValue(address)) }
 
   /// Create a new series that contains values for all provided keys.
   /// Use the specified lookup semantics - for exact matching, use `getAll`
+  ///
+  /// ## Parameters
+  ///  - `keys` - A sequence of keys that will form the keys of the retunred sequence
+  ///  - `lookup` - Lookup behavior to use when the value at the specified key does not exist
+  ///
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("LookupAll")>]
   let lookupAll keys lookup (series:Series<'K, 'T>) = series.GetItems(keys, lookup)
 
   /// Create a new series that contains values for all provided keys.
   /// Uses exact lookup semantics for key lookup - use `lookupAll` for more options
+  ///
+  /// ## Parameters
+  ///  - `keys` - A sequence of keys that will form the keys of the retunred sequence
+  ///
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("GetObservations")>]
   let getAll keys (series:Series<'K, 'T>) = series.GetItems(keys)
 
   /// Get the value for the specified key.
   /// Use the specified lookup semantics - for exact matching, use `get`
+  ///
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("Lookup")>]
   let lookup key lookup (series:Series<'K, 'T>) = series.Get(key, lookup)
 
   /// Get the value for the specified key.
-  /// Uses exact lookup semantics for key lookup - use `lookupAll` for more options
+  /// Uses exact lookup semantics for key lookup - use `lookup` for more options
+  ///
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("Get")>]
   let get key (series:Series<'K, 'T>) = series.Get(key)
 
+  /// Returns the value at the specified (integer) offset.
+  ///
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("GetAt")>]
   let getAt index (series:Series<'K, 'T>) = series.GetAt(index)
 
+  /// Attempts to get the value for the specified key. If the value is not
+  /// available, `None` is returned.
+  /// Use the specified lookup semantics - for exact matching, use `tryGet`.
+  ///
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("TryLookup")>]
   let tryLookup key lookup (series:Series<'K, 'T>) = series.TryGet(key, lookup) |> OptionalValue.asOption
 
+  /// Attempts to get an observation (key value pair) based on the specified key.
+  /// The search uses the specified lookup semantics and so the returned key
+  /// may differ from the key searched for. If the value is not
+  /// available, `None` is returned.
+  ///
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("TryLookupObservation")>]
   let tryLookupObservation key lookup (series:Series<'K, 'T>) = 
     series.TryGetObservation(key, lookup) 
     |> OptionalValue.asOption 
     |> Option.map (fun kvp -> (kvp.Key, kvp.Value))
 
+  /// Get the value for the specified key. Returns `None` when the key does not exist
+  /// or the value is missing.
+  /// Uses exact lookup semantics for key lookup - use `tryLookup` for more options
+  ///
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("TryGet")>]
   let tryGet key (series:Series<'K, 'T>) = series.TryGet(key) |> OptionalValue.asOption
 
+  /// Returns the value at the specified (integer) offset, or `None` if the value is missing.
+  ///
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("TryGetAt")>]
   let tryGetAt index (series:Series<'K, 'T>) = series.TryGetAt(index) |> OptionalValue.asOption
+
+  /// Returns the total number of values in the specified series. This excludes
+  /// missing values or not available values (such as values created from `null`,
+  /// `Double.NaN`, or those that are missing due to outer join etc.).
+  ///
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("CountValues")>]
+  let countValues (series:Series<'K, 'T>) = series.ValueCount 
+
+  /// Returns the total number of keys in the specified series. This returns
+  /// the total length of the series, including keys for which there is no 
+  /// value available.
+  ///
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("CountKeys")>]
+  let countKeys (series:Series<'K, 'T>) = series.KeyCount
+
+  /// Returns true when the series contains value for all of the specified keys
+  /// (This is useful for checking prior to performing a computation)
+  ///
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("HasAll")>]
+  let hasAll keys (series:Series<'K, 'T>) = 
+    keys |> Seq.forall (fun k -> series.TryGet(k).HasValue)
+
+  /// Returns true when the series contains value for some of the specified keys
+  /// (This is useful for checking prior to performing a computation)
+  ///
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("HasSome")>]
+  let hasSome keys (series:Series<'K, 'T>) = 
+    keys |> Seq.exists (fun k -> series.TryGet(k).HasValue)
+
+  /// Returns true when the series does not contains value for any of the specified keys
+  /// (This is useful for checking prior to performing a computation)
+  ///
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("HasNone")>]
+  let hasNone keys (series:Series<'K, 'T>) = 
+    keys |> Seq.forall (fun k -> series.TryGet(k).HasValue |> not)
+
+  /// Returns true when the series contains value for the specified key
+  /// (This is useful for checking prior to performing a computation)
+  ///
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("Has")>]
+  let has key (series:Series<'K, 'T>) = series.TryGet(key).HasValue
+
+  /// Returns true when the series does not contains value for the specified key
+  /// (This is useful for checking prior to performing a computation)
+  ///
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("HasNot")>]
+  let hasNot key (series:Series<'K, 'T>) = series.TryGet(key).HasValue
+
+  /// Returns the last key of the series
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("GetLastKey")>]
+  let lastKey (series:Series< 'K , 'V >) = series.KeyRange |> snd
+
+  /// Returns the first key of the series
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("GetFirstKey")>]
+  let firstKey (series:Series< 'K , 'V >) = series.KeyRange |> fst
+
+  /// Returns the last value of the series. This fails if the last value is missing.
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("GetLastValue")>]
+  let lastValue (series:Series< 'K , 'V >) = series |> get (series.KeyRange |> snd)
+
+  /// Returns the first value of the series. This fails if the first value is missing.
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("GetFirstValue")>]
+  let firstValue (series:Series< 'K , 'V >) = series |> get (series.KeyRange |> fst)
+
+  /// Returns the (non-missing) values of the series as a sequence
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("GetValues")>]
+  let values (series:Series<'K, 'T>) = series.Values
+
+  /// Returns the keys of the series as a sequence
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("GetKeys")>]
+  let keys (series:Series<'K, 'T>) = series.Keys
+
+  // ------------------------------------------------------------------------------------
+  // Series transformations 
+  // ------------------------------------------------------------------------------------
   
-  let internal sortWithCommand compareFunc (series:Series<'K, 'T>) =
-    let index = series.Index
-    let values = series.Vector
-
-    let missingCompare a b =
-      let v1 = values.GetValue(snd a) |> OptionalValue.asOption
-      let v2 = values.GetValue(snd b) |> OptionalValue.asOption 
-      match v1, v2 with
-      | Some x, Some y -> compareFunc x y
-      | None,   Some y -> -1
-      | Some x, None   -> 1
-      | None,   None   -> 0
-
-    let newKeys, newLocs =
-      index.Mappings |> Array.ofSeq 
-                     |> Array.sortWith missingCompare 
-                     |> (fun arr -> arr |> Array.map fst, arr |> Array.map snd)
-
-    let newIndex = Index.ofKeys newKeys
-    let len = int64 newKeys.Length
-    let reordering = Seq.zip (Addressing.Address.generateRange(0L, len-1L)) newLocs
-    newIndex, VectorConstruction.Relocate(VectorConstruction.Return 0, len, reordering)
-
-  let internal sortByCommand (f:'T -> 'V) (series:Series<'K, 'T>) =
-    let index = series.Index
-    let vector = series.Vector
-    let fseries = Series(index, vector.SelectMissing (OptionalValue.map f), series.VectorBuilder, series.IndexBuilder)
-    fseries |> sortWithCommand compare
-
-  let sortWith compareFunc series =
-    let newIndex, cmd = sortWithCommand compareFunc series
-    let vector = series.Vector
-    Series(newIndex, series.VectorBuilder.Build(cmd, [| vector |]), series.VectorBuilder, series.IndexBuilder)
-
-  let sortBy (f:'T -> 'V) (series:Series<'K, 'T>) =
-    let newIndex, cmd = series |> sortByCommand f
-    let vector = series.Vector
-    Series<'K,'T>(newIndex, series.VectorBuilder.Build(cmd, [| vector |]), series.VectorBuilder, series.IndexBuilder)
-
-  let sort series =
-    series |> sortWith compare
-
-  let rev (series:Series<'K,'T>) = 
-    series.Reversed
-
-  let realign keys (series:Series<'K, 'T>) = 
-    series.Realign(keys)
-
-  let indexOrdinally (series:Series<'K, 'T>) = 
-    series.IndexOrdinally()
-
-  let indexWith (keys:seq<'K2>) (series:Series<'K1, 'T>) = 
-    series.IndexWith(keys)
-
+  /// [category:Series transformations]
   let filter f (series:Series<'K, 'T>) = 
     series.Where(Func<_, _>(fun (KeyValue(k,v)) -> f k v))
 
+  /// [category:Series transformations]
   let filterValues f (series:Series<'K, 'T>) = 
     series.Where(Func<_, _>(fun (KeyValue(k,v)) -> f v))
 
+  /// [category:Series transformations]
   let map (f:'K -> 'T -> 'R) (series:Series<'K, 'T>) = 
     series.Select(fun (KeyValue(k,v)) -> f k v)
 
+  /// [category:Series transformations]
   let mapValues (f:'T -> 'R) (series:Series<'K, 'T>) = 
     series.Select(fun (KeyValue(k,v)) -> f v)
 
+  /// [category:Series transformations]
   let mapKeys (f:'K -> 'R) (series:Series<'K, 'T>) = 
     series.SelectKeys(fun kvp -> f kvp.Key)
 
+  /// [category:Series transformations]
   let filterAll f (series:Series<'K, 'T>) = 
     series.WhereOptional(fun kvp -> f kvp.Key (OptionalValue.asOption kvp.Value))
 
+  /// [category:Series transformations]
   let mapAll (f:_ -> _ -> option<'R>) (series:Series<'K, 'T>) = 
     series.SelectOptional(fun kvp -> 
       f kvp.Key (OptionalValue.asOption kvp.Value) |> OptionalValue.ofOption)
 
+  /// [category:Series transformations]
   let tryMap (f:'K -> 'T -> 'R) (series:Series<'K, 'T>) : Series<_, _ tryval> = 
     series.Select(fun (KeyValue(k,v)) -> 
       try TryValue.Success(f k v) with e -> TryValue.Error e )
 
   /// Throws `AggregateException` if something goes wrong
+  ///
+  /// [category:Series transformations]
   let tryValues (series:Series<'K, 'T tryval>) = 
     let exceptions = series.Values |> Seq.choose (fun tv -> 
       if tv.HasValue then None else Some tv.Exception) |> List.ofSeq
@@ -159,6 +341,8 @@ module Series =
     else raise (new AggregateException(exceptions))
 
   /// Return a Series of all exceptions 
+  ///
+  /// [category:Series transformations]
   let tryErrors (series: Series<'K, TryValue<'V>>) =
     let errors = 
       series.Observations
@@ -167,6 +351,8 @@ module Series =
     Series<_,_>(errors)
 
   /// Return a Series of all successful tries 
+  ///
+  /// [category:Series transformations]
   let trySuccesses (series: Series<'K, TryValue<'V>>) =
     let successes = 
       series.Observations
@@ -174,10 +360,69 @@ module Series =
                               | _ -> None)
     Series<_,_>(successes)
 
+  /// [category:Series transformations]
   let fillErrorsWith value (series:Series<'K, 'T tryval>) = 
     series |> mapValues (function TryValue.Error _ -> value | TryValue.Success v -> v)
 
+  /// [category:Series transformations]
+  let take count (series:Series<'K, 'T>) =
+    let addrs = [for i in [0 .. count - 1] -> (Address.ofInt i, Address.ofInt i)]
+    let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 count, addrs)
+    let vec = series.VectorBuilder.Build(cmd, [| series.Vector |])
+    let idx = series.Index.Keys |> Seq.take count |> Index.ofKeys 
+    Series(idx, vec, series.VectorBuilder, series.IndexBuilder)
+
+  /// [category:Series transformations]
+  let takeLast count (series:Series<'K, 'T>) =
+    let addrs = [for i in [0 .. count - 1] -> (Address.ofInt i, Address.ofInt (series.KeyCount - count + i))]
+    let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 count, addrs)
+    let vec = series.VectorBuilder.Build(cmd, [| series.Vector |])
+    let idx = series.Index.Keys |> Seq.skip (series.KeyCount - count) |> Index.ofKeys 
+    Series(idx, vec, series.VectorBuilder, series.IndexBuilder)
+
+  /// [category:Series transformations]
+  let force (series:Series<'K, 'V>) = 
+    series.Materialize()
+
+
+  // Scanning
+
+  /// Applies a folding function starting with some initial value and the first value of the series,
+  /// and continues to "scan" along the series, saving all values produced from the first function 
+  /// application, and yielding a new series having the original index and newly produced values.
+  /// Any application involving a missing value yields a missing value.
+  ///
+  /// ## Parameters
+  ///  - `foldFunc` - A folding function 
+  ///  - `init` - An initial value
+  ///  - `series` - The series over whose values to scan
+  ///
+  /// [category:Series transformations]
+  let scanValues foldFunc init (series:Series<'K,'T>) =
+    series.ScanValues(Func<_,_,_>(foldFunc), init)
+
+  /// Applies a folding function starting with some initial optional value and the first optional value of 
+  /// the series, and continues to "scan" along the series, saving all values produced from the first function 
+  /// application, and yielding a new series having the original index and newly produced values.
+  ///
+  /// ## Parameters
+  ///  - `foldFunc` - A folding function 
+  ///  - `init` - An initial value
+  ///  - `series` - The series over whose values to scan
+  ///
+  /// [category:Series transformations]
+  let scanAllValues foldFunc init (series:Series<'K,'T>) =
+    let liftedFunc a b = foldFunc (OptionalValue.asOption a) (OptionalValue.asOption b) |> OptionalValue.ofOption
+    series.ScanAllValues(Func<_,_,_>(liftedFunc), OptionalValue.ofOption init)
+
+  // ----------------------------------------------------------------------------------------------
+  // Calculations, aggregation and statistics
+  // ----------------------------------------------------------------------------------------------
+
+
   /// `result[k] = series[k] - series[k - offset]`
+  ///
+  /// [category:Calculations, aggregation and statistics]
   let inline diff offset (series:Series<'K, ^T>) = 
     series.Aggregate
       ( WindowSize((abs offset) + 1, Boundary.Skip), 
@@ -189,35 +434,8 @@ module Series =
               OptionalValue(if offset < 0 then h - t else t - h)
           | _ -> OptionalValue.Missing ) )
 
-  // Counting & checking if values are present
-
-  /// Returns the total number of values in the specified series. This excludes
-  /// missing values or not available values (such as values created from `null`,
-  /// `Double.NaN`, or those that are missing due to outer join etc.).
-  let countValues (series:Series<'K, 'T>) = series.Values |> Seq.length
-
-  /// Returns the total number of keys in the specified series. This returns
-  /// the total length of the series, including keys for which there is no 
-  /// value available.
-  let countKeys (series:Series<'K, 'T>) = series.Keys |> Seq.length
-
-  let hasAll keys (series:Series<'K, 'T>) = 
-    keys |> Seq.forall (fun k -> series.TryGet(k).HasValue)
-  let hasSome keys (series:Series<'K, 'T>) = 
-    keys |> Seq.exists (fun k -> series.TryGet(k).HasValue)
-  let hasNone keys (series:Series<'K, 'T>) = 
-    keys |> Seq.forall (fun k -> series.TryGet(k).HasValue |> not)
-  let has key (series:Series<'K, 'T>) = series.TryGet(key).HasValue
-  let hasNot key (series:Series<'K, 'T>) = series.TryGet(key).HasValue
-
-  let lastKey (series:Series< 'K , 'V >) = series.KeyRange |> snd
-  let firstKey (series:Series< 'K , 'V >) = series.KeyRange |> fst
-  let lastValue (series:Series< 'K , 'V >) = series |> get (series.KeyRange |> snd)
-  let firstValue (series:Series< 'K , 'V >) = series |> get (series.KeyRange |> fst)
-
-  let values (series:Series<'K, 'T>) = series.Values
-  let keys (series:Series<'K, 'T>) = series.Keys
-
+  ///
+  /// [category:Calculations, aggregation and statistics]
   let shift offset (series:Series<'K, 'T>) = 
     let win = WindowSize((abs offset) + 1, Boundary.Skip)
     let shifted = 
@@ -232,39 +450,17 @@ module Series =
             (fun s -> s.Data.TryGet(s.Data.KeyRange |> fst)) )
     shifted //.GetItems(series.Keys)
 
-  let take count (series:Series<'K, 'T>) =
-    let addrs = [for i in [0 .. count - 1] -> (Address.ofInt i, Address.ofInt i)]
-    let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 count, addrs)
-    let vec = series.VectorBuilder.Build(cmd, [| series.Vector |])
-    let idx = series.Index.Keys |> Seq.take count |> Index.ofKeys 
-    Series(idx, vec, series.VectorBuilder, series.IndexBuilder)
 
-  let takeLast count (series:Series<'K, 'T>) =
-    let addrs = [for i in [0 .. count - 1] -> (Address.ofInt i, Address.ofInt (series.KeyCount - count + i))]
-    let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 count, addrs)
-    let vec = series.VectorBuilder.Build(cmd, [| series.Vector |])
-    let idx = series.Index.Keys |> Seq.skip (series.KeyCount - count) |> Index.ofKeys 
-    Series(idx, vec, series.VectorBuilder, series.IndexBuilder)
-
+  ///
+  /// [category:Calculations, aggregation and statistics]
   let inline maxBy f (series:Series<'K, 'T>) = 
     series |> observations |> Seq.maxBy (snd >> f)
 
+  ///
+  /// [category:Calculations, aggregation and statistics]
   let inline minBy f (series:Series<'K, 'T>) = 
     series |> observations |> Seq.maxBy (snd >> f)
 
-  // bit like applyLevel
-
-  /// [category:Statistics]
-  [<CompiledName("FlattenLevel")>]
-  let inline flattenLevel (level:'K1 -> 'K2) op (series:Series<_, 'S>) : Series<_, 'V> = 
-    series.GroupBy(fun kvp -> level kvp.Key) |> mapValues op
-
-  let force (series:Series<'K, 'V>) = 
-    series.Materialize()
-
-  // ----------------------------------------------------------------------------------------------
-  // Statistics
-  // ----------------------------------------------------------------------------------------------
   
   /// Aggregates non-missing values using the specified function working on seq<'T>
   [<CompiledName("InternalStreamingAggregation")>]
@@ -291,51 +487,131 @@ module Series =
   ///  - `series` - An input series to be aggregated
   ///  - `op` - A function that takes a sequence and produces an aggregated result
   ///
-  /// [category:Statistics]
+  /// [category:Calculations, aggregation and statistics]
   [<CompiledName("Stat")>]
   let inline stat (op:_ -> 'V2) (series:Series<'K, 'V1>) = 
     series |> streamingAggregation op
 
   /// Returns the sum of the elements of the series. The operation skips over
   /// missing values and so the result will never be `NaN`.
-  /// [category:Statistics]
+  /// [category:Calculations, aggregation and statistics]
   [<CompiledName("Sum")>]
   let inline sum (series:Series<'K, ^V>) = 
     series |> fastAggregation ReadOnlyCollection.sum ReadOnlyCollection.sumOptional Seq.sum
 
   /// Returns the mean of the elements of the series. The operation skips over
   /// missing values and so the result will never be `NaN`.
-  /// [category:Statistics]
+  /// [category:Calculations, aggregation and statistics]
   [<CompiledName("Mean")>]
   let inline mean (series:Series<'K, ^V>) = 
     series |> fastAggregation ReadOnlyCollection.average ReadOnlyCollection.averageOptional Seq.average
 
   /// Returns the standard deviation of the elements of the series. The operation skips over
   /// missing values and so the result will never be `NaN`.
-  /// [category:Statistics]
+  /// [category:Calculations, aggregation and statistics]
   [<CompiledName("StandardDeviation")>]
   let inline sdv (series:Series<'K, float>) = series |> stat Statistics.StandardDeviation 
 
   /// Returns the median of the elements of the series. The operation skips over
   /// missing values and so the result will never be `NaN`.
-  /// [category:Statistics]
+  /// [category:Calculations, aggregation and statistics]
   [<CompiledName("Median")>]
   let inline median (series:Series<'K, float>) = series |> stat Statistics.Median
 
   /// Returns the smallest of all elements of the series. The operation 
   /// skips over missing values and so the result will never be `NaN`.
-  /// [category:Statistics]
+  /// [category:Calculations, aggregation and statistics]
   [<CompiledName("Max")>]
   let inline max (series:Series<'K, ^V>) = 
     series |> fastAggregation ReadOnlyCollection.max (ReadOnlyCollection.maxOptional >> OptionalValue.get) Seq.max
 
   /// Returns the greatest of all elements of the series. The operation 
   /// skips over missing values and so the result will never be `NaN`.
-  /// [category:Statistics]
+  /// [category:Calculations, aggregation and statistics]
   [<CompiledName("Min")>]
   let inline min (series:Series<'K, ^V>) = 
     series |> fastAggregation ReadOnlyCollection.min (ReadOnlyCollection.minOptional >> OptionalValue.get) Seq.min
 
+  /// Aggregates the values of the specified series using a function that can combine
+  /// individual values. 
+  ///
+  /// ## Parameters
+  ///  - `series` - An input series to be aggregated
+  ///  - `op` - A function that is used to aggregate elements of the series
+  ///
+  /// [category:Calculations, aggregation and statistics]
+  [<CompiledName("Reduce")>]
+  let reduce op (series:Series<'K, 'T>) = 
+    series |> fastAggregation (ReadOnlyCollection.reduce op) (ReadOnlyCollection.reduceOptional op >> OptionalValue.get) (Seq.reduce op)
+
+  // Cumulative functions
+
+  /// [category:Calculations, aggregation and statistics]
+  [<CompiledName("CumCount")>]
+  let inline cumCount (series:Series<'K, 'V>) = 
+    let add a _ = a + 1
+    series.ScanValues(Func<_,_,_>(add), 0)
+
+  /// [category:Calculations, aggregation and statistics]
+  [<CompiledName("CumSum")>]
+  let inline cumSum (series:Series<'K, 'V>) = 
+    let add a b = a + b
+    series.ScanValues(Func<_,_,_>(add), LanguagePrimitives.GenericZero)
+
+  /// [category:Calculations, aggregation and statistics]
+  [<CompiledName("CumProd")>]
+  let inline cumProd (series:Series<'K, 'V>) = 
+    let mult a b = a * b
+    series.ScanValues(Func<_,_,_>(mult), LanguagePrimitives.GenericOne)
+ 
+  /// [category:Calculations, aggregation and statistics]
+  [<CompiledName("CumMin")>]
+  let inline cumMin (series:Series<'K, float>) = 
+    series.ScanValues(Func<_,_,_>(LanguagePrimitives.GenericMinimum), System.Double.PositiveInfinity)        
+
+  /// [category:Calculations, aggregation and statistics]
+  [<CompiledName("CumMax")>]
+  let inline cumMax (series:Series<'K, float>) = 
+    series.ScanValues(Func<_,_,_>(LanguagePrimitives.GenericMaximum), System.Double.NegativeInfinity)        
+
+  /// Interpolates an ordered series given a new sequence of keys. The function iterates through
+  /// each new key, and invokes a function on the current key, the nearest smaller and larger valid 
+  /// observations from the series argument. The function must return a new valid float. 
+  ///
+  /// ## Parameters
+  ///  - `keys` - Sequence of new keys that forms the index of interpolated results
+  ///  - `f` - Function to do the interpolating
+  ///
+  /// [category:Calculations, aggregation and statistics]
+  let interpolate keys f (series:Series<'K,'T>) =
+    let liftedf k (prev:KeyValuePair<_,_> opt) (next:KeyValuePair<_,_> opt) =
+      let t1 = prev |> OptionalValue.map (fun kvp -> kvp.Key, kvp.Value) |> OptionalValue.asOption
+      let t2 = next |> OptionalValue.map (fun kvp -> kvp.Key, kvp.Value) |> OptionalValue.asOption
+      f k t1 t2
+
+    series.Interpolate(keys, Func<_,_,_,_>(liftedf))
+
+  /// Linearly interpolates an ordered series given a new sequence of keys. 
+  ///
+  /// ## Parameters
+  ///  - `keys` - Sequence of new keys that forms the index of interpolated results
+  ///  - `keyDiff` - A function representing "subtraction" between two keys
+  ///
+  /// [category:Calculations, aggregation and statistics]
+  let inline interpolateLinear keys (keyDiff:'K->'K->float) (series:Series<'K, float>) =
+    let linearF k a b =
+      match a, b with
+      | Some x, Some y -> 
+        if x = y then snd x 
+        else (snd x) + (keyDiff k (fst x)) / (keyDiff (fst y) (fst x)) * (snd y - snd x)
+      | Some x, _      -> snd x
+      | _, Some y      -> snd y
+      | _              -> raise <| new ArgumentException("Unexpected code path in interpolation")
+    series |> interpolate keys linearF   
+
+  // ----------------------------------------------------------------------------------------------
+  // Hierarchical index operations
+  // ----------------------------------------------------------------------------------------------
 
   /// [omit]
   /// Applies `fastAggregation` to each group produced using the specified `keySelector`
@@ -357,7 +633,7 @@ module Series =
   ///  - `op` - A function that takes a sequence and produces an aggregated result
   ///  - `level` - A delegate that returns a new group key, based on the key in the input series
   ///
-  /// [category:Statistics]
+  /// [category:Hierarchical index operations]
   [<CompiledName("StatisticsLevel")>]
   let inline statLevel (level:'K1 -> 'K2) op (series:Series<_, 'V>) : Series<_, 'R> = 
     series.GroupBy(fun kvp -> level kvp.Key) |> mapValues (stat op)
@@ -374,7 +650,7 @@ module Series =
   ///  - `op` - A function that takes a series and produces an aggregated result
   ///  - `level` - A delegate that returns a new group key, based on the key in the input series
   ///
-  /// [category:Statistics]
+  /// [category:Hierarchical index operations]
   [<CompiledName("ApplyLevel")>]
   let inline applyLevel (level:'K1 -> 'K2) op (series:Series<_, 'V>) : Series<_, 'R> = 
     series.GroupBy(fun kvp -> level kvp.Key) |> mapValues op
@@ -389,7 +665,7 @@ module Series =
   ///  - `series` - A series of values that are used to calculate the means
   ///  - `level` - A delegate that returns a new group key, based on the key in the input series
   ///
-  /// [category:Statistics]
+  /// [category:Hierarchical index operations]
   [<CompiledName("MeanLevel")>]
   let inline meanLevel (level:'K1 -> 'K2) (series:Series<_, 'V>) = 
     series |> fastApplyLevel level ReadOnlyCollection.average ReadOnlyCollection.averageOptional Seq.average
@@ -404,7 +680,7 @@ module Series =
   ///  - `series` - A series of values that are used to calculate the standard deviations
   ///  - `level` - A delegate that returns a new group key, based on the key in the input series
   ///
-  /// [category:Statistics]
+  /// [category:Hierarchical index operations]
   [<CompiledName("StandardDeviationLevel")>]
   let inline sdvLevel (level:'K1 -> 'K2) (series:Series<_, float>) = 
     series |> statLevel level Statistics.StandardDeviation 
@@ -419,7 +695,7 @@ module Series =
   ///  - `series` - A series of values that are used to calculate the medians
   ///  - `level` - A delegate that returns a new group key, based on the key in the input series
   ///
-  /// [category:Statistics]
+  /// [category:Hierarchical index operations]
   [<CompiledName("MedianLevel")>]
   let inline medianLevel level (series:Series<_, float>) = 
     series |> statLevel level Statistics.Median
@@ -434,7 +710,7 @@ module Series =
   ///  - `series` - A series of values that are used to calculate the sums
   ///  - `level` - A delegate that returns a new group key, based on the key in the input series
   ///
-  /// [category:Statistics]
+  /// [category:Hierarchical index operations]
   [<CompiledName("SumLevel")>]
   let inline sumLevel (level:'K1 -> 'K2) (series:Series<_, 'V>) = 
     series |> fastApplyLevel level ReadOnlyCollection.sum ReadOnlyCollection.sumOptional Seq.sum
@@ -449,7 +725,7 @@ module Series =
   ///  - `series` - A series of values that are used to calculate the greatest elements
   ///  - `level` - A delegate that returns a new group key, based on the key in the input series
   ///
-  /// [category:Statistics]
+  /// [category:Hierarchical index operations]
   [<CompiledName("MinLevel")>]
   let inline minLevel (level:'K1 -> 'K2) (series:Series<_, 'V>) = 
     series |> fastApplyLevel level ReadOnlyCollection.min (ReadOnlyCollection.minOptional >> OptionalValue.get) Seq.min
@@ -464,7 +740,7 @@ module Series =
   ///  - `series` - A series of values that are used to calculate the greatest elements
   ///  - `level` - A delegate that returns a new group key, based on the key in the input series
   ///
-  /// [category:Statistics]
+  /// [category:Hierarchical index operations]
   [<CompiledName("MaxLevel")>]
   let inline maxLevel (level:'K1 -> 'K2) (series:Series<_, 'V>) = 
     series |> fastApplyLevel level ReadOnlyCollection.max (ReadOnlyCollection.maxOptional >> OptionalValue.get) Seq.max
@@ -479,22 +755,10 @@ module Series =
   ///  - `series` - A series of values that are used to calculate the counts
   ///  - `level` - A delegate that returns a new group key, based on the key in the input series
   ///
-  /// [category:Statistics]
+  /// [category:Hierarchical index operations]
   [<CompiledName("CountLevel")>]
   let inline countLevel (level:'K1 -> 'K2) (series:Series<_, 'V>) = 
     series |> fastApplyLevel level ReadOnlyCollection.length ReadOnlyCollection.lengthOptional Seq.length
-
-  /// Aggregates the values of the specified series using a function that can combine
-  /// individual values. 
-  ///
-  /// ## Parameters
-  ///  - `series` - An input series to be aggregated
-  ///  - `op` - A function that is used to aggregate elements of the series
-  ///
-  /// [category:Statistics]
-  [<CompiledName("Reduce")>]
-  let reduce op (series:Series<'K, 'T>) = 
-    series |> fastAggregation (ReadOnlyCollection.reduce op) (ReadOnlyCollection.reduceOptional op >> OptionalValue.get) (Seq.reduce op)
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `level` and then aggregates elements in each group
@@ -508,10 +772,24 @@ module Series =
   ///  - `op` - A function that is used to aggregate elements of each group
   ///  - `level` - A delegate that returns a new group key, based on the key in the input series
   ///
-  /// [category:Statistics]
+  /// [category:Hierarchical index operations]
   [<CompiledName("ReduceLevel")>]
   let reduceLevel (level:'K1 -> 'K2) op (series:Series<_, 'T>) = 
     series.GroupBy(fun (KeyValue(key, _)) -> level key) |> mapValues (reduce op)
+
+  /// Given a series with (potentially) multi-level index, group the elements
+  /// of the series according to one part of the key (specified by a key selector)
+  /// and then apply the specified transformation on each group.
+  ///
+  /// ## Parameters
+  ///  - `level` - Specifies the level projection (from source key to target key)
+  ///  - `op` - Reduction operation to be applied to each group
+  ///  - `series` - Input series to be flattened
+  ///
+  /// [category:Hierarchical index operations]
+  [<CompiledName("FlattenLevel")>]
+  let inline flattenLevel (level:'K1 -> 'K2) op (series:Series<_, 'S>) : Series<_, 'V> = 
+    series.GroupBy(fun kvp -> level kvp.Key) |> mapValues op
 
   // ----------------------------------------------------------------------------------------------
   // Windowing, chunking and grouping
@@ -528,6 +806,7 @@ module Series =
   ///  - `series` - The input series to be aggregated.
   ///
   /// [category:Windowing, chunking and grouping]
+  [<CompiledName("Aggregate")>]
   let aggregate aggregation keySelector (series:Series<'K, 'T>) : Series<'TNewKey, _> =
     series.Aggregate
       ( aggregation, System.Func<_, _>(keySelector), System.Func<_, _>(fun v -> OptionalValue(v)))
@@ -545,6 +824,7 @@ module Series =
   ///  - `series` - The input series to be aggregated.
   ///
   /// [category:Windowing, chunking and grouping]
+  [<CompiledName("AggregateInto")>]
   let aggregateInto aggregation keySelector f (series:Series<'K, 'T>) : Series<'TNewKey, 'R> =
     series.Aggregate
       ( aggregation, System.Func<_, _>(keySelector), System.Func<_, _>(f))
@@ -563,6 +843,7 @@ module Series =
   ///  - `series` - The input series to be aggregated.
   ///
   /// [category:Windowing, chunking and grouping]
+  [<CompiledName("WindowSizeInto")>]
   let windowSizeInto bounds f (series:Series<'K, 'T>) : Series<'K, 'R> =
     let dir = if snd bounds = Boundary.AtEnding then Direction.Forward else Direction.Backward
     let keySel = System.Func<DataSegment<Series<_, _>>, _>(fun data -> 
@@ -582,6 +863,7 @@ module Series =
   ///  - `series` - The input series to be aggregated.
   ///
   /// [category:Windowing, chunking and grouping]
+  [<CompiledName("WindowSize")>]
   let inline windowSize bounds (series:Series<'K, 'T>) = 
     windowSizeInto bounds DataSegment.data series 
 
@@ -600,6 +882,7 @@ module Series =
   ///  - `series` - The input series to be aggregated.
   ///
   /// [category:Windowing, chunking and grouping]
+  [<CompiledName("WindowDistanceInto")>]
   let inline windowDistInto distance f (series:Series<'K, 'T>) =
     series.Aggregate
       ( WindowWhile(fun skey ekey -> (ekey - skey) < distance), 
@@ -617,6 +900,7 @@ module Series =
   ///  - `series` - The input series to be aggregated.
   ///
   /// [category:Windowing, chunking and grouping]
+  [<CompiledName("WindowDistance")>]
   let inline windowDist (distance:'D) (series:Series<'K, 'T>) = 
     windowDistInto distance id series 
 
@@ -634,6 +918,7 @@ module Series =
   ///  - `series` - The input series to be aggregated.
   ///
   /// [category:Windowing, chunking and grouping]
+  [<CompiledName("WindowWhileInto")>]
   let inline windowWhileInto cond f (series:Series<'K, 'T>) =
     series.Aggregate(WindowWhile(cond), (fun d -> d.Data.Keys |> Seq.head), fun ds -> OptionalValue(f ds.Data))
 
@@ -648,6 +933,7 @@ module Series =
   ///  - `series` - The input series to be aggregated.
   ///
   /// [category:Windowing, chunking and grouping]
+  [<CompiledName("WindowWhile")>]
   let inline windowWhile cond (series:Series<'K, 'T>) = 
     windowWhileInto cond id series 
 
@@ -667,6 +953,7 @@ module Series =
   ///  - `series` - The input series to be aggregated.
   ///
   /// [category:Windowing, chunking and grouping]
+  [<CompiledName("ChunkSizeInto")>]
   let inline chunkSizeInto bounds f (series:Series<'K, 'T>) : Series<'K, 'R> =
     series.Aggregate(ChunkSize(bounds), (fun d -> d.Data.Keys |> Seq.head), fun ds -> OptionalValue(f ds))
 
@@ -682,6 +969,7 @@ module Series =
   ///  - `series` - The input series to be aggregated.
   ///
   /// [category:Windowing, chunking and grouping]
+  [<CompiledName("ChunkSize")>]
   let inline chunkSize bounds (series:Series<'K, 'T>) = 
     chunkSizeInto bounds DataSegment.data series 
 
@@ -700,6 +988,7 @@ module Series =
   ///  - `series` - The input series to be aggregated.
   ///
   /// [category:Windowing, chunking and grouping]
+  [<CompiledName("ChunkDistanceInto")>]
   let inline chunkDistInto (distance:^D) f (series:Series<'K, 'T>) : Series<'K, 'R> =
     series.Aggregate(ChunkWhile(fun skey ekey -> (ekey - skey) < distance), (fun d -> d.Data.Keys |> Seq.head), fun ds -> OptionalValue(f ds.Data))
 
@@ -715,6 +1004,7 @@ module Series =
   ///  - `series` - The input series to be aggregated.
   ///
   /// [category:Windowing, chunking and grouping]
+  [<CompiledName("ChunkDistance")>]
   let inline chunkDist (distance:^D) (series:Series<'K, 'T>) = 
     chunkDistInto distance id series 
 
@@ -732,6 +1022,7 @@ module Series =
   ///  - `series` - The input series to be aggregated.
   ///
   /// [category:Windowing, chunking and grouping]
+  [<CompiledName("ChunkWhileInto")>]
   let inline chunkWhileInto cond f (series:Series<'K, 'T>) =
     series.Aggregate(ChunkWhile(cond), (fun d -> d.Data.Keys |> Seq.head), fun ds -> OptionalValue(f ds.Data))
 
@@ -746,6 +1037,7 @@ module Series =
   ///  - `series` - The input series to be aggregated.
   ///
   /// [category:Windowing, chunking and grouping]
+  [<CompiledName("ChunkWhile")>]
   let inline chunkWhile cond (series:Series<'K, 'T>) = 
     chunkWhileInto cond id series 
 
@@ -760,6 +1052,7 @@ module Series =
   ///  - `series` - The input series to be aggregated.
   ///
   /// [category:Windowing, chunking and grouping]
+  [<CompiledName("WindowInto")>]
   let inline windowInto size f (series:Series<'K, 'T>) : Series<'K, 'R> =
     windowSizeInto (size, Boundary.Skip) (DataSegment.data >> f) series
 
@@ -772,6 +1065,7 @@ module Series =
   ///  - `series` - The input series to be aggregated.
   ///
   /// [category:Windowing, chunking and grouping]
+  [<CompiledName("Window")>]
   let inline window size (series:Series<'K, 'T>) =
     windowSize (size, Boundary.Skip) series
 
@@ -785,6 +1079,7 @@ module Series =
   ///  - `series` - The input series to be aggregated.
   ///
   /// [category:Windowing, chunking and grouping]
+  [<CompiledName("ChunkInto")>]
   let inline chunkInto size f (series:Series<'K, 'T>) : Series<'K, 'R> =
     chunkSizeInto (size, Boundary.Skip) (DataSegment.data >> f) series
 
@@ -797,6 +1092,7 @@ module Series =
   ///  - `series` - The input series to be aggregated.
   ///
   /// [category:Windowing, chunking and grouping]
+  [<CompiledName("Chunk")>]
   let inline chunk size (series:Series<'K, 'T>) =
     chunkSize (size, Boundary.Skip) series
 
@@ -816,6 +1112,7 @@ module Series =
   ///     res = series [2 => ('a', 'b'); 3 => ('b', 'c') ]
   ///
   /// [category:Windowing, chunking and grouping]
+  [<CompiledName("Pairwise")>]
   let pairwise (series:Series<'K, 'T>) = 
     series.Pairwise()
 
@@ -828,33 +1125,9 @@ module Series =
   ///  - `series` - The input series to be aggregated.
   ///
   /// [category:Windowing, chunking and grouping]
+  [<CompiledName("PairwiseWith")>]
   let pairwiseWith f (series:Series<'K, 'T>) = 
     series.Pairwise() |> map (fun k v -> f k v)
-
-  // Cumulative functions
-
-  [<CompiledName("CumCount")>]
-  let inline cumCount (series:Series<'K, 'V>) = 
-    let add a _ = a + 1
-    series.ScanValues(Func<_,_,_>(add), 0)
-
-  [<CompiledName("CumSum")>]
-  let inline cumSum (series:Series<'K, 'V>) = 
-    let add a b = a + b
-    series.ScanValues(Func<_,_,_>(add), LanguagePrimitives.GenericZero)
-
-  [<CompiledName("CumProd")>]
-  let inline cumProd (series:Series<'K, 'V>) = 
-    let mult a b = a * b
-    series.ScanValues(Func<_,_,_>(mult), LanguagePrimitives.GenericOne)
- 
-  [<CompiledName("CumMin")>]
-  let inline cumMin (series:Series<'K, float>) = 
-    series.ScanValues(Func<_,_,_>(LanguagePrimitives.GenericMinimum), System.Double.PositiveInfinity)        
-
-  [<CompiledName("CumMax")>]
-  let inline cumMax (series:Series<'K, float>) = 
-    series.ScanValues(Func<_,_,_>(LanguagePrimitives.GenericMaximum), System.Double.NegativeInfinity)        
 
   // Grouping
 
@@ -885,69 +1158,6 @@ module Series =
   let groupBy (keySelector:'K -> 'T -> 'TNewKey) (series:Series<'K, 'T>) =
     groupInto keySelector (fun k s -> s) series
 
-  /// Applies a folding function starting with some initial value and the first value of the series,
-  /// and continues to "scan" along the series, saving all values produced from the first function 
-  /// application, and yielding a new series having the original index and newly produced values.
-  /// Any application involving a missing value yields a missing value.
-  ///
-  /// ## Parameters
-  ///  - `foldFunc` - A folding function 
-  ///  - `init` - An initial value
-  ///  - `series` - The series over whose values to scan
-  ///
-  /// [category:Windowing, chunking and grouping]
-  let scanValues foldFunc init (series:Series<'K,'T>) =
-    series.ScanValues(Func<_,_,_>(foldFunc), init)
-
-  /// Applies a folding function starting with some initial optional value and the first optional value of 
-  /// the series, and continues to "scan" along the series, saving all values produced from the first function 
-  /// application, and yielding a new series having the original index and newly produced values.
-  ///
-  /// ## Parameters
-  ///  - `foldFunc` - A folding function 
-  ///  - `init` - An initial value
-  ///  - `series` - The series over whose values to scan
-  ///
-  /// [category:Windowing, chunking and grouping]
-  let scanAllValues foldFunc init (series:Series<'K,'T>) =
-    let liftedFunc a b = foldFunc (OptionalValue.asOption a) (OptionalValue.asOption b) |> OptionalValue.ofOption
-    series.ScanAllValues(Func<_,_,_>(liftedFunc), OptionalValue.ofOption init)
-
-  /// Interpolates an ordered series given a new sequence of keys. The function iterates through
-  /// each new key, and invokes a function on the current key, the nearest smaller and larger valid 
-  /// observations from the series argument. The function must return a new valid float. 
-  ///
-  /// ## Parameters
-  ///  - `keys` - Sequence of new keys that forms the index of interpolated results
-  ///  - `f` - Function to do the interpolating
-  ///
-  /// [category:Windowing, chunking and grouping]
-  let interpolate keys f (series:Series<'K,'T>) =
-    let liftedf k (prev:KeyValuePair<_,_> opt) (next:KeyValuePair<_,_> opt) =
-      let t1 = prev |> OptionalValue.map (fun kvp -> kvp.Key, kvp.Value) |> OptionalValue.asOption
-      let t2 = next |> OptionalValue.map (fun kvp -> kvp.Key, kvp.Value) |> OptionalValue.asOption
-      f k t1 t2
-
-    series.Interpolate(keys, Func<_,_,_,_>(liftedf))
-
-  /// Linearly interpolates an ordered series given a new sequence of keys. 
-  ///
-  /// ## Parameters
-  ///  - `keys` - Sequence of new keys that forms the index of interpolated results
-  ///  - `keyDiff` - A function representing "subtraction" between two keys
-  ///
-  /// [category:Windowing, chunking and grouping]
-  let inline interpolateLinear keys (keyDiff:'K->'K->float) (series:Series<'K, float>) =
-    let linearF k a b =
-      match a, b with
-      | Some x, Some y -> 
-        if x = y then snd x 
-        else (snd x) + (keyDiff k (fst x)) / (keyDiff (fst y) (fst x)) * (snd y - snd x)
-      | Some x, _      -> snd x
-      | _, Some y      -> snd y
-      | _              -> raise <| new ArgumentException("Unexpected code path in interpolation")
-    series |> interpolate keys linearF   
-
 
   // ----------------------------------------------------------------------------------------------
   // Handling of missing values
@@ -966,6 +1176,7 @@ module Series =
   ///     [fsi:val it : Series<int,float> = series [ 1 => 1]
   ///
   /// [category:Missing values]
+  [<CompiledName("DropMissing")>]
   let dropMissing (series:Series<'K, 'T>) = 
     series.WhereOptional(fun (KeyValue(k, v)) -> v.HasValue)
 
@@ -984,6 +1195,7 @@ module Series =
   /// For example see [handling missing values in the tutorial](../features.html#missing)
   ///
   /// [category:Missing values]
+  [<CompiledName("FillMissingUsing")>]
   let fillMissingUsing f (series:Series<'K, 'T>) = 
     series |> mapAll (fun k -> function 
       | None -> Some(f k)
@@ -996,6 +1208,7 @@ module Series =
   ///  - `value` - A constant value that is used to fill all missing values
   ///
   /// [category:Missing values]
+  [<CompiledName("FillMissingWith")>]
   let fillMissingWith value (series:Series<'K, 'T>) = 
     let fillCmd = Vectors.FillMissing(Vectors.Return 0, VectorFillMissing.Constant value)
     let newVector = series.VectorBuilder.Build(fillCmd, [|series.Vector|])
@@ -1024,6 +1237,7 @@ module Series =
   ///     sample |> Series.fillMissing Direction.Forward 
   ///
   /// [category:Missing values]
+  [<CompiledName("FillMissing")>]
   let fillMissing direction (series:Series<'K, 'T>) = 
     let fillCmd = Vectors.FillMissing(Vectors.Return 0, VectorFillMissing.Direction direction)
     let newVector = series.VectorBuilder.Build(fillCmd, [|series.Vector|])
@@ -1031,6 +1245,7 @@ module Series =
 
   /// Fill missing values only between startKey and endKey, inclusive
   /// [category:Missing values]
+  [<CompiledName("FillMissingBetween")>]
   let fillMissingBetween (startKey, endKey) direction (series:Series<'K, 'T>) = 
     let filled = fillMissing direction series.[startKey .. endKey]
     series.Zip(filled, JoinKind.Left).SelectOptional(fun kvp ->
@@ -1041,6 +1256,7 @@ module Series =
 
   /// Fill missing values only between the first and last non-missing values
   /// [category:Missing values]
+  [<CompiledName("FillMissingInside")>]
   let fillMissingInside direction (series:Series<'K, 'T>) = 
     if not series.IsOrdered then invalidOp "Series must be sorted to use fillMissingInside"
     series.Observations |> Seq.tryFirstAndLast |> function
@@ -1050,6 +1266,70 @@ module Series =
   // ----------------------------------------------------------------------------------------------
   // Sorting
   // ----------------------------------------------------------------------------------------------
+
+  /// [omit]
+  let internal sortWithCommand compareFunc (series:Series<'K, 'T>) =
+    let index = series.Index
+    let values = series.Vector
+
+    let missingCompare a b =
+      let v1 = values.GetValue(snd a) |> OptionalValue.asOption
+      let v2 = values.GetValue(snd b) |> OptionalValue.asOption 
+      match v1, v2 with
+      | Some x, Some y -> compareFunc x y
+      | None,   Some y -> -1
+      | Some x, None   -> 1
+      | None,   None   -> 0
+
+    let newKeys, newLocs =
+      index.Mappings |> Array.ofSeq 
+                     |> Array.sortWith missingCompare 
+                     |> (fun arr -> arr |> Array.map fst, arr |> Array.map snd)
+
+    let newIndex = Index.ofKeys newKeys
+    let len = int64 newKeys.Length
+    let reordering = Seq.zip (Addressing.Address.generateRange(0L, len-1L)) newLocs
+    newIndex, VectorConstruction.Relocate(VectorConstruction.Return 0, len, reordering)
+
+  /// [omit]
+  let internal sortByCommand (f:'T -> 'V) (series:Series<'K, 'T>) =
+    let index = series.Index
+    let vector = series.Vector
+    let fseries = Series(index, vector.SelectMissing (OptionalValue.map f), series.VectorBuilder, series.IndexBuilder)
+    fseries |> sortWithCommand compare
+
+  /// [category:Sorting and reindexing]
+  let sortWith compareFunc series =
+    let newIndex, cmd = sortWithCommand compareFunc series
+    let vector = series.Vector
+    Series(newIndex, series.VectorBuilder.Build(cmd, [| vector |]), series.VectorBuilder, series.IndexBuilder)
+
+  /// [category:Sorting and reindexing]
+  let sortBy (f:'T -> 'V) (series:Series<'K, 'T>) =
+    let newIndex, cmd = series |> sortByCommand f
+    let vector = series.Vector
+    Series<'K,'T>(newIndex, series.VectorBuilder.Build(cmd, [| vector |]), series.VectorBuilder, series.IndexBuilder)
+
+  /// [category:Sorting and reindexing]
+  let sort series =
+    series |> sortWith compare
+
+  /// [category:Sorting and reindexing]
+  let rev (series:Series<'K,'T>) = 
+    series.Reversed
+
+  /// [category:Sorting and reindexing]
+  let realign keys (series:Series<'K, 'T>) = 
+    series.Realign(keys)
+
+  /// [category:Sorting and reindexing]
+  let indexOrdinally (series:Series<'K, 'T>) = 
+    series.IndexOrdinally()
+
+  /// [category:Sorting and reindexing]
+  let indexWith (keys:seq<'K2>) (series:Series<'K1, 'T>) = 
+    series.IndexWith(keys)
+
 
   /// Returns a new series whose entries are reordered according to index order
   ///
@@ -1070,6 +1350,7 @@ module Series =
   /// [category:Data structure manipulation]
   let sortByKey series =
     series |> orderByKey
+
   // ----------------------------------------------------------------------------------------------
   // Resampling and similar stuff
   // ----------------------------------------------------------------------------------------------
@@ -1093,7 +1374,7 @@ module Series =
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
   ///
-  /// [category:Lookup, resampling and scaling]
+  /// [category:Sampling, resampling and advanced lookup]
   let resampleInto keys dir f (series:Series<'K, 'V>) =
     series.Resample(keys, dir, (fun k s -> f k s))
 
@@ -1114,7 +1395,7 @@ module Series =
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered.
   ///
-  /// [category:Lookup, resampling and scaling]
+  /// [category:Sampling, resampling and advanced lookup]
   let resample keys dir (series:Series<'K, 'V>) =
     resampleInto keys dir (fun k s -> s) series
 
@@ -1138,7 +1419,7 @@ module Series =
   /// `InvalidOperationException` when the series is not ordered. For unordered
   /// series, similar functionality can be implemented using `Series.groupBy`.
   ///
-  /// [category:Lookup, resampling and scaling]
+  /// [category:Sampling, resampling and advanced lookup]
   let inline resampleEquivInto (keyProj:'K1 -> 'K2) (f:_ -> 'V2) (series:Series<'K1, 'V1>) =
     series 
     |> chunkWhile (fun k1 k2 -> keyProj k1 = keyProj k2)
@@ -1163,7 +1444,7 @@ module Series =
   /// `InvalidOperationException` when the series is not ordered. For unordered
   /// series, similar functionality can be implemented using `Series.groupBy`.
   ///
-  /// [category:Lookup, resampling and scaling]
+  /// [category:Sampling, resampling and advanced lookup]
   let inline resampleEquiv (keyProj:'K1 -> 'K2) (series:Series<'K1, 'V1>) =
     resampleEquivInto keyProj id series
 
@@ -1193,7 +1474,7 @@ module Series =
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered. 
   ///
-  /// [category:Lookup, resampling and scaling]
+  /// [category:Sampling, resampling and advanced lookup]
   let resampleUniformInto (fillMode:Lookup) (keyProj:'K1 -> 'K2) (nextKey:'K2 -> 'K2) f (series:Series<'K1, 'V>) =
     let min, max = series.KeyRange
     
@@ -1245,7 +1526,7 @@ module Series =
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered. 
   ///
-  /// [category:Lookup, resampling and scaling]
+  /// [category:Sampling, resampling and advanced lookup]
   let resampleUniform fillMode (keyProj:'K1 -> 'K2) (nextKey:'K2 -> 'K2) (series:Series<'K1, 'V>) =
     resampleUniformInto fillMode keyProj nextKey id series
 
@@ -1295,7 +1576,7 @@ module Series =
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered. 
   /// 
-  /// [category:Lookup, resampling and scaling]
+  /// [category:Sampling, resampling and advanced lookup]
   let inline sampleTimeInto interval dir f (series:Series< ^K , ^V >) = 
     let add dt ts = (^K: (static member (+) : ^K * TimeSpan -> ^K) (dt, ts))
     Implementation.sampleTimeIntoInternal add None interval dir (fun _ -> f) series
@@ -1318,7 +1599,7 @@ module Series =
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered. 
   /// 
-  /// [category:Lookup, resampling and scaling]
+  /// [category:Sampling, resampling and advanced lookup]
   let inline sampleTimeAtInto start interval dir f (series:Series< ^K , ^V >) = 
     let add dt ts = (^K: (static member (+) : ^K * TimeSpan -> ^K) (dt, ts))
     Implementation.sampleTimeIntoInternal add (Some start) interval dir (fun _ -> f) series
@@ -1339,7 +1620,7 @@ module Series =
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered. 
   /// 
-  /// [category:Lookup, resampling and scaling]
+  /// [category:Sampling, resampling and advanced lookup]
   let inline sampleTime interval dir series = sampleTimeInto interval dir id series
 
   /// Performs sampling by time and returns chunks obtained by time-sampling as a nested  
@@ -1359,7 +1640,7 @@ module Series =
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered. 
   /// 
-  /// [category:Lookup, resampling and scaling]
+  /// [category:Sampling, resampling and advanced lookup]
   let inline sampleTimeAt start interval dir series = sampleTimeAtInto start interval dir id series
 
   /// Finds values at, or near, the specified times in a given series. The operation generates
@@ -1383,7 +1664,7 @@ module Series =
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered. 
   /// 
-  /// [category:Lookup, resampling and scaling]
+  /// [category:Sampling, resampling and advanced lookup]
   let inline lookupTime interval dir lookup (series:Series< ^K , ^V >) = 
     let add dt ts = (^K: (static member (+) : ^K * TimeSpan -> ^K) (dt, ts))
     Implementation.lookupTimeInternal add None interval dir lookup series
@@ -1410,7 +1691,7 @@ module Series =
   /// This operation is only supported on ordered series. The method throws
   /// `InvalidOperationException` when the series is not ordered. 
   /// 
-  /// [category:Lookup, resampling and scaling]
+  /// [category:Sampling, resampling and advanced lookup]
   let inline lookupTimeAt start interval dir lookup (series:Series< ^K , ^V >) = 
     let add dt ts = (^K: (static member (+) : ^K * TimeSpan -> ^K) (dt, ts))
     Implementation.lookupTimeInternal add (Some start) interval dir lookup series
@@ -1436,7 +1717,7 @@ module Series =
   let zipInner (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>) =
    series1.ZipInner(series2)
     
-  /// [category:Joining, zipping and appending]
+  /// [category:Appending, joining and zipping]
   let inline zipAlignInto kind lookup (op:'V1->'V2->'R) (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>) : Series<'K, 'R> =
     let joined = series1.Zip(series2, kind, lookup)
     joined.SelectOptional(fun (KeyValue(_, v)) -> 
@@ -1445,14 +1726,14 @@ module Series =
           OptionalValue(op a b)
       | _ -> OptionalValue.Missing )
 
-  /// [category:Joining, zipping and appending]
+  /// [category:Appending, joining and zipping]
   let inline zipInto (op:'V1->'V2->'R) (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>) : Series<'K, 'R> =
     zipAlignInto JoinKind.Inner Lookup.Exact op (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>)
 
-  /// [category:Joining, zipping and appending]
+  /// [category:Appending, joining and zipping]
   let union (series1:Series<'K, 'V>) (series2:Series<'K, 'V>) = 
     series1.Union(series2)
 
-  /// [category:Joining, zipping and appending]
+  /// [category:Appending, joining and zipping]
   let unionUsing behavior (series1:Series<'K, 'V>) (series2:Series<'K, 'V>) = 
     series1.Union(series2, behavior)
