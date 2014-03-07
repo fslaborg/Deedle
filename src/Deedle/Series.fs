@@ -362,7 +362,7 @@ and
     Series(Index.ofKeys newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
 
   /// [category:Projection and filtering]
-  member x.ScanValues(foldFunc:System.Func<'a,'V,'a>, init) =   
+  member x.ScanValues(foldFunc:System.Func<'S,'V,'S>, init) =   
     let newVector = [| 
       let accum = ref init
       for v in vector.DataSequence ->
@@ -375,7 +375,7 @@ and
     Series(index, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
 
   /// [category:Projection and filtering]
-  member x.ScanAllValues(foldFunc:System.Func<OptionalValue<'a>,OptionalValue<'V>,OptionalValue<'a>>, init) =   
+  member x.ScanAllValues(foldFunc:System.Func<OptionalValue<'S>,OptionalValue<'V>,OptionalValue<'S>>, init) =   
     let newVector = vector.DataSequence |> Seq.scan (fun x y -> foldFunc.Invoke(x, y)) init |> Seq.skip 1 |> Seq.toArray
     Series(index, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
 
@@ -885,15 +885,27 @@ and
       |> String.concat "; "
       |> sprintf "series [ %s]" 
 
+  /// Shows the series content in a human-readable format. The resulting string
+  /// shows a limited number of values from the series.
   member series.Format() =
     series.Format(Formatting.StartItemCount, Formatting.EndItemCount)
 
+  /// Shows the series content in a human-readable format. The resulting string
+  /// shows a limited number of values from the series.
+  ///
+  /// ## Parameters
+  ///  - `itemCount` - The total number of items to show. The result will show
+  ///    at most `itemCount/2` items at the beginning and ending of the series.
   member series.Format(itemCount) =
     let half = itemCount / 2
     series.Format(half, half)
 
   /// Shows the series content in a human-readable format. The resulting string
-  /// shows a limited number of rows.
+  /// shows a limited number of values from the series.
+  ///
+  /// ## Parameters
+  ///  - `startCount` - The number of elements to show at the beginning of the series
+  ///  - `endCount` - The number of elements to show at the end of the series
   member series.Format(startCount, endCount) = 
     let getLevel ordered previous reset maxLevel level (key:'K) = 
       let levelKey = 
