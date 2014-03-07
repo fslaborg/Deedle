@@ -210,8 +210,8 @@ module Stats =
       for v in s ->        
         match v with
         | Some x -> 
-          let y = !m
-          if y <> y || cmp y x then m := x          
+          let mv = !m
+          if System.Double.IsNaN(mv) || cmp mv x then m := x          
           !m
         | None -> !m }  
 
