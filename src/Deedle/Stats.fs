@@ -9,10 +9,9 @@ module Stats =
   // - TODO: 
   //    -- still to do, possibly: median, percentile, corr, cov
 
-  let internal applySeriesProj (proj: float option seq -> float seq) (series:Series<'K, float>) : Series<'K, float> =
+  let internal applySeriesProj (proj: float opt seq -> float seq) (series:Series<'K, float>) : Series<'K, float> =
     let newData = 
       series.Vector.DataSequence 
-      |> Seq.map OptionalValue.asOption
       |> proj 
       |> Vector.ofValues
 
@@ -64,21 +63,21 @@ module Stats =
     let sump4 = if moment < 4 then 0.0 else state.sump4 + (pown curr 4) - (pown outg 4)
     { state with sum = sum; sump2 = sump2; sump3 = sump3; sump4 = sump4 }
 
-  let internal initSumsSparse moment (init: float option []) =
+  let internal initSumsSparse moment (init: float opt []) =
     init 
-    |> Seq.filter Option.isSome 
-    |> Seq.map Option.get 
+    |> Seq.filter (function OptionalValue.Present _ -> true | OptionalValue.Missing -> false )
+    |> Seq.map OptionalValue.get
     |> Seq.toArray 
     |> initSumsDense moment
 
   let internal updateSumsSparse moment state curr outg = 
     match curr, outg with
-    | Some x, Some y -> updateSumsDense moment state x y
-    | Some x, None   -> { updateSumsDense moment state x 0.0 with nobs = state.nobs + 1.0 }
-    | None, Some y   -> { updateSumsDense moment state 0.0 y with nobs = state.nobs - 1.0 }
-    | None, None     -> state
+    | OptionalValue.Present x, OptionalValue.Present y -> updateSumsDense moment state x y
+    | OptionalValue.Present x, OptionalValue.Missing   -> { updateSumsDense moment state x 0.0 with nobs = state.nobs + 1.0 }
+    | OptionalValue.Missing,   OptionalValue.Present y -> { updateSumsDense moment state 0.0 y with nobs = state.nobs - 1.0 }
+    | OptionalValue.Missing,   OptionalValue.Missing   -> state
 
-  let internal applyMovingStatsTransform moment winSz (proj: Sums -> float) series =
+  let internal applyMovingSumsTransform moment winSz (proj: Sums -> float) series =
     if winSz <= 0 then invalidArg "windowSize" "Window must be non-negative"
     let calcSparse = movingWindowFn winSz (initSumsSparse moment) (updateSumsSparse moment) proj
     applySeriesProj calcSparse series
@@ -117,40 +116,40 @@ module Stats =
         // invariant: all values in deque are strictly ascending (min) or descending (max)
         i := !i + 1        
         match v with
-        | Some x -> 
-          // get rid of all obs that fell out of moving window
+        | OptionalValue.Present x -> 
+          // remove from front any values that fell out of moving window
           while q.Count > 0 && !i >= fst q.[0] do q.RemoveFront() |> ignore
-          // remove any values >= current obs
+          // remove from back any values >= (min) or <= (max) compared to current obs
           while q.Count > 0 && (cmp (snd q.[q.Count - 1]) x) do q.RemoveBack() |> ignore
-          // append new obs
+          // append new obs to back
           q.AddBack( (!i + winSz, x) )
-          // return min value
+          // return min/max value at front
           snd q.[0]
-        | None -> 
+        | OptionalValue.Missing -> 
           if q.IsEmpty then nan else snd q.[0] }
 
   // moving window functions
 
   let movingCount winSz (series:Series<'K, float>) : Series<'K, float> =
-    applyMovingStatsTransform 0 winSz (fun s -> s.nobs) series
+    applyMovingSumsTransform 0 winSz (fun s -> s.nobs) series
 
   let movingSum winSz (series:Series<'K, float>) : Series<'K, float> =
-    applyMovingStatsTransform 1 winSz (fun s -> s.sum) series
+    applyMovingSumsTransform 1 winSz (fun s -> s.sum) series
 
   let movingMean winSz (series:Series<'K, float>) : Series<'K, float> =
-    applyMovingStatsTransform 1 winSz (fun s -> s.sum / s.nobs) series
+    applyMovingSumsTransform 1 winSz (fun s -> s.sum / s.nobs) series
 
   let movingVariance winSz (series:Series<'K, float>) : Series<'K, float> =
-    applyMovingStatsTransform 2 winSz variance series
+    applyMovingSumsTransform 2 winSz variance series
 
   let movingStdDev winSz (series:Series<'K, float>) : Series<'K, float> =
-    applyMovingStatsTransform 2 winSz (variance >> sqrt) series
+    applyMovingSumsTransform 2 winSz (variance >> sqrt) series
 
   let movingSkew winSz (series:Series<'K, float>) : Series<'K, float> =
-    applyMovingStatsTransform 3 winSz skew series
+    applyMovingSumsTransform 3 winSz skew series
 
   let movingKurt winSz (series:Series<'K, float>) : Series<'K, float> =
-    applyMovingStatsTransform 4 winSz kurt series 
+    applyMovingSumsTransform 4 winSz kurt series 
 
   let movingMin winSz (series:Series<'K, float>) : Series<'K, float> =
     applySeriesProj (movingMinMaxHelper winSz (>=)) series
@@ -197,10 +196,10 @@ module Stats =
 
   let internal updateMomentsSparse state curr =     
     match curr with
-    | Some x -> updateMoments state x
-    | None   -> state
+    | OptionalValue.Present x -> updateMoments state x
+    | OptionalValue.Missing   -> state
 
-  let internal applyExpandingStatsTransform (proj: Moments -> float) series =
+  let internal applyExpandingMomentsTransform (proj: Moments -> float) series =
     let initMoments = {nobs = 0.0; sum = 0.0; M1 = 0.0; M2 = 0.0; M3 = 0.0; M4 = 0.0 }
     let calcSparse = expandingWindowFn initMoments updateMomentsSparse proj
     applySeriesProj calcSparse series
@@ -219,21 +218,21 @@ module Stats =
   // expanding window functions
 
   let expandingCount (series:Series<'K, float>) : Series<'K, float> =
-    applyExpandingStatsTransform (fun w -> w.nobs) series
+    applyExpandingMomentsTransform (fun w -> w.nobs) series
 
   let expandingSum (series:Series<'K, float>) : Series<'K, float> =
-    applyExpandingStatsTransform (fun w -> w.sum) series
+    applyExpandingMomentsTransform (fun w -> w.sum) series
 
   let expandingMean (series:Series<'K, float>) : Series<'K, float> =
-    applyExpandingStatsTransform (fun w -> w.M1) series
+    applyExpandingMomentsTransform (fun w -> w.M1) series
 
   let expandingVariance (series:Series<'K, float>) : Series<'K, float> =
     let toVar w = w.M2 / (w.nobs - 1.0)
-    applyExpandingStatsTransform toVar series
+    applyExpandingMomentsTransform toVar series
 
   let expandingStdDev (series:Series<'K, float>) : Series<'K, float> =
     let toStdDev w = w.M2 / (w.nobs - 1.0) |> sqrt
-    applyExpandingStatsTransform toStdDev series
+    applyExpandingMomentsTransform toStdDev series
 
   let expandingSkew (series:Series<'K, float>) : Series<'K, float> =
     // population -> sample estimate    
@@ -241,7 +240,7 @@ module Stats =
       if w.nobs < 3.0 then nan else
         let adjust = (sqrt (w.nobs * (w.nobs - 1.0))) / (w.nobs - 2.0)
         adjust * (sqrt w.nobs) * w.M3 / (w.M2 ** 1.5) 
-    applyExpandingStatsTransform toEstSkew series
+    applyExpandingMomentsTransform toEstSkew series
 
   let expandingKurt (series:Series<'K, float>) : Series<'K, float> =
     // population -> sample estimate
@@ -249,20 +248,20 @@ module Stats =
       if w.nobs < 4.0 then nan else
         let adjust p = (6.0 + p * (w.nobs + 1.0)) * (w.nobs - 1.0) / ((w.nobs - 2.0) * (w.nobs - 3.0))
         adjust ((w.nobs * w.M4) / (w.M2 * w.M2) - 3.0)
-    applyExpandingStatsTransform toEstKurt series
+    applyExpandingMomentsTransform toEstKurt series
 
   let expandingMin (series:Series<'K, float>) : Series<'K, float> =
     let minFn s v =
       match v with
-      | Some x -> if System.Double.IsNaN(s) then x else min x s
-      | None   -> s
+      | OptionalValue.Present x -> if System.Double.IsNaN(s) then x else min x s
+      | OptionalValue.Missing   -> s
     applySeriesProj (Seq.scan minFn nan) series
 
   let expandingMax (series:Series<'K, float>) : Series<'K, float> =
     let maxFn s v =
       match v with
-      | Some x -> if System.Double.IsNaN(s) then x else max x s
-      | None   -> s
+      | OptionalValue.Present x -> if System.Double.IsNaN(s) then x else max x s
+      | OptionalValue.Missing   -> s
     applySeriesProj (Seq.scan maxFn nan) series
 
   // end expanding window functions
