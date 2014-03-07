@@ -211,8 +211,7 @@ module Stats =
         match v with
         | Some x -> 
           let mv = !m
-          if System.Double.IsNaN(mv) || cmp mv x then m := x          
-          !m
+          if System.Double.IsNaN(mv) || cmp mv x then m := x; x else mv
         | None -> !m }  
 
   // expanding window functions
