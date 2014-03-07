@@ -612,18 +612,7 @@ type FrameExtensions =
   /// 
   /// [category:Data structure manipulation]
   [<Extension>]
-  static member OrderRows(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.orderRows frame
-
-  /// Returns a data frame that contains the same data as the input, 
-  /// but whose rows are an ordered series. This allows using operations that are
-  /// only available on indexed series such as alignment and inexact lookup.
-  ///
-  /// ## Parameters
-  ///  - `frame` - Source data frame to be ordered.
-  /// 
-  /// [category:Data structure manipulation]
-  [<Extension>]
-  static member SortByRowKey(frame:Frame<'TRowKey, 'TColumnKey>) = frame |> Frame.orderRows
+  static member SortRowsByKey(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.sortRowsByKey frame
 
   /// Returns a data frame that contains the same data as the input, 
   /// but whose columns are an ordered series. This allows using operations that are
@@ -634,18 +623,7 @@ type FrameExtensions =
   /// 
   /// [category:Data structure manipulation]
   [<Extension>]
-  static member OrderColumns(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.orderCols frame
-
-  /// Returns a data frame that contains the same data as the input, 
-  /// but whose columns are an ordered series. This allows using operations that are
-  /// only available on indexed series such as alignment and inexact lookup.
-  ///
-  /// ## Parameters
-  ///  - `frame` - Source data frame to be ordered.
-  /// 
-  /// [category:Data structure manipulation]
-  [<Extension>]
-  static member SortByColKey(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.orderCols frame
+  static member SortColumnsByKey(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.sortColsByKey frame
 
   /// Returns a data frame that contains the same data as the input, 
   /// but whose rows are sorted by some column.
@@ -1053,4 +1031,17 @@ type FrameExtensions =
   /// [category:Missing values]
   [<Extension>]
   static member DropSparseColumns(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.dropSparseCols frame
+
+  // ----------------------------------------------------------------------------------------------
+  // Obsolete - kept for temporary compatibility
+  // ----------------------------------------------------------------------------------------------
+
+  [<Extension; Obsolete("Use SortByKeys instead. This function will be removed in futrue versions.")>]
+  static member OrderRows(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.sortRowsByKey frame
+  [<Extension; Obsolete("Use SortByKeys instead. This function will be removed in futrue versions.")>]
+  static member SortByRowKey(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.sortRowsByKey frame
+  [<Extension; Obsolete("Use SortByKeys instead. This function will be removed in futrue versions.")>]
+  static member OrderColumns(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.sortColsByKey frame
+  [<Extension; Obsolete("Use SortByKeys instead. This function will be removed in futrue versions.")>]
+  static member SortByColKey(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.sortColsByKey frame
   

@@ -689,18 +689,8 @@ type SeriesExtensions =
   ///
   /// [category:Data structure manipulation]
   [<Extension>]
-  static member OrderByKey(series:Series<'K, 'T>) = 
-    Series.orderByKey series
-
-  /// Returns a new series whose entries are reordered according to index order
-  ///
-  /// ## Parameters
-  ///  - `series` - An input series to be used
-  ///
-  /// [category:Data structure manipulation]
-  [<Extension>]
   static member SortByKey(series:Series<'K, 'T>) = 
-    Series.orderByKey series
+    Series.sortByKey series
 
   // ----------------------------------------------------------------------------------------------
   // Lookup, resampling and scaling
@@ -969,3 +959,12 @@ type SeriesExtensions =
   [<Extension>]
   static member SampleInto<'V>(series:Series<DateTimeOffset, 'V>, interval:TimeSpan, dir, aggregate:Func<_, _>) =
     series |> Series.Implementation.sampleTimeIntoInternal (+) None interval dir aggregate.Invoke
+
+
+  // ----------------------------------------------------------------------------------------------
+  // Obsolete - kept for temporary compatibility
+  // ----------------------------------------------------------------------------------------------
+
+  [<Extension; Obsolete("Use SortByKeys instead. This function will be removed in futrue versions.")>]
+  static member OrderByKey(series:Series<'K, 'T>) = Series.sortByKey series
+

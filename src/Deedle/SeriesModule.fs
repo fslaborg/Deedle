@@ -1337,19 +1337,10 @@ module Series =
   ///  - `series` - An input series to be used
   ///
   /// [category:Data structure manipulation]
-  let orderByKey (series:Series<'K, 'T>) =
+  let sortByKey (series:Series<'K, 'T>) =
     let newRowIndex, rowCmd = series.IndexBuilder.OrderIndex(series.Index, Vectors.Return 0)
     let newData = series.VectorBuilder.Build(rowCmd, [| series.Vector |])
     Series(newRowIndex, newData, series.VectorBuilder, series.IndexBuilder)
-
-  /// Returns a new series whose entries are reordered according to index order
-  ///
-  /// ## Parameters
-  ///  - `series` - An input series to be used
-  ///
-  /// [category:Data structure manipulation]
-  let sortByKey series =
-    series |> orderByKey
 
   // ----------------------------------------------------------------------------------------------
   // Resampling and similar stuff
@@ -1737,3 +1728,10 @@ module Series =
   /// [category:Appending, joining and zipping]
   let unionUsing behavior (series1:Series<'K, 'V>) (series2:Series<'K, 'V>) = 
     series1.Union(series2, behavior)
+
+  // ----------------------------------------------------------------------------------------------
+  // Obsolete - kept here for temporary compatibility
+  // ----------------------------------------------------------------------------------------------
+
+  [<Obsolete("Use sortByKeys instead. This function will be removed in futrue versions.")>]
+  let orderByKey series = sortByKey series 
