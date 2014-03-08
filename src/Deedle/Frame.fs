@@ -568,10 +568,12 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   ///               not exactly match (look for nearest available value with the smaller/greater key).
   ///
   /// [category:Accessors and slicing]
-  member frame.TryGetRowObservation<'T>(rowKey, lookup) =
-    frame.Rows.TryGetObservation(rowKey, lookup) 
-    |> OptionalValue.map (fun kvp -> 
-      KeyValuePair(kvp.Key, Series.Create(columnIndex, changeType<'T> kvp.Value.Vector)))
+  member frame.TryGetRowObservation<'T>(rowKey, lookup) : OptionalValue<KeyValuePair<_, Series<_, 'T>>> =
+    let rowAddress = rowIndex.Lookup(rowKey, lookup, fun _ -> true)
+    if not rowAddress.HasValue then OptionalValue.Missing
+    else 
+      let row = Series.Create(columnIndex, createRowReader data vectorBuilder columnIndex.Mappings (snd rowAddress.Value))
+      OptionalValue(KeyValuePair(fst rowAddress.Value, row))
   
   // ----------------------------------------------------------------------------------------------
   // Fancy accessors for frame columns and frame data

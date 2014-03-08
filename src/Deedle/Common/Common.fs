@@ -664,53 +664,6 @@ module Seq =
     | Some (_, items) -> yield items |> List.rev |> Array.ofList
     | _ -> () }
 
-
-  /// Generate non-overlapping chunks from the input sequence. Chunks are aligned
-  /// to the specified keys. The `dir` parameter specifies the direction. If it is
-  /// `Direction.Forward` than the key is the first element of a chunk; for 
-  /// `Direction.Backward`, the key is the last element (note that this does not hold
-  /// at the boundaries)
-  let chunkedUsing (comparer:Comparer<_>) dir keys input = 
-    let keys = List.ofSeq keys
-    let input = List.ofSeq input
-    let (|Cons|Nil|) l = match l with [] -> Nil | x::xs -> Cons(x, xs)
-
-    let (<) a b = comparer.Compare(a, b) < 0
-    let (<=) a b = comparer.Compare(a, b) <= 0
-
-    // Consume input until we find element greater or equal to a given nextKey
-    let rec chunkUntilKeyOrEnd op nextKey input acc =
-      match nextKey, input with
-      | Some nk, Cons(h, input) when op h nk -> chunkUntilKeyOrEnd op nextKey input (h::acc)
-      | Some nk, _ -> input, List.rev acc
-      | None, input -> [], (List.rev acc) @ (List.ofSeq input)
-
-    if dir = Direction.Forward then  
-      match keys with
-      | Nil -> invalidArg "keys" "Keys for sampling should not be empty"
-      | Cons(key, keys) ->
-          let rec loop (key, keys) input = seq {
-            let input, chunk = chunkUntilKeyOrEnd (<) (headOrNone keys) input []
-            yield key, chunk
-            match keys with 
-            | Nil -> if not input.IsEmpty then failwith "Assertion failed: Input not empty"
-            | Cons(key, keys) -> yield! loop(key, keys) input }
-          loop(key, keys) input
-
-    elif dir = Direction.Backward then
-      if keys.IsEmpty then
-        invalidArg "keys" "Keys for sampling should not be empty"
-      else
-        // TODO: Implemented using lazy list - sequence expression does not eliminate tail-call "yield!" ??
-        let key, keys = keys.Head, keys.Tail
-        let rec loop (key, keys) input =  
-          let input, chunk = chunkUntilKeyOrEnd (<=) (Some key) input []
-          match keys with 
-          | Nil -> LazyList.ofSeq [ key, chunk @ (List.ofSeq input) ]
-          | Cons(nkey, keys) -> 
-              LazyList.consDelayed (key, chunk) (fun () -> loop (nkey, keys) input)
-        (loop (key, keys) input) :> seq<_>
-    else invalidArg "dir" "Invalid value for direction" 
       
   /// A version of `Seq.windowed` that allows specifying more complex boundary
   /// behaviour. The `boundary` argument can specify one of the following options:

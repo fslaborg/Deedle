@@ -472,9 +472,8 @@ and
         ( x.Index, keys, direction, Vectors.Return 0, 
           (fun (key, (index, cmd)) -> 
               let window = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
-              OptionalValue(valueSelector.Invoke(key, window))),
-          (fun (key, (index, cmd)) -> 
-              keySelector.Invoke(key, fun () -> Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder))) )
+              let newKey = keySelector.Invoke(key, window)
+              newKey, OptionalValue(valueSelector.Invoke(newKey, window))) )
     Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   /// Resample the series based on a provided collection of keys. The values of the series

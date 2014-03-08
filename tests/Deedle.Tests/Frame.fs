@@ -341,6 +341,17 @@ let ``Accessing row via missing row key with lookup works`` () =
   let actual = rowSample().GetRow<int>("f", Lookup.NearestSmaller)
   actual |> shouldEqual <| series [ "X" => 3; "Y" => 6 ]
 
+[<Test>]
+let ``Accessing row observation via missing row key with lookup works`` () =
+  let actual = rowSample().TryGetRowObservation<int>("f", Lookup.NearestSmaller)
+  actual.Value.Key |> shouldEqual "e"
+  actual.Value.Value |> shouldEqual <| series [ "X" => 3; "Y" => 6 ]
+
+[<Test>]
+let ``Accessing row observation via missing row key returns missing`` () =
+  let actual = rowSample().TryGetRowObservation<int>("f", Lookup.Exact)
+  actual.HasValue |> shouldEqual false
+
 // ------------------------------------------------------------------------------------------------
 // Stack & unstack
 // ------------------------------------------------------------------------------------------------
@@ -422,7 +433,7 @@ let ``Can perform numerical operation with a series on data frames`` () =
   
 [<Test>]
 let ``Can perform pointwise numerical operations on two frames`` () =
-  let df1 = msft() |> Frame.orderRows
+  let df1 = msft() |> Frame.sortRowsByKey
   let df2 = df1 |> Frame.shift 1
   let opens1 = df1?Open
   let opens2 = df2?Open
@@ -529,7 +540,7 @@ let ``Can zip and subtract numerical values in MSFT data set``() =
 
 [<Test>]
 let ``Can zip and subtract numerical values in MSFT data set; with some rows dropped``() = 
-  let df1 = (msft() |> Frame.orderRows).Rows.[DateTime(2000, 1, 1) ..]
+  let df1 = (msft() |> Frame.sortRowsByKey).Rows.[DateTime(2000, 1, 1) ..]
   let df2 = msft()
   let values = df1.Zip(df2, fun a b -> a - b).GetAllValues<int>()
   values |> Seq.length |> shouldEqual (6 * (df1 |> Frame.countRows))

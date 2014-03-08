@@ -325,7 +325,7 @@ let ``Can perform linear interpolation``() =
 
 [<Test>]
 let ``Can order series``() =
-  let ord = unordered |> Series.orderByKey
+  let ord = unordered |> Series.sortByKey
   ord |> shouldEqual sortedByKey
 
 [<Test>]
@@ -439,7 +439,7 @@ let ``Series.sampleTime works when using forward direction`` () =
   actual |> shouldEqual expected        
 
 [<Test>]
-let ``Series.sampleInto works when using forward direction`` () =
+let ``Series.resampleInto works when using forward direction`` () =
   let start = DateTime(2012, 2, 12)
   let input = generate start (TimeSpan.FromHours(5.37)) 20
   let actual = 
@@ -449,14 +449,14 @@ let ``Series.sampleInto works when using forward direction`` () =
   actual |> shouldEqual expected
 
 [<Test>]
-let ``Series.sampleInto works when using backward direction`` () =
+let ``Series.resampleInto works when using backward direction`` () =
   let start = DateTime(2012, 2, 12)
   generate start (TimeSpan.FromHours(5.37)) 20
   |> Series.resampleInto [ DateTime(2012, 2, 13); DateTime(2012, 2, 15) ] Direction.Backward (fun _ -> Series.lastValue)
   |> shouldEqual <| Series.ofObservations [ DateTime(2012, 2, 13) => 4; DateTime(2012, 2, 15) => 19 ]
 
 [<Test>]
-let ``Series.sample generates empty chunks for keys where there are no values`` () =
+let ``Series.resample generates empty chunks for keys where there are no values`` () =
   let start = DateTime(2012, 2, 12)
   let keys = [ for d in 12 .. 20 -> DateTime(2012, 2, d) ]
   generate start (TimeSpan.FromHours(48.0)) 5
@@ -471,6 +471,58 @@ let ``Can create minute samples over one year of items``() =
   let dict = sampl |> Series.observations |> dict
   dict.[DateTime.Today.AddDays(5.0)] |> shouldEqual 0
   dict.Count |> should be (greaterThan 100000)
+
+[<Test>]
+let ``Series.resample works in forward direction with keys in range`` () =
+  let s = series [ for i in 1 .. 10 -> i, i ]
+  let actual = s |> Series.resampleInto [2;4;7] Direction.Forward (fun k s -> List.ofSeq s.Values)
+  let expected = series [2 => [1;2;3]; 4 => [4;5;6]; 7 => [7;8;9;10]]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Series.resample works in backward direction with keys in range`` () =
+  let s = series [ for i in 1 .. 10 -> i, i ]
+  let actual = s |> Series.resampleInto [2;4;7] Direction.Backward (fun k s -> List.ofSeq s.Values)
+  let expected = series [2 => [1;2]; 4 => [3;4]; 7 => [5;6;7;8;9;10]]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Series.resample works in forward direction when key is not in range`` () =
+  let s = series [ for i in 1 .. 10 -> if i >= 4 then i + 1, i + 1 else i, i ]
+  let actual = s |> Series.resampleInto [2;4;7] Direction.Forward (fun k s -> List.ofSeq s.Values)
+  let expected = series [2 => [1;2;3]; 4 => [5;6]; 7 => [7;8;9;10;11]]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Series.resample works in backward direction when key is not in range`` () =
+  let s = series [ for i in 1 .. 10 -> if i >= 4 then i + 1, i + 1 else i, i ]
+  let actual = s |> Series.resampleInto [2;4;7] Direction.Backward (fun k s -> List.ofSeq s.Values)
+  let expected = series [2 => [1;2]; 4 => [3]; 7 => [5;6;7;8;9;10;11]]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Series.resample works in forward direction with keys mapping to empty groups`` () =
+  let s = series [ 1 => 1; 3 => 3; 4 => 4; 5 => 5 ]
+  let actual = s |> Series.resampleInto [1;2;3;5;6] Direction.Forward (fun k s -> List.ofSeq s.Values)
+  let expected = series [1 => [1]; 2 => []; 3 => [3;4]; 5 => [5]; 6 => [] ]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Series.resample works in backward direction with keys mapping to empty groups`` () =
+  let s = series [ 1 => 1; 3 => 3; 4 => 4; 5 => 5 ]
+  let actual = s |> Series.resampleInto [1;2;3;5;6] Direction.Backward (fun k s -> List.ofSeq s.Values)
+  let expected = series [1 => [1]; 2 => []; 3 => [3]; 5 => [4;5]; 6 => [] ]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Series.resample works for very large number of keys`` () =
+  let input = series [for m in 1 .. 12 -> DateTime.Today.AddMonths(m) => float m ] 
+  let keys = [for m in 0.0 .. 100000.0 -> DateTime.Today.AddMinutes(m) ]
+
+  let actual = input |> Series.resample keys Direction.Forward 
+  actual.KeyCount |> shouldEqual 100001
+  let actual = input |> Series.resample keys Direction.Backward 
+  actual.KeyCount |> shouldEqual 100001
 
 // ------------------------------------------------------------------------------------------------
 // Indexing & slicing & related extensions

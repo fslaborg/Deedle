@@ -295,8 +295,8 @@ and IIndexBuilder =
   /// `Direction.Backward`, the key is the last element (note that this does not 
   /// hold at the boundaries where values before/after the key may also be included)
   abstract Resample : IIndex<'K> * seq<'K> * Direction * source:VectorConstruction *
-    valueSelector:('TNewKey * SeriesConstruction<'K> -> OptionalValue<'R>) *
-    keySelector:('K * SeriesConstruction<'K> -> 'TNewKey) -> IIndex<'TNewKey> * IVector<'R>
+    selector:('K * SeriesConstruction<'K> -> 'TNewKey * OptionalValue<'R>) 
+      -> IIndex<'TNewKey> * IVector<'R>
 
   /// Given an index and vector construction, return a new index asynchronously
   /// to allow composing evaluation of lazy series. The command to be applied to
