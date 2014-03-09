@@ -1,6 +1,6 @@
 ﻿(*** hide ***)
 #nowarn "211"
-#I "../../packages/FSharp.Charting.0.87"
+#I "../../packages/FSharp.Charting.0.90.6"
 #r "../../bin/MathNet.Numerics.dll"
 #I @"../../bin"
 open System
