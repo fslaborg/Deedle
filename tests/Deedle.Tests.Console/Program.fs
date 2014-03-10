@@ -70,18 +70,28 @@ let testOne() =
   //let d1 = Array.init 1000000 float
   //let d2 = Array.init 1000000 float
 
-  let s = series [ for k in 0 .. 100000 -> k => float k ]
+//  let s = series [ for k in 0 .. 100000 -> k => float k ]
+
+  let genRandomNumbers count =
+    let rnd = System.Random()
+    List.init count (fun _ -> (float <| rnd.Next()) / (float Int32.MaxValue))
+  let r = genRandomNumbers 1000000
+  let n = Series.ofValues(r)
+  let f = Frame.ofColumns ["n" => n]
 
 //  s |> Series.chunkInto 100 Series.mean |> ignore
 //  s |> Series.chunkWhileInto (fun k1 k2 -> k2 - k1 < 100) Series.mean |> ignore
 //  s |> Series.windowWhileInto (fun k1 k2 -> k2 - k1 < 100) Series.mean |> ignore
 
   //let titanic = Frame.ReadCsv(__SOURCE_DIRECTORY__ + @"\..\..\docs\content\data\Titanic.csv")
-  for i in 1 .. 5 do
+  let rows = ResizeArray<_>()
+  for i in 1 .. 10 do
     timed(fun () ->
        //let nada = s |> Series.windowInto 100 Series.mean
 
-       let nada = s |> Series.windowInto 100 Series.mean |> ignore
+       //let nada = s |> Series.windowInto 100 Series.mean |> ignore
+
+       rows.Add(f.RowsDense)
 
        ///let nada2 = s |> Series.windowSizeInto (5, Boundary.Skip) (DataSegment.data >> Series.mean)
        ()

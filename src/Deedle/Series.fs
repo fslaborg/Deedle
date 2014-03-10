@@ -44,13 +44,11 @@ type ISeries<'K when 'K : equality> =
 and
   Series<'K, 'V when 'K : equality>
     ( index:IIndex<'K>, vector:IVector<'V>,
-      vectorBuilder : IVectorBuilder, indexBuilder : IIndexBuilder ) as this =
+      vectorBuilder : IVectorBuilder, indexBuilder : IIndexBuilder ) =
   
-  /// Lazy value to hold the number of elements (so that we do not recalculate this all the time)
-  let valueCount = Lazy.Create (fun () -> 
-    let mutable count = 0
-    for _, a in index.Mappings do if vector.GetValue(a).HasValue then count <- count + 1
-    count )
+  /// Value to hold the number of elements (so that we do not recalculate this all the time)
+  /// (This is calculated on first access; we do not use Lazy<T> to avoid allocations)
+  let mutable valueCount = -1 
 
   /// Returns the vector builder associated with this series
   member internal x.VectorBuilder = vectorBuilder
@@ -125,7 +123,15 @@ and
   /// `Double.NaN`, or those that are missing due to outer join etc.).
   ///
   /// [category:Series data]
-  member x.ValueCount = valueCount.Value
+  member x.ValueCount = 
+    if valueCount = -1 then
+      // In concurrent access, we may run this multiple times, 
+      // but that's not a big deal as there are no race conditions
+      let mutable count = 0
+      for _, a in index.Mappings do 
+        if vector.GetValue(a).HasValue then count <- count + 1
+      valueCount <- count
+    valueCount
 
   // ----------------------------------------------------------------------------------------------
   // Accessors and slicing
@@ -871,7 +877,7 @@ and
     combine (series.Index.GetHashCode()) (series.Vector.GetHashCode())
 
   interface ISeries<'K> with
-    member x.TryGetObject(k) = this.TryGet(k) |> OptionalValue.map box
+    member x.TryGetObject(k) = x.TryGet(k) |> OptionalValue.map box
     member x.Vector = vector :> IVector
     member x.Index = index
 
