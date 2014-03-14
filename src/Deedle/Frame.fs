@@ -453,10 +453,10 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Accessors and slicing]
   member frame.Rows =
-    let values = rowIndex.Keys |> Seq.map (fun k ->
-      let rowAddress = rowIndex.Locate(k)
-      let rowReader = createObjRowReader data vectorBuilder columnIndex.Mappings rowAddress
-      Series.CreateUntyped(columnIndex, rowReader))    
+    let getRow addr =
+      let rowReader = createObjRowReader data vectorBuilder columnIndex.Mappings addr
+      Series.CreateUntyped(columnIndex, rowReader)
+    let values = rowIndex.Mappings |> Seq.map (fun (_, a) -> getRow a)
     RowSeries(Series<_, _>(rowIndex, Vector.ofValues values, vectorBuilder, indexBuilder))
 
   /// [category:Accessors and slicing]

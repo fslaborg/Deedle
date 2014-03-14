@@ -73,12 +73,17 @@
     <Compile Include="FrameModule.fs" />
     <Compile Include="FrameExtensions.fs" />
     <Compile Include="DelayedSeries.fs" />
+    <Compile Include="Stats.fs" />
     <None Include="packages.config" />
     <None Include="Deedle.fsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Deque">
+      <HintPath>..\..\packages\Deque.0.1.1\lib\Net20\Deque.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>False</Private>
     </Reference>

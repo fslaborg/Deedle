@@ -749,7 +749,7 @@ module Series =
   let inline chunkWhile cond (series:Series<'K, 'T>) = 
     chunkWhileInto cond id series 
 
-  // Most common-case functions
+  // Most common-case functions  
 
   /// Creates a sliding window using the specified size and then applies the provided 
   /// value selector `f` on each window to produce the result which is returned as a new series. 
