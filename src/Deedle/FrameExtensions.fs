@@ -480,21 +480,6 @@ module FSharpFrameExtensions =
     member frame.ToDataTable(rowKeyNames) = 
       FrameUtils.toDataTable rowKeyNames frame
 
-    /// Creates a new data frame resulting from a 'pivot' operation. Consider a denormalized data 
-    /// frame representing a table: column labels are field names & table values are observations
-    /// of those fields. pivotTable buckets the rows along two axes, according to the results of 
-    /// the functions `rowGrp` and `colGrp`; and then computes a value for the frame of rows that
-    /// land in each bucket.
-    ///
-    /// ## Parameters
-    ///  - `rowGrp` - A function from rowkey & row to group value for the resulting row index
-    ///  - `colGrp` - A function from rowkey & row to group value for the resulting col index
-    ///  - `op` - A function computing a value from the corresponding bucket frame 
-    ///
-    /// [category:Frame operations]
-    member frame.PivotTable<'R, 'C, 'T when 'R : equality and 'C : equality>(r:'TColumnKey, c:'TColumnKey, op:Func<Frame<'TRowKey,'TColumnKey>,'T>) =
-        frame |> Frame.pivotTable (fun k os -> os.GetAs<'R>(r)) (fun k os -> os.GetAs<'C>(c)) op.Invoke
-
 module FrameBuilder =
   type Columns<'R, 'C when 'C : equality and 'R : equality>() = 
     let mutable series = []
@@ -816,6 +801,21 @@ type FrameExtensions =
   [<Extension>]
   static member ToDataTable(frame:Frame<'R, 'C>, rowKeyNames) = 
     FrameUtils.toDataTable rowKeyNames frame
+
+  /// Creates a new data frame resulting from a 'pivot' operation. Consider a denormalized data 
+  /// frame representing a table: column labels are field names & table values are observations
+  /// of those fields. pivotTable buckets the rows along two axes, according to the results of 
+  /// the functions `rowGrp` and `colGrp`; and then computes a value for the frame of rows that
+  /// land in each bucket.
+  ///
+  /// ## Parameters
+  ///  - `rowGrp` - A function from rowkey & row to group value for the resulting row index
+  ///  - `colGrp` - A function from rowkey & row to group value for the resulting col index
+  ///  - `op` - A function computing a value from the corresponding bucket frame 
+  ///
+  /// [category:Frame operations]
+  static member PivotTable<'R, 'C, 'T when 'R : equality and 'C : equality>(frame: Frame<'R, 'C>, r:'C, c:'C, op:Func<Frame<'R,'C>,'T>) =
+      frame |> Frame.pivotTable (fun k os -> os.GetAs<'R>(r)) (fun k os -> os.GetAs<'C>(c)) op.Invoke
 
   // ----------------------------------------------------------------------------------------------
   // Assorted stuff
