@@ -111,6 +111,7 @@ open Deedle.Keys
 open Deedle.Internal
 open Deedle.Addressing
 open Deedle.Vectors
+open System.Collections.ObjectModel
 
 /// Specifies the boundary behavior for the `IIndexBuilder.GetRange` operation
 /// (whether the boundary elements should be included or not)
@@ -123,7 +124,7 @@ type BoundaryBehavior = Inclusive | Exclusive
 /// Values of this type are constructed using the associated `IIndexBuilder` type.
 type IIndex<'K when 'K : equality> = 
   /// Returns a sequence of all keys in the index.
-  abstract Keys : seq<'K>
+  abstract Keys : ReadOnlyCollection<'K>
 
   /// Performs reverse lookup - and returns key for a specified address
   abstract KeyAt : Address -> 'K
@@ -198,6 +199,12 @@ and IIndexBuilder =
   /// should check and infer this from the data.
   abstract Create : seq<'K> * Option<bool> -> IIndex<'K>
   
+  /// Create a new index using the specified keys. This overload takes data as ReadOnlyCollection
+  /// and so it is more efficient if the caller already has the keys in an allocated collection.
+  /// Optionally, the caller can specify if the index keys are ordered or not. When the value 
+  /// is not set, the construction should check and infer this from the data.
+  abstract Create : ReadOnlyCollection<'K> * Option<bool> -> IIndex<'K>
+
   /// When we perform some projection on the vector (e.g. `Series.map`), then we may also
   /// need to perform some transformation on the index (because it will typically turn delayed
   /// index into an evaluated index). This operation represents that - it should return 
@@ -288,8 +295,8 @@ and IIndexBuilder =
   /// `Direction.Backward`, the key is the last element (note that this does not 
   /// hold at the boundaries where values before/after the key may also be included)
   abstract Resample : IIndex<'K> * seq<'K> * Direction * source:VectorConstruction *
-    valueSelector:('TNewKey * SeriesConstruction<'K> -> OptionalValue<'R>) *
-    keySelector:('K * SeriesConstruction<'K> -> 'TNewKey) -> IIndex<'TNewKey> * IVector<'R>
+    selector:('K * SeriesConstruction<'K> -> 'TNewKey * OptionalValue<'R>) 
+      -> IIndex<'TNewKey> * IVector<'R>
 
   /// Given an index and vector construction, return a new index asynchronously
   /// to allow composing evaluation of lazy series. The command to be applied to

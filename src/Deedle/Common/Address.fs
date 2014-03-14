@@ -12,6 +12,7 @@ module Address =
   let Invalid = -1L
   let zero = 0L
   let inline asInt (x:Address) = int x
+  let inline asInt64 (x:Address) : int64 = x
   let inline ofInt (x:int) : Address = int64 x
   let inline ofInt64 (x:int64) : Address = x
   let inline increment (x:Address) = (x + 1L)

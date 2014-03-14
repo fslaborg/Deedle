@@ -434,9 +434,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     rowIndex.Mappings |> Seq.isEmpty
 
   /// [category:Accessors and slicing]
-  member frame.RowKeys = rowIndex.Keys
+  member frame.RowKeys = rowIndex.Keys :> seq<_>
   /// [category:Accessors and slicing]
-  member frame.ColumnKeys = columnIndex.Keys
+  member frame.ColumnKeys = columnIndex.Keys :> seq<_>
 
   /// [category:Accessors and slicing]
   member frame.Columns = 
@@ -453,18 +453,18 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Accessors and slicing]
   member frame.Rows =
-    let values = rowIndex.Keys |> Seq.map (fun k ->
-      let rowAddress = rowIndex.Locate(k)
-      let rowReader = createObjRowReader data vectorBuilder columnIndex.Mappings rowAddress
-      Series.CreateUntyped(columnIndex, rowReader))    
-    RowSeries(Series<_, _>(rowIndex, Vector.ofValues values, vectorBuilder, indexBuilder))
+    let getRow addr =
+       let rowReader = createObjRowReader data vectorBuilder columnIndex.KeyCount addr
+       Series.CreateUntyped(columnIndex, rowReader)
+    let values = Array.init (int rowIndex.KeyCount) (fun a -> getRow (Address.ofInt a))
+    RowSeries(Series<_, _>(rowIndex, vectorBuilder.Create(values), vectorBuilder, indexBuilder))
 
   /// [category:Accessors and slicing]
   member frame.RowsDense = 
     let emptySeries = Series<_, _>(rowIndex, Vector.ofValues [], vectorBuilder, indexBuilder)
     let res = emptySeries.SelectOptional (fun row ->
       let rowAddress = rowIndex.Locate(row.Key)
-      let rowVec = createObjRowReader data vectorBuilder columnIndex.Mappings rowAddress
+      let rowVec = createObjRowReader data vectorBuilder columnIndex.KeyCount rowAddress
       let all = columnIndex.Mappings |> Seq.forall (fun (key, addr) -> rowVec.GetValue(addr).HasValue)
       if all then OptionalValue(Series.CreateUntyped(columnIndex, rowVec))
       else OptionalValue.Missing )
@@ -504,7 +504,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     if index < 0 || int64 index >= rowIndex.KeyCount then
       raise (new ArgumentOutOfRangeException("index", "Index must be positive and smaller than the number of rows."))
     let rowAddress = Address.ofInt index
-    Series.Create(columnIndex, createRowReader data vectorBuilder columnIndex.Mappings rowAddress)
+    Series.Create(columnIndex, createRowReader data vectorBuilder columnIndex.KeyCount rowAddress)
 
   /// Returns a row with the specieifed key wrapped in `OptionalValue`. When the specified key 
   /// is not found, the result is `OptionalValue.Missing`. This method is generic and returns the result 
@@ -518,7 +518,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member frame.TryGetRow<'T>(rowKey) : OptionalValue<Series<_, 'T>> =
     let rowAddress = rowIndex.Locate(rowKey)
     if rowAddress = Address.Invalid then OptionalValue.Missing
-    else OptionalValue(Series.Create(columnIndex, createRowReader data vectorBuilder columnIndex.Mappings rowAddress))
+    else OptionalValue(Series.Create(columnIndex, createRowReader data vectorBuilder columnIndex.KeyCount rowAddress))
 
   /// Returns a row with the specieifed key wrapped in `OptionalValue`. When the specified key 
   /// is not found, the result is `OptionalValue.Missing`. This method is generic and returns the result 
@@ -534,7 +534,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member frame.TryGetRow<'T>(rowKey, lookup) : OptionalValue<Series<_, 'T>> =
     let rowAddress = rowIndex.Lookup(rowKey, lookup, fun _ -> true)
     if not rowAddress.HasValue then OptionalValue.Missing
-    else OptionalValue(Series.Create(columnIndex, createRowReader data vectorBuilder columnIndex.Mappings (snd rowAddress.Value)))
+    else OptionalValue(Series.Create(columnIndex, createRowReader data vectorBuilder columnIndex.KeyCount (snd rowAddress.Value)))
 
   /// Returns a row with the specieifed key. This method is generic and returns the result 
   /// as a series containing values of the specified type. To get heterogeneous series of 
@@ -568,10 +568,12 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   ///               not exactly match (look for nearest available value with the smaller/greater key).
   ///
   /// [category:Accessors and slicing]
-  member frame.TryGetRowObservation<'T>(rowKey, lookup) =
-    frame.Rows.TryGetObservation(rowKey, lookup) 
-    |> OptionalValue.map (fun kvp -> 
-      KeyValuePair(kvp.Key, Series.Create(columnIndex, changeType<'T> kvp.Value.Vector)))
+  member frame.TryGetRowObservation<'T>(rowKey, lookup) : OptionalValue<KeyValuePair<_, Series<_, 'T>>> =
+    let rowAddress = rowIndex.Lookup(rowKey, lookup, fun _ -> true)
+    if not rowAddress.HasValue then OptionalValue.Missing
+    else 
+      let row = Series.Create(columnIndex, createRowReader data vectorBuilder columnIndex.KeyCount (snd rowAddress.Value))
+      OptionalValue(KeyValuePair(fst rowAddress.Value, row))
   
   // ----------------------------------------------------------------------------------------------
   // Fancy accessors for frame columns and frame data

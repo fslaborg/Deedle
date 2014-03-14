@@ -39,23 +39,6 @@ let prettyPrintVector (vector:IVector<'T>) =
 // Derived/wrapped implementations of the IVector<'T> interface
 // --------------------------------------------------------------------------------------
 
-/// Create a new vector that delegates all functionality to a ref vector
-let delegatedVector (vector:IVector<'TValue> ref) =
-  { new System.Object() with
-      member x.Equals(another) = vector.Value.Equals(another)
-      member x.GetHashCode() = vector.Value.GetHashCode()
-    interface IVector<'TValue> with
-      member x.GetValue(a) = vector.Value.GetValue(a)
-      member x.Data = vector.Value.Data
-      member x.Select(f) = vector.Value.Select(f)
-      member x.SelectMissing(f) = vector.Value.SelectMissing(f)
-    interface IVector with
-      member x.ObjectSequence = vector.Value.ObjectSequence
-      member x.SuppressPrinting = vector.Value.SuppressPrinting
-      member x.ElementType = vector.Value.ElementType
-      member x.GetObject(i) = vector.Value.GetObject(i) 
-      member x.Invoke(site) = vector.Value.Invoke(site) }
-
 /// Represents a vector containing objects, that has been created by "boxing" a vector
 /// containing values of any (likely more specific type). Given a boxed vector, we can 
 /// get the original vector containing original values via the 'UnboxedVector' property
@@ -250,45 +233,61 @@ let getVectorRange (builder:IVectorBuilder) range (vector:IVector) =
   |> vector.Invoke
 
 
-/// Creates a virtual vector for reading "row" of a data frame. The virtual vector accesses
-/// internal representation of the frame (specified by `data` and `columnMappings`) and is only
-/// fully materialized in certain cases (when `Select`, `SelectMissing`, `Equals` or `GetHashCode` is used)
-/// The function is generic and converts values to the specified type.
-let createRowReader (data:IVector<IVector>) (builder:IVectorBuilder) (columnMappings:seq<'K * _>) rowAddress =
-  // 'let rec' would be more elegant, but it is slow...
-  let virtualVector = ref (Unchecked.defaultof<_>)
-  let materializeVector() =
-    let data = (virtualVector : ref<IVector<'T>>).Value.DataSequence
-    virtualVector := builder.CreateMissing(Array.ofSeq data)
-  virtualVector :=
-    { // Comparison and get hash code is delegated to actual vector
-      new System.Object() with
-        member x.Equals(another) = materializeVector(); virtualVector.Value.Equals(another)
-        member x.GetHashCode() = materializeVector(); virtualVector.Value.GetHashCode()
+/// A virtual vector for reading "row" of a data frame. The virtual vector accesses
+/// internal representation of the frame (specified by `data` and `columnCount`).
+/// The type is generic and automatically converts the values from the underlying
+/// (untyped) vector to the specified type.
+type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, columnCount:int64, rowAddress) =
+
+  // Comparison and get hash code follows the ArrayVector implementation
+  override vector.Equals(another) = 
+    match another with
+    | null -> false
+    | :? IVector<'T> as another -> 
+        Seq.structuralEquals vector.DataSequence another.DataSequence
+    | _ -> false
+  override vector.GetHashCode() = vector.DataSequence |> Seq.structuralHash
+
+  member private vector.DataArray =
+    Array.init (int columnCount) (fun addr -> (vector :> IVector<_>).GetValue(Address.ofInt addr))
       
-      /// In generic interface, we read objects and perform conversion
-      interface IVector<'T> with
-        member x.GetValue(columnAddress) = 
-          let vector = data.GetValue(columnAddress)
-          if not vector.HasValue then OptionalValue.Missing
-          else vector.Value.GetObject(rowAddress) |> OptionalValue.map (Convert.changeType<'T>)
-        member x.Data = 
-          [| for _, addr in columnMappings -> x.GetValue(addr) |]
-          |> ReadOnlyCollection.ofArray |> VectorData.SparseList          
-        member x.Select(f) = materializeVector(); virtualVector.Value.Select(f)
-        member x.SelectMissing(f) = materializeVector(); virtualVector.Value.SelectMissing(f)
+  // In the generic vector implementation, we
+  // read data as objects and perform conversion
+  interface IVector<'T> with
+    member x.GetValue(columnAddress) = 
+      let vector = data.GetValue(columnAddress)
+      if not vector.HasValue then OptionalValue.Missing
+      else vector.Value.GetObject(rowAddress) |> OptionalValue.map (Convert.changeType<'T>)
 
-      // Non-generic interface is fully implemented as "virtual"   
-      interface IVector with
-        member x.ObjectSequence = (x :?> IVector<obj>).DataSequence
-        member x.SuppressPrinting = false
-        member x.ElementType = typeof<'T>
-        member x.GetObject(i) = OptionalValue.map box ((x :?> IVector<'T>).GetValue(i))
-        member x.Invoke(site) = site.Invoke(x :?> IVector<'T>) }
-  delegatedVector virtualVector
+    member vector.Data = 
+      vector.DataArray |> ReadOnlyCollection.ofArray |> VectorData.SparseList 
 
+    member vector.Select(f) = 
+      (vector :> IVector<_>).SelectMissing(OptionalValue.map f)
+
+    member vector.SelectMissing(f) = 
+      let isNA = MissingValues.isNA<'TNewValue>() 
+      let flattenNA (value:OptionalValue<_>) = 
+        if value.HasValue && isNA value.Value then OptionalValue.Missing else value
+      let data = vector.DataArray |> Array.map (f >> flattenNA)
+      builder.CreateMissing(data)
+
+  // Non-generic interface is fully implemented as "virtual"   
+  interface IVector with
+    member x.ObjectSequence = x.DataArray |> Seq.map (OptionalValue.map box)
+    member x.SuppressPrinting = false
+    member x.ElementType = typeof<'T>
+    member x.GetObject(i) = OptionalValue.map box ((unbox<IVector<'T>> x).GetValue(i))
+    member x.Invoke(site) = site.Invoke(unbox<IVector<'T>> x)
+
+
+/// Creates a virtual vector for reading "row" of a data frame. 
+// For more information, see the `RowReaderVector<'T>` type.
+let inline createRowReader (data:IVector<IVector>) (builder:IVectorBuilder) columnCount rowAddress =
+  RowReaderVector<'T>(data, builder, columnCount, rowAddress) :> IVector<'T>
+ 
 /// The same as `createRowReader`, but returns `obj` vector as the result
-let createObjRowReader data builder colmap addr : IVector<obj> = 
+let inline createObjRowReader data builder colmap addr : IVector<obj> = 
   createRowReader data builder colmap addr
 
 /// Helper type that is used via reflection

@@ -44,13 +44,11 @@ type ISeries<'K when 'K : equality> =
 and
   Series<'K, 'V when 'K : equality>
     ( index:IIndex<'K>, vector:IVector<'V>,
-      vectorBuilder : IVectorBuilder, indexBuilder : IIndexBuilder ) as this =
+      vectorBuilder : IVectorBuilder, indexBuilder : IIndexBuilder ) =
   
-  /// Lazy value to hold the number of elements (so that we do not recalculate this all the time)
-  let valueCount = Lazy.Create (fun () -> 
-    let mutable count = 0
-    for _, a in index.Mappings do if vector.GetValue(a).HasValue then count <- count + 1
-    count )
+  /// Value to hold the number of elements (so that we do not recalculate this all the time)
+  /// (This is calculated on first access; we do not use Lazy<T> to avoid allocations)
+  let mutable valueCount = -1 
 
   /// Returns the vector builder associated with this series
   member internal x.VectorBuilder = vectorBuilder
@@ -125,7 +123,15 @@ and
   /// `Double.NaN`, or those that are missing due to outer join etc.).
   ///
   /// [category:Series data]
-  member x.ValueCount = valueCount.Value
+  member x.ValueCount = 
+    if valueCount = -1 then
+      // In concurrent access, we may run this multiple times, 
+      // but that's not a big deal as there are no race conditions
+      let mutable count = 0
+      for _, a in index.Mappings do 
+        if vector.GetValue(a).HasValue then count <- count + 1
+      valueCount <- count
+    valueCount
 
   // ----------------------------------------------------------------------------------------------
   // Accessors and slicing
@@ -188,7 +194,7 @@ and
   ///
   /// [category:Accessors and slicing]
   member series.GetItems(keys, lookup) =    
-    let newIndex = indexBuilder.Create<_>(keys, None)
+    let newIndex = indexBuilder.Create<_>((keys:seq<_>), None)
     let newVector = vectorBuilder.Build(indexBuilder.Reindex(index, newIndex, lookup, Vectors.Return 0, fun addr -> series.Vector.GetValue(addr).HasValue), [| vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
@@ -362,7 +368,7 @@ and
     Series(Index.ofKeys newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
 
   /// [category:Projection and filtering]
-  member x.ScanValues(foldFunc:System.Func<'a,'V,'a>, init) =   
+  member x.ScanValues(foldFunc:System.Func<'S,'V,'S>, init) =   
     let newVector = [| 
       let accum = ref init
       for v in vector.DataSequence ->
@@ -375,7 +381,7 @@ and
     Series(index, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
 
   /// [category:Projection and filtering]
-  member x.ScanAllValues(foldFunc:System.Func<OptionalValue<'a>,OptionalValue<'V>,OptionalValue<'a>>, init) =   
+  member x.ScanAllValues(foldFunc:System.Func<OptionalValue<'S>,OptionalValue<'V>,OptionalValue<'S>>, init) =   
     let newVector = vector.DataSequence |> Seq.scan (fun x y -> foldFunc.Invoke(x, y)) init |> Seq.skip 1 |> Seq.toArray
     Series(index, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
 
@@ -472,9 +478,8 @@ and
         ( x.Index, keys, direction, Vectors.Return 0, 
           (fun (key, (index, cmd)) -> 
               let window = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
-              OptionalValue(valueSelector.Invoke(key, window))),
-          (fun (key, (index, cmd)) -> 
-              keySelector.Invoke(key, fun () -> Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder))) )
+              let newKey = keySelector.Invoke(key, window)
+              newKey, OptionalValue(valueSelector.Invoke(newKey, window))) )
     Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   /// Resample the series based on a provided collection of keys. The values of the series
@@ -705,7 +710,7 @@ and
     Series<int, _>(newIndex, vector, vectorBuilder, indexBuilder)
 
   /// [category:Indexing]
-  member x.IndexWith(keys) = 
+  member x.IndexWith(keys:seq<_>) = 
     let newIndex = indexBuilder.Create(keys, None)
     Series<'TNewKey, _>(newIndex, vector, vectorBuilder, indexBuilder)
 
@@ -872,7 +877,7 @@ and
     combine (series.Index.GetHashCode()) (series.Vector.GetHashCode())
 
   interface ISeries<'K> with
-    member x.TryGetObject(k) = this.TryGet(k) |> OptionalValue.map box
+    member x.TryGetObject(k) = x.TryGet(k) |> OptionalValue.map box
     member x.Vector = vector :> IVector
     member x.Index = index
 
@@ -885,15 +890,27 @@ and
       |> String.concat "; "
       |> sprintf "series [ %s]" 
 
+  /// Shows the series content in a human-readable format. The resulting string
+  /// shows a limited number of values from the series.
   member series.Format() =
     series.Format(Formatting.StartItemCount, Formatting.EndItemCount)
 
+  /// Shows the series content in a human-readable format. The resulting string
+  /// shows a limited number of values from the series.
+  ///
+  /// ## Parameters
+  ///  - `itemCount` - The total number of items to show. The result will show
+  ///    at most `itemCount/2` items at the beginning and ending of the series.
   member series.Format(itemCount) =
     let half = itemCount / 2
     series.Format(half, half)
 
   /// Shows the series content in a human-readable format. The resulting string
-  /// shows a limited number of rows.
+  /// shows a limited number of values from the series.
+  ///
+  /// ## Parameters
+  ///  - `startCount` - The number of elements to show at the beginning of the series
+  ///  - `endCount` - The number of elements to show at the end of the series
   member series.Format(startCount, endCount) = 
     let getLevel ordered previous reset maxLevel level (key:'K) = 
       let levelKey = 

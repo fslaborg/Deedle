@@ -213,30 +213,3 @@ let ``Seq.alignWithoutOrdering works on sample input`` () =
   Seq.alignWithoutOrdering [ ("b", 0); ("c", 1); ("d", 2) ] [ ("b", 1); ("c", 2); ("a", 0); ] 
   |> List.ofSeq |> set |> shouldEqual
       (set [("b", Some 0, Some 1); ("c", Some 1, Some 2); ("d", Some 2, None); ("a", None, Some 0)])
-
-[<Test>]
-let ``Seq.chunkedUsing works in forward direction on sample input`` () =
-  let actual = Seq.chunkedUsing Comparer<int>.Default Direction.Forward [2;4;7] [1 .. 10] |> Array.ofSeq 
-  let expected = [| (2, [1; 2; 3]); (4, [4; 5; 6]); (7, [7; 8; 9; 10]) |]
-  actual |> shouldEqual expected
-  
-[<Test>]
-let ``Seq.chunkedUsing works in backward direction on sample input`` () =
-  let actual = Seq.chunkedUsing Comparer<int>.Default Direction.Backward [2;4;7] [1 .. 10] |> Array.ofSeq 
-  let expected = [|(2, [1;2]); (4, [3;4]); (7, [5; 6; 7; 8; 9; 10]) |]
-  actual |> shouldEqual expected
-
-[<Test>]
-let ``Seq.chunkedUsing returns empty lists when keys are denser than values`` () =
-  let actual = [1;3;4;5] |> Seq.chunkedUsing Comparer<int>.Default Direction.Forward [1;2;3;5;6] |> List.ofSeq
-  let expected = [ (1,[1]); (2,[]); (3,[3;4]); (5,[5]); (6,[]) ]
-  actual |> shouldEqual expected
-
-[<Test>]
-let ``Seq.chunkedUsing works for 500k keys`` () =
-  let input = [for m in 1 .. 12 -> DateTime.Today.AddMonths(m) ] 
-  let keys = [for m in 0.0 .. 500000.0 -> DateTime.Today.AddMinutes(m) ]
-  let actual = input |> Seq.chunkedUsing Comparer<DateTime>.Default Direction.Forward keys
-  actual |> Seq.length |> shouldEqual 500001
-  let actual = input |> Seq.chunkedUsing Comparer<DateTime>.Default Direction.Backward keys
-  actual |> Seq.length |> shouldEqual 500001

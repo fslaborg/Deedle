@@ -485,8 +485,8 @@ module Frame =
   ///  - `frame` - Source data frame to be ordered.
   /// 
   /// [category:Data structure manipulation]
-  [<CompiledName("OrderRows")>]
-  let orderRows (frame:Frame<'R, 'C>) = 
+  [<CompiledName("SortRowsByKey")>]
+  let sortRowsByKey (frame:Frame<'R, 'C>) = 
     let newRowIndex, rowCmd = frame.IndexBuilder.OrderIndex(frame.RowIndex, Vectors.Return 0)
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
@@ -538,8 +538,8 @@ module Frame =
   ///  - `frame` - Source data frame to be ordered.
   /// 
   /// [category:Data structure manipulation]
-  [<CompiledName("OrderColumns")>]
-  let orderCols (frame:Frame<'R, 'C>) = 
+  [<CompiledName("SortColumnsByKey")>]
+  let sortColsByKey (frame:Frame<'R, 'C>) = 
     let newColIndex, rowCmd = frame.IndexBuilder.OrderIndex(frame.ColumnIndex, Vectors.Return 0)
     let newData = frame.VectorBuilder.Build(rowCmd, [| frame.Data |])
     Frame<_, _>(frame.RowIndex, newColIndex, newData)
@@ -1101,3 +1101,12 @@ module Frame =
   /// Returns data of the data frame as a 2D array containing data as `float` values.
   /// Missing data are represented as `Double.NaN` in the returned array.
   let toArray2D (frame:Frame<'R, 'C>) = frame.ToArray2D<float>()
+
+  // ----------------------------------------------------------------------------------------------
+  // Obsolete - kept for temporary compatibility
+  // ----------------------------------------------------------------------------------------------
+
+  [<Obsolete("Use sortRowsByKey instead. This function will be removed in futrue versions.")>]
+  let orderRows (frame:Frame<'R, 'C>) = sortRowsByKey frame
+  [<Obsolete("Use sortColsByKey instead. This function will be removed in futrue versions.")>]
+  let orderCols (frame:Frame<'R, 'C>) = sortColsByKey frame

@@ -60,8 +60,8 @@ namespace CSharp
 
       // [index-date]
       // Get MSFT & FB stock prices indexed by data
-      var msft = msftRaw.IndexRows<DateTime>("Date").OrderRows();
-      var fb = fbRaw.IndexRows<DateTime>("Date").OrderRows();
+      var msft = msftRaw.IndexRows<DateTime>("Date").SortRowsByKey();
+      var fb = fbRaw.IndexRows<DateTime>("Date").SortRowsByKey();
       
       // And rename columns to avoid overlap
       msft.RenameSeries(s => "Msft" + s);
