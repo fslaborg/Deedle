@@ -792,6 +792,7 @@ type FrameExtensions =
   ///  - `op` - A function computing a value from the corresponding bucket frame 
   ///
   /// [category:Frame operations]
+  [<Extension>]
   static member PivotTable<'R, 'C, 'T when 'R : equality and 'C : equality>(frame: Frame<'R, 'C>, r:'C, c:'C, op:Func<Frame<'R,'C>,'T>) =
       frame |> Frame.pivotTable (fun k os -> os.GetAs<'R>(r)) (fun k os -> os.GetAs<'C>(c)) op.Invoke
 
