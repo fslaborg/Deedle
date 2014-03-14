@@ -31,7 +31,7 @@ let ``Can roundtrip data frame (mtcars) between Deedle and R`` () =
   cars1 |> shouldEqual cars2
 
 [<Test>]
-let ``Can roundtrip data frames with missing values`` () =
+let ``Can roundtrip data frames with missing values to R`` () =
   //
   // NOTE: R.NET always returns data as floats, so we only test this for floats
   // but when R.NET is fixed, it should work for strings & ints too
