@@ -287,6 +287,11 @@ module Series =
   [<CompiledName("GetValues")>]
   let values (series:Series<'K, 'T>) = series.Values
 
+  /// Returns the series values (both missing and present) as a sequence
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("GetAllValues")>]
+  let valuesAll (series:Series<'K, 'T>) = series.Vector.DataSequence |> Seq.map OptionalValue.asOption
+
   /// Returns the keys of the series as a sequence
   /// [category:Accessing series data and lookup]
   [<CompiledName("GetKeys")>]

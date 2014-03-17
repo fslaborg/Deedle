@@ -186,6 +186,14 @@ type SeriesExtensions =
     for key, address in series.Index.Mappings ->
       KeyValuePair(key, series.Vector.GetValue(address)) }
 
+  /// Returns all (optional) values. The values are returned using the 
+  /// `OptionalValue<T>` struct which provides `HasValue` for testing 
+  /// if the value is available.
+  [<Extension>]
+  static member GetAllValues(series:Series<'K, 'T>) = seq {
+    for key, address in series.Index.Mappings -> 
+      series.Vector.GetValue(address) }
+
   /// Return observations with available values. The operation skips over 
   /// all keys with missing values (such as values created from `null`,
   /// `Double.NaN`, or those that are missing due to outer join etc.).
