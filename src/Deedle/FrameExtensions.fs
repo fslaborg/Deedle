@@ -329,7 +329,7 @@ module FSharpFrameExtensions =
     FrameUtils.fromColumns(Series(names, values))
 
   type Frame with
-    // NOTE: When changing the parameters below, do not forget to update 'features.fsx'!
+    // NOTE: When changing the parameters below, do not forget to update 'frame.fsx'!
 
     /// Load data frame from a CSV file. The operation automatically reads column names from the 
     /// CSV file (if they are present) and infers the type of values for each column. Columns

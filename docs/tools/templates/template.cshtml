@@ -13,6 +13,7 @@
     <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
     <link type="text/css" rel="stylesheet" href="@Root/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="@Root/content/deedle.css" />
     <script type="text/javascript" src="@Root/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -68,34 +69,43 @@
               }
             </li>
             <li>
-              <a href="@Root/features.html">Advanced frame manipulation</a>
-              @if (Properties.Dictionary.ContainsKey("page-source") && Properties["page-source"].ToString().EndsWith("features.fsx"))
+              <a href="@Root/series.html">Working with time series</a>
+              @if (Properties.Dictionary.ContainsKey("page-source") && Properties["page-source"].ToString().EndsWith("series.fsx"))
               {
               <ul class="nav nav-list">
-                <li><a href="@Root/features.html#creating">Creating & loading</a></li>
-                <li><a href="@Root/features.html#dataframe">Frame manipulation</a></li>
-                <li><a href="@Root/features.html#slicing">Advanced slicing</a></li>
-                <li><a href="@Root/features.html#grouping">Grouping data</a></li>
-                <li><a href="@Root/features.html#pivot">Pivot table</a></li>
-                <li><a href="@Root/features.html#indexing">Hierarchical indexing</a></li>
-                <li><a href="@Root/features.html#missing">Missing values</a></li>
+                <li><a href="@Root/series.html#alignment">Alignment & joining</a></li>
+                <li><a href="@Root/series.html#windowing">Windows and chunks</a></li>
+                <li><a href="@Root/series.html#sampling">Lookup and resampling</a></li>
+                <li><a href="@Root/series.html#stats">Statistics & math</a></li>
               </ul>
               }
             </li>
             <li>
-              <a href="@Root/timeseries.html">Working with time series</a>
-              @if (Properties.Dictionary.ContainsKey("page-source") && Properties["page-source"].ToString().EndsWith("timeseries.fsx"))
+              <a href="@Root/frame.html">Working with data frames</a>
+              @if (Properties.Dictionary.ContainsKey("page-source") && Properties["page-source"].ToString().EndsWith("frame.fsx"))
               {
               <ul class="nav nav-list">
-                <li><a href="@Root/timeseries.html#alignment">Alignment & joining</a></li>
-                <li><a href="@Root/timeseries.html#windowing">Windows and chunks</a></li>
-                <li><a href="@Root/timeseries.html#sampling">Lookup and resampling</a></li>
-                <li><a href="@Root/timeseries.html#stats">Statistics & math</a></li>
+                <li><a href="@Root/frame.html#creating">Creating & loading</a></li>
+                <li><a href="@Root/frame.html#dataframe">Frame manipulation</a></li>
+                <li><a href="@Root/frame.html#slicing">Advanced slicing</a></li>
+                <li><a href="@Root/frame.html#grouping">Grouping data</a></li>
+                <li><a href="@Root/frame.html#pivot">Pivot table</a></li>
+                <li><a href="@Root/frame.html#indexing">Hierarchical indexing</a></li>
+                <li><a href="@Root/frame.html#missing">Missing values</a></li>
               </ul>
               }
             </li>
             <li>
-              <a href="@Root/rinterop.html">Using R with Deedle</a>
+              <a href="@Root/stats.html">Statistics &amp; calculations</a>
+              @if (Properties.Dictionary.ContainsKey("page-source") && Properties["page-source"].ToString().EndsWith("stats.fsx"))
+              {
+              <ul class="nav nav-list">
+                <li><a href="@Root/stats.html#todo">TODO</a></li>
+              </ul>
+              }
+            </li>
+            <li>
+              <a href="@Root/rinterop.html">Using Deedle with R</a>
               @if (Properties.Dictionary.ContainsKey("page-source") && Properties["page-source"].ToString().EndsWith("rinterop.fsx"))
               {
               <ul class="nav nav-list">

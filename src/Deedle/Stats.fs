@@ -790,23 +790,3 @@ type Stats =
   /// [category:Multi-level statistics]
   static member levelKurt (level:'K -> 'L) (series:Series<'K, float>) = 
     Series.applyLevel level Stats.kurt series
-
-// ----------------------------------------------------------------------------------------------
-// Obsolete - kept here for temporary compatibility
-// ----------------------------------------------------------------------------------------------
-[<AutoOpen>]
-module StatsObsolete = 
-  module Series = 
-    [<Obsolete("Please use Stats.sum")>]
-    let inline sum (series:Series<'K, ^V>) = series |> Stats.numSum
-    [<Obsolete("Please use Stats.mean")>]
-    let inline mean (series:Series<'K, float>) = series |> Stats.mean
-    [<Obsolete("Please use Stats.stdev")>]
-    let inline sdv (series:Series<'K, float>) = series |> Stats.stdDev
-    [<Obsolete("Please use Stats.max")>]
-    let inline max (series:Series<'K, ^V>) = series |> Stats.min
-    [<Obsolete("Please use Stats.min")>]
-    let inline min (series:Series<'K, ^V>) = series |> Stats.min
-    [<Obsolete("Please use Stats.median")>]
-    let inline median (series:Series<'K, float>) = series |> Stats.median
-

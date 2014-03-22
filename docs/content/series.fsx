@@ -1,6 +1,7 @@
 ﻿(*** hide ***)
 #I "../../bin"
 #load "Deedle.fsx"
+#I "../../packages/MathNet.Numerics.3.0.0-beta01/lib/net40"
 #load "../../packages/FSharp.Charting.0.90.6/FSharp.Charting.fsx"
 open System
 open FSharp.Data
@@ -10,8 +11,8 @@ open FSharp.Charting
 let root = __SOURCE_DIRECTORY__ + "/data/"
 
 (**
-Time series manipulation in F#
-==============================
+Working with series and time series data in F#
+==============================================
 
 In this section, we look at F# data frame library features that are useful when working
 with time series data or, more generally, any ordered series. Although we mainly look at
@@ -19,7 +20,7 @@ operations on the `Series` type, many of the operations can be applied to data f
 containing multiple series. Furthermore, data frame provides an elegant way for aligning and
 joining series. 
 
-You can also get this page as an [F# script file](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/timeseries.fsx)
+You can also get this page as an [F# script file](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/series.fsx)
 from GitHub and run the samples interactively.
 
 Generating input data
@@ -57,13 +58,14 @@ let stock1 = randomPrice 1 0.1 3.0 20.0 today
 let stock2 = randomPrice 2 0.2 1.5 22.0 today
 (**
 The implementation of the function is not particularly important for the purpose of this
-page, but you can find it in the [script file with full source](https://github.com/BlueMountainCapital/Deedle/blob/master/samples/timeseries.fsx).
+page, but you can find it in the [script file with full source](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/series.fsx).
 Once we have the function, we define a date `today` (representing today's midnight) and
 two helper functions that set basic properties for the `randomPrice` function. 
 
 To get random prices, we now only need to call `stock1` or `stock2` with `TimeSpan` and 
 the required number of prices:
 *)
+(*** define-output: stocks ***)
 Chart.Combine
   [ stock1 (TimeSpan(0, 1, 0)) 1000 |> Chart.FastLine
     stock2 (TimeSpan(0, 1, 0)) 1000 |> Chart.FastLine ]
@@ -71,11 +73,11 @@ Chart.Combine
 The above snippet generates 1k of prices in one minute intervals and plots them using the
 [F# Charting library](https://github.com/fsharp/FSharp.Charting). When you run the code
 and tweak the chart look, you should see something like this:
+*)
 
-<div style="text-align:center;margin-right:100px;">
-<img src="images/ts-chart.png" />
-</div>
+(*** include-it: stocks ***)
 
+(**
 <a name="alignment"></a>
 Data alignment and zipping
 --------------------------
@@ -135,7 +137,7 @@ s1.Zip(s2, JoinKind.Right)
 
 // Use left series key and find the nearest previous
 // (smaller) value from the right series
-s1.Zip(s2, JoinKind.Left, Lookup.NearestSmaller)
+s1.Zip(s2, JoinKind.Left, Lookup.ExactOrSmaller)
 // [fsi:val it : Series<DateTimeOffset,float opt * float opt>]
 // [fsi:  12:00:00 AM -04:00 -> (21.32, 21.61) ]
 // [fsi:   1:00:00 AM -04:00 -> (22.62, 21.86) ]
@@ -188,7 +190,7 @@ f2.Join(f3, JoinKind.Inner)
 // Take keys from the left frame and find corresponding values
 // from the right frame, or value for a nearest smaller date
 // ($21.37 is repeated for all values between 12:00 and 1:05)
-f2.Join(f3, JoinKind.Left, Lookup.NearestSmaller)
+f2.Join(f3, JoinKind.Left, Lookup.ExactOrSmaller)
 // [fsi:val it : Frame<DateTimeOffset,string> =]
 // [fsi:                 S2      S3               ]
 // [fsi:  12:00:00 AM -> 21.61   21.37 ]
@@ -211,7 +213,7 @@ f2.Join(f3, JoinKind.Left, Lookup.Exact)
 Frame.join JoinKind.Outer f1 f2
 
 // Equivalent to line 20, using function syntax
-Frame.joinAlign JoinKind.Left Lookup.NearestSmaller f1 f2
+Frame.joinAlign JoinKind.Left Lookup.ExactOrSmaller f1 f2
 
 (**
 The automatic alignment is extremely useful when you have multiple data series with different
@@ -222,12 +224,12 @@ the `AddSeries` member (or the `df?New <- s` syntax) to add series. This will au
 join the new series to match the current row keys.
 
 When aligning data, you may or may not want to create data frame with missing values. If your
-observations do not happen at exact time, then using `Lookup.NearestSmaller` or `Lookup.NearestGreater`
+observations do not happen at exact time, then using `Lookup.ExactOrSmaller` or `Lookup.ExactOrGreater`
 is a great way to avoid mismatch. 
 
 If you have observations that happen e.g. at two times faster rate (one series is hourly and 
 another is half-hourly), then you can create data frame with missing values using `Lookup.Exact` 
-(the default value) and then handle missing values explicitly (as [discussed here](features.html#missing)).
+(the default value) and then handle missing values explicitly (as [discussed here](frame.html#missing)).
 
 
 <a name="windowing"></a>
@@ -250,8 +252,8 @@ let lf = series <| stock1 (TimeSpan(0, 1, 0)) 6
 
 // Create series of series representing individual windows
 lf |> Series.window 4
-// Aggregate each window using 'Series.mean'
-lf |> Series.windowInto 4 Series.mean
+// Aggregate each window using 'Stats.mean'
+lf |> Series.windowInto 4 Stats.mean
 // Get first value in each window
 lf |> Series.windowInto 4 Series.firstValue
 
@@ -264,7 +266,7 @@ the whole window (we'll see how to change this soon):
 
 *)
 // Calculate means for sliding windows
-let lfm1 = lf |> Series.windowInto 4 Series.mean
+let lfm1 = lf |> Series.windowInto 4 Stats.mean
 // Construct dataframe to show aligned results
 Frame.ofColumns [ "Orig" => lf; "Means" => lfm1 ]
 // [fsi:val it : Frame<DateTimeOffset,string> =]
@@ -285,7 +287,7 @@ or at the end of the beginning. This way, we get _incomplete_ windows that look 
 let lfm2 = 
   // Create sliding windows with incomplete windows at the beginning
   lf |> Series.windowSizeInto (4, Boundary.AtBeginning) (fun ds ->
-    Series.mean ds.Data)
+    Stats.mean ds.Data)
 
 Frame.ofColumns [ "Orig" => lf; "Means" => lfm2 ]
 // [fsi:val it : Frame<DateTimeOffset,string> =]
@@ -309,7 +311,7 @@ aligned with original values. When you want to specify custom key selector,
 you can use a more general function `Series.aggregate`. 
 
 In the previous sample, the code that performs aggregation is no longer
-just a simple function like `Series.mean`, but a lambda that takes `ds`,
+just a simple function like `Stats.mean`, but a lambda that takes `ds`,
 which is of type `DataSegment<T>`. This type informs us whether the window
 is complete or not. For example:
 *)
@@ -370,7 +372,7 @@ let hf = series <| stock1 (TimeSpan(0, 0, 1)) 600
 
 // Create 10 second chunks with (possible) incomplete
 // chunk of smaller size at the end.
-hf |> Series.chunkSize (10, Boundary.AtEnding) 
+//  hf |> Series.chunkSize (10, Boundary.AtEnding) 
 
 // Create 10 second chunks using time span and get
 // the first observation for each chunk (downsample)
@@ -469,7 +471,7 @@ let mf = series <| stock1 (TimeSpan.FromSeconds(13.7)) 6300
 let keys = [ for m in 0.0 .. 24.0*60.0-1.0 -> today.AddMinutes(m) ]
 
 // Find value for a given key, or nearest greater key with value
-mf |> Series.lookupAll keys Lookup.NearestGreater
+mf |> Series.lookupAll keys Lookup.ExactOrGreater
 // [fsi:val it : Series<DateTimeOffset,float> =]
 // [fsi:  12:00:00 AM -> 20.07 ]
 // [fsi:  12:01:00 AM -> 19.98 ]
@@ -479,7 +481,7 @@ mf |> Series.lookupAll keys Lookup.NearestGreater
 
 // Find value for nearest smaller key
 // (This returns value for 11:59:00 PM as well)
-mf |> Series.lookupAll keys Lookup.NearestSmaller
+mf |> Series.lookupAll keys Lookup.ExactOrSmaller
 
 // Find values for exact key 
 // (This only works for the first key)
@@ -507,7 +509,7 @@ mf |> Series.resample keys Direction.Backward
 
 // Aggregate each chunk of preceding values using mean
 mf |> Series.resampleInto keys Direction.Backward 
-  (fun k s -> Series.mean s)
+  (fun k s -> Stats.mean s)
 
 // Resampling is also available via the member syntax
 mf.Resample(keys, Direction.Forward)
@@ -572,11 +574,11 @@ let nu =
 // Generate uniform resampling based on dates. Fill
 // missing chunks with nearest smaller observations.
 let sampled =
-  nu |> Series.resampleUniform Lookup.NearestSmaller 
+  nu |> Series.resampleUniform Lookup.ExactOrSmaller 
     (fun dt -> dt.Date) (fun dt -> dt.AddDays(1.0))
 
 // Same thing using the C#-friendly member syntax
-// (Lookup.NearestSmaller is the default value)
+// (Lookup.ExactOrSmaller is the default value)
 nu.ResampleUniform((fun dt -> dt.Date), (fun dt -> dt.AddDays(1.0)))
 
 // Turn into frame with multiple columns for each day
@@ -603,8 +605,8 @@ a simple ordered row of observations for each day.
 
 The important thing is that there is an observation for each day - even for for 10/5/2013
 which does not have any corresponding observations in the input. We call the resampling
-function with `Lookup.NearestSmaller`, so the value 17.51 is picked from the last observation
-of the previous day (`Lookup.NearestGreater` would pick 18.80 and `Lookup.Exact` would give
+function with `Lookup.ExactOrSmaller`, so the value 17.51 is picked from the last observation
+of the previous day (`Lookup.ExactOrGreater` would pick 18.80 and `Lookup.Exact` would give
 us an empty series for that date).
 
 ### Sampling time series
@@ -710,7 +712,7 @@ sample.Diff(1) ** 2.0
 abs (sample - sample.Shift(1))
 
 // Get absolute value of distance from the mean
-abs (sample - (Series.mean sample))
+abs (sample - (Stats.mean sample))
 
 (**
 The time series library provides a large number of functions that can be applied in this
@@ -756,6 +758,6 @@ df |> Frame.mapRowValues (fun os -> conv $ os.As<float>())
    |> Frame.ofRows
 
 // Sum each column and divide results by a constant
-Frame.sum df / 6.0
+Stats.sum df / 6.0
 // Divide sum by mean of each frame column
-Frame.sum df / Frame.mean df
+Stats.sum df / Stats.mean df

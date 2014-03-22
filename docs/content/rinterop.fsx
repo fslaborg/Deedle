@@ -1,7 +1,6 @@
 ﻿(*** hide ***)
 #nowarn "211"
 #I "../../packages/FSharp.Charting.0.90.6"
-#r "../../bin/MathNet.Numerics.dll"
 #I @"../../bin"
 open System
 let airQuality = __SOURCE_DIRECTORY__ + "/data/AirQuality.csv"
@@ -39,6 +38,10 @@ else).
   <div class="span1"></div>
 </div>
 
+This page is a quick overview showing how to pass data between R and Deedle.
+You can also get this page as an [F# script file](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/rinterop.fsx)
+from GitHub and run the samples interactively.
+
 <a name="setup"></a>
 
 Getting started
@@ -75,18 +78,13 @@ open `datasets` and access the `mtcars` data set using `R.mtcars` (when typing
 the code, you'll get automatic completion when you type `R` followed by dot):
 
 *)
+(*** define-output:mtcars ***)
 open RProvider.datasets
 
 // Get mtcars as an untyped object
 R.mtcars.Value
-// [fsi:val it : obj =]
-// [fsi:                      mpg  cyl disp  hp  drat wt    qsec  vs  am  gear carb ]
-// [fsi:Mazda RX4          -> 21   6   160   110 3.9  2.62  16.46 0   1   4    4    ]
-// [fsi:Mazda RX4 Wag      -> 21   6   160   110 3.9  2.875 17.02 0   1   4    4    ]
-// [fsi:Datsun 710         -> 22.8 4   108   93  3.85 2.32  18.61 1   1   4    1    ]
-// [fsi::                     ...  ... ...   ... ...  ...   ...   ... ... ...  ...  ]
-// [fsi:Maserati Bora      -> 15   8   301   335 3.54 3.57  14.6  0   1   5    8    ]
-// [fsi:Volvo 142E         -> 21.4 4   121   109 4.11 2.78  18.6  1   1   4    2    ]
+
+(*** include-it:mtcars ***)
 
 // Get mtcars as a typed Deedle frame
 let mtcars : Frame<string, string> = R.mtcars.GetValue()
@@ -103,20 +101,19 @@ gears and calculate the average "miles per galon" value based on the gear. To vi
 the data, we use the [F# Charting library](https://github.com/fsharp/FSharp.Charting):
 
 *) 
+(*** define-output:mpgch ***)
 #load "FSharp.Charting.fsx"
 open FSharp.Charting
 
 mtcars
 |> Frame.groupRowsByInt "gear"
-|> Frame.meanLevel fst
-|> Frame.getColumn "mpg"
+|> Frame.getCol "mpg"
+|> Stats.levelMean fst
 |> Series.observations |> Chart.Column
 
-(**
+(*** include-it:mpgch ***)
 
-<div style="text-align:center;margin-right:100px;">
-<img src="images/mpg.png" style="height:300px;margin-left:30px" />
-</div>
+(**
 
 ### From Deedle to R
 
@@ -127,14 +124,8 @@ data frame as argument to standard R functions that expect data frame.
 *)
 
 let air = Frame.ReadCsv(airQuality, separators=";")
-// [fsi:val air : Frame<int,string> =]
-// [fsi:       Ozone     Solar.R   Wind Temp Month Day ]
-// [fsi:0   -> <missing> 190       7.4  67   5     1   ]
-// [fsi:1   -> 36        118       8    72   5     2   ]
-// [fsi:2   -> 12        149       12.6 74   5     3   ]
-// [fsi::      ...       ...       ...  ...  ...   ... ]
-// [fsi:151 -> 18        131       8    76   9     29  ]
-// [fsi:152 -> 20        223       11.5 68   9     30  ]
+
+(*** include-value:air ***)
 
 (**
 Let's first try passing the `air` frame to the R `as.data.frame` function (which 
@@ -149,7 +140,7 @@ R.as_data_frame(air)
 
 // Pass air data to R and get column means
 R.colMeans(air)
-// [fsi:val it : string =]
+// [fsi:val it : SymbolicExpression =]
 // [fsi:  Ozone  Solar.R  Wind  Temp  Month   Day ]
 // [fsi:    NaN      NaN  9.96 77.88   6.99  15.8]
 
@@ -170,7 +161,7 @@ and missing data for other columns are turned into `NA`. Here, we use `R.assign`
 stores the data frame in a varaible available in the current R environment:
 *)
 R.assign("x",  df)
-// [fsi:val it : string = ]
+// [fsi:val it : SymbolicExpression = ]
 // [fsi:     Floats   Names ]
 // [fsi: 1       10     one ] 
 // [fsi: 2      NaN    <NA> ]
@@ -224,7 +215,7 @@ let twoYears = TimeSpan.FromDays(2.0 * 365.0)
 austres 
 |> Series.mapKeys (fun y -> 
     DateTime(int y, 1 + int (12.0 * (y - floor y)), 1))
-|> Series.windowDistInto twoYears Series.mean
+|> Series.windowDistInto twoYears Stats.mean
 (**
 
 The current version of the Deedle plugin supports only time series with single column.
@@ -278,6 +269,8 @@ time series (and data frames) from Deedle. As a final example, we create a data 
 contains the original time series together with the rolling mean (in a separate column)
 and then draws a chart showing the results:
 *)
+
+(*** define-output:means ***)
 // Use 'rollmean' to calculate mean and 'GetValue' to 
 // turn the result into a Deedle time series
 let tf = 
@@ -294,8 +287,6 @@ Chart.Combine
 
 (**
 Depending on your random number generator, the resulting chart looks something like this:
-
-<div style="text-align:center;margin-right:100px;">
-<img src="images/zoo-ts.png" style="margin-left:30px" />
-</div>
 *)
+
+(*** include-it:means ***)

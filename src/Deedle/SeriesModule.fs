@@ -713,7 +713,7 @@ module Series =
   /// using the specified function `op`. The result is a new series containing
   /// the aggregates of each group. 
   ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  /// This operation is designed to be used with [hierarchical indexing](../frame.html#indexing).
   ///
   /// ## Parameters
   ///  - `series` - An input series to be aggregated
@@ -731,7 +731,7 @@ module Series =
   /// the aggregates of each group. The result of a group may be None, in which
   /// case the group will have no representation in the resulting series. 
   ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  /// This operation is designed to be used with [hierarchical indexing](../frame.html#indexing).
   ///
   /// ## Parameters
   ///  - `series` - An input series to be aggregated
@@ -748,7 +748,7 @@ module Series =
   /// using the specified function `op`. The result is a new series containing
   /// the aggregates of each group. 
   ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
+  /// This operation is designed to be used with [hierarchical indexing](../frame.html#indexing).
   ///
   /// ## Parameters
   ///  - `series` - An input series to be aggregated
@@ -1170,7 +1170,7 @@ module Series =
   ///
   /// ## Remarks
   /// This function can be used to implement more complex interpolation.
-  /// For example see [handling missing values in the tutorial](../features.html#missing)
+  /// For example see [handling missing values in the tutorial](../frame.html#missing)
   ///
   /// [category:Missing values]
   [<CompiledName("FillMissingUsing")>]
