@@ -132,6 +132,15 @@ let ``Can create frame from float[,] and get data as float[,]``() =
   let data' = data |> Frame.ofArray2D |> Frame.toArray2D
   data' |> shouldEqual data
 
+[<Test>]
+let ``Creating frame from sorted series returns sorted frame``() =
+  let s1 = series [ 1 => 'a'; 2 => 'a' ]
+  let s2 = series [ 2 => 'a'; 3 => 'a' ]
+  let df1 = frame [ "A" => s1; "B" => s2 ]
+  let df2 = frame [ "A" => s2; "B" => s1 ]
+  df1.RowIndex.IsOrdered  |> shouldEqual true
+  df2.RowIndex.IsOrdered  |> shouldEqual true
+
 // ------------------------------------------------------------------------------------------------
 // Input and output (from records)
 // ------------------------------------------------------------------------------------------------
@@ -974,20 +983,17 @@ let ``Can index rows using transformation function``() =
     Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => 2.0 ]; 
                       "B" => series [ 1 => 2.0; 2 => 3.0 ] ]
     |> Frame.indexRowsUsing (fun r -> r.GetAs<float>("A") + 2.0)
-
   let expected = 
     Frame.ofColumns [ "A" => series [ 3.0 => 1.0; 4.0 => 2.0 ]; 
                       "B" => series [ 3.0 => 2.0; 4.0 => 3.0 ] ]
-
   actual |> shouldEqual expected
   
+
 [<Test>]
 let ``Can reindex ordinally``() =
   let actual = 
     Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => 2.0 ]; 
                       "B" => series [ 1 => 2.0; 2 => 3.0 ] ]
     |> Frame.indexRowsOrdinally
-
   let expected = [0; 1] |> Seq.ofList
-
   actual.RowKeys |> shouldEqual expected

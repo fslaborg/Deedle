@@ -109,7 +109,15 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     | _ ->
         // Create new row index by unioning all keys
         let rowKeys = columns |> Seq.collect (fun (_, s) -> (seriesConv s).Index.Keys) |> Seq.distinct |> Array.ofSeq
-        let rowIndex = nested.IndexBuilder.Create(rowKeys, None)
+        // If all source series were sorted, the resulting frame should also be sorted
+        let sorted = 
+          if columns |> Seq.forall (fun (_, s) -> (seriesConv s).Index.IsOrdered) then
+            let comparer = columns |> Seq.pick (fun (_, s) -> Some((seriesConv s).Index.Comparer))
+            Array.sortInPlaceWith (fun a b -> comparer.Compare(a, b)) rowKeys
+            Some true
+          else None
+        let rowIndex = nested.IndexBuilder.Create(rowKeys, sorted)
+
         // Create column index by taking all column keys
         let colKeys = nested |> Series.observationsAll |> Seq.map fst |> Array.ofSeq
         let colIndex = nested.IndexBuilder.Create(colKeys, None)
@@ -132,10 +140,10 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   member internal x.IndexBuilder = indexBuilder
   member internal x.VectorBuilder = vectorBuilder
-
-  member internal frame.RowIndex = rowIndex
-  member internal frame.ColumnIndex = columnIndex
   member internal frame.Data = data
+
+  member frame.RowIndex = rowIndex
+  member frame.ColumnIndex = columnIndex
 
   member frame.RowCount = frame.RowIndex.KeyCount |> int
   member frame.ColumnCount = frame.ColumnIndex.KeyCount |> int
