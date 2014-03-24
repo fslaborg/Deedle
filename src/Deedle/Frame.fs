@@ -111,7 +111,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
         let rowKeys = columns |> Seq.collect (fun (_, s) -> (seriesConv s).Index.Keys) |> Seq.distinct |> Array.ofSeq
         // If all source series were sorted, the resulting frame should also be sorted
         let sorted = 
-          if columns |> Seq.forall (fun (_, s) -> (seriesConv s).Index.IsOrdered) then
+          if nested.ValueCount > 0 && columns |> Seq.forall (fun (_, s) -> (seriesConv s).Index.IsOrdered) then
             let comparer = columns |> Seq.pick (fun (_, s) -> Some((seriesConv s).Index.Comparer))
             Array.sortInPlaceWith (fun a b -> comparer.Compare(a, b)) rowKeys
             Some true
@@ -226,7 +226,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   ///
   /// [category:Joining, zipping and appending]
   member frame1.Zip<'V1, 'V2, 'V3>(otherFrame:Frame<'TRowKey, 'TColumnKey>, op:Func<'V1, 'V2, 'V3>) =
-    frame1.Zip(otherFrame, JoinKind.Outer, JoinKind.Outer, Lookup.Exact, op)
+    frame1.Zip<'V1, 'V2, 'V3>(otherFrame, JoinKind.Outer, JoinKind.Outer, Lookup.Exact, op)
 
   /// Join two data frames. The columns of the joined frames must not overlap and their
   /// rows are aligned and transformed according to the specified join kind.

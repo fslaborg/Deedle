@@ -1017,7 +1017,7 @@ module Frame =
   /// [category:Joining, zipping and appending]
   [<CompiledName("ZipAlignInto")>]
   let zipAlign columnKind rowKind lookup (op:'V1->'V2->'V) (frame1:Frame<'R, 'C>) (frame2:Frame<'R, 'C>) : Frame<'R, 'C> =
-    frame1.Zip(frame2, columnKind, rowKind, lookup, fun a b -> op a b)
+    frame1.Zip<'V1, 'V2, 'V>(frame2, columnKind, rowKind, lookup, fun a b -> op a b)
 
   /// Aligns two data frames using both column index and row index and apply the specified operation
   /// on values of a specified type that are available in both data frames. This overload uses

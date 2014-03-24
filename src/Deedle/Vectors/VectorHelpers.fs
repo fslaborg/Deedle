@@ -198,13 +198,17 @@ let changeType<'R> (vector:IVector) =
 
 // A "generic function" that tries to change the type of vector elements
 let tryChangeType<'R> (vector:IVector) : OptionalValue<IVector<'R>> = 
-  let shouldBeConvertible (o:obj) = o <> null && o :? IConvertible
+  let shouldBeConvertible (o:obj) = o :? 'R || o :? IConvertible
   { new VectorCallSite<OptionalValue<IVector<'R>>> with
       override x.Invoke<'T>(col:IVector<'T>) = 
         // Check the first non-missing value to see if we should even try doing the conversion
         let first = 
-          col.DataSequence |> Seq.choose OptionalValue.asOption |> Seq.headOrNone 
-          |> Option.map (box >> shouldBeConvertible)
+          col.DataSequence 
+          |> Seq.choose (fun v -> 
+              if v.HasValue && (box v.Value) <> null 
+              then Some (box v.Value) else None) 
+          |> Seq.headOrNone 
+          |> Option.map shouldBeConvertible
         if first = Some(false) then OptionalValue.Missing
         else 
           // We still cannot be sure that it will actually work
@@ -214,13 +218,17 @@ let tryChangeType<'R> (vector:IVector) : OptionalValue<IVector<'R>> =
 
 // A "generic function" that tries to cast the type of vector elements
 let tryCastType<'R> (vector:IVector) : OptionalValue<IVector<'R>> = 
-  let shouldBeConvertible (o:obj) = o <> null && o :? 'R
+  let shouldBeCastable (o:obj) = o :? 'R
   { new VectorCallSite<OptionalValue<IVector<'R>>> with
       override x.Invoke<'T>(col:IVector<'T>) = 
         // Check the first non-missing value to see if we should even try doing the conversion
         let first = 
-          col.DataSequence |> Seq.choose OptionalValue.asOption |> Seq.headOrNone 
-          |> Option.map (box >> shouldBeConvertible)
+          col.DataSequence 
+          |> Seq.choose (fun v -> 
+              if v.HasValue && (box v.Value) <> null 
+              then Some (box v.Value) else None) 
+          |> Seq.headOrNone 
+          |> Option.map shouldBeCastable
         if first = Some(false) then OptionalValue.Missing
         else 
           // We still cannot be sure that it will actually work
