@@ -401,8 +401,8 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       // Merge unordered sequences (when `allOrdered = false` or when comparison fails)
       let mergeUnordered () =
         match constructions with
-        | [li, lv; ri, rv] -> Seq.alignUnordered li.Keys ri.Keys false, Some true
-        | _ -> Seq.alignAllUnordered [| for i, _ in constructions -> i.Keys |], Some true
+        | [li, lv; ri, rv] -> Seq.alignUnordered li.Keys ri.Keys false, Some false
+        | _ -> Seq.alignAllUnordered [| for i, _ in constructions -> i.Keys |], Some false
 
       let keysAndRelocs, ordered = 
         if allOrdered then

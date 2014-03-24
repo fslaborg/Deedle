@@ -645,13 +645,16 @@ let ``Can left-zip two empty series`` () =
 let ``Can append two sample series`` () =
   let inputs = Array.init 1000 (fun i -> i => int (10.0 * sin (float i)))
   let ar1, ar2 = Array.partition (fun (_, v) -> v%2 = 0) inputs
-  (series ar1).Append(series ar2) = series inputs
+  let actual = (series ar1).Append(series ar2) 
+  actual.Index.IsOrdered |> shouldEqual true
+  actual |> shouldEqual (series inputs)
 
 [<Test>]
 let ``Can append 10 sample ordered series (by appending them one by one)`` () =
   let samples = [ for i in 0 .. 9 -> series [ for j in 0 .. 99 -> 10*j + i => i * j ] ]
   let expected = series [ for i in 0 .. 9 do for j in 0 .. 99 -> 10*j + i => i * j ] |> Series.sortByKey
   let actual = samples |> Seq.reduce Series.append
+  actual.Index.IsOrdered |> shouldEqual true
   actual |> shouldEqual expected
 
 [<Test>]
@@ -659,6 +662,7 @@ let ``Can append 10 sample unordered series (by appending them one by one)`` () 
   let samples = [ for i in 0 .. 9 -> series [ for j in 99 .. -1 .. 0 -> 10*j + i => i * j ] ]
   let expected = series [ for i in 0 .. 9 do for j in 99 .. -1 .. 0 -> 10*j + i => i * j ] 
   let actual = samples |> Seq.reduce Series.append
+  actual.Index.IsOrdered |> shouldEqual false
   actual |> shouldEqual expected
 
 [<Test>]
@@ -666,6 +670,7 @@ let ``Can append 10 sample ordered series`` () =
   let samples = [ for i in 0 .. 9 -> series [ for j in 0 .. 99 -> 10*j + i => i * j ] ]
   let expected = series [ for i in 0 .. 9 do for j in 0 .. 99 -> 10*j + i => i * j ] |> Series.sortByKey
   let actual = samples.Head.Append(Array.ofSeq samples.Tail)
+  actual.Index.IsOrdered |> shouldEqual true
   actual |> shouldEqual expected
 
 [<Test>]
@@ -673,6 +678,7 @@ let ``Can append 10 sample unordered series`` () =
   let samples = [ for i in 0 .. 9 -> series [ for j in 99 .. -1 .. 0 -> 10*j + i => i * j ] ]
   let expected = series [ for i in 0 .. 9 do for j in 99 .. -1 .. 0 -> 10*j + i => i * j ] 
   let actual = samples.Head.Append(Array.ofSeq samples.Tail)
+  actual.Index.IsOrdered |> shouldEqual false
   actual |> shouldEqual expected
 
 // ------------------------------------------------------------------------------------------------
