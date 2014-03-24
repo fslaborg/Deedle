@@ -235,8 +235,8 @@ and IIndexBuilder =
   /// are ordered, the ordering should be preserved (the keys should be aligned).
   /// The specified `IVectorValueTransform` defines how to deal with the case when
   /// a key is defined in both indices (i.e. which value should be in the new vector).
-  abstract Append :
-    SeriesConstruction<'K> * SeriesConstruction<'K> * IVectorValueTransform -> 
+  abstract Merge :
+    list<SeriesConstruction<'K>> * IVectorValueListTransform -> 
     IIndex<'K> * VectorConstruction
 
   /// Given an old index and a new index, build a vector transformation that reorders

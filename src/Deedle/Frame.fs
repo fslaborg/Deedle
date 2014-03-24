@@ -244,7 +244,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     // Append the column indices and get transformation to combine them
     // (LeftOrRight - specifies that when column exist in both data frames then fail)
     let newColumnIndex, colCmd = 
-      indexBuilder.Append( (columnIndex, Vectors.Return 0), (otherFrame.ColumnIndex, Vectors.Return 1), VectorValueTransform.LeftOrRight)
+      indexBuilder.Merge( [(columnIndex, Vectors.Return 0); (otherFrame.ColumnIndex, Vectors.Return 1) ], VectorValueListTransform.AtMostOne)
     // Apply transformation to both data vectors
     let newThisData = data.Select(transformColumn vectorBuilder thisRowCmd)
     let newOtherData = otherFrame.Data.Select(transformColumn vectorBuilder otherRowCmd)

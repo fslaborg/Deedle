@@ -152,11 +152,15 @@ type VectorValueListTransform =
   /// Creates a transformation that applies the specified function on `'T` values list
   static member Create<'T>(operation:OptionalValue<'T> list -> OptionalValue<'T>) = 
     { new IVectorValueListTransform with
+        member vt.GetBinaryFunction<'R>() : option<OptionalValue<'R> * _ -> _> = None
         member vt.GetFunction<'R>() = 
           unbox<OptionalValue<'R> list -> OptionalValue<'R>> (box operation) }
   /// A generic transformation that works when at most one value is defined
   static member AtMostOne =
     { new IVectorValueListTransform with
+        member vt.GetBinaryFunction<'R>() = Some(fun (l:OptionalValue<'R>, r:OptionalValue<'R>) ->
+          if l.HasValue && r.HasValue then invalidOp "Combining vectors failed - both vectors have a value."
+          if l.HasValue then l else r)
         member vt.GetFunction<'R>() = (fun (l:OptionalValue<'R> list) ->
           l |> List.fold (fun s v -> 
             if s.HasValue && v.HasValue then invalidOp "Combining vectors failed - more than one vector has a value."
@@ -387,3 +391,14 @@ let rec substitute ((oldVar, newVar) as subst) = function
   | CombineN(lst, c) -> CombineN(List.map (substitute subst) lst, c)
   | CustomCommand(vcs, f) -> CustomCommand(List.map (substitute subst) vcs, f)
   | AsyncCustomCommand(vcs, f) -> AsyncCustomCommand(List.map (substitute subst) vcs, f)
+
+/// Matches when the vector command represents a combination
+/// of N relocated vectors (that is CombineN [Relocate ..; Relocate ..; ...])
+let (|CombinedRelocations|_|) = function
+  | CombineN(list, op) ->
+      if op.GetBinaryFunction<unit>().IsNone then None else
+      if list |> List.forall (function Relocate _ -> true | _ -> false) then
+        let parts = list |> List.map (function Relocate(a,b,c) -> (a,b,c) | _ -> failwith "logic error")
+        Some(parts, op)
+      else None
+  | _ -> None

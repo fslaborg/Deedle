@@ -394,9 +394,21 @@ and
     // Append the row indices and get transformation that combines two column vectors
     // (LeftOrRight - specifies that when column exist in both data frames then fail)
     let newIndex, cmd = 
-      indexBuilder.Append( (index, Vectors.Return 0), (otherSeries.Index, Vectors.Return 1), 
-                           VectorValueTransform.LeftOrRight )
+      indexBuilder.Merge( [(index, Vectors.Return 0); (otherSeries.Index, Vectors.Return 1)], 
+                           VectorValueListTransform.AtMostOne )
     let newVector = vectorBuilder.Build(cmd, [| series.Vector; otherSeries.Vector |])
+    Series(newIndex, newVector, vectorBuilder, indexBuilder)
+
+  /// [category:Appending, joining and zipping]
+  member series.Append([<ParamArray>] otherSeries:Series<'K, 'V>[]) =
+    // Append the row indices and get transformation that combines two column vectors
+    // (LeftOrRight - specifies that when column exist in both data frames then fail)
+    let constrs = otherSeries |> Array.mapi (fun i s -> s.Index, Vectors.Return(i + 1)) |> List.ofSeq
+    let vectors = otherSeries |> Array.map (fun s -> s.Vector)
+
+    let newIndex, cmd = 
+      indexBuilder.Merge( (index, Vectors.Return 0)::constrs, VectorValueListTransform.AtMostOne )
+    let newVector = vectorBuilder.Build(cmd, [| yield series.Vector; yield! vectors |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
   /// [category:Appending, joining and zipping]
