@@ -951,47 +951,45 @@ module Seq =
     
     // We keep an array with indices & original sequences
     // When we finish iterating over a sequence, we set it to 'null' and set the index to -1
-    let current = seqs |> Array.map (fun s -> 
-      if s.Count > 0 then 0, s else -1, null)
+    let current = seqs |> Array.map (fun s -> if s.Count > 0 then 0, s else -1, null)
 
     // Resize arrays with keys and resulting relocation tables
-    let keys = ResizeArray<_>(seqs |> Array.sumBy (fun s -> s.Count))
+    let newkeys = ResizeArray<_>(seqs |> Array.sumBy (fun s -> s.Count))
     let results = seqs |> Array.map (fun s -> ResizeArray<_>(s.Count))
 
-    /// Returns the smallest key from the current position in all collections
-    let smallestKey() = 
-      let mutable k = Unchecked.defaultof<_>
-      let mutable found = false
-      for i = 0 to current.Length - 1 do
-        let idx, keys = current.[i]
-        if idx <> -1 then                   // else: No more values in this collection
-          if found then                     // Get smaller of previous & current
-            let k2 = keys.[idx]
-            k <- if comparer.Compare(k, k2) <= 0 then k else k2
-          else                              // We found our first key
-            k <- keys.[idx]
-            found <- true
-      found, k
+    let mutable heap = BinomialHeap.empty_custom (fun a b -> 
+        BinomialHeap.custom_compare (fun a b -> comparer.Compare(a,b)) (fst a) (fst b))
 
-    /// For a given key, advance all input collections currently at the given key
-    /// and add mapping to relocation table for them (also add key to the list of keys)
-    let addAndAdvanceForKey index k =
-      keys.Add(k)
-      for i = 0 to current.Length - 1 do
+    for i = 0 to current.Length - 1 do
         let idx, keys = current.[i]
-        if idx <> -1 && comparer.Compare(keys.[idx], k) = 0 then
-          current.[i] <- if idx + 1 >= keys.Count then -1, null else idx + 1, keys
-          results.[i].Add( (index, int64 idx) )
+        if idx <> -1 then   
+            heap <- heap |> BinomialHeap.insert (keys.[idx], i)
 
-    // While there is some key in any of the collections, call `addAndAdvanceForKey`
     let mutable index = 0L
     let mutable completed = false
+    let mutable seen = HashSet()
+
     while not completed do
-      match smallestKey() with
-      | false, _ -> completed <- true
-      | true, k -> addAndAdvanceForKey index k; index <- index + 1L
+        if BinomialHeap.isEmpty heap then 
+            completed <- true
+        else
+            let m, htmp = BinomialHeap.removeMin heap
+            let i = m |> snd
+            let idx, keys = current.[i]
+            if idx + 1 < keys.Count then 
+                current.[i] <- (idx + 1, keys)
+                heap <- htmp |> BinomialHeap.insert (keys.[idx + 1], i)
+                results.[i].Add( (index, int64 idx) )
+            else
+                heap <- htmp
+            let k = fst m
+            if not <| seen.Contains(k) then
+                index <- index + 1L
+                newkeys.Add(k) |> ignore
+                seen.Add(k) |> ignore
+    
     // Return results as arrays
-    keys.ToArray(), [ for r in results -> r.ToArray() ]
+    newkeys.ToArray(), [ for r in results -> r.ToArray() ]
 
 
   /// Align two unordered sequences of keys (performs union of the keys)

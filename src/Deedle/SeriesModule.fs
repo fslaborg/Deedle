@@ -1702,6 +1702,14 @@ module Series =
    series1.Append(series2)
 
   /// [category:Appending, joining and zipping]
+  let appendN (series: Series<'K, 'V> seq) =
+    if  series |> Seq.isEmpty then 
+        Series([], [])
+    else 
+        let head = series |> Seq.head 
+        head.Append(series |> Seq.skip 1 |> Seq.toArray)
+
+  /// [category:Appending, joining and zipping]
   let zipAlign kind lookup (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>) =
    series1.Zip(series2, kind, lookup)
 
