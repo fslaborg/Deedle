@@ -224,31 +224,31 @@ let ``Grouping series with missing values works on sample input``() =
 let ``Cumulative sum works``() =
   let s = series [0 => 1.0; 1 => nan; 2 => 2.0; 3 => 3.0 ]
   let e = series [0 => 1.0; 1 => nan; 2 => 3.0; 3 => 6.0 ]
-  s |> Series.cumSum |> shouldEqual e
+  s |> Stats.cumSum |> shouldEqual e
 
 [<Test>]
 let ``Cumulative count works``() =
   let s = series [0 => 1.0; 1 => nan; 2 => 2.0; 3 => 3.0 ]
   let e = Series.ofOptionalObservations [0 => OptionalValue(1); 1 => OptionalValue.Missing; 2 => OptionalValue(2); 3 => OptionalValue(3) ]
-  s |> Series.cumCount |> shouldEqual e
+  s |> Stats.cumCount |> shouldEqual e
 
 [<Test>]
 let ``Cumulative prod works``() =
   let s = series [0 => 1.0; 1 => nan; 2 => 2.0; 3 => 3.0 ]
   let e = series [0 => 1.0; 1 => nan; 2 => 2.0; 3 => 6.0 ]
-  s |> Series.cumProd |> shouldEqual e
+  s |> Stats.cumProd |> shouldEqual e
 
 [<Test>]
 let ``Cumulative min works``() =
   let s = series [0 => 3.0; 1 => nan; 2 => 2.0; 3 => 5.0 ]
   let e = series [0 => 3.0; 1 => nan; 2 => 2.0; 3 => 2.0 ]
-  s |> Series.cumMin |> shouldEqual e
+  s |> Stats.cumMin |> shouldEqual e
 
 [<Test>]
 let ``Cumulative max works``() =
   let s = series [0 => 3.0; 1 => nan; 2 => 2.0; 3 => 5.0 ]
   let e = series [0 => 3.0; 1 => nan; 2 => 3.0; 3 => 5.0 ]
-  s |> Series.cumMax |> shouldEqual e
+  s |> Stats.cumMax |> shouldEqual e
 
 // ------------------------------------------------------------------------------------------------
 // Fill missing values
@@ -315,7 +315,7 @@ let ``Can fill missing values in a specified range``() =
 [<Test>]
 let ``Can perform linear interpolation``() =
   let s = series [ 0 => 0.0; 2 => 2.0; 4 => 4.0]
-  let i = s |> Series.interpolateLinear [0;1;2;3;4] (fun a b -> float <| a - b)
+  let i = s |> Stats.interpolateLinear [0;1;2;3;4] (fun a b -> float <| a - b)
   let e = series [ 0 => 0.0; 1 => 1.0; 2 => 2.0; 3 => 3.0; 4 => 4.0]
   i |> shouldEqual e
   

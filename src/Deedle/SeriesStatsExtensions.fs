@@ -148,3 +148,15 @@ type SeriesStatsExtensions =
   /// [category:Statistics]
   [<Extension>]
   static member inline MaxLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) = Series.maxLevel groupSelector.Invoke series
+
+  /// Linearly interpolates an ordered series given a new sequence of keys. 
+  ///
+  /// ## Parameters
+  ///  - `keys` - Sequence of new keys that forms the index of interpolated results
+  ///  - `keyDiff` - A function representing "subtraction" between two keys
+  ///
+  /// [category:Calculations, aggregation and statistics]
+  [<Extension>]
+  static member InterpolateLinear(series:Series<'K, float>, keys:'K seq, keyDiff:Func<'K,'K,float>): Series<'K,float> = 
+    series |> Stats.interpolateLinear keys (fun a b -> keyDiff.Invoke(a,b))   
+

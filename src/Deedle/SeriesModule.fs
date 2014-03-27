@@ -508,72 +508,7 @@ module Series =
   [<CompiledName("Reduce")>]
   let reduce op (series:Series<'K, 'T>) = 
     series |> fastAggregation (ReadOnlyCollection.reduce op) (ReadOnlyCollection.reduceOptional op >> OptionalValue.get) (Seq.reduce op)
-
-  // Cumulative functions
-
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("CumCount")>]
-  let inline cumCount (series:Series<'K, 'V>) = 
-    let add a _ = a + 1
-    series.ScanValues(Func<_,_,_>(add), 0)
-
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("CumSum")>]
-  let inline cumSum (series:Series<'K, 'V>) = 
-    let add a b = a + b
-    series.ScanValues(Func<_,_,_>(add), LanguagePrimitives.GenericZero)
-
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("CumProd")>]
-  let inline cumProd (series:Series<'K, 'V>) = 
-    let mult a b = a * b
-    series.ScanValues(Func<_,_,_>(mult), LanguagePrimitives.GenericOne)
  
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("CumMin")>]
-  let inline cumMin (series:Series<'K, float>) = 
-    series.ScanValues(Func<_,_,_>(LanguagePrimitives.GenericMinimum), System.Double.PositiveInfinity)        
-
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("CumMax")>]
-  let inline cumMax (series:Series<'K, float>) = 
-    series.ScanValues(Func<_,_,_>(LanguagePrimitives.GenericMaximum), System.Double.NegativeInfinity)        
-
-  /// Interpolates an ordered series given a new sequence of keys. The function iterates through
-  /// each new key, and invokes a function on the current key, the nearest smaller and larger valid 
-  /// observations from the series argument. The function must return a new valid float. 
-  ///
-  /// ## Parameters
-  ///  - `keys` - Sequence of new keys that forms the index of interpolated results
-  ///  - `f` - Function to do the interpolating
-  ///
-  /// [category:Calculations, aggregation and statistics]
-  let interpolate keys f (series:Series<'K,'T>) =
-    let liftedf k (prev:KeyValuePair<_,_> opt) (next:KeyValuePair<_,_> opt) =
-      let t1 = prev |> OptionalValue.map (fun kvp -> kvp.Key, kvp.Value) |> OptionalValue.asOption
-      let t2 = next |> OptionalValue.map (fun kvp -> kvp.Key, kvp.Value) |> OptionalValue.asOption
-      f k t1 t2
-
-    series.Interpolate(keys, Func<_,_,_,_>(liftedf))
-
-  /// Linearly interpolates an ordered series given a new sequence of keys. 
-  ///
-  /// ## Parameters
-  ///  - `keys` - Sequence of new keys that forms the index of interpolated results
-  ///  - `keyDiff` - A function representing "subtraction" between two keys
-  ///
-  /// [category:Calculations, aggregation and statistics]
-  let inline interpolateLinear keys (keyDiff:'K->'K->float) (series:Series<'K, float>) =
-    let linearF k a b =
-      match a, b with
-      | Some x, Some y -> 
-        if x = y then snd x 
-        else (snd x) + (keyDiff k (fst x)) / (keyDiff (fst y) (fst x)) * (snd y - snd x)
-      | Some x, _      -> snd x
-      | _, Some y      -> snd y
-      | _              -> raise <| new ArgumentException("Unexpected code path in interpolation")
-    series |> interpolate keys linearF   
-
   // ----------------------------------------------------------------------------------------------
   // Hierarchical index operations
   // ----------------------------------------------------------------------------------------------
