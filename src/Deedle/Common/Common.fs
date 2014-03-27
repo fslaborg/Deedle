@@ -949,46 +949,54 @@ module Seq =
   /// (This performs union on the specified sequences)
   let alignAllOrdered (seqs:ReadOnlyCollection<'T>[]) (comparer:IComparer<'T>) : 'T[] * list<(int64 * int64)[]> = 
     
-    // We keep an array with indices & original sequences
-    // When we finish iterating over a sequence, we set it to 'null' and set the index to -1
+    // We maintain a set of indices into the original key sequences, starting at 0
+    // An empty sequence is marked with an index of -1
     let current = seqs |> Array.map (fun s -> if s.Count > 0 then 0, s else -1, null)
 
-    // Resize arrays with keys and resulting relocation tables
+    // Resize arrays for resulting keys and relocation tables
     let newkeys = ResizeArray<_>(seqs |> Array.sumBy (fun s -> s.Count))
     let results = seqs |> Array.map (fun s -> ResizeArray<_>(s.Count))
 
+    // We maintain a heap structure to access the next smallest key along with the 
+    // sequence it comes; allows delete-min/find-min in O(log n) time
     let mutable heap = BinomialHeap.empty_custom (fun a b -> 
-        BinomialHeap.custom_compare (fun a b -> comparer.Compare(a,b)) (fst a) (fst b))
+      BinomialHeap.custom_compare (fun a b -> comparer.Compare(a,b)) (fst a) (fst b))
 
+    // initialize heap
     for i = 0 to current.Length - 1 do
-        let idx, keys = current.[i]
-        if idx <> -1 then   
-            heap <- heap |> BinomialHeap.insert (keys.[idx], i)
+      let idx, keys = current.[i]
+      if idx <> -1 then   
+        heap <- heap |> BinomialHeap.insert (keys.[idx], i)
 
     let mutable index = -1L
     let mutable completed = false
-    let mutable seen = HashSet()
+    let mutable seen = HashSet()   // because F# Set requires comparison ...
 
     while not completed do
-        if BinomialHeap.isEmpty heap then 
-            completed <- true
+      if BinomialHeap.isEmpty heap then 
+        // when there are no more elements to examine, we're done
+        completed <- true
+      else
+        // pop the min key along w/sequence it came from
+        let (k, i), htmp = BinomialHeap.removeMin heap
+        let idx, keys = current.[i]
+        if not <| seen.Contains(k) then
+          // we haven't seen this key, so increment index into resulting keys array
+          newkeys.Add(k) |> ignore
+          seen.Add(k) |> ignore
+          index <- index + 1L
+        // store the relocation indexing
+        results.[i].Add( (index, int64 idx) )
+        if idx + 1 < keys.Count then 
+          // there's another key to examine in the i'th sequence, so it on the heap
+          current.[i] <- (idx + 1, keys)
+          heap <- htmp |> BinomialHeap.insert (keys.[idx + 1], i)                
         else
-            let (k, i), htmp = BinomialHeap.removeMin heap
-            let idx, keys = current.[i]
-            if not <| seen.Contains(k) then
-                newkeys.Add(k) |> ignore
-                seen.Add(k) |> ignore
-                index <- index + 1L
-            results.[i].Add( (index, int64 idx) )
-            if idx + 1 < keys.Count then 
-                current.[i] <- (idx + 1, keys)
-                heap <- htmp |> BinomialHeap.insert (keys.[idx + 1], i)                
-            else
-                heap <- htmp
+          // no more keys in i'th sequence, allow heap to shrink
+          heap <- htmp
     
     // Return results as arrays
     newkeys.ToArray(), [ for r in results -> r.ToArray() ]
-
 
   /// Align two unordered sequences of keys (performs union of the keys)
   /// The resulting relocations are returned as two-element list for symmetry with other functions

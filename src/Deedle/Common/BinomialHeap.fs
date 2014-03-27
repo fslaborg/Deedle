@@ -1,4 +1,14 @@
-﻿module BinomialHeap
+﻿/// Purely functional Binomial Heap implementation
+///
+/// http://cs.hubfs.net/topic/None/56608
+///
+/// Characteristics:
+///   isEmpty = O(1)
+///   insert = O(1) amortized; O(log n) worst case
+///   merge = O(log n)
+///   findMin, removeMin, deleteMin = O(log n)
+
+module BinomialHeap
  
 type ord = LT | EQ | GT
  
@@ -15,8 +25,8 @@ let basic_compare x1 x2 =
     else if a > 0 then GT
     else EQ
 
-let custom_compare compare x1 x2 =
-  let a = compare x1 x2 in
+let custom_compare compareFn x1 x2 =
+  let a = compareFn x1 x2 in
     if a < 0 then LT
     else if a > 0 then GT
     else EQ
