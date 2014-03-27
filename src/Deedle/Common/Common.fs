@@ -965,7 +965,7 @@ module Seq =
         if idx <> -1 then   
             heap <- heap |> BinomialHeap.insert (keys.[idx], i)
 
-    let mutable index = 0L
+    let mutable index = -1L
     let mutable completed = false
     let mutable seen = HashSet()
 
@@ -973,16 +973,13 @@ module Seq =
         if BinomialHeap.isEmpty heap then 
             completed <- true
         else
-            let m, htmp = BinomialHeap.removeMin heap
-            let i = m |> snd
+            let (k, i), htmp = BinomialHeap.removeMin heap
             let idx, keys = current.[i]
-            let k = fst m
-            // printfn "array[%d] %d -> %d (%A) (%A)" i idx index keys.[idx] k
-            results.[i].Add( (index, int64 idx) )
             if not <| seen.Contains(k) then
                 newkeys.Add(k) |> ignore
                 seen.Add(k) |> ignore
                 index <- index + 1L
+            results.[i].Add( (index, int64 idx) )
             if idx + 1 < keys.Count then 
                 current.[i] <- (idx + 1, keys)
                 heap <- htmp |> BinomialHeap.insert (keys.[idx + 1], i)                
