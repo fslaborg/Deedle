@@ -194,7 +194,7 @@ module DataSegment =
   /// A complete active pattern that extracts the kind and data from a `DataSegment`
   /// value. This makes it easier to write functions that only need data:
   ///
-  ///    let sumAny = function DataSegment.Any(_, data) -> Series.sum data
+  ///    let sumAny = function DataSegment.Any(_, data) -> Stats.sum data
   ///
   let (|Any|) (ds:DataSegment<'T>) = ds.Kind, ds.Data
   
@@ -203,7 +203,7 @@ module DataSegment =
   /// returns zero for incomplete segments:
   ///
   ///     let sumSegmentOrZero = function
-  ///       | DataSegment.Complete(value) -> Series.sum value
+  ///       | DataSegment.Complete(value) -> Stats.sum value
   ///       | DataSegment.Incomplete _ -> 0.0
   ///
   let (|Complete|Incomplete|) (ds:DataSegment<_>) =
@@ -439,6 +439,7 @@ module ReadOnlyCollection =
   let inline sumOptional (list:ReadOnlyCollection<OptionalValue<'T>>) = 
     let mutable total = LanguagePrimitives.GenericZero
     for i in 0 .. list.Count - 1 do 
+      printfn "%A" list.[i]
       if list.[i].HasValue then total <- total + list.[i].Value
     total
 

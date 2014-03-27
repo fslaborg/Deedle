@@ -745,18 +745,6 @@ module Frame =
     frame.SeriesApply(true, fun (s:Series<_, 'T tryval>) -> 
       (Series.fillErrorsWith value s) :> ISeries<_>)
 
-  let mean (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.mean)
-
-  let sum (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sum)
-
-  let sdv (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sdv)
-
-  let median (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.median)
-
   let stat op (frame:Frame<'R, 'C>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Series.stat op)
 
@@ -786,8 +774,11 @@ module Frame =
   let countLevel keySelector (frame:Frame<'R, 'C>) = 
     frame.GetColumns<obj>() |> Series.map (fun _ -> Series.countLevel keySelector) |> FrameUtils.fromColumns
 
-  let sdvLevel keySelector (frame:Frame<'R, 'C>) = 
+  let stdDevLevel keySelector (frame:Frame<'R, 'C>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Series.sdvLevel keySelector) |> FrameUtils.fromColumns
+
+  [<Obsolete("Use stdDevLevel instead.")>]
+  let sdvLevel = stdDevLevel
 
   let medianLevel keySelector (frame:Frame<'R, 'C>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Series.medianLevel keySelector) |> FrameUtils.fromColumns
@@ -1106,7 +1097,16 @@ module Frame =
   // Obsolete - kept for temporary compatibility
   // ----------------------------------------------------------------------------------------------
 
-  [<Obsolete("Use sortRowsByKey instead. This function will be removed in futrue versions.")>]
+  [<Obsolete("Use sortRowsByKey instead. This function will be removed in future versions.")>]
   let orderRows (frame:Frame<'R, 'C>) = sortRowsByKey frame
-  [<Obsolete("Use sortColsByKey instead. This function will be removed in futrue versions.")>]
+  [<Obsolete("Use sortColsByKey instead. This function will be removed in future versions.")>]
   let orderCols (frame:Frame<'R, 'C>) = sortColsByKey frame
+  [<Obsolete("Use Stats.colMean instead. This function will be removed in future versions.")>]
+  let mean (frame:Frame<'R, 'C>) = frame.GetColumns<float>() |> Series.map (fun _ -> Stats.mean)
+  [<Obsolete("Use Stats.colSum instead. This function will be removed in future versions.")>]
+  let sum (frame:Frame<'R, 'C>) = frame.GetColumns<float>() |> Series.map (fun _ -> Stats.sum)
+  [<Obsolete("Use Stats.colStdDev instead. This function will be removed in future versions.")>]
+  let sdv (frame:Frame<'R, 'C>) = frame.GetColumns<float>() |> Series.map (fun _ -> Stats.stdDev)
+  [<Obsolete("Use Stats.colMedian instead. This function will be removed in future versions.")>]
+  let median (frame:Frame<'R, 'C>) = frame.GetColumns<float>() |> Series.map (fun _ -> Stats.median)
+

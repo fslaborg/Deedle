@@ -497,46 +497,6 @@ module Series =
   let inline stat (op:_ -> 'V2) (series:Series<'K, 'V1>) = 
     series |> streamingAggregation op
 
-  /// Returns the sum of the elements of the series. The operation skips over
-  /// missing values and so the result will never be `NaN`.
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("Sum")>]
-  let inline sum (series:Series<'K, ^V>) = 
-    series |> fastAggregation ReadOnlyCollection.sum ReadOnlyCollection.sumOptional Seq.sum
-
-  /// Returns the mean of the elements of the series. The operation skips over
-  /// missing values and so the result will never be `NaN`.
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("Mean")>]
-  let inline mean (series:Series<'K, ^V>) = 
-    series |> fastAggregation ReadOnlyCollection.average ReadOnlyCollection.averageOptional Seq.average
-
-  /// Returns the standard deviation of the elements of the series. The operation skips over
-  /// missing values and so the result will never be `NaN`.
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("StandardDeviation")>]
-  let inline sdv (series:Series<'K, float>) = series |> stat Statistics.StandardDeviation 
-
-  /// Returns the median of the elements of the series. The operation skips over
-  /// missing values and so the result will never be `NaN`.
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("Median")>]
-  let inline median (series:Series<'K, float>) = series |> stat Statistics.Median
-
-  /// Returns the smallest of all elements of the series. The operation 
-  /// skips over missing values and so the result will never be `NaN`.
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("Max")>]
-  let inline max (series:Series<'K, ^V>) = 
-    series |> fastAggregation ReadOnlyCollection.max (ReadOnlyCollection.maxOptional >> OptionalValue.get) Seq.max
-
-  /// Returns the greatest of all elements of the series. The operation 
-  /// skips over missing values and so the result will never be `NaN`.
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("Min")>]
-  let inline min (series:Series<'K, ^V>) = 
-    series |> fastAggregation ReadOnlyCollection.min (ReadOnlyCollection.minOptional >> OptionalValue.get) Seq.min
-
   /// Aggregates the values of the specified series using a function that can combine
   /// individual values. 
   ///
@@ -1740,3 +1700,50 @@ module Series =
 
   [<Obsolete("Use sortByKeys instead. This function will be removed in futrue versions.")>]
   let orderByKey series = sortByKey series 
+
+  /// Returns the sum of the elements of the series. The operation skips over
+  /// missing values and so the result will never be `NaN`.
+  /// [category:Calculations, aggregation and statistics]
+  [<CompiledName("Sum")>]
+  [<Obsolete("Please use Stats.sum")>]
+  let inline sum (series:Series<'K, ^V>) = 
+    series |> fastAggregation ReadOnlyCollection.sum ReadOnlyCollection.sumOptional Seq.sum
+
+  /// Returns the mean of the elements of the series. The operation skips over
+  /// missing values and so the result will never be `NaN`.
+  /// [category:Calculations, aggregation and statistics]
+  [<CompiledName("Mean")>]
+  [<Obsolete("Please use Stats.mean")>]
+  let inline mean (series:Series<'K, ^V>) = 
+    series |> fastAggregation ReadOnlyCollection.average ReadOnlyCollection.averageOptional Seq.average
+
+  /// Returns the standard deviation of the elements of the series. The operation skips over
+  /// missing values and so the result will never be `NaN`.
+  /// [category:Calculations, aggregation and statistics]
+  [<CompiledName("StandardDeviation")>]
+  [<Obsolete("Please use Stats.stdev")>]
+  let inline sdv (series:Series<'K, float>) = series |> stat Statistics.StandardDeviation 
+
+  /// Returns the smallest of all elements of the series. The operation 
+  /// skips over missing values and so the result will never be `NaN`.
+  /// [category:Calculations, aggregation and statistics]
+  [<CompiledName("Max")>]
+  [<Obsolete("Please use Stats.max")>]
+  let inline max (series:Series<'K, ^V>) = 
+    series |> fastAggregation ReadOnlyCollection.max (ReadOnlyCollection.maxOptional >> OptionalValue.get) Seq.max
+
+  /// Returns the greatest of all elements of the series. The operation 
+  /// skips over missing values and so the result will never be `NaN`.
+  /// [category:Calculations, aggregation and statistics]
+  [<CompiledName("Min")>]
+  [<Obsolete("Please use Stats.min")>]
+  let inline min (series:Series<'K, ^V>) = 
+    series |> fastAggregation ReadOnlyCollection.min (ReadOnlyCollection.minOptional >> OptionalValue.get) Seq.min
+
+  /// Returns the median of the elements of the series. The operation skips over
+  /// missing values and so the result will never be `NaN`.
+  /// [category:Calculations, aggregation and statistics]
+  [<CompiledName("Median")>]
+  [<Obsolete("Please use Stats.median")>]
+  let inline median (series:Series<'K, float>) = series |> stat Statistics.Median
+

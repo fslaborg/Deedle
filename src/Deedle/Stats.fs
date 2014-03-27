@@ -2,6 +2,7 @@
 
 open Deedle.Vectors
 open System.Collections.Generic
+open MathNet.Numerics.Statistics
 
 /// The `Stats` module contains functions for fast calculation of statistics over
 /// and entire series as well as over a moving and an expanding window in a series. 
@@ -296,7 +297,8 @@ module Stats =
   //   - `ftransf` takes the current state to the current output
   let inline internal expandingWindowFn initState fupdate ftransf (source: seq<_>) =
     source 
-    |> Seq.scan fupdate initState 
+    |> Seq.scan fupdate initState
+    |> Seq.skip 1
     |> Seq.map ftransf 
 
   /// Represents the moments as calculated during online processing
@@ -444,7 +446,7 @@ module Stats =
       match v with
       | OptionalValue.Present x -> if System.Double.IsNaN(s) then x else min x s
       | OptionalValue.Missing   -> s
-    applySeriesProj (Seq.scan minFn nan) series
+    applySeriesProj ((Seq.scan minFn nan) >> (Seq.skip 1)) series
 
   /// Returns a series that contains maximum over an expanding window. The value
   /// for a key _k_ in the returned series is the maximum from all elements with
@@ -457,7 +459,7 @@ module Stats =
       match v with
       | OptionalValue.Present x -> if System.Double.IsNaN(s) then x else max x s
       | OptionalValue.Missing   -> s
-    applySeriesProj (Seq.scan maxFn nan) series
+    applySeriesProj ((Seq.scan maxFn nan) >> (Seq.skip 1)) series
 
   // ------------------------------------------------------------------------------------
   // Statistics calculated over the entire series
@@ -491,7 +493,7 @@ module Stats =
   ///
   /// [category:Standard statistics]
   [<CompiledName("Sum")>]
-  let inline sum (series:Series<'K, 'V>) : 'V = Seq.sum series.Values
+  let inline sum (series:Series<'K, ^V>) : ^V = Seq.sum series.Values
 
   /// Returns the mean of the values in a series. The function skips over missing values
   /// and `NaN` values. When there are no available values, the result is NaN.
@@ -546,4 +548,56 @@ module Stats =
   ///
   /// [category:Standard statistics]
   [<CompiledName("Maximum")>]
-  let inline max (series:Series<'K, float>) = trySeriesExtreme max series
+  let inline max (series:Series<'K, 'V>) = trySeriesExtreme max series
+
+  /// Returns the median of the elements of the series.
+  /// [category:Calculations, aggregation and statistics]
+  [<CompiledName("Median")>]
+  let inline median (series:Series<'K, float>) = series.Values |> Statistics.Median
+
+  // ------------------------------------------------------------------------------------
+  // Statistics calculated over the entire frames' float column series
+  // ------------------------------------------------------------------------------------
+
+  /// Returns the sums of the float columns in a frame.
+  /// [category:Calculations, aggregation and statistics]
+  [<CompiledName("ColumnSum")>]
+  let colSum (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> sum)
+
+  /// Returns the means of the float columns in a frame.
+  /// [category:Calculations, aggregation and statistics]
+  [<CompiledName("ColumnMean")>]
+  let colMean (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> mean)
+
+  /// Returns the means of the float columns in a frame.
+  /// [category:Calculations, aggregation and statistics]
+  [<CompiledName("ColumnMedian")>]
+  let colMedian (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> median)
+
+  /// Returns the standard deviations of the float columns in a frame.
+  /// [category:Calculations, aggregation and statistics]
+  [<CompiledName("ColumnStdDev")>]
+  let colStdDev (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> stdDev)
+
+  /// Returns the variance of the float columns in a frame.
+  /// [category:Calculations, aggregation and statistics]
+  [<CompiledName("ColumnVariance")>]
+  let colVariance (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> variance)
+
+  /// Returns the skewness of the float columns in a frame.
+  /// [category:Calculations, aggregation and statistics]
+  [<CompiledName("ColumnSkewness")>]
+  let colSkews (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> skew)
+
+  /// Returns the kurtosis of the float columns in a frame.
+  /// [category:Calculations, aggregation and statistics]
+  [<CompiledName("ColumnKurtosis")>]
+  let colKurt (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> kurt)
+
