@@ -716,13 +716,13 @@ type FrameExtensions =
     frame |> Frame.mapRowKeys (fun t -> (t.Item1, t.Item2)) |> Frame.nest
 
   /// Given a data frame whose row index has two levels, create a series
-  /// whose keys are the unique first level keys as a result of the keyselector
-  /// function projection, and whose values are those corresponding frames 
-  /// selected from the original data.  
+  /// whose keys are the unique results of the keyselector projection, and 
+  /// whose values are those corresponding frames selected from the original 
+  /// data.  
   ///
   /// [category:Data structure manipulation]
   [<Extension>]
-  static member NestBy(frame:Frame<Tuple<'TRowKey1, 'TRowKey2>, 'TColumnKey>, keyselector:Func<Tuple<'TRowKey1, 'TRowKey2>,'a>) =
+  static member NestBy(frame:Frame<'TRowKey1, 'TColumnKey>, keyselector:Func<'TRowKey1, 'TRowKey2>) =
     frame |> Frame.nestBy keyselector.Invoke
 
   /// Given a series whose values are frames, create a frame resulting
