@@ -318,7 +318,7 @@ module Series =
     series.Select(fun (KeyValue(k,v)) -> f v)
 
   /// [category:Series transformations]
-  let mapValuesOptional (f: 'T -> 'R option) (series:Series<'K, 'T>) =
+  let flatMapValues (f: 'T -> 'R option) (series:Series<'K, 'T>) =
     let fn = 
       function 
       | KeyValue(k, OptionalValue.Present t) -> f t |> OptionalValue.ofOption
@@ -531,7 +531,7 @@ module Series =
   /// [category:Hierarchical index operations]
   [<CompiledName("ApplyLevelOptional")>]
   let inline applyLevelOptional (level:'K1 -> 'K2) op (series:Series<_, 'V>) : Series<_, 'R> = 
-    series.GroupBy(fun kvp -> level kvp.Key) |> mapValuesOptional op
+    series.GroupBy(fun kvp -> level kvp.Key) |> flatMapValues op
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `level` and then aggregates elements in each group
