@@ -178,6 +178,11 @@ type SeriesExtensions =
   static member ContainsKey(series:Series<'K, 'T>, key:'K) = 
     series.Keys.Contains(key)
 
+  /// Collapses a series of OptionalValue<'T> values to just 'T values
+  [<Extension>]
+  static member Flatten(series:Series<'K,'T opt>) =
+    series |> Series.mapValues OptionalValue.asOption |> Series.flatten
+
   /// Returns all keys from the sequence, together with the associated (optional)
   /// values. The values are returned using the `OptionalValue<T>` struct which
   /// provides `HasValue` for testing if the value is available.

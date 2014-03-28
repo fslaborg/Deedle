@@ -318,14 +318,6 @@ module Series =
     series.Select(fun (KeyValue(k,v)) -> f v)
 
   /// [category:Series transformations]
-  let flatMapValues (f: 'T -> 'R option) (series:Series<'K, 'T>) =
-    let fn = 
-      function 
-      | KeyValue(k, OptionalValue.Present t) -> f t |> OptionalValue.ofOption
-      | KeyValue(k, OptionalValue.Missing)   -> OptionalValue.Missing
-    series.SelectOptional(Func<_,_>(fn))
-
-  /// [category:Series transformations]
   let mapKeys (f:'K -> 'R) (series:Series<'K, 'T>) = 
     series.SelectKeys(fun kvp -> f kvp.Key)
 
@@ -337,6 +329,13 @@ module Series =
   let mapAll (f:_ -> _ -> option<'R>) (series:Series<'K, 'T>) = 
     series.SelectOptional(fun kvp -> 
       f kvp.Key (OptionalValue.asOption kvp.Value) |> OptionalValue.ofOption)
+
+  /// Flattens option values; ie, it applies the `join` operation to each value 
+  /// that is a nested option monad.
+  ///
+  /// [category:Series transformations]
+  let flatten (series:Series<'K, 'T option>) = 
+    series |> mapAll (fun _ v -> match v with Some x -> x | _ -> None)
 
   /// [category:Series transformations]
   let tryMap (f:'K -> 'T -> 'R) (series:Series<'K, 'T>) : Series<_, _ tryval> = 
@@ -531,7 +530,7 @@ module Series =
   /// [category:Hierarchical index operations]
   [<CompiledName("ApplyLevelOptional")>]
   let inline applyLevelOptional (level:'K1 -> 'K2) op (series:Series<_, 'V>) : Series<_, 'R> = 
-    series.GroupBy(fun kvp -> level kvp.Key) |> flatMapValues op
+    series.GroupBy(fun kvp -> level kvp.Key) |> mapValues op |> flatten
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `level` and then aggregates elements in each group
