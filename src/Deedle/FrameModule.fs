@@ -764,12 +764,6 @@ module Frame =
   let reduceLevel keySelector (op:'T -> 'T -> 'T) (frame:Frame<'R, 'C>) = 
     frame.GetColumns<'T>() |> Series.map (fun _ -> Series.reduceLevel keySelector op) |> FrameUtils.fromColumns
 
-  let applyLevel keySelector op (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.applyLevel keySelector op
-
-  let applyLevelOptional keySelector op (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.applyLevelOptional keySelector op
-
   // other stuff
 
   let shift offset (frame:Frame<'R, 'C>) = 
@@ -1014,13 +1008,6 @@ module Frame =
   // ----------------------------------------------------------------------------------------------
   // Hierarchical indexing
   // ----------------------------------------------------------------------------------------------
-
-  let flatten (level:'R -> 'K) (op:_ -> 'V) (frame:Frame<'R, 'C>) = 
-    frame.Columns |> Series.map (fun _ -> Series.applyLevel level op)
-
-  let flattenRows (level:'R -> 'K) op (frame:Frame<'R, 'C>) : Series<'K, 'V> = 
-    let labels = frame.RowKeys |> Seq.map level
-    frame.NestRowsBy(labels) |> Series.map (fun _ df -> op df)
 
   let nest (frame:Frame<'R1 * 'R2, 'C>) = 
     let labels = frame.RowKeys |> Seq.map fst
