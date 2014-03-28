@@ -499,6 +499,13 @@ module Stats =
   let inline sum (series:Series<'K, 'V>) = 
     series.Values |> Seq.sum 
 
+  /// Convenience sum that operates only on float values, for getting around those nasty type 
+  /// inference cases ...
+  /// [category:Standard statistics]
+  [<CompiledName("SumF")>]
+  let inline sumf (series:Series<'K, float>) = 
+    series.Values |> Seq.sum 
+
   /// Returns the mean of the values in a series. The function skips over missing values
   /// and `NaN` values. When there are no available values, the result is NaN.
   ///
