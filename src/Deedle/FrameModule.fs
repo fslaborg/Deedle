@@ -764,6 +764,9 @@ module Frame =
   let reduceLevel keySelector (op:'T -> 'T -> 'T) (frame:Frame<'R, 'C>) = 
     frame.GetColumns<'T>() |> Series.map (fun _ -> Series.reduceLevel keySelector op) |> FrameUtils.fromColumns
 
+  let applyLevel keySelector op (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<'T>() |> Series.map (fun _ s -> Series.applyLevel keySelector op s) |> FrameUtils.fromColumns
+
   // other stuff
 
   let shift offset (frame:Frame<'R, 'C>) = 
