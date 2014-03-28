@@ -745,9 +745,6 @@ module Frame =
     frame.SeriesApply(true, fun (s:Series<_, 'T tryval>) -> 
       (Series.fillErrorsWith value s) :> ISeries<_>)
 
-  let stat op (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.stat op)
-
   let reduce (op:'T -> 'T -> 'T) (frame:Frame<'R, 'C>) = 
     frame.GetColumns<'T>() |> Series.map (fun _ -> Series.reduce op) 
 
@@ -760,37 +757,18 @@ module Frame =
   let inline minRowBy column (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.minBy (fun row -> row.GetAs<float>(column))
 
-
   // ----------------------------------------------------------------------------------------------
   // Hierarchical aggregation
   // ----------------------------------------------------------------------------------------------
-
-  let meanLevel keySelector (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.meanLevel keySelector) |> FrameUtils.fromColumns
-
-  let sumLevel keySelector (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sumLevel keySelector) |> FrameUtils.fromColumns
-
-  let countLevel keySelector (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<obj>() |> Series.map (fun _ -> Series.countLevel keySelector) |> FrameUtils.fromColumns
-
-  let stdDevLevel keySelector (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sdvLevel keySelector) |> FrameUtils.fromColumns
-
-  [<Obsolete("Use stdDevLevel instead.")>]
-  let sdvLevel = stdDevLevel
-
-  let medianLevel keySelector (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.medianLevel keySelector) |> FrameUtils.fromColumns
-
-  let statLevel keySelector op (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.statLevel keySelector op) |> FrameUtils.fromColumns
 
   let reduceLevel keySelector (op:'T -> 'T -> 'T) (frame:Frame<'R, 'C>) = 
     frame.GetColumns<'T>() |> Series.map (fun _ -> Series.reduceLevel keySelector op) |> FrameUtils.fromColumns
 
   let applyLevel keySelector op (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.applyLevel keySelector op
+
+  let applyLevelOptional keySelector op (frame:Frame<'R, 'C>) = 
+    frame.Rows |> Series.applyLevelOptional keySelector op
 
   // other stuff
 
@@ -1038,7 +1016,7 @@ module Frame =
   // ----------------------------------------------------------------------------------------------
 
   let flatten (level:'R -> 'K) (op:_ -> 'V) (frame:Frame<'R, 'C>) = 
-    frame.Columns |> Series.map (fun _ -> Series.flattenLevel level op)
+    frame.Columns |> Series.map (fun _ -> Series.applyLevel level op)
 
   let flattenRows (level:'R -> 'K) op (frame:Frame<'R, 'C>) : Series<'K, 'V> = 
     let labels = frame.RowKeys |> Seq.map level

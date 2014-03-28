@@ -75,7 +75,8 @@ type SeriesStatsExtensions =
   ///
   /// [category:Statistics]
   [<Extension>]
-  static member MeanLevel(series:Series<'K1, float>, groupSelector:Func<'K1, 'K2>) = Series.meanLevel groupSelector.Invoke series
+  static member MeanLevel(series:Series<'K1, float>, groupSelector:Func<'K1, 'K2>) = 
+    Series.applyLevel groupSelector.Invoke Stats.mean series
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `groupSelector` and then returns a new series containing
@@ -88,10 +89,8 @@ type SeriesStatsExtensions =
   ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
   ///
   /// [category:Statistics]
-  static member StdDevLevel(series:Series<'K1, float>, groupSelector:Func<'K1, 'K2>) = Series.sdvLevel groupSelector.Invoke series
-
-  [<Obsolete("Use StdDevLevel instead")>]
-  static member StandardDeviationLevel(series:Series<'K1, float>, groupSelector:Func<'K1, 'K2>) = Series.sdvLevel groupSelector.Invoke series
+  static member StdDevLevel(series:Series<'K1, float>, groupSelector:Func<'K1, 'K2>) = 
+    Series.applyLevel groupSelector.Invoke Stats.stdDev series
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `groupSelector` and then returns a new series containing
@@ -105,7 +104,8 @@ type SeriesStatsExtensions =
   ///
   /// [category:Statistics]
   [<Extension>]
-  static member MedianLevel(series:Series<'K1, float>, groupSelector:Func<'K1, 'K2>) = Series.medianLevel groupSelector.Invoke series
+  static member MedianLevel(series:Series<'K1, float>, groupSelector:Func<'K1, 'K2>) = 
+      Series.applyLevel groupSelector.Invoke Stats.median series
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `groupSelector` and then returns a new series containing
@@ -119,7 +119,8 @@ type SeriesStatsExtensions =
   ///
   /// [category:Statistics]
   [<Extension>]
-  static member inline SumLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) = Series.sumLevel groupSelector.Invoke series
+  static member inline SumLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) = 
+    Series.applyLevel groupSelector.Invoke Stats.sum series
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `groupSelector` and then returns a new series containing
@@ -133,7 +134,8 @@ type SeriesStatsExtensions =
   ///
   /// [category:Statistics]
   [<Extension>]
-  static member inline MinLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) = Series.minLevel groupSelector.Invoke series
+  static member inline MinLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) = 
+    Series.applyLevelOptional groupSelector.Invoke Stats.min series
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `groupSelector` and then returns a new series containing
@@ -147,7 +149,8 @@ type SeriesStatsExtensions =
   ///
   /// [category:Statistics]
   [<Extension>]
-  static member inline MaxLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) = Series.maxLevel groupSelector.Invoke series
+  static member inline MaxLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) = 
+    Series.applyLevelOptional groupSelector.Invoke Stats.max series
 
   /// Linearly interpolates an ordered series given a new sequence of keys. 
   ///

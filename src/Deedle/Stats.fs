@@ -488,14 +488,16 @@ module Stats =
   ///
   /// [category:Standard statistics]
   [<CompiledName("Count")>]
-  let inline count (series:Series<'K, 'V>) = series.ValueCount
+  let inline count (series:Series<'K, 'V>) = 
+    series.ValueCount
 
   /// Returns the sum of the values in a series. The function skips over missing values
   /// and `NaN` values. When there are no available values, the result is 0.
   ///
   /// [category:Standard statistics]
   [<CompiledName("Sum")>]
-  let inline sum (series:Series<'K, ^V>) : ^V = Seq.sum series.Values
+  let inline sum (series:Series<'K, 'V>) = 
+    series.Values |> Seq.sum 
 
   /// Returns the mean of the values in a series. The function skips over missing values
   /// and `NaN` values. When there are no available values, the result is NaN.
