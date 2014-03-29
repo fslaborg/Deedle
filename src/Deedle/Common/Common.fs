@@ -61,7 +61,11 @@ type OptionalValue<'T> private (hasValue:bool, value:'T) =
   override x.Equals(y) =
     match y with 
     | null -> false
-    | :? OptionalValue<'T> as y -> Object.Equals(x.ValueOrDefault, y.ValueOrDefault)
+    | :? OptionalValue<'T> as y -> 
+        match x.HasValue, y.HasValue with
+        | true, true -> Object.Equals(x.ValueOrDefault, y.ValueOrDefault)
+        | false, false -> true
+        | _ -> false
     | _ -> false
    
 /// Non-generic type that makes it easier to create `OptionalValue<T>` values

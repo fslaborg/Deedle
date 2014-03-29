@@ -41,6 +41,13 @@ let ``Nullable value is recognized as missing, if it has no value`` () =
   testNullable (Nullable()) |> shouldEqual true
 
 [<Test>]
+let ``Equality on OptionalValue type works as expected`` () =
+  OptionalValue.Missing = OptionalValue<float>.Missing |> shouldEqual true
+  OptionalValue(0.0) = OptionalValue(0.0) |> shouldEqual true
+  OptionalValue.Missing = OptionalValue(0.0) |> shouldEqual false
+  OptionalValue.Missing = OptionalValue(1.0) |> shouldEqual false
+
+[<Test>]
 let ``Array.dropRange drops inclusive range from an array`` () = 
   [| 1 .. 10 |] |> Array.dropRange 0 9 |> shouldEqual [| |]
   [| 1 .. 10 |] |> Array.dropRange 1 8 |> shouldEqual [| 1; 10 |]    
@@ -315,4 +322,3 @@ let ``Seq.alignAllUnordered behaves the same as Seq.alignUnordered`` () =
     let a1 = ReadOnlyCollection.ofSeq (Seq.distinct a1)
     let a2 = ReadOnlyCollection.ofSeq (Seq.distinct a2)
     Seq.alignAllUnordered [| a1; a2 |] = Seq.alignUnordered a1 a2 false )
-
