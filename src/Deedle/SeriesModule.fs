@@ -9,6 +9,7 @@ open Deedle.Keys
 open Deedle.Addressing
 open Deedle.Internal
 open Deedle.Vectors
+open Deedle.VectorHelpers
 open MathNet.Numerics.Statistics
 
 /// The `Series` module provides F#-friendly API for working with functions. The API
@@ -424,36 +425,49 @@ module Series =
   // Calculations, aggregation and statistics
   // ----------------------------------------------------------------------------------------------
 
-
-  /// `result[k] = series[k] - series[k - offset]`
+  /// Returns a series containing difference between a value in the original series and 
+  /// a value at the specified offset. For example, calling `Series.diff 1 s` returns a 
+  /// series where previous value is subtracted from the current one. In pseudo-code, the
+  /// function behaves as follows:
+  ///
+  ///     result[k] = series[k] - series[k - offset]
+  ///
+  /// ## Parameters
+  ///  - `offset` - When positive, subtracts the past values from the current values;
+  ///    when negative, subtracts the future values from the current values.
+  ///  - `series` - The input series, containing values that support the `-` operator.
   ///
   /// [category:Calculations, aggregation and statistics]
+  [<CompiledName("Diff")>]
   let inline diff offset (series:Series<'K, ^T>) = 
-    series.Aggregate
-      ( WindowSize((abs offset) + 1, Boundary.Skip), 
-        (fun ks -> if offset < 0 then ks.Data.Keys.First() else ks.Data.Keys.Last() ),
-        (fun ds ->  
-          let fk, lk = ds.Data.KeyRange
-          match ds.Data.TryGet(fk), ds.Data.TryGet(lk) with
-          | OptionalValue.Present h, OptionalValue.Present t -> 
-              OptionalValue(if offset < 0 then h - t else t - h)
-          | _ -> OptionalValue.Missing ) )
+    let vectorBuilder = VectorBuilder.Instance
+    let newIndex, vectorR = series.Index.Builder.Shift((series.Index, Vectors.Return 0), offset)
+    let _, vectorL = series.Index.Builder.Shift((series.Index, Vectors.Return 0), -offset)
+    let cmd = Vectors.Combine(vectorL, vectorR, VectorValueTransform.Create< ^T >(OptionalValue.map2 (-)))
+    let newVector = vectorBuilder.Build(cmd, [| series.Vector |])
+    Series(newIndex, newVector, vectorBuilder, series.Index.Builder)
 
+  /// Returns a series with values shifted by the specified offset. When the offset is 
+  /// positive, the values are shifted forward and first `offset` keys are dropped. When the
+  /// offset is negative, the values are shifted backwards and the last `offset` keys are dropped.
+  /// Expressed in pseudo-code:
+  ///
+  ///     result[k] = series[k - offset]
+  ///
+  /// ## Parameters
+  ///  - `offset` - Can be both positive and negative number.
+  ///  - `series` - The input series to be shifted.
+  ///
+  /// ## Remarks
+  /// If you want to calculate the difference, e.g. `s - (Series.shift 1 s)`, you can
+  /// use `Series.diff` which will be a little bit faster.
   ///
   /// [category:Calculations, aggregation and statistics]
+  [<CompiledName("Shift")>]
   let shift offset (series:Series<'K, 'T>) = 
-    let win = WindowSize((abs offset) + 1, Boundary.Skip)
-    let shifted = 
-      if offset < 0 then
-        let offset = -offset
-        series.Aggregate
-          ( win, (fun s -> s.Data.Keys.First()),
-            (fun s -> s.Data.TryGet(s.Data.KeyRange |> snd)) ) 
-      else
-        series.Aggregate
-          ( win, (fun s -> s.Data.Keys.Last()),
-            (fun s -> s.Data.TryGet(s.Data.KeyRange |> fst)) )
-    shifted //.GetItems(series.Keys)
+    let newIndex, vector = series.IndexBuilder.Shift((series.Index, Vectors.Return 0), offset)
+    let newVector = series.VectorBuilder.Build(vector, [| series.Vector |])
+    Series(newIndex, newVector, series.VectorBuilder, series.IndexBuilder)
 
 
   ///

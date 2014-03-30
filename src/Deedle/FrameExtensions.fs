@@ -889,10 +889,38 @@ type FrameExtensions =
   static member Append(frame:Frame<'TRowKey, 'TColumnKey>, rowKey, row) = 
     frame.Append(Frame.ofRows [ rowKey => row ])
 
+  /// Returns a frame with columns shifted by the specified offset. When the offset is 
+  /// positive, the values are shifted forward and first `offset` keys are dropped. When the
+  /// offset is negative, the values are shifted backwards and the last `offset` keys are dropped.
+  /// Expressed in pseudo-code:
+  ///
+  ///     result[k] = series[k - offset]
+  ///
+  /// ## Parameters
+  ///  - `offset` - Can be both positive and negative number.
+  ///  - `frame` - The input frame whose columns are to be shifted.
+  ///
+  /// ## Remarks
+  /// If you want to calculate the difference, e.g. `df - (Frame.shift 1 df)`, you can
+  /// use `Frame.diff` which will be a little bit faster.
   [<Extension>]
   static member Shift(frame:Frame<'TRowKey, 'TColumnKey>, offset) = 
     frame |> Frame.shift offset
 
+  /// Returns a frame with columns containing difference between an original value and
+  /// a value at the specified offset. For example, calling `Frame.diff 1 s` returns a 
+  /// frame where previous column values is subtracted from the current ones. In pseudo-code, the
+  /// function behaves as follows:
+  ///
+  ///     result[k] = series[k] - series[k - offset]
+  ///
+  /// Columns that cannot be converted to `float` are left without a change.
+  ///
+  /// ## Parameters
+  ///  - `offset` - When positive, subtracts the past values from the current values;
+  ///    when negative, subtracts the future values from the current values.
+  ///  - `frame` - The input frame containing at least some `float` columns.
+  ///
   [<Extension>]
   static member Diff(frame:Frame<'TRowKey, 'TColumnKey>, offset) = 
     frame.SeriesApply<float>(false, fun s -> Series.diff offset s :> ISeries<_>)

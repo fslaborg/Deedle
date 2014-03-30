@@ -220,6 +220,7 @@ and internal DelayedIndexBuilder() =
     member x.Aggregate(index, aggregation, vector, selector) = builder.Aggregate(index, aggregation, vector, selector)
     member x.GroupBy(index, keySel, vector) = builder.GroupBy(index, keySel, vector)
     member x.OrderIndex(sc) = builder.OrderIndex(sc)
+    member x.Shift(sc, offset) = builder.Shift(sc, offset)
     member x.Union(sc1, sc2) = builder.Union(sc1, sc2)
     member x.Intersect(sc1, sc2) = builder.Intersect(sc1, sc2)
     member x.Merge(scs, transform) = builder.Merge(scs, transform)

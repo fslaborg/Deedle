@@ -190,6 +190,14 @@ let ``Series.diff correctly handles missing values``() =
   let actual2 = s |> Series.diff 1 |> Series.observationsAll |> List.ofSeq
   actual2 |> shouldEqual [(1, None); (2, None); (3, None); (4, Some 2.0)]
 
+[<Test>]
+let ``Series.shift works correctnly on sample input``() =
+  let input = series [ 'a' => 1.0; 'b' => 2.0; 'c' => nan; 'd' => 3.0;  ]
+  let actual1 = input |> Series.shift 1
+  actual1 |> shouldEqual <| series [ 'b' => 1.0; 'c' => 2.0; 'd' => nan ]
+  let actual2 = input |> Series.shift -1
+  actual2 |> shouldEqual <| series [ 'a' => 2.0; 'b' => nan; 'c' => 3.0 ]
+
 [<Test>] 
 let ``Union correctly unions series, prefering left or right values``() = 
   let input1 = Series.ofObservations [ 'a' => 1; 'b' => 2; 'c' => 3 ]

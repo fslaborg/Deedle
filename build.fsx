@@ -34,7 +34,7 @@ let rpluginTags = "R RProvider"
 
 let gitHome = "https://github.com/BlueMountainCapital"
 let gitName = "Deedle"
-let testAssemblies = "tests/*/bin/Release/Deedle*Tests*.dll"
+let testAssemblies = "tests/Deedle.*Tests/bin/Release/Deedle*Tests*.dll"
 
 // --------------------------------------------------------------------------------------
 // The rest of the code is standard F# build script 

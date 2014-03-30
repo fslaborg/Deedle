@@ -97,9 +97,9 @@ let testOne() =
   //let rows = ResizeArray<_>()
   //let df = msft |> Frame.sortRowsByKey
 
-  let df = frame [ "A" => series [ for i in 0 .. 5000 -> i => float i  ]]
+  let df = frame [ for c in ["A";"B";"C";"D";"E"] -> c => series [ for i in 0 .. 500000 -> i => float i  ]]
 
-  for i in 1 .. 10 do //1.9s - 2s
+  for i in 1 .. 100 do //1.9s - 2s
     timed(fun () ->
        //let nada = s |> Series.windowInto 100 Series.mean
 
@@ -107,7 +107,9 @@ let testOne() =
 
        //rows.Add(f.RowsDense)
 
-      df |> Frame.shift 1 |> ignore
+      df |> Frame.shift 1 |> ignore // 3.2s
+      //df |> Frame.diff 1 |> ignore // 3.0s
+
       // #time 
 
       // 0.95

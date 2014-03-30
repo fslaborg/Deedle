@@ -121,7 +121,7 @@ let createValueDispatcher<'R> (callSite:ValueCallSite<'R>) =
 /// a helper method for creating transformation on values of known types
 type VectorValueTransform =
   /// Creates a transformation that applies the specified function on `'T` values 
-  static member Create<'T>(operation:OptionalValue<'T> -> OptionalValue<'T> -> OptionalValue<'T>) = 
+  static member inline Create<'T>(operation:OptionalValue<'T> -> OptionalValue<'T> -> OptionalValue<'T>) = 
     { new IVectorValueTransform with
         member vt.GetFunction<'R>() = 
           unbox<OptionalValue<'R> -> OptionalValue<'R> -> OptionalValue<'R>> (box operation) }
@@ -236,7 +236,7 @@ let tryCastType<'R> (vector:IVector) : OptionalValue<IVector<'R>> =
           with :? InvalidCastException -> OptionalValue.Missing }
   |> vector.Invoke
 
-// A "generic function" that drops 
+/// A "generic function" that drops a specified range from any vector
 let getVectorRange (builder:IVectorBuilder) range (vector:IVector) = 
   { new VectorCallSite<IVector> with
       override x.Invoke<'T>(col:IVector<'T>) = 
@@ -244,6 +244,11 @@ let getVectorRange (builder:IVectorBuilder) range (vector:IVector) =
         builder.Build(cmd, [| col |]) :> IVector }
   |> vector.Invoke
 
+/// Active pattern that calls the `tryChangeType<float>` function
+let (|AsFloatVector|_|) v : option<IVector<float>> = 
+  match unboxVector v with 
+  | :? IVector<float> as fv -> Some fv
+  | v -> OptionalValue.asOption (tryChangeType v)
 
 /// A virtual vector for reading "row" of a data frame. The virtual vector accesses
 /// internal representation of the frame (specified by `data` and `columnCount`).

@@ -162,6 +162,20 @@ type SeriesExtensions =
   [<Extension>]
   static member Log(series:Series<'K, float>) = log series
 
+  /// Returns a series with values shifted by the specified offset. When the offset is 
+  /// positive, the values are shifted forward and first `offset` keys are dropped. When the
+  /// offset is negative, the values are shifted backwards and the last `offset` keys are dropped.
+  /// Expressed in pseudo-code:
+  ///
+  ///     result[k] = series[k - offset]
+  ///
+  /// ## Parameters
+  ///  - `offset` - Can be both positive and negative number.
+  ///  - `series` - The input series to be shifted.
+  ///
+  /// ## Remarks
+  /// If you want to calculate the difference, e.g. `s - (Series.shift 1 s)`, you can
+  /// use `Series.diff` which will be a little bit faster.
   [<Extension>]
   static member Shift(series:Series<'K, 'V>, offset) = Series.shift offset series
 
@@ -206,12 +220,51 @@ type SeriesExtensions =
   // static member Where(series:Series<'K, 'T>, f:System.Func<KeyValuePair<'K, 'V>, bool>) = 
 
 
+  /// Returns a series containing difference between a value in the original series and 
+  /// a value at the specified offset. For example, calling `Series.diff 1 s` returns a 
+  /// series where previous value is subtracted from the current one. 
+  ///
+  /// ## Parameters
+  ///  - `offset` - When positive, subtracts the past values from the current values;
+  ///    when negative, subtracts the future values from the current values.
+  ///  - `series` - The input series.
+  ///
   [<Extension>]
   static member Diff(series:Series<'K, float>, offset) = series |> Series.diff offset
+
+  /// Returns a series containing difference between a value in the original series and 
+  /// a value at the specified offset. For example, calling `Series.diff 1 s` returns a 
+  /// series where previous value is subtracted from the current one. 
+  ///
+  /// ## Parameters
+  ///  - `offset` - When positive, subtracts the past values from the current values;
+  ///    when negative, subtracts the future values from the current values.
+  ///  - `series` - The input series.
+  ///
   [<Extension>]
   static member Diff(series:Series<'K, float32>, offset) = series |> Series.diff offset
+
+  /// Returns a series containing difference between a value in the original series and 
+  /// a value at the specified offset. For example, calling `Series.diff 1 s` returns a 
+  /// series where previous value is subtracted from the current one. 
+  ///
+  /// ## Parameters
+  ///  - `offset` - When positive, subtracts the past values from the current values;
+  ///    when negative, subtracts the future values from the current values.
+  ///  - `series` - The input series.
+  ///
   [<Extension>]
   static member Diff(series:Series<'K, decimal>, offset) = series |> Series.diff offset
+
+  /// Returns a series containing difference between a value in the original series and 
+  /// a value at the specified offset. For example, calling `Series.diff 1 s` returns a 
+  /// series where previous value is subtracted from the current one. 
+  ///
+  /// ## Parameters
+  ///  - `offset` - When positive, subtracts the past values from the current values;
+  ///    when negative, subtracts the future values from the current values.
+  ///  - `series` - The input series.
+  ///
   [<Extension>]
   static member Diff(series:Series<'K, int>, offset) = series |> Series.diff offset
 

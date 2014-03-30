@@ -359,6 +359,20 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
                 snd newAddress.Value, oldAddress }
       newIndex, Vectors.Relocate(vector, newIndex.KeyCount, relocations)
 
+    /// Shift the values in the series by a specified offset, in a specified direction
+    member builder.Shift( (index, vector), offset) =
+      let (indexLo, indexHi), vectorRange = 
+        if offset > 0 then 
+          // If offset > 0 then skip first offet keys and take matching values from the start
+          (int64 offset, index.KeyCount - 1L),
+          (0L, index.KeyCount - 1L - int64 offset)
+        else 
+          // If offset < 0 then skip first -offset values and take matching keys from the start
+          (0L, index.KeyCount - 1L + int64 offset),
+          (int64 -offset, index.KeyCount - 1L)
+      let orderedOpt = if index.IsOrdered then Some(true) else None
+      let newIndex = LinearRangeIndex(index, indexLo, indexHi) :> IIndex<_>
+      newIndex, Vectors.GetRange(vector, vectorRange)
 
     /// Union the index with another. For sorted indices, this needs to align the keys;
     /// for unordered, it appends new ones to the end.

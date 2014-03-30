@@ -267,6 +267,15 @@ module OptionalValue =
     if input.HasValue then OptionalValue(f input.Value)
     else OptionalValue.Missing
 
+  /// If both of the arguments contain value, apply the specified function to their
+  /// values and return `OptionalValue<R>` with the result. Otherwise return
+  /// `OptionalValue.Missing`.
+  [<CompiledName("Map2")>]
+  let inline map2 f (input1:OptionalValue<'T1>) (input2:OptionalValue<'T2>): OptionalValue<'R> = 
+    if input1.HasValue && input2.HasValue then 
+      OptionalValue(f input1.Value input2.Value)
+    else OptionalValue.Missing
+
   /// Creates `OptionalValue<T>` from a tuple of type `bool * 'T`. This function
   /// can be used with .NET methods that use `out` arguments. For example:
   ///
