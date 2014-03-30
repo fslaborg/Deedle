@@ -195,5 +195,9 @@ df.Columns.["A"].As<float>() |> ignore
   for i in 0 .. 9 do
     s |> Series.resampleInto [for i in 0 .. 100000 -> i * 10 ] Direction.Backward (fun _ s -> Series.mean s) |> ignore
 
+
+// Shift and Diff are now significantly faster
+
+// Append is now much faster: http://fssnip.net/m5
 *)
 
