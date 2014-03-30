@@ -107,7 +107,9 @@ let testOne() =
 
        //rows.Add(f.RowsDense)
 
-      df |> Frame.shift 1 |> ignore // 3.2s
+      df?A |> Series.windowInto 5 (fun _ -> 0.0) |> ignore // 1.2sec ~
+
+      //df |> Frame.shift 1 |> ignore // 3.2s
       //df |> Frame.diff 1 |> ignore // 3.0s
 
       // #time 

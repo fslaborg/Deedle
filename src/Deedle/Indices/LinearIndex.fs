@@ -254,15 +254,15 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
       // Turn each location into vector construction using LinearRangeIndex
       let vectorConstructions =
-        locations |> Array.ofSeq |> Array.map (fun (kind, lo, hi) ->
+        locations |> Seq.map (fun (kind, lo, hi) ->
           let cmd = Vectors.GetRange(vector, (lo, hi)) 
           let index = LinearRangeIndex(index, lo, hi)
           kind, (index :> IIndex<_>, cmd) )
 
       // Run the specified selector function
-      let keyValuePairs = vectorConstructions |> Array.map selector
+      let keyValuePairs = vectorConstructions |> Seq.map selector |> Array.ofSeq
       // Build & return the resulting series
-      let newIndex = builder.Create(Seq.map fst keyValuePairs, None)
+      let newIndex = builder.Create(ReadOnlyCollection.ofArray (Array.map fst keyValuePairs), None)
       let vect = vectorBuilder.CreateMissing(Array.map snd keyValuePairs)
       newIndex, vect
 
