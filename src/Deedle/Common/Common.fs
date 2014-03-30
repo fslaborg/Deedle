@@ -960,7 +960,7 @@ module Seq =
   /// This is the same as `alignOrdered` but for larger number of key sequences.
   /// Throws ComparisonFailedException when the comparer fails.
   /// (This performs union on the specified sequences)
-  let alignAllOrdered (seqs:ReadOnlyCollection<'T>[]) (comparer:IComparer<'T>) : 'T[] * list<(int64 * int64)[]> = 
+  let alignAllOrderedMany (seqs:ReadOnlyCollection<'T>[]) (comparer:IComparer<'T>) : 'T[] * list<(int64 * int64)[]> = 
     
     // We maintain a set of indices into the original key sequences, starting at 0
     // An empty sequence is marked with an index of -1
@@ -972,8 +972,12 @@ module Seq =
 
     // We maintain a heap structure to access the next smallest key along with the 
     // sequence it comes; allows delete-min/find-min in O(log n) time
-    let mutable heap = BinomialHeap.empty_custom (fun a b -> 
-      BinomialHeap.custom_compare (fun a b -> comparer.Compare(a,b)) (fst a) (fst b))
+    let mutable heap = 
+      { new IComparer<_> with
+          member x.Compare(a, b) = 
+            try comparer.Compare(fst a, fst b) 
+            with _ -> raise (new ComparisonFailedException()) }
+      |> BinomialHeap.emptyCustom
 
     // initialize heap
     for i = 0 to current.Length - 1 do
@@ -982,34 +986,90 @@ module Seq =
         heap <- heap |> BinomialHeap.insert (keys.[idx], i)
 
     let mutable index = -1L
-    let mutable completed = false
     let mutable seen = HashSet()   // because F# Set requires comparison ...
 
-    while not completed do
-      if BinomialHeap.isEmpty heap then 
-        // when there are no more elements to examine, we're done
-        completed <- true
+    // When there are no more elements to examine, we're done
+    while not (BinomialHeap.isEmpty heap) do
+      // pop the min key along w/sequence it came from
+      let (k, i), htmp = BinomialHeap.removeMin heap
+      let idx, keys = current.[i]
+      if not <| seen.Contains(k) then
+        // we haven't seen this key, so increment index into resulting keys array
+        newkeys.Add(k) |> ignore
+        seen.Add(k) |> ignore
+        index <- index + 1L
+      // store the relocation indexing
+      results.[i].Add( (index, int64 idx) )
+      if idx + 1 < keys.Count then 
+        // there's another key to examine in the i'th sequence, so it on the heap
+        current.[i] <- (idx + 1, keys)
+        heap <- htmp |> BinomialHeap.insert (keys.[idx + 1], i)                
       else
-        // pop the min key along w/sequence it came from
-        let (k, i), htmp = BinomialHeap.removeMin heap
-        let idx, keys = current.[i]
-        if not <| seen.Contains(k) then
-          // we haven't seen this key, so increment index into resulting keys array
-          newkeys.Add(k) |> ignore
-          seen.Add(k) |> ignore
-          index <- index + 1L
-        // store the relocation indexing
-        results.[i].Add( (index, int64 idx) )
-        if idx + 1 < keys.Count then 
-          // there's another key to examine in the i'th sequence, so it on the heap
-          current.[i] <- (idx + 1, keys)
-          heap <- htmp |> BinomialHeap.insert (keys.[idx + 1], i)                
-        else
-          // no more keys in i'th sequence, allow heap to shrink
-          heap <- htmp
+        // no more keys in i'th sequence, allow heap to shrink
+        heap <- htmp
     
     // Return results as arrays
     newkeys.ToArray(), [ for r in results -> r.ToArray() ]
+
+  /// Align N ordered sequences of keys (using the specified comparer)
+  /// This is the same as `alignOrdered` but for larger number of key sequences.
+  /// Throws ComparisonFailedException when the comparer fails.
+  /// (This performs union on the specified sequences)
+  let alignAllOrderedFew (seqs:ReadOnlyCollection<'T>[]) (comparer:IComparer<'T>) : 'T[] * list<(int64 * int64)[]> = 
+    
+    // We keep an array with indices & original sequences
+    // When we finish iterating over a sequence, we set it to 'null' and set the index to -1
+    let current = seqs |> Array.map (fun s -> 
+      if s.Count > 0 then 0, s else -1, null)
+
+    // Resize arrays with keys and resulting relocation tables
+    let keys = ResizeArray<_>(seqs |> Array.sumBy (fun s -> s.Count))
+    let results = seqs |> Array.map (fun s -> ResizeArray<_>(s.Count))
+
+    /// Returns the smallest key from the current position in all collections
+    let smallestKey() = 
+      let mutable k = Unchecked.defaultof<_>
+      let mutable found = false
+      for i = 0 to current.Length - 1 do
+        let idx, keys = current.[i]
+        if idx <> -1 then                   // else: No more values in this collection
+          if found then                     // Get smaller of previous & current
+            let k2 = keys.[idx]
+            try k <- if comparer.Compare(k, k2) <= 0 then k else k2
+            with _ -> raise (new ComparisonFailedException())
+          else                              // We found our first key
+            k <- keys.[idx]
+            found <- true
+      found, k
+
+    /// For a given key, advance all input collections currently at the given key
+    /// and add mapping to relocation table for them (also add key to the list of keys)
+    let addAndAdvanceForKey index k =
+      keys.Add(k)
+      for i = 0 to current.Length - 1 do
+        let idx, keys = current.[i]
+        if idx <> -1 && comparer.Compare(keys.[idx], k) = 0 then
+          current.[i] <- if idx + 1 >= keys.Count then -1, null else idx + 1, keys
+          results.[i].Add( (index, int64 idx) )
+
+    // While there is some key in any of the collections, call `addAndAdvanceForKey`
+    let mutable index = 0L
+    let mutable completed = false
+    while not completed do
+      match smallestKey() with
+      | false, _ -> completed <- true
+      | true, k -> addAndAdvanceForKey index k; index <- index + 1L
+    // Return results as arrays
+    keys.ToArray(), [ for r in results -> r.ToArray() ]
+
+
+  /// Calls either `alignAllOrderedMany` or `alignAllOrderedFew` depending on the number
+  /// of sequences to be aligned. Performance measurements suggest that 150 is the limit
+  /// when the implementation using binomial heap is faster.
+  let alignAllOrdered (collections:_[]) comparer = 
+    if collections.Length > 150 then alignAllOrderedMany collections comparer
+    else alignAllOrderedFew collections comparer
+    
 
   /// Align two unordered sequences of keys (performs union of the keys)
   /// The resulting relocations are returned as two-element list for symmetry with other functions

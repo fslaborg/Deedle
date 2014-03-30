@@ -1,94 +1,108 @@
 ﻿/// Purely functional Binomial Heap implementation
-///
-/// http://cs.hubfs.net/topic/None/56608
+/// Based on: http://cs.hubfs.net/topic/None/56608
 ///
 /// Characteristics:
 ///   isEmpty = O(1)
 ///   insert = O(1) amortized; O(log n) worst case
 ///   merge = O(log n)
 ///   findMin, removeMin, deleteMin = O(log n)
+namespace Deedle.Internal
 
-module BinomialHeap
+open System.Collections.Generic
  
-type ord = LT | EQ | GT
+/// Tree where nodes contain values and zero or more child trees.
+/// For each node, we store rank - the number of children
+type RankedTree<'T> = Node of int * 'T * RankedTree<'T> list
+  
+/// Binomial heap stores a list of trees together with custom comparer
+type BinomialHeap<'T> = 
+  { Comparer : IComparer<'T>
+    Heap : RankedTree<'T> list }
  
-type 'a comparer = 'a -> 'a -> ord
+/// Module with functions for working with binomial heaps
+module BinomialHeap =
+  /// Active pattern that makes it easier to deal with results from IComparer
+  let (|LT|GT|EQ|) n =
+    if n < 0 then LT elif n > 0 then GT else EQ
  
-type 'a tree = Node of int * 'a * 'a tree list
- 
-type 'a heap = { cf : 'a comparer ;
-                 heap : 'a tree list }
- 
-let basic_compare x1 x2 =
-  let a = compare x1 x2 in
-    if a < 0 then LT
-    else if a > 0 then GT
-    else EQ
+  /// Creates an empty heap that uses the default .NET comparer
+  let empty<'T> : BinomialHeap<'T> = 
+    { Comparer = Comparer<'T>.Default; Heap = [] }
 
-let custom_compare compareFn x1 x2 =
-  let a = compareFn x1 x2 in
-    if a < 0 then LT
-    else if a > 0 then GT
-    else EQ
+  /// Creates an empty heap using the specified comparer
+  let emptyCustom comparer = 
+    { Comparer = comparer; Heap = [] }
  
-let empty_custom cf = { cf = cf ; heap = [] }
-let empty = {cf=basic_compare; heap = []}
+  /// Returns true when the specified heap is emtpy
+  let isEmpty heap = heap.Heap = []
  
-let isEmpty {heap=heap} = heap = []
+  /// Returns the rank of the specified tree node
+  let internal rank (Node (r,_,_)) = r
+  
+  /// Returns the value in the root of the specified tree 
+  let internal root (Node (_,x,_)) = x
  
-let rank (Node (r,_,_)) = r
- 
-let root (Node (_,x,_)) = x
- 
-let link cf (Node (r, x1, c1) as t1) (Node (_, x2, c2) as t2) =
-  match cf x1 x2 with
+  /// Link two tree nodes. The new root is the smaller of the two nodes.
+  let internal link (comparer:IComparer<_>) (Node (r, x1, c1) as t1) (Node (_, x2, c2) as t2) =
+    match comparer.Compare(x1, x2) with
     | GT -> Node (r+1, x2, t1 :: c2)
     | _  -> Node (r+1, x1, t2 :: c1)
- 
-let rec insTree cf (t: 'a tree) ts =
-  match ts with
+
+  /// Inser the specified tree into the list of trees forming binomial heap.
+  /// If the rank of the inserted tree is higher than the rank of the head, 
+  /// then join the trees and add the resulting tree. 
+  let rec insertTree comparer (t:RankedTree<_>) ts =
+    match ts with
     | [] -> [t]
     | t'::ts' -> 
-    match basic_compare (rank t) (rank t') with
-      | LT -> t::ts
-      | _ -> insTree cf (link cf t t') ts'
+        if (rank t) < (rank t') then t::ts
+        else insertTree comparer (link comparer t t') ts'
  
-let insert x {cf=cf;heap=heap} = 
-  let newheap = insTree cf (Node (0, x, [])) heap in
-    {cf=cf; heap=newheap}
- 
-let rec merge' cf treepair =
-  match treepair with
-    | (ts1, []) -> ts1
-    | ([], ts2) -> ts2
+  /// Insert the specified element to the heap
+  let insert x heap = 
+    let newHeap = insertTree heap.Comparer (Node (0, x, [])) heap.Heap
+    { heap with Heap = newHeap }
+
+  /// Merge two lists of ranked trees, producing a new list.
+  let rec mergeTrees comparer = function
+    // When one or the other is empty, just return it.
+    | ts, [] | [], ts -> ts
     | ((t1::ts1' as ts1), (t2::ts2' as ts2)) ->
-    match basic_compare (rank t1) (rank t2) with
-      | LT -> t1 :: (merge' cf (ts1', ts2))
-      | GT -> t2 :: (merge' cf (ts1, ts2'))
-      | EQ -> insTree cf (link cf t1 t2) (merge' cf (ts1', ts2'))
- 
-let merge {cf=cf;heap=heap1} {heap=heap2} = 
-  let newheap = merge' cf (heap1, heap2) in
-    {cf=cf;heap=newheap}
- 
-exception Empty_Heap
- 
-let rec removeMinTree cf heap =
-  match heap with
-    | [] -> raise Empty_Heap
-    | [t] -> (t, [])
+        // Merge them based on ranks. When the rank is equal,
+        // we actually have to combine the trees and insert the
+        // result into a recursively merged list.
+        match compare (rank t1) (rank t2) with
+        | LT -> t1 :: (mergeTrees comparer (ts1', ts2))
+        | GT -> t2 :: (mergeTrees comparer (ts1, ts2'))
+        | EQ -> insertTree comparer (link comparer t1 t2) (mergeTrees comparer (ts1', ts2'))
+
+  /// Merge two binomial heaps (using the comparer of the first one)
+  let merge heap1 heap2 = 
+    let newHeap = mergeTrees heap1.Comparer (heap1.Heap, heap2.Heap)
+    { heap1 with  Heap = newHeap}
+
+  /// Remove the  smallest tree from a list of ranked trees.
+  let rec internal removeMinTree (comparer:IComparer<_>) heap =
+    match heap with
+    | [] -> invalidOp "The heap is empty."
+    | [t] -> t, []
     | (t::ts) ->
-    let (t', ts') = removeMinTree cf ts in
-      match cf (root t) (root t') with
+        let (t', ts') = removeMinTree comparer ts 
+        match comparer.Compare(root t, root t') with
         | LT | EQ -> (t, ts)
         | _ -> (t', t::ts')
- 
-let findMin {cf=cf;heap=heap} =
-  let (t, _) = removeMinTree cf heap in
+
+  /// Find minimal value from the specified binomial heap 
+  let findMin { Comparer=cf; Heap=heap } =
+    let (t, _) = removeMinTree cf heap 
     root t
  
-let removeMin {cf=cf;heap=heap} =
-  let (Node (_, x, ts1), ts2) = removeMinTree cf heap in
-    (x, {cf=cf; heap=(merge' cf ((List.rev ts1), ts2))})
+  /// Remove minimal value from the specified binomial heap
+  /// (and return the value, together with a new heap)
+  let removeMin { Comparer=comparer; Heap=heap } =
+    let (Node (_, x, ts1), ts2) = removeMinTree comparer heap 
+    x, { Comparer = comparer; Heap = mergeTrees comparer ((List.rev ts1), ts2)}
  
-let deleteMin heap = snd (removeMin heap)
+  /// Remove minimal value from the specified binomial heap
+  /// (and return the new heap)
+  let deleteMin heap = snd (removeMin heap)

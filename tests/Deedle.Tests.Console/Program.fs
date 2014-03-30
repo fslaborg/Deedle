@@ -22,11 +22,14 @@ let colored color =
       member x.Dispose() = Console.ForegroundColor <- prev }
 
 // Measure how long does a test take
-let timed f = 
-  let sw = System.Diagnostics.Stopwatch.StartNew()
-  let res = f()
-  printfn "%dms" sw.ElapsedMilliseconds
-  res
+let timed k f = 
+  let times = ResizeArray<_>()
+  for i in 1 .. k do
+    let sw = System.Diagnostics.Stopwatch.StartNew()
+    let res = f()
+    times.Add(float sw.ElapsedMilliseconds)
+    printfn "%dms (Average: %dms)" sw.ElapsedMilliseconds (int64 (Seq.average times))
+    res
 
 // Measure how long does a test take
 let timedFormat f fmt arg = 
@@ -80,14 +83,25 @@ let testOne() =
   let f = Frame.ofColumns ["n" => n]
   *)
 
-  (*
-  let s1 = series [ for i in 0000001 .. 0300000 -> i => float i ]
-  let s2 = series [ for i in 1000001 .. 1300000 -> i => float i ]
-  let s3 = series [ for i in 2000001 .. 2300000 -> i => float i ]
-  let s4 = series [ for i in 3000001 .. 3300000 -> i => float i ]
-  //let s5 = series [ for i in 4000001 .. 4300000 -> i => float i ]
-*)
+  let s1 = series [ for i in 0000001 .. 0100000 -> i => float i ]
+  let s3 = series [ for i in 1000001 .. 1100000 -> i => float i ]
+  let s4 = series [ for i in 2000001 .. 2100000 -> i => float i ]
+  let s2 = series [ for i in 3000001 .. 3100000 -> i => float i ]
 
+  //Deedle.Internal.Seq.useBinomial <- true
+
+  // 570, 270
+  printfn "Append few"
+  timed 5 (fun _ -> 
+    s1.Append(s2, s3, s4) |> ignore
+  )
+
+  printfn "Append lots"
+  timed 5 (fun _ -> 
+      let mkSeries objId = Series([for j in 1..60 -> (objId, j)], [1..60])
+      let h::tl = [1..1000] |> List.map mkSeries  
+      h.Append(tl |> Array.ofSeq) |> ignore
+  )
 //  s |> Series.chunkInto 100 Series.mean |> ignore
 //  s |> Series.chunkWhileInto (fun k1 k2 -> k2 - k1 < 100) Series.mean |> ignore
 //  s |> Series.windowWhileInto (fun k1 k2 -> k2 - k1 < 100) Series.mean |> ignore
@@ -97,17 +111,59 @@ let testOne() =
   //let rows = ResizeArray<_>()
   //let df = msft |> Frame.sortRowsByKey
 
-  let df = frame [ for c in ["A";"B";"C";"D";"E"] -> c => series [ for i in 0 .. 500000 -> i => float i  ]]
+  //let df = frame [ for c in ["A";"B";"C";"D";"E"] -> c => series [ for i in 0 .. 500000 -> i => float i  ]]
+  
+  (*
+  let size = 1000000
+  let rnd = Random()
 
-  for i in 1 .. 100 do //1.9s - 2s
-    timed(fun () ->
+  for count in 10 .. 30 .. 300 do
+    let ss = Array.init count (fun _ -> ResizeArray<_>())
+    for i in 1 .. size do
+      ss.[rnd.Next(ss.Length)].Add( (i, float i) )
+    let sser = Array.map series ss
+
+    Deedle.Internal.Seq.useBinomial <- false
+    printfn "Normal (%d):" count
+    timed 2 (fun _ ->
+      Series.appendN sser |> ignore )
+
+    Deedle.Internal.Seq.useBinomial <- true
+    printfn "Binomial (%d):" count
+    timed 2 (fun _ ->
+      Series.appendN sser |> ignore )
+
+    printfn ""
+    *)
+
+
+  //timed 1 (fun () ->
+
+
        //let nada = s |> Series.windowInto 100 Series.mean
 
        //let nada = s |> Series.windowInto 100 Series.mean |> ignore
 
        //rows.Add(f.RowsDense)
 
-      df?A |> Series.windowInto 5 (fun _ -> 0.0) |> ignore // 1.2sec ~
+      
+      // 37 sec, 41 sec, 42 sec, 42 sec ~~~> sub 1sec
+      //let mkSeries objId = Series([for j in 1..60 -> (objId, j)], [1..60])
+      //let h::tl = [1..2000] |> List.map mkSeries  
+      //h.Append(tl |> Array.ofSeq) |> ignore
+
+      // 520ms // 1 sec
+      //s1.Append(s2, s3) |> ignore
+
+      // 926ms
+      //s1.Append(s2, s3, s4, s5) |> ignore
+
+      // 1930ms
+      //s1.Append(s2, s3, s4, s5, s6, s7, s8) |> ignore
+
+    //  )
+
+      //df?A |> Series.windowInto 5 (fun _ -> 0.0) |> ignore // 1.2sec ~
 
       //df |> Frame.shift 1 |> ignore // 3.2s
       //df |> Frame.diff 1 |> ignore // 3.0s
@@ -127,7 +183,7 @@ let testOne() =
 
 
       ///let nada2 = s |> Series.windowSizeInto (5, Boundary.Skip) (DataSegment.data >> Series.mean)
-      () 
+  //    () 
        (*
         let bySex = titanic |> Frame.groupRowsByString "Sex"
         let survivedBySex = bySex.Columns.["Survived"].As<bool>()
@@ -150,7 +206,7 @@ let testOne() =
 //      Series(d1, d2).[300000.0 .. 600000.0] |> Series.filter (fun k _ -> true) |> Series.mean
 //      |> ignore
 
-    )
+    //)
 
 //do testAll()
 do testOne()

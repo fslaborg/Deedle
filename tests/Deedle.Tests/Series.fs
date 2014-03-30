@@ -689,6 +689,19 @@ let ``Can append 10 sample unordered series`` () =
   actual.Index.IsOrdered |> shouldEqual false
   actual |> shouldEqual expected
 
+[<Test>]
+let ``Can correctly append over 150 series`` () =
+  let rnd = new Random(0)
+  let values = Array.init 300 (fun _ -> new ResizeArray<_>())
+  for i in 0 .. 10000 do values.[rnd.Next(300)].Add( (i, float i) )
+
+  let minimalCount = values |> Seq.map (fun r -> r.Count) |> Seq.min
+  minimalCount |> shouldEqual 21 // Just to check that we have some values
+
+  let ss = values |> Array.map series
+  let actual = ss.[0].Append(ss.[1 ..]) 
+  actual |> shouldEqual <| series [ for i in 0 .. 10000 -> i => float i ] 
+
 // ------------------------------------------------------------------------------------------------
 // Misc
 // ------------------------------------------------------------------------------------------------

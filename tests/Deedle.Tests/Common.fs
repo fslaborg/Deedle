@@ -322,3 +322,21 @@ let ``Seq.alignAllUnordered behaves the same as Seq.alignUnordered`` () =
     let a1 = ReadOnlyCollection.ofSeq (Seq.distinct a1)
     let a2 = ReadOnlyCollection.ofSeq (Seq.distinct a2)
     Seq.alignAllUnordered [| a1; a2 |] = Seq.alignUnordered a1 a2 false )
+
+
+[<Test>]
+let ``Binomial heap can insert and remove minimum`` () =
+  Check.QuickThrowOnFailure(fun (nums:int[]) ->
+    let mutable h = BinomialHeap.empty
+    // Check that we can insert all numbers and minimum works correctly
+    for i in 0 .. nums.Length - 1 do 
+      h <- BinomialHeap.insert (nums.[i]) h 
+      if BinomialHeap.findMin h <> (Seq.min nums.[0 .. i]) then failwith "Min failed" 
+    
+    // Check that we can remove all elements and the one before is always smaller
+    let mutable lastMin = Int32.MinValue
+    for i in 0 .. nums.Length - 1 do
+      let min, nh = BinomialHeap.removeMin h
+      if min < lastMin then failwith "RemoveMin failed"
+      h <- nh
+      lastMin <- min )
