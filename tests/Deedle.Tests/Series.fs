@@ -707,3 +707,4 @@ let ``Realign works and isn't terribly slow`` () =
   let s1 = Array.zip arr1 arr1 |> series
   let s2 = s1.Realign(arr2)
   s2.Keys |> Seq.toArray |> shouldEqual arr2
+
