@@ -19,10 +19,15 @@ type SeriesStatsExtensions =
   // Statistics
   // ----------------------------------------------------------------------------------------------
 
-  /// Returns the sum of the elements of the series.
+  /// Returns the sum of the elements of the series of float values.
   /// [category:Statistics]
   [<Extension>]
-  static member inline Sum(series:Series<'K, 'V>) = Stats.sum series
+  static member Sum(series:Series<'K, float>) = Stats.sum series
+
+  /// Returns the sum of the elements of the series of numeric values.
+  /// [category:Statistics]
+  [<Extension>]
+  static member inline NumSum(series:Series<'K, 'V>) = Stats.numSum series
 
   /// Returns the smallest of all elements of the series.
   /// [category:Statistics]
@@ -119,7 +124,7 @@ type SeriesStatsExtensions =
   ///
   /// [category:Statistics]
   [<Extension>]
-  static member inline SumLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) = 
+  static member inline SumLevel(series:Series<'K1, float>, groupSelector:Func<'K1, 'K2>) = 
     Series.applyLevel groupSelector.Invoke Stats.sum series
 
   /// Groups the elements of the input series in groups based on the keys

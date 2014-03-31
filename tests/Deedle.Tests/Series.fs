@@ -656,3 +656,9 @@ let ``Realign works and isn't terribly slow`` () =
   let s2 = s1.Realign(arr2)
   s2.Keys |> Seq.toArray |> shouldEqual arr2
 
+
+[<Test>]
+let ``Masking works as expected`` () =
+  let s = series [ 0 => 1.0; 1 => nan; 2 => 3.0 ]
+  let t = series [ 1 => 5.0; 2 => 3.0; 4 => 4.0 ]
+  (t |> Series.withMissingFrom s) |> shouldEqual (series [ 1 => nan; 2 => 3.0; 4 => 4.0 ])

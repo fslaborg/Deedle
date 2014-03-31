@@ -514,21 +514,14 @@ type Stats =
   /// and `NaN` values. When there are no available values, the result is 0.
   ///
   /// [category:Series statistics]
-  static member inline sum (series:Series<'K, 'V>) = 
+  static member inline sum (series:Series<'K, float>) = 
     series.Values |> Seq.sum 
 
-  /// Convenience sum that operates only on float values. This can be used to guide the 
-  /// type inference in cases when the type of values in the series is not known prior to the call.
+  /// Sum that operates only any appropriate numeric type. When there are no available 
+  /// values, the result is zero of the approriate numeric type.
   ///
   /// [category:Series statistics]
-  static member inline sumFloat (series:Series<'K, float>) = 
-    series.Values |> Seq.sum 
-
-  /// Convenience sum that operates only on float values. This can be used to guide the 
-  /// type inference in cases when the type of values in the series is not known prior to the call.
-  ///
-  /// [category:Series statistics]
-  static member inline sumInt (series:Series<'K, int>) = 
+  static member inline numSum (series:Series<'K, 'V>) = 
     series.Values |> Seq.sum 
 
   /// Returns the mean of the values in a series. The function skips over missing values
@@ -591,31 +584,6 @@ type Stats =
       let a = quickSelectInplace mid values
       let b = quickSelectInplace (mid - 1) values
       (a + b) / 2.0
-
-  // Cumulative functions
-
-  /// [category:Calculations, aggregation and statistics]
-  static member inline cumCount (series:Series<'K, 'V>) = 
-    let add a _ = a + 1
-    series.ScanValues(Func<_,_,_>(add), 0)
-
-  /// [category:Calculations, aggregation and statistics]
-  static member inline cumSum (series:Series<'K, 'V>) = 
-    let add a b = a + b
-    series.ScanValues(Func<_,_,_>(add), LanguagePrimitives.GenericZero)
-
-  /// [category:Calculations, aggregation and statistics]
-  static member inline cumProd (series:Series<'K, 'V>) = 
-    let mult a b = a * b
-    series.ScanValues(Func<_,_,_>(mult), LanguagePrimitives.GenericOne)
- 
-  /// [category:Calculations, aggregation and statistics]
-  static member inline cumMin (series:Series<'K, float>) = 
-    series.ScanValues(Func<_,_,_>(LanguagePrimitives.GenericMinimum), System.Double.PositiveInfinity)        
-
-  /// [category:Calculations, aggregation and statistics]
-  static member inline cumMax (series:Series<'K, float>) = 
-    series.ScanValues(Func<_,_,_>(LanguagePrimitives.GenericMaximum), System.Double.NegativeInfinity)        
 
   /// Interpolates an ordered series given a new sequence of keys. The function iterates through
   /// each new key, and invokes a function on the current key, the nearest smaller and larger valid 
@@ -692,7 +660,7 @@ type Stats =
 module StatsObsolete = 
   module Series = 
     [<Obsolete("Please use Stats.sum")>]
-    let inline sum (series:Series<'K, ^V>) = series |> Stats.sum
+    let inline sum (series:Series<'K, ^V>) = series |> Stats.numSum
     [<Obsolete("Please use Stats.mean")>]
     let inline mean (series:Series<'K, float>) = series |> Stats.mean
     [<Obsolete("Please use Stats.stdev")>]

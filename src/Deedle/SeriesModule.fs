@@ -325,6 +325,10 @@ module Series =
     series.WhereOptional(fun kvp -> f kvp.Key (OptionalValue.asOption kvp.Value))
 
   /// [category:Series transformations]
+  let withMissingFrom other (series:Series<'K,'T>) =
+    series.WithMissingFrom(other)
+
+  /// [category:Series transformations]
   let mapAll (f:_ -> _ -> option<'R>) (series:Series<'K, 'T>) = 
     series.SelectOptional(fun kvp -> 
       f kvp.Key (OptionalValue.asOption kvp.Value) |> OptionalValue.ofOption)
