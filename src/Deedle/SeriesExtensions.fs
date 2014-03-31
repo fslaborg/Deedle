@@ -12,63 +12,116 @@ open Deedle.Keys
 open Deedle.Indices
 open Deedle.Internal
 
+// --------------------------------------------------------------------------------------
+// Functions and methods for creating series
+// --------------------------------------------------------------------------------------
+
+/// Contains extensions for creating values of type `Series<'K, 'V>` including
+/// a type with functions such as `Series.ofValues` and the `series` function.
+/// The module is automatically opened for all F# code that references `Deedle`.
 [<AutoOpen>]
 module FSharpSeriesExtensions =
   open System
 
   type Series = 
+    /// Create a series from a sequence of key-value pairs that represent
+    /// the observations of the series. Consider using a shorthand 
+    /// `series` function instead.
     static member ofObservations(observations) = 
       Series(Seq.map fst observations, Seq.map snd observations)
+
+    /// Create a series from the specified sequence of values. The keys
+    /// of the resulting series are generated ordinarilly, starting from 0.
     static member ofValues(values) = 
       let keys = values |> Seq.mapi (fun i _ -> i)
       Series(keys, values)
+
+    /// Create a series from a sequence of nullable values. The keys
+    /// of the resulting series are generated ordinarilly, starting from 0.
+    /// The resulting series will contain keys associated with the `null`
+    /// values, but the values are treated as missing.
     static member ofNullables(values:seq<Nullable<_>>) = 
       let keys = values |> Seq.mapi (fun i _ -> i)
       Series(keys, values).Select(fun (KeyValue(_, v:Nullable<_>)) -> v.Value)
-    static member ofOptionalObservations(observations:seq<'K * OptionalValue<_>>) = 
+    
+    /// Create a series from a sequence of observations where the value is of
+    /// type `option<'T>`. When the value is `None`, the key remains in the
+    /// series, but the value is treated as missing.
+    static member ofOptionalObservations(observations:seq<'K * option<_>>) = 
       Series(Seq.map fst observations, Seq.map snd observations)
-        .SelectOptional(fun kvp -> OptionalValue.bind id kvp.Value)
+        .SelectOptional(fun kvp -> OptionalValue.bind OptionalValue.ofOption kvp.Value)
 
+  /// Create a series from a sequence of key-value pairs that represent
+  /// the observations of the series. This function can be used together
+  /// with the `=>` operator to create key-value pairs.
+  ///
+  /// ## Example
+  ///
+  ///     // Creates a series with squares of numbers
+  ///     let sqs = series [ 1 => 1.0; 2 => 4.0; 3 => 9.0 ]
+  ///
   let series observations = Series.ofObservations observations
 
+
+/// Contains extension methods for various instances of `IEnumerable` that
+/// can be used for creating `Series<'K, 'V>` from the `IEnumerable` value.
 [<Extension>]
 type EnumerableExtensions =
+  /// Convert the `IEnumerable` to a `Series`, using the keys and values of
+  /// the `KeyValuePair` as keys and values of the resulting series.
   [<Extension>]
   static member ToSeries(observations:seq<KeyValuePair<'K, 'V>>) = 
     observations |> Seq.map (fun kvp -> kvp.Key, kvp.Value) |> Series.ofObservations
+
+  /// Convert the `IEnumerable` to a  `Series`, using the keys and values of
+  /// the `KeyValuePair` as keys and values of the resulting series.
+  /// `OptionalValue.Missing` can be used to denote missing values.
   [<Extension>]
   static member ToSparseSeries(observations:seq<KeyValuePair<'K, OptionalValue<'V>>>) = 
-    observations |> Seq.map (fun kvp -> kvp.Key, kvp.Value) |> Series.ofOptionalObservations
+    observations |> Seq.map (fun kvp -> kvp.Key, OptionalValue.asOption kvp.Value) |> Series.ofOptionalObservations
+
+  /// Convert the `IEnumerable` to a `Series`, using the seuqence as the values
+  /// of the resulting series. The keys are generated ordinarilly, starting from 0.
   [<Extension>]
   static member ToOrdinalSeries(observations:seq<'V>) = 
     observations |> Series.ofValues
 
-type internal Series =
-  /// Vector & index builders
-  static member internal vectorBuilder = VectorBuilder.Instance
-  static member internal indexBuilder = IndexBuilder.Instance
+// --------------------------------------------------------------------------------------
+// Series builder
+// --------------------------------------------------------------------------------------
 
-  static member internal Create(data:seq<'V>) =
-    let lookup = data |> Seq.mapi (fun i _ -> i)
-    Series<int, 'V>(Index.ofKeys(lookup), Vector.ofValues(data), Series.vectorBuilder, Series.indexBuilder)
-  static member internal Create(index:seq<'K>, data:seq<'V>) =
-    Series<'K, 'V>(Index.ofKeys(index), Vector.ofValues(data), Series.vectorBuilder, Series.indexBuilder)
-  static member internal Create(index:IIndex<'K>, data:IVector<'V>) = 
-    Series<'K, 'V>(index, data, Series.vectorBuilder, Series.indexBuilder)
-  static member internal CreateUntyped(index:IIndex<'K>, data:IVector<obj>) = 
-    ObjectSeries<'K>(index, data, Series.vectorBuilder, Series.indexBuilder)
-
-
+/// The type can be used for creating series using mutation. You can add 
+/// items using `Add` and get the resulting series using the `Series` property.
+///
+/// ## Using from C#
+///
+/// The type supports the C# collection builder pattern:
+///
+///    	var s = new SeriesBuilder<string, double>
+///       { { "A", 1.0 }, { "B", 2.0 }, { "C", 3.0 } }.Series;
+///
+/// The type also supports the `dynamic` operator:
+///
+///     dynamic sb = new SeriesBuilder<string, obj>();
+///     sb.ID = 1;
+///     sb.Value = 3.4;
+///
 type SeriesBuilder<'K, 'V when 'K : equality and 'V : equality>() = 
   let mutable keys = []
   let mutable values = []
 
+  /// Add specified key and value to the series being build
   member x.Add(key:'K, value:'V) =
     keys <- key::keys
     values <- value::values
   
+  /// Returns the constructed series. The series is an immutable
+  /// copy of the current values and so further additions will not
+  /// change the returned series.
   member x.Series =
-    Series.Create(Index.ofKeys (List.rev keys), Vector.ofValues(List.rev values))
+    Series
+      ( Index.ofKeys (List.rev keys), Vector.ofValues(List.rev values), 
+        VectorBuilder.Instance, IndexBuilder.Instance )
 
   static member (?<-) (builder:SeriesBuilder<string, 'V>, name:string, value:'V) =
     builder.Add(name, value)
@@ -110,18 +163,6 @@ type SeriesBuilder<'K, 'V when 'K : equality and 'V : equality>() =
       match Seq.zip keys values |> Seq.tryFind (fun (k, v) -> k = key) with
       | Some (_, v) -> value <- v; true | _ -> false
     
-
-(*
-ICollection<TKey> Keys { get; }
-ICollection<TValue> Values { get; }
-
-TValue this[TKey key] { get; set; }
-
-void Add(TKey key, TValue value);
-bool ContainsKey(TKey key);
-bool Remove(TKey key);
-bool TryGetValue(TKey key, out TValue value);
-*)
   interface System.Dynamic.IDynamicMetaObjectProvider with 
     member builder.GetMetaObject(expr) = 
       DynamicExtensions.createGetterAndSetterFromFunc expr builder
@@ -134,8 +175,14 @@ bool TryGetValue(TKey key, out TValue value);
             let converted = Convert.changeType<'V> value
             builder.Add(unbox<'K> name, converted))
 
+/// A simple class that inherits from `SeriesBuilder<'K, obj>` and can be
+/// used instead of writing `SeriesBuilder<'K, obj>` with two type arguments.
 type SeriesBuilder<'K when 'K : equality>() =
   inherit SeriesBuilder<'K, obj>()
+
+// --------------------------------------------------------------------------------------
+// Extensions providing nice C#-friendly API
+// --------------------------------------------------------------------------------------
 
 [<Extension>]
 type SeriesExtensions =

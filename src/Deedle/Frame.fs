@@ -124,7 +124,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
         // Build the data 
         let data = 
           nested |> Series.observationsAll |> Seq.map (fun (_, s) ->
-            let series = match s with Some s -> seriesConv s | _ -> Series.Create([], []) :> ISeries<_>
+            let series = match s with Some s -> seriesConv s | _ -> Series([], []) :> ISeries<_>
             let cmd = nested.IndexBuilder.Reindex(series.Index, rowIndex, Lookup.Exact, Vectors.Return 0, fun _ -> true)
             // When the nested series data is in 'IBoxedVector', get the unboxed representation
             VectorHelpers.transformColumn nested.VectorBuilder cmd (unboxVector series.Vector) )
@@ -448,22 +448,23 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Accessors and slicing]
   member frame.Columns = 
-    ColumnSeries(Series.Create(columnIndex, data.Select(fun vect -> 
-      Series.CreateUntyped(rowIndex, boxVector vect))))
+    let newData = data.Select(fun vect -> ObjectSeries<_>(rowIndex, boxVector vect, vectorBuilder, indexBuilder))
+    ColumnSeries(Series(columnIndex, newData, vectorBuilder, indexBuilder))
 
   /// [category:Accessors and slicing]
   member frame.ColumnsDense = 
-    ColumnSeries(Series.Create(columnIndex, data.SelectMissing(fun vect -> 
+    let newData = data.SelectMissing(fun vect -> 
       // Assuming that the data has all values - which should be an invariant...
       let all = rowIndex.Mappings |> Seq.forall (fun (key, addr) -> vect.Value.GetObject(addr).HasValue)
-      if all then OptionalValue(Series.CreateUntyped(rowIndex, boxVector vect.Value))
-      else OptionalValue.Missing )))
+      if all then OptionalValue(ObjectSeries(rowIndex, boxVector vect.Value, vectorBuilder, indexBuilder))
+      else OptionalValue.Missing )
+    ColumnSeries(Series(columnIndex, newData, vectorBuilder, indexBuilder))
 
   /// [category:Accessors and slicing]
   member frame.Rows =
     let getRow addr =
        let rowReader = createObjRowReader data vectorBuilder columnIndex.KeyCount addr
-       Series.CreateUntyped(columnIndex, rowReader)
+       ObjectSeries(columnIndex, rowReader, vectorBuilder, indexBuilder)
     let values = Array.init (int rowIndex.KeyCount) (fun a -> getRow (Address.ofInt a))
     RowSeries(Series<_, _>(rowIndex, vectorBuilder.Create(values), vectorBuilder, indexBuilder))
 
@@ -474,7 +475,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       let rowAddress = rowIndex.Locate(row.Key)
       let rowVec = createObjRowReader data vectorBuilder columnIndex.KeyCount rowAddress
       let all = columnIndex.Mappings |> Seq.forall (fun (key, addr) -> rowVec.GetValue(addr).HasValue)
-      if all then OptionalValue(Series.CreateUntyped(columnIndex, rowVec))
+      if all then OptionalValue(ObjectSeries(columnIndex, rowVec, vectorBuilder, indexBuilder))
       else OptionalValue.Missing )
     RowSeries(Series.dropMissing res)
 
@@ -512,7 +513,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     if index < 0 || int64 index >= rowIndex.KeyCount then
       raise (new ArgumentOutOfRangeException("index", "Index must be positive and smaller than the number of rows."))
     let rowAddress = Address.ofInt index
-    Series.Create(columnIndex, createRowReader data vectorBuilder columnIndex.KeyCount rowAddress)
+    let vector = createRowReader data vectorBuilder columnIndex.KeyCount rowAddress
+    Series(columnIndex, vector, vectorBuilder, indexBuilder)
 
   /// Returns a row with the specieifed key wrapped in `OptionalValue`. When the specified key 
   /// is not found, the result is `OptionalValue.Missing`. This method is generic and returns the result 
@@ -526,7 +528,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member frame.TryGetRow<'T>(rowKey) : OptionalValue<Series<_, 'T>> =
     let rowAddress = rowIndex.Locate(rowKey)
     if rowAddress = Address.Invalid then OptionalValue.Missing
-    else OptionalValue(Series.Create(columnIndex, createRowReader data vectorBuilder columnIndex.KeyCount rowAddress))
+    else 
+      let vector = createRowReader data vectorBuilder columnIndex.KeyCount rowAddress
+      OptionalValue(Series(columnIndex, vector, vectorBuilder, indexBuilder))
 
   /// Returns a row with the specieifed key wrapped in `OptionalValue`. When the specified key 
   /// is not found, the result is `OptionalValue.Missing`. This method is generic and returns the result 
@@ -542,7 +546,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member frame.TryGetRow<'T>(rowKey, lookup) : OptionalValue<Series<_, 'T>> =
     let rowAddress = rowIndex.Lookup(rowKey, lookup, fun _ -> true)
     if not rowAddress.HasValue then OptionalValue.Missing
-    else OptionalValue(Series.Create(columnIndex, createRowReader data vectorBuilder columnIndex.KeyCount (snd rowAddress.Value)))
+    else 
+      let vector = createRowReader data vectorBuilder columnIndex.KeyCount (snd rowAddress.Value)
+      OptionalValue(Series(columnIndex, vector, vectorBuilder, indexBuilder))
 
   /// Returns a row with the specieifed key. This method is generic and returns the result 
   /// as a series containing values of the specified type. To get heterogeneous series of 
@@ -580,7 +586,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let rowAddress = rowIndex.Lookup(rowKey, lookup, fun _ -> true)
     if not rowAddress.HasValue then OptionalValue.Missing
     else 
-      let row = Series.Create(columnIndex, createRowReader data vectorBuilder columnIndex.KeyCount (snd rowAddress.Value))
+      let vector = createRowReader data vectorBuilder columnIndex.KeyCount (snd rowAddress.Value)
+      let row = Series(columnIndex, vector, vectorBuilder, indexBuilder)
       OptionalValue(KeyValuePair(fst rowAddress.Value, row))
   
   // ----------------------------------------------------------------------------------------------
@@ -758,7 +765,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   ///
   /// [category:Series operations]
   member frame.ReplaceSeries(column, data:seq<'V>, lookup) = 
-    frame.ReplaceSeries(column, Series.Create(frame.RowIndex, Vector.ofValues data), lookup)
+    let newSeries = Series(frame.RowIndex, Vector.ofValues data, vectorBuilder, indexBuilder)
+    frame.ReplaceSeries(column, newSeries, lookup)
 
   /// Mutates the data frame by replacing the specified series with
   /// a new series. (If the series does not exist, only the new
@@ -806,9 +814,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member frame.GetSeries<'R>(column:'TColumnKey, lookup) : Series<'TRowKey, 'R> = 
     match safeGetColVector(column, lookup, fun _ -> true) with
     | :? IVector<'R> as vec -> 
-        Series.Create(rowIndex, vec)
+        Series(rowIndex, vec, vectorBuilder, indexBuilder)
     | colVector ->
-        Series.Create(rowIndex, changeType colVector)
+        Series(rowIndex, changeType colVector, vectorBuilder, indexBuilder)
 
   /// [category:Series operations]
   member frame.GetSeriesAt<'R>(index:int) : Series<'TRowKey, 'R> = 
@@ -824,7 +832,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// [category:Series operations]
   member frame.TryGetSeries<'R>(column:'TColumnKey, lookup) =
     tryGetColVector(column, lookup, fun _ -> true) 
-    |> OptionalValue.map (fun v -> Series.Create(rowIndex, changeType<'R> v))
+    |> OptionalValue.map (fun v -> Series(rowIndex, changeType<'R> v, vectorBuilder, indexBuilder))
 
   /// [category:Series operations]
   member frame.TryGetSeriesObservation<'R>(column:'TColumnKey, lookup) =
@@ -834,7 +842,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     else
       data.GetValue (snd columnIndex.Value) 
       |> OptionalValue.map (fun vec ->
-        let ser = Series.Create(rowIndex, changeType<'R> vec)
+        let ser = Series(rowIndex, changeType<'R> vec, vectorBuilder, indexBuilder)
         KeyValuePair(fst columnIndex.Value, ser) )
 
   /// [category:Series operations]
