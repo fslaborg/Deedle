@@ -199,5 +199,10 @@ df.Columns.["A"].As<float>() |> ignore
 // Shift and Diff are now significantly faster
 
 // Append is now much faster: http://fssnip.net/m5
-*)
 
+
+  let s = series (Array.init 2000000 (fun v -> v => float v))
+  //#time
+  Series.take 1000000 s |> ignore // 800 - 1.0 - 1.1
+
+*)
