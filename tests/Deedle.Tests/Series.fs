@@ -169,6 +169,30 @@ let ``Series.windowWhileInto works on sample input`` () =
   actual |> shouldEqual expected
 
 // ------------------------------------------------------------------------------------------------
+// Numerics
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can perform numerical operations on series of floats`` () =
+  let sf = series [ 1 => 1.0; 2 => nan; 3 => 3.0 ]
+  (-sf).[3] |> shouldEqual -3.0
+  (sf * sf).[3] |> shouldEqual 9.0
+  (sf * sf).[3] |> shouldEqual 9.0
+  (sf + sf).[3] |> shouldEqual 6.0
+  (sf - sf).[3] |> shouldEqual 0.0
+  (sf / sf).[3] |> shouldEqual 1.0
+
+[<Test>]
+let ``Can perform numerical operations on series of integers`` () =
+  let sn = series [ 1 => 1; 2 => 2; 3 => 3 ]
+  (-sn).[3] |> shouldEqual -3
+  (sn * sn).[3] |> shouldEqual 9
+  (sn * sn).[3] |> shouldEqual 9
+  (sn + sn).[3] |> shouldEqual 6
+  (sn - sn).[3] |> shouldEqual 0
+  (sn / sn).[3] |> shouldEqual 1
+
+// ------------------------------------------------------------------------------------------------
 // Operations - union, grouping, diff, etc.
 // ------------------------------------------------------------------------------------------------
 

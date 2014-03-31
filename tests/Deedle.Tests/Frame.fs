@@ -432,6 +432,8 @@ let ``Applying numerical operation to frame does not affect non-numeric series``
 let ``Can perform numerical operation with a scalar on data frames`` () =
   let df = msft() 
 
+  (-df)?Open.GetAt(66) |> shouldEqual (-df?Open.GetAt(66))
+
   (df * 2.0)?Open.GetAt(66) |> shouldEqual (df?Open.GetAt(66) * 2.0)
   (df / 2.0)?Open.GetAt(66) |> shouldEqual (df?Open.GetAt(66) / 2.0)
   (df + 2.0)?Open.GetAt(66) |> shouldEqual (df?Open.GetAt(66) + 2.0)
