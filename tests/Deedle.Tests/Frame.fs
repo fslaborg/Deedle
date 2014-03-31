@@ -223,7 +223,7 @@ let ``Can create frame from 100k of three element tuples (in less than a few sec
         for i in 0 .. 1000 do
           yield DateTime.Today.AddDays(float d), i.ToString(), 1.0 |]
   let df = Frame.ofValues values
-  df |> Stats.colSum |> Stats.sum |> int |> shouldEqual 101101
+  df |> Stats.sum |> Stats.sum |> int |> shouldEqual 101101
 
 [<Test>]
 let ``Reconstructing frame from its columns preserves types of vectors``() =

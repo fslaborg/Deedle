@@ -9,7 +9,6 @@ open Deedle.Keys
 open Deedle.Addressing
 open Deedle.Internal
 open Deedle.Vectors
-open MathNet.Numerics.Statistics
 
 /// The `Series` module provides F#-friendly API for working with functions. The API
 /// follows the usual design for collection-processing in F#, so the functions work
@@ -1493,46 +1492,3 @@ module Series =
 
   [<Obsolete("Use sortByKeys instead. This function will be removed in futrue versions.")>]
   let orderByKey series = sortByKey series 
-
-  /// Returns the sum of the elements of the series.
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("Sum")>]
-  [<Obsolete("Please use Stats.sum")>]
-  let inline sum (series:Series<'K, ^V>) = 
-    series.Values |> Seq.sum
-
-  /// Returns the mean of the elements of the series.
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("Mean")>]
-  [<Obsolete("Please use Stats.mean")>]
-  let inline mean (series:Series<'K, ^V>) = 
-    series.Values |> Seq.average
-
-  /// Returns the standard deviation of the elements of the series. 
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("StandardDeviation")>]
-  [<Obsolete("Please use Stats.stdev")>]
-  let inline sdv (series:Series<'K, float>) = 
-    series.Values |> Statistics.StandardDeviation 
-
-  /// Returns the smallest of all elements of the series. 
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("Max")>]
-  [<Obsolete("Please use Stats.max")>]
-  let inline max (series:Series<'K, ^V>) = 
-    series.Values |> Seq.max
-
-  /// Returns the greatest of all elements of the series.
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("Min")>]
-  [<Obsolete("Please use Stats.min")>]
-  let inline min (series:Series<'K, ^V>) = 
-    series.Values |> Seq.min
-
-  /// Returns the median of the elements of the series.
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("Median")>]
-  [<Obsolete("Please use Stats.median")>]
-  let inline median (series:Series<'K, float>) = 
-    series.Values |> Statistics.Median
-

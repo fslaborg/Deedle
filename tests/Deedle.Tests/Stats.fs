@@ -238,3 +238,13 @@ let ``Kurtosis is the same as in Math.NET``() =
     else 
       Stats.kurt s |> should beWithin (d.Kurtosis +/- 1e-9) )
 
+[<Test>]
+let ``Median is the same as in Math.NET``() =
+  Check.QuickThrowOnFailure(fun (input:float[]) -> 
+    let input = Array.filter (Double.IsNaN >> not) input
+    let expected = Statistics.Median(input) 
+    let actual = Series.ofValues input |> Stats.median
+    if input |> Seq.forall (fun v -> not (Double.IsInfinity v)) then
+      // Math.NET returns "nan" if there are infinities, 
+      // while Deedle is happy with that
+      actual |> should beWithin (expected +/- 1e-9) )
