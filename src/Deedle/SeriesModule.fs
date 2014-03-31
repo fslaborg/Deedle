@@ -370,21 +370,69 @@ module Series =
   let fillErrorsWith value (series:Series<'K, 'T tryval>) = 
     series |> mapValues (function TryValue.Error _ -> value | TryValue.Success v -> v)
 
-  /// [category:Series transformations]
-  let take count (series:Series<'K, 'T>) =
-    let addrs = [for i in [0 .. count - 1] -> (Address.ofInt i, Address.ofInt i)]
-    let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 count, addrs)
-    let vec = series.VectorBuilder.Build(cmd, [| series.Vector |])
-    let idx = series.Index.Keys |> Seq.take count |> Index.ofKeys 
-    Series(idx, vec, series.VectorBuilder, series.IndexBuilder)
+  /// Internal helper used by `skip`, `take`, etc.
+  let internal getRange lo hi (series:Series<'K, 'T>) = 
+    if hi < lo then Series([],[]) else
+      let cmd = GetRange(Return 0, (int64 lo, int64 hi))
+      let vec = series.VectorBuilder.Build(cmd, [| series.Vector |])
+      let newKeys = series.Index.Keys.[lo .. hi]
+      let idx = series.IndexBuilder.Create(newKeys, if series.IsOrdered then Some true else None)
+      Series(idx, vec, series.VectorBuilder, series.IndexBuilder)
 
+  /// Returns a series that contains the specified number of keys from the original series. 
+  ///
+  /// ## Parameters
+  ///  - `count` - Number of keys to take; must be smaller or equal to the original number of keys
+  ///  - `series` - Input series from which the keys are taken
+  ///
   /// [category:Series transformations]
+  [<CompiledName("Take")>]
+  let take count (series:Series<'K, 'T>) =
+    if count > series.KeyCount || count < 0 then 
+      invalidArg "count" "Must be greater than zero and less than the number of keys."
+    getRange 0 (count - 1) series
+
+  /// Returns a series that contains the specified number of keys from the 
+  /// original series. The keys are taken from the end of the series. 
+  ///
+  /// ## Parameters
+  ///  - `count` - Number of keys to take; must be smaller or equal to the original number of keys
+  ///  - `series` - Input series from which the keys are taken
+  ///
+  /// [category:Series transformations]
+  [<CompiledName("TakeLast")>]
   let takeLast count (series:Series<'K, 'T>) =
-    let addrs = [for i in [0 .. count - 1] -> (Address.ofInt i, Address.ofInt (series.KeyCount - count + i))]
-    let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 count, addrs)
-    let vec = series.VectorBuilder.Build(cmd, [| series.Vector |])
-    let idx = series.Index.Keys |> Seq.skip (series.KeyCount - count) |> Index.ofKeys 
-    Series(idx, vec, series.VectorBuilder, series.IndexBuilder)
+    if count > series.KeyCount || count < 0 then 
+      invalidArg "count" "Must be greater than zero and less than the number of keys."
+    getRange (series.KeyCount-count) (series.KeyCount-1) series
+
+  /// Returns a series that contains the data from the original series,
+  /// except for the first `count` keys.
+  ///
+  /// ## Parameters
+  ///  - `count` - Number of keys to skip; must be smaller or equal to the original number of keys
+  ///  - `series` - Input series from which the keys are taken
+  ///
+  /// [category:Series transformations]
+  [<CompiledName("Skip")>]
+  let skip count (series:Series<'K, 'T>) =
+    if count > series.KeyCount || count < 0 then 
+      invalidArg "count" "Must be greater than zero and less than the number of keys."
+    getRange count (series.KeyCount-1) series
+
+  /// Returns a series that contains the data from the original series,
+  /// except for the last `count` keys.
+  ///
+  /// ## Parameters
+  ///  - `count` - Number of keys to skip; must be smaller or equal to the original number of keys
+  ///  - `series` - Input series from which the keys are taken
+  ///
+  /// [category:Series transformations]
+  [<CompiledName("SkipLast")>]
+  let skipLast count (series:Series<'K, 'T>) =
+    if count > series.KeyCount || count < 0 then 
+      invalidArg "count" "Must be greater than zero and less than the number of keys."
+    getRange 0 (series.KeyCount-1-count) series
 
   /// [category:Series transformations]
   let force (series:Series<'K, 'V>) = 

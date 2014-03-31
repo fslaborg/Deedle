@@ -237,7 +237,7 @@ let ``Cumulative sum works``() =
 [<Test>]
 let ``Cumulative count works``() =
   let s = series [0 => 1.0; 1 => nan; 2 => 2.0; 3 => 3.0 ]
-  let e = Series.ofOptionalObservations [0 => OptionalValue(1); 1 => OptionalValue.Missing; 2 => OptionalValue(2); 3 => OptionalValue(3) ]
+  let e = Series.ofOptionalObservations [0 => Some(1); 1 => None; 2 => Some(2); 3 => Some(3) ]
   s |> Series.cumCount |> shouldEqual e
 
 [<Test>]
@@ -701,6 +701,34 @@ let ``Can correctly append over 150 series`` () =
   let ss = values |> Array.map series
   let actual = ss.[0].Append(ss.[1 ..]) 
   actual |> shouldEqual <| series [ for i in 0 .. 10000 -> i => float i ] 
+
+// ------------------------------------------------------------------------------------------------
+// take, takeLast, skip, skipLast
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can take N elements from front and back`` () =
+  let s = series [ for i in 1 .. 100 -> i => float i]
+
+  Series.take 2 s |> shouldEqual <| series [1 => 1.0; 2 => 2.0]
+  Series.take 100 s |> shouldEqual <| s
+  Series.take 0 s |> shouldEqual <| series []
+
+  Series.takeLast 2 s |> shouldEqual <| series [99 => 99.0; 100 => 100.0]
+  Series.takeLast 100 s |> shouldEqual <| s
+  Series.takeLast 0 s |> shouldEqual <| series []
+
+[<Test>]
+let ``Can skip N elements from front and back`` () =
+  let s = series [ for i in 1 .. 100 -> i => float i]
+
+  Series.skip 98 s |> shouldEqual <| series [99 => 99.0; 100 => 100.0]
+  Series.skip 100 s |> shouldEqual <| series []
+  Series.skip 0 s |> shouldEqual <| s
+
+  Series.skipLast 98 s |> shouldEqual <| series [1 => 1.0; 2 => 2.0]
+  Series.skipLast 100 s |> shouldEqual <| series []
+  Series.skipLast 0 s |> shouldEqual <| s
 
 // ------------------------------------------------------------------------------------------------
 // Misc

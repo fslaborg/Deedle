@@ -362,6 +362,40 @@ let ``Accessing row observation via missing row key returns missing`` () =
   actual.HasValue |> shouldEqual false
 
 // ------------------------------------------------------------------------------------------------
+// take, takeLast, skip, skipLast
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can take N elements from front and back`` () =
+  let s1 = series [ for i in 1 .. 100 -> i => float i]
+  let s2 = series [ for i in 1 .. 100 -> i => "N" + (string i) ]
+  let df = frame [ "S1" =?> s1; "S2" =?> s2 ]
+  let empty = frame ["S1" =?> Series<int, float>([], []); "S2" =?> Series<int, string>([], [])]
+
+  Frame.take 2 df |> shouldEqual <| frame ["S1" =?> series [1 => 1.0; 2 => 2.0]; "S2" =?> series [1 => "N1"; 2 => "N2"] ]
+  Frame.take 100 df |> shouldEqual <| df
+  Frame.take 0 df |> shouldEqual <| empty
+
+  Frame.takeLast 2 df |> shouldEqual <| frame ["S1" =?> series [99 => 99.0; 100 => 100.0]; "S2" =?> series [99 => "N99"; 100 => "N100"] ]
+  Frame.takeLast 100 df |> shouldEqual <| df
+  Frame.takeLast 0 df |> shouldEqual <| empty
+
+[<Test>]
+let ``Can skip N elements from front and back`` () =
+  let s1 = series [ for i in 1 .. 100 -> i => float i]
+  let s2 = series [ for i in 1 .. 100 -> i => "N" + (string i) ]
+  let df = frame [ "S1" =?> s1; "S2" =?> s2 ]
+  let empty = frame ["S1" =?> Series<int, float>([], []); "S2" =?> Series<int, string>([], [])]
+
+  Frame.skip 98 df |> shouldEqual <| frame ["S1" =?> series [99 => 99.0; 100 => 100.0]; "S2" =?> series [99 => "N99"; 100 => "N100"] ]
+  Frame.skip 100 df |> shouldEqual <| empty
+  Frame.skip 0 df |> shouldEqual <| df
+
+  Frame.skipLast 98 df |> shouldEqual <| frame ["S1" =?> series [1 => 1.0; 2 => 2.0]; "S2" =?> series [1 => "N1"; 2 => "N2"] ]
+  Frame.skipLast 100 df |> shouldEqual <| empty 
+  Frame.skipLast 0 df |> shouldEqual <| df
+
+// ------------------------------------------------------------------------------------------------
 // Stack & unstack
 // ------------------------------------------------------------------------------------------------
 
