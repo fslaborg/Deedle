@@ -219,5 +219,5 @@ let ``Array.quickSelectInplace selects nth element when compared with sorted arr
   Check.QuickThrowOnFailure(fun (input:float[]) ->
     let input = input |> Array.filter (Double.IsNaN >> not)
     for n in 0 .. input.Length - 1 do
-      let nth = Array.quickSelectInplace n (Array.map id input)
+      let nth = StatsHelpers.quickSelectInplace n (Array.map id input)
       nth |> shouldEqual ((Array.sort input).[n]) )
