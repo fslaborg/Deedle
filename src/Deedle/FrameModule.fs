@@ -63,15 +63,24 @@ module Frame =
   let columns (frame:Frame<'R, 'C>) = frame.Columns
 
   /// Returns a series of columns of the data frame indexed by the column keys, 
+  /// which contains those series whose values are convertible to 'T, and with 
+  /// missing values where the conversion fails.
+  ///
+  /// [category:Accessing frame data and lookup]
+  [<CompiledName("ReifiedCols")>]
+  let typedCols (frame:Frame<'R,'C>) : Series<'C,Series<'R,'T>> =
+    frame.Columns 
+    |> Series.map(fun _ v -> v.TryAs<'T>() |> OptionalValue.asOption) 
+    |> Series.flatten
+
+  /// Returns a series of columns of the data frame indexed by the column keys, 
   /// which contains those series whose values are convertible to float, and with 
   /// missing values where the conversion fails.
   ///
   /// [category:Accessing frame data and lookup]
   [<CompiledName("NumericCols")>]
   let numericCols (frame:Frame<'R,'C>) : Series<'C,Series<'R,float>> =
-    frame.Columns 
-    |> Series.map(fun _ v -> v.TryAs<float>() |> OptionalValue.asOption) 
-    |> Series.flatten
+    frame |> typedCols
 
   /// Returns the rows of the data frame as a series (indexed by 
   /// the row keys of the source frame) containing untyped series representing
