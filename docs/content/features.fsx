@@ -108,10 +108,10 @@ let people = peopleList |> Frame.indexRowsString "Name"
 (**
 Note that this does not perform any conversion on the column data. Numerical series
 can be accessed using the `?` operator. For other types, we need to explicitly call
-`GetSeries` with the right type arguments:
+`GetColumn` with the right type arguments:
 *)
 people?Age
-people.GetSeries<string list>("Countries")
+people.GetColumn<string list>("Countries")
 
 (**
 <a name="creating-wb"></a>
@@ -248,7 +248,7 @@ series of series.
 // (the '?' operator converts values automatically)
 people?Age
 // Get the 'Name' column as a series of 'string' values
-people.GetSeries<string>("Name")
+people.GetColumn<string>("Name")
 // Get all frame columns as a series of series
 people.Columns
 
@@ -302,7 +302,7 @@ people.Columns?Name.TryAs<int>()
 The type `ObjectSeries<string>` has a few methods in addition to ordinary `Series<K, V>` type.
 On the lines 18 and 20, we use `As<T>` and `TryAs<T>` that can be used to convert object series
 to a series with statically known type of values. The expression on line 18 is equivalent to
-`people.GetSeries<string>("Name")`, but it is not specific to frame columns - you can use the
+`people.GetColumn<string>("Name")`, but it is not specific to frame columns - you can use the
 same approach to work with frame rows (using `people.Rows`) if your data set has rows of 
 homogeneous types.
 
@@ -504,7 +504,7 @@ using `df.Rows` and `df.Columns`, so the first option is also useful on data fra
 In the following sample, we use the data frame `people` loaded from F# records in 
 [an earlier section](#creating-recd). Let's first get the data:
 *)
-let travels = people.GetSeries<string list>("Countries")
+let travels = people.GetColumn<string list>("Countries")
 // [fsi:val travels : Series<string,string list> =]
 // [fsi:  Joe     -> [UK; US; UK]       ]
 // [fsi:  Tomas   -> [CZ; UK; US; ... ] ]
@@ -650,7 +650,7 @@ byClassAndPort
 |> Frame.meanLevel Pair.get1And2Of3
 
 // Count number of survivors in each group
-byClassAndPort.GetSeries<bool>("Survived")
+byClassAndPort.GetColumn<bool>("Survived")
 |> Series.applyLevel Pair.get1And2Of3 (Series.values >> Seq.countBy id >> series)
 |> Frame.ofRows
 
