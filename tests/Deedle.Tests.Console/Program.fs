@@ -112,7 +112,7 @@ let testOne() =
                 "Died (%)" => survivals?Died/ survivals?Total * 100.0 ] |> frame
                 *)
       //CSharp.Tests.DynamicFrameTests.CanAddSeriesDynamically()
-      //CSharp.Tests.DynamicFrameTests.CanGetSeriesDynamically()
+      //CSharp.Tests.DynamicFrameTests.CanGetColumnDynamically()
 //      Tests.Frame.``Can group 10x5k data frame by row of type string and nest it (in less than a few seconds)``()
 //      Series(d1, d2).[300000.0 .. 600000.0] |> Series.filter (fun k _ -> true) |> Series.mean
 //      |> ignore

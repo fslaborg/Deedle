@@ -109,7 +109,7 @@ open FSharp.Charting
 mtcars
 |> Frame.groupRowsByInt "gear"
 |> Frame.meanLevel fst
-|> Frame.getSeries "mpg"
+|> Frame.getColumn "mpg"
 |> Series.observations |> Chart.Column
 
 (**

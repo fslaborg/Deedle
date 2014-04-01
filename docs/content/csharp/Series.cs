@@ -64,7 +64,7 @@ namespace CSharp
       // [create-csv]
       var frame = Frame.ReadCsv(Path.Combine(root, "../data/stocks/msft.csv"));
       var frameDate = frame.IndexRows<DateTime>("Date").SortRowsByKey();
-      var msftOpen = frameDate.GetSeries<double>("Open");
+      var msftOpen = frameDate.GetColumn<double>("Open");
       msftOpen.Print();
       // [/create-csv]
 
