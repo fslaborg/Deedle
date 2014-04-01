@@ -67,7 +67,7 @@ module Frame =
   /// missing values where the conversion fails.
   ///
   /// [category:Accessing frame data and lookup]
-  [<CompiledName("ReifiedCols")>]
+  [<CompiledName("TypedCols")>]
   let typedCols (frame:Frame<'R,'C>) : Series<'C,Series<'R,'T>> =
     frame.Columns 
     |> Series.map(fun _ v -> v.TryAs<'T>() |> OptionalValue.asOption) 
