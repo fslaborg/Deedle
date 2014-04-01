@@ -60,7 +60,19 @@ module Frame =
   ///
   /// [category:Accessing frame data and lookup]
   [<CompiledName("Columns")>]
-  let cols (frame:Frame<'R, 'C>) = frame.Columns
+  let columns (frame:Frame<'R, 'C>) = frame.Columns
+
+  /// Returns the columns of the data frame as a series (indexed by 
+  /// the column keys of the source frame) containing typed series 
+  /// representing individual columns of the frame that conform to
+  /// that type, and missing values where the type does not match.
+  ///
+  /// [category:Accessing frame data and lookup]
+  [<CompiledName("GetColumns")>]
+  let getColumns (frame:Frame<'R,'C>) : Series<'C, Series<'R, 'T>> =
+    frame.Columns 
+    |> Series.map(fun _ v -> v.TryAs<'T>() |> OptionalValue.asOption) 
+    |> Series.flatten
 
   /// Returns the rows of the data frame as a series (indexed by 
   /// the row keys of the source frame) containing untyped series representing
@@ -75,8 +87,9 @@ module Frame =
   /// matching (e.g. on dates)
   ///
   /// [category:Accessing frame data and lookup]
-  [<CompiledName("GetColumn")>]
-  let getCol column (frame:Frame<'R, 'C>) : Series<'R, 'V> = frame.GetSeries(column)
+  [<CompiledName("GetSeries")>]
+  let getSeries column (frame:Frame<'R, 'C>) : Series<'R, 'V> = 
+    frame.GetSeries(column)
 
   /// Returns a specified row from a data frame. This function uses exact matching 
   /// semantics on the key. Use `lookupRow` if you want to use inexact matching 
@@ -197,14 +210,6 @@ module Frame =
   [<CompiledName("ReplaceColumn")>]
   let replaceSeries column series (frame:Frame<'R, 'C>) = 
     let f = frame.Clone() in f.ReplaceSeries(column, series); f
-
-  /// Returns a specified column from a data frame as a `float` series.
-  /// This function attempts to covnert the column to numeric and throws an exception
-  /// if that is not possible. For non-numeric types, use `getCol` instead.
-  ///
-  /// [category:Series operations]
-  [<CompiledName("GetSeries")>]
-  let getSeries column (frame:Frame<'R, 'C>) : Series<'R, float> = frame.GetSeries(column)
 
   // ----------------------------------------------------------------------------------------------
   // Grouping and hierarchical indexing
