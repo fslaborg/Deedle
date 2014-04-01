@@ -62,16 +62,15 @@ module Frame =
   [<CompiledName("Columns")>]
   let columns (frame:Frame<'R, 'C>) = frame.Columns
 
-  /// Returns the columns of the data frame as a series (indexed by 
-  /// the column keys of the source frame) containing typed series 
-  /// representing individual columns of the frame that conform to
-  /// that type, and missing values where the type does not match.
+  /// Returns a series of columns of the data frame indexed by the column keys, 
+  /// which contains those series whose values are convertible to float, and with 
+  /// missing values where the conversion fails.
   ///
   /// [category:Accessing frame data and lookup]
-  [<CompiledName("GetColumns")>]
-  let getColumns (frame:Frame<'R,'C>) : Series<'C, Series<'R, 'T>> =
+  [<CompiledName("NumericCols")>]
+  let numericCols (frame:Frame<'R,'C>) : Series<'C,Series<'R,float>> =
     frame.Columns 
-    |> Series.map(fun _ v -> v.TryAs<'T>() |> OptionalValue.asOption) 
+    |> Series.map(fun _ v -> v.TryAs<float>() |> OptionalValue.asOption) 
     |> Series.flatten
 
   /// Returns the rows of the data frame as a series (indexed by 
