@@ -60,7 +60,27 @@ module Frame =
   ///
   /// [category:Accessing frame data and lookup]
   [<CompiledName("Columns")>]
-  let cols (frame:Frame<'R, 'C>) = frame.Columns
+  let columns (frame:Frame<'R, 'C>) = frame.Columns
+
+  /// Returns a series of columns of the data frame indexed by the column keys, 
+  /// which contains those series whose values are convertible to 'T, and with 
+  /// missing values where the conversion fails.
+  ///
+  /// [category:Accessing frame data and lookup]
+  [<CompiledName("TypedCols")>]
+  let typedCols (frame:Frame<'R,'C>) : Series<'C,Series<'R,'T>> =
+    frame.Columns 
+    |> Series.map(fun _ v -> v.TryAs<'T>() |> OptionalValue.asOption) 
+    |> Series.flatten
+
+  /// Returns a series of columns of the data frame indexed by the column keys, 
+  /// which contains those series whose values are convertible to float, and with 
+  /// missing values where the conversion fails.
+  ///
+  /// [category:Accessing frame data and lookup]
+  [<CompiledName("NumericCols")>]
+  let numericCols (frame:Frame<'R,'C>) : Series<'C,Series<'R,float>> =
+    frame |> typedCols
 
   /// Returns the rows of the data frame as a series (indexed by 
   /// the row keys of the source frame) containing untyped series representing
@@ -75,8 +95,9 @@ module Frame =
   /// matching (e.g. on dates)
   ///
   /// [category:Accessing frame data and lookup]
-  [<CompiledName("GetColumn")>]
-  let getCol column (frame:Frame<'R, 'C>) : Series<'R, 'V> = frame.GetSeries(column)
+  [<CompiledName("GetSeries")>]
+  let getSeries column (frame:Frame<'R, 'C>) : Series<'R, 'V> = 
+    frame.GetSeries(column)
 
   /// Returns a specified row from a data frame. This function uses exact matching 
   /// semantics on the key. Use `lookupRow` if you want to use inexact matching 
@@ -197,14 +218,6 @@ module Frame =
   [<CompiledName("ReplaceColumn")>]
   let replaceSeries column series (frame:Frame<'R, 'C>) = 
     let f = frame.Clone() in f.ReplaceSeries(column, series); f
-
-  /// Returns a specified column from a data frame as a `float` series.
-  /// This function attempts to covnert the column to numeric and throws an exception
-  /// if that is not possible. For non-numeric types, use `getCol` instead.
-  ///
-  /// [category:Series operations]
-  [<CompiledName("GetSeries")>]
-  let getSeries column (frame:Frame<'R, 'C>) : Series<'R, float> = frame.GetSeries(column)
 
   // ----------------------------------------------------------------------------------------------
   // Grouping and hierarchical indexing
@@ -745,21 +758,6 @@ module Frame =
     frame.SeriesApply(true, fun (s:Series<_, 'T tryval>) -> 
       (Series.fillErrorsWith value s) :> ISeries<_>)
 
-  let mean (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.mean)
-
-  let sum (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sum)
-
-  let sdv (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sdv)
-
-  let median (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.median)
-
-  let stat op (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.stat op)
-
   let reduce (op:'T -> 'T -> 'T) (frame:Frame<'R, 'C>) = 
     frame.GetColumns<'T>() |> Series.map (fun _ -> Series.reduce op) 
 
@@ -772,34 +770,15 @@ module Frame =
   let inline minRowBy column (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.minBy (fun row -> row.GetAs<float>(column))
 
-
   // ----------------------------------------------------------------------------------------------
   // Hierarchical aggregation
   // ----------------------------------------------------------------------------------------------
-
-  let meanLevel keySelector (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.meanLevel keySelector) |> FrameUtils.fromColumns
-
-  let sumLevel keySelector (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sumLevel keySelector) |> FrameUtils.fromColumns
-
-  let countLevel keySelector (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<obj>() |> Series.map (fun _ -> Series.countLevel keySelector) |> FrameUtils.fromColumns
-
-  let sdvLevel keySelector (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.sdvLevel keySelector) |> FrameUtils.fromColumns
-
-  let medianLevel keySelector (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.medianLevel keySelector) |> FrameUtils.fromColumns
-
-  let statLevel keySelector op (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ -> Series.statLevel keySelector op) |> FrameUtils.fromColumns
 
   let reduceLevel keySelector (op:'T -> 'T -> 'T) (frame:Frame<'R, 'C>) = 
     frame.GetColumns<'T>() |> Series.map (fun _ -> Series.reduceLevel keySelector op) |> FrameUtils.fromColumns
 
   let applyLevel keySelector op (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.applyLevel keySelector op
+    frame.GetColumns<'T>() |> Series.map (fun _ s -> Series.applyLevel keySelector op s) |> FrameUtils.fromColumns
 
   // other stuff
 
@@ -1046,13 +1025,6 @@ module Frame =
   // Hierarchical indexing
   // ----------------------------------------------------------------------------------------------
 
-  let flatten (level:'R -> 'K) (op:_ -> 'V) (frame:Frame<'R, 'C>) = 
-    frame.Columns |> Series.map (fun _ -> Series.flattenLevel level op)
-
-  let flattenRows (level:'R -> 'K) op (frame:Frame<'R, 'C>) : Series<'K, 'V> = 
-    let labels = frame.RowKeys |> Seq.map level
-    frame.NestRowsBy(labels) |> Series.map (fun _ df -> op df)
-
   let nest (frame:Frame<'R1 * 'R2, 'C>) = 
     let labels = frame.RowKeys |> Seq.map fst
     frame.NestRowsBy<'R1>(labels) 
@@ -1106,7 +1078,16 @@ module Frame =
   // Obsolete - kept for temporary compatibility
   // ----------------------------------------------------------------------------------------------
 
-  [<Obsolete("Use sortRowsByKey instead. This function will be removed in futrue versions.")>]
+  [<Obsolete("Use sortRowsByKey instead. This function will be removed in future versions.")>]
   let orderRows (frame:Frame<'R, 'C>) = sortRowsByKey frame
-  [<Obsolete("Use sortColsByKey instead. This function will be removed in futrue versions.")>]
+  [<Obsolete("Use sortColsByKey instead. This function will be removed in future versions.")>]
   let orderCols (frame:Frame<'R, 'C>) = sortColsByKey frame
+  [<Obsolete("Use Stats.colMean instead. This function will be removed in future versions.")>]
+  let mean (frame:Frame<'R, 'C>) = frame.GetColumns<float>() |> Series.map (fun _ -> Stats.mean)
+  [<Obsolete("Use Stats.colSum instead. This function will be removed in future versions.")>]
+  let sum (frame:Frame<'R, 'C>) = frame.GetColumns<float>() |> Series.map (fun _ -> Stats.sum)
+  [<Obsolete("Use Stats.colStdDev instead. This function will be removed in future versions.")>]
+  let sdv (frame:Frame<'R, 'C>) = frame.GetColumns<float>() |> Series.map (fun _ -> Stats.stdDev)
+  [<Obsolete("Use Stats.colMedian instead. This function will be removed in future versions.")>]
+  let median (frame:Frame<'R, 'C>) = frame.GetColumns<float>() |> Series.map (fun _ -> Stats.median)
+

@@ -9,7 +9,6 @@ open Deedle.Keys
 open Deedle.Addressing
 open Deedle.Internal
 open Deedle.Vectors
-open MathNet.Numerics.Statistics
 
 /// The `Series` module provides F#-friendly API for working with functions. The API
 /// follows the usual design for collection-processing in F#, so the functions work
@@ -326,9 +325,20 @@ module Series =
     series.WhereOptional(fun kvp -> f kvp.Key (OptionalValue.asOption kvp.Value))
 
   /// [category:Series transformations]
+  let withMissingFrom other (series:Series<'K,'T>) =
+    series.WithMissingFrom(other)
+
+  /// [category:Series transformations]
   let mapAll (f:_ -> _ -> option<'R>) (series:Series<'K, 'T>) = 
     series.SelectOptional(fun kvp -> 
       f kvp.Key (OptionalValue.asOption kvp.Value) |> OptionalValue.ofOption)
+
+  /// Flattens option values; ie, it applies the `join` operation to each value 
+  /// that is a nested option monad.
+  ///
+  /// [category:Series transformations]
+  let flatten (series:Series<'K, 'T option>) = 
+    series |> mapAll (fun _ v -> match v with Some x -> x | _ -> None)
 
   /// [category:Series transformations]
   let tryMap (f:'K -> 'T -> 'R) (series:Series<'K, 'T>) : Series<_, _ tryval> = 
@@ -455,7 +465,6 @@ module Series =
             (fun s -> s.Data.TryGet(s.Data.KeyRange |> fst)) )
     shifted //.GetItems(series.Keys)
 
-
   ///
   /// [category:Calculations, aggregation and statistics]
   let inline maxBy f (series:Series<'K, 'T>) = 
@@ -466,16 +475,7 @@ module Series =
   let inline minBy f (series:Series<'K, 'T>) = 
     series |> observations |> Seq.maxBy (snd >> f)
 
-  
-  /// Aggregates non-missing values using the specified function working on seq<'T>
-  [<CompiledName("InternalStreamingAggregation")>]
-  let inline private streamingAggregation f (series:Series<_, _>) =
-    match series.Vector.Data with
-    | VectorData.DenseList list -> f (list :> seq<_>)
-    | VectorData.SparseList list -> f (Seq.choose OptionalValue.asOption list)
-    | VectorData.Sequence seq -> f (Seq.choose OptionalValue.asOption seq)
-
-  /// Aggregates non-missing values using the specified functions working 
+    /// Aggregates non-missing values using the specified functions working 
   /// on either ReadOnlyCollection<'T>, ReadOnlyCollection<OptionalValue<'T>> or seq<'T>
   [<CompiledName("InternalFastAggregation")>]
   let inline private fastAggregation flist foptlist fseq (series:Series<_, _>) =
@@ -483,59 +483,6 @@ module Series =
     | VectorData.DenseList list -> flist list
     | VectorData.SparseList list -> foptlist list
     | VectorData.Sequence seq -> fseq (Seq.choose OptionalValue.asOption seq)
-
-  /// Aggregates the values of the specified series using a function that operates on
-  /// sequence (`IEnumerable<T>`). This simply reads all non-missing values and passes
-  /// them to the specified operation.
-  ///
-  /// ## Parameters
-  ///  - `series` - An input series to be aggregated
-  ///  - `op` - A function that takes a sequence and produces an aggregated result
-  ///
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("Stat")>]
-  let inline stat (op:_ -> 'V2) (series:Series<'K, 'V1>) = 
-    series |> streamingAggregation op
-
-  /// Returns the sum of the elements of the series. The operation skips over
-  /// missing values and so the result will never be `NaN`.
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("Sum")>]
-  let inline sum (series:Series<'K, ^V>) = 
-    series |> fastAggregation ReadOnlyCollection.sum ReadOnlyCollection.sumOptional Seq.sum
-
-  /// Returns the mean of the elements of the series. The operation skips over
-  /// missing values and so the result will never be `NaN`.
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("Mean")>]
-  let inline mean (series:Series<'K, ^V>) = 
-    series |> fastAggregation ReadOnlyCollection.average ReadOnlyCollection.averageOptional Seq.average
-
-  /// Returns the standard deviation of the elements of the series. The operation skips over
-  /// missing values and so the result will never be `NaN`.
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("StandardDeviation")>]
-  let inline sdv (series:Series<'K, float>) = series |> stat Statistics.StandardDeviation 
-
-  /// Returns the median of the elements of the series. The operation skips over
-  /// missing values and so the result will never be `NaN`.
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("Median")>]
-  let inline median (series:Series<'K, float>) = series |> stat Statistics.Median
-
-  /// Returns the smallest of all elements of the series. The operation 
-  /// skips over missing values and so the result will never be `NaN`.
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("Max")>]
-  let inline max (series:Series<'K, ^V>) = 
-    series |> fastAggregation ReadOnlyCollection.max (ReadOnlyCollection.maxOptional >> OptionalValue.get) Seq.max
-
-  /// Returns the greatest of all elements of the series. The operation 
-  /// skips over missing values and so the result will never be `NaN`.
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("Min")>]
-  let inline min (series:Series<'K, ^V>) = 
-    series |> fastAggregation ReadOnlyCollection.min (ReadOnlyCollection.minOptional >> OptionalValue.get) Seq.min
 
   /// Aggregates the values of the specified series using a function that can combine
   /// individual values. 
@@ -548,100 +495,10 @@ module Series =
   [<CompiledName("Reduce")>]
   let reduce op (series:Series<'K, 'T>) = 
     series |> fastAggregation (ReadOnlyCollection.reduce op) (ReadOnlyCollection.reduceOptional op >> OptionalValue.get) (Seq.reduce op)
-
-  // Cumulative functions
-
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("CumCount")>]
-  let inline cumCount (series:Series<'K, 'V>) = 
-    let add a _ = a + 1
-    series.ScanValues(Func<_,_,_>(add), 0)
-
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("CumSum")>]
-  let inline cumSum (series:Series<'K, 'V>) = 
-    let add a b = a + b
-    series.ScanValues(Func<_,_,_>(add), LanguagePrimitives.GenericZero)
-
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("CumProd")>]
-  let inline cumProd (series:Series<'K, 'V>) = 
-    let mult a b = a * b
-    series.ScanValues(Func<_,_,_>(mult), LanguagePrimitives.GenericOne)
  
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("CumMin")>]
-  let inline cumMin (series:Series<'K, float>) = 
-    series.ScanValues(Func<_,_,_>(LanguagePrimitives.GenericMinimum), System.Double.PositiveInfinity)        
-
-  /// [category:Calculations, aggregation and statistics]
-  [<CompiledName("CumMax")>]
-  let inline cumMax (series:Series<'K, float>) = 
-    series.ScanValues(Func<_,_,_>(LanguagePrimitives.GenericMaximum), System.Double.NegativeInfinity)        
-
-  /// Interpolates an ordered series given a new sequence of keys. The function iterates through
-  /// each new key, and invokes a function on the current key, the nearest smaller and larger valid 
-  /// observations from the series argument. The function must return a new valid float. 
-  ///
-  /// ## Parameters
-  ///  - `keys` - Sequence of new keys that forms the index of interpolated results
-  ///  - `f` - Function to do the interpolating
-  ///
-  /// [category:Calculations, aggregation and statistics]
-  let interpolate keys f (series:Series<'K,'T>) =
-    let liftedf k (prev:KeyValuePair<_,_> opt) (next:KeyValuePair<_,_> opt) =
-      let t1 = prev |> OptionalValue.map (fun kvp -> kvp.Key, kvp.Value) |> OptionalValue.asOption
-      let t2 = next |> OptionalValue.map (fun kvp -> kvp.Key, kvp.Value) |> OptionalValue.asOption
-      f k t1 t2
-
-    series.Interpolate(keys, Func<_,_,_,_>(liftedf))
-
-  /// Linearly interpolates an ordered series given a new sequence of keys. 
-  ///
-  /// ## Parameters
-  ///  - `keys` - Sequence of new keys that forms the index of interpolated results
-  ///  - `keyDiff` - A function representing "subtraction" between two keys
-  ///
-  /// [category:Calculations, aggregation and statistics]
-  let inline interpolateLinear keys (keyDiff:'K->'K->float) (series:Series<'K, float>) =
-    let linearF k a b =
-      match a, b with
-      | Some x, Some y -> 
-        if x = y then snd x 
-        else (snd x) + (keyDiff k (fst x)) / (keyDiff (fst y) (fst x)) * (snd y - snd x)
-      | Some x, _      -> snd x
-      | _, Some y      -> snd y
-      | _              -> raise <| new ArgumentException("Unexpected code path in interpolation")
-    series |> interpolate keys linearF   
-
   // ----------------------------------------------------------------------------------------------
   // Hierarchical index operations
   // ----------------------------------------------------------------------------------------------
-
-  /// [omit]
-  /// Applies `fastAggregation` to each group produced using the specified `keySelector`
-  [<CompilerMessageAttribute("This is an internal function and should not be used directly", 10002, IsHidden=true)>]
-  [<CompiledName("InternalApplyLevel")>]
-  let inline fastApplyLevel keySelector flist foptlist fseq (series:Series<_, _>) : Series<_, _> = 
-    series.GroupBy(fun kvp -> keySelector kvp.Key)
-    |> mapValues (fastAggregation flist foptlist fseq)
-
-  /// Groups the elements of the input series in groups based on the keys
-  /// produced by `level` and then aggregates elements in each group
-  /// using the specified function `op`. The result is a new series containing
-  /// the aggregates of each group. 
-  ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - An input series to be aggregated
-  ///  - `op` - A function that takes a sequence and produces an aggregated result
-  ///  - `level` - A delegate that returns a new group key, based on the key in the input series
-  ///
-  /// [category:Hierarchical index operations]
-  [<CompiledName("StatisticsLevel")>]
-  let inline statLevel (level:'K1 -> 'K2) op (series:Series<_, 'V>) : Series<_, 'R> = 
-    series.GroupBy(fun kvp -> level kvp.Key) |> mapValues (stat op)
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `level` and then aggregates series representing each group
@@ -661,109 +518,22 @@ module Series =
     series.GroupBy(fun kvp -> level kvp.Key) |> mapValues op
 
   /// Groups the elements of the input series in groups based on the keys
-  /// produced by `level` and then returns a new series containing
-  /// the mean of each group. 
+  /// produced by `level` and then aggregates series representing each group
+  /// using the specified function `op`. The result is a new series containing
+  /// the aggregates of each group. The result of a group may be None, in which
+  /// case the group will have no representation in the resulting series. 
   ///
   /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
   ///
   /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the means
+  ///  - `series` - An input series to be aggregated
+  ///  - `op` - A function that takes a series and produces an optional aggregated result
   ///  - `level` - A delegate that returns a new group key, based on the key in the input series
   ///
   /// [category:Hierarchical index operations]
-  [<CompiledName("MeanLevel")>]
-  let inline meanLevel (level:'K1 -> 'K2) (series:Series<_, 'V>) = 
-    series |> fastApplyLevel level ReadOnlyCollection.average ReadOnlyCollection.averageOptional Seq.average
-
-  /// Groups the elements of the input series in groups based on the keys
-  /// produced by `level` and then returns a new series containing
-  /// the standard deviation of each group. 
-  ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the standard deviations
-  ///  - `level` - A delegate that returns a new group key, based on the key in the input series
-  ///
-  /// [category:Hierarchical index operations]
-  [<CompiledName("StandardDeviationLevel")>]
-  let inline sdvLevel (level:'K1 -> 'K2) (series:Series<_, float>) = 
-    series |> statLevel level Statistics.StandardDeviation 
-
-  /// Groups the elements of the input series in groups based on the keys
-  /// produced by `level` and then returns a new series containing
-  /// the median of each group. 
-  ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the medians
-  ///  - `level` - A delegate that returns a new group key, based on the key in the input series
-  ///
-  /// [category:Hierarchical index operations]
-  [<CompiledName("MedianLevel")>]
-  let inline medianLevel level (series:Series<_, float>) = 
-    series |> statLevel level Statistics.Median
-
-  /// Groups the elements of the input series in groups based on the keys
-  /// produced by `level` and then returns a new series containing
-  /// the sum of each group. 
-  ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the sums
-  ///  - `level` - A delegate that returns a new group key, based on the key in the input series
-  ///
-  /// [category:Hierarchical index operations]
-  [<CompiledName("SumLevel")>]
-  let inline sumLevel (level:'K1 -> 'K2) (series:Series<_, 'V>) = 
-    series |> fastApplyLevel level ReadOnlyCollection.sum ReadOnlyCollection.sumOptional Seq.sum
-
-  /// Groups the elements of the input series in groups based on the keys
-  /// produced by `level` and then returns a new series containing
-  /// the greatest element of each group. 
-  ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the greatest elements
-  ///  - `level` - A delegate that returns a new group key, based on the key in the input series
-  ///
-  /// [category:Hierarchical index operations]
-  [<CompiledName("MinLevel")>]
-  let inline minLevel (level:'K1 -> 'K2) (series:Series<_, 'V>) = 
-    series |> fastApplyLevel level ReadOnlyCollection.min (ReadOnlyCollection.minOptional >> OptionalValue.get) Seq.min
-
-  /// Groups the elements of the input series in groups based on the keys
-  /// produced by `level` and then returns a new series containing
-  /// the greatest element of each group. 
-  ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the greatest elements
-  ///  - `level` - A delegate that returns a new group key, based on the key in the input series
-  ///
-  /// [category:Hierarchical index operations]
-  [<CompiledName("MaxLevel")>]
-  let inline maxLevel (level:'K1 -> 'K2) (series:Series<_, 'V>) = 
-    series |> fastApplyLevel level ReadOnlyCollection.max (ReadOnlyCollection.maxOptional >> OptionalValue.get) Seq.max
-
-  /// Groups the elements of the input series in groups based on the keys
-  /// produced by `level` and then returns a new series containing
-  /// the counts of elements in each group. 
-  ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the counts
-  ///  - `level` - A delegate that returns a new group key, based on the key in the input series
-  ///
-  /// [category:Hierarchical index operations]
-  [<CompiledName("CountLevel")>]
-  let inline countLevel (level:'K1 -> 'K2) (series:Series<_, 'V>) = 
-    series |> fastApplyLevel level ReadOnlyCollection.length ReadOnlyCollection.lengthOptional Seq.length
+  [<CompiledName("ApplyLevelOptional")>]
+  let inline applyLevelOptional (level:'K1 -> 'K2) op (series:Series<_, 'V>) : Series<_, 'R> = 
+    series.GroupBy(fun kvp -> level kvp.Key) |> mapValues op |> flatten
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `level` and then aggregates elements in each group
@@ -781,20 +551,6 @@ module Series =
   [<CompiledName("ReduceLevel")>]
   let reduceLevel (level:'K1 -> 'K2) op (series:Series<_, 'T>) = 
     series.GroupBy(fun (KeyValue(key, _)) -> level key) |> mapValues (reduce op)
-
-  /// Given a series with (potentially) multi-level index, group the elements
-  /// of the series according to one part of the key (specified by a key selector)
-  /// and then apply the specified transformation on each group.
-  ///
-  /// ## Parameters
-  ///  - `level` - Specifies the level projection (from source key to target key)
-  ///  - `op` - Reduction operation to be applied to each group
-  ///  - `series` - Input series to be flattened
-  ///
-  /// [category:Hierarchical index operations]
-  [<CompiledName("FlattenLevel")>]
-  let inline flattenLevel (level:'K1 -> 'K2) op (series:Series<_, 'S>) : Series<_, 'V> = 
-    series.GroupBy(fun kvp -> level kvp.Key) |> mapValues op
 
   // ----------------------------------------------------------------------------------------------
   // Windowing, chunking and grouping

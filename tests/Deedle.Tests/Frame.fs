@@ -223,7 +223,7 @@ let ``Can create frame from 100k of three element tuples (in less than a few sec
         for i in 0 .. 1000 do
           yield DateTime.Today.AddDays(float d), i.ToString(), 1.0 |]
   let df = Frame.ofValues values
-  df |> Frame.sum |> Series.sum |> int |> shouldEqual 101101
+  df |> Stats.sum |> Stats.sum |> int |> shouldEqual 101101
 
 [<Test>]
 let ``Reconstructing frame from its columns preserves types of vectors``() =
@@ -552,8 +552,8 @@ let ``Can zip and subtract numerical values in MSFT data set; with some columns 
   df1.DropSeries("Adj Close")
   let df2 = msft()
   let zipped = df1.Zip(df2, fun a b -> a - b)
-  zipped?``Adj Close`` |> Series.sum |> should (be greaterThan) 0.0
-  zipped?Low |> Series.sum |> shouldEqual 0.0
+  zipped?``Adj Close`` |> Stats.sum |> should (be greaterThan) 0.0
+  zipped?Low |> Stats.sum |> shouldEqual 0.0
 
 // ------------------------------------------------------------------------------------------------
 // Operations - join, align

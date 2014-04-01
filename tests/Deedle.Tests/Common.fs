@@ -213,3 +213,11 @@ let ``Seq.alignWithoutOrdering works on sample input`` () =
   Seq.alignWithoutOrdering [ ("b", 0); ("c", 1); ("d", 2) ] [ ("b", 1); ("c", 2); ("a", 0); ] 
   |> List.ofSeq |> set |> shouldEqual
       (set [("b", Some 0, Some 1); ("c", Some 1, Some 2); ("d", Some 2, None); ("a", None, Some 0)])
+
+[<Test>]
+let ``Array.quickSelectInplace selects nth element when compared with sorted array`` () =
+  Check.QuickThrowOnFailure(fun (input:float[]) ->
+    let input = input |> Array.filter (Double.IsNaN >> not)
+    for n in 0 .. input.Length - 1 do
+      let nth = StatsHelpers.quickSelectInplace n (Array.map id input)
+      nth |> shouldEqual ((Array.sort input).[n]) )

@@ -90,6 +90,15 @@ and
       let v = vector.GetValue(a) 
       if v.HasValue then yield v.Value }
 
+  /// Returns a collection of values, including possibly missing values. Note that 
+  /// the length of this sequence matches the `Keys` sequence.
+  ///
+  /// [category:Series data]
+  member x.ValuesAll = seq { 
+    for _, a in index.Mappings do 
+      let v = vector.GetValue(a) 
+      yield v.Value }
+
   /// Returns a collection of observations that form this series. Note that this property
   /// skips over all missing (or NaN) values. Observations are returned as `KeyValuePair<K, V>` 
   /// objects. For an F# alternative that uses tuples, see `Series.observations`.
@@ -99,6 +108,17 @@ and
     for k, a in index.Mappings do
       let v = vector.GetValue(a)
       if v.HasValue then yield KeyValuePair(k, v.Value) }
+
+  /// Returns a collection of observations that form this series. Note that this property
+  /// includes all missing (or NaN) values. Observations are returned as 
+  /// `KeyValuePair<K, OptionalValue<V>>` objects. For an F# alternative that uses tuples, 
+  /// see `Series.observationsAll`.
+  ///
+  /// [category:Series data]
+  member x.ObservationsAll = seq {
+    for k, a in index.Mappings do
+      let v = vector.GetValue(a)
+      yield KeyValuePair(k, v) }
 
   /// 
   ///
@@ -241,8 +261,7 @@ and
     if addr = Address.Invalid then OptionalValue.Missing 
     else
       let value = vector.GetValue(addr) 
-      if not value.HasValue then OptionalValue.Missing
-      else OptionalValue(KeyValuePair(key, value))
+      OptionalValue(KeyValuePair(key, value))
 
   ///
   /// [category:Accessors and slicing]
@@ -384,6 +403,17 @@ and
   member x.ScanAllValues(foldFunc:System.Func<OptionalValue<'S>,OptionalValue<'V>,OptionalValue<'S>>, init) =   
     let newVector = vector.DataSequence |> Seq.scan (fun x y -> foldFunc.Invoke(x, y)) init |> Seq.skip 1 |> Seq.toArray
     Series(index, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
+
+  /// Returns the current series with the same index but with values missing wherever the 
+  /// corresponding key exists in the other series index with an associated missing value.
+  ///
+  /// [category:Projection and filtering]
+  member x.WithMissingFrom(otherSeries: Series<'K, _>) =
+    let newVec = x.ObservationsAll |> Seq.map (fun obs -> 
+      match otherSeries.TryGetObservation(obs.Key) with
+      | OptionalValue.Present kvp -> if kvp.Value.HasValue then obs.Value else OptionalValue.Missing
+      | _                         -> obs.Value)
+    Series(x.Index, vectorBuilder.CreateMissing(Array.ofSeq newVec), vectorBuilder, indexBuilder)
 
   // ----------------------------------------------------------------------------------------------
   // Appending, joining etc
