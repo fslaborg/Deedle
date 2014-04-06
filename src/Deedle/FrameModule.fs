@@ -63,11 +63,20 @@ module Frame =
   let columns (frame:Frame<'R, 'C>) = frame.Columns
 
   /// Returns a series of columns of the data frame indexed by the column keys, 
-  /// which contains those series whose values are convertible to 'T, and with 
+  /// which contains those series whose values are convertible to `'T`, and with 
   /// missing values where the conversion fails.
   ///
+  /// If you want to get numeric columns, you can use a simpler `numericCols` function
+  /// instead. Note that this function typically requires a type annotation. This can
+  /// be specified in various ways, for example by annotating the result value:
+  ///
+  ///     let (res:Series<_, Series<_, string>>) = frame |> typedCols
+  ///
+  /// Here, the annotation on the values of the nested series specifies that we want
+  /// to get columns containing `string` values.
+  ///
   /// [category:Accessing frame data and lookup]
-  [<CompiledName("TypedCols")>]
+  [<CompiledName("TypedColumns")>]
   let typedCols (frame:Frame<'R,'C>) : Series<'C,Series<'R,'T>> =
     frame.Columns 
     |> Series.map(fun _ v -> v.TryAs<'T>() |> OptionalValue.asOption) 

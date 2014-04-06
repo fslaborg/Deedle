@@ -13,8 +13,4 @@
 #r "Deedle.dll"
 
 do fsi.AddPrinter(fun (printer:Deedle.Internal.IFsiFormattable) -> "\n" + (printer.Format()))
-
 open Deedle
-
-let x = frame [ "a" => series [ 0 => 1.0; 1 => 2.0; 2 => 3.0 ]; 
-                "b" => series [ 0 => 5.0; 1 => 6.0; 2 => nan ] ]
