@@ -302,10 +302,10 @@ open StatsHelpers
 ///    In this case, the result of the statisitcs is always attached to the last key
 ///    of the window. The function names are prefixed with `moving`.
 ///
-///  * **Expanding window** means that the window starts as a zero-element sized window
+///  * **Expanding window** means that the window starts as a single-element sized window
 ///    and expands as it moves over the series. In this case, statistics is calculated
-///    for all values preceding the current key. This means that the result is attached
-///    to the key _after_ the end of the window (prefix). The function names are prefixed
+///    for all values up to the current key. This means that the result is attached
+///    to the key at the end of the window. The function names are prefixed
 ///    with `expanding`.
 ///
 /// The resulting series has the same keys as the input series. When the window contains
