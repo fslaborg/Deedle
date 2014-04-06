@@ -205,4 +205,13 @@ df.Columns.["A"].As<float>() |> ignore
   //#time
   Series.take 1000000 s |> ignore // 800 - 1.0 - 1.1
 
+
+let big = 
+  frame [ for c in 1 .. 1000 ->
+            string c => series [ for r in 1 .. 1000 -> r => 0.0 ] ]
+
+// #time
+// (+/- 1.53 to ~300ms)
+big |> Frame.stack |> ignore
+
 *)
