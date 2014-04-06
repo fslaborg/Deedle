@@ -289,14 +289,19 @@ module internal StatsHelpers =
 
 open StatsHelpers
 
-/// The `Stats` module contains functions for fast calculation of statistics over
-/// and entire series as well as over a moving and an expanding window in a series. 
-/// The three kinds of functions in this module are:
+/// The `Stats` type contains functions for fast calculation of statistics over
+/// series and frames as well as over a moving and an expanding window in a series. 
+/// The static members of the type are:
 ///
-///  * **Standard** - functions such as `count`, `mean`, `kurt` etc. return the
+///  * **Series stats** - functions such as `count`, `mean`, `kurt` etc. return the
 ///    statistics calculated over all values of a series. The calculation skips
 ///    over missing values (or `nan` values), so for example `mean` returns the
 ///    average of all _present_ values.
+///
+/// * **Frame stats** - the standard functions are exposed as static members and are 
+///    overloaded. This means that they can be applied to both `Series<'K, float>` and 
+///    to `Frame<'R, 'C>`. When applied to data frame, the functions apply the 
+///    statistical calculation to all numerical columns of the frame.
 ///
 ///  * **Moving window** means that the window has a fixed size and moves over the series.
 ///    In this case, the result of the statisitcs is always attached to the last key
@@ -308,14 +313,19 @@ open StatsHelpers
 ///    to the key at the end of the window. The function names are prefixed
 ///    with `expanding`.
 ///
-/// The resulting series has the same keys as the input series. When the window contains
-/// no values, or contains missing values, different functions behave in different ways.
+///  * **Multi-level index** - for a series with multi-level (hierarchical) index, the
+///    functions prefixed with `level` provide a way to apply statistical operation on 
+///    a single level of the index. (For you can sum values along the `'K1` keys in a 
+///    series `Series<'K1 * 'K2, float>` and get `Series<'K1, float>` as the result.)
+///
+/// The resulting structure has the same keys as the input structure. When there are
+/// no values, or missing values, different functions behave in different ways.
 /// Statistics (e.g. mean) return missing value when any value is missing, while min/max
 /// functions return the minimal/maximal element (skipping over missing values).
 ///
 /// ## Remarks
 ///
-/// The windowing functions in the `Stats` module support calculations over a fixed-size
+/// The windowing functions in the `Stats` type support calculations over a fixed-size
 /// windows specified by the size of the window. If you need more complex windowing 
 /// behavior (such as window based on the distance between keys), different handling
 /// of boundary, or chunking (calculation over adjacent chunks), you can use chunking and
@@ -570,7 +580,7 @@ type Stats =
   /// When the series contains no values, the result is `None`.
   ///
   /// [category:Series statistics]
-  static member max (series:Series<'K, 'V>) = trySeriesExtreme max series
+  static member inline max (series:Series<'K, 'V>) = trySeriesExtreme max series
 
   /// Returns the median of the elements of the series.
   ///
@@ -585,6 +595,10 @@ type Stats =
       let b = quickSelectInplace (mid - 1) values
       (a + b) / 2.0
 
+  // ------------------------------------------------------------------------------------
+  // Series interpolation
+  // ------------------------------------------------------------------------------------
+
   /// Interpolates an ordered series given a new sequence of keys. The function iterates through
   /// each new key, and invokes a function on the current key, the nearest smaller and larger valid 
   /// observations from the series argument. The function must return a new valid float. 
@@ -593,7 +607,7 @@ type Stats =
   ///  - `keys` - Sequence of new keys that forms the index of interpolated results
   ///  - `f` - Function to do the interpolating
   ///
-  /// [category:Calculations, aggregation and statistics]
+  /// [category:Series interoploation]
   static member interpolate keys f (series:Series<'K,'T>) =
     let liftedf k (prev:KeyValuePair<_,_> opt) (next:KeyValuePair<_,_> opt) =
       let t1 = prev |> OptionalValue.map (fun kvp -> kvp.Key, kvp.Value) |> OptionalValue.asOption
@@ -608,7 +622,7 @@ type Stats =
   ///  - `keys` - Sequence of new keys that forms the index of interpolated results
   ///  - `keyDiff` - A function representing "subtraction" between two keys
   ///
-  /// [category:Calculations, aggregation and statistics]
+  /// [category:Series interoploation]
   static member inline interpolateLinear keys (keyDiff:'K->'K->float) (series:Series<'K, float>) =
     let linearF k a b =
       match a, b with
@@ -624,34 +638,133 @@ type Stats =
   // Statistics calculated over the entire frames' float column series
   // ------------------------------------------------------------------------------------
 
-  /// Returns the sums of the float columns in a frame.
+  /// For each column, returns the number of the values in the column. 
+  /// This excludes missing values and values created from `Double.NaN` etc.
+  ///
+  /// [category:Frame statistics]
+  static member count (frame:Frame<'R, 'C>) = 
+    frame.Columns |> Series.map (fun _ -> Stats.count)
+
+  /// For each numerical column, returns the sum of the values in the column. 
+  /// The function skips over missing values and `NaN` values. When there are no 
+  //// available values, the result is 0.
+  ///
+  /// [category:Frame statistics]
   static member sum (frame:Frame<'R, 'C>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Stats.sum)
 
-  /// Returns the means of the float columns in a frame.
+  /// For each numerical column, returns the mean of the values in the column. 
+  /// The function skips over missing values and `NaN` values. When there are 
+  /// no available values, the result is NaN.
+  ///
+  /// [category:Frame statistics]
   static member mean (frame:Frame<'R, 'C>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Stats.mean)
 
-  /// Returns the means of the float columns in a frame.
+  /// For each numerical column, returns the median of the values in the column.
+  ///
+  /// [category:Frame statistics]
   static member median (frame:Frame<'R, 'C>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Stats.median)
 
-  /// Returns the standard deviations of the float columns in a frame.
+  /// For each numerical column, returns the standard deviation of the values in the column. 
+  /// The function skips over missing values and `NaN` values. When there are less than 2 values, 
+  /// the result is NaN.
+  ///
+  /// [category:Frame statistics]
   static member stdDev (frame:Frame<'R, 'C>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Stats.stdDev)
 
-  /// Returns the variance of the float columns in a frame.
+  /// For each numerical column, returns the variance of the values in the column.
+  /// The function skips over missing values and `NaN` values. When there are less 
+  /// than 2 values, the result is NaN.
+  ///
+  /// [category:Frame statistics]
   static member variance (frame:Frame<'R, 'C>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Stats.variance)
 
-  /// Returns the skewness of the float columns in a frame.
+  /// For each numerical column, returns the skewness of the values in a series. 
+  /// The function skips over missing values and `NaN` values. When there are less than 3 values, 
+  /// the result is NaN.
+  ///
+  /// [category:Frame statistics]
   static member skew (frame:Frame<'R, 'C>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Stats.skew)
 
-  /// Returns the kurtosis of the float columns in a frame.
+  /// For each numerical column, returns the kurtosis of the values in a series. 
+  /// The function skips over missing values and `NaN` values. When there are less than 4 values, 
+  /// the result is NaN.
+  ///
+  /// [category:Frame statistics]
   static member kurt (frame:Frame<'R, 'C>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Stats.kurt)  
 
+  // ------------------------------------------------------------------------------------
+  // Statistics applied to a single level of a multi-level indexed series
+  // ------------------------------------------------------------------------------------
+
+  /// For each group with equal keys at the level specified by `level`, 
+  /// returns the number of the values in the group. This excludes missing 
+  /// values and values created from `Double.NaN` etc.
+  ///
+  /// [category:Multi-level statistics]
+  static member levelCount (level:'K -> 'L) (series:Series<'K, 'V>) = 
+    Series.applyLevel level Stats.count series
+
+  /// For each group with equal keys at the level specified by `level`, 
+  /// returns the sum of the values in the group. The function skips over missing values 
+  /// and `NaN` values. When there are no available values, the result is 0.
+  ///
+  /// [category:Multi-level statistics]
+  static member levelSum (level:'K -> 'L) (series:Series<'K, float>) = 
+    Series.applyLevel level Stats.sum series
+
+  /// For each group with equal keys at the level specified by `level`, 
+  /// returns the mean of the values in the group. The function skips over missing 
+  /// values and `NaN` values. When there are no available values, the result is NaN.
+  ///
+  /// [category:Multi-level statistics]
+  static member levelMean (level:'K -> 'L) (series:Series<'K, float>) = 
+    Series.applyLevel level Stats.mean series
+
+  /// For each group with equal keys at the level specified by `level`, 
+  /// returns the median of the values in the group.
+  ///
+  /// [category:Multi-level statistics]
+  static member levelMedian (level:'K -> 'L) (series:Series<'K, float>) = 
+    Series.applyLevel level Stats.median series
+
+  /// For each group with equal keys at the level specified by `level`, 
+  /// returns the standard deviation of the values in the group. The function skips over 
+  /// missing values and `NaN` values. When there are less than 2 values, the result is NaN.
+  ///
+  /// [category:Multi-level statistics]
+  static member levelStdDev (level:'K -> 'L) (series:Series<'K, float>) = 
+    Series.applyLevel level Stats.stdDev series
+
+  /// For each group with equal keys at the level specified by `level`, 
+  /// returns the variance of the values in the group. The function skips over missing 
+  /// values and `NaN` values. When there are less than 2 values, the result is NaN.
+  ///
+  /// [category:Multi-level statistics]
+  static member levelVariance (level:'K -> 'L) (series:Series<'K, float>) = 
+    Series.applyLevel level Stats.variance series
+
+  /// For each group with equal keys at the level specified by `level`, 
+  /// returns the skewness of the values in a series. The function skips over missing 
+  /// values and `NaN` values. When there are less than 3 values, the result is NaN.
+  ///
+  /// [category:Multi-level statistics]
+  static member levelSkew (level:'K -> 'L) (series:Series<'K, float>) = 
+    Series.applyLevel level Stats.skew series
+
+  /// For each group with equal keys at the level specified by `level`, 
+  /// returns the kurtosis of the values in a series. The function skips over missing values 
+  /// and `NaN` values. When there are less than 4 values, the result is NaN.
+  ///
+  /// [category:Multi-level statistics]
+  static member levelKurt (level:'K -> 'L) (series:Series<'K, float>) = 
+    Series.applyLevel level Stats.kurt series
 
 // ----------------------------------------------------------------------------------------------
 // Obsolete - kept here for temporary compatibility
