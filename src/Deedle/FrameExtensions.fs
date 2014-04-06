@@ -715,6 +715,16 @@ type FrameExtensions =
   static member Nest(frame:Frame<Tuple<'TRowKey1, 'TRowKey2>, 'TColumnKey>) =
     frame |> Frame.mapRowKeys (fun t -> (t.Item1, t.Item2)) |> Frame.nest
 
+  /// Given a data frame whose row index has two levels, create a series
+  /// whose keys are the unique results of the keyselector projection, and 
+  /// whose values are those corresponding frames selected from the original 
+  /// data.  
+  ///
+  /// [category:Data structure manipulation]
+  [<Extension>]
+  static member NestBy(frame:Frame<'TRowKey1, 'TColumnKey>, keyselector:Func<'TRowKey1, 'TRowKey2>) =
+    frame |> Frame.nestBy keyselector.Invoke
+
   /// Given a series whose values are frames, create a frame resulting
   /// from the concatenation of all the frames' rows, with the resulting 
   /// keys having two levels. This is the inverse operation to nest.
@@ -822,7 +832,7 @@ type FrameExtensions =
   static member Print(frame:Frame<'K, 'V>, printTypes:bool) = Console.WriteLine(frame.Format(printTypes));
 
   [<Extension>]
-  static member Sum(frame:Frame<'R, 'C>) = Frame.sum frame
+  static member Sum(frame:Frame<'R, 'C>) = Stats.sum frame
 
   [<Extension>]
   static member Window(frame:Frame<'R, 'C>, size) = Frame.window size frame
@@ -928,17 +938,6 @@ type FrameExtensions =
   [<Extension>]
   static member Reduce(frame:Frame<'TRowKey, 'TColumnKey>, aggregation:Func<'T, 'T, 'T>) = 
     frame |> Frame.reduce (fun a b -> aggregation.Invoke(a, b))
-
-
-  // hierarchical indexing 
-
-  [<Extension>]
-  static member Flatten(frame:Frame<'R1, 'C1>, keySelector:Func<_, 'K>, valueSelector:Func<_, 'V>) =
-    frame |> Frame.flatten keySelector.Invoke valueSelector.Invoke
-
-  [<Extension>]
-  static member FlattenRows(frame:Frame<'R, 'C>, keySelector:Func<'R, 'K>, op:Func<_, 'V>) =
-    frame |> Frame.flattenRows keySelector.Invoke op.Invoke
 
   /// [category:Fancy accessors]
   [<Extension>]

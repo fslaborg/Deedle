@@ -198,7 +198,7 @@ module DataSegment =
   /// A complete active pattern that extracts the kind and data from a `DataSegment`
   /// value. This makes it easier to write functions that only need data:
   ///
-  ///    let sumAny = function DataSegment.Any(_, data) -> Series.sum data
+  ///    let sumAny = function DataSegment.Any(_, data) -> Stats.sum data
   ///
   let (|Any|) (ds:DataSegment<'T>) = ds.Kind, ds.Data
   
@@ -207,7 +207,7 @@ module DataSegment =
   /// returns zero for incomplete segments:
   ///
   ///     let sumSegmentOrZero = function
-  ///       | DataSegment.Complete(value) -> Series.sum value
+  ///       | DataSegment.Complete(value) -> Stats.sum value
   ///       | DataSegment.Incomplete _ -> 0.0
   ///
   let (|Complete|Incomplete|) (ds:DataSegment<_>) =
@@ -414,45 +414,14 @@ module ReadOnlyCollection =
     for i in 0 .. list.Count - 1 do res.[i] <- f list.[i]
     Array.AsReadOnly(res)
   
-  /// Sum elements of the ReadOnlyCollection
-  let inline sum (list:ReadOnlyCollection<'T>) = 
-    let mutable total = LanguagePrimitives.GenericZero
-    for i in 0 .. list.Count - 1 do total <- total + list.[i]
-    total
-
-  /// Return the smallest element of the ReadOnlyCollection
-  let inline min (list:ReadOnlyCollection<'T>) = 
-    let mutable res = list.[0]
-    for i in 1 .. list.Count - 1 do res <- min res list.[i]
-    res
-
-  /// Return the greatest element of the ReadOnlyCollection
-  let inline max (list:ReadOnlyCollection<'T>) = 
-    let mutable res = list.[0]
-    for i in 1 .. list.Count - 1 do res <- max res list.[i]
-    res
-
+  /// Count elements of the ReadOnlyCollection
+  let inline length (list:ReadOnlyCollection<'T>) = list.Count
+  
   /// Reduce elements of the ReadOnlyCollection
   let inline reduce op (list:ReadOnlyCollection<'T>) = 
     let mutable res = list.[0]
     for i in 1 .. list.Count - 1 do res <- op res list.[i]
     res
-
-  /// Count elements of the ReadOnlyCollection
-  let inline length (list:ReadOnlyCollection<'T>) = list.Count
-
-  /// Average elements of the ReadOnlyCollection
-  let inline average (list:ReadOnlyCollection<'T>) = 
-    let mutable total = LanguagePrimitives.GenericZero
-    for i in 0 .. list.Count - 1 do total <- total + list.[i]
-    LanguagePrimitives.DivideByInt total list.Count
-
-  /// Sum elements of the ReadOnlyCollection, skipping over missing values
-  let inline sumOptional (list:ReadOnlyCollection<OptionalValue<'T>>) = 
-    let mutable total = LanguagePrimitives.GenericZero
-    for i in 0 .. list.Count - 1 do 
-      if list.[i].HasValue then total <- total + list.[i].Value
-    total
 
   /// Reduce elements of the ReadOnlyCollection, skipping over missing values
   let inline reduceOptional op (list:ReadOnlyCollection<OptionalValue<'T>>) = 
@@ -464,30 +433,6 @@ module ReadOnlyCollection =
       | _ -> ()
     res |> OptionalValue.ofOption
 
-  /// Average elements of the ReadOnlyCollection, skipping over missing values
-  let inline averageOptional (list:ReadOnlyCollection<OptionalValue< ^T >>) = 
-    let mutable total = LanguagePrimitives.GenericZero
-    let mutable count = 0 
-    for i in 0 .. list.Count - 1 do 
-      if list.[i].HasValue then 
-        total <- total + list.[i].Value
-        count <- count + 1
-    LanguagePrimitives.DivideByInt total count
-
-  /// Count elements of the ReadOnlyCollection that are not missing
-  let inline lengthOptional (list:ReadOnlyCollection<OptionalValue<'T>>) = 
-    let mutable total = 0
-    for i in 0 .. list.Count - 1 do if list.[i].HasValue then total <- total + 1
-    total
-
-  /// Return the smallest element, skipping over missing values
-  let inline minOptional (list:ReadOnlyCollection<OptionalValue< ^T >>) = 
-    reduceOptional Operators.min list
-
-  /// Return the greatest element, skipping over missing values
-  let inline maxOptional (list:ReadOnlyCollection<OptionalValue< ^T >>) = 
-    reduceOptional Operators.max list
-
   /// Returns empty readonly collection
   let empty<'T> = new ReadOnlyCollection<'T>([||])
 
@@ -495,6 +440,7 @@ module ReadOnlyCollection =
 /// This module contains additional functions for working with arrays. 
 /// `Deedle.Internals` is opened, it extends the standard `Array` module.
 module Array = 
+
   /// Drop a specified range from a given array. The operation is inclusive on
   /// both sides. Given [ 1; 2; 3; 4 ] and indices (1, 2), the result is [ 1; 4 ]
   let inline dropRange first last (data:'T[]) =

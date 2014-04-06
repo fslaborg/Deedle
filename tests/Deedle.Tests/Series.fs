@@ -252,36 +252,6 @@ let ``Grouping series with missing values works on sample input``() =
   let expected = Series.ofObservations [ 1 => Series.ofObservations [1 => 1; 3 => 2]]
   actual |> shouldEqual expected
 
-[<Test>]
-let ``Cumulative sum works``() =
-  let s = series [0 => 1.0; 1 => nan; 2 => 2.0; 3 => 3.0 ]
-  let e = series [0 => 1.0; 1 => nan; 2 => 3.0; 3 => 6.0 ]
-  s |> Series.cumSum |> shouldEqual e
-
-[<Test>]
-let ``Cumulative count works``() =
-  let s = series [0 => 1.0; 1 => nan; 2 => 2.0; 3 => 3.0 ]
-  let e = Series.ofOptionalObservations [0 => Some(1); 1 => None; 2 => Some(2); 3 => Some(3) ]
-  s |> Series.cumCount |> shouldEqual e
-
-[<Test>]
-let ``Cumulative prod works``() =
-  let s = series [0 => 1.0; 1 => nan; 2 => 2.0; 3 => 3.0 ]
-  let e = series [0 => 1.0; 1 => nan; 2 => 2.0; 3 => 6.0 ]
-  s |> Series.cumProd |> shouldEqual e
-
-[<Test>]
-let ``Cumulative min works``() =
-  let s = series [0 => 3.0; 1 => nan; 2 => 2.0; 3 => 5.0 ]
-  let e = series [0 => 3.0; 1 => nan; 2 => 2.0; 3 => 2.0 ]
-  s |> Series.cumMin |> shouldEqual e
-
-[<Test>]
-let ``Cumulative max works``() =
-  let s = series [0 => 3.0; 1 => nan; 2 => 2.0; 3 => 5.0 ]
-  let e = series [0 => 3.0; 1 => nan; 2 => 3.0; 3 => 5.0 ]
-  s |> Series.cumMax |> shouldEqual e
-
 // ------------------------------------------------------------------------------------------------
 // Fill missing values
 // ------------------------------------------------------------------------------------------------
@@ -347,7 +317,7 @@ let ``Can fill missing values in a specified range``() =
 [<Test>]
 let ``Can perform linear interpolation``() =
   let s = series [ 0 => 0.0; 2 => 2.0; 4 => 4.0]
-  let i = s |> Series.interpolateLinear [0;1;2;3;4] (fun a b -> float <| a - b)
+  let i = s |> Stats.interpolateLinear [0;1;2;3;4] (fun a b -> float <| a - b)
   let e = series [ 0 => 0.0; 1 => 1.0; 2 => 2.0; 3 => 3.0; 4 => 4.0]
   i |> shouldEqual e
   
@@ -773,3 +743,9 @@ let ``Realign works and isn't terribly slow`` () =
   let s2 = s1.Realign(arr2)
   s2.Keys |> Seq.toArray |> shouldEqual arr2
 
+
+[<Test>]
+let ``Masking works as expected`` () =
+  let s = series [ 0 => 1.0; 1 => nan; 2 => 3.0 ]
+  let t = series [ 1 => 5.0; 2 => 3.0; 4 => 4.0 ]
+  (t |> Series.withMissingFrom s) |> shouldEqual (series [ 1 => nan; 2 => 3.0; 4 => 4.0 ])

@@ -69,11 +69,12 @@
     <Compile Include="SeriesModule.fs" />
     <Compile Include="SeriesExtensions.fs" />
     <Compile Include="Frame.fs" />
+    <Compile Include="Stats.fs" />
     <Compile Include="FrameUtils.fs" />
     <Compile Include="FrameModule.fs" />
     <Compile Include="FrameExtensions.fs" />
+    <Compile Include="SeriesStatsExtensions.fs" />
     <Compile Include="DelayedSeries.fs" />
-    <Compile Include="Stats.fs" />
     <None Include="packages.config" />
     <None Include="Deedle.fsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -89,9 +90,6 @@
     </Reference>
     <Reference Include="FSharp.Data.DesignTime">
       <HintPath>..\..\packages\FSharp.Data.1.1.10\lib\net40\FSharp.Data.DesignTime.dll</HintPath>
-    </Reference>
-    <Reference Include="MathNet.Numerics">
-      <HintPath>..\..\packages\MathNet.Numerics.2.6.1\lib\net40\MathNet.Numerics.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="System" />
