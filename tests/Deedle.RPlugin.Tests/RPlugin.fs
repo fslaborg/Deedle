@@ -31,6 +31,13 @@ let ``Can roundtrip data frame (mtcars) between Deedle and R`` () =
   cars1 |> shouldEqual cars2
 
 [<Test>]
+let ``Can pass numerical stacked frames to R``() = 
+  let df1 = frame [ 10 => series [ 1 => 1.0 ]; 11 => series [ 2 => 2.0] ] |> Frame.stack
+  R.assign("df", df1) |> ignore
+  let df2 : Frame<int, string> = R.get("df").GetValue()
+  df1 |> shouldEqual df2
+
+[<Test>]
 let ``Can roundtrip data frames with missing values to R`` () =
   //
   // NOTE: R.NET always returns data as floats, so we only test this for floats

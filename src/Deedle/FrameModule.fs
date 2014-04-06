@@ -1144,18 +1144,40 @@ module Frame =
   /// Implements R-like 'stack' (returns frame whose 
   /// columns are named Row/Column/Value)
   let stack (frame:Frame<'R, 'C>) =
-    let vals = 
-      frame.Rows.Observations |> Seq.collect (fun (KeyValue(rowKey, row)) ->
-        row.Observations 
-        |> Seq.map (fun (KeyValue(colKey, value)) -> (box rowKey, box colKey, value))) |> Array.ofSeq
+    let rowKeys = frame.RowIndex.Keys
+    let colKeys = frame.ColumnIndex.Keys
+    let rows = frame.Data.DataSequence |> Array.ofSeq
+
+    // Build arrays with row keys, column keys and values
+    let rowVec = ResizeArray<_>()
+    let colVec = ResizeArray<_>()
+    let valVec = ResizeArray<_>()
+    for row = 0 to rowKeys.Count - 1 do
+      for col = 0 to colKeys.Count - 1 do
+        let vec = rows.[col]
+        if vec.HasValue then 
+          let value = vec.Value.GetObject(Address.ofInt row)
+          if value.HasValue then 
+            rowVec.Add(rowKeys.[row])
+            colVec.Add(colKeys.[col])
+            valVec.Add(value.Value)
+
+    // Infer type of the values in the "value" vector 
+    let valTyp = 
+      frame.Data.DataSequence 
+      |> Seq.choose (fun dt ->
+        if dt.HasValue then Some(dt.Value.ElementType) else None) 
+      |> VectorHelpers.findCommonSupertype
     
     let colIndex = Index.ofKeys ["Row"; "Column"; "Value"]
-    let rowIndex = Index.ofKeys (Array.init vals.Length id)
+    let rowIndex = Index.ofKeys (Array.init valVec.Count id)
     let data = 
-      [ for f in [ (fun (a, _, _) -> a); (fun (_, a, _) -> a); (fun (_, _, a) -> a) ] ->
-          Vector.ofValues (Array.map f vals) :> IVector ]
+      [ Vector.ofValues (rowVec.ToArray()) :> IVector
+        Vector.ofValues (colVec.ToArray()) :> IVector
+        VectorHelpers.createTypedVector frame.VectorBuilder valTyp (valVec.ToArray()) ]
       |> Vector.ofValues
     Frame(rowIndex, colIndex, data)
+
 
   // Unstack is easier, we just need to get three-element tuples from the frame and use Frame.ofValues
   let unstack (frame:Frame<'O, string>) : Frame<'R, 'C> =

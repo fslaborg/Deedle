@@ -343,13 +343,24 @@ let toArray2D<'R> rowCount colCount (data:IVector<IVector>) (defaultValue:Lazy<'
 
 /// Helper functions and active patterns for type inference
 module Inference = 
+
+  // When we get multiple primitive values that could be converted to a common
+  // type, we choose 'int', 'int64', 'float' (for numbers) or 'string' (for strings and characters)
+  // In principle, we could do better and find "least upper bound" of the conversion relation
+  // but choosing one of the common types seems to be good enough.
+  let inline isType types t = if List.exists ((=) t) types then Some() else None
+  let intTypes = [ typeof<byte>; typeof<sbyte>; typeof<int16>; typeof<uint16>; typeof<int> ]
+  let int64Types = intTypes @ [ typeof<uint32>; typeof<int64> ]
+  let floatTypes = int64Types @ [ typeof<decimal>; typeof<uint64>; typeof<float32>; typeof<float> ]
+  let stringTypes = [ typeof<char>; typeof<string> ]
+
   /// Classsify type as one of the supported primitives
-  let (|Top|Bottom|String|Int|Float|) ty =
-    if ty = null then Top
-    elif ty = typeof<int> || ty = typeof<int16> || ty = typeof<byte> then Int
-    elif ty = typeof<string> || ty = typeof<char> then String
-    elif ty = typeof<float32> || ty = typeof<float> then Float
-    else Bottom
+  let (|Top|_|) (ty:System.Type) = if ty = null then Some() else None
+  let (|Bottom|_|) ty = if ty = typeof<obj> then Some() else None
+  let (|AsInt|_|) ty = isType intTypes ty
+  let (|AsInt64|_|) ty = isType int64Types ty
+  let (|AsFloat|_|) ty = isType floatTypes ty
+  let (|AsString|_|) ty = isType stringTypes ty
 
   /// System.Type representing bottom
   let Bottom = typeof<obj>
@@ -359,36 +370,48 @@ module Inference =
   /// Given two types, find their common supertype
   let commonSupertype t1 t2 = 
     match t1, t2 with
-    // Top and anything is the other thing
+    // Top (null) and anything is the other thing
     | Top, t | t, Top -> t
-    // Bottom and anything is Bottom
+    // When they are the same type, just return it
+    | _ when t1 = t2 -> t1
+    // Bottom and anything is Bottom (one is 'obj')
     | Bottom, _ | _, Bottom -> Bottom
-    // A type with itself is a type
-    | String, String -> typeof<string>
-    | Int, Int -> typeof<int>
-    | Float, Float -> typeof<float>
-    // Ints can be converted to floats
-    | Int, Float | Float, Int -> typeof<float>
-    // String cannot be implicitly converted to anything else
-    | String, _ | _, String -> Bottom
+    // When they are subtypes according to .NET, use that
+    | _ when t1.IsAssignableFrom(t2) -> t1
+    | _ when t2.IsAssignableFrom(t1) -> t2
+
+    // Both can be converted to the same primitive type
+    | AsString, AsString -> typeof<string>
+    | AsInt, AsInt -> typeof<int>
+    | AsInt64, AsInt64 -> typeof<int64>
+    | AsFloat, AsFloat -> typeof<float>
+
+    // No conversion is possible, so return bottom
+    | _, _ -> Bottom
 
 /// Helper object called by createTypedVector via reflection
 type CreateTypedVectorHelper = 
   static member Create<'T>(builder:IVectorBuilder, data:obj[]) =
-    builder.Create(Array.map unbox<'T> data)
+    builder.Create(Array.map Convert.changeType<'T> data)
 
 /// Given object array, create a typed vector of the best possible type
-let createTypedVector (builder:IVectorBuilder) (data:obj[]) =
-  // Infer the vector type
-  let vectorType = 
-    data |> Array.map (fun v -> if v = null then Inference.Top else v.GetType()) 
-         |> Seq.reduce Inference.commonSupertype
-  let vectorType = if vectorType = Inference.Top then Inference.Bottom else vectorType
-
-  // Create specialized method info and invoke it
+let createTypedVector (builder:IVectorBuilder) (vectorType:System.Type) (data:obj[]) =
   let flags = System.Reflection.BindingFlags.NonPublic ||| System.Reflection.BindingFlags.Static
   let createMi = typeof<CreateTypedVectorHelper>.GetMethod("Create", flags).MakeGenericMethod [| vectorType |]
   createMi.Invoke(null, [| builder; data |]) :?> IVector
+
+/// Find common super type of the specified .NET types
+/// (This also allows implicit conversions between primitive values, so casting values
+/// to the common super type would fail, but Convert.changeType will work fine)
+let findCommonSupertype types = 
+  let ty = types |> Seq.fold Inference.commonSupertype Inference.Top
+  if ty = Inference.Top then Inference.Bottom else ty
+
+/// Given object array, create a typed vector of the best possible type
+let createInferredTypeVector (builder:IVectorBuilder) (data:obj[]) =
+  let vectorType = data |> Seq.map (fun v -> 
+    if v = null then Inference.Top else v.GetType()) |> findCommonSupertype
+  createTypedVector builder vectorType data
 
 /// Substitute variable hole for another in a vector construction
 let rec substitute ((oldVar, newVar) as subst) = function
