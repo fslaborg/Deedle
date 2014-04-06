@@ -281,28 +281,6 @@ module Frame =
   // Operations
   // ----------------------------------------------------------------------------------------------
 
-
-//  let shiftRows offset (frame:Frame<'R, 'C>) = 
-//    frame.Columns 
-//    |> Series.map (fun k col -> Series.shift offset col)
-//    |> Frame.ofColumns
-
-  let take count (frame:Frame<'R, 'C>) =
-    let addrs = [for i in [0 .. count - 1] -> (Address.ofInt i, Address.ofInt i)]
-    let reloc = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 count, addrs)
-    let cmd v = VectorHelpers.transformColumn frame.VectorBuilder reloc v
-    let dat = frame.Data.Select(cmd)
-    let idx = frame.RowIndex.Keys |> Seq.take count |> Index.ofKeys 
-    Frame<_,_>(idx, frame.ColumnIndex, dat)
-    
-  let takeLast count (frame:Frame<'R, 'C>) = 
-    let addrs = [for i in [0 .. count - 1] -> (Address.ofInt i, Address.ofInt (frame.RowCount - count + i))]
-    let reloc = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 count, addrs)
-    let cmd v = VectorHelpers.transformColumn frame.VectorBuilder reloc v
-    let dat = frame.Data.Select(cmd)
-    let idx = frame.RowIndex.Keys |> Seq.skip (frame.RowCount - count) |> Index.ofKeys 
-    Frame<_,_>(idx, frame.ColumnIndex, dat)
-
   let window size (frame:Frame<'R, 'C>) = 
     let fromRows rs = rs |> FrameUtils.fromRowsAndColumnKeys frame.ColumnKeys
     frame.Rows |> Series.windowInto size fromRows
@@ -311,6 +289,77 @@ module Frame =
     let fromRows rs = rs |> FrameUtils.fromRowsAndColumnKeys frame.ColumnKeys
     frame.Rows |> Series.windowInto size (fromRows >> f)
 
+  /// Internal helper used by `skip`, `take`, etc.
+  let internal getRange lo hi (frame:Frame<'R, 'C>) = 
+    if hi < lo then 
+      // Create empty vectors of the same type as the inputs
+      let newData = frame.Data.Select(fun v -> 
+        { new VectorCallSite<IVector> with
+            member x.Invoke<'T>(v:IVector<'T>) = 
+              Vector.ofValues ([]:'T list) :> IVector }
+        |> v.Invoke)
+      Frame(Index.ofKeys [], frame.ColumnIndex, newData) 
+    else
+      let cmd = GetRange(Return 0, (int64 lo, int64 hi))
+      let newData = frame.Data.Select(transformColumn frame.VectorBuilder cmd)
+      let newKeys = frame.RowIndex.Keys.[lo .. hi]
+      let idx = frame.IndexBuilder.Create(newKeys, if frame.RowIndex.IsOrdered then Some true else None)
+      Frame(idx, frame.ColumnIndex, newData)
+
+  /// Returns a frame that contains the specified number of rows from the original frame. 
+  ///
+  /// ## Parameters
+  ///  - `count` - Number of rows to take; must be smaller or equal to the original number of rows
+  ///  - `frame` - Input frame from which the rows are taken
+  ///
+  /// [category:???]
+  [<CompiledName("Take")>]
+  let take count (frame:Frame<'R, 'C>) =
+    if count > frame.RowCount || count < 0 then 
+      invalidArg "count" "Must be greater than zero and less than the number of keys."
+    getRange 0 (count - 1) frame
+
+  /// Returns a frame that contains the specified number of rows from the 
+  /// original frame. The rows are taken from the end of the frame. 
+  ///
+  /// ## Parameters
+  ///  - `count` - Number of rows to take; must be smaller or equal to the original number of rows
+  ///  - `frame` - Input frame from which the rows are taken
+  ///
+  /// [category:???]
+  [<CompiledName("TakeLast")>]
+  let takeLast count (frame:Frame<'R, 'C>) =
+    if count > frame.RowCount || count < 0 then 
+      invalidArg "count" "Must be greater than zero and less than the number of rows."
+    getRange (frame.RowCount-count) (frame.RowCount-1) frame
+
+  /// Returns a frame that contains the data from the original frame,
+  /// except for the first `count` rows.
+  ///
+  /// ## Parameters
+  ///  - `count` - Number of rows to skip; must be smaller or equal to the original number of rows
+  ///  - `frame` - Input frame from which the rows are taken
+  ///
+  /// [category:???]
+  [<CompiledName("Skip")>]
+  let skip count (frame:Frame<'R, 'C>) =
+    if count > frame.RowCount || count < 0 then 
+      invalidArg "count" "Must be greater than zero and less than the number of rows."
+    getRange count (frame.RowCount-1) frame
+
+  /// Returns a frame that contains the data from the original frame,
+  /// except for the last `count` rows.
+  ///
+  /// ## Parameters
+  ///  - `count` - Number of rows to skip; must be smaller or equal to the original number of rows
+  ///  - `frame` - Input frame from which the rows are taken
+  ///
+  /// [category:???]
+  [<CompiledName("SkipLast")>]
+  let skipLast count (frame:Frame<'R, 'C>) = 
+    if count > frame.RowCount || count < 0 then 
+      invalidArg "count" "Must be greater than zero and less than the number of keys."
+    getRange 0 (frame.RowCount-1-count) frame
 
   // ----------------------------------------------------------------------------------------------
   // Data structure manipulation
@@ -803,11 +852,51 @@ module Frame =
 
   // other stuff
 
+  /// Returns a frame with columns shifted by the specified offset. When the offset is 
+  /// positive, the values are shifted forward and first `offset` keys are dropped. When the
+  /// offset is negative, the values are shifted backwards and the last `offset` keys are dropped.
+  /// Expressed in pseudo-code:
+  ///
+  ///     result[k] = series[k - offset]
+  ///
+  /// ## Parameters
+  ///  - `offset` - Can be both positive and negative number.
+  ///  - `frame` - The input frame whose columns are to be shifted.
+  ///
+  /// ## Remarks
+  /// If you want to calculate the difference, e.g. `df - (Frame.shift 1 df)`, you can
+  /// use `Frame.diff` which will be a little bit faster.
+  [<CompiledName("Shift")>]
   let shift offset (frame:Frame<'R, 'C>) = 
-    frame |> mapColValues (Series.shift offset)
+    let newRowIndex, cmd = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), offset)
+    let vectorBuilder = VectorBuilder.Instance
+    let newData = frame.Data.Select(VectorHelpers.transformColumn vectorBuilder cmd)
+    Frame(newRowIndex, frame.ColumnIndex, newData)
 
+  /// Returns a frame with columns containing difference between an original value and
+  /// a value at the specified offset. For example, calling `Frame.diff 1 s` returns a 
+  /// frame where previous column values is subtracted from the current ones. In pseudo-code, the
+  /// function behaves as follows:
+  ///
+  ///     result[k] = series[k] - series[k - offset]
+  ///
+  /// Columns that cannot be converted to `float` are left without a change.
+  ///
+  /// ## Parameters
+  ///  - `offset` - When positive, subtracts the past values from the current values;
+  ///    when negative, subtracts the future values from the current values.
+  ///  - `frame` - The input frame containing at least some `float` columns.
+  ///
+  [<CompiledName("Diff")>]
   let diff offset (frame:Frame<'R, 'C>) = 
-    frame.SeriesApply<float>(false, fun s -> Series.diff offset s :> ISeries<_>)
+    let vectorBuilder = VectorBuilder.Instance
+    let newRowIndex, vectorR = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), offset)
+    let _, vectorL = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), -offset)
+    let cmd = Vectors.Combine(vectorL, vectorR, VectorValueTransform.Create<float>(OptionalValue.map2 (-)))
+    let newData = frame.Data.Select(function
+        | AsFloatVector vf -> VectorBuilder.Instance.Build(cmd, [| vf |]) :> IVector
+        | vector -> vector)
+    Frame(newRowIndex, frame.ColumnIndex, newData)
 
   // ----------------------------------------------------------------------------------------------
   // Missing values
@@ -1017,7 +1106,7 @@ module Frame =
   /// [category:Joining, zipping and appending]
   [<CompiledName("ZipAlignInto")>]
   let zipAlign columnKind rowKind lookup (op:'V1->'V2->'V) (frame1:Frame<'R, 'C>) (frame2:Frame<'R, 'C>) : Frame<'R, 'C> =
-    frame1.Zip(frame2, columnKind, rowKind, lookup, fun a b -> op a b)
+    frame1.Zip<'V1, 'V2, 'V>(frame2, columnKind, rowKind, lookup, fun a b -> op a b)
 
   /// Aligns two data frames using both column index and row index and apply the specified operation
   /// on values of a specified type that are available in both data frames. This overload uses

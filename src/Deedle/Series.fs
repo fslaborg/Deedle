@@ -394,9 +394,21 @@ and
     // Append the row indices and get transformation that combines two column vectors
     // (LeftOrRight - specifies that when column exist in both data frames then fail)
     let newIndex, cmd = 
-      indexBuilder.Append( (index, Vectors.Return 0), (otherSeries.Index, Vectors.Return 1), 
-                           VectorValueTransform.LeftOrRight )
+      indexBuilder.Merge( [(index, Vectors.Return 0); (otherSeries.Index, Vectors.Return 1)], 
+                           VectorValueListTransform.AtMostOne )
     let newVector = vectorBuilder.Build(cmd, [| series.Vector; otherSeries.Vector |])
+    Series(newIndex, newVector, vectorBuilder, indexBuilder)
+
+  /// [category:Appending, joining and zipping]
+  member series.Append([<ParamArray>] otherSeries:Series<'K, 'V>[]) =
+    // Append the row indices and get transformation that combines two column vectors
+    // (LeftOrRight - specifies that when column exist in both data frames then fail)
+    let constrs = otherSeries |> Array.mapi (fun i s -> s.Index, Vectors.Return(i + 1)) |> List.ofSeq
+    let vectors = otherSeries |> Array.map (fun s -> s.Vector)
+
+    let newIndex, cmd = 
+      indexBuilder.Merge( (index, Vectors.Return 0)::constrs, VectorValueListTransform.AtMostOne )
+    let newVector = vectorBuilder.Build(cmd, [| yield series.Vector; yield! vectors |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
   /// [category:Appending, joining and zipping]
@@ -736,9 +748,9 @@ and
   // Operators and F# functions
   // ----------------------------------------------------------------------------------------------
 
-  static member inline internal NullaryGenericOperation<'K, 'T1, 'T2>(series:Series<'K, 'T1>, op : 'T1 -> 'T2) = 
+  static member inline internal UnaryGenericOperation<'K, 'T1, 'T2>(series:Series<'K, 'T1>, op : 'T1 -> 'T2) = 
     series.Select(fun (KeyValue(k, v)) -> op v)
-  static member inline internal NullaryOperation<'T>(series:Series<'K, 'T>, op : 'T -> 'T) = 
+  static member inline internal UnaryOperation<'T>(series:Series<'K, 'T>, op : 'T -> 'T) = 
     series.Select(fun (KeyValue(k, v)) -> op v)
   static member inline internal ScalarOperationL<'T>(series:Series<'K, 'T>, scalar, op : 'T -> 'T -> 'T) = 
     series.Select(fun (KeyValue(k, v)) -> op v scalar)
@@ -756,6 +768,11 @@ and
       |> Vector.ofOptionalValues
 
     Series(newIndex, vector, series1.VectorBuilder, series1.IndexBuilder)
+
+  /// [category:Operators]
+  static member (~-)(series) = Series<'K, _>.UnaryOperation<float>(series, (~-))
+  /// [category:Operators]
+  static member (~-)(series) = Series<'K, _>.UnaryOperation<int>(series, (~-))
 
   /// [category:Operators]
   static member (+) (scalar, series) = Series<'K, _>.ScalarOperationR<int>(scalar, series, (+))
@@ -818,48 +835,48 @@ and
   // Trigonometric
   
   /// [category:Operators]
-  static member Acos(series) = Series<'K, _>.NullaryOperation<float>(series, acos)
+  static member Acos(series) = Series<'K, _>.UnaryOperation<float>(series, acos)
   /// [category:Operators]
-  static member Asin(series) = Series<'K, _>.NullaryOperation<float>(series, asin)
+  static member Asin(series) = Series<'K, _>.UnaryOperation<float>(series, asin)
   /// [category:Operators]
-  static member Atan(series) = Series<'K, _>.NullaryOperation<float>(series, atan)
+  static member Atan(series) = Series<'K, _>.UnaryOperation<float>(series, atan)
   /// [category:Operators]
-  static member Sin(series) = Series<'K, _>.NullaryOperation<float>(series, sin)
+  static member Sin(series) = Series<'K, _>.UnaryOperation<float>(series, sin)
   /// [category:Operators]
-  static member Sinh(series) = Series<'K, _>.NullaryOperation<float>(series, sinh)
+  static member Sinh(series) = Series<'K, _>.UnaryOperation<float>(series, sinh)
   /// [category:Operators]
-  static member Cos(series) = Series<'K, _>.NullaryOperation<float>(series, cos)
+  static member Cos(series) = Series<'K, _>.UnaryOperation<float>(series, cos)
   /// [category:Operators]
-  static member Cosh(series) = Series<'K, _>.NullaryOperation<float>(series, cosh)
+  static member Cosh(series) = Series<'K, _>.UnaryOperation<float>(series, cosh)
   /// [category:Operators]
-  static member Tan(series) = Series<'K, _>.NullaryOperation<float>(series, tan)
+  static member Tan(series) = Series<'K, _>.UnaryOperation<float>(series, tan)
   /// [category:Operators]
-  static member Tanh(series) = Series<'K, _>.NullaryOperation<float>(series, tanh)
+  static member Tanh(series) = Series<'K, _>.UnaryOperation<float>(series, tanh)
 
   // Actually useful
 
   /// [category:Operators]
-  static member Abs(series) = Series<'K, _>.NullaryOperation<float>(series, abs)
+  static member Abs(series) = Series<'K, _>.UnaryOperation<float>(series, abs)
   /// [category:Operators]
-  static member Abs(series) = Series<'K, _>.NullaryOperation<int>(series, abs)
+  static member Abs(series) = Series<'K, _>.UnaryOperation<int>(series, abs)
   /// [category:Operators]
-  static member Ceiling(series) = Series<'K, _>.NullaryOperation<float>(series, ceil)
+  static member Ceiling(series) = Series<'K, _>.UnaryOperation<float>(series, ceil)
   /// [category:Operators]
-  static member Exp(series) = Series<'K, _>.NullaryOperation<float>(series, exp)
+  static member Exp(series) = Series<'K, _>.UnaryOperation<float>(series, exp)
   /// [category:Operators]
-  static member Floor(series) = Series<'K, _>.NullaryOperation<float>(series, floor)
+  static member Floor(series) = Series<'K, _>.UnaryOperation<float>(series, floor)
   /// [category:Operators]
-  static member Truncate(series) = Series<'K, _>.NullaryOperation<float>(series, truncate)
+  static member Truncate(series) = Series<'K, _>.UnaryOperation<float>(series, truncate)
   /// [category:Operators]
-  static member Log(series) = Series<'K, _>.NullaryOperation<float>(series, log)
+  static member Log(series) = Series<'K, _>.UnaryOperation<float>(series, log)
   /// [category:Operators]
-  static member Log10(series) = Series<'K, _>.NullaryOperation<float>(series, log10)
+  static member Log10(series) = Series<'K, _>.UnaryOperation<float>(series, log10)
   /// [category:Operators]
-  static member Round(series) = Series<'K, _>.NullaryOperation<float>(series, round)
+  static member Round(series) = Series<'K, _>.UnaryOperation<float>(series, round)
   /// [category:Operators]
-  static member Sign(series) = Series<'K, _>.NullaryGenericOperation<_, float, _>(series, sign)
+  static member Sign(series) = Series<'K, _>.UnaryGenericOperation<_, float, _>(series, sign)
   /// [category:Operators]
-  static member Sqrt(series) = Series<'K, _>.NullaryGenericOperation<_, float, _>(series, sqrt)
+  static member Sqrt(series) = Series<'K, _>.UnaryGenericOperation<_, float, _>(series, sqrt)
 
   // ----------------------------------------------------------------------------------------------
   // Overrides & interfaces
@@ -1010,13 +1027,7 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
         OptionalValue(Series(newIndex, vec, vectorBuilder, indexBuilder))
     | _ -> 
         ( if strict then VectorHelpers.tryCastType vector
-          else               
-            let attempt = VectorHelpers.tryChangeType vector
-            if not attempt.HasValue then 
-              try VectorHelpers.tryCastType vector
-              with :? InvalidCastException -> OptionalValue.Missing
-            else attempt
-        )
+          else VectorHelpers.tryChangeType vector )
         |> OptionalValue.map (fun vec -> 
           let newIndex = indexBuilder.Project(index)
           Series(newIndex, vec, vectorBuilder, indexBuilder))

@@ -41,6 +41,13 @@ let ``Nullable value is recognized as missing, if it has no value`` () =
   testNullable (Nullable()) |> shouldEqual true
 
 [<Test>]
+let ``Equality on OptionalValue type works as expected`` () =
+  OptionalValue.Missing = OptionalValue<float>.Missing |> shouldEqual true
+  OptionalValue(0.0) = OptionalValue(0.0) |> shouldEqual true
+  OptionalValue.Missing = OptionalValue(0.0) |> shouldEqual false
+  OptionalValue.Missing = OptionalValue(1.0) |> shouldEqual false
+
+[<Test>]
 let ``Array.dropRange drops inclusive range from an array`` () = 
   [| 1 .. 10 |] |> Array.dropRange 0 9 |> shouldEqual [| |]
   [| 1 .. 10 |] |> Array.dropRange 1 8 |> shouldEqual [| 1; 10 |]    
@@ -200,16 +207,136 @@ let ``Seq.chunkedWithBounds can skip incomplete chunk at the end`` () =
        DataSegment(Complete, [|7; 8; 9|]) |]
 
 [<Test>]
-let ``Seq.alignWithOrdering works on sample input`` () =
-  let comparer = System.Collections.Generic.Comparer<string>.Default
-  Seq.alignWithOrdering [ ("b", 0); ("c", 1); ("d", 2) ] [ ("a", 0); ("b", 1); ("c", 2) ] comparer
-  |> List.ofSeq |> shouldEqual
-      [ ("a", None, Some 0); ("b", Some 0, Some 1); 
-        ("c", Some 1, Some 2); ("d", Some 2, None)]
+let ``Seq.alignOrdered (union) satisfies basic conditions`` () =
+  let comparer = System.Collections.Generic.Comparer<int>.Default
+  Check.QuickThrowOnFailure(fun (a1:int[]) (a2:int[]) ->
+    // Preprocess: we only want distinct values & sorted inputs
+    let a1 = ReadOnlyCollection.ofSeq (Seq.sort (Seq.distinct a1))
+    let a2 = ReadOnlyCollection.ofSeq (Seq.sort (Seq.distinct a2))
+    let keys, relocs = Seq.alignOrdered a1 a2 comparer false
+    let r1, r2 = match relocs with [r1;r2] -> r1,r2 | _ -> failwith "Expected 2 items"
+
+    // Check that: keys are sorted
+    Array.sort keys = keys &&
+    // Check that: all original keys are somewhere in new keys
+    a1 |> Seq.forall (fun k1 -> Seq.exists ((=) k1) keys) &&
+    a2 |> Seq.forall (fun k2 -> Seq.exists ((=) k2) keys) &&
+    // Check that: there are as many relocations as values & no indices are duplicated
+    r1.Length = a1.Count &&
+    (Seq.length (Seq.distinctBy fst r1)) = r1.Length &&
+    (Seq.length (Seq.distinctBy snd r1)) = r1.Length &&
+    r2.Length = a2.Count &&
+    (Seq.length (Seq.distinctBy fst r2)) = r2.Length &&
+    (Seq.length (Seq.distinctBy snd r2)) = r2.Length &&
+    // Check that: relocations point to right keys
+    r1 |> Seq.forall (fun (nidx, oidx) -> keys.[int nidx] = a1.[int oidx]) &&
+    r2 |> Seq.forall (fun (nidx, oidx) -> keys.[int nidx] = a2.[int oidx]) )
 
 [<Test>]
-let ``Seq.alignWithoutOrdering works on sample input`` () =
-  let comparer = System.Collections.Generic.Comparer<string>.Default
-  Seq.alignWithoutOrdering [ ("b", 0); ("c", 1); ("d", 2) ] [ ("b", 1); ("c", 2); ("a", 0); ] 
-  |> List.ofSeq |> set |> shouldEqual
-      (set [("b", Some 0, Some 1); ("c", Some 1, Some 2); ("d", Some 2, None); ("a", None, Some 0)])
+let ``Seq.alignUnordered (union) satisfies basic conditions`` () =
+  Check.QuickThrowOnFailure(fun (a1:int[]) (a2:int[]) ->
+    // Preprocess: we only want distinct values 
+    let a1 = ReadOnlyCollection.ofSeq (Seq.distinct a1)
+    let a2 = ReadOnlyCollection.ofSeq (Seq.distinct a2)
+    let keys, relocs = Seq.alignUnordered a1 a2 false
+    let r1, r2 = match relocs with [r1;r2] -> r1,r2 | _ -> failwith "Expected 2 items"
+
+    // Check that: all original keys are somewhere in new keys
+    a1 |> Seq.forall (fun k1 -> Seq.exists ((=) k1) keys) &&
+    a2 |> Seq.forall (fun k2 -> Seq.exists ((=) k2) keys) &&
+    // Check that: there are as many relocations as values & no indices are duplicated
+    r1.Length = a1.Count &&
+    (Seq.length (Seq.distinctBy fst r1)) = r1.Length &&
+    (Seq.length (Seq.distinctBy snd r1)) = r1.Length &&
+    r2.Length = a2.Count &&
+    (Seq.length (Seq.distinctBy fst r2)) = r2.Length &&
+    (Seq.length (Seq.distinctBy snd r2)) = r2.Length &&
+    // Check that: relocations point to right keys
+    r1 |> Seq.forall (fun (nidx, oidx) -> keys.[int nidx] = a1.[int oidx]) &&
+    r2 |> Seq.forall (fun (nidx, oidx) -> keys.[int nidx] = a2.[int oidx]) )
+
+[<Test>]
+let ``Seq.alignOrdered (intersection) satisfies basic conditions`` () =
+  let comparer = System.Collections.Generic.Comparer<int>.Default
+  Check.QuickThrowOnFailure(fun (a1:int[]) (a2:int[]) ->
+    // Preprocess: we only want distinct values & sorted inputs
+    let a1 = ReadOnlyCollection.ofSeq (Seq.sort (Seq.distinct a1))
+    let a2 = ReadOnlyCollection.ofSeq (Seq.sort (Seq.distinct a2))
+    let keys, relocs = Seq.alignOrdered a1 a2 comparer true
+    let r1, r2 = match relocs with [r1;r2] -> r1,r2 | _ -> failwith "Expected 2 items"
+
+    let expectedKeys = Set.intersect (set a1) (set a2)
+
+    // Check that: keys match expected keys according to F# set
+    keys = Array.sort (Array.ofSeq expectedKeys) &&
+    // Check that: relocation lengths match number of keys to be included in the output
+    r1.Length = (a1 |> Seq.sumBy (fun k1 -> if expectedKeys.Contains(k1) then 1 else 0)) &&
+    r2.Length = (a2 |> Seq.sumBy (fun k2 -> if expectedKeys.Contains(k2) then 1 else 0)) &&
+    // Check that: relocation indices are unique
+    (Seq.length (Seq.distinctBy fst r1)) = r1.Length &&
+    (Seq.length (Seq.distinctBy snd r1)) = r1.Length &&
+    (Seq.length (Seq.distinctBy fst r2)) = r2.Length &&
+    (Seq.length (Seq.distinctBy snd r2)) = r2.Length &&
+    // Check that: relocations point to right keys
+    r1 |> Seq.forall (fun (nidx, oidx) -> keys.[int nidx] = a1.[int oidx]) &&
+    r2 |> Seq.forall (fun (nidx, oidx) -> keys.[int nidx] = a2.[int oidx]) )
+
+[<Test>]
+let ``Seq.alignUnordered (intersection) satisfies basic conditions`` () =
+  Check.QuickThrowOnFailure(fun (a1:int[]) (a2:int[]) ->
+    // Preprocess: we only want distinct values 
+    let a1 = ReadOnlyCollection.ofSeq (Seq.distinct a1)
+    let a2 = ReadOnlyCollection.ofSeq (Seq.distinct a2)
+    let keys, relocs = Seq.alignUnordered a1 a2 true
+    let r1, r2 = match relocs with [r1;r2] -> r1,r2 | _ -> failwith "Expected 2 items"
+
+    let expectedKeys = Set.intersect (set a1) (set a2)
+
+    // Check that: keys match expected keys according to F# set
+    set keys = expectedKeys &&
+    // Check that: relocation lengths match number of keys to be included in the output
+    r1.Length = (a1 |> Seq.sumBy (fun k1 -> if expectedKeys.Contains(k1) then 1 else 0)) &&
+    r2.Length = (a2 |> Seq.sumBy (fun k2 -> if expectedKeys.Contains(k2) then 1 else 0)) &&
+    // Check that: relocation indices are unique
+    (Seq.length (Seq.distinctBy fst r1)) = r1.Length &&
+    (Seq.length (Seq.distinctBy snd r1)) = r1.Length &&
+    (Seq.length (Seq.distinctBy fst r2)) = r2.Length &&
+    (Seq.length (Seq.distinctBy snd r2)) = r2.Length &&
+    // Check that: relocations point to right keys
+    r1 |> Seq.forall (fun (nidx, oidx) -> keys.[int nidx] = a1.[int oidx]) &&
+    r2 |> Seq.forall (fun (nidx, oidx) -> keys.[int nidx] = a2.[int oidx]) )
+
+[<Test>]
+let ``Seq.alignAllOrdered behaves the same as Seq.alignOrdered`` () =
+  let comparer = System.Collections.Generic.Comparer<int>.Default
+  Check.QuickThrowOnFailure(fun (a1:int[]) (a2:int[]) ->
+    // Preprocess: we only want distinct values & sorted inputs
+    let a1 = ReadOnlyCollection.ofSeq (Seq.sort (Seq.distinct a1))
+    let a2 = ReadOnlyCollection.ofSeq (Seq.sort (Seq.distinct a2))
+    Seq.alignAllOrdered [| a1; a2 |] comparer = Seq.alignOrdered a1 a2 comparer false )
+
+[<Test>]
+let ``Seq.alignAllUnordered behaves the same as Seq.alignUnordered`` () =
+  Check.QuickThrowOnFailure(fun (a1:int[]) (a2:int[]) ->
+    // Preprocess: we only want distinct values 
+    let a1 = ReadOnlyCollection.ofSeq (Seq.distinct a1)
+    let a2 = ReadOnlyCollection.ofSeq (Seq.distinct a2)
+    Seq.alignAllUnordered [| a1; a2 |] = Seq.alignUnordered a1 a2 false )
+
+
+[<Test>]
+let ``Binomial heap can insert and remove minimum`` () =
+  Check.QuickThrowOnFailure(fun (nums:int[]) ->
+    let mutable h = BinomialHeap.empty
+    // Check that we can insert all numbers and minimum works correctly
+    for i in 0 .. nums.Length - 1 do 
+      h <- BinomialHeap.insert (nums.[i]) h 
+      if BinomialHeap.findMin h <> (Seq.min nums.[0 .. i]) then failwith "Min failed" 
+    
+    // Check that we can remove all elements and the one before is always smaller
+    let mutable lastMin = Int32.MinValue
+    for i in 0 .. nums.Length - 1 do
+      let min, nh = BinomialHeap.removeMin h
+      if min < lastMin then failwith "RemoveMin failed"
+      h <- nh
+      lastMin <- min )

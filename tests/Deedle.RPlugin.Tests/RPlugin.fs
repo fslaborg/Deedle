@@ -57,7 +57,7 @@ let ``Can roundtrip time series (EuStockMarkets$FTSE) between Deedle and R`` () 
 let ``Can roundtrip time series with date times between Deedle and R`` () =
   let rnd = System.Random()
   // NOTE: This does not work for "DateTime.Now" because R uses less precise representation
-  let ts = series [ for i in 0.0 .. 100.0 -> System.DateTime.Today.AddHours(i), rnd.NextDouble() ]
+  let ts = series [ for i in 0.0 .. 100.0 -> System.DateTime(2014,1,1).AddHours(i), rnd.NextDouble() ]
   R.assign("x", ts) |> ignore
   R.get("x").GetValue<Series<System.DateTime, float>>() 
   |> shouldEqual ts

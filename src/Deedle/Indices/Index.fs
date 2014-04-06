@@ -235,8 +235,8 @@ and IIndexBuilder =
   /// are ordered, the ordering should be preserved (the keys should be aligned).
   /// The specified `IVectorValueTransform` defines how to deal with the case when
   /// a key is defined in both indices (i.e. which value should be in the new vector).
-  abstract Append :
-    SeriesConstruction<'K> * SeriesConstruction<'K> * IVectorValueTransform -> 
+  abstract Merge :
+    list<SeriesConstruction<'K>> * IVectorValueListTransform -> 
     IIndex<'K> * VectorConstruction
 
   /// Given an old index and a new index, build a vector transformation that reorders
@@ -267,6 +267,16 @@ and IIndexBuilder =
 
   /// Order (possibly unordered) index and return transformation that reorders vector
   abstract OrderIndex : SeriesConstruction<'K> -> SeriesConstruction<'K>
+
+  /// Shift the values in the series by a specified offset, in a specified direction.
+  /// The resulting series should be shorter by abs(offset); key for which there is no
+  /// value should be dropped. For example:
+  /// 
+  ///     (original)  (shift 1) (shift -1)
+  ///     a b c       _ b c     a b _
+  ///     1 2 3         1 2     1 2
+  /// 
+  abstract Shift : SeriesConstruction<'K> * int -> SeriesConstruction<'K>
 
   /// Aggregate an ordered index into floating windows or chunks. 
   ///

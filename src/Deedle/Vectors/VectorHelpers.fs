@@ -121,7 +121,7 @@ let createValueDispatcher<'R> (callSite:ValueCallSite<'R>) =
 /// a helper method for creating transformation on values of known types
 type VectorValueTransform =
   /// Creates a transformation that applies the specified function on `'T` values 
-  static member Create<'T>(operation:OptionalValue<'T> -> OptionalValue<'T> -> OptionalValue<'T>) = 
+  static member inline Create<'T>(operation:OptionalValue<'T> -> OptionalValue<'T> -> OptionalValue<'T>) = 
     { new IVectorValueTransform with
         member vt.GetFunction<'R>() = 
           unbox<OptionalValue<'R> -> OptionalValue<'R> -> OptionalValue<'R>> (box operation) }
@@ -152,11 +152,15 @@ type VectorValueListTransform =
   /// Creates a transformation that applies the specified function on `'T` values list
   static member Create<'T>(operation:OptionalValue<'T> list -> OptionalValue<'T>) = 
     { new IVectorValueListTransform with
+        member vt.GetBinaryFunction<'R>() : option<OptionalValue<'R> * _ -> _> = None
         member vt.GetFunction<'R>() = 
           unbox<OptionalValue<'R> list -> OptionalValue<'R>> (box operation) }
   /// A generic transformation that works when at most one value is defined
   static member AtMostOne =
     { new IVectorValueListTransform with
+        member vt.GetBinaryFunction<'R>() = Some(fun (l:OptionalValue<'R>, r:OptionalValue<'R>) ->
+          if l.HasValue && r.HasValue then invalidOp "Combining vectors failed - both vectors have a value."
+          if l.HasValue then l else r)
         member vt.GetFunction<'R>() = (fun (l:OptionalValue<'R> list) ->
           l |> List.fold (fun s v -> 
             if s.HasValue && v.HasValue then invalidOp "Combining vectors failed - more than one vector has a value."
@@ -194,13 +198,17 @@ let changeType<'R> (vector:IVector) =
 
 // A "generic function" that tries to change the type of vector elements
 let tryChangeType<'R> (vector:IVector) : OptionalValue<IVector<'R>> = 
-  let shouldBeConvertible (o:obj) = o <> null && o :? IConvertible
+  let shouldBeConvertible (o:obj) = o :? 'R || o :? IConvertible
   { new VectorCallSite<OptionalValue<IVector<'R>>> with
       override x.Invoke<'T>(col:IVector<'T>) = 
         // Check the first non-missing value to see if we should even try doing the conversion
         let first = 
-          col.DataSequence |> Seq.choose OptionalValue.asOption |> Seq.headOrNone 
-          |> Option.map (box >> shouldBeConvertible)
+          col.DataSequence 
+          |> Seq.choose (fun v -> 
+              if v.HasValue && (box v.Value) <> null 
+              then Some (box v.Value) else None) 
+          |> Seq.headOrNone 
+          |> Option.map shouldBeConvertible
         if first = Some(false) then OptionalValue.Missing
         else 
           // We still cannot be sure that it will actually work
@@ -210,13 +218,17 @@ let tryChangeType<'R> (vector:IVector) : OptionalValue<IVector<'R>> =
 
 // A "generic function" that tries to cast the type of vector elements
 let tryCastType<'R> (vector:IVector) : OptionalValue<IVector<'R>> = 
-  let shouldBeConvertible (o:obj) = o <> null && o :? 'R
+  let shouldBeCastable (o:obj) = o :? 'R
   { new VectorCallSite<OptionalValue<IVector<'R>>> with
       override x.Invoke<'T>(col:IVector<'T>) = 
         // Check the first non-missing value to see if we should even try doing the conversion
         let first = 
-          col.DataSequence |> Seq.choose OptionalValue.asOption |> Seq.headOrNone 
-          |> Option.map (box >> shouldBeConvertible)
+          col.DataSequence 
+          |> Seq.choose (fun v -> 
+              if v.HasValue && (box v.Value) <> null 
+              then Some (box v.Value) else None) 
+          |> Seq.headOrNone 
+          |> Option.map shouldBeCastable
         if first = Some(false) then OptionalValue.Missing
         else 
           // We still cannot be sure that it will actually work
@@ -224,7 +236,7 @@ let tryCastType<'R> (vector:IVector) : OptionalValue<IVector<'R>> =
           with :? InvalidCastException -> OptionalValue.Missing }
   |> vector.Invoke
 
-// A "generic function" that drops 
+/// A "generic function" that drops a specified range from any vector
 let getVectorRange (builder:IVectorBuilder) range (vector:IVector) = 
   { new VectorCallSite<IVector> with
       override x.Invoke<'T>(col:IVector<'T>) = 
@@ -232,6 +244,11 @@ let getVectorRange (builder:IVectorBuilder) range (vector:IVector) =
         builder.Build(cmd, [| col |]) :> IVector }
   |> vector.Invoke
 
+/// Active pattern that calls the `tryChangeType<float>` function
+let (|AsFloatVector|_|) v : option<IVector<float>> = 
+  match unboxVector v with 
+  | :? IVector<float> as fv -> Some fv
+  | v -> OptionalValue.asOption (tryChangeType v)
 
 /// A virtual vector for reading "row" of a data frame. The virtual vector accesses
 /// internal representation of the frame (specified by `data` and `columnCount`).
@@ -387,3 +404,14 @@ let rec substitute ((oldVar, newVar) as subst) = function
   | CombineN(lst, c) -> CombineN(List.map (substitute subst) lst, c)
   | CustomCommand(vcs, f) -> CustomCommand(List.map (substitute subst) vcs, f)
   | AsyncCustomCommand(vcs, f) -> AsyncCustomCommand(List.map (substitute subst) vcs, f)
+
+/// Matches when the vector command represents a combination
+/// of N relocated vectors (that is CombineN [Relocate ..; Relocate ..; ...])
+let (|CombinedRelocations|_|) = function
+  | CombineN(list, op) ->
+      if op.GetBinaryFunction<unit>().IsNone then None else
+      if list |> List.forall (function Relocate _ -> true | _ -> false) then
+        let parts = list |> List.map (function Relocate(a,b,c) -> (a,b,c) | _ -> failwith "logic error")
+        Some(parts, op)
+      else None
+  | _ -> None

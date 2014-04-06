@@ -141,6 +141,10 @@ type IVectorValueTransform =
 
 /// Represent a tranformation that is applied when combining N vectors
 type IVectorValueListTransform =
+  /// Returns a binary function that can be used for folding the values iteratively
+  /// (This can return None, which disallows some optimizations, but is fine)
+  abstract GetBinaryFunction<'T> : unit -> option<OptionalValue<'T> * OptionalValue<'T> -> OptionalValue<'T>>
+
   /// Returns a function that combines N values stored in vectors into a new vector value
   abstract GetFunction<'T> : unit -> (OptionalValue<'T> list -> OptionalValue<'T>)
 

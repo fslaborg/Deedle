@@ -61,7 +61,11 @@ type OptionalValue<'T> private (hasValue:bool, value:'T) =
   override x.Equals(y) =
     match y with 
     | null -> false
-    | :? OptionalValue<'T> as y -> Object.Equals(x.ValueOrDefault, y.ValueOrDefault)
+    | :? OptionalValue<'T> as y -> 
+        match x.HasValue, y.HasValue with
+        | true, true -> Object.Equals(x.ValueOrDefault, y.ValueOrDefault)
+        | false, false -> true
+        | _ -> false
     | _ -> false
    
 /// Non-generic type that makes it easier to create `OptionalValue<T>` values
@@ -263,6 +267,15 @@ module OptionalValue =
     if input.HasValue then OptionalValue(f input.Value)
     else OptionalValue.Missing
 
+  /// If both of the arguments contain value, apply the specified function to their
+  /// values and return `OptionalValue<R>` with the result. Otherwise return
+  /// `OptionalValue.Missing`.
+  [<CompiledName("Map2")>]
+  let inline map2 f (input1:OptionalValue<'T1>) (input2:OptionalValue<'T2>): OptionalValue<'R> = 
+    if input1.HasValue && input2.HasValue then 
+      OptionalValue(f input1.Value input2.Value)
+    else OptionalValue.Missing
+
   /// Creates `OptionalValue<T>` from a tuple of type `bool * 'T`. This function
   /// can be used with .NET methods that use `out` arguments. For example:
   ///
@@ -312,7 +325,6 @@ module OptionalValue =
 namespace Deedle.Internal
 
 open System
-open System.Linq
 open Deedle
 open System.Collections.Generic
 open System.Collections.ObjectModel
@@ -532,8 +544,6 @@ module Array =
 /// This module contains additional functions for working with sequences. 
 /// `Deedle.Internals` is opened, it extends the standard `Seq` module.
 module Seq = 
-  open ExtCore.Collections
-  open ExtCore.Collections.LazyListPatterns
 
   /// Comapre two sequences using the `Equals` method. Returns true
   /// when all their elements are equal and they have the same size.
@@ -556,7 +566,7 @@ module Seq =
   /// If the input is non empty, returns `Some(head)` where `head` is 
   /// the first value. Otherwise, returns `None`.
   let headOrNone (input:seq<_>) = 
-    (input |> Seq.map Some).FirstOrDefault()
+    System.Linq.Enumerable.FirstOrDefault(input |> Seq.map Some)
 
   /// Returns the specified number of elements from the end of the sequence
   /// Note that this needs to store the specified number of elements in memory
@@ -862,6 +872,7 @@ module Seq =
     if not (en.MoveNext()) then true
     else isSorted en.Current en
 
+
   /// Returns the first and the last element from a sequence or 'None' if the sequence is empty
   let tryFirstAndLast (input:seq<_>) = 
     let mutable first = None
@@ -872,61 +883,287 @@ module Seq =
     let last = last
     first |> Option.map (fun f -> f, last.Value)
 
-  /// Align two ordered sequences of `Key * Address` pairs and produce a 
-  /// collection that contains three-element tuples consisting of: 
-  ///
-  ///   * ordered keys (from one or the ohter sequence)
-  ///   * optional address of the key in the first sequence
-  ///   * optional address of the key in the second sequence
-  ///
-  let alignWithOrdering (seq1:seq<'T * 'TAddress>) (seq2:seq<'T * 'TAddress>) (comparer:IComparer<_>) = seq {
-    let withIndex seq = Seq.mapi (fun i v -> i, v) seq
-    use en1 = seq1.GetEnumerator()
-    use en2 = seq2.GetEnumerator()
-    let en1HasNext = ref (en1.MoveNext())
-    let en2HasNext = ref (en2.MoveNext())
-    let returnAll (en:IEnumerator<_>) hasNext f = seq { 
-      if hasNext then
-        yield f en.Current
-        while en.MoveNext() do yield f en.Current }
+  // ------------------------------------------------------------------------------------
+  // Aligning sequences
+  // ------------------------------------------------------------------------------------
+  
+  // The following functions take two or N, ordered or unordered sequences of keys.
+  // They all produces a new array with the union of keys together with relocation
+  // tables for each original sequence of keys. The relocation table is an array with
+  // two numbers. The first number is the new location (index of a key K in newly 
+  // returned array of keys) and the second is original location (index of the key K in
+  // the original input sequence).
+  // 
+  // The functions generally perform union, meaning that the resulting array with keys
+  // contains union of all the keys. For aligning two sequences, there is also a version
+  // that performs intersection.
 
-    let rec next () = seq {
-      if not en1HasNext.Value then yield! returnAll en2 en2HasNext.Value (fun (k, i) -> k, None, Some i)
-      elif not en2HasNext.Value then yield! returnAll en1 en1HasNext.Value (fun (k, i) -> k, Some i, None)
+  /// Align two ordered sequences of keys (using the specified comparer)
+  /// The resulting relocations are returned as two-element list for symmetry with other functions
+  /// Throws ComparisonFailedException when the comparer fails.
+  ///
+  /// When `intersectionOnly = true`, the function only adds keys & relocations
+  /// for keys that appear in both sequences (otherwise, it performs union)
+  let alignOrdered (seq1:ReadOnlyCollection<'T>) (seq2:ReadOnlyCollection<'T>) (comparer:IComparer<'T>) intersectionOnly : 'T[] * list<(int64 * int64)[]> = 
+    // Indices in the sequences seq1 and seq2
+    let mutable index1 = if seq1.Count > 0 then 0 else -1
+    let mutable index2 = if seq2.Count > 0 then 0 else -1
+    // Index in the output list of keys
+    let mutable outIndex = 0L
+    let keys = ResizeArray<_>(seq1.Count + seq2.Count)
+    // Arrays with relocations
+    let res1 = ResizeArray<_>(seq1.Count)
+    let res2 = ResizeArray<_>(seq2.Count)
+    
+    // Loop while there is a key in both inputs
+    while index1 <> -1 && index2 <> -1 do
+      let comparison = 
+        try comparer.Compare(seq1.[index1], seq2.[index2])
+        with _ -> raise <| ComparisonFailedException()
+      // Add current smallest key to the list of keys
+      if intersectionOnly then 
+        if comparison = 0 then keys.Add(seq1.[index1])
       else
-        let en1Val, en2Val = fst en1.Current, fst en2.Current
-        let comparison = 
-          try comparer.Compare(en1Val, en2Val)
-          with _ -> raise <| ComparisonFailedException()
-        if comparison = 0 then 
-          yield en1Val, Some(snd en1.Current), Some(snd en2.Current)
-          en1HasNext := en1.MoveNext()
-          en2HasNext := en2.MoveNext()
-          yield! next()
-        elif comparison < 0 then
-          yield en1Val, Some(snd en1.Current), None
-          en1HasNext := en1.MoveNext()
-          yield! next ()
-        else 
-          yield en2Val, None, Some(snd en2.Current)
-          en2HasNext := en2.MoveNext() 
-          yield! next () }
-    yield! next () }
+        if comparison <= 0 then keys.Add(seq1.[index1])
+        else keys.Add(seq2.[index2])
 
-  /// Align two unordered sequences of `Key * Address` pairs and produce a collection
-  /// that contains three-element tuples consisting of keys, optional address in the
-  /// first sequence & optional address in the second sequence. (See also `alignWithOrdering`)
-  let alignWithoutOrdering (seq1:seq<'T * 'TAddress>) (seq2:seq<'T * 'TAddress>) = seq {
-    let dict = Dictionary<_, _>()
-    for key, addr in seq1 do
-      dict.[key] <- (Some addr, None)
-    for key, addr in seq2 do
+      // Advance sequence(s) starting with the current key
+      if comparison <= 0 then
+        if comparison = 0 || not intersectionOnly then res1.Add( (outIndex, int64 index1) )
+        index1 <- if index1 + 1 >= seq1.Count then -1 else index1 + 1
+      if comparison >= 0 then
+        if comparison = 0 || not intersectionOnly then res2.Add( (outIndex, int64 index2) )
+        index2 <- if index2 + 1 >= seq2.Count then -1 else index2 + 1
+
+      // If we added key, increment index (we add key when 
+      // unioning or when interesecting & keys are in both)
+      if not intersectionOnly || comparison = 0 then
+        outIndex <- outIndex + 1L
+
+    // Add remaining relocations for one or the other 
+    if not intersectionOnly && index1 <> -1 then
+      for i = index1 to seq1.Count - 1 do 
+        res1.Add( (outIndex, int64 i) )
+        keys.Add(seq1.[i])
+        outIndex <- outIndex + 1L
+    if not intersectionOnly && index2 <> -1 then
+      for i = index2 to seq2.Count - 1 do 
+        res2.Add( (outIndex, int64 i) )
+        keys.Add(seq2.[i])
+        outIndex <- outIndex + 1L
+
+    // Produce results as arrays
+    keys.ToArray(), [ res1.ToArray(); res2.ToArray() ]
+
+  
+  /// Align N ordered sequences of keys (using the specified comparer)
+  /// This is the same as `alignOrdered` but for larger number of key sequences.
+  /// Throws ComparisonFailedException when the comparer fails.
+  /// (This performs union on the specified sequences)
+  let alignAllOrderedMany (seqs:ReadOnlyCollection<'T>[]) (comparer:IComparer<'T>) : 'T[] * list<(int64 * int64)[]> = 
+    
+    // We maintain a set of indices into the original key sequences, starting at 0
+    // An empty sequence is marked with an index of -1
+    let current = seqs |> Array.map (fun s -> if s.Count > 0 then 0, s else -1, null)
+
+    // Resize arrays for resulting keys and relocation tables
+    let newkeys = ResizeArray<_>(seqs |> Array.sumBy (fun s -> s.Count))
+    let results = seqs |> Array.map (fun s -> ResizeArray<_>(s.Count))
+
+    // We maintain a heap structure to access the next smallest key along with the 
+    // sequence it comes; allows delete-min/find-min in O(log n) time
+    let mutable heap = 
+      { new IComparer<_> with
+          member x.Compare(a, b) = 
+            try comparer.Compare(fst a, fst b) 
+            with _ -> raise (new ComparisonFailedException()) }
+      |> BinomialHeap.emptyCustom
+
+    // initialize heap
+    for i = 0 to current.Length - 1 do
+      let idx, keys = current.[i]
+      if idx <> -1 then   
+        heap <- heap |> BinomialHeap.insert (keys.[idx], i)
+
+    let mutable index = -1L
+    let mutable seen = HashSet()   // because F# Set requires comparison ...
+
+    // When there are no more elements to examine, we're done
+    while not (BinomialHeap.isEmpty heap) do
+      // pop the min key along w/sequence it came from
+      let (k, i), htmp = BinomialHeap.removeMin heap
+      let idx, keys = current.[i]
+      if not <| seen.Contains(k) then
+        // we haven't seen this key, so increment index into resulting keys array
+        newkeys.Add(k) |> ignore
+        seen.Add(k) |> ignore
+        index <- index + 1L
+      // store the relocation indexing
+      results.[i].Add( (index, int64 idx) )
+      if idx + 1 < keys.Count then 
+        // there's another key to examine in the i'th sequence, so it on the heap
+        current.[i] <- (idx + 1, keys)
+        heap <- htmp |> BinomialHeap.insert (keys.[idx + 1], i)                
+      else
+        // no more keys in i'th sequence, allow heap to shrink
+        heap <- htmp
+    
+    // Return results as arrays
+    newkeys.ToArray(), [ for r in results -> r.ToArray() ]
+
+  /// Align N ordered sequences of keys (using the specified comparer)
+  /// This is the same as `alignOrdered` but for larger number of key sequences.
+  /// Throws ComparisonFailedException when the comparer fails.
+  /// (This performs union on the specified sequences)
+  let alignAllOrderedFew (seqs:ReadOnlyCollection<'T>[]) (comparer:IComparer<'T>) : 'T[] * list<(int64 * int64)[]> = 
+    
+    // We keep an array with indices & original sequences
+    // When we finish iterating over a sequence, we set it to 'null' and set the index to -1
+    let current = seqs |> Array.map (fun s -> 
+      if s.Count > 0 then 0, s else -1, null)
+
+    // Resize arrays with keys and resulting relocation tables
+    let keys = ResizeArray<_>(seqs |> Array.sumBy (fun s -> s.Count))
+    let results = seqs |> Array.map (fun s -> ResizeArray<_>(s.Count))
+
+    /// Returns the smallest key from the current position in all collections
+    let smallestKey() = 
+      let mutable k = Unchecked.defaultof<_>
+      let mutable found = false
+      for i = 0 to current.Length - 1 do
+        let idx, keys = current.[i]
+        if idx <> -1 then                   // else: No more values in this collection
+          if found then                     // Get smaller of previous & current
+            let k2 = keys.[idx]
+            try k <- if comparer.Compare(k, k2) <= 0 then k else k2
+            with _ -> raise (new ComparisonFailedException())
+          else                              // We found our first key
+            k <- keys.[idx]
+            found <- true
+      found, k
+
+    /// For a given key, advance all input collections currently at the given key
+    /// and add mapping to relocation table for them (also add key to the list of keys)
+    let addAndAdvanceForKey index k =
+      keys.Add(k)
+      for i = 0 to current.Length - 1 do
+        let idx, keys = current.[i]
+        if idx <> -1 && comparer.Compare(keys.[idx], k) = 0 then
+          current.[i] <- if idx + 1 >= keys.Count then -1, null else idx + 1, keys
+          results.[i].Add( (index, int64 idx) )
+
+    // While there is some key in any of the collections, call `addAndAdvanceForKey`
+    let mutable index = 0L
+    let mutable completed = false
+    while not completed do
+      match smallestKey() with
+      | false, _ -> completed <- true
+      | true, k -> addAndAdvanceForKey index k; index <- index + 1L
+    // Return results as arrays
+    keys.ToArray(), [ for r in results -> r.ToArray() ]
+
+
+  /// Calls either `alignAllOrderedMany` or `alignAllOrderedFew` depending on the number
+  /// of sequences to be aligned. Performance measurements suggest that 150 is the limit
+  /// when the implementation using binomial heap is faster.
+  let alignAllOrdered (collections:_[]) comparer = 
+    if collections.Length > 150 then alignAllOrderedMany collections comparer
+    else alignAllOrderedFew collections comparer
+    
+
+  /// Align two unordered sequences of keys (performs union of the keys)
+  /// The resulting relocations are returned as two-element list for symmetry with other functions
+  let alignUnorderedUnion (seq1:ReadOnlyCollection<'T>) (seq2:ReadOnlyCollection<'T>) = 
+    let dict = Dictionary<_, _>(seq1.Count + seq2.Count)
+    let keys = ResizeArray<_>(seq1.Count + seq2.Count)
+    let res1 = ResizeArray<_>(seq1.Count)
+    let res2 = ResizeArray<_>(seq1.Count)
+
+    let mutable keyIndex = 0L
+    for i = 0 to seq1.Count - 1 do
+      let key = seq1.[i]
+      keys.Add(key)
+      res1.Add( (keyIndex, int64 i) )
+      dict.[key] <- keyIndex
+      keyIndex <- keyIndex + 1L
+
+    for i = 0 to seq2.Count - 1 do
+      let key = seq2.[i]
       match dict.TryGetValue(key) with
-      | true, (left, _) -> dict.[key] <- (left, Some addr)
-      | _ -> dict.[key] <- (None, Some addr)
-    for (KeyValue(k, (l, r))) in dict do
-      yield k, l, r }
+      | true, ki -> 
+          res2.Add( (ki, int64 i) )
+      | false, _ ->
+          keys.Add(key)
+          res2.Add( (keyIndex, int64 i) )
+          keyIndex <- keyIndex + 1L
+          // No need to add to 'dict' because it will not appear again in 'seq2'
 
+    keys.ToArray(), [ res1.ToArray(); res2.ToArray() ]    
+
+
+  /// Align two unordered sequences of keys (performs intersection of the keys)
+  /// The resulting relocations are returned as two-element list for symmetry with other functions
+  let alignUnorderedIntersection (seq1:ReadOnlyCollection<'T>) (seq2:ReadOnlyCollection<'T>) = 
+    // Dictionary containing 'true' when the key is in both collections
+    let dict = Dictionary<_, _>(seq1.Count + seq2.Count)
+    for k in seq1 do dict.Add(k, false)
+    for k in seq2 do if fst (dict.TryGetValue(k)) then dict.[k] <- true
+
+    // Lookup with indices for keys & array of keys to return
+    let keyIndices = Dictionary<_, _>(seq1.Count + seq2.Count)
+    let keys = ResizeArray<_>()
+    for (KeyValue(k, v)) in dict do
+      if v then 
+        keyIndices.Add(k, int64 keys.Count)
+        keys.Add(k)
+
+    // Build relocation tables
+    let res1 = ResizeArray<_>(seq1.Count)
+    let res2 = ResizeArray<_>(seq2.Count)
+    for i = 0 to seq1.Count - 1 do 
+      let succ, j = keyIndices.TryGetValue(seq1.[i])
+      if succ then res1.Add( (j, int64 i) ) 
+    for i = 0 to seq2.Count - 1 do 
+      let succ, j = keyIndices.TryGetValue(seq2.[i])
+      if succ then res2.Add( (j, int64 i) ) 
+
+    // Return the results
+    keys.ToArray(), [ res1.ToArray(); res2.ToArray() ]
+
+  /// Align two unordered sequences of keys. Calls either
+  /// `alignUnorderedUnion` or `alignUnorderedIntersection`, based 
+  /// on the `intersectionOnly` parameter.
+  let alignUnordered s1 s2 intersectionOnly = 
+    if intersectionOnly then alignUnorderedIntersection s1 s2
+    else alignUnorderedUnion s1 s2
+
+
+  /// Align N unordered sequences of keys (performs union of the keys)
+  let alignAllUnordered (seqs:ReadOnlyCollection<'T>[]) = 
+    let capacity = seqs |> Array.sumBy (fun s -> s.Count)
+    let dict = Dictionary<_, _>(capacity)
+    let keys = ResizeArray(capacity)
+    let mutable keyIndex = 0L
+    let relocs = seqs |> Array.map (fun c -> ResizeArray<_>(c.Count))
+
+    for i = 0 to seqs.Length - 1 do
+      let seq = seqs.[i]
+      for j = 0 to seq.Count - 1 do
+        let key = seq.[j]
+        match dict.TryGetValue(key) with
+        | true, ki -> relocs.[i].Add( (ki, int64 j) )
+        | false, _ ->
+            keys.Add(key)
+            dict.Add(key, keyIndex)
+            relocs.[i].Add( (keyIndex, int64 j) )
+            keyIndex <- keyIndex + 1L
+            
+    keys.ToArray(), [ for r in relocs -> r.ToArray() ] 
+
+// --------------------------------------------------------------------------------------
+// Misc - formatting
+// --------------------------------------------------------------------------------------
+  
 /// [omit]
 /// An interface implemented by types that support nice formatting for F# Interactive
 /// (The `FSharp.DataFrame.fsx` file registers an FSI printer using this interface.)

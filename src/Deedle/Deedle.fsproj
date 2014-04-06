@@ -53,7 +53,7 @@
   <ItemGroup>
     <Compile Include="Common\AssemblyInfo.fs" />
     <Compile Include="Common\Attributes.fs" />
-    <Compile Include="Common\LazyList.fs" />
+    <Compile Include="Common\BinomialHeap.fs" />
     <Compile Include="Common\Common.fs" />
     <Compile Include="Common\Address.fs" />
     <Compile Include="Vectors\Vector.fs" />

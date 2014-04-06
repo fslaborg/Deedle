@@ -9,6 +9,7 @@ open Deedle.Keys
 open Deedle.Addressing
 open Deedle.Internal
 open Deedle.Vectors
+open Deedle.VectorHelpers
 open MathNet.Numerics.Statistics
 
 /// The `Series` module provides F#-friendly API for working with functions. The API
@@ -369,21 +370,69 @@ module Series =
   let fillErrorsWith value (series:Series<'K, 'T tryval>) = 
     series |> mapValues (function TryValue.Error _ -> value | TryValue.Success v -> v)
 
-  /// [category:Series transformations]
-  let take count (series:Series<'K, 'T>) =
-    let addrs = [for i in [0 .. count - 1] -> (Address.ofInt i, Address.ofInt i)]
-    let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 count, addrs)
-    let vec = series.VectorBuilder.Build(cmd, [| series.Vector |])
-    let idx = series.Index.Keys |> Seq.take count |> Index.ofKeys 
-    Series(idx, vec, series.VectorBuilder, series.IndexBuilder)
+  /// Internal helper used by `skip`, `take`, etc.
+  let internal getRange lo hi (series:Series<'K, 'T>) = 
+    if hi < lo then Series([],[]) else
+      let cmd = GetRange(Return 0, (int64 lo, int64 hi))
+      let vec = series.VectorBuilder.Build(cmd, [| series.Vector |])
+      let newKeys = series.Index.Keys.[lo .. hi]
+      let idx = series.IndexBuilder.Create(newKeys, if series.IsOrdered then Some true else None)
+      Series(idx, vec, series.VectorBuilder, series.IndexBuilder)
 
+  /// Returns a series that contains the specified number of keys from the original series. 
+  ///
+  /// ## Parameters
+  ///  - `count` - Number of keys to take; must be smaller or equal to the original number of keys
+  ///  - `series` - Input series from which the keys are taken
+  ///
   /// [category:Series transformations]
+  [<CompiledName("Take")>]
+  let take count (series:Series<'K, 'T>) =
+    if count > series.KeyCount || count < 0 then 
+      invalidArg "count" "Must be greater than zero and less than the number of keys."
+    getRange 0 (count - 1) series
+
+  /// Returns a series that contains the specified number of keys from the 
+  /// original series. The keys are taken from the end of the series. 
+  ///
+  /// ## Parameters
+  ///  - `count` - Number of keys to take; must be smaller or equal to the original number of keys
+  ///  - `series` - Input series from which the keys are taken
+  ///
+  /// [category:Series transformations]
+  [<CompiledName("TakeLast")>]
   let takeLast count (series:Series<'K, 'T>) =
-    let addrs = [for i in [0 .. count - 1] -> (Address.ofInt i, Address.ofInt (series.KeyCount - count + i))]
-    let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 count, addrs)
-    let vec = series.VectorBuilder.Build(cmd, [| series.Vector |])
-    let idx = series.Index.Keys |> Seq.skip (series.KeyCount - count) |> Index.ofKeys 
-    Series(idx, vec, series.VectorBuilder, series.IndexBuilder)
+    if count > series.KeyCount || count < 0 then 
+      invalidArg "count" "Must be greater than zero and less than the number of keys."
+    getRange (series.KeyCount-count) (series.KeyCount-1) series
+
+  /// Returns a series that contains the data from the original series,
+  /// except for the first `count` keys.
+  ///
+  /// ## Parameters
+  ///  - `count` - Number of keys to skip; must be smaller or equal to the original number of keys
+  ///  - `series` - Input series from which the keys are taken
+  ///
+  /// [category:Series transformations]
+  [<CompiledName("Skip")>]
+  let skip count (series:Series<'K, 'T>) =
+    if count > series.KeyCount || count < 0 then 
+      invalidArg "count" "Must be greater than zero and less than the number of keys."
+    getRange count (series.KeyCount-1) series
+
+  /// Returns a series that contains the data from the original series,
+  /// except for the last `count` keys.
+  ///
+  /// ## Parameters
+  ///  - `count` - Number of keys to skip; must be smaller or equal to the original number of keys
+  ///  - `series` - Input series from which the keys are taken
+  ///
+  /// [category:Series transformations]
+  [<CompiledName("SkipLast")>]
+  let skipLast count (series:Series<'K, 'T>) =
+    if count > series.KeyCount || count < 0 then 
+      invalidArg "count" "Must be greater than zero and less than the number of keys."
+    getRange 0 (series.KeyCount-1-count) series
 
   /// [category:Series transformations]
   let force (series:Series<'K, 'V>) = 
@@ -424,36 +473,49 @@ module Series =
   // Calculations, aggregation and statistics
   // ----------------------------------------------------------------------------------------------
 
-
-  /// `result[k] = series[k] - series[k - offset]`
+  /// Returns a series containing difference between a value in the original series and 
+  /// a value at the specified offset. For example, calling `Series.diff 1 s` returns a 
+  /// series where previous value is subtracted from the current one. In pseudo-code, the
+  /// function behaves as follows:
+  ///
+  ///     result[k] = series[k] - series[k - offset]
+  ///
+  /// ## Parameters
+  ///  - `offset` - When positive, subtracts the past values from the current values;
+  ///    when negative, subtracts the future values from the current values.
+  ///  - `series` - The input series, containing values that support the `-` operator.
   ///
   /// [category:Calculations, aggregation and statistics]
+  [<CompiledName("Diff")>]
   let inline diff offset (series:Series<'K, ^T>) = 
-    series.Aggregate
-      ( WindowSize((abs offset) + 1, Boundary.Skip), 
-        (fun ks -> if offset < 0 then ks.Data.Keys.First() else ks.Data.Keys.Last() ),
-        (fun ds ->  
-          let fk, lk = ds.Data.KeyRange
-          match ds.Data.TryGet(fk), ds.Data.TryGet(lk) with
-          | OptionalValue.Present h, OptionalValue.Present t -> 
-              OptionalValue(if offset < 0 then h - t else t - h)
-          | _ -> OptionalValue.Missing ) )
+    let vectorBuilder = VectorBuilder.Instance
+    let newIndex, vectorR = series.Index.Builder.Shift((series.Index, Vectors.Return 0), offset)
+    let _, vectorL = series.Index.Builder.Shift((series.Index, Vectors.Return 0), -offset)
+    let cmd = Vectors.Combine(vectorL, vectorR, VectorValueTransform.Create< ^T >(OptionalValue.map2 (-)))
+    let newVector = vectorBuilder.Build(cmd, [| series.Vector |])
+    Series(newIndex, newVector, vectorBuilder, series.Index.Builder)
 
+  /// Returns a series with values shifted by the specified offset. When the offset is 
+  /// positive, the values are shifted forward and first `offset` keys are dropped. When the
+  /// offset is negative, the values are shifted backwards and the last `offset` keys are dropped.
+  /// Expressed in pseudo-code:
+  ///
+  ///     result[k] = series[k - offset]
+  ///
+  /// ## Parameters
+  ///  - `offset` - Can be both positive and negative number.
+  ///  - `series` - The input series to be shifted.
+  ///
+  /// ## Remarks
+  /// If you want to calculate the difference, e.g. `s - (Series.shift 1 s)`, you can
+  /// use `Series.diff` which will be a little bit faster.
   ///
   /// [category:Calculations, aggregation and statistics]
+  [<CompiledName("Shift")>]
   let shift offset (series:Series<'K, 'T>) = 
-    let win = WindowSize((abs offset) + 1, Boundary.Skip)
-    let shifted = 
-      if offset < 0 then
-        let offset = -offset
-        series.Aggregate
-          ( win, (fun s -> s.Data.Keys.First()),
-            (fun s -> s.Data.TryGet(s.Data.KeyRange |> snd)) ) 
-      else
-        series.Aggregate
-          ( win, (fun s -> s.Data.Keys.Last()),
-            (fun s -> s.Data.TryGet(s.Data.KeyRange |> fst)) )
-    shifted //.GetItems(series.Keys)
+    let newIndex, vector = series.IndexBuilder.Shift((series.Index, Vectors.Return 0), offset)
+    let newVector = series.VectorBuilder.Build(vector, [| series.Vector |])
+    Series(newIndex, newVector, series.VectorBuilder, series.IndexBuilder)
 
 
   ///
@@ -1700,6 +1762,14 @@ module Series =
   /// [category:Appending, joining and zipping]
   let append (series1:Series<'K, 'V>) (series2:Series<'K, 'V>) =
    series1.Append(series2)
+
+  /// [category:Appending, joining and zipping]
+  let appendN (series: Series<'K, 'V> seq) =
+    if  series |> Seq.isEmpty then 
+        Series([], [])
+    else 
+        let head = series |> Seq.head 
+        head.Append(series |> Seq.skip 1 |> Seq.toArray)
 
   /// [category:Appending, joining and zipping]
   let zipAlign kind lookup (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>) =

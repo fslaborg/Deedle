@@ -132,6 +132,15 @@ let ``Can create frame from float[,] and get data as float[,]``() =
   let data' = data |> Frame.ofArray2D |> Frame.toArray2D
   data' |> shouldEqual data
 
+[<Test>]
+let ``Creating frame from sorted series returns sorted frame``() =
+  let s1 = series [ 1 => 'a'; 2 => 'a' ]
+  let s2 = series [ 2 => 'a'; 3 => 'a' ]
+  let df1 = frame [ "A" => s1; "B" => s2 ]
+  let df2 = frame [ "A" => s2; "B" => s1 ]
+  df1.RowIndex.IsOrdered  |> shouldEqual true
+  df2.RowIndex.IsOrdered  |> shouldEqual true
+
 // ------------------------------------------------------------------------------------------------
 // Input and output (from records)
 // ------------------------------------------------------------------------------------------------
@@ -353,6 +362,40 @@ let ``Accessing row observation via missing row key returns missing`` () =
   actual.HasValue |> shouldEqual false
 
 // ------------------------------------------------------------------------------------------------
+// take, takeLast, skip, skipLast
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can take N elements from front and back`` () =
+  let s1 = series [ for i in 1 .. 100 -> i => float i]
+  let s2 = series [ for i in 1 .. 100 -> i => "N" + (string i) ]
+  let df = frame [ "S1" =?> s1; "S2" =?> s2 ]
+  let empty = frame ["S1" =?> Series<int, float>([], []); "S2" =?> Series<int, string>([], [])]
+
+  Frame.take 2 df |> shouldEqual <| frame ["S1" =?> series [1 => 1.0; 2 => 2.0]; "S2" =?> series [1 => "N1"; 2 => "N2"] ]
+  Frame.take 100 df |> shouldEqual <| df
+  Frame.take 0 df |> shouldEqual <| empty
+
+  Frame.takeLast 2 df |> shouldEqual <| frame ["S1" =?> series [99 => 99.0; 100 => 100.0]; "S2" =?> series [99 => "N99"; 100 => "N100"] ]
+  Frame.takeLast 100 df |> shouldEqual <| df
+  Frame.takeLast 0 df |> shouldEqual <| empty
+
+[<Test>]
+let ``Can skip N elements from front and back`` () =
+  let s1 = series [ for i in 1 .. 100 -> i => float i]
+  let s2 = series [ for i in 1 .. 100 -> i => "N" + (string i) ]
+  let df = frame [ "S1" =?> s1; "S2" =?> s2 ]
+  let empty = frame ["S1" =?> Series<int, float>([], []); "S2" =?> Series<int, string>([], [])]
+
+  Frame.skip 98 df |> shouldEqual <| frame ["S1" =?> series [99 => 99.0; 100 => 100.0]; "S2" =?> series [99 => "N99"; 100 => "N100"] ]
+  Frame.skip 100 df |> shouldEqual <| empty
+  Frame.skip 0 df |> shouldEqual <| df
+
+  Frame.skipLast 98 df |> shouldEqual <| frame ["S1" =?> series [1 => 1.0; 2 => 2.0]; "S2" =?> series [1 => "N1"; 2 => "N2"] ]
+  Frame.skipLast 100 df |> shouldEqual <| empty 
+  Frame.skipLast 0 df |> shouldEqual <| df
+
+// ------------------------------------------------------------------------------------------------
 // Stack & unstack
 // ------------------------------------------------------------------------------------------------
 
@@ -388,6 +431,8 @@ let ``Applying numerical operation to frame does not affect non-numeric series``
 [<Test>]
 let ``Can perform numerical operation with a scalar on data frames`` () =
   let df = msft() 
+
+  (-df)?Open.GetAt(66) |> shouldEqual (-df?Open.GetAt(66))
 
   (df * 2.0)?Open.GetAt(66) |> shouldEqual (df?Open.GetAt(66) * 2.0)
   (df / 2.0)?Open.GetAt(66) |> shouldEqual (df?Open.GetAt(66) / 2.0)
@@ -533,7 +578,7 @@ let ``Can inner/outer/left/right join row keys when aligning``()  =
 let ``Can zip and subtract numerical values in MSFT data set``() = 
   let df1 = msft()
   let df2 = msft()
-  let actual = df1.Zip(df2, fun a b -> a - b)
+  let actual = df1.Zip<int, _, _>(df2, fun a b -> a - b)
   let values = actual.GetAllValues<int>()
   values |> Seq.length |> shouldEqual (6 * (df1 |> Frame.countRows))
   values |> Seq.forall ((=) 0) |> shouldEqual true
@@ -542,7 +587,7 @@ let ``Can zip and subtract numerical values in MSFT data set``() =
 let ``Can zip and subtract numerical values in MSFT data set; with some rows dropped``() = 
   let df1 = (msft() |> Frame.sortRowsByKey).Rows.[DateTime(2000, 1, 1) ..]
   let df2 = msft()
-  let values = df1.Zip(df2, fun a b -> a - b).GetAllValues<int>()
+  let values = df1.Zip<int, _, _>(df2, fun a b -> a - b).GetAllValues<int>()
   values |> Seq.length |> shouldEqual (6 * (df1 |> Frame.countRows))
   values |> Seq.forall ((=) 0) |> shouldEqual true
 
@@ -551,9 +596,29 @@ let ``Can zip and subtract numerical values in MSFT data set; with some columns 
   let df1 = msft()
   df1.DropSeries("Adj Close")
   let df2 = msft()
-  let zipped = df1.Zip(df2, fun a b -> a - b)
+  let zipped = df1.Zip<int, _, _>(df2, fun a b -> a - b)
   zipped?``Adj Close`` |> Series.sum |> should (be greaterThan) 0.0
   zipped?Low |> Series.sum |> shouldEqual 0.0
+
+[<Test>]
+let ``Can zip frames containing values of complex types`` () =  
+  let df = frame [ "A" => Series.ofValues [2 .. 2 .. 20]; "B" => Series.ofValues [1 .. 10 ] ]
+  let df1 = df.Zip<int, int, int*int>(df, fun a b -> a,b)
+  let df2 = df1.Zip<int*int, int, (int*int)*int>(df, fun a b -> (a,b))
+  let actual = df2.Rows.[0].As<(int * int) * int>()
+  actual |> shouldEqual <| series [ "A" => ((2,2),2); "B" => ((1,1), 1)]
+
+[<Test>]
+let ``Can zip frames containing values of complex types without annotations`` () =  
+  let df = frame [ "A" => Series.ofValues [2 .. 2 .. 20]; "B" => Series.ofValues [1 .. 10 ] ]
+  let df1 = df.Zip(df, fun a b -> a,b)
+  let df2 = df1.Zip(df, fun a b -> (a,b))
+  
+  let ab, c = unbox<obj * obj> (df2.Rows.[0].["A"])
+  let a, b = unbox<obj * obj> ab
+  a |> shouldEqual (box 2)
+  b |> shouldEqual (box 2)
+  c |> shouldEqual (box 2)
 
 // ------------------------------------------------------------------------------------------------
 // Operations - join, align
@@ -719,7 +784,7 @@ let ``Left join fills missing values - search for previous when there is missing
 let ``Left zip fills missing values - search for previous when there is no exact key`` () =
   let miss = Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => Double.NaN; ] ]
   let full = Frame.ofColumns [ "A" => series [ 1 => 2.0; 3 => 3.0 ] ]
-  let joined = full.Zip(miss, JoinKind.Inner, JoinKind.Left, Lookup.NearestSmaller, fun a b -> a + b)
+  let joined = full.Zip<float, _, _>(miss, JoinKind.Inner, JoinKind.Left, Lookup.NearestSmaller, fun a b -> a + b)
   let expected = series [ 1 => 3.0; 3 => 4.0 ]
   joined?A |> shouldEqual expected
 
@@ -727,7 +792,7 @@ let ``Left zip fills missing values - search for previous when there is no exact
 let ``Left zip only fills missing values in joined series`` () =
   let miss = Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => Double.NaN; ] ]
   let full = Frame.ofColumns [ "A" => series [ 1 => 2.0; 2 => 3.0 ] ]
-  let joined = miss.Zip(full, JoinKind.Inner, JoinKind.Left, Lookup.NearestSmaller, fun a b -> a + b)
+  let joined = miss.Zip<float, _, _>(full, JoinKind.Inner, JoinKind.Left, Lookup.NearestSmaller, fun a b -> a + b)
   let expected = series [ 1 => 3.0; 2 => Double.NaN ]
   joined?A |> shouldEqual expected
 
@@ -974,20 +1039,17 @@ let ``Can index rows using transformation function``() =
     Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => 2.0 ]; 
                       "B" => series [ 1 => 2.0; 2 => 3.0 ] ]
     |> Frame.indexRowsUsing (fun r -> r.GetAs<float>("A") + 2.0)
-
   let expected = 
     Frame.ofColumns [ "A" => series [ 3.0 => 1.0; 4.0 => 2.0 ]; 
                       "B" => series [ 3.0 => 2.0; 4.0 => 3.0 ] ]
-
   actual |> shouldEqual expected
   
+
 [<Test>]
 let ``Can reindex ordinally``() =
   let actual = 
     Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => 2.0 ]; 
                       "B" => series [ 1 => 2.0; 2 => 3.0 ] ]
     |> Frame.indexRowsOrdinally
-
   let expected = [0; 1] |> Seq.ofList
-
   actual.RowKeys |> shouldEqual expected

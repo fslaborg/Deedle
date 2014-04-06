@@ -169,6 +169,30 @@ let ``Series.windowWhileInto works on sample input`` () =
   actual |> shouldEqual expected
 
 // ------------------------------------------------------------------------------------------------
+// Numerics
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can perform numerical operations on series of floats`` () =
+  let sf = series [ 1 => 1.0; 2 => nan; 3 => 3.0 ]
+  (-sf).[3] |> shouldEqual -3.0
+  (sf * sf).[3] |> shouldEqual 9.0
+  (sf * sf).[3] |> shouldEqual 9.0
+  (sf + sf).[3] |> shouldEqual 6.0
+  (sf - sf).[3] |> shouldEqual 0.0
+  (sf / sf).[3] |> shouldEqual 1.0
+
+[<Test>]
+let ``Can perform numerical operations on series of integers`` () =
+  let sn = series [ 1 => 1; 2 => 2; 3 => 3 ]
+  (-sn).[3] |> shouldEqual -3
+  (sn * sn).[3] |> shouldEqual 9
+  (sn * sn).[3] |> shouldEqual 9
+  (sn + sn).[3] |> shouldEqual 6
+  (sn - sn).[3] |> shouldEqual 0
+  (sn / sn).[3] |> shouldEqual 1
+
+// ------------------------------------------------------------------------------------------------
 // Operations - union, grouping, diff, etc.
 // ------------------------------------------------------------------------------------------------
 
@@ -189,6 +213,14 @@ let ``Series.diff correctly handles missing values``() =
   actual1 |> shouldEqual [(0, None); (1, None); (2, None); (3, Some -2.0)]
   let actual2 = s |> Series.diff 1 |> Series.observationsAll |> List.ofSeq
   actual2 |> shouldEqual [(1, None); (2, None); (3, None); (4, Some 2.0)]
+
+[<Test>]
+let ``Series.shift works correctnly on sample input``() =
+  let input = series [ 'a' => 1.0; 'b' => 2.0; 'c' => nan; 'd' => 3.0;  ]
+  let actual1 = input |> Series.shift 1
+  actual1 |> shouldEqual <| series [ 'b' => 1.0; 'c' => 2.0; 'd' => nan ]
+  let actual2 = input |> Series.shift -1
+  actual2 |> shouldEqual <| series [ 'a' => 2.0; 'b' => nan; 'c' => 3.0 ]
 
 [<Test>] 
 let ``Union correctly unions series, prefering left or right values``() = 
@@ -229,7 +261,7 @@ let ``Cumulative sum works``() =
 [<Test>]
 let ``Cumulative count works``() =
   let s = series [0 => 1.0; 1 => nan; 2 => 2.0; 3 => 3.0 ]
-  let e = Series.ofOptionalObservations [0 => OptionalValue(1); 1 => OptionalValue.Missing; 2 => OptionalValue(2); 3 => OptionalValue(3) ]
+  let e = Series.ofOptionalObservations [0 => Some(1); 1 => None; 2 => Some(2); 3 => Some(3) ]
   s |> Series.cumCount |> shouldEqual e
 
 [<Test>]
@@ -640,6 +672,91 @@ let ``Can left-zip two empty series`` () =
   let s1 = series ([] : list<int * int>)
   let s2 = s1.Zip(s1, JoinKind.Left)
   s2 |> shouldEqual (series [])
+
+[<Test>]
+let ``Can append two sample series`` () =
+  let inputs = Array.init 1000 (fun i -> i => int (10.0 * sin (float i)))
+  let ar1, ar2 = Array.partition (fun (_, v) -> v%2 = 0) inputs
+  let actual = (series ar1).Append(series ar2) 
+  actual.Index.IsOrdered |> shouldEqual true
+  actual |> shouldEqual (series inputs)
+
+[<Test>]
+let ``Can append 10 sample ordered series (by appending them one by one)`` () =
+  let samples = [ for i in 0 .. 9 -> series [ for j in 0 .. 99 -> 10*j + i => i * j ] ]
+  let expected = series [ for i in 0 .. 9 do for j in 0 .. 99 -> 10*j + i => i * j ] |> Series.sortByKey
+  let actual = samples |> Seq.reduce Series.append
+  actual.Index.IsOrdered |> shouldEqual true
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Can append 10 sample unordered series (by appending them one by one)`` () =
+  let samples = [ for i in 0 .. 9 -> series [ for j in 99 .. -1 .. 0 -> 10*j + i => i * j ] ]
+  let expected = series [ for i in 0 .. 9 do for j in 99 .. -1 .. 0 -> 10*j + i => i * j ] 
+  let actual = samples |> Seq.reduce Series.append
+  actual.Index.IsOrdered |> shouldEqual false
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Can append 10 sample ordered series`` () =
+  let samples = [ for i in 0 .. 9 -> series [ for j in 0 .. 99 -> 10*j + i => i * j ] ]
+  let expected = series [ for i in 0 .. 9 do for j in 0 .. 99 -> 10*j + i => i * j ] |> Series.sortByKey
+  let actual = samples.Head.Append(Array.ofSeq samples.Tail)
+  actual.Index.IsOrdered |> shouldEqual true
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Can append 10 sample unordered series`` () =
+  let samples = [ for i in 0 .. 9 -> series [ for j in 99 .. -1 .. 0 -> 10*j + i => i * j ] ]
+  let expected = series [ for i in 0 .. 9 do for j in 99 .. -1 .. 0 -> 10*j + i => i * j ] 
+  let actual = samples.Head.Append(Array.ofSeq samples.Tail)
+  actual.Index.IsOrdered |> shouldEqual false
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Can correctly append over 150 series`` () =
+  let rnd = new Random(0)
+  let values = Array.init 300 (fun _ -> new ResizeArray<_>())
+  for i in 0 .. 10000 do values.[rnd.Next(300)].Add( (i, float i) )
+
+  let minimalCount = values |> Seq.map (fun r -> r.Count) |> Seq.min
+  minimalCount |> shouldEqual 21 // Just to check that we have some values
+
+  let ss = values |> Array.map series
+  let actual = ss.[0].Append(ss.[1 ..]) 
+  actual |> shouldEqual <| series [ for i in 0 .. 10000 -> i => float i ] 
+
+// ------------------------------------------------------------------------------------------------
+// take, takeLast, skip, skipLast
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can take N elements from front and back`` () =
+  let s = series [ for i in 1 .. 100 -> i => float i]
+
+  Series.take 2 s |> shouldEqual <| series [1 => 1.0; 2 => 2.0]
+  Series.take 100 s |> shouldEqual <| s
+  Series.take 0 s |> shouldEqual <| series []
+
+  Series.takeLast 2 s |> shouldEqual <| series [99 => 99.0; 100 => 100.0]
+  Series.takeLast 100 s |> shouldEqual <| s
+  Series.takeLast 0 s |> shouldEqual <| series []
+
+[<Test>]
+let ``Can skip N elements from front and back`` () =
+  let s = series [ for i in 1 .. 100 -> i => float i]
+
+  Series.skip 98 s |> shouldEqual <| series [99 => 99.0; 100 => 100.0]
+  Series.skip 100 s |> shouldEqual <| series []
+  Series.skip 0 s |> shouldEqual <| s
+
+  Series.skipLast 98 s |> shouldEqual <| series [1 => 1.0; 2 => 2.0]
+  Series.skipLast 100 s |> shouldEqual <| series []
+  Series.skipLast 0 s |> shouldEqual <| s
+
+// ------------------------------------------------------------------------------------------------
+// Misc
+// ------------------------------------------------------------------------------------------------
 
 [<Test>]
 let ``TryMap can catch errors`` () =

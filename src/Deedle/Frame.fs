@@ -109,14 +109,22 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     | _ ->
         // Create new row index by unioning all keys
         let rowKeys = columns |> Seq.collect (fun (_, s) -> (seriesConv s).Index.Keys) |> Seq.distinct |> Array.ofSeq
-        let rowIndex = nested.IndexBuilder.Create(rowKeys, None)
+        // If all source series were sorted, the resulting frame should also be sorted
+        let sorted = 
+          if nested.ValueCount > 0 && columns |> Seq.forall (fun (_, s) -> (seriesConv s).Index.IsOrdered) then
+            let comparer = columns |> Seq.pick (fun (_, s) -> Some((seriesConv s).Index.Comparer))
+            Array.sortInPlaceWith (fun a b -> comparer.Compare(a, b)) rowKeys
+            Some true
+          else None
+        let rowIndex = nested.IndexBuilder.Create(rowKeys, sorted)
+
         // Create column index by taking all column keys
         let colKeys = nested |> Series.observationsAll |> Seq.map fst |> Array.ofSeq
         let colIndex = nested.IndexBuilder.Create(colKeys, None)
         // Build the data 
         let data = 
           nested |> Series.observationsAll |> Seq.map (fun (_, s) ->
-            let series = match s with Some s -> seriesConv s | _ -> Series.Create([], []) :> ISeries<_>
+            let series = match s with Some s -> seriesConv s | _ -> Series([], []) :> ISeries<_>
             let cmd = nested.IndexBuilder.Reindex(series.Index, rowIndex, Lookup.Exact, Vectors.Return 0, fun _ -> true)
             // When the nested series data is in 'IBoxedVector', get the unboxed representation
             VectorHelpers.transformColumn nested.VectorBuilder cmd (unboxVector series.Vector) )
@@ -132,10 +140,10 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   member internal x.IndexBuilder = indexBuilder
   member internal x.VectorBuilder = vectorBuilder
-
-  member internal frame.RowIndex = rowIndex
-  member internal frame.ColumnIndex = columnIndex
   member internal frame.Data = data
+
+  member frame.RowIndex = rowIndex
+  member frame.ColumnIndex = columnIndex
 
   member frame.RowCount = frame.RowIndex.KeyCount |> int
   member frame.ColumnCount = frame.ColumnIndex.KeyCount |> int
@@ -218,7 +226,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   ///
   /// [category:Joining, zipping and appending]
   member frame1.Zip<'V1, 'V2, 'V3>(otherFrame:Frame<'TRowKey, 'TColumnKey>, op:Func<'V1, 'V2, 'V3>) =
-    frame1.Zip(otherFrame, JoinKind.Outer, JoinKind.Outer, Lookup.Exact, op)
+    frame1.Zip<'V1, 'V2, 'V3>(otherFrame, JoinKind.Outer, JoinKind.Outer, Lookup.Exact, op)
 
   /// Join two data frames. The columns of the joined frames must not overlap and their
   /// rows are aligned and transformed according to the specified join kind.
@@ -244,7 +252,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     // Append the column indices and get transformation to combine them
     // (LeftOrRight - specifies that when column exist in both data frames then fail)
     let newColumnIndex, colCmd = 
-      indexBuilder.Append( (columnIndex, Vectors.Return 0), (otherFrame.ColumnIndex, Vectors.Return 1), VectorValueTransform.LeftOrRight)
+      indexBuilder.Merge( [(columnIndex, Vectors.Return 0); (otherFrame.ColumnIndex, Vectors.Return 1) ], VectorValueListTransform.AtMostOne)
     // Apply transformation to both data vectors
     let newThisData = data.Select(transformColumn vectorBuilder thisRowCmd)
     let newOtherData = otherFrame.Data.Select(transformColumn vectorBuilder otherRowCmd)
@@ -440,22 +448,23 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Accessors and slicing]
   member frame.Columns = 
-    ColumnSeries(Series.Create(columnIndex, data.Select(fun vect -> 
-      Series.CreateUntyped(rowIndex, boxVector vect))))
+    let newData = data.Select(fun vect -> ObjectSeries<_>(rowIndex, boxVector vect, vectorBuilder, indexBuilder))
+    ColumnSeries(Series(columnIndex, newData, vectorBuilder, indexBuilder))
 
   /// [category:Accessors and slicing]
   member frame.ColumnsDense = 
-    ColumnSeries(Series.Create(columnIndex, data.SelectMissing(fun vect -> 
+    let newData = data.SelectMissing(fun vect -> 
       // Assuming that the data has all values - which should be an invariant...
       let all = rowIndex.Mappings |> Seq.forall (fun (key, addr) -> vect.Value.GetObject(addr).HasValue)
-      if all then OptionalValue(Series.CreateUntyped(rowIndex, boxVector vect.Value))
-      else OptionalValue.Missing )))
+      if all then OptionalValue(ObjectSeries(rowIndex, boxVector vect.Value, vectorBuilder, indexBuilder))
+      else OptionalValue.Missing )
+    ColumnSeries(Series(columnIndex, newData, vectorBuilder, indexBuilder))
 
   /// [category:Accessors and slicing]
   member frame.Rows =
     let getRow addr =
        let rowReader = createObjRowReader data vectorBuilder columnIndex.KeyCount addr
-       Series.CreateUntyped(columnIndex, rowReader)
+       ObjectSeries(columnIndex, rowReader, vectorBuilder, indexBuilder)
     let values = Array.init (int rowIndex.KeyCount) (fun a -> getRow (Address.ofInt a))
     RowSeries(Series<_, _>(rowIndex, vectorBuilder.Create(values), vectorBuilder, indexBuilder))
 
@@ -466,7 +475,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       let rowAddress = rowIndex.Locate(row.Key)
       let rowVec = createObjRowReader data vectorBuilder columnIndex.KeyCount rowAddress
       let all = columnIndex.Mappings |> Seq.forall (fun (key, addr) -> rowVec.GetValue(addr).HasValue)
-      if all then OptionalValue(Series.CreateUntyped(columnIndex, rowVec))
+      if all then OptionalValue(ObjectSeries(columnIndex, rowVec, vectorBuilder, indexBuilder))
       else OptionalValue.Missing )
     RowSeries(Series.dropMissing res)
 
@@ -504,7 +513,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     if index < 0 || int64 index >= rowIndex.KeyCount then
       raise (new ArgumentOutOfRangeException("index", "Index must be positive and smaller than the number of rows."))
     let rowAddress = Address.ofInt index
-    Series.Create(columnIndex, createRowReader data vectorBuilder columnIndex.KeyCount rowAddress)
+    let vector = createRowReader data vectorBuilder columnIndex.KeyCount rowAddress
+    Series(columnIndex, vector, vectorBuilder, indexBuilder)
 
   /// Returns a row with the specieifed key wrapped in `OptionalValue`. When the specified key 
   /// is not found, the result is `OptionalValue.Missing`. This method is generic and returns the result 
@@ -518,7 +528,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member frame.TryGetRow<'T>(rowKey) : OptionalValue<Series<_, 'T>> =
     let rowAddress = rowIndex.Locate(rowKey)
     if rowAddress = Address.Invalid then OptionalValue.Missing
-    else OptionalValue(Series.Create(columnIndex, createRowReader data vectorBuilder columnIndex.KeyCount rowAddress))
+    else 
+      let vector = createRowReader data vectorBuilder columnIndex.KeyCount rowAddress
+      OptionalValue(Series(columnIndex, vector, vectorBuilder, indexBuilder))
 
   /// Returns a row with the specieifed key wrapped in `OptionalValue`. When the specified key 
   /// is not found, the result is `OptionalValue.Missing`. This method is generic and returns the result 
@@ -534,7 +546,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member frame.TryGetRow<'T>(rowKey, lookup) : OptionalValue<Series<_, 'T>> =
     let rowAddress = rowIndex.Lookup(rowKey, lookup, fun _ -> true)
     if not rowAddress.HasValue then OptionalValue.Missing
-    else OptionalValue(Series.Create(columnIndex, createRowReader data vectorBuilder columnIndex.KeyCount (snd rowAddress.Value)))
+    else 
+      let vector = createRowReader data vectorBuilder columnIndex.KeyCount (snd rowAddress.Value)
+      OptionalValue(Series(columnIndex, vector, vectorBuilder, indexBuilder))
 
   /// Returns a row with the specieifed key. This method is generic and returns the result 
   /// as a series containing values of the specified type. To get heterogeneous series of 
@@ -572,7 +586,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let rowAddress = rowIndex.Lookup(rowKey, lookup, fun _ -> true)
     if not rowAddress.HasValue then OptionalValue.Missing
     else 
-      let row = Series.Create(columnIndex, createRowReader data vectorBuilder columnIndex.KeyCount (snd rowAddress.Value))
+      let vector = createRowReader data vectorBuilder columnIndex.KeyCount (snd rowAddress.Value)
+      let row = Series(columnIndex, vector, vectorBuilder, indexBuilder)
       OptionalValue(KeyValuePair(fst rowAddress.Value, row))
   
   // ----------------------------------------------------------------------------------------------
@@ -750,7 +765,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   ///
   /// [category:Series operations]
   member frame.ReplaceSeries(column, data:seq<'V>, lookup) = 
-    frame.ReplaceSeries(column, Series.Create(frame.RowIndex, Vector.ofValues data), lookup)
+    let newSeries = Series(frame.RowIndex, Vector.ofValues data, vectorBuilder, indexBuilder)
+    frame.ReplaceSeries(column, newSeries, lookup)
 
   /// Mutates the data frame by replacing the specified series with
   /// a new series. (If the series does not exist, only the new
@@ -798,9 +814,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member frame.GetSeries<'R>(column:'TColumnKey, lookup) : Series<'TRowKey, 'R> = 
     match safeGetColVector(column, lookup, fun _ -> true) with
     | :? IVector<'R> as vec -> 
-        Series.Create(rowIndex, vec)
+        Series(rowIndex, vec, vectorBuilder, indexBuilder)
     | colVector ->
-        Series.Create(rowIndex, changeType colVector)
+        Series(rowIndex, changeType colVector, vectorBuilder, indexBuilder)
 
   /// [category:Series operations]
   member frame.GetSeriesAt<'R>(index:int) : Series<'TRowKey, 'R> = 
@@ -816,7 +832,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// [category:Series operations]
   member frame.TryGetSeries<'R>(column:'TColumnKey, lookup) =
     tryGetColVector(column, lookup, fun _ -> true) 
-    |> OptionalValue.map (fun v -> Series.Create(rowIndex, changeType<'R> v))
+    |> OptionalValue.map (fun v -> Series(rowIndex, changeType<'R> v, vectorBuilder, indexBuilder))
 
   /// [category:Series operations]
   member frame.TryGetSeriesObservation<'R>(column:'TColumnKey, lookup) =
@@ -826,7 +842,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     else
       data.GetValue (snd columnIndex.Value) 
       |> OptionalValue.map (fun vec ->
-        let ser = Series.Create(rowIndex, changeType<'R> vec)
+        let ser = Series(rowIndex, changeType<'R> vec, vectorBuilder, indexBuilder)
         KeyValuePair(fst columnIndex.Value, ser) )
 
   /// [category:Series operations]
@@ -894,11 +910,16 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   static member inline private ScalarOperationL<'T>(frame:Frame<'TRowKey, 'TColumnKey>, scalar:'T, op:'T -> 'T -> 'T) : Frame<'TRowKey, 'TColumnKey> =
     Frame<'TRowKey, 'TColumnKey>.ScalarOperationR<'T>(frame, scalar, fun a b -> op b a)
   // Apply operation 'op' to all values in all columns convertible to 'T
-  static member inline internal NullaryOperation<'T>(frame:Frame<'TRowKey, 'TColumnKey>, op : 'T -> 'T) = 
+  static member inline internal UnaryOperation<'T>(frame:Frame<'TRowKey, 'TColumnKey>, op : 'T -> 'T) = 
     frame.SeriesApply(false, fun (s:Series<'TRowKey, 'T>) -> (Series.mapValues op s) :> ISeries<_>)
   // Apply operation 'op' to all values in all columns convertible to 'T1 (the operation returns different type!)
-  static member inline internal NullaryGenericOperation<'T1, 'T2>(frame:Frame<'TRowKey, 'TColumnKey>, op : 'T1 -> 'T2) =
+  static member inline internal UnaryGenericOperation<'T1, 'T2>(frame:Frame<'TRowKey, 'TColumnKey>, op : 'T1 -> 'T2) =
     frame.SeriesApply(false, fun (s:Series<'TRowKey, 'T1>) -> (Series.mapValues op s) :> ISeries<_>)
+
+  // Unary numerical operators (just minus)
+
+  /// [category:Operators]
+  static member (~-) (frame) = Frame<'TRowKey, 'TColumnKey>.UnaryGenericOperation<float, _>(frame, (~-))
 
   // Pointwise binary operations applied to two frames
 
@@ -1029,46 +1050,46 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   // Trigonometric
   
   /// [category:Operators]
-  static member Acos(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, acos)
+  static member Acos(frame) = Frame<'TRowKey, 'TColumnKey>.UnaryOperation<float>(frame, acos)
   /// [category:Operators]
-  static member Asin(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, asin)
+  static member Asin(frame) = Frame<'TRowKey, 'TColumnKey>.UnaryOperation<float>(frame, asin)
   /// [category:Operators]
-  static member Atan(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, atan)
+  static member Atan(frame) = Frame<'TRowKey, 'TColumnKey>.UnaryOperation<float>(frame, atan)
   /// [category:Operators]
-  static member Sin(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, sin)
+  static member Sin(frame) = Frame<'TRowKey, 'TColumnKey>.UnaryOperation<float>(frame, sin)
   /// [category:Operators]
-  static member Sinh(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, sinh)
+  static member Sinh(frame) = Frame<'TRowKey, 'TColumnKey>.UnaryOperation<float>(frame, sinh)
   /// [category:Operators]
-  static member Cos(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, cos)
+  static member Cos(frame) = Frame<'TRowKey, 'TColumnKey>.UnaryOperation<float>(frame, cos)
   /// [category:Operators]
-  static member Cosh(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, cosh)
+  static member Cosh(frame) = Frame<'TRowKey, 'TColumnKey>.UnaryOperation<float>(frame, cosh)
   /// [category:Operators]
-  static member Tan(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, tan)
+  static member Tan(frame) = Frame<'TRowKey, 'TColumnKey>.UnaryOperation<float>(frame, tan)
   /// [category:Operators]
-  static member Tanh(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, tanh)
+  static member Tanh(frame) = Frame<'TRowKey, 'TColumnKey>.UnaryOperation<float>(frame, tanh)
 
   // Actually useful
 
   /// [category:Operators]
-  static member Abs(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, abs)
+  static member Abs(frame) = Frame<'TRowKey, 'TColumnKey>.UnaryOperation<float>(frame, abs)
   /// [category:Operators]
-  static member Ceiling(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, ceil)
+  static member Ceiling(frame) = Frame<'TRowKey, 'TColumnKey>.UnaryOperation<float>(frame, ceil)
   /// [category:Operators]
-  static member Exp(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, exp)
+  static member Exp(frame) = Frame<'TRowKey, 'TColumnKey>.UnaryOperation<float>(frame, exp)
   /// [category:Operators]
-  static member Floor(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, floor)
+  static member Floor(frame) = Frame<'TRowKey, 'TColumnKey>.UnaryOperation<float>(frame, floor)
   /// [category:Operators]
-  static member Truncate(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, truncate)
+  static member Truncate(frame) = Frame<'TRowKey, 'TColumnKey>.UnaryOperation<float>(frame, truncate)
   /// [category:Operators]
-  static member Log(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, log)
+  static member Log(frame) = Frame<'TRowKey, 'TColumnKey>.UnaryOperation<float>(frame, log)
   /// [category:Operators]
-  static member Log10(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, log10)
+  static member Log10(frame) = Frame<'TRowKey, 'TColumnKey>.UnaryOperation<float>(frame, log10)
   /// [category:Operators]
-  static member Round(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryOperation<float>(frame, round)
+  static member Round(frame) = Frame<'TRowKey, 'TColumnKey>.UnaryOperation<float>(frame, round)
   /// [category:Operators]
-  static member Sign(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryGenericOperation<float, _>(frame, sign)
+  static member Sign(frame) = Frame<'TRowKey, 'TColumnKey>.UnaryGenericOperation<float, _>(frame, sign)
   /// [category:Operators]
-  static member Sqrt(frame) = Frame<'TRowKey, 'TColumnKey>.NullaryGenericOperation<float, _>(frame, sqrt)
+  static member Sqrt(frame) = Frame<'TRowKey, 'TColumnKey>.UnaryGenericOperation<float, _>(frame, sqrt)
 
   // ----------------------------------------------------------------------------------------------
   // Constructor

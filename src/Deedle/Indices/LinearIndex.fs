@@ -191,22 +191,20 @@ type LinearRangeIndex<'K when 'K : equality>
 /// provides operations for manipulating linear indices (and the associated vectors).
 type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
-  /// Given the result of 'Seq.alignWithOrdering', create a new index
-  /// and apply the transformations on two specified vector constructors
-  let returnUsingAlignedSequence joined vector1 vector2 ordered : (IIndex<_> * _ * _) = 
-    // Create a new index using the sorted keys
-    let newIndex = LinearIndex<_>(seq { for k, _, _ in joined -> k} |> ReadOnlyCollection.ofSeq, LinearIndexBuilder.Instance, ?ordered=ordered)
-    let len = (newIndex :> IIndex<_>).KeyCount
+  /// Given the result of one of the 'Seq.align[All][Un]Ordered' functions,
+  /// build new index and 'Vectors.Relocate' commands for each vector
+  let makeSeriesConstructions (keys:'K[], relocations:list<(Address * Address)[]>) vectors ordered : (IIndex<_> * list<_>) = 
+    let newIndex = LinearIndex<_>(ReadOnlyCollection.ofArray keys, LinearIndexBuilder.Instance, ?ordered=ordered)
+    let newVectors = (vectors, relocations) ||> List.mapi2 (fun i vec reloc ->
+      Vectors.Relocate(vec, int64 keys.Length, reloc) )
+    ( upcast newIndex, newVectors )
 
-    // Create relocation transformations for both vectors
-    let joinedWithIndex = Seq.zip (Address.generateRange (0L, len-1L)) joined
-    let vect1Reloc = seq { for n, (_, o, _) in joinedWithIndex do if Option.isSome o then yield n, o.Value }
-    let newVector1 = Vectors.Relocate(vector1, len, vect1Reloc)
-    let vect2Reloc = seq { for n, (_, _, o) in joinedWithIndex do if Option.isSome o then yield n, o.Value }
-    let newVector2 = Vectors.Relocate(vector2, len, vect2Reloc)
-
-    // That's it! Return the result.
-    ( upcast newIndex, newVector1, newVector2 )
+  /// Calls 'makeSeriesConstructions' on two vectors 
+  /// (assumes that 'spec' contains two relocation tables)
+  let makeTwoSeriesConstructions spec v1 v2 ordered = 
+    match makeSeriesConstructions spec [v1; v2] ordered with
+    | index, [ v1; v2 ] -> index, v1, v2
+    | _ -> failwith "makeTwoSeriesConstructions: Expected two vectors"
 
   /// Convert any index to a linear index (and relocate vector accordingly)
   let asLinearIndex (index:IIndex<_>) vector =
@@ -256,15 +254,15 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
       // Turn each location into vector construction using LinearRangeIndex
       let vectorConstructions =
-        locations |> Array.ofSeq |> Array.map (fun (kind, lo, hi) ->
+        locations |> Seq.map (fun (kind, lo, hi) ->
           let cmd = Vectors.GetRange(vector, (lo, hi)) 
           let index = LinearRangeIndex(index, lo, hi)
           kind, (index :> IIndex<_>, cmd) )
 
       // Run the specified selector function
-      let keyValuePairs = vectorConstructions |> Array.map selector
+      let keyValuePairs = vectorConstructions |> Seq.map selector |> Array.ofSeq
       // Build & return the resulting series
-      let newIndex = builder.Create(Seq.map fst keyValuePairs, None)
+      let newIndex = builder.Create(ReadOnlyCollection.ofArray (Array.map fst keyValuePairs), None)
       let vect = vectorBuilder.CreateMissing(Array.map snd keyValuePairs)
       newIndex, vect
 
@@ -361,48 +359,75 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
                 snd newAddress.Value, oldAddress }
       newIndex, Vectors.Relocate(vector, newIndex.KeyCount, relocations)
 
+    /// Shift the values in the series by a specified offset, in a specified direction
+    member builder.Shift( (index, vector), offset) =
+      let (indexLo, indexHi), vectorRange = 
+        if offset > 0 then 
+          // If offset > 0 then skip first offet keys and take matching values from the start
+          (int64 offset, index.KeyCount - 1L),
+          (0L, index.KeyCount - 1L - int64 offset)
+        else 
+          // If offset < 0 then skip first -offset values and take matching keys from the start
+          (0L, index.KeyCount - 1L + int64 offset),
+          (int64 -offset, index.KeyCount - 1L)
+      let orderedOpt = if index.IsOrdered then Some(true) else None
+      let newIndex = LinearRangeIndex(index, indexLo, indexHi) :> IIndex<_>
+      newIndex, Vectors.GetRange(vector, vectorRange)
 
     /// Union the index with another. For sorted indices, this needs to align the keys;
     /// for unordered, it appends new ones to the end.
     member builder.Union<'K when 'K : equality >
         ( (index1:IIndex<'K>, vector1), (index2, vector2) )= 
-      let joined, ordered =
+      let keysAndRelocs, ordered =
         if index1.IsOrdered && index2.IsOrdered then
-          try Seq.alignWithOrdering index1.Mappings index2.Mappings index1.Comparer |> Array.ofSeq, Some true
+          try Seq.alignOrdered index1.Keys index2.Keys index1.Comparer false, Some true
           with :? ComparisonFailedException ->
-            Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq, None
+            Seq.alignUnordered index1.Keys index2.Keys false, None
         else
-          Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq, Some false
-      returnUsingAlignedSequence joined vector1 vector2 ordered 
+          Seq.alignUnordered index1.Keys index2.Keys false, Some false
+      makeTwoSeriesConstructions keysAndRelocs vector1 vector2 ordered 
 
-        
-    /// Append is similar to union, but it also combines the vectors using the specified
-    /// vector transformation.
-    member builder.Append<'K when 'K : equality >
-        ( (index1:IIndex<'K>, vector1), (index2, vector2), transform) = 
-      let joined, ordered = 
-        if index1.IsOrdered && index2.IsOrdered then
-          try Seq.alignWithOrdering index1.Mappings index2.Mappings index1.Comparer |> Array.ofSeq, Some true
-          with :? ComparisonFailedException ->
-            Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq, None
-        else
-          Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq, Some false
-      let newIndex, vec1Cmd, vec2Cmd = returnUsingAlignedSequence joined vector1 vector2 ordered
-      newIndex, Vectors.Combine(vec1Cmd, vec2Cmd, transform)
 
     /// Intersect the index with another. This is the same as
     /// Union, but we filter & only return keys present in both sequences.
     member builder.Intersect<'K when 'K : equality >
         ( (index1:IIndex<'K>, vector1), (index2, vector2) ) = 
-      let joined, ordered = 
+      let keysAndRelocs, ordered = 
         if index1.IsOrdered && index2.IsOrdered then
-          try Seq.alignWithOrdering index1.Mappings index2.Mappings index1.Comparer |> Array.ofSeq, Some true
+          try Seq.alignOrdered index1.Keys index2.Keys index1.Comparer true, Some true
           with :? ComparisonFailedException ->
-            Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq, None
+            Seq.alignUnordered index1.Keys index2.Keys true, None
         else
-          Seq.alignWithoutOrdering index1.Mappings index2.Mappings |> Array.ofSeq, Some false
-      let joined = joined |> Seq.filter (function _, Some _, Some _ -> true | _ -> false)
-      returnUsingAlignedSequence joined vector1 vector2 ordered
+          Seq.alignUnordered index1.Keys index2.Keys true, Some false
+      makeTwoSeriesConstructions keysAndRelocs vector1 vector2 ordered
+
+
+    /// Append is similar to union, but it also combines the vectors using the specified
+    /// vector transformation.
+    member builder.Merge<'K when 'K : equality>(constructions:SeriesConstruction<'K> list, transform) = 
+      let allOrdered = constructions |> List.forall (fun (index, _) -> index.IsOrdered)
+
+      // Merge ordered sequences (assuming `allOrdered = true`)
+      let mergeOrdered comparer =
+        match constructions with
+        | [li, lv; ri, rv] -> Seq.alignOrdered li.Keys ri.Keys comparer false, Some true
+        | _ -> Seq.alignAllOrdered [| for i, _ in constructions -> i.Keys |] comparer, Some true
+      // Merge unordered sequences (when `allOrdered = false` or when comparison fails)
+      let mergeUnordered () =
+        match constructions with
+        | [li, lv; ri, rv] -> Seq.alignUnordered li.Keys ri.Keys false, Some false
+        | _ -> Seq.alignAllUnordered [| for i, _ in constructions -> i.Keys |], Some false
+
+      let keysAndRelocs, ordered = 
+        if allOrdered then
+          let comparer = (fst (constructions |> List.head)).Comparer
+          try mergeOrdered comparer 
+          with :? ComparisonFailedException -> mergeUnordered()
+        else mergeUnordered()
+      let vectors = constructions |> List.map snd
+      let newIndex, vectors = makeSeriesConstructions keysAndRelocs vectors ordered
+      newIndex, Vectors.CombineN(vectors, transform)
+
 
     /// Build a new index by getting a key for each old key using the specified function
     member builder.WithIndex<'K, 'TNewKey when 'K : equality  and 'TNewKey : equality>
@@ -416,6 +441,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       let len = (newIndex :> IIndex<_>).KeyCount
       let relocations = Seq.zip (Address.generateRange(0L, len-1L)) (Seq.map snd newKeys)
       upcast newIndex, Vectors.Relocate(vector, int64 newKeys.Length, relocations)
+
 
     /// Reorder elements in the index to match with another index ordering
     member builder.Reindex(index1, index2, semantics, vector, condition) = 
@@ -434,6 +460,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
                   yield newAddress, oldAddress.Value |> snd }
       Vectors.Relocate(vector, index2.KeyCount, relocations)
 
+
     member builder.LookupLevel( (index, vector), searchKey:ICustomLookup<'K> ) =
       let matching = 
         [| for key, addr in index.Mappings do
@@ -443,6 +470,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       let newIndex = LinearIndex<_>(Seq.map snd matching |> ReadOnlyCollection.ofSeq, builder, index.IsOrdered)
       let newVector = Vectors.Relocate(vector, len, relocs)
       upcast newIndex, newVector
+
 
     /// Drop the specified item from the index
     member builder.DropItem<'K when 'K : equality >
