@@ -1,47 +1,18 @@
 ﻿namespace Deedle
 
-open Deedle.Vectors
+open System
 open System.Collections.Generic
 
-/// The `Stats` module contains functions for fast calculation of statistics over
-/// and entire series as well as over a moving and an expanding window in a series. 
-/// The three kinds of functions in this module are:
-///
-///  * **Standard** - functions such as `count`, `mean`, `kurt` etc. return the
-///    statistics calculated over all values of a series. The calculation skips
-///    over missing values (or `nan` values), so for example `mean` returns the
-///    average of all _present_ values.
-///
-///  * **Moving window** means that the window has a fixed size and moves over the series.
-///    In this case, the result of the statisitcs is always attached to the last key
-///    of the window. The function names are prefixed with `moving`.
-///
-///  * **Expanding window** means that the window starts as a zero-element sized window
-///    and expands as it moves over the series. In this case, statistics is calculated
-///    for all values preceding the current key. This means that the result is attached
-///    to the key _after_ the end of the window (prefix). The function names are prefixed
-///    with `expanding`.
-///
-/// The resulting series has the same keys as the input series. When the window contains
-/// no values, or contains missing values, different functions behave in different ways.
-/// Statistics (e.g. mean) return missing value when any value is missing, while min/max
-/// functions return the minimal/maximal element (skipping over missing values).
-///
-/// ## Remarks
-///
-/// The windowing functions in the `Stats` module support calculations over a fixed-size
-/// windows specified by the size of the window. If you need more complex windowing 
-/// behavior (such as window based on the distance between keys), different handling
-/// of boundary, or chunking (calculation over adjacent chunks), you can use chunking and
-/// windowing functions from the `Series` module such as `Series.windowSizeInto` or
-/// `Series.chunkSizeInto`.
-///
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]    
-module Stats =
+open Deedle.Vectors
 
-  // TODO: still to do, possibly: median, percentile, corr, cov
+// ------------------------------------------------------------------------------------
+// StatsHelpers module contains various helper functions that are used in the Stats 
+// type. We put all the public functionality in a type to allow overloading.
+// ------------------------------------------------------------------------------------  
 
+// TODO: still to do, possibly: median, percentile, corr, cov
 
+module internal StatsHelpers =
   // ------------------------------------------------------------------------------------
   // Implementation internals - moving window functionality
   // ------------------------------------------------------------------------------------  
@@ -200,91 +171,6 @@ module Stats =
           if q.IsEmpty then nan else snd q.[0] }
 
   // ------------------------------------------------------------------------------------
-  // Public - moving window functions
-  // ------------------------------------------------------------------------------------
-
-  /// Returns a series that contains counts over a moving window of the specified size.
-  /// The first `size-1` elements of the returned series are always missing; if the 
-  /// entire window contains missing values, the result is 0.
-  ///
-  /// [category:Moving windows]
-  [<CompiledName("MovingCount")>]
-  let movingCount size (series:Series<'K, float>) : Series<'K, float> =
-    applyMovingSumsTransform 0 size (fun s -> s.nobs) series
-
-  /// Returns a series that contains sums over a moving window of the specified size.
-  /// The first `size-1` elements of the returned series are always missing; if the 
-  /// entire window contains missing values, the result is 0.
-  ///
-  /// [category:Moving windows]
-  [<CompiledName("MovingSum")>]
-  let movingSum size (series:Series<'K, float>) : Series<'K, float> =
-    applyMovingSumsTransform 1 size (fun s -> s.sum) series
-
-  /// Returns a series that contains means over a moving window of the specified size.
-  /// The first `size-1` elements of the returned series are always missing; if the 
-  /// entire window contains missing values, the result is also missing.
-  ///
-  /// [category:Moving windows]
-  [<CompiledName("MovingMean")>]
-  let movingMean size (series:Series<'K, float>) : Series<'K, float> =
-    applyMovingSumsTransform 1 size (fun s -> s.sum / s.nobs) series
-
-  /// Returns a series that contains variance over a moving window of the specified size.
-  /// The first `size-1` elements of the returned series are always missing; if the 
-  /// entire window contains missing values, the result is also missing.
-  ///
-  /// [category:Moving windows]
-  [<CompiledName("MovingVariance")>]
-  let movingVariance size (series:Series<'K, float>) : Series<'K, float> =
-    applyMovingSumsTransform 2 size varianceSums series
-
-  /// Returns a series that contains standard deviations over a moving window of the specified size.
-  /// The first `size-1` elements of the returned series are always missing; if the 
-  /// entire window contains missing values, the result is also missing.
-  ///
-  /// [category:Moving windows]
-  [<CompiledName("MovingStandardDeviation")>]
-  let movingStdDev size (series:Series<'K, float>) : Series<'K, float> =
-    applyMovingSumsTransform 2 size (varianceSums >> sqrt) series
-
-  /// Returns a series that contains skewness over a moving window of the specified size.
-  /// The first `size-1` elements of the returned series are always missing; if the 
-  /// entire window contains missing values, the result is also missing.
-  ///
-  /// [category:Moving windows]
-  [<CompiledName("MovingSkewness")>]
-  let movingSkew size (series:Series<'K, float>) : Series<'K, float> =
-    applyMovingSumsTransform 3 size skewSums series
-
-  /// Returns a series that contains kurtosis over a moving window of the specified size.
-  /// The first `size-1` elements of the returned series are always missing; if the 
-  /// entire window contains missing values, the result is also missing.
-  ///
-  /// [category:Moving windows]
-  [<CompiledName("MovingKurtosis")>]
-  let movingKurt size (series:Series<'K, float>) : Series<'K, float> =
-    applyMovingSumsTransform 4 size kurtSums series 
-
-  /// Returns a series that contains minimum over a moving window of the specified size.
-  /// The first `size-1` elements are calculated using smaller windows spanning over `1 .. size-1` 
-  /// values. If the entire window contains missing values, the result is missing.
-  ///
-  /// [category:Moving windows]
-  [<CompiledName("MovingMinimum")>]
-  let movingMin size (series:Series<'K, float>) : Series<'K, float> =
-    applySeriesProj (movingMinMaxHelper size (>=)) series
-
-  /// Returns a series that contains maximum over a moving window of the specified size.
-  /// The first `size-1` elements are calculated using smaller windows spanning over `1 .. size-1` 
-  /// values. If the entire window contains missing values, the result is missing.
-  ///
-  /// [category:Moving windows]
-  [<CompiledName("MovingMaximum")>]
-  let movingMax size (series:Series<'K, float>) : Series<'K, float> =
-    applySeriesProj (movingMinMaxHelper size (<=)) series
-
-  // ------------------------------------------------------------------------------------
   // Implementation internals - expanding windows
   // ------------------------------------------------------------------------------------
 
@@ -296,7 +182,8 @@ module Stats =
   //   - `ftransf` takes the current state to the current output
   let inline internal expandingWindowFn initState fupdate ftransf (source: seq<_>) =
     source 
-    |> Seq.scan fupdate initState 
+    |> Seq.scan fupdate initState
+    |> Seq.skip 1
     |> Seq.map ftransf 
 
   /// Represents the moments as calculated during online processing
@@ -352,114 +239,6 @@ module Stats =
         | None -> !m }  
 
   // ------------------------------------------------------------------------------------
-  // Public - expanding window functions
-  // ------------------------------------------------------------------------------------
-
-  /// Returns a series that contains counts over expanding windows (the value for
-  /// a given key is calculated from all elements with smaller keys).
-  ///
-  /// [category:Expanding windows]
-  [<CompiledName("ExpandingCount")>]
-  let expandingCount (series:Series<'K, float>) : Series<'K, float> =
-    applyExpandingMomentsTransform (fun w -> w.nobs) series
-
-  /// Returns a series that contains sums over expanding windows (the value for
-  /// a given key is calculated from all elements with smaller keys); If the 
-  /// entire window contains no values, the result is 0.
-  ///
-  /// [category:Expanding windows]
-  [<CompiledName("ExpandingSum")>]
-  let expandingSum (series:Series<'K, float>) : Series<'K, float> =
-    applyExpandingMomentsTransform (fun w -> w.sum) series
-
-  /// Returns a series that contains means over expanding windows (the value for
-  /// a given key is calculated from all elements with smaller keys); If the 
-  /// entire window contains no values, the result is missing.
-  ///
-  /// [category:Expanding windows]
-  [<CompiledName("ExpandingMean")>]
-  let expandingMean (series:Series<'K, float>) : Series<'K, float> =
-    applyExpandingMomentsTransform (fun w -> w.M1) series
-
-  /// Returns a series that contains variance over expanding windows (the value for
-  /// a given key is calculated from all elements with smaller keys); If the 
-  /// entire window contains fewer than 2 values, the result is missing.
-  ///
-  /// [category:Expanding windows]
-  [<CompiledName("ExpandingVariance")>]
-  let expandingVariance (series:Series<'K, float>) : Series<'K, float> =
-    let toVar w = 
-      if w.nobs < 2.0 then nan
-      else w.M2 / (w.nobs - 1.0)
-    applyExpandingMomentsTransform toVar series
-
-  /// Returns a series that contains standard deviation over expanding windows (the 
-  /// value for a given key is calculated from all elements with smaller keys); If the 
-  /// entire window contains fewer than 2 values, the result is missing.
-  ///
-  /// [category:Expanding windows]
-  [<CompiledName("ExpandingStandardDeviation")>]
-  let expandingStdDev (series:Series<'K, float>) : Series<'K, float> =
-    let toStdDev w = 
-      if w.nobs < 2.0 then nan
-      else w.M2 / (w.nobs - 1.0) |> sqrt
-    applyExpandingMomentsTransform toStdDev series
-
-  /// Returns a series that contains skewness over expanding windows (the value for
-  /// a given key is calculated from all elements with smaller keys); If the 
-  /// entire window contains fewer than 3 values, the result is missing.
-  ///
-  /// [category:Expanding windows]
-  [<CompiledName("ExpandingSkewness")>]
-  let expandingSkew (series:Series<'K, float>) : Series<'K, float> =
-    // population -> sample estimate    
-    let toEstSkew w = 
-      if w.nobs < 3.0 then nan else
-        let adjust = (sqrt (w.nobs * (w.nobs - 1.0))) / (w.nobs - 2.0)
-        adjust * (sqrt w.nobs) * w.M3 / (w.M2 ** 1.5) 
-    applyExpandingMomentsTransform toEstSkew series
-
-  /// Returns a series that contains kurtosis over expanding windows (the value for
-  /// a given key is calculated from all elements with smaller keys); If the 
-  /// entire window contains fewer than 4 values, the result is missing.
-  ///
-  /// [category:Expanding windows]
-  [<CompiledName("ExpandingKurtosis")>]
-  let expandingKurt (series:Series<'K, float>) : Series<'K, float> =
-    // population -> sample estimate
-    let toEstKurt w = 
-      if w.nobs < 4.0 then nan else
-        let adjust p = (6.0 + p * (w.nobs + 1.0)) * (w.nobs - 1.0) / ((w.nobs - 2.0) * (w.nobs - 3.0))
-        adjust ((w.nobs * w.M4) / (w.M2 * w.M2) - 3.0)
-    applyExpandingMomentsTransform toEstKurt series
-
-  /// Returns a series that contains minimum over an expanding window. The value
-  /// for a key _k_ in the returned series is the minimum from all elements with
-  /// smaller keys.
-  ///
-  /// [category:Expanding windows]
-  [<CompiledName("ExpandingMinimum")>]
-  let expandingMin (series:Series<'K, float>) : Series<'K, float> =
-    let minFn s v =
-      match v with
-      | OptionalValue.Present x -> if System.Double.IsNaN(s) then x else min x s
-      | OptionalValue.Missing   -> s
-    applySeriesProj (Seq.scan minFn nan) series
-
-  /// Returns a series that contains maximum over an expanding window. The value
-  /// for a key _k_ in the returned series is the maximum from all elements with
-  /// smaller keys.
-  ///
-  /// [category:Expanding windows]
-  [<CompiledName("ExpandingMaximum")>]
-  let expandingMax (series:Series<'K, float>) : Series<'K, float> =
-    let maxFn s v =
-      match v with
-      | OptionalValue.Present x -> if System.Double.IsNaN(s) then x else max x s
-      | OptionalValue.Missing   -> s
-    applySeriesProj (Seq.scan maxFn nan) series
-
-  // ------------------------------------------------------------------------------------
   // Statistics calculated over the entire series
   // ------------------------------------------------------------------------------------
 
@@ -478,72 +257,418 @@ module Stats =
         initialized <- true
     if initialized then Some res else None
 
+  /// Returns the nth smallest element from the specified array.
+  /// (QuickSelect implementation based on: http://en.wikipedia.org/wiki/Quickselect)
+  let quickSelectInplace n (arr:float[]) =
+    let inline swap a b = 
+      let t = arr.[b]
+      arr.[b] <- arr.[a]
+      arr.[a] <- t
+
+    let partition left right pivotIndex =
+      let pivotValue = arr.[pivotIndex]
+      swap pivotIndex right // Move pivot to end
+      let mutable storeIndex = left
+      for i = left to right-1 do
+        if arr.[i] < pivotValue then
+          swap storeIndex i
+          storeIndex <- storeIndex + 1
+      swap right storeIndex  // Move pivot to its final place
+      storeIndex
+
+    let rec select left right = 
+      if left = right then arr.[left] else
+        let pivotIndex = (left + right) / 2 
+        let pivotIndex = partition left right pivotIndex
+        if n = pivotIndex then arr.[n]
+        elif n < pivotIndex then select left (pivotIndex - 1)
+        else select (pivotIndex + 1) right
+    
+    select 0 (arr.Length - 1)
+
+
+open StatsHelpers
+
+/// The `Stats` module contains functions for fast calculation of statistics over
+/// and entire series as well as over a moving and an expanding window in a series. 
+/// The three kinds of functions in this module are:
+///
+///  * **Standard** - functions such as `count`, `mean`, `kurt` etc. return the
+///    statistics calculated over all values of a series. The calculation skips
+///    over missing values (or `nan` values), so for example `mean` returns the
+///    average of all _present_ values.
+///
+///  * **Moving window** means that the window has a fixed size and moves over the series.
+///    In this case, the result of the statisitcs is always attached to the last key
+///    of the window. The function names are prefixed with `moving`.
+///
+///  * **Expanding window** means that the window starts as a zero-element sized window
+///    and expands as it moves over the series. In this case, statistics is calculated
+///    for all values preceding the current key. This means that the result is attached
+///    to the key _after_ the end of the window (prefix). The function names are prefixed
+///    with `expanding`.
+///
+/// The resulting series has the same keys as the input series. When the window contains
+/// no values, or contains missing values, different functions behave in different ways.
+/// Statistics (e.g. mean) return missing value when any value is missing, while min/max
+/// functions return the minimal/maximal element (skipping over missing values).
+///
+/// ## Remarks
+///
+/// The windowing functions in the `Stats` module support calculations over a fixed-size
+/// windows specified by the size of the window. If you need more complex windowing 
+/// behavior (such as window based on the distance between keys), different handling
+/// of boundary, or chunking (calculation over adjacent chunks), you can use chunking and
+/// windowing functions from the `Series` module such as `Series.windowSizeInto` or
+/// `Series.chunkSizeInto`.
+///
+type Stats = 
+
+  // ------------------------------------------------------------------------------------
+  // Public - moving window functions
+  // ------------------------------------------------------------------------------------
+
+  /// Returns a series that contains counts over a moving window of the specified size.
+  /// The first `size-1` elements of the returned series are always missing; if the 
+  /// entire window contains missing values, the result is 0.
+  ///
+  /// [category:Moving windows]
+  static member movingCount size (series:Series<'K, float>) : Series<'K, float> =
+    applyMovingSumsTransform 0 size (fun s -> s.nobs) series
+
+  /// Returns a series that contains sums over a moving window of the specified size.
+  /// The first `size-1` elements of the returned series are always missing; if the 
+  /// entire window contains missing values, the result is 0.
+  ///
+  /// [category:Moving windows]
+  static member movingSum size (series:Series<'K, float>) : Series<'K, float> =
+    applyMovingSumsTransform 1 size (fun s -> s.sum) series
+
+  /// Returns a series that contains means over a moving window of the specified size.
+  /// The first `size-1` elements of the returned series are always missing; if the 
+  /// entire window contains missing values, the result is also missing.
+  ///
+  /// [category:Moving windows]
+  static member movingMean size (series:Series<'K, float>) : Series<'K, float> =
+    applyMovingSumsTransform 1 size (fun s -> s.sum / s.nobs) series
+
+  /// Returns a series that contains variance over a moving window of the specified size.
+  /// The first `size-1` elements of the returned series are always missing; if the 
+  /// entire window contains missing values, the result is also missing.
+  ///
+  /// [category:Moving windows]
+  static member movingVariance size (series:Series<'K, float>) : Series<'K, float> =
+    applyMovingSumsTransform 2 size varianceSums series
+
+  /// Returns a series that contains standard deviations over a moving window of the specified size.
+  /// The first `size-1` elements of the returned series are always missing; if the 
+  /// entire window contains missing values, the result is also missing.
+  ///
+  /// [category:Moving windows]
+  static member movingStdDev size (series:Series<'K, float>) : Series<'K, float> =
+    applyMovingSumsTransform 2 size (varianceSums >> sqrt) series
+
+  /// Returns a series that contains skewness over a moving window of the specified size.
+  /// The first `size-1` elements of the returned series are always missing; if the 
+  /// entire window contains missing values, the result is also missing.
+  ///
+  /// [category:Moving windows]
+  static member movingSkew size (series:Series<'K, float>) : Series<'K, float> =
+    applyMovingSumsTransform 3 size skewSums series
+
+  /// Returns a series that contains kurtosis over a moving window of the specified size.
+  /// The first `size-1` elements of the returned series are always missing; if the 
+  /// entire window contains missing values, the result is also missing.
+  ///
+  /// [category:Moving windows]
+  static member movingKurt size (series:Series<'K, float>) : Series<'K, float> =
+    applyMovingSumsTransform 4 size kurtSums series 
+
+  /// Returns a series that contains minimum over a moving window of the specified size.
+  /// The first `size-1` elements are calculated using smaller windows spanning over `1 .. size-1` 
+  /// values. If the entire window contains missing values, the result is missing.
+  ///
+  /// [category:Moving windows]
+  static member movingMin size (series:Series<'K, float>) : Series<'K, float> =
+    applySeriesProj (movingMinMaxHelper size (>=)) series
+
+  /// Returns a series that contains maximum over a moving window of the specified size.
+  /// The first `size-1` elements are calculated using smaller windows spanning over `1 .. size-1` 
+  /// values. If the entire window contains missing values, the result is missing.
+  ///
+  /// [category:Moving windows]
+  static member movingMax size (series:Series<'K, float>) : Series<'K, float> =
+    applySeriesProj (movingMinMaxHelper size (<=)) series
+
+  // ------------------------------------------------------------------------------------
+  // Public - expanding window functions
+  // ------------------------------------------------------------------------------------
+
+  /// Returns a series that contains counts over expanding windows (the value for
+  /// a given key is calculated from all elements with smaller keys).
+  ///
+  /// [category:Expanding windows]
+  static member expandingCount (series:Series<'K, float>) : Series<'K, float> =
+    applyExpandingMomentsTransform (fun w -> w.nobs) series
+
+  /// Returns a series that contains sums over expanding windows (the value for
+  /// a given key is calculated from all elements with smaller keys); If the 
+  /// entire window contains no values, the result is 0.
+  ///
+  /// [category:Expanding windows]
+  static member expandingSum (series:Series<'K, float>) : Series<'K, float> =
+    applyExpandingMomentsTransform (fun w -> w.sum) series
+
+  /// Returns a series that contains means over expanding windows (the value for
+  /// a given key is calculated from all elements with smaller keys); If the 
+  /// entire window contains no values, the result is missing.
+  ///
+  /// [category:Expanding windows]
+  static member expandingMean (series:Series<'K, float>) : Series<'K, float> =
+    applyExpandingMomentsTransform (fun w -> w.M1) series
+
+  /// Returns a series that contains variance over expanding windows (the value for
+  /// a given key is calculated from all elements with smaller keys); If the 
+  /// entire window contains fewer than 2 values, the result is missing.
+  ///
+  /// [category:Expanding windows]
+  static member expandingVariance (series:Series<'K, float>) : Series<'K, float> =
+    let toVar w = 
+      if w.nobs < 2.0 then nan
+      else w.M2 / (w.nobs - 1.0)
+    applyExpandingMomentsTransform toVar series
+
+  /// Returns a series that contains standard deviation over expanding windows (the 
+  /// value for a given key is calculated from all elements with smaller keys); If the 
+  /// entire window contains fewer than 2 values, the result is missing.
+  ///
+  /// [category:Expanding windows]
+  static member expandingStdDev (series:Series<'K, float>) : Series<'K, float> =
+    let toStdDev w = 
+      if w.nobs < 2.0 then nan
+      else w.M2 / (w.nobs - 1.0) |> sqrt
+    applyExpandingMomentsTransform toStdDev series
+
+  /// Returns a series that contains skewness over expanding windows (the value for
+  /// a given key is calculated from all elements with smaller keys); If the 
+  /// entire window contains fewer than 3 values, the result is missing.
+  ///
+  /// [category:Expanding windows]
+  static member expandingSkew (series:Series<'K, float>) : Series<'K, float> =
+    // population -> sample estimate    
+    let toEstSkew w = 
+      if w.nobs < 3.0 then nan else
+        let adjust = (sqrt (w.nobs * (w.nobs - 1.0))) / (w.nobs - 2.0)
+        adjust * (sqrt w.nobs) * w.M3 / (w.M2 ** 1.5) 
+    applyExpandingMomentsTransform toEstSkew series
+
+  /// Returns a series that contains kurtosis over expanding windows (the value for
+  /// a given key is calculated from all elements with smaller keys); If the 
+  /// entire window contains fewer than 4 values, the result is missing.
+  ///
+  /// [category:Expanding windows]
+  static member expandingKurt (series:Series<'K, float>) : Series<'K, float> =
+    // population -> sample estimate
+    let toEstKurt w = 
+      if w.nobs < 4.0 then nan else
+        let adjust p = (6.0 + p * (w.nobs + 1.0)) * (w.nobs - 1.0) / ((w.nobs - 2.0) * (w.nobs - 3.0))
+        adjust ((w.nobs * w.M4) / (w.M2 * w.M2) - 3.0)
+    applyExpandingMomentsTransform toEstKurt series
+
+  /// Returns a series that contains minimum over an expanding window. The value
+  /// for a key _k_ in the returned series is the minimum from all elements with
+  /// smaller keys.
+  ///
+  /// [category:Expanding windows]
+  static member expandingMin (series:Series<'K, float>) : Series<'K, float> =
+    let minFn s v =
+      match v with
+      | OptionalValue.Present x -> if System.Double.IsNaN(s) then x else min x s
+      | OptionalValue.Missing   -> s
+    applySeriesProj ((Seq.scan minFn nan) >> (Seq.skip 1)) series
+
+  /// Returns a series that contains maximum over an expanding window. The value
+  /// for a key _k_ in the returned series is the maximum from all elements with
+  /// smaller keys.
+  ///
+  /// [category:Expanding windows]
+  static member expandingMax (series:Series<'K, float>) : Series<'K, float> =
+    let maxFn s v =
+      match v with
+      | OptionalValue.Present x -> if System.Double.IsNaN(s) then x else max x s
+      | OptionalValue.Missing   -> s
+    applySeriesProj ((Seq.scan maxFn nan) >> (Seq.skip 1)) series
+
+
+  // ------------------------------------------------------------------------------------
+  // Public - standard statistics on series
+  // ------------------------------------------------------------------------------------
 
   /// Returns the number of the values in a series. This excludes missing values
   /// and values created from `Double.NaN` etc.
   ///
-  /// [category:Standard statistics]
-  [<CompiledName("Count")>]
-  let inline count (series:Series<'K, 'V>) = series.ValueCount
+  /// [category:Series statistics]
+  static member inline count (series:Series<'K, 'V>) = series.ValueCount
 
   /// Returns the sum of the values in a series. The function skips over missing values
   /// and `NaN` values. When there are no available values, the result is 0.
   ///
-  /// [category:Standard statistics]
-  [<CompiledName("Sum")>]
-  let inline sum (series:Series<'K, 'V>) : 'V = Seq.sum series.Values
+  /// [category:Series statistics]
+  static member inline sum (series:Series<'K, float>) = 
+    series.Values |> Seq.sum 
+
+  /// Sum that operates only any appropriate numeric type. When there are no available 
+  /// values, the result is zero of the approriate numeric type.
+  ///
+  /// [category:Series statistics]
+  static member inline numSum (series:Series<'K, 'V>) = 
+    series.Values |> Seq.sum 
 
   /// Returns the mean of the values in a series. The function skips over missing values
   /// and `NaN` values. When there are no available values, the result is NaN.
   ///
-  /// [category:Standard statistics]
-  [<CompiledName("Mean")>]
-  let mean (series:Series<'K, float>) =
+  /// [category:Series statistics]
+  static member mean (series:Series<'K, float>) =
     let sums = initSumsSparse 1 (valuesAllOpt series)
     sums.sum / sums.nobs
 
   /// Returns the variance of the values in a series. The function skips over missing values
   /// and `NaN` values. When there are less than 2 values, the result is NaN.
   ///
-  /// [category:Standard statistics]
-  [<CompiledName("Variance")>]
-  let variance (series:Series<'K, float>) =
+  /// [category:Series statistics]
+  static member variance (series:Series<'K, float>) =
     varianceSums (initSumsSparse 2 (valuesAllOpt series))
 
   /// Returns the standard deviation of the values in a series. The function skips over 
   /// missing values and `NaN` values. When there are less than 2 values, the result is NaN.
   ///
-  /// [category:Standard statistics]
-  [<CompiledName("StandardDeviation")>]
-  let stdDev (series:Series<'K, float>) =
+  /// [category:Series statistics]
+  static member stdDev (series:Series<'K, float>) =
     sqrt (varianceSums (initSumsSparse 2 (valuesAllOpt series)))
 
   /// Returns the skewness of the values in a series. The function skips over missing 
   /// values and `NaN` values. When there are less than 3 values, the result is NaN.
   ///
-  /// [category:Standard statistics]
-  [<CompiledName("Skewness")>]
-  let skew (series:Series<'K, float>) =
+  /// [category:Series statistics]
+  static member skew (series:Series<'K, float>) =
     skewSums (initSumsSparse 3 (valuesAllOpt series))
 
   /// Returns the kurtosis of the values in a series. The function skips over missing 
   /// values and `NaN` values. When there are less than 4 values, the result is NaN.
   ///
-  /// [category:Standard statistics]
-  [<CompiledName("Kurtosis")>]
-  let kurt (series:Series<'K, float>) =
+  /// [category:Series statistics]
+  static member kurt (series:Series<'K, float>) =
     kurtSums (initSumsSparse 4 (valuesAllOpt series))
 
   /// Returns the minimum of the values in a series. The result is option value.
   /// When the series contains no values, the result is `None`.
   ///
-  /// [category:Standard statistics]
-  [<CompiledName("Minimum")>]
-  let inline min (series:Series<'K, 'V>) = trySeriesExtreme min series
+  /// [category:Series statistics]
+  static member inline min (series:Series<'K, 'V>) = trySeriesExtreme min series
 
   /// Returns the maximum of the values in a series. The result is option value.
   /// When the series contains no values, the result is `None`.
   ///
-  /// [category:Standard statistics]
-  [<CompiledName("Maximum")>]
-  let inline max (series:Series<'K, float>) = trySeriesExtreme max series
+  /// [category:Series statistics]
+  static member max (series:Series<'K, 'V>) = trySeriesExtreme max series
+
+  /// Returns the median of the elements of the series.
+  ///
+  /// [category:Series statistics]
+  static member median (series:Series<'K, float>) = 
+    let values = Array.ofSeq series.Values 
+    let mid = values.Length / 2
+    if values.Length = 0 then nan
+    elif values.Length % 2 = 1 then quickSelectInplace mid values
+    else
+      let a = quickSelectInplace mid values
+      let b = quickSelectInplace (mid - 1) values
+      (a + b) / 2.0
+
+  /// Interpolates an ordered series given a new sequence of keys. The function iterates through
+  /// each new key, and invokes a function on the current key, the nearest smaller and larger valid 
+  /// observations from the series argument. The function must return a new valid float. 
+  ///
+  /// ## Parameters
+  ///  - `keys` - Sequence of new keys that forms the index of interpolated results
+  ///  - `f` - Function to do the interpolating
+  ///
+  /// [category:Calculations, aggregation and statistics]
+  static member interpolate keys f (series:Series<'K,'T>) =
+    let liftedf k (prev:KeyValuePair<_,_> opt) (next:KeyValuePair<_,_> opt) =
+      let t1 = prev |> OptionalValue.map (fun kvp -> kvp.Key, kvp.Value) |> OptionalValue.asOption
+      let t2 = next |> OptionalValue.map (fun kvp -> kvp.Key, kvp.Value) |> OptionalValue.asOption
+      f k t1 t2
+
+    series.Interpolate(keys, Func<_,_,_,_>(liftedf))
+
+  /// Linearly interpolates an ordered series given a new sequence of keys. 
+  ///
+  /// ## Parameters
+  ///  - `keys` - Sequence of new keys that forms the index of interpolated results
+  ///  - `keyDiff` - A function representing "subtraction" between two keys
+  ///
+  /// [category:Calculations, aggregation and statistics]
+  static member inline interpolateLinear keys (keyDiff:'K->'K->float) (series:Series<'K, float>) =
+    let linearF k a b =
+      match a, b with
+      | Some x, Some y -> 
+        if x = y then snd x 
+        else (snd x) + (keyDiff k (fst x)) / (keyDiff (fst y) (fst x)) * (snd y - snd x)
+      | Some x, _      -> snd x
+      | _, Some y      -> snd y
+      | _              -> raise <| new ArgumentException("Unexpected code path in interpolation")
+    series |> Stats.interpolate keys linearF
+
+  // ------------------------------------------------------------------------------------
+  // Statistics calculated over the entire frames' float column series
+  // ------------------------------------------------------------------------------------
+
+  /// Returns the sums of the float columns in a frame.
+  static member sum (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Stats.sum)
+
+  /// Returns the means of the float columns in a frame.
+  static member mean (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Stats.mean)
+
+  /// Returns the means of the float columns in a frame.
+  static member median (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Stats.median)
+
+  /// Returns the standard deviations of the float columns in a frame.
+  static member stdDev (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Stats.stdDev)
+
+  /// Returns the variance of the float columns in a frame.
+  static member variance (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Stats.variance)
+
+  /// Returns the skewness of the float columns in a frame.
+  static member skew (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Stats.skew)
+
+  /// Returns the kurtosis of the float columns in a frame.
+  static member kurt (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ -> Stats.kurt)  
+
+
+// ----------------------------------------------------------------------------------------------
+// Obsolete - kept here for temporary compatibility
+// ----------------------------------------------------------------------------------------------
+[<AutoOpen>]
+module StatsObsolete = 
+  module Series = 
+    [<Obsolete("Please use Stats.sum")>]
+    let inline sum (series:Series<'K, ^V>) = series |> Stats.numSum
+    [<Obsolete("Please use Stats.mean")>]
+    let inline mean (series:Series<'K, float>) = series |> Stats.mean
+    [<Obsolete("Please use Stats.stdev")>]
+    let inline sdv (series:Series<'K, float>) = series |> Stats.stdDev
+    [<Obsolete("Please use Stats.max")>]
+    let inline max (series:Series<'K, ^V>) = series |> Stats.min
+    [<Obsolete("Please use Stats.min")>]
+    let inline min (series:Series<'K, ^V>) = series |> Stats.min
+    [<Obsolete("Please use Stats.median")>]
+    let inline median (series:Series<'K, float>) = series |> Stats.median
+

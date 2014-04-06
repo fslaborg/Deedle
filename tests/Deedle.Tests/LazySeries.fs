@@ -102,7 +102,7 @@ let ``Can add projection of a lazy vector to a data frame`` () =
     return seq { for i in 0 .. 100 -> KeyValue.Create(i, i) }  })
   let df = Frame.ofColumns [ "Lazy" => ls ]
   df?Test <- ((+) 1) $ ls 
-  df?Lazy - df?Test |> Series.sum |> int |> shouldEqual -101
+  df?Lazy - df?Test |> Stats.sum |> int |> shouldEqual -101
 
 // ------------------------------------------------------------------------------------------------
 // Materialization
