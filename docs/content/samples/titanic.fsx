@@ -24,7 +24,7 @@ Draw a pie chart displaying the survival rate
 titanic
 |> Frame.groupRowsByBool "Survived"
 |> Frame.countLevel fst
-|> Frame.getSeries "PassengerId"
+|> Frame.getColumn "PassengerId"
 |> Series.indexWith ["Died"; "Survived"]
 |> Series.observations
 |> Chart.Pie

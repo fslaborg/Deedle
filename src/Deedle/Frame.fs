@@ -600,11 +600,16 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       vopt |> OptionalValue.bind (fun ser -> ser.TryAs<'R>(false)))
 
   /// [category:Fancy accessors]
+  member frame.GetRows<'R>() = 
+    frame.Rows.SelectOptional(fun (KeyValue(k, vopt)) ->
+      vopt |> OptionalValue.bind (fun ser -> ser.TryAs<'R>(false)))
+
+  /// [category:Fancy accessors]
   member frame.GetAllValues<'R>() = frame.GetAllValues<'R>(false)
 
   /// [category:Fancy accessors]
   member frame.GetAllValues<'R>(strict) =
-    seq { for (KeyValue(_, v)) in frame.GetAllSeries<'R>() do yield! v |> Series.values }
+    seq { for (KeyValue(_, v)) in frame.GetAllColumns<'R>() do yield! v |> Series.values }
 
   /// Returns data of the data frame as a 2D array. The method attempts to convert
   /// all values to the specified type 'R. When a value is missing, the specified 
@@ -793,17 +798,16 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     frame.ReplaceSeries(column, data, Lookup.Exact)
 
 
-
   /// [category:Series operations]
   member frame.Item 
-    with get(column:'TColumnKey) = frame.GetSeries<float>(column)
+    with get(column:'TColumnKey) = frame.GetColumn<float>(column)
     and set(column:'TColumnKey) (series:Series<'TRowKey, float>) = frame.ReplaceSeries(column, series)
 
   /// [category:Series operations]
-  member frame.SeriesApply<'T>(f) = frame.SeriesApply<'T>(false, f)
+  member frame.ColumnApply<'T>(f) = frame.ColumnApply<'T>(false, f)
 
   /// [category:Series operations]
-  member frame.SeriesApply<'T>(strict, f:Func<Series<'TRowKey, 'T>, ISeries<_>>) = 
+  member frame.ColumnApply<'T>(strict, f:Func<Series<'TRowKey, 'T>, ISeries<_>>) = 
     frame.Columns |> Series.mapValues (fun os ->
       match os.TryAs<'T>(strict) with
       | OptionalValue.Present s -> f.Invoke s
@@ -811,7 +815,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     |> fromColumnsNonGeneric id
 
   /// [category:Series operations]
-  member frame.GetSeries<'R>(column:'TColumnKey, lookup) : Series<'TRowKey, 'R> = 
+  member frame.GetColumn<'R>(column:'TColumnKey, lookup) : Series<'TRowKey, 'R> = 
     match safeGetColVector(column, lookup, fun _ -> true) with
     | :? IVector<'R> as vec -> 
         Series(rowIndex, vec, vectorBuilder, indexBuilder)
@@ -819,23 +823,23 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
         Series(rowIndex, changeType colVector, vectorBuilder, indexBuilder)
 
   /// [category:Series operations]
-  member frame.GetSeriesAt<'R>(index:int) : Series<'TRowKey, 'R> = 
+  member frame.GetColumnAt<'R>(index:int) : Series<'TRowKey, 'R> = 
     frame.Columns.GetAt(index).As<'R>()
 
   /// [category:Series operations]
-  member frame.GetSeries<'R>(column:'TColumnKey) : Series<'TRowKey, 'R> = 
-    frame.GetSeries(column, Lookup.Exact)
+  member frame.GetColumn<'R>(column:'TColumnKey) : Series<'TRowKey, 'R> = 
+    frame.GetColumn(column, Lookup.Exact)
 
   /// [category:Series operations]
-  member frame.GetAllSeries<'R>() = frame.GetAllSeries<'R>(false)
+  member frame.GetAllColumns<'R>() = frame.GetAllColumns<'R>(false)
 
   /// [category:Series operations]
-  member frame.TryGetSeries<'R>(column:'TColumnKey, lookup) =
+  member frame.TryGetColumn<'R>(column:'TColumnKey, lookup) =
     tryGetColVector(column, lookup, fun _ -> true) 
     |> OptionalValue.map (fun v -> Series(rowIndex, changeType<'R> v, vectorBuilder, indexBuilder))
 
   /// [category:Series operations]
-  member frame.TryGetSeriesObservation<'R>(column:'TColumnKey, lookup) =
+  member frame.TryGetColumnObservation<'R>(column:'TColumnKey, lookup) =
     let columnIndex = columnIndex.Lookup(column, lookup, fun _ -> true)
     if not columnIndex.HasValue then 
       OptionalValue.Missing 
@@ -846,25 +850,25 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
         KeyValuePair(fst columnIndex.Value, ser) )
 
   /// [category:Series operations]
-  member frame.GetAllSeries<'R>(strict) =
+  member frame.GetAllColumns<'R>(strict) =
     frame.Columns.Observations |> Seq.choose (fun os -> 
       match os.Value.TryAs<'R>(strict) with
       | OptionalValue.Present s -> Some (KeyValuePair(os.Key, s))
       | _ -> None)
 
   /// [category:Series operations]
-  member frame.RenameSeries(columnKeys) =
+  member frame.RenameColumns(columnKeys) =
     if Seq.length columnIndex.Keys <> Seq.length columnKeys then 
       invalidArg "columnKeys" "The number of new column keys does not match with the number of columns"
     frame.setColumnIndex (Index.ofKeys columnKeys)
 
   /// [category:Series operations]
-  member frame.RenameSeries(oldKey, newKey) =
+  member frame.RenameColumn(oldKey, newKey) =
     let newKeys = columnIndex.Keys |> Seq.map (fun k -> if k = oldKey then newKey else k)
     frame.setColumnIndex (Index.ofKeys newKeys)
 
   /// [category:Series operations]
-  member frame.RenameSeries(mapping:Func<_, _>) =
+  member frame.RenameColumns(mapping:Func<_, _>) =
     frame.setColumnIndex (Index.ofKeys (Seq.map mapping.Invoke columnIndex.Keys))
 
   /// [category:Series operations]
@@ -877,7 +881,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Series operations]
   static member (?) (frame:Frame<_, _>, column) : Series<'T, float> = 
-    frame.GetSeries<float>(column)
+    frame.GetColumn<float>(column)
 
   // ----------------------------------------------------------------------------------------------
   // Some operators
@@ -911,10 +915,10 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     Frame<'TRowKey, 'TColumnKey>.ScalarOperationR<'T>(frame, scalar, fun a b -> op b a)
   // Apply operation 'op' to all values in all columns convertible to 'T
   static member inline internal UnaryOperation<'T>(frame:Frame<'TRowKey, 'TColumnKey>, op : 'T -> 'T) = 
-    frame.SeriesApply(false, fun (s:Series<'TRowKey, 'T>) -> (Series.mapValues op s) :> ISeries<_>)
+    frame.ColumnApply(false, fun (s:Series<'TRowKey, 'T>) -> (Series.mapValues op s) :> ISeries<_>)
   // Apply operation 'op' to all values in all columns convertible to 'T1 (the operation returns different type!)
   static member inline internal UnaryGenericOperation<'T1, 'T2>(frame:Frame<'TRowKey, 'TColumnKey>, op : 'T1 -> 'T2) =
-    frame.SeriesApply(false, fun (s:Series<'TRowKey, 'T1>) -> (Series.mapValues op s) :> ISeries<_>)
+    frame.ColumnsApply(false, fun (s:Series<'TRowKey, 'T1>) -> (Series.mapValues op s) :> ISeries<_>)
 
   // Unary numerical operators (just minus)
 
@@ -1294,7 +1298,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
             if typeof<'TColumnKey> = typeof<string> then unbox<'TColumnKey> name
             else invalidOp "Dynamic operations are not supported on frames with non-string column key!"
           // In principle, 'retType' could be something else than 'obj', but C# never does this (?)
-          <@@ box ((%%frame : Frame<'TRowKey, 'TColumnKey>).GetSeries<float>(colKey)) @@>)
+          <@@ box ((%%frame : Frame<'TRowKey, 'TColumnKey>).GetColumn<float>(colKey)) @@>)
 
         (fun frame name argTyp argExpr -> 
           // Cast column key to the right type
@@ -1467,7 +1471,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     Series<_, _>(newIndex, Vector.ofValues groups, vectorBuilder, indexBuilder)
 
   member frame.GroupRowsBy<'TGroup when 'TGroup : equality>(colKey) =
-    let col = frame.GetSeries<'TGroup>(colKey)    
+    let col = frame.GetColumn<'TGroup>(colKey)    
     frame.GroupByLabels col.Values frame.RowCount
 
   member frame.GroupRowsByIndex(keySelector:Func<_, _>) =
@@ -1494,7 +1498,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let labels = frame.Rows.Values |> Seq.map (Series.getAll grpKeys >> Series.values >> Array.ofSeq) 
     let nested = frame.NestRowsBy(labels)
     nested
-    |> Series.map (fun _ f -> [for c in aggBy -> (c, aggFunc.Invoke(f.GetSeries<_>(c)) |> box)] )
+    |> Series.map (fun _ f -> [for c in aggBy -> (c, aggFunc.Invoke(f.GetColumn<_>(c)) |> box)] )
     |> Series.map (fun k v -> v |> Seq.append (k |> Seq.zip grpKeys) |> Series.ofObservations)
     |> Series.indexOrdinally
     |> FrameUtils.fromRows
@@ -1509,7 +1513,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   ///
   /// [category:Indexing]
   member frame.IndexRows<'TNewRowIndex when 'TNewRowIndex : equality>(column) : Frame<'TNewRowIndex, _> = 
-    let columnVec = frame.GetSeries<'TNewRowIndex>(column)
+    let columnVec = frame.GetColumn<'TNewRowIndex>(column)
     let lookup addr = columnVec.Vector.GetValue(addr)
     let newRowIndex, rowCmd = frame.IndexBuilder.WithIndex(frame.RowIndex, lookup, Vectors.Return 0)
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)

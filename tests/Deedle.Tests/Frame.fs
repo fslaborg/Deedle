@@ -264,9 +264,9 @@ let ``Can retrieve a series according to type parameter`` () =
   let s2 = series [| 1 => ("a",1.0); 2 => ("b",2.0) |]
   let f = frame [ "A" => s1 ]
   f?B <- s2
-  f.GetAllSeries<int*int>() |> shouldEqual ( seq [ KeyValuePair("A", s1) ] )
-  f.GetAllSeries<string*float>() |> shouldEqual ( seq [ KeyValuePair("B", s2) ] )
-  f.GetAllSeries<int*float>() |> shouldEqual Seq.empty
+  f.GetAllColumns<int*int>() |> shouldEqual ( seq [ KeyValuePair("A", s1) ] )
+  f.GetAllColumns<string*float>() |> shouldEqual ( seq [ KeyValuePair("B", s2) ] )
+  f.GetAllColumns<int*float>() |> shouldEqual Seq.empty
 
 [<Test>]
 let ``Can do fuzzy lookup on frame rows and cols`` () =
@@ -442,7 +442,7 @@ let ``Can group 10x5k data frame by row of type string and nest it (in less than
 [<Test>]
 let ``Applying numerical operation to frame does not affect non-numeric series`` () =
   let df = msft() * 2.0
-  let actual = df.GetSeries<DateTime>("Date").GetAt(0).Date 
+  let actual = df.GetColumn<DateTime>("Date").GetAt(0).Date 
   actual |> shouldEqual (DateTime(2012, 1, 27))
   
 [<Test>]

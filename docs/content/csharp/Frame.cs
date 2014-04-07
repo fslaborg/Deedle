@@ -64,8 +64,8 @@ namespace CSharp
       var fb = fbRaw.IndexRows<DateTime>("Date").SortRowsByKey();
       
       // And rename columns to avoid overlap
-      msft.RenameSeries(s => "Msft" + s);
-      fb.RenameSeries(s => "Fb" + s);
+      msft.RenameColumns(s => "Msft" + s);
+      fb.RenameColumns(s => "Fb" + s);
       // [/index-date]
 
       // [index-cols]
@@ -113,8 +113,8 @@ namespace CSharp
 
       // [series-get]
       // Get MSFT and FB opening prices and calculate the difference
-      var msOpen = joinIn.GetSeries<double>("MsftOpen");
-      var msClose = joinIn.GetSeries<double>("MsftClose");
+      var msOpen = joinIn.GetColumn<double>("MsftOpen");
+      var msClose = joinIn.GetColumn<double>("MsftClose");
       var msDiff = msClose - msOpen;
       // [/series-get]
 
@@ -171,7 +171,7 @@ namespace CSharp
       // Transform all numerical series
       // (round the values to 2 fractional digits)
       var round = 
-        returns.SeriesApply((Series<DateTime, double> numeric) => 
+        returns.ColumnApply((Series<DateTime, double> numeric) => 
           numeric.Select(kvp => Math.Round(kvp.Value, 2)));
       // [/ops-returns]
       round.Print();
