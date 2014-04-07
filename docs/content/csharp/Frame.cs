@@ -120,11 +120,11 @@ namespace CSharp
 
       // [series-dropadd]
       // Drop series from a data frame
-      joinIn.DropSeries("MsftAdj Close");
-      joinIn.DropSeries("FbAdj Close");
+      joinIn.DropColumn("MsftAdj Close");
+      joinIn.DropColumn("FbAdj Close");
 
       // Add new series to a frame
-      joinIn.AddSeries("MsftDiff", msDiff);
+      joinIn.AddColumn("MsftDiff", msDiff);
       joinIn.Print();
       // [/series-dropadd]
 

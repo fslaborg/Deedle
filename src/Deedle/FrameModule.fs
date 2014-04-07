@@ -60,15 +60,15 @@ module Frame =
   ///
   /// [category:Accessing frame data and lookup]
   [<CompiledName("Columns")>]
-  let columns (frame:Frame<'R, 'C>) = frame.Columns
+  let cols (frame:Frame<'R, 'C>) = frame.Columns
   
   /// Returns a specified column from a data frame. This function uses exact matching 
-  /// semantics on the key. Use `lookupSeries` if you want to use inexact 
+  /// semantics on the key. Use `lookupCol` if you want to use inexact 
   /// matching (e.g. on dates)
   ///
   /// [category:Accessing frame data and lookup]
   [<CompiledName("GetColumn")>]
-  let getColumn column (frame:Frame<'R, 'C>) : Series<'R, 'V> = 
+  let getCol column (frame:Frame<'R, 'C>) : Series<'R, 'V> = 
     frame.GetColumn(column)
 
   /// Returns a series of columns of the data frame indexed by the column keys, 
@@ -86,7 +86,7 @@ module Frame =
   ///
   /// [category:Accessing frame data and lookup]
   [<CompiledName("GetColumns")>]
-  let getColumns (frame:Frame<'R,'C>) : Series<'C,Series<'R,'T>> =
+  let getCols (frame:Frame<'R,'C>) : Series<'C,Series<'R,'T>> =
     frame.Columns 
     |> Series.map(fun _ v -> v.TryAs<'T>() |> OptionalValue.asOption) 
     |> Series.flatten
@@ -98,7 +98,7 @@ module Frame =
   /// [category:Accessing frame data and lookup]
   [<CompiledName("GetNumericColumns")>]
   let getNumericColumns (frame:Frame<'R,'C>) : Series<'C,Series<'R,float>> =
-    frame |> getColumns
+    frame |> getCols
 
   /// Returns the rows of the data frame as a series (indexed by 
   /// the row keys of the source frame) containing untyped series representing
@@ -133,14 +133,14 @@ module Frame =
   ///
   /// [category:Accessing frame data and lookup]
   [<CompiledName("LookupColumn")>]
-  let lookupCol column lookup (frame:Frame<'R, 'C>) = frame.GetColumn(column, lookup)
+  let lookupCol column lookup (frame:Frame<'R, 'C>) : Series<'R, 'V> = frame.GetColumn(column, lookup)
 
   /// Returns a specified series (column) from a data frame, or missing value if 
   /// column doesn't exist.
   ///
   /// [category:Accessing frame data and lookup]
   [<CompiledName("TryLookupColumn")>]
-  let tryLookupCol column lookup (frame:Frame<'R, 'C>) = 
+  let tryLookupCol column lookup (frame:Frame<'R, 'C>) : option<Series<'R, 'V>> = 
     frame.TryGetColumn(column, lookup) |> OptionalValue.asOption
 
   /// Returns a specified key and series (column) from a data frame, or missing value if 
@@ -208,9 +208,9 @@ module Frame =
   ///  - `frame` - Source data frame (which is not mutated by the operation)
   ///
   /// [category:Series operations]
-  [<CompiledName("AddSeries")>]
-  let addSeries column (series:Series<_, 'V>) (frame:Frame<'R, 'C>) = 
-    let f = frame.Clone() in f.AddSeries(column, series); f
+  [<CompiledName("AddColumn")>]
+  let addCol column (series:Series<_, 'V>) (frame:Frame<'R, 'C>) = 
+    let f = frame.Clone() in f.AddColumn(column, series); f
 
   /// Creates a new data frame that contains all data from the original
   /// data frame without the specified series (column). The operation throws
@@ -221,9 +221,9 @@ module Frame =
   ///  - `frame` - Source data frame (which is not mutated by the operation)
   ///
   /// [category:Series operations]
-  [<CompiledName("DropSeries")>]
-  let dropSeries column (frame:Frame<'R, 'C>) = 
-    let f = frame.Clone() in f.DropSeries(column); f
+  [<CompiledName("DropColumn")>]
+  let dropCol column (frame:Frame<'R, 'C>) = 
+    let f = frame.Clone() in f.DropColumn(column); f
 
   /// Creates a new data frame where the specified column is replaced
   /// with a new series. (If the series does not exist, only the new
@@ -236,8 +236,8 @@ module Frame =
   ///
   /// [category:Series operations]
   [<CompiledName("ReplaceColumn")>]
-  let replaceSeries column series (frame:Frame<'R, 'C>) = 
-    let f = frame.Clone() in f.ReplaceSeries(column, series); f
+  let replaceCol column series (frame:Frame<'R, 'C>) = 
+    let f = frame.Clone() in f.ReplaceColumn(column, series); f
 
   // ----------------------------------------------------------------------------------------------
   // Grouping and hierarchical indexing
