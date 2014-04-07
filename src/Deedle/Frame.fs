@@ -797,7 +797,6 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member frame.ReplaceColumn(column, data:seq<'V>) = 
     frame.ReplaceColumn(column, data, Lookup.Exact)
 
-
   /// [category:Series operations]
   member frame.Item 
     with get(column:'TColumnKey) = frame.GetColumn<float>(column)
