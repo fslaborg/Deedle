@@ -56,6 +56,7 @@
     <Compile Include="Common\BinomialHeap.fs" />
     <Compile Include="Common\Common.fs" />
     <Compile Include="Common\Address.fs" />
+    <Compile Include="Common\Deque.fs" />
     <Compile Include="Vectors\Vector.fs" />
     <Compile Include="Vectors\VectorHelpers.fs" />
     <Compile Include="Vectors\ArrayVector.fs" />
@@ -69,7 +70,6 @@
     <Compile Include="SeriesModule.fs" />
     <Compile Include="SeriesExtensions.fs" />
     <Compile Include="Frame.fs" />
-    <Compile Include="Deque.fs" />
     <Compile Include="Stats.fs" />
     <Compile Include="FrameUtils.fs" />
     <Compile Include="FrameModule.fs" />

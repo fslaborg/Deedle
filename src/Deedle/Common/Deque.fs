@@ -1,22 +1,12 @@
-﻿/// A generic Deque class. It can be thought of as a double-ended queue, hence Deque. This allows for an O(1) AddFront, AddBack, RemoveFront, RemoveBack.
-/// The Deque also has O(1) indexed lookup, as it is backed by a circular array.
-module Deedle.Deque
+﻿namespace Deedle
 
 open System
+open System.Collections
+open System.Collections.Generic
+open System.Diagnostics
+open System.Runtime.InteropServices
 
-/// The default capacity of the deque.
-[<Literal>]
-let defaultCapacity = 16
-
-let inline closestPowerOfTwoGreaterThan x =
-   let x = x - 1
-   let x = x ||| (x >>> 1)
-   let x = x ||| (x >>> 2)
-   let x = x ||| (x >>> 4)
-   let x = x ||| (x >>> 8)
-   let x = x ||| (x >>> 16)
-   x+1
-
+[<SerializableAttribute>]
 type Deque<'T>(capacity : int) =
     // The circular array holding the items.
     let mutable buffer : 'T array = 
@@ -29,7 +19,7 @@ type Deque<'T>(capacity : int) =
     let mutable capacityClosestPowerOfTwoMinusOne = 0
 
     /// Creates a new Deque with the default capacity
-    new() = Deque<'T>(defaultCapacity)
+    new() = Deque<'T>(16)
 
     /// Gets the total number of elements the internal array can hold without resizing.
     member this.Capacity = buffer.Length
@@ -38,7 +28,7 @@ type Deque<'T>(capacity : int) =
     member this.Count = count
 
     member private this.CopyArray(size) =
-        let newArray = Array.create size Unchecked.defaultof<'T>
+        let newArray = Array.zeroCreate size
 
         if 0 <> startOffset && startOffset + this.Count >= this.Capacity then
             let lengthFromStart = this.Capacity - startOffset
@@ -62,6 +52,15 @@ type Deque<'T>(capacity : int) =
         if capacity = buffer.Length then () else
 
         // Create a new array and copy the old values.
+        let inline closestPowerOfTwoGreaterThan x =
+           let x = x - 1
+           let x = x ||| (x >>> 1)
+           let x = x ||| (x >>> 2)
+           let x = x ||| (x >>> 4)
+           let x = x ||| (x >>> 8)
+           let x = x ||| (x >>> 16)
+           x+1
+
         let powOfTwo = closestPowerOfTwoGreaterThan capacity
 
         // Set up to use the new buffer.
@@ -125,7 +124,7 @@ type Deque<'T>(capacity : int) =
         count <- count + 1
 
     /// Removes an item from the front of the Deque and returns it.
-    member this.RemoveFront() =
+    member this.RemoveFirst() =
         if this.IsEmpty then
             raise <| new InvalidOperationException("The Deque is empty")
 
@@ -134,7 +133,7 @@ type Deque<'T>(capacity : int) =
         item
 
     /// Removes an item from the back of the Deque and returns it.
-    member this.RemoveBack() =
+    member this.RemoveLast() =
         if this.IsEmpty then
             raise <| new InvalidOperationException("The Deque is empty")
 

@@ -20,13 +20,13 @@ open Deedle
 
 [<Test>]
 let ``empty deque is empty`` () =
-  let d = Deque.Deque()
+  let d = Deque()
 
   d.IsEmpty |> shouldEqual true
   
 [<Test>]
 let ``can add single element`` () =
-  let d = Deque.Deque()
+  let d = Deque()
 
   d.Add(1)
   
@@ -35,7 +35,7 @@ let ``can add single element`` () =
 
 [<Test>]
 let ``can add elements`` () =
-  let d = Deque.Deque()
+  let d = Deque()
 
   d.Add(1)
   d.Add(1)
@@ -48,7 +48,7 @@ let ``can add elements`` () =
 
 [<Test>]
 let ``can add elements and remove from front`` () =
-  let d = Deque.Deque()
+  let d = Deque()
 
   for x in 1..2049 do
       d.Add(x.ToString())
@@ -57,7 +57,7 @@ let ``can add elements and remove from front`` () =
   d.Count |> shouldEqual 2049
 
   for x in 1..2049 do
-      d.RemoveFront() |> shouldEqual (x.ToString())
+      d.RemoveFirst() |> shouldEqual (x.ToString())
 
   d.IsEmpty |> shouldEqual true
   d.Count |> shouldEqual 0
@@ -65,7 +65,7 @@ let ``can add elements and remove from front`` () =
 
 [<Test>]
 let ``can add elements and remove from back`` () =
-  let d = Deque.Deque()
+  let d = Deque()
 
   for x in 1..2049 do
       d.Add(x)
@@ -74,7 +74,7 @@ let ``can add elements and remove from back`` () =
   d.Count |> shouldEqual 2049
 
   for x in 1..2049 do
-      d.RemoveBack() |> shouldEqual (2049-x+1)
+      d.RemoveLast() |> shouldEqual (2049-x+1)
 
   d.IsEmpty |> shouldEqual true
   d.Count |> shouldEqual 0
@@ -82,7 +82,7 @@ let ``can add elements and remove from back`` () =
 
 [<Test>]
 let ``can add elements and interate`` () =
-  let d = Deque.Deque()
+  let d = Deque()
 
   for x in 1..2049 do
       d.Add(x)
@@ -94,7 +94,7 @@ let ``can add elements and interate`` () =
 
 [<Test>]
 let ``can add elements and convert to list`` () =
-  let d = Deque.Deque()
+  let d = Deque()
 
   for x in 1..2049 do
       d.Add(x)
