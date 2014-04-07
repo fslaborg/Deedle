@@ -416,11 +416,11 @@ and
     Series(x.Index, vectorBuilder.CreateMissing(Array.ofSeq newVec), vectorBuilder, indexBuilder)
 
   // ----------------------------------------------------------------------------------------------
-  // Appending, joining etc
+  // Merging, joining etc
   // ----------------------------------------------------------------------------------------------
 
-  /// [category:Appending, joining and zipping]
-  member series.Append(otherSeries:Series<'K, 'V>) =
+  /// [category:Merging, joining and zipping]
+  member series.Merge(otherSeries:Series<'K, 'V>) =
     // Append the row indices and get transformation that combines two column vectors
     // (LeftOrRight - specifies that when column exist in both data frames then fail)
     let newIndex, cmd = 
@@ -429,8 +429,8 @@ and
     let newVector = vectorBuilder.Build(cmd, [| series.Vector; otherSeries.Vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
-  /// [category:Appending, joining and zipping]
-  member series.Append([<ParamArray>] otherSeries:Series<'K, 'V>[]) =
+  /// [category:Merging, joining and zipping]
+  member series.Merge([<ParamArray>] otherSeries:Series<'K, 'V>[]) =
     // Append the row indices and get transformation that combines two column vectors
     // (LeftOrRight - specifies that when column exist in both data frames then fail)
     let constrs = otherSeries |> Array.mapi (fun i s -> s.Index, Vectors.Return(i + 1)) |> List.ofSeq
@@ -441,11 +441,23 @@ and
     let newVector = vectorBuilder.Build(cmd, [| yield series.Vector; yield! vectors |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
-  /// [category:Appending, joining and zipping]
+  /// [category:Merging, joining and zipping]
+  member series.Merge(another:Series<'K, 'V>, behavior) = 
+    let newIndex, vec1, vec2 = indexBuilder.Union( (series.Index, Vectors.Return 0), (another.Index, Vectors.Return 1) )
+    let transform = 
+      match behavior with
+      | UnionBehavior.PreferRight -> VectorHelpers.VectorValueTransform.RightIfAvailable
+      | UnionBehavior.Exclusive -> VectorHelpers.VectorValueTransform.LeftOrRight
+      | _ -> VectorHelpers.VectorValueTransform.LeftIfAvailable
+    let vecCmd = Vectors.Combine(vec1, vec2, transform)
+    let newVec = vectorBuilder.Build(vecCmd, [| series.Vector; another.Vector |])
+    Series(newIndex, newVec, vectorBuilder, indexBuilder)
+
+  /// [category:Merging, joining and zipping]
   member series.Zip<'V2>(otherSeries:Series<'K, 'V2>) =
     series.Zip(otherSeries, JoinKind.Outer, Lookup.Exact)
 
-  /// [category:Appending, joining and zipping]
+  /// [category:Merging, joining and zipping]
   member series.Zip<'V2>(otherSeries:Series<'K, 'V2>, kind) =
     series.Zip(otherSeries, kind, Lookup.Exact)
 
@@ -459,33 +471,17 @@ and
 
     newIndex, lVec, rVec
 
-  /// [category:Appending, joining and zipping]
+  /// [category:Merging, joining and zipping]
   member series.Zip<'V2>(otherSeries:Series<'K, 'V2>, kind, lookup) : Series<'K, 'V opt * 'V2 opt> =
     let newIndex, lVec, rVec = series.ZipHelper(otherSeries, kind, lookup)
     let zipv = rVec.DataSequence |> Seq.zip lVec.DataSequence |> Vector.ofValues
     Series(newIndex, zipv, vectorBuilder, indexBuilder)
 
-  /// [category:Appending, joining and zipping]
+  /// [category:Merging, joining and zipping]
   member series.ZipInner<'V2>(otherSeries:Series<'K, 'V2>) : Series<'K, 'V * 'V2> =
     let newIndex, lVec, rVec = series.ZipHelper(otherSeries, JoinKind.Inner, Lookup.Exact)
     let zipv = rVec.Data.Values |> Seq.zip lVec.Data.Values |> Vector.ofValues
     Series(newIndex, zipv, vectorBuilder, indexBuilder)
-
-  /// [category:Appending, joining and zipping]
-  member series.Union(another:Series<'K, 'V>) = 
-    series.Union(another, UnionBehavior.PreferLeft)
-  
-  /// [category:Appending, joining and zipping]
-  member series.Union(another:Series<'K, 'V>, behavior) = 
-    let newIndex, vec1, vec2 = indexBuilder.Union( (series.Index, Vectors.Return 0), (another.Index, Vectors.Return 1) )
-    let transform = 
-      match behavior with
-      | UnionBehavior.PreferRight -> VectorHelpers.VectorValueTransform.RightIfAvailable
-      | UnionBehavior.Exclusive -> VectorHelpers.VectorValueTransform.LeftOrRight
-      | _ -> VectorHelpers.VectorValueTransform.LeftIfAvailable
-    let vecCmd = Vectors.Combine(vec1, vec2, transform)
-    let newVec = vectorBuilder.Build(vecCmd, [| series.Vector; another.Vector |])
-    Series(newIndex, newVec, vectorBuilder, indexBuilder)
 
   // ----------------------------------------------------------------------------------------------
   // Resampling

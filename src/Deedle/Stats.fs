@@ -291,37 +291,46 @@ open StatsHelpers
 
 /// The `Stats` type contains functions for fast calculation of statistics over
 /// series and frames as well as over a moving and an expanding window in a series. 
-/// The static members of the type are:
 ///
-///  * **Series stats** - functions such as `count`, `mean`, `kurt` etc. return the
-///    statistics calculated over all values of a series. The calculation skips
-///    over missing values (or `nan` values), so for example `mean` returns the
-///    average of all _present_ values.
-///
-/// * **Frame stats** - the standard functions are exposed as static members and are 
-///    overloaded. This means that they can be applied to both `Series<'K, float>` and 
-///    to `Frame<'R, 'C>`. When applied to data frame, the functions apply the 
-///    statistical calculation to all numerical columns of the frame.
-///
-///  * **Moving window** means that the window has a fixed size and moves over the series.
-///    In this case, the result of the statisitcs is always attached to the last key
-///    of the window. The function names are prefixed with `moving`.
-///
-///  * **Expanding window** means that the window starts as a single-element sized window
-///    and expands as it moves over the series. In this case, statistics is calculated
-///    for all values up to the current key. This means that the result is attached
-///    to the key at the end of the window. The function names are prefixed
-///    with `expanding`.
-///
-///  * **Multi-level index** - for a series with multi-level (hierarchical) index, the
-///    functions prefixed with `level` provide a way to apply statistical operation on 
-///    a single level of the index. (For you can sum values along the `'K1` keys in a 
-///    series `Series<'K1 * 'K2, float>` and get `Series<'K1, float>` as the result.)
-///
-/// The resulting structure has the same keys as the input structure. When there are
+/// The resulting series has the same keys as the input series. When there are
 /// no values, or missing values, different functions behave in different ways.
 /// Statistics (e.g. mean) return missing value when any value is missing, while min/max
 /// functions return the minimal/maximal element (skipping over missing values).
+///
+/// ## Series statistics
+/// 
+/// Functions such as `count`, `mean`, `kurt` etc. return the
+/// statistics calculated over all values of a series. The calculation skips
+/// over missing values (or `nan` values), so for example `mean` returns the
+/// average of all _present_ values.
+///
+/// ## Frame statistics
+///
+/// The standard functions are exposed as static members and are 
+/// overloaded. This means that they can be applied to both `Series<'K, float>` and 
+/// to `Frame<'R, 'C>`. When applied to data frame, the functions apply the 
+/// statistical calculation to all numerical columns of the frame.
+///
+/// ## Moving windows
+///
+/// Moving window means that the window has a fixed size and moves over the series.
+/// In this case, the result of the statisitcs is always attached to the last key
+/// of the window. The function names are prefixed with `moving`.
+///
+/// ## Expanding windows
+///
+/// Expanding window means that the window starts as a single-element sized window
+/// and expands as it moves over the series. In this case, statistics is calculated
+/// for all values up to the current key. This means that the result is attached
+/// to the key at the end of the window. The function names are prefixed
+/// with `expanding`.
+///
+/// ## Multi-level statistics
+///
+/// For a series with multi-level (hierarchical) index, the
+/// functions prefixed with `level` provide a way to apply statistical operation on 
+/// a single level of the index. (For you can sum values along the `'K1` keys in a 
+/// series `Series<'K1 * 'K2, float>` and get `Series<'K1, float>` as the result.)
 ///
 /// ## Remarks
 ///
@@ -570,17 +579,33 @@ type Stats =
   static member kurt (series:Series<'K, float>) =
     kurtSums (initSumsSparse 4 (valuesAllOpt series))
 
-  /// Returns the minimum of the values in a series. The result is option value.
+  /// Returns the minimum of the values in a series. The result is an option value.
   /// When the series contains no values, the result is `None`.
   ///
   /// [category:Series statistics]
   static member inline min (series:Series<'K, 'V>) = trySeriesExtreme min series
 
-  /// Returns the maximum of the values in a series. The result is option value.
+  /// Returns the maximum of the values in a series. The result is an option value.
   /// When the series contains no values, the result is `None`.
   ///
   /// [category:Series statistics]
   static member inline max (series:Series<'K, 'V>) = trySeriesExtreme max series
+
+  /// Returns the key and value of the greatest element in the series. The result
+  /// is an optional value. When the series contains no values, the result is `None`.
+  ///
+  /// [category:Series statistics]
+  static member inline maxBy f (series:Series<'K, 'T>) = 
+    if series.ValueCount = 0 then None
+    else Some(series |> Series.observations |> Seq.maxBy (snd >> f))
+
+  /// Returns the key and value of the least element in the series. The result
+  /// is an optional value. When the series contains no values, the result is `None`.
+  ///
+  /// [category:Series statistics]
+  static member inline minBy f (series:Series<'K, 'T>) = 
+    if series.ValueCount = 0 then None
+    else Some(series |> Series.observations |> Seq.maxBy (snd >> f))
 
   /// Returns the median of the elements of the series.
   ///

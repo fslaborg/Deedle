@@ -834,10 +834,10 @@ module Frame =
     frame.Columns |> Series.map (fun _ -> Series.countValues)
 
   let inline maxRowBy column (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.maxBy (fun row -> row.GetAs<float>(column))
+    frame.Rows |> Stats.maxBy (fun row -> row.GetAs<float>(column))
 
   let inline minRowBy column (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.minBy (fun row -> row.GetAs<float>(column))
+    frame.Rows |> Stats.minBy (fun row -> row.GetAs<float>(column))
 
   // ----------------------------------------------------------------------------------------------
   // Hierarchical aggregation
@@ -1204,21 +1204,3 @@ module Frame =
   /// Returns data of the data frame as a 2D array containing data as `float` values.
   /// Missing data are represented as `Double.NaN` in the returned array.
   let toArray2D (frame:Frame<'R, 'C>) = frame.ToArray2D<float>()
-
-  // ----------------------------------------------------------------------------------------------
-  // Obsolete - kept for temporary compatibility
-  // ----------------------------------------------------------------------------------------------
-
-  [<Obsolete("Use sortRowsByKey instead. This function will be removed in future versions.")>]
-  let orderRows (frame:Frame<'R, 'C>) = sortRowsByKey frame
-  [<Obsolete("Use sortColsByKey instead. This function will be removed in future versions.")>]
-  let orderCols (frame:Frame<'R, 'C>) = sortColsByKey frame
-  [<Obsolete("Use Stats.colMean instead. This function will be removed in future versions.")>]
-  let mean (frame:Frame<'R, 'C>) = frame.GetColumns<float>() |> Series.map (fun _ -> Stats.mean)
-  [<Obsolete("Use Stats.colSum instead. This function will be removed in future versions.")>]
-  let sum (frame:Frame<'R, 'C>) = frame.GetColumns<float>() |> Series.map (fun _ -> Stats.sum)
-  [<Obsolete("Use Stats.colStdDev instead. This function will be removed in future versions.")>]
-  let sdv (frame:Frame<'R, 'C>) = frame.GetColumns<float>() |> Series.map (fun _ -> Stats.stdDev)
-  [<Obsolete("Use Stats.colMedian instead. This function will be removed in future versions.")>]
-  let median (frame:Frame<'R, 'C>) = frame.GetColumns<float>() |> Series.map (fun _ -> Stats.median)
-
