@@ -69,6 +69,7 @@
     <Compile Include="SeriesModule.fs" />
     <Compile Include="SeriesExtensions.fs" />
     <Compile Include="Frame.fs" />
+    <Compile Include="Deque.fs" />
     <Compile Include="Stats.fs" />
     <Compile Include="FrameUtils.fs" />
     <Compile Include="FrameModule.fs" />
@@ -81,10 +82,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Deque">
-      <HintPath>..\..\packages\Deque.0.1.1\lib\Net20\Deque.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>False</Private>
     </Reference>
