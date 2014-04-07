@@ -7,10 +7,10 @@ open System.Diagnostics
 open System.Runtime.InteropServices
 
 [<SerializableAttribute>]
-type Deque<'T>(capacity : int) =
+type Deque<'T>(initCapacity : int) =
+    let mutable capacity = initCapacity
     // The circular array holding the items.
-    let mutable buffer : 'T array = 
-        [||]
+    let mutable buffer : 'T array = Array.zeroCreate capacity
     
     // The first element offset from the beginning of the data array.
     let mutable startOffset = 0
@@ -42,35 +42,20 @@ type Deque<'T>(capacity : int) =
         newArray
 
     /// Sets the total number of elements the internal array can hold without resizing.
-    member this.SetCapacity(capacity : int) =
+    member private this.DoubleCapacity() =
         if capacity < 0 then
             raise <| new ArgumentOutOfRangeException("value", "Capacity is less than 0.")
 
         if capacity < this.Count then
             raise <| new InvalidOperationException("Capacity cannot be set to a value less than Count")
 
-        if capacity = buffer.Length then () else
-
-        // Create a new array and copy the old values.
-        let inline closestPowerOfTwoGreaterThan x =
-           let x = x - 1
-           let x = x ||| (x >>> 1)
-           let x = x ||| (x >>> 2)
-           let x = x ||| (x >>> 4)
-           let x = x ||| (x >>> 8)
-           let x = x ||| (x >>> 16)
-           x+1
-
-        let powOfTwo = closestPowerOfTwoGreaterThan capacity
+        if capacity <= buffer.Length then () else
 
         // Set up to use the new buffer.
-        buffer <- this.CopyArray(powOfTwo)
-        capacityClosestPowerOfTwoMinusOne <- powOfTwo - 1
+        capacity <- capacity * 2
+        buffer <- this.CopyArray(capacity)
+        capacityClosestPowerOfTwoMinusOne <- capacity - 1
         startOffset <- 0
-
-    member private this.ensureCapacityFor(numElements) =
-        if this.Count + numElements > this.Capacity then
-            this.SetCapacity(this.Count + numElements)
 
     member private this.shiftStartOffset(value) =
         startOffset <- this.toBufferIndex(value)
@@ -112,14 +97,10 @@ type Deque<'T>(capacity : int) =
         }
 
     /// Adds the provided item to the back of the Deque.
-    member this.AddBack(item) =
-        this.ensureCapacityFor(1)
-        buffer.[this.toBufferIndex(startOffset + this.Count)] <- item
-        count <- count + 1
-
-    /// Adds the provided item to the back of the Deque.
     member this.Add(item) =
-        this.ensureCapacityFor(1)
+        if this.Count >= this.Capacity then
+            this.DoubleCapacity()
+
         buffer.[this.toBufferIndex(startOffset + this.Count)] <- item
         count <- count + 1
 
