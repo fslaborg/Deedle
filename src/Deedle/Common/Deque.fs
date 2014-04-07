@@ -55,6 +55,11 @@ type Deque<'T>(initCapacity : int) =
                     yield buffer.[i]
         }
     
+    let preShiftStartOffset value = 
+        let offset = startOffset
+        startOffset <- toBufferIndex value
+        offset
+    
     /// Creates a new Deque with the default capacity
     new() = Deque<'T>(16)
     
@@ -64,31 +69,22 @@ type Deque<'T>(initCapacity : int) =
     /// Gets the number of elements contained in the Deque.
     member this.Count = count
     
-    member private this.shiftStartOffset (value) = 
-        startOffset <- toBufferIndex (value)
-        startOffset
-    
-    member private this.preShiftStartOffset (value) = 
-        let offset = startOffset
-        this.shiftStartOffset (value) |> ignore
-        offset
-    
     /// Gets whether or not the Deque is filled to capacity.
-    member this.IsFull = this.Count >= this.Capacity
+    member this.IsFull = count >= capacity
     
     /// Gets whether or not the Deque is empty.
-    member this.IsEmpty = this.Count = 0
+    member this.IsEmpty = count = 0
     
     /// Adds the provided item to the back of the Deque.
     member this.Add(item) = 
-        if this.Count >= this.Capacity then doubleCapacity()
-        buffer.[toBufferIndex (startOffset + this.Count)] <- item
+        if count >= capacity then doubleCapacity()
+        buffer.[toBufferIndex (startOffset + count)] <- item
         count <- count + 1
     
     /// Removes an item from the front of the Deque and returns it.
     member this.RemoveFirst() = 
         if this.IsEmpty then raise <| new InvalidOperationException("The Deque is empty")
-        let item = buffer.[this.preShiftStartOffset (1)]
+        let item = buffer.[preShiftStartOffset 1]
         count <- count - 1
         item
     
@@ -96,18 +92,17 @@ type Deque<'T>(initCapacity : int) =
     member this.RemoveLast() = 
         if this.IsEmpty then raise <| new InvalidOperationException("The Deque is empty")
         count <- count - 1
-        buffer.[toBufferIndex (this.Count)]
+        buffer.[toBufferIndex count]
     
     /// Gets the value at the specified index of the Deque
     member this.Get(index) = 
-        if index >= this.Count then 
-            raise <| new IndexOutOfRangeException("The supplied index is greater than the Count")
-        buffer.[toBufferIndex (index)]
+        if index >= count then raise <| new IndexOutOfRangeException("The supplied index is greater than the Count")
+        buffer.[toBufferIndex index]
     
     /// Gets the element at the front
     member this.First = 
         if count = 0 then raise <| new InvalidOperationException("The Deque is empty")
-        buffer.[toBufferIndex (0)]
+        buffer.[toBufferIndex 0]
     
     /// Gets the element at the end
     member this.Last = 
