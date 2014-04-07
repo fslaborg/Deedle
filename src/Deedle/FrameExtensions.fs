@@ -933,7 +933,7 @@ type FrameExtensions =
   ///
   [<Extension>]
   static member Diff(frame:Frame<'TRowKey, 'TColumnKey>, offset) = 
-    frame.SeriesApply<float>(false, fun s -> Series.diff offset s :> ISeries<_>)
+    frame.ColumnApply<float>(false, fun s -> Series.diff offset s :> ISeries<_>)
 
   [<Extension>]
   static member Reduce(frame:Frame<'TRowKey, 'TColumnKey>, aggregation:Func<'T, 'T, 'T>) = 

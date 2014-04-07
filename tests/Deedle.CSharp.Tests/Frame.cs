@@ -100,7 +100,7 @@ namespace Deedle.CSharp.Tests
 				}.Frame;
 				dynamic dfd = df;
 				dfd.Test1 = new[] { 1, 2 };
-				dfd.Test2 = df.GetSeries<double>("Test");
+				dfd.Test2 = df.GetColumn<double>("Test");
 				dfd.Test3 = new Dictionary<int, string> { { 1, "A" }, { 2, "B" } };
 				var row = df.Rows[2];
 
@@ -112,7 +112,7 @@ namespace Deedle.CSharp.Tests
 		}
 
 		[Test]
-		public static void CanGetSeriesDynamically()
+		public static void CanGetColumnDynamically()
 		{
 			for (int i = 1; i <= 2; i++) // Run this twice, to check that instance references are right
 			{

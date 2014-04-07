@@ -46,7 +46,7 @@ let bySex =
   grouped
   |> Series.map (fun sex df -> 
       // Group by the 'Survived' column & count by Boolean values
-      df.GetSeries<bool>("Survived") |> Series.groupBy (fun k v -> v) 
+      df.GetColumn<bool>("Survived") |> Series.groupBy (fun k v -> v) 
       |> Frame.ofColumns |> Frame.countValues )
   |> Frame.ofRows
   |> Frame.indexColsWith ["Died"; "Survived"]

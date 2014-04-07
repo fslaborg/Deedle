@@ -264,9 +264,9 @@ let ``Can retrieve a series according to type parameter`` () =
   let s2 = series [| 1 => ("a",1.0); 2 => ("b",2.0) |]
   let f = frame [ "A" => s1 ]
   f?B <- s2
-  f.GetAllSeries<int*int>() |> shouldEqual ( seq [ KeyValuePair("A", s1) ] )
-  f.GetAllSeries<string*float>() |> shouldEqual ( seq [ KeyValuePair("B", s2) ] )
-  f.GetAllSeries<int*float>() |> shouldEqual Seq.empty
+  f.GetAllColumns<int*int>() |> shouldEqual ( seq [ KeyValuePair("A", s1) ] )
+  f.GetAllColumns<string*float>() |> shouldEqual ( seq [ KeyValuePair("B", s2) ] )
+  f.GetAllColumns<int*float>() |> shouldEqual Seq.empty
 
 [<Test>]
 let ``Can do fuzzy lookup on frame rows and cols`` () =
@@ -400,10 +400,27 @@ let ``Can skip N elements from front and back`` () =
 // ------------------------------------------------------------------------------------------------
 
 [<Test>]
-let slowStack() = 
+let ``Can stack frame with 200x500 data frame``() = 
   let big = frame [ for d in 0 .. 200 -> string d => series [ for i in 0 .. 500 -> string i => 1.0 ] ]
   let stacked = Frame.stack big 
   stacked |> Frame.countRows |> shouldEqual 100701
+
+[<Test>]
+let ``Values in a stacked frame can be expanded`` () =
+  let df = 
+    [ "a" => series [ 0 => 1.0; 1 => 2.0; 2 => 3.0 ]; 
+      "b" => series [ 0 => 5.0; 1 => 6.0; 2 => nan ] ] |> frame
+  let res = df |> Frame.zip (fun a b -> a, b) df |> Frame.stack |> Frame.expandCols ["Value"]
+  let actual = res.Rows.[0].As<obj>() 
+  let expected = series [ "Row" => box 0; "Column" => box "a"; "Value.Item1" => box 1.0; "Value.Item2" => box 1.0]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Frame.stack preserves type of values`` () = 
+  let df = frame [ "S1" =?> series [1 => 1]; "S2" =?> series [1 => 1.0 ]]
+  let res = df |> Frame.stack 
+  let colTypes = res.GetFrameData().Columns |> Seq.map (fun (ty,_) -> ty.Name) |> List.ofSeq
+  colTypes |> shouldEqual ["Int32"; "String"; "Double"]
 
 [<Test>]
 let ``Can group 10x5k data frame by row of type string (in less than a few seconds)`` () =
@@ -425,7 +442,7 @@ let ``Can group 10x5k data frame by row of type string and nest it (in less than
 [<Test>]
 let ``Applying numerical operation to frame does not affect non-numeric series`` () =
   let df = msft() * 2.0
-  let actual = df.GetSeries<DateTime>("Date").GetAt(0).Date 
+  let actual = df.GetColumn<DateTime>("Date").GetAt(0).Date 
   actual |> shouldEqual (DateTime(2012, 1, 27))
   
 [<Test>]

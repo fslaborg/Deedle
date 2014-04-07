@@ -228,9 +228,10 @@ let ``Union correctly unions series, prefering left or right values``() =
   let input2 = Series.ofObservations [ 'c' => 1; 'd' => 4  ]
   let expectedL = Series.ofObservations [ 'a' => 1; 'b' => 2; 'c' => 3; 'd' => 4 ]
   let expectedR = Series.ofObservations [ 'a' => 1; 'b' => 2; 'c' => 1; 'd' => 4 ]
-  input1.Union(input2) |> shouldEqual expectedL
+  input1.Merge(input2) |> shouldEqual expectedL
   input1.Union(input2, UnionBehavior.PreferRight) |> shouldEqual expectedR
 
+  (series [ 1=>nan; 2=>1.0]).Append(series [1=> 1.0])
 [<Test>] 
 let ``Union throws exception when behavior is exclusive and series overlap``() = 
   let input1 = Series.ofObservations [ 'a' => 1; 'b' => 2; 'c' => 3 ]

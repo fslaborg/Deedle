@@ -60,15 +60,33 @@ module Frame =
   ///
   /// [category:Accessing frame data and lookup]
   [<CompiledName("Columns")>]
-  let columns (frame:Frame<'R, 'C>) = frame.Columns
-
-  /// Returns a series of columns of the data frame indexed by the column keys, 
-  /// which contains those series whose values are convertible to 'T, and with 
-  /// missing values where the conversion fails.
+  let cols (frame:Frame<'R, 'C>) = frame.Columns
+  
+  /// Returns a specified column from a data frame. This function uses exact matching 
+  /// semantics on the key. Use `lookupCol` if you want to use inexact 
+  /// matching (e.g. on dates)
   ///
   /// [category:Accessing frame data and lookup]
-  [<CompiledName("TypedCols")>]
-  let typedCols (frame:Frame<'R,'C>) : Series<'C,Series<'R,'T>> =
+  [<CompiledName("GetColumn")>]
+  let getCol column (frame:Frame<'R, 'C>) : Series<'R, 'V> = 
+    frame.GetColumn(column)
+
+  /// Returns a series of columns of the data frame indexed by the column keys, 
+  /// which contains those series whose values are convertible to `'T`, and with 
+  /// missing values where the conversion fails.
+  ///
+  /// If you want to get numeric columns, you can use a simpler `numericCols` function
+  /// instead. Note that this function typically requires a type annotation. This can
+  /// be specified in various ways, for example by annotating the result value:
+  ///
+  ///     let (res:Series<_, Series<_, string>>) = frame |> getColumns
+  ///
+  /// Here, the annotation on the values of the nested series specifies that we want
+  /// to get columns containing `string` values.
+  ///
+  /// [category:Accessing frame data and lookup]
+  [<CompiledName("GetColumns")>]
+  let getCols (frame:Frame<'R,'C>) : Series<'C,Series<'R,'T>> =
     frame.Columns 
     |> Series.map(fun _ v -> v.TryAs<'T>() |> OptionalValue.asOption) 
     |> Series.flatten
@@ -78,9 +96,9 @@ module Frame =
   /// missing values where the conversion fails.
   ///
   /// [category:Accessing frame data and lookup]
-  [<CompiledName("NumericCols")>]
-  let numericCols (frame:Frame<'R,'C>) : Series<'C,Series<'R,float>> =
-    frame |> typedCols
+  [<CompiledName("GetNumericColumns")>]
+  let getNumericColumns (frame:Frame<'R,'C>) : Series<'C,Series<'R,float>> =
+    frame |> getCols
 
   /// Returns the rows of the data frame as a series (indexed by 
   /// the row keys of the source frame) containing untyped series representing
@@ -90,15 +108,6 @@ module Frame =
   [<CompiledName("Rows")>]
   let rows (frame:Frame<'R, 'C>) = frame.Rows
 
-  /// Returns a specified column from a data frame. This function uses exact matching 
-  /// semantics on the key. Use `lookupSeries` if you want to use inexact 
-  /// matching (e.g. on dates)
-  ///
-  /// [category:Accessing frame data and lookup]
-  [<CompiledName("GetSeries")>]
-  let getSeries column (frame:Frame<'R, 'C>) : Series<'R, 'V> = 
-    frame.GetSeries(column)
-
   /// Returns a specified row from a data frame. This function uses exact matching 
   /// semantics on the key. Use `lookupRow` if you want to use inexact matching 
   /// (e.g. on dates)
@@ -107,21 +116,32 @@ module Frame =
   [<CompiledName("GetRow")>]
   let getRow row (frame:Frame<'R, 'C>) = frame.GetRow(row)
 
+  /// Returns a series of rows of the data frame indexed by the row keys, 
+  /// which contains those rows whose values are convertible to 'T, and with 
+  /// missing values where the conversion fails.
+  ///
+  /// [category:Accessing frame data and lookup]
+  [<CompiledName("GetRows")>]
+  let getRows (frame:Frame<'R,'C>) : Series<'R,Series<'C,'T>> =
+    frame.Rows 
+    |> Series.map(fun _ v -> v.TryAs<'T>() |> OptionalValue.asOption) 
+    |> Series.flatten
+
   /// Returns a specified series (column) from a data frame. If the data frame has 
   /// ordered column index, the lookup semantics can be used to get series
   /// with nearest greater/smaller key. For exact semantics, you can use `getCol`.
   ///
   /// [category:Accessing frame data and lookup]
   [<CompiledName("LookupColumn")>]
-  let lookupCol column lookup (frame:Frame<'R, 'C>) = frame.GetSeries(column, lookup)
+  let lookupCol column lookup (frame:Frame<'R, 'C>) : Series<'R, 'V> = frame.GetColumn(column, lookup)
 
   /// Returns a specified series (column) from a data frame, or missing value if 
   /// column doesn't exist.
   ///
   /// [category:Accessing frame data and lookup]
   [<CompiledName("TryLookupColumn")>]
-  let tryLookupCol column lookup (frame:Frame<'R, 'C>) = 
-    frame.TryGetSeries(column, lookup) |> OptionalValue.asOption
+  let tryLookupCol column lookup (frame:Frame<'R, 'C>) : option<Series<'R, 'V>> = 
+    frame.TryGetColumn(column, lookup) |> OptionalValue.asOption
 
   /// Returns a specified key and series (column) from a data frame, or missing value if 
   /// doesn't exist.
@@ -129,7 +149,7 @@ module Frame =
   /// [category:Accessing frame data and lookup]
   [<CompiledName("TryLookupColObservation")>]
   let tryLookupColObservation column lookup (frame:Frame<'R, 'C>) = 
-    frame.TryGetSeriesObservation(column, lookup) 
+    frame.TryGetColumnObservation(column, lookup) 
     |> OptionalValue.asOption 
     |> Option.map (fun kvp -> kvp.Key, kvp.Value)
 
@@ -161,16 +181,16 @@ module Frame =
   /// data frame. The function uses exact key matching semantics.
   ///
   /// [category:Accessing frame data and lookup]
-  [<CompiledName("GetColumns")>]
-  let getCols (columns:seq<_>) (frame:Frame<'R, 'C>) = 
+  [<CompiledName("SliceCols")>]
+  let sliceCols (columns:seq<_>) (frame:Frame<'R, 'C>) = 
     frame.Columns.[columns]
 
   /// Returns a frame consisting of the specified rows from the original
   /// data frame. The function uses exact key matching semantics.
   ///
   /// [category:Accessing frame data and lookup]
-  [<CompiledName("GetRows")>]
-  let getRows (rows:seq<_>) (frame:Frame<'R, 'C>) = 
+  [<CompiledName("SliceRows")>]
+  let sliceRows (rows:seq<_>) (frame:Frame<'R, 'C>) = 
     frame.Rows.[rows]
 
   // ----------------------------------------------------------------------------------------------
@@ -188,9 +208,9 @@ module Frame =
   ///  - `frame` - Source data frame (which is not mutated by the operation)
   ///
   /// [category:Series operations]
-  [<CompiledName("AddSeries")>]
-  let addSeries column (series:Series<_, 'V>) (frame:Frame<'R, 'C>) = 
-    let f = frame.Clone() in f.AddSeries(column, series); f
+  [<CompiledName("AddColumn")>]
+  let addCol column (series:Series<_, 'V>) (frame:Frame<'R, 'C>) = 
+    let f = frame.Clone() in f.AddColumn(column, series); f
 
   /// Creates a new data frame that contains all data from the original
   /// data frame without the specified series (column). The operation throws
@@ -201,9 +221,9 @@ module Frame =
   ///  - `frame` - Source data frame (which is not mutated by the operation)
   ///
   /// [category:Series operations]
-  [<CompiledName("DropSeries")>]
-  let dropSeries column (frame:Frame<'R, 'C>) = 
-    let f = frame.Clone() in f.DropSeries(column); f
+  [<CompiledName("DropColumn")>]
+  let dropCol column (frame:Frame<'R, 'C>) = 
+    let f = frame.Clone() in f.DropColumn(column); f
 
   /// Creates a new data frame where the specified column is replaced
   /// with a new series. (If the series does not exist, only the new
@@ -216,8 +236,8 @@ module Frame =
   ///
   /// [category:Series operations]
   [<CompiledName("ReplaceColumn")>]
-  let replaceSeries column series (frame:Frame<'R, 'C>) = 
-    let f = frame.Clone() in f.ReplaceSeries(column, series); f
+  let replaceCol column series (frame:Frame<'R, 'C>) = 
+    let f = frame.Clone() in f.ReplaceColumn(column, series); f
 
   // ----------------------------------------------------------------------------------------------
   // Grouping and hierarchical indexing
@@ -562,7 +582,7 @@ module Frame =
   /// [category:Data structure manipulation]
   [<CompiledName("SortRows")>]
   let sortRows colKey (frame:Frame<'R,'C>) =
-    let newRowIndex, rowCmd = frame.GetSeries(colKey) |> Series.sortWithCommand compare
+    let newRowIndex, rowCmd = frame.GetColumn(colKey) |> Series.sortWithCommand compare
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
 
@@ -575,7 +595,7 @@ module Frame =
   /// [category:Data structure manipulation]
   [<CompiledName("SortRowsWith")>]
   let sortRowsWith colKey compareFunc (frame:Frame<'R,'C>) =
-    let newRowIndex, rowCmd = frame.GetSeries(colKey) |> Series.sortWithCommand compareFunc
+    let newRowIndex, rowCmd = frame.GetColumn(colKey) |> Series.sortWithCommand compareFunc
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
 
@@ -588,7 +608,7 @@ module Frame =
   /// [category:Data structure manipulation]
   [<CompiledName("SortRowBy")>]
   let sortRowsBy colKey (f:'T -> 'V) (frame:Frame<'R,'C>) =
-    let newRowIndex, rowCmd = frame.GetSeries(colKey) |> Series.sortByCommand f
+    let newRowIndex, rowCmd = frame.GetColumn(colKey) |> Series.sortByCommand f
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
 
@@ -804,7 +824,7 @@ module Frame =
       raise (new AggregateException(exceptions))
 
   let fillErrorsWith (value:'T) (frame:Frame<'R, 'C>) = 
-    frame.SeriesApply(true, fun (s:Series<_, 'T tryval>) -> 
+    frame.ColumnApply(true, fun (s:Series<_, 'T tryval>) -> 
       (Series.fillErrorsWith value s) :> ISeries<_>)
 
   let reduce (op:'T -> 'T -> 'T) (frame:Frame<'R, 'C>) = 
@@ -814,10 +834,10 @@ module Frame =
     frame.Columns |> Series.map (fun _ -> Series.countValues)
 
   let inline maxRowBy column (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.maxBy (fun row -> row.GetAs<float>(column))
+    frame.Rows |> Stats.maxBy (fun row -> row.GetAs<float>(column))
 
   let inline minRowBy column (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.minBy (fun row -> row.GetAs<float>(column))
+    frame.Rows |> Stats.minBy (fun row -> row.GetAs<float>(column))
 
   // ----------------------------------------------------------------------------------------------
   // Hierarchical aggregation
@@ -894,7 +914,7 @@ module Frame =
   /// [category:Missing values]
   [<CompiledName("FillMissingWith")>]
   let fillMissingWith (value:'T) (frame:Frame<'R, 'C>) =
-    frame.SeriesApply(true, fun (s:Series<_, 'T>) -> Series.fillMissingWith value s :> ISeries<_>)
+    frame.ColumnApply(true, fun (s:Series<_, 'T>) -> Series.fillMissingWith value s :> ISeries<_>)
 
   /// Fill missing values in the data frame with the nearest available value
   /// (using the specified direction). Note that the frame may still contain
@@ -932,7 +952,7 @@ module Frame =
   /// [category:Missing values]
   [<CompiledName("FillMissingUsing")>]
   let fillMissingUsing (f:Series<'R, 'T> -> 'R -> 'T) (frame:Frame<'R, 'C>) =
-    frame.SeriesApply(false, fun (s:Series<_, 'T>) -> Series.fillMissingUsing (f s) s :> ISeries<_>)
+    frame.ColumnApply(false, fun (s:Series<_, 'T>) -> Series.fillMissingUsing (f s) s :> ISeries<_>)
 
   /// Creates a new data frame that contains only those rows of the original 
   /// data frame that are _dense_, meaning that they have a value for each column.
@@ -1135,18 +1155,40 @@ module Frame =
   /// Implements R-like 'stack' (returns frame whose 
   /// columns are named Row/Column/Value)
   let stack (frame:Frame<'R, 'C>) =
-    let vals = 
-      frame.Rows.Observations |> Seq.collect (fun (KeyValue(rowKey, row)) ->
-        row.Observations 
-        |> Seq.map (fun (KeyValue(colKey, value)) -> (box rowKey, box colKey, value))) |> Array.ofSeq
+    let rowKeys = frame.RowIndex.Keys
+    let colKeys = frame.ColumnIndex.Keys
+    let rows = frame.Data.DataSequence |> Array.ofSeq
+
+    // Build arrays with row keys, column keys and values
+    let rowVec = ResizeArray<_>()
+    let colVec = ResizeArray<_>()
+    let valVec = ResizeArray<_>()
+    for row = 0 to rowKeys.Count - 1 do
+      for col = 0 to colKeys.Count - 1 do
+        let vec = rows.[col]
+        if vec.HasValue then 
+          let value = vec.Value.GetObject(Address.ofInt row)
+          if value.HasValue then 
+            rowVec.Add(rowKeys.[row])
+            colVec.Add(colKeys.[col])
+            valVec.Add(value.Value)
+
+    // Infer type of the values in the "value" vector 
+    let valTyp = 
+      frame.Data.DataSequence 
+      |> Seq.choose (fun dt ->
+        if dt.HasValue then Some(dt.Value.ElementType) else None) 
+      |> VectorHelpers.findCommonSupertype
     
     let colIndex = Index.ofKeys ["Row"; "Column"; "Value"]
-    let rowIndex = Index.ofKeys (Array.init vals.Length id)
+    let rowIndex = Index.ofKeys (Array.init valVec.Count id)
     let data = 
-      [ for f in [ (fun (a, _, _) -> a); (fun (_, a, _) -> a); (fun (_, _, a) -> a) ] ->
-          Vector.ofValues (Array.map f vals) :> IVector ]
+      [ Vector.ofValues (rowVec.ToArray()) :> IVector
+        Vector.ofValues (colVec.ToArray()) :> IVector
+        VectorHelpers.createTypedVector frame.VectorBuilder valTyp (valVec.ToArray()) ]
       |> Vector.ofValues
     Frame(rowIndex, colIndex, data)
+
 
   // Unstack is easier, we just need to get three-element tuples from the frame and use Frame.ofValues
   let unstack (frame:Frame<'O, string>) : Frame<'R, 'C> =
@@ -1162,21 +1204,3 @@ module Frame =
   /// Returns data of the data frame as a 2D array containing data as `float` values.
   /// Missing data are represented as `Double.NaN` in the returned array.
   let toArray2D (frame:Frame<'R, 'C>) = frame.ToArray2D<float>()
-
-  // ----------------------------------------------------------------------------------------------
-  // Obsolete - kept for temporary compatibility
-  // ----------------------------------------------------------------------------------------------
-
-  [<Obsolete("Use sortRowsByKey instead. This function will be removed in future versions.")>]
-  let orderRows (frame:Frame<'R, 'C>) = sortRowsByKey frame
-  [<Obsolete("Use sortColsByKey instead. This function will be removed in future versions.")>]
-  let orderCols (frame:Frame<'R, 'C>) = sortColsByKey frame
-  [<Obsolete("Use Stats.colMean instead. This function will be removed in future versions.")>]
-  let mean (frame:Frame<'R, 'C>) = frame.GetColumns<float>() |> Series.map (fun _ -> Stats.mean)
-  [<Obsolete("Use Stats.colSum instead. This function will be removed in future versions.")>]
-  let sum (frame:Frame<'R, 'C>) = frame.GetColumns<float>() |> Series.map (fun _ -> Stats.sum)
-  [<Obsolete("Use Stats.colStdDev instead. This function will be removed in future versions.")>]
-  let sdv (frame:Frame<'R, 'C>) = frame.GetColumns<float>() |> Series.map (fun _ -> Stats.stdDev)
-  [<Obsolete("Use Stats.colMedian instead. This function will be removed in future versions.")>]
-  let median (frame:Frame<'R, 'C>) = frame.GetColumns<float>() |> Series.map (fun _ -> Stats.median)
-
