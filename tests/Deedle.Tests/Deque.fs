@@ -52,14 +52,17 @@ let ``can add elements`` () =
   let d = Deque()
 
   d.Add(1)
-  d.Add(1)
   d.Add(2)
   d.Add(3)
   d.Add(4)
+  d.Add(5)
   
   d.IsEmpty |> shouldEqual false 
   d.Count |> shouldEqual 5
-  d.Last |> shouldEqual 4
+
+  d.[0] |> shouldEqual 1
+  d.[2] |> shouldEqual 3
+  d.Last |> shouldEqual 5
   d.First |> shouldEqual 1
 
 [<Test>]

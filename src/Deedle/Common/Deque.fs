@@ -87,9 +87,10 @@ type Deque<'T>(initCapacity : int) =
         buffer.[toBufferIndex count]
     
     /// Gets the value at the specified index of the Deque
-    member this.Get(index) = 
-        if index >= count then raise <| new IndexOutOfRangeException("The supplied index is greater than the Count")
-        buffer.[toBufferIndex index]
+    member this.Item 
+        with get index = 
+            if index >= count then raise <| new IndexOutOfRangeException("The supplied index is greater than the Count")
+            buffer.[toBufferIndex index]
     
     /// Gets the element at the front
     member this.First = 
