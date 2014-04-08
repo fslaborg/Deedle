@@ -83,14 +83,14 @@ type Deque<'T>(initCapacity : int) =
     
     /// Removes an item from the front of the Deque and returns it.
     member this.RemoveFirst() = 
-        if this.IsEmpty then raise <| new InvalidOperationException("The Deque is empty")
+        if count = 0 then raise <| new InvalidOperationException("The Deque is empty")
         let item = buffer.[preShiftStartOffset 1]
         count <- count - 1
         item
     
     /// Removes an item from the back of the Deque and returns it.
     member this.RemoveLast() = 
-        if this.IsEmpty then raise <| new InvalidOperationException("The Deque is empty")
+        if count = 0 then raise <| new InvalidOperationException("The Deque is empty")
         count <- count - 1
         buffer.[toBufferIndex count]
     
