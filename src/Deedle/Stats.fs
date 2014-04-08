@@ -166,7 +166,7 @@ module internal StatsHelpers =
           // append new obs to back
           q.Add( (!i + winSize, x) )
           // return min/max value at front
-          snd q.Last
+          snd q.First
         | OptionalValue.Missing -> 
           if q.IsEmpty then nan else snd q.First }
 
