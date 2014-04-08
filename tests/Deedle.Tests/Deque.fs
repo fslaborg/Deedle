@@ -154,6 +154,31 @@ let ``can add and remove elements and convert to list`` () =
   l |> shouldEqual [1..max]
 
 [<Test>]
+let ``can add and remove elements and double capacity`` () =
+  let d = Deque()
+  let max = 17
+
+  for x in 1..max do
+      d.Add(x)
+ 
+  for x in 1..max do
+      d.RemoveFirst()
+
+  d.IsEmpty |> shouldEqual true
+
+  let newMax = max * 4 + 1
+
+  for x in 1..newMax do
+      d.Add(x)
+
+  d.Last |> shouldEqual newMax
+
+  let l = d |> Seq.toList
+  l |> Seq.length |> shouldEqual newMax
+  l |> Seq.last |> shouldEqual newMax
+  l |> shouldEqual [1..newMax]
+
+[<Test>]
 let ``moving max regression is fixed`` () =
   let d = Deque()
 
