@@ -189,8 +189,21 @@ let ``Expanding max works`` () =
   s1 |> Stats.expandingMax |> Stats.sum |> should beWithin (e1 +/- 1e-9)
   s2 |> Stats.expandingMax |> Stats.sum |> should beWithin (e2 +/- 1e-9)
 
+[<Test>]
+let ``Basic level statistics works on sample input`` () = 
+  let s1 = series [(1,0) => nan; (1,1) => 2.0; (2,0) => 3.0; (2,1) => 4.0 ]  
+  s1 |> Stats.levelCount fst |> shouldEqual <| series [ 1 => 1; 2 => 2 ]
+  s1 |> Stats.levelSum fst |> shouldEqual <| series [ 1 => 2.0; 2 => 7.0 ]
+  s1 |> Stats.levelMean fst |> shouldEqual <| series [ 1 => 2.0; 2 => 3.5 ]
+
+[<Test>]
+let ``Advanced level statistics works on sample input`` () = 
+  let s1 = series [(1,0) => 1.0; (1,1) => 2.0; (1,2) => 3.0; (1,4) => 4.0; (2,0) => 3.0; (2,1) => 4.0 ]  
+  s1 |> Stats.levelKurt fst |> shouldEqual <| series [ 1 => -1.2; 2 => nan ]
+  s1 |> Stats.levelSkew fst |> shouldEqual <| series [ 1 => 0.0; 2 => nan ]
+
 // ------------------------------------------------------------------------------------------------
-// Statistics
+// Comparing results with Math.NET
 // ------------------------------------------------------------------------------------------------
 
 open FsCheck

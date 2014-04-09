@@ -83,7 +83,7 @@ let constructFrame (df:DataFrame) rowIndex colIndex =
   // TODO: Do not always create column with objects - pick int/string/something
   let data = Array.init df.ColumnCount (fun colIndex ->
     let colData = rows |> Array.map (fun r -> r.[colIndex])
-    VectorHelpers.createTypedVector Vectors.ArrayVector.ArrayVectorBuilder.Instance colData)
+    VectorHelpers.createInferredTypeVector Vectors.ArrayVector.ArrayVectorBuilder.Instance colData)
   Some(Frame<_,_>(rowIndex, colIndex, Vector.ofValues data))
 
 /// Convert R expression to a data frame and return frame of an

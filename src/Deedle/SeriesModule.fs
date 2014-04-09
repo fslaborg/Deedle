@@ -52,19 +52,23 @@ open Deedle.VectorHelpers
 /// ## Series transformations 
 ///
 /// > **TODO** Write comment here  
-/// > **TODO** Document functions in this category
 /// 
-/// 
-/// ## Calculations, aggregation and statistics
-///
-/// > **TODO** Write comment here  
-/// > **TODO** Document functions in this category
-///
 /// 
 /// ## Hierarchical index operations
 ///
-/// > **TODO** Write comment here
+/// When the key of a series is tuple, the elements of the tuple can be treated
+/// as multiple levels of a index. For example `Series<'K1 * 'K2, 'V>` has two 
+/// levels with keys of types `'K1` and `'K2` respectively.
 ///
+/// The functions in this cateogry provide a way for aggregating values in the 
+/// series at one of the levels. For example, given a series `input` indexed by
+/// two-element tuple, you can calculate mean for different first-level values as
+/// follows:
+///
+///     input |> applyLevel fst Stats.mean
+///
+/// Note that the `Stats` module provides helpers for typical statistical operations,
+/// so the above could be written just as `input |> Stats.levelMean fst`.
 /// 
 /// ## Windowing, chunking and grouping
 ///
@@ -89,8 +93,13 @@ open Deedle.VectorHelpers
 ///
 /// ## Missing values
 ///
-/// > **TODO** Write comment here
+/// This group of functions provides a way of working with missing values in a series.
+/// The `dropMissing` function drops all keys for which there are no values in the series.
+/// The remaining functions provide different mechanism for filling the missing values.
 ///
+///  * `fillMissingWith` fills missing values with a specified constant
+///  * `fillMissingUsing` calls a specified function for every missing value
+///  * `fillMissing` and variants propagates values from previous/later keys
 ///
 /// ## Sorting and reindexing
 /// 
@@ -102,10 +111,24 @@ open Deedle.VectorHelpers
 /// > **TODO** Write comment here
 ///
 ///
-/// ## Appending, joining and zipping
+/// ## Merging and zipping
 ///
-/// > **TODO** Write comment here
+/// Given two series, there are two ways to combine the values. If the keys in the series
+/// are not overlapping (or you want to throw away values from one or the other series), 
+/// then you cna use `merge` or `mergeUsing`. To merge more than 2 series efficiently, use 
+/// the `mergeAll` function, which has been optimized for large number of series.
 ///
+/// If you want to align two series, you can use the _zipping_ operation. This aligns
+/// two series based on their keys and gives you tuples of values. The default behavior
+/// (`zip`) uses outer join and exact matching. For ordered series, you can specify 
+/// other forms of key lookups (e.g. find the greatest smaller key) using `zipAlign`.
+/// functions ending with `Into` are generally easier to use as they call a specified
+/// function to turn the tuple (of possibly missing values) into a new value.
+///
+/// For more complicated behaviors, it is often convenient to use joins on frames instead
+/// of working with series. Create two frames with single columns and then use the join
+/// operation. The result will be a frame with two columns (which is easier to use than
+/// series of tuples).
 ///
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Series = 
@@ -479,10 +502,6 @@ module Series =
     let liftedFunc a b = foldFunc (OptionalValue.asOption a) (OptionalValue.asOption b) |> OptionalValue.ofOption
     series.ScanAllValues(Func<_,_,_>(liftedFunc), OptionalValue.ofOption init)
 
-  // ----------------------------------------------------------------------------------------------
-  // Calculations, aggregation and statistics
-  // ----------------------------------------------------------------------------------------------
-
   /// Returns a series containing difference between a value in the original series and 
   /// a value at the specified offset. For example, calling `Series.diff 1 s` returns a 
   /// series where previous value is subtracted from the current one. In pseudo-code, the
@@ -495,7 +514,7 @@ module Series =
   ///    when negative, subtracts the future values from the current values.
   ///  - `series` - The input series, containing values that support the `-` operator.
   ///
-  /// [category:Calculations, aggregation and statistics]
+  /// [category:Series transformations]
   [<CompiledName("Diff")>]
   let inline diff offset (series:Series<'K, ^T>) = 
     let vectorBuilder = VectorBuilder.Instance
@@ -520,31 +539,12 @@ module Series =
   /// If you want to calculate the difference, e.g. `s - (Series.shift 1 s)`, you can
   /// use `Series.diff` which will be a little bit faster.
   ///
-  /// [category:Calculations, aggregation and statistics]
+  /// [category:Series transformations]
   [<CompiledName("Shift")>]
   let shift offset (series:Series<'K, 'T>) = 
     let newIndex, vector = series.IndexBuilder.Shift((series.Index, Vectors.Return 0), offset)
     let newVector = series.VectorBuilder.Build(vector, [| series.Vector |])
     Series(newIndex, newVector, series.VectorBuilder, series.IndexBuilder)
-
-  ///
-  /// [category:Calculations, aggregation and statistics]
-  let inline maxBy f (series:Series<'K, 'T>) = 
-    series |> observations |> Seq.maxBy (snd >> f)
-
-  ///
-  /// [category:Calculations, aggregation and statistics]
-  let inline minBy f (series:Series<'K, 'T>) = 
-    series |> observations |> Seq.maxBy (snd >> f)
-
-    /// Aggregates non-missing values using the specified functions working 
-  /// on either ReadOnlyCollection<'T>, ReadOnlyCollection<OptionalValue<'T>> or seq<'T>
-  [<CompiledName("InternalFastAggregation")>]
-  let inline private fastAggregation flist foptlist fseq (series:Series<_, _>) =
-    match series.Vector.Data with
-    | VectorData.DenseList list -> flist list
-    | VectorData.SparseList list -> foptlist list
-    | VectorData.Sequence seq -> fseq (Seq.choose OptionalValue.asOption seq)
 
   /// Aggregates the values of the specified series using a function that can combine
   /// individual values. 
@@ -553,10 +553,13 @@ module Series =
   ///  - `series` - An input series to be aggregated
   ///  - `op` - A function that is used to aggregate elements of the series
   ///
-  /// [category:Calculations, aggregation and statistics]
+  /// [category:Series transformations]
   [<CompiledName("Reduce")>]
   let reduce op (series:Series<'K, 'T>) = 
-    series |> fastAggregation (ReadOnlyCollection.reduce op) (ReadOnlyCollection.reduceOptional op >> OptionalValue.get) (Seq.reduce op)
+    match series.Vector.Data with
+    | VectorData.DenseList list -> ReadOnlyCollection.reduce op list
+    | VectorData.SparseList list -> (ReadOnlyCollection.reduceOptional op list) |> OptionalValue.get
+    | VectorData.Sequence seq -> Seq.reduce op (Seq.choose OptionalValue.asOption seq)
  
   // ----------------------------------------------------------------------------------------------
   // Hierarchical index operations
@@ -1066,7 +1069,17 @@ module Series =
     let newVector = series.VectorBuilder.Build(fillCmd, [|series.Vector|])
     Series<_, _>(series.Index, newVector, series.VectorBuilder, series.IndexBuilder)
 
-  /// Fill missing values only between startKey and endKey, inclusive
+  /// Fill missing values only between `startKey` and `endKey`, inclusive.
+  /// 
+  /// ## Parameters
+  ///  - `series` - An input series that is to be filled
+  ///  - `direction` - Specifies the direction used when searching for 
+  ///    the nearest available value. `Backward` means that we want to
+  ///    look for the first value with a smaller key while `Forward` searches
+  ///    for the nearest greater key.
+  ///  - `startKey` - the lower bound at which values should be filled
+  ///  - `endKey` - the upper bound at which values should be filled
+  ///
   /// [category:Missing values]
   [<CompiledName("FillMissingBetween")>]
   let fillMissingBetween (startKey, endKey) direction (series:Series<'K, 'T>) = 
@@ -1077,7 +1090,8 @@ module Series =
       | OptionalValue.Present(OptionalValue.Present v1, _) -> OptionalValue v1
       | _ -> OptionalValue.Missing )
 
-  /// Fill missing values only between the first and last non-missing values
+  /// Fill missing values only between the first and last non-missing values.
+  ///
   /// [category:Missing values]
   [<CompiledName("FillMissingInside")>]
   let fillMissingInside direction (series:Series<'K, 'T>) = 
@@ -1159,7 +1173,7 @@ module Series =
   /// ## Parameters
   ///  - `series` - An input series to be used
   ///
-  /// [category:Data structure manipulation]
+  /// [category:Sorting and reindexing]
   let sortByKey (series:Series<'K, 'T>) =
     let newRowIndex, rowCmd = series.IndexBuilder.OrderIndex(series.Index, Vectors.Return 0)
     let newData = series.VectorBuilder.Build(rowCmd, [| series.Vector |])
@@ -1512,57 +1526,117 @@ module Series =
 
 
   // ----------------------------------------------------------------------------------------------
-  // Appending, joining and zipping
+  // Merging and zipping
   // ----------------------------------------------------------------------------------------------
 
-  /// [category:Appending, joining and zipping]
-  let append (series1:Series<'K, 'V>) (series2:Series<'K, 'V>) =
-   series1.Append(series2)
+  /// Merge two series with distinct keys. When the same key with a value occurs in both
+  /// series, an exception is thrown. In that case, you can use `mergeUsing`, which allows
+  /// specifying merging behavior.
+  ///
+  /// [category:Merging and zipping]
+  [<CompiledName("Merge")>]
+  let merge (series1:Series<'K, 'V>) (series2:Series<'K, 'V>) =
+   series1.Merge(series2)
 
-  /// [category:Appending, joining and zipping]
-  let appendN (series: Series<'K, 'V> seq) =
-    if  series |> Seq.isEmpty then 
+  /// Merge two series with possibly overlapping keys. The `behavior` parameter specifies
+  /// how to handle situation when a value is definedin both series.
+  ///
+  /// ## Parameters
+  ///  - `behavior` specifies how to handle values available in both series.
+  ///    You can use `UnionBehavior.Exclusive` to throw an exception, or 
+  ///    `UnionBehavior.PreferLeft` and `UnionBehavior.PreferRight` to prefer values
+  ///    from the first or the second series, respectively.
+  /// - `series1` - the first (left) series to be merged
+  /// - `series2` - the second (right) series to be merged
+  ///
+  /// [category:Merging and zipping]
+  [<CompiledName("MergeUsing")>]
+  let mergeUsing behavior (series1:Series<'K, 'V>) (series2:Series<'K, 'V>) = 
+    series1.Merge(series2, behavior)
+
+  /// Merge multiple series with distinct keys. When the same key with a value occurs in two
+  /// of the series, an exception is thrown. This function is efficient even when the number
+  /// of series to be merged is large.
+  ///
+  /// [category:Merging and zipping]
+  [<CompiledName("MergeAll")>]
+  let mergeAll (series: Series<'K, 'V> seq) =
+    if series |> Seq.isEmpty then 
         Series([], [])
     else 
-        let head = series |> Seq.head 
-        head.Append(series |> Seq.skip 1 |> Seq.toArray)
+        let series = series |> Array.ofSeq
+        series.[0].Merge(series.[1 .. ])
 
-  /// [category:Appending, joining and zipping]
-  let zipAlign kind lookup (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>) =
-   series1.Zip(series2, kind, lookup)
-
-  /// [category:Appending, joining and zipping]
+  /// Align and zip two series using outer join and exact key matching. The function returns
+  /// a series of tuples where both elements may be missing. As a result, it is often easier
+  /// to use join on frames instead.
+  ///
+  /// [category:Merging and zipping]
+  [<CompiledName("Zip")>]
   let zip (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>) =
-   series1.Zip(series2)
+    series1.Zip(series2)
 
-  /// [category:Appending, joining and zipping]
+  /// Align and zip two series using the specified joining mechanism and key matching.
+  /// The function returns a series of tuples where both elements may be missing. As a result, 
+  /// it is often easier to use join on frames instead.
+  ///
+  /// ## Parameters
+  ///  - `kind` specifies the kind of join you want to use (left, right, inner or outer).
+  ///    For inner join, it is better to use `zipInner` instead.
+  ///  - `lookup` specifies how matching keys are found when left or right join is used
+  ///    on a sorted series. Use this to find the nearest smaller or nearest greater key
+  ///    in the other series.
+  ///  - `series1` - The first (left) series to be aligned
+  ///  - `series2` - The second (right) series to be aligned
+  ///
+  /// [category:Merging and zipping]
+  [<CompiledName("ZipAlign")>]
+  let zipAlign kind lookup (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>) =
+    series1.Zip(series2, kind, lookup)
+
+  /// Align and zip two series using inner join and exact key matching. The function returns
+  /// a series of tuples with values from the two series.
+  ///
+  /// [category:Merging and zipping]
+  [<CompiledName("ZipInner")>]
   let zipInner (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>) =
-   series1.ZipInner(series2)
+    series1.ZipInner(series2)
     
-  /// [category:Appending, joining and zipping]
-  let inline zipAlignInto kind lookup (op:'V1->'V2->'R) (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>) : Series<'K, 'R> =
+  /// Align and zip two series using the specified joining mechanism and key matching.
+  /// The function calls the specified function `op` to combine values from the two series
+  ///
+  /// ## Parameters
+  ///  - `kind` specifies the kind of join you want to use (left, right, inner or outer).
+  ///    For inner join, it is better to use `zipInner` instead.
+  ///  - `lookup` specifies how matching keys are found when left or right join is used
+  ///    on a sorted series. Use this to find the nearest smaller or nearest greater key
+  ///    in the other series.
+  ///  - `op` - A function that combines values from the two series. In case of left, right
+  ///    or outer join, some of the values may be missing. The function can also return 
+  ///    `None` to indicate a missing result.
+  ///  - `series1` - The first (left) series to be aligned
+  ///  - `series2` - The second (right) series to be aligned
+  ///
+  /// [category:Merging and zipping]
+  [<CompiledName("ZipAlignInto")>]
+  let zipAlignInto kind lookup (op:'V1 option->'V2 option->'R option) (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>) : Series<'K, 'R> =
     let joined = series1.Zip(series2, kind, lookup)
     joined.SelectOptional(fun (KeyValue(_, v)) -> 
       match v with
-      | OptionalValue.Present(OptionalValue.Present a, OptionalValue.Present b) -> 
-          OptionalValue(op a b)
+      | OptionalValue.Present(a, b) -> OptionalValue.ofOption(op (OptionalValue.asOption a) (OptionalValue.asOption b))
       | _ -> OptionalValue.Missing )
 
-  /// [category:Appending, joining and zipping]
-  let inline zipInto (op:'V1->'V2->'R) (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>) : Series<'K, 'R> =
-    zipAlignInto JoinKind.Inner Lookup.Exact op (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>)
-
-  /// [category:Appending, joining and zipping]
-  let union (series1:Series<'K, 'V>) (series2:Series<'K, 'V>) = 
-    series1.Union(series2)
-
-  /// [category:Appending, joining and zipping]
-  let unionUsing behavior (series1:Series<'K, 'V>) (series2:Series<'K, 'V>) = 
-    series1.Union(series2, behavior)
-
-  // ----------------------------------------------------------------------------------------------
-  // Obsolete - kept here for temporary compatibility
-  // ----------------------------------------------------------------------------------------------
-
-  [<Obsolete("Use sortByKeys instead. This function will be removed in futrue versions.")>]
-  let orderByKey series = sortByKey series 
+  /// Align and zip two series using outer join and exact key matching (use `zipAlignInto`
+  /// for more options). The function calls the specified function `op` to combine values 
+  /// from the two series
+  ///
+  /// ## Parameters
+  ///  - `op` - A function that combines values from the two series. 
+  ///  - `series1` - The first (left) series to be aligned
+  ///  - `series2` - The second (right) series to be aligned
+  ///
+  /// [category:Merging and zipping]
+  [<CompiledName("ZipInto")>]
+  let zipInto (op:'V1->'V2->'R) (series1:Series<'K, 'V1>) (series2:Series<'K, 'V2>) : Series<'K, 'R> =
+    (series1, series2) ||> zipAlignInto JoinKind.Inner Lookup.Exact (fun a b ->
+      match a, b with Some a, Some b -> Some (op a b) | _ -> None)
