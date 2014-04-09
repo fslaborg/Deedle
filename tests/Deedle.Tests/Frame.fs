@@ -513,7 +513,7 @@ let ``Can perform pointwise numerical operations on two frames`` () =
 let ``Can append two frames with disjoint columns`` () = 
   let df1 = Frame.ofColumns [ "A" => series [ for i in 1 .. 5 -> i, i ] ]
   let df2 = Frame.ofColumns [ "B" => series [ for i in 1 .. 5 -> i, i ] ]
-  let actual = df1.Append(df2) 
+  let actual = df1.Merge(df2) 
   actual.Rows.[3].GetAt(0) |> shouldEqual (box 3)
   actual.Rows.[3].GetAt(1) |> shouldEqual (box 3)
 
@@ -521,7 +521,7 @@ let ``Can append two frames with disjoint columns`` () =
 let ``Appending works on overlapping frames with missing values`` () =
   let df1 = Frame.ofColumns [ "A" => series [1 => Double.NaN; 2 => 1.0] ]
   let df2 = Frame.ofColumns [ "A" => series [2 => Double.NaN; 1 => 1.0] ]
-  let actual = df1.Append(df2)
+  let actual = df1.Merge(df2)
   actual.Columns.["A"] |> Series.mapValues (unbox<float>) 
   |> shouldEqual (series [1 => 1.0; 2 => 1.0])
 
@@ -529,7 +529,7 @@ let ``Appending works on overlapping frames with missing values`` () =
 let ``Appending fails on overlapping frames with overlapping values`` () =
   let df1 = Frame.ofColumns [ "A" => series [1 => Double.NaN; 2 => 1.0] ]
   let df2 = Frame.ofColumns [ "A" => series [2 => 1.0] ]
-  (fun () -> df1.Append(df2) |> ignore) |> should throw (typeof<InvalidOperationException>)
+  (fun () -> df1.Merge(df2) |> ignore) |> should throw (typeof<InvalidOperationException>)
 
 [<Test>]
 let ``Can append two frames with partially overlapping columns`` () = 
@@ -537,7 +537,7 @@ let ``Can append two frames with partially overlapping columns`` () =
   let df2 = Frame.ofColumns 
               [ "A" => series [ 6 => 10 ]
                 "B" => series [ for i in 1 .. 5 -> i, i ] ]
-  let actual = df1.Append(df2)
+  let actual = df1.Merge(df2)
   actual.Rows.[3].GetAt(0) |> shouldEqual (box 3)
   actual.Rows.[3].GetAt(1) |> shouldEqual (box 3)
   actual.Rows.[6].GetAt(0) |> shouldEqual (box 10)
@@ -547,14 +547,14 @@ let ``Can append two frames with partially overlapping columns`` () =
 let ``Can append two frames with single rows and keys with comparison that fails at runtime`` () = 
   let df1 = Frame.ofColumns [ "A" => series [ ([| 0 |], 0) => "A" ] ]
   let df2 = Frame.ofColumns [ "A" => series [ ([| 0 |], 1) => "A" ] ]
-  df1.Append(df2).RowKeys |> Seq.length |> shouldEqual 2
+  df1.Merge(df2).RowKeys |> Seq.length |> shouldEqual 2
  
 [<Test>]
 let ``Can append multiple frames`` () =
   let df1 = Frame.ofColumns [ "A" => series [ for i in 1 .. 5 -> i, i ] ]
   let df2 = Frame.ofColumns [ "B" => series [ for i in 1 .. 5 -> i, i ] ]
   let df3 = Frame.ofColumns [ "B" => series [ for i in 6 .. 9 -> i, i ] ]
-  let actual = Frame.appendN [df1;df2;df3]
+  let actual = Frame.mergeAll [df1;df2;df3]
   actual.Rows.[3].GetAt(0) |> shouldEqual (box 3)
   actual.Rows.[3].GetAt(1) |> shouldEqual (box 3)
   actual.Rows.[8].GetAt(1) |> shouldEqual (box 8)

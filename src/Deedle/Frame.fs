@@ -1,4 +1,5 @@
-﻿namespace Deedle
+﻿#nowarn "10001"
+namespace Deedle
 
 // --------------------------------------------------------------------------------------
 // Data frame
@@ -335,7 +336,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     frame.Join(colKey, series, JoinKind.Outer, Lookup.Exact)
 
 
-  /// Append two data frames with non-overlapping values. The operation takes the union of columns
+  /// Merge two data frames with non-overlapping values. The operation takes the union of columns
   /// and rows of the source data frames and then unions the values. An exception is thrown when 
   /// both data frames define value for a column/row location, but the operation succeeds if one
   /// frame has a missing value at the location.
@@ -348,10 +349,10 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   ///  - `otherFrame` - The other frame to be appended (combined) with the current instance
   ///
   /// [category:Joining, zipping and appending]
-  member frame.Append(otherFrame:Frame<'TRowKey, 'TColumnKey>) = 
-    frame.AppendN([ otherFrame ])
+  member frame.Merge(otherFrame:Frame<'TRowKey, 'TColumnKey>) = 
+    frame.Merge([| otherFrame |])
 
-  /// Append multiple data frames with non-overlapping values. The operation takes the union of columns
+  /// Merge multiple data frames with non-overlapping values. The operation takes the union of columns
   /// and rows of the source data frames and then unions the values. An exception is thrown when 
   /// both data frames define value for a column/row location, but the operation succeeds if one
   /// frame has a missing value at the location.
@@ -365,24 +366,32 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   ///    (combined) with the current instance
   ///
   /// [category:Joining, zipping and appending]
-  member frame.AppendN(otherFrames:Frame<'TRowKey, 'TColumnKey> seq) = 
-    let frames = seq { yield frame; yield! otherFrames }
+  member frame.Merge(otherFrames:seq<Frame<'TRowKey, 'TColumnKey>>) = 
+    frame.Merge(Array.ofSeq otherFrames)
 
-    // build the union of all row keys
-    let rowUnion ix (f:Frame<'R, 'C>) = 
-      let newIx, _, _ = indexBuilder.Union((ix, VectorConstruction.Empty), (f.RowIndex, VectorConstruction.Empty))
-      newIx
+  /// Merge multiple data frames with non-overlapping values. The operation takes the union of columns
+  /// and rows of the source data frames and then unions the values. An exception is thrown when 
+  /// both data frames define value for a column/row location, but the operation succeeds if one
+  /// frame has a missing value at the location.
+  ///
+  /// Note that the rows are *not* automatically reindexed to avoid overlaps. This means that when
+  /// a frame has rows indexed with ordinal numbers, you may need to explicitly reindex the row
+  /// keys before calling append.
+  ///
+  /// ## Parameters
+  ///  - `otherFrames` - A collection containing other data frame to be appended 
+  ///    (combined) with the current instance
+  ///
+  /// [category:Joining, zipping and appending]
+  member frame.Merge([<ParamArray>] otherFrames:Frame<'TRowKey, 'TColumnKey>[]) = 
+    
+    // Get an array with all frames we're merging
+    let frames = Array.append [| frame |] otherFrames
 
-    let allRowIx = frames |> Seq.fold rowUnion (Index.ofKeys [])
-
-    // Create a row command: steps to build a result column from a list of input rows
-    //  1) align each vector to the unioned row index
-    //  2) merge across all vectors
-    let rowCmd = 
-      frames
-      |> Seq.map (fun f -> f.RowIndex) 
-      |> Seq.mapi (fun i x -> indexBuilder.Reindex(x, allRowIx, Lookup.Exact, Vectors.Return(i), fun _ -> true))
-      |> fun vc -> Vectors.CombineN(Seq.toList vc, VectorValueListTransform.AtMostOne)
+    // Merge the row indices and get a transformation that combines N vectors
+    // (AtMostOne - specifies that when the vectors are merged, there should be no overlap)
+    let constrs = frames |> Seq.mapi (fun i f -> f.RowIndex, Vectors.Return(i)) |> List.ofSeq
+    let newRowIndex, rowCmd = indexBuilder.Merge(constrs, VectorValueListTransform.AtMostOne)
 
     // Define a function to construct result vector via the above row command, which will dynamically
     // dispatch to a type-specific generic implementation
@@ -403,35 +412,17 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
         match lst |> Seq.tryFind (fun v -> v.HasValue) with
         | Some(v) -> v.Value
         | _       -> invalidOp "Logic error: could not find non-empty IVector ??"
-
-      let empty = Vector.ofValues []
-      let input = [ for v in lst do 
-                    if v.HasValue 
-                    then yield v.Value
-                    else yield upcast Vector.ofValues [] ]
-      input |> convertAndAppendVectors witnessVec |> fun r -> OptionalValue(r) )
+      let empty = Vector.ofValues [] :> IVector
+      let input = lst |> List.map (OptionalValue.defaultArg empty)
+      input |> convertAndAppendVectors witnessVec |> OptionalValue.Create )
 
     // build the union of all column keys
-    let colUnion ix (f:Frame<'R, 'C>) = 
-      let newIx, _, _ = indexBuilder.Union((ix, VectorConstruction.Empty), (f.ColumnIndex, VectorConstruction.Empty))
-      newIx
+    let colConstrs = frames |> Seq.mapi (fun i f -> f.ColumnIndex, Vectors.Return(i)) |> List.ofSeq
+    let newColIndex, frameCmd = indexBuilder.Merge(colConstrs, append)
 
-    let allColIx = frames |> Seq.fold colUnion (Index.ofKeys [])
-
-    // Create a frame command: steps to build a frame from a list of input frames
-    //  1) align each column to the unioned column index
-    //  2) merge the columns via the row command transform 
-    let frameCmd = 
-      frames 
-      |> Seq.map (fun f -> f.ColumnIndex) 
-      |> Seq.mapi (fun i x -> indexBuilder.Reindex(x, allColIx, Lookup.Exact, Vectors.Return(i), fun _ -> true))
-      |> fun vc -> Vectors.CombineN(Seq.toList vc, append)
-
-    let frameData = frames |> Seq.map (fun f -> f.Data) |> Seq.toArray
-    
+    let frameData = frames |> Array.map (fun f -> f.Data)
     let newData = vectorBuilder.Build(frameCmd, frameData)
-
-    Frame(allRowIx, allColIx, newData)
+    Frame(newRowIndex, newColIndex, newData)
 
   // ----------------------------------------------------------------------------------------------
   // Frame accessors

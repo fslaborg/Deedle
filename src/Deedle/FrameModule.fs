@@ -1059,13 +1059,13 @@ module Frame =
   ///  - `frames` - The seq of frames to be appended (combined) 
   ///
   /// [category:Joining, zipping and appending]
-  [<CompiledName("AppendN")>]
-  let appendN (frames:Frame<'R, 'C> seq) =
+  [<CompiledName("MergeAll")>]
+  let mergeAll (frames:Frame<'R, 'C> seq) =
     if frames |> Seq.isEmpty then 
       Frame([], [])
     else 
       let head = frames |> Seq.head 
-      head.AppendN(frames |> Seq.skip 1)
+      head.Merge(frames |> Seq.skip 1)
 
   /// Append two data frames with non-overlapping values. The operation takes the union of columns
   /// and rows of the source data frames and then unions the values. An exception is thrown when 
@@ -1080,8 +1080,8 @@ module Frame =
   ///  - `otherFrame` - The other frame to be appended (combined) with the current instance
   ///
   /// [category:Joining, zipping and appending]
-  [<CompiledName("Append")>]
-  let append (frame1:Frame<'R, 'C>) frame2 = appendN [frame1; frame2]
+  [<CompiledName("Merge")>]
+  let merge (frame1:Frame<'R, 'C>) frame2 = mergeAll [frame1; frame2]
 
   /// Aligns two data frames using both column index and row index and apply the specified operation
   /// on values of a specified type that are available in both data frames. The parameters `columnKind`,
@@ -1150,7 +1150,7 @@ module Frame =
       |> Seq.map (fun k2 -> (k1, k2)) 
       |> (fun ix -> indexRowsWith ix df))
     |> Series.values
-    |> appendN
+    |> mergeAll
 
   /// Implements R-like 'stack' (returns frame whose 
   /// columns are named Row/Column/Value)

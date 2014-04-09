@@ -430,6 +430,10 @@ and
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
   /// [category:Merging, joining and zipping]
+  member series.Merge(otherSeries:seq<Series<'K, 'V>>) =
+    series.Merge(Array.ofSeq otherSeries)
+
+  /// [category:Merging, joining and zipping]
   member series.Merge([<ParamArray>] otherSeries:Series<'K, 'V>[]) =
     // Append the row indices and get transformation that combines two column vectors
     // (LeftOrRight - specifies that when column exist in both data frames then fail)
