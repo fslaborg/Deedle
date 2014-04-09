@@ -90,11 +90,11 @@ let ``Can save MSFT data as CSV file and read it afterwards (with default args)`
 let ``Can save MSFT data as CSV file and read it afterwards (with custom format)`` () =
   let file = System.IO.Path.GetTempFileName()
   let expected = msft()
-  expected.DropSeries("Date")
+  expected.DropColumn("Date")
   expected.SaveCsv(file, keyNames=["Date"], separator=';', culture=System.Globalization.CultureInfo.GetCultureInfo("cs-CZ"))
   let actual = 
     Frame.ReadCsv(file, separators=";", culture="cs-CZ")
-    |> Frame.indexRowsDate "Date" |> Frame.dropSeries "Date"
+    |> Frame.indexRowsDate "Date" |> Frame.dropCol "Date"
   actual |> shouldEqual expected
 
 [<Test>]
@@ -611,7 +611,7 @@ let ``Can zip and subtract numerical values in MSFT data set; with some rows dro
 [<Test>]
 let ``Can zip and subtract numerical values in MSFT data set; with some columns dropped``() = 
   let df1 = msft()
-  df1.DropSeries("Adj Close")
+  df1.DropColumn("Adj Close")
   let df2 = msft()
   let zipped = df1.Zip<int, _, _>(df2, fun a b -> a - b)
   zipped?``Adj Close`` |> Stats.sum |> should (be greaterThan) 0.0
@@ -882,14 +882,19 @@ let ndA = [ DateTime(2013,12,31) => 100.0] |> series
 let ndB = [ DateTime(2013,12,31) => 1000.0 ] |> series
 let netDebt =  [ "A" => ndA; "B" => ndB ] |> Frame.ofColumns
 
+let lift2 f a b = 
+    match a, b with
+    | Some x, Some y -> Some(f x y)
+    | _              -> None
+
 [<Test>]
 let ``Can zip-align frames with inner-join left-join nearest-smaller options`` () =
   let mktcapA = 
     (pxA, sharesA)
-    ||> Series.zipAlignInto JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+    ||> Series.zipAlignInto JoinKind.Left Lookup.NearestSmaller (lift2 (fun (l:float) r -> l*r))
   let mktcapB = 
     (pxB, sharesB)
-    ||> Series.zipAlignInto JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+    ||> Series.zipAlignInto JoinKind.Left Lookup.NearestSmaller (lift2 (fun (l:float) r -> l*r))
   
   // calculate stock mktcap 
   let mktCapCommons = 

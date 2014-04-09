@@ -402,7 +402,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       makeTwoSeriesConstructions keysAndRelocs vector1 vector2 ordered
 
 
-    /// Append is similar to union, but it also combines the vectors using the specified
+    /// Merge is similar to union, but it also combines the vectors using the specified
     /// vector transformation.
     member builder.Merge<'K when 'K : equality>(constructions:SeriesConstruction<'K> list, transform) = 
       let allOrdered = constructions |> List.forall (fun (index, _) -> index.IsOrdered)

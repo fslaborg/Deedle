@@ -93,14 +93,14 @@ let testOne() =
   // 570, 270
   printfn "Append few"
   timed 5 (fun _ -> 
-    s1.Append(s2, s3, s4) |> ignore
+    s1.Merge(s2, s3, s4) |> ignore
   )
 
   printfn "Append lots"
   timed 5 (fun _ -> 
       let mkSeries objId = Series([for j in 1..60 -> (objId, j)], [1..60])
       let h::tl = [1..1000] |> List.map mkSeries  
-      h.Append(tl |> Array.ofSeq) |> ignore
+      h.Merge(tl |> Array.ofSeq) |> ignore
   )
 //  s |> Series.chunkInto 100 Series.mean |> ignore
 //  s |> Series.chunkWhileInto (fun k1 k2 -> k2 - k1 < 100) Series.mean |> ignore

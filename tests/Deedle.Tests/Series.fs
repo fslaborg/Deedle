@@ -228,15 +228,18 @@ let ``Union correctly unions series, prefering left or right values``() =
   let input2 = Series.ofObservations [ 'c' => 1; 'd' => 4  ]
   let expectedL = Series.ofObservations [ 'a' => 1; 'b' => 2; 'c' => 3; 'd' => 4 ]
   let expectedR = Series.ofObservations [ 'a' => 1; 'b' => 2; 'c' => 1; 'd' => 4 ]
-  input1.Merge(input2) |> shouldEqual expectedL
-  input1.Union(input2, UnionBehavior.PreferRight) |> shouldEqual expectedR
+  input1.Merge(input2, UnionBehavior.PreferLeft) |> shouldEqual expectedL
+  input1.Merge(input2, UnionBehavior.PreferRight) |> shouldEqual expectedR
+  
+  let s1 = series [ 1 => nan; 2 => 1.0]
+  let s2 = series [ 1 => 1.0 ]  
+  s1.Merge(s2) |> shouldEqual (series [ 1 => 1.0; 2 => 1.0] )
 
-  (series [ 1=>nan; 2=>1.0]).Append(series [1=> 1.0])
 [<Test>] 
 let ``Union throws exception when behavior is exclusive and series overlap``() = 
   let input1 = Series.ofObservations [ 'a' => 1; 'b' => 2; 'c' => 3 ]
   let input2 = Series.ofObservations [ 'c' => 1; 'd' => 4  ]
-  (fun () -> input1.Union(input2, UnionBehavior.Exclusive) |> ignore) 
+  (fun () -> input1.Merge(input2, UnionBehavior.Exclusive) |> ignore) 
   |> should throw typeof<System.InvalidOperationException>
 
 [<Test>] 
@@ -244,7 +247,7 @@ let ``Union combines series when behavior is exclusive and series do not overlap
   let input1 = Series.ofObservations [ 'a' => 1; 'b' => 2; 'c' => 3 ]
   let input2 = Series.ofObservations [ 'd' => 4  ]
   let expected = Series.ofObservations [ 'a' => 1; 'b' => 2; 'c' => 3; 'd' => 4 ]
-  input1.Union(input2, UnionBehavior.Exclusive) |> shouldEqual expected
+  input1.Merge(input2, UnionBehavior.Exclusive) |> shouldEqual expected
 
 [<Test>] 
 let ``Grouping series with missing values works on sample input``() =
@@ -577,6 +580,11 @@ let b =
   [ DateTime(2013,9,8) => 8.0; // no matching point in a
     DateTime(2013,9,11) => 11.0 ] |> series
 
+let lift2 f a b = 
+    match a, b with
+    | Some x, Some y -> Some(f x y)
+    | _              -> None
+
 [<Test>]
 let ``ZipInto correctly zips series with missing values and custom operation``() =
   let res = (a, b) ||> Series.zipInto (fun l r -> (l**2.0) * r)
@@ -585,7 +593,7 @@ let ``ZipInto correctly zips series with missing values and custom operation``()
 
 [<Test>]
 let ``ZipAlignInto correctly left-aligns and zips series with nearest smaller option``() =
-  let res = (a, b) ||> Series.zipAlignInto JoinKind.Left Lookup.NearestSmaller (fun l r -> (l**2.0) * r) 
+  let res = (a, b) ||> Series.zipAlignInto JoinKind.Left Lookup.NearestSmaller (lift2 (fun l r -> (l**2.0) * r))
   res.GetAt(0) |> shouldEqual 8.0
   res.GetAt(1) |> shouldEqual 32.0
   res.GetAt(2) |> shouldEqual 99.0
@@ -594,7 +602,7 @@ let ``ZipAlignInto correctly left-aligns and zips series with nearest smaller op
 
 [<Test>]
 let ``ZipAlignInto correctly left-aligns and zips series with nearest greater option``() =
-  let res = (a, b) ||> Series.zipAlignInto JoinKind.Left Lookup.NearestGreater (fun l r -> (l**2.0) * r) 
+  let res = (a, b) ||> Series.zipAlignInto JoinKind.Left Lookup.NearestGreater (lift2 (fun l r -> (l**2.0) * r))
   res.GetAt(0) |> shouldEqual 11.0
   res.GetAt(1) |> shouldEqual 44.0
   res.GetAt(2) |> shouldEqual 99.0
@@ -603,7 +611,7 @@ let ``ZipAlignInto correctly left-aligns and zips series with nearest greater op
 
 [<Test>]
 let ``ZipAlignInto correctly right-aligns and zips series with nearest smaller option``() =
-  let res = (b, a) ||> Series.zipAlignInto JoinKind.Right Lookup.NearestSmaller (fun l r -> (l**2.0) * r) 
+  let res = (b, a) ||> Series.zipAlignInto JoinKind.Right Lookup.NearestSmaller (lift2 (fun l r -> (l**2.0) * r)) 
   res.GetAt(0) |> shouldEqual ((8.0 ** 2.0) * 1.0)
   res.GetAt(1) |> shouldEqual ((8.0 ** 2.0) * 2.0)
   res.GetAt(2) |> shouldEqual ((11.0 ** 2.0) * 3.0)
@@ -612,7 +620,7 @@ let ``ZipAlignInto correctly right-aligns and zips series with nearest smaller o
 
 [<Test>]
 let ``ZipAlignInto correctly right-aligns and zips series with nearest greater option``() =
-  let res = (b, a) ||> Series.zipAlignInto JoinKind.Right Lookup.NearestGreater (fun l r -> (l**2.0) * r) 
+  let res = (b, a) ||> Series.zipAlignInto JoinKind.Right Lookup.NearestGreater (lift2 (fun l r -> (l**2.0) * r))
   res.GetAt(0) |> shouldEqual ((11.0 ** 2.0) * 1.0)
   res.GetAt(1) |> shouldEqual ((11.0 ** 2.0) * 2.0)
   res.GetAt(2) |> shouldEqual ((11.0 ** 2.0) * 3.0)
@@ -648,7 +656,7 @@ let ``Can left-zip two empty series`` () =
 let ``Can append two sample series`` () =
   let inputs = Array.init 1000 (fun i -> i => int (10.0 * sin (float i)))
   let ar1, ar2 = Array.partition (fun (_, v) -> v%2 = 0) inputs
-  let actual = (series ar1).Append(series ar2) 
+  let actual = (series ar1).Merge(series ar2) 
   actual.Index.IsOrdered |> shouldEqual true
   actual |> shouldEqual (series inputs)
 
@@ -656,7 +664,7 @@ let ``Can append two sample series`` () =
 let ``Can append 10 sample ordered series (by appending them one by one)`` () =
   let samples = [ for i in 0 .. 9 -> series [ for j in 0 .. 99 -> 10*j + i => i * j ] ]
   let expected = series [ for i in 0 .. 9 do for j in 0 .. 99 -> 10*j + i => i * j ] |> Series.sortByKey
-  let actual = samples |> Seq.reduce Series.append
+  let actual = samples |> Seq.reduce Series.merge
   actual.Index.IsOrdered |> shouldEqual true
   actual |> shouldEqual expected
 
@@ -664,7 +672,7 @@ let ``Can append 10 sample ordered series (by appending them one by one)`` () =
 let ``Can append 10 sample unordered series (by appending them one by one)`` () =
   let samples = [ for i in 0 .. 9 -> series [ for j in 99 .. -1 .. 0 -> 10*j + i => i * j ] ]
   let expected = series [ for i in 0 .. 9 do for j in 99 .. -1 .. 0 -> 10*j + i => i * j ] 
-  let actual = samples |> Seq.reduce Series.append
+  let actual = samples |> Seq.reduce Series.merge
   actual.Index.IsOrdered |> shouldEqual false
   actual |> shouldEqual expected
 
@@ -672,7 +680,7 @@ let ``Can append 10 sample unordered series (by appending them one by one)`` () 
 let ``Can append 10 sample ordered series`` () =
   let samples = [ for i in 0 .. 9 -> series [ for j in 0 .. 99 -> 10*j + i => i * j ] ]
   let expected = series [ for i in 0 .. 9 do for j in 0 .. 99 -> 10*j + i => i * j ] |> Series.sortByKey
-  let actual = samples.Head.Append(Array.ofSeq samples.Tail)
+  let actual = samples.Head.Merge(Array.ofSeq samples.Tail)
   actual.Index.IsOrdered |> shouldEqual true
   actual |> shouldEqual expected
 
@@ -680,7 +688,7 @@ let ``Can append 10 sample ordered series`` () =
 let ``Can append 10 sample unordered series`` () =
   let samples = [ for i in 0 .. 9 -> series [ for j in 99 .. -1 .. 0 -> 10*j + i => i * j ] ]
   let expected = series [ for i in 0 .. 9 do for j in 99 .. -1 .. 0 -> 10*j + i => i * j ] 
-  let actual = samples.Head.Append(Array.ofSeq samples.Tail)
+  let actual = samples.Head.Merge(Array.ofSeq samples.Tail)
   actual.Index.IsOrdered |> shouldEqual false
   actual |> shouldEqual expected
 
@@ -694,7 +702,7 @@ let ``Can correctly append over 150 series`` () =
   minimalCount |> shouldEqual 21 // Just to check that we have some values
 
   let ss = values |> Array.map series
-  let actual = ss.[0].Append(ss.[1 ..]) 
+  let actual = ss.[0].Merge(ss.[1 ..]) 
   actual |> shouldEqual <| series [ for i in 0 .. 10000 -> i => float i ] 
 
 // ------------------------------------------------------------------------------------------------
