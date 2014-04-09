@@ -316,6 +316,9 @@ module OptionalValue =
   /// available, throws an exception. (This is equivalent to the `Value` property)
   let inline get (optional:'T opt) = optional.Value
     
+  /// Returns the value `def` when the argument is missing, otherwise returns its value
+  let inline defaultArg def (optional:'T opt) = 
+    if optional.HasValue then optional.Value else def
 
 
 // --------------------------------------------------------------------------------------

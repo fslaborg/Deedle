@@ -896,8 +896,8 @@ type FrameExtensions =
     frame.Columns.SelectKeys(projection) |> Frame.ofColumns
 
   [<Extension>]
-  static member Append(frame:Frame<'TRowKey, 'TColumnKey>, rowKey, row) = 
-    frame.Append(Frame.ofRows [ rowKey => row ])
+  static member Merge(frame:Frame<'TRowKey, 'TColumnKey>, rowKey, row) = 
+    frame.Merge(Frame.ofRows [ rowKey => row ])
 
   /// Returns a frame with columns shifted by the specified offset. When the offset is 
   /// positive, the values are shifted forward and first `offset` keys are dropped. When the
