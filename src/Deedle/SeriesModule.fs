@@ -167,6 +167,16 @@ module Series =
   [<CompiledName("LookupAll")>]
   let lookupAll keys lookup (series:Series<'K, 'T>) = series.GetItems(keys, lookup)
 
+  /// Sample an (ordered) series by finding the value at the exact or closest prior key 
+  /// for some new sequence of keys. 
+  ///
+  /// ## Parameters
+  ///  - `keys` - A sequence of keys that will form the keys of the retunred sequence
+  ///
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("Sample")>]
+  let sample keys (series:Series<'K, 'T>) = lookupAll keys Lookup.NearestSmaller
+
   /// Create a new series that contains values for all provided keys.
   /// Uses exact lookup semantics for key lookup - use `lookupAll` for more options
   ///
