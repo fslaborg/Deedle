@@ -175,7 +175,7 @@ module Series =
   ///
   /// [category:Accessing series data and lookup]
   [<CompiledName("Sample")>]
-  let sample keys (series:Series<'K, 'T>) = lookupAll keys Lookup.NearestSmaller
+  let sample keys (series:Series<'K, 'T>) = series |> lookupAll keys Lookup.NearestSmaller
 
   /// Create a new series that contains values for all provided keys.
   /// Uses exact lookup semantics for key lookup - use `lookupAll` for more options
