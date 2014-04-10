@@ -489,30 +489,42 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
     /// (together with a transformation that should be applied to a vector)
     member builder.GetRange<'K when 'K : equality >
         (index:IIndex<'K>, lo, hi, vector) =
+
       // Default values are specified by the entire range
-      let defaults = Address.zero, Address.ofInt64 (index.KeyCount - 1L)
-      let getBound offs semantics proj = 
-        let (|Lookup|_|) x = 
-          match index.Lookup(x, semantics, fun _ -> true) with 
-          | OptionalValue.Present(_, v) -> Some v | _ -> None
-        match offs with 
-        | None -> Some(proj defaults, BoundaryBehavior.Inclusive)
-        | Some (Lookup i, bound) -> Some(i, bound)
-        | _ -> None
+      let minAddr, maxAddr = Address.zero, Address.ofInt64 (index.KeyCount - 1L)
 
-      // Create new index using the range & vector transformation
-      match getBound lo Lookup.NearestGreater fst, getBound hi Lookup.NearestSmaller snd with
-      | Some lo, Some hi ->
-          let lo = if snd lo = BoundaryBehavior.Exclusive then Address.increment (fst lo) else fst lo
-          let hi = if snd hi = BoundaryBehavior.Exclusive then Address.decrement (fst hi) else fst hi
+      let loBound = 
+        match lo with
+        | Some(key, beh) ->
+            //  Lookup the key or the nearest greater key that is available
+            match index.Lookup(key, Lookup.NearestGreater, fun _ -> true) with
+            | OptionalValue.Present(foundKey, addr) ->
+                // If we want exclusive behavior and we have an exact
+                // key match, then adjust (increment) the address 
+                if beh = BoundaryBehavior.Exclusive && key = foundKey then Address.increment addr else addr
+            | OptionalValue.Missing -> Address.increment maxAddr
+        | None -> minAddr
 
-          let index, vector = asLinearIndex index vector 
-          let newKeys = 
-            let lo, hi = Address.asInt lo, Address.asInt hi
-            if hi >= lo then index.KeyCollection.[lo .. hi] else ReadOnlyCollection.empty
-          let newVector = Vectors.GetRange(vector, (lo, hi))
-          upcast LinearIndex<_>(newKeys, builder, (index :> IIndex<_>).IsOrdered), newVector
-      | _ -> upcast LinearIndex<_>(ReadOnlyCollection.ofArray [||], builder, index.IsOrdered), Vectors.Empty
+      let hiBound = 
+        match hi with
+        | Some(key, beh) -> 
+            //  Lookup the key or the nearest smaller key that is available
+            match index.Lookup(key, Lookup.NearestSmaller, fun _ -> true) with
+            | OptionalValue.Present(foundKey, addr) ->
+                // If we want exclusive behavior and we have an exact
+                // key match, then adjust (decrement) the address 
+                if beh = BoundaryBehavior.Exclusive && foundKey = key then Address.decrement addr else addr
+            | OptionalValue.Missing -> Address.decrement minAddr
+        | None -> maxAddr
+
+      if hiBound < loBound then
+        let newIndex = LinearIndex<_>(ReadOnlyCollection.ofArray [||], builder, true) :> IIndex<_>
+        newIndex, Vectors.Empty
+      else
+        let newIndex = LinearRangeIndex(index, loBound, hiBound) :> IIndex<_>
+        let newVector = Vectors.GetRange(vector, (loBound, hiBound))
+        newIndex, newVector
+
 
 // --------------------------------------------------------------------------------------
 // Functions for creatin linear indices

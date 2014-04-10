@@ -551,6 +551,14 @@ let ``SeriesExtensions.StartAt works when the key is before, after or in range``
   s.StartAt(25.0).Values |> List.ofSeq |> shouldEqual [ ]
 
 [<Test>]
+let ``SeriesExtensions.After works when the key is before, after or in range``() =
+  let s = Series.ofObservations [ for i in 10.0 .. 20.0 -> i => int i ]
+  s.After(15.5).Values |> List.ofSeq |> shouldEqual [ 16 .. 20 ]
+  s.After(15.0).Values |> List.ofSeq |> shouldEqual [ 16 .. 20 ]
+  s.After(5.00).Values |> List.ofSeq |> shouldEqual [ 10 .. 20 ]
+  s.After(25.0).Values |> List.ofSeq |> shouldEqual [ ]
+
+[<Test>]
 let ``Slicing of ordered series works when using inexact keys (below, inside, above) key range``() =
   let s = Series.ofObservations [ for i in 10.0 .. 20.0 -> i => int i ]
   s.[15.5 .. 20.0].Values |> List.ofSeq |> shouldEqual [ 16 .. 20 ]
