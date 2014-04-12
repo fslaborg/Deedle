@@ -718,8 +718,8 @@ and
     let newObs = 
       seq {
         for k in keys do
-          let smaller = x.TryGetObservation(k, Lookup.NearestSmaller)
-          let bigger  = x.TryGetObservation(k, Lookup.NearestGreater)
+          let smaller = x.TryGetObservation(k, Lookup.ExactOrSmaller)
+          let bigger  = x.TryGetObservation(k, Lookup.ExactOrGreater)
           yield f.Invoke(k, smaller, bigger) }
       |> Seq.toArray
 

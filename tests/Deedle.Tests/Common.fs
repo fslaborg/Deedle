@@ -53,46 +53,88 @@ let ``Array.dropRange drops inclusive range from an array`` () =
   [| 1 .. 10 |] |> Array.dropRange 1 8 |> shouldEqual [| 1; 10 |]    
 
 [<Test>]
-let ``Binary searching for nearest greater value works`` () =
+let ``Binary searching for exact or greater value works`` () =
   let comparer = System.Collections.Generic.Comparer<int>.Default
   new ReadOnlyCollection<_> [| 1; 2; 4; 6 |]
-  |> Array.binarySearchNearestGreater 5 comparer |> shouldEqual (Some 3)
+  |> Array.binarySearchNearestGreater 5 comparer true |> shouldEqual (Some 3)
   new ReadOnlyCollection<_> [| 1; 2; 4; 6 |]
-  |> Array.binarySearchNearestGreater 6 comparer |> shouldEqual (Some 3)
+  |> Array.binarySearchNearestGreater 6 comparer true |> shouldEqual (Some 3)
   new ReadOnlyCollection<_> [| 1; 2; 4; 6 |]
-  |> Array.binarySearchNearestGreater 7 comparer |> shouldEqual None
+  |> Array.binarySearchNearestGreater 7 comparer true |> shouldEqual None
   new ReadOnlyCollection<_> [| |]
-  |> Array.binarySearchNearestGreater 5 comparer |> shouldEqual None
+  |> Array.binarySearchNearestGreater 5 comparer true |> shouldEqual None
     
 [<Test>]
-let ``Binary searching for nearest smaller value works`` () =
+let ``Binary searching for exact or smaller value works`` () =
   let comparer = System.Collections.Generic.Comparer<int>.Default
   new ReadOnlyCollection<_> [| 1; 2; 4; 6 |]
-  |> Array.binarySearchNearestSmaller 5 comparer |> shouldEqual (Some 2)
+  |> Array.binarySearchNearestSmaller 5 comparer true |> shouldEqual (Some 2)
   new ReadOnlyCollection<_> [| 1; 2; 4; 6 |]
-  |> Array.binarySearchNearestSmaller 6 comparer |> shouldEqual (Some 3)
+  |> Array.binarySearchNearestSmaller 6 comparer true |> shouldEqual (Some 3)
   new ReadOnlyCollection<_> [| 1; 2; 4; 6 |]
-  |> Array.binarySearchNearestSmaller 0 comparer |> shouldEqual None
+  |> Array.binarySearchNearestSmaller 0 comparer true |> shouldEqual None
   new ReadOnlyCollection<_> [| |]
-  |> Array.binarySearchNearestSmaller 5 comparer |> shouldEqual None
+  |> Array.binarySearchNearestSmaller 5 comparer true |> shouldEqual None
+
+[<Test>]
+let ``Binary searching for greater value works`` () =
+  let comparer = System.Collections.Generic.Comparer<int>.Default
+  new ReadOnlyCollection<_> [| 1; 2; 4; 6 |]
+  |> Array.binarySearchNearestGreater 5 comparer false |> shouldEqual (Some 3)
+  new ReadOnlyCollection<_> [| 1; 2; 4; 6 |]
+  |> Array.binarySearchNearestGreater 2 comparer false |> shouldEqual (Some 2)
+  new ReadOnlyCollection<_> [| 1; 2; 4; 6 |]
+  |> Array.binarySearchNearestGreater 6 comparer false |> shouldEqual None
+  new ReadOnlyCollection<_> [| |]
+  |> Array.binarySearchNearestGreater 5 comparer false |> shouldEqual None
     
 [<Test>]
-let ``Binary searching for nearest greater value satisfies laws`` () =
+let ``Binary searching for smaller value works`` () =
+  let comparer = System.Collections.Generic.Comparer<int>.Default
+  new ReadOnlyCollection<_> [| 1; 2; 4; 6 |]
+  |> Array.binarySearchNearestSmaller 5 comparer false |> shouldEqual (Some 2)
+  new ReadOnlyCollection<_> [| 1; 2; 4; 6 |]
+  |> Array.binarySearchNearestSmaller 6 comparer false |> shouldEqual (Some 2)
+  new ReadOnlyCollection<_> [| 1; 2; 4; 6 |]
+  |> Array.binarySearchNearestSmaller 0 comparer false |> shouldEqual None
+  new ReadOnlyCollection<_> [| |]
+  |> Array.binarySearchNearestSmaller 5 comparer false |> shouldEqual None
+    
+[<Test>]
+let ``Binary searching for exact or greater value satisfies laws`` () =
   let comparer = System.Collections.Generic.Comparer<int>.Default
   Check.QuickThrowOnFailure(fun (input:int[]) (key:int) -> 
     let input = new ReadOnlyCollection<_>(Array.sort input)
-    match Array.binarySearchNearestGreater key comparer input with
+    match Array.binarySearchNearestGreater key comparer true input with
     | Some idx -> input.[idx] >= key
     | None -> Seq.forall (fun v -> v < key) input )
 
 [<Test>]
-let ``Binary searching for nearest smaller value satisfies laws`` () =
+let ``Binary searching for exact or smaller value satisfies laws`` () =
   let comparer = System.Collections.Generic.Comparer<int>.Default
   Check.QuickThrowOnFailure(fun (input:int[]) (key:int) -> 
     let input = new ReadOnlyCollection<_>(Array.sort input)
-    match Array.binarySearchNearestSmaller key comparer input with
+    match Array.binarySearchNearestSmaller key comparer true input with
     | Some idx -> input.[idx] <= key
     | None -> Seq.forall (fun v -> v > key) input )
+
+[<Test>]
+let ``Binary searching for greater value satisfies laws`` () =
+  let comparer = System.Collections.Generic.Comparer<int>.Default
+  Check.QuickThrowOnFailure(fun (input:int[]) (key:int) -> 
+    let input = new ReadOnlyCollection<_>(input |> Seq.distinct |> Seq.sort |> Array.ofSeq)
+    match Array.binarySearchNearestGreater key comparer false input with
+    | Some idx -> input.[idx] > key
+    | None -> Seq.forall (fun v -> v <= key) input )
+
+[<Test>]
+let ``Binary searching for smaller value satisfies laws`` () =
+  let comparer = System.Collections.Generic.Comparer<int>.Default
+  Check.QuickThrowOnFailure(fun (input:int[]) (key:int) -> 
+    let input = new ReadOnlyCollection<_>(input |> Seq.distinct |> Seq.sort |> Array.ofSeq)
+    match Array.binarySearchNearestSmaller key comparer false input with
+    | Some idx -> input.[idx] < key
+    | None -> Seq.forall (fun v -> v >= key) input )
 
 [<Test>]
 let ``Seq.lastFew works on empty lists`` () = 
