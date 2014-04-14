@@ -152,7 +152,7 @@ module internal StatsHelpers =
   let internal movingMinMaxHelper winSize cmp (s:seq<OptionalValue<_>>) = 
     let res = ResizeArray<_>()
     let i = ref 0
-    let q = Deque(max 16 (winSize / 4))
+    let q = Deque()
     for v in s do
       // invariant: all values in deque are strictly ascending (min) or descending (max)
       // invariant: all values in deque are in the current window (fst q.[i] > !i)
