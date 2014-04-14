@@ -1299,9 +1299,10 @@ module Series =
   ///
   /// ## Parameters
   ///  - `series` - An input series to be resampled
-  ///  - `fillMode` - When set to `Lookup.NearestSmaller` or `Lookup.NearestGreater`, 
+  ///  - `fillMode` - When set to `Lookup.ExactOrSmaller` or `Lookup.ExactOrGreater`, 
   ///     the function searches for a nearest available observation in an neighboring chunk.
   ///     Otherwise, the function `f` is called with an empty series as an argument.
+  ///     Values `Lookup.Smaller` and `Lookup.Greater` are not supported.
   ///  - `keyProj` - A function that transforms keys from original space to a new 
   ///    space (which is then used for grouping based on equivalence)
   ///  - `nextKey` - A function that gets the next key in the transformed space
@@ -1315,6 +1316,8 @@ module Series =
   ///
   /// [category:Sampling, resampling and advanced lookup]
   let resampleUniformInto (fillMode:Lookup) (keyProj:'K1 -> 'K2) (nextKey:'K2 -> 'K2) f (series:Series<'K1, 'V>) =
+    if not (fillMode.HasFlag(Lookup.Exact)) then
+      invalidOp "resampleUniformInto: The value of 'fillMode' must include 'Exact'."
     let min, max = series.KeyRange
     
     // Generate keys of the new space that fit in the range of the series
@@ -1333,10 +1336,10 @@ module Series =
     reindexed
     |> fillMissingUsing (fun k ->
         match fillMode with
-        | Lookup.NearestSmaller ->
+        | Lookup.ExactOrSmaller ->
             let res = reindexed.Get(k, fillMode)
             Series([res.KeyRange |> snd], [res.[res.KeyRange |> snd]])
-        | Lookup.NearestGreater ->
+        | Lookup.ExactOrGreater ->
             let res = reindexed.Get(k, fillMode)
             Series([res.KeyRange |> fst], [res.[res.KeyRange |> fst]]) 
         | _ -> Series([], [])  )
@@ -1597,6 +1600,7 @@ module Series =
   ///  - `lookup` specifies how matching keys are found when left or right join is used
   ///    on a sorted series. Use this to find the nearest smaller or nearest greater key
   ///    in the other series.
+  ///    Supported values are `Lookup.Exact`, `Lookup.ExactOrSmaller` and `Lookup.ExactOrGreater`.
   ///  - `series1` - The first (left) series to be aligned
   ///  - `series2` - The second (right) series to be aligned
   ///
@@ -1622,6 +1626,7 @@ module Series =
   ///  - `lookup` specifies how matching keys are found when left or right join is used
   ///    on a sorted series. Use this to find the nearest smaller or nearest greater key
   ///    in the other series.
+  ///    Supported values are `Lookup.Exact`, `Lookup.ExactOrSmaller` and `Lookup.ExactOrGreater`.
   ///  - `op` - A function that combines values from the two series. In case of left, right
   ///    or outer join, some of the values may be missing. The function can also return 
   ///    `None` to indicate a missing result.

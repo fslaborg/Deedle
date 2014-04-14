@@ -99,18 +99,24 @@ type LinearIndex<'K when 'K : equality>
     member x.Lookup(key, semantics, check) = 
       match lookup.Value.TryGetValue(key), semantics with
 
+      // First, handle the case when the value exists in the index (return it only if 
+      // 'check' returns 'true' and the caller wants Exact, ExactOrSmaller or ExactOrGreater)
+
       // When the value exists directly and the user requires exact match, we 
       // just return it (ignoring the fact that Vector value may be missing)
       | (true, res), Lookup.Exact -> OptionalValue((key, res))
-      // otherwise, only return it if there is associated value
-      | (true, res), _ when check res -> OptionalValue((key, res))
-      // if we find it, but 'check' does not like it & we're looking for exact, we return missing
-      | (true, _), Lookup.Exact -> OptionalValue.Missing
+      // If the caller wants exact (or greater/smaller), then check if the directly
+      // found address is OK (e.g. if there is an associated value in the vector)
+      | (true, res), (Lookup.ExactOrGreater | Lookup.ExactOrSmaller) when check res -> 
+          OptionalValue((key, res))
 
-      // If we can convert array index to address, we can use binary search!
-      // (Find the index & generate all previous/next indices so that we can 'check' them)
-      | _, Lookup.NearestSmaller when ordered.Value ->
-          let addrOpt = Array.binarySearchNearestSmaller key comparer keys
+      // Otherwise continue we need to use binary search to find the right value.
+      
+      // 
+      // Find the index & generate all previous indices so that we can 'check' them
+      | _, (Lookup.Smaller | Lookup.ExactOrSmaller) when ordered.Value ->
+          let inclusive = semantics = Lookup.ExactOrSmaller
+          let addrOpt = Array.binarySearchNearestSmaller key comparer inclusive keys
           let indices = addrOpt |> Option.map (fun v -> seq { v .. -1 .. 0 })
           let indices = defaultArg indices Seq.empty
           indices 
@@ -119,8 +125,10 @@ type LinearIndex<'K when 'K : equality>
           |> OptionalValue.ofOption
           |> OptionalValue.map (fun idx -> keys.[idx], Address.ofInt idx)
 
-      | _, Lookup.NearestGreater when ordered.Value ->
-          let addrOpt = Array.binarySearchNearestGreater key comparer keys
+      // Find the index & generate all next indices so that we can 'check' them
+      | _, (Lookup.Greater | Lookup.ExactOrGreater) when ordered.Value ->
+          let inclusive = semantics = Lookup.ExactOrGreater
+          let addrOpt = Array.binarySearchNearestGreater key comparer inclusive keys
           let indices = addrOpt |> Option.map (fun v -> seq { v .. keys.Count - 1 })
           let indices = defaultArg indices Seq.empty
           indices 
@@ -302,7 +310,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           // Lookup all keys. Find nearest greater if the key is not present.
           // At the end, we get missing value (when the key is greater), so we pad it with KeyCount
           let keyLocations = keys |> Seq.map (fun k ->  
-            let addr = index.Lookup(k, Lookup.NearestGreater, fun _ -> true)
+            let addr = index.Lookup(k, Lookup.ExactOrGreater, fun _ -> true)
             k, if addr.HasValue then snd addr.Value else index.KeyCount )
 
           // To make sure we produce the last chunk, append one pair at the end
@@ -319,7 +327,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           // Lookup all keys. Find nearest smaller if the key is not present.
           // At the beginning, we get missing value (when the key is smaller), so we pad it with 0L
           let keyLocations =  keys |> Seq.map (fun k ->
-            let addr = index.Lookup(k, Lookup.NearestSmaller, fun _ -> true)
+            let addr = index.Lookup(k, Lookup.ExactOrSmaller, fun _ -> true)
             k, if addr.HasValue then snd addr.Value else 0L ) 
           
           // To make sure we produce the first chunk, append one pair at the beginning
@@ -496,24 +504,26 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       let loBound = 
         match lo with
         | Some(key, beh) ->
-            //  Lookup the key or the nearest greater key that is available
-            match index.Lookup(key, Lookup.NearestGreater, fun _ -> true) with
-            | OptionalValue.Present(foundKey, addr) ->
-                // If we want exclusive behavior and we have an exact
-                // key match, then adjust (increment) the address 
-                if beh = BoundaryBehavior.Exclusive && key = foundKey then Address.increment addr else addr
+            // Lookup the key or the nearest greater key that is available
+            // (Use 'Greater' for exclusive and 'ExactOrGreater' for inclusive lookup)
+            let sem = 
+              if beh = BoundaryBehavior.Exclusive then Lookup.Greater
+              else Lookup.ExactOrGreater        
+            match index.Lookup(key, sem, fun _ -> true) with
+            | OptionalValue.Present(_, addr) -> addr
             | OptionalValue.Missing -> Address.increment maxAddr
         | None -> minAddr
 
       let hiBound = 
         match hi with
         | Some(key, beh) -> 
-            //  Lookup the key or the nearest smaller key that is available
-            match index.Lookup(key, Lookup.NearestSmaller, fun _ -> true) with
-            | OptionalValue.Present(foundKey, addr) ->
-                // If we want exclusive behavior and we have an exact
-                // key match, then adjust (decrement) the address 
-                if beh = BoundaryBehavior.Exclusive && foundKey = key then Address.decrement addr else addr
+            // Lookup the key or the nearest smaller key that is available
+            // (Use 'Smaller' for exclusive and 'ExactOrSmaller' for inclusive lookup)
+            let sem = 
+              if beh = BoundaryBehavior.Exclusive then Lookup.Smaller
+              else Lookup.ExactOrSmaller
+            match index.Lookup(key, sem, fun _ -> true) with
+            | OptionalValue.Present(_, addr) -> addr
             | OptionalValue.Missing -> Address.decrement minAddr
         | None -> maxAddr
 

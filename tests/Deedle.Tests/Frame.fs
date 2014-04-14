@@ -275,21 +275,21 @@ let ``Can do fuzzy lookup on frame rows and cols`` () =
   let s3 = series [| "a" => 7.0; "c" => 8.0; "e" => 9.0 |]  
   let f = frame [ 1 => s1; 3 => s2; 5 => s3 ]    
 
-  f |> Frame.tryLookupRow "b" Lookup.NearestSmaller |> shouldEqual ( Some <| series [ 1 => 1.0; 3 => 4.0; 5 => 7.0 ] )
-  f |> Frame.tryLookupRow "b" Lookup.NearestGreater |> shouldEqual ( Some <| series [ 1 => 2.0; 3 => 5.0; 5 => 8.0 ] )
-  f |> Frame.tryLookupRow "f" Lookup.NearestGreater |> shouldEqual None
+  f |> Frame.tryLookupRow "b" Lookup.ExactOrSmaller |> shouldEqual ( Some <| series [ 1 => 1.0; 3 => 4.0; 5 => 7.0 ] )
+  f |> Frame.tryLookupRow "b" Lookup.ExactOrGreater |> shouldEqual ( Some <| series [ 1 => 2.0; 3 => 5.0; 5 => 8.0 ] )
+  f |> Frame.tryLookupRow "f" Lookup.ExactOrGreater |> shouldEqual None
 
-  f |> Frame.tryLookupRowObservation "b" Lookup.NearestSmaller |> shouldEqual (Some ("a", series [ 1 => 1.0; 3 => 4.0; 5 => 7.0 ]))
-  f |> Frame.tryLookupRowObservation "b" Lookup.NearestGreater |> shouldEqual (Some ("c", series [ 1 => 2.0; 3 => 5.0; 5 => 8.0 ]))
-  f |> Frame.tryLookupRowObservation "f" Lookup.NearestGreater |> shouldEqual None
+  f |> Frame.tryLookupRowObservation "b" Lookup.ExactOrSmaller |> shouldEqual (Some ("a", series [ 1 => 1.0; 3 => 4.0; 5 => 7.0 ]))
+  f |> Frame.tryLookupRowObservation "b" Lookup.ExactOrGreater |> shouldEqual (Some ("c", series [ 1 => 2.0; 3 => 5.0; 5 => 8.0 ]))
+  f |> Frame.tryLookupRowObservation "f" Lookup.ExactOrGreater |> shouldEqual None
 
-  f |> Frame.tryLookupCol 2 Lookup.NearestSmaller |> shouldEqual ( Some s1 )
-  f |> Frame.tryLookupCol 2 Lookup.NearestGreater |> shouldEqual ( Some s2 )
-  f |> Frame.tryLookupCol 6 Lookup.NearestGreater |> shouldEqual None
+  f |> Frame.tryLookupCol 2 Lookup.ExactOrSmaller |> shouldEqual ( Some s1 )
+  f |> Frame.tryLookupCol 2 Lookup.ExactOrGreater |> shouldEqual ( Some s2 )
+  f |> Frame.tryLookupCol 6 Lookup.ExactOrGreater |> shouldEqual None
 
-  f |> Frame.tryLookupColObservation 2 Lookup.NearestSmaller |> shouldEqual (Some (1, s1))
-  f |> Frame.tryLookupColObservation 2 Lookup.NearestGreater |> shouldEqual (Some (3, s2))
-  f |> Frame.tryLookupColObservation 6 Lookup.NearestGreater |> shouldEqual None
+  f |> Frame.tryLookupColObservation 2 Lookup.ExactOrSmaller |> shouldEqual (Some (1, s1))
+  f |> Frame.tryLookupColObservation 2 Lookup.ExactOrGreater |> shouldEqual (Some (3, s2))
+  f |> Frame.tryLookupColObservation 6 Lookup.ExactOrGreater |> shouldEqual None
 
 [<Test>]
 let  ``Can access floats from ObjectSeries rows`` () =
@@ -347,12 +347,26 @@ let ``Accessing row via missing row key returns missing`` () =
 
 [<Test>]
 let ``Accessing row via missing row key with lookup works`` () =
-  let actual = rowSample().GetRow<int>("f", Lookup.NearestSmaller)
+  let actual = rowSample().GetRow<int>("f", Lookup.ExactOrSmaller)
+  actual |> shouldEqual <| series [ "X" => 3; "Y" => 6 ]
+
+[<Test>]
+let ``Accessing row via row key with exclusive smaller lookup works`` () =
+  let actual = rowSample().GetRow<int>("b", Lookup.Smaller)
+  actual |> shouldEqual <| series [ "X" => 1; "Y" => 4 ]
+  let actual = rowSample().GetRow<int>("c", Lookup.Smaller)
+  actual |> shouldEqual <| series [ "X" => 1; "Y" => 4 ]
+
+[<Test>]
+let ``Accessing row via row key with exclusive greater lookup works`` () =
+  let actual = rowSample().GetRow<int>("c", Lookup.Greater)
+  actual |> shouldEqual <| series [ "X" => 3; "Y" => 6 ]
+  let actual = rowSample().GetRow<int>("d", Lookup.Greater)
   actual |> shouldEqual <| series [ "X" => 3; "Y" => 6 ]
 
 [<Test>]
 let ``Accessing row observation via missing row key with lookup works`` () =
-  let actual = rowSample().TryGetRowObservation<int>("f", Lookup.NearestSmaller)
+  let actual = rowSample().TryGetRowObservation<int>("f", Lookup.ExactOrSmaller)
   actual.Value.Key |> shouldEqual "e"
   actual.Value.Value |> shouldEqual <| series [ "X" => 3; "Y" => 6 ]
 
@@ -661,7 +675,7 @@ let ``Can left-align ordered frames - nearest smaller returns missing if no smal
   // after left join with NearestSmaller option
   let daysTimesPrevL = 
       (daysFrame, timesFrame) 
-      ||> Frame.joinAlign JoinKind.Left Lookup.NearestSmaller
+      ||> Frame.joinAlign JoinKind.Left Lookup.ExactOrSmaller
 
   daysTimesPrevL?Times.TryGetAt(0) |> shouldEqual OptionalValue.Missing
   daysTimesPrevL?Times.TryGetAt(1) |> shouldEqual (OptionalValue 0.5)
@@ -674,7 +688,7 @@ let ``Can left-align ordered frames - nearest greater always finds greater value
   // all values in Times must be as in original series
   let daysTimesNextL = 
       (daysFrame, timesFrame) 
-      ||> Frame.joinAlign JoinKind.Left Lookup.NearestGreater
+      ||> Frame.joinAlign JoinKind.Left Lookup.ExactOrGreater
         
   daysTimesNextL?Times.TryGetAt(0) |> shouldEqual (OptionalValue 0.5)
   daysTimesNextL?Times.TryGetAt(1) |> shouldEqual (OptionalValue 1.5)
@@ -686,7 +700,7 @@ let ``Can right-align ordered frames - nearest smaller always finds smaller valu
   // all values in Days must be as in original series
   let daysTimesPrevR = 
       (daysFrame, timesFrame) 
-      ||> Frame.joinAlign JoinKind.Right Lookup.NearestSmaller
+      ||> Frame.joinAlign JoinKind.Right Lookup.ExactOrSmaller
   
   daysTimesPrevR?Days.TryGetAt(0) |> shouldEqual (OptionalValue 0.0)
   daysTimesPrevR?Days.TryGetAt(1) |> shouldEqual (OptionalValue 1.0)
@@ -698,7 +712,7 @@ let ``Can right-align ordered frames - nearest greater returns missing if no gre
   // last point in Days must be missing after joining
   let daysTimesNextR = 
       (daysFrame, timesFrame) 
-      ||> Frame.joinAlign JoinKind.Right Lookup.NearestGreater
+      ||> Frame.joinAlign JoinKind.Right Lookup.ExactOrGreater
   
   daysTimesNextR?Days.TryGetAt(0) |> shouldEqual (OptionalValue 1.0)
   daysTimesNextR?Days.TryGetAt(1) |> shouldEqual (OptionalValue 2.0)
@@ -706,7 +720,8 @@ let ``Can right-align ordered frames - nearest greater returns missing if no gre
 
 [<Test>]
 let ``Can join frame with series`` () =
-  Check.QuickThrowOnFailure(fun (kind:JoinKind) (lookup:Lookup) (keys1:int[]) (keys2:int[]) (data1:float[]) (data2:float[]) -> 
+  Check.QuickThrowOnFailure(fun (kind:JoinKind) (lookup:int) (keys1:int[]) (keys2:int[]) (data1:float[]) (data2:float[]) -> 
+    let lookup = match lookup%3 with 0 -> Lookup.ExactOrGreater | 1 -> Lookup.ExactOrSmaller | _ -> Lookup.Exact 
     let s1 = series (Seq.zip (Seq.sort (Seq.distinct keys1)) data1)
     let s2 = series (Seq.zip (Seq.sort (Seq.distinct keys2)) data2)
     let f1 = Frame.ofColumns ["S1" => s1]
@@ -785,7 +800,7 @@ let ``Fill missing values using the specified constant``() =
 let ``Left join fills missing values - search for previous when there is no exact key`` () =
   let miss = Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => Double.NaN; ] ]
   let full = Frame.ofColumns [ "B" => series [ 1 => 2.0; 3 => 3.0 ] ]
-  let joined = full.Join(miss, JoinKind.Left, Lookup.NearestSmaller)
+  let joined = full.Join(miss, JoinKind.Left, Lookup.ExactOrSmaller)
   let expected = series [ 1 => 1.0; 3 => 1.0 ]
   joined?A |> shouldEqual expected
 
@@ -793,7 +808,7 @@ let ``Left join fills missing values - search for previous when there is no exac
 let ``Left join fills missing values - search for previous when there is missing at the exact key`` () =
   let miss = Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => Double.NaN; ] ]
   let full = Frame.ofColumns [ "B" => series [ 1 => 2.0; 2 => 3.0 ] ]
-  let joined = full.Join(miss, JoinKind.Left, Lookup.NearestSmaller)
+  let joined = full.Join(miss, JoinKind.Left, Lookup.ExactOrSmaller)
   let expected = series [ 1 => 1.0; 2 => 1.0 ]
   joined?A |> shouldEqual expected
 
@@ -801,7 +816,7 @@ let ``Left join fills missing values - search for previous when there is missing
 let ``Left zip fills missing values - search for previous when there is no exact key`` () =
   let miss = Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => Double.NaN; ] ]
   let full = Frame.ofColumns [ "A" => series [ 1 => 2.0; 3 => 3.0 ] ]
-  let joined = full.Zip<float, _, _>(miss, JoinKind.Inner, JoinKind.Left, Lookup.NearestSmaller, fun a b -> a + b)
+  let joined = full.Zip<float, _, _>(miss, JoinKind.Inner, JoinKind.Left, Lookup.ExactOrSmaller, fun a b -> a + b)
   let expected = series [ 1 => 3.0; 3 => 4.0 ]
   joined?A |> shouldEqual expected
 
@@ -809,7 +824,7 @@ let ``Left zip fills missing values - search for previous when there is no exact
 let ``Left zip only fills missing values in joined series`` () =
   let miss = Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => Double.NaN; ] ]
   let full = Frame.ofColumns [ "A" => series [ 1 => 2.0; 2 => 3.0 ] ]
-  let joined = miss.Zip<float, _, _>(full, JoinKind.Inner, JoinKind.Left, Lookup.NearestSmaller, fun a b -> a + b)
+  let joined = miss.Zip<float, _, _>(full, JoinKind.Inner, JoinKind.Left, Lookup.ExactOrSmaller, fun a b -> a + b)
   let expected = series [ 1 => 3.0; 2 => Double.NaN ]
   joined?A |> shouldEqual expected
 
@@ -891,15 +906,15 @@ let lift2 f a b =
 let ``Can zip-align frames with inner-join left-join nearest-smaller options`` () =
   let mktcapA = 
     (pxA, sharesA)
-    ||> Series.zipAlignInto JoinKind.Left Lookup.NearestSmaller (lift2 (fun (l:float) r -> l*r))
+    ||> Series.zipAlignInto JoinKind.Left Lookup.ExactOrSmaller (lift2 (fun (l:float) r -> l*r))
   let mktcapB = 
     (pxB, sharesB)
-    ||> Series.zipAlignInto JoinKind.Left Lookup.NearestSmaller (lift2 (fun (l:float) r -> l*r))
+    ||> Series.zipAlignInto JoinKind.Left Lookup.ExactOrSmaller (lift2 (fun (l:float) r -> l*r))
   
   // calculate stock mktcap 
   let mktCapCommons = 
     (pxCommons, sharesCommons)
-    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.ExactOrSmaller (fun (l:float) r -> l*r) 
   
   mktCapCommons?A.GetAt(0) |> shouldEqual 1000.0
   mktCapCommons?A.GetAt(1) |> shouldEqual 1010.0
@@ -923,15 +938,15 @@ let ``Can zip-align frames with different set of columns`` () =
   // calculate stock mktcap 
   let mktCapCommons = 
     (pxCommons, sharesCommons)
-    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.ExactOrSmaller (fun (l:float) r -> l*r) 
   // calculate stock mktcap for prefs
   let mktCapPrefs = 
     (pxPrefs, sharesPrefs)
-    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.ExactOrSmaller (fun (l:float) r -> l*r) 
   // calculate company mktcap 
   let mktCap = 
     (mktCapCommons, mktCapPrefs)
-    ||> Frame.zipAlign JoinKind.Left JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l+r) 
+    ||> Frame.zipAlign JoinKind.Left JoinKind.Left Lookup.ExactOrSmaller (fun (l:float) r -> l+r) 
   
   mktCap?A.GetAt(0) |> shouldEqual 1000.0
   mktCap?A.GetAt(1) |> shouldEqual 1010.0
@@ -955,20 +970,20 @@ let ``Can zip-align frames with inner-join left-join nearest-greater options`` (
     // calculate stock mktcap 
   let mktCapCommons = 
     (pxCommons, sharesCommons)
-    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.ExactOrSmaller (fun (l:float) r -> l*r) 
   // calculate stock mktcap for prefs
   let mktCapPrefs = 
     (pxPrefs, sharesPrefs)
-    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.ExactOrSmaller (fun (l:float) r -> l*r) 
   // calculate company mktcap 
   let mktCap = 
     (mktCapCommons, mktCapPrefs)
-    ||> Frame.zipAlign JoinKind.Left JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l+r) 
+    ||> Frame.zipAlign JoinKind.Left JoinKind.Left Lookup.ExactOrSmaller (fun (l:float) r -> l+r) 
   
   // calculate enterprice value
   let ev = 
     (mktCap, netDebt)
-    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.NearestGreater (fun (l:float) r -> l+r) // net debt is at the year end
+    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.ExactOrGreater (fun (l:float) r -> l+r) // net debt is at the year end
   
   ev?A.GetAt(0) |> shouldEqual 1100.0
   ev?A.GetAt(1) |> shouldEqual 1110.0

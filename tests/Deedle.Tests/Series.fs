@@ -55,9 +55,14 @@ let ``Can access elements by address`` () =
   missing.TryGetAt(1).HasValue |> shouldEqual false
 
 [<Test>]  
-let ``Can lookup previous and next elements in ordered series`` () =
-  ordered.Get(4, Lookup.NearestGreater) |> shouldEqual "nazdar"
-  ordered.Get(4, Lookup.NearestSmaller) |> shouldEqual "ciao"
+let ``Can lookup previous and next elements (inclusively) in ordered series`` () =
+  ordered.Get(4, Lookup.ExactOrGreater) |> shouldEqual "nazdar"
+  ordered.Get(4, Lookup.ExactOrSmaller) |> shouldEqual "ciao"
+
+[<Test>]  
+let ``Can lookup previous and next elements (exclusively) in ordered series`` () =
+  ordered.Get(3, Lookup.Greater) |> shouldEqual "nazdar"
+  ordered.Get(3, Lookup.Smaller) |> shouldEqual "bye"
 
 // ------------------------------------------------------------------------------------------------
 // Value conversions
@@ -417,7 +422,7 @@ let ``Sample by keys - get the nearest previous key or <missing> (TestExplicitTi
     [ "12/20/2011" => Double.NaN; "1/5/2012" => 2.0;
       "1/8/2012" => 3.0; "1/19/2012" => 7.0; "1/29/2012" => 10.0 ]
     |> series |> Series.mapKeys parseDateUSA |> Series.mapValues int
-  let actual = input.GetItems(dateSampels, Lookup.NearestSmaller)
+  let actual = input.GetItems(dateSampels, Lookup.ExactOrSmaller)
   actual |> shouldEqual expected
 
 [<Test>]
@@ -601,7 +606,7 @@ let ``ZipInto correctly zips series with missing values and custom operation``()
 
 [<Test>]
 let ``ZipAlignInto correctly left-aligns and zips series with nearest smaller option``() =
-  let res = (a, b) ||> Series.zipAlignInto JoinKind.Left Lookup.NearestSmaller (lift2 (fun l r -> (l**2.0) * r))
+  let res = (a, b) ||> Series.zipAlignInto JoinKind.Left Lookup.ExactOrSmaller (lift2 (fun l r -> (l**2.0) * r))
   res.GetAt(0) |> shouldEqual 8.0
   res.GetAt(1) |> shouldEqual 32.0
   res.GetAt(2) |> shouldEqual 99.0
@@ -610,7 +615,7 @@ let ``ZipAlignInto correctly left-aligns and zips series with nearest smaller op
 
 [<Test>]
 let ``ZipAlignInto correctly left-aligns and zips series with nearest greater option``() =
-  let res = (a, b) ||> Series.zipAlignInto JoinKind.Left Lookup.NearestGreater (lift2 (fun l r -> (l**2.0) * r))
+  let res = (a, b) ||> Series.zipAlignInto JoinKind.Left Lookup.ExactOrGreater (lift2 (fun l r -> (l**2.0) * r))
   res.GetAt(0) |> shouldEqual 11.0
   res.GetAt(1) |> shouldEqual 44.0
   res.GetAt(2) |> shouldEqual 99.0
@@ -619,7 +624,7 @@ let ``ZipAlignInto correctly left-aligns and zips series with nearest greater op
 
 [<Test>]
 let ``ZipAlignInto correctly right-aligns and zips series with nearest smaller option``() =
-  let res = (b, a) ||> Series.zipAlignInto JoinKind.Right Lookup.NearestSmaller (lift2 (fun l r -> (l**2.0) * r)) 
+  let res = (b, a) ||> Series.zipAlignInto JoinKind.Right Lookup.ExactOrSmaller (lift2 (fun l r -> (l**2.0) * r)) 
   res.GetAt(0) |> shouldEqual ((8.0 ** 2.0) * 1.0)
   res.GetAt(1) |> shouldEqual ((8.0 ** 2.0) * 2.0)
   res.GetAt(2) |> shouldEqual ((11.0 ** 2.0) * 3.0)
@@ -628,7 +633,7 @@ let ``ZipAlignInto correctly right-aligns and zips series with nearest smaller o
 
 [<Test>]
 let ``ZipAlignInto correctly right-aligns and zips series with nearest greater option``() =
-  let res = (b, a) ||> Series.zipAlignInto JoinKind.Right Lookup.NearestGreater (lift2 (fun l r -> (l**2.0) * r))
+  let res = (b, a) ||> Series.zipAlignInto JoinKind.Right Lookup.ExactOrGreater (lift2 (fun l r -> (l**2.0) * r))
   res.GetAt(0) |> shouldEqual ((11.0 ** 2.0) * 1.0)
   res.GetAt(1) |> shouldEqual ((11.0 ** 2.0) * 2.0)
   res.GetAt(2) |> shouldEqual ((11.0 ** 2.0) * 3.0)
@@ -641,13 +646,13 @@ let ``Can zip series with lookup and skip over missing values ``() =
   let l = [ 1 => 1.0;  2 => 2.0;        3 => 3.0;        4 => 4.0;  ] |> series
   let r = [ 1 => 10.0; 2 => Double.NaN; 3 => Double.NaN; 4 => 40.0; ] |> series
 
-  let res1 = l.Zip(r, JoinKind.Left, Lookup.NearestSmaller)
+  let res1 = l.Zip(r, JoinKind.Left, Lookup.ExactOrSmaller)
   res1.GetAt(0) |> shouldEqual (OptionalValue 1.0, OptionalValue 10.0)
   res1.GetAt(1) |> shouldEqual (OptionalValue 2.0, OptionalValue 10.0) // second values is missing instead of 10
   res1.GetAt(2) |> shouldEqual (OptionalValue 3.0, OptionalValue 10.0) // second values is missing instead of 10
   res1.GetAt(3) |> shouldEqual (OptionalValue 4.0, OptionalValue 40.0)
 
-  let res2 = l.Zip(r, JoinKind.Left, Lookup.NearestGreater)
+  let res2 = l.Zip(r, JoinKind.Left, Lookup.ExactOrGreater)
   res2.GetAt(0) |> shouldEqual (OptionalValue 1.0, OptionalValue 10.0)
   res2.GetAt(1) |> shouldEqual (OptionalValue 2.0, OptionalValue 40.0) // second values is missing instead of 40
   res2.GetAt(2) |> shouldEqual (OptionalValue 3.0, OptionalValue 40.0) // second values is missing instead of 40

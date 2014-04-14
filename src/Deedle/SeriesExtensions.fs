@@ -523,7 +523,7 @@ type SeriesExtensions =
   /// [category:Lookup, resampling and scaling]
   [<Extension>]
   static member ResampleUniform(series:Series<'K, 'V>, keyProj:Func<_, _>, nextKey:Func<_, _>) =
-    Series.resampleUniformInto Lookup.NearestSmaller keyProj.Invoke nextKey.Invoke Series.lastValue series
+    Series.resampleUniformInto Lookup.ExactOrSmaller keyProj.Invoke nextKey.Invoke Series.lastValue series
 
   /// Resample the series based on equivalence class on the keys and also generate values 
   /// for all keys of the target space that are between the minimal and maximal key of the
@@ -588,7 +588,7 @@ type SeriesExtensions =
   /// [category:Lookup, resampling and scaling]
   [<Extension>]
   static member Sample<'V>(series:Series<DateTime, 'V>, start:DateTime, interval:TimeSpan, dir) =
-    series |> Series.Implementation.lookupTimeInternal (+) (Some start) interval dir Lookup.NearestSmaller
+    series |> Series.Implementation.lookupTimeInternal (+) (Some start) interval dir Lookup.ExactOrSmaller
 
   /// Finds values at, or near, the specified times in a given series. The operation generates
   /// keys starting at the specified `start` time, using the specified `interval`
@@ -610,7 +610,7 @@ type SeriesExtensions =
   /// [category:Lookup, resampling and scaling]
   [<Extension>]
   static member Sample<'V>(series:Series<DateTimeOffset, 'V>, start:DateTimeOffset, interval:TimeSpan, dir) =
-    series |> Series.Implementation.lookupTimeInternal (+) (Some start) interval dir Lookup.NearestSmaller
+    series |> Series.Implementation.lookupTimeInternal (+) (Some start) interval dir Lookup.ExactOrSmaller
 
   /// Finds values at, or near, the specified times in a given series. The operation generates
   /// keys starting from the smallest key of the original series, using the specified `interval`
@@ -631,7 +631,7 @@ type SeriesExtensions =
   /// [category:Lookup, resampling and scaling]
   [<Extension>]
   static member Sample<'V>(series:Series<DateTime, 'V>, interval:TimeSpan, dir) =
-    series |> Series.Implementation.lookupTimeInternal (+) None interval dir Lookup.NearestSmaller
+    series |> Series.Implementation.lookupTimeInternal (+) None interval dir Lookup.ExactOrSmaller
 
   /// Finds values at, or near, the specified times in a given series. The operation generates
   /// keys starting from the smallest key of the original series, using the specified `interval`
@@ -653,7 +653,7 @@ type SeriesExtensions =
   /// [category:Lookup, resampling and scaling]
   [<Extension>]
   static member Sample<'V>(series:Series<DateTimeOffset, 'V>, interval:TimeSpan, dir) =
-    series |> Series.Implementation.lookupTimeInternal (+) None interval dir Lookup.NearestSmaller
+    series |> Series.Implementation.lookupTimeInternal (+) None interval dir Lookup.ExactOrSmaller
 
   /// Finds values at, or near, the specified times in a given series. The operation generates
   /// keys starting from the smallest key of the original series, using the specified `interval`

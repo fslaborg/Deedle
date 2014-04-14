@@ -464,19 +464,29 @@ module Array =
 
   /// Returns the index of 'key' or the index of immediately following value.
   /// If the specified key is greater than all keys in the array, None is returned.
-  let binarySearchNearestGreater key (comparer:System.Collections.Generic.IComparer<'T>) (array:ReadOnlyCollection<'T>) =
+  ///
+  /// When 'inclusive' is false, the function returns the index of strictry greater value.
+  /// Note that the function expects that the array contains distinct values
+  /// (which is fine because LinearIndex does not support duplicate keys)
+  let binarySearchNearestGreater key (comparer:System.Collections.Generic.IComparer<'T>) inclusive (array:ReadOnlyCollection<'T>) =
     if array.Count = 0 then None else
     let loc = binarySearch key comparer array
-    if comparer.Compare(array.[loc], key) >= 0 then Some loc
+    let comp = comparer.Compare(array.[loc], key)
+    if (comp = 0 && inclusive) || comp > 0 then Some loc
     elif loc + 1 < array.Count && comparer.Compare(array.[loc + 1], key) >= 1 then Some (loc + 1)
     else None
 
   /// Returns the index of 'key' or the index of immediately preceeding value.
   /// If the specified key is smaller than all keys in the array, None is returned.
-  let binarySearchNearestSmaller key (comparer:System.Collections.Generic.IComparer<'T>) (array:ReadOnlyCollection<'T>) =
+  ///
+  /// When 'inclusive' is false, the function returns the index of strictry smaller value.
+  /// Note that the function expects that the array contains distinct values
+  /// (which is fine because LinearIndex does not support duplicate keys)
+  let binarySearchNearestSmaller key (comparer:System.Collections.Generic.IComparer<'T>) inclusive (array:ReadOnlyCollection<'T>) =
     if array.Count = 0 then None else
     let loc = binarySearch key comparer array
-    if comparer.Compare(array.[loc], key) <= 0 then Some loc
+    let comp = comparer.Compare(array.[loc], key)
+    if (comp = 0 && inclusive) || comp < 0 then Some loc
     elif loc - 1 >= 0 && comparer.Compare(array.[loc - 1], key) <= 0 then Some (loc - 1)
     else None
 

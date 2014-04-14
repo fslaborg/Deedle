@@ -97,4 +97,12 @@ let ``Can pass data frame containing decimals to R (#90)``() =
   let actual = rframe.GetValue<Frame<int, string>>() 
   round (actual * 100.0) |> shouldEqual (round (df * 100.0))
 
+[<Test>]
+let ``Can index rows ordinally and pass the result to R (#146)`` () =
+  let df = Frame.ofRowKeys([0; 1])
+  df?col <- [10.0; 20.0]
+  let df2 = df |> Frame.indexRowsOrdinally 
+
+  R.assign("df", df2) |> ignore
+  R.get("df").GetValue<Frame<int, string>>() |> shouldEqual df2
 

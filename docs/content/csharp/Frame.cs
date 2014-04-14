@@ -103,7 +103,7 @@ namespace CSharp
 
       // This works! Find the value for the nearest smaller key
       // (that is, for the nearest earlier time with value)
-      var joinLeft = fb.Join(msftShift, JoinKind.Left, Lookup.NearestSmaller);
+      var joinLeft = fb.Join(msftShift, JoinKind.Left, Lookup.ExactOrSmaller);
       joinLeft.Print();
       // [/join-lookup]
 
@@ -137,7 +137,7 @@ namespace CSharp
       // Get row for the first available value after
       // the specified key (1 January 2013)
       var firstJan = joinIn.Rows.Get(new DateTime(2013, 1, 1), 
-        Lookup.NearestGreater);
+        Lookup.ExactOrGreater);
 
       // Get value for a specified column & row keys
       var diff = joinIn["MsftDiff", new DateTime(2013, 1, 4)];

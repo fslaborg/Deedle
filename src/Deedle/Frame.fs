@@ -170,6 +170,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   ///  - `columnKind` - Specifies how to align columns (inner, outer, left or right join)
   ///  - `rowKind` - Specifies how to align rows (inner, outer, left or right join)
   ///  - `lookup` - Specifies how to find matching value for a row (when using left or right join on rows)
+  ///    Supported values are `Lookup.Exact`, `Lookup.ExactOrSmaller` and `Lookup.ExactOrGreater`.
   ///  - `op` - A function that is applied to aligned values. The `Zip` operation is generic
   ///    in the type of this function and the type of function is used to determine which 
   ///    values in the frames are zipped and which are left unchanged.
@@ -244,6 +245,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   ///  - `lookup` - When `kind` is `Left` or `Right` and the two frames have ordered row index,
   ///    this parameter can be used to specify how to find value for a key when there is no
   ///    exactly matching key or when there are missing values.
+  ///    Supported values are `Lookup.Exact`, `Lookup.ExactOrSmaller` and `Lookup.ExactOrGreater`.
   ///
   /// [category:Joining, zipping and appending]
   member frame.Join(otherFrame:Frame<'TRowKey, 'TColumnKey>, kind, lookup) =    
@@ -302,6 +304,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   ///  - `lookup` - When `kind` is `Left` or `Right` and the two frames have ordered row index,
   ///    this parameter can be used to specify how to find value for a key when there is no
   ///    exactly matching key or when there are missing values.
+  ///    Supported values are `Lookup.Exact`, `Lookup.ExactOrSmaller` and `Lookup.ExactOrGreater`.
   ///
   /// [category:Joining, zipping and appending]
   member frame.Join<'V>(colKey, series:Series<'TRowKey, 'V>, kind, lookup) =    
