@@ -3,7 +3,7 @@
 #load "Deedle.fsx"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #r "../../packages/FsCheck.0.9.1.0/lib/net40-Client/FsCheck.dll"
-#r "../../packages/FSharp.Data.1.1.10/lib/net40/FSharp.Data.dll"
+#r "../../packages/FSharp.Data.2.0.5/lib/net40/FSharp.Data.dll"
 #load "../Common/FsUnit.fs"
 #else
 module Deedle.Tests.Frame
@@ -151,7 +151,7 @@ type Stock = { Date : DateTime; Volume : int; Price : Price }
 
 let typedRows () = 
   let msft = MSFT.Load(__SOURCE_DIRECTORY__ + "/data/MSFT.csv")
-  [| for r in msft.Data -> 
+  [| for r in msft.Rows -> 
       let p = { Open = r.Open; Close = r.Close; High = r.High; Low = r.High }
       { Date = r.Date; Volume = r.Volume; Price = p } |]
 let typedPrices () = 
