@@ -175,7 +175,7 @@ module Series =
   ///
   /// [category:Accessing series data and lookup]
   [<CompiledName("Sample")>]
-  let sample keys (series:Series<'K, 'T>) = series |> lookupAll keys Lookup.NearestSmaller
+  let sample keys (series:Series<'K, 'T>) = series |> lookupAll keys Lookup.ExactOrSmaller
 
   /// Create a new series that contains values for all provided keys.
   /// Uses exact lookup semantics for key lookup - use `lookupAll` for more options
@@ -527,13 +527,12 @@ module Series =
   /// [category:Series transformations]
   [<CompiledName("Diff")>]
   let inline diff offset (series:Series<'K, ^T>) = 
-    if series.KeyCount = 0 then Series([], []) else
-      let vectorBuilder = VectorBuilder.Instance
-      let newIndex, vectorR = series.Index.Builder.Shift((series.Index, Vectors.Return 0), offset)
-      let _, vectorL = series.Index.Builder.Shift((series.Index, Vectors.Return 0), -offset)
-      let cmd = Vectors.Combine(vectorL, vectorR, VectorValueTransform.Create< ^T >(OptionalValue.map2 (-)))
-      let newVector = vectorBuilder.Build(cmd, [| series.Vector |])
-      Series(newIndex, newVector, vectorBuilder, series.Index.Builder)
+    let vectorBuilder = VectorBuilder.Instance
+    let newIndex, vectorR = series.Index.Builder.Shift((series.Index, Vectors.Return 0), offset)
+    let _, vectorL = series.Index.Builder.Shift((series.Index, Vectors.Return 0), -offset)
+    let cmd = Vectors.Combine(vectorL, vectorR, VectorValueTransform.Create< ^T >(OptionalValue.map2 (-)))
+    let newVector = vectorBuilder.Build(cmd, [| series.Vector |])
+    Series(newIndex, newVector, vectorBuilder, series.Index.Builder)
 
   /// Returns a series with values shifted by the specified offset. When the offset is 
   /// positive, the values are shifted forward and first `offset` keys are dropped. When the

@@ -212,6 +212,18 @@ let ``Series.diff and SeriesExtensions.Diff work on sample input``() =
   SeriesExtensions.Diff(input, 2) |> shouldEqual expectedForward
 
 [<Test>]
+let ``Series.diff and Series.shift correctly return empty series`` () =
+  let empty : Series<int, float> = series [] 
+  empty |> Series.diff 1 |> shouldEqual <| series []
+  empty |> Series.shift 1 |> Series.countKeys |> shouldEqual 0
+  empty |> Series.shift -1 |> Series.countKeys |> shouldEqual 0
+  
+  let single = series [ 1 => 1.0 ]
+  single |> Series.shift 2 |> Series.countKeys |> shouldEqual 0
+  single |> Series.shift -2 |> Series.countKeys |> shouldEqual 0
+  single |> Series.diff -2 |> shouldEqual <| series []
+
+[<Test>]
 let ``Series.diff correctly handles missing values``() =  
   let s = Series.ofValues [ 0.0; Double.NaN; Double.NaN; 0.0; 2.0 ]
   let actual1 = s |> Series.diff -1 |> Series.observationsAll |> List.ofSeq

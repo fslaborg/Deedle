@@ -409,6 +409,17 @@ let ``Can skip N elements from front and back`` () =
   Frame.skipLast 100 df |> shouldEqual <| empty 
   Frame.skipLast 0 df |> shouldEqual <| df
 
+
+[<Test>]  
+let ``Frame.diff and Frame.shift correctly return empty frames`` () =
+  let empty : Frame<int, string> = frame [ "A" => (series [] : Series<int, float>) ]
+  empty |> Frame.shift 1 |> Frame.countRows |> shouldEqual 0
+  empty |> Frame.diff 1 |> shouldEqual <| empty
+
+  let single : Frame<int, string> = frame [ "A" => series [ 1 => 1.0 ] ]
+  single |> Frame.shift -2 |> Frame.countRows |> shouldEqual 0
+  single |> Frame.diff -1 |> shouldEqual <| empty
+
 // ------------------------------------------------------------------------------------------------
 // Stack & unstack
 // ------------------------------------------------------------------------------------------------
