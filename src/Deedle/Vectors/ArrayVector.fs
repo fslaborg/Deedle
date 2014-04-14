@@ -82,7 +82,8 @@ type ArrayVectorBuilder() =
     member builder.Build<'T>(command:VectorConstruction, arguments:IVector<'T>[]) = 
       match command with
       | Return vectorVar -> arguments.[vectorVar]
-      | Empty -> vectorBuilder.Create [||]
+      | Empty 0L -> vectorBuilder.Create [||]
+      | Empty size -> vectorBuilder.CreateMissing (Array.create (int size) OptionalValue.Missing)
       | FillMissing(source, dir) ->
           // The nice thing is that this is no-op on dense vectors!
           // On sparse vectors, we have some work to do...

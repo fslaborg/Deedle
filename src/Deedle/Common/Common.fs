@@ -436,6 +436,21 @@ module ReadOnlyCollection =
       | _ -> ()
     res |> OptionalValue.ofOption
 
+  /// Fold elements of the ReadOnlyCollection
+  let inline fold op init (list:ReadOnlyCollection<'T>) = 
+    let mutable res = init
+    for i in 0 .. list.Count - 1 do res <- op res list.[i]
+    res
+
+  /// Fold elements of the ReadOnlyCollection, skipping over missing values
+  let inline foldOptional op init (list:ReadOnlyCollection<OptionalValue<'T>>) = 
+    let mutable res = init
+    for i in 0 .. list.Count - 1 do 
+      match list.[i] with
+      | OptionalValue.Present v -> res <- op res v
+      | _ -> ()
+    res
+
   /// Returns empty readonly collection
   let empty<'T> = new ReadOnlyCollection<'T>([||])
 

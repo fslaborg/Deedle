@@ -937,7 +937,7 @@ type FrameExtensions =
 
   [<Extension>]
   static member Reduce(frame:Frame<'TRowKey, 'TColumnKey>, aggregation:Func<'T, 'T, 'T>) = 
-    frame |> Frame.reduce (fun a b -> aggregation.Invoke(a, b))
+    frame |> Frame.reduceValues (fun a b -> aggregation.Invoke(a, b))
 
   /// [category:Fancy accessors]
   [<Extension>]

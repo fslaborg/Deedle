@@ -343,7 +343,7 @@ let ``Can perform linear interpolation``() =
   i |> shouldEqual e
   
 // ------------------------------------------------------------------------------------------------
-// Sorting
+// Sorting and reindexing
 // ------------------------------------------------------------------------------------------------
 
 [<Test>]
@@ -373,6 +373,16 @@ let ``Can sort series``() =
     if a < b then -1 else if a = b then 0 else 1)
   ord6 |> shouldEqual ascendingMissing
 
+[<Test>]
+let ``Series.indexWith does not leak previous values through the value vector`` () =
+  let s = series [ 1 => 1.0; 2 => 2.0 ]
+  s |> Series.indexWith [1] |> Series.reduceValues (+) |> shouldEqual 1.0
+
+[<Test>]
+let ``Series.indexWith returns series that can be correctly tested for equality`` () =
+  let s = series [ 1 => 1.0; 2 => 2.0 ]
+  s |> Series.indexWith [1] |> shouldEqual <| series [ 1=>1.0 ]
+  s |> Series.indexWith [1;2;3] |> shouldEqual <| series [ 1=>1.0; 2=>2.0; 3=>nan ]
 
 // ------------------------------------------------------------------------------------------------
 // Sampling and lookup

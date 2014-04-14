@@ -174,8 +174,9 @@ type VectorConstruction =
   /// - this element represent getting one of the variables.
   | Return of VectorHole
 
-  /// Creates an empty vector of the requested type
-  | Empty 
+  /// Creates an empty vector of the requested type and size
+  /// The returned vector is filled with missing values.
+  | Empty of int64 
 
   /// Reorders elements of the vector. Carries a new required vector length and a list
   /// of relocations (each pair of addresses specifies that an element at a new address 

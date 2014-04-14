@@ -417,7 +417,7 @@ let createInferredTypeVector (builder:IVectorBuilder) (data:obj[]) =
 let rec substitute ((oldVar, newVar) as subst) = function
   | Return v when v = oldVar -> Return newVar
   | Return v -> Return v
-  | Empty -> Empty
+  | Empty size -> Empty size
   | FillMissing(vc, d) -> FillMissing(substitute subst vc, d)
   | Relocate(vc, r, l) -> Relocate(substitute subst vc, r, l)
   | DropRange(vc, r) -> DropRange(substitute subst vc, r)

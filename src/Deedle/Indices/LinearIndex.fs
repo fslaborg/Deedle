@@ -382,7 +382,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       // If the shifted start/end is out of range of the index, return empty index & vector
       if indexLo > indexHi then 
         let newIndex = LinearIndex(ReadOnlyCollection.empty, indexBuilder, true) :> IIndex<_>
-        newIndex, Vectors.Empty
+        newIndex, Vectors.Empty(0L)
       else
         let orderedOpt = if index.IsOrdered then Some(true) else None
         let newIndex = LinearRangeIndex(index, indexLo, indexHi) :> IIndex<_>
@@ -535,7 +535,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
       if hiBound < loBound then
         let newIndex = LinearIndex<_>(ReadOnlyCollection.ofArray [||], builder, true) :> IIndex<_>
-        newIndex, Vectors.Empty
+        newIndex, Vectors.Empty(0L)
       else
         let newIndex = LinearRangeIndex(index, loBound, hiBound) :> IIndex<_>
         let newVector = Vectors.GetRange(vector, (loBound, hiBound))
