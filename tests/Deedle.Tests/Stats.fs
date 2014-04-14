@@ -212,17 +212,17 @@ open MathNet.Numerics.Statistics
 [<Test>]
 let ``Mean is the same as in Math.NET``() =
   Check.QuickThrowOnFailure(fun (input:int[]) -> 
-    let d = DescriptiveStatistics(Array.map float input) 
+    let expected = Statistics.Mean(Array.map float input)
     let s = Series.ofValues (Array.map float input)
     if s.ValueCount < 1 then 
       Double.IsNaN(Stats.mean s) |> shouldEqual true
     else 
-      Stats.mean s |> should beWithin (d.Mean +/- 1e-9) )
+      Stats.mean s |> should beWithin (expected +/- 1e-9) )
 
 [<Test>]
 let ``StdDev and Variance is the same as in Math.NET``() =
   Check.QuickThrowOnFailure(fun (input:int[]) -> 
-    let d = DescriptiveStatistics(Array.map float input) 
+    let d = DescriptiveStatistics(Array.map float input)
     let s = Series.ofValues (Array.map float input)
     if s.ValueCount < 2 then 
       Double.IsNaN(Stats.variance s) |> shouldEqual true
@@ -234,30 +234,27 @@ let ``StdDev and Variance is the same as in Math.NET``() =
 [<Test>]
 let ``Skewness is the same as in Math.NET``() =
   Check.QuickThrowOnFailure(fun (input:int[]) -> 
-    let d = DescriptiveStatistics(Array.map float input) 
+    let expected = Statistics.Skewness(Array.map float input)
     let s = Series.ofValues (Array.map float input)
     if s.ValueCount < 3 then 
       Double.IsNaN(Stats.skew s) |> shouldEqual true
     else 
-      Stats.skew s |> should beWithin (d.Skewness +/- 1e-9) )
+      Stats.skew s |> should beWithin (expected +/- 1e-9) )
 
 [<Test>]
 let ``Kurtosis is the same as in Math.NET``() =
   Check.QuickThrowOnFailure(fun (input:int[]) -> 
-    let d = DescriptiveStatistics(Array.map float input) 
+    let expected = Statistics.Kurtosis(Array.map float input)
     let s = Series.ofValues (Array.map float input)
     if s.ValueCount < 4 then 
       Double.IsNaN(Stats.kurt s) |> shouldEqual true
     else 
-      Stats.kurt s |> should beWithin (d.Kurtosis +/- 1e-9) )
+      Stats.kurt s |> should beWithin (expected +/- 1e-9) )
 
 [<Test>]
 let ``Median is the same as in Math.NET``() =
   Check.QuickThrowOnFailure(fun (input:float[]) -> 
     let input = Array.filter (Double.IsNaN >> not) input
-    let expected = Statistics.Median(input) 
+    let expected = Statistics.Median(input)
     let actual = Series.ofValues input |> Stats.median
-    if input |> Seq.forall (fun v -> not (Double.IsInfinity v)) then
-      // Math.NET returns "nan" if there are infinities, 
-      // while Deedle is happy with that
-      actual |> should beWithin (expected +/- 1e-9) )
+    actual |> should beWithin (expected +/- 1e-9) )
