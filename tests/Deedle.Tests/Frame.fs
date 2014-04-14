@@ -87,6 +87,22 @@ let ``Can save MSFT data as CSV file and read it afterwards (with default args)`
   actual |> shouldEqual expected
 
 [<Test>]
+let ``Saving dates uses consistently invariant cultrue by default`` () =
+  let file = System.IO.Path.GetTempFileName()
+  let df = frame [ "A" => series [ DateTime.Now => 1.0; DateTime.Today => 2.1] ]
+  // Save the frame on a machine with "en-GB" date time format
+  System.Threading.Thread.CurrentThread.CurrentCulture <- System.Globalization.CultureInfo.GetCultureInfo("en-GB")
+  df.SaveCsv(file, ["Date"])
+  // Read the frame (in invariant culture format) and parse row keys as dates
+  // (we need to run this on InvariantCulture because the 'ReadCsv' method reads
+  // values as DateTime. We intentionally ignore the fact the columns are inferred
+  // as DateTime, because Deedle tries to avoid using DateTime)
+  System.Threading.Thread.CurrentThread.CurrentCulture <- System.Globalization.CultureInfo.InvariantCulture
+  let actual = Frame.ReadCsv(file).IndexRows<DateTime>("Date").RowKeys |> List.ofSeq
+  let expected = df.RowKeys |> List.ofSeq
+  actual |> shouldEqual expected
+
+[<Test>]
 let ``Can save MSFT data as CSV file and read it afterwards (with custom format)`` () =
   let file = System.IO.Path.GetTempFileName()
   let expected = msft()

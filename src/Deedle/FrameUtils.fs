@@ -282,10 +282,10 @@ module internal FrameUtils =
       formatPlainString <| o.ToString(null, ci)
     let formatters = 
       [ formatter (fun (dt:System.DateTime) ->
-          if dt.TimeOfDay = TimeSpan.Zero then dt.ToShortDateString() 
+          if dt.TimeOfDay = TimeSpan.Zero then dt.ToString("d", ci) 
           else dt.ToString(ci))
         formatter (fun (dt:System.DateTimeOffset) ->
-          if dt.TimeOfDay = TimeSpan.Zero then dt.Date.ToShortDateString() 
+          if dt.TimeOfDay = TimeSpan.Zero then dt.Date.ToString("d", ci) 
           else dt.DateTime.ToString(ci)) ] |> dict
     
     // Format optional value, using 
