@@ -552,6 +552,22 @@ type SeriesExtensions =
   static member ResampleUniform(series:Series<'K1, 'V>, keyProj:Func<'K1, 'K2>, nextKey:Func<'K2, 'K2>, fillMode:Lookup) =
     Series.resampleUniformInto fillMode keyProj.Invoke nextKey.Invoke Series.lastValue series
 
+  /// Sample an (ordered) series by finding the value at the exact or closest prior key 
+  /// for some new sequence of keys. 
+  /// 
+  /// ## Parameters
+  ///  - `series` - An input series to be sampled
+  ///  - `keys`   - The keys at which to sample
+  /// 
+  /// ## Remarks
+  /// This operation is only supported on ordered series. The method throws
+  /// `InvalidOperationException` when the series is not ordered.
+  /// 
+  /// [category:Lookup, resampling and scaling]
+  [<Extension>]
+  static member Sample<'K, 'V when 'K : equality>(series:Series<'K, 'V>, keys) =
+    series |> Series.sample keys
+
   /// Finds values at, or near, the specified times in a given series. The operation generates
   /// keys starting at the specified `start` time, using the specified `interval`
   /// and then finds nearest smaller values close to such keys according to `dir`.
