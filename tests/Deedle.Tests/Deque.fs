@@ -16,7 +16,11 @@ open FsUnit
 open FsCheck
 open NUnit.Framework
 
-open Deedle
+open Deedle.Internal
+
+// ------------------------------------------------------------------------------------------------
+// Deque tests
+// ------------------------------------------------------------------------------------------------
 
 [<Test>]
 let ``empty deque is empty`` () =
@@ -139,7 +143,7 @@ let ``can add and remove elements and convert to list`` () =
       d.Add(x)
  
   for x in 1..max do
-      d.RemoveFirst()
+      d.RemoveFirst() |> ignore
 
   d.IsEmpty |> shouldEqual true
 
@@ -162,7 +166,7 @@ let ``can add and remove elements and double capacity`` () =
       d.Add(x)
  
   for x in 1..max do
-      d.RemoveFirst()
+      d.RemoveFirst() |> ignore
 
   d.IsEmpty |> shouldEqual true
 
@@ -184,14 +188,14 @@ let ``moving max regression is fixed`` () =
 
   d.Add(4, 0)
   d.Add(5, -1)
-  d.RemoveFirst()
-  d.RemoveLast()
+  d.RemoveFirst() |> ignore
+  d.RemoveLast() |> ignore
   d.Add(7, 3)
-  d.RemoveFirst()
+  d.RemoveFirst() |> ignore
   d.Add(8, -5)
-  d.RemoveLast()
+  d.RemoveLast() |> ignore
   d.Add(9, 4)
-  d.RemoveFirst()
+  d.RemoveFirst() |> ignore
   d.IsEmpty |> shouldEqual true
 
   d.Add(10, 8)
@@ -227,14 +231,14 @@ let ``moving max regression at back`` () =
 
   d.Add(4, 0)
   d.Add(5, -1)
-  d.RemoveLast()
-  d.RemoveLast()
+  d.RemoveLast() |> ignore
+  d.RemoveLast() |> ignore
   d.Add(7, 3)
-  d.RemoveLast()
+  d.RemoveLast() |> ignore
   d.Add(8, -5)
-  d.RemoveLast()
+  d.RemoveLast() |> ignore
   d.Add(9, 4)
-  d.RemoveLast()
+  d.RemoveLast() |> ignore
   d.IsEmpty |> shouldEqual true
 
   d.Add(10, 8)

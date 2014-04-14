@@ -202,11 +202,41 @@ let ``Advanced level statistics works on sample input`` () =
   s1 |> Stats.levelKurt fst |> Stats.sum |> should beWithin (-1.2 +/- 1e-9)
   s1 |> Stats.levelSkew fst |> Stats.sum |> should beWithin (0.0 +/- 1e-9)
 
+[<Test>]
+let ``Moving minimum works with nan values`` () =
+  let s1 = series [ 0 => 1.0; 1 => nan ]
+  Stats.movingMin 1 s1 |> shouldEqual <| series [ 0 => 1.0; 1 => nan ]
+
+// ------------------------------------------------------------------------------------------------
+// Some FsCheck tests
+// ------------------------------------------------------------------------------------------------
+
+open FsCheck
+
+[<Test>]
+let ``Moving minimum using Stats.movingMin is equal to using Series.window`` () = 
+  Check.QuickThrowOnFailure(fun (input:float[]) ->
+    let s = Series.ofValues input
+    for i in 1 .. s.KeyCount - 1 do
+      let actual = s |> Stats.movingMin i
+      let expected = s |> Series.windowSizeInto (i, Boundary.AtBeginning) (fun s -> 
+        if s.Data.ValueCount = 0 then nan else Seq.min s.Data.Values)
+      actual |> shouldEqual expected )
+
+[<Test>]
+let ``Moving maximum using Stats.movingMax is equal to using Series.window`` () = 
+  Check.QuickThrowOnFailure(fun (input:float[]) ->
+    let s = Series.ofValues input
+    for i in 1 .. s.KeyCount - 1 do
+      let actual = s |> Stats.movingMax i
+      let expected = s |> Series.windowSizeInto (i, Boundary.AtBeginning) (fun s -> 
+        if s.Data.ValueCount = 0 then nan else Seq.max s.Data.Values)
+      actual |> shouldEqual expected )
+
 // ------------------------------------------------------------------------------------------------
 // Comparing results with Math.NET
 // ------------------------------------------------------------------------------------------------
 
-open FsCheck
 open MathNet.Numerics.Statistics
 
 [<Test>]

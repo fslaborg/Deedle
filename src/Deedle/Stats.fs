@@ -152,14 +152,14 @@ module internal StatsHelpers =
   let internal movingMinMaxHelper winSize cmp (s:seq<OptionalValue<_>>) = 
     let res = ResizeArray<_>()
     let i = ref 0
-    let q = Deque(winSize / 4)
+    let q = Deque(max 16 (winSize / 4))
     for v in s do
       // invariant: all values in deque are strictly ascending (min) or descending (max)
       // invariant: all values in deque are in the current window (fst q.[i] > !i)
       i := !i + 1        
+      // remove from front any values that fell out of moving window
+      while q.Count > 0 && !i >= fst q.First do q.RemoveFirst() |> ignore
       if v.HasValue then
-        // remove from front any values that fell out of moving window
-        while q.Count > 0 && !i >= fst q.First do q.RemoveFirst() |> ignore
         // remove from back any values >= (min) or <= (max) compared to current obs
         while q.Count > 0 && (cmp (snd q.Last) v.Value) do q.RemoveLast() |> ignore
         // append new obs to back
