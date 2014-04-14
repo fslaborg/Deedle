@@ -1,4 +1,8 @@
-﻿namespace Deedle
+﻿namespace Deedle.Internal
+
+// --------------------------------------------------------------------------------------
+// Deque - implements fast double ended queue, for use in the Stats module 
+// --------------------------------------------------------------------------------------
 
 open System
 open System.Collections
@@ -6,6 +10,10 @@ open System.Collections.Generic
 open System.Diagnostics
 open System.Runtime.InteropServices
 
+/// Mutable double ended queue that holds elements in a circular array.
+/// The data structure provides O(1) RemoveFirst and RemoveLast. Add is 
+/// O(1) when the deque has enough internal capacity, otherwise it extends
+/// the array 2x (so amortized cost is O(1) too).
 [<SerializableAttribute>]
 type Deque<'T>(initCapacity : int) = 
     let mutable capacity = initCapacity

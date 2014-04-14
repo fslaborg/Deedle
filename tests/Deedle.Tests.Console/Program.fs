@@ -2,13 +2,15 @@
 #time
 #I "../../bin"
 #load "Deedle.fsx"
+#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
+#r "../../packages/FsCheck.0.9.1.0/lib/net40-Client/FsCheck.dll"
+#load "../Common/FsUnit.fs"
 #else
 module Main
 #endif
 
 open System
 open System.Linq.Expressions
-open Deedle.Tests
 open Deedle
 
 // ------------------------------------------------------------------------------------------------
@@ -71,37 +73,34 @@ let testAll () =
 
 open Deedle
 
-let testOne() =
-  let ordFrames =
-    [| for i in 0 .. 500 ->
-        [ for col in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ->
-            col => series [  for j in 0 .. 100 -> (i, j) => 1.0 ] ] |> frame |]
-  
-  let unordFrames =
-    [| for i in 0 .. 500 ->
-        [ for col in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ->
-            col => series [  for j in 0 .. 100 -> (i, 100-j) => 1.0 ] ] |> frame |]
-      
+let rnd = System.Random(0)
+
+//let s0 = series <| Array.init 1000 (fun i -> i => rnd.NextDouble())
+let s1 = series <| Array.init 1000000 (fun i -> i => rnd.NextDouble())
+//let s2 = series <| Array.init 10000000 (fun i -> i => rnd.NextDouble())
+
+let testOne() =      
   timed 1 (fun () ->
-    
-    // 0.32
-    ordFrames.[0 .. 20] |> Frame.mergeAll |> ignore
-    // 1.75
-    ordFrames.[0 .. 50] |> Frame.mergeAll |> ignore
 
-    // 0.32
-    unordFrames.[0 .. 20] |> Frame.mergeAll |> ignore
-    // 2.0
-    unordFrames.[0 .. 50] |> Frame.mergeAll |> ignore
+    // 315ms
+    //for i in 0 .. 1000 do (s0 |> Stats.movingMin 100 |> ignore)
 
-    // 0.40
-    unordFrames |> Frame.mergeAll |> ignore
+    // 310ms
+    s1 |> Stats.movingMin 100 |> ignore
 
-    
-    let df1 = frame [ "A" => series [1=>1.0] ]
-    let df2 = frame [ "B" => series [2=>1.0] ]
-    
-    df1.Merge(df2) |> ignore
+    // 190ms
+    //s1 |> Stats.expandingMin |> ignore
+    // 1950ms
+    //s2 |> Stats.expandingMin |> ignore
+
+    // 325ms
+    //s1 |> Stats.movingMin 100000 |> ignore
+
+    // 320ms
+    //s1 |> Stats.movingMin 500000 |> ignore
+
+    // 3250ms
+    //s2 |> Stats.movingMin 100 |> ignore
     ()
 
   )

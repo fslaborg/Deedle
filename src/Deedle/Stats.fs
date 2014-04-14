@@ -4,6 +4,7 @@ open System
 open System.Collections.Generic
 
 open Deedle.Vectors
+open Deedle.Internal
 
 // ------------------------------------------------------------------------------------
 // StatsHelpers module contains various helper functions that are used in the Stats 
@@ -20,12 +21,11 @@ module internal StatsHelpers =
   /// Apply transformation on series elements. The projection function `proj` always
   /// returns `float`, but may return `nan` to indicate that the value is not available.
   /// The resulting sequence should have the same number of values as the input sequence
-  let inline internal applySeriesProj (proj: float opt seq -> float seq) (series:Series<'K, float>) : Series<'K, float> =
+  let inline internal applySeriesProj (proj: float opt seq -> float[]) (series:Series<'K, float>) : Series<'K, float> =
     let newData = 
       series.Vector.DataSequence 
       |> proj 
-      |> Vector.ofValues
-      
+      |> series.VectorBuilder.Create  
     Series(series.Index, newData, series.VectorBuilder, series.IndexBuilder)
 
   /// Helper for moving window calculations (adopted from `Seq.windowed` in F# code base)
@@ -108,7 +108,7 @@ module internal StatsHelpers =
   /// `Sums` properties are calculated during the processing.
   let internal applyMovingSumsTransform moment winSize (proj: Sums -> float) series =
     if winSize <= 0 then invalidArg "windowSize" "Window must be positive"
-    let calcSparse = movingWindowFn winSize (initSumsSparse moment) (updateSumsSparse moment) proj
+    let calcSparse = movingWindowFn winSize (initSumsSparse moment) (updateSumsSparse moment) proj >> Array.ofSeq
     applySeriesProj calcSparse series
 
   /// Calculate variance from `Sums`; requires `moment=2`
@@ -149,26 +149,26 @@ module internal StatsHelpers =
   /// such that the front is the min/max value. During the iteration, new value is
   /// added to the end (and all values that are greater/smaller than the new value
   /// are removed before it is appended).
-  let internal movingMinMaxHelper winSize cmp s = 
-    seq {
-      let i = ref 0
-      let q = Deedle.Deque()
-      for v in s ->
-        // invariant: all values in deque are strictly ascending (min) or descending (max)
-        // invariant: all values in deque are in the current window (fst q.[i] > !i)
-        i := !i + 1        
-        match v with
-        | OptionalValue.Present x -> 
-          // remove from front any values that fell out of moving window
-          while q.Count > 0 && !i >= fst q.First do q.RemoveFirst() |> ignore
-          // remove from back any values >= (min) or <= (max) compared to current obs
-          while q.Count > 0 && (cmp (snd q.Last) x) do q.RemoveLast() |> ignore
-          // append new obs to back
-          q.Add( (!i + winSize, x) )
-          // return min/max value at front
-          snd q.First
-        | OptionalValue.Missing -> 
-          if q.IsEmpty then nan else snd q.First }
+  let internal movingMinMaxHelper winSize cmp (s:seq<OptionalValue<_>>) = 
+    let res = ResizeArray<_>()
+    let i = ref 0
+    let q = Deque(winSize / 4)
+    for v in s do
+      // invariant: all values in deque are strictly ascending (min) or descending (max)
+      // invariant: all values in deque are in the current window (fst q.[i] > !i)
+      i := !i + 1        
+      if v.HasValue then
+        // remove from front any values that fell out of moving window
+        while q.Count > 0 && !i >= fst q.First do q.RemoveFirst() |> ignore
+        // remove from back any values >= (min) or <= (max) compared to current obs
+        while q.Count > 0 && (cmp (snd q.Last) v.Value) do q.RemoveLast() |> ignore
+        // append new obs to back
+        q.Add( (!i + winSize, v.Value) )
+        // return min/max value at front
+        res.Add(snd q.First)
+      else
+        res.Add(if q.IsEmpty then nan else snd q.First)
+    res.ToArray()
 
   // ------------------------------------------------------------------------------------
   // Implementation internals - expanding windows
@@ -224,7 +224,7 @@ module internal StatsHelpers =
   /// The specified `proj` function is used to calculate the resulting value
   let internal applyExpandingMomentsTransform (proj: Moments -> float) series =
     let initMoments = {nobs = 0.0; sum = 0.0; M1 = 0.0; M2 = 0.0; M3 = 0.0; M4 = 0.0 }
-    let calcSparse = expandingWindowFn initMoments updateMomentsSparse proj
+    let calcSparse = expandingWindowFn initMoments updateMomentsSparse proj >> Array.ofSeq
     applySeriesProj calcSparse series
 
   /// Calculates minimum or maximum over an expanding window
@@ -504,8 +504,8 @@ type Stats =
       match v with
       | OptionalValue.Present x -> if System.Double.IsNaN(s) then x else min x s
       | OptionalValue.Missing   -> s
-    applySeriesProj ((Seq.scan minFn nan) >> (Seq.skip 1)) series
-
+    applySeriesProj ((Seq.scan minFn nan) >> (Seq.skip 1) >> Array.ofSeq) series
+    
   /// Returns a series that contains maximum over an expanding window. The value
   /// for a key _k_ in the returned series is the maximum from all elements with
   /// smaller keys.
@@ -516,7 +516,7 @@ type Stats =
       match v with
       | OptionalValue.Present x -> if System.Double.IsNaN(s) then x else max x s
       | OptionalValue.Missing   -> s
-    applySeriesProj ((Seq.scan maxFn nan) >> (Seq.skip 1)) series
+    applySeriesProj ((Seq.scan maxFn nan) >> (Seq.skip 1) >> Array.ofSeq) series
 
 
   // ------------------------------------------------------------------------------------
