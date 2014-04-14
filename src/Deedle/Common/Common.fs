@@ -492,7 +492,6 @@ module Array =
 
   /// Returns a new array containing only the elements for which the specified function returns `Some`.
   /// The predicate is called with the index in the source array and the element.
-  /// When 'inclusive' is false, the function returns the index of strictry greater value.
   let inline choosei f (array:_[]) = 
     let res = new System.Collections.Generic.List<_>() // ResizeArray
     for i = 0 to array.Length - 1 do 
