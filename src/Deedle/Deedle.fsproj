@@ -56,6 +56,7 @@
     <Compile Include="Common\BinomialHeap.fs" />
     <Compile Include="Common\Common.fs" />
     <Compile Include="Common\Address.fs" />
+    <Compile Include="Common\Deque.fs" />
     <Compile Include="Vectors\Vector.fs" />
     <Compile Include="Vectors\VectorHelpers.fs" />
     <Compile Include="Vectors\ArrayVector.fs" />
@@ -81,10 +82,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Deque">
-      <HintPath>..\..\packages\Deque.0.1.1\lib\Net20\Deque.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>False</Private>
     </Reference>

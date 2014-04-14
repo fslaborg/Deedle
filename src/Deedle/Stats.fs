@@ -152,7 +152,7 @@ module internal StatsHelpers =
   let internal movingMinMaxHelper winSize cmp s = 
     seq {
       let i = ref 0
-      let q = Deque()
+      let q = Deedle.Deque()
       for v in s ->
         // invariant: all values in deque are strictly ascending (min) or descending (max)
         // invariant: all values in deque are in the current window (fst q.[i] > !i)
@@ -160,15 +160,15 @@ module internal StatsHelpers =
         match v with
         | OptionalValue.Present x -> 
           // remove from front any values that fell out of moving window
-          while q.Count > 0 && !i >= fst q.[0] do q.RemoveFront() |> ignore
+          while q.Count > 0 && !i >= fst q.First do q.RemoveFirst() |> ignore
           // remove from back any values >= (min) or <= (max) compared to current obs
-          while q.Count > 0 && (cmp (snd q.[q.Count - 1]) x) do q.RemoveBack() |> ignore
+          while q.Count > 0 && (cmp (snd q.Last) x) do q.RemoveLast() |> ignore
           // append new obs to back
-          q.AddBack( (!i + winSize, x) )
+          q.Add( (!i + winSize, x) )
           // return min/max value at front
-          snd q.[0]
+          snd q.First
         | OptionalValue.Missing -> 
-          if q.IsEmpty then nan else snd q.[0] }
+          if q.IsEmpty then nan else snd q.First }
 
   // ------------------------------------------------------------------------------------
   // Implementation internals - expanding windows
