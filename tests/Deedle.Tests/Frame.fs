@@ -105,12 +105,15 @@ let ``Saving dates uses consistently invariant cultrue by default`` () =
 [<Test>]
 let ``Can save MSFT data as CSV file and read it afterwards (with custom format)`` () =
   let file = System.IO.Path.GetTempFileName()
+  let cz = System.Globalization.CultureInfo.GetCultureInfo("cs-CZ")
   let expected = msft()
   expected.DropColumn("Date")
-  expected.SaveCsv(file, keyNames=["Date"], separator=';', culture=System.Globalization.CultureInfo.GetCultureInfo("cs-CZ"))
+  expected.SaveCsv(file, keyNames=["Date"], separator=';', culture=cz)
   let actual = 
     Frame.ReadCsv(file, separators=";", culture="cs-CZ")
-    |> Frame.indexRowsDate "Date" |> Frame.dropCol "Date"
+    |> Frame.indexRowsString "Date" 
+    |> Frame.mapRowKeys (fun s -> DateTime.Parse(s, cz) )
+    |> Frame.dropCol "Date"
   actual |> shouldEqual expected
 
 [<Test>]
