@@ -89,7 +89,7 @@ let ``Can save MSFT data as CSV file and read it afterwards (with default args)`
 [<Test>]
 let ``Saving dates uses consistently invariant cultrue by default`` () =
   let file = System.IO.Path.GetTempFileName()
-  let df = frame [ "A" => series [ DateTime.Now => 1.0; DateTime.Today => 2.1] ]
+  let df = frame [ "A" => series [ DateTime(2014, 1, 29, 12, 39, 45) => 1.0; DateTime(2014, 1, 29) => 2.1] ]
   // Save the frame on a machine with "en-GB" date time format
   System.Threading.Thread.CurrentThread.CurrentCulture <- System.Globalization.CultureInfo.GetCultureInfo("en-GB")
   df.SaveCsv(file, ["Date"])
