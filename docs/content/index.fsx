@@ -2,8 +2,6 @@
 #load "../../bin/Deedle.fsx"
 open System
 open Deedle
-/// Titanic data set loaded from a CSV file
-let titanic = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/Titanic.csv")
 
 (**
 Deedle: Exploratory data library for .NET
@@ -32,12 +30,15 @@ grouping and aggregation, statistics and more.
 Titanic survivor analysis in 20 lines
 -------------------------------------
 
-Assume we loaded [Titanic data set](http://www.kaggle.com/c/titanic-gettingStarted) 
-into a data frame called `titanic` (the data frame has numerous columns including string 
+Assume we downloaded [Titanic data set](http://www.kaggle.com/c/titanic-gettingStarted) 
+into a data frame called `Titanic.csv` (the data frame has numerous columns including string 
 `Sex` and Boolean `Survived`). Now we can calculate the survival rates for males and females:
 
 <div id="hp-snippet">
 *)
+/// Titanic data set loaded from a CSV file
+let titanic = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/Titanic.csv")
+
 // Group the data frame by sex 
 let grouped = titanic |> Frame.groupRowsByString "Sex" |> Frame.nest
 
