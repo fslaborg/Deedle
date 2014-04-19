@@ -148,6 +148,18 @@ let ``Series.chunkSizeInto with AtEnding boundary works correctly on sample inpu
   actual |> shouldEqual expected
 
 [<Test>]
+let ``Series.chunkSizeInto with AtBeginning boundary works correctly when boundary is empty`` () =
+  let actual = letters 8 |> Series.chunkSizeInto (4, Boundary.AtBeginning) (fun s -> new String(Array.ofSeq s.Data.Values))
+  let expected = series [0 => "ABCD"; 4 => "EFGH" ]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Series.chunkSizeInto with AtEnding boundary works correctly when boundary is empty`` () =
+  let actual = letters 8 |> Series.chunkSizeInto (4, Boundary.AtEnding) (fun s -> new String(Array.ofSeq s.Data.Values))
+  let expected = series [0 => "ABCD"; 4 => "EFGH" ]
+  actual |> shouldEqual expected
+
+[<Test>]
 let ``Series.chunkSizeInto with AtBeginning & Skip boundary works correctly on sample input`` () =
   let actual = letters 10 |> Series.chunkSizeInto (4, Boundary.AtBeginning ||| Boundary.Skip) (fun s -> new String(Array.ofSeq s.Data.Values))
   let expected = series [2 => "CDEF"; 6 => "GHIJ" ]
@@ -732,9 +744,6 @@ let ``Can correctly append over 150 series`` () =
   let rnd = new Random(0)
   let values = Array.init 300 (fun _ -> new ResizeArray<_>())
   for i in 0 .. 10000 do values.[rnd.Next(300)].Add( (i, float i) )
-
-  let minimalCount = values |> Seq.map (fun r -> r.Count) |> Seq.min
-  minimalCount |> shouldEqual 21 // Just to check that we have some values
 
   let ss = values |> Array.map series
   let actual = ss.[0].Merge(ss.[1 ..]) 

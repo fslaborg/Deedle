@@ -775,7 +775,7 @@ module Seq =
     if boundary.HasFlag(Boundary.AtBeginning) then
       // Generate one incomplete chunk if it is required
       // and then chunkCount times chunks starting from incompleteSize
-      if not (boundary.HasFlag(Boundary.Skip)) then
+      if not (boundary.HasFlag(Boundary.Skip)) && incompleteSize <> 0L then
         yield DataSegmentKind.Incomplete, 0L, incompleteSize - 1L
       for i in 0L .. chunkCount - 1L do 
         yield DataSegmentKind.Complete, incompleteSize + i * size, incompleteSize + (i + 1L) * size - 1L
@@ -784,7 +784,7 @@ module Seq =
       // and then one incomplete chunk if it is required
       for i in 0L .. chunkCount - 1L do 
         yield DataSegmentKind.Complete, i * size, (i + 1L) * size - 1L
-      if not (boundary.HasFlag(Boundary.Skip)) then
+      if not (boundary.HasFlag(Boundary.Skip)) && incompleteSize <> 0L then
         yield DataSegmentKind.Incomplete, chunkCount * size, length - 1L }
 
   /// Generate floating windows from the input sequence. New floating window is 

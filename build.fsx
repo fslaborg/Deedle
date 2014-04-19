@@ -34,7 +34,6 @@ let rpluginTags = "R RProvider"
 
 let gitHome = "https://github.com/BlueMountainCapital"
 let gitName = "Deedle"
-let testAssemblies = "tests/Deedle.*Tests/bin/Release/Deedle*Tests*.dll"
 
 // --------------------------------------------------------------------------------------
 // The rest of the code is standard F# build script 
@@ -82,6 +81,11 @@ Target "RestorePackages" (fun _ ->
 
 Target "Clean" (fun _ ->
     CleanDirs ["bin"; "temp" ]
+
+    CleanDirs [ "tests/Deedle.CSharp.Tests/bin" ]
+    CleanDirs [ "tests/Deedle.RPlugin.Tests/bin" ]
+    CleanDirs [ "tests/Deedle.Tests/bin" ]
+    CleanDirs [ "tests/Deedle.Tests.Console/bin" ]
 )
 
 Target "CleanDocs" (fun _ ->
@@ -92,10 +96,20 @@ Target "CleanDocs" (fun _ ->
 // Build library & test project
 
 Target "Build" (fun _ ->
-    !! (project + "*.sln")
-    |> MSBuildRelease "" "Rebuild"
-    |> Log "AppBuild-Output: "
+    !! (project + ".sln")
+      |> MSBuildRelease "" "Rebuild"
+      |> Log "AppBuild-Output: "
+  
+    !! (project + ".Tests.sln")
+      |> MSBuildRelease "" "Rebuild"
+      |> Log "AppBuild-Output: "
 )
+
+Target "BuildCore" (fun _ ->
+    !! (project + ".Core.sln")
+      |> MSBuildRelease "" "Rebuild"
+      |> Log "AppBuild-Output: "
+  )
 
 // --------------------------------------------------------------------------------------
 // Run the unit tests using test runner & kill test runner when complete
@@ -105,7 +119,7 @@ Target "RunTests" (fun _ ->
     let nunitPath = sprintf "packages/NUnit.Runners.%s/Tools" nunitVersion
     ActivateFinalTarget "CloseTestRunner"
 
-    !! testAssemblies
+    !! "tests/Deedle.*Tests/bin/Release/Deedle*Tests*.dll"
     |> NUnit (fun p ->
         { p with
             ToolPath = nunitPath
@@ -191,14 +205,21 @@ Target "Release" DoNothing
 // Run all targets by default. Invoke 'build <Target>' to override
 
 Target "All" DoNothing
+Target "AllCore" DoNothing
 
 "Clean"
   ==> "RestorePackages"
   ==> "UpdateFsxVersions"
   ==> "AssemblyInfo"
   ==> "Build"
-  ==> "RunTests"
-  ==> "All"
+  ==> "All" 
+
+"AssemblyInfo"
+  ==> "BuildCore"
+  ==> "AllCore"
+
+"RunTests" ==> "All"
+"RunTests" ==> "AllCore"
 
 "All" 
   ==> "CleanDocs"

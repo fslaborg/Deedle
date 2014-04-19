@@ -372,7 +372,7 @@ let hf = series <| stock1 (TimeSpan(0, 0, 1)) 600
 
 // Create 10 second chunks with (possible) incomplete
 // chunk of smaller size at the end.
-//  hf |> Series.chunkSize (10, Boundary.AtEnding) 
+hf |> Series.chunkSize (10, Boundary.AtEnding) 
 
 // Create 10 second chunks using time span and get
 // the first observation for each chunk (downsample)
