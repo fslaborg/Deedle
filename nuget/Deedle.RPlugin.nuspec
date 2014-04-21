@@ -16,12 +16,13 @@
     <tags>@tags@</tags>
     <dependencies>
       <dependency id="Deedle" version="@build.number@" />
-      <dependency id="RProvider" version="1.0.4" />
+      <dependency id="R.NET" version="1.5.5" />
+      <dependency id="RDotNet.FSharp" version="0.1.2.1" />
+      <dependency id="RProvider" version="1.0.7-alpha" />
     </dependencies>
   </metadata>
   <files>
     <file src="..\bin\Deedle.RProvider.Plugin.dll" target="lib/net40" />
     <file src="..\bin\Deedle.RProvider.Plugin.pdb" target="lib/net40" />
-    <file src="..\nuget\init.ps1" target="tools" />
   </files>
 </package>

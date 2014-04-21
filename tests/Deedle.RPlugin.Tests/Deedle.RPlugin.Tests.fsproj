@@ -73,6 +73,9 @@
     <Reference Include="RProvider">
       <HintPath>..\..\bin\RProvider.dll</HintPath>
     </Reference>
+    <Reference Include="RProvider.Runtime">
+      <HintPath>..\..\bin\RProvider.Runtime.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />

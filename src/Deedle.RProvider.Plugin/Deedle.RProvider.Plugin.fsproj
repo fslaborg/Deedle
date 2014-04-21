@@ -65,7 +65,10 @@
       <HintPath>..\..\packages\R.NET.1.5.5\lib\net40\RDotNet.NativeLibrary.dll</HintPath>
     </Reference>
     <Reference Include="RProvider">
-      <HintPath>..\..\packages\RProvider.1.0.4\lib\RProvider.dll</HintPath>
+      <HintPath>..\..\packages\RProvider.1.0.7-alpha\lib\RProvider.dll</HintPath>
+    </Reference>
+    <Reference Include="RProvider.Runtime">
+      <HintPath>..\..\packages\RProvider.1.0.7-alpha\lib\RProvider.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>False</Private>
@@ -89,6 +92,6 @@
   </Target>
   -->
   <Target Name="AfterBuild">
-    <Copy SourceFiles="..\..\packages\RProvider.1.0.4\RProvider.fsx" DestinationFolder="$(ProjectDir)..\..\bin" />
+    <Copy SourceFiles="..\..\packages\RProvider.1.0.7-alpha\RProvider.fsx" DestinationFolder="$(ProjectDir)..\..\bin" />
   </Target>
 </Project>

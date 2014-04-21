@@ -51,7 +51,7 @@ In a typical project ("F# Tutorial"), the NuGet packages are installed in the `.
 directory. To use R provider and Deedle, you need to write something like this:
 *)
 #I "../packages/Deedle.0.9.9-beta/"
-#I "../packages/RProvider.1.0.4/"
+#I "../packages/RProvider.1.0.7-alpha/"
 #load "RProvider.fsx"
 #load "Deedle.fsx"
 
@@ -62,7 +62,7 @@ open Deedle
 
 If you're not using NuGet from Visual Studio, then you'll need to manually copy the
 file `Deedle.RProvider.Plugin.dll` from the package `Deedle.RPlugin` to the 
-directory where `RProvider.dll` is located (in `RProvider.1.0.4/lib`). Once that's
+directory where `RProvider.dll` is located (in `RProvider.1.0.7-alpha/lib`). Once that's
 done, the R provider will automatically find the plugin.
 
 <a name="frames"></a>
