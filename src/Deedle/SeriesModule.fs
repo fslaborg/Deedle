@@ -11,8 +11,8 @@ open Deedle.Internal
 open Deedle.Vectors
 open Deedle.VectorHelpers
 
-/// The `Series` module provides F#-friendly API for working with functions. The API
-/// follows the usual design for collection-processing in F#, so the functions work
+/// The `Series` module provides an F#-friendly API for working with data and time series. 
+/// The API follows the usual design for collection-processing in F#, so the functions work
 /// well with the pipelining (`|>`) operator. For example, given a series with ages,
 /// we can use `Series.filterValues` to filter outliers and then `Stats.mean` to calculate
 /// the mean:
@@ -34,7 +34,8 @@ open Deedle.VectorHelpers
 /// For more information about C#-friendly extensions, see `SeriesExtensions`. The functions 
 /// in the `Series` module are grouped in a number of categories and documented below.
 ///
-/// ## Accessing series data and lookup
+/// Accessing series data and lookup
+/// --------------------------------
 ///
 /// Functions in this category provide access to the values in the series.
 ///
@@ -49,7 +50,8 @@ open Deedle.VectorHelpers
 ///  - Functions with a name ending with `At` perform lookup based on the absolute
 ///    integer offset (and ignore the keys of the series)
 ///
-/// ## Series transformations 
+/// Series transformations 
+/// ----------------------
 ///
 /// Functions in this category perform standard transformations on series including
 /// projections, filtering, taking some sub-series of the series, aggregating values
@@ -75,7 +77,8 @@ open Deedle.VectorHelpers
 /// `Series.shift 1 ts`. The `diff` function calculates difference from previous value using
 /// `ts - (Series.shift offs ts)`.
 ///
-/// ## Processing series with exceptions
+/// Processing series with exceptions
+/// ---------------------------------
 /// 
 /// The functions in this group can be used to write computations over series that may fail.
 /// They use the type `tryval<'T>` which is defined as a discriminated union:
@@ -90,7 +93,8 @@ open Deedle.VectorHelpers
 /// give series containing only errors and successes. You can fill failed values with
 /// a constant using `fillErrorsWith`.
 /// 
-/// ## Hierarchical index operations
+/// Hierarchical index operations
+/// -----------------------------
 ///
 /// When the key of a series is tuple, the elements of the tuple can be treated
 /// as multiple levels of a index. For example `Series<'K1 * 'K2, 'V>` has two 
@@ -106,7 +110,8 @@ open Deedle.VectorHelpers
 /// Note that the `Stats` module provides helpers for typical statistical operations,
 /// so the above could be written just as `input |> Stats.levelMean fst`.
 /// 
-/// ## Grouping, windowing and chunking
+/// Grouping, windowing and chunking
+/// --------------------------------
 ///
 /// This category includes functions that group data from a series in some way. Two key
 /// concepts here are _window_ and _chunk_. Window refers to (overlapping) sliding windows
@@ -127,7 +132,8 @@ open Deedle.VectorHelpers
 /// The functions `window`, `windowInto` and `chunk`, `chunkInto` are simplified versions
 /// that take a size. There is also `pairwise` function for sliding window of size two.
 ///
-/// ## Missing values
+/// Missing values
+/// --------------
 ///
 /// This group of functions provides a way of working with missing values in a series.
 /// The `dropMissing` function drops all keys for which there are no values in the series.
@@ -138,11 +144,12 @@ open Deedle.VectorHelpers
 ///  * `fillMissingUsing` calls a specified function for every missing value
 ///  * `fillMissing` and variants propagates values from previous/later keys
 ///
-/// ## Sorting and index manipulation
+/// Sorting and index manipulation
+/// ------------------------------
 /// 
 /// A series that is sorted by keys allows a number of additional operations (such as lookup
 /// using the `Lookp.ExactOrSmaller` lookup behavior). However, it is also possible to sort 
-/// series based on the values - although the functions for manipulation with series do not  
+/// series based on the values - although the functions for manipulation with series do not
 /// guarantee that the order will be preserved.
 ///
 /// To sort series by keys, use `sortByKey`. Other sorting functions let you sort the series
@@ -153,7 +160,8 @@ open Deedle.VectorHelpers
 /// or with integers using `indexOrdinally`. To pick and reorder series values using to match
 /// a list of keys use `realign`.
 ///
-/// ## Sampling, resampling and advanced lookup
+/// Sampling, resampling and advanced lookup
+/// ----------------------------------------
 ///
 /// Given a (typically) time series sampling or resampling makes it possible to 
 /// get time series with representative values at lower or uniform frequency.
@@ -172,7 +180,8 @@ open Deedle.VectorHelpers
 ///    the operation also fills value for days that have no corresponding 
 ///    observations in the input sequence.
 ///
-/// ## Joining, merging and zipping
+/// Joining, merging and zipping
+/// ----------------------------
 ///
 /// Given two series, there are two ways to combine the values. If the keys in the series
 /// are not overlapping (or you want to throw away values from one or the other series), 
@@ -1019,6 +1028,7 @@ module Series =
   /// ## Parameters
   ///  - `size` - The size of the sliding window.
   ///  - `series` - The input series to be aggregated.
+  ///  - `f` - A function that is called on each created window.
   ///
   /// [category:Grouping, windowing and chunking]
   [<CompiledName("WindowInto")>]

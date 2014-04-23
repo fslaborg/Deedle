@@ -1,38 +1,212 @@
 ﻿namespace Deedle
 
-/// Frame module comment
+/// The `Frame` module provides an F#-friendly API for working with data frames. 
+/// The module follows the usual desing for collection-processing in F#, so the 
+/// functions work well with the pipelining operator (`|>`). For example, given
+/// a frame with two columns representing prices, we can use `Frame.diff` and 
+/// numerical operators to calculate daily returns like this:
+/// 
+///     let df = frame [ "MSFT" => prices1; "AAPL" => prices2 ]
+///     let past = df |> Frame.diff 1
+///     let rets = past / df * 100.0
+///     rets |> Stats.mean
 ///
-/// ## Accessing frame data and lookup
+/// Note that the `Stats.mean` operation is overloaded and works both on series 
+/// (returning a number) and on frames (returning a series).
+/// 
+/// The functions in this module are designed to be used from F#. For a C#-friendly
+/// API, see the `FrameExtensions` type. For working with individual series, see the
+/// `Series` module. The functions in the `Frame` module are grouped in a number of 
+/// categories and documented below.
 ///
-/// TODO
+/// Accessing frame data and lookup
+/// -------------------------------
 ///
-/// ## Grouping, windowing and chunking
+/// Functions in this category provide access to the values in the fame. You can 
+/// also add and remove columns from a frame (which both return a new value).
 ///
-/// TODO
+/// - `addCol`, `replaceCol` and `dropCol` can be used to create a new data frame
+///   with a new column, by replacing an existing column with a new one, or by dropping
+///   an existing column
 ///
-/// ## Sorting and index manipulation
+/// - `cols` and `rows` return the columns or rows of a frame as a series containing
+///   objects; `getCols` and `getRows` return a generic series and cast the values to
+///   the type inferred from the context (columns or rows of incompatible types are skipped);
+///   `getNumericCols` returns columns of a type convertible to `float` for convenience.
 ///
-/// TODO
+/// - You can get a specific row or column using `get[Col|Row]` or `lookup[Col|Row]` functions.
+///   The `lookup` variant lets you specify lookup behavior for key matching (e.g. find the
+///   nearest smaller key than the specified value). There are also `[try]get` and `[try]Lookup`
+///   functions that return optional values and functions returning entire observations
+///   (key together with the series).
 ///
-/// ## Frame transformations
+/// - `sliceCols` and `sliceRows` return a sub-frame containing only the specified columns
+///   or rows. Finally, `toArray2D` returns the frame data as a 2D array.
 ///
-/// TODO
+/// Grouping, windowing and chunking
+/// --------------------------------
 ///
-/// ## Processing frames with exceptions
+/// The basic grouping functions in this category can be used to group the rows of a
+/// data frame by a specified projection or column to create a frame with hierarchical
+/// index such as `Frame<'K1 * 'K2, 'C>`. The functions always aggregate rows, so if you
+/// want to group columns, you need to use `Frame.transpose` first.
 ///
-/// TODO
+/// The function `groupRowsBy` groups rows by the value of a specified column. Use
+/// `groupRowsBy[Int|Float|String...]` if you want to specify the type of the column in
+/// an easier way than using type inference; `groupRowsUsing` groups rows using the 
+/// specified _projection function_ and `groupRowsByIndex` projects the grouping key just
+/// from the row index.
 ///
-/// ## Missing values
+/// More advanced functions include: `aggregateRowsBy` which groups the rows by a 
+/// specified sequence of columns and aggregates each group into a single value; 
+/// `pivotTable` implements the pivoting operation [as documented in the 
+/// tutorials](../frame.html#pivot).
 ///
-/// TODO
+/// The `stack` and `unstack` functions turn the data frame into a single data frame
+/// containing columns `Row`, `Column` and `Value` containing the data of the original
+/// frame; `unstack` can be used to turn this representation back into an original frame.
 ///
-/// ## Joining, merging and zipping
+/// A simple windowing functions that are exposed for an entire frame operations are
+/// `window` and `windowInto`. For more complex windowing operations, you currently have
+/// to use `mapRows` or `mapCols` and apply windowing on individual series.
 ///
-/// TODO
+/// Sorting and index manipulation
+/// ------------------------------
 ///
-/// ## Hierarchical index operations
+/// A frame is indexed by row keys and column keys. Both of these indices can be sorted
+/// (by the keys). A frame that is sorted allows a number of additional operations (such 
+/// as lookup using the `Lookp.ExactOrSmaller` lookup behavior). The functions in this 
+/// category provide ways for manipulating the indices. It is expected that most operations
+/// are done on rows and so more functions are available in a row-wise way. A frame can
+/// alwyas be transposed using `Frame.transpose`.
 ///
-/// TODO
+/// ### Index operations
+/// 
+/// The existing row/column keys can be replaced by a sequence of new keys using the 
+/// `indexColsWith` and `indexRowsWith` functions. Row keys can also be replaced by 
+/// ordinal numbers using `indexRowsOrdinally`.
+///
+/// The function `indexRows` uses the specified column of the original frame as the 
+/// index. This function infers the type of row keys from the context, so it is usually
+/// more convenient to use `indexRows[Date|String|Int|...]` functions. Finally, if 
+/// you want to calculate the index value based on multiple columns of the row, you
+/// can use `indexRowsUsing`.
+///
+/// ### Sorting frame rows
+/// 
+/// Frame rows can be sorted according to the value of a specified column using the
+/// `sortRows` function; `sortRowsBy` takes a projection function which lets you 
+/// transform the value of a column (e.g. to project a part of the value). 
+///
+/// The functions `sortRowsByKey` and `sortColsByKey` sort the rows or columns 
+/// using the default ordering on the key values. The result is a frame with ordered
+/// index.
+///
+/// ### Expanding columns
+///
+/// When the frame contains a series with complex .NET objects such as F# records or 
+/// C# classes, it can be useful to "expand" the column. This operation looks at the 
+/// type of the objects, gets all properties of the objects (recursively) and 
+/// generates multiple series representing the properties as columns.
+///
+/// The function `expandCols` expands the specified columns while `expandAllCols`
+/// applies the expansion to all columns of the data frame.
+///
+/// Frame transformations
+/// ---------------------
+///
+/// Functions in this category perform standard transformations on data frames including
+/// projections, filtering, taking some sub-frame of the frame, aggregating values
+/// using scanning and so on.
+///
+/// Projection and filtering functions such as `[map|filter][Cols|Rows]` call the 
+/// specified function with the column or row key and an `ObjectSeries<'K>` representing
+/// the column or row. You can use functions ending with `Values` (such as `mapRowValues`)
+/// when you do not require the row key, but only the row series; `mapRowKeys` and 
+/// `mapColKeys` can be used to transform the keys.
+///
+/// You can use `reduceValues` to apply a custom reduction to values of columns. Other
+/// aggregations are available in the `Stats` module. You can also get a row with the 
+/// greaterst or smallest value of a given column using `[min|max]RowBy`.
+///
+/// The functions `take[Last]` and `skip[Last]` can be used to take a sub-frame of the
+/// original source frame by skipping a specified number of rows. Note that this 
+/// does not require an ordered frame and it ignores the index - for index-based lookup
+/// use slicing, such as `df.Rows.[lo .. hi]`, instead.
+///
+/// Finally the `shift` function can be used to obtain a frame with values shifted by 
+/// the specified offset. This can be used e.g. to get previous value for each key using
+/// `Frame.shift 1 df`. The `diff` function calculates difference from previous value using
+/// `df - (Frame.shift offs df)`.
+///
+/// Processing frames with exceptions
+/// ---------------------------------
+/// 
+/// The functions in this group can be used to write computations over frames that may fail.
+/// They use the type `tryval<'T>` which is defined as a discriminated union:
+///
+///     type tryval<'T> = 
+///       | Success of 'T
+///       | Error of exn
+///
+/// Using `tryval<'T>` as a value in a data frame is not generally recommended, because
+/// the type of values cannot be tracked in the type. For this reason, it is better to use
+/// `tryval<'T>` with individual series. However, `tryValues` and `fillErrorsWith` functions
+/// can be used to get values, or fill failed values inside an entire data frame.
+///
+/// The `tryMapRows` function is more useful. It can be used to write a transformation
+/// that applies a computation (which may fail) to each row of a data frame. The resulting
+/// series is of type `Series<'R, tryval<'T>>` and can be processed using the `Series` module
+/// functions.
+///
+/// Missing values
+/// --------------
+///
+/// This group of functions provides a way of working with missing values in a data frame.
+/// The category provides the following functions that can be used to fill missing values:
+///
+///  * `fillMissingWith` fills missing values with a specified constant
+///  * `fillMissingUsing` calls a specified function for every missing value
+///  * `fillMissing` and variants propagates values from previous/later keys
+///
+/// We use the terms _sparse_ and _dense_ to denote series that contain some missing values
+/// or do not contain any missing values, respectively. The functions `denseCols` and 
+/// `denseRows` return a series that contains only dense columns or rows and all sparse
+/// rows or columns are replaced with a missing value. The `dropSparseCols` and `dropSparseRows`
+/// functions drop these missing values and return a frame with no missing values.
+///
+/// Joining, merging and zipping
+/// ----------------------------
+///
+/// The simplest way to join two frames is to use the `join` operation which can be used to 
+/// perform left, right, outer or inner join of two frames. When the row keys of the frames do
+/// not match exactly, you can use `joinAlign` which takes an additional parameter that specifies
+/// how to find matching key in left/right join (e.g. by taking the nearest smaller available key).
+///
+/// Frames that do not contian overlapping values can be combined using `merge` (when combining
+/// just two frames) or using `mergeAll` (for larger number of frames). Tha latter is optimized
+/// to work well for a large number of data frames.
+///
+/// Finally, frames with overlapping values can be combined using `zip`. It takes a function
+/// that is used to combine the overlapping values. A `zipAlign` function provides a variant
+/// with more flexible row key matching (as in `joinAlign`)
+///
+/// Hierarchical index operations
+/// -----------------------------
+///
+/// A data frame has a hierarchical row index if the row index is formed by a tuple, such as
+/// `Frame<'R1 * 'R2, 'C>`. Frames of this kind are returned, for example, by the grouping 
+/// functions such as `Frame.groupRowsBy`. The functions in this category provide ways for 
+/// working with data frames that have hierarchical row keys.
+///
+/// The functions `applyLevel` and `reduceLevel` can be used to reduce values according to 
+/// one of the levels. The `applyLevel` function takes a reduction of type `Series<'K, 'T> -> 'T`
+/// while `reduceLevel` reduces individual values using a function of type `'T -> 'T -> 'T`.
+///
+/// The functions `nest` and `unnest` can be used to convert between frames with 
+/// hierarchical indices (`Frame<'K1 * 'K2, 'C>`) and series of frames that represent 
+/// individual groups (`Series<'K1, Frame<'K2, 'C>>`). The `nestBy` function can be 
+/// used to perform group by operation and return the result as a series of frems.
 ///
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]    
 module Frame = 
@@ -62,7 +236,12 @@ module Frame =
   [<CompiledName("CountColumns")>]
   let countCols (frame:Frame<'R, 'C>) = frame.ColumnIndex.KeyCount |> int
 
+  /// Returns a series with the total number of values in each column. This counts
+  /// the number of actual values, excluding the missing values or not available 
+  /// values (such as `nan`, `null`, etc.)
+  ///
   /// [category:Accessing frame data and lookup]
+  [<CompiledName("CountValues")>]
   let inline countValues (frame:Frame<'R, 'C>) = 
     frame.Columns |> Series.map (fun _ -> Series.countValues)
 
@@ -91,7 +270,7 @@ module Frame =
   /// instead. Note that this function typically requires a type annotation. This can
   /// be specified in various ways, for example by annotating the result value:
   ///
-  ///     let (res:Series<_, Series<_, string>>) = frame |> getColumns
+  ///     let (res:Series<_, Series<_, string>>) = frame |> getCols
   ///
   /// Here, the annotation on the values of the nested series specifies that we want
   /// to get columns containing `string` values.
@@ -109,7 +288,7 @@ module Frame =
   ///
   /// [category:Accessing frame data and lookup]
   [<CompiledName("GetNumericColumns")>]
-  let getNumericColumns (frame:Frame<'R,'C>) : Series<'C,Series<'R,float>> =
+  let getNumericCols (frame:Frame<'R,'C>) : Series<'C,Series<'R,float>> =
     frame |> getCols
 
   /// Returns the rows of the data frame as a series (indexed by 
@@ -251,38 +430,65 @@ module Frame =
   /// Missing data are represented as `Double.NaN` in the returned array.
   ///
   /// [category:Accessing frame data and lookup]
+  [<CompiledName("ToArray2D")>]
   let toArray2D (frame:Frame<'R, 'C>) = frame.ToArray2D<float>()
 
   // ----------------------------------------------------------------------------------------------
   // Grouping, windowing and chunking
   // ----------------------------------------------------------------------------------------------
 
+  /// Group rows of a data frame using the specified `selector`. The selector is called with
+  /// a row key and object series representing the row and should return a new key. The result
+  /// is a frame with multi-level index, where the first level is formed by the newly created
+  /// keys.
+  ///
   /// [category:Grouping, windowing and chunking]
   [<CompiledName("GroupRowsUsing")>]
-  let groupRowsUsing selector (frame:Frame<'R, 'C>) = 
+  let groupRowsUsing (selector:_ -> _ -> 'K) (frame:Frame<'R, 'C>) = 
     frame.GroupRowsUsing(Func<_,_,_>(selector))    
 
+  /// Group rows of a data frame using the specified `column`. The type of the column is inferred
+  /// from the usage of the resulting frame. The result is a frame with multi-level index, where 
+  /// the first level is formed by the newly created keys. Use `groupRowsBy[Int|String|...]` to
+  /// explicitly specify the type of the column.
+  ///
   /// [category:Grouping, windowing and chunking]
   [<CompiledName("GroupRowsBy")>]
-  let groupRowsBy column (frame:Frame<'R, 'C>) = 
+  let groupRowsBy column (frame:Frame<'R, 'C>) : Frame<('K * _), _> = 
     frame.GroupRowsBy(column)
 
+  /// Groups the rows of a frame by a specified column in the same way as `groupRowsBy`.
+  /// This function assumes that the values of the specified column are of type `obj`.
+  ///
   /// [category:Grouping, windowing and chunking]
   [<CompiledName("GroupRowsByObj")>]
   let groupRowsByObj column (frame:Frame<'R, 'C>) : Frame<obj * _, _> = groupRowsBy column frame
 
+  /// Groups the rows of a frame by a specified column in the same way as `groupRowsBy`.
+  /// This function assumes that the values of the specified column are of type `int`.
+  ///
   /// [category:Grouping, windowing and chunking]
   [<CompiledName("GroupRowsByInt")>]
   let groupRowsByInt column (frame:Frame<'R, 'C>) : Frame<int * _, _> = groupRowsBy column frame
 
+  /// Groups the rows of a frame by a specified column in the same way as `groupRowsBy`.
+  /// This function assumes that the values of the specified column are of type `string`.
+  ///
   /// [category:Grouping, windowing and chunking]
   [<CompiledName("GroupRowsByString")>]
   let groupRowsByString column (frame:Frame<'R, 'C>) : Frame<string * _, _> = groupRowsBy column frame
 
+  /// Groups the rows of a frame by a specified column in the same way as `groupRowsBy`.
+  /// This function assumes that the values of the specified column are of type `bool`.
+  ///
   /// [category:Grouping, windowing and chunking]
   [<CompiledName("GroupRowsByBool")>]
   let groupRowsByBool column (frame:Frame<'R, 'C>) : Frame<bool * _, _> = groupRowsBy column frame
   
+  /// Group rows of a data frame using the specified `keySelector`. The selector is called with
+  /// a key of each row and should return a new key. The result is a frame with multi-level index, 
+  /// here the first level is formed by the newly created keys.
+  ///
   /// [category:Grouping, windowing and chunking]
   [<CompiledName("GroupRowsByIndex")>]
   let groupRowsByIndex (keySelector:_ -> 'K) (frame:Frame<'R,'C>) =
@@ -317,6 +523,7 @@ module Frame =
   ///  - `op` - A function computing a value from the corresponding bucket frame 
   ///
   /// [category:Grouping, windowing and chunking]
+  [<CompiledName("PivotTable")>]
   let pivotTable (rowGrp:'R -> ObjectSeries<'C> -> 'RNew) (colGrp:'R -> ObjectSeries<'C> -> 'CNew) (op:Frame<'R, 'C> -> 'T) (frame:Frame<'R, 'C>): Frame<'RNew, 'CNew> =
     frame.Rows                                                                    //    Series<'R,ObjectSeries<'C>>
     |> Series.groupInto (fun r g -> colGrp r g) (fun _ g -> g)                    // -> Series<'CNew, Series<'R,ObjectSeries<'C>>>
@@ -324,21 +531,42 @@ module Frame =
     |> Series.mapValues (Series.mapValues (FrameUtils.fromRows >> op))            // -> Series<'CNew, Series<'RNew, 'T>>
     |> FrameUtils.fromColumns                                                     // -> Frame<'RNew, 'CNew, 'T>
 
+  /// Creates a sliding window using the specified size. The result is a series
+  /// containing data frames that represent individual windows.
+  /// This function skips incomplete chunks. 
+  ///
+  /// ## Parameters
+  ///  - `size` - The size of the sliding window.
+  ///  - `frame` - The input frame to be aggregated.
+  ///
   /// [category:Grouping, windowing and chunking]
+  [<CompiledName("Window")>]
   let window size (frame:Frame<'R, 'C>) = 
     let fromRows rs = rs |> FrameUtils.fromRowsAndColumnKeys frame.ColumnKeys
     frame.Rows |> Series.windowInto size fromRows
 
+  /// Creates a sliding window using the specified size and then applies the provided 
+  /// value selector `f` on each window to produce the result which is returned as a new series. 
+  /// This function skips incomplete chunks. 
+  ///
+  /// ## Parameters
+  ///  - `size` - The size of the sliding window.
+  ///  - `frame` - The input frame to be aggregated.
+  ///  - `f` - A function that is called on each created window.
+  ///
   /// [category:Grouping, windowing and chunking]
+  [<CompiledName("WindowInto")>]
   let windowInto size f (frame:Frame<'R, 'C>) = 
     let fromRows rs = rs |> FrameUtils.fromRowsAndColumnKeys frame.ColumnKeys
     frame.Rows |> Series.windowInto size (fromRows >> f)
 
 
-  /// Implements R-like 'stack' (returns frame whose 
-  /// columns are named Row/Column/Value)
+  /// Returns a data frame with three columns named `Row`, `Column`
+  /// and `Value` that contains the data of the original data frame 
+  /// in individual rows.
   ///
   /// [category:Grouping, windowing and chunking]
+  [<CompiledName("Stack")>]
   let stack (frame:Frame<'R, 'C>) =
     let rowKeys = frame.RowIndex.Keys
     let colKeys = frame.ColumnIndex.Keys
@@ -375,9 +603,13 @@ module Frame =
     Frame(rowIndex, colIndex, data)
 
 
-  // Unstack is easier, we just need to get three-element tuples from the frame and use Frame.ofValues
+  /// This function is the opposite of `stack`. It takes a data frame
+  /// with three columns named `Row`, `Column` and `Value` and reconstructs
+  /// a data frame by using `Row` and `Column` as row and column index keys,
+  /// respectively.
   ///
   /// [category:Grouping, windowing and chunking]
+  [<CompiledName("Unstack")>]
   let unstack (frame:Frame<'O, string>) : Frame<'R, 'C> =
     FrameUtils.fromValues frame.Rows.Values 
       (fun row -> row.GetAs<'C>("Column"))
@@ -516,9 +748,6 @@ module Frame =
   /// The rows of the frame are assigned index according to the current order, or in a
   /// non-deterministic way, if the current row index is not ordered.
   ///
-  /// ## Parameters
-  ///  - `frame` - Source data frame whose row index are to be replaced.
-  ///
   /// [category:Sorting and index manipulation]
   [<CompiledName("IndexRowsOrdinally")>]
   let indexRowsOrdinally (frame:Frame<'TRowKey, 'TColumnKey>) = 
@@ -541,9 +770,6 @@ module Frame =
   /// and you mostly need to access its rows as a series (because accessing columns as a 
   /// series is more efficient).
   /// 
-  /// ## Parameters
-  ///  - `frame` - Source data frame to be transposed.
-  /// 
   /// [category:Sorting and index manipulation]
   [<CompiledName("Transpose")>]
   let transpose (frame:Frame<'R, 'TColumnKey>) = 
@@ -553,9 +779,6 @@ module Frame =
   /// but whose rows are an ordered series. This allows using operations that are
   /// only available on indexed series such as alignment and inexact lookup.
   ///
-  /// ## Parameters
-  ///  - `frame` - Source data frame to be ordered.
-  /// 
   /// [category:Sorting and index manipulation]
   [<CompiledName("SortRowsByKey")>]
   let sortRowsByKey (frame:Frame<'R, 'C>) = 
@@ -566,9 +789,6 @@ module Frame =
   /// Returns a data frame that contains the same data as the input, 
   /// but whose rows are ordered on a particular column of the frame. 
   ///
-  /// ## Parameters
-  ///  - `frame` - Source data frame to be sorted.
-  /// 
   /// [category:Sorting and index manipulation]
   [<CompiledName("SortRows")>]
   let sortRows colKey (frame:Frame<'R,'C>) =
@@ -579,9 +799,6 @@ module Frame =
   /// Returns a data frame that contains the same data as the input, 
   /// but whose rows are ordered on a particular column of the frame. 
   ///
-  /// ## Parameters
-  ///  - `frame` - Source data frame to be sorted.
-  /// 
   /// [category:Sorting and index manipulation]
   [<CompiledName("SortRowsWith")>]
   let sortRowsWith colKey compareFunc (frame:Frame<'R,'C>) =
@@ -592,9 +809,6 @@ module Frame =
   /// Returns a data frame that contains the same data as the input, 
   /// but whose rows are ordered on a particular column of the frame. 
   ///
-  /// ## Parameters
-  ///  - `frame` - Source data frame to be sorted.
-  /// 
   /// [category:Sorting and index manipulation]
   [<CompiledName("SortRowBy")>]
   let sortRowsBy colKey (f:'T -> 'V) (frame:Frame<'R,'C>) =
@@ -606,9 +820,6 @@ module Frame =
   /// but whose columns are an ordered series. This allows using operations that are
   /// only available on indexed series such as alignment and inexact lookup.
   ///
-  /// ## Parameters
-  ///  - `frame` - Source data frame to be ordered.
-  /// 
   /// [category:Sorting and index manipulation]
   [<CompiledName("SortColumnsByKey")>]
   let sortColsByKey (frame:Frame<'R, 'C>) = 
@@ -627,6 +838,7 @@ module Frame =
   ///  - `frame` - Input data frame whose columns will be expanded
   ///
   /// [category:Sorting and index manipulation]
+  [<CompiledName("ExpandAllColumns")>]
   let expandAllCols nesting (frame:Frame<'R, string>) = 
     FrameUtils.expandVectors nesting false frame
 
@@ -672,11 +884,8 @@ module Frame =
       let idx = frame.IndexBuilder.Create(newKeys, if frame.RowIndex.IsOrdered then Some true else None)
       Frame(idx, frame.ColumnIndex, newData)
 
-  /// Returns a frame that contains the specified number of rows from the original frame. 
-  ///
-  /// ## Parameters
-  ///  - `count` - Number of rows to take; must be smaller or equal to the original number of rows
-  ///  - `frame` - Input frame from which the rows are taken
+  /// Returns a frame that contains the specified `count` of rows from the 
+  /// original frame; `count` must be smaller or equal to the original number of rows.
   ///
   /// [category:Frame transformations]
   [<CompiledName("Take")>]
@@ -685,12 +894,9 @@ module Frame =
       invalidArg "count" "Must be greater than zero and less than the number of keys."
     getRange 0 (count - 1) frame
 
-  /// Returns a frame that contains the specified number of rows from the 
-  /// original frame. The rows are taken from the end of the frame. 
-  ///
-  /// ## Parameters
-  ///  - `count` - Number of rows to take; must be smaller or equal to the original number of rows
-  ///  - `frame` - Input frame from which the rows are taken
+  /// Returns a frame that contains the specified `count` of rows from the 
+  /// original frame. The rows are taken from the end of the frame; `count`
+  /// must be smaller or equal to the original number of rows.
   ///
   /// [category:Frame transformations]
   [<CompiledName("TakeLast")>]
@@ -700,11 +906,8 @@ module Frame =
     getRange (frame.RowCount-count) (frame.RowCount-1) frame
 
   /// Returns a frame that contains the data from the original frame,
-  /// except for the first `count` rows.
-  ///
-  /// ## Parameters
-  ///  - `count` - Number of rows to skip; must be smaller or equal to the original number of rows
-  ///  - `frame` - Input frame from which the rows are taken
+  /// except for the first `count` rows; `count` must be smaller or equal 
+  /// to the original number of rows.
   ///
   /// [category:Frame transformations]
   [<CompiledName("Skip")>]
@@ -714,11 +917,8 @@ module Frame =
     getRange count (frame.RowCount-1) frame
 
   /// Returns a frame that contains the data from the original frame,
-  /// except for the last `count` rows.
-  ///
-  /// ## Parameters
-  ///  - `count` - Number of rows to skip; must be smaller or equal to the original number of rows
-  ///  - `frame` - Input frame from which the rows are taken
+  /// except for the last `count` rows; `count` must be smaller or equal to the
+  /// original number of rows.
   ///
   /// [category:Frame transformations]
   [<CompiledName("SkipLast")>]
@@ -862,15 +1062,39 @@ module Frame =
     let newColIndex = frame.IndexBuilder.Create(frame.ColumnIndex.Keys |> Seq.map f, None)
     Frame(frame.RowIndex, newColIndex, frame.Data)
 
+  /// Returns a series that contains the results of aggregating each column
+  /// to a single value. The function takes columns that can be converted to 
+  /// the type expected by the specified `op` function and reduces the values
+  /// in each column using `Series.reduceValues`. 
+  ///
+  /// ## Example
+  /// The following sums the values in each column that can be converted to
+  /// `float` and returns the result as a new series:
+  ///
+  ///     df |> Frame.reduceValues (fun (a:float) b -> a + b)
+  ///
   /// [category:Frame transformations]
+  [<CompiledName("ReduceValues")>]
   let reduceValues (op:'T -> 'T -> 'T) (frame:Frame<'R, 'C>) = 
     frame.GetColumns<'T>() |> Series.map (fun _ -> Series.reduceValues op) 
 
+  /// Returns a row of the data frame which has the greatest value of the
+  /// specified `column`. The row is returned as an optional value (which is
+  /// `None` for empty frame) and contains a key together with an object
+  /// series representing the row.
+  ///
   /// [category:Frame transformations]
+  [<CompiledName("MaxRowBy")>]
   let inline maxRowBy column (frame:Frame<'R, 'C>) = 
     frame.Rows |> Stats.maxBy (fun row -> row.GetAs<float>(column))
 
+  /// Returns a row of the data frame which has the smallest value of the
+  /// specified `column`. The row is returned as an optional value (which is
+  /// `None` for empty frame) and contains a key together with an object
+  /// series representing the row.
+  ///
   /// [category:Frame transformations]
+  [<CompiledName("MinRowBy")>]
   let inline minRowBy column (frame:Frame<'R, 'C>) = 
     frame.Rows |> Stats.minBy (fun row -> row.GetAs<float>(column))
 
@@ -928,14 +1152,21 @@ module Frame =
   // Processing frames with exceptions
   // ----------------------------------------------------------------------------------------------
 
-  /// [category:Processing frames with exceptions]
-  let tryMapRows (f:_ -> _ -> 'V) (frame:Frame<'R, 'C>) = 
-    frame |> mapRows (fun k row -> try TryValue.Success(f k row) with e -> TryValue.Error e)
-
-  /// Unwraps TryValues into regular values.
-  /// Throws `AggregateException` if any TryValues are Failures
+  /// Returns a series, obtained by applying the specified projection function `f` to all rows
+  /// of the input frame. The resulting series wraps the results in `tryval<'V>`. When the projection 
+  /// function fails, the exception is wrapped using the `Error` case.
   ///
   /// [category:Processing frames with exceptions]
+  [<CompiledName("TryMapRows")>]
+  let tryMapRows (f:_ -> _ -> 'V) (frame:Frame<'R, 'C>) : Series<_, _ tryval> = 
+    frame |> mapRows (fun k row -> try TryValue.Success(f k row) with e -> TryValue.Error e)
+
+  /// Given a data frame containing columns of type `tryval<'T>`, returns a new data frame
+  /// that contains the underlying values of type `'T`. When the frame contains one or more 
+  /// failures, the operation throws `AggregateException`. Otherwise, it returns a frame containing values.
+  ///
+  /// [category:Processing frames with exceptions]
+  [<CompiledName("TryValues")>]
   let tryValues (frame:Frame<'R, 'C>) = 
     let newTryData = frame.Data.Select(VectorHelpers.tryValues)
     let exceptions = newTryData.DataSequence |> Seq.choose OptionalValue.asOption |> Seq.choose (fun v ->
@@ -950,8 +1181,12 @@ module Frame =
         | :? AggregateException as ae -> ae.InnerExceptions |> List.ofSeq | e -> [e])
       raise (new AggregateException(exceptions))
 
-  ///
+  /// Fills all error cases of a `tryval<'T>` value in a data frame with the specified 
+  /// `value`. The function takes all columns of type `tryval<'T>` and uses `Series.fillErrorsWith`
+  /// to fill the error values with the specified default value.
+  /// 
   /// [category:Processing frames with exceptions]
+  [<CompiledName("FillErrorsWith")>]
   let fillErrorsWith (value:'T) (frame:Frame<'R, 'C>) = 
     frame.ColumnApply(true, fun (s:Series<_, 'T tryval>) -> 
       (Series.fillErrorsWith value s) :> ISeries<_>)
@@ -1018,9 +1253,6 @@ module Frame =
   /// The resulting data frame has the same number of columns, but may have 
   /// fewer rows (or no rows at all).
   /// 
-  /// ## Parameters
-  ///  - `frame` - An input data frame that is to be filtered
-  ///
   /// [category:Missing values]
   [<CompiledName("DropSparseRows")>]
   let dropSparseRows (frame:Frame<'R, 'C>) = 
@@ -1030,9 +1262,6 @@ module Frame =
   /// data frame that are _dense_, meaning that they have a value for each row.
   /// The resulting data frame has the same number of rows, but may have 
   /// fewer columns (or no columns at all).
-  ///
-  /// ## Parameters
-  ///  - `frame` - An input data frame that is to be filtered
   ///
   /// [category:Missing values]
   [<CompiledName("DropSparseColumns")>]
@@ -1044,24 +1273,18 @@ module Frame =
   /// containing _series_ representing individual columns of the frame. This is similar 
   /// to `Columns`, but it skips columns that contain missing value in _any_ row.
   ///
-  /// ## Parameters
-  ///  - `frame` - An input data frame containing columns to be filtered
-  ///
   /// [category:Missing values]
-  [<CompiledName("ColumnsDense")>]
-  let colsDense (frame:Frame<'R, 'C>) = frame.ColumnsDense
+  [<CompiledName("DenseColumns")>]
+  let denseCols (frame:Frame<'R, 'C>) = frame.ColumnsDense
 
   /// Returns the rows of the data frame that do not have any missing values. 
   /// The operation returns a series (indexed by the row keys of the source frame) 
   /// containing _series_ representing individual row of the frame. This is similar 
   /// to `Rows`, but it skips rows that contain missing value in _any_ column.
   ///
-  /// ## Parameters
-  ///  - `frame` - An input data frame containing rows to be filtered
-  ///
   /// [category:Missing values]
-  [<CompiledName("RowsDense")>]
-  let rowsDense (frame:Frame<'R, 'C>) = frame.RowsDense
+  [<CompiledName("DenseRows")>]
+  let denseRows (frame:Frame<'R, 'C>) = frame.RowsDense
 
 
   // ----------------------------------------------------------------------------------------------
@@ -1114,9 +1337,6 @@ module Frame =
   /// a frame has rows indexed with ordinal numbers, you may need to explicitly reindex the row
   /// keys before calling append.
   ///
-  /// ## Parameters
-  ///  - `frames` - The seq of frames to be appended (combined) 
-  ///
   /// [category:Joining, merging and zipping]
   [<CompiledName("MergeAll")>]
   let mergeAll (frames:Frame<'R, 'C> seq) =
@@ -1136,7 +1356,8 @@ module Frame =
   /// keys before calling append.
   ///
   /// ## Parameters
-  ///  - `otherFrame` - The other frame to be appended (combined) with the current instance
+  ///  - `frame1` - First of the two frames to be merged (combined)
+  ///  - `frame2` - The other frame to be merged (combined) with the first instance
   ///
   /// [category:Joining, merging and zipping]
   [<CompiledName("Merge")>]
@@ -1193,26 +1414,75 @@ module Frame =
   // Hierarchical index operations
   // ----------------------------------------------------------------------------------------------
 
+  /// Reduce the values in each series according to the specified level of a hierarchical row key.
+  /// For each group of rows as specified by `levelSel`, the function reduces the values in each series 
+  /// using the preovided function `op` by applying `Series.reduceLevel`. Columns that cannot be
+  /// converted to a type required by `op` are skipped.
+  ///
+  /// ## Example
+  /// To sum the values in all numerical columns according to the first component of a two level
+  /// row key `'K1 * 'K2`, you can use the following:
+  ///
+  ///     df |> Frame.reduceLevel fst (fun (a:float) b -> a + b)
+  //
+  /// ## Remarks
+  /// This function reduces values using a function `'T -> 'T -> 'T`. If you want to process
+  /// an entire group of values at once, you can use `applyLevel` instead.
+  ///
   /// [category:Hierarchical index operations]
-  let reduceLevel keySelector (op:'T -> 'T -> 'T) (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<'T>() |> Series.map (fun _ -> Series.reduceLevel keySelector op) |> FrameUtils.fromColumns
+  [<CompiledName("ReduceLevel")>]
+  let reduceLevel (levelSel:_ -> 'K) (op:'T -> 'T -> 'T) (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<'T>() |> Series.map (fun _ -> Series.reduceLevel levelSel op) |> FrameUtils.fromColumns
 
+  /// Apply a specified function to a group of values in each series according to the specified 
+  /// level of a hierarchical row key. For each group of rows as specified by `levelSel`, the function 
+  /// applies the specified function `op` to all columns. Columns that cannot be converted to a 
+  /// type required by `op` are skipped. 
+  ///
+  /// ## Example
+  /// To get the standard deviation of values in all numerical columns according to the first 
+  /// component of a two level row key `'K1 * 'K2`, you can use the following:
+  ///
+  ///     df |> Frame.applyLevel fst Stats.stdDev
+  //
+  /// ## Remarks
+  /// This function reduces a series of values using a function `Series<'R, 'T> -> 'T`. If
+  /// you want to reduce values using a simpler function `'T -> 'T -> 'T`, you can use
+  /// `Frame.reduceLevel` instead.
+  ///
   /// [category:Hierarchical index operations]
-  let applyLevel keySelector op (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<'T>() |> Series.map (fun _ s -> Series.applyLevel keySelector op s) |> FrameUtils.fromColumns
+  [<CompiledName("ApplyLevel")>]
+  let applyLevel (levelSel:_ -> 'K) (op:_ -> 'T) (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<'T>() |> Series.map (fun _ s -> Series.applyLevel levelSel op s) |> FrameUtils.fromColumns
 
+  /// Given a frame with two-level row index, returns a series indexed by the first
+  /// part of the key, containing frames representing individual groups. This function
+  /// can be used if you want to perform a transformation individually on each group
+  /// (e.g. using `Series.mapValues` after calling `Frame.nest`).
+  ///
   /// [category:Hierarchical index operations]
+  [<CompiledName("Nest")>]
   let nest (frame:Frame<'R1 * 'R2, 'C>) = 
     let labels = frame.RowKeys |> Seq.map fst
     frame.NestRowsBy<'R1>(labels) 
     |> Series.map (fun r df -> df |> indexRowsWith (df.RowKeys |> Seq.map snd))
 
+  /// Given a data frame, use the specified `keySelector` to generate a new, first-level
+  /// of indices based on the current indices. Returns a series (indexed by the first-level)
+  /// of frames (indexed by the second-level). 
+  ///
   /// [category:Hierarchical index operations]
-  let nestBy keySelector (frame:Frame<'R, 'C>) = 
+  [<CompiledName("NestBy")>]
+  let nestBy (keySelector:_ -> 'K1) (frame:Frame<'K2, 'C>) = 
     let labels = (frame.RowKeys |> Seq.map keySelector)
     frame.GroupByLabels labels frame.RowCount |> nest
 
+  /// Given a series of frames, returns a new data frame with two-level hierarchical
+  /// row index, using the series keys as the first component. This function is the
+  /// dual of `Frame.nest`.
+  ///
   /// [category:Hierarchical index operations]
+  [<CompiledName("Unnest")>]
   let unnest (series:Series<'R1, Frame<'R2, 'C>>) =
     series
     |> Series.map (fun k1 df -> 
