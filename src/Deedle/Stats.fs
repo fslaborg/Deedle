@@ -329,8 +329,8 @@ open StatsHelpers
 ///
 /// For a series with multi-level (hierarchical) index, the
 /// functions prefixed with `level` provide a way to apply statistical operation on 
-/// a single level of the index. (For you can sum values along the `'K1` keys in a 
-/// series `Series<'K1 * 'K2, float>` and get `Series<'K1, float>` as the result.)
+/// a single level of the index. (For example you can sum values along the `'K1` keys 
+/// in a series `Series<'K1 * 'K2, float>` and get `Series<'K1, float>` as the result.)
 ///
 /// ## Remarks
 ///
@@ -444,7 +444,8 @@ type Stats =
   ///
   /// [category:Expanding windows]
   static member expandingMean (series:Series<'K, float>) : Series<'K, float> =
-    applyExpandingMomentsTransform (fun w -> w.M1) series
+    applyExpandingMomentsTransform (fun w -> 
+      if w.nobs < 1.0 then nan else w.M1) series
 
   /// Returns a series that contains variance over expanding windows (the value for
   /// a given key is calculated from all elements with smaller keys); If the 
