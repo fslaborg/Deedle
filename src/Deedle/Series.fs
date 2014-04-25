@@ -754,7 +754,19 @@ and
   /// [category:Indexing]
   member x.IndexWith(keys:seq<_>) = 
     let newIndex = indexBuilder.Create(keys, None)
-    Series<'TNewKey, _>(newIndex, vector, vectorBuilder, indexBuilder)
+    let vectorCmd = 
+      if newIndex.KeyCount = int64 x.KeyCount then
+        // Just return the vecotr, because it has the same length
+        Vectors.Return 0
+      elif newIndex.KeyCount > int64 x.KeyCount then
+        // Pad vector with missing values
+        Vectors.Append(Vectors.Return 0, Vectors.Empty(newIndex.KeyCount - int64 x.KeyCount))
+      else 
+        // Get sub-range of the source vector
+        Vectors.GetRange(Vectors.Return 0, (Address.zero, newIndex.KeyCount - 1L))
+
+    let newVector = vectorBuilder.Build(vectorCmd, [| vector |])
+    Series<'TNewKey, _>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   // ----------------------------------------------------------------------------------------------
   // Asynchronous support 

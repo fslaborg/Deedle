@@ -1,8 +1,8 @@
 bin
 temp/
 docs/output
-docs/content/csharp/obj
-docs/content/csharp/bin
+docs/csharp/obj
+docs/csharp/bin
 src/Deedle/bin
 src/Deedle/obj
 src/Deedle.RProvider.Plugin/bin

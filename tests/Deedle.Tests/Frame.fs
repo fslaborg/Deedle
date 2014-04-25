@@ -3,7 +3,7 @@
 #load "Deedle.fsx"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #r "../../packages/FsCheck.0.9.1.0/lib/net40-Client/FsCheck.dll"
-#r "../../packages/FSharp.Data.1.1.10/lib/net40/FSharp.Data.dll"
+#r "../../packages/FSharp.Data.2.0.5/lib/net40/FSharp.Data.dll"
 #load "../Common/FsUnit.fs"
 #else
 module Deedle.Tests.Frame
@@ -87,14 +87,33 @@ let ``Can save MSFT data as CSV file and read it afterwards (with default args)`
   actual |> shouldEqual expected
 
 [<Test>]
+let ``Saving dates uses consistently invariant cultrue by default`` () =
+  let file = System.IO.Path.GetTempFileName()
+  let df = frame [ "A" => series [ DateTime(2014, 1, 29, 12, 39, 45) => 1.0; DateTime(2014, 1, 29) => 2.1] ]
+  // Save the frame on a machine with "en-GB" date time format
+  System.Threading.Thread.CurrentThread.CurrentCulture <- System.Globalization.CultureInfo.GetCultureInfo("en-GB")
+  df.SaveCsv(file, ["Date"])
+  // Read the frame (in invariant culture format) and parse row keys as dates
+  // (we need to run this on InvariantCulture because the 'ReadCsv' method reads
+  // values as DateTime. We intentionally ignore the fact the columns are inferred
+  // as DateTime, because Deedle tries to avoid using DateTime)
+  System.Threading.Thread.CurrentThread.CurrentCulture <- System.Globalization.CultureInfo.InvariantCulture
+  let actual = Frame.ReadCsv(file).IndexRows<DateTime>("Date").RowKeys |> List.ofSeq
+  let expected = df.RowKeys |> List.ofSeq
+  actual |> shouldEqual expected
+
+[<Test>]
 let ``Can save MSFT data as CSV file and read it afterwards (with custom format)`` () =
   let file = System.IO.Path.GetTempFileName()
+  let cz = System.Globalization.CultureInfo.GetCultureInfo("cs-CZ")
   let expected = msft()
   expected.DropColumn("Date")
-  expected.SaveCsv(file, keyNames=["Date"], separator=';', culture=System.Globalization.CultureInfo.GetCultureInfo("cs-CZ"))
+  expected.SaveCsv(file, keyNames=["Date"], separator=';', culture=cz)
   let actual = 
     Frame.ReadCsv(file, separators=";", culture="cs-CZ")
-    |> Frame.indexRowsDate "Date" |> Frame.dropCol "Date"
+    |> Frame.indexRowsString "Date" 
+    |> Frame.mapRowKeys (fun s -> DateTime.Parse(s, cz) )
+    |> Frame.dropCol "Date"
   actual |> shouldEqual expected
 
 [<Test>]
@@ -151,7 +170,7 @@ type Stock = { Date : DateTime; Volume : int; Price : Price }
 
 let typedRows () = 
   let msft = MSFT.Load(__SOURCE_DIRECTORY__ + "/data/MSFT.csv")
-  [| for r in msft.Data -> 
+  [| for r in msft.Rows -> 
       let p = { Open = r.Open; Close = r.Close; High = r.High; Low = r.High }
       { Date = r.Date; Volume = r.Volume; Price = p } |]
 let typedPrices () = 
@@ -408,6 +427,17 @@ let ``Can skip N elements from front and back`` () =
   Frame.skipLast 98 df |> shouldEqual <| frame ["S1" =?> series [1 => 1.0; 2 => 2.0]; "S2" =?> series [1 => "N1"; 2 => "N2"] ]
   Frame.skipLast 100 df |> shouldEqual <| empty 
   Frame.skipLast 0 df |> shouldEqual <| df
+
+
+[<Test>]  
+let ``Frame.diff and Frame.shift correctly return empty frames`` () =
+  let empty : Frame<int, string> = frame [ "A" => (series [] : Series<int, float>) ]
+  empty |> Frame.shift 1 |> Frame.countRows |> shouldEqual 0
+  empty |> Frame.diff 1 |> shouldEqual <| empty
+
+  let single : Frame<int, string> = frame [ "A" => series [ 1 => 1.0 ] ]
+  single |> Frame.shift -2 |> Frame.countRows |> shouldEqual 0
+  single |> Frame.diff -1 |> shouldEqual <| empty
 
 // ------------------------------------------------------------------------------------------------
 // Stack & unstack

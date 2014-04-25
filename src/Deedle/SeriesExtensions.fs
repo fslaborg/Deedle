@@ -430,7 +430,7 @@ type SeriesExtensions =
   ///
   /// ## Remarks
   /// This function can be used to implement more complex interpolation.
-  /// For example see [handling missing values in the tutorial](../features.html#missing)
+  /// For example see [handling missing values in the tutorial](../frame.html#missing)
   ///
   /// [category:Missing values]
   [<Extension>]

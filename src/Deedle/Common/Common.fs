@@ -436,6 +436,21 @@ module ReadOnlyCollection =
       | _ -> ()
     res |> OptionalValue.ofOption
 
+  /// Fold elements of the ReadOnlyCollection
+  let inline fold op init (list:ReadOnlyCollection<'T>) = 
+    let mutable res = init
+    for i in 0 .. list.Count - 1 do res <- op res list.[i]
+    res
+
+  /// Fold elements of the ReadOnlyCollection, skipping over missing values
+  let inline foldOptional op init (list:ReadOnlyCollection<OptionalValue<'T>>) = 
+    let mutable res = init
+    for i in 0 .. list.Count - 1 do 
+      match list.[i] with
+      | OptionalValue.Present v -> res <- op res v
+      | _ -> ()
+    res
+
   /// Returns empty readonly collection
   let empty<'T> = new ReadOnlyCollection<'T>([||])
 
@@ -760,7 +775,7 @@ module Seq =
     if boundary.HasFlag(Boundary.AtBeginning) then
       // Generate one incomplete chunk if it is required
       // and then chunkCount times chunks starting from incompleteSize
-      if not (boundary.HasFlag(Boundary.Skip)) then
+      if not (boundary.HasFlag(Boundary.Skip)) && incompleteSize <> 0L then
         yield DataSegmentKind.Incomplete, 0L, incompleteSize - 1L
       for i in 0L .. chunkCount - 1L do 
         yield DataSegmentKind.Complete, incompleteSize + i * size, incompleteSize + (i + 1L) * size - 1L
@@ -769,7 +784,7 @@ module Seq =
       // and then one incomplete chunk if it is required
       for i in 0L .. chunkCount - 1L do 
         yield DataSegmentKind.Complete, i * size, (i + 1L) * size - 1L
-      if not (boundary.HasFlag(Boundary.Skip)) then
+      if not (boundary.HasFlag(Boundary.Skip)) && incompleteSize <> 0L then
         yield DataSegmentKind.Incomplete, chunkCount * size, length - 1L }
 
   /// Generate floating windows from the input sequence. New floating window is 

@@ -378,9 +378,15 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           // If offset < 0 then skip first -offset values and take matching keys from the start
           (0L, index.KeyCount - 1L + int64 offset),
           (int64 -offset, index.KeyCount - 1L)
-      let orderedOpt = if index.IsOrdered then Some(true) else None
-      let newIndex = LinearRangeIndex(index, indexLo, indexHi) :> IIndex<_>
-      newIndex, Vectors.GetRange(vector, vectorRange)
+
+      // If the shifted start/end is out of range of the index, return empty index & vector
+      if indexLo > indexHi then 
+        let newIndex = LinearIndex(ReadOnlyCollection.empty, indexBuilder, true) :> IIndex<_>
+        newIndex, Vectors.Empty(0L)
+      else
+        let orderedOpt = if index.IsOrdered then Some(true) else None
+        let newIndex = LinearRangeIndex(index, indexLo, indexHi) :> IIndex<_>
+        newIndex, Vectors.GetRange(vector, vectorRange)
 
     /// Union the index with another. For sorted indices, this needs to align the keys;
     /// for unordered, it appends new ones to the end.
@@ -529,7 +535,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
       if hiBound < loBound then
         let newIndex = LinearIndex<_>(ReadOnlyCollection.ofArray [||], builder, true) :> IIndex<_>
-        newIndex, Vectors.Empty
+        newIndex, Vectors.Empty(0L)
       else
         let newIndex = LinearRangeIndex(index, loBound, hiBound) :> IIndex<_>
         let newVector = Vectors.GetRange(vector, (loBound, hiBound))

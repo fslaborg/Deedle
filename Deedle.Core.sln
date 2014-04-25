@@ -1,0 +1,56 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.Tests", "tests\Deedle.Tests\Deedle.Tests.fsproj", "{484A96E6-D217-47EE-974C-5D7B3CFB401E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{22729065-4C30-4E43-A63F-4F3338A03878} = {22729065-4C30-4E43-A63F-4F3338A03878}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deedle.CSharp.Tests", "tests\Deedle.CSharp.Tests\Deedle.CSharp.Tests.csproj", "{B0584275-6E9D-4DB8-A35D-4F37B623F97E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{22729065-4C30-4E43-A63F-4F3338A03878} = {22729065-4C30-4E43-A63F-4F3338A03878}
+	EndProjectSection
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.Documentation.Tests", "tests\Deedle.Documentation.Tests\Deedle.Documentation.Tests.fsproj", "{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{22729065-4C30-4E43-A63F-4F3338A03878} = {22729065-4C30-4E43-A63F-4F3338A03878}
+	EndProjectSection
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.Tests.Console", "tests\Deedle.Tests.Console\Deedle.Tests.Console.fsproj", "{09D8960B-9703-425E-AF0B-FA39525F5B9C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{22729065-4C30-4E43-A63F-4F3338A03878} = {22729065-4C30-4E43-A63F-4F3338A03878}
+	EndProjectSection
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle", "src\Deedle\Deedle.fsproj", "{22729065-4C30-4E43-A63F-4F3338A03878}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{484A96E6-D217-47EE-974C-5D7B3CFB401E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{484A96E6-D217-47EE-974C-5D7B3CFB401E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{484A96E6-D217-47EE-974C-5D7B3CFB401E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{484A96E6-D217-47EE-974C-5D7B3CFB401E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0584275-6E9D-4DB8-A35D-4F37B623F97E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0584275-6E9D-4DB8-A35D-4F37B623F97E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0584275-6E9D-4DB8-A35D-4F37B623F97E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0584275-6E9D-4DB8-A35D-4F37B623F97E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09D8960B-9703-425E-AF0B-FA39525F5B9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09D8960B-9703-425E-AF0B-FA39525F5B9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09D8960B-9703-425E-AF0B-FA39525F5B9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09D8960B-9703-425E-AF0B-FA39525F5B9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22729065-4C30-4E43-A63F-4F3338A03878}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22729065-4C30-4E43-A63F-4F3338A03878}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22729065-4C30-4E43-A63F-4F3338A03878}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22729065-4C30-4E43-A63F-4F3338A03878}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

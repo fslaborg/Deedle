@@ -2,7 +2,7 @@
 #load "../../bin/Deedle.fsx"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #r "../../packages/FsCheck.0.9.1.0/lib/net40-Client/FsCheck.dll"
-#r "../../packages/MathNet.Numerics.3.0.0-alpha8/lib/net40/MathNet.Numerics.dll"
+#r "../../packages/MathNet.Numerics.3.0.0-beta01/lib/net40/MathNet.Numerics.dll"
 #load "../Common/FsUnit.fs"
 #else
 module Deedle.Tests.Stats
@@ -202,27 +202,57 @@ let ``Advanced level statistics works on sample input`` () =
   s1 |> Stats.levelKurt fst |> Stats.sum |> should beWithin (-1.2 +/- 1e-9)
   s1 |> Stats.levelSkew fst |> Stats.sum |> should beWithin (0.0 +/- 1e-9)
 
+[<Test>]
+let ``Moving minimum works with nan values`` () =
+  let s1 = series [ 0 => 1.0; 1 => nan ]
+  Stats.movingMin 1 s1 |> shouldEqual <| series [ 0 => 1.0; 1 => nan ]
+
+// ------------------------------------------------------------------------------------------------
+// Some FsCheck tests
+// ------------------------------------------------------------------------------------------------
+
+open FsCheck
+
+[<Test>]
+let ``Moving minimum using Stats.movingMin is equal to using Series.window`` () = 
+  Check.QuickThrowOnFailure(fun (input:float[]) ->
+    let s = Series.ofValues input
+    for i in 1 .. s.KeyCount - 1 do
+      let actual = s |> Stats.movingMin i
+      let expected = s |> Series.windowSizeInto (i, Boundary.AtBeginning) (fun s -> 
+        if s.Data.ValueCount = 0 then nan else Seq.min s.Data.Values)
+      actual |> shouldEqual expected )
+
+[<Test>]
+let ``Moving maximum using Stats.movingMax is equal to using Series.window`` () = 
+  Check.QuickThrowOnFailure(fun (input:float[]) ->
+    let s = Series.ofValues input
+    for i in 1 .. s.KeyCount - 1 do
+      let actual = s |> Stats.movingMax i
+      let expected = s |> Series.windowSizeInto (i, Boundary.AtBeginning) (fun s -> 
+        if s.Data.ValueCount = 0 then nan else Seq.max s.Data.Values)
+      actual |> shouldEqual expected )
+
 // ------------------------------------------------------------------------------------------------
 // Comparing results with Math.NET
 // ------------------------------------------------------------------------------------------------
 
-open FsCheck
 open MathNet.Numerics.Statistics
 
 [<Test>]
 let ``Mean is the same as in Math.NET``() =
   Check.QuickThrowOnFailure(fun (input:int[]) -> 
-    let d = DescriptiveStatistics(Array.map float input) 
+    let expected = Statistics.Mean(Array.map float input)
     let s = Series.ofValues (Array.map float input)
     if s.ValueCount < 1 then 
       Double.IsNaN(Stats.mean s) |> shouldEqual true
     else 
-      Stats.mean s |> should beWithin (d.Mean +/- 1e-9) )
+      Stats.mean s |> should beWithin (expected +/- 1e-9) )
 
 [<Test>]
 let ``StdDev and Variance is the same as in Math.NET``() =
   Check.QuickThrowOnFailure(fun (input:int[]) -> 
-    let d = DescriptiveStatistics(Array.map float input) 
+    let d = DescriptiveStatistics(Array.map float input)
     let s = Series.ofValues (Array.map float input)
     if s.ValueCount < 2 then 
       Double.IsNaN(Stats.variance s) |> shouldEqual true
@@ -234,30 +264,27 @@ let ``StdDev and Variance is the same as in Math.NET``() =
 [<Test>]
 let ``Skewness is the same as in Math.NET``() =
   Check.QuickThrowOnFailure(fun (input:int[]) -> 
-    let d = DescriptiveStatistics(Array.map float input) 
+    let expected = Statistics.Skewness(Array.map float input)
     let s = Series.ofValues (Array.map float input)
     if s.ValueCount < 3 then 
       Double.IsNaN(Stats.skew s) |> shouldEqual true
     else 
-      Stats.skew s |> should beWithin (d.Skewness +/- 1e-9) )
+      Stats.skew s |> should beWithin (expected +/- 1e-9) )
 
 [<Test>]
 let ``Kurtosis is the same as in Math.NET``() =
   Check.QuickThrowOnFailure(fun (input:int[]) -> 
-    let d = DescriptiveStatistics(Array.map float input) 
+    let expected = Statistics.Kurtosis(Array.map float input)
     let s = Series.ofValues (Array.map float input)
     if s.ValueCount < 4 then 
       Double.IsNaN(Stats.kurt s) |> shouldEqual true
     else 
-      Stats.kurt s |> should beWithin (d.Kurtosis +/- 1e-9) )
+      Stats.kurt s |> should beWithin (expected +/- 1e-9) )
 
 [<Test>]
 let ``Median is the same as in Math.NET``() =
   Check.QuickThrowOnFailure(fun (input:float[]) -> 
     let input = Array.filter (Double.IsNaN >> not) input
-    let expected = Statistics.Median(input) 
+    let expected = Statistics.Median(input)
     let actual = Series.ofValues input |> Stats.median
-    if input |> Seq.forall (fun v -> not (Double.IsInfinity v)) then
-      // Math.NET returns "nan" if there are infinities, 
-      // while Deedle is happy with that
-      actual |> should beWithin (expected +/- 1e-9) )
+    actual |> should beWithin (expected +/- 1e-9) )

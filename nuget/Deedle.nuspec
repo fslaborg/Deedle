@@ -12,10 +12,10 @@
     <summary>@summary@</summary>
     <description>@description@</description>
     <releaseNotes>@releaseNotes@</releaseNotes>
-    <copyright>Copyright 2013</copyright>
+    <copyright>Copyright 2014</copyright>
     <tags>@tags@</tags>
     <dependencies>
-      <dependency id="FSharp.Data" version="1.1.10" />
+      <dependency id="FSharp.Data" version="2.0.5" />
     </dependencies>
   </metadata>
   <files>

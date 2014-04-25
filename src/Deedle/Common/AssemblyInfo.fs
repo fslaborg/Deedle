@@ -4,9 +4,9 @@ open System.Reflection
 [<assembly: AssemblyTitleAttribute("Deedle")>]
 [<assembly: AssemblyProductAttribute("Deedle")>]
 [<assembly: AssemblyDescriptionAttribute("Easy to use .NET library for data manipulation and scientific programming")>]
-[<assembly: AssemblyVersionAttribute("0.9.12")>]
-[<assembly: AssemblyFileVersionAttribute("0.9.12")>]
-()
+[<assembly: AssemblyVersionAttribute("1.0.0")>]
+[<assembly: AssemblyFileVersionAttribute("1.0.0")>]
+do ()
 
 module internal AssemblyVersionInformation =
-    let [<Literal>] Version = "0.9.12"
+    let [<Literal>] Version = "1.0.0"

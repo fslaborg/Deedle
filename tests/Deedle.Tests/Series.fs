@@ -148,6 +148,18 @@ let ``Series.chunkSizeInto with AtEnding boundary works correctly on sample inpu
   actual |> shouldEqual expected
 
 [<Test>]
+let ``Series.chunkSizeInto with AtBeginning boundary works correctly when boundary is empty`` () =
+  let actual = letters 8 |> Series.chunkSizeInto (4, Boundary.AtBeginning) (fun s -> new String(Array.ofSeq s.Data.Values))
+  let expected = series [0 => "ABCD"; 4 => "EFGH" ]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Series.chunkSizeInto with AtEnding boundary works correctly when boundary is empty`` () =
+  let actual = letters 8 |> Series.chunkSizeInto (4, Boundary.AtEnding) (fun s -> new String(Array.ofSeq s.Data.Values))
+  let expected = series [0 => "ABCD"; 4 => "EFGH" ]
+  actual |> shouldEqual expected
+
+[<Test>]
 let ``Series.chunkSizeInto with AtBeginning & Skip boundary works correctly on sample input`` () =
   let actual = letters 10 |> Series.chunkSizeInto (4, Boundary.AtBeginning ||| Boundary.Skip) (fun s -> new String(Array.ofSeq s.Data.Values))
   let expected = series [2 => "CDEF"; 6 => "GHIJ" ]
@@ -210,6 +222,18 @@ let ``Series.diff and SeriesExtensions.Diff work on sample input``() =
   input |> Series.diff 2 |> shouldEqual expectedForward 
   SeriesExtensions.Diff(input, -2) |> shouldEqual expectedBackward
   SeriesExtensions.Diff(input, 2) |> shouldEqual expectedForward
+
+[<Test>]
+let ``Series.diff and Series.shift correctly return empty series`` () =
+  let empty : Series<int, float> = series [] 
+  empty |> Series.diff 1 |> shouldEqual <| series []
+  empty |> Series.shift 1 |> Series.countKeys |> shouldEqual 0
+  empty |> Series.shift -1 |> Series.countKeys |> shouldEqual 0
+  
+  let single = series [ 1 => 1.0 ]
+  single |> Series.shift 2 |> Series.countKeys |> shouldEqual 0
+  single |> Series.shift -2 |> Series.countKeys |> shouldEqual 0
+  single |> Series.diff -2 |> shouldEqual <| series []
 
 [<Test>]
 let ``Series.diff correctly handles missing values``() =  
@@ -331,7 +355,7 @@ let ``Can perform linear interpolation``() =
   i |> shouldEqual e
   
 // ------------------------------------------------------------------------------------------------
-// Sorting
+// Sorting and reindexing
 // ------------------------------------------------------------------------------------------------
 
 [<Test>]
@@ -361,6 +385,16 @@ let ``Can sort series``() =
     if a < b then -1 else if a = b then 0 else 1)
   ord6 |> shouldEqual ascendingMissing
 
+[<Test>]
+let ``Series.indexWith does not leak previous values through the value vector`` () =
+  let s = series [ 1 => 1.0; 2 => 2.0 ]
+  s |> Series.indexWith [1] |> Series.reduceValues (+) |> shouldEqual 1.0
+
+[<Test>]
+let ``Series.indexWith returns series that can be correctly tested for equality`` () =
+  let s = series [ 1 => 1.0; 2 => 2.0 ]
+  s |> Series.indexWith [1] |> shouldEqual <| series [ 1=>1.0 ]
+  s |> Series.indexWith [1;2;3] |> shouldEqual <| series [ 1=>1.0; 2=>2.0; 3=>nan ]
 
 // ------------------------------------------------------------------------------------------------
 // Sampling and lookup
@@ -710,9 +744,6 @@ let ``Can correctly append over 150 series`` () =
   let rnd = new Random(0)
   let values = Array.init 300 (fun _ -> new ResizeArray<_>())
   for i in 0 .. 10000 do values.[rnd.Next(300)].Add( (i, float i) )
-
-  let minimalCount = values |> Seq.map (fun r -> r.Count) |> Seq.min
-  minimalCount |> shouldEqual 21 // Just to check that we have some values
 
   let ss = values |> Array.map series
   let actual = ss.[0].Merge(ss.[1 ..]) 

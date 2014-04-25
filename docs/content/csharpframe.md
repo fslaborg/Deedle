@@ -7,7 +7,8 @@ You can think of data frame as a data table or a spreadsheet. When working with 
 often need to work on individual series (either rows or columns) of the frame, so it is recommended
 to look at the [page discussing series](csharpseries.html) first.
 
-You can also get the samples on this page as a [C# source file](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/csharp/Frame.cs)
+You can also get the samples on this page as a 
+[C# source file](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/csharp/Frame.cs)
 from GitHub and run the samples.
 
 <a name="understanding"></a>
@@ -45,7 +46,7 @@ Let's start with a number of examples showing how to create data frames. The mos
 already have some code that reads the data - perhaps from a database or some other source - and you want 
 to convert it to data frame. Any collection of .NET objects can be turned to data frame using `Frame.FromRecords`:
 
-    [lang=csharp,file=csharp/Frame.cs,key=create-records]
+    [lang=csharp,file=../csharp/Frame.cs,key=create-records]
     
 In this sample, we use simple LINQ construction to generate collection with anonymous types containing properties
 `Key` and `Number`. The `FromRecords` method uses reflection to get public readable properties of the type and
@@ -63,11 +64,11 @@ A row is just a series of type `Series<TColKey, TValue>` so you can use any of t
 [creating series](csharpseries.html#creating). Here, we use `SeriesBuilder<string>` which is the easiest way
 to create series imperatively by adding columns:
 
-    [lang=csharp,file=csharp/Frame.cs,key=create-rows]
+    [lang=csharp,file=../csharp/Frame.cs,key=create-rows]
 
 Finally, you can also easily load data frames from a CSV file. The `Frame.ReadCsv` function
 
-    [lang=csharp,file=csharp/Frame.cs,key=create-csv]
+    [lang=csharp,file=../csharp/Frame.cs,key=create-csv]
 
 The function automatically recognizes the names of columns (if the CSV file does not have headers, you can
 specify optional parameter `hasHeaders:false`). It also infers the type of values, so that you can later work
@@ -97,7 +98,7 @@ For example, for the MSFT and FB stock prices, we want the row index to be `Date
 align the prices based on dates) and we also need to order the rows (because aligning that we'll do in
 the next step is only allowed on ordered frames and series):
 
-    [lang=csharp,file=csharp/Frame.cs,key=index-date]
+    [lang=csharp,file=../csharp/Frame.cs,key=index-date]
 
 The `IndexRows<T>(..)` method takes the name of the column that we want to use as an index and it also takes
 a type parameter `T` that specifies the type of the column (because this is not statically known). We use
@@ -111,7 +112,7 @@ and that is only possible when column keys do not overlap.
 Before looking at the joining, let's look at one more example of loading data from a CSV file. This time,
 the source file has ordered rows, but has poor header names, so we reanme the column names: 
 
-    [lang=csharp,file=csharp/Frame.cs,key=index-cols]
+    [lang=csharp,file=../csharp/Frame.cs,key=index-cols]
 
 The `IndexColumnsWith` method takes a collection of names - here, we use C# array expression to specify
 the names explicitly. Note that the names do not have to be `string` values. It is perfectly fine to use
@@ -139,7 +140,7 @@ The two data frames share the same keys (`DateTime` representing trading days), 
 are different, because we have more historical data for Microsoft. We can perform _inner_ or 
 _outer_ join as follows:
 
-    [lang=csharp,file=csharp/Frame.cs,key=join-inout]
+    [lang=csharp,file=../csharp/Frame.cs,key=join-inout]
 
 When using inner join, the resulting data frame will contain only keys that are available in both
 of the source frames. On the other hand, outer join takes the union of the keys and marks all 
@@ -150,7 +151,7 @@ Another option that is available lets you align (and join) two ordered data fram
 do not exactly match. The following snippet demonstrates this by shifting one of the data frames
 by 1 hour (the keys are always at 12:00am, representing just time)
 
-    [lang=csharp,file=csharp/Frame.cs,key=join-lookup]
+    [lang=csharp,file=../csharp/Frame.cs,key=join-lookup]
 
 After calculating the `msftShift` frame, we first try using just an ordinary left join. This should
 align data from the right frame to the keys in the left data frame (`fb`). However, this produces
@@ -173,7 +174,7 @@ let's look how we can obtain data from the data frame. First, we look at getting
 column - this allows you to get `Series<K, V>` where `K` is the row key and `V` is a type of values
 in the series. When getting a series, you need to specify the required type of values:
 
-    [lang=csharp,file=csharp/Frame.cs,key=series-get]
+    [lang=csharp,file=../csharp/Frame.cs,key=series-get]
 
 Here, we get values as `double` (which matches with the internal representation), however data frame
 will attempt to automatically convert the data to the specified type, so we could get the series as
@@ -183,7 +184,7 @@ The last line calculates the difference between opening and closing price. We ca
 mutations on the original data frame and remove two series we do not use (using `DropSeries`) and
 add the difference as a new series (using `AddSeries`):
 
-    [lang=csharp,file=csharp/Frame.cs,key=series-dropadd]
+    [lang=csharp,file=../csharp/Frame.cs,key=series-dropadd]
 
 For more information about working with series, see [tutorial on working with series](csharpseries.html).
 Working with series is very common, so the data frame provides the operations discussed above. However,
@@ -192,7 +193,7 @@ properties.
 
 The following example shows different options for getting row representing a specified date:
 
-    [lang=csharp,file=csharp/Frame.cs,key=series-rows]
+    [lang=csharp,file=../csharp/Frame.cs,key=series-rows]
 
 We start by using indexer on `joinIn.Rows`. This can be used when the exact key (here January 4)
 exists in the data frame. The result is a series containing `object` values, because the contents
@@ -219,7 +220,7 @@ frame or filter the contents. The `Select` operation can be used when you need t
 operation that is not directly available on series. For example, to perform point-wise comparison
 of Microsoft and Facebook stock prices, you can write:
 
-    [lang=csharp,file=csharp/Frame.cs,key=linq-select]
+    [lang=csharp,file=../csharp/Frame.cs,key=linq-select]
 
 The result is a series of type `Series<DateTime, bool>` - the return type is inferred to be `bool`
 (because that's what the lambda function returns) and the `Select` method typically returns just
@@ -233,7 +234,7 @@ If we wanted to find only the days when Microsoft stock prices were more expensi
 stock prices (and create a new frame containing such data), we can use the other familiar LINQ
 method, called `Where`:
 
-    [lang=csharp,file=csharp/Frame.cs,key=linq-where]
+    [lang=csharp,file=../csharp/Frame.cs,key=linq-where]
 
 The result of the filtering is a series containing individual rows. Such nested series can be turned
 back into data frame using `Frame.FromRows`. Now you could use the `RowCount` property to compare
@@ -248,7 +249,7 @@ similar to the methods for calculating with series [discussed in another article
 We look at a single example that calculates daily returns of Microsoft stock prices and then applies
 rounding to all values in the resulting data frame.
 
-    [lang=csharp,file=csharp/Frame.cs,key=ops-returns]
+    [lang=csharp,file=../csharp/Frame.cs,key=ops-returns]
 
 To calculate daily returns, we need to subtract the price on previous day from the price on the
 current day. This is done by using the `Diff` extension method (another option is to use `Shift` 

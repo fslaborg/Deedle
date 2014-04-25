@@ -322,7 +322,7 @@ open Deedle.Vectors.ArrayVector
 /// in a database, but only loads data that are actually needed. For more information
 /// see the [lazy data loading tutorial](../lazysource.html).
 /// 
-/// ### Example
+/// ## Example
 /// 
 /// Assuming we have a function `generate lo hi` that generates data in the specified
 /// `DateTime` range, we can create lazy series as follows:

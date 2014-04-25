@@ -1,7 +1,7 @@
 ﻿(*** hide ***)
 #load "../../bin/Deedle.fsx"
-#load "../../packages/FSharp.Charting.0.87/FSharp.Charting.fsx"
-#r "../../packages/FSharp.Data.1.1.10/lib/net40/FSharp.Data.dll"
+#load "../../packages/FSharp.Charting.0.90.6/FSharp.Charting.fsx"
+#r "../../packages/FSharp.Data.2.0.5/lib/net40/FSharp.Data.dll"
 open System
 open System.IO
 open FSharp.Data
@@ -11,14 +11,14 @@ open FSharp.Charting
 let root = __SOURCE_DIRECTORY__ + "/data/"
 
 (**
-Data frame features
-===================
+Working with data frames in F#
+==============================
 
 In this section, we look at various features of the F# data frame library (using both
 `Series` and `Frame` types and modules). Feel free to jump to the section you are interested
 in, but note that some sections refer back to values built in "Creating & loading".
 
-You can also get this page as an [F# script file](https://github.com/BlueMountainCapital/Deedle/blob/master/samples/features.fsx)
+You can also get this page as an [F# script file](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/frame.fsx)
 from GitHub and run the samples interactively.
 
 <a name="creating"></a>
@@ -39,7 +39,7 @@ let titanic = Frame.ReadCsv(root + "Titanic.csv")
 let msft = 
   Frame.ReadCsv(root + "stocks/msft.csv") 
   |> Frame.indexRowsDate "Date"
-  |> Frame.orderRows
+  |> Frame.sortRowsByKey
 
 // Specify column separator
 let air = Frame.ReadCsv(root + "AirQuality.csv", separators=";")
@@ -147,14 +147,7 @@ let oecd = loadRegion wb.Regions.``OECD members``
 // Join and convert to in billions of USD
 let world = eu.Join(oecd) / 1e9
 
-// [fsi:val world : Frame<int,(string * string)> =]
-// [fsi:        Euro area                OECD members  ]
-// [fsi:        Austria  Estonia   (...) Canada  Chile   (...)]
-// [fsi:1960 -> 6.592    <missing>       41.093  4.2117]
-// [fsi:1961 -> 7.311    <missing>       40.767  4.7053]
-// [fsi::       ...]
-// [fsi:2011 -> 417.6    22.15           1777.7  250.99]
-// [fsi:2012 -> 399.6    21.85           1821.4  268.18]
+(*** include-value:(round (world*100.0))/100.0 ***)
 
 (**
 The loaded data look something like the sample above. As you can see, the columns
@@ -171,18 +164,16 @@ For this reason, the data frame supports _expansion_. Given a data frame with so
 in a column, you can use `Frame.expandCols` to create a new frame that contains properties
 of the object as new columns. For example: 
 *)
+
+(*** define-output:ppl ***)
 // Create frame with single column 'People'
 let peopleNested = 
   [ "People" => Series.ofValues peopleRecds ] |> frame
 
 // Expand the 'People' column
 peopleNested |> Frame.expandCols ["People"]
-// [fsi:val it : Frame<int,string> =]
-// [fsi:     People.Name People.Age People.Countries   ]
-// [fsi:0 -> Joe         51         [UK; US; UK]       ]
-// [fsi:1 -> Tomas       28         [CZ; UK; US; ... ] ]
-// [fsi:2 -> Eve         2          [FR]               ]
-// [fsi:3 -> Suzanne     15         [US]   ]
+
+(*** include-it:ppl ***)
 
 (**
 As you can see, the operation generates columns based on the properties of the original 
@@ -324,13 +315,13 @@ syntax.
 
 The series type is _immutable_ and so it is not possible to add new values to a series or 
 change the values stored in an existing series. However, you can use operations that return
-a new series as the result such as `Append`.
+a new series as the result such as `Merge`.
 *)
 
 // Create series with more value
 let more = series [ "John" => 48.0 ]
 // Create a new, concatenated series
-people?Age.Append(more)
+people?Age.Merge(more)
 
 (**
 Data frame allows a very limited form of mutation. It is possible to add new series (as a column)
@@ -348,7 +339,7 @@ people?Siblings <- [0; 2; 1; 3]
 
 // Replace existing series with new values
 // (Equivalent to people?Siblings <- ...)
-people.ReplaceSeries("Siblings", [3; 2; 1; 0])
+people.ReplaceColumn("Siblings", [3; 2; 1; 0])
 
 (**
 Finally, it is also possible to append one data frame or a single row to an existing data
@@ -363,7 +354,7 @@ let newRow =
     "Countries" => box ["US"]; "Siblings" => box 5 ]
   |> series
 // Create a new data frame, containing the new series
-people.Append("Jim", newRow)
+people.Merge("Jim", newRow)
 
 // Another option is to use mutable SeriesBuilder
 let otherRow = SeriesBuilder<string>()
@@ -372,7 +363,7 @@ otherRow?Age <- 51
 otherRow?Countries <- ["US"]
 otherRow?Siblings <- 5
 // The Series property returns the built series
-people.Append("Jim", otherRow.Series)
+people.Merge("Jim", otherRow.Series)
 
 
 (**
@@ -414,7 +405,7 @@ are also available as members, for example via `ages.TryGet`):
 *)
 
 // Fails when key is not present
-ages |> Series.get "John"
+try ages |> Series.get "John" with _ -> nan
 // Returns 'None' when key is not present
 ages |> Series.tryGet "John"
 // Returns series with missing value for 'John'
@@ -443,11 +434,11 @@ We use MSFT stock prices [from earlier example](#creating-csv):
 let opens = msft?Open
 
 // Fails. The key is not available in the series
-opens.[DateTime(2013, 1, 1)]
+try opens.[DateTime(2013, 1, 1)] with e -> nan
 // Works. Find value for the nearest greater key
-opens.Get(DateTime(2013, 1, 1), Lookup.NearestGreater)
+opens.Get(DateTime(2013, 1, 1), Lookup.ExactOrSmaller)
 // Works. Find value for the nearest smaler key
-opens.Get(DateTime(2013, 1, 1), Lookup.NearestSmaller)
+opens.Get(DateTime(2013, 1, 1), Lookup.ExactOrSmaller)
 
 (**
 When using instance members, we can use `Get` which has an overload taking
@@ -455,22 +446,22 @@ When using instance members, we can use `Get` which has an overload taking
 also obtain values for a sequence of keys:
 *)
 // Find value for the nearest greater key
-opens |> Series.lookup (DateTime(2013, 1, 1)) Lookup.NearestGreater
+opens |> Series.lookup (DateTime(2013, 1, 1)) Lookup.ExactOrGreater
 
 // Get first price for each month in 2012
 let dates = [ for m in 1 .. 12 -> DateTime(2012, m, 1) ]
-opens |> Series.lookupAll dates Lookup.NearestGreater
+opens |> Series.lookupAll dates Lookup.ExactOrGreater
 
 (**
 With ordered series, we can use slicing to get a sub-range of a series:
 *)
+
+(*** define-output:opens ***)
 opens.[DateTime(2013, 1, 1) .. DateTime(2013, 1, 31)]
-// [fsi:val it : Series<DateTime,float> =]
-// [fsi:  1/2/2013  -> 27.25 ]
-// [fsi:  1/3/2013  -> 27.63 ]
-// [fsi:  ...]
-// [fsi:  1/30/2013 -> 28.01 ]
-// [fsi:  1/31/2013 -> 27.79 ]
+|> Series.mapKeys (fun k -> k.ToShortDateString())
+
+(*** include-it:opens ***)
+
 (** 
 The slicing works even if the keys are not available in the series. The lookup
 automatically uses nearest greater lower bound and nearest smaller upper bound
@@ -485,7 +476,7 @@ Grouping data
 
 Grouping of data can be performed on both unordered and ordered series and frames.
 For ordered series, more options (such as floating window or grouping of consecutive
-elements) are available - these can be found in the [time series tutorial](timeseries.html).
+elements) are available - these can be found in the [time series tutorial](series.html).
 There are essentially two options: 
 
  - You can group series of any values and get a series of series (representing individual 
@@ -534,16 +525,13 @@ As a final example, let's say that we want to build a data frame that contains i
 people (as rows), all countries that appear in someone's travel list (as columns). 
 The frame contains the number of visits to each country by each person:
 *)
+(*** define-output: trav ***)
 travels
 |> Series.mapValues (Seq.countBy id >> series)
 |> Frame.ofRows
 |> Frame.fillMissingWith 0
-// [fsi:val it : Frame<string,string> =  ]
-// [fsi:             CZ FR UK US ]
-// [fsi:  Joe     -> 0  0  2  1  ]
-// [fsi:  Tomas   -> 2  0  1  1  ]
-// [fsi:  Eve     -> 0  1  0  0  ]
-// [fsi:  Suzanne -> 0  0  0  1  ]
+
+(*** include-it: trav ***)
 
 (**
 The problem can be solved just using `Series.mapValues`, together with standard F#
@@ -643,11 +631,14 @@ As our last example, we look at various ways of aggregating the groups:
 *)
 // Get average ages in each group
 byClassAndPort?Age
-|> Series.meanLevel Pair.get1And2Of3
+|> Stats.levelMean Pair.get1And2Of3
 
 // Averages for all numeric columns
 byClassAndPort
-|> Frame.meanLevel Pair.get1And2Of3
+|> Frame.getNumericColumns
+|> Series.dropMissing
+|> Series.mapValues (Stats.levelMean Pair.get1And2Of3)
+|> Frame.ofColumns
 
 // Count number of survivors in each group
 byClassAndPort.GetColumn<bool>("Survived")
@@ -655,7 +646,12 @@ byClassAndPort.GetColumn<bool>("Survived")
 |> Frame.ofRows
 
 (**
-The last snippet is more interesting. We get the "Survived" column (which 
+The second snippet combines a number of useful functions. It uses `Frame.getNumericColumns`
+to obtain just numerical columns from a data frame. Then it drops the non-numerical columns
+using `Series.dropMissing`. Then we use `Series.mapValues` to apply the averaging operation
+to all columns.
+
+The last snippet is alo interesting. We get the "Survived" column (which 
 contains Boolean values) and we aggregate each group using a specified function.
 The function is composed from three components - it first gets the values in the
 group, counts them (to get a number of `true` and `false` values) and then creates
@@ -687,6 +683,8 @@ For example, given the titanic data set that [we loaded earlier](#creating-csv) 
 explored in the previous section, we might want to compare the survival rate for males 
 and females. The pivot table makes this possible using just a single call:
 *)
+
+(*** define-output:pivot1 ***)
 titanic 
 |> Frame.pivotTable 
     // Returns a new row key
@@ -701,30 +699,32 @@ The first two specify functions that, given a row in the original frame, return 
 row key and column key, respectively. In the above example, the new row key is
 the `Sex` value and the new column key is whether a person survived or not. As a result
 we get the following two by two table:
+*)
 
-              False True
-    male   -> 468   109      
-    female -> 81    233      
+(*** include-it:pivot1 ***)
 
+(**
 The pivot table operation takes the source frame, partitions the data (rows) based on the 
 new row and column keys and then aggregates each frame using the specified aggregation. In the
 above example, we used `Frame.countRows` to simply return number of people in each sub-group.
 However, we could easily calculate other statistic - such as average age:
 *) 
+
+(*** define-output:pivot2 ***)
 titanic 
 |> Frame.pivotTable 
     (fun k r -> r.GetAs<string>("Sex")) 
     (fun k r -> r.GetAs<bool>("Survived")) 
-    (fun frame -> frame?Age |> Series.mean)
+    (fun frame -> frame?Age |> Stats.mean)
 |> round
 (**
 The results suggest that older males were less likely survive than younger males, but 
 older females were more likely to survive then younger females:
+*)
 
-              False True 
-    male   -> 32    27   
-    female -> 25    29   
+(*** include-it:pivot2 ***)
 
+(**
 <a name="indexing"></a>
 Hierarchical indexing
 ---------------------
@@ -790,7 +790,6 @@ let decades = euro |> Frame.groupRowsUsing (fun k _ ->
 // [fsi:  2010s 2010 -> 376.8    18.84 ]
 // [fsi:        2011 -> 417.6    22.15 ]
 // [fsi:        2012 -> 399.6    21.85 ]
-
 (**
 Now that we have a data frame with hierarchical index, we can select data
 in a single group, such as 1990s. The result is a data frame of the same type.
@@ -805,13 +804,17 @@ apply aggregation to the entire data set:
 *)
 
 // Calculate means per decades for Slovakia
-decades?``Slovak Republic`` |> Series.meanLevel fst
+decades?``Slovak Republic`` |> Stats.levelMean fst
 
 // Calculate means per decateds for all countries
-decades |> Frame.meanLevel fst
+decades
+|> Frame.getNumericColumns 
+|> Series.mapValues (Stats.levelMean fst)
+|> Frame.ofColumns
 
-// Calculate means per decades in USD
-decades * 1.0e9 |> Frame.meanLevel fst
+// Calculate standard deviation per decades in USD
+decades?Belgium * 1.0e9 
+|> Stats.levelStdDev fst
 
 (**
 So far, we were working with data frames that only had one hierarchical index. However,
@@ -820,8 +823,9 @@ snippet groups countries by their average GDP (in addition to grouping rows by d
 *)
 
 // Group countries by comparing average GDP with $500bn
-let byGDP = decades |> Frame.groupColsUsing (fun k v -> 
-  v.As<float>() |> Series.mean > 500.0)
+let byGDP = 
+  decades |> Frame.transpose |> Frame.groupRowsUsing (fun k v -> 
+    v.As<float>() |> Stats.mean > 500.0)
 (**
 You can see (by hovering over `byGDP`) that the two hierarchies are captured in the type.
 The column key is `bool * string` (rich? and name) and the row key is `string * int` 
@@ -829,21 +833,8 @@ The column key is `bool * string` (rich? and name) and the row key is `string * 
 Italy and the other containing remaining countries.
 
 The aggregations are only (directly) supported on rows, but we can use `Frame.transpose`
-to switch between rows and columns. The following calculates the mean for each group
-of countries and for each decade:
-*)
+to switch between rows and columns. 
 
-// Mean by decade and then mean by country group
-byGDP
-|> Frame.meanLevel fst
-|> Frame.transpose
-|> Frame.meanLevel fst
-// [fsi:val it : Frame<bool,string> =]
-// [fsi:           1960s  1970s  ... 2010s]
-// [fsi:  False -> 10.45  34.37      306.89]
-// [fsi:  True  -> 82.74  335.71     2719.26]
-
-(**
 <a name="missing"></a>
 Handling missing values
 -----------------------
@@ -853,14 +844,17 @@ contain missing values. When constructing series or frames from data, certain va
 are automatically treated as "missing values". This includes `Double.NaN`, `null` values
 for reference types and for nullable types:
 *)
+(*** define-output:misv1 ***)
 Series.ofValues [ Double.NaN; 1.0; 3.14 ]
-// [fsi:val it : Series<int,float> =]
-// [fsi:  0 -> <missing> ]
-// [fsi:  1 -> 1        ] 
-// [fsi:  2 -> 3.14    ]
-let nulls = 
-  [ Nullable(1); Nullable(); Nullable(3) ]
-  |> Series.ofValues
+
+(*** include-it:misv1 ***)
+
+(*** define-output:misv2 ***)
+[ Nullable(1); Nullable(); Nullable(3) ]
+|> Series.ofValues
+
+(*** include-it:misv2 ***)
+
 (**
 Missing values are automatically skipped when performing statistical computations such
 as `Series.mean`. They are also ignored by projections and filtering, including
@@ -910,8 +904,8 @@ at all):
 // Fill missing values using interpolation function
 ozone |> Series.fillMissingUsing (fun k -> 
   // Get previous and next values
-  let prev = ozone.TryGet(k, Lookup.NearestSmaller)
-  let next = ozone.TryGet(k, Lookup.NearestGreater)
+  let prev = ozone.TryGet(k, Lookup.ExactOrSmaller)
+  let next = ozone.TryGet(k, Lookup.ExactOrGreater)
   // Pattern match to check which values were available
   match prev, next with 
   | OptionalValue.Present(p), OptionalValue.Present(n) -> 
