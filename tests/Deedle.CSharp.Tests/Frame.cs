@@ -31,6 +31,59 @@ namespace Deedle.CSharp.Tests
 		}
 	}
 
+  /* ----------------------------------------------------------------------------------
+   * Creating frames and getting frame data
+   * --------------------------------------------------------------------------------*/
+  public class FrameCreateAccessTests
+  {
+    [Test]
+    public static void CanCreateFrameFromRecords()
+    {
+      var df = Frame.FromRecords(new[] {
+        new { A = 1, B = "Test" },
+        new { A = 2, B = "Another"}
+      });
+      var firstRow = df.Rows[0].Values.ToArray();
+      Assert.AreEqual(new object[] { 1, "Test" }, firstRow);
+      Assert.AreEqual(new[] { "A", "B" }, df.ColumnKeys.ToArray());
+    }
+
+    [Test]
+    public static void CanRoundtripWithArray2D()
+    {
+      var arr = new double[200, 500];
+      for (var r = 0; r < 200; r++)
+        for (var c = 0; c < 500; c++)
+          arr[r, c] = (r + c == 10) ? Double.NaN : (r + c);
+
+      var arr2 = Frame.FromArray2D(arr).ToArray2D<double>();
+      Assert.AreEqual(arr, arr2);
+    }
+
+    [Test]
+    public static void CannotGetDefaultValueOfBoolean()
+    {
+      var df = Frame.FromColumns(new[] {
+        KeyValue.Create(1, (new SeriesBuilder<string>() { { "A", true } }).Series),
+        KeyValue.Create(1, (new SeriesBuilder<string>() { { "B", true } }).Series)
+      });
+      Assert.Throws<InvalidOperationException>(() =>
+        df.ToArray2D<bool>());
+    }
+
+    [Test]
+    public static void CanGetDataAsBooleanWithDefault()
+    {
+      var df = Frame.FromColumns(new[] {
+        KeyValue.Create(1, (new SeriesBuilder<string>() { { "A", true } }).Series),
+        KeyValue.Create(1, (new SeriesBuilder<string>() { { "B", true } }).Series)
+      });
+      var data = df.ToArray2D<bool>(true);
+      var bools = data.OfType<bool>().ToArray();
+      Assert.AreEqual(new[] { true, true, true, true }, bools);
+    }
+  }
+
 	/* ----------------------------------------------------------------------------------
 	 * Test data frame dynamic 
 	 * --------------------------------------------------------------------------------*/
@@ -47,7 +100,7 @@ namespace Deedle.CSharp.Tests
 				}.Frame;
 				dynamic dfd = df;
 				dfd.Test1 = new[] { 1, 2 };
-				dfd.Test2 = df.GetSeries<double>("Test");
+				dfd.Test2 = df.GetColumn<double>("Test");
 				dfd.Test3 = new Dictionary<int, string> { { 1, "A" }, { 2, "B" } };
 				var row = df.Rows[2];
 
@@ -59,7 +112,7 @@ namespace Deedle.CSharp.Tests
 		}
 
 		[Test]
-		public static void CanGetSeriesDynamically()
+		public static void CanGetColumnDynamically()
 		{
 			for (int i = 1; i <= 2; i++) // Run this twice, to check that instance references are right
 			{

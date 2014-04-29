@@ -44,13 +44,11 @@ type ISeries<'K when 'K : equality> =
 and
   Series<'K, 'V when 'K : equality>
     ( index:IIndex<'K>, vector:IVector<'V>,
-      vectorBuilder : IVectorBuilder, indexBuilder : IIndexBuilder ) as this =
+      vectorBuilder : IVectorBuilder, indexBuilder : IIndexBuilder ) =
   
-  /// Lazy value to hold the number of elements (so that we do not recalculate this all the time)
-  let valueCount = Lazy.Create (fun () -> 
-    let mutable count = 0
-    for _, a in index.Mappings do if vector.GetValue(a).HasValue then count <- count + 1
-    count )
+  /// Value to hold the number of elements (so that we do not recalculate this all the time)
+  /// (This is calculated on first access; we do not use Lazy<T> to avoid allocations)
+  let mutable valueCount = -1 
 
   /// Returns the vector builder associated with this series
   member internal x.VectorBuilder = vectorBuilder
@@ -92,6 +90,15 @@ and
       let v = vector.GetValue(a) 
       if v.HasValue then yield v.Value }
 
+  /// Returns a collection of values, including possibly missing values. Note that 
+  /// the length of this sequence matches the `Keys` sequence.
+  ///
+  /// [category:Series data]
+  member x.ValuesAll = seq { 
+    for _, a in index.Mappings do 
+      let v = vector.GetValue(a) 
+      yield v.Value }
+
   /// Returns a collection of observations that form this series. Note that this property
   /// skips over all missing (or NaN) values. Observations are returned as `KeyValuePair<K, V>` 
   /// objects. For an F# alternative that uses tuples, see `Series.observations`.
@@ -101,6 +108,17 @@ and
     for k, a in index.Mappings do
       let v = vector.GetValue(a)
       if v.HasValue then yield KeyValuePair(k, v.Value) }
+
+  /// Returns a collection of observations that form this series. Note that this property
+  /// includes all missing (or NaN) values. Observations are returned as 
+  /// `KeyValuePair<K, OptionalValue<V>>` objects. For an F# alternative that uses tuples, 
+  /// see `Series.observationsAll`.
+  ///
+  /// [category:Series data]
+  member x.ObservationsAll = seq {
+    for k, a in index.Mappings do
+      let v = vector.GetValue(a)
+      yield KeyValuePair(k, v) }
 
   /// 
   ///
@@ -125,7 +143,15 @@ and
   /// `Double.NaN`, or those that are missing due to outer join etc.).
   ///
   /// [category:Series data]
-  member x.ValueCount = valueCount.Value
+  member x.ValueCount = 
+    if valueCount = -1 then
+      // In concurrent access, we may run this multiple times, 
+      // but that's not a big deal as there are no race conditions
+      let mutable count = 0
+      for _, a in index.Mappings do 
+        if vector.GetValue(a).HasValue then count <- count + 1
+      valueCount <- count
+    valueCount
 
   // ----------------------------------------------------------------------------------------------
   // Accessors and slicing
@@ -188,7 +214,7 @@ and
   ///
   /// [category:Accessors and slicing]
   member series.GetItems(keys, lookup) =    
-    let newIndex = indexBuilder.Create<_>(keys, None)
+    let newIndex = indexBuilder.Create<_>((keys:seq<_>), None)
     let newVector = vectorBuilder.Build(indexBuilder.Reindex(index, newIndex, lookup, Vectors.Return 0, fun addr -> series.Vector.GetValue(addr).HasValue), [| vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
@@ -230,16 +256,39 @@ and
   /// Attempts to get a value at the specified 'key'
   ///
   /// [category:Accessors and slicing]
-  member x.TryGetObservation(key) = x.TryGetObservation(key, Lookup.Exact)
+  member x.TryGetObservation(key) = 
+    let addr = index.Locate(key) 
+    if addr = Address.Invalid then OptionalValue.Missing 
+    else
+      let value = vector.GetValue(addr) 
+      OptionalValue(KeyValuePair(key, value))
+
   ///
   /// [category:Accessors and slicing]
-  member x.GetObservation(key) = x.GetObservation(key, Lookup.Exact)
+  member x.GetObservation(key) = 
+    let addr = index.Locate(key) 
+    if addr = Address.Invalid then keyNotFound key
+    let value = vector.GetValue(addr) 
+    if not value.HasValue then missingVal key
+    KeyValuePair(key, value.Value)
+
   ///
   /// [category:Accessors and slicing]
-  member x.TryGet(key) = x.TryGet(key, Lookup.Exact)
+  member x.TryGet(key) = 
+    let addr = x.Index.Locate(key) 
+    if addr = Address.Invalid then OptionalValue.Missing 
+    else x.Vector.GetValue(addr)
+
   ///
   /// [category:Accessors and slicing]
-  member x.Get(key) = x.Get(key, Lookup.Exact)
+  member x.Get(key) = 
+    let addr = x.Index.Locate(key) 
+    if addr = Address.Invalid then keyNotFound key
+    else 
+      match x.Vector.GetValue(addr) with
+      | OptionalValue.Missing   -> missingVal key
+      | OptionalValue.Present v -> v
+
   ///
   /// [category:Accessors and slicing]
   member x.TryGetAt(index) = 
@@ -337,25 +386,82 @@ and
     let newVector = vector.DataSequence |> Array.ofSeq |> Array.rev
     Series(Index.ofKeys newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
 
+  /// [category:Projection and filtering]
+  member x.ScanValues(foldFunc:System.Func<'S,'V,'S>, init) =   
+    let newVector = [| 
+      let accum = ref init
+      for v in vector.DataSequence ->
+        if v.HasValue then
+          accum := foldFunc.Invoke(!accum, v.Value)
+          OptionalValue(!accum)
+        else
+          OptionalValue.Missing |] 
+
+    Series(index, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
+
+  /// [category:Projection and filtering]
+  member x.ScanAllValues(foldFunc:System.Func<OptionalValue<'S>,OptionalValue<'V>,OptionalValue<'S>>, init) =   
+    let newVector = vector.DataSequence |> Seq.scan (fun x y -> foldFunc.Invoke(x, y)) init |> Seq.skip 1 |> Seq.toArray
+    Series(index, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
+
+  /// Returns the current series with the same index but with values missing wherever the 
+  /// corresponding key exists in the other series index with an associated missing value.
+  ///
+  /// [category:Projection and filtering]
+  member x.WithMissingFrom(otherSeries: Series<'K, _>) =
+    let newVec = x.ObservationsAll |> Seq.map (fun obs -> 
+      match otherSeries.TryGetObservation(obs.Key) with
+      | OptionalValue.Present kvp -> if kvp.Value.HasValue then obs.Value else OptionalValue.Missing
+      | _                         -> obs.Value)
+    Series(x.Index, vectorBuilder.CreateMissing(Array.ofSeq newVec), vectorBuilder, indexBuilder)
+
   // ----------------------------------------------------------------------------------------------
-  // Appending, joining etc
+  // Merging, joining etc
   // ----------------------------------------------------------------------------------------------
 
-  /// [category:Appending, joining and zipping]
-  member series.Append(otherSeries:Series<'K, 'V>) =
+  /// [category:Merging, joining and zipping]
+  member series.Merge(otherSeries:Series<'K, 'V>) =
     // Append the row indices and get transformation that combines two column vectors
     // (LeftOrRight - specifies that when column exist in both data frames then fail)
     let newIndex, cmd = 
-      indexBuilder.Append( (index, Vectors.Return 0), (otherSeries.Index, Vectors.Return 1), 
-                           VectorValueTransform.LeftOrRight )
+      indexBuilder.Merge( [(index, Vectors.Return 0); (otherSeries.Index, Vectors.Return 1)], 
+                           VectorValueListTransform.AtMostOne )
     let newVector = vectorBuilder.Build(cmd, [| series.Vector; otherSeries.Vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
-  /// [category:Appending, joining and zipping]
+  /// [category:Merging, joining and zipping]
+  member series.Merge(otherSeries:seq<Series<'K, 'V>>) =
+    series.Merge(Array.ofSeq otherSeries)
+
+  /// [category:Merging, joining and zipping]
+  member series.Merge([<ParamArray>] otherSeries:Series<'K, 'V>[]) =
+    // Append the row indices and get transformation that combines two column vectors
+    // (LeftOrRight - specifies that when column exist in both data frames then fail)
+    let constrs = otherSeries |> Array.mapi (fun i s -> s.Index, Vectors.Return(i + 1)) |> List.ofSeq
+    let vectors = otherSeries |> Array.map (fun s -> s.Vector)
+
+    let newIndex, cmd = 
+      indexBuilder.Merge( (index, Vectors.Return 0)::constrs, VectorValueListTransform.AtMostOne )
+    let newVector = vectorBuilder.Build(cmd, [| yield series.Vector; yield! vectors |])
+    Series(newIndex, newVector, vectorBuilder, indexBuilder)
+
+  /// [category:Merging, joining and zipping]
+  member series.Merge(another:Series<'K, 'V>, behavior) = 
+    let newIndex, vec1, vec2 = indexBuilder.Union( (series.Index, Vectors.Return 0), (another.Index, Vectors.Return 1) )
+    let transform = 
+      match behavior with
+      | UnionBehavior.PreferRight -> VectorHelpers.VectorValueTransform.RightIfAvailable
+      | UnionBehavior.Exclusive -> VectorHelpers.VectorValueTransform.LeftOrRight
+      | _ -> VectorHelpers.VectorValueTransform.LeftIfAvailable
+    let vecCmd = Vectors.Combine(vec1, vec2, transform)
+    let newVec = vectorBuilder.Build(vecCmd, [| series.Vector; another.Vector |])
+    Series(newIndex, newVec, vectorBuilder, indexBuilder)
+
+  /// [category:Merging, joining and zipping]
   member series.Zip<'V2>(otherSeries:Series<'K, 'V2>) =
     series.Zip(otherSeries, JoinKind.Outer, Lookup.Exact)
 
-  /// [category:Appending, joining and zipping]
+  /// [category:Merging, joining and zipping]
   member series.Zip<'V2>(otherSeries:Series<'K, 'V2>, kind) =
     series.Zip(otherSeries, kind, Lookup.Exact)
 
@@ -369,33 +475,17 @@ and
 
     newIndex, lVec, rVec
 
-  /// [category:Appending, joining and zipping]
+  /// [category:Merging, joining and zipping]
   member series.Zip<'V2>(otherSeries:Series<'K, 'V2>, kind, lookup) : Series<'K, 'V opt * 'V2 opt> =
     let newIndex, lVec, rVec = series.ZipHelper(otherSeries, kind, lookup)
     let zipv = rVec.DataSequence |> Seq.zip lVec.DataSequence |> Vector.ofValues
     Series(newIndex, zipv, vectorBuilder, indexBuilder)
 
-  /// [category:Appending, joining and zipping]
+  /// [category:Merging, joining and zipping]
   member series.ZipInner<'V2>(otherSeries:Series<'K, 'V2>) : Series<'K, 'V * 'V2> =
     let newIndex, lVec, rVec = series.ZipHelper(otherSeries, JoinKind.Inner, Lookup.Exact)
     let zipv = rVec.Data.Values |> Seq.zip lVec.Data.Values |> Vector.ofValues
     Series(newIndex, zipv, vectorBuilder, indexBuilder)
-
-  /// [category:Appending, joining and zipping]
-  member series.Union(another:Series<'K, 'V>) = 
-    series.Union(another, UnionBehavior.PreferLeft)
-  
-  /// [category:Appending, joining and zipping]
-  member series.Union(another:Series<'K, 'V>, behavior) = 
-    let newIndex, vec1, vec2 = indexBuilder.Union( (series.Index, Vectors.Return 0), (another.Index, Vectors.Return 1) )
-    let transform = 
-      match behavior with
-      | UnionBehavior.PreferRight -> VectorHelpers.VectorValueTransform.RightIfAvailable
-      | UnionBehavior.Exclusive -> VectorHelpers.VectorValueTransform.LeftOrRight
-      | _ -> VectorHelpers.VectorValueTransform.LeftIfAvailable
-    let vecCmd = Vectors.Combine(vec1, vec2, transform)
-    let newVec = vectorBuilder.Build(vecCmd, [| series.Vector; another.Vector |])
-    Series(newIndex, newVec, vectorBuilder, indexBuilder)
 
   // ----------------------------------------------------------------------------------------------
   // Resampling
@@ -430,9 +520,8 @@ and
         ( x.Index, keys, direction, Vectors.Return 0, 
           (fun (key, (index, cmd)) -> 
               let window = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
-              OptionalValue(valueSelector.Invoke(key, window))),
-          (fun (key, (index, cmd)) -> 
-              keySelector.Invoke(key, Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder))) )
+              let newKey = keySelector.Invoke(key, window)
+              newKey, OptionalValue(valueSelector.Invoke(newKey, window))) )
     Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   /// Resample the series based on a provided collection of keys. The values of the series
@@ -595,20 +684,16 @@ and
     Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   /// Groups a series (ordered or unordered) using the specified key selector (`keySelector`) 
-  /// and then aggregates each group into a single value, returned in the resulting series,
-  /// using the provided `valueSelector` function.
   ///
   /// ## Parameters
   ///  - `keySelector` - Generates a new key that is used for aggregation, based on the original 
   ///    key and value. The new key must support equality testing.
-  ///  - `valueSelector` - A value selector function that is called to aggregate 
-  ///    each group of collected elements.
   ///
   /// [category:Windowing, chunking and grouping]
   member x.GroupBy(keySelector:Func<_, _>) =
     let cmd = 
       indexBuilder.GroupBy(
-        x.Index, 
+        x.Index,
         (fun key -> 
           x.TryGet(key) 
           |> OptionalValue.map (fun v -> 
@@ -619,6 +704,28 @@ and
     let newGroups = cmd |> Seq.map snd |> Seq.map (fun sc -> 
         Series(fst sc, vectorBuilder.Build(snd sc, [| x.Vector |]), vectorBuilder, indexBuilder))
     Series<'TNewKey, _>(newIndex, Vector.ofValues newGroups, vectorBuilder, indexBuilder)
+
+  /// Interpolates an ordered series given a new sequence of keys. The function iterates through
+  /// each new key, and invokes a function on the current key, the nearest smaller and larger valid 
+  /// observations from the series argument. The function must return a new valid float. 
+  ///
+  /// ## Parameters
+  ///  - `keys` - Sequence of new keys that forms the index of interpolated results
+  ///  - `f` - Function to do the interpolating
+  ///
+  /// [category:Windowing, chunking and grouping]
+  member x.Interpolate(keys:'K seq, f:Func<'K, OptionalValue<KeyValuePair<'K,'V>>, OptionalValue<KeyValuePair<'K,'V>>, 'V>) =
+    let newObs = 
+      seq {
+        for k in keys do
+          let smaller = x.TryGetObservation(k, Lookup.ExactOrSmaller)
+          let bigger  = x.TryGetObservation(k, Lookup.ExactOrGreater)
+          yield f.Invoke(k, smaller, bigger) }
+      |> Seq.toArray
+
+    let newIndex = Index.ofKeys keys
+    let newValues = newObs
+    Series(newIndex, Vector.ofValues newValues, vectorBuilder, indexBuilder)
 
   // ----------------------------------------------------------------------------------------------
   // Indexing
@@ -645,9 +752,21 @@ and
     Series<int, _>(newIndex, vector, vectorBuilder, indexBuilder)
 
   /// [category:Indexing]
-  member x.IndexWith(keys) = 
+  member x.IndexWith(keys:seq<_>) = 
     let newIndex = indexBuilder.Create(keys, None)
-    Series<'TNewKey, _>(newIndex, vector, vectorBuilder, indexBuilder)
+    let vectorCmd = 
+      if newIndex.KeyCount = int64 x.KeyCount then
+        // Just return the vecotr, because it has the same length
+        Vectors.Return 0
+      elif newIndex.KeyCount > int64 x.KeyCount then
+        // Pad vector with missing values
+        Vectors.Append(Vectors.Return 0, Vectors.Empty(newIndex.KeyCount - int64 x.KeyCount))
+      else 
+        // Get sub-range of the source vector
+        Vectors.GetRange(Vectors.Return 0, (Address.zero, newIndex.KeyCount - 1L))
+
+    let newVector = vectorBuilder.Build(vectorCmd, [| vector |])
+    Series<'TNewKey, _>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   // ----------------------------------------------------------------------------------------------
   // Asynchronous support 
@@ -671,9 +790,9 @@ and
   // Operators and F# functions
   // ----------------------------------------------------------------------------------------------
 
-  static member inline internal NullaryGenericOperation<'K, 'T1, 'T2>(series:Series<'K, 'T1>, op : 'T1 -> 'T2) = 
+  static member inline internal UnaryGenericOperation<'K, 'T1, 'T2>(series:Series<'K, 'T1>, op : 'T1 -> 'T2) = 
     series.Select(fun (KeyValue(k, v)) -> op v)
-  static member inline internal NullaryOperation<'T>(series:Series<'K, 'T>, op : 'T -> 'T) = 
+  static member inline internal UnaryOperation<'T>(series:Series<'K, 'T>, op : 'T -> 'T) = 
     series.Select(fun (KeyValue(k, v)) -> op v)
   static member inline internal ScalarOperationL<'T>(series:Series<'K, 'T>, scalar, op : 'T -> 'T -> 'T) = 
     series.Select(fun (KeyValue(k, v)) -> op v scalar)
@@ -691,6 +810,11 @@ and
       |> Vector.ofOptionalValues
 
     Series(newIndex, vector, series1.VectorBuilder, series1.IndexBuilder)
+
+  /// [category:Operators]
+  static member (~-)(series) = Series<'K, _>.UnaryOperation<float>(series, (~-))
+  /// [category:Operators]
+  static member (~-)(series) = Series<'K, _>.UnaryOperation<int>(series, (~-))
 
   /// [category:Operators]
   static member (+) (scalar, series) = Series<'K, _>.ScalarOperationR<int>(scalar, series, (+))
@@ -753,48 +877,48 @@ and
   // Trigonometric
   
   /// [category:Operators]
-  static member Acos(series) = Series<'K, _>.NullaryOperation<float>(series, acos)
+  static member Acos(series) = Series<'K, _>.UnaryOperation<float>(series, acos)
   /// [category:Operators]
-  static member Asin(series) = Series<'K, _>.NullaryOperation<float>(series, asin)
+  static member Asin(series) = Series<'K, _>.UnaryOperation<float>(series, asin)
   /// [category:Operators]
-  static member Atan(series) = Series<'K, _>.NullaryOperation<float>(series, atan)
+  static member Atan(series) = Series<'K, _>.UnaryOperation<float>(series, atan)
   /// [category:Operators]
-  static member Sin(series) = Series<'K, _>.NullaryOperation<float>(series, sin)
+  static member Sin(series) = Series<'K, _>.UnaryOperation<float>(series, sin)
   /// [category:Operators]
-  static member Sinh(series) = Series<'K, _>.NullaryOperation<float>(series, sinh)
+  static member Sinh(series) = Series<'K, _>.UnaryOperation<float>(series, sinh)
   /// [category:Operators]
-  static member Cos(series) = Series<'K, _>.NullaryOperation<float>(series, cos)
+  static member Cos(series) = Series<'K, _>.UnaryOperation<float>(series, cos)
   /// [category:Operators]
-  static member Cosh(series) = Series<'K, _>.NullaryOperation<float>(series, cosh)
+  static member Cosh(series) = Series<'K, _>.UnaryOperation<float>(series, cosh)
   /// [category:Operators]
-  static member Tan(series) = Series<'K, _>.NullaryOperation<float>(series, tan)
+  static member Tan(series) = Series<'K, _>.UnaryOperation<float>(series, tan)
   /// [category:Operators]
-  static member Tanh(series) = Series<'K, _>.NullaryOperation<float>(series, tanh)
+  static member Tanh(series) = Series<'K, _>.UnaryOperation<float>(series, tanh)
 
   // Actually useful
 
   /// [category:Operators]
-  static member Abs(series) = Series<'K, _>.NullaryOperation<float>(series, abs)
+  static member Abs(series) = Series<'K, _>.UnaryOperation<float>(series, abs)
   /// [category:Operators]
-  static member Abs(series) = Series<'K, _>.NullaryOperation<int>(series, abs)
+  static member Abs(series) = Series<'K, _>.UnaryOperation<int>(series, abs)
   /// [category:Operators]
-  static member Ceiling(series) = Series<'K, _>.NullaryOperation<float>(series, ceil)
+  static member Ceiling(series) = Series<'K, _>.UnaryOperation<float>(series, ceil)
   /// [category:Operators]
-  static member Exp(series) = Series<'K, _>.NullaryOperation<float>(series, exp)
+  static member Exp(series) = Series<'K, _>.UnaryOperation<float>(series, exp)
   /// [category:Operators]
-  static member Floor(series) = Series<'K, _>.NullaryOperation<float>(series, floor)
+  static member Floor(series) = Series<'K, _>.UnaryOperation<float>(series, floor)
   /// [category:Operators]
-  static member Truncate(series) = Series<'K, _>.NullaryOperation<float>(series, truncate)
+  static member Truncate(series) = Series<'K, _>.UnaryOperation<float>(series, truncate)
   /// [category:Operators]
-  static member Log(series) = Series<'K, _>.NullaryOperation<float>(series, log)
+  static member Log(series) = Series<'K, _>.UnaryOperation<float>(series, log)
   /// [category:Operators]
-  static member Log10(series) = Series<'K, _>.NullaryOperation<float>(series, log10)
+  static member Log10(series) = Series<'K, _>.UnaryOperation<float>(series, log10)
   /// [category:Operators]
-  static member Round(series) = Series<'K, _>.NullaryOperation<float>(series, round)
+  static member Round(series) = Series<'K, _>.UnaryOperation<float>(series, round)
   /// [category:Operators]
-  static member Sign(series) = Series<'K, _>.NullaryGenericOperation<_, float, _>(series, sign)
+  static member Sign(series) = Series<'K, _>.UnaryGenericOperation<_, float, _>(series, sign)
   /// [category:Operators]
-  static member Sqrt(series) = Series<'K, _>.NullaryGenericOperation<_, float, _>(series, sqrt)
+  static member Sqrt(series) = Series<'K, _>.UnaryGenericOperation<_, float, _>(series, sqrt)
 
   // ----------------------------------------------------------------------------------------------
   // Overrides & interfaces
@@ -812,7 +936,7 @@ and
     combine (series.Index.GetHashCode()) (series.Vector.GetHashCode())
 
   interface ISeries<'K> with
-    member x.TryGetObject(k) = this.TryGet(k) |> OptionalValue.map box
+    member x.TryGetObject(k) = x.TryGet(k) |> OptionalValue.map box
     member x.Vector = vector :> IVector
     member x.Index = index
 
@@ -825,10 +949,28 @@ and
       |> String.concat "; "
       |> sprintf "series [ %s]" 
 
-  /// Shows the data frame content in a human-readable format. The resulting string
-  /// shows all columns, but a limited number of rows. The property is used 
-  /// automatically by F# Interactive.
-  member series.Format() = 
+  /// Shows the series content in a human-readable format. The resulting string
+  /// shows a limited number of values from the series.
+  member series.Format() =
+    series.Format(Formatting.StartItemCount, Formatting.EndItemCount)
+
+  /// Shows the series content in a human-readable format. The resulting string
+  /// shows a limited number of values from the series.
+  ///
+  /// ## Parameters
+  ///  - `itemCount` - The total number of items to show. The result will show
+  ///    at most `itemCount/2` items at the beginning and ending of the series.
+  member series.Format(itemCount) =
+    let half = itemCount / 2
+    series.Format(half, half)
+
+  /// Shows the series content in a human-readable format. The resulting string
+  /// shows a limited number of values from the series.
+  ///
+  /// ## Parameters
+  ///  - `startCount` - The number of elements to show at the beginning of the series
+  ///  - `endCount` - The number of elements to show at the end of the series
+  member series.Format(startCount, endCount) = 
     let getLevel ordered previous reset maxLevel level (key:'K) = 
       let levelKey = 
         if level = 0 && maxLevel = 0 then box key
@@ -844,7 +986,7 @@ and
           let levels = CustomKey.Get(key).Levels
           let previous = Array.init levels (fun _ -> ref None)
           let reset i () = for j in i + 1 .. levels - 1 do previous.[j] := None
-          seq { for item in index.Mappings |> Seq.startAndEnd Formatting.StartItemCount Formatting.EndItemCount  do
+          seq { for item in index.Mappings |> Seq.startAndEnd startCount endCount  do
                   match item with 
                   | Choice1Of3(k, a) | Choice3Of3(k, a) -> 
                       let v = vector.GetValue(a)
@@ -921,19 +1063,13 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
     series.GetAs<float>(name, nan)
 
   member x.TryAs<'R>(strict) =
-    match box vector with
+    match unboxVector vector with
     | :? IVector<'R> as vec -> 
         let newIndex = indexBuilder.Project(index)
         OptionalValue(Series(newIndex, vec, vectorBuilder, indexBuilder))
     | _ -> 
         ( if strict then VectorHelpers.tryCastType vector
-          else               
-            let attempt = VectorHelpers.tryChangeType vector
-            if not attempt.HasValue then 
-              try VectorHelpers.tryCastType vector
-              with :? InvalidCastException -> OptionalValue.Missing
-            else attempt
-        )
+          else VectorHelpers.tryChangeType vector )
         |> OptionalValue.map (fun vec -> 
           let newIndex = indexBuilder.Project(index)
           Series(newIndex, vec, vectorBuilder, indexBuilder))
@@ -943,6 +1079,4 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
 
   member x.As<'R>() =
     let newIndex = indexBuilder.Project(index)
-    match box vector with
-    | :? IVector<'R> as vec -> Series(newIndex, vec, vectorBuilder, indexBuilder)
-    | _ -> Series(newIndex, VectorHelpers.changeType vector, vectorBuilder, indexBuilder)
+    Series(newIndex, VectorHelpers.changeType<'R> vector, vectorBuilder, indexBuilder)

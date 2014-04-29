@@ -82,7 +82,8 @@ type ArrayVectorBuilder() =
     member builder.Build<'T>(command:VectorConstruction, arguments:IVector<'T>[]) = 
       match command with
       | Return vectorVar -> arguments.[vectorVar]
-      | Empty -> vectorBuilder.Create [||]
+      | Empty 0L -> vectorBuilder.Create [||]
+      | Empty size -> vectorBuilder.CreateMissing (Array.create (int size) OptionalValue.Missing)
       | FillMissing(source, dir) ->
           // The nice thing is that this is no-op on dense vectors!
           // On sparse vectors, we have some work to do...
@@ -175,6 +176,28 @@ type ArrayVectorBuilder() =
                 merge lv rv)
               vectorBuilder.CreateMissing(filled)
 
+      | VectorHelpers.CombinedRelocations(relocs, op) ->
+          // OPTIMIZATION: Matches when we want to combine N vectors (as below) but
+          // each vector is specified by a Relocate construction. In that case, we do
+          // not need to build intermediate relocated vectors, but can directly build
+          // the final vector (handling relocations during the process)
+          // (This is useful when merging/aligning series or joining frames)
+          //
+          // NOTE: This can also only be used when the operation can be specified as a
+          // binary function (as we add vectors as we go, rather than building full list)
+          let data = relocs |> List.map (fun (v, _, r) -> 
+            (|AsVectorOptional|) (builder.buildArrayVector v arguments), r)
+          let merge = op.GetBinaryFunction<'T>().Value // IsSome=true is checked by CombinedRelocations 
+          let count = relocs |> List.map (fun (_, l, _) -> l) |> List.max
+          let filled = Array.create (int count) OptionalValue.Missing
+          
+          for vdata, vreloc in data do
+            for newIndex, oldIndex in vreloc do
+              let newIndex, oldIndex = Address.asInt newIndex, Address.asInt oldIndex
+              if oldIndex < vdata.Length && oldIndex >= 0 then
+                filled.[newIndex] <- merge (filled.[newIndex], vdata.[oldIndex])
+          vectorBuilder.CreateMissing(filled)
+
       | CombineN(vectors, op) ->
           let data = 
             vectors 
@@ -222,6 +245,7 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
       | VectorNonOptional opts -> opts |> Seq.map (fun v -> OptionalValue(box v))
     member x.ElementType = typeof<'T>
     member x.SuppressPrinting = false
+    member vector.Invoke(site) = site.Invoke<'T>(vector)
 
     member vector.GetObject(index) = 
       let index = Address.asInt index

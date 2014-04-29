@@ -10,22 +10,36 @@
 /// Represents different behaviors of key lookup in series. For unordered series,
 /// the only available option is `Lookup.Exact` which finds the exact key - methods
 /// fail or return missing value if the key is not available in the index. For ordered
-/// series `Lookup.NearestGreater` finds the first greater key (e.g. later date) with
-/// a value. `Lookup.NearestSmaller` searches for the first smaller key.
+/// series `Lookup.Greater` finds the first greater key (e.g. later date) with
+/// a value. `Lookup.Smaller` searches for the first smaller key. The options
+/// `Lookup.ExactOrGreater` and `Lookup.ExactOrSmaller` finds the exact key (if it is
+/// present) and otherwise search for the nearest larger or smaller key, respectively.
+[<System.Flags>]
 type Lookup = 
   /// Lookup a value associated with the exact specified key. 
   /// If the key is not available, then fail or return missing value. 
-  | Exact = 0
+  | Exact = 1
 
   /// Lookup a value associated with the specified key or with the nearest
   /// greater key that has a value available. Fails (or returns missing value)
   /// only when the specified key is greater than all available keys.
-  | NearestGreater = 1
+  | ExactOrGreater = 3
 
   /// Lookup a value associated with the specified key or with the nearest
   /// smaller key that has a value available. Fails (or returns missing value)
   /// only when the specified key is smaller than all available keys.
-  | NearestSmaller = 2
+  | ExactOrSmaller = 5
+
+  /// Lookup a value associated with a key that is greater than the specified one.
+  /// Fails (or returns missing value) when the specified key is greater or equal
+  /// to the greatest available key.
+  | Greater = 2
+
+  /// Lookup a value associated with a key that is smaller than the specified one.
+  /// Fails (or returns missing value) when the specified key is smaller or equal
+  /// to the smallest available key.
+  | Smaller = 4
+
 
 /// Represents a strategy for aggregating data in an ordered series into data segments.
 /// To create a value of this type from C#, use the non-generic `Aggregation` type.
@@ -111,6 +125,7 @@ open Deedle.Keys
 open Deedle.Internal
 open Deedle.Addressing
 open Deedle.Vectors
+open System.Collections.ObjectModel
 
 /// Specifies the boundary behavior for the `IIndexBuilder.GetRange` operation
 /// (whether the boundary elements should be included or not)
@@ -123,7 +138,7 @@ type BoundaryBehavior = Inclusive | Exclusive
 /// Values of this type are constructed using the associated `IIndexBuilder` type.
 type IIndex<'K when 'K : equality> = 
   /// Returns a sequence of all keys in the index.
-  abstract Keys : seq<'K>
+  abstract Keys : ReadOnlyCollection<'K>
 
   /// Performs reverse lookup - and returns key for a specified address
   abstract KeyAt : Address -> 'K
@@ -198,6 +213,12 @@ and IIndexBuilder =
   /// should check and infer this from the data.
   abstract Create : seq<'K> * Option<bool> -> IIndex<'K>
   
+  /// Create a new index using the specified keys. This overload takes data as ReadOnlyCollection
+  /// and so it is more efficient if the caller already has the keys in an allocated collection.
+  /// Optionally, the caller can specify if the index keys are ordered or not. When the value 
+  /// is not set, the construction should check and infer this from the data.
+  abstract Create : ReadOnlyCollection<'K> * Option<bool> -> IIndex<'K>
+
   /// When we perform some projection on the vector (e.g. `Series.map`), then we may also
   /// need to perform some transformation on the index (because it will typically turn delayed
   /// index into an evaluated index). This operation represents that - it should return 
@@ -228,8 +249,8 @@ and IIndexBuilder =
   /// are ordered, the ordering should be preserved (the keys should be aligned).
   /// The specified `IVectorValueTransform` defines how to deal with the case when
   /// a key is defined in both indices (i.e. which value should be in the new vector).
-  abstract Append :
-    SeriesConstruction<'K> * SeriesConstruction<'K> * IVectorValueTransform -> 
+  abstract Merge :
+    list<SeriesConstruction<'K>> * IVectorValueListTransform -> 
     IIndex<'K> * VectorConstruction
 
   /// Given an old index and a new index, build a vector transformation that reorders
@@ -261,6 +282,16 @@ and IIndexBuilder =
   /// Order (possibly unordered) index and return transformation that reorders vector
   abstract OrderIndex : SeriesConstruction<'K> -> SeriesConstruction<'K>
 
+  /// Shift the values in the series by a specified offset, in a specified direction.
+  /// The resulting series should be shorter by abs(offset); key for which there is no
+  /// value should be dropped. For example:
+  /// 
+  ///     (original)  (shift 1) (shift -1)
+  ///     a b c       _ b c     a b _
+  ///     1 2 3         1 2     1 2
+  /// 
+  abstract Shift : SeriesConstruction<'K> * int -> SeriesConstruction<'K>
+
   /// Aggregate an ordered index into floating windows or chunks. 
   ///
   /// ## Parameters
@@ -288,8 +319,8 @@ and IIndexBuilder =
   /// `Direction.Backward`, the key is the last element (note that this does not 
   /// hold at the boundaries where values before/after the key may also be included)
   abstract Resample : IIndex<'K> * seq<'K> * Direction * source:VectorConstruction *
-    valueSelector:('TNewKey * SeriesConstruction<'K> -> OptionalValue<'R>) *
-    keySelector:('K * SeriesConstruction<'K> -> 'TNewKey) -> IIndex<'TNewKey> * IVector<'R>
+    selector:('K * SeriesConstruction<'K> -> 'TNewKey * OptionalValue<'R>) 
+      -> IIndex<'TNewKey> * IVector<'R>
 
   /// Given an index and vector construction, return a new index asynchronously
   /// to allow composing evaluation of lazy series. The command to be applied to

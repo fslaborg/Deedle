@@ -63,8 +63,8 @@ namespace CSharp
 
       // [create-csv]
       var frame = Frame.ReadCsv(Path.Combine(root, "../data/stocks/msft.csv"));
-      var frameDate = frame.IndexRows<DateTime>("Date").OrderRows();
-      var msftOpen = frameDate.GetSeries<double>("Open");
+      var frameDate = frame.IndexRows<DateTime>("Date").SortRowsByKey();
+      var msftOpen = frameDate.GetColumn<double>("Open");
       msftOpen.Print();
       // [/create-csv]
 
@@ -99,11 +99,11 @@ namespace CSharp
 
       // Get value at a key or for the nearest previous date
       var beforeJan1 = msftOpen
-        .Get(new DateTime(2012, 1, 1), Lookup.NearestSmaller);
+        .Get(new DateTime(2012, 1, 1), Lookup.ExactOrSmaller);
 
       // Get value at a key or for the nearest later date
       var afterJan1 = msftOpen
-        .Get(new DateTime(2012, 1, 1), Lookup.NearestGreater);
+        .Get(new DateTime(2012, 1, 1), Lookup.ExactOrGreater);
       // [/lookup-ord]
 
       // [lookup-slice]

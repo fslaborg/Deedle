@@ -50,9 +50,10 @@ module internal JoinHelpers =
   /// When using fancy lookup, first fill values in the vector, before doing the join
   let fillMissing vector lookup = 
     match lookup with
-    | Lookup.NearestSmaller -> Vectors.FillMissing(vector, VectorFillMissing.Direction Direction.Forward)
-    | Lookup.NearestGreater -> Vectors.FillMissing(vector, VectorFillMissing.Direction Direction.Backward)
-    | Lookup.Exact | _ -> vector
+    | Lookup.ExactOrSmaller -> Vectors.FillMissing(vector, VectorFillMissing.Direction Direction.Forward)
+    | Lookup.ExactOrGreater -> Vectors.FillMissing(vector, VectorFillMissing.Direction Direction.Backward)
+    | Lookup.Exact -> vector
+    | _ -> invalidOp "Lookup.Smaller and Lookup.Greater are not supported when joining"
 
   /// Create transformation on indices/vectors representing the join operation
   let createJoinTransformation 

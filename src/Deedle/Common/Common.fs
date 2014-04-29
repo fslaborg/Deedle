@@ -61,7 +61,11 @@ type OptionalValue<'T> private (hasValue:bool, value:'T) =
   override x.Equals(y) =
     match y with 
     | null -> false
-    | :? OptionalValue<'T> as y -> Object.Equals(x.ValueOrDefault, y.ValueOrDefault)
+    | :? OptionalValue<'T> as y -> 
+        match x.HasValue, y.HasValue with
+        | true, true -> Object.Equals(x.ValueOrDefault, y.ValueOrDefault)
+        | false, false -> true
+        | _ -> false
     | _ -> false
    
 /// Non-generic type that makes it easier to create `OptionalValue<T>` values
@@ -194,7 +198,7 @@ module DataSegment =
   /// A complete active pattern that extracts the kind and data from a `DataSegment`
   /// value. This makes it easier to write functions that only need data:
   ///
-  ///    let sumAny = function DataSegment.Any(_, data) -> Series.sum data
+  ///    let sumAny = function DataSegment.Any(_, data) -> Stats.sum data
   ///
   let (|Any|) (ds:DataSegment<'T>) = ds.Kind, ds.Data
   
@@ -203,7 +207,7 @@ module DataSegment =
   /// returns zero for incomplete segments:
   ///
   ///     let sumSegmentOrZero = function
-  ///       | DataSegment.Complete(value) -> Series.sum value
+  ///       | DataSegment.Complete(value) -> Stats.sum value
   ///       | DataSegment.Incomplete _ -> 0.0
   ///
   let (|Complete|Incomplete|) (ds:DataSegment<_>) =
@@ -263,6 +267,15 @@ module OptionalValue =
     if input.HasValue then OptionalValue(f input.Value)
     else OptionalValue.Missing
 
+  /// If both of the arguments contain value, apply the specified function to their
+  /// values and return `OptionalValue<R>` with the result. Otherwise return
+  /// `OptionalValue.Missing`.
+  [<CompiledName("Map2")>]
+  let inline map2 f (input1:OptionalValue<'T1>) (input2:OptionalValue<'T2>): OptionalValue<'R> = 
+    if input1.HasValue && input2.HasValue then 
+      OptionalValue(f input1.Value input2.Value)
+    else OptionalValue.Missing
+
   /// Creates `OptionalValue<T>` from a tuple of type `bool * 'T`. This function
   /// can be used with .NET methods that use `out` arguments. For example:
   ///
@@ -303,6 +316,9 @@ module OptionalValue =
   /// available, throws an exception. (This is equivalent to the `Value` property)
   let inline get (optional:'T opt) = optional.Value
     
+  /// Returns the value `def` when the argument is missing, otherwise returns its value
+  let inline defaultArg def (optional:'T opt) = 
+    if optional.HasValue then optional.Value else def
 
 
 // --------------------------------------------------------------------------------------
@@ -312,7 +328,6 @@ module OptionalValue =
 namespace Deedle.Internal
 
 open System
-open System.Linq
 open Deedle
 open System.Collections.Generic
 open System.Collections.ObjectModel
@@ -395,46 +410,21 @@ module ReadOnlyCollection =
 
   /// Converts a lazy sequence to fully evaluated ReadOnlyCollection
   let inline ofSeq (seq:seq<'T>) : ReadOnlyCollection<'T> = Array.AsReadOnly(Array.ofSeq seq)
+
+  /// Transform all elements of ReadOnlyCollection using the specified function
+  let inline map f (list:ReadOnlyCollection<'T>) = 
+    let res = Array.zeroCreate list.Count
+    for i in 0 .. list.Count - 1 do res.[i] <- f list.[i]
+    Array.AsReadOnly(res)
   
-  /// Sum elements of the ReadOnlyCollection
-  let inline sum (list:ReadOnlyCollection<'T>) = 
-    let mutable total = LanguagePrimitives.GenericZero
-    for i in 0 .. list.Count - 1 do total <- total + list.[i]
-    total
-
-  /// Return the smallest element of the ReadOnlyCollection
-  let inline min (list:ReadOnlyCollection<'T>) = 
-    let mutable res = list.[0]
-    for i in 1 .. list.Count - 1 do res <- min res list.[i]
-    res
-
-  /// Return the greatest element of the ReadOnlyCollection
-  let inline max (list:ReadOnlyCollection<'T>) = 
-    let mutable res = list.[0]
-    for i in 1 .. list.Count - 1 do res <- max res list.[i]
-    res
-
+  /// Count elements of the ReadOnlyCollection
+  let inline length (list:ReadOnlyCollection<'T>) = list.Count
+  
   /// Reduce elements of the ReadOnlyCollection
   let inline reduce op (list:ReadOnlyCollection<'T>) = 
     let mutable res = list.[0]
     for i in 1 .. list.Count - 1 do res <- op res list.[i]
     res
-
-  /// Count elements of the ReadOnlyCollection
-  let inline length (list:ReadOnlyCollection<'T>) = list.Count
-
-  /// Average elements of the ReadOnlyCollection
-  let inline average (list:ReadOnlyCollection<'T>) = 
-    let mutable total = LanguagePrimitives.GenericZero
-    for i in 0 .. list.Count - 1 do total <- total + list.[i]
-    LanguagePrimitives.DivideByInt total list.Count
-
-  /// Sum elements of the ReadOnlyCollection, skipping over missing values
-  let inline sumOptional (list:ReadOnlyCollection<OptionalValue<'T>>) = 
-    let mutable total = LanguagePrimitives.GenericZero
-    for i in 0 .. list.Count - 1 do 
-      if list.[i].HasValue then total <- total + list.[i].Value
-    total
 
   /// Reduce elements of the ReadOnlyCollection, skipping over missing values
   let inline reduceOptional op (list:ReadOnlyCollection<OptionalValue<'T>>) = 
@@ -446,29 +436,20 @@ module ReadOnlyCollection =
       | _ -> ()
     res |> OptionalValue.ofOption
 
-  /// Average elements of the ReadOnlyCollection, skipping over missing values
-  let inline averageOptional (list:ReadOnlyCollection<OptionalValue< ^T >>) = 
-    let mutable total = LanguagePrimitives.GenericZero
-    let mutable count = 0 
+  /// Fold elements of the ReadOnlyCollection
+  let inline fold op init (list:ReadOnlyCollection<'T>) = 
+    let mutable res = init
+    for i in 0 .. list.Count - 1 do res <- op res list.[i]
+    res
+
+  /// Fold elements of the ReadOnlyCollection, skipping over missing values
+  let inline foldOptional op init (list:ReadOnlyCollection<OptionalValue<'T>>) = 
+    let mutable res = init
     for i in 0 .. list.Count - 1 do 
-      if list.[i].HasValue then 
-        total <- total + list.[i].Value
-        count <- count + 1
-    LanguagePrimitives.DivideByInt total count
-
-  /// Count elements of the ReadOnlyCollection that are not missing
-  let inline lengthOptional (list:ReadOnlyCollection<OptionalValue<'T>>) = 
-    let mutable total = 0
-    for i in 0 .. list.Count - 1 do if list.[i].HasValue then total <- total + 1
-    total
-
-  /// Return the smallest element, skipping over missing values
-  let inline minOptional (list:ReadOnlyCollection<OptionalValue< ^T >>) = 
-    reduceOptional Operators.min list
-
-  /// Return the greatest element, skipping over missing values
-  let inline maxOptional (list:ReadOnlyCollection<OptionalValue< ^T >>) = 
-    reduceOptional Operators.max list
+      match list.[i] with
+      | OptionalValue.Present v -> res <- op res v
+      | _ -> ()
+    res
 
   /// Returns empty readonly collection
   let empty<'T> = new ReadOnlyCollection<'T>([||])
@@ -477,6 +458,7 @@ module ReadOnlyCollection =
 /// This module contains additional functions for working with arrays. 
 /// `Deedle.Internals` is opened, it extends the standard `Array` module.
 module Array = 
+
   /// Drop a specified range from a given array. The operation is inclusive on
   /// both sides. Given [ 1; 2; 3; 4 ] and indices (1, 2), the result is [ 1; 4 ]
   let inline dropRange first last (data:'T[]) =
@@ -497,19 +479,29 @@ module Array =
 
   /// Returns the index of 'key' or the index of immediately following value.
   /// If the specified key is greater than all keys in the array, None is returned.
-  let binarySearchNearestGreater key (comparer:System.Collections.Generic.IComparer<'T>) (array:ReadOnlyCollection<'T>) =
+  ///
+  /// When 'inclusive' is false, the function returns the index of strictry greater value.
+  /// Note that the function expects that the array contains distinct values
+  /// (which is fine because LinearIndex does not support duplicate keys)
+  let binarySearchNearestGreater key (comparer:System.Collections.Generic.IComparer<'T>) inclusive (array:ReadOnlyCollection<'T>) =
     if array.Count = 0 then None else
     let loc = binarySearch key comparer array
-    if comparer.Compare(array.[loc], key) >= 0 then Some loc
+    let comp = comparer.Compare(array.[loc], key)
+    if (comp = 0 && inclusive) || comp > 0 then Some loc
     elif loc + 1 < array.Count && comparer.Compare(array.[loc + 1], key) >= 1 then Some (loc + 1)
     else None
 
   /// Returns the index of 'key' or the index of immediately preceeding value.
   /// If the specified key is smaller than all keys in the array, None is returned.
-  let binarySearchNearestSmaller key (comparer:System.Collections.Generic.IComparer<'T>) (array:ReadOnlyCollection<'T>) =
+  ///
+  /// When 'inclusive' is false, the function returns the index of strictry smaller value.
+  /// Note that the function expects that the array contains distinct values
+  /// (which is fine because LinearIndex does not support duplicate keys)
+  let binarySearchNearestSmaller key (comparer:System.Collections.Generic.IComparer<'T>) inclusive (array:ReadOnlyCollection<'T>) =
     if array.Count = 0 then None else
     let loc = binarySearch key comparer array
-    if comparer.Compare(array.[loc], key) <= 0 then Some loc
+    let comp = comparer.Compare(array.[loc], key)
+    if (comp = 0 && inclusive) || comp < 0 then Some loc
     elif loc - 1 >= 0 && comparer.Compare(array.[loc - 1], key) <= 0 then Some (loc - 1)
     else None
 
@@ -526,8 +518,6 @@ module Array =
 /// This module contains additional functions for working with sequences. 
 /// `Deedle.Internals` is opened, it extends the standard `Seq` module.
 module Seq = 
-  open ExtCore.Collections
-  open ExtCore.Collections.LazyListPatterns
 
   /// Comapre two sequences using the `Equals` method. Returns true
   /// when all their elements are equal and they have the same size.
@@ -550,7 +540,7 @@ module Seq =
   /// If the input is non empty, returns `Some(head)` where `head` is 
   /// the first value. Otherwise, returns `None`.
   let headOrNone (input:seq<_>) = 
-    (input |> Seq.map Some).FirstOrDefault()
+    System.Linq.Enumerable.FirstOrDefault(input |> Seq.map Some)
 
   /// Returns the specified number of elements from the end of the sequence
   /// Note that this needs to store the specified number of elements in memory
@@ -658,53 +648,6 @@ module Seq =
     | Some (_, items) -> yield items |> List.rev |> Array.ofList
     | _ -> () }
 
-
-  /// Generate non-overlapping chunks from the input sequence. Chunks are aligned
-  /// to the specified keys. The `dir` parameter specifies the direction. If it is
-  /// `Direction.Forward` than the key is the first element of a chunk; for 
-  /// `Direction.Backward`, the key is the last element (note that this does not hold
-  /// at the boundaries)
-  let chunkedUsing (comparer:Comparer<_>) dir keys input = 
-    let keys = List.ofSeq keys
-    let input = List.ofSeq input
-    let (|Cons|Nil|) l = match l with [] -> Nil | x::xs -> Cons(x, xs)
-
-    let (<) a b = comparer.Compare(a, b) < 0
-    let (<=) a b = comparer.Compare(a, b) <= 0
-
-    // Consume input until we find element greater or equal to a given nextKey
-    let rec chunkUntilKeyOrEnd op nextKey input acc =
-      match nextKey, input with
-      | Some nk, Cons(h, input) when op h nk -> chunkUntilKeyOrEnd op nextKey input (h::acc)
-      | Some nk, _ -> input, List.rev acc
-      | None, input -> [], (List.rev acc) @ (List.ofSeq input)
-
-    if dir = Direction.Forward then  
-      match keys with
-      | Nil -> invalidArg "keys" "Keys for sampling should not be empty"
-      | Cons(key, keys) ->
-          let rec loop (key, keys) input = seq {
-            let input, chunk = chunkUntilKeyOrEnd (<) (headOrNone keys) input []
-            yield key, chunk
-            match keys with 
-            | Nil -> if not input.IsEmpty then failwith "Assertion failed: Input not empty"
-            | Cons(key, keys) -> yield! loop(key, keys) input }
-          loop(key, keys) input
-
-    elif dir = Direction.Backward then
-      if keys.IsEmpty then
-        invalidArg "keys" "Keys for sampling should not be empty"
-      else
-        // TODO: Implemented using lazy list - sequence expression does not eliminate tail-call "yield!" ??
-        let key, keys = keys.Head, keys.Tail
-        let rec loop (key, keys) input =  
-          let input, chunk = chunkUntilKeyOrEnd (<=) (Some key) input []
-          match keys with 
-          | Nil -> LazyList.ofSeq [ key, chunk @ (List.ofSeq input) ]
-          | Cons(nkey, keys) -> 
-              LazyList.consDelayed (key, chunk) (fun () -> loop (nkey, keys) input)
-        (loop (key, keys) input) :> seq<_>
-    else invalidArg "dir" "Invalid value for direction" 
       
   /// A version of `Seq.windowed` that allows specifying more complex boundary
   /// behaviour. The `boundary` argument can specify one of the following options:
@@ -766,6 +709,133 @@ module Seq =
        yield DataSegment(Incomplete, !currentChunk |> Array.ofList |> Array.rev) }
 
 
+  /// Generates addresses of chunks in a collection of size 'length'. For example, consider
+  /// a collection with 7 elements (and indices 0 .. 6) and the requirement to create chunks
+  /// of length 4: 
+  ///
+  ///    0 1 2 3 4 5 6   
+  ///
+  ///    s
+  ///    s s
+  ///    s s s
+  ///    w w w w
+  ///      w w w w
+  ///        w w w w
+  ///          w w w w
+  ///            e e e 
+  ///              e e
+  ///                e
+  ///
+  /// The windows 's' are returned when `boundary = Boundary.AtBeginning` and the windows
+  /// 'e' are returned when `boundary = Boundary.AtEnding`. The middle is returned always.
+  /// The windows are specified by *inclusive* indices, so, e.g. the first window is returned
+  /// as a pair (0, 0).
+  let windowRangesWithBounds size boundary length = seq { 
+    // If we want incomplete windows at the beginning, 
+    // generate "size - 1" windows always starting from 0
+    if boundary = Boundary.AtBeginning then
+      for i in 1L .. size - 1L do yield DataSegmentKind.Incomplete, 0L, i - 1L
+    // Generate all windows in the middle. There is always length - size + 1 of those
+    for i in 0L .. length - size do yield DataSegmentKind.Complete, i, i + size - 1L 
+    // If we want incomplete windows at the ending
+    // gneerate "size - 1" windows, always ending with length-1
+    if boundary = Boundary.AtEnding then
+      for i in 1L .. size - 1L do yield DataSegmentKind.Incomplete, length - size + i, length - 1L }
+
+
+  /// Generates addresses of windows in a collection of size 'length'. For example, consider
+  /// a collection with 7 elements (and indices 0 .. 6) and the requirement to create windows
+  /// of length 3: 
+  ///
+  ///    0 1 2 3 4 5 6   
+  ///
+  /// When the `AtEnding` flag is set for `boundary`:
+  ///
+  ///    c c c
+  ///          c c c
+  ///                d
+  ///
+  /// The two chunks marked as 'c' are returned always. The incomplete chunk at the end is
+  /// returned unless the `Skip` flag is set for `boundary`. When the `AtBeginning` flag is
+  /// set, the incomplete chunk is (when not `Skip`) returned at the beginning:
+  ///
+  ///    d
+  ///      c c c 
+  ///            c c c 
+  ///
+  /// The chunks are specified by *inclusive* indices, so, e.g. the first chunk in 
+  /// the second example above is returned as a pair (0, 0).
+  let chunkRangesWithBounds size (boundary:Boundary) length = seq { 
+    if boundary.HasFlag(Boundary.AtBeginning) && boundary.HasFlag(Boundary.AtEnding) then
+      invalidOp "Only one kind of boundary must be specified (either AtBeginning or AtEnding)"
+
+    // How many chunk do we return? What is the length of the incomplete one?
+    let chunkCount = length / size
+    let incompleteSize = length % size
+    if boundary.HasFlag(Boundary.AtBeginning) then
+      // Generate one incomplete chunk if it is required
+      // and then chunkCount times chunks starting from incompleteSize
+      if not (boundary.HasFlag(Boundary.Skip)) && incompleteSize <> 0L then
+        yield DataSegmentKind.Incomplete, 0L, incompleteSize - 1L
+      for i in 0L .. chunkCount - 1L do 
+        yield DataSegmentKind.Complete, incompleteSize + i * size, incompleteSize + (i + 1L) * size - 1L
+    else // Assuming Boundary.AtEnding
+      // Generate chunkCount times chunks starting from zero
+      // and then one incomplete chunk if it is required
+      for i in 0L .. chunkCount - 1L do 
+        yield DataSegmentKind.Complete, i * size, (i + 1L) * size - 1L
+      if not (boundary.HasFlag(Boundary.Skip)) && incompleteSize <> 0L then
+        yield DataSegmentKind.Incomplete, chunkCount * size, length - 1L }
+
+  /// Generate floating windows from the input sequence. New floating window is 
+  /// started for each element. To find the end of the window, the function calls
+  /// the provided argument `f` with the first and the last elements of the window
+  /// as arguments. A window ends when `f` returns `false`.
+  /// The function returns the windows as pairs of their indices.
+  let windowRangesWhile (f:'T -> 'T -> bool) input = seq {
+    let windows = System.Collections.Generic.LinkedList()
+    let index = ref -1L
+    for v in input do
+      index := !index + 1L
+      windows.AddLast( (v, !index, !index) ) |> ignore
+      // Walk over all windows; use 'f' to determine if the item
+      // should be added - if so, add it, otherwise yield window
+      let win = ref windows.First
+      while win.Value <> null do 
+        let value, startIdx, endIdx = win.Value.Value
+        let next = win.Value.Next
+        if f value v then win.Value.Value <- value, startIdx, !index
+        else 
+          yield startIdx, endIdx
+          windows.Remove(win.Value)
+        win := next
+    for _, startIdx, endIdx in windows do
+      yield startIdx, endIdx }
+
+  
+  /// Generate non-verlapping chunks from the input sequence. A chunk is started 
+  /// at the beginning and then immediately after the end of the previous chunk.
+  /// To find the end of the chunk, the function calls the provided argument `f` 
+  /// with the first and the last elements of the chunk as arguments. A chunk 
+  /// ends when `f` returns `false`.
+  /// The function returns the chunks as pairs of their indices.
+  let chunkRangesWhile f input = seq {
+    let chunk = ref None
+    let index = ref -1L
+    for v in input do
+      index := !index + 1L
+      match chunk.Value with 
+      | None -> chunk := Some(v, !index, !index)
+      | Some(value, startIdx, endIdx) ->
+          if f value v then chunk := Some(value, startIdx, !index)
+          else
+            yield startIdx, endIdx
+            chunk := Some(v, !index, !index)
+    match chunk.Value with
+    | Some (_, startIdx, endIdx) -> yield startIdx, endIdx
+    | _ -> () }
+
+
   /// Returns true if the specified sequence is sorted.
   let isSorted (data:seq<_>) (comparer:IComparer<_>) =
     let rec isSorted past (en:IEnumerator<'T>) =
@@ -775,6 +845,7 @@ module Seq =
     let en = data.GetEnumerator()
     if not (en.MoveNext()) then true
     else isSorted en.Current en
+
 
   /// Returns the first and the last element from a sequence or 'None' if the sequence is empty
   let tryFirstAndLast (input:seq<_>) = 
@@ -786,61 +857,287 @@ module Seq =
     let last = last
     first |> Option.map (fun f -> f, last.Value)
 
-  /// Align two ordered sequences of `Key * Address` pairs and produce a 
-  /// collection that contains three-element tuples consisting of: 
-  ///
-  ///   * ordered keys (from one or the ohter sequence)
-  ///   * optional address of the key in the first sequence
-  ///   * optional address of the key in the second sequence
-  ///
-  let alignWithOrdering (seq1:seq<'T * 'TAddress>) (seq2:seq<'T * 'TAddress>) (comparer:IComparer<_>) = seq {
-    let withIndex seq = Seq.mapi (fun i v -> i, v) seq
-    use en1 = seq1.GetEnumerator()
-    use en2 = seq2.GetEnumerator()
-    let en1HasNext = ref (en1.MoveNext())
-    let en2HasNext = ref (en2.MoveNext())
-    let returnAll (en:IEnumerator<_>) hasNext f = seq { 
-      if hasNext then
-        yield f en.Current
-        while en.MoveNext() do yield f en.Current }
+  // ------------------------------------------------------------------------------------
+  // Aligning sequences
+  // ------------------------------------------------------------------------------------
+  
+  // The following functions take two or N, ordered or unordered sequences of keys.
+  // They all produces a new array with the union of keys together with relocation
+  // tables for each original sequence of keys. The relocation table is an array with
+  // two numbers. The first number is the new location (index of a key K in newly 
+  // returned array of keys) and the second is original location (index of the key K in
+  // the original input sequence).
+  // 
+  // The functions generally perform union, meaning that the resulting array with keys
+  // contains union of all the keys. For aligning two sequences, there is also a version
+  // that performs intersection.
 
-    let rec next () = seq {
-      if not en1HasNext.Value then yield! returnAll en2 en2HasNext.Value (fun (k, i) -> k, None, Some i)
-      elif not en2HasNext.Value then yield! returnAll en1 en1HasNext.Value (fun (k, i) -> k, Some i, None)
+  /// Align two ordered sequences of keys (using the specified comparer)
+  /// The resulting relocations are returned as two-element list for symmetry with other functions
+  /// Throws ComparisonFailedException when the comparer fails.
+  ///
+  /// When `intersectionOnly = true`, the function only adds keys & relocations
+  /// for keys that appear in both sequences (otherwise, it performs union)
+  let alignOrdered (seq1:ReadOnlyCollection<'T>) (seq2:ReadOnlyCollection<'T>) (comparer:IComparer<'T>) intersectionOnly : 'T[] * list<(int64 * int64)[]> = 
+    // Indices in the sequences seq1 and seq2
+    let mutable index1 = if seq1.Count > 0 then 0 else -1
+    let mutable index2 = if seq2.Count > 0 then 0 else -1
+    // Index in the output list of keys
+    let mutable outIndex = 0L
+    let keys = ResizeArray<_>(seq1.Count + seq2.Count)
+    // Arrays with relocations
+    let res1 = ResizeArray<_>(seq1.Count)
+    let res2 = ResizeArray<_>(seq2.Count)
+    
+    // Loop while there is a key in both inputs
+    while index1 <> -1 && index2 <> -1 do
+      let comparison = 
+        try comparer.Compare(seq1.[index1], seq2.[index2])
+        with _ -> raise <| ComparisonFailedException()
+      // Add current smallest key to the list of keys
+      if intersectionOnly then 
+        if comparison = 0 then keys.Add(seq1.[index1])
       else
-        let en1Val, en2Val = fst en1.Current, fst en2.Current
-        let comparison = 
-          try comparer.Compare(en1Val, en2Val)
-          with _ -> raise <| ComparisonFailedException()
-        if comparison = 0 then 
-          yield en1Val, Some(snd en1.Current), Some(snd en2.Current)
-          en1HasNext := en1.MoveNext()
-          en2HasNext := en2.MoveNext()
-          yield! next()
-        elif comparison < 0 then
-          yield en1Val, Some(snd en1.Current), None
-          en1HasNext := en1.MoveNext()
-          yield! next ()
-        else 
-          yield en2Val, None, Some(snd en2.Current)
-          en2HasNext := en2.MoveNext() 
-          yield! next () }
-    yield! next () }
+        if comparison <= 0 then keys.Add(seq1.[index1])
+        else keys.Add(seq2.[index2])
 
-  /// Align two unordered sequences of `Key * Address` pairs and produce a collection
-  /// that contains three-element tuples consisting of keys, optional address in the
-  /// first sequence & optional address in the second sequence. (See also `alignWithOrdering`)
-  let alignWithoutOrdering (seq1:seq<'T * 'TAddress>) (seq2:seq<'T * 'TAddress>) = seq {
-    let dict = Dictionary<_, _>()
-    for key, addr in seq1 do
-      dict.[key] <- (Some addr, None)
-    for key, addr in seq2 do
+      // Advance sequence(s) starting with the current key
+      if comparison <= 0 then
+        if comparison = 0 || not intersectionOnly then res1.Add( (outIndex, int64 index1) )
+        index1 <- if index1 + 1 >= seq1.Count then -1 else index1 + 1
+      if comparison >= 0 then
+        if comparison = 0 || not intersectionOnly then res2.Add( (outIndex, int64 index2) )
+        index2 <- if index2 + 1 >= seq2.Count then -1 else index2 + 1
+
+      // If we added key, increment index (we add key when 
+      // unioning or when interesecting & keys are in both)
+      if not intersectionOnly || comparison = 0 then
+        outIndex <- outIndex + 1L
+
+    // Add remaining relocations for one or the other 
+    if not intersectionOnly && index1 <> -1 then
+      for i = index1 to seq1.Count - 1 do 
+        res1.Add( (outIndex, int64 i) )
+        keys.Add(seq1.[i])
+        outIndex <- outIndex + 1L
+    if not intersectionOnly && index2 <> -1 then
+      for i = index2 to seq2.Count - 1 do 
+        res2.Add( (outIndex, int64 i) )
+        keys.Add(seq2.[i])
+        outIndex <- outIndex + 1L
+
+    // Produce results as arrays
+    keys.ToArray(), [ res1.ToArray(); res2.ToArray() ]
+
+  
+  /// Align N ordered sequences of keys (using the specified comparer)
+  /// This is the same as `alignOrdered` but for larger number of key sequences.
+  /// Throws ComparisonFailedException when the comparer fails.
+  /// (This performs union on the specified sequences)
+  let alignAllOrderedMany (seqs:ReadOnlyCollection<'T>[]) (comparer:IComparer<'T>) : 'T[] * list<(int64 * int64)[]> = 
+    
+    // We maintain a set of indices into the original key sequences, starting at 0
+    // An empty sequence is marked with an index of -1
+    let current = seqs |> Array.map (fun s -> if s.Count > 0 then 0, s else -1, null)
+
+    // Resize arrays for resulting keys and relocation tables
+    let newkeys = ResizeArray<_>(seqs |> Array.sumBy (fun s -> s.Count))
+    let results = seqs |> Array.map (fun s -> ResizeArray<_>(s.Count))
+
+    // We maintain a heap structure to access the next smallest key along with the 
+    // sequence it comes; allows delete-min/find-min in O(log n) time
+    let mutable heap = 
+      { new IComparer<_> with
+          member x.Compare(a, b) = 
+            try comparer.Compare(fst a, fst b) 
+            with _ -> raise (new ComparisonFailedException()) }
+      |> BinomialHeap.emptyCustom
+
+    // initialize heap
+    for i = 0 to current.Length - 1 do
+      let idx, keys = current.[i]
+      if idx <> -1 then   
+        heap <- heap |> BinomialHeap.insert (keys.[idx], i)
+
+    let mutable index = -1L
+    let mutable seen = HashSet()   // because F# Set requires comparison ...
+
+    // When there are no more elements to examine, we're done
+    while not (BinomialHeap.isEmpty heap) do
+      // pop the min key along w/sequence it came from
+      let (k, i), htmp = BinomialHeap.removeMin heap
+      let idx, keys = current.[i]
+      if not <| seen.Contains(k) then
+        // we haven't seen this key, so increment index into resulting keys array
+        newkeys.Add(k) |> ignore
+        seen.Add(k) |> ignore
+        index <- index + 1L
+      // store the relocation indexing
+      results.[i].Add( (index, int64 idx) )
+      if idx + 1 < keys.Count then 
+        // there's another key to examine in the i'th sequence, so it on the heap
+        current.[i] <- (idx + 1, keys)
+        heap <- htmp |> BinomialHeap.insert (keys.[idx + 1], i)                
+      else
+        // no more keys in i'th sequence, allow heap to shrink
+        heap <- htmp
+    
+    // Return results as arrays
+    newkeys.ToArray(), [ for r in results -> r.ToArray() ]
+
+  /// Align N ordered sequences of keys (using the specified comparer)
+  /// This is the same as `alignOrdered` but for larger number of key sequences.
+  /// Throws ComparisonFailedException when the comparer fails.
+  /// (This performs union on the specified sequences)
+  let alignAllOrderedFew (seqs:ReadOnlyCollection<'T>[]) (comparer:IComparer<'T>) : 'T[] * list<(int64 * int64)[]> = 
+    
+    // We keep an array with indices & original sequences
+    // When we finish iterating over a sequence, we set it to 'null' and set the index to -1
+    let current = seqs |> Array.map (fun s -> 
+      if s.Count > 0 then 0, s else -1, null)
+
+    // Resize arrays with keys and resulting relocation tables
+    let keys = ResizeArray<_>(seqs |> Array.sumBy (fun s -> s.Count))
+    let results = seqs |> Array.map (fun s -> ResizeArray<_>(s.Count))
+
+    /// Returns the smallest key from the current position in all collections
+    let smallestKey() = 
+      let mutable k = Unchecked.defaultof<_>
+      let mutable found = false
+      for i = 0 to current.Length - 1 do
+        let idx, keys = current.[i]
+        if idx <> -1 then                   // else: No more values in this collection
+          if found then                     // Get smaller of previous & current
+            let k2 = keys.[idx]
+            try k <- if comparer.Compare(k, k2) <= 0 then k else k2
+            with _ -> raise (new ComparisonFailedException())
+          else                              // We found our first key
+            k <- keys.[idx]
+            found <- true
+      found, k
+
+    /// For a given key, advance all input collections currently at the given key
+    /// and add mapping to relocation table for them (also add key to the list of keys)
+    let addAndAdvanceForKey index k =
+      keys.Add(k)
+      for i = 0 to current.Length - 1 do
+        let idx, keys = current.[i]
+        if idx <> -1 && comparer.Compare(keys.[idx], k) = 0 then
+          current.[i] <- if idx + 1 >= keys.Count then -1, null else idx + 1, keys
+          results.[i].Add( (index, int64 idx) )
+
+    // While there is some key in any of the collections, call `addAndAdvanceForKey`
+    let mutable index = 0L
+    let mutable completed = false
+    while not completed do
+      match smallestKey() with
+      | false, _ -> completed <- true
+      | true, k -> addAndAdvanceForKey index k; index <- index + 1L
+    // Return results as arrays
+    keys.ToArray(), [ for r in results -> r.ToArray() ]
+
+
+  /// Calls either `alignAllOrderedMany` or `alignAllOrderedFew` depending on the number
+  /// of sequences to be aligned. Performance measurements suggest that 150 is the limit
+  /// when the implementation using binomial heap is faster.
+  let alignAllOrdered (collections:_[]) comparer = 
+    if collections.Length > 150 then alignAllOrderedMany collections comparer
+    else alignAllOrderedFew collections comparer
+    
+
+  /// Align two unordered sequences of keys (performs union of the keys)
+  /// The resulting relocations are returned as two-element list for symmetry with other functions
+  let alignUnorderedUnion (seq1:ReadOnlyCollection<'T>) (seq2:ReadOnlyCollection<'T>) = 
+    let dict = Dictionary<_, _>(seq1.Count + seq2.Count)
+    let keys = ResizeArray<_>(seq1.Count + seq2.Count)
+    let res1 = ResizeArray<_>(seq1.Count)
+    let res2 = ResizeArray<_>(seq1.Count)
+
+    let mutable keyIndex = 0L
+    for i = 0 to seq1.Count - 1 do
+      let key = seq1.[i]
+      keys.Add(key)
+      res1.Add( (keyIndex, int64 i) )
+      dict.[key] <- keyIndex
+      keyIndex <- keyIndex + 1L
+
+    for i = 0 to seq2.Count - 1 do
+      let key = seq2.[i]
       match dict.TryGetValue(key) with
-      | true, (left, _) -> dict.[key] <- (left, Some addr)
-      | _ -> dict.[key] <- (None, Some addr)
-    for (KeyValue(k, (l, r))) in dict do
-      yield k, l, r }
+      | true, ki -> 
+          res2.Add( (ki, int64 i) )
+      | false, _ ->
+          keys.Add(key)
+          res2.Add( (keyIndex, int64 i) )
+          keyIndex <- keyIndex + 1L
+          // No need to add to 'dict' because it will not appear again in 'seq2'
 
+    keys.ToArray(), [ res1.ToArray(); res2.ToArray() ]    
+
+
+  /// Align two unordered sequences of keys (performs intersection of the keys)
+  /// The resulting relocations are returned as two-element list for symmetry with other functions
+  let alignUnorderedIntersection (seq1:ReadOnlyCollection<'T>) (seq2:ReadOnlyCollection<'T>) = 
+    // Dictionary containing 'true' when the key is in both collections
+    let dict = Dictionary<_, _>(seq1.Count + seq2.Count)
+    for k in seq1 do dict.Add(k, false)
+    for k in seq2 do if fst (dict.TryGetValue(k)) then dict.[k] <- true
+
+    // Lookup with indices for keys & array of keys to return
+    let keyIndices = Dictionary<_, _>(seq1.Count + seq2.Count)
+    let keys = ResizeArray<_>()
+    for (KeyValue(k, v)) in dict do
+      if v then 
+        keyIndices.Add(k, int64 keys.Count)
+        keys.Add(k)
+
+    // Build relocation tables
+    let res1 = ResizeArray<_>(seq1.Count)
+    let res2 = ResizeArray<_>(seq2.Count)
+    for i = 0 to seq1.Count - 1 do 
+      let succ, j = keyIndices.TryGetValue(seq1.[i])
+      if succ then res1.Add( (j, int64 i) ) 
+    for i = 0 to seq2.Count - 1 do 
+      let succ, j = keyIndices.TryGetValue(seq2.[i])
+      if succ then res2.Add( (j, int64 i) ) 
+
+    // Return the results
+    keys.ToArray(), [ res1.ToArray(); res2.ToArray() ]
+
+  /// Align two unordered sequences of keys. Calls either
+  /// `alignUnorderedUnion` or `alignUnorderedIntersection`, based 
+  /// on the `intersectionOnly` parameter.
+  let alignUnordered s1 s2 intersectionOnly = 
+    if intersectionOnly then alignUnorderedIntersection s1 s2
+    else alignUnorderedUnion s1 s2
+
+
+  /// Align N unordered sequences of keys (performs union of the keys)
+  let alignAllUnordered (seqs:ReadOnlyCollection<'T>[]) = 
+    let capacity = seqs |> Array.sumBy (fun s -> s.Count)
+    let dict = Dictionary<_, _>(capacity)
+    let keys = ResizeArray(capacity)
+    let mutable keyIndex = 0L
+    let relocs = seqs |> Array.map (fun c -> ResizeArray<_>(c.Count))
+
+    for i = 0 to seqs.Length - 1 do
+      let seq = seqs.[i]
+      for j = 0 to seq.Count - 1 do
+        let key = seq.[j]
+        match dict.TryGetValue(key) with
+        | true, ki -> relocs.[i].Add( (ki, int64 j) )
+        | false, _ ->
+            keys.Add(key)
+            dict.Add(key, keyIndex)
+            relocs.[i].Add( (keyIndex, int64 j) )
+            keyIndex <- keyIndex + 1L
+            
+    keys.ToArray(), [ for r in relocs -> r.ToArray() ] 
+
+// --------------------------------------------------------------------------------------
+// Misc - formatting
+// --------------------------------------------------------------------------------------
+  
 /// [omit]
 /// An interface implemented by types that support nice formatting for F# Interactive
 /// (The `FSharp.DataFrame.fsx` file registers an FSI printer using this interface.)

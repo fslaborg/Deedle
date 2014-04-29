@@ -113,7 +113,7 @@ namespace Deedle.CSharp.Tests
     {
 		var msft = Frame.ReadCsv(@"..\..\..\..\samples\data\msft.csv");
 
-		var s = msft.GetSeries<double>("Open");
+		var s = msft.GetColumn<double>("Open");
 
     IEnumerable<KeyValuePair<int, double>> kvps =
         Enumerable.Range(0, 10).Select(k => new KeyValuePair<int, double>(k, k * k));
