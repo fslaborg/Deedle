@@ -79,13 +79,6 @@
     <Compile Include="Performance.fs" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Deedle.PerfTest.Core\Deedle.PerfTest.Core.fsproj">
-      <Name>Deedle.PerfTest.Core</Name>
-      <Project>{d1e7603a-aa82-4517-8605-360dc708b0e9}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-  </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
   </PropertyGroup>

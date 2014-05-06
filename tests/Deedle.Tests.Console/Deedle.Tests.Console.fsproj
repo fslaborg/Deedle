@@ -61,18 +61,6 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Deedle.CSharp.Tests\Deedle.CSharp.Tests.csproj">
-      <Name>Deedle.CSharp.Tests</Name>
-      <Project>{b0584275-6e9d-4db8-a35d-4f37b623f97e}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Deedle.Tests\Deedle.Tests.fsproj">
-      <Name>Deedle.Tests</Name>
-      <Project>{484a96e6-d217-47ee-974c-5d7b3cfb401e}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-  </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
   </PropertyGroup>

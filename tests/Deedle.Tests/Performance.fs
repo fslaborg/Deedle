@@ -146,5 +146,19 @@ let means = f |> Frame.groupRowsByString "s" |> Frame.applyLevel fst (fun r ->
 
 Whereas this code takes less than three seconds fairly consistently
 let means = f.GroupRowsWith x |> Series.mapValues (fun f -> f?n |> Series.mean)
+
+
+let rnd = System.Random(0)
+
+let s0 = series <| Array.init 10000 (fun i -> i => rnd.NextDouble())
+let f0 = frame [ for i in 0 .. 10 -> i => s0 ]
+let f1 = frame [ for i in 0 .. 100 -> i => s0 ]
+
+    // 75 ms ~> 40 ms
+    //f0 + s0 |> ignore
+
+    // 750 ms ~> 360 ms
+    f1 + s0 |> ignore
+
 *)
 
