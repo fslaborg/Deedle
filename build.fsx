@@ -34,7 +34,6 @@ let rpluginTags = "R RProvider"
 
 let gitHome = "https://github.com/BlueMountainCapital"
 let gitName = "Deedle"
-let testAssemblies = ["tests/*/bin/Release/Deedle*Tests*.dll"]
 
 // --------------------------------------------------------------------------------------
 // The rest of the code is standard F# build script 
@@ -75,13 +74,15 @@ Target "UpdateFsxVersions" (fun _ ->
 Target "RestorePackages" (fun _ ->
     !! "./**/packages.config"
     |> Seq.iter (RestorePackage (fun p -> { p with ToolPath = "./.nuget/NuGet.exe" }))
-    // Restore packages does not run install script, so copy files for R provider by hand
-    !! "packages/R.NET.1.5.5/lib/net40/*" |> CopyFiles "packages/RProvider.1.0.4/lib/" 
-    !! "packages/RDotNet.FSharp.0.1.2.1/lib/net40/*" |> CopyFiles "packages/RProvider.1.0.4/lib/" 
 )
 
 Target "Clean" (fun _ ->
     CleanDirs ["bin"; "temp" ]
+
+    CleanDirs [ "tests/Deedle.CSharp.Tests/bin" ]
+    CleanDirs [ "tests/Deedle.RPlugin.Tests/bin" ]
+    CleanDirs [ "tests/Deedle.Tests/bin" ]
+    CleanDirs [ "tests/Deedle.Tests.Console/bin" ]
 )
 
 Target "CleanDocs" (fun _ ->
@@ -92,13 +93,20 @@ Target "CleanDocs" (fun _ ->
 // Build library & test project
 
 Target "Build" (fun _ ->
-    { BaseDirectories = [__SOURCE_DIRECTORY__]
-      Includes = [project + ".sln"; project + ".Tests.sln"]
-      Excludes = [] } 
-    |> Scan
-    |> MSBuildRelease "" "Rebuild"
-    |> Log "AppBuild-Output: "
+    !! (project + ".sln")
+      |> MSBuildRelease "" "Rebuild"
+      |> Log "AppBuild-Output: "
+  
+    !! (project + ".Tests.sln")
+      |> MSBuildRelease "" "Rebuild"
+      |> Log "AppBuild-Output: "
 )
+
+Target "BuildCore" (fun _ ->
+    !! (project + ".Core.sln")
+      |> MSBuildRelease "" "Rebuild"
+      |> Log "AppBuild-Output: "
+  )
 
 // --------------------------------------------------------------------------------------
 // Run the unit tests using test runner & kill test runner when complete
@@ -108,10 +116,7 @@ Target "RunTests" (fun _ ->
     let nunitPath = sprintf "packages/NUnit.Runners.%s/Tools" nunitVersion
     ActivateFinalTarget "CloseTestRunner"
 
-    { BaseDirectories = [__SOURCE_DIRECTORY__]
-      Includes = testAssemblies
-      Excludes = [] } 
-    |> Scan
+    !! "tests/Deedle.*Tests/bin/Release/Deedle*Tests*.dll"
     |> NUnit (fun p ->
         { p with
             ToolPath = nunitPath
@@ -197,14 +202,21 @@ Target "Release" DoNothing
 // Run all targets by default. Invoke 'build <Target>' to override
 
 Target "All" DoNothing
+Target "AllCore" DoNothing
 
 "Clean"
   ==> "RestorePackages"
   ==> "UpdateFsxVersions"
   ==> "AssemblyInfo"
   ==> "Build"
-  ==> "RunTests"
-  ==> "All"
+  ==> "All" 
+
+"AssemblyInfo"
+  ==> "BuildCore"
+  ==> "AllCore"
+
+"RunTests" ==> "All"
+"RunTests" ==> "AllCore"
 
 "All" 
   ==> "CleanDocs"

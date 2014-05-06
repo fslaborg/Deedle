@@ -177,16 +177,10 @@ module internal Reflection =
           | _ -> OptionalValue.Missing)).DataSequence
         fieldName, createTypedVector fieldTyp it ]
 
-  let expandUntypedVector =
-    let staticExp =
-      { new VectorHelpers.VectorCallSite1<_> with
-          member x.Invoke(vect) = expandVector false vect }
-      |> VectorHelpers.createVectorDispatcher    
-    let dynamicExp =
-      { new VectorHelpers.VectorCallSite1<_> with
-          member x.Invoke(vect) = expandVector true vect }
-      |> VectorHelpers.createVectorDispatcher    
-    (fun dynamic col -> if dynamic then dynamicExp col else staticExp col)
+  let expandUntypedVector dynamic (col:IVector) =
+    { new VectorCallSite<_> with
+        member x.Invoke(vect) = expandVector dynamic vect }
+    |> col.Invoke
 
   /// Given type 'T that represents some .NET object, generate an array of 
   /// functions that take seq<'T> and generate IVector with each column:
@@ -225,15 +219,15 @@ module internal Reflection =
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module internal FrameUtils = 
-  open FSharp.Data
   open System
-  open System.Data
-  open System.IO
   open System.Collections.Generic
+  open System.Data
   open System.Globalization
-  open ProviderImplementation
-  open FSharp.Data.RuntimeImplementation
-  open FSharp.Data.RuntimeImplementation.StructuralTypes
+  open System.IO
+  open FSharp.Data
+  open FSharp.Data.Runtime
+  open FSharp.Data.Runtime.CsvInference
+  open FSharp.Data.Runtime.StructuralTypes
 
   let internal formatter (f:'T -> string) = 
     typeof<'T>, (fun (o:obj) -> f (unbox o))
@@ -288,10 +282,10 @@ module internal FrameUtils =
       formatPlainString <| o.ToString(null, ci)
     let formatters = 
       [ formatter (fun (dt:System.DateTime) ->
-          if dt.TimeOfDay = TimeSpan.Zero then dt.ToShortDateString() 
+          if dt.TimeOfDay = TimeSpan.Zero then dt.ToString("d", ci) 
           else dt.ToString(ci))
         formatter (fun (dt:System.DateTimeOffset) ->
-          if dt.TimeOfDay = TimeSpan.Zero then dt.Date.ToShortDateString() 
+          if dt.TimeOfDay = TimeSpan.Zero then dt.Date.ToString("d", ci) 
           else dt.DateTime.ToString(ci)) ] |> dict
     
     // Format optional value, using 
@@ -376,10 +370,9 @@ module internal FrameUtils =
 
 
   /// Load data from a CSV file using F# Data API
-  let readCsv (reader:TextReader) hasHeaders inferTypes inferRows schema (missingValues:string) separators culture maxRows =
+  let readCsv (reader:TextReader) hasHeaders inferTypes inferRows schema (missingValues:string[]) separators culture maxRows =
     let schema = defaultArg schema ""
     let schema = if schema = null then "" else schema
-    let missingValuesArr = missingValues.Split(',')
     let inferRows = defaultArg inferRows 0
     let safeMode = false // Irrelevant - all DF values can be missing
     let preferOptionals = true // Ignored
@@ -388,29 +381,28 @@ module internal FrameUtils =
     let cultureInfo = System.Globalization.CultureInfo.GetCultureInfo(culture)
 
     let createVector typ (data:string[]) = 
-      if typ = typeof<bool> then Vector.ofOptionalValues (Array.map (fun s -> Operations.ConvertBoolean(culture, Some(s))) data) :> IVector
-      elif typ = typeof<decimal> then Vector.ofOptionalValues (Array.map (fun s -> Operations.ConvertDecimal(culture, Some(s))) data) :> IVector
-      elif typ = typeof<float> then Vector.ofOptionalValues (Array.map (fun s -> Operations.ConvertFloat(culture, missingValues, Some(s))) data) :> IVector
-      elif typ = typeof<int> then Vector.ofOptionalValues (Array.map (fun s -> Operations.ConvertInteger(culture, Some(s))) data) :> IVector
-      elif typ = typeof<int64> then Vector.ofOptionalValues (Array.map (fun s -> Operations.ConvertInteger64(culture, Some(s))) data) :> IVector
+      let missingValuesStr = String.Join(",", missingValues)
+      if typ = typeof<bool> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertBoolean(culture, Some(s))) data) :> IVector
+      elif typ = typeof<decimal> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertDecimal(culture, Some(s))) data) :> IVector
+      elif typ = typeof<float> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertFloat(culture, missingValuesStr, Some(s))) data) :> IVector
+      elif typ = typeof<int> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertInteger(culture, Some(s))) data) :> IVector
+      elif typ = typeof<int64> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertInteger64(culture, Some(s))) data) :> IVector
       else Vector.ofValues data :> IVector
 
     // If 'inferTypes' is specified (or by default), use the CSV type inference
     // to load information about types in the CSV file. By default, use the entire
     // content (but inferRows can be set to smaller number). Otherwise we just
     // "infer" all columns as string.
-    let data = Csv.CsvFile.Load(reader, ?separators=separators, ?hasHeaders=hasHeaders)
+    let data = CsvFile.Load(reader, ?separators=separators, ?hasHeaders=hasHeaders)
     let inferedProperties = 
       if not (inferTypes = Some false) then
-        CsvInference.inferType 
-          data inferRows (missingValuesArr, cultureInfo) schema safeMode preferOptionals
-        ||> CsvInference.getFields preferOptionals
+        data.InferColumnTypes(inferRows, missingValues, cultureInfo, schema, safeMode, preferOptionals)
       else 
         let headers = 
           match data.Headers with 
           | None -> [| for i in 1 .. data.NumberOfColumns -> sprintf "Column%d" i |]
           | Some headers -> headers
-        [ for c in headers -> PrimitiveInferedProperty.Create(c, typeof<string>, true) ]
+        [ for c in headers -> PrimitiveInferedProperty.Create(c, typeof<string>, true, None) ]
 
     // Load the data and convert the values to the appropriate type
     let data = 
@@ -422,9 +414,9 @@ module internal FrameUtils =
     let columnIndex = Index.ofKeys [ for p in inferedProperties -> p.Name ]
     let columns = 
       inferedProperties |> Seq.mapi (fun i prop ->
-        [| for row in data.Data -> row.Columns.[i] |]
+        [| for row in data.Rows -> row.Columns.[i] |]
         |> createVector prop.RuntimeType )
-    let rowIndex = Index.ofKeys [ 0 .. (Seq.length data.Data) - 1 ]
+    let rowIndex = Index.ofKeys [ 0 .. (Seq.length data.Rows) - 1 ]
     Frame(rowIndex, columnIndex, Vector.ofValues columns)
 
 

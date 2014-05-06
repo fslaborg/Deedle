@@ -1,6 +1,6 @@
 ﻿(*** hide ***)
-#load "../../../packages/FSharp.Charting.0.87/FSharp.Charting.fsx"
-#r "../../../packages/FSharp.Data.1.1.10/lib/net40/FSharp.Data.dll"
+#load "../../../packages/FSharp.Charting.0.90.6/FSharp.Charting.fsx"
+#r "../../../packages/FSharp.Data.2.0.5/lib/net40/FSharp.Data.dll"
 #load "../../../bin/Deedle.fsx"
 open System
 open FSharp.Data
@@ -24,7 +24,7 @@ Draw a pie chart displaying the survival rate
 titanic
 |> Frame.groupRowsByBool "Survived"
 |> Frame.countLevel fst
-|> Frame.getSeries "PassengerId"
+|> Frame.getColumn "PassengerId"
 |> Series.indexWith ["Died"; "Survived"]
 |> Series.observations
 |> Chart.Pie

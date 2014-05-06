@@ -15,6 +15,15 @@ open Microsoft.FSharp.Reflection
 // Conversion helpers
 // ------------------------------------------------------------------------------------------------
 
+let invcult = System.Globalization.CultureInfo.InvariantCulture
+let dateFmt = "yyyy-MM-dd HH:mm:ss.ffffff"
+
+let dateTimeOffsetToStr (dt:DateTimeOffset) =
+    dt.ToUniversalTime().ToString(dateFmt, invcult)
+
+let dateTimeToStr (dt:DateTime) =
+    dt.ToUniversalTime().ToString(dateFmt, invcult)
+
 /// Convert Deedle frame key (or multi-level tuple) to string that can be passed to R
 let convertKey (key:obj) =
   if Object.ReferenceEquals(key, null) then ""
@@ -22,6 +31,10 @@ let convertKey (key:obj) =
     FSharpValue.GetTupleFields(key)
     |> Array.map string
     |> String.concat " - "
+  elif key :? DateTime then
+    dateTimeToStr (key :?> DateTime)
+  elif key :? DateTimeOffset then
+    dateTimeOffsetToStr (key :?> DateTimeOffset)
   else string key
 
 /// Turn columns/rows into an index with either int or string keys
@@ -39,8 +52,8 @@ let convertIndex (names:string[]) : option<IIndex<'R>> =
   with _ -> None
 
 /// Convert vector to a boxed array that can be passed to the R provider
-let convertVector : IVector -> obj =
-  { new VectorHelpers.VectorCallSite1<obj> with
+let convertVector (vector:IVector) : obj =
+  { new VectorCallSite<obj> with
       override x.Invoke<'T>(col:IVector<'T>) = 
         // Figure out how to handle missing values - if we can pass NA or NaN to R
         // then we just fill missing values with 'missingVal'
@@ -61,7 +74,7 @@ let convertVector : IVector -> obj =
         // Either there are no missing values, or we can fill them 
         else 
           box [| for v in col.DataSequence -> if v.HasValue then v.Value else missingVal.Value |] }
-  |> VectorHelpers.createVectorDispatcher 
+  |> vector.Invoke
 
 
 /// Creates data frame with the specified row & col indices
@@ -70,7 +83,7 @@ let constructFrame (df:DataFrame) rowIndex colIndex =
   // TODO: Do not always create column with objects - pick int/string/something
   let data = Array.init df.ColumnCount (fun colIndex ->
     let colData = rows |> Array.map (fun r -> r.[colIndex])
-    VectorHelpers.createTypedVector Vectors.ArrayVector.ArrayVectorBuilder.Instance colData)
+    VectorHelpers.createInferredTypeVector Vectors.ArrayVector.ArrayVectorBuilder.Instance colData)
   Some(Frame<_,_>(rowIndex, colIndex, Vector.ofValues data))
 
 /// Convert R expression to a data frame and return frame of an
@@ -109,7 +122,6 @@ let tryAsZooSeries (symExpr:SymbolicExpression) =
 
 /// Try convert the keys of a specified zoo time series to DateTime
 let tryGetDateTimeKeys (zoo:SymbolicExpression) fromDateTime =
-  let invcult = System.Globalization.CultureInfo.InvariantCulture
   try
     R.strftime(R.index(zoo), "%Y-%m-%d %H:%M:%S").AsCharacter()
     |> Seq.map (fun v -> DateTime.ParseExact(v, "yyyy-MM-dd HH:mm:ss", invcult))

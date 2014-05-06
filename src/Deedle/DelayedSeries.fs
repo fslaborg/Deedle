@@ -104,6 +104,7 @@ module internal Ranges =
 open Ranges
 open System.Threading.Tasks
 open System.Collections.Generic
+open System.Collections.ObjectModel
 
 /// Specifies the ranges for which data need to be provided
 type internal DelayedSourceRanges<'K> = (('K * BoundaryBehavior) * ('K * BoundaryBehavior))[]
@@ -169,6 +170,7 @@ type internal DelayedVector<'K, 'V when 'K : equality> internal (source:DelayedS
     member x.SuppressPrinting = true
     member x.GetObject(index) = source.Values.GetObject(index)
     member x.ObjectSequence = source.Values.ObjectSequence
+    member x.Invoke(site) = site.Invoke<'V>(x)
   interface IVector<'V> with
     member x.GetValue(index) = source.Values.GetValue(index)
     member x.Data = source.Values.Data
@@ -187,6 +189,7 @@ type internal DelayedIndex<'K, 'V when 'K : equality> internal (source:DelayedSo
     member x.Builder = DelayedIndexBuilder() :> IIndexBuilder
     member x.KeyRange = source.RangeMin, source.RangeMax
     member x.Keys = source.Index.Keys
+    member x.Locate(key) = source.Index.Locate(key)
     member x.Lookup(key, semantics, check) = source.Index.Lookup(key, semantics, check)
     member x.Mappings = source.Index.Mappings
     member x.IsOrdered = true // source.Index.Ordered
@@ -212,18 +215,20 @@ and internal DelayedIndexFunction<'K, 'R when 'K : equality> =
 and internal DelayedIndexBuilder() =
   let builder = IndexBuilder.Instance
   interface IIndexBuilder with
-    member x.Create(keys, ordered) = builder.Create(keys, ordered)
+    member x.Create(keys:seq<_>, ordered) = builder.Create(keys, ordered)
+    member x.Create(keys:ReadOnlyCollection<_>, ordered) = builder.Create(keys, ordered)
     member x.Aggregate(index, aggregation, vector, selector) = builder.Aggregate(index, aggregation, vector, selector)
-    member x.GroupBy(index, keySel, vector, valueSel) = builder.GroupBy(index, keySel, vector, valueSel)
+    member x.GroupBy(index, keySel, vector) = builder.GroupBy(index, keySel, vector)
     member x.OrderIndex(sc) = builder.OrderIndex(sc)
+    member x.Shift(sc, offset) = builder.Shift(sc, offset)
     member x.Union(sc1, sc2) = builder.Union(sc1, sc2)
-    member x.Append(sc1, sc2, transform) = builder.Append(sc1, sc2, transform)
     member x.Intersect(sc1, sc2) = builder.Intersect(sc1, sc2)
+    member x.Merge(scs, transform) = builder.Merge(scs, transform)
     member x.LookupLevel(sc, key) = builder.LookupLevel(sc, key)
     member x.WithIndex(index1, f, vector) = builder.WithIndex(index1, f, vector)
     member x.Reindex(index1, index2, semantics, vector, cond) = builder.Reindex(index1, index2, semantics, vector, cond)
     member x.DropItem(sc, key) = builder.DropItem(sc, key)
-    member x.Resample(index, keys, close, vect, ks, vs) = builder.Resample(index, keys, close, vect, ks, vs)
+    member x.Resample(index, keys, close, vect, selector) = builder.Resample(index, keys, close, vect, selector)
     
     member x.Project(index:IIndex<'K>) = 
       // If the index is delayed, then projection evaluates it
@@ -317,7 +322,7 @@ open Deedle.Vectors.ArrayVector
 /// in a database, but only loads data that are actually needed. For more information
 /// see the [lazy data loading tutorial](../lazysource.html).
 /// 
-/// ### Example
+/// ## Example
 /// 
 /// Assuming we have a function `generate lo hi` that generates data in the specified
 /// `DateTime` range, we can create lazy series as follows:

@@ -12,63 +12,116 @@ open Deedle.Keys
 open Deedle.Indices
 open Deedle.Internal
 
+// --------------------------------------------------------------------------------------
+// Functions and methods for creating series
+// --------------------------------------------------------------------------------------
+
+/// Contains extensions for creating values of type `Series<'K, 'V>` including
+/// a type with functions such as `Series.ofValues` and the `series` function.
+/// The module is automatically opened for all F# code that references `Deedle`.
 [<AutoOpen>]
 module FSharpSeriesExtensions =
   open System
 
   type Series = 
+    /// Create a series from a sequence of key-value pairs that represent
+    /// the observations of the series. Consider using a shorthand 
+    /// `series` function instead.
     static member ofObservations(observations) = 
       Series(Seq.map fst observations, Seq.map snd observations)
+
+    /// Create a series from the specified sequence of values. The keys
+    /// of the resulting series are generated ordinarilly, starting from 0.
     static member ofValues(values) = 
       let keys = values |> Seq.mapi (fun i _ -> i)
       Series(keys, values)
+
+    /// Create a series from a sequence of nullable values. The keys
+    /// of the resulting series are generated ordinarilly, starting from 0.
+    /// The resulting series will contain keys associated with the `null`
+    /// values, but the values are treated as missing.
     static member ofNullables(values:seq<Nullable<_>>) = 
       let keys = values |> Seq.mapi (fun i _ -> i)
       Series(keys, values).Select(fun (KeyValue(_, v:Nullable<_>)) -> v.Value)
-    static member ofOptionalObservations(observations:seq<'K * OptionalValue<_>>) = 
+    
+    /// Create a series from a sequence of observations where the value is of
+    /// type `option<'T>`. When the value is `None`, the key remains in the
+    /// series, but the value is treated as missing.
+    static member ofOptionalObservations(observations:seq<'K * option<_>>) = 
       Series(Seq.map fst observations, Seq.map snd observations)
-        .SelectOptional(fun kvp -> OptionalValue.bind id kvp.Value)
+        .SelectOptional(fun kvp -> OptionalValue.bind OptionalValue.ofOption kvp.Value)
 
+  /// Create a series from a sequence of key-value pairs that represent
+  /// the observations of the series. This function can be used together
+  /// with the `=>` operator to create key-value pairs.
+  ///
+  /// ## Example
+  ///
+  ///     // Creates a series with squares of numbers
+  ///     let sqs = series [ 1 => 1.0; 2 => 4.0; 3 => 9.0 ]
+  ///
   let series observations = Series.ofObservations observations
 
+
+/// Contains extension methods for various instances of `IEnumerable` that
+/// can be used for creating `Series<'K, 'V>` from the `IEnumerable` value.
 [<Extension>]
 type EnumerableExtensions =
+  /// Convert the `IEnumerable` to a `Series`, using the keys and values of
+  /// the `KeyValuePair` as keys and values of the resulting series.
   [<Extension>]
   static member ToSeries(observations:seq<KeyValuePair<'K, 'V>>) = 
     observations |> Seq.map (fun kvp -> kvp.Key, kvp.Value) |> Series.ofObservations
+
+  /// Convert the `IEnumerable` to a  `Series`, using the keys and values of
+  /// the `KeyValuePair` as keys and values of the resulting series.
+  /// `OptionalValue.Missing` can be used to denote missing values.
   [<Extension>]
   static member ToSparseSeries(observations:seq<KeyValuePair<'K, OptionalValue<'V>>>) = 
-    observations |> Seq.map (fun kvp -> kvp.Key, kvp.Value) |> Series.ofOptionalObservations
+    observations |> Seq.map (fun kvp -> kvp.Key, OptionalValue.asOption kvp.Value) |> Series.ofOptionalObservations
+
+  /// Convert the `IEnumerable` to a `Series`, using the seuqence as the values
+  /// of the resulting series. The keys are generated ordinarilly, starting from 0.
   [<Extension>]
   static member ToOrdinalSeries(observations:seq<'V>) = 
     observations |> Series.ofValues
 
-type internal Series =
-  /// Vector & index builders
-  static member internal vectorBuilder = VectorBuilder.Instance
-  static member internal indexBuilder = IndexBuilder.Instance
+// --------------------------------------------------------------------------------------
+// Series builder
+// --------------------------------------------------------------------------------------
 
-  static member internal Create(data:seq<'V>) =
-    let lookup = data |> Seq.mapi (fun i _ -> i)
-    Series<int, 'V>(Index.ofKeys(lookup), Vector.ofValues(data), Series.vectorBuilder, Series.indexBuilder)
-  static member internal Create(index:seq<'K>, data:seq<'V>) =
-    Series<'K, 'V>(Index.ofKeys(index), Vector.ofValues(data), Series.vectorBuilder, Series.indexBuilder)
-  static member internal Create(index:IIndex<'K>, data:IVector<'V>) = 
-    Series<'K, 'V>(index, data, Series.vectorBuilder, Series.indexBuilder)
-  static member internal CreateUntyped(index:IIndex<'K>, data:IVector<obj>) = 
-    ObjectSeries<'K>(index, data, Series.vectorBuilder, Series.indexBuilder)
-
-
+/// The type can be used for creating series using mutation. You can add 
+/// items using `Add` and get the resulting series using the `Series` property.
+///
+/// ## Using from C#
+///
+/// The type supports the C# collection builder pattern:
+///
+///    	var s = new SeriesBuilder<string, double>
+///       { { "A", 1.0 }, { "B", 2.0 }, { "C", 3.0 } }.Series;
+///
+/// The type also supports the `dynamic` operator:
+///
+///     dynamic sb = new SeriesBuilder<string, obj>();
+///     sb.ID = 1;
+///     sb.Value = 3.4;
+///
 type SeriesBuilder<'K, 'V when 'K : equality and 'V : equality>() = 
   let mutable keys = []
   let mutable values = []
 
+  /// Add specified key and value to the series being build
   member x.Add(key:'K, value:'V) =
     keys <- key::keys
     values <- value::values
   
+  /// Returns the constructed series. The series is an immutable
+  /// copy of the current values and so further additions will not
+  /// change the returned series.
   member x.Series =
-    Series.Create(Index.ofKeys (List.rev keys), Vector.ofValues(List.rev values))
+    Series
+      ( Index.ofKeys (List.rev keys), Vector.ofValues(List.rev values), 
+        VectorBuilder.Instance, IndexBuilder.Instance )
 
   static member (?<-) (builder:SeriesBuilder<string, 'V>, name:string, value:'V) =
     builder.Add(name, value)
@@ -110,18 +163,6 @@ type SeriesBuilder<'K, 'V when 'K : equality and 'V : equality>() =
       match Seq.zip keys values |> Seq.tryFind (fun (k, v) -> k = key) with
       | Some (_, v) -> value <- v; true | _ -> false
     
-
-(*
-ICollection<TKey> Keys { get; }
-ICollection<TValue> Values { get; }
-
-TValue this[TKey key] { get; set; }
-
-void Add(TKey key, TValue value);
-bool ContainsKey(TKey key);
-bool Remove(TKey key);
-bool TryGetValue(TKey key, out TValue value);
-*)
   interface System.Dynamic.IDynamicMetaObjectProvider with 
     member builder.GetMetaObject(expr) = 
       DynamicExtensions.createGetterAndSetterFromFunc expr builder
@@ -134,8 +175,14 @@ bool TryGetValue(TKey key, out TValue value);
             let converted = Convert.changeType<'V> value
             builder.Add(unbox<'K> name, converted))
 
+/// A simple class that inherits from `SeriesBuilder<'K, obj>` and can be
+/// used instead of writing `SeriesBuilder<'K, obj>` with two type arguments.
 type SeriesBuilder<'K when 'K : equality>() =
   inherit SeriesBuilder<'K, obj>()
+
+// --------------------------------------------------------------------------------------
+// Extensions providing nice C#-friendly API
+// --------------------------------------------------------------------------------------
 
 [<Extension>]
 type SeriesExtensions =
@@ -162,12 +209,40 @@ type SeriesExtensions =
   [<Extension>]
   static member Log(series:Series<'K, float>) = log series
 
+  /// Returns a series with values shifted by the specified offset. When the offset is 
+  /// positive, the values are shifted forward and first `offset` keys are dropped. When the
+  /// offset is negative, the values are shifted backwards and the last `offset` keys are dropped.
+  /// Expressed in pseudo-code:
+  ///
+  ///     result[k] = series[k - offset]
+  ///
+  /// ## Parameters
+  ///  - `offset` - Can be both positive and negative number.
+  ///  - `series` - The input series to be shifted.
+  ///
+  /// ## Remarks
+  /// If you want to calculate the difference, e.g. `s - (Series.shift 1 s)`, you can
+  /// use `Series.diff` which will be a little bit faster.
   [<Extension>]
   static member Shift(series:Series<'K, 'V>, offset) = Series.shift offset series
 
   [<Extension>]
+  static member Sort(series:Series<'K, 'V>) = Series.sort series
+
+  [<Extension>]
+  static member SortBy(series:Series<'K, 'V>, f: Func<'V,'V2>) = Series.sortBy f.Invoke series
+
+  [<Extension>]
+  static member SortWith(series:Series<'K, 'V>, cmp: Comparer<'V>) = Series.sortWith (fun x y -> cmp.Compare(x, y)) series
+
+  [<Extension>]
   static member ContainsKey(series:Series<'K, 'T>, key:'K) = 
     series.Keys.Contains(key)
+
+  /// Collapses a series of OptionalValue<'T> values to just 'T values
+  [<Extension>]
+  static member Flatten(series:Series<'K,'T opt>) =
+    series |> Series.mapValues OptionalValue.asOption |> Series.flatten
 
   /// Returns all keys from the sequence, together with the associated (optional)
   /// values. The values are returned using the `OptionalValue<T>` struct which
@@ -176,6 +251,14 @@ type SeriesExtensions =
   static member GetAllObservations(series:Series<'K, 'T>) = seq {
     for key, address in series.Index.Mappings ->
       KeyValuePair(key, series.Vector.GetValue(address)) }
+
+  /// Returns all (optional) values. The values are returned using the 
+  /// `OptionalValue<T>` struct which provides `HasValue` for testing 
+  /// if the value is available.
+  [<Extension>]
+  static member GetAllValues(series:Series<'K, 'T>) = seq {
+    for key, address in series.Index.Mappings -> 
+      series.Vector.GetValue(address) }
 
   /// Return observations with available values. The operation skips over 
   /// all keys with missing values (such as values created from `null`,
@@ -189,12 +272,51 @@ type SeriesExtensions =
   // static member Where(series:Series<'K, 'T>, f:System.Func<KeyValuePair<'K, 'V>, bool>) = 
 
 
+  /// Returns a series containing difference between a value in the original series and 
+  /// a value at the specified offset. For example, calling `Series.diff 1 s` returns a 
+  /// series where previous value is subtracted from the current one. 
+  ///
+  /// ## Parameters
+  ///  - `offset` - When positive, subtracts the past values from the current values;
+  ///    when negative, subtracts the future values from the current values.
+  ///  - `series` - The input series.
+  ///
   [<Extension>]
   static member Diff(series:Series<'K, float>, offset) = series |> Series.diff offset
+
+  /// Returns a series containing difference between a value in the original series and 
+  /// a value at the specified offset. For example, calling `Series.diff 1 s` returns a 
+  /// series where previous value is subtracted from the current one. 
+  ///
+  /// ## Parameters
+  ///  - `offset` - When positive, subtracts the past values from the current values;
+  ///    when negative, subtracts the future values from the current values.
+  ///  - `series` - The input series.
+  ///
   [<Extension>]
   static member Diff(series:Series<'K, float32>, offset) = series |> Series.diff offset
+
+  /// Returns a series containing difference between a value in the original series and 
+  /// a value at the specified offset. For example, calling `Series.diff 1 s` returns a 
+  /// series where previous value is subtracted from the current one. 
+  ///
+  /// ## Parameters
+  ///  - `offset` - When positive, subtracts the past values from the current values;
+  ///    when negative, subtracts the future values from the current values.
+  ///  - `series` - The input series.
+  ///
   [<Extension>]
   static member Diff(series:Series<'K, decimal>, offset) = series |> Series.diff offset
+
+  /// Returns a series containing difference between a value in the original series and 
+  /// a value at the specified offset. For example, calling `Series.diff 1 s` returns a 
+  /// series where previous value is subtracted from the current one. 
+  ///
+  /// ## Parameters
+  ///  - `offset` - When positive, subtracts the past values from the current values;
+  ///    when negative, subtracts the future values from the current values.
+  ///  - `series` - The input series.
+  ///
   [<Extension>]
   static member Diff(series:Series<'K, int>, offset) = series |> Series.diff offset
 
@@ -233,356 +355,6 @@ type SeriesExtensions =
 
   [<Extension>]
   static member LastKey(series:Series<'K, 'V>) = series.KeyRange |> snd
-
-  // ----------------------------------------------------------------------------------------------
-  // Statistics
-  // ----------------------------------------------------------------------------------------------
-
-  /// Returns the mean of the elements of the series. The operation skips over
-  /// missing values and so the result will never be `NaN`.
-  /// [category:Statistics]
-  [<Extension>]
-  static member Mean(series:Series<'K, float>) = Series.mean series
-
-  /// Returns the mean of the elements of the series. The operation skips over
-  /// missing values and so the result will never be `NaN`.
-  /// [category:Statistics]
-  [<Extension>]
-  static member Mean(series:Series<'K, float32>) = Series.mean series
-
-  /// Returns the mean of the elements of the series. 
-  /// [category:Statistics]
-  [<Extension>]
-  static member Mean(series:Series<'K, decimal>) = Series.mean series
-
-  /// Returns the standard deviation of the elements of the series. The operation skips over
-  /// missing values and so the result will never be `NaN`.
-  /// [category:Statistics]
-  [<Extension>]
-  static member StandardDeviation(series:Series<'K, float>) = Series.sdv series
-
-  /// Returns the median of the elements of the series. The operation skips over
-  /// missing values and so the result will never be `NaN`.
-  /// [category:Statistics]
-  [<Extension>]
-  static member Median(series:Series<'K, float>) = Series.median series
-
-  /// Returns the sum of the elements of the series. The operation skips over
-  /// missing values and so the result will never be `NaN`.
-  /// [category:Statistics]
-  [<Extension>]
-  static member Sum(series:Series<'K, float>) = Series.sum series
-
-  /// Returns the sum of the elements of the series. The operation skips over
-  /// missing values and so the result will never be `NaN`.
-  /// [category:Statistics]
-  [<Extension>]
-  static member Sum(series:Series<'K, float32>) = Series.sum series
-
-  /// Returns the sum of the elements of the series. 
-  /// [category:Statistics]
-  [<Extension>]
-  static member Sum(series:Series<'K, int>) = Series.sum series
-
-  /// Returns the sum of the elements of the series. 
-  /// [category:Statistics]
-  [<Extension>]
-  static member Sum(series:Series<'K, decimal>) = Series.sum series
-
-  /// Returns the smallest of all elements of the series. The operation 
-  /// skips over missing values and so the result will never be `NaN`.
-  /// [category:Statistics]
-  [<Extension>]
-  static member Min(series:Series<'K, float>) = Series.min series
-
-  /// Returns the smallest of all elements of the series. The operation 
-  /// skips over missing values and so the result will never be `NaN`.
-  /// [category:Statistics]
-  [<Extension>]
-  static member Min(series:Series<'K, float32>) = Series.min series
-
-  /// Returns the smallest of all elements of the series. 
-  /// [category:Statistics]
-  [<Extension>]
-  static member Min(series:Series<'K, int>) = Series.min series
-
-  /// Returns the smallest of all elements of the series. 
-  /// [category:Statistics]
-  [<Extension>]
-  static member Min(series:Series<'K, decimal>) = Series.min series
-
-  /// Returns the greatest of all elements of the series. The operation 
-  /// skips over missing values and so the result will never be `NaN`.
-  /// [category:Statistics]
-  [<Extension>]
-  static member Max(series:Series<'K, float>) = Series.max series
-
-  /// Returns the greatest of all elements of the series. The operation 
-  /// skips over missing values and so the result will never be `NaN`.
-  /// [category:Statistics]
-  [<Extension>]
-  static member Max(series:Series<'K, float32>) = Series.max series
-
-  /// Returns the greatest of all elements of the series. 
-  /// [category:Statistics]
-  [<Extension>]
-  static member Max(series:Series<'K, int>) = Series.max series
-
-  /// Returns the greatest of all elements of the series. 
-  /// [category:Statistics]
-  [<Extension>]
-  static member Max(series:Series<'K, decimal>) = Series.max series
-
-  /// Groups the elements of the input series in groups based on the keys
-  /// produced by `groupSelector` and then returns a new series containing
-  /// the mean of each group. 
-  ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the means
-  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
-  ///
-  /// [category:Statistics]
-  [<Extension>]
-  static member MeanLevel(series:Series<'K1, float>, groupSelector:Func<'K1, 'K2>) = Series.meanLevel groupSelector.Invoke series
-
-  /// Groups the elements of the input series in groups based on the keys
-  /// produced by `groupSelector` and then returns a new series containing
-  /// the mean of each group. 
-  ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the means
-  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
-  ///
-  /// [category:Statistics]
-  [<Extension>]
-  static member MeanLevel(series:Series<'K1, float32>, groupSelector:Func<'K1, 'K2>) = Series.meanLevel groupSelector.Invoke series
-
-  /// Groups the elements of the input series in groups based on the keys
-  /// produced by `groupSelector` and then returns a new series containing
-  /// the mean of each group. 
-  ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the means
-  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
-  ///
-  /// [category:Statistics]
-  [<Extension>]
-  static member MeanLevel(series:Series<'K1, decimal>, groupSelector:Func<'K1, 'K2>) = Series.meanLevel groupSelector.Invoke series
-
-  /// Groups the elements of the input series in groups based on the keys
-  /// produced by `groupSelector` and then returns a new series containing
-  /// the standard deviation of each group. 
-  ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the standard deviations
-  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
-  ///
-  /// [category:Statistics]
-  static member StandardDeviationLevel(series:Series<'K1, float>, groupSelector:Func<'K1, 'K2>) = Series.sdvLevel groupSelector.Invoke series
-
-  /// Groups the elements of the input series in groups based on the keys
-  /// produced by `groupSelector` and then returns a new series containing
-  /// the median of each group. 
-  ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the medians
-  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
-  ///
-  /// [category:Statistics]
-  [<Extension>]
-  static member MedianLevel(series:Series<'K1, float>, groupSelector:Func<'K1, 'K2>) = Series.medianLevel groupSelector.Invoke series
-
-  /// Groups the elements of the input series in groups based on the keys
-  /// produced by `groupSelector` and then returns a new series containing
-  /// the sum of each group. 
-  ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the sums
-  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
-  ///
-  /// [category:Statistics]
-  [<Extension>]
-  static member SumLevel(series:Series<'K1, float>, groupSelector:Func<'K1, 'K2>) = Series.sumLevel groupSelector.Invoke series
-
-  /// Groups the elements of the input series in groups based on the keys
-  /// produced by `groupSelector` and then returns a new series containing
-  /// the sum of each group. 
-  ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the sums
-  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
-  ///
-  /// [category:Statistics]
-  [<Extension>]
-  static member SumLevel(series:Series<'K1, float32>, groupSelector:Func<'K1, 'K2>) = Series.sumLevel groupSelector.Invoke series
-
-  /// Groups the elements of the input series in groups based on the keys
-  /// produced by `groupSelector` and then returns a new series containing
-  /// the sum of each group. 
-  ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the sums
-  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
-  ///
-  /// [category:Statistics]
-  [<Extension>]
-  static member SumLevel(series:Series<'K1, int>, groupSelector:Func<'K1, 'K2>) = Series.sumLevel groupSelector.Invoke series
-
-  /// Groups the elements of the input series in groups based on the keys
-  /// produced by `groupSelector` and then returns a new series containing
-  /// the sum of each group. 
-  ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the sums
-  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
-  ///
-  /// [category:Statistics]
-  [<Extension>]
-  static member SumLevel(series:Series<'K1, decimal>, groupSelector:Func<'K1, 'K2>) = Series.sumLevel groupSelector.Invoke series
-
-  /// Groups the elements of the input series in groups based on the keys
-  /// produced by `groupSelector` and then returns a new series containing
-  /// the smallest element of each group. 
-  ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the smallest elements
-  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
-  ///
-  /// [category:Statistics]
-  [<Extension>]
-  static member MinLevel(series:Series<'K1, float>, groupSelector:Func<'K1, 'K2>) = Series.minLevel groupSelector.Invoke series
-
-  /// Groups the elements of the input series in groups based on the keys
-  /// produced by `groupSelector` and then returns a new series containing
-  /// the smallest element of each group. 
-  ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the smallest elements
-  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
-  ///
-  /// [category:Statistics]
-  [<Extension>]
-  static member MinLevel(series:Series<'K1, float32>, groupSelector:Func<'K1, 'K2>) = Series.minLevel groupSelector.Invoke series
-
-  /// Groups the elements of the input series in groups based on the keys
-  /// produced by `groupSelector` and then returns a new series containing
-  /// the smallest element of each group. 
-  ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the smallest elements
-  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
-  ///
-  /// [category:Statistics]
-  [<Extension>]
-  static member MinLevel(series:Series<'K1, int>, groupSelector:Func<'K1, 'K2>) = Series.minLevel groupSelector.Invoke series
-
-  /// Groups the elements of the input series in groups based on the keys
-  /// produced by `groupSelector` and then returns a new series containing
-  /// the smallest element of each group. 
-  ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the smallest elements
-  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
-  ///
-  /// [category:Statistics]
-  [<Extension>]
-  static member MinLevel(series:Series<'K1, decimal>, groupSelector:Func<'K1, 'K2>) = Series.minLevel groupSelector.Invoke series
-
-  /// Groups the elements of the input series in groups based on the keys
-  /// produced by `groupSelector` and then returns a new series containing
-  /// the greatest element of each group. 
-  ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the greatest elements
-  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
-  ///
-  /// [category:Statistics]
-  [<Extension>]
-  static member MaxLevel(series:Series<'K1, float>, groupSelector:Func<'K1, 'K2>) = Series.maxLevel groupSelector.Invoke series
-
-  /// Groups the elements of the input series in groups based on the keys
-  /// produced by `groupSelector` and then returns a new series containing
-  /// the greatest element of each group. 
-  ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the greatest elements
-  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
-  ///
-  /// [category:Statistics]
-  [<Extension>]
-  static member MaxLevel(series:Series<'K1, float32>, groupSelector:Func<'K1, 'K2>) = Series.maxLevel groupSelector.Invoke series
-
-  /// Groups the elements of the input series in groups based on the keys
-  /// produced by `groupSelector` and then returns a new series containing
-  /// the greatest element of each group. 
-  ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the greatest elements
-  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
-  ///
-  /// [category:Statistics]
-  [<Extension>]
-  static member MaxLevel(series:Series<'K1, int>, groupSelector:Func<'K1, 'K2>) = Series.maxLevel groupSelector.Invoke series
-
-  /// Groups the elements of the input series in groups based on the keys
-  /// produced by `groupSelector` and then returns a new series containing
-  /// the greatest element of each group. 
-  ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the greatest elements
-  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
-  ///
-  /// [category:Statistics]
-  [<Extension>]
-  static member MaxLevel(series:Series<'K1, decimal>, groupSelector:Func<'K1, 'K2>) = Series.maxLevel groupSelector.Invoke series
-
-  /// Groups the elements of the input series in groups based on the keys
-  /// produced by `groupSelector` and then returns a new series containing
-  /// the counts of elements in each group. 
-  ///
-  /// This operation is designed to be used with [hierarchical indexing](../features.html#indexing).
-  ///
-  /// ## Parameters
-  ///  - `series` - A series of values that are used to calculate the counts
-  ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
-  ///
-  /// [category:Statistics]
-  [<Extension>]
-  static member CountLevel(series:Series<'K1, decimal>, groupSelector:Func<'K1, 'K2>) = Series.countLevel groupSelector.Invoke series
 
   // ----------------------------------------------------------------------------------------------
   // Missing values
@@ -658,7 +430,7 @@ type SeriesExtensions =
   ///
   /// ## Remarks
   /// This function can be used to implement more complex interpolation.
-  /// For example see [handling missing values in the tutorial](../features.html#missing)
+  /// For example see [handling missing values in the tutorial](../frame.html#missing)
   ///
   /// [category:Missing values]
   [<Extension>]
@@ -676,8 +448,8 @@ type SeriesExtensions =
   ///
   /// [category:Data structure manipulation]
   [<Extension>]
-  static member OrderByKey(series:Series<'K, 'T>) = 
-    Series.orderByKey series
+  static member SortByKey(series:Series<'K, 'T>) = 
+    Series.sortByKey series
 
   // ----------------------------------------------------------------------------------------------
   // Lookup, resampling and scaling
@@ -751,7 +523,7 @@ type SeriesExtensions =
   /// [category:Lookup, resampling and scaling]
   [<Extension>]
   static member ResampleUniform(series:Series<'K, 'V>, keyProj:Func<_, _>, nextKey:Func<_, _>) =
-    Series.resampleUniformInto Lookup.NearestSmaller keyProj.Invoke nextKey.Invoke Series.lastValue series
+    Series.resampleUniformInto Lookup.ExactOrSmaller keyProj.Invoke nextKey.Invoke Series.lastValue series
 
   /// Resample the series based on equivalence class on the keys and also generate values 
   /// for all keys of the target space that are between the minimal and maximal key of the
@@ -780,6 +552,22 @@ type SeriesExtensions =
   static member ResampleUniform(series:Series<'K1, 'V>, keyProj:Func<'K1, 'K2>, nextKey:Func<'K2, 'K2>, fillMode:Lookup) =
     Series.resampleUniformInto fillMode keyProj.Invoke nextKey.Invoke Series.lastValue series
 
+  /// Sample an (ordered) series by finding the value at the exact or closest prior key 
+  /// for some new sequence of keys. 
+  /// 
+  /// ## Parameters
+  ///  - `series` - An input series to be sampled
+  ///  - `keys`   - The keys at which to sample
+  /// 
+  /// ## Remarks
+  /// This operation is only supported on ordered series. The method throws
+  /// `InvalidOperationException` when the series is not ordered.
+  /// 
+  /// [category:Lookup, resampling and scaling]
+  [<Extension>]
+  static member Sample<'K, 'V when 'K : equality>(series:Series<'K, 'V>, keys) =
+    series |> Series.sample keys
+
   /// Finds values at, or near, the specified times in a given series. The operation generates
   /// keys starting at the specified `start` time, using the specified `interval`
   /// and then finds nearest smaller values close to such keys according to `dir`.
@@ -800,7 +588,7 @@ type SeriesExtensions =
   /// [category:Lookup, resampling and scaling]
   [<Extension>]
   static member Sample<'V>(series:Series<DateTime, 'V>, start:DateTime, interval:TimeSpan, dir) =
-    series |> Series.Implementation.lookupTimeInternal (+) (Some start) interval dir Lookup.NearestSmaller
+    series |> Series.Implementation.lookupTimeInternal (+) (Some start) interval dir Lookup.ExactOrSmaller
 
   /// Finds values at, or near, the specified times in a given series. The operation generates
   /// keys starting at the specified `start` time, using the specified `interval`
@@ -822,7 +610,7 @@ type SeriesExtensions =
   /// [category:Lookup, resampling and scaling]
   [<Extension>]
   static member Sample<'V>(series:Series<DateTimeOffset, 'V>, start:DateTimeOffset, interval:TimeSpan, dir) =
-    series |> Series.Implementation.lookupTimeInternal (+) (Some start) interval dir Lookup.NearestSmaller
+    series |> Series.Implementation.lookupTimeInternal (+) (Some start) interval dir Lookup.ExactOrSmaller
 
   /// Finds values at, or near, the specified times in a given series. The operation generates
   /// keys starting from the smallest key of the original series, using the specified `interval`
@@ -843,7 +631,7 @@ type SeriesExtensions =
   /// [category:Lookup, resampling and scaling]
   [<Extension>]
   static member Sample<'V>(series:Series<DateTime, 'V>, interval:TimeSpan, dir) =
-    series |> Series.Implementation.lookupTimeInternal (+) None interval dir Lookup.NearestSmaller
+    series |> Series.Implementation.lookupTimeInternal (+) None interval dir Lookup.ExactOrSmaller
 
   /// Finds values at, or near, the specified times in a given series. The operation generates
   /// keys starting from the smallest key of the original series, using the specified `interval`
@@ -865,7 +653,7 @@ type SeriesExtensions =
   /// [category:Lookup, resampling and scaling]
   [<Extension>]
   static member Sample<'V>(series:Series<DateTimeOffset, 'V>, interval:TimeSpan, dir) =
-    series |> Series.Implementation.lookupTimeInternal (+) None interval dir Lookup.NearestSmaller
+    series |> Series.Implementation.lookupTimeInternal (+) None interval dir Lookup.ExactOrSmaller
 
   /// Finds values at, or near, the specified times in a given series. The operation generates
   /// keys starting from the smallest key of the original series, using the specified `interval`
@@ -946,3 +734,12 @@ type SeriesExtensions =
   [<Extension>]
   static member SampleInto<'V>(series:Series<DateTimeOffset, 'V>, interval:TimeSpan, dir, aggregate:Func<_, _>) =
     series |> Series.Implementation.sampleTimeIntoInternal (+) None interval dir aggregate.Invoke
+
+
+  // ----------------------------------------------------------------------------------------------
+  // Obsolete - kept for temporary compatibility
+  // ----------------------------------------------------------------------------------------------
+
+  [<Extension; Obsolete("Use SortByKeys instead. This function will be removed in futrue versions.")>]
+  static member OrderByKey(series:Series<'K, 'T>) = Series.sortByKey series
+

@@ -50,7 +50,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Deedle\Deedle.fsproj">
+    <ProjectReference Include="..\..\src\Deedle\Deedle.fsproj">
       <Project>{22729065-4c30-4e43-a63f-4f3338a03878}</Project>
       <Name>Deedle</Name>
     </ProjectReference>

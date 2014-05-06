@@ -10,9 +10,11 @@
     <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
     <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
     <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
     <link type="text/css" rel="stylesheet" href="@Root/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="@Root/content/deedle.css" />
     <script type="text/javascript" src="@Root/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -24,12 +26,11 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="@Properties["project-github"]">github page</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Charting/">F# Charting</a></li>
-          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider">R Type Provider</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Data/">F# Data</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
         </ul>
-        <h3 class="muted">@Properties["project-name"]</h3>
+        <h3 class="muted"><a href="@Root/index.html">@Properties["project-name"]</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -37,7 +38,7 @@
           @RenderBody()
         </div>
         <div class="span3">
-          <a href="https://nuget.org/packages/Deedle">
+          <a href="@Root/index.html">
             <img src="@Root/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
@@ -68,34 +69,46 @@
               }
             </li>
             <li>
-              <a href="@Root/features.html">Advanced frame manipulation</a>
-              @if (Properties.Dictionary.ContainsKey("page-source") && Properties["page-source"].ToString().EndsWith("features.fsx"))
+              <a href="@Root/series.html">Working with time series</a>
+              @if (Properties.Dictionary.ContainsKey("page-source") && Properties["page-source"].ToString().EndsWith("series.fsx"))
               {
               <ul class="nav nav-list">
-                <li><a href="@Root/features.html#creating">Creating & loading</a></li>
-                <li><a href="@Root/features.html#dataframe">Frame manipulation</a></li>
-                <li><a href="@Root/features.html#slicing">Advanced slicing</a></li>
-                <li><a href="@Root/features.html#grouping">Grouping data</a></li>
-                <li><a href="@Root/features.html#pivot">Pivot table</a></li>
-                <li><a href="@Root/features.html#indexing">Hierarchical indexing</a></li>
-                <li><a href="@Root/features.html#missing">Missing values</a></li>
+                <li><a href="@Root/series.html#alignment">Alignment & joining</a></li>
+                <li><a href="@Root/series.html#windowing">Windows and chunks</a></li>
+                <li><a href="@Root/series.html#sampling">Lookup and resampling</a></li>
+                <li><a href="@Root/series.html#stats">Statistics & math</a></li>
               </ul>
               }
             </li>
             <li>
-              <a href="@Root/timeseries.html">Working with time series</a>
-              @if (Properties.Dictionary.ContainsKey("page-source") && Properties["page-source"].ToString().EndsWith("timeseries.fsx"))
+              <a href="@Root/frame.html">Working with data frames</a>
+              @if (Properties.Dictionary.ContainsKey("page-source") && Properties["page-source"].ToString().EndsWith("frame.fsx"))
               {
               <ul class="nav nav-list">
-                <li><a href="@Root/timeseries.html#alignment">Alignment & joining</a></li>
-                <li><a href="@Root/timeseries.html#windowing">Windows and chunks</a></li>
-                <li><a href="@Root/timeseries.html#sampling">Lookup and resampling</a></li>
-                <li><a href="@Root/timeseries.html#stats">Statistics & math</a></li>
+                <li><a href="@Root/frame.html#creating">Creating & loading</a></li>
+                <li><a href="@Root/frame.html#dataframe">Frame manipulation</a></li>
+                <li><a href="@Root/frame.html#slicing">Advanced slicing</a></li>
+                <li><a href="@Root/frame.html#grouping">Grouping data</a></li>
+                <li><a href="@Root/frame.html#pivot">Pivot table</a></li>
+                <li><a href="@Root/frame.html#indexing">Hierarchical indexing</a></li>
+                <li><a href="@Root/frame.html#missing">Missing values</a></li>
               </ul>
               }
             </li>
             <li>
-              <a href="@Root/rinterop.html">Using R with Deedle</a>
+              <a href="@Root/stats.html">Statistics &amp; calculations</a>
+              @if (Properties.Dictionary.ContainsKey("page-source") && Properties["page-source"].ToString().EndsWith("stats.fsx"))
+              {
+              <ul class="nav nav-list">
+                <li><a href="@Root/stats.html#stats">Series and frame statistics</a></li>
+                <li><a href="@Root/stats.html#moving">Moving windows</a></li>
+                <li><a href="@Root/stats.html#exp">Expanding windows</a></li>
+                <li><a href="@Root/stats.html#multi">Multi-level key statistics</a></li>
+              </ul>
+              }
+            </li>
+            <li>
+              <a href="@Root/rinterop.html">Using Deedle with R</a>
               @if (Properties.Dictionary.ContainsKey("page-source") && Properties["page-source"].ToString().EndsWith("rinterop.fsx"))
               {
               <ul class="nav nav-list">
@@ -141,11 +154,13 @@
 
             <li class="nav-header">Documentation</li>
             <li><a href="@Root/reference/index.html">API Reference</a></li>
+            <li class="divider"></li>
+            <li><a href="@Root/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="@Root/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="@Root/reference/deedle-stats.html">Stats module</a></li>
 
             <li class="nav-header">Samples</li>
             <li><a href="@Root/lazysource.html">Lazy data loading</a></li>
-            <li><a href="@Root/samples/volatility.html">Price volatility</a></li>
-            <li><a href="@Root/samples/titanic.html">Titanic survivors</a></li>
           </ul>
         </div>
       </div>
