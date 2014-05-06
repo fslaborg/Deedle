@@ -1062,17 +1062,13 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
   static member (?) (series:ObjectSeries<_>, name:string) = 
     series.GetAs<float>(name, nan)
 
-  member x.TryAs<'R>(strict) =
-    match unboxVector vector with
-    | :? IVector<'R> as vec -> 
-        let newIndex = indexBuilder.Project(index)
-        OptionalValue(Series(newIndex, vec, vectorBuilder, indexBuilder))
-    | _ -> 
-        ( if strict then VectorHelpers.tryCastType vector
-          else VectorHelpers.tryChangeType vector )
-        |> OptionalValue.map (fun vec -> 
-          let newIndex = indexBuilder.Project(index)
-          Series(newIndex, vec, vectorBuilder, indexBuilder))
+  member x.TryAs<'R>(strict) : OptionalValue<Series<_, 'R>> =
+    let typed = 
+      if strict then VectorHelpers.tryCastType vector
+      else VectorHelpers.tryChangeType vector
+    typed |> OptionalValue.map (fun vec -> 
+      let newIndex = indexBuilder.Project(index)
+      Series(newIndex, vec, vectorBuilder, indexBuilder))
 
   member x.TryAs<'R>() =
     x.TryAs<'R>(false)

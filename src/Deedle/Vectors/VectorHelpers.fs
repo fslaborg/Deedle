@@ -199,42 +199,48 @@ let changeType<'R> (vector:IVector) =
 // A "generic function" that tries to change the type of vector elements
 let tryChangeType<'R> (vector:IVector) : OptionalValue<IVector<'R>> = 
   let shouldBeConvertible (o:obj) = o :? 'R || o :? IConvertible
-  { new VectorCallSite<OptionalValue<IVector<'R>>> with
-      override x.Invoke<'T>(col:IVector<'T>) = 
-        // Check the first non-missing value to see if we should even try doing the conversion
-        let first = 
-          col.DataSequence 
-          |> Seq.choose (fun v -> 
-              if v.HasValue && (box v.Value) <> null 
-              then Some (box v.Value) else None) 
-          |> Seq.headOrNone 
-          |> Option.map shouldBeConvertible
-        if first = Some(false) then OptionalValue.Missing
-        else 
-          // We still cannot be sure that it will actually work
-          try OptionalValue(col.Select(fun v -> Convert.changeType<'R> v))
-          with :? InvalidCastException | :? FormatException -> OptionalValue.Missing }
-  |> vector.Invoke
+  match unboxVector vector with
+  | :? IVector<'R> as res -> OptionalValue(res)
+  | vector ->
+      { new VectorCallSite<OptionalValue<IVector<'R>>> with
+          override x.Invoke<'T>(col:IVector<'T>) = 
+            // Check the first non-missing value to see if we should even try doing the conversion
+            let first = 
+              col.DataSequence 
+              |> Seq.choose (fun v -> 
+                  if v.HasValue && (box v.Value) <> null 
+                  then Some (box v.Value) else None) 
+              |> Seq.headOrNone 
+              |> Option.map shouldBeConvertible
+            if first = Some(false) then OptionalValue.Missing
+            else 
+              // We still cannot be sure that it will actually work
+              try OptionalValue(col.Select(fun v -> Convert.changeType<'R> v))
+              with :? InvalidCastException | :? FormatException -> OptionalValue.Missing }
+      |> vector.Invoke
 
 // A "generic function" that tries to cast the type of vector elements
 let tryCastType<'R> (vector:IVector) : OptionalValue<IVector<'R>> = 
   let shouldBeCastable (o:obj) = o :? 'R
-  { new VectorCallSite<OptionalValue<IVector<'R>>> with
-      override x.Invoke<'T>(col:IVector<'T>) = 
-        // Check the first non-missing value to see if we should even try doing the conversion
-        let first = 
-          col.DataSequence 
-          |> Seq.choose (fun v -> 
-              if v.HasValue && (box v.Value) <> null 
-              then Some (box v.Value) else None) 
-          |> Seq.headOrNone 
-          |> Option.map shouldBeCastable
-        if first = Some(false) then OptionalValue.Missing
-        else 
-          // We still cannot be sure that it will actually work
-          try OptionalValue(col.Select(fun v -> unbox<'R> v))
-          with :? InvalidCastException -> OptionalValue.Missing }
-  |> vector.Invoke
+  match unboxVector vector with
+  | :? IVector<'R> as res -> OptionalValue(res)
+  | vector ->
+      { new VectorCallSite<OptionalValue<IVector<'R>>> with
+          override x.Invoke<'T>(col:IVector<'T>) = 
+            // Check the first non-missing value to see if we should even try doing the conversion
+            let first = 
+              col.DataSequence 
+              |> Seq.choose (fun v -> 
+                  if v.HasValue && (box v.Value) <> null 
+                  then Some (box v.Value) else None) 
+              |> Seq.headOrNone 
+              |> Option.map shouldBeCastable
+            if first = Some(false) then OptionalValue.Missing
+            else 
+              // We still cannot be sure that it will actually work
+              try OptionalValue(col.Select(fun v -> unbox<'R> v))
+              with :? InvalidCastException -> OptionalValue.Missing }
+      |> vector.Invoke
 
 /// A "generic function" that drops a specified range from any vector
 let getVectorRange (builder:IVectorBuilder) range (vector:IVector) = 
@@ -246,9 +252,7 @@ let getVectorRange (builder:IVectorBuilder) range (vector:IVector) =
 
 /// Active pattern that calls the `tryChangeType<float>` function
 let (|AsFloatVector|_|) v : option<IVector<float>> = 
-  match unboxVector v with 
-  | :? IVector<float> as fv -> Some fv
-  | v -> OptionalValue.asOption (tryChangeType v)
+  OptionalValue.asOption (tryChangeType v)
 
 /// A virtual vector for reading "row" of a data frame. The virtual vector accesses
 /// internal representation of the frame (specified by `data` and `columnCount`).

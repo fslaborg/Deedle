@@ -549,6 +549,42 @@ let ``Can perform pointwise numerical operations on two frames`` () =
   (df2 * df1)?Open.GetAt(66) |> shouldEqual (opens2.GetAt(66) * opens1.GetAt(66))
   (df2 / df1)?Open.GetAt(66) |> shouldEqual (opens2.GetAt(66) / opens1.GetAt(66))
 
+[<Test>]
+let ``Applying (+) on frame & series introduces missing values`` () = 
+  let s1 = series [ 2 => 1.0 ]
+  let s2 = series [ 1 => 1.0; 2 => 1.0 ]
+  let f1 = frame  [ "S1" => s1 ]
+  let f2 = frame  [ "S2" => s2 ]
+
+  // Returned series should contain 'NA' when key is only in one series
+  (f1 + s2)?S1 |> shouldEqual <| series [ 1 => nan; 2 => 2.0 ]
+  (s1 + f2)?S2 |> shouldEqual <| series [ 1 => nan; 2 => 2.0 ]
+  // This should be the same as adding two series
+  (f1 + s2)?S1 |> shouldEqual <| s1 + s2
+  (s1 + f2)?S2 |> shouldEqual <| s1 + s2
+
+[<Test>]
+let ``Applying (+) on frame & series preserves non-numeric columns`` () =
+  let s1 = series [ 3 => 1.0 ]
+  let s2 = series [ 2 => 1.0 ]
+  let f1 = frame  [ "S1" =?> series [ 1 => 1.0; 3 => 2.0]; "S2" =?> series [ 1 => "ahoj"; 3 => "hi"] ]
+
+  // Non-numeric series stays the same
+  (f1 - s1).GetColumn<string>("S2") 
+  |> shouldEqual <| f1.GetColumn<string>("S2")
+
+[<Test>]
+let ``Applying (+) on frame & series expands non-numeric columns`` () =
+  let s1 = series [ 3 => 1.0 ]
+  let s2 = series [ 2 => 1.0 ]
+  let f1 = frame  [ "S1" =?> series [ 1 => 1.0; 3 => 2.0]; "S2" =?> series [ 1 => "ahoj"; 3 => "hi"] ]
+
+  // Non-numeric series is expanded to match new keys
+  (f1 - s2).GetColumn<string>("S2") |> Series.dropMissing 
+  |> shouldEqual <| f1.GetColumn<string>("S2")
+  (f1 - s2).GetColumn<string>("S2") |> Series.tryGet 2 
+  |> shouldEqual None
+
 // ------------------------------------------------------------------------------------------------
 // Operations - append
 // ------------------------------------------------------------------------------------------------

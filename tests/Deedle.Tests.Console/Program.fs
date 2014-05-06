@@ -75,18 +75,27 @@ open Deedle
 
 let rnd = System.Random(0)
 
-//let s0 = series <| Array.init 1000 (fun i -> i => rnd.NextDouble())
-let s1 = series <| Array.init 1000000 (fun i -> i => rnd.NextDouble())
+let s0 = series <| Array.init 10000 (fun i -> i => rnd.NextDouble())
+let f0 = frame [ for i in 0 .. 10 -> i => s0 ]
+let f1 = frame [ for i in 0 .. 100 -> i => s0 ]
+
+//let s1 = series <| Array.init 1000000 (fun i -> i => rnd.NextDouble())
 //let s2 = series <| Array.init 10000000 (fun i -> i => rnd.NextDouble())
 
 let testOne() =      
-  timed 1 (fun () ->
+  timed 5 (fun () ->
+
+    // 75 ms ~> 40 ms
+    //f0 + s0 |> ignore
+
+    // 750 ms ~> 360 ms
+    f1 + s0 |> ignore
 
     // 315ms
     //for i in 0 .. 1000 do (s0 |> Stats.movingMin 100 |> ignore)
 
     // 310ms
-    s1 |> Stats.movingMin 100 |> ignore
+    //s1 |> Stats.movingMin 100 |> ignore
 
     // 190ms
     //s1 |> Stats.expandingMin |> ignore
