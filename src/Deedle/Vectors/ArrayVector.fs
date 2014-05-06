@@ -117,33 +117,37 @@ type ArrayVectorBuilder() =
               invalidOp "Type mismatch - cannot fill values of the vector!"
               
 
-      | Relocate(source, (IntAddress loRange, IntAddress hiRange), relocations) ->
+      | Relocate(source, len, relocations) ->
           // Create a new array with specified size and move values from the
           // old array (source) to the new, according to 'relocations'
-          let newData = Array.zeroCreate (hiRange - loRange + 1)
+          let newData = Array.zeroCreate (int len)
           match builder.buildArrayVector source arguments with 
           | VectorOptional data ->
-              for IntAddress newIndex, IntAddress oldIndex in relocations do
+              for newIndex, oldIndex in relocations do
+                let newIndex, oldIndex = Address.asInt newIndex, Address.asInt oldIndex
                 if oldIndex < data.Length && oldIndex >= 0 then
                   newData.[newIndex] <- data.[oldIndex]
           | VectorNonOptional data ->
-              for IntAddress newIndex, IntAddress oldIndex in relocations do
+              for newIndex, oldIndex in relocations do
+                let newIndex, oldIndex = Address.asInt newIndex, Address.asInt oldIndex
                 if oldIndex < data.Length && oldIndex >= 0 then
                   newData.[newIndex] <- OptionalValue(data.[oldIndex])
           vectorBuilder.CreateMissing(newData)
 
-      | DropRange(source, (IntAddress loRange, IntAddress hiRange)) ->
+      | DropRange(source, (loRange, hiRange)) ->
           // Create a new array without the specified range. For Optional, call the 
           // builder recursively as this may turn Optional representation to NonOptional
+          let loRange, hiRange = Address.asInt loRange, Address.asInt hiRange
           match builder.buildArrayVector source arguments with 
           | VectorOptional data -> 
               vectorBuilder.CreateMissing(Array.dropRange loRange hiRange data) 
           | VectorNonOptional data -> 
               VectorNonOptional(Array.dropRange loRange hiRange data) |> av
 
-      | GetRange(source, (IntAddress loRange, IntAddress hiRange)) ->
+      | GetRange(source, (loRange, hiRange)) ->
           // Get the specified sub-range. For Optional, call the builder recursively 
           // as this may turn Optional representation to NonOptional
+          let loRange, hiRange = Address.asInt loRange, Address.asInt hiRange
           if hiRange < loRange then VectorNonOptional [||] |> av else
           match builder.buildArrayVector source arguments with 
           | VectorOptional data -> 
@@ -170,6 +174,20 @@ type ArrayVectorBuilder() =
                 let rv = if idx >= right.Length then OptionalValue.Missing else right.[idx]
                 merge lv rv)
               vectorBuilder.CreateMissing(filled)
+
+      | CombineN(vectors, op) ->
+          let data = 
+            vectors 
+            |> List.map (fun v -> builder.buildArrayVector v arguments) 
+            |> List.map (function AsVectorOptional o -> o)
+
+          let merge = op.GetFunction<'T>()
+          let filled = Array.init (data |> List.map (fun v -> v.Length) |> List.reduce max) (fun idx ->
+            data 
+            |> List.map (fun v -> if idx > v.Length then OptionalValue.Missing else v.[idx]) 
+            |> merge)  
+
+          vectorBuilder.CreateMissing(filled)
 
       | CustomCommand(vectors, f) ->
           let vectors = List.map (fun v -> vectorBuilder.Build(v, arguments) :> IVector) vectors
@@ -205,7 +223,8 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
     member x.ElementType = typeof<'T>
     member x.SuppressPrinting = false
 
-    member vector.GetObject(IntAddress index) = 
+    member vector.GetObject(index) = 
+      let index = Address.asInt index
       match representation with
       | VectorOptional data when index < data.Length -> data.[index] |> OptionalValue.map box 
       | VectorNonOptional data when index < data.Length -> OptionalValue(box data.[index])
@@ -213,7 +232,8 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
 
   // Implement the typed vector interface
   interface IVector<'T> with
-    member vector.GetValue(IntAddress index) = 
+    member vector.GetValue(index) = 
+      let index = Address.asInt index
       match representation with
       | VectorOptional data when index < data.Length -> data.[index]
       | VectorNonOptional data when index < data.Length -> OptionalValue(data.[index])

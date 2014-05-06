@@ -58,6 +58,11 @@ module Series =
 
   let tryLookup key lookup (series:Series<'K, 'T>) = series.TryGet(key, lookup) |> OptionalValue.asOption
 
+  let tryLookupObservation key lookup (series:Series<'K, 'T>) = 
+    series.TryGetObservation(key, lookup) 
+    |> OptionalValue.asOption 
+    |> Option.map (fun kvp -> (kvp.Key, kvp.Value))
+
   let tryGet key (series:Series<'K, 'T>) = series.TryGet(key) |> OptionalValue.asOption
 
   let tryGetAt index (series:Series<'K, 'T>) = series.TryGetAt(index) |> OptionalValue.asOption
@@ -180,8 +185,12 @@ module Series =
             (fun s -> s.Data.TryGet(s.Data.KeyRange |> fst)) )
     shifted //.GetItems(series.Keys)
 
-  let takeLast count (series:Series<'K, 'T>) = 
-    let keys = series.Keys |> Seq.lastFew count 
+  let take count (series:Series<'K, 'T>) =
+    let keys = series.Keys |> Seq.take count
+    Series(keys, seq { for k in keys -> series.[k] })
+
+  let takeLast count (series:Series<'K, 'T>) =
+    let keys = series.Keys |> Seq.lastFew count
     Series(keys, seq { for k in keys -> series.[k] })
 
   let inline maxBy f (series:Series<'K, 'T>) = 
@@ -889,6 +898,7 @@ module Series =
     let newVector = series.VectorBuilder.Build(fillCmd, [|series.Vector|])
     Series<_, _>(series.Index, newVector, series.VectorBuilder, series.IndexBuilder)
 
+  /// Fill missing values only between startKey and endKey, inclusive
   /// [category:Missing values]
   let fillMissingBetween (startKey, endKey) direction (series:Series<'K, 'T>) = 
     let filled = fillMissing direction series.[startKey .. endKey]
@@ -897,6 +907,14 @@ module Series =
       | OptionalValue.Present(_, OptionalValue.Present v2) -> OptionalValue v2
       | OptionalValue.Present(OptionalValue.Present v1, _) -> OptionalValue v1
       | _ -> OptionalValue.Missing )
+
+  /// Fill missing values only between the first and last non-missing values
+  /// [category:Missing values]
+  let fillMissingInside direction (series:Series<'K, 'T>) = 
+    if not series.IsOrdered then invalidOp "Series must be sorted to use fillMissingInside"
+    series.Observations |> Seq.tryFirstAndLast |> function
+    | Some (a, b) when a <> b -> series |> fillMissingBetween (a.Key, b.Key) direction
+    | _ -> series
 
   // ----------------------------------------------------------------------------------------------
   // Sorting

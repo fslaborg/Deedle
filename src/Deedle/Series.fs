@@ -4,6 +4,7 @@ open System
 open System.ComponentModel
 open System.Collections.Generic
 
+open Deedle.Addressing
 open Deedle.Internal
 open Deedle.JoinHelpers
 open Deedle.Indices
@@ -242,10 +243,10 @@ and
   ///
   /// [category:Accessors and slicing]
   member x.TryGetAt(index) = 
-    x.Vector.GetValue(Addressing.Int index)
+    x.Vector.GetValue(Address.ofInt index)
   /// [category:Accessors and slicing]
   member x.GetKeyAt(index) = 
-    x.Index.KeyAt(Addressing.Int index)
+    x.Index.KeyAt(Address.ofInt index)
   /// [category:Accessors and slicing]
   member x.GetAt(index) = 
     x.TryGetAt(index).Value
@@ -629,13 +630,11 @@ and
 
   /// [category:Indexing]
   member x.Realign(newKeys) = 
-    let ns = 
-      Series( Index.ofKeys newKeys, vectorBuilder.Create (Array.ofSeq newKeys),
-              vectorBuilder, indexBuilder )
-    ns.Zip(x, JoinKind.Left).SelectOptional(fun kvp ->
-      match kvp with
-      | KeyValue(k, OptionalValue.Present(_, v)) -> v
-      | _ -> OptionalValue.Missing )
+    let newIndex = Index.ofKeys newKeys
+    let newIndex, thisRowCmd, otherRowCmd = 
+      createJoinTransformation indexBuilder JoinKind.Right Lookup.Exact x.Index newIndex (Vectors.Return 0) (Vectors.Return 1)
+    let newVector = vectorBuilder.Build(thisRowCmd, [| this.Vector |])
+    Series<_,_>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   /// Replace the index of the series with ordinarilly generated integers starting from zero.
   /// The elements of the series are assigned index according to the current order, or in a
@@ -875,8 +874,8 @@ and
     Series(pairs |> Seq.map (fun kvp -> kvp.Key), pairs |> Seq.map (fun kvp -> kvp.Value))
 
   new(keys:seq<_>, values:seq<_>) = 
-    let vectorBuilder = Vectors.ArrayVector.ArrayVectorBuilder.Instance
-    let indexBuilder = Indices.Linear.LinearIndexBuilder.Instance
+    let vectorBuilder = VectorBuilder.Instance
+    let indexBuilder = IndexBuilder.Instance
     Series( Index.ofKeys keys, vectorBuilder.Create (Array.ofSeq values),
             vectorBuilder, indexBuilder )
 
@@ -915,7 +914,13 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
         OptionalValue(Series(newIndex, vec, vectorBuilder, indexBuilder))
     | _ -> 
         ( if strict then VectorHelpers.tryCastType vector
-          else VectorHelpers.tryChangeType vector )
+          else               
+            let attempt = VectorHelpers.tryChangeType vector
+            if not attempt.HasValue then 
+              try VectorHelpers.tryCastType vector
+              with :? InvalidCastException -> OptionalValue.Missing
+            else attempt
+        )
         |> OptionalValue.map (fun vec -> 
           let newIndex = indexBuilder.Project(index)
           Series(newIndex, vec, vectorBuilder, indexBuilder))
