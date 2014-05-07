@@ -173,5 +173,71 @@ let f1 = frame [ for i in 0 .. 100 -> i => s0 ]
     // 750 ms ~> 360 ms
     f1 + s0 |> ignore
 
-*)
 
+/// -------------------
+// also, the function where AppendN makes things faster is: collapseFrameSeries 
+// So add a test tracking that.
+
+// The following should go from 3.8 sec to almost no-op
+// ~3.8sec
+for i in 0 .. 100 do
+  frame20x10000.Columns
+  |> Frame.ofColumns
+  |> ignore
+
+
+
+// Converting huge series to its own type via columns should be no-op
+let df = frame [ "A" => Series.ofValues [for i in 0 .. 1000000 -> float i ] ]
+df.Columns.["A"].As<float>() |> ignore
+
+(with conversion, it will take some time)
+
+
+
+  let s = series [ for i in 0 .. 1000000 -> i, float i ]
+  // 95ms (was 7286ms)
+  for i in 0 .. 9 do
+    s |> Series.resampleInto [for i in 0 .. 100 -> i * 10000 ] Direction.Forward (fun _ s -> Series.mean s) |> ignore
+  // 100ms (was 9224ms)
+  for i in 0 .. 9 do
+    s |> Series.resampleInto [for i in 0 .. 100 -> i * 10000 ] Direction.Backward (fun _ s -> Series.mean s) |> ignore
+  // 190ms (was 7547ms)
+  for i in 0 .. 9 do
+    s |> Series.resampleInto [for i in 0 .. 1000 -> i * 1000 ] Direction.Forward (fun _ s -> Series.mean s) |> ignore
+  // 190ms (was 9294ms)
+  for i in 0 .. 9 do
+    s |> Series.resampleInto [for i in 0 .. 1000 -> i * 1000 ] Direction.Backward (fun _ s -> Series.mean s) |> ignore
+  // 440ms (was 8215ms)
+  for i in 0 .. 9 do
+    s |> Series.resampleInto [for i in 0 .. 10000 -> i * 100 ] Direction.Forward (fun _ s -> Series.mean s) |> ignore
+  // 430ms (was 9934ms)
+  for i in 0 .. 9 do
+    s |> Series.resampleInto [for i in 0 .. 10000 -> i * 100 ] Direction.Backward (fun _ s -> Series.mean s) |> ignore
+  // 4150ms (was 15853ms)
+  for i in 0 .. 9 do
+    s |> Series.resampleInto [for i in 0 .. 100000 -> i * 10 ] Direction.Forward (fun _ s -> Series.mean s) |> ignore
+  // 5000ms (was 20695ms)
+  for i in 0 .. 9 do
+    s |> Series.resampleInto [for i in 0 .. 100000 -> i * 10 ] Direction.Backward (fun _ s -> Series.mean s) |> ignore
+
+
+// Shift and Diff are now significantly faster
+
+// Append is now much faster: http://fssnip.net/m5
+
+
+  let s = series (Array.init 2000000 (fun v -> v => float v))
+  //#time
+  Series.take 1000000 s |> ignore // 800 - 1.0 - 1.1
+
+
+let big = 
+  frame [ for c in 1 .. 1000 ->
+            string c => series [ for r in 1 .. 1000 -> r => 0.0 ] ]
+
+// #time
+// (+/- 1.53 to ~300ms)
+big |> Frame.stack |> ignore
+
+*)
