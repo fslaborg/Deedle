@@ -1,4 +1,4 @@
-﻿namespace Deedle.PerfTest.Core
+﻿namespace Deedle.PerfTest
 
 open System
 

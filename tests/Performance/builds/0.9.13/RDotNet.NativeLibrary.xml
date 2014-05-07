@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>RDotNet.NativeLibrary</name>
+    </assembly>
+    <members>
+        <member name="T:RDotNet.NativeLibrary.UnmanagedDll">
+            <summary>
+            A proxy for unmanaged dynamic link library (DLL).
+            </summary>
+        </member>
+        <member name="M:RDotNet.NativeLibrary.UnmanagedDll.#ctor(System.String)">
+            <summary>
+            Creates a proxy for the specified dll.
+            </summary>
+            <param name="dllName">The DLL's name.</param>
+        </member>
+        <member name="M:RDotNet.NativeLibrary.UnmanagedDll.GetFunction``1">
+            <summary>
+            Creates the delegate function for the specified function defined in the DLL.
+            </summary>
+            <typeparam name="TDelegate">The type of delegate.</typeparam>
+            <returns>The delegate.</returns>
+        </member>
+        <member name="M:RDotNet.NativeLibrary.UnmanagedDll.GetFunction``1(System.String)">
+            <summary>
+            Creates the delegate function for the specified function defined in the DLL.
+            </summary>
+            <typeparam name="TDelegate">The type of delegate.</typeparam>
+            <param name="entryPoint">The name of function.</param>
+            <returns>The delegate.</returns>
+        </member>
+        <member name="M:RDotNet.NativeLibrary.UnmanagedDll.DangerousGetHandle(System.String)">
+            <summary>
+            Gets the handle of the specified entry.
+            </summary>
+            <param name="entryPoint">The name of function.</param>
+            <returns>The handle.</returns>
+        </member>
+        <member name="M:RDotNet.NativeLibrary.UnmanagedDll.SetDllDirectory(System.String)">
+            <summary>
+            Adds a directory to the search path used to locate DLLs for the application.
+            </summary>
+            <remarks>
+            Calls <c>SetDllDirectory</c> in the kernel32.dll on Windows.
+            </remarks>
+            <param name="dllDirectory">
+            The directory to be added to the search path.
+            If this parameter is an empty string (""), the call removes the current directory from the default DLL search order.
+            If this parameter is NULL, the function restores the default search order.
+            </param>
+            <returns>If the function succeeds, the return value is nonzero.</returns>
+        </member>
+        <member name="T:RDotNet.NativeLibrary.NativeUtility">
+            <summary>
+            Collection of utility methods for operating systems.
+            </summary>
+        </member>
+        <member name="M:RDotNet.NativeLibrary.NativeUtility.GetPlatform">
+            <summary>
+            Gets the platform on which the current process runs.
+            </summary>
+            <remarks>
+                <see cref="P:System.Environment.OSVersion" />'s platform is not <see cref="F:System.PlatformID.MacOSX" /> even on Mac OS X.
+            This method returns <see cref="F:System.PlatformID.MacOSX" /> when the current process runs on Mac OS X.
+            This method uses UNIX's uname command to check the operating system,
+            so this method cannot check the OS correctly if the PATH environment variable is changed (will returns <see cref="F:System.PlatformID.Unix" />).
+            </remarks>
+            <returns>The current platform.</returns>
+        </member>
+    </members>
+</doc>

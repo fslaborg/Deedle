@@ -18,12 +18,6 @@ tests/Deedle.CSharp.Tests/obj
 tests/Deedle.CSharp.Tests/bin
 tests/Deedle.Tests.Console/obj
 tests/Deedle.Tests.Console/bin
-tests/Deedle.PerfTest.Core/bin/
-tests/Deedle.PerfTest.Core/obj/
-tests/Deedle.PerfTest.Runner/bin/
-tests/Deedle.PerfTest.Runner/obj/
-tests/Deedle.PerfTest/bin/
-tests/Deedle.PerfTest/obj/
 packages/*
 *.vsp
 TestResults.xml
@@ -32,3 +26,9 @@ TestResult.xml
 *.bak
 *.psess
 nuget/*.nuspec
+tests/PerformanceTools/Deedle.PerfTest.Core/obj
+tests/PerformanceTools/Deedle.PerfTest.Core/bin
+tests/PerformanceTools/Deedle.PerfTest.Runner/obj
+tests/PerformanceTools/Deedle.PerfTest.Runner/bin
+tests/PerformanceTools/Deedle.PerfTest/obj
+tests/PerformanceTools/Deedle.PerfTest/bin

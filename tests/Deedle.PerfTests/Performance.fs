@@ -3,8 +3,8 @@
 #load "Deedle.fsx"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #r "../../packages/FsCheck.0.9.1.0/lib/net40-Client/FsCheck.dll"
-#r "../../packages/FSharp.Data.1.1.10/lib/net40/FSharp.Data.dll"
-#r "../Deedle.PerfTest.Core/bin/Debug/Deedle.PerfTest.Core.dll"
+#r "../../packages/FSharp.Data.2.0.5/lib/net40/FSharp.Data.dll"
+#r "../PerformanceTools/bin/Deedle.PerfTest.Core.dll"
 #load "../Common/FsUnit.fs"
 #else
 module Deedle.Tests.Performance
@@ -14,7 +14,7 @@ open System
 open FsUnit
 open NUnit.Framework
 open Deedle
-open Deedle.PerfTest.Core
+open Deedle.PerfTest
 
 // ------------------------------------------------------------------------------------------------
 // Performance tests that are run & evaluated automatically against a baseline
@@ -59,9 +59,13 @@ let ``Building a large (1M items) series from two arrays``() =
 
 [<Test;PerfTest(Iterations=5)>]
 let ``Append 10 medium-size (1000) frames (by repeatedly calling Append)``() =
+#if BELOW_0_9_13
   let appended = frames10x1000 |> Seq.reduce (Frame.append)
+#else
+  let appended = frames10x1000 |> Seq.reduce (Frame.merge)
+#endif
   appended.RowCount |> shouldEqual 10000
-
+  
 [<Test;PerfTest(Iterations=100)>]
 let ``Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)``() =   
   let bySex = titanic |> Frame.groupRowsByString "Sex"
@@ -72,9 +76,15 @@ let ``Calculate survival rate for Titanic based on gender (using groupRowsBy & a
         sr.Values |> Seq.countBy id |> series)
     |> Frame.ofRows
     |> Frame.indexColsWith ["Survived"; "Died"]
+#if BELOW_0_9_13
   survivals?Total <- 
     bySex
     |> Frame.applyLevel Pair.get1Of2 Series.countKeys
+#else
+  survivals?Total <- 
+    bySex.Rows
+    |> Series.applyLevel Pair.get1Of2 Series.countKeys
+#endif
 
   // Verify that we get the expected results
   let actual = round (survivals?Survived / survivals?Total * 100.0)
@@ -93,8 +103,11 @@ let ``Realign a 1M element series according to a specified key array`` () =
   // Verify the results  
   actual.TryGet(1).HasValue |> shouldEqual true
   actual.TryGet(0).HasValue |> shouldEqual false
+#if BELOW_0_9_13
+  actual.KeyRange |> fst |> shouldEqual 1
+#else
   actual.FirstKey() |> shouldEqual 1
-
+#endif
 
 (*
 TODO: https://github.com/BlueMountainCapital/Deedle/issues/142#issuecomment-33587885

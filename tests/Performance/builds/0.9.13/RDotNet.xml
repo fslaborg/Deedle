@@ -1,0 +1,2502 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>RDotNet</name>
+    </assembly>
+    <members>
+        <member name="T:RDotNet.Closure">
+            <summary>
+            A closure.
+            </summary>
+        </member>
+        <member name="M:RDotNet.Closure.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a closure object.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="pointer">The pointer.</param>
+        </member>
+        <member name="P:RDotNet.Closure.Arguments">
+            <summary>
+            Gets the arguments list.
+            </summary>
+        </member>
+        <member name="P:RDotNet.Closure.Body">
+            <summary>
+            Gets the body.
+            </summary>
+        </member>
+        <member name="P:RDotNet.Closure.Environment">
+            <summary>
+            Gets the environment.
+            </summary>
+        </member>
+        <member name="T:RDotNet.ComplexVector">
+            <summary>
+            A collection of complex numbers.
+            </summary>
+        </member>
+        <member name="M:RDotNet.ComplexVector.#ctor(RDotNet.REngine,System.Int32)">
+            <summary>
+            Creates a new empty ComplexVector with the specified length.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="length">The length.</param>
+            <seealso cref="M:RDotNet.REngineExtension.CreateComplexVector(RDotNet.REngine,System.Int32)" />
+        </member>
+        <member name="M:RDotNet.ComplexVector.#ctor(RDotNet.REngine,System.Collections.Generic.IEnumerable{System.Numerics.Complex})">
+            <summary>
+            Creates a new ComplexVector with the specified values.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="vector">The values.</param>
+            <seealso cref="M:RDotNet.REngineExtension.CreateComplexVector(RDotNet.REngine,System.Collections.Generic.IEnumerable{System.Numerics.Complex})" />
+        </member>
+        <member name="M:RDotNet.ComplexVector.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a new instance for a complex number vector.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="coerced">The pointer to a complex number vector.</param>
+        </member>
+        <member name="P:RDotNet.ComplexVector.Item(System.Int32)">
+            <summary>
+            Gets or sets the element at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the element to get or set.</param>
+            <returns>The element at the specified index.</returns>
+        </member>
+        <member name="P:RDotNet.ComplexVector.DataSize">
+            <summary>
+            Gets the size of a complex number in byte.
+            </summary>
+        </member>
+        <member name="T:RDotNet.CharacterMatrix">
+            <summary>
+            A matrix of strings.
+            </summary>
+        </member>
+        <member name="M:RDotNet.CharacterMatrix.#ctor(RDotNet.REngine,System.Int32,System.Int32)">
+            <summary>
+            Creates a new empty CharacterMatrix with the specified size.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="rowCount">The row size.</param>
+            <param name="columnCount">The column size.</param>
+            <seealso cref="M:RDotNet.REngineExtension.CreateCharacterMatrix(RDotNet.REngine,System.Int32,System.Int32)" />
+        </member>
+        <member name="M:RDotNet.CharacterMatrix.#ctor(RDotNet.REngine,System.String[0:,0:])">
+            <summary>
+            Creates a new CharacterMatrix with the specified values.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="matrix">The values.</param>
+            <seealso cref="M:RDotNet.REngineExtension.CreateCharacterMatrix(RDotNet.REngine,System.String[0:,0:])" />
+        </member>
+        <member name="M:RDotNet.CharacterMatrix.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a new instance for a string matrix.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="coerced">The pointer to a string matrix.</param>
+        </member>
+        <member name="P:RDotNet.CharacterMatrix.Item(System.Int32,System.Int32)">
+            <summary>
+            Gets or sets the element at the specified index.
+            </summary>
+            <param name="rowIndex">The zero-based rowIndex index of the element to get or set.</param>
+            <param name="columnIndex">The zero-based columnIndex index of the element to get or set.</param>
+            <returns>The element at the specified index.</returns>
+        </member>
+        <member name="P:RDotNet.CharacterMatrix.DataSize">
+            <summary>
+            Gets the size of a pointer in byte.
+            </summary>
+        </member>
+        <member name="T:RDotNet.ComplexMatrix">
+            <summary>
+            A matrix of complex numbers.
+            </summary>
+        </member>
+        <member name="M:RDotNet.ComplexMatrix.#ctor(RDotNet.REngine,System.Int32,System.Int32)">
+            <summary>
+            Creates a new empty ComplexMatrix with the specified size.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="rowCount">The row size.</param>
+            <param name="columnCount">The column size.</param>
+            <seealso cref="M:RDotNet.REngineExtension.CreateComplexMatrix(RDotNet.REngine,System.Int32,System.Int32)" />
+        </member>
+        <member name="M:RDotNet.ComplexMatrix.#ctor(RDotNet.REngine,System.Numerics.Complex[0:,0:])">
+            <summary>
+            Creates a new ComplexMatrix with the specified values.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="matrix">The values.</param>
+            <seealso cref="M:RDotNet.REngineExtension.CreateComplexMatrix(RDotNet.REngine,System.Numerics.Complex[0:,0:])" />
+        </member>
+        <member name="M:RDotNet.ComplexMatrix.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a new instance for a complex number matrix.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="coerced">The pointer to a complex number matrix.</param>
+        </member>
+        <member name="P:RDotNet.ComplexMatrix.Item(System.Int32,System.Int32)">
+            <summary>
+            Gets or sets the element at the specified index.
+            </summary>
+            <param name="rowIndex">The zero-based rowIndex index of the element to get or set.</param>
+            <param name="columnIndex">The zero-based columnIndex index of the element to get or set.</param>
+            <returns>The element at the specified index.</returns>
+        </member>
+        <member name="P:RDotNet.ComplexMatrix.DataSize">
+            <summary>
+            Gets the size of a complex number in byte.
+            </summary>
+        </member>
+        <member name="T:RDotNet.BuiltinFunction">
+            <summary>
+            A built-in function.
+            </summary>
+        </member>
+        <member name="M:RDotNet.BuiltinFunction.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a built-in function proxy.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="pointer">The pointer.</param>
+        </member>
+        <member name="T:RDotNet.DataFrameColumnAttribute">
+            <summary>
+            Represents a column of certain data frames.
+            </summary>
+        </member>
+        <member name="P:RDotNet.DataFrameColumnAttribute.Index">
+            <summary>
+            Gets the index.
+            </summary>
+        </member>
+        <member name="P:RDotNet.DataFrameColumnAttribute.Name">
+            <summary>
+            Gets or sets the name.
+            </summary>
+        </member>
+        <member name="M:RDotNet.DataFrameColumnAttribute.#ctor(System.String)">
+            <summary>
+            Initializes a new instance by name.
+            </summary>
+            <param name="name">The name.</param>
+        </member>
+        <member name="M:RDotNet.DataFrameColumnAttribute.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance by index.
+            </summary>
+            <param name="name">The index.</param>
+        </member>
+        <member name="T:RDotNet.DataFrameRowAttribute">
+            <summary>
+            Indicates the class with the attribute represents rows of certain data frames.
+            </summary>
+        </member>
+        <member name="M:RDotNet.DataFrameRowAttribute.#ctor">
+            <summary>
+            Initializes a new instance.
+            </summary>
+        </member>
+        <member name="M:RDotNet.Devices.CharacterDeviceAdapter.#ctor(RDotNet.Devices.ICharacterDevice)">
+            <summary>
+            Creates an instance.
+            </summary>
+            <param name="device">The implementation.</param>
+        </member>
+        <member name="P:RDotNet.Devices.CharacterDeviceAdapter.Device">
+            <summary>
+            Gets the implementation of <see cref="T:RDotNet.Devices.ICharacterDevice" /> interface.
+            </summary>
+        </member>
+        <member name="T:RDotNet.Devices.ConsoleDevice">
+            <summary>
+            The default IO device.
+            </summary>
+        </member>
+        <member name="T:RDotNet.Devices.NullCharacterDevice">
+            <summary>
+            The default IO device.
+            </summary>
+        </member>
+        <member name="T:RDotNet.Devices.ICharacterDevice">
+            <summary>
+            A console class handles user's inputs and outputs.
+            </summary>
+        </member>
+        <member name="M:RDotNet.Devices.ICharacterDevice.ReadConsole(System.String,System.Int32,System.Boolean)">
+            <summary>
+            Read input from console.
+            </summary>
+            <param name="prompt">The prompt message.</param>
+            <param name="capacity">The buffer's capacity in byte.</param>
+            <param name="history">Whether the input should be added to any command history.</param>
+            <returns>The input.</returns>
+        </member>
+        <member name="M:RDotNet.Devices.ICharacterDevice.WriteConsole(System.String,System.Int32,RDotNet.Internals.ConsoleOutputType)">
+            <summary>
+            Write output on console.
+            </summary>
+            <param name="output">The output message</param>
+            <param name="length">The output's length in byte.</param>
+            <param name="outputType">The output type.</param>
+        </member>
+        <member name="M:RDotNet.Devices.ICharacterDevice.ShowMessage(System.String)">
+            <summary>
+            Displays the message.
+            </summary>
+            <remarks>
+            It should be brought to the user's attention immediately.
+            </remarks>
+            <param name="message">The message.</param>
+        </member>
+        <member name="M:RDotNet.Devices.ICharacterDevice.Busy(RDotNet.Internals.BusyType)">
+            <summary>
+            Invokes actions.
+            </summary>
+            <param name="which">The state.</param>
+        </member>
+        <member name="M:RDotNet.Devices.ICharacterDevice.Callback">
+            <summary>
+            Callback function.
+            </summary>
+        </member>
+        <member name="M:RDotNet.Devices.ICharacterDevice.Ask(System.String)">
+            <summary>
+            Asks user's decision.
+            </summary>
+            <param name="question">The question.</param>
+            <returns>User's decision.</returns>
+        </member>
+        <member name="M:RDotNet.Devices.ICharacterDevice.Suicide(System.String)">
+            <summary>
+            Abort R environment itself as soon as possible.
+            </summary>
+            <remarks>
+            Only Unix.
+            </remarks>
+            <param name="message">The message.</param>
+        </member>
+        <member name="M:RDotNet.Devices.ICharacterDevice.ResetConsole">
+            <summary>
+            Clear the console.
+            </summary>
+            <remarks>
+            Only Unix.
+            </remarks>
+        </member>
+        <member name="M:RDotNet.Devices.ICharacterDevice.FlushConsole">
+            <summary>
+            Flush the console.
+            </summary>
+            <remarks>
+            Only Unix.
+            </remarks>
+        </member>
+        <member name="M:RDotNet.Devices.ICharacterDevice.ClearErrorConsole">
+            <summary>
+            Clear the error console.
+            </summary>
+            <remarks>
+            Only Unix.
+            </remarks>
+        </member>
+        <member name="M:RDotNet.Devices.ICharacterDevice.CleanUp(RDotNet.Internals.StartupSaveAction,System.Int32,System.Boolean)">
+            <summary>
+            Invokes any actions which occur at system termination.
+            </summary>
+            <remarks>
+            Only Unix.
+            </remarks>
+            <param name="saveAction">The save type.</param>
+            <param name="status">Exit code.</param>
+            <param name="runLast">Whether R should execute <code>.Last</code>.</param>
+        </member>
+        <member name="M:RDotNet.Devices.ICharacterDevice.ShowFiles(System.String[],System.String[],System.String,System.Boolean,System.String)">
+            <summary>
+            Displays the contents of files.
+            </summary>
+            <remarks>
+            Only Unix.
+            </remarks>
+            <param name="files">The file paths.</param>
+            <param name="headers">The header before the contents is printed.</param>
+            <param name="title">The window title.</param>
+            <param name="delete">Whether the file will be deleted.</param>
+            <param name="pager">The pager used.</param>
+            <returns>
+            </returns>
+        </member>
+        <member name="M:RDotNet.Devices.ICharacterDevice.ChooseFile(System.Boolean)">
+            <summary>
+            Chooses a file.
+            </summary>
+            <remarks>
+            Only Unix.
+            </remarks>
+            <param name="create">To be created.</param>
+            <returns>The length of input.</returns>
+        </member>
+        <member name="M:RDotNet.Devices.ICharacterDevice.EditFile(System.String)">
+            <remarks>
+            Only Unix.
+            </remarks>
+        </member>
+        <member name="M:RDotNet.Devices.ICharacterDevice.LoadHistory(RDotNet.Language,RDotNet.SymbolicExpression,RDotNet.Pairlist,RDotNet.REnvironment)">
+            <remarks>
+            Only Unix.
+            </remarks>
+        </member>
+        <member name="M:RDotNet.Devices.ICharacterDevice.SaveHistory(RDotNet.Language,RDotNet.SymbolicExpression,RDotNet.Pairlist,RDotNet.REnvironment)">
+            <remarks>
+            Only Unix.
+            </remarks>
+        </member>
+        <member name="M:RDotNet.Devices.ICharacterDevice.AddHistory(RDotNet.Language,RDotNet.SymbolicExpression,RDotNet.Pairlist,RDotNet.REnvironment)">
+            <remarks>
+            Only Unix.
+            </remarks>
+        </member>
+        <member name="T:RDotNet.Factor">
+            <summary>
+            Represents factors.
+            </summary>
+        </member>
+        <member name="M:RDotNet.Factor.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a new instance for a factor vector.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="coerced">The pointer to a factor vector.</param>
+        </member>
+        <member name="M:RDotNet.Factor.GetLevels">
+            <summary>
+            Gets the levels of the factor.
+            </summary>
+        </member>
+        <member name="M:RDotNet.Factor.GetFactors">
+            <summary>
+            Gets the levels of the factor.
+            </summary>
+            <returns>Factors.</returns>
+        </member>
+        <member name="M:RDotNet.Factor.GetFactors``1(System.Boolean)">
+            <summary>
+            Gets the levels of the factor as the specific enum type.
+            </summary>
+            <remarks>
+            Be careful to the underlying values.
+            You had better set <c>levels</c> and <c>labels</c> argument explicitly.
+            </remarks>
+            <example>
+                <code>
+            public enum Group
+            {
+            Treatment = 1,
+            Control = 2
+            }
+            // You must set 'levels' and 'labels' arguments explicitly in this case
+            // because levels of factor is sorted by default and the names in R and in enum names are different.
+            var code = @"factor(
+            c(rep('T', 5), rep('C', 5), rep('T', 4), rep('C', 5)),
+            levels=c('T', 'C'),
+            labels=c('Treatment', 'Control')
+            )";
+            var factor = engine.Evaluate(code).AsFactor();
+            foreach (Group g in factor.GetFactors&lt;Group&gt;())
+            {
+            Console.Write("{0} ", g);
+            }
+            </code>
+            </example>
+            <typeparam name="TEnum">The type of enum.</typeparam>
+            <param name="ignoreCase">The value indicating case-sensitivity.</param>
+            <returns>Factors.</returns>
+        </member>
+        <member name="P:RDotNet.Factor.IsOrdered">
+            <summary>
+            Gets the value which indicating the factor is ordered or not.
+            </summary>
+        </member>
+        <member name="T:RDotNet.Internals.OutputMode">
+            <summary>
+            Specifies output mode.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.OutputMode.None">
+            <summary>
+            No option.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.OutputMode.Quiet">
+            <summary>
+            Quiet mode.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.OutputMode.Slave">
+            <summary>
+            Slave mode.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.OutputMode.Verbose">
+            <summary>
+            Verbose mode.
+            </summary>
+        </member>
+        <member name="T:RDotNet.Internals.ConsoleOutputType">
+            <summary>
+            Specifies console to output.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.ConsoleOutputType.None">
+            <summary>
+            The default value.
+            </summary>
+        </member>
+        <member name="T:RDotNet.Internals.BusyType">
+            <summary>
+            Type of R's working.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.BusyType.None">
+            <summary>
+            Terminated states of business.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.BusyType.ExtendedComputation">
+            <summary>
+            Embarks on an extended computation
+            </summary>
+        </member>
+        <member name="T:RDotNet.Internals.StartupRestoreAction">
+            <summary>
+            Specifies the restore action.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.StartupRestoreAction.NoRestore">
+            <summary>
+            Not restoring.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.StartupRestoreAction.Restore">
+            <summary>
+            Restoring.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.StartupRestoreAction.Default">
+            <summary>
+            The default value.
+            </summary>
+        </member>
+        <member name="T:RDotNet.Internals.StartupSaveAction">
+            <summary>
+            Specifies the save action.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.StartupSaveAction.Default">
+            <summary>
+            The default value.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.StartupSaveAction.NoSave">
+            <summary>
+            No saving.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.StartupSaveAction.Save">
+            <summary>
+            Saving.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.StartupSaveAction.Ask">
+            <summary>
+            Asking user.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.StartupSaveAction.Suicide">
+            <summary>
+            Terminates without any actions.
+            </summary>
+        </member>
+        <member name="T:RDotNet.Internals.YesNoCancel">
+            <summary>
+            User's decision.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.YesNoCancel.Yes">
+            <summary>
+            User agreed.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.YesNoCancel.No">
+            <summary>
+            User disagreed.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.YesNoCancel.Cancel">
+            <summary>
+            User abandoned to answer.
+            </summary>
+        </member>
+        <member name="T:RDotNet.SpecialFunction">
+            <summary>
+            A special function.
+            </summary>
+        </member>
+        <member name="M:RDotNet.SpecialFunction.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a special function proxy.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="pointer">The pointer.</param>
+        </member>
+        <member name="T:RDotNet.REnvironment">
+            <summary>
+            An environment object.
+            </summary>
+        </member>
+        <member name="M:RDotNet.REnvironment.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates an environment object.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="pointer">The pointer to an environment.</param>
+        </member>
+        <member name="M:RDotNet.REnvironment.#ctor(RDotNet.REngine,RDotNet.REnvironment)">
+            <summary>
+            Creates a new environment object.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="parent">The parent environment.</param>
+        </member>
+        <member name="P:RDotNet.REnvironment.Parent">
+            <summary>
+            Gets the parental environment.
+            </summary>
+        </member>
+        <member name="M:RDotNet.REnvironment.GetSymbol(System.String)">
+            <summary>
+            Gets a symbol defined in this environment.
+            </summary>
+            <param name="name">The name.</param>
+            <returns>The symbol.</returns>
+        </member>
+        <member name="M:RDotNet.REnvironment.SetSymbol(System.String,RDotNet.SymbolicExpression)">
+            <summary>
+            Defines a symbol in this environment.
+            </summary>
+            <param name="name">The name.</param>
+            <param name="expression">The symbol.</param>
+        </member>
+        <member name="M:RDotNet.REnvironment.GetSymbolNames(System.Boolean)">
+            <summary>
+            Gets the symbol names defined in this environment.
+            </summary>
+            <param name="all">Including special functions or not.</param>
+            <returns>Symbol names.</returns>
+        </member>
+        <member name="T:RDotNet.Expression">
+            <summary>
+            An expression object.
+            </summary>
+        </member>
+        <member name="M:RDotNet.Expression.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates an expression object.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="pointer">The pointer to an expression.</param>
+        </member>
+        <member name="M:RDotNet.Expression.Evaluate(RDotNet.REnvironment)">
+            <summary>
+            Evaluates the expression in the specified environment.
+            </summary>
+            <param name="environment">The environment.</param>
+            <returns>The evaluation result.</returns>
+        </member>
+        <member name="M:RDotNet.Expression.TryEvaluate(RDotNet.REnvironment,RDotNet.SymbolicExpression@)">
+            <summary>
+            Evaluates the expression in the specified environment.
+            </summary>
+            <param name="environment">The environment.</param>
+            <param name="result">The evaluation result, or <c>null</c> if the evaluation failed</param>
+            <returns>
+                <c>True</c> if the evaluation succeeded.</returns>
+        </member>
+        <member name="M:RDotNet.ExpressionVector.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a new instance for an expression vector.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="coerced">The pointer to an expression vector.</param>
+        </member>
+        <member name="P:RDotNet.ExpressionVector.DataSize">
+            <summary>
+            Gets the size of a pointer in byte.
+            </summary>
+        </member>
+        <member name="T:RDotNet.DataFrame">
+            <summary>
+            A data frame.
+            </summary>
+        </member>
+        <member name="M:RDotNet.DataFrame.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a new instance.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="coerced">The pointer to a data frame.</param>
+        </member>
+        <member name="P:RDotNet.DataFrame.Item(System.Int32)">
+            <summary>
+            Gets or sets the column at the specified index as a vector.
+            </summary>
+            <param name="columnIndex">The zero-based index of the column to get or set.</param>
+            <returns>The column at the specified index.</returns>
+        </member>
+        <member name="P:RDotNet.DataFrame.Item(System.Int32,System.Int32)">
+            <summary>
+            Gets or sets the element at the specified indexes.
+            </summary>
+            <param name="rowIndex">The row index.</param>
+            <param name="columnIndex">The column index.</param>
+            <returns>The element.</returns>
+        </member>
+        <member name="P:RDotNet.DataFrame.Item(System.Int32,System.String)">
+            <summary>
+            Gets or sets the element at the specified index and name.
+            </summary>
+            <param name="rowIndex">The row index.</param>
+            <param name="columnName">The column name.</param>
+            <returns>The element.</returns>
+        </member>
+        <member name="P:RDotNet.DataFrame.Item(System.String,System.String)">
+            <summary>
+            Gets or sets the element at the specified names.
+            </summary>
+            <param name="rowName">The row name.</param>
+            <param name="columnName">The column name.</param>
+            <returns>The element.</returns>
+        </member>
+        <member name="P:RDotNet.DataFrame.RowCount">
+            <summary>
+            Gets the number of data sets.
+            </summary>
+        </member>
+        <member name="P:RDotNet.DataFrame.ColumnCount">
+            <summary>
+            Gets the number of kinds of data.
+            </summary>
+        </member>
+        <member name="P:RDotNet.DataFrame.RowNames">
+            <summary>
+            Gets the names of rows.
+            </summary>
+        </member>
+        <member name="P:RDotNet.DataFrame.ColumnNames">
+            <summary>
+            Gets the names of columns.
+            </summary>
+        </member>
+        <member name="M:RDotNet.DataFrame.GetRow(System.Int32)">
+            <summary>
+            Gets the row at the specified index.
+            </summary>
+            <param name="rowIndex">The index.</param>
+            <returns>The row.</returns>
+        </member>
+        <member name="M:RDotNet.DataFrame.GetRow``1(System.Int32)">
+            <summary>
+            Gets the row at the specified index mapping a specified class.
+            </summary>
+            <typeparam name="TRow">The row type with <see cref="T:RDotNet.DataFrameRowAttribute" />.</typeparam>
+            <returns>The row.</returns>
+        </member>
+        <member name="M:RDotNet.DataFrame.GetRows">
+            <summary>
+            Enumerates all the rows in the data frame.
+            </summary>
+            <returns>The collection of the rows.</returns>
+        </member>
+        <member name="M:RDotNet.DataFrame.GetRows``1">
+            <summary>
+            Enumerates all the rows in the data frame mapping a specified class.
+            </summary>
+            <typeparam name="TRow">The row type with <see cref="T:RDotNet.DataFrameRowAttribute" />.</typeparam>
+            <returns>The collection of the rows.</returns>
+        </member>
+        <member name="T:RDotNet.DataFrameRow">
+            <summary>
+            A data frame row.
+            </summary>
+        </member>
+        <member name="P:RDotNet.DataFrameRow.Item(System.Int32)">
+            <summary>
+            Gets and sets the value at the specified column.
+            </summary>
+            <param name="index">The column index.</param>
+            <returns>The value.</returns>
+        </member>
+        <member name="P:RDotNet.DataFrameRow.Item(System.String)">
+            <summary>
+            Gets and sets the value at the specified column.
+            </summary>
+            <param name="name">The column name.</param>
+            <returns>The value.</returns>
+        </member>
+        <member name="P:RDotNet.DataFrameRow.DataFrame">
+            <summary>
+            Gets the data frame containing this row.
+            </summary>
+        </member>
+        <member name="P:RDotNet.DataFrameRow.RowIndex">
+            <summary>
+            Gets the index of this row.
+            </summary>
+        </member>
+        <member name="T:RDotNet.DynamicVector">
+            <summary>
+            A collection of values.
+            </summary>
+            <remarks>
+            This vector cannot contain more than one types of values.
+            Consider to use another vector class instead.
+            </remarks>
+        </member>
+        <member name="P:RDotNet.DynamicVector.Item(System.Int32)">
+            <summary>
+            Gets or sets the element at the specified index.
+            </summary>
+            <remarks>
+            The value is converted into specific type.
+            </remarks>
+            <param name="index">The zero-based index of the element to get or set.</param>
+            <returns>The element at the specified index.</returns>
+        </member>
+        <member name="T:RDotNet.Function">
+            <summary>
+            A function is one of closure, built-in function, or special function.
+            </summary>
+        </member>
+        <member name="M:RDotNet.Function.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a function object.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="pointer">The pointer.</param>
+        </member>
+        <member name="M:RDotNet.Function.Invoke(RDotNet.SymbolicExpression[])">
+            <summary>
+            Executes the function.
+            </summary>
+            <param name="args">The arguments.</param>
+            <returns>The return value.</returns>
+        </member>
+        <member name="T:RDotNet.GenericVector">
+            <summary>
+            A generic list. This is also known as list in R.
+            </summary>
+        </member>
+        <member name="M:RDotNet.GenericVector.#ctor(RDotNet.REngine,System.Int32)">
+            <summary>
+            Creates a new empty GenericVector with the specified length.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="length">The length.</param>
+        </member>
+        <member name="M:RDotNet.GenericVector.#ctor(RDotNet.REngine,System.Collections.Generic.IEnumerable{RDotNet.SymbolicExpression})">
+            <summary>
+            Creates a new GenericVector with the specified values.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="list">The values.</param>
+        </member>
+        <member name="M:RDotNet.GenericVector.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a new instance for a list.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="coerced">The pointer to a list.</param>
+        </member>
+        <member name="P:RDotNet.GenericVector.Item(System.Int32)">
+            <summary>
+            Gets or sets the element at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the element to get or set.</param>
+            <returns>The element at the specified index.</returns>
+        </member>
+        <member name="M:RDotNet.GenericVector.ToPairlist">
+            <summary>
+            Converts into a <see cref="T:RDotNet.Pairlist" />.
+            </summary>
+            <returns>The pairlist.</returns>
+        </member>
+        <member name="T:RDotNet.Language">
+            <summary>
+            A language object.
+            </summary>
+        </member>
+        <member name="M:RDotNet.Language.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a language object.
+            </summary>
+            <param name="engine">The engine</param>
+            <param name="pointer">The pointer.</param>
+        </member>
+        <member name="P:RDotNet.Language.FunctionCall">
+            <summary>
+            Gets function calls.
+            </summary>
+        </member>
+        <member name="T:RDotNet.LogicalMatrix">
+            <summary>
+            A matrix of Boolean values.
+            </summary>
+        </member>
+        <member name="M:RDotNet.LogicalMatrix.#ctor(RDotNet.REngine,System.Int32,System.Int32)">
+            <summary>
+            Creates a new empty LogicalMatrix with the specified size.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="rowCount">The row size.</param>
+            <param name="columnCount">The column size.</param>
+            <seealso cref="M:RDotNet.REngineExtension.CreateLogicalMatrix(RDotNet.REngine,System.Int32,System.Int32)" />
+        </member>
+        <member name="M:RDotNet.LogicalMatrix.#ctor(RDotNet.REngine,System.Boolean[0:,0:])">
+            <summary>
+            Creates a new LogicalMatrix with the specified values.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="matrix">The values.</param>
+            <seealso cref="M:RDotNet.REngineExtension.CreateLogicalMatrix(RDotNet.REngine,System.Boolean[0:,0:])" />
+        </member>
+        <member name="M:RDotNet.LogicalMatrix.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a new instance for a Boolean matrix.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="coerced">The pointer to a Boolean matrix.</param>
+        </member>
+        <member name="P:RDotNet.LogicalMatrix.Item(System.Int32,System.Int32)">
+            <summary>
+            Gets or sets the element at the specified index.
+            </summary>
+            <param name="rowIndex">The zero-based rowIndex index of the element to get or set.</param>
+            <param name="columnIndex">The zero-based columnIndex index of the element to get or set.</param>
+            <returns>The element at the specified index.</returns>
+        </member>
+        <member name="P:RDotNet.LogicalMatrix.DataSize">
+            <summary>
+            Gets the size of an integer in byte.
+            </summary>
+        </member>
+        <member name="T:RDotNet.Pairlist">
+            <summary>
+            A pairlist.
+            </summary>
+        </member>
+        <member name="M:RDotNet.Pairlist.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a pairlist.
+            </summary>
+            <param name="engine">The engine</param>
+            <param name="pointer">The pointer.</param>
+        </member>
+        <member name="P:RDotNet.Pairlist.Count">
+            <summary>
+            Gets the number of nodes.
+            </summary>
+        </member>
+        <member name="T:RDotNet.RawMatrix">
+            <summary>
+            A matrix of byte values.
+            </summary>
+        </member>
+        <member name="M:RDotNet.RawMatrix.#ctor(RDotNet.REngine,System.Int32,System.Int32)">
+            <summary>
+            Creates a new RawMatrix with the specified size.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="rowCount">The row size.</param>
+            <param name="columnCount">The column size.</param>
+            <seealso cref="M:RDotNet.REngineExtension.CreateRawMatrix(RDotNet.REngine,System.Int32,System.Int32)" />
+        </member>
+        <member name="M:RDotNet.RawMatrix.#ctor(RDotNet.REngine,System.Byte[0:,0:])">
+            <summary>
+            Creates a new RawMatrix with the specified values.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="matrix">The values.</param>
+            <seealso cref="M:RDotNet.REngineExtension.CreateRawMatrix(RDotNet.REngine,System.Byte[0:,0:])" />
+        </member>
+        <member name="M:RDotNet.RawMatrix.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a new instance for a raw matrix.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="coerced">The pointer to a raw matrix.</param>
+        </member>
+        <member name="P:RDotNet.RawMatrix.Item(System.Int32,System.Int32)">
+            <summary>
+            Gets or sets the element at the specified index.
+            </summary>
+            <param name="rowIndex">The zero-based rowIndex index of the element to get or set.</param>
+            <param name="columnIndex">The zero-based columnIndex index of the element to get or set.</param>
+            <returns>The element at the specified index.</returns>
+        </member>
+        <member name="P:RDotNet.RawMatrix.DataSize">
+            <summary>
+            Gets the size of an Raw in byte.
+            </summary>
+        </member>
+        <member name="T:RDotNet.NumericMatrix">
+            <summary>
+            A matrix of real numbers in double precision.
+            </summary>
+        </member>
+        <member name="M:RDotNet.NumericMatrix.#ctor(RDotNet.REngine,System.Int32,System.Int32)">
+            <summary>
+            Creates a new empty NumericMatrix with the specified size.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="rowCount">The row size.</param>
+            <param name="columnCount">The column size.</param>
+            <seealso cref="M:RDotNet.REngineExtension.CreateNumericMatrix(RDotNet.REngine,System.Int32,System.Int32)" />
+        </member>
+        <member name="M:RDotNet.NumericMatrix.#ctor(RDotNet.REngine,System.Double[0:,0:])">
+            <summary>
+            Creates a new NumericMatrix with the specified values.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="matrix">The values.</param>
+            <seealso cref="M:RDotNet.REngineExtension.CreateNumericMatrix(RDotNet.REngine,System.Double[0:,0:])" />
+        </member>
+        <member name="M:RDotNet.NumericMatrix.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a new instance for a numeric matrix.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="coerced">The pointer to a numeric matrix.</param>
+        </member>
+        <member name="P:RDotNet.NumericMatrix.Item(System.Int32,System.Int32)">
+            <summary>
+            Gets or sets the element at the specified index.
+            </summary>
+            <param name="rowIndex">The zero-based rowIndex index of the element to get or set.</param>
+            <param name="columnIndex">The zero-based columnIndex index of the element to get or set.</param>
+            <returns>The element at the specified index.</returns>
+        </member>
+        <member name="P:RDotNet.NumericMatrix.DataSize">
+            <summary>
+            Gets the size of a real number in byte.
+            </summary>
+        </member>
+        <member name="T:RDotNet.IntegerMatrix">
+            <summary>
+            A matrix of integers from <c>-2^31 + 1</c> to <c>2^31 - 1</c>.
+            </summary>
+            <remarks>
+            The minimum value of IntegerVector is different from that of System.Int32 in .NET Framework.
+            </remarks>
+        </member>
+        <member name="M:RDotNet.IntegerMatrix.#ctor(RDotNet.REngine,System.Int32,System.Int32)">
+            <summary>
+            Creates a new empty IntegerMatrix with the specified size.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="rowCount">The row size.</param>
+            <param name="columnCount">The column size.</param>
+            <seealso cref="M:RDotNet.REngineExtension.CreateIntegerMatrix(RDotNet.REngine,System.Int32,System.Int32)" />
+        </member>
+        <member name="M:RDotNet.IntegerMatrix.#ctor(RDotNet.REngine,System.Int32[0:,0:])">
+            <summary>
+            Creates a new IntegerMatrix with the specified values.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="matrix">The values.</param>
+            <seealso cref="M:RDotNet.REngineExtension.CreateIntegerMatrix(RDotNet.REngine,System.Int32[0:,0:])" />
+        </member>
+        <member name="M:RDotNet.IntegerMatrix.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a new instance for an integer matrix.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="coerced">The pointer to an integer matrix.</param>
+        </member>
+        <member name="P:RDotNet.IntegerMatrix.Item(System.Int32,System.Int32)">
+            <summary>
+            Gets or sets the element at the specified index.
+            </summary>
+            <param name="rowIndex">The zero-based rowIndex index of the element to get or set.</param>
+            <param name="columnIndex">The zero-based columnIndex index of the element to get or set.</param>
+            <returns>The element at the specified index.</returns>
+        </member>
+        <member name="P:RDotNet.IntegerMatrix.DataSize">
+            <summary>
+            Gets the size of an integer in byte.
+            </summary>
+        </member>
+        <member name="T:RDotNet.Matrix`1">
+            <summary>
+            A matrix base.
+            </summary>
+            <typeparam name="T">The element type.</typeparam>
+        </member>
+        <member name="M:RDotNet.Matrix`1.#ctor(RDotNet.REngine,RDotNet.Internals.SymbolicExpressionType,System.Int32,System.Int32)">
+            <summary>
+            Creates a new matrix with the specified size.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="type">The element type.</param>
+            <param name="rowCount">The size of row.</param>
+            <param name="columnCount">The size of column.</param>
+        </member>
+        <member name="M:RDotNet.Matrix`1.#ctor(RDotNet.REngine,RDotNet.Internals.SymbolicExpressionType,`0[0:,0:])">
+            <summary>
+            Creates a new matrix with the specified values.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="type">The element type.</param>
+            <param name="matrix">The values.</param>
+        </member>
+        <member name="M:RDotNet.Matrix`1.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a new instance for a matrix.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="coerced">The pointer to a matrix.</param>
+        </member>
+        <member name="P:RDotNet.Matrix`1.Item(System.Int32,System.Int32)">
+            <summary>
+            Gets or sets the element at the specified index.
+            </summary>
+            <param name="rowIndex">The zero-based row index of the element to get or set.</param>
+            <param name="columnIndex">The zero-based column index of the element to get or set.</param>
+            <returns>The element at the specified index.</returns>
+        </member>
+        <member name="P:RDotNet.Matrix`1.Item(System.String,System.String)">
+            <summary>
+            Gets or sets the element at the specified names.
+            </summary>
+            <param name="rowName">The row name of the element to get or set.</param>
+            <param name="columnName">The column name of the element to get or set.</param>
+            <returns>The element at the specified names.</returns>
+        </member>
+        <member name="P:RDotNet.Matrix`1.RowCount">
+            <summary>
+            Gets the row size of elements.
+            </summary>
+        </member>
+        <member name="P:RDotNet.Matrix`1.ColumnCount">
+            <summary>
+            Gets the column size of elements.
+            </summary>
+        </member>
+        <member name="P:RDotNet.Matrix`1.RowNames">
+            <summary>
+            Gets the names of rows.
+            </summary>
+        </member>
+        <member name="P:RDotNet.Matrix`1.ColumnNames">
+            <summary>
+            Gets the names of columns.
+            </summary>
+        </member>
+        <member name="P:RDotNet.Matrix`1.DataPointer">
+            <summary>
+            Gets the pointer for the first element.
+            </summary>
+        </member>
+        <member name="P:RDotNet.Matrix`1.DataSize">
+            <summary>
+            Gets the size of an element in byte.
+            </summary>
+        </member>
+        <member name="M:RDotNet.Matrix`1.GetOffset(System.Int32,System.Int32)">
+            <summary>
+            Gets the offset for the specified indexes.
+            </summary>
+            <param name="rowIndex">The index of row.</param>
+            <param name="columnIndex">The index of column.</param>
+            <returns>The offset.</returns>
+        </member>
+        <member name="M:RDotNet.Matrix`1.CopyTo(`0[0:,0:],System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Copies the elements to the specified array.
+            </summary>
+            <param name="destination">The destination array.</param>
+            <param name="rowCount">The row length to copy.</param>
+            <param name="columnCount">The column length to copy.</param>
+            <param name="sourceRowIndex">The first row index of the matrix.</param>
+            <param name="sourceColumnIndex">The first column index of the matrix.</param>
+            <param name="destinationRowIndex">The first row index of the destination array.</param>
+            <param name="destinationColumnIndex">The first column index of the destination array.</param>
+        </member>
+        <member name="T:RDotNet.InternalString">
+            <summary>
+            Internal string.
+            </summary>
+        </member>
+        <member name="M:RDotNet.InternalString.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a new instance.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="pointer">The pointer to a string.</param>
+        </member>
+        <member name="M:RDotNet.InternalString.#ctor(RDotNet.REngine,System.String)">
+            <summary>
+            Creates a new instance.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="s">The string</param>
+        </member>
+        <member name="M:RDotNet.InternalString.op_Implicit(RDotNet.InternalString)~System.String">
+            <summary>
+            Converts to the string into .NET Framework string.
+            </summary>
+            <param name="s">The R string.</param>
+            <returns>The .NET Framework string.</returns>
+        </member>
+        <member name="M:RDotNet.InternalString.ToString">
+            <summary>
+            Gets the string representation of the string object.
+            This returns <c>"NA"</c> if the value is <c>NA</c>, whereas <see cref="M:RDotNet.InternalString.GetInternalValue" /> returns <c>null</c>.
+            </summary>
+            <returns>The string representation.</returns>
+            <seealso cref="M:RDotNet.InternalString.GetInternalValue" />
+        </member>
+        <member name="M:RDotNet.InternalString.GetInternalValue">
+            <summary>
+            Gets the string representation of the string object.
+            This returns <c>null</c> if the value is <c>NA</c>, whereas <see cref="M:RDotNet.InternalString.ToString" /> returns <c>"NA"</c>.
+            </summary>
+            <returns>The string representation.</returns>
+        </member>
+        <member name="T:RDotNet.RawVector">
+            <summary>
+            A sequence of byte values.
+            </summary>
+        </member>
+        <member name="M:RDotNet.RawVector.#ctor(RDotNet.REngine,System.Int32)">
+            <summary>
+            Creates a new RawVector with the specified length.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="length">The length.</param>
+        </member>
+        <member name="M:RDotNet.RawVector.#ctor(RDotNet.REngine,System.Collections.Generic.IEnumerable{System.Byte})">
+            <summary>
+            Creates a new RawVector with the specified values.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="vector">The values.</param>
+            <seealso cref="M:RDotNet.REngineExtension.CreateRawVector(RDotNet.REngine,System.Collections.Generic.IEnumerable{System.Byte})" />
+        </member>
+        <member name="M:RDotNet.RawVector.#ctor(RDotNet.REngine,System.Byte[])">
+            <summary>
+            Creates a new RawVector with the specified values.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="vector">The values.</param>
+            <seealso cref="M:RDotNet.REngineExtension.CreateRawVector(RDotNet.REngine,System.Int32)" />
+        </member>
+        <member name="M:RDotNet.RawVector.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a new instance for a raw vector.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="coerced">The pointer to a raw vector.</param>
+            <seealso cref="!:REngineExtension.CreateRawVector(REngine, byte[])" />
+        </member>
+        <member name="P:RDotNet.RawVector.Item(System.Int32)">
+            <summary>
+            Gets or sets the element at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the element to get or set.</param>
+            <returns>The element at the specified index.</returns>
+        </member>
+        <member name="P:RDotNet.RawVector.DataSize">
+            <summary>
+            Gets the size of a byte value in byte.
+            </summary>
+        </member>
+        <member name="M:RDotNet.RawVector.CopyTo(System.Byte[],System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Copies the elements to the specified array.
+            </summary>
+            <param name="destination">The destination array.</param>
+            <param name="length">The length to copy.</param>
+            <param name="sourceIndex">The first index of the vector.</param>
+            <param name="destinationIndex">The first index of the destination array.</param>
+        </member>
+        <member name="T:RDotNet.Internals.ParseStatus">
+            <summary>
+            Parsing status enumeration.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.ParseStatus.Null">
+            <summary>
+            The default value.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.ParseStatus.OK">
+            <summary>
+            No error.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.ParseStatus.Incomplete">
+            <summary>
+            Statement is incomplete.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.ParseStatus.Error">
+            <summary>
+            Error occurred.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.ParseStatus.EOF">
+            <summary>
+            EOF.
+            </summary>
+        </member>
+        <member name="T:RDotNet.NumericVector">
+            <summary>
+            A collection of real numbers in double precision.
+            </summary>
+        </member>
+        <member name="M:RDotNet.NumericVector.#ctor(RDotNet.REngine,System.Int32)">
+            <summary>
+            Creates a new empty NumericVector with the specified length.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="length">The length.</param>
+            <seealso cref="M:RDotNet.REngineExtension.CreateNumericVector(RDotNet.REngine,System.Int32)" />
+        </member>
+        <member name="M:RDotNet.NumericVector.#ctor(RDotNet.REngine,System.Collections.Generic.IEnumerable{System.Double})">
+            <summary>
+            Creates a new NumericVector with the specified values.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="vector">The values.</param>
+            <seealso cref="M:RDotNet.REngineExtension.CreateNumericVector(RDotNet.REngine,System.Collections.Generic.IEnumerable{System.Double})" />
+        </member>
+        <member name="M:RDotNet.NumericVector.#ctor(RDotNet.REngine,System.Double[])">
+            <summary>
+            Creates a new NumericVector with the specified values.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="vector">The values.</param>
+            <seealso cref="!:REngineExtension.CreateNumericVector(REngine, double[])" />
+        </member>
+        <member name="M:RDotNet.NumericVector.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a new instance for a numeric vector.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="coerced">The pointer to a numeric vector.</param>
+        </member>
+        <member name="P:RDotNet.NumericVector.Item(System.Int32)">
+            <summary>
+            Gets or sets the element at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the element to get or set.</param>
+            <returns>The element at the specified index.</returns>
+        </member>
+        <member name="P:RDotNet.NumericVector.DataSize">
+            <summary>
+            Gets the size of a real number in byte.
+            </summary>
+        </member>
+        <member name="M:RDotNet.NumericVector.CopyTo(System.Double[],System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Copies the elements to the specified array.
+            </summary>
+            <param name="destination">The destination array.</param>
+            <param name="length">The length to copy.</param>
+            <param name="sourceIndex">The first index of the vector.</param>
+            <param name="destinationIndex">The first index of the destination array.</param>
+        </member>
+        <member name="T:RDotNet.IntegerVector">
+            <summary>
+            A collection of integers from <c>-2^31 + 1</c> to <c>2^31 - 1</c>.
+            </summary>
+            <remarks>
+            The minimum value of IntegerVector is different from that of System.Int32 in .NET Framework.
+            </remarks>
+        </member>
+        <member name="M:RDotNet.IntegerVector.#ctor(RDotNet.REngine,System.Int32)">
+            <summary>
+            Creates a new empty IntegerVector with the specified length.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="length">The length.</param>
+            <seealso cref="M:RDotNet.REngineExtension.CreateIntegerVector(RDotNet.REngine,System.Int32)" />
+        </member>
+        <member name="M:RDotNet.IntegerVector.#ctor(RDotNet.REngine,System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Creates a new IntegerVector with the specified values.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="vector">The values.</param>
+            <seealso cref="M:RDotNet.REngineExtension.CreateIntegerVector(RDotNet.REngine,System.Collections.Generic.IEnumerable{System.Int32})" />
+        </member>
+        <member name="M:RDotNet.IntegerVector.#ctor(RDotNet.REngine,System.Int32[])">
+            <summary>
+            Creates a new IntegerVector with the specified values.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="vector">The values.</param>
+            <seealso cref="!:REngineExtension.CreateIntegerVector(REngine, int[])" />
+        </member>
+        <member name="M:RDotNet.IntegerVector.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a new instance for an integer vector.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="coerced">The pointer to an integer vector.</param>
+        </member>
+        <member name="P:RDotNet.IntegerVector.Item(System.Int32)">
+            <summary>
+            Gets or sets the element at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the element to get or set.</param>
+            <returns>The element at the specified index.</returns>
+        </member>
+        <member name="P:RDotNet.IntegerVector.DataSize">
+            <summary>
+            Gets the size of an integer in byte.
+            </summary>
+        </member>
+        <member name="M:RDotNet.IntegerVector.CopyTo(System.Int32[],System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Copies the elements to the specified array.
+            </summary>
+            <param name="destination">The destination array.</param>
+            <param name="length">The length to copy.</param>
+            <param name="sourceIndex">The first index of the vector.</param>
+            <param name="destinationIndex">The first index of the destination array.</param>
+        </member>
+        <member name="T:RDotNet.ParseException">
+            <summary>
+            Thrown when an engine comes to an error.
+            </summary>
+        </member>
+        <member name="M:RDotNet.ParseException.#ctor">
+            <summary>
+            Creates a new instance.
+            </summary>
+        </member>
+        <member name="M:RDotNet.ParseException.#ctor(RDotNet.Internals.ParseStatus,System.String)">
+            <summary>
+            Creates a new instance with the specified error.
+            </summary>
+            <param name="status">The error.</param>
+            <param name="errorStatement">The error statement.</param>
+        </member>
+        <member name="P:RDotNet.ParseException.Status">
+            <summary>
+            The error.
+            </summary>
+        </member>
+        <member name="P:RDotNet.ParseException.ErrorStatement">
+            <summary>
+            The statement caused the error.
+            </summary>
+        </member>
+        <member name="T:RDotNet.REngineExtension">
+            <summary>
+            Provides extension methods for <see cref="T:RDotNet.REngine" />.
+            </summary>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateCharacterVector(RDotNet.REngine,System.Int32)">
+            <summary>
+            Creates a new empty CharacterVector with the specified length.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="length">The length.</param>
+            <returns>The new vector.</returns>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateComplexVector(RDotNet.REngine,System.Int32)">
+            <summary>
+            Creates a new empty ComplexVector with the specified length.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="length">The length.</param>
+            <returns>The new vector.</returns>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateIntegerVector(RDotNet.REngine,System.Int32)">
+            <summary>
+            Creates a new empty IntegerVector with the specified length.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="length">The length.</param>
+            <returns>The new vector.</returns>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateLogicalVector(RDotNet.REngine,System.Int32)">
+            <summary>
+            Creates a new empty LogicalVector with the specified length.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="length">The length.</param>
+            <returns>The new vector.</returns>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateNumericVector(RDotNet.REngine,System.Int32)">
+            <summary>
+            Creates a new empty NumericVector with the specified length.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="length">The length.</param>
+            <returns>The new vector.</returns>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateRawVector(RDotNet.REngine,System.Int32)">
+            <summary>
+            Creates a new empty RawVector with the specified length.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="length">The length.</param>
+            <returns>The new vector.</returns>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateCharacterVector(RDotNet.REngine,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Creates a new CharacterVector with the specified values.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="vector">The values.</param>
+            <returns>The new vector.</returns>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateComplexVector(RDotNet.REngine,System.Collections.Generic.IEnumerable{System.Numerics.Complex})">
+            <summary>
+            Creates a new ComplexVector with the specified values.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="vector">The values.</param>
+            <returns>The new vector.</returns>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateIntegerVector(RDotNet.REngine,System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Creates a new IntegerVector with the specified values.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="vector">The values.</param>
+            <returns>The new vector.</returns>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateLogicalVector(RDotNet.REngine,System.Collections.Generic.IEnumerable{System.Boolean})">
+            <summary>
+            Creates a new LogicalVector with the specified values.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="vector">The values.</param>
+            <returns>The new vector.</returns>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateNumericVector(RDotNet.REngine,System.Collections.Generic.IEnumerable{System.Double})">
+            <summary>
+            Creates a new NumericVector with the specified values.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="vector">The values.</param>
+            <returns>The new vector.</returns>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateRawVector(RDotNet.REngine,System.Collections.Generic.IEnumerable{System.Byte})">
+            <summary>
+            Creates a new RawVector with the specified values.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="vector">The values.</param>
+            <returns>The new vector.</returns>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateCharacterMatrix(RDotNet.REngine,System.Int32,System.Int32)">
+            <summary>
+            Creates a new empty CharacterMatrix with the specified size.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="rowCount">The row size.</param>
+            <param name="columnCount">The column size.</param>
+            <returns>The new matrix.</returns>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateComplexMatrix(RDotNet.REngine,System.Int32,System.Int32)">
+            <summary>
+            Creates a new empty ComplexMatrix with the specified size.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="rowCount">The row size.</param>
+            <param name="columnCount">The column size.</param>
+            <returns>The new matrix.</returns>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateIntegerMatrix(RDotNet.REngine,System.Int32,System.Int32)">
+            <summary>
+            Creates a new empty IntegerMatrix with the specified size.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="rowCount">The row size.</param>
+            <param name="columnCount">The column size.</param>
+            <returns>The new matrix.</returns>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateLogicalMatrix(RDotNet.REngine,System.Int32,System.Int32)">
+            <summary>
+            Creates a new empty LogicalMatrix with the specified size.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="rowCount">The row size.</param>
+            <param name="columnCount">The column size.</param>
+            <returns>The new matrix.</returns>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateNumericMatrix(RDotNet.REngine,System.Int32,System.Int32)">
+            <summary>
+            Creates a new empty NumericMatrix with the specified size.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="rowCount">The row size.</param>
+            <param name="columnCount">The column size.</param>
+            <returns>The new matrix.</returns>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateRawMatrix(RDotNet.REngine,System.Int32,System.Int32)">
+            <summary>
+            Creates a new empty RawMatrix with the specified size.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="rowCount">The row size.</param>
+            <param name="columnCount">The column size.</param>
+            <returns>The new matrix.</returns>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateCharacterMatrix(RDotNet.REngine,System.String[0:,0:])">
+            <summary>
+            Creates a new CharacterMatrix with the specified values.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="matrix">The values.</param>
+            <returns>The new matrix.</returns>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateComplexMatrix(RDotNet.REngine,System.Numerics.Complex[0:,0:])">
+            <summary>
+            Creates a new ComplexMatrix with the specified values.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="matrix">The values.</param>
+            <returns>The new matrix.</returns>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateIntegerMatrix(RDotNet.REngine,System.Int32[0:,0:])">
+            <summary>
+            Creates a new IntegerMatrix with the specified values.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="matrix">The values.</param>
+            <returns>The new matrix.</returns>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateLogicalMatrix(RDotNet.REngine,System.Boolean[0:,0:])">
+            <summary>
+            Creates a new LogicalMatrix with the specified values.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="matrix">The values.</param>
+            <returns>The new matrix.</returns>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateNumericMatrix(RDotNet.REngine,System.Double[0:,0:])">
+            <summary>
+            Creates a new NumericMatrix with the specified values.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="matrix">The values.</param>
+            <returns>The new matrix.</returns>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateRawMatrix(RDotNet.REngine,System.Byte[0:,0:])">
+            <summary>
+            Creates a new RawMatrix with the specified values.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="matrix">The values.</param>
+            <returns>The new matrix.</returns>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateEnvironment(RDotNet.REngine,RDotNet.REnvironment)">
+            <summary>
+            Creates a new environment.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="parent">The parent environment.</param>
+            <returns>The newly created environment.</returns>
+        </member>
+        <member name="M:RDotNet.REngineExtension.CreateIsolatedEnvironment(RDotNet.REngine)">
+            <summary>
+            Creates a new isolated environment.
+            </summary>
+            <param name="engine">The engine.</param>
+            <returns>The newly created isolated environment.</returns>
+        </member>
+        <member name="T:RDotNet.StartupParameter">
+            <summary>
+            Represents parameters on R's startup.
+            </summary>
+            <remarks>
+            Wraps RStart struct.
+            </remarks>
+        </member>
+        <member name="P:RDotNet.StartupParameter.Quiet">
+            <summary>
+            Gets or sets the value indicating that R runs as quiet mode.
+            </summary>
+        </member>
+        <member name="P:RDotNet.StartupParameter.Slave">
+            <summary>
+            Gets or sets the value indicating that R runs as slave mode.
+            </summary>
+        </member>
+        <member name="P:RDotNet.StartupParameter.Interactive">
+            <summary>
+            Gets or sets the value indicating that R runs as interactive mode.
+            </summary>
+        </member>
+        <member name="P:RDotNet.StartupParameter.Verbose">
+            <summary>
+            Gets or sets the value indicating that R runs as verbose mode.
+            </summary>
+        </member>
+        <member name="P:RDotNet.StartupParameter.LoadSiteFile">
+            <summary>
+            Gets or sets the value indicating that R loads the site file.
+            </summary>
+        </member>
+        <member name="P:RDotNet.StartupParameter.LoadInitFile">
+            <summary>
+            Gets or sets the value indicating that R loads the init file.
+            </summary>
+        </member>
+        <member name="P:RDotNet.StartupParameter.DebugInitFile">
+            <summary>
+            Gets or sets the value indicating that R debugs the init file.
+            </summary>
+        </member>
+        <member name="P:RDotNet.StartupParameter.RestoreAction">
+            <summary>
+            Gets or sets the value indicating that R restores the history.
+            </summary>
+        </member>
+        <member name="P:RDotNet.StartupParameter.SaveAction">
+            <summary>
+            Gets or sets the value indicating that R saves the history.
+            </summary>
+        </member>
+        <member name="P:RDotNet.StartupParameter.MinMemorySize">
+            <summary>
+            Gets or sets the minimum memory size.
+            </summary>
+        </member>
+        <member name="P:RDotNet.StartupParameter.MinCellSize">
+            <summary>
+            Gets or sets the minimum number of cons cells.
+            </summary>
+        </member>
+        <member name="P:RDotNet.StartupParameter.MaxMemorySize">
+            <summary>
+            Gets or sets the maximum memory size.
+            </summary>
+        </member>
+        <member name="P:RDotNet.StartupParameter.MaxCellSize">
+            <summary>
+            Gets or sets the maximum number of cons cells.
+            </summary>
+        </member>
+        <member name="P:RDotNet.StartupParameter.StackSize">
+            <summary>
+            Gets or sets the maximum number of protected pointers in stack.
+            </summary>
+        </member>
+        <member name="P:RDotNet.StartupParameter.NoRenviron">
+            <summary>
+            Gets or sets the value indicating that R does NOT load the environment file.
+            </summary>
+        </member>
+        <member name="P:RDotNet.StartupParameter.RHome">
+            <summary>
+            Gets or sets the base directory in which R is installed.
+            </summary>
+            <remarks>
+            Only Windows.
+            </remarks>
+        </member>
+        <member name="P:RDotNet.StartupParameter.Home">
+            <summary>
+            Gets or sets the default user workspace.
+            </summary>
+            <remarks>
+            Only Windows.
+            </remarks>
+        </member>
+        <member name="P:RDotNet.StartupParameter.CharacterMode">
+            <summary>
+            Gets or sets the UI mode.
+            </summary>
+            <remarks>
+            Only Windows.
+            </remarks>
+        </member>
+        <member name="T:RDotNet.Symbol">
+            <summary>
+            A symbol object.
+            </summary>
+        </member>
+        <member name="M:RDotNet.Symbol.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a symbol.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="pointer">The pointer.</param>
+        </member>
+        <member name="P:RDotNet.Symbol.PrintName">
+            <summary>
+            Gets and sets the name.
+            </summary>
+        </member>
+        <member name="P:RDotNet.Symbol.Internal">
+            <summary>
+            Gets the internal function.
+            </summary>
+        </member>
+        <member name="P:RDotNet.Symbol.Value">
+            <summary>
+            Gets the symbol value.
+            </summary>
+        </member>
+        <member name="T:RDotNet.SymbolicExpression">
+            <summary>
+            An expression in R environment.
+            </summary>
+        </member>
+        <member name="M:RDotNet.SymbolicExpression.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates new instance of SymbolicExpression.
+            </summary>
+            <param name="engine">The engine.</param>
+            <param name="pointer">The pointer.</param>
+        </member>
+        <member name="P:RDotNet.SymbolicExpression.Engine">
+            <summary>
+            Gets the <see cref="T:RDotNet.REngine" /> to which this expression belongs.
+            </summary>
+        </member>
+        <member name="P:RDotNet.SymbolicExpression.IsProtected">
+            <summary>
+            Gets whether this expression is protected from the garbage collection.
+            </summary>
+        </member>
+        <member name="P:RDotNet.SymbolicExpression.Type">
+            <summary>
+            Gets the <see cref="T:RDotNet.Internals.SymbolicExpressionType" />.
+            </summary>
+        </member>
+        <member name="M:RDotNet.SymbolicExpression.GetAttributeNames">
+            <summary>
+            Gets all value names.
+            </summary>
+            <returns>The names of attributes</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpression.GetAttribute(System.String)">
+            <summary>
+            Gets the value of the specified name.
+            </summary>
+            <param name="attributeName">The name of attribute.</param>
+            <returns>The attribute.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpression.SetAttribute(System.String,RDotNet.SymbolicExpression)">
+            <summary>
+            Sets the new value to the attribute of the specified name.
+            </summary>
+            <param name="attributeName">The name of attribute.</param>
+            <param name="value">The value</param>
+        </member>
+        <member name="M:RDotNet.SymbolicExpression.Preserve">
+            <summary>
+            Protects the expression from R's garbage collector.
+            </summary>
+            <seealso cref="M:RDotNet.SymbolicExpression.Unpreserve" />
+        </member>
+        <member name="M:RDotNet.SymbolicExpression.Unpreserve">
+            <summary>
+            Stops protection.
+            </summary>
+            <seealso cref="M:RDotNet.SymbolicExpression.Preserve" />
+        </member>
+        <member name="T:RDotNet.Internals.SymbolicExpressionType">
+            <summary>
+            SEXPTYPE enumeration.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.SymbolicExpressionType.Null">
+            <summary>
+            Null.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.SymbolicExpressionType.Symbol">
+            <summary>
+            Symbols.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.SymbolicExpressionType.Pairlist">
+            <summary>
+            Pairlists.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.SymbolicExpressionType.Closure">
+            <summary>
+            Closures.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.SymbolicExpressionType.Environment">
+            <summary>
+            Environments.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.SymbolicExpressionType.Promise">
+            <summary>
+            To be evaluated.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.SymbolicExpressionType.LanguageObject">
+            <summary>
+            Pairlists for function calls.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.SymbolicExpressionType.SpecialFunction">
+            <summary>
+            Special functions.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.SymbolicExpressionType.BuiltinFunction">
+            <summary>
+            Builtin functions.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.SymbolicExpressionType.InternalCharacterString">
+            <summary>
+            Internal character string.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.SymbolicExpressionType.LogicalVector">
+            <summary>
+            Boolean vectors.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.SymbolicExpressionType.IntegerVector">
+            <summary>
+            Integer vectors.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.SymbolicExpressionType.NumericVector">
+            <summary>
+            Numeric vectors.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.SymbolicExpressionType.ComplexVector">
+            <summary>
+            Complex number vectors.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.SymbolicExpressionType.CharacterVector">
+            <summary>
+            Character vectors.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.SymbolicExpressionType.DotDotDotObject">
+            <summary>
+            Dot-dot-dot object.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.SymbolicExpressionType.Any">
+            <summary>
+            Place holders for any type.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.SymbolicExpressionType.List">
+            <summary>
+            Generic vectors.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.SymbolicExpressionType.ExpressionVector">
+            <summary>
+            Expression vectors.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.SymbolicExpressionType.ByteCode">
+            <summary>
+            Byte code.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.SymbolicExpressionType.ExternalPointer">
+            <summary>
+            External pointer.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.SymbolicExpressionType.WeakReference">
+            <summary>
+            Weak reference.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.SymbolicExpressionType.RawVector">
+            <summary>
+            Raw vectors.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.SymbolicExpressionType.S4">
+            <summary>
+            S4 classes.
+            </summary>
+        </member>
+        <member name="F:RDotNet.Internals.SymbolicExpressionType.FUNSXP">
+            <summary>
+            Closures, builtin functions or special functions.
+            </summary>
+        </member>
+        <member name="T:RDotNet.REngine">
+            <summary>
+            REngine handles R environment through evaluation of R statement.
+            </summary>
+            <example>This example generates and outputs five random numbers from standard normal distribution.
+            <code>
+            Environment.SetEnvironmentVariable("PATH", @"C:\Program Files\R\R-2.12.0\bin\i386");
+            using (REngine engine = REngine.CreateInstance("RDotNet"))
+            {
+            engine.Initialize();
+            NumericVector random = engine.Evaluate("rnorm(5, 0, 1)").AsNumeric();
+            foreach (double r in random)
+            {
+            Console.Write(r + " ");
+            }
+            }
+            </code></example>
+        </member>
+        <member name="P:RDotNet.REngine.IsRunning">
+            <summary>
+            Gets whether this instance is running.
+            </summary>
+        </member>
+        <member name="P:RDotNet.REngine.DllVersion">
+            <summary>
+            Gets the version of R.DLL.
+            </summary>
+        </member>
+        <member name="P:RDotNet.REngine.ID">
+            <summary>
+            Gets the ID of this instance.
+            </summary>
+        </member>
+        <member name="P:RDotNet.REngine.GlobalEnvironment">
+            <summary>
+            Gets the global environment.
+            </summary>
+        </member>
+        <member name="P:RDotNet.REngine.EmptyEnvironment">
+            <summary>
+            Gets the root environment.
+            </summary>
+        </member>
+        <member name="P:RDotNet.REngine.BaseNamespace">
+            <summary>
+            Gets the base environment.
+            </summary>
+        </member>
+        <member name="P:RDotNet.REngine.NilValue">
+            <summary>
+            Gets the <c>NULL</c> value.
+            </summary>
+        </member>
+        <member name="P:RDotNet.REngine.UnboundValue">
+            <summary>
+            Gets the unbound value.
+            </summary>
+        </member>
+        <member name="M:RDotNet.REngine.CreateInstance(System.String,System.String)">
+            <summary>
+            Creates a new instance that handles R.DLL.
+            </summary>
+            <param name="id">ID.</param>
+            <param name="dll">The core dll of R.</param>
+            <returns>The engine.</returns>
+        </member>
+        <member name="M:RDotNet.REngine.GetInstanceFromID(System.String)">
+            <summary>
+            Gets an instance specified in the given ID.
+            </summary>
+            <param name="id">ID.</param>
+            <returns>The engine.</returns>
+        </member>
+        <member name="M:RDotNet.REngine.Initialize(RDotNet.StartupParameter,RDotNet.Devices.ICharacterDevice)">
+            <summary>
+            Initializes R process.
+            </summary>
+            <param name="parameter">The startup parameter.</param>
+            <param name="device">The IO device.</param>
+        </member>
+        <member name="M:RDotNet.REngine.ForceGarbageCollection">
+            <summary>
+            Forces garbage collection.
+            </summary>
+        </member>
+        <member name="M:RDotNet.REngine.GetSymbol(System.String)">
+            <summary>
+            Gets a symbol defined in the global environment.
+            </summary>
+            <param name="name">The name.</param>
+            <returns>The symbol.</returns>
+        </member>
+        <member name="M:RDotNet.REngine.GetSymbol(System.String,RDotNet.REnvironment)">
+            <summary>
+            Gets a symbol defined in the global environment.
+            </summary>
+            <param name="name">The name.</param>
+            <param name="environment">The environment. If <c>null</c> is passed, <see cref="P:RDotNet.REngine.GlobalEnvironment" /> is used.</param>
+            <returns>The symbol.</returns>
+        </member>
+        <member name="M:RDotNet.REngine.SetSymbol(System.String,RDotNet.SymbolicExpression)">
+            <summary>
+            Defines a symbol in the global environment.
+            </summary>
+            <param name="name">The name.</param>
+            <param name="expression">The symbol.</param>
+        </member>
+        <member name="M:RDotNet.REngine.SetSymbol(System.String,RDotNet.SymbolicExpression,RDotNet.REnvironment)">
+            <summary>
+            Defines a symbol in the specified environment.
+            </summary>
+            <param name="name">The name.</param>
+            <param name="expression">The symbol.</param>
+            <param name="environment">The environment. If <c>null</c> is passed, <see cref="P:RDotNet.REngine.GlobalEnvironment" /> is used.</param>
+        </member>
+        <member name="M:RDotNet.REngine.Evaluate(System.String)">
+            <summary>
+            Evaluates a statement in the given string.
+            </summary>
+            <param name="statement">The statement.</param>
+            <returns>Last evaluation.</returns>
+        </member>
+        <member name="M:RDotNet.REngine.Evaluate(System.IO.Stream)">
+            <summary>
+            Evaluates a statement in the given stream.
+            </summary>
+            <param name="stream">The stream.</param>
+            <returns>Last evaluation.</returns>
+        </member>
+        <member name="M:RDotNet.REngine.Defer(System.String)">
+            <summary>
+            Evaluates a statement in the given string.
+            </summary>
+            <param name="statement">The statement.</param>
+            <returns>Each evaluation.</returns>
+        </member>
+        <member name="M:RDotNet.REngine.Defer(System.IO.Stream)">
+            <summary>
+            Evaluates a statement in the given stream.
+            </summary>
+            <param name="stream">The stream.</param>
+            <returns>Each evaluation.</returns>
+        </member>
+        <member name="M:RDotNet.REngine.SetCommandLineArguments(System.String[])">
+            <summary>
+            Sets the command line arguments.
+            </summary>
+            <param name="args">The arguments.</param>
+        </member>
+        <member name="M:RDotNet.REngine.GetPredefinedSymbol(System.String)">
+            <summary>
+            Gets the predefined symbol with the specified name.
+            </summary>
+            <param name="name">The name.</param>
+            <returns>The symbol.</returns>
+        </member>
+        <member name="T:RDotNet.SymbolicExpressionExtension">
+            <summary>
+            Provides extension methods for <see cref="T:RDotNet.SymbolicExpression" />.
+            </summary>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.IsList(RDotNet.SymbolicExpression)">
+            <summary>
+            Gets whether the specified expression is list.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>
+                <c>True</c> if the specified expression is list.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.AsList(RDotNet.SymbolicExpression)">
+            <summary>
+            Converts the specified expression to a GenericVector.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>The GenericVector. Returns <c>null</c> if the specified expression is not vector.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.IsDataFrame(RDotNet.SymbolicExpression)">
+            <summary>
+            Gets whether the specified expression is data frame.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>
+                <c>True</c> if the specified expression is data frame.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.AsDataFrame(RDotNet.SymbolicExpression)">
+            <summary>
+            Converts the specified expression to a DataFrame.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>The DataFrame. Returns <c>null</c> if the specified expression is not vector.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.IsVector(RDotNet.SymbolicExpression)">
+            <summary>
+            Gets whether the specified expression is vector.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>
+                <c>True</c> if the specified expression is vector.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.AsVector(RDotNet.SymbolicExpression)">
+            <summary>
+            Converts the specified expression to a DynamicVector.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>The DynamicVector. Returns <c>null</c> if the specified expression is not vector.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.AsLogical(RDotNet.SymbolicExpression)">
+            <summary>
+            Converts the specified expression to a LogicalVector.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>The LogicalVector. Returns <c>null</c> if the specified expression is not vector.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.AsInteger(RDotNet.SymbolicExpression)">
+            <summary>
+            Converts the specified expression to an IntegerVector.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>The LogicalVector. Returns <c>null</c> if the specified expression is not vector.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.AsNumeric(RDotNet.SymbolicExpression)">
+            <summary>
+            Converts the specified expression to a NumericVector.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>The LogicalVector. Returns <c>null</c> if the specified expression is not vector.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.AsCharacter(RDotNet.SymbolicExpression)">
+            <summary>
+            Converts the specified expression to a CharacterVector.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>The LogicalVector. Returns <c>null</c> if the specified expression is not vector.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.AsComplex(RDotNet.SymbolicExpression)">
+            <summary>
+            Converts the specified expression to a ComplexVector.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>The LogicalVector. Returns <c>null</c> if the specified expression is not vector.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.AsRaw(RDotNet.SymbolicExpression)">
+            <summary>
+            Converts the specified expression to a RawVector.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>The LogicalVector. Returns <c>null</c> if the specified expression is not vector.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.IsMatrix(RDotNet.SymbolicExpression)">
+            <summary>
+            Gets whether the specified expression is matrix.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>
+                <c>True</c> if the specified expression is matrix.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.AsLogicalMatrix(RDotNet.SymbolicExpression)">
+            <summary>
+            Converts the specified expression to a LogicalMatrix.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>The LogicalMatrix. Returns <c>null</c> if the specified expression is not vector.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.AsIntegerMatrix(RDotNet.SymbolicExpression)">
+            <summary>
+            Converts the specified expression to an IntegerMatrix.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>The IntegerMatrix. Returns <c>null</c> if the specified expression is not vector.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.AsNumericMatrix(RDotNet.SymbolicExpression)">
+            <summary>
+            Converts the specified expression to a NumericMatrix.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>The NumericMatrix. Returns <c>null</c> if the specified expression is not vector.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.AsCharacterMatrix(RDotNet.SymbolicExpression)">
+            <summary>
+            Converts the specified expression to a CharacterMatrix.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>The CharacterMatrix. Returns <c>null</c> if the specified expression is not vector.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.AsComplexMatrix(RDotNet.SymbolicExpression)">
+            <summary>
+            Converts the specified expression to a ComplexMatrix.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>The ComplexMatrix. Returns <c>null</c> if the specified expression is not vector.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.AsRawMatrix(RDotNet.SymbolicExpression)">
+            <summary>
+            Converts the specified expression to a RawMatrix.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>The RawMatrix. Returns <c>null</c> if the specified expression is not vector.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.IsEnvironment(RDotNet.SymbolicExpression)">
+            <summary>
+            Specifies the expression is an <see cref="T:RDotNet.REnvironment" /> object or not.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>
+                <c>True</c> if it is an environment.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.AsEnvironment(RDotNet.SymbolicExpression)">
+            <summary>
+            Gets the expression as an <see cref="T:RDotNet.REnvironment" />.
+            </summary>
+            <param name="expression">The environment.</param>
+            <returns>The environment.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.IsExpression(RDotNet.SymbolicExpression)">
+            <summary>
+            Specifies the expression is an <see cref="T:RDotNet.Expression" /> object or not.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>
+                <c>True</c> if it is an expression.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.AsExpression(RDotNet.SymbolicExpression)">
+            <summary>
+            Gets the expression as an <see cref="T:RDotNet.Expression" />.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>The expression.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.IsSymbol(RDotNet.SymbolicExpression)">
+            <summary>
+            Specifies the expression is a symbol object or not.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>
+                <c>True</c> if it is a symbol.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.AsSymbol(RDotNet.SymbolicExpression)">
+            <summary>
+            Gets the expression as a symbol.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>The symbol.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.IsLanguage(RDotNet.SymbolicExpression)">
+            <summary>
+            Specifies the expression is a language object or not.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>
+                <c>True</c> if it is a language.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.AsLanguage(RDotNet.SymbolicExpression)">
+            <summary>
+            Gets the expression as a language.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>The language.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.IsFunction(RDotNet.SymbolicExpression)">
+            <summary>
+            Specifies the expression is a function object or not.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>
+                <c>True</c> if it is a function.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.AsFunction(RDotNet.SymbolicExpression)">
+            <summary>
+            Gets the expression as a function.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>The function.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.IsFactor(RDotNet.SymbolicExpression)">
+            <summary>
+            Gets whether the specified expression is factor.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>
+                <c>True</c> if the specified expression is factor.</returns>
+        </member>
+        <member name="M:RDotNet.SymbolicExpressionExtension.AsFactor(RDotNet.SymbolicExpression)">
+            <summary>
+            Gets the expression as a factor.
+            </summary>
+            <param name="expression">The expression.</param>
+            <returns>The factor.</returns>
+        </member>
+        <member name="T:RDotNet.Vector`1">
+            <summary>
+            A vector base.
+            </summary>
+            <typeparam name="T">The element type.</typeparam>
+        </member>
+        <member name="M:RDotNet.Vector`1.#ctor(RDotNet.REngine,RDotNet.Internals.SymbolicExpressionType,System.Int32)">
+            <summary>
+            Creates a new vector with the specified size.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="type">The element type.</param>
+            <param name="length">The length of vector.</param>
+        </member>
+        <member name="M:RDotNet.Vector`1.#ctor(RDotNet.REngine,RDotNet.Internals.SymbolicExpressionType,System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Creates a new vector with the specified values.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="type">The element type.</param>
+            <param name="vector">The elements of vector.</param>
+        </member>
+        <member name="M:RDotNet.Vector`1.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a new instance for a vector.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="coerced">The pointer to a vector.</param>
+        </member>
+        <member name="P:RDotNet.Vector`1.Item(System.Int32)">
+            <summary>
+            Gets or sets the element at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the element to get or set.</param>
+            <returns>The element at the specified index.</returns>
+        </member>
+        <member name="P:RDotNet.Vector`1.Item(System.String)">
+            <summary>
+            Gets or sets the element at the specified name.
+            </summary>
+            <param name="name">The name of the element to get or set.</param>
+            <returns>The element at the specified name.</returns>
+        </member>
+        <member name="P:RDotNet.Vector`1.Length">
+            <summary>
+            Gets the number of elements.
+            </summary>
+        </member>
+        <member name="P:RDotNet.Vector`1.Names">
+            <summary>
+            Gets the names of elements.
+            </summary>
+        </member>
+        <member name="P:RDotNet.Vector`1.DataPointer">
+            <summary>
+            Gets the pointer for the first element.
+            </summary>
+        </member>
+        <member name="P:RDotNet.Vector`1.DataSize">
+            <summary>
+            Gets the size of an element in byte.
+            </summary>
+        </member>
+        <member name="M:RDotNet.Vector`1.CopyTo(`0[],System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Copies the elements to the specified array.
+            </summary>
+            <param name="destination">The destination array.</param>
+            <param name="length">The length to copy.</param>
+            <param name="sourceIndex">The first index of the vector.</param>
+            <param name="destinationIndex">The first index of the destination array.</param>
+        </member>
+        <member name="M:RDotNet.Vector`1.GetOffset(System.Int32)">
+            <summary>
+            Gets the offset for the specified index.
+            </summary>
+            <param name="index">The index.</param>
+            <returns>The offset.</returns>
+        </member>
+        <member name="T:RDotNet.LogicalVector">
+            <summary>
+            A collection of Boolean values.
+            </summary>
+        </member>
+        <member name="M:RDotNet.LogicalVector.#ctor(RDotNet.REngine,System.Int32)">
+            <summary>
+            Creates a new empty LogicalVector with the specified length.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="length">The length.</param>
+            <seealso cref="M:RDotNet.REngineExtension.CreateLogicalVector(RDotNet.REngine,System.Int32)" />
+        </member>
+        <member name="M:RDotNet.LogicalVector.#ctor(RDotNet.REngine,System.Collections.Generic.IEnumerable{System.Boolean})">
+            <summary>
+            Creates a new LogicalVector with the specified values.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="vector">The values.</param>
+            <seealso cref="M:RDotNet.REngineExtension.CreateLogicalVector(RDotNet.REngine,System.Collections.Generic.IEnumerable{System.Boolean})" />
+        </member>
+        <member name="M:RDotNet.LogicalVector.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a new instance for a Boolean vector.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="coerced">The pointer to a Boolean vector.</param>
+        </member>
+        <member name="P:RDotNet.LogicalVector.Item(System.Int32)">
+            <summary>
+            Gets or sets the element at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the element to get or set.</param>
+            <returns>The element at the specified index.</returns>
+        </member>
+        <member name="P:RDotNet.LogicalVector.DataSize">
+            <summary>
+            Gets the size of a Boolean value in byte.
+            </summary>
+        </member>
+        <member name="T:RDotNet.CharacterVector">
+            <summary>
+            A collection of strings.
+            </summary>
+        </member>
+        <member name="M:RDotNet.CharacterVector.#ctor(RDotNet.REngine,System.Int32)">
+            <summary>
+            Creates a new empty CharacterVector with the specified length.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="length">The length.</param>
+            <seealso cref="M:RDotNet.REngineExtension.CreateCharacterVector(RDotNet.REngine,System.Int32)" />
+        </member>
+        <member name="M:RDotNet.CharacterVector.#ctor(RDotNet.REngine,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Creates a new CharacterVector with the specified values.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="vector">The values.</param>
+            <seealso cref="M:RDotNet.REngineExtension.CreateCharacterVector(RDotNet.REngine,System.Collections.Generic.IEnumerable{System.String})" />
+        </member>
+        <member name="M:RDotNet.CharacterVector.#ctor(RDotNet.REngine,System.IntPtr)">
+            <summary>
+            Creates a new instance for a string vector.
+            </summary>
+            <param name="engine">The <see cref="T:RDotNet.REngine" /> handling this instance.</param>
+            <param name="coerced">The pointer to a string vector.</param>
+        </member>
+        <member name="P:RDotNet.CharacterVector.Item(System.Int32)">
+            <summary>
+            Gets or sets the element at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the element to get or set.</param>
+            <returns>The element at the specified index.</returns>
+        </member>
+        <member name="P:RDotNet.CharacterVector.DataSize">
+            <summary>
+            Gets the size of a pointer in byte.
+            </summary>
+        </member>
+    </members>
+</doc>
