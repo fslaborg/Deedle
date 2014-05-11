@@ -1524,14 +1524,40 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// ## Parameters
   ///  - `column` - The name of a column in the original data frame that will be used for the new
   ///    index. Note that the values in the column need to be unique.
+  ///  - `keepColumn` - Specifies whether the column used as an index should be kept in the frame.
+  ///
+  /// [category:Indexing]
+  member frame.IndexRows<'TNewRowIndex when 'TNewRowIndex : equality>(column, keepColumn) : Frame<'TNewRowIndex, _> = 
+    let columnVec = frame.GetColumn<'TNewRowIndex>(column)
+    let lookup addr = columnVec.Vector.GetValue(addr)
+    
+    // Reindex according to column & drop the column (if not keepColumn)
+    let newRowIndex, rowCmd = frame.IndexBuilder.WithIndex(frame.RowIndex, lookup, Vectors.Return 0)
+    let newColumnIndex, colCmd = 
+      if keepColumn then frame.ColumnIndex, Vectors.Return 0
+      else frame.IndexBuilder.DropItem((frame.ColumnIndex, Vectors.Return 0), column)
+
+    // Drop the specified column & transform the remaining columns
+    let newData = 
+      frame.VectorBuilder
+        .Build(colCmd, [| frame.Data |])
+        .Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
+    Frame<'TNewRowIndex, 'TColumnKey>(newRowIndex, newColumnIndex, newData)
+
+  /// Returns a data frame whose rows are indexed based on the specified column of the original
+  /// data frame. The generic type parameter is (typically) needed to specify the type of the 
+  /// values in the required index column. 
+  ///
+  /// The resulting frame will *not* contain the specified column. If you want to preserve the
+  /// column, use the overload that takes `keepColumn` parameter.
+  ///
+  /// ## Parameters
+  ///  - `column` - The name of a column in the original data frame that will be used for the new
+  ///    index. Note that the values in the column need to be unique.
   ///
   /// [category:Indexing]
   member frame.IndexRows<'TNewRowIndex when 'TNewRowIndex : equality>(column) : Frame<'TNewRowIndex, _> = 
-    let columnVec = frame.GetColumn<'TNewRowIndex>(column)
-    let lookup addr = columnVec.Vector.GetValue(addr)
-    let newRowIndex, rowCmd = frame.IndexBuilder.WithIndex(frame.RowIndex, lookup, Vectors.Return 0)
-    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
-    Frame<'TNewRowIndex, 'TColumnKey>(newRowIndex, frame.ColumnIndex, newData)
+    frame.IndexRows<'TNewRowIndex>(column, false)
 
 // ------------------------------------------------------------------------------------------------
 // 
