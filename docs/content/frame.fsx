@@ -44,12 +44,22 @@ let msft =
 // Specify column separator
 let air = Frame.ReadCsv(root + "AirQuality.csv", separators=";")
 (**
+In the second example, we call `indexRowsDate` to use the "Date" column as a row index
+of the resulting data frame. This is a very common scenario and so Deedle provides an
+easier option using a generic overload of the `ReadCsv` method:
+*)
+let msftSimpler = 
+  Frame.ReadCsv<DateTime>(root + "stocks/msft.csv", indexCol="Date") 
+  |> Frame.sortRowsByKey
+(**
 The `ReadCsv` method has a number of optional arguments that you can use to control 
 the loading. It supports both CSV files, TSV files and other formats. If the file name
 ends with `tsv`, the Tab is used automatically, but you can set `separator` explicitly.
 The following parameters can be used:
 
  * `path` - Specifies a file name or an web location of the resource.
+ * `indexCol` - Specifies the column that should be used as an index in the 
+   resulting frame. The type is specified via a type parameter.
  * `inferTypes` - Specifies whether the method should attempt to infer types
    of columns automatically (set this to `false` if you want to specify schema)
  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
