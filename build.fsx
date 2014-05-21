@@ -215,14 +215,14 @@ Target "AllCore" DoNothing
   ==> "BuildCore"
   ==> "AllCore"
 
-//"RunTests" ==> "All"
+"RunTests" ==> "All"
 "RunTests" ==> "AllCore"
 
 "All" 
-  //==> "CleanDocs"
-  //==> "GenerateDocs"
-  //==> "ReleaseDocs"
-  //==> "ReleaseBinaries"
+  ==> "CleanDocs"
+  ==> "GenerateDocs"
+  ==> "ReleaseDocs"
+  ==> "ReleaseBinaries"
   ==> "NuGet"
   ==> "Release"
 
