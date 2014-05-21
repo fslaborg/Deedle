@@ -8,12 +8,14 @@
     <meta name="description" content="Easy to use .NET library for data manipulation and scientific programming">
     <meta name="author" content="BlueMountain Capital">
 
-    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
-    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
-    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
-    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
     <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/deedle.css" />
     <script type="text/javascript" src="http://bluemountaincapital.github.io/Deedle/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -25,18 +27,20 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://github.com/BlueMountainCapital/Deedle">github page</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Charting/">F# Charting</a></li>
-          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider">R Type Provider</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Data/">F# Data</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
+          <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
-        <h3 class="muted">Deedle</h3>
+        <h3 class="muted"><a href="http://bluemountaincapital.github.io/Deedle/index.html">Deedle</a></h3>
       </div>
       <hr />
       <div class="row">
         <div class="span9" id="main">
           
 <h1>Deedle: Exploratory data library for .NET</h1>
+
+<img src="http://www.bluemountaincapital.com/media/logo.gif" style="float:right;margin:10px" />
 
 <p>Deedle is an easy to use library for data and time series manipulation and for scientific 
 programming. It supports working with structured data frames, ordered and unordered data, 
@@ -47,24 +51,14 @@ F# and C# interactive console, but can be also used in efficient compiled .NET c
 advanced indexing and slicing, joining and aligning data, handling of missing values,
 grouping and aggregation, statistics and more.</p>
 
-<div class="row">
-  <div class="span1"></div>
-  <div class="span6">
-    <div class="well well-small" id="nuget">
-      The F# DataFrame library can be <a href="https://nuget.org/packages/Deedle">installed from NuGet</a>:
-      <pre>PM> Install-Package Deedle</pre>
-    </div>
-  </div>
-  <div class="span1"></div>
-</div>
-
-<h2>Titanic survivor analysis in 20 lines</h2>
+<h3>Titanic survivor analysis in 20 lines</h3>
 
 <p>Assume we loaded <a href="http://www.kaggle.com/c/titanic-gettingStarted">Titanic data set</a> 
-into a data frame called <code>titanic</code> (the data frame has numerous columns including string 
-<code>Sex</code> and Boolean <code>Survived</code>). Now we can calculate the survival rates for males and females:</p>
+into a data frame called <code>titanic</code> (the data frame has numerous columns including int
+<code>Pclass</code> and Boolean <code>Survived</code>). Now we can calculate the survival rates for three different
+classes of tickets:</p>
 
-<div id="hp-snippet">
+<div id="hp-snippeta">
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
@@ -90,44 +84,88 @@ into a data frame called <code>titanic</code> (the data frame has numerous colum
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Group the data frame by sex </span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">grouped</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">titanic</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="i">groupRowsByString</span> <span class="s">&quot;</span><span class="s">Sex</span><span class="s">&quot;</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs3', 5)" onmouseover="showTip(event, 'fs3', 5)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs5', 6)" onmouseover="showTip(event, 'fs5', 6)" class="i">nest</span>
+<span class="c">// Read Titanic data &amp; group rows by &#39;Sex&#39;</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">titanic</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">ReadCsv</span>(<span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="i">root</span> <span class="o">+</span> <span class="s">&quot;</span><span class="s">titanic</span><span class="s">.</span><span class="s">csv</span><span class="s">&quot;</span>)<span class="o">.</span><span class="i">GroupRowsBy</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">int</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Pclass</span><span class="s">&quot;</span>)
 
-<span class="c">// For each group, calculate the total number of survived &amp; died</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="i">bySex</span> <span class="o">=</span>
-  <span onmouseout="hideTip(event, 'fs1', 8)" onmouseover="showTip(event, 'fs1', 8)" class="i">grouped</span>
-  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs7', 9)" onmouseover="showTip(event, 'fs7', 9)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 10)" onmouseover="showTip(event, 'fs8', 10)" class="i">map</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs9', 11)" onmouseover="showTip(event, 'fs9', 11)" class="i">sex</span> <span onmouseout="hideTip(event, 'fs10', 12)" onmouseover="showTip(event, 'fs10', 12)" class="i">df</span> <span class="k">-&gt;</span> 
-      <span class="c">// Group by the &#39;Survived&#39; column &amp; count by Boolean values</span>
-      <span onmouseout="hideTip(event, 'fs10', 13)" onmouseover="showTip(event, 'fs10', 13)" class="i">df</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs11', 14)" onmouseover="showTip(event, 'fs11', 14)" class="i">GetSeries</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs12', 15)" onmouseover="showTip(event, 'fs12', 15)" class="i">bool</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Survived</span><span class="s">&quot;</span>) <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs7', 16)" onmouseover="showTip(event, 'fs7', 16)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs13', 17)" onmouseover="showTip(event, 'fs13', 17)" class="i">groupBy</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs14', 18)" onmouseover="showTip(event, 'fs14', 18)" class="i">k</span> <span onmouseout="hideTip(event, 'fs15', 19)" onmouseover="showTip(event, 'fs15', 19)" class="i">v</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs15', 20)" onmouseover="showTip(event, 'fs15', 20)" class="i">v</span>) 
-      <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs3', 21)" onmouseover="showTip(event, 'fs3', 21)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 22)" onmouseover="showTip(event, 'fs16', 22)" class="i">ofColumns</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs3', 23)" onmouseover="showTip(event, 'fs3', 23)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs17', 24)" onmouseover="showTip(event, 'fs17', 24)" class="i">countValues</span> )
-  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs3', 25)" onmouseover="showTip(event, 'fs3', 25)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs18', 26)" onmouseover="showTip(event, 'fs18', 26)" class="i">ofRows</span>
-  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs3', 27)" onmouseover="showTip(event, 'fs3', 27)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 28)" onmouseover="showTip(event, 'fs19', 28)" class="i">indexColsWith</span> [<span class="s">&quot;</span><span class="s">Died</span><span class="s">&quot;</span>; <span class="s">&quot;</span><span class="s">Survived</span><span class="s">&quot;</span>]
+<span class="c">// Get &#39;Survived&#39; column and count survival count per clsas</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="i">byClass</span> <span class="o">=</span>
+  <span onmouseout="hideTip(event, 'fs1', 7)" onmouseover="showTip(event, 'fs1', 7)" class="i">titanic</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="i">GetColumn</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs8', 9)" onmouseover="showTip(event, 'fs8', 9)" class="i">bool</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Survived</span><span class="s">&quot;</span>)
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 10)" onmouseover="showTip(event, 'fs9', 10)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs10', 11)" onmouseover="showTip(event, 'fs10', 11)" class="i">applyLevel</span> <span onmouseout="hideTip(event, 'fs11', 12)" onmouseover="showTip(event, 'fs11', 12)" class="i">fst</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs12', 13)" onmouseover="showTip(event, 'fs12', 13)" class="i">s</span> <span class="k">-&gt;</span>
+      <span class="c">// Get counts for &#39;True&#39; and &#39;False&#39; values of &#39;Survived&#39;</span>
+      <span onmouseout="hideTip(event, 'fs13', 14)" onmouseover="showTip(event, 'fs13', 14)" class="i">series</span> (<span onmouseout="hideTip(event, 'fs14', 15)" onmouseover="showTip(event, 'fs14', 15)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs15', 16)" onmouseover="showTip(event, 'fs15', 16)" class="i">countBy</span> <span onmouseout="hideTip(event, 'fs16', 17)" onmouseover="showTip(event, 'fs16', 17)" class="i">id</span> <span onmouseout="hideTip(event, 'fs12', 18)" onmouseover="showTip(event, 'fs12', 18)" class="i">s</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs17', 19)" onmouseover="showTip(event, 'fs17', 19)" class="i">Values</span>))
+  <span class="c">// Create frame with &#39;Pclass&#39; as row and &#39;Died&#39; &amp; &#39;Survived&#39; columns</span>
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 20)" onmouseover="showTip(event, 'fs2', 20)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs18', 21)" onmouseover="showTip(event, 'fs18', 21)" class="i">ofRows</span> 
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 22)" onmouseover="showTip(event, 'fs2', 22)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 23)" onmouseover="showTip(event, 'fs19', 23)" class="i">sortRowsByKey</span>
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 24)" onmouseover="showTip(event, 'fs2', 24)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs20', 25)" onmouseover="showTip(event, 'fs20', 25)" class="i">indexColsWith</span> [<span class="s">&quot;</span><span class="s">Died</span><span class="s">&quot;</span>; <span class="s">&quot;</span><span class="s">Survived</span><span class="s">&quot;</span>]
 
 <span class="c">// Add column with Total number of males/females on Titanic</span>
-<span onmouseout="hideTip(event, 'fs6', 29)" onmouseover="showTip(event, 'fs6', 29)" class="i">bySex</span><span class="o">?</span><span class="i">Total</span> <span class="o">&lt;-</span> <span onmouseout="hideTip(event, 'fs3', 30)" onmouseover="showTip(event, 'fs3', 30)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs20', 31)" onmouseover="showTip(event, 'fs20', 31)" class="i">countRows</span> <span class="o">$</span> <span onmouseout="hideTip(event, 'fs1', 32)" onmouseover="showTip(event, 'fs1', 32)" class="i">grouped</span>
+<span onmouseout="hideTip(event, 'fs6', 26)" onmouseover="showTip(event, 'fs6', 26)" class="i">byClass</span><span class="o">?</span><span class="i">Total</span> <span class="o">&lt;-</span> <span onmouseout="hideTip(event, 'fs6', 27)" onmouseover="showTip(event, 'fs6', 27)" class="i">byClass</span><span class="o">?</span><span class="i">Died</span> <span class="o">+</span> <span onmouseout="hideTip(event, 'fs6', 28)" onmouseover="showTip(event, 'fs6', 28)" class="i">byClass</span><span class="o">?</span><span class="i">Survived</span>
 
 <span class="c">// Build a data frame with nice summary of rates in percents</span>
-[ <span class="s">&quot;</span><span class="s">Died</span><span class="s"> </span><span class="s">(</span><span class="s">%</span><span class="s">)</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs6', 33)" onmouseover="showTip(event, 'fs6', 33)" class="i">bySex</span><span class="o">?</span><span class="i">Died</span> <span class="o">/</span> <span onmouseout="hideTip(event, 'fs6', 34)" onmouseover="showTip(event, 'fs6', 34)" class="i">bySex</span><span class="o">?</span><span class="i">Total</span> <span class="o">*</span> <span class="n">100.0</span>
-  <span class="s">&quot;</span><span class="s">Survived</span><span class="s"> </span><span class="s">(</span><span class="s">%</span><span class="s">)</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs6', 35)" onmouseover="showTip(event, 'fs6', 35)" class="i">bySex</span><span class="o">?</span><span class="i">Survived</span> <span class="o">/</span> <span onmouseout="hideTip(event, 'fs6', 36)" onmouseover="showTip(event, 'fs6', 36)" class="i">bySex</span><span class="o">?</span><span class="i">Total</span> <span class="o">*</span> <span class="n">100.0</span> ]
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs3', 37)" onmouseover="showTip(event, 'fs3', 37)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 38)" onmouseover="showTip(event, 'fs16', 38)" class="i">ofColumns</span></pre>
+<span onmouseout="hideTip(event, 'fs21', 29)" onmouseover="showTip(event, 'fs21', 29)" class="i">frame</span> [ <span class="s">&quot;</span><span class="s">Died</span><span class="s"> </span><span class="s">(</span><span class="s">%</span><span class="s">)</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs22', 30)" onmouseover="showTip(event, 'fs22', 30)" class="i">round</span> (<span onmouseout="hideTip(event, 'fs6', 31)" onmouseover="showTip(event, 'fs6', 31)" class="i">byClass</span><span class="o">?</span><span class="i">Died</span> <span class="o">/</span> <span onmouseout="hideTip(event, 'fs6', 32)" onmouseover="showTip(event, 'fs6', 32)" class="i">byClass</span><span class="o">?</span><span class="i">Total</span> <span class="o">*</span> <span class="n">100.0</span>)
+        <span class="s">&quot;</span><span class="s">Survived</span><span class="s"> </span><span class="s">(</span><span class="s">%</span><span class="s">)</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs22', 33)" onmouseover="showTip(event, 'fs22', 33)" class="i">round</span> (<span onmouseout="hideTip(event, 'fs6', 34)" onmouseover="showTip(event, 'fs6', 34)" class="i">byClass</span><span class="o">?</span><span class="i">Survived</span> <span class="o">/</span> <span onmouseout="hideTip(event, 'fs6', 35)" onmouseover="showTip(event, 'fs6', 35)" class="i">byClass</span><span class="o">?</span><span class="i">Total</span> <span class="o">*</span> <span class="n">100.0</span>) ]</pre>
 </td>
 </tr>
 </table>
 
-<p>We first group data by the <code>Sex</code> column and get a series (with rows <code>male</code> and <code>female</code>)
-containing data frames for individual groups. Then we count the number of survivors in
-each group, add the total number of males and females and, finally, build a new data frame
-with the summary:</p>
+</div>
 
-<table class="table table-bordered table-striped">
-<thead><tr><td></td><td>Died (%)</td><td>Survived (%)</td></tr></thead>
+<style type="text/css">
+.hp-table th, .hp-table td { width: 140px; }
+.hp-table th:first-child, .hp-table td:first-child { width: 90px; }
+</style>
+<div class="hp-table">
+
+<div class="deedleframe">
+
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th><p>Died (%)</p></th>
+<th><p>Survived (%)</p></th>
+</tr>
+</thead>
 <tbody>
-  <tr><td class="title">Female</td><td>25.80</td><td>74.20</td></tr></thead>
-  <tr><td class="title">Male</td><td>81.11</td><td>18.89</td></tr></thead>
+<tr class="odd">
+<td><p>1</p></td>
+<td><p>37</p></td>
+<td><p>63</p></td>
+</tr>
+<tr class="even">
+<td><p>2</p></td>
+<td><p>53</p></td>
+<td><p>47</p></td>
+</tr>
+<tr class="odd">
+<td><p>3</p></td>
+<td><p>76</p></td>
+<td><p>24</p></td>
+</tr>
 </tbody>
 </table>
 
+
 </div>
+
+</div>
+
+<p>We first group data by the <code>Pclass</code> and get the <code>Survived</code> column as a series
+of Boolean values. Then we reduce each group using <code>applyLevel</code>. This calls a specified
+function for each passenger class. We count the number of survivors and casualties.
+Then we add nice namings, sort the frame and build a new data frame with a nice summary:</p>
+
+<h3>How to get Deedle</h3>
+
+<ul>
+<li><p>The library is available as <a href="https://www.nuget.org/packages/Deedle">Deedle on NuGet</a>. To get the
+can also <a href="https://github.com/BlueMountainCapital/Deedle/">get the code from GitHub</a>
+or download <a href="https://github.com/BlueMountainCapital/Deedle/zipball/master">the source as a ZIP file</a>.
+Compiled binaries are also available for <a href="https://github.com/BlueMountainCapital/Deedle/zipball/release">download as a ZIP file</a>.</p></li>
+<li><p>If you want to use Deedle with F# Data, R type provider and other F# components for data science,
+consider using the <a href="https://www.nuget.org/packages/FsLab">FsLab package</a>. When using Visual Studio,
+you can also install <a href="http://visualstudiogallery.msdn.microsoft.com/45373b36-2a4c-4b6a-b427-93c7a8effddb">the FsLab project template</a>.</p></li>
+</ul>
 
 <h2>Samples &amp; documentation</h2>
 
@@ -138,19 +176,33 @@ reference is automatically generated from Markdown comments in the library imple
 <ul>
 <li><p><a href="tutorial.html">Quick start tutorial</a> shows how to use the most important 
 features of F# DataFrame library. Start here to learn how to use the library in 10 minutes.</p></li>
-<li><p><a href="features.html">Data frame features</a> provides more examples that use general data frame 
+<li><p><a href="frame.html">Data frame features</a> provides more examples that use general data frame 
 features. These includes slicing, joining, grouping, aggregation.</p></li>
-<li><p><a href="timeseries.html">Time series features</a> provides more details on operations that are 
+<li><p><a href="series.html">Series features</a> provides more details on operations that are 
 relevant when working with time series data (such as stock prices). This includes sliding
 windows, chunking, sampling and statistics.</p></li>
-<li><p><a href="reference/index.html">API Reference</a> contains automatically generated documentation for all types, modules
-and functions in the library. This includes additional brief samples on using most of the
-functions.</p></li>
+<li><p><a href="stats.fsx">Calculating frame ans series statistics</a> shows how to calculate statistical
+indicators such as mean, variance, skweness and other. The tutorial also covers moving
+window and expanding window statistics.</p></li>
+<li><p>The Deedle library can be used from both F# and C#. We aim to provide idiomatic API for
+both of the languages. Read the <a href="csharpintro.html">using Deedle from C#</a> page for more
+information about the C#-friednly API.</p></li>
+</ul>
+
+<p>Automatically generated documentation for all types, modules and functions in the library 
+is available in the <a href="reference/index.html">API Reference</a>. The three most important modules
+that are fully documented are the following:</p>
+
+<ul>
+<li><a href="reference/deedle-seriesmodule.html"><code>Series</code> module</a> provides functions for working
+with individual data series and time-series values.</li>
+<li><a href="reference/deedle-framemodule.html"><code>Frame</code> module</a> provides functions that are similar
+to those in the <code>Series</code> module, but operate on entire data frames.</li>
+<li><a href="reference/deedle-stats.html"><code>Stats</code> module</a> implements standard statistical functions,
+moving windows and a lot more. It contains functions for both series and frames.</li>
 </ul>
 
 <h2>Contributing and copyright</h2>
-
-<img src="http://www.bluemountaincapital.com/media/logo.gif" style="float:right;margin:10px" />
 
 <p>The project is hosted on <a href="https://github.com/blueMountainCapital/Deedle">GitHub</a> where you can <a href="https://github.com/blueMountainCapital/Deedle/issues">report issues</a>, fork 
 the project and submit pull requests. If you're adding new public API, please also 
@@ -166,30 +218,32 @@ and contributors. It is available under the BSD license, which allows modificati
 redistribution for both commercial and non-commercial purposes. For more information see the 
 <a href="https://github.com/blueMountainCapital/Deedle/blob/master/LICENSE.md">License file</a> in the GitHub repository.</p>
 
-<div class="tip" id="fs1">val grouped : Series&lt;string,Frame&lt;int,string&gt;&gt;<br /><br />Full name: Index.grouped</div>
-<div class="tip" id="fs2">val titanic : Frame&lt;int,string&gt;<br /><br />Full name: Index.titanic<br /><em><br /><br />&#160;Titanic data set loaded from a CSV file</em></div>
-<div class="tip" id="fs3">Multiple items<br />module Frame<br /><br />from Deedle<br /><br />--------------------<br />type Frame =<br />&#160;&#160;static member CreateEmpty : unit -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,ObjectSeries&lt;&#39;RowKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : rows:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;ColKey,int&gt; (requires equality)<br />&#160;&#160;static member FromRecords : values:seq&lt;&#39;T&gt; -&gt; Frame&lt;int,string&gt;<br />&#160;&#160;static member FromRecords : series:Series&lt;&#39;K,&#39;R&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRowKeys : keys:seq&lt;&#39;K&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRows : rows:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TColKey,&#39;TRowKey&gt; (requires equality and equality)<br />&#160;&#160;...<br /><br />Full name: Deedle.Frame<br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =<br />&#160;&#160;interface IDynamicMetaObjectProvider<br />&#160;&#160;interface INotifyCollectionChanged<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface IFrame<br />&#160;&#160;new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;private new : rowIndex:IIndex&lt;&#39;TRowKey&gt; * columnIndex:IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member AddSeries : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;...<br /><br />Full name: Deedle.Frame&lt;_,_&gt;<br /><br />--------------------<br />new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
-<div class="tip" id="fs4">val groupRowsByString : column:&#39;a -&gt; frame:Frame&lt;&#39;b,&#39;a&gt; -&gt; Frame&lt;(string * &#39;b),&#39;a&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.groupRowsByString</div>
-<div class="tip" id="fs5">val nest : frame:Frame&lt;(&#39;R1 * &#39;R2),&#39;C&gt; -&gt; Series&lt;&#39;R1,Frame&lt;&#39;R2,&#39;C&gt;&gt; (requires equality and equality and equality)<br /><br />Full name: Deedle.Frame.nest</div>
-<div class="tip" id="fs6">val bySex : Frame&lt;string,string&gt;<br /><br />Full name: Index.bySex</div>
-<div class="tip" id="fs7">Multiple items<br />module Series<br /><br />from Deedle<br /><br />--------------------<br />type Series =<br />&#160;&#160;static member ofNullables : values:seq&lt;Nullable&lt;&#39;a0&gt;&gt; -&gt; Series&lt;int,&#39;a0&gt; (requires default constructor and value type and &#39;a0 :&gt; ValueType)<br />&#160;&#160;static member ofObservations : observations:seq&lt;&#39;a0 * &#39;a1&gt; -&gt; Series&lt;&#39;a0,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofOptionalObservations : observations:seq&lt;&#39;K * OptionalValue&lt;&#39;a1&gt;&gt; -&gt; Series&lt;&#39;K,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofValues : values:seq&lt;&#39;a0&gt; -&gt; Series&lt;int,&#39;a0&gt;<br /><br />Full name: Deedle.FSharpSeriesExtensions.Series<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface ISeries&lt;&#39;K&gt;<br />&#160;&#160;new : pairs:seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : index:IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member After : lowerExclusive:&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * observationSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,KeyValuePair&lt;&#39;TNewKey,OptionalValue&lt;&#39;R&gt;&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * keySelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,OptionalValue&lt;&#39;R&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member Append : otherSeries:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member AsyncMaterialize : unit -&gt; Async&lt;Series&lt;&#39;K,&#39;V&gt;&gt;<br />&#160;&#160;...<br /><br />Full name: Deedle.Series&lt;_,_&gt;<br /><br />--------------------<br />new : pairs:seq&lt;Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : index:Indices.IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:Vectors.IVectorBuilder * indexBuilder:Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
-<div class="tip" id="fs8">val map : f:(&#39;K -&gt; &#39;T -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt; (requires equality)<br /><br />Full name: Deedle.Series.map</div>
-<div class="tip" id="fs9">val sex : string</div>
-<div class="tip" id="fs10">val df : Frame&lt;int,string&gt;</div>
-<div class="tip" id="fs11">member Frame.GetSeries : column:&#39;TColumnKey -&gt; Series&lt;&#39;TRowKey,&#39;R&gt;<br />member Frame.GetSeries : column:&#39;TColumnKey * lookup:Lookup -&gt; Series&lt;&#39;TRowKey,&#39;R&gt;</div>
-<div class="tip" id="fs12">type bool = Boolean<br /><br />Full name: Microsoft.FSharp.Core.bool</div>
-<div class="tip" id="fs13">val groupBy : keySelector:(&#39;K -&gt; &#39;T -&gt; &#39;TNewKey) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;TNewKey,Series&lt;&#39;K,&#39;T&gt;&gt; (requires equality and equality)<br /><br />Full name: Deedle.Series.groupBy</div>
-<div class="tip" id="fs14">val k : int</div>
-<div class="tip" id="fs15">val v : bool</div>
-<div class="tip" id="fs16">static member Frame.ofColumns : cols:Series&lt;&#39;a0,#ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a2,&#39;a0&gt; (requires equality and equality)<br />static member Frame.ofColumns : cols:seq&lt;&#39;a0 * #ISeries&lt;&#39;K&gt;&gt; -&gt; Frame&lt;&#39;K,&#39;a0&gt; (requires equality and equality)</div>
-<div class="tip" id="fs17">val countValues : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,int&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.countValues</div>
+<div class="tip" id="fs1">val titanic : Frame&lt;(int * int),string&gt;<br /><br />Full name: Index.titanic</div>
+<div class="tip" id="fs2">Multiple items<br />module Frame<br /><br />from Deedle<br /><br />--------------------<br />type Frame =<br />&#160;&#160;static member CreateEmpty : unit -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br />&#160;&#160;static member FromArray2D : array:&#39;T [,] -&gt; Frame&lt;int,int&gt;<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,ObjectSeries&lt;&#39;RowKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : rows:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;ColKey,int&gt; (requires equality)<br />&#160;&#160;static member FromRecords : values:seq&lt;&#39;T&gt; -&gt; Frame&lt;int,string&gt;<br />&#160;&#160;static member FromRecords : series:Series&lt;&#39;K,&#39;R&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRowKeys : keys:seq&lt;&#39;K&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;...<br /><br />Full name: Deedle.Frame<br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =<br />&#160;&#160;interface IDynamicMetaObjectProvider<br />&#160;&#160;interface INotifyCollectionChanged<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface IFrame<br />&#160;&#160;new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;private new : rowIndex:IIndex&lt;&#39;TRowKey&gt; * columnIndex:IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; -&gt; unit<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; -&gt; unit<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;...<br /><br />Full name: Deedle.Frame&lt;_,_&gt;<br /><br />--------------------<br />new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
+<div class="tip" id="fs3">static member Frame.ReadCsv : path:string * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : stream:IO.Stream * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : path:string * indexCol:string * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int -&gt; Frame&lt;&#39;R,string&gt; (requires equality)</div>
+<div class="tip" id="fs4">val root : string<br /><br />Full name: Index.root</div>
+<div class="tip" id="fs5">Multiple items<br />val int : value:&#39;T -&gt; int (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.int<br /><br />--------------------<br />type int = int32<br /><br />Full name: Microsoft.FSharp.Core.int<br /><br />--------------------<br />type int&lt;&#39;Measure&gt; = int<br /><br />Full name: Microsoft.FSharp.Core.int&lt;_&gt;</div>
+<div class="tip" id="fs6">val byClass : Frame&lt;int,string&gt;<br /><br />Full name: Index.byClass</div>
+<div class="tip" id="fs7">member Frame.GetColumn : column:&#39;TColumnKey -&gt; Series&lt;&#39;TRowKey,&#39;R&gt;<br />member Frame.GetColumn : column:&#39;TColumnKey * lookup:Lookup -&gt; Series&lt;&#39;TRowKey,&#39;R&gt;</div>
+<div class="tip" id="fs8">type bool = Boolean<br /><br />Full name: Microsoft.FSharp.Core.bool</div>
+<div class="tip" id="fs9">Multiple items<br />module Series<br /><br />from Deedle<br /><br />--------------------<br />type Series =<br />&#160;&#160;static member ofNullables : values:seq&lt;Nullable&lt;&#39;a0&gt;&gt; -&gt; Series&lt;int,&#39;a0&gt; (requires default constructor and value type and &#39;a0 :&gt; ValueType)<br />&#160;&#160;static member ofObservations : observations:seq&lt;&#39;a0 * &#39;a1&gt; -&gt; Series&lt;&#39;a0,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofOptionalObservations : observations:seq&lt;&#39;K * &#39;a1 option&gt; -&gt; Series&lt;&#39;K,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofValues : values:seq&lt;&#39;a0&gt; -&gt; Series&lt;int,&#39;a0&gt;<br /><br />Full name: Deedle.FSharpSeriesExtensions.Series<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface ISeries&lt;&#39;K&gt;<br />&#160;&#160;new : pairs:seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : index:IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member After : lowerExclusive:&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * observationSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,KeyValuePair&lt;&#39;TNewKey,OptionalValue&lt;&#39;R&gt;&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * keySelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,OptionalValue&lt;&#39;R&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member AsyncMaterialize : unit -&gt; Async&lt;Series&lt;&#39;K,&#39;V&gt;&gt;<br />&#160;&#160;member Before : upperExclusive:&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;...<br /><br />Full name: Deedle.Series&lt;_,_&gt;<br /><br />--------------------<br />new : pairs:seq&lt;Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : index:Indices.IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:Vectors.IVectorBuilder * indexBuilder:Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
+<div class="tip" id="fs10">val applyLevel : level:(&#39;K1 -&gt; &#39;K2) -&gt; op:(Series&lt;&#39;K1,&#39;V&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;R&gt; (requires equality and equality)<br /><br />Full name: Deedle.Series.applyLevel</div>
+<div class="tip" id="fs11">val fst : tuple:(&#39;T1 * &#39;T2) -&gt; &#39;T1<br /><br />Full name: Microsoft.FSharp.Core.Operators.fst</div>
+<div class="tip" id="fs12">val s : Series&lt;(int * int),bool&gt;</div>
+<div class="tip" id="fs13">val series : observations:seq&lt;&#39;a * &#39;b&gt; -&gt; Series&lt;&#39;a,&#39;b&gt; (requires equality)<br /><br />Full name: Deedle.FSharpSeriesExtensions.series</div>
+<div class="tip" id="fs14">module Seq<br /><br />from Microsoft.FSharp.Collections</div>
+<div class="tip" id="fs15">val countBy : projection:(&#39;T -&gt; &#39;Key) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;Key * int&gt; (requires equality)<br /><br />Full name: Microsoft.FSharp.Collections.Seq.countBy</div>
+<div class="tip" id="fs16">val id : x:&#39;T -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.Operators.id</div>
+<div class="tip" id="fs17">property Series.Values: seq&lt;bool&gt;</div>
 <div class="tip" id="fs18">static member Frame.ofRows : rows:seq&lt;&#39;a0 * #ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a0,&#39;a2&gt; (requires equality and equality)<br />static member Frame.ofRows : rows:Series&lt;&#39;a0,#ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a0,&#39;a2&gt; (requires equality and equality)</div>
-<div class="tip" id="fs19">val indexColsWith : keys:seq&lt;&#39;C2&gt; -&gt; frame:Frame&lt;&#39;R,&#39;C1&gt; -&gt; Frame&lt;&#39;R,&#39;C2&gt; (requires equality and equality and equality)<br /><br />Full name: Deedle.Frame.indexColsWith</div>
-<div class="tip" id="fs20">val countRows : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; int (requires equality and equality)<br /><br />Full name: Deedle.Frame.countRows</div>
+<div class="tip" id="fs19">val sortRowsByKey : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.sortRowsByKey</div>
+<div class="tip" id="fs20">val indexColsWith : keys:seq&lt;&#39;C2&gt; -&gt; frame:Frame&lt;&#39;R,&#39;C1&gt; -&gt; Frame&lt;&#39;R,&#39;C2&gt; (requires equality and equality and equality)<br /><br />Full name: Deedle.Frame.indexColsWith</div>
+<div class="tip" id="fs21">val frame : columns:seq&lt;&#39;a * #ISeries&lt;&#39;c&gt;&gt; -&gt; Frame&lt;&#39;c,&#39;a&gt; (requires equality and equality)<br /><br />Full name: Deedle.FSharpFrameExtensions.frame</div>
+<div class="tip" id="fs22">val round : value:&#39;T -&gt; &#39;T (requires member Round)<br /><br />Full name: Microsoft.FSharp.Core.Operators.round</div>
 
         </div>
         <div class="span3">
-          <a href="https://nuget.org/packages/Deedle">
+          <a href="http://bluemountaincapital.github.io/Deedle/index.html">
             <img src="http://bluemountaincapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
@@ -209,13 +263,16 @@ redistribution for both commercial and non-commercial purposes. For more informa
               <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/features.html">Advanced frame manipulation</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/series.html">Working with time series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/timeseries.html">Working with time series</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/frame.html">Working with data frames</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using R with Deedle</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/stats.html">Statistics &amp; calculations</a>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
@@ -229,11 +286,13 @@ redistribution for both commercial and non-commercial purposes. For more informa
 
             <li class="nav-header">Documentation</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
+            <li class="divider"></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-stats.html">Stats module</a></li>
 
             <li class="nav-header">Samples</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/samples/volatility.html">Price volatility</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/samples/titanic.html">Titanic survivors</a></li>
           </ul>
         </div>
       </div>

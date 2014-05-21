@@ -8,12 +8,14 @@
     <meta name="description" content="Easy to use .NET library for data manipulation and scientific programming">
     <meta name="author" content="BlueMountain Capital">
 
-    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
-    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
-    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
-    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
     <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/deedle.css" />
     <script type="text/javascript" src="http://bluemountaincapital.github.io/Deedle/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -25,12 +27,12 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://github.com/BlueMountainCapital/Deedle">github page</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Charting/">F# Charting</a></li>
-          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider">R Type Provider</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Data/">F# Data</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
+          <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
-        <h3 class="muted">Deedle</h3>
+        <h3 class="muted"><a href="http://bluemountaincapital.github.io/Deedle/index.html">Deedle</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -44,7 +46,8 @@ You can think of data frame as a data table or a spreadsheet. When working with 
 often need to work on individual series (either rows or columns) of the frame, so it is recommended
 to look at the <a href="csharpseries.html">page discussing series</a> first.</p>
 
-<p>You can also get the samples on this page as a <a href="https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/csharp/Frame.cs">C# source file</a>
+<p>You can also get the samples on this page as a 
+<a href="https://github.com/BlueMountainCapital/Deedle/blob/master/docs/csharp/Frame.cs">C# source file</a>
 from GitHub and run the samples.</p>
 
 <a name="understanding"></a>
@@ -150,12 +153,12 @@ align the prices based on dates) and we also need to order the rows (because ali
 the next step is only allowed on ordered frames and series):</p>
 
 <pre lang="csharp"><span class="c">// Get MSFT &amp; FB stock prices indexed by data</span>
-<span class="k">var</span> msft = msftRaw.IndexRows&lt;DateTime&gt;(<span class="s">"Date"</span>).OrderRows();
-<span class="k">var</span> fb = fbRaw.IndexRows&lt;DateTime&gt;(<span class="s">"Date"</span>).OrderRows();
+<span class="k">var</span> msft = msftRaw.IndexRows&lt;DateTime&gt;(<span class="s">"Date"</span>).SortRowsByKey();
+<span class="k">var</span> fb = fbRaw.IndexRows&lt;DateTime&gt;(<span class="s">"Date"</span>).SortRowsByKey();
 
 <span class="c">// And rename columns to avoid overlap</span>
-msft.RenameSeries(s =&gt; <span class="s">"Msft"</span> + s);
-fb.RenameSeries(s =&gt; <span class="s">"Fb"</span> + s);</pre>
+msft.RenameColumns(s =&gt; <span class="s">"Msft"</span> + s);
+fb.RenameColumns(s =&gt; <span class="s">"Fb"</span> + s);</pre>
 
 <p>The <code>IndexRows&lt;T&gt;(..)</code> method takes the name of the column that we want to use as an index and it also takes
 a type parameter <code>T</code> that specifies the type of the column (because this is not statically known). We use
@@ -222,7 +225,7 @@ by 1 hour (the keys are always at 12:00am, representing just time)</p>
 
 <span class="c">// This works! Find the value for the nearest smaller key</span>
 <span class="c">// (that is, for the nearest earlier time with value)</span>
-<span class="k">var</span> joinLeft = fb.Join(msftShift, JoinKind.Left, Lookup.NearestSmaller);
+<span class="k">var</span> joinLeft = fb.Join(msftShift, JoinKind.Left, Lookup.ExactOrSmaller);
 joinLeft.Print();</pre>
 
 <p>After calculating the <code>msftShift</code> frame, we first try using just an ordinary left join. This should
@@ -246,8 +249,8 @@ column - this allows you to get <code>Series&lt;K, V&gt;</code> where <code>K</c
 in the series. When getting a series, you need to specify the required type of values:</p>
 
 <pre lang="csharp"><span class="c">// Get MSFT and FB opening prices and calculate the difference</span>
-<span class="k">var</span> msOpen = joinIn.GetSeries&lt;<span class="k">double</span>&gt;(<span class="s">"MsftOpen"</span>);
-<span class="k">var</span> msClose = joinIn.GetSeries&lt;<span class="k">double</span>&gt;(<span class="s">"MsftClose"</span>);
+<span class="k">var</span> msOpen = joinIn.GetColumn&lt;<span class="k">double</span>&gt;(<span class="s">"MsftOpen"</span>);
+<span class="k">var</span> msClose = joinIn.GetColumn&lt;<span class="k">double</span>&gt;(<span class="s">"MsftClose"</span>);
 <span class="k">var</span> msDiff = msClose - msOpen;</pre>
 
 <p>Here, we get values as <code>double</code> (which matches with the internal representation), however data frame
@@ -259,11 +262,11 @@ mutations on the original data frame and remove two series we do not use (using 
 add the difference as a new series (using <code>AddSeries</code>):</p>
 
 <pre lang="csharp"><span class="c">// Drop series from a data frame</span>
-joinIn.DropSeries(<span class="s">"MsftAdj Close"</span>);
-joinIn.DropSeries(<span class="s">"FbAdj Close"</span>);
+joinIn.DropColumn(<span class="s">"MsftAdj Close"</span>);
+joinIn.DropColumn(<span class="s">"FbAdj Close"</span>);
 
 <span class="c">// Add new series to a frame</span>
-joinIn.AddSeries(<span class="s">"MsftDiff"</span>, msDiff);
+joinIn.AddColumn(<span class="s">"MsftDiff"</span>, msDiff);
 joinIn.Print();</pre>
 
 <p>For more information about working with series, see <a href="csharpseries.html">tutorial on working with series</a>.
@@ -281,7 +284,7 @@ properties.</p>
 <span class="c">// Get row for the first available value after</span>
 <span class="c">// the specified key (1 January 2013)</span>
 <span class="k">var</span> firstJan = joinIn.Rows.Get(<span class="k">new</span> DateTime(2013, 1, 1), 
-  Lookup.NearestGreater);
+  Lookup.ExactOrGreater);
 
 <span class="c">// Get value for a specified column &amp; row keys</span>
 <span class="k">var</span> diff = joinIn[<span class="s">"MsftDiff"</span>, <span class="k">new</span> DateTime(2013, 1, 4)];</pre>
@@ -353,7 +356,7 @@ rounding to all values in the resulting data frame.</p>
 <span class="c">// Transform all numerical series</span>
 <span class="c">// (round the values to 2 fractional digits)</span>
 <span class="k">var</span> round = 
-  returns.SeriesApply((Series&lt;DateTime, <span class="k">double</span>&gt; numeric) =&gt; 
+  returns.ColumnApply((Series&lt;DateTime, <span class="k">double</span>&gt; numeric) =&gt; 
     numeric.Select(kvp =&gt; Math.Round(kvp.Value, 2)));</pre>
 
 <p>To calculate daily returns, we need to subtract the price on previous day from the price on the
@@ -388,7 +391,7 @@ using <code>DropSparseRows</code> method.</p>
 
         </div>
         <div class="span3">
-          <a href="https://nuget.org/packages/Deedle">
+          <a href="http://bluemountaincapital.github.io/Deedle/index.html">
             <img src="http://bluemountaincapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
@@ -408,13 +411,16 @@ using <code>DropSparseRows</code> method.</p>
               <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/features.html">Advanced frame manipulation</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/series.html">Working with time series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/timeseries.html">Working with time series</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/frame.html">Working with data frames</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using R with Deedle</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/stats.html">Statistics &amp; calculations</a>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
@@ -436,11 +442,13 @@ using <code>DropSparseRows</code> method.</p>
 
             <li class="nav-header">Documentation</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
+            <li class="divider"></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-stats.html">Stats module</a></li>
 
             <li class="nav-header">Samples</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/samples/volatility.html">Price volatility</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/samples/titanic.html">Titanic survivors</a></li>
           </ul>
         </div>
       </div>

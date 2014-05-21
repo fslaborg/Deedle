@@ -7,12 +7,14 @@
     <meta name="description" content="">
     <meta name="author" content="BlueMountain Capital">
 
-    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
-    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
-    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
-    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
     <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/deedle.css" />
     <script type="text/javascript" src="http://bluemountaincapital.github.io/Deedle/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -24,12 +26,12 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://github.com/BlueMountainCapital/Deedle">github page</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Charting/">F# Charting</a></li>
-          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider">R Type Provider</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Data/">F# Data</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
+          <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
-        <h3 class="muted">Deedle</h3>
+        <h3 class="muted"><a href="http://bluemountaincapital.github.io/Deedle/index.html">Deedle</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -109,21 +111,6 @@ constructing data series (of type <code>Series&lt;K, V&gt;</code>) with lazily l
 use this functionality to create series that represents e.g. an entire price history
 in a database, but only loads data that are actually needed. For more information
 see the <a href="../lazysource.html">lazy data loading tutorial</a>.</p>
-
-<h3>Example</h3>
-
-<p>Assuming we have a function <code>generate lo hi</code> that generates data in the specified
-<code>DateTime</code> range, we can create lazy series as follows:</p>
-
-<pre><code>let ls = DelayedSeries.Create(min, max, fun (lo, lob) (hi, hib) -&gt; 
-  async { 
-    printfn "Query: %A - %A" (lo, lob) (hi, hib)
-    return generate lo hi })
-</code></pre>
-
-<p>The arguments <code>min</code> and <code>max</code> specfify the complete range of the series. The 
-function passed to <code>Create</code> is called with minimal and maximal required key
-(<code>lo</code> and <code>hi</code>) and with two values that specify boundary behaviour.</p>
 </td>
         </tr>
         <tr>
@@ -138,7 +125,9 @@ function passed to <code>Create</code> is called with minimal and maximal requir
           <td class="type-name">
             <a href="deedle-enumerableextensions.html">EnumerableExtensions</a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>Contains extension methods for various instances of <code>IEnumerable</code> that
+can be used for creating <code>Series&lt;'K, 'V&gt;</code> from the <code>IEnumerable</code> value.</p>
+</td>
         </tr>
         <tr>
           <td class="type-name">
@@ -152,7 +141,10 @@ function passed to <code>Create</code> is called with minimal and maximal requir
           <td class="type-name">
             <a href="deedle-frame.html">Frame</a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>Provides static methods for creating frames, reading frame data
+from CSV files and database (via IDataReader). The type also provides
+global configuration for reflection-based expansion.</p>
+</td>
         </tr>
         <tr>
           <td class="type-name">
@@ -183,15 +175,18 @@ customized pattern matching (equality testing)</p>
             <a href="deedle-iframe.html">IFrame</a>
           </td>
           <td class="xmldoc"><p>An empty interface that is implemented by <code>Frame&lt;'R, 'C&gt;</code>. The purpose of the
-interface is to allow writing code that works on arbitrary data frames, although
-you</p>
+interface is to allow writing code that works on arbitrary data frames (you 
+need to provide an implementation of the <code>IFrameOperation&lt;'V&gt;</code> which contains
+a generic method <code>Invoke</code> that will be called with the typed data frame).</p>
 </td>
         </tr>
         <tr>
           <td class="type-name">
             <a href="deedle-iframeoperation-1.html">IFrameOperation<'V></a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>Represents an operation that can be invoked on <code>Frame&lt;'R, 'C&gt;</code>. The operation
+is generic in the type of row and column keys.</p>
+</td>
         </tr>
         <tr>
           <td class="type-name">
@@ -252,8 +247,10 @@ right joins take the keys of the first or the second series/frame.</p>
           <td class="xmldoc"><p>Represents different behaviors of key lookup in series. For unordered series,
 the only available option is <code>Lookup.Exact</code> which finds the exact key - methods
 fail or return missing value if the key is not available in the index. For ordered
-series <code>Lookup.NearestGreater</code> finds the first greater key (e.g. later date) with
-a value. <code>Lookup.NearestSmaller</code> searches for the first smaller key.</p>
+series <code>Lookup.Greater</code> finds the first greater key (e.g. later date) with
+a value. <code>Lookup.Smaller</code> searches for the first smaller key. The options
+<code>Lookup.ExactOrGreater</code> and <code>Lookup.ExactOrSmaller</code> finds the exact key (if it is
+present) and otherwise search for the nearest larger or smaller key, respectively.</p>
 </td>
         </tr>
         <tr>
@@ -322,19 +319,42 @@ keys <code>K</code>. The keys of a series may or may not be ordered</p>
           <td class="type-name">
             <a href="deedle-seriesbuilder-2.html">SeriesBuilder<'K, 'V></a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>The type can be used for creating series using mutation. You can add 
+items using <code>Add</code> and get the resulting series using the <code>Series</code> property.</p>
+</td>
         </tr>
         <tr>
           <td class="type-name">
             <a href="deedle-seriesbuilder-1.html">SeriesBuilder<'K></a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>A simple class that inherits from <code>SeriesBuilder&lt;'K, obj&gt;</code> and can be
+used instead of writing <code>SeriesBuilder&lt;'K, obj&gt;</code> with two type arguments.</p>
+</td>
         </tr>
         <tr>
           <td class="type-name">
             <a href="deedle-seriesextensions.html">SeriesExtensions</a>
           </td>
           <td class="xmldoc"></td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-seriesstatsextensions.html">SeriesStatsExtensions</a>
+          </td>
+          <td class="xmldoc"></td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-stats.html">Stats</a>
+          </td>
+          <td class="xmldoc"><p>The <code>Stats</code> type contains functions for fast calculation of statistics over
+series and frames as well as over a moving and an expanding window in a series.</p>
+
+<p>The resulting series has the same keys as the input series. When there are
+no values, or missing values, different functions behave in different ways.
+Statistics (e.g. mean) return missing value when any value is missing, while min/max
+functions return the minimal/maximal element (skipping over missing values).</p>
+</td>
         </tr>
         <tr>
           <td class="type-name">
@@ -354,6 +374,14 @@ and <code>Exception</code> properties</p>
           <td class="xmldoc"><p>This enumeration specifeis the behavior of <code>Union</code> operation on series when there are
 overlapping keys in two series that are being unioned. The options include prefering values
 from the left/right series or throwing an exception when both values are available.</p>
+</td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-vectorcallsite-1.html">VectorCallSite<'R></a>
+          </td>
+          <td class="xmldoc"><p>Represents a generic function <code>\forall.'T.(IVector&lt;'T&gt; -&gt; 'R)</code>. The function can be 
+generically invoked on an argument of type <code>IVector</code> using <code>IVector.Invoke</code></p>
 </td>
         </tr>
         <tr>
@@ -384,7 +412,9 @@ to make F# type declarations that explcitly handle exceptions more succinct.</p>
             <a href="deedle-addressing.html">Addressing</a>
           </td>
           <td class="xmldoc"><p>An <code>Address</code> value is used as an interface between vectors and indices. The index maps
-keys of various types to address, which is then used to get a value from the vector.</p>
+keys of various types to address, which is then used to get a value from the vector.
+In the current implementation, the address is just <code>int64</code>, but most address-related
+functionality is in a separate module to make this easy to change.</p>
 </td>
         </tr>
         <tr>
@@ -402,6 +432,13 @@ keys of various types to address, which is then used to get a value from the vec
         </tr>
         <tr>
           <td class="module-name">
+            <a href="deedle-fsharpindexbuilderimplementation.html">FSharpIndexBuilderImplementation</a>
+          </td>
+          <td class="xmldoc"><p>Set concrete IIndexBuilder implementation</p>
+</td>
+        </tr>
+        <tr>
+          <td class="module-name">
             <a href="deedle-fsharpindexextensions.html">FSharpIndexExtensions</a>
           </td>
           <td class="xmldoc"><p>Defines non-generic <code>Index</code> type that provides functions for building indices
@@ -413,7 +450,17 @@ using <code>AutoOpen</code>. The methods are not designed for the use from C#.</
           <td class="module-name">
             <a href="deedle-fsharpseriesextensions.html">FSharpSeriesExtensions</a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>Contains extensions for creating values of type <code>Series&lt;'K, 'V&gt;</code> including
+a type with functions such as <code>Series.ofValues</code> and the <code>series</code> function.
+The module is automatically opened for all F# code that references <code>Deedle</code>.</p>
+</td>
+        </tr>
+        <tr>
+          <td class="module-name">
+            <a href="deedle-fsharpvectorbuilderimplementation.html">FSharpVectorBuilderImplementation</a>
+          </td>
+          <td class="xmldoc"><p>Set concrete IVectorBuilder implementation</p>
+</td>
         </tr>
         <tr>
           <td class="module-name">
@@ -428,7 +475,25 @@ using <code>AutoOpen</code>. The methods are not designed for the use from C#.</
           <td class="module-name">
             <a href="deedle-framemodule.html">Frame</a>
           </td>
-          <td class="xmldoc"><p>Frame module comment</p>
+          <td class="xmldoc"><p>The <code>Frame</code> module provides an F#-friendly API for working with data frames. 
+The module follows the usual desing for collection-processing in F#, so the 
+functions work well with the pipelining operator (<code>|&gt;</code>). For example, given
+a frame with two columns representing prices, we can use <code>Frame.diff</code> and 
+numerical operators to calculate daily returns like this:</p>
+
+<pre><code>let df = frame [ "MSFT" =&gt; prices1; "AAPL" =&gt; prices2 ]
+let past = df |&gt; Frame.diff 1
+let rets = past / df * 100.0
+rets |&gt; Stats.mean
+</code></pre>
+
+<p>Note that the <code>Stats.mean</code> operation is overloaded and works both on series 
+(returning a number) and on frames (returning a series).</p>
+
+<p>The functions in this module are designed to be used from F#. For a C#-friendly
+API, see the <code>FrameExtensions</code> type. For working with individual series, see the
+<code>Series</code> module. The functions in the <code>Frame</code> module are grouped in a number of 
+categories and documented below.</p>
 </td>
         </tr>
         <tr>
@@ -463,7 +528,30 @@ using <code>AutoOpen</code>. The methods are not designed for the use from C#.</
           <td class="module-name">
             <a href="deedle-seriesmodule.html">Series</a>
           </td>
-          <td class="xmldoc"><p>Series module comment..</p>
+          <td class="xmldoc"><p>The <code>Series</code> module provides an F#-friendly API for working with data and time series. 
+The API follows the usual design for collection-processing in F#, so the functions work
+well with the pipelining (<code>|&gt;</code>) operator. For example, given a series with ages,
+we can use <code>Series.filterValues</code> to filter outliers and then <code>Stats.mean</code> to calculate
+the mean:</p>
+
+<pre><code>ages
+|&gt; Series.filterValues (fun v -&gt; v &gt; 0.0 &amp;&amp; v &lt; 120.0)
+|&gt; Stats.mean
+</code></pre>
+
+<p>The module provides comprehensive set of functions for working with series. The same
+API is also exposed using C#-friendly extension methods. In C#, the above snippet could
+be written as:</p>
+
+<pre><code>[lang=csharp]
+ages
+  .Where(kvp =&gt; kvp.Value &gt; 0.0 &amp;&amp; kvp.Value &lt; 120.0)
+  .Mean()
+</code></pre>
+
+<p>For more information about similar frame-manipulation functions, see the <code>Frame</code> module.
+For more information about C#-friendly extensions, see <code>SeriesExtensions</code>. The functions 
+in the <code>Series</code> module are grouped in a number of categories and documented below.</p>
 </td>
         </tr>
         <tr>
@@ -562,6 +650,17 @@ comparer for <code>K</code>) and disallows certain operations on unordered indic
 provides operations for manipulating linear indices (and the associated vectors).</p>
 </td>
         </tr>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-indices-linear-linearrangeindex-1.html">LinearRangeIndex<'K></a>
+          </td>
+          <td class="xmldoc"><p>A virtual index that represents a subrange of a specified index. This is useful for
+windowing operations where we do not want to allocate a new index for each window. 
+This index can be cheaply constructed and it implements many of the standard functions
+without actually allocating the index (e.g. KeyCount, KeyAt, IsEmpty). For more 
+complex index manipulations (including lookup), an actual index is constructed lazily.</p>
+</td>
+        </tr>
     </tbody>
   </table>
 
@@ -575,10 +674,35 @@ provides operations for manipulating linear indices (and the associated vectors)
     <tbody>
         <tr>
           <td class="type-name">
+            <a href="deedle-internal-binomialheap-1.html">BinomialHeap<'T></a>
+          </td>
+          <td class="xmldoc"><p>Binomial heap stores a list of trees together with custom comparer</p>
+</td>
+        </tr>
+        <tr>
+          <td class="type-name">
             <a href="deedle-internal-comparisonfailedexception.html">ComparisonFailedException</a>
           </td>
           <td class="xmldoc"><p>An internal exception that is used to handle the case when comparison fails
 (even though the type implements IComparable and everything...)</p>
+</td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-internal-deque-1.html">Deque<'T></a>
+          </td>
+          <td class="xmldoc"><p>Mutable double ended queue that holds elements in a circular array.
+The data structure provides O(1) RemoveFirst and RemoveLast. Add is 
+O(1) when the deque has enough internal capacity, otherwise it extends
+the array 2x (so amortized cost is O(1) too).</p>
+</td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-internal-rankedtree-1.html">RankedTree<'T></a>
+          </td>
+          <td class="xmldoc"><p>Tree where nodes contain values and zero or more child trees.
+For each node, we store rank - the number of children</p>
 </td>
         </tr>
     </tbody>
@@ -594,6 +718,13 @@ provides operations for manipulating linear indices (and the associated vectors)
           </td>
           <td class="xmldoc"><p>This module contains additional functions for working with arrays. 
 <code>Deedle.Internals</code> is opened, it extends the standard <code>Array</code> module.</p>
+</td>
+        </tr>
+        <tr>
+          <td class="module-name">
+            <a href="deedle-internal-binomialheap.html">BinomialHeap</a>
+          </td>
+          <td class="xmldoc"><p>Module with functions for working with binomial heaps</p>
 </td>
         </tr>
         <tr>
@@ -616,6 +747,12 @@ the <code>null</code> value, <code>Nullable&lt;T&gt;</code> value with <code>Has
 in the <code>Array</code> module. Most importantly, F# 3.0 does not know that array implements
 <code>IList&lt;T&gt;</code>.</p>
 </td>
+        </tr>
+        <tr>
+          <td class="module-name">
+            <a href="deedle-internal-readonlycollectionextensions.html">ReadOnlyCollectionExtensions</a>
+          </td>
+          <td class="xmldoc"></td>
         </tr>
         <tr>
           <td class="module-name">
@@ -677,6 +814,13 @@ optional objects (that represent missing/set parts of a key)</p>
           </td>
           <td class="xmldoc"><p>Represents an object that can construct vector values by processing 
 the "mini-DSL" representation <code>VectorConstruction</code>.</p>
+</td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-vectors-ivectorvaluelisttransform.html">IVectorValueListTransform</a>
+          </td>
+          <td class="xmldoc"><p>Represent a tranformation that is applied when combining N vectors</p>
 </td>
         </tr>
         <tr>
@@ -789,7 +933,7 @@ uses <code>ArrayVectorData.VectorOptional</code>, otherwise it uses
 
         </div>
         <div class="span3">
-          <a href="https://nuget.org/packages/Deedle">
+          <a href="http://bluemountaincapital.github.io/Deedle/index.html">
             <img src="http://bluemountaincapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
@@ -809,13 +953,16 @@ uses <code>ArrayVectorData.VectorOptional</code>, otherwise it uses
               <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/features.html">Advanced frame manipulation</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/series.html">Working with time series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/timeseries.html">Working with time series</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/frame.html">Working with data frames</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using R with Deedle</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/stats.html">Statistics &amp; calculations</a>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
@@ -829,11 +976,13 @@ uses <code>ArrayVectorData.VectorOptional</code>, otherwise it uses
 
             <li class="nav-header">Documentation</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
+            <li class="divider"></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-stats.html">Stats module</a></li>
 
             <li class="nav-header">Samples</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/samples/volatility.html">Price volatility</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/samples/titanic.html">Titanic survivors</a></li>
           </ul>
         </div>
       </div>

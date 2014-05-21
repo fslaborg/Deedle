@@ -7,12 +7,14 @@
     <meta name="description" content="">
     <meta name="author" content="BlueMountain Capital">
 
-    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
-    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
-    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
-    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
     <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/deedle.css" />
     <script type="text/javascript" src="http://bluemountaincapital.github.io/Deedle/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -24,12 +26,12 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://github.com/BlueMountainCapital/Deedle">github page</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Charting/">F# Charting</a></li>
-          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider">R Type Provider</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Data/">F# Data</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
+          <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
-        <h3 class="muted">Deedle</h3>
+        <h3 class="muted"><a href="http://bluemountaincapital.github.io/Deedle/index.html">Deedle</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -50,15 +52,19 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '437', 437)" onmouseover="showTip(event, '437', 437)">
+          <code onmouseout="hideTip(event, '463', 463)" onmouseover="showTip(event, '463', 463)">
             new(series)
           </code>
-          <div class="tip" id="437">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,obj&gt; -&gt; ObjectSeries&lt;&#39;K&gt;<br />
+          <div class="tip" id="463">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,obj&gt; -&gt; ObjectSeries&lt;&#39;K&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1033-1033" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
     </tbody>
@@ -72,113 +78,163 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '442', 442)" onmouseover="showTip(event, '442', 442)">
+          <code onmouseout="hideTip(event, '470', 470)" onmouseover="showTip(event, '470', 470)">
             As()
           </code>
-          <div class="tip" id="442">
-            <strong>Signature:</strong>unit -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
+          <div class="tip" id="470">
+            <strong>Signature:</strong> unit -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'R          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1076-1076" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '443', 443)" onmouseover="showTip(event, '443', 443)">
+          <code onmouseout="hideTip(event, '471', 471)" onmouseover="showTip(event, '471', 471)">
+            GetAs(column, fallback)
+          </code>
+          <div class="tip" id="471">
+            <strong>Signature:</strong> (column:&#39;K * fallback:&#39;R) -&gt; &#39;R<br />
+                          <strong>Type parameters:</strong> 'R          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1047-1047" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '472', 472)" onmouseover="showTip(event, '472', 472)">
             GetAs(column)
           </code>
-          <div class="tip" id="443">
-            <strong>Signature:</strong>column:&#39;K -&gt; &#39;R<br />
+          <div class="tip" id="472">
+            <strong>Signature:</strong> column:&#39;K -&gt; &#39;R<br />
                           <strong>Type parameters:</strong> 'R          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1044-1044" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '444', 444)" onmouseover="showTip(event, '444', 444)">
+          <code onmouseout="hideTip(event, '473', 473)" onmouseover="showTip(event, '473', 473)">
             GetAtAs(index)
           </code>
-          <div class="tip" id="444">
-            <strong>Signature:</strong>index:int -&gt; &#39;R<br />
+          <div class="tip" id="473">
+            <strong>Signature:</strong> index:int -&gt; &#39;R<br />
                           <strong>Type parameters:</strong> 'R          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1056-1056" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '445', 445)" onmouseover="showTip(event, '445', 445)">
+          <code onmouseout="hideTip(event, '474', 474)" onmouseover="showTip(event, '474', 474)">
             GetValues()
           </code>
-          <div class="tip" id="445">
-            <strong>Signature:</strong>unit -&gt; IEnumerable&lt;&#39;R&gt;<br />
+          <div class="tip" id="474">
+            <strong>Signature:</strong> unit -&gt; IEnumerable&lt;&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'R          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1042-1042" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '446', 446)" onmouseover="showTip(event, '446', 446)">
+          <code onmouseout="hideTip(event, '475', 475)" onmouseover="showTip(event, '475', 475)">
             GetValues(strict)
           </code>
-          <div class="tip" id="446">
-            <strong>Signature:</strong>strict:bool -&gt; IEnumerable&lt;&#39;R&gt;<br />
+          <div class="tip" id="475">
+            <strong>Signature:</strong> strict:bool -&gt; IEnumerable&lt;&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'R          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1036-1036" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '447', 447)" onmouseover="showTip(event, '447', 447)">
+          <code onmouseout="hideTip(event, '476', 476)" onmouseover="showTip(event, '476', 476)">
             TryAs()
           </code>
-          <div class="tip" id="447">
-            <strong>Signature:</strong>unit -&gt; OptionalValue&lt;Series&lt;&#39;K,&#39;R&gt;&gt;<br />
+          <div class="tip" id="476">
+            <strong>Signature:</strong> unit -&gt; OptionalValue&lt;Series&lt;&#39;K,&#39;R&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'R          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1073-1073" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '448', 448)" onmouseover="showTip(event, '448', 448)">
+          <code onmouseout="hideTip(event, '477', 477)" onmouseover="showTip(event, '477', 477)">
             TryAs(strict)
           </code>
-          <div class="tip" id="448">
-            <strong>Signature:</strong>strict:bool -&gt; OptionalValue&lt;Series&lt;&#39;K,&#39;R&gt;&gt;<br />
+          <div class="tip" id="477">
+            <strong>Signature:</strong> strict:bool -&gt; OptionalValue&lt;Series&lt;&#39;K,&#39;R&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'R          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1065-1065" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '449', 449)" onmouseover="showTip(event, '449', 449)">
+          <code onmouseout="hideTip(event, '478', 478)" onmouseover="showTip(event, '478', 478)">
             TryGetAs(column)
           </code>
-          <div class="tip" id="449">
-            <strong>Signature:</strong>column:&#39;K -&gt; OptionalValue&lt;&#39;R&gt;<br />
+          <div class="tip" id="478">
+            <strong>Signature:</strong> column:&#39;K -&gt; OptionalValue&lt;&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'R          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1059-1059" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
     </tbody>
@@ -192,15 +248,19 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '455', 455)" onmouseover="showTip(event, '455', 455)">
+          <code onmouseout="hideTip(event, '483', 483)" onmouseover="showTip(event, '483', 483)">
             ( ? )(series, name)
           </code>
-          <div class="tip" id="455">
-            <strong>Signature:</strong>(series:ObjectSeries&lt;string&gt; * name:string) -&gt; float<br />
+          <div class="tip" id="483">
+            <strong>Signature:</strong> (series:ObjectSeries&lt;string&gt; * name:string) -&gt; float<br />
                       </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1062-1062" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
     </tbody>
@@ -208,7 +268,7 @@
 
         </div>
         <div class="span3">
-          <a href="https://nuget.org/packages/Deedle">
+          <a href="http://bluemountaincapital.github.io/Deedle/index.html">
             <img src="http://bluemountaincapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
@@ -228,13 +288,16 @@
               <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/features.html">Advanced frame manipulation</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/series.html">Working with time series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/timeseries.html">Working with time series</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/frame.html">Working with data frames</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using R with Deedle</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/stats.html">Statistics &amp; calculations</a>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
@@ -248,11 +311,13 @@
 
             <li class="nav-header">Documentation</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
+            <li class="divider"></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-stats.html">Stats module</a></li>
 
             <li class="nav-header">Samples</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/samples/volatility.html">Price volatility</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/samples/titanic.html">Titanic survivors</a></li>
           </ul>
         </div>
       </div>

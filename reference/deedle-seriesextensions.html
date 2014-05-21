@@ -7,12 +7,14 @@
     <meta name="description" content="">
     <meta name="author" content="BlueMountain Capital">
 
-    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
-    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
-    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
-    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
     <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/deedle.css" />
     <script type="text/javascript" src="http://bluemountaincapital.github.io/Deedle/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -24,12 +26,12 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://github.com/BlueMountainCapital/Deedle">github page</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Charting/">F# Charting</a></li>
-          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider">R Type Provider</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Data/">F# Data</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
+          <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
-        <h3 class="muted">Deedle</h3>
+        <h3 class="muted"><a href="http://bluemountaincapital.github.io/Deedle/index.html">Deedle</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -47,8 +49,7 @@
       <li><a href="#section0">Data structure manipulation</a></li>
       <li><a href="#section1">Lookup, resampling and scaling</a></li>
       <li><a href="#section2">Missing values</a></li>
-      <li><a href="#section3">Statistics</a></li>
-      <li><a href="#section4">Other type members</a></li>
+      <li><a href="#section3">Other type members</a></li>
   </ul>
     <h2>Data structure manipulation<a name="section0">&#160;</a></h2>
   <h3>Static members</h3>
@@ -60,15 +61,19 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '625', 625)" onmouseover="showTip(event, '625', 625)">
-            OrderByKey(series)
+          <code onmouseout="hideTip(event, '484', 484)" onmouseover="showTip(event, '484', 484)">
+            SortByKey(series)
           </code>
-          <div class="tip" id="625">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
+          <div class="tip" id="484">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-        <p>Returns a new series whose entries are reordered according to index order</p>
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L451-451" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a new series whose entries are reordered according to index order</p>
 
 <h2>Parameters</h2>
 
@@ -90,15 +95,19 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '657', 657)" onmouseover="showTip(event, '657', 657)">
+          <code onmouseout="hideTip(event, '505', 505)" onmouseover="showTip(event, '505', 505)">
             ResampleEquivalence(...)
           </code>
-          <div class="tip" id="657">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;V&gt; * keyProj:Func&lt;&#39;K,&#39;?6048&gt; * aggregate:Func&lt;Series&lt;&#39;K,&#39;V&gt;,&#39;?6049&gt;) -&gt; Series&lt;&#39;?6048,&#39;?6049&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V, '?6048, '?6049          </div>
+          <div class="tip" id="505">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * keyProj:Func&lt;&#39;K,&#39;?439441&gt; * aggregate:Func&lt;Series&lt;&#39;K,&#39;V&gt;,&#39;?439442&gt;) -&gt; Series&lt;&#39;?439441,&#39;?439442&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V, '?439441, '?439442          </div>
         </td>
         <td class="xmldoc">
-        <p>Resample the series based on equivalence class on the keys. A specified function
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L497-497" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Resample the series based on equivalence class on the keys. A specified function
 <code>keyProj</code> is used to project keys to another space and the observations for which the 
 projected keys are equivalent are grouped into chunks. The chunks are then transformed
 to values using the provided function <code>f</code>.</p>
@@ -124,15 +133,19 @@ series, similar functionality can be implemented using <code>GroupBy</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '658', 658)" onmouseover="showTip(event, '658', 658)">
+          <code onmouseout="hideTip(event, '506', 506)" onmouseover="showTip(event, '506', 506)">
             ResampleEquivalence(series, keyProj)
           </code>
-          <div class="tip" id="658">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;V&gt; * keyProj:Func&lt;&#39;K,&#39;?6044&gt;) -&gt; Series&lt;&#39;?6044,Series&lt;&#39;K,&#39;V&gt;&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V, '?6044          </div>
+          <div class="tip" id="506">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * keyProj:Func&lt;&#39;K,&#39;?439437&gt;) -&gt; Series&lt;&#39;?439437,Series&lt;&#39;K,&#39;V&gt;&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V, '?439437          </div>
         </td>
         <td class="xmldoc">
-        <p>Resample the series based on equivalence class on the keys. A specified function
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L475-475" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Resample the series based on equivalence class on the keys. A specified function
 <code>keyProj</code> is used to project keys to another space and the observations for which the 
 projected keys are equivalent are grouped into chunks. The chunks are then returned
 as nested series.</p>
@@ -156,15 +169,19 @@ series, similar functionality can be implemented using <code>GroupBy</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '659', 659)" onmouseover="showTip(event, '659', 659)">
+          <code onmouseout="hideTip(event, '507', 507)" onmouseover="showTip(event, '507', 507)">
             ResampleUniform(...)
           </code>
-          <div class="tip" id="659">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K1,&#39;V&gt; * keyProj:Func&lt;&#39;K1,&#39;K2&gt; * nextKey:Func&lt;&#39;K2,&#39;K2&gt; * fillMode:Lookup) -&gt; Series&lt;&#39;K2,&#39;V&gt;<br />
+          <div class="tip" id="507">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K1,&#39;V&gt; * keyProj:Func&lt;&#39;K1,&#39;K2&gt; * nextKey:Func&lt;&#39;K2,&#39;K2&gt; * fillMode:Lookup) -&gt; Series&lt;&#39;K2,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'V, 'K2          </div>
         </td>
         <td class="xmldoc">
-        <p>Resample the series based on equivalence class on the keys and also generate values 
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L552-552" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Resample the series based on equivalence class on the keys and also generate values 
 for all keys of the target space that are between the minimal and maximal key of the
 specified series (e.g. generate value for all days in the range covered by the series).
 A specified function <code>keyProj</code> is used to project keys to another space and <code>nextKey</code>
@@ -195,15 +212,19 @@ space (which is then used for grouping based on equivalence)</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '660', 660)" onmouseover="showTip(event, '660', 660)">
+          <code onmouseout="hideTip(event, '508', 508)" onmouseover="showTip(event, '508', 508)">
             ResampleUniform(...)
           </code>
-          <div class="tip" id="660">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;V&gt; * keyProj:Func&lt;&#39;K,&#39;?6053&gt; * nextKey:Func&lt;&#39;?6053,&#39;?6053&gt;) -&gt; Series&lt;&#39;?6053,&#39;V&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V, '?6053          </div>
+          <div class="tip" id="508">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * keyProj:Func&lt;&#39;K,&#39;?439446&gt; * nextKey:Func&lt;&#39;?439446,&#39;?439446&gt;) -&gt; Series&lt;&#39;?439446,&#39;V&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V, '?439446          </div>
         </td>
         <td class="xmldoc">
-        <p>Resample the series based on equivalence class on the keys and also generate values 
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L525-525" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Resample the series based on equivalence class on the keys and also generate values 
 for all keys of the target space that are between the minimal and maximal key of the
 specified series (e.g. generate value for all days in the range covered by the series).
 For each equivalence class (e.g. date), select the latest value (with greatest key).
@@ -235,15 +256,19 @@ space (which is then used for grouping based on equivalence)</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '661', 661)" onmouseover="showTip(event, '661', 661)">
+          <code onmouseout="hideTip(event, '509', 509)" onmouseover="showTip(event, '509', 509)">
             Sample(series, interval)
           </code>
-          <div class="tip" id="661">
-            <strong>Signature:</strong>(series:Series&lt;DateTimeOffset,&#39;V&gt; * interval:TimeSpan) -&gt; Series&lt;DateTimeOffset,&#39;V&gt;<br />
+          <div class="tip" id="509">
+            <strong>Signature:</strong> (series:Series&lt;DateTimeOffset,&#39;V&gt; * interval:TimeSpan) -&gt; Series&lt;DateTimeOffset,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'V          </div>
         </td>
         <td class="xmldoc">
-        <p>Finds values at, or near, the specified times in a given series. The operation generates
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L691-691" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Finds values at, or near, the specified times in a given series. The operation generates
 keys starting from the smallest key of the original series, using the specified <code>interval</code>
 and then finds nearest smaller values close to such keys. The function generates samples
 at, or just before the end of an interval and at, or after, the end of the series.</p>
@@ -265,15 +290,19 @@ at, or just before the end of an interval and at, or after, the end of the serie
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '662', 662)" onmouseover="showTip(event, '662', 662)">
+          <code onmouseout="hideTip(event, '510', 510)" onmouseover="showTip(event, '510', 510)">
             Sample(series, interval)
           </code>
-          <div class="tip" id="662">
-            <strong>Signature:</strong>(series:Series&lt;DateTime,&#39;V&gt; * interval:TimeSpan) -&gt; Series&lt;DateTime,&#39;V&gt;<br />
+          <div class="tip" id="510">
+            <strong>Signature:</strong> (series:Series&lt;DateTime,&#39;V&gt; * interval:TimeSpan) -&gt; Series&lt;DateTime,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'V          </div>
         </td>
         <td class="xmldoc">
-        <p>Finds values at, or near, the specified times in a given series. The operation generates
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L673-673" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Finds values at, or near, the specified times in a given series. The operation generates
 keys starting from the smallest key of the original series, using the specified <code>interval</code>
 and then finds nearest smaller values close to such keys. The function generates samples
 at, or just before the end of an interval and at, or after, the end of the series.</p>
@@ -295,15 +324,19 @@ at, or just before the end of an interval and at, or after, the end of the serie
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '663', 663)" onmouseover="showTip(event, '663', 663)">
+          <code onmouseout="hideTip(event, '511', 511)" onmouseover="showTip(event, '511', 511)">
             Sample(series, interval, dir)
           </code>
-          <div class="tip" id="663">
-            <strong>Signature:</strong>(series:Series&lt;DateTimeOffset,&#39;V&gt; * interval:TimeSpan * dir:Direction) -&gt; Series&lt;DateTimeOffset,&#39;V&gt;<br />
+          <div class="tip" id="511">
+            <strong>Signature:</strong> (series:Series&lt;DateTimeOffset,&#39;V&gt; * interval:TimeSpan * dir:Direction) -&gt; Series&lt;DateTimeOffset,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'V          </div>
         </td>
         <td class="xmldoc">
-        <p>Finds values at, or near, the specified times in a given series. The operation generates
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L655-655" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Finds values at, or near, the specified times in a given series. The operation generates
 keys starting from the smallest key of the original series, using the specified <code>interval</code>
 and then finds nearest smaller values close to such keys according to <code>dir</code>.</p>
 
@@ -329,15 +362,19 @@ of interval and at the end of the series.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '664', 664)" onmouseover="showTip(event, '664', 664)">
+          <code onmouseout="hideTip(event, '512', 512)" onmouseover="showTip(event, '512', 512)">
             Sample(series, interval, dir)
           </code>
-          <div class="tip" id="664">
-            <strong>Signature:</strong>(series:Series&lt;DateTime,&#39;V&gt; * interval:TimeSpan * dir:Direction) -&gt; Series&lt;DateTime,&#39;V&gt;<br />
+          <div class="tip" id="512">
+            <strong>Signature:</strong> (series:Series&lt;DateTime,&#39;V&gt; * interval:TimeSpan * dir:Direction) -&gt; Series&lt;DateTime,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'V          </div>
         </td>
         <td class="xmldoc">
-        <p>Finds values at, or near, the specified times in a given series. The operation generates
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L633-633" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Finds values at, or near, the specified times in a given series. The operation generates
 keys starting from the smallest key of the original series, using the specified <code>interval</code>
 and then finds nearest smaller values close to such keys according to <code>dir</code>.</p>
 
@@ -362,15 +399,19 @@ values at exact keys will be returned; <code>NearestGreater</code> returns the n
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '665', 665)" onmouseover="showTip(event, '665', 665)">
+          <code onmouseout="hideTip(event, '513', 513)" onmouseover="showTip(event, '513', 513)">
             Sample(series, start, interval, dir)
           </code>
-          <div class="tip" id="665">
-            <strong>Signature:</strong>(series:Series&lt;DateTimeOffset,&#39;V&gt; * start:DateTimeOffset * interval:TimeSpan * dir:Direction) -&gt; Series&lt;DateTimeOffset,&#39;V&gt;<br />
+          <div class="tip" id="513">
+            <strong>Signature:</strong> (series:Series&lt;DateTimeOffset,&#39;V&gt; * start:DateTimeOffset * interval:TimeSpan * dir:Direction) -&gt; Series&lt;DateTimeOffset,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'V          </div>
         </td>
         <td class="xmldoc">
-        <p>Finds values at, or near, the specified times in a given series. The operation generates
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L612-612" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Finds values at, or near, the specified times in a given series. The operation generates
 keys starting at the specified <code>start</code> time, using the specified <code>interval</code>
 and then finds nearest smaller values close to such keys according to <code>dir</code>.</p>
 
@@ -396,15 +437,19 @@ values at exact keys will be returned; <code>NearestGreater</code> returns the n
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '666', 666)" onmouseover="showTip(event, '666', 666)">
+          <code onmouseout="hideTip(event, '514', 514)" onmouseover="showTip(event, '514', 514)">
             Sample(series, start, interval, dir)
           </code>
-          <div class="tip" id="666">
-            <strong>Signature:</strong>(series:Series&lt;DateTime,&#39;V&gt; * start:DateTime * interval:TimeSpan * dir:Direction) -&gt; Series&lt;DateTime,&#39;V&gt;<br />
+          <div class="tip" id="514">
+            <strong>Signature:</strong> (series:Series&lt;DateTime,&#39;V&gt; * start:DateTime * interval:TimeSpan * dir:Direction) -&gt; Series&lt;DateTime,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'V          </div>
         </td>
         <td class="xmldoc">
-        <p>Finds values at, or near, the specified times in a given series. The operation generates
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L590-590" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Finds values at, or near, the specified times in a given series. The operation generates
 keys starting at the specified <code>start</code> time, using the specified <code>interval</code>
 and then finds nearest smaller values close to such keys according to <code>dir</code>.</p>
 
@@ -430,15 +475,51 @@ values at exact keys will be returned; <code>NearestGreater</code> returns the n
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '667', 667)" onmouseover="showTip(event, '667', 667)">
+          <code onmouseout="hideTip(event, '515', 515)" onmouseover="showTip(event, '515', 515)">
+            Sample(series, keys)
+          </code>
+          <div class="tip" id="515">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * keys:seq&lt;&#39;K&gt;) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L568-568" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Sample an (ordered) series by finding the value at the exact or closest prior key 
+for some new sequence of keys.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>series</code> - An input series to be sampled</li>
+<li><code>keys</code>   - The keys at which to sample</li>
+</ul>
+
+<h2>Remarks</h2>
+
+<p>This operation is only supported on ordered series. The method throws
+<code>InvalidOperationException</code> when the series is not ordered.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '516', 516)" onmouseover="showTip(event, '516', 516)">
             SampleInto(...)
           </code>
-          <div class="tip" id="667">
-            <strong>Signature:</strong>(series:Series&lt;DateTimeOffset,&#39;V&gt; * interval:TimeSpan * dir:Direction * aggregate:Func&lt;DateTimeOffset,(Series&lt;DateTimeOffset,&#39;V&gt; -&gt; obj)&gt;) -&gt; Series&lt;DateTimeOffset,obj&gt;<br />
+          <div class="tip" id="516">
+            <strong>Signature:</strong> (series:Series&lt;DateTimeOffset,&#39;V&gt; * interval:TimeSpan * dir:Direction * aggregate:Func&lt;DateTimeOffset,(Series&lt;DateTimeOffset,&#39;V&gt; -&gt; obj)&gt;) -&gt; Series&lt;DateTimeOffset,obj&gt;<br />
                           <strong>Type parameters:</strong> 'V          </div>
         </td>
         <td class="xmldoc">
-        <p>Performs sampling by time and aggregates chunks obtained by time-sampling into a single
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L735-735" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Performs sampling by time and aggregates chunks obtained by time-sampling into a single
 value using a specified function. The operation generates keys starting at the first
 key in the source series, using the specified <code>interval</code> and then obtains chunks based on 
 these keys in a fashion similar to the <code>Series.resample</code> function.</p>
@@ -464,15 +545,19 @@ used as the greatest keys in a chunk.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '668', 668)" onmouseover="showTip(event, '668', 668)">
+          <code onmouseout="hideTip(event, '517', 517)" onmouseover="showTip(event, '517', 517)">
             SampleInto(...)
           </code>
-          <div class="tip" id="668">
-            <strong>Signature:</strong>(series:Series&lt;DateTime,&#39;V&gt; * interval:TimeSpan * dir:Direction * aggregate:Func&lt;DateTime,(Series&lt;DateTime,&#39;V&gt; -&gt; obj)&gt;) -&gt; Series&lt;DateTime,obj&gt;<br />
+          <div class="tip" id="517">
+            <strong>Signature:</strong> (series:Series&lt;DateTime,&#39;V&gt; * interval:TimeSpan * dir:Direction * aggregate:Func&lt;DateTime,(Series&lt;DateTime,&#39;V&gt; -&gt; obj)&gt;) -&gt; Series&lt;DateTime,obj&gt;<br />
                           <strong>Type parameters:</strong> 'V          </div>
         </td>
         <td class="xmldoc">
-        <p>Performs sampling by time and aggregates chunks obtained by time-sampling into a single
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L713-713" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Performs sampling by time and aggregates chunks obtained by time-sampling into a single
 value using a specified function. The operation generates keys starting at the first
 key in the source series, using the specified <code>interval</code> and then obtains chunks based on 
 these keys in a fashion similar to the <code>Series.resample</code> function.</p>
@@ -507,15 +592,19 @@ used as the greatest keys in a chunk.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '749', 749)" onmouseover="showTip(event, '749', 749)">
+          <code onmouseout="hideTip(event, '586', 586)" onmouseover="showTip(event, '586', 586)">
             DropMissing(series)
           </code>
-          <div class="tip" id="749">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
+          <div class="tip" id="586">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-        <p>Drop missing values from the specified series. The returned series contains 
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L377-377" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Drop missing values from the specified series. The returned series contains 
 only those keys for which there is a value available in the original one.</p>
 
 <h2>Parameters</h2>
@@ -536,15 +625,19 @@ s.DropMissing()
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '750', 750)" onmouseover="showTip(event, '750', 750)">
+          <code onmouseout="hideTip(event, '588', 588)" onmouseover="showTip(event, '588', 588)">
             FillMissing(series, filler)
           </code>
-          <div class="tip" id="750">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;T&gt; * filler:Func&lt;&#39;K,&#39;T&gt;) -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
+          <div class="tip" id="588">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;T&gt; * filler:Func&lt;&#39;K,&#39;T&gt;) -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-        <p>Fill missing values in the series using the specified function.
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L437-437" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Fill missing values in the series using the specified function.
 The specified function is called with all keys for which the series
 does not contain value and the result of the call is used in place 
 of the missing value.</p>
@@ -560,22 +653,26 @@ used in a place where the original series contains a missing value.</li>
 <h2>Remarks</h2>
 
 <p>This function can be used to implement more complex interpolation.
-For example see <a href="../features.html#missing">handling missing values in the tutorial</a></p>
+For example see <a href="../frame.html#missing">handling missing values in the tutorial</a></p>
 
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '751', 751)" onmouseover="showTip(event, '751', 751)">
+          <code onmouseout="hideTip(event, '589', 589)" onmouseover="showTip(event, '589', 589)">
             FillMissing(series, direction)
           </code>
-          <div class="tip" id="751">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;T&gt; * direction:Direction) -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
+          <div class="tip" id="589">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;T&gt; * direction:Direction) -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-        <p>Fill missing values in the series with the nearest available value
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L414-414" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Fill missing values in the series with the nearest available value
 (using the specified direction). The default direction is <code>Direction.Backward</code>.
 Note that the series may still contain missing values after call to this 
 function. This operation can only be used on ordered series.</p>
@@ -605,15 +702,19 @@ for the nearest greater key.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '752', 752)" onmouseover="showTip(event, '752', 752)">
+          <code onmouseout="hideTip(event, '590', 590)" onmouseover="showTip(event, '590', 590)">
             FillMissing(series, value)
           </code>
-          <div class="tip" id="752">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;T&gt; * value:&#39;T) -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
+          <div class="tip" id="590">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;T&gt; * value:&#39;T) -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-        <p>Fill missing values in the series with a constant value.</p>
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L388-388" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Fill missing values in the series with a constant value.</p>
 
 <h2>Parameters</h2>
 
@@ -626,7 +727,7 @@ for the nearest greater key.</li>
       </tr>
     </tbody>
   </table>
-    <h2>Statistics<a name="section3">&#160;</a></h2>
+    <h2>Other type members<a name="section3">&#160;</a></h2>
   <h3>Static members</h3>
   <table class="table table-bordered member-list">
     <thead>
@@ -636,897 +737,262 @@ for the nearest greater key.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '773', 773)" onmouseover="showTip(event, '773', 773)">
-            CountLevel(series, groupSelector)
-          </code>
-          <div class="tip" id="773">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K1,decimal&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,int&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Groups the elements of the input series in groups based on the keys
-produced by <code>groupSelector</code> and then returns a new series containing
-the counts of elements in each group.</p>
-
-<p>This operation is designed to be used with <a href="../features.html#indexing">hierarchical indexing</a>.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>series</code> - A series of values that are used to calculate the counts</li>
-<li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
-</ul>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '774', 774)" onmouseover="showTip(event, '774', 774)">
-            Max(series)
-          </code>
-          <div class="tip" id="774">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,decimal&gt; -&gt; decimal<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Returns the greatest of all elements of the series.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '775', 775)" onmouseover="showTip(event, '775', 775)">
-            Max(series)
-          </code>
-          <div class="tip" id="775">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,int&gt; -&gt; int<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Returns the greatest of all elements of the series.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '776', 776)" onmouseover="showTip(event, '776', 776)">
-            Max(series)
-          </code>
-          <div class="tip" id="776">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,float32&gt; -&gt; float32<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Returns the greatest of all elements of the series. The operation 
-skips over missing values and so the result will never be <code>NaN</code>.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '777', 777)" onmouseover="showTip(event, '777', 777)">
-            Max(series)
-          </code>
-          <div class="tip" id="777">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,float&gt; -&gt; float<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Returns the greatest of all elements of the series. The operation 
-skips over missing values and so the result will never be <code>NaN</code>.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '778', 778)" onmouseover="showTip(event, '778', 778)">
-            MaxLevel(series, groupSelector)
-          </code>
-          <div class="tip" id="778">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K1,decimal&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,decimal&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Groups the elements of the input series in groups based on the keys
-produced by <code>groupSelector</code> and then returns a new series containing
-the greatest element of each group.</p>
-
-<p>This operation is designed to be used with <a href="../features.html#indexing">hierarchical indexing</a>.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>series</code> - A series of values that are used to calculate the greatest elements</li>
-<li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
-</ul>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '779', 779)" onmouseover="showTip(event, '779', 779)">
-            MaxLevel(series, groupSelector)
-          </code>
-          <div class="tip" id="779">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K1,int&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,int&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Groups the elements of the input series in groups based on the keys
-produced by <code>groupSelector</code> and then returns a new series containing
-the greatest element of each group.</p>
-
-<p>This operation is designed to be used with <a href="../features.html#indexing">hierarchical indexing</a>.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>series</code> - A series of values that are used to calculate the greatest elements</li>
-<li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
-</ul>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '780', 780)" onmouseover="showTip(event, '780', 780)">
-            MaxLevel(series, groupSelector)
-          </code>
-          <div class="tip" id="780">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K1,float32&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float32&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Groups the elements of the input series in groups based on the keys
-produced by <code>groupSelector</code> and then returns a new series containing
-the greatest element of each group.</p>
-
-<p>This operation is designed to be used with <a href="../features.html#indexing">hierarchical indexing</a>.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>series</code> - A series of values that are used to calculate the greatest elements</li>
-<li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
-</ul>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '781', 781)" onmouseover="showTip(event, '781', 781)">
-            MaxLevel(series, groupSelector)
-          </code>
-          <div class="tip" id="781">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K1,float&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Groups the elements of the input series in groups based on the keys
-produced by <code>groupSelector</code> and then returns a new series containing
-the greatest element of each group.</p>
-
-<p>This operation is designed to be used with <a href="../features.html#indexing">hierarchical indexing</a>.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>series</code> - A series of values that are used to calculate the greatest elements</li>
-<li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
-</ul>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '782', 782)" onmouseover="showTip(event, '782', 782)">
-            Mean(series)
-          </code>
-          <div class="tip" id="782">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,decimal&gt; -&gt; decimal<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Returns the mean of the elements of the series.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '783', 783)" onmouseover="showTip(event, '783', 783)">
-            Mean(series)
-          </code>
-          <div class="tip" id="783">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,float32&gt; -&gt; float32<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Returns the mean of the elements of the series. The operation skips over
-missing values and so the result will never be <code>NaN</code>.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '784', 784)" onmouseover="showTip(event, '784', 784)">
-            Mean(series)
-          </code>
-          <div class="tip" id="784">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,float&gt; -&gt; float<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Returns the mean of the elements of the series. The operation skips over
-missing values and so the result will never be <code>NaN</code>.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '785', 785)" onmouseover="showTip(event, '785', 785)">
-            MeanLevel(series, groupSelector)
-          </code>
-          <div class="tip" id="785">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K1,decimal&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,decimal&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Groups the elements of the input series in groups based on the keys
-produced by <code>groupSelector</code> and then returns a new series containing
-the mean of each group.</p>
-
-<p>This operation is designed to be used with <a href="../features.html#indexing">hierarchical indexing</a>.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>series</code> - A series of values that are used to calculate the means</li>
-<li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
-</ul>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '786', 786)" onmouseover="showTip(event, '786', 786)">
-            MeanLevel(series, groupSelector)
-          </code>
-          <div class="tip" id="786">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K1,float32&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float32&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Groups the elements of the input series in groups based on the keys
-produced by <code>groupSelector</code> and then returns a new series containing
-the mean of each group.</p>
-
-<p>This operation is designed to be used with <a href="../features.html#indexing">hierarchical indexing</a>.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>series</code> - A series of values that are used to calculate the means</li>
-<li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
-</ul>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '787', 787)" onmouseover="showTip(event, '787', 787)">
-            MeanLevel(series, groupSelector)
-          </code>
-          <div class="tip" id="787">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K1,float&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Groups the elements of the input series in groups based on the keys
-produced by <code>groupSelector</code> and then returns a new series containing
-the mean of each group.</p>
-
-<p>This operation is designed to be used with <a href="../features.html#indexing">hierarchical indexing</a>.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>series</code> - A series of values that are used to calculate the means</li>
-<li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
-</ul>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '788', 788)" onmouseover="showTip(event, '788', 788)">
-            Median(series)
-          </code>
-          <div class="tip" id="788">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,float&gt; -&gt; float<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Returns the median of the elements of the series. The operation skips over
-missing values and so the result will never be <code>NaN</code>.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '789', 789)" onmouseover="showTip(event, '789', 789)">
-            MedianLevel(series, groupSelector)
-          </code>
-          <div class="tip" id="789">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K1,float&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Groups the elements of the input series in groups based on the keys
-produced by <code>groupSelector</code> and then returns a new series containing
-the median of each group.</p>
-
-<p>This operation is designed to be used with <a href="../features.html#indexing">hierarchical indexing</a>.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>series</code> - A series of values that are used to calculate the medians</li>
-<li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
-</ul>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '790', 790)" onmouseover="showTip(event, '790', 790)">
-            Min(series)
-          </code>
-          <div class="tip" id="790">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,decimal&gt; -&gt; decimal<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Returns the smallest of all elements of the series.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '791', 791)" onmouseover="showTip(event, '791', 791)">
-            Min(series)
-          </code>
-          <div class="tip" id="791">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,int&gt; -&gt; int<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Returns the smallest of all elements of the series.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '792', 792)" onmouseover="showTip(event, '792', 792)">
-            Min(series)
-          </code>
-          <div class="tip" id="792">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,float32&gt; -&gt; float32<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Returns the smallest of all elements of the series. The operation 
-skips over missing values and so the result will never be <code>NaN</code>.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '793', 793)" onmouseover="showTip(event, '793', 793)">
-            Min(series)
-          </code>
-          <div class="tip" id="793">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,float&gt; -&gt; float<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Returns the smallest of all elements of the series. The operation 
-skips over missing values and so the result will never be <code>NaN</code>.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '794', 794)" onmouseover="showTip(event, '794', 794)">
-            MinLevel(series, groupSelector)
-          </code>
-          <div class="tip" id="794">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K1,decimal&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,decimal&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Groups the elements of the input series in groups based on the keys
-produced by <code>groupSelector</code> and then returns a new series containing
-the smallest element of each group.</p>
-
-<p>This operation is designed to be used with <a href="../features.html#indexing">hierarchical indexing</a>.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>series</code> - A series of values that are used to calculate the smallest elements</li>
-<li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
-</ul>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '795', 795)" onmouseover="showTip(event, '795', 795)">
-            MinLevel(series, groupSelector)
-          </code>
-          <div class="tip" id="795">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K1,int&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,int&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Groups the elements of the input series in groups based on the keys
-produced by <code>groupSelector</code> and then returns a new series containing
-the smallest element of each group.</p>
-
-<p>This operation is designed to be used with <a href="../features.html#indexing">hierarchical indexing</a>.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>series</code> - A series of values that are used to calculate the smallest elements</li>
-<li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
-</ul>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '796', 796)" onmouseover="showTip(event, '796', 796)">
-            MinLevel(series, groupSelector)
-          </code>
-          <div class="tip" id="796">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K1,float32&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float32&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Groups the elements of the input series in groups based on the keys
-produced by <code>groupSelector</code> and then returns a new series containing
-the smallest element of each group.</p>
-
-<p>This operation is designed to be used with <a href="../features.html#indexing">hierarchical indexing</a>.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>series</code> - A series of values that are used to calculate the smallest elements</li>
-<li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
-</ul>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '797', 797)" onmouseover="showTip(event, '797', 797)">
-            MinLevel(series, groupSelector)
-          </code>
-          <div class="tip" id="797">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K1,float&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Groups the elements of the input series in groups based on the keys
-produced by <code>groupSelector</code> and then returns a new series containing
-the smallest element of each group.</p>
-
-<p>This operation is designed to be used with <a href="../features.html#indexing">hierarchical indexing</a>.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>series</code> - A series of values that are used to calculate the smallest elements</li>
-<li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
-</ul>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '798', 798)" onmouseover="showTip(event, '798', 798)">
-            StandardDeviation(series)
-          </code>
-          <div class="tip" id="798">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,float&gt; -&gt; float<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Returns the standard deviation of the elements of the series. The operation skips over
-missing values and so the result will never be <code>NaN</code>.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '799', 799)" onmouseover="showTip(event, '799', 799)">
-            StandardDeviationLevel(...)
-          </code>
-          <div class="tip" id="799">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K1,float&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Groups the elements of the input series in groups based on the keys
-produced by <code>groupSelector</code> and then returns a new series containing
-the standard deviation of each group.</p>
-
-<p>This operation is designed to be used with <a href="../features.html#indexing">hierarchical indexing</a>.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>series</code> - A series of values that are used to calculate the standard deviations</li>
-<li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
-</ul>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '800', 800)" onmouseover="showTip(event, '800', 800)">
-            Sum(series)
-          </code>
-          <div class="tip" id="800">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,decimal&gt; -&gt; decimal<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Returns the sum of the elements of the series.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '801', 801)" onmouseover="showTip(event, '801', 801)">
-            Sum(series)
-          </code>
-          <div class="tip" id="801">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,int&gt; -&gt; int<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Returns the sum of the elements of the series.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '802', 802)" onmouseover="showTip(event, '802', 802)">
-            Sum(series)
-          </code>
-          <div class="tip" id="802">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,float32&gt; -&gt; float32<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Returns the sum of the elements of the series. The operation skips over
-missing values and so the result will never be <code>NaN</code>.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '803', 803)" onmouseover="showTip(event, '803', 803)">
-            Sum(series)
-          </code>
-          <div class="tip" id="803">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,float&gt; -&gt; float<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Returns the sum of the elements of the series. The operation skips over
-missing values and so the result will never be <code>NaN</code>.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '804', 804)" onmouseover="showTip(event, '804', 804)">
-            SumLevel(series, groupSelector)
-          </code>
-          <div class="tip" id="804">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K1,decimal&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,decimal&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Groups the elements of the input series in groups based on the keys
-produced by <code>groupSelector</code> and then returns a new series containing
-the sum of each group.</p>
-
-<p>This operation is designed to be used with <a href="../features.html#indexing">hierarchical indexing</a>.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>series</code> - A series of values that are used to calculate the sums</li>
-<li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
-</ul>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '805', 805)" onmouseover="showTip(event, '805', 805)">
-            SumLevel(series, groupSelector)
-          </code>
-          <div class="tip" id="805">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K1,int&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,int&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Groups the elements of the input series in groups based on the keys
-produced by <code>groupSelector</code> and then returns a new series containing
-the sum of each group.</p>
-
-<p>This operation is designed to be used with <a href="../features.html#indexing">hierarchical indexing</a>.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>series</code> - A series of values that are used to calculate the sums</li>
-<li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
-</ul>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '806', 806)" onmouseover="showTip(event, '806', 806)">
-            SumLevel(series, groupSelector)
-          </code>
-          <div class="tip" id="806">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K1,float32&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float32&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Groups the elements of the input series in groups based on the keys
-produced by <code>groupSelector</code> and then returns a new series containing
-the sum of each group.</p>
-
-<p>This operation is designed to be used with <a href="../features.html#indexing">hierarchical indexing</a>.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>series</code> - A series of values that are used to calculate the sums</li>
-<li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
-</ul>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '807', 807)" onmouseover="showTip(event, '807', 807)">
-            SumLevel(series, groupSelector)
-          </code>
-          <div class="tip" id="807">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K1,float&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2          </div>
-        </td>
-        <td class="xmldoc">
-        <p>Groups the elements of the input series in groups based on the keys
-produced by <code>groupSelector</code> and then returns a new series containing
-the sum of each group.</p>
-
-<p>This operation is designed to be used with <a href="../features.html#indexing">hierarchical indexing</a>.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>series</code> - A series of values that are used to calculate the sums</li>
-<li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
-</ul>
-
-        </td>
-      </tr>
-    </tbody>
-  </table>
-    <h2>Other type members<a name="section4">&#160;</a></h2>
-  <h3>Static members</h3>
-  <table class="table table-bordered member-list">
-    <thead>
-      <tr><td>Static member</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '815', 815)" onmouseover="showTip(event, '815', 815)">
+          <code onmouseout="hideTip(event, '707', 707)" onmouseover="showTip(event, '707', 707)">
             Chunk(series, size)
           </code>
-          <div class="tip" id="815">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;V&gt; * size:int) -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;V&gt;&gt;<br />
+          <div class="tip" id="707">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * size:int) -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;V&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L348-348" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '816', 816)" onmouseover="showTip(event, '816', 816)">
+          <code onmouseout="hideTip(event, '708', 708)" onmouseover="showTip(event, '708', 708)">
             ChunkInto(series, size, reduce)
           </code>
-          <div class="tip" id="816">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;V&gt; * size:int * reduce:Func&lt;Series&lt;&#39;K,&#39;V&gt;,&#39;U&gt;) -&gt; Series&lt;&#39;K,&#39;U&gt;<br />
+          <div class="tip" id="708">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * size:int * reduce:Func&lt;Series&lt;&#39;K,&#39;V&gt;,&#39;U&gt;) -&gt; Series&lt;&#39;K,&#39;U&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V, 'U          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L344-344" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '817', 817)" onmouseover="showTip(event, '817', 817)">
+          <code onmouseout="hideTip(event, '709', 709)" onmouseover="showTip(event, '709', 709)">
             ChunkInto(series, size, selector)
           </code>
-          <div class="tip" id="817">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K1,&#39;V&gt; * size:int * selector:Func&lt;Series&lt;&#39;K1,&#39;V&gt;,KeyValuePair&lt;&#39;K2,&#39;U&gt;&gt;) -&gt; Series&lt;&#39;K2,&#39;U&gt;<br />
+          <div class="tip" id="709">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K1,&#39;V&gt; * size:int * selector:Func&lt;Series&lt;&#39;K1,&#39;V&gt;,KeyValuePair&lt;&#39;K2,&#39;U&gt;&gt;) -&gt; Series&lt;&#39;K2,&#39;U&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'V, 'K2, 'U          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L338-338" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '818', 818)" onmouseover="showTip(event, '818', 818)">
+          <code onmouseout="hideTip(event, '710', 710)" onmouseover="showTip(event, '710', 710)">
             ContainsKey(series, key)
           </code>
-          <div class="tip" id="818">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;T&gt; * key:&#39;K) -&gt; bool<br />
+          <div class="tip" id="710">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;T&gt; * key:&#39;K) -&gt; bool<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L239-239" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '819', 819)" onmouseover="showTip(event, '819', 819)">
+          <code onmouseout="hideTip(event, '711', 711)" onmouseover="showTip(event, '711', 711)">
             Diff(series, offset)
           </code>
-          <div class="tip" id="819">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K,int&gt; * offset:int) -&gt; Series&lt;&#39;K,int&gt;<br />
+          <div class="tip" id="711">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,int&gt; * offset:int) -&gt; Series&lt;&#39;K,int&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L321-321" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a series containing difference between a value in the original series and 
+a value at the specified offset. For example, calling <code>Series.diff 1 s</code> returns a 
+series where previous value is subtracted from the current one.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>offset</code> - When positive, subtracts the past values from the current values;
+when negative, subtracts the future values from the current values.</li>
+<li><code>series</code> - The input series.</li>
+</ul>
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '820', 820)" onmouseover="showTip(event, '820', 820)">
+          <code onmouseout="hideTip(event, '712', 712)" onmouseover="showTip(event, '712', 712)">
             Diff(series, offset)
           </code>
-          <div class="tip" id="820">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K,decimal&gt; * offset:int) -&gt; Series&lt;&#39;K,decimal&gt;<br />
+          <div class="tip" id="712">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,decimal&gt; * offset:int) -&gt; Series&lt;&#39;K,decimal&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L309-309" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a series containing difference between a value in the original series and 
+a value at the specified offset. For example, calling <code>Series.diff 1 s</code> returns a 
+series where previous value is subtracted from the current one.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>offset</code> - When positive, subtracts the past values from the current values;
+when negative, subtracts the future values from the current values.</li>
+<li><code>series</code> - The input series.</li>
+</ul>
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '821', 821)" onmouseover="showTip(event, '821', 821)">
+          <code onmouseout="hideTip(event, '713', 713)" onmouseover="showTip(event, '713', 713)">
             Diff(series, offset)
           </code>
-          <div class="tip" id="821">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K,float32&gt; * offset:int) -&gt; Series&lt;&#39;K,float32&gt;<br />
+          <div class="tip" id="713">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,float32&gt; * offset:int) -&gt; Series&lt;&#39;K,float32&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L297-297" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a series containing difference between a value in the original series and 
+a value at the specified offset. For example, calling <code>Series.diff 1 s</code> returns a 
+series where previous value is subtracted from the current one.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>offset</code> - When positive, subtracts the past values from the current values;
+when negative, subtracts the future values from the current values.</li>
+<li><code>series</code> - The input series.</li>
+</ul>
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '822', 822)" onmouseover="showTip(event, '822', 822)">
+          <code onmouseout="hideTip(event, '714', 714)" onmouseover="showTip(event, '714', 714)">
             Diff(series, offset)
           </code>
-          <div class="tip" id="822">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K,float&gt; * offset:int) -&gt; Series&lt;&#39;K,float&gt;<br />
+          <div class="tip" id="714">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,float&gt; * offset:int) -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L285-285" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a series containing difference between a value in the original series and 
+a value at the specified offset. For example, calling <code>Series.diff 1 s</code> returns a 
+series where previous value is subtracted from the current one.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>offset</code> - When positive, subtracts the past values from the current values;
+when negative, subtracts the future values from the current values.</li>
+<li><code>series</code> - The input series.</li>
+</ul>
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '823', 823)" onmouseover="showTip(event, '823', 823)">
+          <code onmouseout="hideTip(event, '715', 715)" onmouseover="showTip(event, '715', 715)">
             FillMissing(...)
           </code>
-          <div class="tip" id="823">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;T&gt; * startKey:&#39;K * endKey:&#39;K * direction:Direction) -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
+          <div class="tip" id="715">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;T&gt; * startKey:&#39;K * endKey:&#39;K * direction:Direction) -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L418-418" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '824', 824)" onmouseover="showTip(event, '824', 824)">
+          <code onmouseout="hideTip(event, '716', 716)" onmouseover="showTip(event, '716', 716)">
             FirstKey(series)
           </code>
-          <div class="tip" id="824">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;K<br />
+          <div class="tip" id="716">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;K<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L354-354" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '825', 825)" onmouseover="showTip(event, '825', 825)">
-            GetAllObservations(series)
+          <code onmouseout="hideTip(event, '717', 717)" onmouseover="showTip(event, '717', 717)">
+            Flatten(series)
           </code>
-          <div class="tip" id="825">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;KeyValuePair&lt;&#39;K,OptionalValue&lt;&#39;T&gt;&gt;&gt;<br />
+          <div class="tip" id="717">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;T opt&gt;) -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-        <p>Returns all keys from the sequence, together with the associated (optional)
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L244-244" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Collapses a series of OptionalValue<'T> values to just 'T values</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '718', 718)" onmouseover="showTip(event, '718', 718)">
+            GetAllObservations(series)
+          </code>
+          <div class="tip" id="718">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;KeyValuePair&lt;&#39;K,OptionalValue&lt;&#39;T&gt;&gt;&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L251-251" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns all keys from the sequence, together with the associated (optional)
 values. The values are returned using the <code>OptionalValue&lt;T&gt;</code> struct which
 provides <code>HasValue</code> for testing if the value is available.</p>
 
@@ -1535,15 +1001,40 @@ provides <code>HasValue</code> for testing if the value is available.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '826', 826)" onmouseover="showTip(event, '826', 826)">
-            GetObservations(series)
+          <code onmouseout="hideTip(event, '719', 719)" onmouseover="showTip(event, '719', 719)">
+            GetAllValues(series)
           </code>
-          <div class="tip" id="826">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;KeyValuePair&lt;&#39;K,&#39;T&gt;&gt;<br />
+          <div class="tip" id="719">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;OptionalValue&lt;&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-        <p>Return observations with available values. The operation skips over 
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L259-259" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns all (optional) values. The values are returned using the 
+<code>OptionalValue&lt;T&gt;</code> struct which provides <code>HasValue</code> for testing 
+if the value is available.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '720', 720)" onmouseover="showTip(event, '720', 720)">
+            GetObservations(series)
+          </code>
+          <div class="tip" id="720">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;KeyValuePair&lt;&#39;K,&#39;T&gt;&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L267-267" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Return observations with available values. The operation skips over 
 all keys with missing values (such as values created from <code>null</code>,
 <code>Double.NaN</code>, or those that are missing due to outer join etc.).</p>
 
@@ -1552,141 +1043,272 @@ all keys with missing values (such as values created from <code>null</code>,
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '827', 827)" onmouseover="showTip(event, '827', 827)">
+          <code onmouseout="hideTip(event, '721', 721)" onmouseover="showTip(event, '721', 721)">
             GetSlice(series, k1, lo2, hi2)
           </code>
-          <div class="tip" id="827">
-            <strong>Signature:</strong>(series:Series&lt;(&#39;K1 * &#39;K2),&#39;V&gt; * k1:&#39;K1 * lo2:&#39;K2 option * hi2:&#39;K2 option) -&gt; Series&lt;(&#39;K1 * &#39;K2),&#39;V&gt;<br />
+          <div class="tip" id="721">
+            <strong>Signature:</strong> (series:Series&lt;(&#39;K1 * &#39;K2),&#39;V&gt; * k1:&#39;K1 * lo2:&#39;K2 option * hi2:&#39;K2 option) -&gt; Series&lt;(&#39;K1 * &#39;K2),&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L202-202" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '828', 828)" onmouseover="showTip(event, '828', 828)">
+          <code onmouseout="hideTip(event, '722', 722)" onmouseover="showTip(event, '722', 722)">
             GetSlice(series, lo1, hi1, k2)
           </code>
-          <div class="tip" id="828">
-            <strong>Signature:</strong>(series:Series&lt;(&#39;K1 * &#39;K2),&#39;V&gt; * lo1:&#39;K1 option * hi1:&#39;K1 option * k2:&#39;K2) -&gt; Series&lt;(&#39;K1 * &#39;K2),&#39;V&gt;<br />
+          <div class="tip" id="722">
+            <strong>Signature:</strong> (series:Series&lt;(&#39;K1 * &#39;K2),&#39;V&gt; * lo1:&#39;K1 option * hi1:&#39;K1 option * k2:&#39;K2) -&gt; Series&lt;(&#39;K1 * &#39;K2),&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L197-197" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '829', 829)" onmouseover="showTip(event, '829', 829)">
+          <code onmouseout="hideTip(event, '723', 723)" onmouseover="showTip(event, '723', 723)">
             GetSlice(series, lo1, hi1, lo2, hi2)
           </code>
-          <div class="tip" id="829">
-            <strong>Signature:</strong>(series:Series&lt;(&#39;K1 * &#39;K2),&#39;V&gt; * lo1:&#39;K1 option * hi1:&#39;K1 option * lo2:&#39;K2 option * hi2:&#39;K2 option) -&gt; Series&lt;(&#39;K1 * &#39;K2),&#39;V&gt;<br />
+          <div class="tip" id="723">
+            <strong>Signature:</strong> (series:Series&lt;(&#39;K1 * &#39;K2),&#39;V&gt; * lo1:&#39;K1 option * hi1:&#39;K1 option * lo2:&#39;K2 option * hi2:&#39;K2 option) -&gt; Series&lt;(&#39;K1 * &#39;K2),&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L191-191" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '830', 830)" onmouseover="showTip(event, '830', 830)">
+          <code onmouseout="hideTip(event, '724', 724)" onmouseover="showTip(event, '724', 724)">
             LastKey(series)
           </code>
-          <div class="tip" id="830">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;K<br />
+          <div class="tip" id="724">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;K<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L357-357" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '831', 831)" onmouseover="showTip(event, '831', 831)">
+          <code onmouseout="hideTip(event, '725', 725)" onmouseover="showTip(event, '725', 725)">
             Log(series)
           </code>
-          <div class="tip" id="831">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+          <div class="tip" id="725">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L210-210" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '832', 832)" onmouseover="showTip(event, '832', 832)">
+          <code onmouseout="hideTip(event, '726', 726)" onmouseover="showTip(event, '726', 726)">
+            OrderByKey(series)
+          </code>
+          <div class="tip" id="726">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L744-744" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '727', 727)" onmouseover="showTip(event, '727', 727)">
             Print(series)
           </code>
-          <div class="tip" id="832">
-            <strong>Signature:</strong>series:Series&lt;&#39;K,&#39;V&gt; -&gt; unit<br />
+          <div class="tip" id="727">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; unit<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L207-207" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '833', 833)" onmouseover="showTip(event, '833', 833)">
+          <code onmouseout="hideTip(event, '728', 728)" onmouseover="showTip(event, '728', 728)">
             Shift(series, offset)
           </code>
-          <div class="tip" id="833">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;V&gt; * offset:int) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
+          <div class="tip" id="728">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * offset:int) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L227-227" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a series with values shifted by the specified offset. When the offset is 
+positive, the values are shifted forward and first <code>offset</code> keys are dropped. When the
+offset is negative, the values are shifted backwards and the last <code>offset</code> keys are dropped.
+Expressed in pseudo-code:</p>
+
+<pre><code>result[k] = series[k - offset]
+</code></pre>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>offset</code> - Can be both positive and negative number.</li>
+<li><code>series</code> - The input series to be shifted.</li>
+</ul>
+
+<h2>Remarks</h2>
+
+<p>If you want to calculate the difference, e.g. <code>s - (Series.shift 1 s)</code>, you can
+use <code>Series.diff</code> which will be a little bit faster.</p>
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '834', 834)" onmouseover="showTip(event, '834', 834)">
+          <code onmouseout="hideTip(event, '729', 729)" onmouseover="showTip(event, '729', 729)">
+            Sort(series)
+          </code>
+          <div class="tip" id="729">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L230-230" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '730', 730)" onmouseover="showTip(event, '730', 730)">
+            SortBy(series, f)
+          </code>
+          <div class="tip" id="730">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * f:Func&lt;&#39;V,&#39;V2&gt;) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V, 'V2          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L233-233" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '731', 731)" onmouseover="showTip(event, '731', 731)">
+            SortWith(series, cmp)
+          </code>
+          <div class="tip" id="731">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * cmp:Comparer&lt;&#39;V&gt;) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L236-236" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '732', 732)" onmouseover="showTip(event, '732', 732)">
             Window(series, size)
           </code>
-          <div class="tip" id="834">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;V&gt; * size:int) -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;V&gt;&gt;<br />
+          <div class="tip" id="732">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * size:int) -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;V&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L334-334" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '835', 835)" onmouseover="showTip(event, '835', 835)">
+          <code onmouseout="hideTip(event, '733', 733)" onmouseover="showTip(event, '733', 733)">
             WindowInto(series, size, reduce)
           </code>
-          <div class="tip" id="835">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K,&#39;V&gt; * size:int * reduce:Func&lt;Series&lt;&#39;K,&#39;V&gt;,&#39;U&gt;) -&gt; Series&lt;&#39;K,&#39;U&gt;<br />
+          <div class="tip" id="733">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * size:int * reduce:Func&lt;Series&lt;&#39;K,&#39;V&gt;,&#39;U&gt;) -&gt; Series&lt;&#39;K,&#39;U&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V, 'U          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L330-330" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '836', 836)" onmouseover="showTip(event, '836', 836)">
+          <code onmouseout="hideTip(event, '734', 734)" onmouseover="showTip(event, '734', 734)">
             WindowInto(series, size, selector)
           </code>
-          <div class="tip" id="836">
-            <strong>Signature:</strong>(series:Series&lt;&#39;K1,&#39;V&gt; * size:int * selector:Func&lt;Series&lt;&#39;K1,&#39;V&gt;,KeyValuePair&lt;&#39;K2,&#39;U&gt;&gt;) -&gt; Series&lt;&#39;K2,&#39;U&gt;<br />
+          <div class="tip" id="734">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K1,&#39;V&gt; * size:int * selector:Func&lt;Series&lt;&#39;K1,&#39;V&gt;,KeyValuePair&lt;&#39;K2,&#39;U&gt;&gt;) -&gt; Series&lt;&#39;K2,&#39;U&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'V, 'K2, 'U          </div>
         </td>
         <td class="xmldoc">
-        
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L324-324" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
     </tbody>
@@ -1694,7 +1316,7 @@ all keys with missing values (such as values created from <code>null</code>,
 
         </div>
         <div class="span3">
-          <a href="https://nuget.org/packages/Deedle">
+          <a href="http://bluemountaincapital.github.io/Deedle/index.html">
             <img src="http://bluemountaincapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
@@ -1714,13 +1336,16 @@ all keys with missing values (such as values created from <code>null</code>,
               <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/features.html">Advanced frame manipulation</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/series.html">Working with time series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/timeseries.html">Working with time series</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/frame.html">Working with data frames</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using R with Deedle</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/stats.html">Statistics &amp; calculations</a>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
@@ -1734,11 +1359,13 @@ all keys with missing values (such as values created from <code>null</code>,
 
             <li class="nav-header">Documentation</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
+            <li class="divider"></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-stats.html">Stats module</a></li>
 
             <li class="nav-header">Samples</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/samples/volatility.html">Price volatility</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/samples/titanic.html">Titanic survivors</a></li>
           </ul>
         </div>
       </div>

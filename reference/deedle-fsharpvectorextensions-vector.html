@@ -7,12 +7,14 @@
     <meta name="description" content="">
     <meta name="author" content="BlueMountain Capital">
 
-    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
-    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
-    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
-    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
     <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/deedle.css" />
     <script type="text/javascript" src="http://bluemountaincapital.github.io/Deedle/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -24,12 +26,12 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://github.com/BlueMountainCapital/Deedle">github page</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Charting/">F# Charting</a></li>
-          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider">R Type Provider</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Data/">F# Data</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
+          <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
-        <h3 class="muted">Deedle</h3>
+        <h3 class="muted"><a href="http://bluemountaincapital.github.io/Deedle/index.html">Deedle</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -53,15 +55,19 @@ continuous block of memory.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '337', 337)" onmouseover="showTip(event, '337', 337)">
+          <code onmouseout="hideTip(event, '328', 328)" onmouseover="showTip(event, '328', 328)">
             ofOptionalValues(data)
           </code>
-          <div class="tip" id="337">
-            <strong>Signature:</strong>data:seq&lt;OptionalValue&lt;&#39;T&gt;&gt; -&gt; IVector&lt;&#39;T&gt;<br />
+          <div class="tip" id="328">
+            <strong>Signature:</strong> data:seq&lt;OptionalValue&lt;&#39;T&gt;&gt; -&gt; IVector&lt;&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
         <td class="xmldoc">
-        <p>Missing values can be specified explicitly as <code>OptionalValue.Missing</code>, but 
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VectorExtensions.fs#L47-47" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Missing values can be specified explicitly as <code>OptionalValue.Missing</code>, but 
 other values such as <code>null</code> and <code>Double.NaN</code> are turned into missing values too.</p>
 
         </td>
@@ -69,15 +75,19 @@ other values such as <code>null</code> and <code>Double.NaN</code> are turned in
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '339', 339)" onmouseover="showTip(event, '339', 339)">
+          <code onmouseout="hideTip(event, '329', 329)" onmouseover="showTip(event, '329', 329)">
             ofOptionalValues(data)
           </code>
-          <div class="tip" id="339">
-            <strong>Signature:</strong>(data:seq&lt;&#39;T option&gt;) -&gt; IVector&lt;&#39;T&gt;<br />
+          <div class="tip" id="329">
+            <strong>Signature:</strong> (data:seq&lt;&#39;T option&gt;) -&gt; IVector&lt;&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
         <td class="xmldoc">
-        <p>Creates a vector that stores the specified data in an array.
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VectorExtensions.fs#L42-42" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Creates a vector that stores the specified data in an array.
 Missing values can be specified explicitly as <code>None</code>, but other values 
 such as <code>null</code> and <code>Double.NaN</code> are turned into missing values too.</p>
 
@@ -86,15 +96,19 @@ such as <code>null</code> and <code>Double.NaN</code> are turned into missing va
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '340', 340)" onmouseover="showTip(event, '340', 340)">
+          <code onmouseout="hideTip(event, '330', 330)" onmouseover="showTip(event, '330', 330)">
             ofValues(data)
           </code>
-          <div class="tip" id="340">
-            <strong>Signature:</strong>data:seq&lt;&#39;T&gt; -&gt; IVector&lt;&#39;T&gt;<br />
+          <div class="tip" id="330">
+            <strong>Signature:</strong> data:seq&lt;&#39;T&gt; -&gt; IVector&lt;&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
         <td class="xmldoc">
-        <p>Creates a vector that stores the specified data in an array.
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VectorExtensions.fs#L36-36" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Creates a vector that stores the specified data in an array.
 Values such as <code>null</code> and <code>Double.NaN</code> are turned into missing values.</p>
 
         </td>
@@ -102,15 +116,19 @@ Values such as <code>null</code> and <code>Double.NaN</code> are turned into mis
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '341', 341)" onmouseover="showTip(event, '341', 341)">
+          <code onmouseout="hideTip(event, '331', 331)" onmouseover="showTip(event, '331', 331)">
             ofValues(data)
           </code>
-          <div class="tip" id="341">
-            <strong>Signature:</strong>(data:&#39;T []) -&gt; IVector&lt;&#39;T&gt;<br />
+          <div class="tip" id="331">
+            <strong>Signature:</strong> (data:&#39;T []) -&gt; IVector&lt;&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
         <td class="xmldoc">
-        <p>Creates a vector that stores the specified data in an array.
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VectorExtensions.fs#L31-31" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Creates a vector that stores the specified data in an array.
 Values such as <code>null</code> and <code>Double.NaN</code> are turned into missing values.</p>
 
         </td>
@@ -120,7 +138,7 @@ Values such as <code>null</code> and <code>Double.NaN</code> are turned into mis
 
         </div>
         <div class="span3">
-          <a href="https://nuget.org/packages/Deedle">
+          <a href="http://bluemountaincapital.github.io/Deedle/index.html">
             <img src="http://bluemountaincapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
@@ -140,13 +158,16 @@ Values such as <code>null</code> and <code>Double.NaN</code> are turned into mis
               <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/features.html">Advanced frame manipulation</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/series.html">Working with time series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/timeseries.html">Working with time series</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/frame.html">Working with data frames</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using R with Deedle</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/stats.html">Statistics &amp; calculations</a>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
@@ -160,11 +181,13 @@ Values such as <code>null</code> and <code>Double.NaN</code> are turned into mis
 
             <li class="nav-header">Documentation</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
+            <li class="divider"></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-stats.html">Stats module</a></li>
 
             <li class="nav-header">Samples</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/samples/volatility.html">Price volatility</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/samples/titanic.html">Titanic survivors</a></li>
           </ul>
         </div>
       </div>

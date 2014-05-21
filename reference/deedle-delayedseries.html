@@ -7,12 +7,14 @@
     <meta name="description" content="">
     <meta name="author" content="BlueMountain Capital">
 
-    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
-    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
-    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
-    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
     <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/deedle.css" />
     <script type="text/javascript" src="http://bluemountaincapital.github.io/Deedle/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -24,12 +26,12 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://github.com/BlueMountainCapital/Deedle">github page</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Charting/">F# Charting</a></li>
-          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider">R Type Provider</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Data/">F# Data</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
+          <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
-        <h3 class="muted">Deedle</h3>
+        <h3 class="muted"><a href="http://bluemountaincapital.github.io/Deedle/index.html">Deedle</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -45,9 +47,7 @@ constructing data series (of type <code>Series&lt;K, V&gt;</code>) with lazily l
 use this functionality to create series that represents e.g. an entire price history
 in a database, but only loads data that are actually needed. For more information
 see the <a href="../lazysource.html">lazy data loading tutorial</a>.</p>
-
-<h3>Example</h3>
-
+        <h2>Example</h2>
 <p>Assuming we have a function <code>generate lo hi</code> that generates data in the specified
 <code>DateTime</code> range, we can create lazy series as follows:</p>
 
@@ -70,15 +70,19 @@ function passed to <code>Create</code> is called with minimal and maximal requir
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '408', 408)" onmouseover="showTip(event, '408', 408)">
+          <code onmouseout="hideTip(event, '373', 373)" onmouseover="showTip(event, '373', 373)">
             Create(min, max, loader)
           </code>
-          <div class="tip" id="408">
-            <strong>Signature:</strong>(min:&#39;K * max:&#39;K * loader:(&#39;K * BoundaryBehavior -&gt; &#39;K * BoundaryBehavior -&gt; Async&lt;seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt;&gt;)) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
+          <div class="tip" id="373">
+            <strong>Signature:</strong> (min:&#39;K * max:&#39;K * loader:(&#39;K * BoundaryBehavior -&gt; &#39;K * BoundaryBehavior -&gt; Async&lt;seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt;&gt;)) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-        <p>An F#-friendly function that creates lazily loaded series. The method requires
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/DelayedSeries.fs#L378-378" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>An F#-friendly function that creates lazily loaded series. The method requires
 the overall range of the series (smallest and greatest key) and a function that
 loads the data. The function is called with two tuples that specify lower and upper
 boundary. It returns an asynchronous workflow that produces the data.</p>
@@ -103,15 +107,19 @@ specified range. The function is called with two tuples consisting of key and
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '409', 409)" onmouseover="showTip(event, '409', 409)">
+          <code onmouseout="hideTip(event, '374', 374)" onmouseover="showTip(event, '374', 374)">
             Create(min, max, loader)
           </code>
-          <div class="tip" id="409">
-            <strong>Signature:</strong>(min:&#39;K * max:&#39;K * loader:Func&lt;&#39;K,BoundaryBehavior,&#39;K,BoundaryBehavior,Task&lt;seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt;&gt;&gt;) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
+          <div class="tip" id="374">
+            <strong>Signature:</strong> (min:&#39;K * max:&#39;K * loader:Func&lt;&#39;K,BoundaryBehavior,&#39;K,BoundaryBehavior,Task&lt;seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt;&gt;&gt;) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-        <p>A C#-friendly function that creates lazily loaded series. The method requires
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/DelayedSeries.fs#L358-358" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>A C#-friendly function that creates lazily loaded series. The method requires
 the overall range of the series (smallest and greatest key) and a function that
 loads the data. In this overload, the function is a <code>Func</code> delegate taking 
 information about the requested range and returning <code>Task&lt;T&gt;</code> that produces the data.</p>
@@ -140,7 +148,7 @@ requesting the result.</p>
 
         </div>
         <div class="span3">
-          <a href="https://nuget.org/packages/Deedle">
+          <a href="http://bluemountaincapital.github.io/Deedle/index.html">
             <img src="http://bluemountaincapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
@@ -160,13 +168,16 @@ requesting the result.</p>
               <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/features.html">Advanced frame manipulation</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/series.html">Working with time series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/timeseries.html">Working with time series</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/frame.html">Working with data frames</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using R with Deedle</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/stats.html">Statistics &amp; calculations</a>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
@@ -180,11 +191,13 @@ requesting the result.</p>
 
             <li class="nav-header">Documentation</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
+            <li class="divider"></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-stats.html">Stats module</a></li>
 
             <li class="nav-header">Samples</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/samples/volatility.html">Price volatility</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/samples/titanic.html">Titanic survivors</a></li>
           </ul>
         </div>
       </div>

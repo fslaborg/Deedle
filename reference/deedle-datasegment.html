@@ -7,12 +7,14 @@
     <meta name="description" content="">
     <meta name="author" content="BlueMountain Capital">
 
-    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
-    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
-    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
-    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
     <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/deedle.css" />
     <script type="text/javascript" src="http://bluemountaincapital.github.io/Deedle/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -24,12 +26,12 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://github.com/BlueMountainCapital/Deedle">github page</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Charting/">F# Charting</a></li>
-          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider">R Type Provider</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Data/">F# Data</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
+          <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
-        <h3 class="muted">Deedle</h3>
+        <h3 class="muted"><a href="http://bluemountaincapital.github.io/Deedle/index.html">Deedle</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -54,30 +56,38 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '13', 13)" onmouseover="showTip(event, '13', 13)">
+          <code onmouseout="hideTip(event, '5', 5)" onmouseover="showTip(event, '5', 5)">
             data ds
           </code>
-          <div class="tip" id="13">
-            <strong>Signature:</strong>ds:DataSegment&lt;&#39;?9758&gt; -&gt; &#39;?9758<br />
-                          <strong>Type parameters:</strong> '?9758          </div>
+          <div class="tip" id="5">
+            <strong>Signature:</strong> ds:DataSegment&lt;&#39;?443709&gt; -&gt; &#39;?443709<br />
+                          <strong>Type parameters:</strong> '?443709          </div>
         </td>
         <td class="xmldoc">
-        <p>Returns the data property of the specified <code>DataSegment&lt;T&gt;</code></p>
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L219-219" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the data property of the specified <code>DataSegment&lt;T&gt;</code></p>
 
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '14', 14)" onmouseover="showTip(event, '14', 14)">
+          <code onmouseout="hideTip(event, '6', 6)" onmouseover="showTip(event, '6', 6)">
             kind ds
           </code>
-          <div class="tip" id="14">
-            <strong>Signature:</strong>ds:DataSegment&lt;&#39;?9760&gt; -&gt; DataSegmentKind<br />
-                          <strong>Type parameters:</strong> '?9760          </div>
+          <div class="tip" id="6">
+            <strong>Signature:</strong> ds:DataSegment&lt;&#39;?443711&gt; -&gt; DataSegmentKind<br />
+                          <strong>Type parameters:</strong> '?443711          </div>
         </td>
         <td class="xmldoc">
-        <p>Returns the kind property of the specified <code>DataSegment&lt;T&gt;</code></p>
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L223-223" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the kind property of the specified <code>DataSegment&lt;T&gt;</code></p>
 
         </td>
       </tr>
@@ -92,38 +102,46 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '43', 43)" onmouseover="showTip(event, '43', 43)">
+          <code onmouseout="hideTip(event, '39', 39)" onmouseover="showTip(event, '39', 39)">
             ( |Any| ) ds
           </code>
-          <div class="tip" id="43">
-            <strong>Signature:</strong>ds:DataSegment&lt;&#39;T&gt; -&gt; DataSegmentKind * &#39;T<br />
+          <div class="tip" id="39">
+            <strong>Signature:</strong> ds:DataSegment&lt;&#39;T&gt; -&gt; DataSegmentKind * &#39;T<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
         <td class="xmldoc">
-        <p>A complete active pattern that extracts the kind and data from a <code>DataSegment</code>
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L203-203" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>A complete active pattern that extracts the kind and data from a <code>DataSegment</code>
 value. This makes it easier to write functions that only need data:</p>
 
-<p>let sumAny = function DataSegment.Any(_, data) -> Series.sum data</p>
+<p>let sumAny = function DataSegment.Any(_, data) -> Stats.sum data</p>
 
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '44', 44)" onmouseover="showTip(event, '44', 44)">
+          <code onmouseout="hideTip(event, '40', 40)" onmouseover="showTip(event, '40', 40)">
             ( |Complete|Incomplete| ) ds
           </code>
-          <div class="tip" id="44">
-            <strong>Signature:</strong>ds:DataSegment&lt;&#39;?9756&gt; -&gt; Choice&lt;&#39;?9756,&#39;?9756&gt;<br />
-                          <strong>Type parameters:</strong> '?9756          </div>
+          <div class="tip" id="40">
+            <strong>Signature:</strong> ds:DataSegment&lt;&#39;?443707&gt; -&gt; Choice&lt;&#39;?443707,&#39;?443707&gt;<br />
+                          <strong>Type parameters:</strong> '?443707          </div>
         </td>
         <td class="xmldoc">
-        <p>Complete active pattern that makes it possible to write functions that behave 
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L213-213" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Complete active pattern that makes it possible to write functions that behave 
 differently for complete and incomplete segments. For example, the following 
 returns zero for incomplete segments:</p>
 
 <pre><code>let sumSegmentOrZero = function
-  | DataSegment.Complete(value) -&gt; Series.sum value
+  | DataSegment.Complete(value) -&gt; Stats.sum value
   | DataSegment.Incomplete _ -&gt; 0.0
 </code></pre>
 
@@ -134,7 +152,7 @@ returns zero for incomplete segments:</p>
 
         </div>
         <div class="span3">
-          <a href="https://nuget.org/packages/Deedle">
+          <a href="http://bluemountaincapital.github.io/Deedle/index.html">
             <img src="http://bluemountaincapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
@@ -154,13 +172,16 @@ returns zero for incomplete segments:</p>
               <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/features.html">Advanced frame manipulation</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/series.html">Working with time series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/timeseries.html">Working with time series</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/frame.html">Working with data frames</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using R with Deedle</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/stats.html">Statistics &amp; calculations</a>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
@@ -174,11 +195,13 @@ returns zero for incomplete segments:</p>
 
             <li class="nav-header">Documentation</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
+            <li class="divider"></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-stats.html">Stats module</a></li>
 
             <li class="nav-header">Samples</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/samples/volatility.html">Price volatility</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/samples/titanic.html">Titanic survivors</a></li>
           </ul>
         </div>
       </div>

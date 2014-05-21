@@ -7,12 +7,14 @@
     <meta name="description" content="">
     <meta name="author" content="BlueMountain Capital">
 
-    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
-    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
-    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
-    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
     <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/deedle.css" />
     <script type="text/javascript" src="http://bluemountaincapital.github.io/Deedle/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -24,12 +26,12 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://github.com/BlueMountainCapital/Deedle">github page</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Charting/">F# Charting</a></li>
-          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider">R Type Provider</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Data/">F# Data</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
+          <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
-        <h3 class="muted">Deedle</h3>
+        <h3 class="muted"><a href="http://bluemountaincapital.github.io/Deedle/index.html">Deedle</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -52,16 +54,20 @@ the "mini-DSL" representation <code>VectorConstruction</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '765', 765)" onmouseover="showTip(event, '765', 765)">
+          <code onmouseout="hideTip(event, '870', 870)" onmouseover="showTip(event, '870', 870)">
             AsyncBuild(arg1, arg2)
           </code>
-          <div class="tip" id="765">
-            <strong>Signature:</strong>(VectorConstruction * IVector&lt;&#39;T&gt; []) -&gt; Async&lt;IVector&lt;&#39;T&gt;&gt;<br />
+          <div class="tip" id="870">
+            <strong>Signature:</strong> (VectorConstruction * IVector&lt;&#39;T&gt; []) -&gt; Async&lt;IVector&lt;&#39;T&gt;&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
         <td class="xmldoc">
-        <p>Asynchronous version of <code>Build</code> operation. This is mainly used for 
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L245-245" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Asynchronous version of <code>Build</code> operation. This is mainly used for 
 <code>AsyncMaterialize</code> and it does not handle fully general vector constructions (yet)</p>
 
         </td>
@@ -69,16 +75,20 @@ the "mini-DSL" representation <code>VectorConstruction</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '766', 766)" onmouseover="showTip(event, '766', 766)">
+          <code onmouseout="hideTip(event, '871', 871)" onmouseover="showTip(event, '871', 871)">
             Build(arg1, arg2)
           </code>
-          <div class="tip" id="766">
-            <strong>Signature:</strong>(VectorConstruction * IVector&lt;&#39;T&gt; []) -&gt; IVector&lt;&#39;T&gt;<br />
+          <div class="tip" id="871">
+            <strong>Signature:</strong> (VectorConstruction * IVector&lt;&#39;T&gt; []) -&gt; IVector&lt;&#39;T&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
         <td class="xmldoc">
-        <p>Apply a vector construction to a given vector. The second parameter
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L241-241" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Apply a vector construction to a given vector. The second parameter
 is an array of arguments ("variables") that may be referenced from the
 <code>VectorConstruction</code> using the <code>Return 0</code> construct.</p>
 
@@ -87,16 +97,20 @@ is an array of arguments ("variables") that may be referenced from the
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '767', 767)" onmouseover="showTip(event, '767', 767)">
+          <code onmouseout="hideTip(event, '872', 872)" onmouseover="showTip(event, '872', 872)">
             Create(arg1)
           </code>
-          <div class="tip" id="767">
-            <strong>Signature:</strong>(&#39;T []) -&gt; IVector&lt;&#39;T&gt;<br />
+          <div class="tip" id="872">
+            <strong>Signature:</strong> (&#39;T []) -&gt; IVector&lt;&#39;T&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
         <td class="xmldoc">
-        <p>Create a vector from an array containing values. The values may 
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L231-231" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Create a vector from an array containing values. The values may 
 still represent missing values and the vector should handle this.
 For example <code>Double.NaN</code> or <code>null</code> should be turned into a missing
 value in the returned vector.</p>
@@ -106,16 +120,20 @@ value in the returned vector.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '768', 768)" onmouseover="showTip(event, '768', 768)">
+          <code onmouseout="hideTip(event, '873', 873)" onmouseover="showTip(event, '873', 873)">
             CreateMissing(arg1)
           </code>
-          <div class="tip" id="768">
-            <strong>Signature:</strong>(OptionalValue&lt;&#39;T&gt; []) -&gt; IVector&lt;&#39;T&gt;<br />
+          <div class="tip" id="873">
+            <strong>Signature:</strong> (OptionalValue&lt;&#39;T&gt; []) -&gt; IVector&lt;&#39;T&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
         <td class="xmldoc">
-        <p>Create a vector from an array containing values that may be missing. 
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L236-236" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Create a vector from an array containing values that may be missing. 
 Even if a value is passed, it may be a missing value such as <code>Double.NaN</code>
 or <code>null</code>. The vector builder should hanlde this.</p>
 
@@ -126,7 +144,7 @@ or <code>null</code>. The vector builder should hanlde this.</p>
 
         </div>
         <div class="span3">
-          <a href="https://nuget.org/packages/Deedle">
+          <a href="http://bluemountaincapital.github.io/Deedle/index.html">
             <img src="http://bluemountaincapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
@@ -146,13 +164,16 @@ or <code>null</code>. The vector builder should hanlde this.</p>
               <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/features.html">Advanced frame manipulation</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/series.html">Working with time series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/timeseries.html">Working with time series</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/frame.html">Working with data frames</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using R with Deedle</a>
+              <a href="http://bluemountaincapital.github.io/Deedle/stats.html">Statistics &amp; calculations</a>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
@@ -166,11 +187,13 @@ or <code>null</code>. The vector builder should hanlde this.</p>
 
             <li class="nav-header">Documentation</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
+            <li class="divider"></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-stats.html">Stats module</a></li>
 
             <li class="nav-header">Samples</li>
             <li><a href="http://bluemountaincapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/samples/volatility.html">Price volatility</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/samples/titanic.html">Titanic survivors</a></li>
           </ul>
         </div>
       </div>

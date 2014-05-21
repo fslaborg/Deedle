@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>SeriesStatsExtensions - Deedle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="BlueMountain Capital">
+
+    <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/deedle.css" />
+    <script type="text/javascript" src="http://bluemountaincapital.github.io/Deedle/content/tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
+          <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
+        </ul>
+        <h3 class="muted"><a href="http://bluemountaincapital.github.io/Deedle/index.html">Deedle</a></h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+
+
+
+<h1>SeriesStatsExtensions</h1>
+<div class="xmldoc">
+</div>
+  <!-- If there is more than 1 category in the type, generate TOC -->
+  <h2>Table of contents</h2>
+  <ul>
+      <li><a href="#section0">Calculations, aggregation and statistics</a></li>
+      <li><a href="#section1">Statistics</a></li>
+      <li><a href="#section2">Other type members</a></li>
+  </ul>
+    <h2>Calculations, aggregation and statistics<a name="section0">&#160;</a></h2>
+  <h3>Static members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Static member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '801', 801)" onmouseover="showTip(event, '801', 801)">
+            InterpolateLinear(series, keys, keyDiff)
+          </code>
+          <div class="tip" id="801">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,float&gt; * keys:seq&lt;&#39;K&gt; * keyDiff:Func&lt;&#39;K,&#39;K,float&gt;) -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesStatsExtensions.fs#L168-168" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Linearly interpolates an ordered series given a new sequence of keys.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>keys</code> - Sequence of new keys that forms the index of interpolated results</li>
+<li><code>keyDiff</code> - A function representing "subtraction" between two keys</li>
+</ul>
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+    <h2>Statistics<a name="section1">&#160;</a></h2>
+  <h3>Static members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Static member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '886', 886)" onmouseover="showTip(event, '886', 886)">
+            Kurtosis(series)
+          </code>
+          <div class="tip" id="886">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'K          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesStatsExtensions.fs#L60-60" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the kurtosis of the elements of the series.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '887', 887)" onmouseover="showTip(event, '887', 887)">
+            Max(series)
+          </code>
+          <div class="tip" id="887">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V<br />
+                          <strong>Type parameters:</strong> 'K, 'V          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesStatsExtensions.fs#L40-40" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the greatest of all elements of the series.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '888', 888)" onmouseover="showTip(event, '888', 888)">
+            MaxLevel(series, groupSelector)
+          </code>
+          <div class="tip" id="888">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K1,&#39;V&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,&#39;V&gt;<br />
+                          <strong>Type parameters:</strong> 'K1, 'V, 'K2          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesStatsExtensions.fs#L157-157" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Groups the elements of the input series in groups based on the keys
+produced by <code>groupSelector</code> and then returns a new series containing
+the greatest element of each group.</p>
+
+<p>This operation is designed to be used with <a href="../features.html#indexing">hierarchical indexing</a>.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>series</code> - A series of values that are used to calculate the greatest elements</li>
+<li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
+</ul>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '889', 889)" onmouseover="showTip(event, '889', 889)">
+            Mean(series)
+          </code>
+          <div class="tip" id="889">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'K          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesStatsExtensions.fs#L45-45" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the mean of the elements of the series.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '890', 890)" onmouseover="showTip(event, '890', 890)">
+            MeanLevel(series, groupSelector)
+          </code>
+          <div class="tip" id="890">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K1,float&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K1, 'K2          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesStatsExtensions.fs#L83-83" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Groups the elements of the input series in groups based on the keys
+produced by <code>groupSelector</code> and then returns a new series containing
+the mean of each group.</p>
+
+<p>This operation is designed to be used with <a href="../features.html#indexing">hierarchical indexing</a>.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>series</code> - A series of values that are used to calculate the means</li>
+<li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
+</ul>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '891', 891)" onmouseover="showTip(event, '891', 891)">
+            Median(series)
+          </code>
+          <div class="tip" id="891">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'K          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesStatsExtensions.fs#L69-69" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the median of the elements of the series.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '892', 892)" onmouseover="showTip(event, '892', 892)">
+            MedianLevel(series, groupSelector)
+          </code>
+          <div class="tip" id="892">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K1,float&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K1, 'K2          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesStatsExtensions.fs#L112-112" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Groups the elements of the input series in groups based on the keys
+produced by <code>groupSelector</code> and then returns a new series containing
+the median of each group.</p>
+
+<p>This operation is designed to be used with <a href="../features.html#indexing">hierarchical indexing</a>.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>series</code> - A series of values that are used to calculate the medians</li>
+<li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
+</ul>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '893', 893)" onmouseover="showTip(event, '893', 893)">
+            Min(series)
+          </code>
+          <div class="tip" id="893">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V<br />
+                          <strong>Type parameters:</strong> 'K, 'V          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesStatsExtensions.fs#L35-35" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the smallest of all elements of the series.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '894', 894)" onmouseover="showTip(event, '894', 894)">
+            MinLevel(series, groupSelector)
+          </code>
+          <div class="tip" id="894">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K1,&#39;V&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,&#39;V&gt;<br />
+                          <strong>Type parameters:</strong> 'K1, 'V, 'K2          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesStatsExtensions.fs#L142-142" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Groups the elements of the input series in groups based on the keys
+produced by <code>groupSelector</code> and then returns a new series containing
+the smallest element of each group.</p>
+
+<p>This operation is designed to be used with <a href="../features.html#indexing">hierarchical indexing</a>.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>series</code> - A series of values that are used to calculate the smallest elements</li>
+<li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
+</ul>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '895', 895)" onmouseover="showTip(event, '895', 895)">
+            NumSum(series)
+          </code>
+          <div class="tip" id="895">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,^V&gt; -&gt; ^V<br />
+                          <strong>Type parameters:</strong> 'K, ^V          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesStatsExtensions.fs#L30-30" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the sum of the elements of the series of numeric values.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '896', 896)" onmouseover="showTip(event, '896', 896)">
+            Skewness(series)
+          </code>
+          <div class="tip" id="896">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'K          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesStatsExtensions.fs#L55-55" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the skewness of the elements of the series.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '897', 897)" onmouseover="showTip(event, '897', 897)">
+            StdDev(series)
+          </code>
+          <div class="tip" id="897">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'K          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesStatsExtensions.fs#L50-50" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the standard deviation of the elements of the series.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '898', 898)" onmouseover="showTip(event, '898', 898)">
+            StdDevLevel(series, groupSelector)
+          </code>
+          <div class="tip" id="898">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K1,float&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K1, 'K2          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesStatsExtensions.fs#L97-97" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Groups the elements of the input series in groups based on the keys
+produced by <code>groupSelector</code> and then returns a new series containing
+the standard deviation of each group.</p>
+
+<p>This operation is designed to be used with <a href="../features.html#indexing">hierarchical indexing</a>.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>series</code> - A series of values that are used to calculate the standard deviations</li>
+<li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
+</ul>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '899', 899)" onmouseover="showTip(event, '899', 899)">
+            Sum(series)
+          </code>
+          <div class="tip" id="899">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'K          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesStatsExtensions.fs#L25-25" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the sum of the elements of the series of float values.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '900', 900)" onmouseover="showTip(event, '900', 900)">
+            SumLevel(series, groupSelector)
+          </code>
+          <div class="tip" id="900">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K1,float&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K1, 'K2          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesStatsExtensions.fs#L127-127" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Groups the elements of the input series in groups based on the keys
+produced by <code>groupSelector</code> and then returns a new series containing
+the sum of each group.</p>
+
+<p>This operation is designed to be used with <a href="../features.html#indexing">hierarchical indexing</a>.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>series</code> - A series of values that are used to calculate the sums</li>
+<li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
+</ul>
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+    <h2>Other type members<a name="section2">&#160;</a></h2>
+  <h3>Static members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Static member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '932', 932)" onmouseover="showTip(event, '932', 932)">
+            StandardDeviation(series)
+          </code>
+          <div class="tip" id="932">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'K          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesStatsExtensions.fs#L64-64" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+        </div>
+        <div class="span3">
+          <a href="http://bluemountaincapital.github.io/Deedle/index.html">
+            <img src="http://bluemountaincapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          </a>
+
+          <ul class="nav nav-list" id="menu">
+            <li class="nav-header">Deedle</li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/index.html">Home page</a></li>
+            <li class="divider"></li>
+            <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/design.html">Design notes</a></li>
+            <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
+            
+            <li class="nav-header">Using from F#</li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/series.html">Working with time series</a>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/frame.html">Working with data frames</a>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/stats.html">Statistics &amp; calculations</a>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using Deedle with R</a>
+            </li>
+
+            <li class="nav-header">Using from C#</li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/csharpintro.html">Getting started</a></li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html">Working with data series</a>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html">Working with data frames</a>
+            </li>
+
+            <li class="nav-header">Documentation</li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
+            <li class="divider"></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-stats.html">Stats module</a></li>
+
+            <li class="nav-header">Samples</li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/BlueMountainCapital/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <script>
+      (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+          (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+      })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+      ga('create', 'UA-45379232-1', 'bluemountaincapital.github.io');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
