@@ -46,7 +46,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="FSharp.Data">
-      <HintPath>..\..\packages\FSharp.Data.2.0.5\lib\net40\FSharp.Data.dll</HintPath>
+      <HintPath>..\..\packages\FSharp.Data.2.0.8\lib\net40\FSharp.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MathNet.Numerics">

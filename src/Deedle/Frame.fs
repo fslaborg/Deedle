@@ -38,13 +38,22 @@ type FrameData =
     Columns : seq<Type * IVector<obj>> }  
 
 /// An empty interface that is implemented by `Frame<'R, 'C>`. The purpose of the
-/// interface is to allow writing code that works on arbitrary data frames, although
-/// you 
+/// interface is to allow writing code that works on arbitrary data frames (you 
+/// need to provide an implementation of the `IFrameOperation<'V>` which contains
+/// a generic method `Invoke` that will be called with the typed data frame).
 type IFrame = 
+  /// Calls the `Invoke` method of the specified interface `IFrameOperation<'V>`
+  /// with the typed data frame as an argument
   abstract Apply : IFrameOperation<'V> -> 'V
 
+/// Represents an operation that can be invoked on `Frame<'R, 'C>`. The operation
+/// is generic in the type of row and column keys.
 and IFrameOperation<'V> =
   abstract Invoke : Frame<'R, 'C> -> 'V
+
+// --------------------------------------------------------------------------------------
+// Data frame
+// --------------------------------------------------------------------------------------
 
 /// A frame contains one Index, with multiple Vecs
 /// (because this is dynamic, we need to store them as IVec)
@@ -881,12 +890,24 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   // ----------------------------------------------------------------------------------------------
 
   // Apply operation 'op' with 'series' on the right to all columns convertible to 'T
-  static member inline private PointwiseFrameSeriesR<'T>(frame:Frame<'TRowKey, 'TColumnKey>, series:Series<'TRowKey, 'T>, op:'T -> 'T -> 'T) =
-    frame.Columns |> Series.mapValues (fun os ->
-      match os.TryAs<'T>(false) with
-      | OptionalValue.Present s -> s.ZipInner(series) |> Series.mapValues (fun (v1, v2) -> op v1 v2) :> ISeries<_>
-      | _ -> os :> ISeries<_>)
-    |> fromColumnsNonGeneric id
+  static member inline private PointwiseFrameSeriesR<'T>(frame:Frame<'TRowKey, 'TColumnKey>, series:Series<'TRowKey, 'T>, op:'T -> 'T -> 'T) : Frame<'TRowKey, 'TColumnKey> =
+    // Join the row index of the frame & the index of the series
+    // (so that we can apply the transformation repeatedly on columns)
+    let newIndex, frameCmd, seriesCmd = 
+      createJoinTransformation frame.IndexBuilder JoinKind.Outer Lookup.Exact frame.RowIndex series.Index (Vectors.Return 0) (Vectors.Return 1)
+    let opCmd = Vectors.Combine(frameCmd, seriesCmd, VectorValueTransform.CreateLifted(op))
+
+    // Apply the transformation on all columns that can be converted to 'T
+    let newData = frame.Data.Select(fun vector ->
+      match VectorHelpers.tryChangeType vector with
+      | OptionalValue.Present(tyvec) ->
+          frame.VectorBuilder.Build(opCmd, [| tyvec; series.Vector |]) :> IVector
+      | _ -> 
+          { new VectorCallSite<_> with
+              member x.Invoke(tyvec) =
+                frame.VectorBuilder.Build(frameCmd, [| tyvec |]) :> IVector }
+          |> vector.Invoke ) 
+    Frame(newIndex, frame.ColumnIndex, newData)
 
   // Apply operation 'op' to all columns that exist in both frames and are convertible to 'T
   static member inline internal PointwiseFrameFrame<'T>(frame1:Frame<'TRowKey, 'TColumnKey>, frame2:Frame<'TRowKey, 'TColumnKey>, op:'T -> 'T -> 'T) =
@@ -1503,14 +1524,40 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// ## Parameters
   ///  - `column` - The name of a column in the original data frame that will be used for the new
   ///    index. Note that the values in the column need to be unique.
+  ///  - `keepColumn` - Specifies whether the column used as an index should be kept in the frame.
+  ///
+  /// [category:Indexing]
+  member frame.IndexRows<'TNewRowIndex when 'TNewRowIndex : equality>(column, keepColumn) : Frame<'TNewRowIndex, _> = 
+    let columnVec = frame.GetColumn<'TNewRowIndex>(column)
+    let lookup addr = columnVec.Vector.GetValue(addr)
+    
+    // Reindex according to column & drop the column (if not keepColumn)
+    let newRowIndex, rowCmd = frame.IndexBuilder.WithIndex(frame.RowIndex, lookup, Vectors.Return 0)
+    let newColumnIndex, colCmd = 
+      if keepColumn then frame.ColumnIndex, Vectors.Return 0
+      else frame.IndexBuilder.DropItem((frame.ColumnIndex, Vectors.Return 0), column)
+
+    // Drop the specified column & transform the remaining columns
+    let newData = 
+      frame.VectorBuilder
+        .Build(colCmd, [| frame.Data |])
+        .Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
+    Frame<'TNewRowIndex, 'TColumnKey>(newRowIndex, newColumnIndex, newData)
+
+  /// Returns a data frame whose rows are indexed based on the specified column of the original
+  /// data frame. The generic type parameter is (typically) needed to specify the type of the 
+  /// values in the required index column. 
+  ///
+  /// The resulting frame will *not* contain the specified column. If you want to preserve the
+  /// column, use the overload that takes `keepColumn` parameter.
+  ///
+  /// ## Parameters
+  ///  - `column` - The name of a column in the original data frame that will be used for the new
+  ///    index. Note that the values in the column need to be unique.
   ///
   /// [category:Indexing]
   member frame.IndexRows<'TNewRowIndex when 'TNewRowIndex : equality>(column) : Frame<'TNewRowIndex, _> = 
-    let columnVec = frame.GetColumn<'TNewRowIndex>(column)
-    let lookup addr = columnVec.Vector.GetValue(addr)
-    let newRowIndex, rowCmd = frame.IndexBuilder.WithIndex(frame.RowIndex, lookup, Vectors.Return 0)
-    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
-    Frame<'TNewRowIndex, 'TColumnKey>(newRowIndex, frame.ColumnIndex, newData)
+    frame.IndexRows<'TNewRowIndex>(column, false)
 
 // ------------------------------------------------------------------------------------------------
 // 

@@ -339,6 +339,34 @@ module FSharpFrameExtensions =
     /// ## Parameters
     ///
     ///  * `path` - Specifies a file name or an web location of the resource.
+    ///  * `indexCol` - Specifies the column that should be used as an index in the 
+    ///     resulting frame. The type is specified via a type parameter, e.g. use
+    ///     `Frame.ReadCsv<int>("file.csv", indexCol="Day")`.
+    ///  * `hasHeaders` - Specifies whether the input CSV file has header row
+    ///  * `inferTypes` - Specifies whether the method should attempt to infer types
+    ///    of columns automatically (set this to `false` if you want to specify schema)
+    ///  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
+    ///    rows to use for type inference. The default value is 0, meaninig all rows.
+    ///  * `schema` - A string that specifies CSV schema. See the documentation for 
+    ///    information about the schema format.
+    ///  * `separators` - A string that specifies one or more (single character) separators
+    ///    that are used to separate columns in the CSV file. Use for example `";"` to 
+    ///    parse semicolon separated files.
+    ///  * `culture` - Specifies the name of the culture that is used when parsing 
+    ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
+    static member ReadCsv<'R when 'R : equality>(path:string, indexCol, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture, ?maxRows) : Frame<'R, _> =
+      use reader = new StreamReader(path)
+      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema TextConversions.DefaultMissingValues separators culture maxRows
+      |> Frame.indexRows indexCol
+
+    /// Load data frame from a CSV file. The operation automatically reads column names from the 
+    /// CSV file (if they are present) and infers the type of values for each column. Columns
+    /// of primitive types (`int`, `float`, etc.) are converted to the right type. Columns of other
+    /// types (such as dates) are not converted automatically.
+    ///
+    /// ## Parameters
+    ///
+    ///  * `path` - Specifies a file name or an web location of the resource.
     ///  * `hasHeaders` - Specifies whether the input CSV file has header row
     ///  * `inferTypes` - Specifies whether the method should attempt to infer types
     ///    of columns automatically (set this to `false` if you want to specify schema)
@@ -414,6 +442,11 @@ module FSharpFrameExtensions =
     /// over the specified type parameter `'T` and turns its properties to columns.
     static member ofRecords (values:seq<'T>) =
       Reflection.convertRecordSequence<'T>(values)    
+
+    /// Creates a data frame from a sequence of any .NET objects. The method uses reflection
+    /// over the specified type parameter `'T` and turns its properties to columns.
+    static member ofRecords<'R when 'R : equality> (values:System.Collections.IEnumerable, indexCol:string) =
+      Reflection.convertRecordSequenceUntyped(values).IndexRows<'R>(indexCol)
 
     /// Create data frame from a 2D array of values. The first dimension of the array
     /// is used as rows and the second dimension is treated as columns. Rows and columns

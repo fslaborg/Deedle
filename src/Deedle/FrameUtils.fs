@@ -213,6 +213,22 @@ module internal Reflection =
       |> vectorBuilder.Create
     Frame<int, string>(Index.ofKeys [0 .. (Seq.length data) - 1], colIndex, frameData)
 
+  /// Helper that makes it possible to call convertRecordSequence on untyped enumerable
+  type ConvertRecordHelper =
+    static member ConvertRecordSequence<'T>(data:System.Collections.IEnumerable) =
+      convertRecordSequence<'T> (data :?> seq<'T>)
+
+  /// Calls `convertRecordSequence` with a type argument based on the 
+  /// type of an implemented `seq<'T>` interface (works when a collection 
+  /// implements the interface, but we do not know it statically)
+  let convertRecordSequenceUntyped(data:System.Collections.IEnumerable) =
+    let seqTy = data.GetType().GetInterface("System.Collections.Generic.IEnumerable`1")
+    if seqTy = null then invalidOp "convertRecordSequenceUntyped: Argument must implement seq<T>."
+    let argTy = seqTy.GetGenericArguments().[0]
+    let bindFlags = BindingFlags.NonPublic ||| BindingFlags.Static ||| BindingFlags.Public
+    let mi = typeof<ConvertRecordHelper>.GetMethod("ConvertRecordSequence", bindFlags).MakeGenericMethod(argTy)
+    mi.Invoke(null, [| data |]) :?> Frame<int, string>
+
 // ------------------------------------------------------------------------------------------------
 // Utilities, mostly dealing with construction & serialization of frames
 // ------------------------------------------------------------------------------------------------

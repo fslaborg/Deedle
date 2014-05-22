@@ -5,7 +5,7 @@
 #I "../../../packages/FSharp.Charting.0.90.6"
 #r "../../../bin/MathNet.Numerics.dll"
 #load "../../bin/Deedle.fsx"
-#r "../../../packages/FSharp.Data.2.0.5/lib/net40/FSharp.Data.dll"
+#r "../../../packages/FSharp.Data.2.0.8/lib/net40/FSharp.Data.dll"
 #load "FSharp.Charting.fsx"
 
 open System

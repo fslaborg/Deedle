@@ -87,9 +87,10 @@
 /// ordinal numbers using `indexRowsOrdinally`.
 ///
 /// The function `indexRows` uses the specified column of the original frame as the 
-/// index. This function infers the type of row keys from the context, so it is usually
-/// more convenient to use `indexRows[Date|String|Int|...]` functions. Finally, if 
-/// you want to calculate the index value based on multiple columns of the row, you
+/// index. It removes the column from the resulting frame (to avoid this, use overloaded
+/// `IndexRows` method). This function infers the type of row keys from the context, so it 
+/// is usually more convenient to use `indexRows[Date|String|Int|...]` functions. Finally, 
+/// if you want to calculate the index value based on multiple columns of the row, you
 /// can use `indexRowsUsing`.
 ///
 /// ### Sorting frame rows
@@ -640,7 +641,8 @@ module Frame =
 
   /// Returns a data frame whose rows are indexed based on the specified column of the original
   /// data frame. The generic type parameter is specifies the type of the values in the required 
-  /// index column (and usually needs to be specified using a type annotation).
+  /// index column (and usually needs to be specified using a type annotation). The specified
+  /// column is removed from the resulting frame.
   ///
   /// ## Parameters
   ///  - `frame` - Source data frame whose row index is to be replaced.
@@ -654,6 +656,7 @@ module Frame =
   /// Returns a data frame whose rows are indexed based on the specified column of the original
   /// data frame. This function casts (or converts) the column key to values of type `obj`
   /// (a generic variant that may require some type annotation is `Frame.indexRows`)
+  /// The specified column is removed from the resulting frame.
   ///
   /// ## Parameters
   ///  - `frame` - Source data frame whose row index is to be replaced.
@@ -667,6 +670,7 @@ module Frame =
   /// Returns a data frame whose rows are indexed based on the specified column of the original
   /// data frame. This function casts (or converts) the column key to values of type `int`
   /// (a generic variant that may require some type annotation is `Frame.indexRows`)
+  /// The specified column is removed from the resulting frame.
   ///
   /// ## Parameters
   ///  - `frame` - Source data frame whose row index is to be replaced.
@@ -680,6 +684,7 @@ module Frame =
   /// Returns a data frame whose rows are indexed based on the specified column of the original
   /// data frame. This function casts (or converts) the column key to values of type `DateTime`
   /// (a generic variant that may require some type annotation is `Frame.indexRows`)
+  /// The specified column is removed from the resulting frame.
   ///
   /// ## Parameters
   ///  - `frame` - Source data frame whose row index is to be replaced.
@@ -693,6 +698,7 @@ module Frame =
   /// Returns a data frame whose rows are indexed based on the specified column of the original
   /// data frame. This function casts (or converts) the column key to values of type `DateTimeOffset`
   /// (a generic variant that may require some type annotation is `Frame.indexRows`)
+  /// The specified column is removed from the resulting frame.
   ///
   /// ## Parameters
   ///  - `frame` - Source data frame whose row index is to be replaced.
@@ -706,6 +712,7 @@ module Frame =
   /// Returns a data frame whose rows are indexed based on the specified column of the original
   /// data frame. This function casts (or converts) the column key to values of type `string`
   /// (a generic variant that may require some type annotation is `Frame.indexRows`)
+  /// The specified column is removed from the resulting frame.
   ///
   /// ## Parameters
   ///  - `frame` - Source data frame whose row index is to be replaced.
@@ -718,6 +725,7 @@ module Frame =
 
   /// Replace the column index of the frame with the provided sequence of column keys.
   /// The columns of the frame are assigned keys according to the provided order.
+  /// The specified column is removed from the resulting frame.
   ///
   /// ## Parameters
   ///  - `frame` - Source data frame whose column index are to be replaced.
