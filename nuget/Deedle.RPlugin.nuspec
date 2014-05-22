@@ -18,7 +18,7 @@
       <dependency id="Deedle" version="@build.number@" />
       <dependency id="R.NET" version="1.5.5" />
       <dependency id="RDotNet.FSharp" version="0.1.2.1" />
-      <dependency id="RProvider" version="1.0.7-alpha" />
+      <dependency id="RProvider" version="1.0.9" />
     </dependencies>
   </metadata>
   <files>

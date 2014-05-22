@@ -1,6 +1,7 @@
 ﻿#if INTERACTIVE
 #load "../../bin/Deedle.fsx"
 #r "../../bin/RProvider.dll"
+#r "../../bin/RProvider.Runtime.dll"
 #r "../../bin/RDotNet.dll"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #load "../Common/FsUnit.fs"
