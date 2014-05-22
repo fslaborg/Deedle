@@ -1,0 +1,243 @@
+Version,Test,Time
+0.9.12-baseline,"Numerical operators on 20x10k frame",2136
+0.9.12-baseline,"Numerical operators on 20x10k frame",2122
+0.9.12-baseline,"Numerical operators on 20x10k frame",2142
+0.9.12-baseline,"Building a large (1M items) series from two arrays",405
+0.9.12-baseline,"Building a large (1M items) series from two arrays",516
+0.9.12-baseline,"Building a large (1M items) series from two arrays",438
+0.9.12-baseline,"Building a large (1M items) series from two arrays",408
+0.9.12-baseline,"Building a large (1M items) series from two arrays",532
+0.9.12-baseline,"Building a large (1M items) series from two arrays",442
+0.9.12-baseline,"Building a large (1M items) series from two arrays",502
+0.9.12-baseline,"Building a large (1M items) series from two arrays",519
+0.9.12-baseline,"Building a large (1M items) series from two arrays",416
+0.9.12-baseline,"Building a large (1M items) series from two arrays",414
+0.9.12-baseline,"Append 10 medium-size (1000) frames (by repeatedly calling Append)",513
+0.9.12-baseline,"Append 10 medium-size (1000) frames (by repeatedly calling Append)",511
+0.9.12-baseline,"Append 10 medium-size (1000) frames (by repeatedly calling Append)",591
+0.9.12-baseline,"Append 10 medium-size (1000) frames (by repeatedly calling Append)",556
+0.9.12-baseline,"Append 10 medium-size (1000) frames (by repeatedly calling Append)",616
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",46
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",50
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",51
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",50
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",49
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",49
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",49
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",49
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",46
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",45
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",53
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",49
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",46
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",49
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",49
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",50
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",50
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",49
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",49
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",57
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",57
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",51
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",57
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",49
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",49
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",49
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",47
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",49
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",49
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",50
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",49
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",50
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",49
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",48
+0.9.12-baseline,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",52
+0.9.12-baseline,"Realign a 1M element series according to a specified key array",5099
+0.9.12-baseline,"Realign a 1M element series according to a specified key array",3982
+0.9.12-baseline,"Realign a 1M element series according to a specified key array",8450
+0.9.13,"Numerical operators on 20x10k frame",932
+0.9.13,"Numerical operators on 20x10k frame",931
+0.9.13,"Numerical operators on 20x10k frame",933
+0.9.13,"Building a large (1M items) series from two arrays",6
+0.9.13,"Building a large (1M items) series from two arrays",8
+0.9.13,"Building a large (1M items) series from two arrays",6
+0.9.13,"Building a large (1M items) series from two arrays",7
+0.9.13,"Building a large (1M items) series from two arrays",6
+0.9.13,"Building a large (1M items) series from two arrays",6
+0.9.13,"Building a large (1M items) series from two arrays",6
+0.9.13,"Building a large (1M items) series from two arrays",6
+0.9.13,"Building a large (1M items) series from two arrays",6
+0.9.13,"Building a large (1M items) series from two arrays",6
+0.9.13,"Append 10 medium-size (1000) frames (by repeatedly calling Append)",98
+0.9.13,"Append 10 medium-size (1000) frames (by repeatedly calling Append)",183
+0.9.13,"Append 10 medium-size (1000) frames (by repeatedly calling Append)",131
+0.9.13,"Append 10 medium-size (1000) frames (by repeatedly calling Append)",98
+0.9.13,"Append 10 medium-size (1000) frames (by repeatedly calling Append)",131
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",21
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",18
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",18
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",18
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",20
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",20
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",23
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",27
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",22
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",29
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",21
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",20
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",20
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",20
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",25
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",20
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",20
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",21
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",21
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",20
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",20
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",21
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",20
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",20
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",18
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",18
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",18
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",18
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",21
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",18
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",18
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",18
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",18
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",18
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",18
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",20
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",18
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",18
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",18
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",21
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",18
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",18
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)",19
+0.9.13,"Realign a 1M element series according to a specified key array",444
+0.9.13,"Realign a 1M element series according to a specified key array",439
+0.9.13,"Realign a 1M element series according to a specified key array",469

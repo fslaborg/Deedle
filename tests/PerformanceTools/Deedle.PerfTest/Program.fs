@@ -121,7 +121,7 @@ type private PerfRunner() =
               float sw.ElapsedMilliseconds ]
         let mean = Seq.average times
         let sdv = sqrt ((times |> Seq.sumBy (fun v -> pown (v - mean) 2)) / (float iter))
-        yield name, float mean, float sdv
+        for time in times do yield name, time
         printfn " * %s (%f+/-%fms)" name mean sdv ]
     
   /// Evaluate performance for the specified library
@@ -146,22 +146,6 @@ type private PerfRunner() =
       AppDomain.Unload domain
 
 // ------------------------------------------------------------------------------------------------
-// Generate 
-// ------------------------------------------------------------------------------------------------
-
-module internal Formatter =
-  let generateChart data = 
-    let fnum (v:float) = Math.Round(v, 2)
-    let chartData =
-      [ for dir, tests in data do
-          for name, time, sdv in tests do
-            yield sprintf "{\"dir\":\"%s\", \"test\":\"%s\", \"value\":%f, \"valuelo\":%f, \"valuehi\":%f}" dir name (fnum time) (fnum (time - sdv)) (fnum (time + sdv)) ]
-      |> String.concat ", "
-    let root = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
-    let templ = Path.Combine(root, "template.html")
-    File.ReadAllText(templ).Replace("***DATA***", chartData)
-
-// ------------------------------------------------------------------------------------------------
 // Entry point - parse command line & run it!
 // ------------------------------------------------------------------------------------------------
 
@@ -175,7 +159,7 @@ type PerfTests =
   ///  - `sources` - List of source files containing tests (and other required code)
   ///  - `outFile` - Specifies the file name where the resulting output is stored
   ///
-  static member Run(binRoot, sources, outFile) =
+  static member Run(binRoot, sources, outFile:string) =
     // Get directories with libraries & find a baseline directory
     let baseline, versions =
       Directory.GetDirectories(binRoot)
@@ -188,34 +172,14 @@ type PerfTests =
       | _ -> failwith "Expected a single sub-folder with baseline in the name."
 
     let compiled = versions |> List.map (Compiler.compile sources)
-    let results = (versions, compiled) ||> List.map2 PerfRunner.RunTests
-    let data = List.zip (List.map Path.GetFileName versions) results
-    let html = Formatter.generateChart data
-    File.WriteAllText(outFile, html)
+    let results = 
+      [ for ver, compiled in List.zip versions compiled do
+          for test, time in PerfRunner.RunTests ver compiled do
+            yield Path.GetFileName ver, test, time ]
+      |> Frame.ofRecords
+      |> Frame.indexColsWith [ "Version"; "Test"; "Time" ]
+    results.SaveCsv(outFile)
 
     use c = colored ConsoleColor.Yellow
     printfn "\nDone. Cleaning temp files"
     for library in compiled do File.Delete(library)
-
-module Main = 
-  [<EntryPoint>]
-  let main argv = 
-    let binRoot, outFile = 
-      match List.ofSeq argv with 
-      | bin::out::_ -> bin, out
-      | _ ->
-        System.Console.WriteLine
-         ( "Directory with binaries or output not specified. The expected usage is:\n\n" +
-           "   perftest C:\\your\\directory C:\\outfile.html \n\n" +
-           "where 'C:\\your\\directory' contains a number of sub-directories\n" +
-           "with different versions of the assemblies that you want to measure.\n" +
-           "There should be at least one directory with 'baseline' in the name\n" +
-           "which is used as the baseline for the comparison." ) 
-        exit -1
-
-    let sources = 
-      [ @"C:\Tomas\Public\Deedle\tests\Common\FsUnit.fs"
-        @"C:\Tomas\Public\Deedle\tests\Deedle.PerfTests\Performance.fs" ]
-  
-    PerfTests.Run(binRoot, sources, outFile)
-    0

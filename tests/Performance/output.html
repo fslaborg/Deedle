@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <meta charset="utf-8">
 <html>
 <head>
@@ -22,7 +22,7 @@ function parse(spec) {
     {\
       "name": "table",\
       "values": [\
-          {"dir":"0.9.12-baseline", "test":"Numerical operators on 20x10k frame", "value":2138.330000, "valuelo":2086.810000, "valuehi":2189.860000}, {"dir":"0.9.12-baseline", "test":"Building a large (1M items) series from two arrays", "value":466.600000, "valuelo":427.720000, "valuehi":505.480000}, {"dir":"0.9.12-baseline", "test":"Append 10 medium-size (1000) frames (by repeatedly calling Append)", "value":541.200000, "valuelo":532.920000, "valuehi":549.480000}, {"dir":"0.9.12-baseline", "test":"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)", "value":48.350000, "valuelo":46.840000, "valuehi":49.860000}, {"dir":"0.9.12-baseline", "test":"Realign a 1M element series according to a specified key array", "value":4258.000000, "valuelo":4033.120000, "valuehi":4482.880000}, {"dir":"0.9.13", "test":"Numerical operators on 20x10k frame", "value":1030.000000, "valuelo":1025.920000, "valuehi":1034.080000}, {"dir":"0.9.13", "test":"Building a large (1M items) series from two arrays", "value":12.600000, "valuelo":-2.910000, "valuehi":28.110000}, {"dir":"0.9.13", "test":"Append 10 medium-size (1000) frames (by repeatedly calling Append)", "value":109.800000, "valuelo":107.090000, "valuehi":112.510000}, {"dir":"0.9.13", "test":"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)", "value":20.210000, "valuelo":19.510000, "valuehi":20.910000}, {"dir":"0.9.13", "test":"Realign a 1M element series according to a specified key array", "value":478.000000, "valuelo":464.070000, "valuehi":491.930000}\
+          {"dir":"0.9.12-baseline", "test":"Numerical operators on 20x10k frame", "value":2133, "valuelo":2123, "valuehi":2144}, {"dir":"0.9.12-baseline", "test":"Building a large (1M items) series from two arrays", "value":459, "valuelo":407, "valuehi":511}, {"dir":"0.9.12-baseline", "test":"Append 10 medium-size (1000) frames (by repeatedly calling Append)", "value":557, "valuelo":511, "valuehi":604}, {"dir":"0.9.12-baseline", "test":"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)", "value":48, "valuelo":46, "valuehi":50}, {"dir":"0.9.12-baseline", "test":"Realign a 1M element series according to a specified key array", "value":5844, "valuelo":3518, "valuehi":8169}, {"dir":"0.9.13", "test":"Numerical operators on 20x10k frame", "value":932, "valuelo":931, "valuehi":933}, {"dir":"0.9.13", "test":"Building a large (1M items) series from two arrays", "value":6, "valuelo":6, "valuehi":7}, {"dir":"0.9.13", "test":"Append 10 medium-size (1000) frames (by repeatedly calling Append)", "value":128, "valuelo":93, "valuehi":163}, {"dir":"0.9.13", "test":"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)", "value":19, "valuelo":18, "valuehi":21}, {"dir":"0.9.13", "test":"Realign a 1M element series according to a specified key array", "value":451, "valuelo":435, "valuehi":467}\
       ]\
     }\
   ],\
@@ -66,7 +66,7 @@ function parse(spec) {
     {\
       "name": "color",\
       "type": "ordinal",\
-      "range": "category10"\
+      "range": "category20"\
     }\
   ],\
   "axes": [\
@@ -143,42 +143,6 @@ function parse(spec) {
                 "scale": "color",\
                 "field": "data.dir"\
               }\
-            }\
-          }\
-        },\
-        {\
-          "type": "rect",\
-          "properties": {\
-            "enter": {\
-              "y": { "scale": "pos", "field": "data.dir", "offset": 13 },\
-              "x": { "scale": "val", "field": "data.valuelo" },\
-              "x2": { "scale": "val", "field": "data.valuehi" },\
-              "height": {"value": 1}, \
-              "fill": {"value": "#000000"} \
-            }\
-          }\
-        },\
-        {\
-          "type": "rect",\
-          "properties": {\
-            "enter": {\
-              "y": { "scale": "pos", "field": "data.dir", "offset": 10 },\
-              "x": { "scale": "val", "field": "data.valuelo" },\
-              "x2": { "scale": "val", "field": "data.valuelo", "offset": 1 },\
-              "height": {"value": 6}, \
-              "fill": {"value": "#000000"} \
-            }\
-          }\
-        },\
-        {\
-          "type": "rect",\
-          "properties": {\
-            "enter": {\
-              "y": { "scale": "pos", "field": "data.dir", "offset": 10 },\
-              "x": { "scale": "val", "field": "data.valuehi" },\
-              "x2": { "scale": "val", "field": "data.valuehi", "offset": 1 },\
-              "height": {"value": 6}, \
-              "fill": {"value": "#000000"} \
             }\
           }\
         },\
