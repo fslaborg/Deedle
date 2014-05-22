@@ -29,7 +29,10 @@ module internal Compiler =
   open Microsoft.FSharp.Compiler.SimpleSourceCodeServices
 
   type PerfConfig = XmlProvider<"perf.config">
+
   let scs = SimpleSourceCodeServices()
+  let programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
+  let microsoft =  programFiles @@ "Reference Assemblies" @@ "Microsoft"
 
   /// Given a list of source files & directory with references 
   /// (for a specific version of the tested library), compile!
@@ -46,11 +49,15 @@ module internal Compiler =
 
       yield "--nowarn:52"
       yield "--noframework"
-      yield! [ "-r"; @"C:\Program Files (x86)\Reference Assemblies\Microsoft\FSharp\.NETFramework\v4.0\4.3.0.0\FSharp.Core.dll"]
-      yield! [ "-r"; @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\mscorlib.dll" ]
-      yield! [ "-r"; @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.dll" ]
-      yield! [ "-r"; @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Core.dll" ]
-      yield! [ "-r"; @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Data.dll" ]
+      yield! [ "-r"; microsoft @@ "FSharp" @@ ".NETFramework" @@ "v4.0" @@ "4.3.0.0" @@ "FSharp.Core.dll"]
+      yield! [ "-r"; microsoft @@"Framework" @@ ".NETFramework" @@ "v4.5" @@ "mscorlib.dll" ]
+      yield! [ "-r"; microsoft @@"Framework" @@ ".NETFramework" @@ "v4.5" @@ "System.dll" ]
+      yield! [ "-r"; microsoft @@"Framework" @@ ".NETFramework" @@ "v4.5" @@ "System.Core.dll" ]
+      yield! [ "-r"; microsoft @@"Framework" @@ ".NETFramework" @@ "v4.5" @@ "System.Data.dll" ]
+
+      // Generate "--define" argument for all symbols
+      for def in config.Defines.Defines do
+        yield "--define:" + def.Symbol
 
       // Generate "-r" argument for all libraries to be referenced
       for ref in config.Reference.References do
@@ -63,62 +70,97 @@ module internal Compiler =
       // Specify all the sources
       for src in sources do yield src }
 
+    // Compile, report possible errors and reutrn the DLL
     ( use c = colored ConsoleColor.Yellow
-      printfn "Compiling %s\n%s" (Path.GetFileName(refpath)) (String.concat " " commandLine) )
+      printfn "\nCompiling: %s" (Path.GetFileName(refpath)) )
+    printfn "%s" (String.concat " " commandLine)
+
     let errors1, exitCode1 = scs.Compile(Array.ofSeq commandLine)
-    ( use c = colored ConsoleColor.Red
-      errors1 |> Seq.iter (printfn "%A\n") )
+    if exitCode1 > 0 then
+      use c = colored ConsoleColor.Red
+      errors1 |> Seq.iter (printfn "%A\n") 
+      failwith "Compilation failed!"
+    
+    tempDll
 
 // ------------------------------------------------------------------------------------------------
-(*
-/// Matches a string that starts with a given prefix & returns the rest
-let (|StartsWith|_|) prefix (s:string) = 
-  if s.StartsWith(prefix) then Some(s.Substring(prefix.Length)) else None
+// Resolving and running performance tests
+// ------------------------------------------------------------------------------------------------
+open Deedle
+open System.Linq.Expressions
 
-/// Run the perftest-runner on the specified folder & collect results
-let evalPerformance folder = 
-  let fg = Console.ForegroundColor
-  Console.ForegroundColor <- ConsoleColor.Yellow
-  printfn "\nEvaluating folder: %s" (Path.GetFileName(folder))
-  Console.ForegroundColor <- fg
+/// Runner that is created & executed in a separate AppDomain
+type private PerfRunner() =
+  inherit MarshalByRefObject()
 
-  // Agent that reads all performance results from the standard output
-  let rows = ResizeArray<_>()
-  let readerAgent = MailboxProcessor<string>.Start(fun inbox ->
-    let rec waiting () = inbox.Scan(function
-      | StartsWith "RUNNING: " name -> Some(running name)
-      | _ -> None)
-    and running name = inbox.Scan(function
-      | StartsWith "DONE: " time -> Some(async { 
-          printfn " - %s (%dms)" name (int time)
-          rows.Add(name, float time)
-          return! waiting() })
-      | _ -> None)
-    waiting ())
+  /// Find all performance tests in a specified directory
+  /// (we use reflection to avoid library version mismatch)
+  let getPerformanceTests (asm:Assembly) : list<string * Action * int> = 
+    [ for typ in asm.GetTypes() do 
+        for mi in typ.GetMethods() do
+          let attrs = mi.GetCustomAttributes()
+          let perfAttrs = attrs |> Seq.choose (function
+            | :? Deedle.PerfTest.PerfTestAttribute as pe ->
+                Some (pe.Iterations)
+            | _ -> None)
+          match List.ofSeq perfAttrs with
+          | [iters] -> 
+              let f = Expression.Lambda<Action>(Expression.Call(mi)).Compile()
+              yield mi.Name, f, iters
+          | _ -> () ] 
 
-  let ps = 
-    ProcessStartInfo
-      ("perftest-runner.exe", folder, RedirectStandardOutput=true, UseShellExecute=false)
-  let p = Process.Start(ps) 
-  p.OutputDataReceived.Add(fun e -> readerAgent.Post(e.Data))
-  p.BeginOutputReadLine()
-  p.WaitForExit()
-  Path.GetFileName(folder), rows :> seq<_>
-*)
+  /// Run the specified tests and output time to the console
+  /// in a CSV format for furhter analysis
+  let evalPerformance (tests:list<string * Action * int>) =
+    [ for name, f, iter in tests do 
+        f.Invoke()
+        let times = 
+          [ for i in 1 .. iter -> 
+              let sw = Stopwatch.StartNew()
+              f.Invoke()
+              float sw.ElapsedMilliseconds ]
+        let mean = Seq.average times
+        let sdv = sqrt ((times |> Seq.sumBy (fun v -> pown (v - mean) 2)) / (float iter))
+        yield name, float mean, float sdv
+        printfn " * %s (%f+/-%fms)" name mean sdv ]
+    
+  /// Evaluate performance for the specified library
+  member x.Run(library) = 
+    Assembly.LoadFrom(library) 
+    |> getPerformanceTests
+    |> evalPerformance 
+
+  /// Eavluate performance of a single library and return list of tests & times
+  static member RunTests refpath library =
+    ( use c = colored ConsoleColor.Yellow
+      printfn "\nRunning perf tests: %s" (Path.GetFileName(refpath)) )
+    // Create new AppDomain and call the PerfRunner
+    // (Resolve references in the 'refpath' folder)
+    let ads = AppDomainSetup(ApplicationBase=refpath)
+    let domain = AppDomain.CreateDomain("PerfTest_" + Path.GetFileName(refpath), null, ads)
+    try
+      let loc = Assembly.GetExecutingAssembly().Location
+      let f = domain.CreateInstanceFromAndUnwrap(loc, typeof<PerfRunner>.FullName) :?> PerfRunner
+      f.Run(library)
+    finally
+      AppDomain.Unload domain
+
 // ------------------------------------------------------------------------------------------------
 // Generate 
 // ------------------------------------------------------------------------------------------------
-(*
-let generateChart data = 
-  let chartData =
-    [ for dir, tests in data do
-        for name, time in tests do
-          yield sprintf "{\"dir\":\"%s\", \"test\":\"%s\", \"value\":%f}" dir name time ]
-    |> String.concat ", "
-  let root = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
-  let templ = Path.Combine(root, "template.html")
-  File.ReadAllText(templ).Replace("***DATA***", chartData)
-*)
+
+module internal Formatter =
+  let generateChart data = 
+    let fnum (v:float) = Math.Round(v, 2)
+    let chartData =
+      [ for dir, tests in data do
+          for name, time, sdv in tests do
+            yield sprintf "{\"dir\":\"%s\", \"test\":\"%s\", \"value\":%f, \"valuelo\":%f, \"valuehi\":%f}" dir name (fnum time) (fnum (time - sdv)) (fnum (time + sdv)) ]
+      |> String.concat ", "
+    let root = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
+    let templ = Path.Combine(root, "template.html")
+    File.ReadAllText(templ).Replace("***DATA***", chartData)
+
 // ------------------------------------------------------------------------------------------------
 // Entry point - parse command line & run it!
 // ------------------------------------------------------------------------------------------------
@@ -131,23 +173,29 @@ type PerfTests =
   ///    for each version, containing `perf.config` file. One of the directories should have
   ///    `baseline` in the name (to be used as the baseline)
   ///  - `sources` - List of source files containing tests (and other required code)
-  static member Run(binRoot, sources) =
+  ///  - `outFile` - Specifies the file name where the resulting output is stored
+  ///
+  static member Run(binRoot, sources, outFile) =
     // Get directories with libraries & find a baseline directory
     let baseline, versions =
       Directory.GetDirectories(binRoot)
       |> List.ofSeq
       |> List.partition (fun dir -> Path.GetFileName(dir).ToLower().Contains("baseline"))
   
-    let baseline, versions = 
+    let versions = 
       match baseline with
-      | [baseline] -> baseline, versions
+      | [baseline] -> baseline::versions
       | _ -> failwith "Expected a single sub-folder with baseline in the name."
 
-    printfn "%A\n%A" baseline versions
-    baseline::versions |> List.iter (Compiler.compile sources)
-    //let results = baseline::versions |> List.map evalPerformance
-    //let html = generateChart results
-    //File.WriteAllText(outFile, html)
+    let compiled = versions |> List.map (Compiler.compile sources)
+    let results = (versions, compiled) ||> List.map2 PerfRunner.RunTests
+    let data = List.zip (List.map Path.GetFileName versions) results
+    let html = Formatter.generateChart data
+    File.WriteAllText(outFile, html)
+
+    use c = colored ConsoleColor.Yellow
+    printfn "\nDone. Cleaning temp files"
+    for library in compiled do File.Delete(library)
 
 module Main = 
   [<EntryPoint>]
@@ -169,5 +217,5 @@ module Main =
       [ @"C:\Tomas\Public\Deedle\tests\Common\FsUnit.fs"
         @"C:\Tomas\Public\Deedle\tests\Deedle.PerfTests\Performance.fs" ]
   
-    PerfTests.Run(binRoot, sources)        
+    PerfTests.Run(binRoot, sources, outFile)
     0

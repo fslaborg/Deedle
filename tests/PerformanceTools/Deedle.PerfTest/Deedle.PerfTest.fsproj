@@ -41,6 +41,9 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Deedle">
+      <HintPath>..\..\..\bin\Deedle.dll</HintPath>
+    </Reference>
     <Reference Include="FSharp.Compiler.Service">
       <HintPath>..\..\..\packages\FSharp.Compiler.Service.0.0.44\lib\net40\FSharp.Compiler.Service.dll</HintPath>
     </Reference>

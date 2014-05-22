@@ -1,15 +1,14 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <meta charset="utf-8">
-  <head>
-    <title>Vega Scaffold</title>
-    <script src="http://d3js.org/d3.v3.min.js"></script>
-    <script src="http://trifacta.github.com/vega/vega.js"></script>
-    <!--<script src="http://trifacta.github.com/vega/d3.geo.projection.min.js"></script>-->
-  </head>
-
-  <body>
-    <div id="vis"></div>
-  </body>
+<html>
+<head>
+  <title>Vega Scaffold</title>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="http://trifacta.github.com/vega/vega.js"></script>
+  <!--<script src="http://trifacta.github.com/vega/d3.geo.projection.min.js"></script>-->
+</head>
+<body>
+<div id="vis"></div>
 
 <script type="text/javascript">
 // parse a spec and create a visualization view
@@ -23,15 +22,14 @@ function parse(spec) {
     {\
       "name": "table",\
       "values": [\
-          {"dir":"0.9.12-baseline", "test":"Numerical operators on 20x10k frame", "value":24159.000000}, {"dir":"0.9.12-baseline", "test":"Building a large (1M items) series from two arrays", "value":54799.000000}, {"dir":"0.9.12-baseline", "test":"Append 10 medium-size (1000) frames (by repeatedly calling Append)", "value":31270.000000}, {"dir":"0.9.12-baseline", "test":"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)", "value":58597.000000}, {"dir":"0.9.12-baseline", "test":"Realign a 1M element series according to a specified key array", "value":45733.000000}, {"dir":"0.9.13", "test":"Numerical operators on 20x10k frame", "value":25492.000000}, {"dir":"0.9.13", "test":"Building a large (1M items) series from two arrays", "value":55969.000000}, {"dir":"0.9.13", "test":"Append 10 medium-size (1000) frames (by repeatedly calling Append)", "value":31150.000000}, {"dir":"0.9.13", "test":"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)", "value":57990.000000}, {"dir":"0.9.13", "test":"Realign a 1M element series according to a specified key array", "value":47036.000000}\
+          {"dir":"0.9.12-baseline", "test":"Numerical operators on 20x10k frame", "value":2138.330000, "valuelo":2086.810000, "valuehi":2189.860000}, {"dir":"0.9.12-baseline", "test":"Building a large (1M items) series from two arrays", "value":466.600000, "valuelo":427.720000, "valuehi":505.480000}, {"dir":"0.9.12-baseline", "test":"Append 10 medium-size (1000) frames (by repeatedly calling Append)", "value":541.200000, "valuelo":532.920000, "valuehi":549.480000}, {"dir":"0.9.12-baseline", "test":"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)", "value":48.350000, "valuelo":46.840000, "valuehi":49.860000}, {"dir":"0.9.12-baseline", "test":"Realign a 1M element series according to a specified key array", "value":4258.000000, "valuelo":4033.120000, "valuehi":4482.880000}, {"dir":"0.9.13", "test":"Numerical operators on 20x10k frame", "value":1030.000000, "valuelo":1025.920000, "valuehi":1034.080000}, {"dir":"0.9.13", "test":"Building a large (1M items) series from two arrays", "value":12.600000, "valuelo":-2.910000, "valuehi":28.110000}, {"dir":"0.9.13", "test":"Append 10 medium-size (1000) frames (by repeatedly calling Append)", "value":109.800000, "valuelo":107.090000, "valuehi":112.510000}, {"dir":"0.9.13", "test":"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)", "value":20.210000, "valuelo":19.510000, "valuehi":20.910000}, {"dir":"0.9.13", "test":"Realign a 1M element series according to a specified key array", "value":478.000000, "valuelo":464.070000, "valuehi":491.930000}\
       ]\
     }\
   ],\
   "legends": [\
     {\
       "fill": "color",\
-      "title": "Versions",\
-      "offset": 0,\
+      "title": "Performance tests",\
       "properties": {\
         "symbols": {\
           "fillOpacity": {\
@@ -68,7 +66,7 @@ function parse(spec) {
     {\
       "name": "color",\
       "type": "ordinal",\
-      "range": "category20"\
+      "range": "category10"\
     }\
   ],\
   "axes": [\
@@ -149,6 +147,42 @@ function parse(spec) {
           }\
         },\
         {\
+          "type": "rect",\
+          "properties": {\
+            "enter": {\
+              "y": { "scale": "pos", "field": "data.dir", "offset": 13 },\
+              "x": { "scale": "val", "field": "data.valuelo" },\
+              "x2": { "scale": "val", "field": "data.valuehi" },\
+              "height": {"value": 1}, \
+              "fill": {"value": "#000000"} \
+            }\
+          }\
+        },\
+        {\
+          "type": "rect",\
+          "properties": {\
+            "enter": {\
+              "y": { "scale": "pos", "field": "data.dir", "offset": 10 },\
+              "x": { "scale": "val", "field": "data.valuelo" },\
+              "x2": { "scale": "val", "field": "data.valuelo", "offset": 1 },\
+              "height": {"value": 6}, \
+              "fill": {"value": "#000000"} \
+            }\
+          }\
+        },\
+        {\
+          "type": "rect",\
+          "properties": {\
+            "enter": {\
+              "y": { "scale": "pos", "field": "data.dir", "offset": 10 },\
+              "x": { "scale": "val", "field": "data.valuehi" },\
+              "x2": { "scale": "val", "field": "data.valuehi", "offset": 1 },\
+              "height": {"value": 6}, \
+              "fill": {"value": "#000000"} \
+            }\
+          }\
+        },\
+        {\
           "type": "text",\
           "properties": {\
             "enter": {\
@@ -186,3 +220,5 @@ function parse(spec) {
   ]\
 }'));
 </script>
+</body>
+</html>

@@ -17,7 +17,7 @@ open Deedle
 open Deedle.PerfTest
 
 // ------------------------------------------------------------------------------------------------
-// Performance tests that are run & evaluated automatically against a baseline
+// Load data and generate frames
 // ------------------------------------------------------------------------------------------------
 
 let generateFrame colKeys rowCount rowOffset = 
@@ -37,8 +37,10 @@ let series1M = Series.ofValues array1M
 let titanic = Frame.ReadCsv(__SOURCE_DIRECTORY__ + @"\..\Performance\data\Titanic.csv")
 
 // ------------------------------------------------------------------------------------------------
+//
+// ------------------------------------------------------------------------------------------------
 
-[<Test;PerfTest>]
+[<Test;PerfTest(Iterations=3)>]
 let ``Numerical operators on 20x10k frame``() =
   let add = frame20x10000 + frame20x10000
   let mul = frame20x10000 * frame20x10000
@@ -95,7 +97,7 @@ let ``Calculate survival rate for Titanic based on gender (using groupRowsBy & a
   let expected = series ["male" => 19.0; "female" => 74.0]
   actual |> shouldEqual expected
 
-[<Test;PerfTest(Iterations=1)>]
+[<Test;PerfTest(Iterations=3)>]
 let ``Realign a 1M element series according to a specified key array`` () =
   let newKeys = [|1 .. 1000000|]
   let actual = series1M |> Series.realign newKeys
