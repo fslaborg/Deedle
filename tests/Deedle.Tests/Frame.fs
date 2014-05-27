@@ -3,7 +3,7 @@
 #load "Deedle.fsx"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #r "../../packages/FsCheck.0.9.1.0/lib/net40-Client/FsCheck.dll"
-#r "../../packages/FSharp.Data.1.1.10/lib/net40/FSharp.Data.dll"
+#r "../../packages/FSharp.Data.2.0.8/lib/net40/FSharp.Data.dll"
 #load "../Common/FsUnit.fs"
 #else
 module Deedle.Tests.Frame
@@ -19,7 +19,7 @@ open NUnit.Framework
 open Deedle
 
 // ------------------------------------------------------------------------------------------------
-// Input and output (CSV files)
+// Input and output (CSV files, IDataReader)
 // ------------------------------------------------------------------------------------------------
 
 let msft() = 
@@ -45,7 +45,7 @@ let ``Can create empty data frame and empty series`` () =
 let ``Can read MSFT data from CSV file`` () =
   let df = msft()
   df.RowKeys |> Seq.length |> shouldEqual 6527
-  df.ColumnKeys |> Seq.length |> shouldEqual 7
+  df.ColumnKeys |> Seq.length |> shouldEqual 6
 
 [<Test>]
 let ``Can read MSFT data from CSV file truncated`` () =
@@ -54,10 +54,18 @@ let ``Can read MSFT data from CSV file truncated`` () =
   df.ColumnKeys |> Seq.length |> shouldEqual 7
 
 [<Test>]
+let ``Can read MSFT data from CSV file using a specified index column`` () =
+  let df = Frame.ReadCsv<DateTime>(__SOURCE_DIRECTORY__ + "/data/MSFT.csv", "Date", inferRows=10, maxRows=27) 
+  df.RowKeys |> Seq.length |> shouldEqual 27
+  df.ColumnKeys |> Seq.length |> shouldEqual 6
+  df.RowKeys |> Seq.head |> shouldEqual (DateTime(2012, 1, 27))
+
+[<Test>]
 let ``Can read MSFT data from CSV file without header row`` () =
   let df = msftNoHeaders()
   let expected = msft()  
-  let actual = df |> Frame.indexColsWith expected.ColumnKeys |> Frame.indexRowsDate "Date"
+  let colKeys = Seq.append ["Date"] expected.ColumnKeys
+  let actual = df |> Frame.indexColsWith colKeys |> Frame.indexRowsDate "Date"
   actual |> shouldEqual expected 
 
 [<Test>]
@@ -83,18 +91,35 @@ let ``Can save MSFT data as CSV file and read it afterwards (with default args)`
   let file = System.IO.Path.GetTempFileName()
   let expected = msft()
   expected.SaveCsv(file)
-  let actual = Frame.ReadCsv(file) |> Frame.indexRowsDate "Date"
+  let actual = Frame.ReadCsv(file) 
+  actual |> shouldEqual (Frame.indexRowsOrdinally expected)
+
+[<Test>]
+let ``Saving dates uses consistently invariant cultrue by default`` () =
+  let file = System.IO.Path.GetTempFileName()
+  let df = frame [ "A" => series [ DateTime(2014, 1, 29, 12, 39, 45) => 1.0; DateTime(2014, 1, 29) => 2.1] ]
+  // Save the frame on a machine with "en-GB" date time format
+  System.Threading.Thread.CurrentThread.CurrentCulture <- System.Globalization.CultureInfo.GetCultureInfo("en-GB")
+  df.SaveCsv(file, ["Date"])
+  // Read the frame (in invariant culture format) and parse row keys as dates
+  // (we need to run this on InvariantCulture because the 'ReadCsv' method reads
+  // values as DateTime. We intentionally ignore the fact the columns are inferred
+  // as DateTime, because Deedle tries to avoid using DateTime)
+  System.Threading.Thread.CurrentThread.CurrentCulture <- System.Globalization.CultureInfo.InvariantCulture
+  let actual = Frame.ReadCsv(file).IndexRows<DateTime>("Date").RowKeys |> List.ofSeq
+  let expected = df.RowKeys |> List.ofSeq
   actual |> shouldEqual expected
 
 [<Test>]
 let ``Can save MSFT data as CSV file and read it afterwards (with custom format)`` () =
   let file = System.IO.Path.GetTempFileName()
+  let cz = System.Globalization.CultureInfo.GetCultureInfo("cs-CZ")
   let expected = msft()
-  expected.DropSeries("Date")
-  expected.SaveCsv(file, keyNames=["Date"], separator=';', culture=System.Globalization.CultureInfo.GetCultureInfo("cs-CZ"))
+  expected.SaveCsv(file, keyNames=["Date"], separator=';', culture=cz)
   let actual = 
     Frame.ReadCsv(file, separators=";", culture="cs-CZ")
-    |> Frame.indexRowsDate "Date" |> Frame.dropSeries "Date"
+    |> Frame.indexRowsString "Date" 
+    |> Frame.mapRowKeys (fun s -> DateTime.Parse(s, cz) )
   actual |> shouldEqual expected
 
 [<Test>]
@@ -113,15 +138,33 @@ let ``Can create frame from IDataReader``() =
   Frame.ReadReader(dt.CreateDataReader())
   |> shouldEqual expected
 
+// ------------------------------------------------------------------------------------------------
+// Constructing frames and getting frame data
+// ------------------------------------------------------------------------------------------------
 
 [<Test>]
 let ``Construction of frame from columns respects specified order``() =
   let df = 
-    Frame.ofColumns
+    frame
       [ "Z" => Series.ofValues [ 1 .. 10 ]
         "X" => Series.ofValues [ 1 .. 10 ] ]
   df.ColumnKeys |> List.ofSeq
   |> shouldEqual ["Z"; "X"]
+
+[<Test>]
+let ``Can create frame from float[,] and get data as float[,]``() =
+  let data = Array2D.init 5000 200 (fun x y -> float (x+y))
+  let data' = data |> Frame.ofArray2D |> Frame.toArray2D
+  data' |> shouldEqual data
+
+[<Test>]
+let ``Creating frame from sorted series returns sorted frame``() =
+  let s1 = series [ 1 => 'a'; 2 => 'a' ]
+  let s2 = series [ 2 => 'a'; 3 => 'a' ]
+  let df1 = frame [ "A" => s1; "B" => s2 ]
+  let df2 = frame [ "A" => s2; "B" => s1 ]
+  df1.RowIndex.IsOrdered  |> shouldEqual true
+  df2.RowIndex.IsOrdered  |> shouldEqual true
 
 // ------------------------------------------------------------------------------------------------
 // Input and output (from records)
@@ -133,7 +176,7 @@ type Stock = { Date : DateTime; Volume : int; Price : Price }
 
 let typedRows () = 
   let msft = MSFT.Load(__SOURCE_DIRECTORY__ + "/data/MSFT.csv")
-  [| for r in msft.Data -> 
+  [| for r in msft.Rows -> 
       let p = { Open = r.Open; Close = r.Close; High = r.High; Low = r.High }
       { Date = r.Date; Volume = r.Volume; Price = p } |]
 let typedPrices () = 
@@ -145,6 +188,13 @@ let ``Can read simple sequence of records`` () =
   let df = Frame.ofRecords prices
   set df.ColumnKeys |> shouldEqual (set ["Open"; "High"; "Low"; "Close"])
   df |> Frame.countRows |> shouldEqual prices.Length
+
+[<Test>]  
+let ``Can read simple sequence of records using a specified column as index`` () =
+  let rows = typedRows ()
+  let df = Frame.ofRecords<DateTime>(rows, "Date") 
+  set df.ColumnKeys |> shouldEqual (set ["Volume"; "Price"])
+  df.RowKeys |> Seq.head |> shouldEqual rows.[0].Date
 
 [<Test>]  
 let ``Can expand properties of a simple record sequence`` () =
@@ -214,7 +264,27 @@ let ``Can create frame from 100k of three element tuples (in less than a few sec
         for i in 0 .. 1000 do
           yield DateTime.Today.AddDays(float d), i.ToString(), 1.0 |]
   let df = Frame.ofValues values
-  df |> Frame.sum |> Series.sum |> int |> shouldEqual 101101
+  df |> Stats.sum |> Stats.sum |> int |> shouldEqual 101101
+
+[<Test>]
+let ``Reconstructing frame from its columns preserves types of vectors``() =
+  let df = 
+    frame [ "A" =?> series [ 1 => 1.0; 2 => 2.0 ]
+            "B" =?> series [ 1 => "a"; 2 => "b" ] ]
+  let df' = df.Columns |> Frame.ofColumns
+
+  let types = df.GetFrameData().Columns |> Seq.map (fun (t, _) -> t.Name) |> List.ofSeq
+  let types' = df'.GetFrameData().Columns |> Seq.map (fun (t, _) -> t.Name) |> List.ofSeq
+  types |> shouldEqual types'
+
+[<Test>]
+let ``Reconstructing frame from its columns does not break equals (#91)``() =
+  let df = 
+    frame [ "A" =?> series [ 1 => 1.0; 2 => 2.0 ]
+            "B" =?> series [ 1 => "a"; 2 => "b" ] ]
+  let df' = df.Columns |> Frame.ofColumns
+  df |> shouldEqual df'
+
 
 // ------------------------------------------------------------------------------------------------
 // Accessor testing
@@ -226,9 +296,9 @@ let ``Can retrieve a series according to type parameter`` () =
   let s2 = series [| 1 => ("a",1.0); 2 => ("b",2.0) |]
   let f = frame [ "A" => s1 ]
   f?B <- s2
-  f.GetAllSeries<int*int>() |> shouldEqual ( seq [ KeyValuePair("A", s1) ] )
-  f.GetAllSeries<string*float>() |> shouldEqual ( seq [ KeyValuePair("B", s2) ] )
-  f.GetAllSeries<int*float>() |> shouldEqual Seq.empty
+  f.GetAllColumns<int*int>() |> shouldEqual ( seq [ KeyValuePair("A", s1) ] )
+  f.GetAllColumns<string*float>() |> shouldEqual ( seq [ KeyValuePair("B", s2) ] )
+  f.GetAllColumns<int*float>() |> shouldEqual Seq.empty
 
 [<Test>]
 let ``Can do fuzzy lookup on frame rows and cols`` () =
@@ -237,33 +307,177 @@ let ``Can do fuzzy lookup on frame rows and cols`` () =
   let s3 = series [| "a" => 7.0; "c" => 8.0; "e" => 9.0 |]  
   let f = frame [ 1 => s1; 3 => s2; 5 => s3 ]    
 
-  f |> Frame.tryLookupRow "b" Lookup.NearestSmaller |> shouldEqual ( Some <| series [ 1 => 1.0; 3 => 4.0; 5 => 7.0 ] )
-  f |> Frame.tryLookupRow "b" Lookup.NearestGreater |> shouldEqual ( Some <| series [ 1 => 2.0; 3 => 5.0; 5 => 8.0 ] )
-  f |> Frame.tryLookupRow "f" Lookup.NearestGreater |> shouldEqual None
+  f |> Frame.tryLookupRow "b" Lookup.ExactOrSmaller |> shouldEqual ( Some <| series [ 1 => 1.0; 3 => 4.0; 5 => 7.0 ] )
+  f |> Frame.tryLookupRow "b" Lookup.ExactOrGreater |> shouldEqual ( Some <| series [ 1 => 2.0; 3 => 5.0; 5 => 8.0 ] )
+  f |> Frame.tryLookupRow "f" Lookup.ExactOrGreater |> shouldEqual None
 
-  f |> Frame.tryLookupRowObservation "b" Lookup.NearestSmaller |> shouldEqual (Some ("a", series [ 1 => 1.0; 3 => 4.0; 5 => 7.0 ]))
-  f |> Frame.tryLookupRowObservation "b" Lookup.NearestGreater |> shouldEqual (Some ("c", series [ 1 => 2.0; 3 => 5.0; 5 => 8.0 ]))
-  f |> Frame.tryLookupRowObservation "f" Lookup.NearestGreater |> shouldEqual None
+  f |> Frame.tryLookupRowObservation "b" Lookup.ExactOrSmaller |> shouldEqual (Some ("a", series [ 1 => 1.0; 3 => 4.0; 5 => 7.0 ]))
+  f |> Frame.tryLookupRowObservation "b" Lookup.ExactOrGreater |> shouldEqual (Some ("c", series [ 1 => 2.0; 3 => 5.0; 5 => 8.0 ]))
+  f |> Frame.tryLookupRowObservation "f" Lookup.ExactOrGreater |> shouldEqual None
 
-  f |> Frame.tryLookupCol 2 Lookup.NearestSmaller |> shouldEqual ( Some s1 )
-  f |> Frame.tryLookupCol 2 Lookup.NearestGreater |> shouldEqual ( Some s2 )
-  f |> Frame.tryLookupCol 6 Lookup.NearestGreater |> shouldEqual None
+  f |> Frame.tryLookupCol 2 Lookup.ExactOrSmaller |> shouldEqual ( Some s1 )
+  f |> Frame.tryLookupCol 2 Lookup.ExactOrGreater |> shouldEqual ( Some s2 )
+  f |> Frame.tryLookupCol 6 Lookup.ExactOrGreater |> shouldEqual None
 
-  f |> Frame.tryLookupColObservation 2 Lookup.NearestSmaller |> shouldEqual (Some (1, s1))
-  f |> Frame.tryLookupColObservation 2 Lookup.NearestGreater |> shouldEqual (Some (3, s2))
-  f |> Frame.tryLookupColObservation 6 Lookup.NearestGreater |> shouldEqual None
+  f |> Frame.tryLookupColObservation 2 Lookup.ExactOrSmaller |> shouldEqual (Some (1, s1))
+  f |> Frame.tryLookupColObservation 2 Lookup.ExactOrGreater |> shouldEqual (Some (3, s2))
+  f |> Frame.tryLookupColObservation 6 Lookup.ExactOrGreater |> shouldEqual None
+
+[<Test>]
+let  ``Can access floats from ObjectSeries rows`` () =
+  let df = frame [ "X" => series [| "a" => 1.0; "c" => 2.0; "e" => 3.0 |]
+                   "Y" => series [| "a" => 4.0; "c" => nan; "e" => 6.0 |] ]    
+
+  let df' = frame [ "X" => series [| "e" => 3.0 |]
+                    "Y" => series [| "e" => 6.0 |] ]    
+
+  let filt = df |> Frame.filterRows(fun _ r -> r?X >= 2.0 && not(Double.IsNaN(r?Y)))
+  filt |> shouldEqual df'
+
+  let testInvalidKey() = df |> Frame.filterRows(fun _ r -> r?Z >= 2.0) |> ignore
+  testInvalidKey |> should throw (typeof<KeyNotFoundException>)
+
+[<Test>]
+let ``Filter all rows keeps column keys`` () =
+  let df = frame [ "X" => series [| "a" => 1.0; "c" => 2.0; "e" => 3.0 |]
+                   "Y" => series [| "a" => 4.0; "c" => nan; "e" => 6.0 |] ]    
+
+  let filt = df |> Frame.filterRows (fun _ _ -> false)
+  filt.RowCount |> shouldEqual 0
+  filt.ColumnKeys |> shouldEqual (Seq.ofList ["X"; "Y"])
+  filt.["X"] |> shouldEqual (series [])
+  filt.["Y"] |> shouldEqual (series [])
+  (fun () -> filt.["Z"] |> ignore) |> should throw (typeof<ArgumentException>)
+
+// ------------------------------------------------------------------------------------------------
+// Row access
+// ------------------------------------------------------------------------------------------------
+
+let rowSample() = 
+  frame [ "X" => series [| "a" => 1.0; "c" => 2.0; "e" => 3.0 |]
+          "Y" => series [| "a" => 4.0; "c" => nan; "e" => 6.0 |] ]    
+
+[<Test>]
+let ``Accessing row via row offset work`` () =
+  let actual = rowSample().GetRowAt<int>(2)
+  actual |> shouldEqual <| series [ "X" => 3; "Y" => 6 ]
+
+[<Test>]
+let ``Accessing row via invalid row offset throws an exception`` () =
+  (fun () -> rowSample().GetRowAt<int>(4) |> ignore)
+  |> should throw (typeof<ArgumentOutOfRangeException>)
+
+[<Test>]
+let ``Accessing row via row key works`` () =
+  let actual = rowSample().GetRow<int>("e")
+  actual |> shouldEqual <| series [ "X" => 3; "Y" => 6 ]
+
+[<Test>]
+let ``Accessing row via missing row key returns missing`` () =
+  let actual = rowSample().TryGetRow<int>("f")
+  actual.HasValue |> shouldEqual false
+
+[<Test>]
+let ``Accessing row via missing row key with lookup works`` () =
+  let actual = rowSample().GetRow<int>("f", Lookup.ExactOrSmaller)
+  actual |> shouldEqual <| series [ "X" => 3; "Y" => 6 ]
+
+[<Test>]
+let ``Accessing row via row key with exclusive smaller lookup works`` () =
+  let actual = rowSample().GetRow<int>("b", Lookup.Smaller)
+  actual |> shouldEqual <| series [ "X" => 1; "Y" => 4 ]
+  let actual = rowSample().GetRow<int>("c", Lookup.Smaller)
+  actual |> shouldEqual <| series [ "X" => 1; "Y" => 4 ]
+
+[<Test>]
+let ``Accessing row via row key with exclusive greater lookup works`` () =
+  let actual = rowSample().GetRow<int>("c", Lookup.Greater)
+  actual |> shouldEqual <| series [ "X" => 3; "Y" => 6 ]
+  let actual = rowSample().GetRow<int>("d", Lookup.Greater)
+  actual |> shouldEqual <| series [ "X" => 3; "Y" => 6 ]
+
+[<Test>]
+let ``Accessing row observation via missing row key with lookup works`` () =
+  let actual = rowSample().TryGetRowObservation<int>("f", Lookup.ExactOrSmaller)
+  actual.Value.Key |> shouldEqual "e"
+  actual.Value.Value |> shouldEqual <| series [ "X" => 3; "Y" => 6 ]
+
+[<Test>]
+let ``Accessing row observation via missing row key returns missing`` () =
+  let actual = rowSample().TryGetRowObservation<int>("f", Lookup.Exact)
+  actual.HasValue |> shouldEqual false
+
+// ------------------------------------------------------------------------------------------------
+// take, takeLast, skip, skipLast
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can take N elements from front and back`` () =
+  let s1 = series [ for i in 1 .. 100 -> i => float i]
+  let s2 = series [ for i in 1 .. 100 -> i => "N" + (string i) ]
+  let df = frame [ "S1" =?> s1; "S2" =?> s2 ]
+  let empty = frame ["S1" =?> Series<int, float>([], []); "S2" =?> Series<int, string>([], [])]
+
+  Frame.take 2 df |> shouldEqual <| frame ["S1" =?> series [1 => 1.0; 2 => 2.0]; "S2" =?> series [1 => "N1"; 2 => "N2"] ]
+  Frame.take 100 df |> shouldEqual <| df
+  Frame.take 0 df |> shouldEqual <| empty
+
+  Frame.takeLast 2 df |> shouldEqual <| frame ["S1" =?> series [99 => 99.0; 100 => 100.0]; "S2" =?> series [99 => "N99"; 100 => "N100"] ]
+  Frame.takeLast 100 df |> shouldEqual <| df
+  Frame.takeLast 0 df |> shouldEqual <| empty
+
+[<Test>]
+let ``Can skip N elements from front and back`` () =
+  let s1 = series [ for i in 1 .. 100 -> i => float i]
+  let s2 = series [ for i in 1 .. 100 -> i => "N" + (string i) ]
+  let df = frame [ "S1" =?> s1; "S2" =?> s2 ]
+  let empty = frame ["S1" =?> Series<int, float>([], []); "S2" =?> Series<int, string>([], [])]
+
+  Frame.skip 98 df |> shouldEqual <| frame ["S1" =?> series [99 => 99.0; 100 => 100.0]; "S2" =?> series [99 => "N99"; 100 => "N100"] ]
+  Frame.skip 100 df |> shouldEqual <| empty
+  Frame.skip 0 df |> shouldEqual <| df
+
+  Frame.skipLast 98 df |> shouldEqual <| frame ["S1" =?> series [1 => 1.0; 2 => 2.0]; "S2" =?> series [1 => "N1"; 2 => "N2"] ]
+  Frame.skipLast 100 df |> shouldEqual <| empty 
+  Frame.skipLast 0 df |> shouldEqual <| df
 
 
+[<Test>]  
+let ``Frame.diff and Frame.shift correctly return empty frames`` () =
+  let empty : Frame<int, string> = frame [ "A" => (series [] : Series<int, float>) ]
+  empty |> Frame.shift 1 |> Frame.countRows |> shouldEqual 0
+  empty |> Frame.diff 1 |> shouldEqual <| empty
+
+  let single : Frame<int, string> = frame [ "A" => series [ 1 => 1.0 ] ]
+  single |> Frame.shift -2 |> Frame.countRows |> shouldEqual 0
+  single |> Frame.diff -1 |> shouldEqual <| empty
 
 // ------------------------------------------------------------------------------------------------
 // Stack & unstack
 // ------------------------------------------------------------------------------------------------
 
 [<Test>]
-let slowStack() = 
+let ``Can stack frame with 200x500 data frame``() = 
   let big = frame [ for d in 0 .. 200 -> string d => series [ for i in 0 .. 500 -> string i => 1.0 ] ]
   let stacked = Frame.stack big 
   stacked |> Frame.countRows |> shouldEqual 100701
+
+[<Test>]
+let ``Values in a stacked frame can be expanded`` () =
+  let df = 
+    [ "a" => series [ 0 => 1.0; 1 => 2.0; 2 => 3.0 ]; 
+      "b" => series [ 0 => 5.0; 1 => 6.0; 2 => nan ] ] |> frame
+  let res = df |> Frame.zip (fun a b -> a, b) df |> Frame.stack |> Frame.expandCols ["Value"]
+  let actual = res.Rows.[0].As<obj>() 
+  let expected = series [ "Row" => box 0; "Column" => box "a"; "Value.Item1" => box 1.0; "Value.Item2" => box 1.0]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Frame.stack preserves type of values`` () = 
+  let df = frame [ "S1" =?> series [1 => 1]; "S2" =?> series [1 => 1.0 ]]
+  let res = df |> Frame.stack 
+  let colTypes = res.GetFrameData().Columns |> Seq.map (fun (ty,_) -> ty.Name) |> List.ofSeq
+  colTypes |> shouldEqual ["Int32"; "String"; "Double"]
 
 [<Test>]
 let ``Can group 10x5k data frame by row of type string (in less than a few seconds)`` () =
@@ -284,13 +498,15 @@ let ``Can group 10x5k data frame by row of type string and nest it (in less than
 
 [<Test>]
 let ``Applying numerical operation to frame does not affect non-numeric series`` () =
-  let df = msft() * 2.0
-  let actual = df.GetSeries<DateTime>("Date").GetAt(0).Date 
+  let df = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/MSFT.csv", inferRows=10) * 2.0
+  let actual = df.GetColumn<DateTime>("Date").GetAt(0).Date 
   actual |> shouldEqual (DateTime(2012, 1, 27))
   
 [<Test>]
 let ``Can perform numerical operation with a scalar on data frames`` () =
   let df = msft() 
+
+  (-df)?Open.GetAt(66) |> shouldEqual (-df?Open.GetAt(66))
 
   (df * 2.0)?Open.GetAt(66) |> shouldEqual (df?Open.GetAt(66) * 2.0)
   (df / 2.0)?Open.GetAt(66) |> shouldEqual (df?Open.GetAt(66) / 2.0)
@@ -336,7 +552,7 @@ let ``Can perform numerical operation with a series on data frames`` () =
   
 [<Test>]
 let ``Can perform pointwise numerical operations on two frames`` () =
-  let df1 = msft() |> Frame.orderRows
+  let df1 = msft() |> Frame.sortRowsByKey
   let df2 = df1 |> Frame.shift 1
   let opens1 = df1?Open
   let opens2 = df2?Open
@@ -346,6 +562,42 @@ let ``Can perform pointwise numerical operations on two frames`` () =
   (df2 * df1)?Open.GetAt(66) |> shouldEqual (opens2.GetAt(66) * opens1.GetAt(66))
   (df2 / df1)?Open.GetAt(66) |> shouldEqual (opens2.GetAt(66) / opens1.GetAt(66))
 
+[<Test>]
+let ``Applying (+) on frame & series introduces missing values`` () = 
+  let s1 = series [ 2 => 1.0 ]
+  let s2 = series [ 1 => 1.0; 2 => 1.0 ]
+  let f1 = frame  [ "S1" => s1 ]
+  let f2 = frame  [ "S2" => s2 ]
+
+  // Returned series should contain 'NA' when key is only in one series
+  (f1 + s2)?S1 |> shouldEqual <| series [ 1 => nan; 2 => 2.0 ]
+  (s1 + f2)?S2 |> shouldEqual <| series [ 1 => nan; 2 => 2.0 ]
+  // This should be the same as adding two series
+  (f1 + s2)?S1 |> shouldEqual <| s1 + s2
+  (s1 + f2)?S2 |> shouldEqual <| s1 + s2
+
+[<Test>]
+let ``Applying (+) on frame & series preserves non-numeric columns`` () =
+  let s1 = series [ 3 => 1.0 ]
+  let s2 = series [ 2 => 1.0 ]
+  let f1 = frame  [ "S1" =?> series [ 1 => 1.0; 3 => 2.0]; "S2" =?> series [ 1 => "ahoj"; 3 => "hi"] ]
+
+  // Non-numeric series stays the same
+  (f1 - s1).GetColumn<string>("S2") 
+  |> shouldEqual <| f1.GetColumn<string>("S2")
+
+[<Test>]
+let ``Applying (+) on frame & series expands non-numeric columns`` () =
+  let s1 = series [ 3 => 1.0 ]
+  let s2 = series [ 2 => 1.0 ]
+  let f1 = frame  [ "S1" =?> series [ 1 => 1.0; 3 => 2.0]; "S2" =?> series [ 1 => "ahoj"; 3 => "hi"] ]
+
+  // Non-numeric series is expanded to match new keys
+  (f1 - s2).GetColumn<string>("S2") |> Series.dropMissing 
+  |> shouldEqual <| f1.GetColumn<string>("S2")
+  (f1 - s2).GetColumn<string>("S2") |> Series.tryGet 2 
+  |> shouldEqual None
+
 // ------------------------------------------------------------------------------------------------
 // Operations - append
 // ------------------------------------------------------------------------------------------------
@@ -354,7 +606,7 @@ let ``Can perform pointwise numerical operations on two frames`` () =
 let ``Can append two frames with disjoint columns`` () = 
   let df1 = Frame.ofColumns [ "A" => series [ for i in 1 .. 5 -> i, i ] ]
   let df2 = Frame.ofColumns [ "B" => series [ for i in 1 .. 5 -> i, i ] ]
-  let actual = df1.Append(df2) 
+  let actual = df1.Merge(df2) 
   actual.Rows.[3].GetAt(0) |> shouldEqual (box 3)
   actual.Rows.[3].GetAt(1) |> shouldEqual (box 3)
 
@@ -362,7 +614,7 @@ let ``Can append two frames with disjoint columns`` () =
 let ``Appending works on overlapping frames with missing values`` () =
   let df1 = Frame.ofColumns [ "A" => series [1 => Double.NaN; 2 => 1.0] ]
   let df2 = Frame.ofColumns [ "A" => series [2 => Double.NaN; 1 => 1.0] ]
-  let actual = df1.Append(df2)
+  let actual = df1.Merge(df2)
   actual.Columns.["A"] |> Series.mapValues (unbox<float>) 
   |> shouldEqual (series [1 => 1.0; 2 => 1.0])
 
@@ -370,7 +622,7 @@ let ``Appending works on overlapping frames with missing values`` () =
 let ``Appending fails on overlapping frames with overlapping values`` () =
   let df1 = Frame.ofColumns [ "A" => series [1 => Double.NaN; 2 => 1.0] ]
   let df2 = Frame.ofColumns [ "A" => series [2 => 1.0] ]
-  (fun () -> df1.Append(df2) |> ignore) |> should throw (typeof<InvalidOperationException>)
+  (fun () -> df1.Merge(df2) |> ignore) |> should throw (typeof<InvalidOperationException>)
 
 [<Test>]
 let ``Can append two frames with partially overlapping columns`` () = 
@@ -378,7 +630,7 @@ let ``Can append two frames with partially overlapping columns`` () =
   let df2 = Frame.ofColumns 
               [ "A" => series [ 6 => 10 ]
                 "B" => series [ for i in 1 .. 5 -> i, i ] ]
-  let actual = df1.Append(df2)
+  let actual = df1.Merge(df2)
   actual.Rows.[3].GetAt(0) |> shouldEqual (box 3)
   actual.Rows.[3].GetAt(1) |> shouldEqual (box 3)
   actual.Rows.[6].GetAt(0) |> shouldEqual (box 10)
@@ -388,18 +640,31 @@ let ``Can append two frames with partially overlapping columns`` () =
 let ``Can append two frames with single rows and keys with comparison that fails at runtime`` () = 
   let df1 = Frame.ofColumns [ "A" => series [ ([| 0 |], 0) => "A" ] ]
   let df2 = Frame.ofColumns [ "A" => series [ ([| 0 |], 1) => "A" ] ]
-  df1.Append(df2).RowKeys |> Seq.length |> shouldEqual 2
+  df1.Merge(df2).RowKeys |> Seq.length |> shouldEqual 2
  
 [<Test>]
 let ``Can append multiple frames`` () =
   let df1 = Frame.ofColumns [ "A" => series [ for i in 1 .. 5 -> i, i ] ]
   let df2 = Frame.ofColumns [ "B" => series [ for i in 1 .. 5 -> i, i ] ]
   let df3 = Frame.ofColumns [ "B" => series [ for i in 6 .. 9 -> i, i ] ]
-  let actual = Frame.appendN [df1;df2;df3]
+  let actual = Frame.mergeAll [df1;df2;df3]
   actual.Rows.[3].GetAt(0) |> shouldEqual (box 3)
   actual.Rows.[3].GetAt(1) |> shouldEqual (box 3)
   actual.Rows.[8].GetAt(1) |> shouldEqual (box 8)
   actual.Rows.[8].TryGetAt(0).HasValue |> shouldEqual false
+
+[<Test>]
+let ``AppendN works on non-primitives`` () =
+  let df = frame []
+  df?X <- series [ "a" => Decimal(1.0); "b" => Decimal(1.0); "c" => Decimal(2.0); "d" => Decimal(2.0)]
+  df?Y <- series [ "a" => 1; "b" => 1; "c" => 2; "d" => 2]
+
+
+  let df2 = df |> Frame.groupRowsByString("Y") 
+               |> Frame.nest
+               |> Frame.unnest
+
+  df2.RowCount |> shouldEqual df.RowCount
 
 // ------------------------------------------------------------------------------------------------
 // Operations - zip
@@ -423,27 +688,47 @@ let ``Can inner/outer/left/right join row keys when aligning``()  =
 let ``Can zip and subtract numerical values in MSFT data set``() = 
   let df1 = msft()
   let df2 = msft()
-  let actual = df1.Zip(df2, fun a b -> a - b)
+  let actual = df1.Zip<int, _, _>(df2, fun a b -> a - b)
   let values = actual.GetAllValues<int>()
   values |> Seq.length |> shouldEqual (6 * (df1 |> Frame.countRows))
   values |> Seq.forall ((=) 0) |> shouldEqual true
 
 [<Test>]
 let ``Can zip and subtract numerical values in MSFT data set; with some rows dropped``() = 
-  let df1 = (msft() |> Frame.orderRows).Rows.[DateTime(2000, 1, 1) ..]
+  let df1 = (msft() |> Frame.sortRowsByKey).Rows.[DateTime(2000, 1, 1) ..]
   let df2 = msft()
-  let values = df1.Zip(df2, fun a b -> a - b).GetAllValues<int>()
+  let values = df1.Zip<int, _, _>(df2, fun a b -> a - b).GetAllValues<int>()
   values |> Seq.length |> shouldEqual (6 * (df1 |> Frame.countRows))
   values |> Seq.forall ((=) 0) |> shouldEqual true
 
 [<Test>]
 let ``Can zip and subtract numerical values in MSFT data set; with some columns dropped``() = 
   let df1 = msft()
-  df1.DropSeries("Adj Close")
+  df1.DropColumn("Adj Close")
   let df2 = msft()
-  let zipped = df1.Zip(df2, fun a b -> a - b)
-  zipped?``Adj Close`` |> Series.sum |> should (be greaterThan) 0.0
-  zipped?Low |> Series.sum |> shouldEqual 0.0
+  let zipped = df1.Zip<int, _, _>(df2, fun a b -> a - b)
+  zipped?``Adj Close`` |> Stats.sum |> should (be greaterThan) 0.0
+  zipped?Low |> Stats.sum |> shouldEqual 0.0
+
+[<Test>]
+let ``Can zip frames containing values of complex types`` () =  
+  let df = frame [ "A" => Series.ofValues [2 .. 2 .. 20]; "B" => Series.ofValues [1 .. 10 ] ]
+  let df1 = df.Zip<int, int, int*int>(df, fun a b -> a,b)
+  let df2 = df1.Zip<int*int, int, (int*int)*int>(df, fun a b -> (a,b))
+  let actual = df2.Rows.[0].As<(int * int) * int>()
+  actual |> shouldEqual <| series [ "A" => ((2,2),2); "B" => ((1,1), 1)]
+
+[<Test>]
+let ``Can zip frames containing values of complex types without annotations`` () =  
+  let df = frame [ "A" => Series.ofValues [2 .. 2 .. 20]; "B" => Series.ofValues [1 .. 10 ] ]
+  let df1 = df.Zip(df, fun a b -> a,b)
+  let df2 = df1.Zip(df, fun a b -> (a,b))
+  
+  let ab, c = unbox<obj * obj> (df2.Rows.[0].["A"])
+  let a, b = unbox<obj * obj> ab
+  a |> shouldEqual (box 2)
+  b |> shouldEqual (box 2)
+  c |> shouldEqual (box 2)
 
 // ------------------------------------------------------------------------------------------------
 // Operations - join, align
@@ -469,7 +754,7 @@ let ``Can left-align ordered frames - nearest smaller returns missing if no smal
   // after left join with NearestSmaller option
   let daysTimesPrevL = 
       (daysFrame, timesFrame) 
-      ||> Frame.joinAlign JoinKind.Left Lookup.NearestSmaller
+      ||> Frame.joinAlign JoinKind.Left Lookup.ExactOrSmaller
 
   daysTimesPrevL?Times.TryGetAt(0) |> shouldEqual OptionalValue.Missing
   daysTimesPrevL?Times.TryGetAt(1) |> shouldEqual (OptionalValue 0.5)
@@ -482,7 +767,7 @@ let ``Can left-align ordered frames - nearest greater always finds greater value
   // all values in Times must be as in original series
   let daysTimesNextL = 
       (daysFrame, timesFrame) 
-      ||> Frame.joinAlign JoinKind.Left Lookup.NearestGreater
+      ||> Frame.joinAlign JoinKind.Left Lookup.ExactOrGreater
         
   daysTimesNextL?Times.TryGetAt(0) |> shouldEqual (OptionalValue 0.5)
   daysTimesNextL?Times.TryGetAt(1) |> shouldEqual (OptionalValue 1.5)
@@ -494,7 +779,7 @@ let ``Can right-align ordered frames - nearest smaller always finds smaller valu
   // all values in Days must be as in original series
   let daysTimesPrevR = 
       (daysFrame, timesFrame) 
-      ||> Frame.joinAlign JoinKind.Right Lookup.NearestSmaller
+      ||> Frame.joinAlign JoinKind.Right Lookup.ExactOrSmaller
   
   daysTimesPrevR?Days.TryGetAt(0) |> shouldEqual (OptionalValue 0.0)
   daysTimesPrevR?Days.TryGetAt(1) |> shouldEqual (OptionalValue 1.0)
@@ -506,7 +791,7 @@ let ``Can right-align ordered frames - nearest greater returns missing if no gre
   // last point in Days must be missing after joining
   let daysTimesNextR = 
       (daysFrame, timesFrame) 
-      ||> Frame.joinAlign JoinKind.Right Lookup.NearestGreater
+      ||> Frame.joinAlign JoinKind.Right Lookup.ExactOrGreater
   
   daysTimesNextR?Days.TryGetAt(0) |> shouldEqual (OptionalValue 1.0)
   daysTimesNextR?Days.TryGetAt(1) |> shouldEqual (OptionalValue 2.0)
@@ -514,7 +799,8 @@ let ``Can right-align ordered frames - nearest greater returns missing if no gre
 
 [<Test>]
 let ``Can join frame with series`` () =
-  Check.QuickThrowOnFailure(fun (kind:JoinKind) (lookup:Lookup) (keys1:int[]) (keys2:int[]) (data1:float[]) (data2:float[]) -> 
+  Check.QuickThrowOnFailure(fun (kind:JoinKind) (lookup:int) (keys1:int[]) (keys2:int[]) (data1:float[]) (data2:float[]) -> 
+    let lookup = match lookup%3 with 0 -> Lookup.ExactOrGreater | 1 -> Lookup.ExactOrSmaller | _ -> Lookup.Exact 
     let s1 = series (Seq.zip (Seq.sort (Seq.distinct keys1)) data1)
     let s2 = series (Seq.zip (Seq.sort (Seq.distinct keys2)) data2)
     let f1 = Frame.ofColumns ["S1" => s1]
@@ -522,6 +808,39 @@ let ``Can join frame with series`` () =
     let lookup = match kind with JoinKind.Inner | JoinKind.Outer -> Lookup.Exact | _ -> lookup
     f1.Join(f2, kind, lookup) = f1.Join("S2", s2, kind, lookup)
   )
+
+// ------------------------------------------------------------------------------------------------
+// Operations - sorting
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can sort frame``() =
+  let randomOrder        = frame [ "x" => Series.randomOrder ]
+  let randomOrderMissing = frame [ "x" => Series.randomOrderMissing ]
+  let ascending          = frame [ "x" => Series.ascending ]
+  let descending         = frame [ "x" => Series.descending ]
+  let ascendingMissing   = frame [ "x" => Series.ascendingMissing ]
+  let descendingMissing  = frame [ "x" => Series.descendingMissing ]
+
+  let ord1 = randomOrder |> Frame.sortRows "x"
+  ord1 |> shouldEqual ascending
+
+  let ord2 = randomOrder |> Frame.sortRowsBy "x" (fun v -> -v)
+  ord2 |> shouldEqual descending
+
+  let ord3 = randomOrder |> Frame.sortRowsWith "x" (fun a b -> 
+    if a < b then -1 else if a = b then 0 else 1)
+  ord3 |> shouldEqual ascending
+
+  let ord4 = randomOrderMissing |> Frame.sortRows "x"
+  ord4 |> shouldEqual ascendingMissing
+  
+  let ord5 = randomOrderMissing |> Frame.sortRowsBy "x" (fun v -> -v)
+  ord5 |> shouldEqual descendingMissing
+
+  let ord6 = randomOrderMissing |> Frame.sortRowsWith "x" (fun a b -> 
+    if a < b then -1 else if a = b then 0 else 1)
+  ord6 |> shouldEqual ascendingMissing
 
 // ------------------------------------------------------------------------------------------------
 // Operations - fill
@@ -560,7 +879,7 @@ let ``Fill missing values using the specified constant``() =
 let ``Left join fills missing values - search for previous when there is no exact key`` () =
   let miss = Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => Double.NaN; ] ]
   let full = Frame.ofColumns [ "B" => series [ 1 => 2.0; 3 => 3.0 ] ]
-  let joined = full.Join(miss, JoinKind.Left, Lookup.NearestSmaller)
+  let joined = full.Join(miss, JoinKind.Left, Lookup.ExactOrSmaller)
   let expected = series [ 1 => 1.0; 3 => 1.0 ]
   joined?A |> shouldEqual expected
 
@@ -568,7 +887,7 @@ let ``Left join fills missing values - search for previous when there is no exac
 let ``Left join fills missing values - search for previous when there is missing at the exact key`` () =
   let miss = Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => Double.NaN; ] ]
   let full = Frame.ofColumns [ "B" => series [ 1 => 2.0; 2 => 3.0 ] ]
-  let joined = full.Join(miss, JoinKind.Left, Lookup.NearestSmaller)
+  let joined = full.Join(miss, JoinKind.Left, Lookup.ExactOrSmaller)
   let expected = series [ 1 => 1.0; 2 => 1.0 ]
   joined?A |> shouldEqual expected
 
@@ -576,7 +895,7 @@ let ``Left join fills missing values - search for previous when there is missing
 let ``Left zip fills missing values - search for previous when there is no exact key`` () =
   let miss = Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => Double.NaN; ] ]
   let full = Frame.ofColumns [ "A" => series [ 1 => 2.0; 3 => 3.0 ] ]
-  let joined = full.Zip(miss, JoinKind.Inner, JoinKind.Left, Lookup.NearestSmaller, fun a b -> a + b)
+  let joined = full.Zip<float, _, _>(miss, JoinKind.Inner, JoinKind.Left, Lookup.ExactOrSmaller, fun a b -> a + b)
   let expected = series [ 1 => 3.0; 3 => 4.0 ]
   joined?A |> shouldEqual expected
 
@@ -584,7 +903,7 @@ let ``Left zip fills missing values - search for previous when there is no exact
 let ``Left zip only fills missing values in joined series`` () =
   let miss = Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => Double.NaN; ] ]
   let full = Frame.ofColumns [ "A" => series [ 1 => 2.0; 2 => 3.0 ] ]
-  let joined = miss.Zip(full, JoinKind.Inner, JoinKind.Left, Lookup.NearestSmaller, fun a b -> a + b)
+  let joined = miss.Zip<float, _, _>(full, JoinKind.Inner, JoinKind.Left, Lookup.ExactOrSmaller, fun a b -> a + b)
   let expected = series [ 1 => 3.0; 2 => Double.NaN ]
   joined?A |> shouldEqual expected
 
@@ -657,19 +976,24 @@ let ndA = [ DateTime(2013,12,31) => 100.0] |> series
 let ndB = [ DateTime(2013,12,31) => 1000.0 ] |> series
 let netDebt =  [ "A" => ndA; "B" => ndB ] |> Frame.ofColumns
 
+let lift2 f a b = 
+    match a, b with
+    | Some x, Some y -> Some(f x y)
+    | _              -> None
+
 [<Test>]
 let ``Can zip-align frames with inner-join left-join nearest-smaller options`` () =
   let mktcapA = 
     (pxA, sharesA)
-    ||> Series.zipAlignInto JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+    ||> Series.zipAlignInto JoinKind.Left Lookup.ExactOrSmaller (lift2 (fun (l:float) r -> l*r))
   let mktcapB = 
     (pxB, sharesB)
-    ||> Series.zipAlignInto JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+    ||> Series.zipAlignInto JoinKind.Left Lookup.ExactOrSmaller (lift2 (fun (l:float) r -> l*r))
   
   // calculate stock mktcap 
   let mktCapCommons = 
     (pxCommons, sharesCommons)
-    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.ExactOrSmaller (fun (l:float) r -> l*r) 
   
   mktCapCommons?A.GetAt(0) |> shouldEqual 1000.0
   mktCapCommons?A.GetAt(1) |> shouldEqual 1010.0
@@ -693,15 +1017,15 @@ let ``Can zip-align frames with different set of columns`` () =
   // calculate stock mktcap 
   let mktCapCommons = 
     (pxCommons, sharesCommons)
-    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.ExactOrSmaller (fun (l:float) r -> l*r) 
   // calculate stock mktcap for prefs
   let mktCapPrefs = 
     (pxPrefs, sharesPrefs)
-    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.ExactOrSmaller (fun (l:float) r -> l*r) 
   // calculate company mktcap 
   let mktCap = 
     (mktCapCommons, mktCapPrefs)
-    ||> Frame.zipAlign JoinKind.Left JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l+r) 
+    ||> Frame.zipAlign JoinKind.Left JoinKind.Left Lookup.ExactOrSmaller (fun (l:float) r -> l+r) 
   
   mktCap?A.GetAt(0) |> shouldEqual 1000.0
   mktCap?A.GetAt(1) |> shouldEqual 1010.0
@@ -725,20 +1049,20 @@ let ``Can zip-align frames with inner-join left-join nearest-greater options`` (
     // calculate stock mktcap 
   let mktCapCommons = 
     (pxCommons, sharesCommons)
-    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.ExactOrSmaller (fun (l:float) r -> l*r) 
   // calculate stock mktcap for prefs
   let mktCapPrefs = 
     (pxPrefs, sharesPrefs)
-    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l*r) 
+    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.ExactOrSmaller (fun (l:float) r -> l*r) 
   // calculate company mktcap 
   let mktCap = 
     (mktCapCommons, mktCapPrefs)
-    ||> Frame.zipAlign JoinKind.Left JoinKind.Left Lookup.NearestSmaller (fun (l:float) r -> l+r) 
+    ||> Frame.zipAlign JoinKind.Left JoinKind.Left Lookup.ExactOrSmaller (fun (l:float) r -> l+r) 
   
   // calculate enterprice value
   let ev = 
     (mktCap, netDebt)
-    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.NearestGreater (fun (l:float) r -> l+r) // net debt is at the year end
+    ||> Frame.zipAlign JoinKind.Inner JoinKind.Left Lookup.ExactOrGreater (fun (l:float) r -> l+r) // net debt is at the year end
   
   ev?A.GetAt(0) |> shouldEqual 1100.0
   ev?A.GetAt(1) |> shouldEqual 1110.0
@@ -787,6 +1111,15 @@ let ``Can group titanic data by boolean column "Survived"``() =
     |> Series.mapValues Frame.countRows
   actual |> shouldEqual (series [false => 549; true => 342])
 
+[<Test>]
+let ``Can group on row keys``() =
+  let df = Frame.ofColumns [ "a" => Series.ofValues [1; 2; 3]; "b" => Series.ofValues [4; 5; 6] ]
+  let actual = 
+    df |> Frame.groupRowsByIndex (fun i -> i % 2) |> Frame.nest |> Series.map (fun _ v -> v.RowCount)
+  let expected =
+    Series.ofValues [2; 1]
+  actual |> shouldEqual expected
+
 // ------------------------------------------------------------------------------------------------
 // Operations - pivot table
 // ------------------------------------------------------------------------------------------------
@@ -822,10 +1155,30 @@ let ``Can index rows using transformation function``() =
     Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => 2.0 ]; 
                       "B" => series [ 1 => 2.0; 2 => 3.0 ] ]
     |> Frame.indexRowsUsing (fun r -> r.GetAs<float>("A") + 2.0)
-
   let expected = 
     Frame.ofColumns [ "A" => series [ 3.0 => 1.0; 4.0 => 2.0 ]; 
                       "B" => series [ 3.0 => 2.0; 4.0 => 3.0 ] ]
-
   actual |> shouldEqual expected
-  
+
+[<Test>]
+let ``Indexing with a column drops the column from the frame by default``() =
+  let sample = 
+    [ "K" =?> series [ 1 => 1; 2 => 2 ]
+      "A" =?> series [ 1 => 1.0; 2 => 2.0 ]
+      "B" =?> series [ 1 => 2.0; 2 => 3.0 ] ] |> frame
+
+  let actual = sample |> Frame.indexRowsInt "K"
+  set actual.ColumnKeys |> shouldEqual <| set ["A"; "B"]
+  let actual = sample.IndexRows<int>("K")
+  set actual.ColumnKeys |> shouldEqual <| set ["A"; "B"]
+  let actual = sample.IndexRows<int>("K", keepColumn=true)
+  set actual.ColumnKeys |> shouldEqual <| set ["K"; "A"; "B"]  
+
+[<Test>]
+let ``Can reindex ordinally``() =
+  let actual = 
+    Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => 2.0 ]; 
+                      "B" => series [ 1 => 2.0; 2 => 3.0 ] ]
+    |> Frame.indexRowsOrdinally
+  let expected = [0; 1] |> Seq.ofList
+  actual.RowKeys |> shouldEqual expected

@@ -17,7 +17,7 @@ we also need  [F# Charting](http://fsharp.github.io/FSharp.Charting), which
 works similarly:
 
 *)
-#I "../../packages/FSharp.Charting.0.87"
+#I "../../packages/FSharp.Charting.0.90.6"
 #I "../../packages/Deedle.0.9.5"
 #load "FSharp.Charting.fsx"
 #load "Deedle.fsx"
@@ -37,6 +37,7 @@ do not actually have to be strings). So, to create a data frame, we first need
 to create a series:
 *)
 
+(*** define-output: create1 ***)
 // Create from sequence of keys and sequence of values
 let dates  = 
   [ DateTime(2013,1,1); 
@@ -51,20 +52,16 @@ Series.ofObservations
   [ DateTime(2013,1,1) => 10.0
     DateTime(2013,1,4) => 20.0
     DateTime(2013,1,8) => 30.0 ]
-// [fsi:val it : Series<DateTime,float> =]
-// [fsi:  1/1/2013 12:00:00 AM -> 10 ]
-// [fsi:  1/4/2013 12:00:00 AM -> 20 ]
-// [fsi:  1/8/2013 12:00:00 AM -> 30 ]
 
+(*** include-it: create1 ***)
+
+(*** define-output: create2 ***)
 // Shorter alternative to 'Series.ofObservations'
 series [ 1 => 1.0; 2 => 2.0 ]
 
 // Create series with implicit (ordinal) keys
 Series.ofValues [ 10.0; 20.0; 30.0 ]
-// [fsi:val it : Series<int,float> =]
-// [fsi:  0 -> 10 ]
-// [fsi:  1 -> 20 ]
-// [fsi:  2 -> 30 ]
+(*** include-it: create2 ***)
 
 (**
 Note that the series type is generic. `Series<K, T>` represents a series
@@ -83,12 +80,8 @@ let rand count = (*[omit:(...)]*)
 
 // A series with values for 10 days 
 let second = Series(dateRange (DateTime(2013,1,1)) 10, rand 10)
-// [fsi:val it : Series<DateTime,float> =]
-// [fsi:  1/1/2013  12:00:00 AM -> 0.957571796121808  ]
-// [fsi:  1/2/2013  12:00:00 AM -> 0.424694305017914  ]
-// [fsi:  ...                      ...              ]
-// [fsi:  1/9/2013  12:00:00 AM -> 0.874667080526551  ]
-// [fsi:  1/10/2013 12:00:00 AM -> 0.308210378656262 ]
+
+(*** include-value: (round (second*100.0))/100.0 ***)
 
 (**
 Now we can easily construct a data frame that has two columns - one representing
@@ -96,12 +89,8 @@ the `first` series and another representing the `second` series:
 *)
 
 let df1 = Frame(["first"; "second"], [first; second])
-// [fsi:val it : Frame<DateTime,strubg> =]
-// [fsi:                           first     second             ]
-// [fsi:  1/1/2013 12:00:00 AM ->  10        0.287487044598668  ]
-// [fsi:  1/2/2013 12:00:00 AM ->  <missing> 0.66628182011949   ]
-// [fsi:  ...                      ...       ...              ]
-// [fsi:  1/10/2013 12:00:00 AM -> <missing> 0.104357822846788  ]
+
+(*** include-value: df1 ***)
 
 (** 
 The type representing a data frame has two generic parameters:
@@ -155,13 +144,8 @@ Finally, we can also load data frame from CSV:
 *)
 let msftCsv = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/stocks/MSFT.csv")
 let fbCsv = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/stocks/FB.csv")
-// [fsi:val fbCsv : Frame<int,string> =]
-// [fsi:         Date       Open  High  Low   Close Volume    Adj Close ]
-// [fsi:  0 ->   2013-08-30 42.02 42.26 41.06 41.29 67587400  41.29     ]
-// [fsi:  1 ->   2013-08-29 40.89 41.78 40.80 41.28 58303400  41.28     ]
-// [fsi:  :      ...        ...   ...   ...   ...   ...       ...       ]
-// [fsi:  321 -> 2012-05-21 36.53 36.66 33.00 34.03 168192700 34.03     ]
-// [fsi:  322 -> 2012-05-18 42.05 45.00 38.00 38.23 573576400 38.23     ]
+
+(*** include-value: fbCsv ***)
 
 (**
 When loading the data, the data frame analyses the values and automatically converts
@@ -191,7 +175,7 @@ are not explicitly included in the index).
 let msftOrd = 
   msftCsv
   |> Frame.indexRowsDate "Date"
-  |> Frame.orderRows
+  |> Frame.sortRowsByKey
 
 (**
 The `indexRowsDate` function uses a column of type `DateTime` as a new index.
@@ -207,6 +191,7 @@ only has the data we're interested (Open & Close) prices and we add a new column
 that shows their difference:
 *)
 
+(*** define-output: plot1 ***)
 // Create data frame with just Open and Close prices
 let msft = msftOrd.Columns.[ ["Open"; "Close"] ]
 
@@ -217,14 +202,16 @@ msft?Difference <- msft?Open - msft?Close
 let fb = 
   fbCsv
   |> Frame.indexRowsDate "Date"
-  |> Frame.orderRows
-  |> Frame.getCols ["Open"; "Close"]
+  |> Frame.sortRowsByKey
+  |> Frame.sliceCols ["Open"; "Close"]
 fb?Difference <- fb?Open - fb?Close
 
 // Now we can easily plot the differences
 Chart.Combine
   [ Chart.Line(msft?Difference |> Series.observations) 
     Chart.Line(fb?Difference |> Series.observations) ]
+
+(*** include-it:plot1 ***)
 
 (**
 When selecting columns using `f.Columns.[ .. ]` it is possible to use a list of columns
@@ -238,6 +225,7 @@ for both Microsoft and Facebook. This is done using the `Join` method - but befo
 can do this, we need to rename their columns, because duplicate keys are not allowed:
 *)
 
+(*** define-output:msfb ***)
 // Change the column names so that they are unique
 let msftNames = ["MsftOpen"; "MsftClose"; "MsftDiff"]
 let msftRen = msft |> Frame.indexColsWith msftNames
@@ -256,13 +244,9 @@ Chart.Rows
   [ Chart.Line(joinedIn?MsftDiff |> Series.observations) 
     Chart.Line(joinedIn?FbDiff |> Series.observations) ]
 
+(*** include-it:msfb ***)
+
 (**
-As a result, you should see a chart that looks something like this:
-
-<div style="text-align:center">
-<img src="images/tutorial-chart.png" />
-</div>
-
 <a name="selecting"></a>
 
 Selecting values and slicing
@@ -305,21 +289,16 @@ let janDates = [ for d in 2 .. 4 -> DateTime(2013, 1, d) ]
 let jan234 = joinedIn.Rows.[janDates]
 
 // Calculate mean of Open price for 3 days
-jan234?MsftOpen |> Series.mean
+jan234?MsftOpen |> Stats.mean
 
 // Get values corresponding to entire January 2013
 let jan = joinedIn.Rows.[DateTime(2013, 1, 1) .. DateTime(2013, 1, 31)] 
-// [fsi:val jan : Frame<DateTime,string> =]
-// [fsi:               FbOpen FbClose FbDiff MsftOpen MsftClose MsftDiff ]
-// [fsi:  1/2/2013  -> 28.00  27.44   -0.55  27.62    27.25     -0.37 ]
-// [fsi:  1/3/2013  -> 27.77  27.88   0.10   27.25    27.63     0.37 ]
-// [fsi:  ...       -> ...    ...     ...    ...      ...       ... ]
-// [fsi:  1/30/2013 -> 31.24  30.98   -0.25  27.85    28.01     0.16 ]              
-// [fsi:  1/31/2013 -> 30.98  29.15   -1.83  27.45    27.79     0.34  ]              
+
+(*** include-value: Frame.map(round (jan*100.0))/100.0 |> Frame.mapRowKeys (fun dt -> dt.ToShortDateString()) ***)
 
 // Calculate means over the period
-jan?FbOpen |> Series.mean
-jan?MsftOpen |> Series.mean
+jan?FbOpen |> Stats.mean
+jan?MsftOpen |> Stats.mean
 
 (**
 The result of the indexing operation is a single data series when you use just a single
@@ -354,18 +333,9 @@ can be used to ilustrate the idea):
 
 let daysSeries = Series(dateRange DateTime.Today 10, rand 10)
 let obsSeries = Series(dateRange DateTime.Now 10, rand 10)
-// [fsi:  ]
-// [fsi:val daysSeries : Series<DateTime,float> =]
-// [fsi:  9/12/2013 12:00:00 AM -> 0.834164640323336  ]
-// [fsi:  9/13/2013 12:00:00 AM -> 0.871085483520797  ]
-// [fsi:  ...                   -> ...                ]
-// [fsi:  9/21/2013 12:00:00 AM -> 0.939047194523293  ]
-// [fsi:  ]
-// [fsi:val obsSeries : Series<DateTime,float> =]
-// [fsi:  9/12/2013 2:38:27 PM -> 0.433889241625503 ]
-// [fsi:  9/13/2013 2:38:27 PM -> 0.318957257233075 ]
-// [fsi:  ...                   -> ...               ] 
-// [fsi:  9/21/2013 2:38:27 PM -> 0.227506533836716 ]
+
+(*** include-value: (round (daysSeries*100.0))/100.0 ***)
+(*** include-value: (round (obsSeries*100.0))/100.0 ***)
 
 (**
 The indexing operation written as `daysSeries.[date]` uses _exact_ semantics so it will 
@@ -374,13 +344,14 @@ additional parameter to specify the required behaviour:
 *)
 
 // Fails, because current time is not present
-daysSeries.[DateTime.Now]
-obsSeries.[DateTime.Now]
+try daysSeries.[DateTime.Now] with _ -> nan
+try obsSeries.[DateTime.Now] with _ -> nan
 
 // This works - we get the value for DateTime.Today (12:00 AM)
-daysSeries.Get(DateTime.Now, Lookup.NearestSmaller)
+daysSeries.Get(DateTime.Now, Lookup.ExactOrSmaller)
 // This does not - there is no nearest key <= Today 12:00 AM
-obsSeries.Get(DateTime.Today, Lookup.NearestSmaller)
+try obsSeries.Get(DateTime.Today, Lookup.ExactOrSmaller)
+with _ -> nan
 
 (**
 Similarly, you can specify the semantics when calling `TryGet` (to get an optional value)
@@ -402,14 +373,14 @@ let obsDaysExact = daysFrame.Join(obsFrame, kind=JoinKind.Left)
 // time in the frame indexed by later times in the day
 let obsDaysPrev = 
   (daysFrame, obsFrame) 
-  ||> Frame.joinAlign JoinKind.Left Lookup.NearestSmaller
+  ||> Frame.joinAlign JoinKind.Left Lookup.ExactOrSmaller
 
 // The first value is missing (because there is no nearest 
 // value with greater key - the first one has the smallest 
 // key) but the rest is available
 let obsDaysNext =
   (daysFrame, obsFrame) 
-  ||> Frame.joinAlign JoinKind.Left Lookup.NearestGreater
+  ||> Frame.joinAlign JoinKind.Left Lookup.ExactOrGreater
 
 (**
 In general, the same operation can usually be achieved using a function from the 
@@ -458,11 +429,11 @@ Now we can get the number of days when Microsoft stock prices were above Faceboo
 other way round:
 *)
 
-joinedOut.GetSeries<string>("Comparison")
+joinedOut.GetColumn<string>("Comparison")
 |> Series.filterValues ((=) "MSFT") |> Series.countValues
 // [fsi:val it : int = 220]
 
-joinedOut.GetSeries<string>("Comparison")
+joinedOut.GetColumn<string>("Comparison")
 |> Series.filterValues ((=) "FB") |> Series.countValues
 // [fsi:val it : int = 103]
 
@@ -496,8 +467,8 @@ Grouping and aggregation
 ------------------------
 
 As a last thing, we briefly look at grouping and aggregation. For more information
-about grouping of time series data, see [the time series features tutorial](timeseries.html)
-and [the data frame features](features.html) contains more about grouping of unordered
+about grouping of time series data, see [the time series features tutorial](series.html)
+and [the data frame features](frame.html) contains more about grouping of unordered
 frames.
 
 We'll use the simplest option which is the `Frame.groupRowsUsing` function (also available
@@ -531,7 +502,7 @@ rows in groups (assuming they are correctly ordered).
 A number of operations can be used on hierarchical indices. For example, we can get
 rows in a specified group (say, May 2013) and calculate means of columns in the group:
 *)
-monthly.Rows.[DateTime(2013,5,1), *] |> Frame.mean
+monthly.Rows.[DateTime(2013,5,1), *] |> Stats.mean
 // [fsi:val it : Series<string,float> =]
 // [fsi:  FbOpen    -> 26.14 ]
 // [fsi:  FbClose   -> 26.35 ]
@@ -544,9 +515,13 @@ monthly.Rows.[DateTime(2013,5,1), *] |> Frame.mean
 The above snippet uses slicing notation that is only available in F# 3.1 (Visual Studio 2013).
 In earlier versions, you can get the same thing using `monthly.Rows.[Lookup1Of2 (DateTime(2013,5,1))]`.
 The syntax indicates that we only want to specify the first part of the key and do not match
-on the second component. We can also use `Frame.meanLevel` to get means for all first-level groups:
+on the second component. We can also use `Frame.getNumericColumns` in combination with 
+`Stats.levelMean` to get means for all first-level groups:
 *)
-monthly |> Frame.meanLevel fst
+monthly 
+|> Frame.getNumericColumns
+|> Series.mapValues (Stats.levelMean fst)
+|> Frame.ofColumns
 
 (**
 Here, we simply use the fact that the key is a tuple. The `fst` function projects the first 

@@ -11,3 +11,6 @@
 * 0.9.10-beta - Support time series in the R plugin
 * 0.9.11-beta - Fix bug when creating empty data frame
 * 0.9.12 - Improved C# compatibility, added C# documentation
+* 1.0.0-alpha1 - API redesign, performance improvements and new features
+* 1.0.0-alpha2 - Update to a new pre-release of RProvider
+* 1.0.0 - Performance and API design improvements

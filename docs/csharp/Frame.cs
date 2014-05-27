@@ -60,12 +60,12 @@ namespace CSharp
 
       // [index-date]
       // Get MSFT & FB stock prices indexed by data
-      var msft = msftRaw.IndexRows<DateTime>("Date").OrderRows();
-      var fb = fbRaw.IndexRows<DateTime>("Date").OrderRows();
+      var msft = msftRaw.IndexRows<DateTime>("Date").SortRowsByKey();
+      var fb = fbRaw.IndexRows<DateTime>("Date").SortRowsByKey();
       
       // And rename columns to avoid overlap
-      msft.RenameSeries(s => "Msft" + s);
-      fb.RenameSeries(s => "Fb" + s);
+      msft.RenameColumns(s => "Msft" + s);
+      fb.RenameColumns(s => "Fb" + s);
       // [/index-date]
 
       // [index-cols]
@@ -103,7 +103,7 @@ namespace CSharp
 
       // This works! Find the value for the nearest smaller key
       // (that is, for the nearest earlier time with value)
-      var joinLeft = fb.Join(msftShift, JoinKind.Left, Lookup.NearestSmaller);
+      var joinLeft = fb.Join(msftShift, JoinKind.Left, Lookup.ExactOrSmaller);
       joinLeft.Print();
       // [/join-lookup]
 
@@ -113,18 +113,18 @@ namespace CSharp
 
       // [series-get]
       // Get MSFT and FB opening prices and calculate the difference
-      var msOpen = joinIn.GetSeries<double>("MsftOpen");
-      var msClose = joinIn.GetSeries<double>("MsftClose");
+      var msOpen = joinIn.GetColumn<double>("MsftOpen");
+      var msClose = joinIn.GetColumn<double>("MsftClose");
       var msDiff = msClose - msOpen;
       // [/series-get]
 
       // [series-dropadd]
       // Drop series from a data frame
-      joinIn.DropSeries("MsftAdj Close");
-      joinIn.DropSeries("FbAdj Close");
+      joinIn.DropColumn("MsftAdj Close");
+      joinIn.DropColumn("FbAdj Close");
 
       // Add new series to a frame
-      joinIn.AddSeries("MsftDiff", msDiff);
+      joinIn.AddColumn("MsftDiff", msDiff);
       joinIn.Print();
       // [/series-dropadd]
 
@@ -137,7 +137,7 @@ namespace CSharp
       // Get row for the first available value after
       // the specified key (1 January 2013)
       var firstJan = joinIn.Rows.Get(new DateTime(2013, 1, 1), 
-        Lookup.NearestGreater);
+        Lookup.ExactOrGreater);
 
       // Get value for a specified column & row keys
       var diff = joinIn["MsftDiff", new DateTime(2013, 1, 4)];
@@ -171,7 +171,7 @@ namespace CSharp
       // Transform all numerical series
       // (round the values to 2 fractional digits)
       var round = 
-        returns.SeriesApply((Series<DateTime, double> numeric) => 
+        returns.ColumnApply((Series<DateTime, double> numeric) => 
           numeric.Select(kvp => Math.Round(kvp.Value, 2)));
       // [/ops-returns]
       round.Print();

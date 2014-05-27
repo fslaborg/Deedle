@@ -13,6 +13,23 @@ type VectorData<'T> =
   | SparseList of ReadOnlyCollection<OptionalValue<'T>>
   | Sequence of seq<OptionalValue<'T>>
 
+  /// Returns only the non-missing (ie present) values within a vector
+  member x.Values : seq<'T> =
+    match x with
+    | DenseList l -> 
+      seq { yield! l }
+    | SparseList l -> 
+      seq { 
+        for v in l do 
+          if v.HasValue then 
+            yield v.Value }
+    | Sequence l -> 
+      seq { 
+        for v in l do 
+          if v.HasValue then 
+            yield v.Value }
+
+
 // --------------------------------------------------------------------------------------
 // Interfaces (generic & non-generic) for representing vectors
 // --------------------------------------------------------------------------------------
@@ -47,11 +64,22 @@ type IVector =
   /// untyped version of `GetValue` method on a typed vector.
   abstract GetObject : Address -> OptionalValue<obj>
 
+  /// Invokes the specified generic function (vector call site) with the current 
+  /// instance of vector passed as a statically typed vector (ie. IVector<ElementType>)
+  abstract Invoke : VectorCallSite<'R> -> 'R
+
+
+/// Represents a generic function `\forall.'T.(IVector<'T> -> 'R)`. The function can be 
+/// generically invoked on an argument of type `IVector` using `IVector.Invoke`
+and VectorCallSite<'R> =
+  abstract Invoke<'T> : IVector<'T> -> 'R
+
+
 /// A generic, typed vector. Represents mapping from addresses to values of type `T`. 
 /// The vector provides a minimal interface that is required by series and can be
 /// implemented in a number of ways to provide vector backed by database or an
 /// alternative representation of data.
-type IVector<'T> = 
+and IVector<'T> = 
   inherit IVector 
   /// Returns value stored in the vector at a specified address. 
   abstract GetValue : Address -> OptionalValue<'T>
@@ -113,6 +141,10 @@ type IVectorValueTransform =
 
 /// Represent a tranformation that is applied when combining N vectors
 type IVectorValueListTransform =
+  /// Returns a binary function that can be used for folding the values iteratively
+  /// (This can return None, which disallows some optimizations, but is fine)
+  abstract GetBinaryFunction<'T> : unit -> option<OptionalValue<'T> * OptionalValue<'T> -> OptionalValue<'T>>
+
   /// Returns a function that combines N values stored in vectors into a new vector value
   abstract GetFunction<'T> : unit -> (OptionalValue<'T> list -> OptionalValue<'T>)
 
@@ -142,8 +174,9 @@ type VectorConstruction =
   /// - this element represent getting one of the variables.
   | Return of VectorHole
 
-  /// Creates an empty vector of the requested type
-  | Empty 
+  /// Creates an empty vector of the requested type and size
+  /// The returned vector is filled with missing values.
+  | Empty of int64 
 
   /// Reorders elements of the vector. Carries a new required vector length and a list
   /// of relocations (each pair of addresses specifies that an element at a new address 

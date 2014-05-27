@@ -50,9 +50,10 @@ module internal JoinHelpers =
   /// When using fancy lookup, first fill values in the vector, before doing the join
   let fillMissing vector lookup = 
     match lookup with
-    | Lookup.NearestSmaller -> Vectors.FillMissing(vector, VectorFillMissing.Direction Direction.Forward)
-    | Lookup.NearestGreater -> Vectors.FillMissing(vector, VectorFillMissing.Direction Direction.Backward)
-    | Lookup.Exact | _ -> vector
+    | Lookup.ExactOrSmaller -> Vectors.FillMissing(vector, VectorFillMissing.Direction Direction.Forward)
+    | Lookup.ExactOrGreater -> Vectors.FillMissing(vector, VectorFillMissing.Direction Direction.Backward)
+    | Lookup.Exact -> vector
+    | _ -> invalidOp "Lookup.Smaller and Lookup.Greater are not supported when joining"
 
   /// Create transformation on indices/vectors representing the join operation
   let createJoinTransformation 
@@ -67,18 +68,30 @@ module internal JoinHelpers =
     if not (thisIndex.IsOrdered && otherIndex.IsOrdered) && lookup <> Lookup.Exact then
       invalidOp "Join/Zip - Lookup can be only used when joining/zipping ordered series/frames."
 
-    match kind with 
+    match kind with
     | JoinKind.Inner ->
-        indexBuilder.Intersect( (thisIndex, vector1), (otherIndex, vector2) )
+        if thisIndex = otherIndex then
+          thisIndex, vector1, vector2
+        else
+          indexBuilder.Intersect( (thisIndex, vector1), (otherIndex, vector2) )
     | JoinKind.Left ->
         let otherRowIndex, vector2 = restrictToRowIndex lookup thisIndex otherIndex vector2
-        let vector2 = fillMissing vector2 lookup
-        let otherRowCmd = indexBuilder.Reindex(otherRowIndex, thisIndex, lookup, vector2, fun _ -> true)
-        thisIndex, vector1, otherRowCmd
+        if lookup = Lookup.Exact && thisIndex = otherRowIndex then
+          thisIndex, vector1, vector2
+        else
+          let vector2 = fillMissing vector2 lookup
+          let otherRowCmd = indexBuilder.Reindex(otherRowIndex, thisIndex, lookup, vector2, fun _ -> true)
+          thisIndex, vector1, otherRowCmd
     | JoinKind.Right ->
         let thisRowIndex, vector1 = restrictToRowIndex lookup otherIndex thisIndex vector1
-        let vector1 = fillMissing vector1 lookup
-        let thisRowCmd = indexBuilder.Reindex(thisRowIndex, otherIndex, lookup, vector1, fun _ -> true)
-        otherIndex, thisRowCmd, vector2
+        if lookup = Lookup.Exact && thisRowIndex = otherIndex then
+          thisIndex, vector1, vector2
+        else
+          let vector1 = fillMissing vector1 lookup
+          let thisRowCmd = indexBuilder.Reindex(thisRowIndex, otherIndex, lookup, vector1, fun _ -> true)
+          otherIndex, thisRowCmd, vector2
     | JoinKind.Outer | _ ->
-        indexBuilder.Union( (thisIndex, vector1), (otherIndex, vector2) )
+        if thisIndex = otherIndex then
+          thisIndex, vector1, vector2
+        else
+          indexBuilder.Union( (thisIndex, vector1), (otherIndex, vector2) )
