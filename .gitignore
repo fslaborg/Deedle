@@ -18,6 +18,8 @@ tests/Deedle.CSharp.Tests/obj
 tests/Deedle.CSharp.Tests/bin
 tests/Deedle.Tests.Console/obj
 tests/Deedle.Tests.Console/bin
+tests/Deedle.PerfTests/obj
+tests/Deedle.PerfTests/bin
 packages/*
 *.vsp
 TestResults.xml

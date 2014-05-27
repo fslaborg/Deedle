@@ -92,6 +92,6 @@
   </Target>
   -->
   <Target Name="AfterBuild">
-    <Copy SourceFiles="..\..\packages\RProvider.1.0.7-alpha\RProvider.fsx" DestinationFolder="$(ProjectDir)..\..\bin" />
+    <Copy SourceFiles="..\..\packages\RProvider.1.0.9\RProvider.fsx" DestinationFolder="$(ProjectDir)..\..\bin" />
   </Target>
 </Project>

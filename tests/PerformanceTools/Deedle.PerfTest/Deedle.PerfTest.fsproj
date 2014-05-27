@@ -48,7 +48,7 @@
       <HintPath>..\..\..\packages\FSharp.Compiler.Service.0.0.44\lib\net40\FSharp.Compiler.Service.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Data">
-      <HintPath>..\..\..\packages\FSharp.Data.2.0.5\lib\net40\FSharp.Data.dll</HintPath>
+      <HintPath>..\..\..\packages\FSharp.Data.2.0.8\lib\net40\FSharp.Data.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">

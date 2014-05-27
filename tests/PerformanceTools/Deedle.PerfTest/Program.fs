@@ -113,16 +113,18 @@ type private PerfRunner() =
   /// in a CSV format for furhter analysis
   let evalPerformance (tests:list<string * Action * int>) =
     [ for name, f, iter in tests do 
+        printf " * %s" name
         f.Invoke()
         let times = 
           [ for i in 1 .. iter -> 
+              printf "."
               let sw = Stopwatch.StartNew()
               f.Invoke()
               float sw.ElapsedMilliseconds ]
         let mean = Seq.average times
         let sdv = sqrt ((times |> Seq.sumBy (fun v -> pown (v - mean) 2)) / (float iter))
         for time in times do yield name, time
-        printfn " * %s (%f+/-%fms)" name mean sdv ]
+        printfn " %s (%f+/-%fms)" name mean sdv ]
     
   /// Evaluate performance for the specified library
   member x.Run(library) = 
