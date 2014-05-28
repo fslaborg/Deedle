@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<head>
+  <title>Vega Scaffold</title>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="http://trifacta.github.com/vega/vega.js"></script>
+  <!--<script src="http://trifacta.github.com/vega/d3.geo.projection.min.js"></script>-->
+</head>
+<body>
+<div id="vis"></div>
+
+<script type="text/javascript">
+// parse a spec and create a visualization view
+function parse(spec) {
+  vg.parse.spec(spec, function(chart) { chart({el:"#vis"}).update(); });
+}
+  parse(JSON.parse('{\
+  "width": 300,\
+  "height": 500,\
+  "data": [\
+    {\
+      "name": "table",\
+      "values": [\
+          {"dir":"0.9.12-baseline", "test":"Accessing float series via object series", "value":14160}, {"dir":"0.9.13", "test":"Accessing float series via object series", "value":3}, {"dir":"0.9.12-baseline", "test":"Building a large (1M items) series from two arrays", "value":1284}, {"dir":"0.9.13", "test":"Building a large (1M items) series from two arrays", "value":13}, {"dir":"0.9.12-baseline", "test":"Diff 20x10k frame by offset 10", "value":8839}, {"dir":"0.9.13", "test":"Diff 20x10k frame by offset 10", "value":82}, {"dir":"0.9.12-baseline", "test":"Get frames columns and re-create frame", "value":4174}, {"dir":"0.9.13", "test":"Get frames columns and re-create frame", "value":17}, {"dir":"0.9.12-baseline", "test":"Group by column and subtract group averages", "value":7855}, {"dir":"0.9.13", "test":"Group by column and subtract group averages", "value":1682}, {"dir":"0.9.12-baseline", "test":"Merge 10 frames of size 1k (repeated Merge)", "value":746}, {"dir":"0.9.13", "test":"Merge 10 frames of size 1k (repeated Merge)", "value":122}, {"dir":"0.9.13", "test":"Merge 1000 ordered 1k long series (single Merge)", "value":2867}, {"dir":"0.9.13", "test":"Merge 1000 unordered 1k long series (single Merge)", "value":1067}, {"dir":"0.9.12-baseline", "test":"Merge 3 ordered 300k long series (repeating Merge)", "value":4790}, {"dir":"0.9.13", "test":"Merge 3 ordered 300k long series (repeating Merge)", "value":730}, {"dir":"0.9.13", "test":"Merge 3 ordered 300k long series (single Merge)", "value":643}, {"dir":"0.9.12-baseline", "test":"Merge 3 unordered 300k long series (repeating Merge)", "value":5566}, {"dir":"0.9.13", "test":"Merge 3 unordered 300k long series (repeating Merge)", "value":957}, {"dir":"0.9.13", "test":"Merge 3 unordered 300k long series (single Merge)", "value":544}, {"dir":"0.9.12-baseline", "test":"Merge 6 ordered 300k long series (repeating Merge)", "value":20415}, {"dir":"0.9.13", "test":"Merge 6 ordered 300k long series (repeating Merge)", "value":2799}, {"dir":"0.9.13", "test":"Merge 6 ordered 300k long series (single Merge)", "value":1764}, {"dir":"0.9.12-baseline", "test":"Merge 6 unordered 300k long series (repeating Merge)", "value":22357}, {"dir":"0.9.13", "test":"Merge 6 unordered 300k long series (repeating Merge)", "value":3211}, {"dir":"0.9.13", "test":"Merge 6 unordered 300k long series (single Merge)", "value":1178}, {"dir":"0.9.12-baseline", "test":"Numerical operators on 100x10k frame and series", "value":9747}, {"dir":"0.9.13", "test":"Numerical operators on 100x10k frame and series", "value":480}, {"dir":"0.9.12-baseline", "test":"Numerical operators on 10x10k frame and series", "value":1101}, {"dir":"0.9.13", "test":"Numerical operators on 10x10k frame and series", "value":56}, {"dir":"0.9.12-baseline", "test":"Numerical operators on 20x10k frame", "value":2429}, {"dir":"0.9.13", "test":"Numerical operators on 20x10k frame", "value":1019}, {"dir":"0.9.12-baseline", "test":"Realign 1M series according to a key array", "value":5638}, {"dir":"0.9.13", "test":"Realign 1M series according to a key array", "value":671}, {"dir":"0.9.12-baseline", "test":"Resample 1M series using 100 blocks (backward)", "value":2914}, {"dir":"0.9.13", "test":"Resample 1M series using 100 blocks (backward)", "value":139}, {"dir":"0.9.12-baseline", "test":"Resample 1M series using 100 blocks (forward)", "value":3118}, {"dir":"0.9.13", "test":"Resample 1M series using 100 blocks (forward)", "value":154}, {"dir":"0.9.12-baseline", "test":"Resample 1M series using 10000 blocks", "value":2763}, {"dir":"0.9.13", "test":"Resample 1M series using 10000 blocks", "value":192}, {"dir":"0.9.12-baseline", "test":"Resample 1M series using 10000 blocks (backward)", "value":2745}, {"dir":"0.9.13", "test":"Resample 1M series using 10000 blocks (backward)", "value":174}, {"dir":"0.9.12-baseline", "test":"Resample 1M series using 10000 blocks (forward)", "value":2563}, {"dir":"0.9.13", "test":"Resample 1M series using 10000 blocks (forward)", "value":175}, {"dir":"0.9.12-baseline", "test":"Shift 20x10k frame by offset 10", "value":8160}, {"dir":"0.9.13", "test":"Shift 20x10k frame by offset 10", "value":6}, {"dir":"0.9.12-baseline", "test":"Stack values of a 1000x1000 frame", "value":2428}, {"dir":"0.9.13", "test":"Stack values of a 1000x1000 frame", "value":462}, {"dir":"0.9.13", "test":"Take 500k elements from a 1M element series", "value":9}, {"dir":"0.9.12-baseline", "test":"Titanic survival rate based on gender (groupRowsBy)", "value":60}, {"dir":"0.9.13", "test":"Titanic survival rate based on gender (groupRowsBy)", "value":22}, {"dir":"0.9.13", "test":"Titanic survival rate based on gender (pivotTable)", "value":26}\
+      ]\
+    }\
+  ],\
+  "legends": [\
+    {\
+      "fill": "color",\
+      "title": "Performance tests",\
+      "properties": {\
+        "symbols": {\
+          "fillOpacity": {\
+            "value": 0.5\
+          },\
+          "stroke": {\
+            "value": "transparent"\
+          }\
+        }\
+      }\
+    }\
+  ],\
+  "scales": [\
+    {\
+      "name": "cat",\
+      "type": "ordinal",\
+      "range": "height",\
+      "padding": 0.2,\
+      "domain": {\
+        "data": "table",\
+        "field": "data.test"\
+      }\
+    },\
+    {\
+      "name": "val",\
+      "range": "width",\
+      "type": "linear",\
+      "round": true,\
+      "nice": true,\
+      "clamp": true,\
+      "domainMax": 10000,\
+      "domain": {\
+        "data": "table",\
+        "field": "data.value"\
+      }\
+    },\
+    {\
+      "name": "color",\
+      "type": "ordinal",\
+      "range": ["#1f77b4", "#68C433"] \
+    }\
+  ],\
+  "axes": [\
+    {\
+      "type": "y",\
+      "scale": "cat",\
+      "tickSize": 0,\
+      "tickPadding": 8\
+    },\
+    {\
+      "type": "x",\
+      "scale": "val",\
+      "title": "Time (ms)"\
+    }\
+  ],\
+  "marks": [\
+    {\
+      "type": "group",\
+      "from": {\
+        "data": "table",\
+        "transform": [\
+          {\
+            "type": "facet",\
+            "keys": [\
+              "data.test"\
+            ]\
+          }\
+        ]\
+      },\
+      "properties": {\
+        "enter": {\
+          "y": {\
+            "scale": "cat",\
+            "field": "key"\
+          },\
+          "height": {\
+            "scale": "cat",\
+            "band": true\
+          }\
+        }\
+      },\
+      "scales": [\
+        {\
+          "name": "pos",\
+          "type": "ordinal",\
+          "range": "height",\
+          "domain": {\
+            "field": "data.dir"\
+          }\
+        }\
+      ],\
+      "marks": [\
+        {\
+          "type": "rect",\
+          "properties": {\
+            "enter": {\
+              "y": {\
+                "scale": "pos",\
+                "field": "data.dir"\
+              },\
+              "height": {\
+                "scale": "pos",\
+                "mult": 0.8,\
+                "band": true\
+              },\
+              "x": {\
+                "scale": "val",\
+                "field": "data.value"\
+              },\
+              "x2": {\
+                "scale": "val",\
+                "value": 0\
+              },\
+              "fill": {\
+                "scale": "color",\
+                "field": "data.dir"\
+              }\
+            }\
+          }\
+        },\
+        {\
+          "type": "text",\
+          "properties": {\
+            "enter": {\
+              "y": {\
+                "scale": "pos",\
+                "field": "data.dir"\
+              },\
+              "dy": {\
+                "scale": "pos",\
+                "band": true,\
+                "mult": 0.5\
+              },\
+              "x": {\
+                "scale": "val",\
+                "field": "data.value",\
+                "offset": 4\
+              },\
+              "fill": {\
+                "scale": "color",\
+                "field": "data.dir"\
+              },\
+              "align": {\
+                "value": "left"\
+              },\
+              "baseline": {\
+                "value": "middle"\
+              },\
+              "text": {\
+                "field": "data.value"\
+              }\
+            }\
+          }\
+        }\
+      ]\
+    }\
+  ]\
+}'));
+</script>
+</body>
+</html>

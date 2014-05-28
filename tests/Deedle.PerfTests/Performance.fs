@@ -63,10 +63,10 @@ type Deedle.Series<'K, 'V when 'K : equality> with
 #endif
 
 // ------------------------------------------------------------------------------------------------
-//
+// Performance tests
 // ------------------------------------------------------------------------------------------------
 
-[<Test; PerfTest(Iterations=5)>]
+[<Test; PerfTest(Iterations=10)>]
 let ``Numerical operators on 20x10k frame``() =
   let add = frame20x10000 + frame20x10000
   let mul = frame20x10000 * frame20x10000
@@ -80,7 +80,7 @@ let ``Numerical operators on 20x10k frame``() =
     sub?D.GetAt(55) = 0.0 )
   |> shouldEqual true
 
-[<Test; PerfTest(Iterations=5)>]
+[<Test; PerfTest(Iterations=10)>]
 let ``Numerical operators on 100x10k frame and series`` () =
   let f1 = frame [ for i in 0 .. 100 -> i => series10k ]
   let res = f1 - series10k 
@@ -92,13 +92,13 @@ let ``Numerical operators on 10x10k frame and series`` () =
   let res = f1 - series10k 
   unbox<float> (res.Rows.[100].[5]) |> shouldEqual 0.0
 
-[<Test;PerfTest(Iterations=20)>]
+[<Test;PerfTest(Iterations=10)>]
 let ``Building a large (1M items) series from two arrays``() =
   let s = Series(array1M, array1M)
   s.KeyCount |> shouldEqual 1000000
 
-[<Test;PerfTest(Iterations=100)>]
-let ``Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)``() =   
+[<Test;PerfTest(Iterations=50)>]
+let ``Titanic survival rate based on gender (groupRowsBy)``() =   
   let bySex = titanic |> Frame.groupRowsByString "Sex"
   let survivedBySex = bySex.Columns.["Survived"].As<bool>()
   let survivals = 
@@ -126,8 +126,31 @@ let ``Calculate survival rate for Titanic based on gender (using groupRowsBy & a
   let expected = series ["male" => 19.0; "female" => 74.0]
   actual |> shouldEqual expected
 
-[<Test; PerfTest(Iterations=3)>]
-let ``Realign a 1M element series according to a specified key array`` () =
+#if BELOW_0_9_13
+#else
+[<Test;PerfTest(Iterations=50)>]
+let ``Titanic survival rate based on gender (pivotTable)``() =   
+  let survivals = 
+    titanic 
+    |> Frame.pivotTable 
+        (fun _ row -> row.GetAs<string>("Sex"))
+        (fun _ row -> row.GetAs<bool>("Survived")) 
+        (fun df -> df.RowCount)
+    |> Frame.indexColsWith ["Survived";"Died"]
+  survivals?Total <- survivals?Died + survivals?Survived
+
+  // Verify that we get the expected results
+  let actual = round (survivals?Survived / survivals?Total * 100.0)
+  let expected = series ["male" => 81.0; "female" => 26.0]
+  actual |> shouldEqual expected
+
+  let actual = round (survivals?Died / survivals?Total * 100.0)
+  let expected = series ["male" => 19.0; "female" => 74.0]
+  actual |> shouldEqual expected
+#endif
+
+[<Test; PerfTest(Iterations=10)>]
+let ``Realign 1M series according to a key array`` () =
   let newKeys = [|1 .. 1000000|]
   let actual = series1M |> Series.realign newKeys
 
@@ -140,7 +163,7 @@ let ``Realign a 1M element series according to a specified key array`` () =
   actual.FirstKey() |> shouldEqual 1
 #endif
 
-[<Test; PerfTest(Iterations=3)>]
+[<Test; PerfTest(Iterations=10)>]
 let ``Group by column and subtract group averages`` () =
   // https://github.com/BlueMountainCapital/Deedle/issues/142#issuecomment-33587885
   let grouped = frameTwoCol1M |> Frame.groupRowsByString "Key"
@@ -168,9 +191,9 @@ let ``Get frames columns and re-create frame`` () =
     let df = frame20x10000.Columns |> Frame.ofColumns
     df.ColumnCount |> shouldEqual 20
 
-[<Test; PerfTest(Iterations=10)>]
-let ``Accessing float series via columns and converting to float series`` () =
-  for i in 0 .. 100 do 
+[<Test; PerfTest(Iterations=4)>]
+let ``Accessing float series via object series`` () =
+  for i in 0 .. 20 do 
     let df = frame [ "A" => series1M ]
     df.Columns.["A"].As<float>().[0] |> shouldEqual (series1M.[0])
 
@@ -199,13 +222,13 @@ let ``Resample 1M series using 100 blocks (backward)``() =
   let keys = [for i in 0 .. 10000 -> i * 100 ]
   series1M |> Series.resampleInto keys Direction.Backward (fun _ s -> Stats.mean s) |> ignore
 
-[<Test; PerfTest(Iterations=10)>]
-let ``Shift 20x10k frame by 10`` () =
+[<Test; PerfTest(Iterations=6)>]
+let ``Shift 20x10k frame by offset 10`` () =
   let res = frame20x10000 |> Frame.shift 10
   res.Rows.[100].As<float>() |> shouldEqual (frame20x10000.Rows.[90].As<float>())
 
-[<Test; PerfTest(Iterations=10)>]
-let ``Diff 20x10k frame by 10`` () =
+[<Test; PerfTest(Iterations=6)>]
+let ``Diff 20x10k frame by offset 10`` () =
   let res = frame20x10000 |> Frame.diff 10
   let test = (frame20x10000.Rows.[100].As<float>() - frame20x10000.Rows.[90].As<float>())
   res.Rows.[100].As<float>() |> shouldEqual test
@@ -219,12 +242,12 @@ let ``Take 500k elements from a 1M element series`` () =
 #endif
 
 [<Test; PerfTest(Iterations=10)>]
-let ``Stack a 1000x1000 frame`` () = 
+let ``Stack values of a 1000x1000 frame`` () = 
   let df = frame1000x1000 |> Frame.stack
   df.RowCount |> shouldEqual 1000000
 
 [<Test;PerfTest(Iterations=5)>]
-let ``Append 10 medium-size (1000) frames (by repeatedly calling Append)``() =
+let ``Merge 10 frames of size 1k (repeated Merge)``() =
 #if BELOW_0_9_13
   let appended = frames10x1000 |> Seq.reduce (Frame.append)
 #else
@@ -246,52 +269,52 @@ let r4 = series [ for i in 3300000 .. -1 .. 3000001 -> i => float i ]
 let r5 = series [ for i in 4300000 .. -1 .. 4000001 -> i => float i ] 
 let r6 = series [ for i in 5300000 .. -1 .. 5000001 -> i => float i ] 
 
-[<Test;PerfTest(Iterations=5)>]
-let ``Merge 3 ordered series of length 300k (by calling Merge repeatedly)`` () =
+[<Test;PerfTest(Iterations=10)>]
+let ``Merge 3 ordered 300k long series (repeating Merge)`` () =
   s1.Merge(s2).Merge(s3).KeyCount |> shouldEqual 900000
 
 [<Test;PerfTest(Iterations=5)>]
-let ``Merge 6 ordered series of length 300k (by calling Merge repeatedly)`` () =
+let ``Merge 6 ordered 300k long series (repeating Merge)`` () =
   s1.Merge(s2).Merge(s3).Merge(s4).Merge(s5).Merge(s6).KeyCount |> shouldEqual 1800000
 
 #if BELOW_0_9_13
 #else
-[<Test;PerfTest(Iterations=5)>]
-let ``Merge 3 ordered series of length 300k (by calling Merge once)`` () =
+[<Test;PerfTest(Iterations=10)>]
+let ``Merge 3 ordered 300k long series (single Merge)`` () =
   s1.Merge(s2, s3).KeyCount |> shouldEqual 900000
 
 [<Test;PerfTest(Iterations=5)>]
-let ``Merge 6 ordered series of length 300k (by calling Merge once)`` () =
+let ``Merge 6 ordered 300k long series (single Merge)`` () =
   s1.Merge(s2, s3, s4, s5, s6).KeyCount |> shouldEqual 1800000
 
 [<Test;PerfTest(Iterations=5)>]
-let ``Merge 1000 ordered series of length 1000 (by calling Merge once)`` () =
+let ``Merge 1000 ordered 1k long series (single Merge)`` () =
   let series1000of1000 = 
     [ for i in 1 .. 1000 ->
         series [ for j in 1000000*i+1 .. 1000000*i+1000 -> j => float j ] ]
   (Series.mergeAll series1000of1000).KeyCount |> shouldEqual 1000000
 #endif
 
-[<Test;PerfTest(Iterations=5)>]
-let ``Merge 3 unordered series of length 300k (by calling Merge repeatedly)`` () =
+[<Test;PerfTest(Iterations=10)>]
+let ``Merge 3 unordered 300k long series (repeating Merge)`` () =
   r1.Merge(r2).Merge(r3).KeyCount |> shouldEqual 900000
 
 [<Test;PerfTest(Iterations=5)>]
-let ``Merge 6 unordered series of length 300k (by calling Merge repeatedly)`` () =
+let ``Merge 6 unordered 300k long series (repeating Merge)`` () =
   r1.Merge(r2).Merge(r3).Merge(r4).Merge(r5).Merge(r6).KeyCount |> shouldEqual 1800000
 
 #if BELOW_0_9_13
 #else
-[<Test;PerfTest(Iterations=5)>]
-let ``Merge 3 unordered series of length 300k (by calling Merge once)`` () =
+[<Test;PerfTest(Iterations=10)>]
+let ``Merge 3 unordered 300k long series (single Merge)`` () =
   r1.Merge(r2, r3).KeyCount |> shouldEqual 900000
 
 [<Test;PerfTest(Iterations=5)>]
-let ``Merge 6 unordered series of length 300k (by calling Merge once)`` () =
+let ``Merge 6 unordered 300k long series (single Merge)`` () =
   r1.Merge(r2, r3, r4, r5, r6).KeyCount |> shouldEqual 1800000
 
 [<Test;PerfTest(Iterations=5)>]
-let ``Merge 1000 unordered series of length 1000 (by calling Merge once)`` () =
+let ``Merge 1000 unordered 1k long series (single Merge)`` () =
   let series1000of1000 = 
     [ for i in 1 .. 1000 ->
         series [ for j in 1000000*i+1000 .. -1 .. 1000000*i+1 -> j => float j ] ]

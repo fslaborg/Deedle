@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.PerfTest.Core", "tests\PerformanceTools\Deedle.PerfTest.Core\Deedle.PerfTest.Core.fsproj", "{D1E7603A-AA82-4517-8605-360DC708B0E9}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.PerfTest.Core", "PerformanceTools\Deedle.PerfTest.Core\Deedle.PerfTest.Core.fsproj", "{D1E7603A-AA82-4517-8605-360DC708B0E9}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.PerfTest", "tests\PerformanceTools\Deedle.PerfTest\Deedle.PerfTest.fsproj", "{371F8CE6-B031-4589-843F-583FE9180948}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.PerfTest", "PerformanceTools\Deedle.PerfTest\Deedle.PerfTest.fsproj", "{371F8CE6-B031-4589-843F-583FE9180948}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -22,6 +22,11 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.RPlugin.Tests", "tes
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.PerfTests", "tests\Deedle.PerfTests\Deedle.PerfTests.fsproj", "{0275C56B-9A00-4578-A826-A6CF1F089086}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Performance", "Performance", "{DEA1237A-77B6-4988-AC8C-065C546435BB}"
+	ProjectSection(SolutionItems) = preProject
+		tests\PerformanceTools\performance.fsx = tests\PerformanceTools\performance.fsx
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -16,8 +16,8 @@ function parse(spec) {
   vg.parse.spec(spec, function(chart) { chart({el:"#vis"}).update(); });
 }
   parse(JSON.parse('{\
-  "width": 600,\
-  "height": 800,\
+  "width": 300,\
+  "height": 500,\
   "data": [\
     {\
       "name": "table",\
@@ -56,8 +56,11 @@ function parse(spec) {
     {\
       "name": "val",\
       "range": "width",\
+      "type": "linear",\
       "round": true,\
       "nice": true,\
+      "clamp": true,\
+      "domainMax": 10000,\
       "domain": {\
         "data": "table",\
         "field": "data.value"\
@@ -66,7 +69,7 @@ function parse(spec) {
     {\
       "name": "color",\
       "type": "ordinal",\
-      "range": "category20"\
+      "range": ["#1f77b4", "#68C433"] \
     }\
   ],\
   "axes": [\
@@ -129,6 +132,7 @@ function parse(spec) {
               },\
               "height": {\
                 "scale": "pos",\
+                "mult": 0.8,\
                 "band": true\
               },\
               "x": {\
@@ -162,13 +166,14 @@ function parse(spec) {
               "x": {\
                 "scale": "val",\
                 "field": "data.value",\
-                "offset": 25\
+                "offset": 4\
               },\
               "fill": {\
-                "value": "black"\
+                "scale": "color",\
+                "field": "data.dir"\
               },\
               "align": {\
-                "value": "right"\
+                "value": "left"\
               },\
               "baseline": {\
                 "value": "middle"\

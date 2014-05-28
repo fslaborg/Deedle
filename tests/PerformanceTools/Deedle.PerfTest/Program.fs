@@ -156,26 +156,15 @@ type PerfTests =
   /// 
   /// ## Parameters
   ///  - `binRoot` - Specifies a directory with binaries. There should be one sub-directory
-  ///    for each version, containing `perf.config` file. One of the directories should have
-  ///    `baseline` in the name (to be used as the baseline)
+  ///    for each version, containing `perf.config` file. 
   ///  - `sources` - List of source files containing tests (and other required code)
   ///  - `outFile` - Specifies the file name where the resulting output is stored
   ///
   static member Run(binRoot, sources, outFile:string) =
-    // Get directories with libraries & find a baseline directory
-    let baseline, versions =
-      Directory.GetDirectories(binRoot)
-      |> List.ofSeq
-      |> List.partition (fun dir -> Path.GetFileName(dir).ToLower().Contains("baseline"))
-  
-    let versions = 
-      match baseline with
-      | [baseline] -> baseline::versions
-      | _ -> failwith "Expected a single sub-folder with baseline in the name."
-
-    let compiled = versions |> List.map (Compiler.compile sources)
+    let versions = Directory.GetDirectories(binRoot)
+    let compiled = versions |> Array.map (Compiler.compile sources)
     let results = 
-      [ for ver, compiled in List.zip versions compiled do
+      [ for ver, compiled in Array.zip versions compiled do
           for test, time in PerfRunner.RunTests ver compiled do
             yield Path.GetFileName ver, test, time ]
       |> Frame.ofRecords

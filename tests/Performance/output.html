@@ -16,13 +16,13 @@ function parse(spec) {
   vg.parse.spec(spec, function(chart) { chart({el:"#vis"}).update(); });
 }
   parse(JSON.parse('{\
-  "width": 600,\
-  "height": 800,\
+  "width": 400,\
+  "height": 600,\
   "data": [\
     {\
       "name": "table",\
       "values": [\
-          {"dir":"0.9.13", "test":"Accessing float series via columns and converting to float series", "value":0.0, "valuelo":0, "valuehi":0}, {"dir":"0.9.13", "test":"Shift 20x10k frame by 10", "value":0.1, "valuelo":0, "valuehi":0}, {"dir":"0.9.13", "test":"Get frames columns and re-create frame", "value":0.4, "valuelo":0, "valuehi":1}, {"dir":"0.9.13", "test":"Diff 20x10k frame by 10", "value":1.0, "valuelo":0, "valuehi":2}, {"dir":"0.9.13", "test":"Building a large (1M items) series from two arrays", "value":1.2, "valuelo":0, "valuehi":2}, {"dir":"0.9.13", "test":"Numerical operators on 10x10k frame and series", "value":4.9, "valuelo":0, "valuehi":10}, {"dir":"0.9.13", "test":"Numerical operators on 100x10k frame and series", "value":5.4, "valuelo":0, "valuehi":11}, {"dir":"0.9.13", "test":"Resample 1M series using 100 blocks (backward)", "value":5.6, "valuelo":0, "valuehi":11}, {"dir":"0.9.13", "test":"Resample 1M series using 100 blocks (forward)", "value":6.0, "valuelo":0, "valuehi":12}, {"dir":"0.9.13", "test":"Resample 1M series using 10000 blocks (backward)", "value":6.2, "valuelo":0, "valuehi":12}, {"dir":"0.9.13", "test":"Resample 1M series using 10000 blocks (forward)", "value":6.3, "valuelo":0, "valuehi":13}, {"dir":"0.9.13", "test":"Resample 1M series using 10000 blocks", "value":6.8, "valuelo":0, "valuehi":14}, {"dir":"0.9.13", "test":"Merge 6 unordered series of length 300k (by calling Merge repeatedly)", "value":13.4, "valuelo":0, "valuehi":27}, {"dir":"0.9.13", "test":"Merge 6 ordered series of length 300k (by calling Merge repeatedly)", "value":13.9, "valuelo":0, "valuehi":28}, {"dir":"0.9.13", "test":"Realign a 1M element series according to a specified key array", "value":14.3, "valuelo":0, "valuehi":29}, {"dir":"0.9.13", "test":"Merge 3 ordered series of length 300k (by calling Merge repeatedly)", "value":14.7, "valuelo":0, "valuehi":29}, {"dir":"0.9.13", "test":"Merge 3 unordered series of length 300k (by calling Merge repeatedly)", "value":15.3, "valuelo":0, "valuehi":31}, {"dir":"0.9.13", "test":"Append 10 medium-size (1000) frames (by repeatedly calling Append)", "value":17.8, "valuelo":0, "valuehi":36}, {"dir":"0.9.13", "test":"Stack a 1000x1000 frame", "value":19.4, "valuelo":0, "valuehi":39}, {"dir":"0.9.13", "test":"Group by column and subtract group averages", "value":25.8, "valuelo":0, "valuehi":52}, {"dir":"0.9.13", "test":"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)", "value":40.1, "valuelo":0, "valuehi":80}, {"dir":"0.9.13", "test":"Numerical operators on 20x10k frame", "value":46.5, "valuelo":0, "valuehi":93}, {"dir":"0.9.12-baseline", "test":"Numerical operators on 20x10k frame", "value":100.0, "valuelo":0, "valuehi":200}, {"dir":"0.9.12-baseline", "test":"Get frames columns and re-create frame", "value":100.0, "valuelo":0, "valuehi":200}, {"dir":"0.9.12-baseline", "test":"Group by column and subtract group averages", "value":100.0, "valuelo":0, "valuehi":200}, {"dir":"0.9.12-baseline", "test":"Accessing float series via columns and converting to float series", "value":100.0, "valuelo":0, "valuehi":200}, {"dir":"0.9.12-baseline", "test":"Resample 1M series using 10000 blocks (forward)", "value":100.0, "valuelo":0, "valuehi":200}, {"dir":"0.9.12-baseline", "test":"Resample 1M series using 10000 blocks", "value":100.0, "valuelo":0, "valuehi":200}, {"dir":"0.9.12-baseline", "test":"Numerical operators on 10x10k frame and series", "value":100.0, "valuelo":0, "valuehi":200}, {"dir":"0.9.12-baseline", "test":"Numerical operators on 100x10k frame and series", "value":100.0, "valuelo":0, "valuehi":200}, {"dir":"0.9.12-baseline", "test":"Building a large (1M items) series from two arrays", "value":100.0, "valuelo":0, "valuehi":200}, {"dir":"0.9.12-baseline", "test":"Realign a 1M element series according to a specified key array", "value":100.0, "valuelo":0, "valuehi":200}, {"dir":"0.9.12-baseline", "test":"Calculate survival rate for Titanic based on gender (using groupRowsBy & applyLevel)", "value":100.0, "valuelo":0, "valuehi":200}, {"dir":"0.9.12-baseline", "test":"Resample 1M series using 10000 blocks (backward)", "value":100.0, "valuelo":0, "valuehi":200}, {"dir":"0.9.12-baseline", "test":"Merge 3 ordered series of length 300k (by calling Merge repeatedly)", "value":100.0, "valuelo":0, "valuehi":200}, {"dir":"0.9.12-baseline", "test":"Append 10 medium-size (1000) frames (by repeatedly calling Append)", "value":100.0, "valuelo":0, "valuehi":200}, {"dir":"0.9.12-baseline", "test":"Merge 6 ordered series of length 300k (by calling Merge repeatedly)", "value":100.0, "valuelo":0, "valuehi":200}, {"dir":"0.9.12-baseline", "test":"Merge 6 unordered series of length 300k (by calling Merge repeatedly)", "value":100.0, "valuelo":0, "valuehi":200}, {"dir":"0.9.12-baseline", "test":"Merge 3 unordered series of length 300k (by calling Merge repeatedly)", "value":100.0, "valuelo":0, "valuehi":200}, {"dir":"0.9.12-baseline", "test":"Resample 1M series using 100 blocks (backward)", "value":100.0, "valuelo":0, "valuehi":200}, {"dir":"0.9.12-baseline", "test":"Resample 1M series using 100 blocks (forward)", "value":100.0, "valuelo":0, "valuehi":200}, {"dir":"0.9.12-baseline", "test":"Shift 20x10k frame by 10", "value":100.0, "valuelo":0, "valuehi":200}, {"dir":"0.9.12-baseline", "test":"Stack a 1000x1000 frame", "value":100.0, "valuelo":0, "valuehi":200}, {"dir":"0.9.12-baseline", "test":"Diff 20x10k frame by 10", "value":100.0, "valuelo":0, "valuehi":200}\
+          {"dir":"0.9.12-baseline", "test":"Accessing float series via columns and converting to float series", "value":13500}, {"dir":"0.9.13", "test":"Accessing float series via columns and converting to float series", "value":2}, {"dir":"0.9.12-baseline", "test":"Building a large (1M items) series from two arrays", "value":1272}, {"dir":"0.9.13", "test":"Building a large (1M items) series from two arrays", "value":12}, {"dir":"0.9.12-baseline", "test":"Diff 20x10k frame by 10", "value":7017}, {"dir":"0.9.13", "test":"Diff 20x10k frame by 10", "value":76}, {"dir":"0.9.12-baseline", "test":"Get frames columns and re-create frame", "value":4179}, {"dir":"0.9.13", "test":"Get frames columns and re-create frame", "value":17}, {"dir":"0.9.12-baseline", "test":"Group by column and subtract group averages", "value":6477}, {"dir":"0.9.13", "test":"Group by column and subtract group averages", "value":1744}, {"dir":"0.9.12-baseline", "test":"Merge 10 medium-size (1000) frames (by repeatedly calling Merge)", "value":637}, {"dir":"0.9.13", "test":"Merge 10 medium-size (1000) frames (by repeatedly calling Merge)", "value":123}, {"dir":"0.9.13", "test":"Merge 1000 ordered series of length 1000 (by calling Merge once)", "value":2741}, {"dir":"0.9.13", "test":"Merge 1000 unordered series of length 1000 (by calling Merge once)", "value":1037}, {"dir":"0.9.13", "test":"Merge 3 ordered series of length 300k (by calling Merge once)", "value":658}, {"dir":"0.9.12-baseline", "test":"Merge 3 ordered series of length 300k (by calling Merge repeatedly)", "value":4481}, {"dir":"0.9.13", "test":"Merge 3 ordered series of length 300k (by calling Merge repeatedly)", "value":733}, {"dir":"0.9.13", "test":"Merge 3 unordered series of length 300k (by calling Merge once)", "value":549}, {"dir":"0.9.12-baseline", "test":"Merge 3 unordered series of length 300k (by calling Merge repeatedly)", "value":5615}, {"dir":"0.9.13", "test":"Merge 3 unordered series of length 300k (by calling Merge repeatedly)", "value":861}, {"dir":"0.9.13", "test":"Merge 6 ordered series of length 300k (by calling Merge once)", "value":1476}, {"dir":"0.9.12-baseline", "test":"Merge 6 ordered series of length 300k (by calling Merge repeatedly)", "value":18768}, {"dir":"0.9.13", "test":"Merge 6 ordered series of length 300k (by calling Merge repeatedly)", "value":2771}, {"dir":"0.9.13", "test":"Merge 6 unordered series of length 300k (by calling Merge once)", "value":1091}, {"dir":"0.9.12-baseline", "test":"Merge 6 unordered series of length 300k (by calling Merge repeatedly)", "value":22368}, {"dir":"0.9.13", "test":"Merge 6 unordered series of length 300k (by calling Merge repeatedly)", "value":3483}, {"dir":"0.9.12-baseline", "test":"Numerical operators on 100x10k frame and series", "value":8839}, {"dir":"0.9.13", "test":"Numerical operators on 100x10k frame and series", "value":551}, {"dir":"0.9.12-baseline", "test":"Numerical operators on 10x10k frame and series", "value":992}, {"dir":"0.9.13", "test":"Numerical operators on 10x10k frame and series", "value":61}, {"dir":"0.9.12-baseline", "test":"Numerical operators on 20x10k frame", "value":2344}, {"dir":"0.9.13", "test":"Numerical operators on 20x10k frame", "value":1087}, {"dir":"0.9.12-baseline", "test":"Realign a 1M element series according to a specified key array", "value":5238}, {"dir":"0.9.13", "test":"Realign a 1M element series according to a specified key array", "value":751}, {"dir":"0.9.12-baseline", "test":"Resample 1M series using 100 blocks (backward)", "value":2743}, {"dir":"0.9.13", "test":"Resample 1M series using 100 blocks (backward)", "value":156}, {"dir":"0.9.12-baseline", "test":"Resample 1M series using 100 blocks (forward)", "value":2658}, {"dir":"0.9.13", "test":"Resample 1M series using 100 blocks (forward)", "value":157}, {"dir":"0.9.12-baseline", "test":"Resample 1M series using 10000 blocks", "value":2642}, {"dir":"0.9.13", "test":"Resample 1M series using 10000 blocks", "value":161}, {"dir":"0.9.12-baseline", "test":"Resample 1M series using 10000 blocks (backward)", "value":2523}, {"dir":"0.9.13", "test":"Resample 1M series using 10000 blocks (backward)", "value":173}, {"dir":"0.9.12-baseline", "test":"Resample 1M series using 10000 blocks (forward)", "value":2581}, {"dir":"0.9.13", "test":"Resample 1M series using 10000 blocks (forward)", "value":173}, {"dir":"0.9.12-baseline", "test":"Shift 20x10k frame by 10", "value":6801}, {"dir":"0.9.13", "test":"Shift 20x10k frame by 10", "value":8}, {"dir":"0.9.12-baseline", "test":"Stack a 1000x1000 frame", "value":2131}, {"dir":"0.9.13", "test":"Stack a 1000x1000 frame", "value":479}, {"dir":"0.9.13", "test":"Take 500k elements from a 1M element series", "value":16}, {"dir":"0.9.12-baseline", "test":"Titanic survival rate based on gender (using groupRowsBy)", "value":57}, {"dir":"0.9.13", "test":"Titanic survival rate based on gender (using groupRowsBy)", "value":25}, {"dir":"0.9.13", "test":"Titanic survival rate based on gender (using pivotTable)", "value":29}\
       ]\
     }\
   ],\
@@ -56,8 +56,11 @@ function parse(spec) {
     {\
       "name": "val",\
       "range": "width",\
+      "type": "linear",\
       "round": true,\
       "nice": true,\
+      "clamp": true,\
+      "domainMax": 100,\
       "domain": {\
         "data": "table",\
         "field": "data.value"\
@@ -66,7 +69,7 @@ function parse(spec) {
     {\
       "name": "color",\
       "type": "ordinal",\
-      "range": "category20"\
+      "range": ["#1f77b4", "#68C433"] \
     }\
   ],\
   "axes": [\
@@ -129,6 +132,7 @@ function parse(spec) {
               },\
               "height": {\
                 "scale": "pos",\
+                "mult": 0.8,\
                 "band": true\
               },\
               "x": {\
@@ -162,13 +166,14 @@ function parse(spec) {
               "x": {\
                 "scale": "val",\
                 "field": "data.value",\
-                "offset": 25\
+                "offset": 4\
               },\
               "fill": {\
-                "value": "black"\
+                "scale": "color",\
+                "field": "data.dir"\
               },\
               "align": {\
-                "value": "right"\
+                "value": "left"\
               },\
               "baseline": {\
                 "value": "middle"\
