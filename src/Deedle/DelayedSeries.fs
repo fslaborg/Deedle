@@ -49,12 +49,15 @@ module internal Ranges =
     let (>=) a b = comparer.Compare(a, b) >= 0
 
     // First we get all boundary points in the range tree and sort them
-    let rec getBoundaries ranges = seq {
-      match ranges with 
-      | Range((lo, _), (hi, _)) -> yield! [lo; hi]
-      | Union(l, r) | Intersect(l, r) -> 
-          yield! getBoundaries l
-          yield! getBoundaries r }
+    let rec getBoundaries ranges = 
+      seq {
+        match ranges with 
+        | Range((lo, _), (hi, _)) -> 
+            if hi < lo then raise <| ArgumentOutOfRangeException() else yield! [lo; hi]
+        | Union(l, r) | Intersect(l, r) -> 
+            yield! getBoundaries l
+            yield! getBoundaries r }
+
     let allRanges = Seq.concat [seq [overallMin; overallMax]; getBoundaries ranges]
     let sorted = System.Linq.Enumerable.Distinct(allRanges) |> Array.ofSeq
     Array.sortInPlaceWith (fun a b -> comparer.Compare(a, b)) sorted
@@ -133,7 +136,12 @@ type internal DelayedSource<'K, 'V when 'K : equality>
   // Lazy computation that returns started task whil loads the data 
   // (we use task here so that we can cache the result)
   let asyncData = Lazy.Create(fun () -> 
-    let ranges = flattenRanges rangeMin rangeMax comparer ranges |> Array.ofSeq
+    let ranges = 
+      try
+        flattenRanges rangeMin rangeMax comparer ranges |> Array.ofSeq 
+      with 
+        | :? ArgumentOutOfRangeException -> Array.empty
+
     let ops = loader ranges
     async {
       let data = new ResizeArray<_>(1000)

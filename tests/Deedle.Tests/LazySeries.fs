@@ -68,6 +68,12 @@ let ``Multiple range restrictions are combined for sample calls`` () =
   r.Values |> shouldEqual [(10, Exclusive), (90, Exclusive)]
 
 [<Test>]
+let ``Multiple conflicting range restrictions lead to empty results`` () =
+  let ls = DelayedSeries.Create(0, 100, fun _ _ -> async { 
+    return seq { for i in 0 .. 100 -> KeyValue.Create(i, i) } })   
+  ls.Between(90,89).KeyCount |> shouldEqual 0
+  
+[<Test>]
 let ``Splicing syntax creates inclusive restrictions`` () = 
   let r = Recorder()
   let ls = DelayedSeries.Create(0, 100, spy2 r loadIntegers)
