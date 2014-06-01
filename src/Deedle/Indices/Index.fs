@@ -225,6 +225,11 @@ and IIndexBuilder =
   /// (evaluated) index with the same keys.
   abstract Project : IIndex<'K> -> IIndex<'K>
 
+  /// Create a new index that represents sub-range of an existing index.
+  /// The range is specified as a pair of addresses, which means that it can be 
+  /// used by operations such as "series.Take(5)" (which do not rely on keys)
+  abstract GetAddressRange : SeriesConstruction<'K> * (Address * Address) -> SeriesConstruction<'K>
+
   /// Create a new index that represents sub-range of an existing index. The range is specified
   /// as a pair of options (when `None`, the original left/right boundary should be used) 
   /// that contain boundary behavior and the boundary key.

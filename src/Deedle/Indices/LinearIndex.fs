@@ -498,6 +498,17 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       | _ ->
           invalidArg "key" (sprintf "The key '%O' is not present in the index." key)
 
+    /// Get a sub-range of the index keys based on address (rather than keys)
+    member builder.GetAddressRange( (index, vector), (lo, hi) ) =
+      let builder = (builder :> IIndexBuilder)
+      if hi < lo then 
+        let newIndex = LinearIndex<_>(ReadOnlyCollection.empty, builder, ordered=true)
+        upcast newIndex, Vectors.Empty(0L)
+      else
+        let newVector = Vectors.GetRange(vector, (lo, hi))
+        let newKeys = index.Keys.[int lo .. int hi]
+        let newIndex = builder.Create(newKeys, if index.IsOrdered then Some true else None)
+        newIndex, newVector
 
     /// Get a new index representing a sub-index of the current one
     /// (together with a transformation that should be applied to a vector)

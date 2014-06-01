@@ -157,6 +157,12 @@ and
   // Accessors and slicing
   // ----------------------------------------------------------------------------------------------
 
+  /// Internal helper used by `skip`, `take`, etc.
+  member x.GetAddressRange(lo, hi) = 
+    let newIndex, cmd = indexBuilder.GetAddressRange((index, Vectors.Return 0), (int64 lo, int64 hi))
+    let vec = vectorBuilder.Build(cmd, [| vector |])
+    Series(newIndex, vec, vectorBuilder, indexBuilder)
+
   /// [category:Accessors and slicing]
   member x.GetSubrange(lo, hi) =
     let newIndex, newVector = indexBuilder.GetRange(index, lo, hi, Vectors.Return 0)
@@ -940,12 +946,22 @@ and
     member x.Vector = vector :> IVector
     member x.Index = index
 
+  member private series.GetPrintedObservations(startCount, endCount) = 
+    if series.KeyCount <= startCount + endCount then
+      seq { for obs in series.Observations -> Choice1Of3(obs.Key, obs.Value) } 
+    else
+      let starts = series.GetAddressRange(0, startCount)
+      let ends = series.GetAddressRange(series.KeyCount - 1 - endCount, series.KeyCount - 1)
+      seq { for obs in starts.Observations do yield Choice1Of3(obs.Key, obs.Value)
+            yield Choice2Of3()
+            for obs in ends.Observations do yield Choice1Of3(obs.Key, obs.Value) }
+
   override series.ToString() =
     if vector.SuppressPrinting then "(Suppressed)" else
-      seq { for item in series.Observations |> Seq.startAndEnd Formatting.StartInlineItemCount Formatting.EndInlineItemCount ->
-              match item with 
-              | Choice2Of3() -> " ... "
-              | Choice1Of3(KeyValue(k, v)) | Choice3Of3(KeyValue(k, v)) -> sprintf "%O => %O" k v }
+      series.GetPrintedObservations(Formatting.StartInlineItemCount, Formatting.EndInlineItemCount) 
+      |> Seq.map (function
+          | Choice2Of3() -> " ... "
+          | Choice1Of3(k, v) | Choice3Of3(k, v) -> sprintf "%O => %O" k v )
       |> String.concat "; "
       |> sprintf "series [ %s]" 
 
@@ -979,31 +995,29 @@ and
       else previous := Some levelKey; reset(); levelKey.ToString()
 
     if vector.SuppressPrinting then "(Suppressed)" else
-      let key = series.Index.Keys |> Seq.headOrNone
-      match key with 
-      | None -> "(Empty)"
-      | Some key ->
-          let levels = CustomKey.Get(key).Levels
-          let previous = Array.init levels (fun _ -> ref None)
-          let reset i () = for j in i + 1 .. levels - 1 do previous.[j] := None
-          seq { for item in index.Mappings |> Seq.startAndEnd startCount endCount  do
-                  match item with 
-                  | Choice1Of3(k, a) | Choice3Of3(k, a) -> 
-                      let v = vector.GetValue(a)
-                      yield [ 
-                        // Yield all row keys
-                        for level in 0 .. levels - 1 do 
-                          yield getLevel series.Index.IsOrdered previous.[level] (reset level) levels level k
-                        yield "->"
-                        yield v.ToString() ]
-                  | Choice2Of3() -> 
-                      yield [ 
-                        yield "..."
-                        for level in 1 .. levels - 1 do yield ""
-                        yield "->"
-                        yield "..." ] }
-          |> array2D
-          |> Formatting.formatTable
+      if series.KeyCount = 0 then 
+        "(Empty)"
+      else
+        let firstKey, _ = series.Index.KeyRange 
+        let levels = CustomKey.Get(firstKey).Levels
+        let previous = Array.init levels (fun _ -> ref None)
+        let reset i () = for j in i + 1 .. levels - 1 do previous.[j] := None
+
+        series.GetPrintedObservations(startCount, endCount)
+        |> Seq.map (function
+            | Choice1Of3(k, v) | Choice3Of3(k, v) -> 
+                [ // Yield all row keys
+                  for level in 0 .. levels - 1 do 
+                    yield getLevel series.Index.IsOrdered previous.[level] (reset level) levels level k
+                  yield "->"
+                  yield v.ToString() ]
+            | Choice2Of3() -> 
+                [ yield "..."
+                  for level in 1 .. levels - 1 do yield ""
+                  yield "->"
+                  yield "..." ] )
+        |> array2D
+        |> Formatting.formatTable
 
   interface IFsiFormattable with
     member x.Format() = (x :> Series<_, _>).Format()

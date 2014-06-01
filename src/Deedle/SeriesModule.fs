@@ -478,15 +478,6 @@ module Series =
   let flatten (series:Series<'K, 'T option>) = 
     series |> mapAll (fun _ v -> match v with Some x -> x | _ -> None)
 
-  /// Internal helper used by `skip`, `take`, etc.
-  let internal getRange lo hi (series:Series<'K, 'T>) = 
-    if hi < lo then Series([],[]) else
-      let cmd = GetRange(Return 0, (int64 lo, int64 hi))
-      let vec = series.VectorBuilder.Build(cmd, [| series.Vector |])
-      let newKeys = series.Index.Keys.[lo .. hi]
-      let idx = series.IndexBuilder.Create(newKeys, if series.IsOrdered then Some true else None)
-      Series(idx, vec, series.VectorBuilder, series.IndexBuilder)
-
   /// Returns a series that contains the specified number of keys from the original series. 
   ///
   /// ## Parameters
@@ -498,7 +489,7 @@ module Series =
   let take count (series:Series<'K, 'T>) =
     if count > series.KeyCount || count < 0 then 
       invalidArg "count" "Must be greater than zero and less than the number of keys."
-    getRange 0 (count - 1) series
+    series.GetAddressRange(0, count - 1)
 
   /// Returns a series that contains the specified number of keys from the 
   /// original series. The keys are taken from the end of the series. 
@@ -512,7 +503,7 @@ module Series =
   let takeLast count (series:Series<'K, 'T>) =
     if count > series.KeyCount || count < 0 then 
       invalidArg "count" "Must be greater than zero and less than the number of keys."
-    getRange (series.KeyCount-count) (series.KeyCount-1) series
+    series.GetAddressRange(series.KeyCount-count, series.KeyCount-1)
 
   /// Returns a series that contains the data from the original series,
   /// except for the first `count` keys.
@@ -526,7 +517,7 @@ module Series =
   let skip count (series:Series<'K, 'T>) =
     if count > series.KeyCount || count < 0 then 
       invalidArg "count" "Must be greater than zero and less than the number of keys."
-    getRange count (series.KeyCount-1) series
+    series.GetAddressRange(count, series.KeyCount-1)
 
   /// Returns a series that contains the data from the original series,
   /// except for the last `count` keys.
@@ -540,7 +531,7 @@ module Series =
   let skipLast count (series:Series<'K, 'T>) =
     if count > series.KeyCount || count < 0 then 
       invalidArg "count" "Must be greater than zero and less than the number of keys."
-    getRange 0 (series.KeyCount-1-count) series
+    series.GetAddressRange(0, series.KeyCount-1-count)
 
   /// Returns a new fully evaluated series. If the source series contains a lazy index or
   /// lazy vectors, these are forced to evaluate and the resulting series is fully loaded in memory.
