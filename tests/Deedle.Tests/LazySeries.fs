@@ -140,6 +140,60 @@ let ``Materializing materialized series is a no-op`` () =
   r.Values |> shouldEqual [(40, Inclusive), (60, Inclusive)]
 
 // ------------------------------------------------------------------------------------------------
+// Unioning and intersecting ranges
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can union valid range with an invalid (negative) range`` () =
+  let ranges = 
+    Ranges.Union
+      ( Ranges.Range((0, Inclusive), (10, Inclusive)),
+        Ranges.Range((30, Inclusive), (20, Inclusive)) )
+  let intComp = System.Collections.Generic.Comparer<int>.Default
+  Ranges.flattenRanges 0 100 intComp ranges |> List.ofSeq
+  |> shouldEqual [(0, Inclusive), (10, Inclusive)]
+
+[<Test>]
+let ``Can intersect valid range with an invalid (negative) range`` () =
+  let ranges = 
+    Ranges.Intersect
+      ( Ranges.Range((0, Inclusive), (100, Inclusive)),
+        Ranges.Range((30, Inclusive), (20, Inclusive)) )
+  let intComp = System.Collections.Generic.Comparer<int>.Default
+  Ranges.flattenRanges 0 100 intComp ranges |> List.ofSeq
+  |> shouldEqual []
+
+[<Test>]
+let ``Can union valid range with an invalid (zero) range`` () =
+  let ranges = 
+    Ranges.Union
+      ( Ranges.Range((0, Inclusive), (10, Inclusive)),
+        Ranges.Range((20, Inclusive), (20, Exclusive)) )
+  let intComp = System.Collections.Generic.Comparer<int>.Default
+  Ranges.flattenRanges 0 100 intComp ranges |> List.ofSeq
+  |> shouldEqual [(0, Inclusive), (10, Inclusive)]
+
+[<Test>]
+let ``Can union valid range with a singleton range`` () =
+  let ranges = 
+    Ranges.Union
+      ( Ranges.Range((0, Inclusive), (10, Inclusive)),
+        Ranges.Range((20, Inclusive), (20, Inclusive)) )
+  let intComp = System.Collections.Generic.Comparer<int>.Default
+  Ranges.flattenRanges 0 100 intComp ranges |> List.ofSeq
+  |> shouldEqual [(0, Inclusive), (10, Inclusive); (20, Inclusive), (20, Inclusive)]
+
+[<Test>]
+let ``Can intersect valid range with a singleton range`` () =
+  let ranges = 
+    Ranges.Intersect
+      ( Ranges.Range((0, Inclusive), (100, Inclusive)),
+        Ranges.Range((20, Inclusive), (20, Inclusive)) )
+  let intComp = System.Collections.Generic.Comparer<int>.Default
+  Ranges.flattenRanges 0 100 intComp ranges |> List.ofSeq
+  |> shouldEqual [(20, Inclusive), (20, Inclusive)]
+
+// ------------------------------------------------------------------------------------------------
 // Random testing
 // ------------------------------------------------------------------------------------------------
 

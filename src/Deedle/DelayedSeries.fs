@@ -52,8 +52,9 @@ module internal Ranges =
     let rec getBoundaries ranges = 
       seq {
         match ranges with 
-        | Range((lo, _), (hi, _)) -> 
-            if hi < lo then raise <| ArgumentOutOfRangeException() else yield! [lo; hi]
+        | Range((lo, lobh), (hi, hibh)) -> 
+            if (lo < hi) || (lo = hi && lobh = BoundaryBehavior.Inclusive && hibh = BoundaryBehavior.Inclusive) 
+              then yield! [lo; hi]
         | Union(l, r) | Intersect(l, r) -> 
             yield! getBoundaries l
             yield! getBoundaries r }
@@ -136,12 +137,7 @@ type internal DelayedSource<'K, 'V when 'K : equality>
   // Lazy computation that returns started task whil loads the data 
   // (we use task here so that we can cache the result)
   let asyncData = Lazy.Create(fun () -> 
-    let ranges = 
-      try
-        flattenRanges rangeMin rangeMax comparer ranges |> Array.ofSeq 
-      with 
-        | :? ArgumentOutOfRangeException -> Array.empty
-
+    let ranges = flattenRanges rangeMin rangeMax comparer ranges |> Array.ofSeq 
     let ops = loader ranges
     async {
       let data = new ResizeArray<_>(1000)
