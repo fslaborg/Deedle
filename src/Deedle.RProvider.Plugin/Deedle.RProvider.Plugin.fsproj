@@ -93,5 +93,9 @@
   -->
   <Target Name="AfterBuild">
     <Copy SourceFiles="..\..\packages\RProvider.1.0.9\RProvider.fsx" DestinationFolder="$(ProjectDir)..\..\bin" />
+    <Copy SourceFiles="..\..\packages\RProvider.1.0.9\lib\RProvider.DesignTime.dll" DestinationFolder="$(ProjectDir)..\..\bin" />
+    <Copy SourceFiles="..\..\packages\RProvider.1.0.9\lib\RProvider.DesignTime.pdb" DestinationFolder="$(ProjectDir)..\..\bin" />
+	<Copy SourceFiles="..\..\packages\RProvider.1.0.9\lib\RProvider.Server.exe" DestinationFolder="$(ProjectDir)..\..\bin" />
+	<Copy SourceFiles="..\..\packages\RProvider.1.0.9\lib\RProvider.Server.pdb" DestinationFolder="$(ProjectDir)..\..\bin" />
   </Target>
 </Project>

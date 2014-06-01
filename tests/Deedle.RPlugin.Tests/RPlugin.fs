@@ -32,6 +32,12 @@ let ``Can roundtrip data frame (mtcars) between Deedle and R`` () =
   cars1 |> shouldEqual cars2
 
 [<Test>]
+let ``Can get frame containing subset of columns and pass it to R``() =
+  let mtcars : Frame<string, string> = R.mtcars.GetValue()
+  let mtcars' = mtcars.Columns.[["vs";"am";"gear";"carb"]]
+  R.as_data_frame(mtcars').GetValue() |> shouldEqual mtcars'
+
+[<Test>]
 let ``Can pass numerical stacked frames to R``() = 
   let df1 = frame [ 10 => series [ 1 => 1.0 ]; 11 => series [ 2 => 2.0] ] |> Frame.stack
   R.assign("df", df1) |> ignore
