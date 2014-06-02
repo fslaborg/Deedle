@@ -386,7 +386,7 @@ module internal FrameUtils =
 
 
   /// Load data from a CSV file using F# Data API
-  let readCsv (reader:TextReader) hasHeaders inferTypes inferRows schema (missingValues:string[]) separators culture maxRows =
+  let readCsv (reader:StreamReader) hasHeaders inferTypes inferRows schema (missingValues:string[]) separators culture maxRows =
     let schema = defaultArg schema ""
     let schema = if schema = null then "" else schema
     let inferRows = defaultArg inferRows 100
@@ -409,12 +409,16 @@ module internal FrameUtils =
     // to load information about types in the CSV file. By default, use the first
     // 100 rows (but inferRows can be set to another value). Otherwise we just
     // "infer" all columns as string.
-    let readDataFromCsv() = CsvFile.Load(reader, ?separators=separators, ?hasHeaders=hasHeaders)
-    let data = readDataFromCsv()
+
+    // If the stream does not support seeking, we read the entire dataset into memory because we need to iterate over the stream twice;
+    // once for inferring the schema and the second for actually pushing it into a frame.
+    
+    let stream = if reader.BaseStream.CanSeek then reader.BaseStream else (new MemoryStream(System.Text.Encoding.UTF8.GetBytes(reader.ReadToEnd())) :> Stream)
+    let data = CsvFile.Load(stream, ?separators=separators, ?hasHeaders=hasHeaders)
     let inferredProperties =
         match inferTypes with
         | Some true | None ->
-            readDataFromCsv().InferColumnTypes(inferRows, missingValues, cultureInfo, schema, safeMode, preferOptionals)
+            data.InferColumnTypes(inferRows, missingValues, cultureInfo, schema, safeMode, preferOptionals)
         | Some false ->
             let headers = 
                 match data.Headers with 
@@ -425,7 +429,7 @@ module internal FrameUtils =
     // Load the data and convert the values to the appropriate type
     let data = 
       match maxRows with 
-      | Some(nrows) ->  data.Truncate(nrows).Cache() 
+      | Some(nrows) -> data.Truncate(nrows).Cache() 
       | None -> data.Cache()
 
     // Generate columns using the inferred properties 
