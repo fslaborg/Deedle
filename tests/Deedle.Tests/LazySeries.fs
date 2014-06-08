@@ -68,10 +68,16 @@ let ``Multiple range restrictions are combined for sample calls`` () =
   r.Values |> shouldEqual [(10, Exclusive), (90, Exclusive)]
 
 [<Test>]
-let ``Multiple conflicting range restrictions lead to empty results`` () =
+let ``Multiple conflicting range restrictions (at the end) lead to empty results`` () =
   let ls = DelayedSeries.Create(0, 100, fun _ _ -> async { 
     return seq { for i in 0 .. 100 -> KeyValue.Create(i, i) } })   
   ls.Between(100,99).KeyCount |> shouldEqual 0
+
+[<Test>]
+let ``Multiple conflicting range restrictions (in the middle) lead to empty results`` () =
+  let ls = DelayedSeries.Create(0, 100, fun _ _ -> async { 
+    return seq { for i in 0 .. 100 -> KeyValue.Create(i, i) } })   
+  ls.Between(90,89).KeyCount |> shouldEqual 0
   
 [<Test>]
 let ``Splicing syntax creates inclusive restrictions`` () = 
@@ -192,6 +198,26 @@ let ``Can intersect valid range with a singleton range`` () =
   let intComp = System.Collections.Generic.Comparer<int>.Default
   Ranges.flattenRanges 0 100 intComp ranges |> List.ofSeq
   |> shouldEqual [(20, Inclusive), (20, Inclusive)]
+
+[<Test>]
+let ``Can intersect two singleton ranges`` () =
+  let ranges = 
+    Ranges.Intersect
+      ( Ranges.Range((5, Inclusive), (5, Inclusive)),
+        Ranges.Range((6, Inclusive), (6, Inclusive)) )
+  let intComp = System.Collections.Generic.Comparer<int>.Default
+  Ranges.flattenRanges 0 100 intComp ranges |> List.ofSeq
+  |> shouldEqual []
+
+[<Test>]
+let ``Contains function works on ranges with invalid high/low order`` () =
+  let ranges = 
+    Ranges.Intersect
+      ( Ranges.Range((0, Inclusive), (100, Inclusive)),
+        Ranges.Range((100, Inclusive), (99, Inclusive)) )
+  let intComp = System.Collections.Generic.Comparer<int>.Default
+  Ranges.contains intComp 100 ranges |> shouldEqual false
+
 
 // ------------------------------------------------------------------------------------------------
 // Random testing

@@ -13,15 +13,18 @@ open Deedle.Indices
 
 /// Module that contains functions for working with ranges - most importantly
 /// it handles flattening of trees constructed by unioning & intersecting ranges
-module internal Ranges = 
+module Ranges = 
   type Ranges<'T> = 
     | Range of (('T * BoundaryBehavior) * ('T * BoundaryBehavior))
     | Intersect of Ranges<'T> * Ranges<'T>
     | Union of Ranges<'T> * Ranges<'T>
 
-  let containsRange f input =
+  let containsRange (comparer:System.Collections.Generic.IComparer<_>) f input =
+    let (<) a b = comparer.Compare(a, b) < 0
     let rec loop = function
-      | Range(l, h) -> f l h
+      | Range(((lo, lobh) as l), ((hi, hibh) as h)) -> 
+          if (lo < hi) || (lo = hi && lobh = BoundaryBehavior.Inclusive && hibh = BoundaryBehavior.Inclusive) 
+            then f l h else false
       | Union(lo, hi) -> loop lo || loop hi
       | Intersect(lo, hi) -> loop lo && loop hi
     loop input
@@ -31,14 +34,14 @@ module internal Ranges =
   let containsSub (comparer:System.Collections.Generic.IComparer<_>) rlo rhi input =
     let (<=) a b = comparer.Compare(a, b) <= 0
     let (>=) a b = comparer.Compare(a, b) >= 0
-    input |> containsRange (fun (lo, _) (hi, _) ->
+    input |> containsRange comparer (fun (lo, _) (hi, _) ->
       rlo >= lo && rhi <= hi)
 
   /// Test if a range contains the specified value
   let contains (comparer:System.Collections.Generic.IComparer<_>) x input =
     let (<) a b = comparer.Compare(a, b) < 0
     let (>) a b = comparer.Compare(a, b) > 0
-    input |> containsRange (fun (lo, lob) (hi, hib) ->
+    input |> containsRange comparer (fun (lo, lob) (hi, hib) ->
       (x > lo && x < hi) || (x = lo && lob = Inclusive) || (x = hi && hib = Inclusive))
 
   /// Returns an ordered sequence of exclusive ranges
