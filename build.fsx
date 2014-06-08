@@ -196,6 +196,20 @@ Target "ReleaseBinaries" (fun _ ->
     Branches.push "temp/release"
 )
 
+Target "TagRelease" (fun _ ->
+    // Concatenate notes & create a tag in the local repository
+    let notes = (String.concat " " release.Notes).Replace("\n", ";").Replace("\r", "")
+    let tagName = "v" + release.NugetVersion
+    let cmd = sprintf """tag -a %s -m "%s" """ tagName notes
+    CommandHelper.runSimpleGitCommand "." cmd |> printfn "%s"
+
+    // Find the main remote (BlueMountain GitHub)
+    let _, remotes, _ = CommandHelper.runGitCommand "." "remote -v"
+    let main = remotes |> Seq.find (fun s -> s.Contains("(push)") && s.Contains("BlueMountainCapital/Deedle"))
+    let remoteName = main.Split('\t').[0]
+    Fake.Git.Branches.pushTag "." remoteName tagName
+)
+
 Target "Release" DoNothing
 
 // --------------------------------------------------------------------------------------
@@ -224,6 +238,7 @@ Target "AllCore" DoNothing
   ==> "ReleaseDocs"
   ==> "ReleaseBinaries"
   ==> "NuGet"
+  ==> "TagRelease"
   ==> "Release"
 
 RunTargetOrDefault "All"
