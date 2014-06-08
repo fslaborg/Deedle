@@ -405,15 +405,17 @@ module internal FrameUtils =
       elif typ = typeof<int64> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertInteger64(culture, Some(s))) data) :> IVector
       else Vector.ofValues data :> IVector
 
+    // If the stream does not support seeking, we read the entire dataset into memory 
+    // because we need to iterate over the stream twice; once for inferring the schema 
+    // and the second for actually pushing it into a frame.    
+    let stream = 
+      if reader.BaseStream.CanSeek then reader.BaseStream 
+      else (new MemoryStream(System.Text.Encoding.UTF8.GetBytes(reader.ReadToEnd())) :> Stream)
+
     // If 'inferTypes' is specified (or by default), use the CSV type inference
     // to load information about types in the CSV file. By default, use the first
     // 100 rows (but inferRows can be set to another value). Otherwise we just
     // "infer" all columns as string.
-
-    // If the stream does not support seeking, we read the entire dataset into memory because we need to iterate over the stream twice;
-    // once for inferring the schema and the second for actually pushing it into a frame.
-    
-    let stream = if reader.BaseStream.CanSeek then reader.BaseStream else (new MemoryStream(System.Text.Encoding.UTF8.GetBytes(reader.ReadToEnd())) :> Stream)
     let data = CsvFile.Load(stream, ?separators=separators, ?hasHeaders=hasHeaders)
     let inferredProperties =
         match inferTypes with
