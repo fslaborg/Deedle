@@ -13,7 +13,7 @@ open Deedle.Indices
 
 /// Module that contains functions for working with ranges - most importantly
 /// it handles flattening of trees constructed by unioning & intersecting ranges
-module Ranges = 
+module internal Ranges = 
   type Ranges<'T> = 
     | Range of (('T * BoundaryBehavior) * ('T * BoundaryBehavior))
     | Intersect of Ranges<'T> * Ranges<'T>
