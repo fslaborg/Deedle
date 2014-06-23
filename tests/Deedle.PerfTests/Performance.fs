@@ -31,6 +31,9 @@ let frame20x10000 = generateFrame (Seq.map string "ABCDEFGHIJKLMNOPQRST") 10000 
 let frames10x1000 =
   [ for i in 0 .. 9 -> generateFrame (Seq.map string "ABCDEFGHIJ") 1000 (i * 1000) ]
 let frame1000x1000 = generateFrame [ 0 .. 999 ] 1000 0
+let frame100x10000WithNans = 
+  [ for i in 0 .. 100 ->
+      i => series [ for j in 0 .. 10000 -> j => if j%10=0 then nan else float j ]  ] |> frame
 
 // Generate series of various lengths
 let rnd = Random(0)
@@ -321,3 +324,7 @@ let ``Merge 1000 unordered 1k long series (single Merge)`` () =
   (Series.mergeAll series1000of1000).KeyCount |> shouldEqual 1000000
 #endif 
 
+[<Test;PerfTest(Iterations=10)>]
+let ``Fill forward missing values in 100x10k frame`` () =
+  let filled = frame100x10000WithNans |> Frame.fillMissing Direction.Forward 
+  filled.Rows.[10000].GetAs<float>(50) |> shouldEqual 9999.0
