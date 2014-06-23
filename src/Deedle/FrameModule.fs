@@ -1234,7 +1234,9 @@ module Frame =
   /// [category:Missing values]
   [<CompiledName("FillMissing")>]
   let fillMissing direction (frame:Frame<'R, 'C>) =
-    frame.Columns |> Series.mapValues (fun s -> Series.fillMissing direction s) |> FrameUtils.fromColumns
+    let fillCmd = Vectors.FillMissing(Vectors.Return 0, VectorFillMissing.Direction direction)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder fillCmd)
+    Frame<_, _>(frame.RowIndex, frame.ColumnIndex, newData)
 
   /// Fill missing values in the frame using the specified function. The specified
   /// function is called with all series and keys for which the frame does not 
