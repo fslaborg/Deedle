@@ -4,9 +4,9 @@
 #I "../bin"
 #I "bin"
 #I "lib"
-#I "../packages/Deedle.1.0.1/lib/net40"
-#I "../../packages/Deedle.1.0.1/lib/net40"
-#I "../../../packages/Deedle.1.0.1/lib/net40"
+#I "../packages/Deedle.1.0.2/lib/net40"
+#I "../../packages/Deedle.1.0.2/lib/net40"
+#I "../../../packages/Deedle.1.0.2/lib/net40"
 // Also reference path with FSharp.Data.DesignTime.dll
 #I "../FSharp.Data.2.0.8/lib/net40/"
 // Reference Deedle

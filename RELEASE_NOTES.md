@@ -52,3 +52,5 @@
 ### 1.0.2
  * Operations GetAs, TryAs (ObjectSeries), GetColumns, GetRows, GetAllValues, ColumnApply (Frame)
    and filling of missing values uses "safe" conversion (allows conversion to bigger numeric type)
+ * Avoid boxing when filling missing values (#222)
+ * Fix documentation bugs (#221, #226) and update formatters from FsLab

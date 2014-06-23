@@ -2,7 +2,7 @@
 #load "../../bin/Deedle.fsx"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #r "../../packages/FsCheck.0.9.1.0/lib/net40-Client/FsCheck.dll"
-#r "../../packages/MathNet.Numerics.3.0.0-beta01/lib/net40/MathNet.Numerics.dll"
+#r "../../packages/MathNet.Numerics.3.0.0/lib/net40/MathNet.Numerics.dll"
 #load "../Common/FsUnit.fs"
 #else
 module Deedle.Tests.Stats
