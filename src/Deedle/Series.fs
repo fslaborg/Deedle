@@ -1042,46 +1042,54 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
   new(series:Series<'K, obj>) = 
     ObjectSeries<_>(series.Index, series.Vector, series.VectorBuilder, series.IndexBuilder)
 
-  member x.GetValues<'R>(strict) = 
-    if strict then System.Linq.Enumerable.OfType<'R>(x.Values)
-    else x.Values |> Seq.choose (fun v ->
-      try Some(Convert.changeType<'R> v) 
+  member x.GetValues<'R>(conversionKind) = 
+    x.Values |> Seq.choose (fun v ->
+      try Some(Convert.convertType<'R> conversionKind v) 
       with _ -> None)
 
-  member x.GetValues<'R>() = x.GetValues<'R>(true)
+  member x.GetValues<'R>() = x.GetValues<'R>(ConversionKind.Safe)
 
   member x.GetAs<'R>(column) : 'R = 
-    Convert.changeType<'R> (x.Get(column))
+    Convert.convertType<'R> ConversionKind.Flexible (x.Get(column))
 
   member x.GetAs<'R>(column, fallback) : 'R =
     let address = index.Lookup(column, Lookup.Exact, fun _ -> true) 
     match address with
     | OptionalValue.Present a -> 
         match (vector.GetValue(snd a)) with
-        | OptionalValue.Present v -> Convert.changeType<'R> v
+        | OptionalValue.Present v -> Convert.convertType<'R> ConversionKind.Flexible v
         | OptionalValue.Missing   -> fallback
     | OptionalValue.Missing -> keyNotFound column
 
   member x.GetAtAs<'R>(index) : 'R = 
-    Convert.changeType<'R> (x.GetAt(index))
+    Convert.convertType<'R> ConversionKind.Flexible (x.GetAt(index))
+
+  member x.GetAtAs<'R>(index, conversionKind) : 'R = 
+    Convert.convertType<'R> conversionKind (x.GetAt(index))
 
   member x.TryGetAs<'R>(column) : OptionalValue<'R> = 
-    x.TryGet(column) |> OptionalValue.map (fun v -> Convert.changeType<'R> v)
+    x.TryGet(column) |> OptionalValue.map (fun v -> Convert.convertType<'R> ConversionKind.Flexible v)
+
+  member x.TryGetAs<'R>(column, conversionKind) : OptionalValue<'R> = 
+    x.TryGet(column) |> OptionalValue.map (fun v -> Convert.convertType<'R> conversionKind v)
 
   static member (?) (series:ObjectSeries<_>, name:string) = 
     series.GetAs<float>(name, nan)
 
-  member x.TryAs<'R>(strict) : OptionalValue<Series<_, 'R>> =
-    let typed = 
-      if strict then VectorHelpers.tryCastType vector
-      else VectorHelpers.tryChangeType vector
-    typed |> OptionalValue.map (fun vec -> 
+  member x.TryAs<'R>(conversionKind) : OptionalValue<Series<_, 'R>> =
+    VectorHelpers.tryConvertType conversionKind vector
+    |> OptionalValue.map (fun vec -> 
       let newIndex = indexBuilder.Project(index)
       Series(newIndex, vec, vectorBuilder, indexBuilder))
 
-  member x.TryAs<'R>() =
-    x.TryAs<'R>(false)
+  member x.TryAs<'R>() = x.TryAs<'R>(ConversionKind.Safe)
 
   member x.As<'R>() =
     let newIndex = indexBuilder.Project(index)
-    Series(newIndex, VectorHelpers.changeType<'R> vector, vectorBuilder, indexBuilder)
+    Series(newIndex, VectorHelpers.convertType<'R> ConversionKind.Flexible vector, vectorBuilder, indexBuilder)
+
+
+  [<Obsolete("GetValues(bool) is obsolete. Use GetValues(ConversionKind) instead.")>]
+  member x.GetValues<'R>(strict) = x.GetValues(if strict then ConversionKind.Exact else ConversionKind.Flexible)
+  [<Obsolete("TryAs(bool) is obsolete. Use TryAs(ConversionKind) instead.")>]
+  member x.TryAs<'R>(strict) = x.TryAs<'R>(if strict then ConversionKind.Exact else ConversionKind.Flexible)

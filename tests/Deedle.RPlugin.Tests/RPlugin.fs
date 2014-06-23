@@ -112,4 +112,3 @@ let ``Can index rows ordinally and pass the result to R (#146)`` () =
 
   R.assign("df", df2) |> ignore
   R.get("df").GetValue<Frame<int, string>>() |> shouldEqual df2
-

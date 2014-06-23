@@ -172,7 +172,7 @@ type SeriesBuilder<'K, 'V when 'K : equality and 'V : equality>() =
             | (true, v) -> v :> obj
             | (false, _) -> failwithf "%s does not exist" name)
         (fun builder name value ->
-            let converted = Convert.changeType<'V> value
+            let converted = Convert.convertType<'V> ConversionKind.Flexible value
             builder.Add(unbox<'K> name, converted))
 
 /// A simple class that inherits from `SeriesBuilder<'K, obj>` and can be

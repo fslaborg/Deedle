@@ -1196,7 +1196,7 @@ module Frame =
   /// [category:Processing frames with exceptions]
   [<CompiledName("FillErrorsWith")>]
   let fillErrorsWith (value:'T) (frame:Frame<'R, 'C>) = 
-    frame.ColumnApply(true, fun (s:Series<_, 'T tryval>) -> 
+    frame.ColumnApply(ConversionKind.Safe, fun (s:Series<_, 'T tryval>) -> 
       (Series.fillErrorsWith value s) :> ISeries<_>)
 
   // ----------------------------------------------------------------------------------------------
@@ -1216,7 +1216,7 @@ module Frame =
   /// [category:Missing values]
   [<CompiledName("FillMissingWith")>]
   let fillMissingWith (value:'T) (frame:Frame<'R, 'C>) =
-    frame.ColumnApply(true, fun (s:Series<_, 'T>) -> Series.fillMissingWith value s :> ISeries<_>)
+    frame.ColumnApply(ConversionKind.Safe, fun (s:Series<_, 'T>) -> Series.fillMissingWith value s :> ISeries<_>)
 
   /// Fill missing values in the data frame with the nearest available value
   /// (using the specified direction). Note that the frame may still contain
@@ -1254,7 +1254,7 @@ module Frame =
   /// [category:Missing values]
   [<CompiledName("FillMissingUsing")>]
   let fillMissingUsing (f:Series<'R, 'T> -> 'R -> 'T) (frame:Frame<'R, 'C>) =
-    frame.ColumnApply(false, fun (s:Series<_, 'T>) -> Series.fillMissingUsing (f s) s :> ISeries<_>)
+    frame.ColumnApply(ConversionKind.Safe, fun (s:Series<_, 'T>) -> Series.fillMissingUsing (f s) s :> ISeries<_>)
 
   /// Creates a new data frame that contains only those rows of the original 
   /// data frame that are _dense_, meaning that they have a value for each column.

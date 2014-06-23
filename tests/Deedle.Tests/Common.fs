@@ -390,3 +390,74 @@ let ``Array.quickSelectInplace selects nth element when compared with sorted arr
     for n in 0 .. input.Length - 1 do
       let nth = StatsHelpers.quickSelectInplace n (Array.map id input)
       nth |> shouldEqual ((Array.sort input).[n]) )
+
+// ------------------------------------------------------------------------------------------------
+// Type conversions
+// ------------------------------------------------------------------------------------------------
+
+let values = 
+  [ box 1uy; box 1y; box 1us; box 1s; box 1; box 1u; box 1L; 
+    box 1UL; box 1.0M; box 1.0f; box 1.0; box "1"; box true ] 
+
+[<Test>]
+let ``Type conversion (flexible) can convert values to float and int`` () =
+  for value in values do
+    Convert.convertType<float> ConversionKind.Flexible value |> shouldEqual 1.0
+    Convert.canConvertType<float> ConversionKind.Flexible value |> shouldEqual true
+  for value in values do
+    Convert.convertType<int> ConversionKind.Flexible value |> shouldEqual 1
+    Convert.canConvertType<int> ConversionKind.Flexible value |> shouldEqual true
+
+[<Test>]
+let ``Type conversion (exact) can convert values of exact numeric types to float and int`` () =
+  for value in values do
+    let ty = value.GetType() 
+    if ty = typeof<float> then
+      Convert.convertType<float> ConversionKind.Safe value |> shouldEqual 1.0
+      Convert.canConvertType<float> ConversionKind.Exact value |> shouldEqual true
+  for value in values do
+    let ty = value.GetType() 
+    if ty = typeof<int> then
+      Convert.convertType<int> ConversionKind.Exact value |> shouldEqual 1
+      Convert.canConvertType<int> ConversionKind.Exact value |> shouldEqual true
+
+[<Test>]
+let ``Type conversion (exact) cannot convert values of non-exact numeric types to float and int`` () =
+  for value in values do
+    let ty = value.GetType() 
+    if ty <> typeof<float> then
+      (fun () -> Convert.convertType<float> ConversionKind.Exact value |> ignore) |> should throw typeof<InvalidCastException>
+      Convert.canConvertType<float> ConversionKind.Exact value |> shouldEqual false
+  for value in values do
+    let ty = value.GetType() 
+    if ty <> typeof<int> then
+      (fun () -> Convert.convertType<int> ConversionKind.Exact value |> ignore) |> should throw typeof<InvalidCastException>
+      Convert.canConvertType<int> ConversionKind.Exact value |> shouldEqual false
+
+[<Test>]
+let ``Type conversion (safe) can convert values of smaller numeric types to float and int`` () =
+  for value in values do
+    let ty = value.GetType() 
+    if ty <> typeof<string> && ty <> typeof<bool> then
+      Convert.convertType<float> ConversionKind.Safe value |> shouldEqual 1.0
+      Convert.canConvertType<float> ConversionKind.Safe value |> shouldEqual true
+  for value in values do
+    let ty = value.GetType() 
+    if ty <> typeof<string> && ty <> typeof<bool> && ty <> typeof<float> && ty <> typeof<decimal> && 
+       ty <> typeof<float32> && ty <> typeof<float> && ty <> typeof<uint32> && ty <> typeof<int64> && ty <> typeof<uint64> then
+      Convert.convertType<int> ConversionKind.Safe value |> shouldEqual 1
+      Convert.canConvertType<int> ConversionKind.Safe value |> shouldEqual true
+
+[<Test>]
+let ``Type conversion (safe) cannot convert values of bigger or non-numeric types to float and int`` () =
+  for value in values do
+    let ty = value.GetType() 
+    if ty = typeof<string> || ty = typeof<bool> then
+      (fun () -> Convert.convertType<float> ConversionKind.Safe value |> ignore) |> should throw typeof<InvalidCastException>
+      Convert.canConvertType<float> ConversionKind.Safe value |> shouldEqual false
+  for value in values do
+    let ty = value.GetType() 
+    if ty = typeof<string> || ty = typeof<bool> || ty = typeof<float> || ty = typeof<decimal> || 
+       ty = typeof<float32> || ty = typeof<float> || ty = typeof<uint32> || ty = typeof<int64> || ty = typeof<uint64> then
+      (fun () -> Convert.convertType<int> ConversionKind.Safe value |> ignore) |> should throw typeof<InvalidCastException>
+      Convert.canConvertType<int> ConversionKind.Safe value |> shouldEqual false
