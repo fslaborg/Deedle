@@ -47,7 +47,7 @@ Chart.Pie [ "Good", 20; "Bad", 10; "Unsure", 5 ]
 (**
 helper to capture the last image
 *)
-#load "../../../packages/RProvider.1.0.7-alpha/RProvider.fsx"
+#load "../../../packages/RProvider.1.0.13/RProvider.fsx"
 open RProvider
 open RProvider.datasets
 open RProvider.``base``

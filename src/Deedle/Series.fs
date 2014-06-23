@@ -484,8 +484,17 @@ and
   /// [category:Merging, joining and zipping]
   member series.ZipInner<'V2>(otherSeries:Series<'K, 'V2>) : Series<'K, 'V * 'V2> =
     let newIndex, lVec, rVec = series.ZipHelper(otherSeries, JoinKind.Inner, Lookup.Exact)
-    let zipv = rVec.Data.Values |> Seq.zip lVec.Data.Values |> Vector.ofValues
-    Series(newIndex, zipv, vectorBuilder, indexBuilder)
+    
+    let vecRes = 
+      Vectors.Combine(Vectors.Return 0, Vectors.Return 1, 
+        VectorValueTransform.CreateLifted<Choice<'V, 'V2, 'V * 'V2>>(fun l r ->
+          match l, r with
+          | Choice1Of3 l, Choice2Of3 r -> Choice3Of3(l, r)
+          | _ -> failwith "logic error"))
+
+    let zipV = vectorBuilder.Build<Choice<'V, 'V2, 'V * 'V2>>(vecRes, [| lVec.Select(Choice1Of3); rVec.Select(Choice2Of3) |])
+    let zipV = zipV.Select(function Choice3Of3 v -> v | _ -> failwith "logic error")
+    Series(newIndex, zipV, vectorBuilder, indexBuilder)
 
   // ----------------------------------------------------------------------------------------------
   // Resampling

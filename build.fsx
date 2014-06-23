@@ -232,12 +232,12 @@ Target "AllCore" DoNothing
 "RunTests" ==> "All"
 "RunTests" ==> "AllCore"
 
+"All" ==> "NuGet" ==> "Release"
 "All" 
   ==> "CleanDocs"
   ==> "GenerateDocs"
   ==> "ReleaseDocs"
   ==> "ReleaseBinaries"
-  ==> "NuGet"
   ==> "TagRelease"
   ==> "Release"
 

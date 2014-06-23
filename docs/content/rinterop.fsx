@@ -1,6 +1,7 @@
 ﻿(*** hide ***)
 #nowarn "211"
 #I "../../packages/FSharp.Charting.0.90.6"
+#I "../../packages/RProvider.1.0.13/"
 #I @"../../bin"
 open System
 let airQuality = __SOURCE_DIRECTORY__ + "/data/AirQuality.csv"
@@ -51,7 +52,7 @@ In a typical project ("F# Tutorial"), the NuGet packages are installed in the `.
 directory. To use R provider and Deedle, you need to write something like this:
 *)
 #I "../packages/Deedle.0.9.9-beta/"
-#I "../packages/RProvider.1.0.7-alpha/"
+#I "../packages/RProvider.1.0.13/"
 #load "RProvider.fsx"
 #load "Deedle.fsx"
 
@@ -62,7 +63,7 @@ open Deedle
 
 If you're not using NuGet from Visual Studio, then you'll need to manually copy the
 file `Deedle.RProvider.Plugin.dll` from the package `Deedle.RPlugin` to the 
-directory where `RProvider.dll` is located (in `RProvider.1.0.7-alpha/lib`). Once that's
+directory where `RProvider.dll` is located (in `RProvider.1.0.13/lib`). Once that's
 done, the R provider will automatically find the plugin.
 
 <a name="frames"></a>
@@ -176,15 +177,10 @@ Passing time series to and from R
 
 For working with time series data, the Deedle plugin uses [the zoo package](http://cran.r-project.org/web/packages/zoo/index.html) 
 (Z's ordered observations). If you do not have the package installed, you can do that
-by using the `install.packages("zoo")` command from R or using the following code from
-F# (when running the code from F#, you'll need to restart your editor and F# interactive
-after it is installed): 
-*)
+by using the `install.packages("zoo")` command from R or using `R.install_packages("zoo")` from
+F# after opening `RProvider.utils`. When running the code from F#, you'll need to restart your 
+editor and F# interactive after it is installed.
 
-open RProvider.utils
-R.install_packages("zoo")
-
-(**
 ### From R to Deedle
 
 Let's start by looking at getting time series data from R. We can again use the `datasets`

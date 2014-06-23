@@ -613,7 +613,7 @@ let ``Slicing of ordered series works when keys are out of series key range``() 
   s.[20.0 .. 5.0].Values |> List.ofSeq |> shouldEqual []
 
 // ------------------------------------------------------------------------------------------------
-// Appending and joining
+// Ziping
 // ------------------------------------------------------------------------------------------------
   
 let a =
@@ -698,6 +698,19 @@ let ``Can left-zip two empty series`` () =
   let s1 = series ([] : list<int * int>)
   let s2 = s1.Zip(s1, JoinKind.Left)
   s2 |> shouldEqual (series [])
+
+[<Test>]
+let ``zipInner should not break alignment of the index (#233)``() = 
+  let x = series [ 0 => nan; 1 => nan; 2 => 1.0; 3 => 2.0 ] 
+  let y = series [ 0 => nan; 1 => nan; 2 => 3.0; 3 => 4.0 ]
+  let expected = 
+    [ 0 => None; 1 => None; 2 => Some(1.0, 3.0); 3 => Some(2.0, 4.0) ]
+    |> Series.ofOptionalObservations 
+  Series.zipInner x y |> shouldEqual expected
+
+// ------------------------------------------------------------------------------------------------
+// Appending and joining
+// ------------------------------------------------------------------------------------------------
 
 [<Test>]
 let ``Can append two sample series`` () =
