@@ -15,6 +15,7 @@ open System.Collections.ObjectModel
 type BlockStore<'K, 'V when 'K : equality> = 
   abstract Length : int64
   abstract KeyAt : int64 -> 'K
+  abstract LookupKey : 'K * Lookup * (Addressing.Address -> bool) -> OptionalValue<'K * int64>
   abstract ValueAt : int64 -> OptionalValue<'V>
   abstract GetAddressRange : int64 * int64 -> BlockStore<'K, 'V>
   
@@ -38,8 +39,10 @@ and BlockStoreIndex<'K, 'V when 'K : equality>(store:BlockStore<'K, 'V>) =
     member x.Builder = failwith "Builder: TODO!!" :> IIndexBuilder
     member x.KeyRange = store.KeyAt(0L), store.KeyAt(store.Length - 1L)
     member x.Keys = Array.init (int store.Length) (int64 >> store.KeyAt) |> ReadOnlyCollection.ofArray 
-    member x.Locate(key) = failwith "Locate: TODO!!" 
-    member x.Lookup(key, semantics, check) = failwith "Lookup: TODO!!"
+    member x.Locate(key) = 
+      let loc = store.LookupKey(key, Lookup.Exact, fun _ -> true)
+      if loc.HasValue then snd loc.Value else Addressing.Address.Invalid
+    member x.Lookup(key, semantics, check) = store.LookupKey(key, semantics, check)
     member x.Mappings = seq { for i in 0L .. store.Length-1L -> store.KeyAt(i), i }
     member x.IsOrdered = true
     member x.Comparer = Comparer<'K>.Default

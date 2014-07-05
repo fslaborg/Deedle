@@ -63,18 +63,14 @@ and IFrameOperation<'V> =
 ///
 ///
 and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>
-    internal ( rowIndex:IIndex<'TRowKey>, columnIndex:IIndex<'TColumnKey>, 
-               data:IVector<IVector>) =
+    ( rowIndex:IIndex<'TRowKey>, columnIndex:IIndex<'TColumnKey>, 
+      data:IVector<IVector>, indexBuilder:IIndexBuilder, vectorBuilder:IVectorBuilder) =
 
   // ----------------------------------------------------------------------------------------------
   // Internals (rowIndex, columnIndex, data and various helpers)
   // ----------------------------------------------------------------------------------------------
 
   let mutable isEmpty = rowIndex.IsEmpty && columnIndex.IsEmpty
-
-  /// Vector builder
-  let vectorBuilder = VectorBuilder.Instance
-  let indexBuilder = IndexBuilder.Instance
 
   // TODO: Perhaps assert that the 'data' vector has all things required by column index
   // (to simplify various handling below)
@@ -104,7 +100,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// Create frame from a series of columns. This is used inside Frame and so we have to have it
   /// as a static member here. The function is optimised for the case when all series share the
   /// same index (by checking object reference equality)
-  static let fromColumnsNonGeneric (seriesConv:'S -> ISeries<_>) (nested:Series<_, 'S>) = 
+  static let fromColumnsNonGeneric indexBuilder vectorBuilder (seriesConv:'S -> ISeries<_>) (nested:Series<_, 'S>) = 
     let columns = Series.observations nested
     let rowIndex = Seq.headOrNone columns |> Option.map (fun (_, s) -> (seriesConv s).Index)
     match rowIndex with 
@@ -114,7 +110,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
         let vector = columns |> Seq.map (fun (_, s) -> 
           // When the nested series data is in 'IBoxedVector', get the unboxed representation
           unboxVector (seriesConv s).Vector) |> Vector.ofValues
-        Frame<_, _>(rowIndex, Index.ofKeys (Seq.map fst columns), vector)
+        Frame<_, _>(rowIndex, Index.ofKeys (Seq.map fst columns), vector, indexBuilder, vectorBuilder)
 
     | _ ->
         // Create new row index by unioning all keys
@@ -139,9 +135,10 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
             // When the nested series data is in 'IBoxedVector', get the unboxed representation
             VectorHelpers.transformColumn nested.VectorBuilder cmd (unboxVector series.Vector) )
           |> Vector.ofValues
-        Frame<_, _>(rowIndex, colIndex, data)
+        Frame<_, _>(rowIndex, colIndex, data, indexBuilder, vectorBuilder)
 
-  static member internal FromColumnsNonGeneric seriesConv nested = fromColumnsNonGeneric seriesConv nested
+  static member internal FromColumnsNonGeneric indexBuilder vectorBuilder seriesConv nested = 
+    fromColumnsNonGeneric indexBuilder vectorBuilder seriesConv nested
 
   member private x.setColumnIndex newColumnIndex = 
     columnIndex <- newColumnIndex
@@ -219,7 +216,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
         | OptionalValue.Present v, _ -> f1trans v
         | _, OptionalValue.Present v -> f2trans v
         | _ -> failwith "zipAlignInto: join failed." )
-    Frame<_, _>(rowIndex, newColumns.Index, newColumns.Vector)
+    Frame<_, _>(rowIndex, newColumns.Index, newColumns.Vector, indexBuilder, vectorBuilder)
 
   /// Aligns two data frames using both column index and row index and apply the specified operation
   /// on values of a specified type that are available in both data frames. This overload uses
@@ -270,7 +267,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let newOtherData = otherFrame.Data.Select(transformColumn vectorBuilder otherRowCmd)
     // Combine column vectors a single vector & return results
     let newData = vectorBuilder.Build(colCmd, [| newThisData; newOtherData |])
-    Frame(newRowIndex, newColumnIndex, newData)
+    Frame(newRowIndex, newColumnIndex, newData, indexBuilder, vectorBuilder)
 
   /// Join two data frames. The columns of the joined frames must not overlap and their
   /// rows are aligned and transformed according to the specified join kind.
@@ -434,7 +431,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
     let frameData = frames |> Array.map (fun f -> f.Data)
     let newData = vectorBuilder.Build(frameCmd, frameData)
-    Frame(newRowIndex, newColIndex, newData)
+    Frame(newRowIndex, newColIndex, newData, indexBuilder, vectorBuilder)
 
   // ----------------------------------------------------------------------------------------------
   // Frame accessors
@@ -724,7 +721,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       data <- Vector.ofValues [series.Vector]
       frame.setColumnIndex (Index.ofKeys [column])
     else
-      let other = Frame(series.Index, Index.ofUnorderedKeys [column], Vector.ofValues [series.Vector])
+      let other = Frame(series.Index, Index.ofUnorderedKeys [column], Vector.ofValues [series.Vector], indexBuilder, vectorBuilder)
       let joined = frame.Join(other, JoinKind.Left, lookup)
       data <- joined.Data
       frame.setColumnIndex joined.ColumnIndex
@@ -814,7 +811,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       match os.TryAs<'T>(strict) with
       | OptionalValue.Present s -> f.Invoke s
       | _ -> os :> ISeries<_>)
-    |> fromColumnsNonGeneric id
+    |> fromColumnsNonGeneric indexBuilder vectorBuilder id
 
   /// [category:Series operations]
   member frame.GetColumn<'R>(column:'TColumnKey, lookup) : Series<'TRowKey, 'R> = 
@@ -907,7 +904,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
               member x.Invoke(tyvec) =
                 frame.VectorBuilder.Build(frameCmd, [| tyvec |]) :> IVector }
           |> vector.Invoke ) 
-    Frame(newIndex, frame.ColumnIndex, newData)
+    Frame(newIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   // Apply operation 'op' to all columns that exist in both frames and are convertible to 'T
   static member inline internal PointwiseFrameFrame<'T>(frame1:Frame<'TRowKey, 'TColumnKey>, frame2:Frame<'TRowKey, 'TColumnKey>, op:'T -> 'T -> 'T) =
@@ -919,7 +916,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       match os.TryAs<'T>(false) with
       | OptionalValue.Present s -> (Series.mapValues (fun v -> op v scalar) s) :> ISeries<_>
       | _ -> os :> ISeries<_>)
-    |> fromColumnsNonGeneric id
+    |> fromColumnsNonGeneric frame.IndexBuilder frame.VectorBuilder id
 
   // Apply operation 'op' with 'series' on the left to all columns convertible to 'T
   static member inline private PointwiseFrameSeriesL<'T>(frame:Frame<'TRowKey, 'TColumnKey>, series:Series<'TRowKey, 'T>, op:'T -> 'T -> 'T) =
@@ -1114,14 +1111,14 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   // ----------------------------------------------------------------------------------------------
 
   new(names:seq<'TColumnKey>, columns:seq<ISeries<'TRowKey>>) =
-    let df = Frame(Index.ofKeys [], Index.ofKeys [], Vector.ofValues [])
+    let df = Frame(Index.ofKeys [], Index.ofKeys [], Vector.ofValues [], IndexBuilder.Instance, VectorBuilder.Instance)
     let df = (df, Seq.zip names columns) ||> Seq.fold (fun df (colKey, colData) ->
-      let other = Frame(colData.Index, Index.ofUnorderedKeys [colKey], Vector.ofValues [colData.Vector])
+      let other = Frame(colData.Index, Index.ofUnorderedKeys [colKey], Vector.ofValues [colData.Vector], IndexBuilder.Instance, VectorBuilder.Instance)
       df.Join(other, JoinKind.Outer) )
-    Frame(df.RowIndex, df.ColumnIndex, df.Data)
+    Frame(df.RowIndex, df.ColumnIndex, df.Data, IndexBuilder.Instance, VectorBuilder.Instance)
 
   member frame.Clone() =
-    Frame<_, _>(rowIndex, columnIndex, data)
+    Frame<_, _>(rowIndex, columnIndex, data, indexBuilder, vectorBuilder)
 
   // ----------------------------------------------------------------------------------------------
   // Interfaces and overrides
@@ -1163,6 +1160,22 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       col.Value.ElementType, boxedVec)
     // Return as VectorData
     { ColumnKeys = colKeys; RowKeys = rowKeys; Columns = columns }
+
+  /// Internal helper used by `skip`, `take`, etc.
+  member frame.GetAddressRange(lo, hi) = 
+    let newRowIndex, cmd = indexBuilder.GetAddressRange((frame.RowIndex, Vectors.Return 0), (lo, hi))
+    let newData = frame.Data.Select(VectorHelpers.transformColumn vectorBuilder cmd)
+    Frame<_, _>(newRowIndex, columnIndex, newData, indexBuilder, vectorBuilder)
+
+  member private frame.GetPrintedRowObservations(startCount:int, endCount:int) = 
+    if frame.RowIndex.KeyCount <= int64 (startCount + endCount) then
+      seq { for obs in frame.Rows.Observations -> Choice1Of3(obs.Key, obs.Value) } 
+    else
+      let starts = frame.GetAddressRange(0L, int64 startCount)
+      let ends = frame.GetAddressRange(frame.RowIndex.KeyCount - 1L - int64 endCount, frame.RowIndex.KeyCount - 1L)
+      seq { for obs in starts.Rows.Observations do yield Choice1Of3(obs.Key, obs.Value)
+            yield Choice2Of3()
+            for obs in ends.Rows.Observations do yield Choice1Of3(obs.Key, obs.Value) }
 
   /// Shows the data frame content in a human-readable format. The resulting string
   /// shows all columns, but a limited number of rows. 
@@ -1216,11 +1229,11 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     try
       // Get the number of levels in column/row index
       let colLevels = 
-        match frame.ColumnIndex.Keys |> Seq.headOrNone with 
-        Some colKey -> CustomKey.Get(colKey).Levels | _ -> 1
+        if frame.ColumnIndex.KeyCount = 0L then 1 
+        else CustomKey.Get(frame.ColumnIndex.KeyAt(0L)).Levels
       let rowLevels = 
-        match frame.RowIndex.Keys |> Seq.headOrNone with 
-        Some rowKey -> CustomKey.Get(rowKey).Levels | _ -> 1
+        if frame.RowIndex.KeyCount = 0L then 1 
+        else CustomKey.Get(frame.RowIndex.KeyAt(0L)).Levels
 
       /// Format type with a few special cases for common types
       let formatType (typ:System.Type) =
@@ -1265,10 +1278,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
               yield String.Concat("(", typ, ")") ]
               
         // Yield row data
-        let rows = frame.Rows
         let previous = Array.init rowLevels (fun _ -> ref None)
         let reset i () = for j in i + 1 .. rowLevels - 1 do previous.[j] := None
-        for item in frame.RowIndex.Mappings |> Seq.startAndEnd startCount endCount do
+        for item in frame.GetPrintedRowObservations(startCount, endCount) do
           match item with 
           | Choice2Of3() ->
               yield [
@@ -1276,8 +1288,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
                 for i in 0 .. rowLevels - 1 do yield if i = 0 then ":" else ""
                 yield ""
                 for i in 1 .. data.DataSequence |> Seq.length -> "..." ]
-          | Choice1Of3(rowKey, addr) | Choice3Of3(rowKey, addr) ->
-              let row = rows.[rowKey]
+          | Choice1Of3(rowKey, row) | Choice3Of3(rowKey, row) ->
               yield [
                 // Yield all row keys
                 for rowLevel in 0 .. rowLevels - 1 do 
@@ -1359,23 +1370,10 @@ and FrameUtils =
   // Current index builder to be used for creating frames
   static member indexBuilder = IndexBuilder.Instance
 
-  /// Create data frame containing a single column
-  static member createColumn<'TColumnKey, 'TRowKey when 'TColumnKey : equality and 'TRowKey : equality>
-      (column:'TColumnKey, series:ISeries<'TRowKey>) = 
-    let data = Vector.ofValues [| series.Vector |]
-    Frame(series.Index, Index.ofKeys [column], data)
-
-  /// Create data frame containing a single row
-  static member createRow(row:'TRowKey, series:Series<'TColumnKey, 'TValue>) = 
-    let data = series.Vector.SelectMissing(fun v -> 
-      let res = VectorBuilder.Instance.CreateMissing [| v |] 
-      OptionalValue(res :> IVector))
-    Frame(Index.ofKeys [row], series.Index, data)
-    
   /// Create data frame from a series of rows
   static member fromRowsAndColumnKeys<'TRowKey, 'TColumnKey, 'TSeries
         when 'TRowKey : equality and 'TColumnKey : equality and 'TSeries :> ISeries<'TColumnKey>> 
-      colKeys (nested:Series<'TRowKey, 'TSeries>) =
+      indexBuilder vectorBuilder colKeys (nested:Series<'TRowKey, 'TSeries>) =
 
     // Create column index from keys of all rows
     let columnIndex = colKeys |> Index.ofKeys
@@ -1411,23 +1409,22 @@ and FrameUtils =
             // so we try again and pass object as a witness
             columnCreator key (obj()) )
       |> Array.ofSeq |> FrameUtils.vectorBuilder.Create
-    Frame(rowIndex, columnIndex, data)
+    Frame(rowIndex, columnIndex, data, indexBuilder, vectorBuilder)
 
   /// Create data frame from a series of rows
   static member fromRows<'TRowKey, 'TColumnKey, 'TSeries
         when 'TRowKey : equality and 'TColumnKey : equality and 'TSeries :> ISeries<'TColumnKey>>
-      (nested:Series<'TRowKey, 'TSeries>) =
+      indexBuilder vectorBuilder (nested:Series<'TRowKey, 'TSeries>) =
 
     // Create column index from keys of all rows
     let columnIndex = nested.Values |> Seq.collect (fun sr -> sr.Index.Keys) |> Seq.distinct |> Array.ofSeq
-
-    FrameUtils.fromRowsAndColumnKeys columnIndex nested
+    FrameUtils.fromRowsAndColumnKeys indexBuilder vectorBuilder columnIndex nested
 
   /// Create data frame from a series of columns
   static member fromColumns<'TRowKey, 'TColumnKey, 'TSeries when 'TSeries :> ISeries<'TRowKey> 
         and 'TRowKey : equality and 'TColumnKey : equality>
-      (nested:Series<'TColumnKey, 'TSeries>) =
-      nested |> Frame<int, int>.FromColumnsNonGeneric (fun s -> s :> _)
+      indexBuilder vectorBuilder (nested:Series<'TColumnKey, 'TSeries>) =
+      nested |> Frame<int, int>.FromColumnsNonGeneric indexBuilder vectorBuilder (fun s -> s :> _)
 
 // ------------------------------------------------------------------------------------------------
 // These should really be extensions, but they take generic type parameter
@@ -1458,7 +1455,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let newIndex = Index.ofKeys keys
     let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 n, locs)
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder cmd)
-    Frame<_, _>(newIndex, frame.ColumnIndex, newData)
+    Frame<_, _>(newIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   member internal frame.NestRowsBy<'TGroup when 'TGroup : equality>(labels:seq<'TGroup>) =
     let indexBuilder = frame.IndexBuilder
@@ -1480,7 +1477,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       let newLocs  = idx |> Seq.map snd                  // seq of offsets
       let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 newIndex.KeyCount, newLocs |> Seq.mapi (fun a b -> (int64 a, int64 b)))
       let newData  = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder cmd)
-      Frame<_, _>(newIndex, frame.ColumnIndex, newData) )
+      Frame<_, _>(newIndex, frame.ColumnIndex, newData, indexBuilder, vectorBuilder) )
  
     Series<_, _>(newIndex, Vector.ofValues groups, vectorBuilder, indexBuilder)
 
@@ -1515,7 +1512,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     |> Series.map (fun _ f -> [for c in aggBy -> (c, aggFunc.Invoke(f.GetColumn<_>(c)) |> box)] )
     |> Series.map (fun k v -> v |> Seq.append (k |> Seq.zip grpKeys) |> Series.ofObservations)
     |> Series.indexOrdinally
-    |> FrameUtils.fromRows
+    |> FrameUtils.fromRows frame.IndexBuilder frame.VectorBuilder 
 
   /// Returns a data frame whose rows are indexed based on the specified column of the original
   /// data frame. The generic type parameter is (typically) needed to specify the type of the 
@@ -1542,7 +1539,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       frame.VectorBuilder
         .Build(colCmd, [| frame.Data |])
         .Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
-    Frame<'TNewRowIndex, 'TColumnKey>(newRowIndex, newColumnIndex, newData)
+    Frame<'TNewRowIndex, 'TColumnKey>(newRowIndex, newColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Returns a data frame whose rows are indexed based on the specified column of the original
   /// data frame. The generic type parameter is (typically) needed to specify the type of the 
@@ -1569,10 +1566,10 @@ and ColumnSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey 
     ColumnSeries(series.Index, series.Vector, series.VectorBuilder, series.IndexBuilder)
 
   [<EditorBrowsable(EditorBrowsableState.Never)>]
-  member x.GetSlice(lo, hi) = base.GetSlice(lo, hi) |> FrameUtils.fromColumns
+  member x.GetSlice(lo, hi) = base.GetSlice(lo, hi) |> FrameUtils.fromColumns indexBuilder vectorBuilder 
   [<EditorBrowsable(EditorBrowsableState.Never)>]
-  member x.GetByLevel(level) = base.GetByLevel(level) |> FrameUtils.fromColumns
-  member x.Item with get(items) = x.GetItems(items) |> FrameUtils.fromColumns
+  member x.GetByLevel(level) = base.GetByLevel(level) |> FrameUtils.fromColumns indexBuilder vectorBuilder 
+  member x.Item with get(items) = x.GetItems(items) |> FrameUtils.fromColumns indexBuilder vectorBuilder 
   member x.Item with get(level) = x.GetByLevel(level)
 
 and RowSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>(index, vector, vectorBuilder, indexBuilder) =
@@ -1581,8 +1578,8 @@ and RowSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : e
     RowSeries(series.Index, series.Vector, series.VectorBuilder, series.IndexBuilder)
 
   [<EditorBrowsable(EditorBrowsableState.Never)>]
-  member x.GetSlice(lo, hi) = base.GetSlice(lo, hi) |> FrameUtils.fromRows
+  member x.GetSlice(lo, hi) = base.GetSlice(lo, hi) |> FrameUtils.fromRows indexBuilder vectorBuilder 
   [<EditorBrowsable(EditorBrowsableState.Never)>]
-  member x.GetByLevel(level) = base.GetByLevel(level) |> FrameUtils.fromRows
-  member x.Item with get(items) = x.GetItems(items) |> FrameUtils.fromRows
+  member x.GetByLevel(level) = base.GetByLevel(level) |> FrameUtils.fromRows indexBuilder vectorBuilder 
+  member x.Item with get(items) = x.GetItems(items) |> FrameUtils.fromRows indexBuilder vectorBuilder 
   member x.Item with get(level) = x.GetByLevel(level)

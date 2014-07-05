@@ -84,7 +84,7 @@ let constructFrame (df:DataFrame) rowIndex colIndex =
   let data = Array.init df.ColumnCount (fun colIndex ->
     let colData = rows |> Array.map (fun r -> r.[colIndex])
     VectorHelpers.createInferredTypeVector Vectors.ArrayVector.ArrayVectorBuilder.Instance colData)
-  Some(Frame<_,_>(rowIndex, colIndex, Vector.ofValues data))
+  Some(Frame<_,_>(rowIndex, colIndex, Vector.ofValues data, IndexBuilder.Instance, VectorBuilder.Instance))
 
 /// Convert R expression to a data frame and return frame of an
 /// appropriate type, based on the values of the indices
