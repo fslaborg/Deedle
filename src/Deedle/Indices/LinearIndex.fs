@@ -141,7 +141,7 @@ type LinearIndex<'K when 'K : equality>
       | _ -> OptionalValue.Missing
 
     /// Returns all mappings of the index (key -> address) 
-    member x.Mappings = keys |> Seq.mapi (fun i k -> k, Address.ofInt i)
+    member x.Mappings = keys |> Seq.mapi (fun i k -> KeyValuePair(k, Address.ofInt i))
     /// Are the keys of the index ordered?
     member x.IsOrdered = ordered.Value
     member x.Comparer = comparer
@@ -219,9 +219,9 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
     match index with
     | :? LinearIndex<_> as lin -> lin, vector
     | _ ->
-      let relocs = index.Mappings |> Seq.mapi (fun i (k, a) -> Address.ofInt i, a)
+      let relocs = index.Mappings |> Seq.mapi (fun i (KeyValue(k, a)) -> Address.ofInt i, a)
       let newVector = Vectors.Relocate(vector, index.KeyCount, relocs)
-      LinearIndex(index.Mappings |> Seq.map fst |> ReadOnlyCollection.ofSeq, LinearIndexBuilder.Instance), newVector
+      LinearIndex(index.Mappings |> Seq.map (fun kvp -> kvp.Key) |> ReadOnlyCollection.ofSeq, LinearIndexBuilder.Instance), newVector
 
   /// Instance of the index builder (specialized to Int32 addresses)
   static let indexBuilder = LinearIndexBuilder(VectorBuilder.Instance)
@@ -361,7 +361,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       Array.sortInPlaceWith (fun a b -> index.Comparer.Compare(a, b)) keys
       let newIndex = LinearIndex(ReadOnlyCollection.ofArray keys, builder, true) :> IIndex<_>
       let relocations = 
-        seq { for key, oldAddress in index.Mappings ->
+        seq { for KeyValue(key, oldAddress) in index.Mappings ->
                 let newAddress = newIndex.Lookup(key, Lookup.Exact, fun _ -> true) 
                 if not newAddress.HasValue then failwith "OrderIndex: key not found in the new index"
                 snd newAddress.Value, oldAddress }
@@ -447,7 +447,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
     member builder.WithIndex<'K, 'TNewKey when 'K : equality  and 'TNewKey : equality>
         (index1:IIndex<'K>, f:Address -> OptionalValue<'TNewKey>, vector) =
       let newKeys =
-        [| for key, oldAddress in index1.Mappings do
+        [| for KeyValue(key, oldAddress) in index1.Mappings do
              let newKey = f oldAddress
              if newKey.HasValue then yield newKey.Value, oldAddress |]
       
@@ -462,13 +462,13 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       let relocations = 
         if semantics = Lookup.Exact then
             seq {  
-              for key, newAddress in index2.Mappings do
+              for KeyValue(key, newAddress) in index2.Mappings do
                 let oldAddress = index1.Locate(key)
                 if oldAddress <> Address.Invalid && condition oldAddress then 
                   yield newAddress, oldAddress }
         else
             seq {  
-              for key, newAddress in index2.Mappings do
+              for KeyValue(key, newAddress) in index2.Mappings do
                 let oldAddress = index1.Lookup(key, semantics, condition)
                 if oldAddress.HasValue then 
                   yield newAddress, oldAddress.Value |> snd }
@@ -477,7 +477,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
     member builder.LookupLevel( (index, vector), searchKey:ICustomLookup<'K> ) =
       let matching = 
-        [| for key, addr in index.Mappings do
+        [| for KeyValue(key, addr) in index.Mappings do
              if searchKey.Matches(key) then yield addr, key |]
       let len = matching.Length |> int64
       let relocs = Seq.zip (Address.generateRange(0L, len-1L)) (Seq.map fst matching)

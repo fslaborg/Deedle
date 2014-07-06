@@ -45,7 +45,7 @@ let ``Counting keys does not evaluate the series`` () =
 
 [<Test>]
 let ``Counting values does not evaluate the series`` () =
-  let src = TrackingSource(0L, 1000000L, IsTracking=false)
+  let src = TrackingSource(0L, 10000000L, IsTracking=false)
   let series = Virtual.CreateOrdinalSeries(src)
-  series.ValueCount |> shouldEqual 666667
+  series.ValueCount |> shouldEqual 6666667
 

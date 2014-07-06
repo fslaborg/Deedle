@@ -82,7 +82,7 @@ type VirtualOrdinalIndex(range) =
     member x.Keys = Array.init (int size) (Address.ofInt >> (keyOfAddr lo)) |> ReadOnlyCollection.ofArray
     member x.Mappings = 
       Seq.range 0L (size - 1L) 
-      |> Seq.map (fun i -> keyOfAddr lo (Address.ofInt64 i), Address.ofInt64 i)
+      |> Seq.map (fun i -> KeyValuePair(keyOfAddr lo (Address.ofInt64 i), Address.ofInt64 i))
     member x.IsOrdered = true
     member x.Comparer = Comparer<int64>.Default
 

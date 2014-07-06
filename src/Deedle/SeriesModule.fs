@@ -214,7 +214,7 @@ module Series =
   /// [category:Accessing series data and lookup]
   [<CompiledName("GetObservations")>]
   let observations (series:Series<'K, 'T>) = seq { 
-    for key, address in series.Index.Mappings do
+    for KeyValue(key, address) in series.Index.Mappings do
       let v = series.Vector.GetValue(address)
       if v.HasValue then yield key, v.Value }
   
@@ -223,7 +223,7 @@ module Series =
   /// [category:Accessing series data and lookup]
   [<CompiledName("GetAllObservations")>]
   let observationsAll (series:Series<'K, 'T>) = seq { 
-    for key, address in series.Index.Mappings ->
+    for KeyValue(key, address) in series.Index.Mappings ->
       key, OptionalValue.asOption (series.Vector.GetValue(address)) }
 
   /// Create a new series that contains values for all provided keys.
@@ -1263,18 +1263,18 @@ module Series =
     let values = series.Vector
 
     let missingCompare a b =
-      let v1 = values.GetValue(snd a) |> OptionalValue.asOption
-      let v2 = values.GetValue(snd b) |> OptionalValue.asOption 
+      let v1 = values.GetValue(a) |> OptionalValue.asOption
+      let v2 = values.GetValue(b) |> OptionalValue.asOption 
       match v1, v2 with
       | Some x, Some y -> compareFunc x y
       | None,   Some y -> -1
       | Some x, None   -> 1
       | None,   None   -> 0
 
-    let newKeys, newLocs =
-      index.Mappings |> Array.ofSeq 
-                     |> Array.sortWith missingCompare 
-                     |> (fun arr -> arr |> Array.map fst, arr |> Array.map snd)
+    let sorted = index.Mappings |> Array.ofSeq 
+    sorted |> Array.sortInPlaceWith (fun kva kvb -> missingCompare kva.Value kvb.Value) 
+    let newKeys = sorted |> Array.map (fun kvp -> kvp.Key)
+    let newLocs = sorted |> Array.map (fun kvp -> kvp.Value)
 
     let newIndex = Index.ofKeys newKeys
     let len = int64 newKeys.Length

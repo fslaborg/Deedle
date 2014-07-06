@@ -455,7 +455,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member frame.ColumnsDense = 
     let newData = data.SelectMissing(fun vect -> 
       // Assuming that the data has all values - which should be an invariant...
-      let all = rowIndex.Mappings |> Seq.forall (fun (key, addr) -> vect.Value.GetObject(addr).HasValue)
+      let all = rowIndex.Mappings |> Seq.forall (fun (KeyValue(key, addr)) -> vect.Value.GetObject(addr).HasValue)
       if all then OptionalValue(ObjectSeries(rowIndex, boxVector vect.Value, vectorBuilder, indexBuilder))
       else OptionalValue.Missing )
     ColumnSeries(Series(columnIndex, newData, vectorBuilder, indexBuilder))
@@ -474,7 +474,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let res = emptySeries.SelectOptional (fun row ->
       let rowAddress = rowIndex.Locate(row.Key)
       let rowVec = createObjRowReader data vectorBuilder columnIndex.KeyCount rowAddress
-      let all = columnIndex.Mappings |> Seq.forall (fun (key, addr) -> rowVec.GetValue(addr).HasValue)
+      let all = columnIndex.Mappings |> Seq.forall (fun (KeyValue(key, addr)) -> rowVec.GetValue(addr).HasValue)
       if all then OptionalValue(ObjectSeries(columnIndex, rowVec, vectorBuilder, indexBuilder))
       else OptionalValue.Missing )
     RowSeries(Series.dropMissing res)
@@ -1148,7 +1148,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       let maxLevel = 
         match index.Keys |> Seq.headOrNone with 
         | Some colKey -> CustomKey.Get(colKey).Levels | _ -> 1
-      for key, _ in index.Mappings ->
+      for KeyValue(key, _) in index.Mappings ->
         [| for level in 0 .. maxLevel - 1 -> 
              if level = 0 && maxLevel = 0 then box key
              else CustomKey.Get(key).GetLevel(level) |] }
@@ -1260,7 +1260,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
             for i in 0 .. rowLevels - 1 do yield "" 
             yield ""
             let previous = ref None
-            for colKey, _ in frame.ColumnIndex.Mappings do 
+            for KeyValue(colKey, _) in frame.ColumnIndex.Mappings do 
               yield getLevel frame.ColumnIndex.IsOrdered previous ignore colLevels colLevel colKey ]
 
         // If we want to print types, add another line with type information
@@ -1270,8 +1270,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
             for i in 0 .. rowLevels - 1 do yield "" 
             yield ""
             let previous = ref None
-            for _, colAddr in frame.ColumnIndex.Mappings do 
-              let vector = frame.Data.GetValue(colAddr) 
+            for kvp in frame.ColumnIndex.Mappings do 
+              let vector = frame.Data.GetValue(kvp.Value) 
               let typ = 
                 if not vector.HasValue then "missing"
                 else formatType vector.Value.ElementType

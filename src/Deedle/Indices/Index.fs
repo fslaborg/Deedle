@@ -125,6 +125,7 @@ open Deedle.Keys
 open Deedle.Internal
 open Deedle.Addressing
 open Deedle.Vectors
+open System.Collections.Generic
 open System.Collections.ObjectModel
 
 /// Specifies the boundary behavior for the `IIndexBuilder.GetRange` operation
@@ -162,7 +163,7 @@ type IIndex<'K when 'K : equality> =
   abstract Lookup : key:'K * lookup:Lookup * condition:(Address -> bool) -> OptionalValue<'K * Address>  
 
   /// Returns all key-address mappings in the index
-  abstract Mappings : seq<'K * Address>
+  abstract Mappings : seq<KeyValuePair<'K, Address>>
 
   /// Returns the minimal and maximal key associated with the index.
   /// (the operation may fail for unordered indices)

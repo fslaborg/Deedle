@@ -43,7 +43,7 @@ and BlockStoreIndex<'K, 'V when 'K : equality>(store:BlockStore<'K, 'V>) =
       let loc = store.LookupKey(key, Lookup.Exact, fun _ -> true)
       if loc.HasValue then snd loc.Value else Addressing.Address.Invalid
     member x.Lookup(key, semantics, check) = store.LookupKey(key, semantics, check)
-    member x.Mappings = seq { for i in 0L .. store.Length-1L -> store.KeyAt(i), i }
+    member x.Mappings = Seq.range 0L (store.Length-1L) |> Seq.map (fun i -> KeyValuePair(store.KeyAt(i), i))
     member x.IsOrdered = true
     member x.Comparer = Comparer<'K>.Default
 

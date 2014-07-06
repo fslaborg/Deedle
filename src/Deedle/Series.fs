@@ -77,7 +77,7 @@ and
   /// property or `Series.observation`.
   ///
   /// [category:Series data]
-  member x.Keys = seq { for key, _ in index.Mappings -> key }
+  member x.Keys = seq { for kvp in index.Mappings -> kvp.Key }
 
   /// Returns a collection of values that are available in the series data.
   /// Note that the length of this sequence does not match the `Keys` sequence
@@ -86,8 +86,8 @@ and
   ///
   /// [category:Series data]
   member x.Values = seq { 
-    for _, a in index.Mappings do 
-      let v = vector.GetValue(a) 
+    for kvp in index.Mappings do 
+      let v = vector.GetValue(kvp.Value) 
       if v.HasValue then yield v.Value }
 
   /// Returns a collection of values, including possibly missing values. Note that 
@@ -95,8 +95,8 @@ and
   ///
   /// [category:Series data]
   member x.ValuesAll = seq { 
-    for _, a in index.Mappings do 
-      let v = vector.GetValue(a) 
+    for kvp in index.Mappings do 
+      let v = vector.GetValue(kvp.Value) 
       yield v.Value }
 
   /// Returns a collection of observations that form this series. Note that this property
@@ -105,7 +105,7 @@ and
   ///
   /// [category:Series data]
   member x.Observations = seq {
-    for k, a in index.Mappings do
+    for KeyValue(k, a) in index.Mappings do
       let v = vector.GetValue(a)
       if v.HasValue then yield KeyValuePair(k, v.Value) }
 
@@ -116,7 +116,7 @@ and
   ///
   /// [category:Series data]
   member x.ObservationsAll = seq {
-    for k, a in index.Mappings do
+    for KeyValue(k, a) in index.Mappings do
       let v = vector.GetValue(a)
       yield KeyValuePair(k, v) }
 
@@ -148,8 +148,8 @@ and
       // In concurrent access, we may run this multiple times, 
       // but that's not a big deal as there are no race conditions
       let mutable count = 0
-      for _, a in index.Mappings do 
-        if vector.GetValue(a).HasValue then count <- count + 1
+      for kvp in index.Mappings do 
+        if vector.GetValue(kvp.Value).HasValue then count <- count + 1
       valueCount <- count
     valueCount
 
@@ -328,7 +328,7 @@ and
   member x.Where(f:System.Func<KeyValuePair<'K, 'V>, int, bool>) = 
     let keys, optValues =
       index.Mappings 
-      |> Array.ofSeq |> Array.choosei (fun i (key, addr) ->
+      |> Array.ofSeq |> Array.choosei (fun i (KeyValue(key, addr)) ->
           let opt = vector.GetValue(addr)
           // If a required value is missing, then skip over this
           if opt.HasValue && f.Invoke (KeyValuePair(key, opt.Value), i)
@@ -345,7 +345,7 @@ and
   /// [category:Projection and filtering]
   member x.WhereOptional(f:System.Func<KeyValuePair<'K, OptionalValue<'V>>, bool>) = 
     let keys, optValues =
-      [| for key, addr in index.Mappings do
+      [| for KeyValue(key, addr) in index.Mappings do
           let opt = vector.GetValue(addr)
           if f.Invoke (KeyValuePair(key, opt)) then yield key, opt |]
       |> Array.unzip
@@ -357,7 +357,7 @@ and
   member x.Select<'R>(f:System.Func<KeyValuePair<'K, 'V>, int, 'R>) = 
     let newVector =
       index.Mappings 
-      |> Seq.mapi (fun i (key, addr) ->
+      |> Seq.mapi (fun i (KeyValue(key, addr)) ->
            vector.GetValue(addr) |> OptionalValue.bind (fun v -> 
              // If a required value is missing, then skip over this
              try OptionalValue(f.Invoke(KeyValuePair(key, v), i))
@@ -373,7 +373,7 @@ and
   /// [category:Projection and filtering]
   member x.SelectKeys<'R when 'R : equality>(f:System.Func<KeyValuePair<'K, OptionalValue<'V>>, 'R>) = 
     let newKeys =
-      [| for key, addr in index.Mappings -> 
+      [| for KeyValue(key, addr) in index.Mappings -> 
            f.Invoke(KeyValuePair(key, vector.GetValue(addr))) |]
     let newIndex = indexBuilder.Create(newKeys, None)
     Series<'R, _>(newIndex, vector, vectorBuilder, indexBuilder )
@@ -381,7 +381,7 @@ and
   /// [category:Projection and filtering]
   member x.SelectOptional<'R>(f:System.Func<KeyValuePair<'K, OptionalValue<'V>>, OptionalValue<'R>>) = 
     let newVector =
-      index.Mappings |> Array.ofSeq |> Array.map (fun (key, addr) ->
+      index.Mappings |> Array.ofSeq |> Array.map (fun (KeyValue(key, addr)) ->
            f.Invoke(KeyValuePair(key, vector.GetValue(addr))))
     let newIndex = indexBuilder.Project(index)
     Series<'K, 'R>(newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
@@ -611,7 +611,7 @@ and
               // Calculate value for the chunk
               let newValue = 
                 let actualVector = vectorBuilder.Build(cmd, [| vector |])
-                let obs = [ for k, addr in index.Mappings -> actualVector.GetValue(addr) ]
+                let obs = [ for KeyValue(k, addr) in index.Mappings -> actualVector.GetValue(addr) ]
                 match obs with
                 | [ OptionalValue.Present v1; OptionalValue.Present v2 ] -> 
                     OptionalValue( DataSegment(kind, (v1, v2)) )
