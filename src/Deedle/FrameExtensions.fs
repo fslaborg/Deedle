@@ -417,13 +417,13 @@ module FSharpFrameExtensions =
       FrameUtils.fromRows IndexBuilder.Instance VectorBuilder.Instance (Series(names, values))
 
     static member ofRows(rows) = 
-      FrameUtils.fromRows(rows)
+      FrameUtils.fromRows IndexBuilder.Instance VectorBuilder.Instance rows
 
     static member ofRowKeys(keys) = 
       Frame.FromRowKeys(keys)
     
     static member ofColumns(cols) = 
-      FrameUtils.fromColumns(cols)
+      FrameUtils.fromColumns IndexBuilder.Instance VectorBuilder.Instance cols
 
     static member ofColumns(cols:seq<_ * #ISeries<'K>>) = 
       let names, values = cols |> List.ofSeq |> List.unzip

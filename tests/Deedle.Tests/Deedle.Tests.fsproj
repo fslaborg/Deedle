@@ -71,11 +71,12 @@
     <Compile Include="Common.fs" />
     <Compile Include="Vector.fs" />
     <Compile Include="MultiKey.fs" />
+    <Compile Include="Deque.fs" />
+    <Compile Include="Stats.fs" />
     <Compile Include="Series.fs" />
     <Compile Include="Frame.fs" />
     <Compile Include="LazySeries.fs" />
-    <Compile Include="Deque.fs" />
-    <Compile Include="Stats.fs" />
+    <Compile Include="VirtualFrame.fs" />
     <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup>

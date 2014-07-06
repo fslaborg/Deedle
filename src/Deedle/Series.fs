@@ -948,13 +948,13 @@ and
 
   member private series.GetPrintedObservations(startCount, endCount) = 
     if series.KeyCount <= startCount + endCount then
-      seq { for obs in series.Observations -> Choice1Of3(obs.Key, obs.Value) } 
+      seq { for obs in series.ObservationsAll -> Choice1Of3(obs.Key, obs.Value) } 
     else
-      let starts = series.GetAddressRange(0, startCount)
-      let ends = series.GetAddressRange(series.KeyCount - 1 - endCount, series.KeyCount - 1)
-      seq { for obs in starts.Observations do yield Choice1Of3(obs.Key, obs.Value)
+      let starts = series.GetAddressRange(0, startCount - 1)
+      let ends = series.GetAddressRange(series.KeyCount - endCount, series.KeyCount - 1)
+      seq { for obs in starts.ObservationsAll do yield Choice1Of3(obs.Key, obs.Value)
             yield Choice2Of3()
-            for obs in ends.Observations do yield Choice1Of3(obs.Key, obs.Value) }
+            for obs in ends.ObservationsAll do yield Choice1Of3(obs.Key, obs.Value) }
 
   override series.ToString() =
     if vector.SuppressPrinting then "(Suppressed)" else

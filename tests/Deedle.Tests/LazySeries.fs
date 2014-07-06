@@ -104,13 +104,6 @@ let ``Can add projection of a lazy vector to a data frame`` () =
   df?Test <- ((+) 1) $ ls 
   df?Lazy - df?Test |> Stats.sum |> int |> shouldEqual -101
 
-[<Test>]
-let ``Accessing KeyCount on series with a distance function does not access values`` () = 
-  let r = Recorder()
-  let ls = DelayedSeries.Create(0, 100, Some(fun (l, h) -> int64 (h-l+1)), true, spy2 r loadIntegers)
-  ls.KeyCount |> shouldEqual 101
-  r.Values |> shouldEqual []
-
 // ------------------------------------------------------------------------------------------------
 // Materialization
 // ------------------------------------------------------------------------------------------------
