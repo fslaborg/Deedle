@@ -111,7 +111,7 @@ and BlockStoreIndexBuilder() =
 
     member x.Project(index:IIndex<'K>) = failwith "Project"
     member x.AsyncMaterialize( (index:IIndex<'K>, vector) ) = failwith "AsyncMaterialize"
-    member x.GetRange(index, optLo:option<'K * _>, optHi:option<'K * _>, vector) = failwith "GetRange"
+    member x.GetRange((index, vector), (optLo:option<'K * _>, optHi:option<'K * _>)) = failwith "GetRange"
 
 // ------------------------------------------------------------------------------------------------
 

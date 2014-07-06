@@ -165,7 +165,7 @@ and
 
   /// [category:Accessors and slicing]
   member x.GetSubrange(lo, hi) =
-    let newIndex, newVector = indexBuilder.GetRange(index, lo, hi, Vectors.Return 0)
+    let newIndex, newVector = indexBuilder.GetRange((index, Vectors.Return 0), (lo, hi))
     let newVector = vectorBuilder.Build(newVector, [| vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
@@ -355,16 +355,17 @@ and
 
   /// [category:Projection and filtering]
   member x.Select<'R>(f:System.Func<KeyValuePair<'K, 'V>, int, 'R>) = 
-    let newVector =
-      index.Mappings 
-      |> Seq.mapi (fun i (KeyValue(key, addr)) ->
-           vector.GetValue(addr) |> OptionalValue.bind (fun v -> 
-             // If a required value is missing, then skip over this
-             try OptionalValue(f.Invoke(KeyValuePair(key, v), i))
-             with :? MissingValueException -> OptionalValue.Missing )) 
-      |> Array.ofSeq
+    
+    // TODO: Review the change here - does it make things faster? slower? neutral?
+
+    let newVector = vectorBuilder.InitMissing(index.KeyCount, fun addr ->
+      vector.GetValue(addr) |> OptionalValue.bind (fun v -> 
+        // If a required value is missing, then skip over this
+        let key = index.KeyAt(addr)
+        try OptionalValue(f.Invoke(KeyValuePair(key, v), Address.asInt addr))
+        with :? MissingValueException -> OptionalValue.Missing ))  
     let newIndex = indexBuilder.Project(index)
-    Series<'K, 'R>(newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder )
+    Series<'K, 'R>(newIndex, newVector, vectorBuilder, indexBuilder )
 
   /// [category:Projection and filtering]
   member x.Select<'R>(f:System.Func<KeyValuePair<'K, 'V>, 'R>) = 
@@ -788,8 +789,9 @@ and
     x.AsyncMaterialize() |> Async.StartAsTask
 
   member x.Materialize() = 
-    let newIndex = indexBuilder.Project(index)
-    let newVector = vector.Select id
+    let newIndex, cmd = indexBuilder.AsyncMaterialize(index, Vectors.Return 0)
+    let newIndex = newIndex |> Async.RunSynchronously
+    let newVector = vectorBuilder.Build(cmd, [| vector |])
     Series<_, _>(newIndex, newVector, vectorBuilder, indexBuilder)
     
   // ----------------------------------------------------------------------------------------------

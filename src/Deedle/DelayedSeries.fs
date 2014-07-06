@@ -247,7 +247,7 @@ and DelayedIndexBuilder() =
               | Some keyAt ->
                   let lo = Some(keyAt(fst range), BoundaryBehavior.Inclusive)
                   let hi = Some(keyAt(snd range), BoundaryBehavior.Inclusive)
-                  (this :> IIndexBuilder).GetRange(index, lo, hi, vector) 
+                  (this :> IIndexBuilder).GetRange( (index :> _, vector), (lo, hi)) 
               | _ -> builder.GetAddressRange( (index :> _, vector), range)  }
         |> index.Invoke
       | _ ->
@@ -285,7 +285,7 @@ and DelayedIndexBuilder() =
       | _ ->
         builder.AsyncMaterialize((index, vector))
 
-    member x.GetRange(index, optLo:option<'K * _>, optHi:option<'K * _>, vector) = 
+    member x.GetRange((index, vector), (optLo:option<'K * _>, optHi:option<'K * _>)) = 
       match index with
       | :? IDelayedIndex<'K> as index ->
         // Use 'index.Invoke' to run the 'Invoke' method of the following
@@ -348,7 +348,7 @@ and DelayedIndexBuilder() =
               newIndex :> IIndex<'K>, cmd }
         |> index.Invoke
       | _ ->
-        builder.GetRange(index, optLo, optHi, vector)
+        builder.GetRange( (index, vector), (optLo, optHi) )
 
 // --------------------------------------------------------------------------------------
 // Public API for creating delayed series

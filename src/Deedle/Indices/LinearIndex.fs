@@ -512,8 +512,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
     /// Get a new index representing a sub-index of the current one
     /// (together with a transformation that should be applied to a vector)
-    member builder.GetRange<'K when 'K : equality >
-        (index:IIndex<'K>, lo, hi, vector) =
+    member builder.GetRange<'K when 'K : equality >((index:IIndex<'K>, vector), (lo, hi)) =
 
       // Default values are specified by the entire range
       let minAddr, maxAddr = Address.zero, Address.ofInt64 (index.KeyCount - 1L)

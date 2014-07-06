@@ -68,7 +68,6 @@ type IVector =
   /// instance of vector passed as a statically typed vector (ie. IVector<ElementType>)
   abstract Invoke : VectorCallSite<'R> -> 'R
 
-
 /// Represents a generic function `\forall.'T.(IVector<'T> -> 'R)`. The function can be 
 /// generically invoked on an argument of type `IVector` using `IVector.Invoke`
 and VectorCallSite<'R> =
@@ -229,11 +228,16 @@ type IVectorBuilder =
   /// For example `Double.NaN` or `null` should be turned into a missing
   /// value in the returned vector.
   abstract Create : 'T[] -> IVector<'T>
-  
+
   /// Create a vector from an array containing values that may be missing. 
   /// Even if a value is passed, it may be a missing value such as `Double.NaN`
   /// or `null`. The vector builder should hanlde this.
   abstract CreateMissing : OptionalValue<'T>[] -> IVector<'T>
+
+  /// Create a vector using the specified length and initialization function.
+  /// This operation allows the builder to delay construction of the actual
+  /// vector when desirable. Other than that, it should behave as Create.
+  abstract InitMissing : int64 * (Address -> OptionalValue<'T>) -> IVector<'T>
 
   /// Apply a vector construction to a given vector. The second parameter
   /// is an array of arguments ("variables") that may be referenced from the

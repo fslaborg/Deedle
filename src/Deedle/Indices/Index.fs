@@ -235,7 +235,7 @@ and IIndexBuilder =
   /// as a pair of options (when `None`, the original left/right boundary should be used) 
   /// that contain boundary behavior and the boundary key.
   abstract GetRange : 
-    IIndex<'K> * option<'K * BoundaryBehavior> * option<'K * BoundaryBehavior> * VectorConstruction ->
+    SeriesConstruction<'K> * (option<'K * BoundaryBehavior> * option<'K * BoundaryBehavior>) ->
     SeriesConstruction<'K>
 
   /// Creates a union of two indices and builds corresponding vector transformations

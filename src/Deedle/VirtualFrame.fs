@@ -8,24 +8,38 @@ open Deedle
 open Deedle.Vectors
 open Deedle.Internal
 
-type VirtualVectorSource<'V> = 
+type VirtualVectorSource =
+  abstract ElementType : System.Type
   abstract Length : int64
+
+type VirtualVectorSource<'V> = 
+  inherit VirtualVectorSource
   abstract ValueAt : int64 -> OptionalValue<'V>
   abstract GetSubVector : int64 * int64 -> VirtualVectorSource<'V>
 
 type VirtualVector<'V>(source:VirtualVectorSource<'V>) = 
-  member x.Source = source
+  member vector.Source = source
   interface IVector with
     member val ElementType = typeof<'V>
-    member x.SuppressPrinting = false
-    member x.GetObject(index) = source.ValueAt(index) |> OptionalValue.map box
-    member x.ObjectSequence = seq { for i in Seq.range 0L (source.Length-1L) -> source.ValueAt(i) |> OptionalValue.map box }
-    member x.Invoke(site) = site.Invoke<'V>(x)
+    member vector.SuppressPrinting = false
+    member vector.GetObject(index) = source.ValueAt(index) |> OptionalValue.map box
+    member vector.ObjectSequence = seq { for i in Seq.range 0L (source.Length-1L) -> source.ValueAt(i) |> OptionalValue.map box }
+    member vector.Invoke(site) = site.Invoke<'V>(vector)
   interface IVector<'V> with
-    member x.GetValue(index) = source.ValueAt(index)
-    member x.Data = seq { for i in Seq.range 0L (source.Length-1L) -> source.ValueAt(i) } |> VectorData.Sequence
-    member x.SelectMissing(f) = invalidOp "VirtualVector.Select: Not supported"
-    member x.Select(f) = invalidOp "VirtualVector.SelectMissing: Not supported"
+    member vector.GetValue(index) = source.ValueAt(index)
+    member vector.Data = seq { for i in Seq.range 0L (source.Length-1L) -> source.ValueAt(i) } |> VectorData.Sequence
+    member vector.SelectMissing<'TNew>(f:OptionalValue<'V> -> OptionalValue<'TNew>) = 
+      let rec mapSource (source:VirtualVectorSource<'V>) = 
+        { new VirtualVectorSource<'TNew> with
+            member x.ValueAt(idx) = f (source.ValueAt(idx))
+            member x.GetSubVector(lo, hi) = mapSource (source.GetSubVector(lo, hi))
+          interface VirtualVectorSource with
+            member x.ElementType = typeof<'TNew>
+            member x.Length = source.Length }
+      VirtualVector(mapSource source) :> _
+
+    member vector.Select(f) = 
+      (vector :> IVector<_>).SelectMissing(OptionalValue.map f)
 
 type VirtualVectorBuilder() =
   let baseBuilder = VectorBuilder.Instance
@@ -37,6 +51,20 @@ type VirtualVectorBuilder() =
   interface IVectorBuilder with
     member builder.Create(values) = baseBuilder.Create(values)
     member builder.CreateMissing(optValues) = baseBuilder.CreateMissing(optValues)
+    member builder.InitMissing<'T>(size, f) = 
+      let isNa = MissingValues.isNA<'T> ()
+      let rec createSource lo hi =
+        { new VirtualVectorSource<'T> with
+            member x.ValueAt(idx) = 
+              let v = f (lo + idx)
+              if v.HasValue && not (isNa v.Value) then v
+              else OptionalValue.Missing 
+            member x.GetSubVector(nlo, nhi) = createSource (lo+nlo) (lo+nhi)
+          interface VirtualVectorSource with
+            member x.ElementType = typeof<'T>
+            member x.Length = (hi-lo+1L) }
+      VirtualVector(createSource 0L (size-1L)) :> _
+
     member builder.AsyncBuild<'T>(cmd, args) = baseBuilder.AsyncBuild<'T>(cmd, args)
     member builder.Build<'T>(cmd, args) = 
       match cmd with 
@@ -112,6 +140,11 @@ type VirtualOrdinalIndex(range) =
 
 and VirtualOrdinalIndexBuilder() = 
   let baseBuilder = IndexBuilder.Instance
+
+  let emptyConstruction () =
+    let newIndex = VirtualOrdinalIndex(0L, -1L)
+    unbox<IIndex<'K>> newIndex, Vectors.Empty(0L)
+
   static let indexBuilder = VirtualOrdinalIndexBuilder()
   static member Instance = indexBuilder
 
@@ -132,29 +165,79 @@ and VirtualOrdinalIndexBuilder() =
     member x.Resample(index, keys, close, vect, selector) = failwith "Resample"
 
     member x.GetAddressRange<'K when 'K : equality>((index, vector), (lo, hi)) = 
-      if typeof<'K> <> typeof<int64> then 
-        baseBuilder.GetAddressRange((index, vector), (lo, hi))
-      else 
-        let index = index :?> IIndex<int64>
-        let keyLo, keyHi = index.KeyRange
-        if hi < lo then 
-          let newIndex = VirtualOrdinalIndex(0L, -1L)
-          unbox<IIndex<'K>> newIndex, Vectors.Empty(0L)
-        else
+      match index with
+      | :? VirtualOrdinalIndex when hi < lo -> emptyConstruction()
+      | :? VirtualOrdinalIndex & (:? IIndex<int64> as index) -> 
           // TODO: range checks
+          let keyLo, keyHi = index.KeyRange
           let newVector = Vectors.GetRange(vector, (lo, hi))
           let newIndex = VirtualOrdinalIndex(keyLo + lo, keyLo + hi)
           unbox<IIndex<'K>> newIndex, newVector
+      | _ -> 
+          baseBuilder.GetAddressRange((index, vector), (lo, hi))
 
-    member x.Project(index:IIndex<'K>) = failwith "Project"
-    member x.AsyncMaterialize( (index:IIndex<'K>, vector) ) = failwith "AsyncMaterialize"
-    member x.GetRange(index, optLo:option<'K * _>, optHi:option<'K * _>, vector) = failwith "GetRange"
+    member x.Project(index:IIndex<'K>) = index
+
+    member x.AsyncMaterialize( (index:IIndex<'K>, vector) ) = 
+      match index with
+      | :? VirtualOrdinalIndex -> 
+          let newIndex = Linear.LinearIndexBuilder.Instance.Create(index.Keys, Some index.IsOrdered)
+          let cmd = Vectors.CustomCommand([vector], fun vectors ->
+            { new VectorCallSite<_> with
+                member x.Invoke(vector) =
+                  vector.DataSequence
+                  |> Array.ofSeq
+                  |> ArrayVector.ArrayVectorBuilder.Instance.CreateMissing  :> IVector }
+            |> (List.head vectors).Invoke)
+          async.Return(newIndex), cmd
+      | _ -> async.Return(index), vector
+
+    member x.GetRange<'K when 'K : equality>( (index, vector), (optLo:option<'K * _>, optHi:option<'K * _>)) = 
+      match index with
+      | :? VirtualOrdinalIndex & (:? IIndex<int64> as index) -> 
+          let getRangeKey proj next = function
+            | None -> proj index.KeyRange 
+            | Some(k, BoundaryBehavior.Inclusive) -> unbox<int64> k
+            | Some(k, BoundaryBehavior.Exclusive) -> next (unbox<int64> k)
+          let loKey, hiKey = getRangeKey fst ((+) 1L) optLo, getRangeKey snd ((-) 1L) optHi
+          let loIdx, hiIdx = loKey - (fst index.KeyRange), hiKey - (fst index.KeyRange)
+
+          // TODO: range checks
+          let newVector = Vectors.GetRange(vector, (loIdx, hiIdx))
+          let newIndex = VirtualOrdinalIndex(loKey, hiKey)
+          unbox<IIndex<'K>> newIndex, newVector
+      | _ -> 
+          baseBuilder.GetRange((index, vector), (optLo, optHi))
 
 // ------------------------------------------------------------------------------------------------
 
-type Virtual =
+type VirtualVectorHelper =
+  static member Create<'T>(source:VirtualVectorSource<'T>) = 
+    VirtualVector<'T>(source)
+
+type Virtual() =
+  static let createMi = typeof<VirtualVectorHelper>.GetMethod("Create")
+
   static member CreateOrdinalSeries(source) =
     let vector = VirtualVector(source)
     let index = VirtualOrdinalIndex(0L, source.Length-1L)
     Series(index, vector, VirtualVectorBuilder.Instance, VirtualOrdinalIndexBuilder.Instance)
 
+  static member CreateOrdinalFrame(keys, sources:seq<VirtualVectorSource>) = 
+    let columnIndex = Index.ofKeys keys
+    let count = sources |> Seq.fold (fun st src ->
+      match st with 
+      | None -> Some(src.Length) 
+      | Some n when n = src.Length -> Some(n)
+      | _ -> invalidArg "sources" "Sources should have the same length!" ) None
+    if count = None then invalidArg "sources" "At least one column is required"
+    let count = count.Value
+
+    let rowIndex = VirtualOrdinalIndex(0L, count-1L)
+    let data = 
+      sources 
+      |> Seq.map (fun source -> 
+          createMi.MakeGenericMethod(source.ElementType).Invoke(null, [| source |]) :?> IVector)
+      |> Vector.ofValues
+    Frame<_, _>(rowIndex, columnIndex, data, VirtualOrdinalIndexBuilder.Instance, VirtualVectorBuilder.Instance)
+    

@@ -464,9 +464,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member frame.Rows =
     let getRow addr =
        let rowReader = createObjRowReader data vectorBuilder columnIndex.KeyCount addr
-       ObjectSeries(columnIndex, rowReader, vectorBuilder, indexBuilder)
-    let values = Array.init (int rowIndex.KeyCount) (fun a -> getRow (Address.ofInt a))
-    RowSeries(Series<_, _>(rowIndex, vectorBuilder.Create(values), vectorBuilder, indexBuilder))
+       OptionalValue(ObjectSeries(columnIndex, rowReader, vectorBuilder, indexBuilder))
+    let vector = vectorBuilder.InitMissing(rowIndex.KeyCount, fun a -> getRow (Address.ofInt64 a))
+    RowSeries<'TRowKey, 'TColumnKey>(rowIndex, vector, frame)
 
   /// [category:Accessors and slicing]
   member frame.RowsDense = 
@@ -477,7 +477,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       let all = columnIndex.Mappings |> Seq.forall (fun (KeyValue(key, addr)) -> rowVec.GetValue(addr).HasValue)
       if all then OptionalValue(ObjectSeries(columnIndex, rowVec, vectorBuilder, indexBuilder))
       else OptionalValue.Missing )
-    RowSeries(Series.dropMissing res)
+    FilteredRowSeries(Series.dropMissing res)
 
   /// [category:Accessors and slicing]
   member frame.Item 
@@ -1161,6 +1161,12 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     // Return as VectorData
     { ColumnKeys = colKeys; RowKeys = rowKeys; Columns = columns }
 
+  /// [category:Accessors and slicing]
+  member x.GetSubrange(lo, hi) =
+    let newRowIndex, cmd = indexBuilder.GetRange((rowIndex, Vectors.Return 0), (lo, hi))
+    let newData = data.Select(VectorHelpers.transformColumn vectorBuilder cmd)
+    Frame<_, _>(newRowIndex, columnIndex, newData, indexBuilder, vectorBuilder)
+
   /// Internal helper used by `skip`, `take`, etc.
   member frame.GetAddressRange(lo, hi) = 
     let newRowIndex, cmd = indexBuilder.GetAddressRange((frame.RowIndex, Vectors.Return 0), (lo, hi))
@@ -1572,14 +1578,28 @@ and ColumnSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey 
   member x.Item with get(items) = x.GetItems(items) |> FrameUtils.fromColumns indexBuilder vectorBuilder 
   member x.Item with get(level) = x.GetByLevel(level)
 
-and RowSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>(index, vector, vectorBuilder, indexBuilder) =
+and FilteredRowSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>(index, vector, vectorBuilder, indexBuilder) =
   inherit Series<'TRowKey, ObjectSeries<'TColumnKey>>(index, vector, vectorBuilder, indexBuilder)
   new(series:Series<'TRowKey, ObjectSeries<'TColumnKey>>) = 
-    RowSeries(series.Index, series.Vector, series.VectorBuilder, series.IndexBuilder)
+    FilteredRowSeries(series.Index, series.Vector, series.VectorBuilder, series.IndexBuilder)
 
   [<EditorBrowsable(EditorBrowsableState.Never)>]
   member x.GetSlice(lo, hi) = base.GetSlice(lo, hi) |> FrameUtils.fromRows indexBuilder vectorBuilder 
   [<EditorBrowsable(EditorBrowsableState.Never)>]
   member x.GetByLevel(level) = base.GetByLevel(level) |> FrameUtils.fromRows indexBuilder vectorBuilder 
   member x.Item with get(items) = x.GetItems(items) |> FrameUtils.fromRows indexBuilder vectorBuilder 
+  member x.Item with get(level) = x.GetByLevel(level)
+
+and RowSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>
+    (index, vector:IVector<ObjectSeries<_>>, frame:Frame<'TRowKey, 'TColumnKey>) =
+  inherit Series<'TRowKey, ObjectSeries<'TColumnKey>>(index, vector, frame.VectorBuilder, frame.IndexBuilder)
+
+  [<EditorBrowsable(EditorBrowsableState.Never)>]
+  member x.GetSlice(lo, hi) = 
+    let inclusive v = v |> Option.map (fun v -> v, BoundaryBehavior.Inclusive)
+    frame.GetSubrange(inclusive lo, inclusive hi)
+   
+  [<EditorBrowsable(EditorBrowsableState.Never)>]
+  member x.GetByLevel(level) = base.GetByLevel(level) |> FrameUtils.fromRows frame.IndexBuilder frame.VectorBuilder 
+  member x.Item with get(items) = x.GetItems(items) |> FrameUtils.fromRows frame.IndexBuilder frame.VectorBuilder 
   member x.Item with get(level) = x.GetByLevel(level)
