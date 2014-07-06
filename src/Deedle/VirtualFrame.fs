@@ -1,5 +1,56 @@
 ﻿namespace Deedle.Virtual
 
+module Helpers = 
+  open Deedle
+
+  let inline binarySearch count valueAt value (lookup:Lookup) check = 
+  
+    /// Returns the 'asOfTicks' at the specified index
+    //let asOfAt idx = asOfTicksSeries.[indexMap.[idx]]
+
+    /// Binary search the 'asOfTicks' series, looking for the 
+    /// specified 'asOf' (the invariant is that: lo <= res < hi)
+    /// The result is index 'idx' such that: 'asOfAt idx <= asOf && asOf (idx+1) > asOf'
+    let rec binarySearch lo hi = 
+      let mid = (lo + hi) / 2L
+      if lo + 1L = hi then lo
+      else
+        if valueAt mid > value then binarySearch lo mid
+        else binarySearch mid hi
+
+    /// Scan the series, looking for first value that passes 'check'
+    let rec scan next idx = 
+      printfn "scan %A" idx
+      if idx < 0L || idx >= count then OptionalValue.Missing
+      elif check idx then OptionalValue(idx)
+      else scan next (next idx)
+
+    if count = 0L then OptionalValue.Missing
+    else
+      let found = binarySearch 0L count
+      printfn "found: %A"  found
+      match lookup with
+      | Lookup.Exact -> 
+          printfn "case 0" 
+          // We're looking for an exact value, if it's not the one at 'idx' then Nothing
+          if valueAt found = value && check found then OptionalValue(found)
+          else OptionalValue.Missing
+      | Lookup.ExactOrGreater | Lookup.ExactOrSmaller when valueAt found = value && check found ->
+          printfn "case 1" 
+          // We found an exact match and we the lookup behaviour permits that
+          OptionalValue(found)
+      | Lookup.Greater | Lookup.ExactOrGreater ->
+          printfn "case 2" 
+          // Otherwise we need to scan (because the found value does not work or is not allowed)
+          scan ((+) 1L) (if valueAt found <= value then found + 1L else found)
+      | Lookup.Smaller | Lookup.ExactOrSmaller ->
+          printfn "case 3" 
+          scan ((-) 1L) (if valueAt found >= value then found - 1L else found)
+      | _ -> invalidArg "lookup" "Unexpected Lookup behaviour"
+
+  let binarySearchLong count valueAt (value:int64) lookup check = 
+    binarySearch count valueAt value lookup check
+
 // ------------------------------------------------------------------------------------------------
 // Virtual vectors
 // ------------------------------------------------------------------------------------------------
@@ -16,6 +67,7 @@ type VirtualVectorSource<'V> =
   inherit VirtualVectorSource
   abstract ValueAt : int64 -> OptionalValue<'V>
   abstract GetSubVector : int64 * int64 -> VirtualVectorSource<'V>
+  abstract Lookup : 'V * Lookup * (Addressing.Address -> bool) -> OptionalValue<'V * Addressing.Address>
 
 type VirtualVector<'V>(source:VirtualVectorSource<'V>) = 
   member vector.Source = source
@@ -32,6 +84,7 @@ type VirtualVector<'V>(source:VirtualVectorSource<'V>) =
       let rec mapSource (source:VirtualVectorSource<'V>) = 
         { new VirtualVectorSource<'TNew> with
             member x.ValueAt(idx) = f (source.ValueAt(idx))
+            member x.Lookup(v, l, c) = failwith "Cannot lookup on virtual vector"
             member x.GetSubVector(lo, hi) = mapSource (source.GetSubVector(lo, hi))
           interface VirtualVectorSource with
             member x.ElementType = typeof<'TNew>
@@ -59,6 +112,7 @@ type VirtualVectorBuilder() =
               let v = f (lo + idx)
               if v.HasValue && not (isNa v.Value) then v
               else OptionalValue.Missing 
+            member x.Lookup(v, l, c) = failwith "cannot lookup on vector created by init"
             member x.GetSubVector(nlo, nhi) = createSource (lo+nlo) (lo+nhi)
           interface VirtualVectorSource with
             member x.ElementType = typeof<'T>
@@ -89,11 +143,37 @@ open Deedle.Internal
 open System.Collections.Generic
 open System.Collections.ObjectModel
 
-module Helpers = 
+module Helpers2 = 
   let inline addrOfKey lo key = Address.ofInt64 (key - lo)
   let inline keyOfAddr lo addr = lo + (Address.asInt64 addr)
 
-open Helpers
+open Helpers2
+
+type VirtualOrderedIndex<'K when 'K : equality>(source:VirtualVectorSource<'K>) =
+  // TODO: Assert that the source is ordered
+  // TODO: Another assumption here is that the source contains no NA values
+  let keyAtOffset i = source.ValueAt(Address.ofInt64 i).Value
+  let keyAtAddr i = source.ValueAt(i).Value
+  member x.Source = source
+
+  interface IIndex<'K> with
+    member x.KeyAt(addr) = keyAtAddr addr
+    member x.KeyCount = source.Length
+    member x.IsEmpty = source.Length = 0L
+    member x.Builder = failwith "Builder: TODO!!" :> IIndexBuilder
+    member x.KeyRange = keyAtOffset 0L, keyAtOffset (source.Length-1L)
+    member x.Keys = Array.init (int source.Length) (int64 >> keyAtAddr) |> ReadOnlyCollection.ofArray
+    member x.Mappings = 
+      Seq.range 0L (source.Length - 1L) 
+      |> Seq.map (fun i -> KeyValuePair(keyAtOffset i, Address.ofInt64 i))
+    member x.IsOrdered = true
+    member x.Comparer = Comparer<'K>.Default
+
+    member x.Locate(key) = 
+      let loc = source.Lookup(key, Lookup.Exact, fun _ -> true)
+      if loc.HasValue then snd loc.Value else Address.Invalid
+    member x.Lookup(key, semantics, check) = 
+      source.Lookup(key, semantics, check)
 
 type VirtualOrdinalIndex(range) =
   let lo, hi = range
@@ -138,14 +218,15 @@ type VirtualOrdinalIndex(range) =
             then step addr else addr
         scan step start
 
-and VirtualOrdinalIndexBuilder() = 
+
+type VirtualIndexBuilder() = 
   let baseBuilder = IndexBuilder.Instance
 
   let emptyConstruction () =
     let newIndex = VirtualOrdinalIndex(0L, -1L)
     unbox<IIndex<'K>> newIndex, Vectors.Empty(0L)
 
-  static let indexBuilder = VirtualOrdinalIndexBuilder()
+  static let indexBuilder = VirtualIndexBuilder()
   static member Instance = indexBuilder
 
   interface IIndexBuilder with
@@ -166,11 +247,17 @@ and VirtualOrdinalIndexBuilder() =
 
     member x.GetAddressRange<'K when 'K : equality>((index, vector), (lo, hi)) = 
       match index with
+      | :? VirtualOrderedIndex<'K> as index ->
+          // TODO: Range checks
+          let newIndex = VirtualOrderedIndex(index.Source.GetSubVector(lo, hi))
+          let newVector = Vectors.GetRange(vector, (lo, hi))
+          newIndex :> IIndex<'K>, newVector
+
       | :? VirtualOrdinalIndex when hi < lo -> emptyConstruction()
       | :? VirtualOrdinalIndex & (:? IIndex<int64> as index) -> 
           // TODO: range checks
-          let keyLo, keyHi = index.KeyRange
           let newVector = Vectors.GetRange(vector, (lo, hi))
+          let keyLo, keyHi = index.KeyRange
           let newIndex = VirtualOrdinalIndex(keyLo + lo, keyLo + hi)
           unbox<IIndex<'K>> newIndex, newVector
       | _ -> 
@@ -194,6 +281,22 @@ and VirtualOrdinalIndexBuilder() =
 
     member x.GetRange<'K when 'K : equality>( (index, vector), (optLo:option<'K * _>, optHi:option<'K * _>)) = 
       match index with
+      | :? VirtualOrderedIndex<'K> as index ->
+          let getRangeKey bound lookup = function
+            | None -> bound
+            | Some(k, beh) -> 
+                let lookup = if beh = BoundaryBehavior.Inclusive then lookup ||| Lookup.Exact else lookup
+                match index.Source.Lookup(k, lookup, fun _ -> true) with
+                | OptionalValue.Present(_, addr) -> addr
+                | _ -> bound // TODO: Not sure what this means!
+
+          let loIdx, hiIdx = getRangeKey 0L Lookup.Greater optLo, getRangeKey (index.Source.Length-1L) Lookup.Smaller optHi
+
+          // TODO: probably range checks
+          let newVector = Vectors.GetRange(vector, (loIdx, hiIdx))
+          let newIndex = VirtualOrderedIndex(index.Source.GetSubVector(loIdx, hiIdx))
+          unbox<IIndex<'K>> newIndex, newVector
+
       | :? VirtualOrdinalIndex & (:? IIndex<int64> as index) -> 
           let getRangeKey proj next = function
             | None -> proj index.KeyRange 
@@ -221,7 +324,15 @@ type Virtual() =
   static member CreateOrdinalSeries(source) =
     let vector = VirtualVector(source)
     let index = VirtualOrdinalIndex(0L, source.Length-1L)
-    Series(index, vector, VirtualVectorBuilder.Instance, VirtualOrdinalIndexBuilder.Instance)
+    Series(index, vector, VirtualVectorBuilder.Instance, VirtualIndexBuilder.Instance)
+
+  static member CreateSeries(indexSource:VirtualVectorSource<_>, valueSource:VirtualVectorSource<_>) =
+    if valueSource.Length <> indexSource.Length then
+      invalidOp "CreateSeries: Index and value source should have the same length"
+
+    let vector = VirtualVector(valueSource)
+    let index = VirtualOrderedIndex(indexSource)
+    Series(index, vector, VirtualVectorBuilder.Instance, VirtualIndexBuilder.Instance)
 
   static member CreateOrdinalFrame(keys, sources:seq<VirtualVectorSource>) = 
     let columnIndex = Index.ofKeys keys
@@ -239,5 +350,5 @@ type Virtual() =
       |> Seq.map (fun source -> 
           createMi.MakeGenericMethod(source.ElementType).Invoke(null, [| source |]) :?> IVector)
       |> Vector.ofValues
-    Frame<_, _>(rowIndex, columnIndex, data, VirtualOrdinalIndexBuilder.Instance, VirtualVectorBuilder.Instance)
+    Frame<_, _>(rowIndex, columnIndex, data, VirtualIndexBuilder.Instance, VirtualVectorBuilder.Instance)
     

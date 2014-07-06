@@ -18,28 +18,44 @@ open Deedle.Virtual
 // Tracking source
 // ------------------------------------------------------------------------------------------------
 
-type TrackingSource<'T>(lo, hi, f:int64 -> 'T) = 
+type TrackingSource<'T>(lo, hi, valueAt:int64 -> 'T, ?asLong:'T -> int64) = 
   member val AccessListCell = ref [] with get, set
+  member val LookupListCell = ref [] with get, set
   member val IsTracking = true with get, set
+  member val HasMissing = true with get, set
   member x.AccessList = List.rev x.AccessListCell.Value
+  member x.LookupList = List.rev x.LookupListCell.Value
   interface VirtualVectorSource with
     member x.Length = hi - lo + 1L
     member x.ElementType = typeof<'T>
+
   interface VirtualVectorSource<'T> with
+    member x.Lookup(k, l, c) = 
+      if x.IsTracking then x.LookupListCell := (k, l) :: !x.LookupListCell
+      let asLong = match asLong with None -> failwith "Lookup not supported" | Some g -> g
+      Helpers.binarySearchLong (hi - lo + 1L) (fun i -> asLong (valueAt (i+1L))) (asLong k) l c
+      |> OptionalValue.map (fun i -> valueAt i, i )
+
     member x.ValueAt addr = 
       if x.IsTracking then x.AccessListCell := (lo + addr) :: !x.AccessListCell
-      if addr % 3L = 0L then OptionalValue.Missing
-      else OptionalValue(f (lo + addr))
+      if x.HasMissing && (addr % 3L = 0L) then OptionalValue.Missing
+      else OptionalValue(valueAt (lo + addr))
     member x.GetSubVector(nlo, nhi) = 
       if nhi < nlo then invalidOp "hi < lo"
       elif nlo < 0L then invalidOp "lo < 0"
       elif nhi > hi then invalidOp "hi > max"
-      else TrackingSource(lo+nlo, lo+nhi, f, IsTracking = x.IsTracking, AccessListCell = x.AccessListCell) :> _
+      else TrackingSource
+            ( lo+nlo, lo+nhi, valueAt, ?asLong=asLong, HasMissing = x.HasMissing, IsTracking = x.IsTracking, 
+              LookupListCell = x.LookupListCell, AccessListCell = x.AccessListCell ) :> _
 
 type TrackingSource =
   static member CreateLongs(lo, hi) = TrackingSource<int64>(lo, hi, id)
   static member CreateFloats(lo, hi) = TrackingSource<float>(lo, hi, float)
   static member CreateStrings(lo, hi) = TrackingSource<string>(lo, hi, sprintf "str(%d)")
+  static member CreateTimes(lo, hi) = 
+    let start = DateTimeOffset(DateTime(2000, 1, 1), TimeSpan.FromHours(-1.0))
+    let asDto ticks = start.AddTicks(ticks * 123456789L)
+    TrackingSource<DateTimeOffset>(lo, hi, asDto, (fun dto -> dto.UtcTicks), HasMissing=false)
 
 // ------------------------------------------------------------------------------------------------
 // Virtual series tests
@@ -105,6 +121,51 @@ let ``Can materialize virtual series and access it repeatedly`` () =
   sm |> Stats.mean |> ignore
   sm |> Stats.sum |> ignore
   src.AccessList |> shouldEqual [ 100L .. 200L ]
+
+// ------------------------------------------------------------------------------------------------
+// Virutal series with ordered index
+// ------------------------------------------------------------------------------------------------
+
+let createTimeSeries () =
+  let idxSrc = TrackingSource.CreateTimes(0L, 10000000L)
+  let valSrc = TrackingSource.CreateFloats(0L, 10000000L)
+  let sv = Virtual.CreateSeries(idxSrc, valSrc)
+  idxSrc, valSrc, sv
+
+let date y m d = DateTimeOffset(DateTime(y, m, d), TimeSpan.FromHours(-1.0))
+let ith i = (date 2000 1 1).AddTicks(i * 123456789L)
+
+[<Test>]
+let ``Can access elements in an ordered time series without evaluating it`` () =
+  let isrc, vsrc, s = createTimeSeries()
+  s.[ith 5000000L] |> shouldEqual 5000000.0
+  s.TryGet(ith 5000001L) |> shouldEqual OptionalValue.Missing
+  isrc.LookupList |> shouldEqual [ith 5000000L, Lookup.Exact; ith 5000001L, Lookup.Exact]
+  isrc.AccessList |> shouldEqual []
+  vsrc.LookupList |> shouldEqual []
+  vsrc.AccessList |> shouldEqual [5000000L; 5000001L]
+
+[<Test>]
+let ``Can use different lookup behaviours when accessing time series values`` () = 
+  let isrc, vsrc, s = createTimeSeries()
+  s.Get(ith 5000001L, Lookup.ExactOrGreater) |> shouldEqual 5000002.0
+  s.Get(ith 5000001L, Lookup.ExactOrSmaller) |> shouldEqual 5000000.0
+  s.Get(ith 5000000L, Lookup.Greater) |> shouldEqual 5000002.0
+  s.Get(ith 5000000L, Lookup.Smaller) |> shouldEqual 4999999.0
+  isrc.LookupList |> Seq.length |> shouldEqual 4
+  isrc.AccessList |> shouldEqual []
+  set vsrc.AccessList |> shouldEqual <| set [ 4999999L .. 5000002L ]
+
+[<Test>]
+let ``Can perform slicing on time series without evaluating it`` () =
+  let isrc, vsrc, s1 = createTimeSeries()
+  let s2 = s1.[date 2001 1 1 .. date 2001 2 1]
+  fst s2.KeyRange |> should be (greaterThanOrEqualTo (date 2001 1 1))
+  snd s2.KeyRange |> should be (lessThanOrEqualTo (date 2001 2 1))
+  s2.[ith 2700001L] |> shouldEqual <| s1.[ith 2700001L]
+  isrc.AccessList |> set |> Seq.length |> shouldEqual 2
+  isrc.LookupList |> set |> Seq.length |> shouldEqual 3
+  vsrc.AccessList |> set |> Seq.length |> shouldEqual 1
 
 // ------------------------------------------------------------------------------------------------
 // Virtual frame tests
