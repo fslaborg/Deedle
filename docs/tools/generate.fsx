@@ -21,7 +21,7 @@ let info =
 // --------------------------------------------------------------------------------------
 
 #I "../../packages/FSharp.Compiler.Service.0.0.44/lib/net40"
-#I "../../packages/FSharp.Formatting.2.4.8/lib/net40"
+#I "../../packages/FSharp.Formatting.2.4.11/lib/net40"
 #I "../../packages/RazorEngine.3.3.0/lib/net40/"
 #r "../../packages/Microsoft.AspNet.Razor.2.0.30506.0/lib/net40/System.Web.Razor.dll"
 #r "../../packages/FAKE/tools/FakeLib.dll"
@@ -51,7 +51,7 @@ let content    = __SOURCE_DIRECTORY__ @@ "../content"
 let output     = __SOURCE_DIRECTORY__ @@ "../output"
 let files      = __SOURCE_DIRECTORY__ @@ "../files"
 let templates  = __SOURCE_DIRECTORY__ @@ "templates"
-let formatting = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting.2.4.8/"
+let formatting = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting.2.4.11/"
 let docTemplate = formatting @@ "templates/docpage.cshtml"
 
 // Where to look for *.csproj templates (in this order)
@@ -89,4 +89,4 @@ let buildDocumentation () =
 // Generate
 copyFiles()
 buildDocumentation()
-buildReference()
+//buildReference()

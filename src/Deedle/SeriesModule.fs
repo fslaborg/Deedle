@@ -1834,7 +1834,7 @@ module Series =
       | OptionalValue.Present(a, b) -> OptionalValue.ofOption(op (OptionalValue.asOption a) (OptionalValue.asOption b))
       | _ -> OptionalValue.Missing )
 
-  /// Align and zip two series using outer join and exact key matching (use `zipAlignInto`
+  /// Align and zip two series using inner join and exact key matching (use `zipAlignInto`
   /// for more options). The function calls the specified function `op` to combine values 
   /// from the two series
   ///

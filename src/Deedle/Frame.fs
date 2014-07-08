@@ -200,8 +200,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let s2 = Series(otherFrame.ColumnIndex, otherFrame.Data, otherFrame.VectorBuilder, otherFrame.IndexBuilder)
 
     // Operations that try converting vectors to the required types for 'op'
-    let asV1 = VectorHelpers.tryChangeType<'V1>
-    let asV2 = VectorHelpers.tryChangeType<'V2>
+    let asV1 = VectorHelpers.tryConvertType<'V1> ConversionKind.Flexible
+    let asV2 = VectorHelpers.tryConvertType<'V2> ConversionKind.Flexible
     let (|TryConvert|_|) f inp = OptionalValue.asOption (f inp)
 
     let newColumns = 
@@ -414,7 +414,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let convertAndAppendVectors (witnessVec:IVector) (vectors:IVector list) =
       { new VectorCallSite<IVector> with
           override x.Invoke<'T>(_:IVector<'T>) =
-            let typed = vectors |> Seq.map (VectorHelpers.changeType<'T>) |> Array.ofSeq
+            let typed = vectors |> Seq.map (VectorHelpers.convertType<'T> ConversionKind.Flexible) |> Array.ofSeq
             vectorBuilder.Build(rowCmd, typed) :> IVector }
       |> witnessVec.Invoke
 
@@ -600,15 +600,15 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// [category:Fancy accessors]
   member frame.GetColumns<'R>() = 
     frame.Columns.SelectOptional(fun (KeyValue(k, vopt)) ->
-      vopt |> OptionalValue.bind (fun ser -> ser.TryAs<'R>(false)))
+      vopt |> OptionalValue.bind (fun ser -> ser.TryAs<'R>(ConversionKind.Safe)))
 
   /// [category:Fancy accessors]
   member frame.GetRows<'R>() = 
     frame.Rows.SelectOptional(fun (KeyValue(k, vopt)) ->
-      vopt |> OptionalValue.bind (fun ser -> ser.TryAs<'R>(false)))
+      vopt |> OptionalValue.bind (fun ser -> ser.TryAs<'R>(ConversionKind.Safe)))
 
   /// [category:Fancy accessors]
-  member frame.GetAllValues<'R>() = frame.GetAllValues<'R>(false)
+  member frame.GetAllValues<'R>() = frame.GetAllValues<'R>(ConversionKind.Safe)
 
   /// [category:Fancy accessors]
   member frame.GetAllValues<'R>(strict) =
@@ -806,23 +806,23 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     and set(column:'TColumnKey) (series:Series<'TRowKey, float>) = frame.ReplaceColumn(column, series)
 
   /// [category:Series operations]
-  member frame.ColumnApply<'T>(f) = frame.ColumnApply<'T>(false, f)
+  member frame.ColumnApply<'T>(f:Func<Series<'TRowKey, 'T>, ISeries<_>>) = frame.ColumnApply<'T>(ConversionKind.Safe, f)
 
   /// [category:Series operations]
-  member frame.ColumnApply<'T>(strict, f:Func<Series<'TRowKey, 'T>, ISeries<_>>) = 
+  member frame.ColumnApply<'T>(conversionKind:ConversionKind, f:Func<Series<'TRowKey, 'T>, ISeries<_>>) = 
     frame.Columns |> Series.mapValues (fun os ->
-      match os.TryAs<'T>(strict) with
+      match os.TryAs<'T>(conversionKind) with
       | OptionalValue.Present s -> f.Invoke s
       | _ -> os :> ISeries<_>)
     |> fromColumnsNonGeneric id
 
   /// [category:Series operations]
   member frame.GetColumn<'R>(column:'TColumnKey, lookup) : Series<'TRowKey, 'R> = 
-    match safeGetColVector(column, lookup, fun _ -> true) with
+    match unboxVector (safeGetColVector(column, lookup, fun _ -> true)) with
     | :? IVector<'R> as vec -> 
         Series(rowIndex, vec, vectorBuilder, indexBuilder)
     | colVector ->
-        Series(rowIndex, changeType colVector, vectorBuilder, indexBuilder)
+        Series(rowIndex, convertType ConversionKind.Flexible colVector, vectorBuilder, indexBuilder)
 
   /// [category:Series operations]
   member frame.GetColumnAt<'R>(index:int) : Series<'TRowKey, 'R> = 
@@ -833,12 +833,12 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     frame.GetColumn(column, Lookup.Exact)
 
   /// [category:Series operations]
-  member frame.GetAllColumns<'R>() = frame.GetAllColumns<'R>(false)
+  member frame.GetAllColumns<'R>() = frame.GetAllColumns<'R>(ConversionKind.Flexible)
 
   /// [category:Series operations]
   member frame.TryGetColumn<'R>(column:'TColumnKey, lookup) =
     tryGetColVector(column, lookup, fun _ -> true) 
-    |> OptionalValue.map (fun v -> Series(rowIndex, changeType<'R> v, vectorBuilder, indexBuilder))
+    |> OptionalValue.map (fun v -> Series(rowIndex, convertType<'R> ConversionKind.Flexible v, vectorBuilder, indexBuilder))
 
   /// [category:Series operations]
   member frame.TryGetColumnObservation<'R>(column:'TColumnKey, lookup) =
@@ -848,13 +848,13 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     else
       data.GetValue (snd columnIndex.Value) 
       |> OptionalValue.map (fun vec ->
-        let ser = Series(rowIndex, changeType<'R> vec, vectorBuilder, indexBuilder)
+        let ser = Series(rowIndex, convertType<'R> ConversionKind.Flexible vec, vectorBuilder, indexBuilder)
         KeyValuePair(fst columnIndex.Value, ser) )
 
   /// [category:Series operations]
-  member frame.GetAllColumns<'R>(strict) =
+  member frame.GetAllColumns<'R>(conversionKind:ConversionKind) =
     frame.Columns.Observations |> Seq.choose (fun os -> 
-      match os.Value.TryAs<'R>(strict) with
+      match os.Value.TryAs<'R>(conversionKind) with
       | OptionalValue.Present s -> Some (KeyValuePair(os.Key, s))
       | _ -> None)
 
@@ -899,7 +899,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
     // Apply the transformation on all columns that can be converted to 'T
     let newData = frame.Data.Select(fun vector ->
-      match VectorHelpers.tryChangeType vector with
+      match VectorHelpers.tryConvertType ConversionKind.Safe vector with
       | OptionalValue.Present(tyvec) ->
           frame.VectorBuilder.Build(opCmd, [| tyvec; series.Vector |]) :> IVector
       | _ -> 
@@ -916,7 +916,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   // Apply operation 'op' with 'scalar' on the right to all columns convertible to 'T
   static member inline private ScalarOperationR<'T>(frame:Frame<'TRowKey, 'TColumnKey>, scalar:'T, op:'T -> 'T -> 'T) : Frame<'TRowKey, 'TColumnKey> =
     frame.Columns |> Series.mapValues (fun os -> 
-      match os.TryAs<'T>(false) with
+      match os.TryAs<'T>(ConversionKind.Safe) with
       | OptionalValue.Present s -> (Series.mapValues (fun v -> op v scalar) s) :> ISeries<_>
       | _ -> os :> ISeries<_>)
     |> fromColumnsNonGeneric id
@@ -929,10 +929,10 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     Frame<'TRowKey, 'TColumnKey>.ScalarOperationR<'T>(frame, scalar, fun a b -> op b a)
   // Apply operation 'op' to all values in all columns convertible to 'T
   static member inline internal UnaryOperation<'T>(frame:Frame<'TRowKey, 'TColumnKey>, op : 'T -> 'T) = 
-    frame.ColumnApply(false, fun (s:Series<'TRowKey, 'T>) -> (Series.mapValues op s) :> ISeries<_>)
+    frame.ColumnApply(ConversionKind.Safe, fun (s:Series<'TRowKey, 'T>) -> (Series.mapValues op s) :> ISeries<_>)
   // Apply operation 'op' to all values in all columns convertible to 'T1 (the operation returns different type!)
   static member inline internal UnaryGenericOperation<'T1, 'T2>(frame:Frame<'TRowKey, 'TColumnKey>, op : 'T1 -> 'T2) =
-    frame.ColumnApply(false, fun (s:Series<'TRowKey, 'T1>) -> (Series.mapValues op s) :> ISeries<_>)
+    frame.ColumnApply(ConversionKind.Safe, fun (s:Series<'TRowKey, 'T1>) -> (Series.mapValues op s) :> ISeries<_>)
 
   // Unary numerical operators (just minus)
 
@@ -1343,6 +1343,10 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
                 Expr.Call(frame, AddColumnSeq.MakeGenericMethod(elemTy), [Expr.Value name; Expr.Coerce(argExpr, seqTyp)] ) )
 
 
+  [<Obsolete("GetAllColumns(bool) is obsolete. Use GetAllColumns(ConversionKind) instead.")>]
+  member x.GetAllColumns<'R>(strict) = x.GetAllColumns<'R>(if strict then ConversionKind.Exact else ConversionKind.Flexible)
+  [<Obsolete("ColumnApply(bool, Func) is obsolete. Use ColumnApply(ConversionKind, Func) instead.")>]
+  member x.ColumnApply<'T>(strict:bool, f:Func<_, _>) = x.ColumnApply<'T>((if strict then ConversionKind.Exact else ConversionKind.Flexible), f)
 
 // ------------------------------------------------------------------------------------------------
 // Building frame from series of rows/columns (this has to be here, because we need it in 
@@ -1390,7 +1394,7 @@ and FrameUtils =
             let it = nested.SelectOptional(fun kvp ->
               if kvp.Value.HasValue then 
                 kvp.Value.Value.TryGetObject(key) 
-                |> OptionalValue.map (Convert.changeType<'T>)
+                |> OptionalValue.map (Convert.convertType<'T> ConversionKind.Flexible)
               else OptionalValue.Missing)
             it.Vector :> IVector }
       |> VectorHelpers.createValueDispatcher

@@ -1196,7 +1196,7 @@ module Frame =
   /// [category:Processing frames with exceptions]
   [<CompiledName("FillErrorsWith")>]
   let fillErrorsWith (value:'T) (frame:Frame<'R, 'C>) = 
-    frame.ColumnApply(true, fun (s:Series<_, 'T tryval>) -> 
+    frame.ColumnApply(ConversionKind.Safe, fun (s:Series<_, 'T tryval>) -> 
       (Series.fillErrorsWith value s) :> ISeries<_>)
 
   // ----------------------------------------------------------------------------------------------
@@ -1216,7 +1216,7 @@ module Frame =
   /// [category:Missing values]
   [<CompiledName("FillMissingWith")>]
   let fillMissingWith (value:'T) (frame:Frame<'R, 'C>) =
-    frame.ColumnApply(true, fun (s:Series<_, 'T>) -> Series.fillMissingWith value s :> ISeries<_>)
+    frame.ColumnApply(ConversionKind.Safe, fun (s:Series<_, 'T>) -> Series.fillMissingWith value s :> ISeries<_>)
 
   /// Fill missing values in the data frame with the nearest available value
   /// (using the specified direction). Note that the frame may still contain
@@ -1234,7 +1234,9 @@ module Frame =
   /// [category:Missing values]
   [<CompiledName("FillMissing")>]
   let fillMissing direction (frame:Frame<'R, 'C>) =
-    frame.Columns |> Series.mapValues (fun s -> Series.fillMissing direction s) |> FrameUtils.fromColumns
+    let fillCmd = Vectors.FillMissing(Vectors.Return 0, VectorFillMissing.Direction direction)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder fillCmd)
+    Frame<_, _>(frame.RowIndex, frame.ColumnIndex, newData)
 
   /// Fill missing values in the frame using the specified function. The specified
   /// function is called with all series and keys for which the frame does not 
@@ -1254,7 +1256,7 @@ module Frame =
   /// [category:Missing values]
   [<CompiledName("FillMissingUsing")>]
   let fillMissingUsing (f:Series<'R, 'T> -> 'R -> 'T) (frame:Frame<'R, 'C>) =
-    frame.ColumnApply(false, fun (s:Series<_, 'T>) -> Series.fillMissingUsing (f s) s :> ISeries<_>)
+    frame.ColumnApply(ConversionKind.Safe, fun (s:Series<_, 'T>) -> Series.fillMissingUsing (f s) s :> ISeries<_>)
 
   /// Creates a new data frame that contains only those rows of the original 
   /// data frame that are _dense_, meaning that they have a value for each column.

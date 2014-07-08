@@ -186,19 +186,20 @@ let transformColumn (vectorBuilder:IVectorBuilder) rowCmd (vector:IVector) =
         vectorBuilder.Build<'T>(rowCmd, [| col |]) :> IVector }
   |> vector.Invoke
 
-// A "generic function" that changes the type of vector elements
-let changeType<'R> (vector:IVector) = 
+// A generic vector operation that converts the elements of the 
+// vector to the specified type using the specified kind of conversion.
+let convertType<'R> conversionKind (vector:IVector) = 
   match unboxVector vector with
   | :? IVector<'R> as res -> res
   | vector ->
       { new VectorCallSite<IVector<'R>> with
           override x.Invoke<'T>(col:IVector<'T>) = 
-            col.Select(Convert.changeType<'R>) }
+            col.Select(Convert.convertType<'R> conversionKind) }
       |> vector.Invoke
 
-// A "generic function" that tries to change the type of vector elements
-let tryChangeType<'R> (vector:IVector) : OptionalValue<IVector<'R>> = 
-  let shouldBeConvertible (o:obj) = o :? 'R || o :? IConvertible
+// A generic vector operation that attempts to convert the elements of the 
+// vector to the specified type using the specified kind of conversion.
+let tryConvertType<'R> conversionKind (vector:IVector) : OptionalValue<IVector<'R>> = 
   match unboxVector vector with
   | :? IVector<'R> as res -> OptionalValue(res)
   | vector ->
@@ -211,35 +212,13 @@ let tryChangeType<'R> (vector:IVector) : OptionalValue<IVector<'R>> =
                   if v.HasValue && (box v.Value) <> null 
                   then Some (box v.Value) else None) 
               |> Seq.headOrNone 
-              |> Option.map shouldBeConvertible
+              |> Option.map (Convert.canConvertType<'R> conversionKind)
+
             if first = Some(false) then OptionalValue.Missing
             else 
               // We still cannot be sure that it will actually work
-              try OptionalValue(col.Select(fun v -> Convert.changeType<'R> v))
+              try OptionalValue(col.Select(fun v -> Convert.convertType<'R> conversionKind v))
               with :? InvalidCastException | :? FormatException -> OptionalValue.Missing }
-      |> vector.Invoke
-
-// A "generic function" that tries to cast the type of vector elements
-let tryCastType<'R> (vector:IVector) : OptionalValue<IVector<'R>> = 
-  let shouldBeCastable (o:obj) = o :? 'R
-  match unboxVector vector with
-  | :? IVector<'R> as res -> OptionalValue(res)
-  | vector ->
-      { new VectorCallSite<OptionalValue<IVector<'R>>> with
-          override x.Invoke<'T>(col:IVector<'T>) = 
-            // Check the first non-missing value to see if we should even try doing the conversion
-            let first = 
-              col.DataSequence 
-              |> Seq.choose (fun v -> 
-                  if v.HasValue && (box v.Value) <> null 
-                  then Some (box v.Value) else None) 
-              |> Seq.headOrNone 
-              |> Option.map shouldBeCastable
-            if first = Some(false) then OptionalValue.Missing
-            else 
-              // We still cannot be sure that it will actually work
-              try OptionalValue(col.Select(fun v -> unbox<'R> v))
-              with :? InvalidCastException -> OptionalValue.Missing }
       |> vector.Invoke
 
 /// A "generic function" that drops a specified range from any vector
@@ -252,7 +231,7 @@ let getVectorRange (builder:IVectorBuilder) range (vector:IVector) =
 
 /// Active pattern that calls the `tryChangeType<float>` function
 let (|AsFloatVector|_|) v : option<IVector<float>> = 
-  OptionalValue.asOption (tryChangeType v)
+  OptionalValue.asOption (tryConvertType ConversionKind.Flexible v)
 
 /// A virtual vector for reading "row" of a data frame. The virtual vector accesses
 /// internal representation of the frame (specified by `data` and `columnCount`).
@@ -278,7 +257,7 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, columnCo
     member x.GetValue(columnAddress) = 
       let vector = data.GetValue(columnAddress)
       if not vector.HasValue then OptionalValue.Missing
-      else vector.Value.GetObject(rowAddress) |> OptionalValue.map (Convert.changeType<'T>)
+      else vector.Value.GetObject(rowAddress) |> OptionalValue.map (Convert.convertType<'T> ConversionKind.Flexible)
 
     member vector.Data = 
       vector.DataArray |> ReadOnlyCollection.ofArray |> VectorData.SparseList 
@@ -339,7 +318,7 @@ let toArray2D<'R> rowCount colCount (data:IVector<IVector>) (defaultValue:Lazy<'
     data.DataSequence
     |> Seq.iteri (fun c vector ->
       if vector.HasValue then
-        changeType(vector.Value).DataSequence
+        (convertType ConversionKind.Flexible vector.Value).DataSequence
         |> Seq.iteri (fun r v -> 
             res.[r,c] <- if v.HasValue then v.Value else defaultValue.Value )
       else for r = 0 to rowCount - 1 do res.[r, c] <- defaultValue.Value )
@@ -396,7 +375,7 @@ module Inference =
 /// Helper object called by createTypedVector via reflection
 type CreateTypedVectorHelper = 
   static member Create<'T>(builder:IVectorBuilder, data:obj[]) =
-    builder.Create(Array.map Convert.changeType<'T> data)
+    builder.Create(Array.map (Convert.convertType<'T> ConversionKind.Flexible) data)
 
 /// Given object array, create a typed vector of the best possible type
 let createTypedVector (builder:IVectorBuilder) (vectorType:System.Type) (data:obj[]) =

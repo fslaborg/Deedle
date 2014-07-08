@@ -113,3 +113,9 @@ let ``Can index rows ordinally and pass the result to R (#146)`` () =
   R.assign("df", df2) |> ignore
   R.get("df").GetValue<Frame<int, string>>() |> shouldEqual df2
 
+[<Test>]
+let ``Filling missing values preserves type of columns (and allows R interop)`` () =
+  let df1 = frame [ "A" => series [0 => 0.0; 1 => nan]]
+  let df2 = df1 |> Frame.fillMissing Direction.Forward
+  let df3 = R.as_data_frame(df2).GetValue<Frame<int, string>>()
+  df3 |> shouldEqual df2

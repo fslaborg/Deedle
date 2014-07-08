@@ -870,6 +870,11 @@ let ``Fill missing values using the specified constant``() =
   filled.Rows.[0].As<float>() |> shouldEqual <| series ["A" => 0.0; "B" => 0.0; "C" => 0.0; "D" => 0.0 ]
   filled.Rows.[10].As<float>() |> shouldEqual <| series ["A" => 10.0; "B" => 0.0; "C" => 10.0; "D" => 10.0 ]
 
+[<Test>]
+let ``Can fill missing values in a frame containing decimals`` () =
+  let df1 = frame [ "A" => Series.ofOptionalObservations [ 1 => None; 2 => Some 0.2M ] ]
+  let df2 = df1 |> Frame.fillMissingWith 0.1
+  df2?A |> shouldEqual <| series [1 => 0.1; 2 => 0.2]
 
 // ------------------------------------------------------------------------------------------------
 // Operations - join & zip (handling missing values)
