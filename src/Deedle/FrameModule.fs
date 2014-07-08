@@ -1081,8 +1081,7 @@ module Frame =
   ///
   /// [category:Frame transformations]
   [<CompiledName("MapValues")>]
-  let mapValues f (frame:Frame<'R, 'C>) = 
-     frame.ColumnApply<'V>(ConversionKind.Safe, fun s -> s |> Series.mapValues f :> ISeries<_>)
+  let mapValues f (frame:Frame<'R, 'C>) = frame.SelectValues(Func<_,_>(f))
 
   /// Builds a new data frame whose values are the results of applying the specified
   /// function on these values, but only for those columns which can be converted 
@@ -1093,12 +1092,7 @@ module Frame =
   ///  - `f` - Function that defines the mapping
   ///
   /// [category:Frame transformations]
-  let map f (frame:Frame<'R, 'C>) =
-    frame.Columns |> Series.map (fun c os ->
-      match os.TryAs<'V>(ConversionKind.Safe) with
-      | OptionalValue.Present s -> s |> Series.map (fun r v -> f r c v) :> ISeries<_>
-      | _ -> os :> ISeries<_>)
-    |> Frame<'R,'C>.FromColumnsNonGeneric id
+  let map f (frame:Frame<'R, 'C>) = frame.Select(Func<_,_,_,_>(f))
 
   /// Returns a series that contains the results of aggregating each column
   /// to a single value. The function takes columns that can be converted to 
