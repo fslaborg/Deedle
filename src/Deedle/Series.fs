@@ -381,6 +381,30 @@ and
     Series<'K, 'R>(newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
 
   /// [category:Projection and filtering]
+  member x.SelectValues<'T>(f:System.Func<'V, 'T>) = 
+    let newVector =
+      index.Mappings |> Array.ofSeq |> Array.map (fun (key, addr) -> 
+        match vector.GetValue(addr) |> OptionalValue.asOption with 
+        | Some v -> OptionalValue(f.Invoke(v))
+        | None   -> OptionalValue.Missing)
+    let newIndex = indexBuilder.Project(index)
+    Series<'K, 'T>(newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
+  
+  /// Custom operator that can be used for applying fuction to all elements of 
+  /// a series. This provides a nicer syntactic sugar for the `Series.mapValues` 
+  /// function. For example:
+  ///
+  ///     // Given a float series and a function on floats
+  ///     let s1 = Series.ofValues [ 1.0 .. 10.0 ]
+  ///     let adjust v = max 10.0 v
+  ///
+  ///     // Apply "adjust (v + v)" to all elements
+  ///     adjust $ (s1 + s1)
+  ///
+  static member ($) (f, series: Series<'K,'V>) = 
+    series.SelectValues(Func<_,_>(f))
+
+  /// [category:Projection and filtering]
   member x.Reversed =
     let newIndex = index.Keys |> Array.ofSeq |> Array.rev
     let newVector = vector.DataSequence |> Array.ofSeq |> Array.rev

@@ -1070,6 +1070,36 @@ module Frame =
     let newColIndex = frame.IndexBuilder.Create(frame.ColumnIndex.Keys |> Seq.map f, None)
     Frame(frame.RowIndex, newColIndex, frame.Data)
 
+  /// Builds a new data frame whose values are the results of applying the specified
+  /// function on these values, but only for those columns which can be converted 
+  /// to the appropriate type for input to the mapping function (use `map` if you need 
+  //// to access the row and column keys).
+  ///
+  /// ## Parameters
+  ///  - `frame` - Input data frame to be transformed
+  ///  - `f` - Function that defines the mapping
+  ///
+  /// [category:Frame transformations]
+  [<CompiledName("MapValues")>]
+  let mapValues f (frame:Frame<'R, 'C>) = 
+     frame.ColumnApply<'V>(ConversionKind.Safe, fun s -> s |> Series.mapValues f :> ISeries<_>)
+
+  /// Builds a new data frame whose values are the results of applying the specified
+  /// function on these values, but only for those columns which can be converted 
+  /// to the appropriate type for input to the mapping function. 
+  ///
+  /// ## Parameters
+  ///  - `frame` - Input data frame to be transformed
+  ///  - `f` - Function that defines the mapping
+  ///
+  /// [category:Frame transformations]
+  let map f (frame:Frame<'R, 'C>) =
+    frame.Columns |> Series.map (fun c os ->
+      match os.TryAs<'V>(ConversionKind.Safe) with
+      | OptionalValue.Present s -> s |> Series.map (fun r v -> f r c v) :> ISeries<_>
+      | _ -> os :> ISeries<_>)
+    |> Frame<'R,'C>.FromColumnsNonGeneric id
+
   /// Returns a series that contains the results of aggregating each column
   /// to a single value. The function takes columns that can be converted to 
   /// the type expected by the specified `op` function and reduces the values

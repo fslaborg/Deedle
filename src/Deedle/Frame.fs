@@ -805,16 +805,34 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     with get(column:'TColumnKey) = frame.GetColumn<float>(column)
     and set(column:'TColumnKey) (series:Series<'TRowKey, float>) = frame.ReplaceColumn(column, series)
 
-  /// [category:Series operations]
+  /// [category:Projection and filtering]
   member frame.ColumnApply<'T>(f:Func<Series<'TRowKey, 'T>, ISeries<_>>) = frame.ColumnApply<'T>(ConversionKind.Safe, f)
 
-  /// [category:Series operations]
+  /// [category:Projection and filtering]
   member frame.ColumnApply<'T>(conversionKind:ConversionKind, f:Func<Series<'TRowKey, 'T>, ISeries<_>>) = 
     frame.Columns |> Series.mapValues (fun os ->
       match os.TryAs<'T>(conversionKind) with
       | OptionalValue.Present s -> f.Invoke s
       | _ -> os :> ISeries<_>)
     |> fromColumnsNonGeneric id
+
+  /// [category:Projection and filtering]
+  member frame.Select<'T1, 'T2>(f:System.Func<'TRowKey, 'TColumnKey, 'T1, 'T2>) = 
+    frame.Columns |> Series.map (fun c os ->
+      match os.TryAs<'T1>(ConversionKind.Safe) with
+      | OptionalValue.Present s -> Series.map (fun r v -> f.Invoke(r, c, v)) s :> ISeries<_>
+      | _ -> os :> ISeries<_>)
+    |> fromColumnsNonGeneric id
+
+  /// [category:Projection and filtering]
+  member frame.SelectValues<'T1, 'T2>(f:System.Func<'T1, 'T2>) = 
+    frame.ColumnApply(ConversionKind.Safe, fun s -> s.SelectValues(f) :> ISeries<_>)
+
+  /// Custom operator that can be used for applying fuction to all elements of 
+  /// a frame. This provides a nicer syntactic sugar for the `Frame.mapValues` 
+  /// function.
+  static member ($) (f, frame: Frame<'TRowKey,'TColumnKey>) = 
+    frame.SelectValues(Func<_,_>(f))
 
   /// [category:Series operations]
   member frame.GetColumn<'R>(column:'TColumnKey, lookup) : Series<'TRowKey, 'R> = 

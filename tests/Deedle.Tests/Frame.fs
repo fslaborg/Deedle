@@ -1187,3 +1187,41 @@ let ``Can reindex ordinally``() =
     |> Frame.indexRowsOrdinally
   let expected = [0; 1] |> Seq.ofList
   actual.RowKeys |> shouldEqual expected
+
+// ------------------------------------------------------------------------------------------------
+// Operations - mapping
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can map over frame values``() =
+  let actual = 
+    Frame.ofColumns [ "A" =?> series [ 1 => 1; 2 => 2 ]; 
+                      "B" =?> series [ 1 => 2.0; 2 => 3.0 ];
+                      "C" =?> series [ 1 => "a"; 2 => "b" ] ]
+    
+  let expected = 
+    Frame.ofColumns [ "A" =?> series [ 1 => "x"; 2 => "x" ]; 
+                      "B" =?> series [ 1 => "x"; 2 => "y" ];
+                      "C" =?> series [ 1 => "a"; 2 => "b" ] ]
+  
+  let f v = if v <= 2.0 then "x" else "y"
+
+  actual |> Frame.mapValues f |> shouldEqual expected
+  f $ actual |> shouldEqual expected
+
+[<Test>]
+let ``Can map over frame keys and values``() =
+  let actual = 
+    Frame.ofColumns [ "A" =?> series [ 1 => 1; 2 => 2 ]; 
+                      "B" =?> series [ 1 => 2.0; 2 => 3.0 ];
+                      "C" =?> series [ 1 => "a"; 2 => "b" ] ]
+    
+  let expected = 
+    Frame.ofColumns [ "A" =?> series [ 1 => "x"; 2 => "y" ]; 
+                      "B" =?> series [ 1 => "y"; 2 => "y" ];
+                      "C" =?> series [ 1 => "a"; 2 => "b" ] ]
+  
+  let f r c v = if r < 2 && c <> "B" && v <= 2.0 then "x" else "y"
+  actual |> Frame.map f |> shouldEqual expected
+
+ 
