@@ -826,7 +826,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Projection and filtering]
   member frame.SelectValues<'T1, 'T2>(f:System.Func<'T1, 'T2>) = 
-    frame.ColumnApply<'T1>(ConversionKind.Safe, fun s -> s.SelectValues(f) :> ISeries<_>)
+    frame.ColumnApply(ConversionKind.Safe, fun (s:Series<_,'T1>) -> s.SelectValues(f) :> ISeries<_>)
 
   /// Custom operator that can be used for applying fuction to all elements of 
   /// a frame. This provides a nicer syntactic sugar for the `Frame.mapValues` 
