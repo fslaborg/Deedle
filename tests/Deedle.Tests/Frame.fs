@@ -123,6 +123,23 @@ let ``Can save MSFT data as CSV file and read it afterwards (with custom format)
   actual |> shouldEqual expected
 
 [<Test>]
+let ``Saving CSV to a stream closes the stream when complete`` () =
+  use stream = new System.IO.MemoryStream()
+  stream.CanWrite |> shouldEqual true
+  let expected = msft()
+  expected.SaveCsv(stream)
+  stream.CanWrite |> shouldEqual false
+
+[<Test>]
+let ``Saving CSV to a stream via the extension method closes the stream when complete`` () =
+  let cz = System.Globalization.CultureInfo.GetCultureInfo("cs-CZ")
+  use stream = new System.IO.MemoryStream()
+  stream.CanWrite |> shouldEqual true
+  let expected = msft()
+  FrameExtensions.SaveCsv (expected, stream, true, ["Date"], ';', cz)
+  stream.CanWrite |> shouldEqual false
+
+[<Test>]
 let ``Can create frame from IDataReader``() =
   let dt = new DataTable()
   dt.Columns.Add(new DataColumn("First", typeof<int>))

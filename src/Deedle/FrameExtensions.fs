@@ -473,7 +473,8 @@ module FSharpFrameExtensions =
     ///
     /// [category:Input and output]
     member frame.SaveCsv(stream:Stream, ?includeRowKeys, ?keyNames, ?separator, ?culture) = 
-      FrameUtils.writeCsv (new StreamWriter(stream)) None separator culture includeRowKeys keyNames frame
+      use writer = new StreamWriter(stream)
+      FrameUtils.writeCsv (writer) None separator culture includeRowKeys keyNames frame
 
     /// Save data frame to a CSV file or to a `Stream`. When calling the operation,
     /// you can specify whether you want to save the row keys or not (and headers for the keys)
@@ -790,7 +791,8 @@ type FrameExtensions =
     let separator = if separator = '\000' then None else Some separator
     let culture = if culture = null then None else Some culture
     let keyNames = if keyNames = Unchecked.defaultof<_> then None else Some keyNames
-    FrameUtils.writeCsv (new StreamWriter(stream)) None separator culture (Some includeRowKeys) keyNames frame
+    use writer = new StreamWriter(stream)
+    FrameUtils.writeCsv (writer) None separator culture (Some includeRowKeys) keyNames frame
 
   /// Save data frame to a CSV file or to a `Stream`. When calling the operation,
   /// you can specify whether you want to save the row keys or not (and headers for the keys)
