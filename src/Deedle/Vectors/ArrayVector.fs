@@ -272,18 +272,18 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
 
     // A version of Select that can transform missing values to actual values (we always 
     // end up with array that may contain missing values, so use CreateMissing)
-    member vector.SelectMissing<'TNewValue>(f) = 
+    member vector.SelectMissing<'TNewValue>(_, f) = 
       let isNA = MissingValues.isNA<'TNewValue>() 
       let flattenNA (value:OptionalValue<_>) = 
         if value.HasValue && isNA value.Value then OptionalValue.Missing else value
       let data = 
         match representation with
         | VectorNonOptional data ->
-            data |> Array.map (fun v -> OptionalValue(v) |> f |> flattenNA)
+            data |> Array.mapi (fun i v -> f (Address.ofInt i) (OptionalValue v) |> flattenNA)
         | VectorOptional data ->
-            data |> Array.map (f >> flattenNA)
+            data |> Array.mapi (fun i v -> f (Address.ofInt i) v |> flattenNA)
       ArrayVectorBuilder.Instance.CreateMissing(data)
 
     // Select function does not call 'f' on missing values.
     member vector.Select<'TNewValue>(f:'T -> 'TNewValue) = 
-      (vector :> IVector<_>).SelectMissing(OptionalValue.map f)
+      (vector :> IVector<_>).SelectMissing(None, fun _ -> OptionalValue.map f)

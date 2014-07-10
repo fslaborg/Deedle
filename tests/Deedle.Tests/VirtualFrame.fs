@@ -25,33 +25,46 @@ type TrackingSource<'T>(lo, hi, valueAt:int64 -> 'T, ?asLong:'T -> int64) =
   member val HasMissing = true with get, set
   member x.AccessList = List.rev x.AccessListCell.Value
   member x.LookupList = List.rev x.LookupListCell.Value
-  interface VirtualVectorSource with
+
+  interface IVirtualVectorSource with
     member x.Length = hi - lo + 1L
     member x.ElementType = typeof<'T>
 
-  interface VirtualVectorSource<'T> with
-    member x.Lookup(k, l, c) = 
+  interface IVirtualVectorSource<'T> with
+    member x.LookupRange(v) = 
+      failwith "TODO"
+
+    member x.LookupValue(k, l, c) = 
       if x.IsTracking then x.LookupListCell := (k, l) :: !x.LookupListCell
       let asLong = match asLong with None -> failwith "Lookup not supported" | Some g -> g
-      Helpers.binarySearchLong (hi - lo + 1L) (fun i -> asLong (valueAt (i+1L))) (asLong k) l c
+      IndexUtilsModule.binarySearch (hi - lo + 1L) (Func<_, _>(fun i -> asLong (valueAt (lo + i)))) (asLong k) l c
       |> OptionalValue.map (fun i -> valueAt i, i )
 
     member x.ValueAt addr = 
+      //printfn "Value at: %A is %A" addr (lo + addr)
       if x.IsTracking then x.AccessListCell := (lo + addr) :: !x.AccessListCell
       if x.HasMissing && (addr % 3L = 0L) then OptionalValue.Missing
       else OptionalValue(valueAt (lo + addr))
-    member x.GetSubVector(nlo, nhi) = 
-      if nhi < nlo then invalidOp "hi < lo"
-      elif nlo < 0L then invalidOp "lo < 0"
-      elif nhi > hi then invalidOp "hi > max"
-      else TrackingSource
-            ( lo+nlo, lo+nhi, valueAt, ?asLong=asLong, HasMissing = x.HasMissing, IsTracking = x.IsTracking, 
-              LookupListCell = x.LookupListCell, AccessListCell = x.AccessListCell ) :> _
+
+    member x.GetSubVector(range) = 
+      match range with
+      | Range(nlo, nhi) ->
+          if nhi < nlo then invalidOp "hi < lo"
+          elif nlo < 0L then invalidOp "lo < 0"
+          elif nhi > hi then invalidOp "hi > max"
+          else TrackingSource
+                ( lo+nlo, lo+nhi, valueAt, ?asLong=asLong, HasMissing = x.HasMissing, IsTracking = x.IsTracking, 
+                  LookupListCell = x.LookupListCell, AccessListCell = x.AccessListCell ) :> _
+      | _ -> failwith "unexpected custom range!"
 
 type TrackingSource =
-  static member CreateLongs(lo, hi) = TrackingSource<int64>(lo, hi, id)
+  static member CreateLongs(lo, hi) = TrackingSource<int64>(lo, hi, id, id)
   static member CreateFloats(lo, hi) = TrackingSource<float>(lo, hi, float)
   static member CreateStrings(lo, hi) = TrackingSource<string>(lo, hi, sprintf "str(%d)")
+  static member CreateTicks(lo, hi) = 
+    let start = DateTimeOffset(DateTime(2000, 1, 1), TimeSpan.FromHours(-1.0))
+    let asTicks ticks = start.Ticks + ticks * 987654321L
+    TrackingSource<int64>(lo, hi, asTicks, id, HasMissing=false)
   static member CreateTimes(lo, hi) = 
     let start = DateTimeOffset(DateTime(2000, 1, 1), TimeSpan.FromHours(-1.0))
     let asDto ticks = start.AddTicks(ticks * 123456789L)
@@ -100,6 +113,7 @@ let ``Can perform slicing without evaluating the series`` () =
   let s1 = Virtual.CreateOrdinalSeries(src)
   let s2 = s1.[10000000L-9L ..]
   let s3 = s1.[.. 9L]
+
   (Stats.sum s2) + (Stats.sum s3) |> shouldEqual 60000000.0
   src.AccessList |> Seq.length |> shouldEqual 20
   src.AccessList |> Seq.sum |> shouldEqual 100000000L
@@ -134,6 +148,8 @@ let createTimeSeries () =
 
 let date y m d = DateTimeOffset(DateTime(y, m, d), TimeSpan.FromHours(-1.0))
 let ith i = (date 2000 1 1).AddTicks(i * 123456789L)
+let fromTicks (t:int64) = DateTimeOffset(t, TimeSpan.FromHours(0.0)).ToOffset(TimeSpan.FromHours(8.0))
+let toTicks (dto:DateTimeOffset) = dto.UtcTicks
 
 [<Test>]
 let ``Can access elements in an ordered time series without evaluating it`` () =
@@ -159,7 +175,12 @@ let ``Can use different lookup behaviours when accessing time series values`` ()
 [<Test>]
 let ``Can perform slicing on time series without evaluating it`` () =
   let isrc, vsrc, s1 = createTimeSeries()
+  
+  // TODO: s1.[x] = s2.[x]
+  // s1.[ith 2778364L]
+
   let s2 = s1.[date 2001 1 1 .. date 2001 2 1]
+  // s2.[ith 2778364L]
   fst s2.KeyRange |> should be (greaterThanOrEqualTo (date 2001 1 1))
   snd s2.KeyRange |> should be (lessThanOrEqualTo (date 2001 2 1))
   s2.[ith 2700001L] |> shouldEqual <| s1.[ith 2700001L]
@@ -175,6 +196,18 @@ let createSimpleFrame() =
   let s1 = TrackingSource.CreateLongs(0L, 10000000L)
   let s2 = TrackingSource.CreateStrings(0L, 10000000L)
   let frame = Virtual.CreateOrdinalFrame( ["S1"; "S2"], [s1; s2] )
+  s1, s2, frame
+
+let createNumericFrame() =
+  let s1 = TrackingSource.CreateFloats(0L, 10000000L, HasMissing=false)
+  let s2 = TrackingSource.CreateFloats(0L, 10000000L)
+  let frame = Virtual.CreateOrdinalFrame( ["Dense"; "Sparse"], [s1; s2] )
+  s1, s2, frame
+
+let createTicksFrame() =
+  let s1 = TrackingSource.CreateTicks(0L, 10000000L)
+  let s2 = TrackingSource.CreateFloats(0L, 10000000L)
+  let frame = Virtual.CreateOrdinalFrame( ["Ticks"; "Values"], [s1; s2] )
   s1, s2, frame
 
 [<Test>]
@@ -210,9 +243,6 @@ let ``Can use ColumnsApply and 'sin' witout evaluating a frame`` () =
   s1.AccessList |> shouldEqual [3141592654L]
   s2.AccessList |> shouldEqual [3141592654L]
 
-  // TODO: ColumnApply does not work when the frame contains non-numerical columns
-  // ...because we delay things, it delays the attempt to convert string -> float :-(
-
 [<Test>]
 let ``Can map over frame rows without evaluating it`` () = 
   let s1, s2, frame = createSimpleFrame()
@@ -236,5 +266,50 @@ let ``Can perform slicing on frame using the Rows property`` () =
   |> List.ofSeq
   |> shouldEqual ["str(500001)"; "str(500002)"; "str(500004)"; "str(500005)"]
 
+[<Test>]
+let ``Can access Columns of a virtual frame without evaluating the data`` () =
+  let s1, s2, f = createSimpleFrame()
+  let cols = f.Columns
+  cols.Keys |> List.ofSeq |> shouldEqual ["S1"; "S2"]
+  cols.["S1"].[10L] |> unbox |> shouldEqual 10L
+  s1.AccessList |> shouldEqual [10L]
+  s2.AccessList |> shouldEqual []
 
+[<Test>]
+let ``Can add computed series as a new column to a frame with the same index``() = 
+  let s1, s2, f = createNumericFrame()
+  let times = f |> Frame.mapRows (fun _ row -> 
+    let t = row.GetAs<int64>("Dense")
+    DateTimeOffset(DateTime(2000,1,1).AddTicks(t * 1233456789L), TimeSpan.FromHours(1.0)) )
+  f.AddColumn("Times", times)
+  f.GetRow<obj>(5000001L).["Dense"] |> shouldEqual (box 5000001L)
+  f.GetRow<obj>(5000001L).TryGet("Sparse") |> shouldEqual OptionalValue.Missing
+  (f.GetRow<obj>(5000001L).["Times"] |> unbox<DateTimeOffset>).Year |> shouldEqual 2019
+  set s1.AccessList |> shouldEqual <| set [5000001L]
+  set s2.AccessList |> shouldEqual <| set [5000001L]
+
+[<Test>]
+let ``Can index frame by a ordered column computed using series transform`` () =
+  let s1, s2, f = createTicksFrame()
+  f?Times <- f.GetColumn<int64>("Ticks") |> Series.transform fromTicks toTicks
+  let byTimes = f |> Frame.indexRowsDateOffs "Times"
+
+  byTimes.Rows.TryGet(date 2010 1 1, Lookup.Exact) |> shouldEqual OptionalValue.Missing
+  let prev = byTimes.Rows.Get(date 2010 1 1, Lookup.ExactOrSmaller).["Ticks"] |> unbox<int64> |> fromTicks
+  let next = byTimes.Rows.Get(date 2010 1 1, Lookup.ExactOrGreater).["Ticks"] |> unbox<int64> |> fromTicks
+  prev < date 2010 1 1 |> shouldEqual true
+  next > date 2010 1 1 |> shouldEqual true
+  ((date 2010 1 1) - prev).Ticks + (next - (date 2010 1 1)).Ticks |> shouldEqual 987654321L
+
+// TODO: Tests for frame with datetimeoffset index
+
+// TODO: Filtering ???
+// TODO: Append/merge frames
+
+// TODO: ColumnApply does not work when the frame contains non-numerical columns
+// ...because we delay things, it delays the attempt to convert string -> float :-(
+// We should be able to check the type of the column (at least)
+
+// TODO: What if we need to build index from two columns, say 'utcTicks' and 'offset' ??
+// This is not reversible: f |> Frame.mapRows (fun _ row -> niceTimeFromTicks (row.GetAs "Dense"))
 

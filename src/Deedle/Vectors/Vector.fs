@@ -96,7 +96,10 @@ and IVector<'T> =
   /// a new vector (not necessarily of the same representation) with the results.
   /// The function handles missing values - it is called with optional values and
   /// may return a missing value as a result of the transformation.
-  abstract SelectMissing : (OptionalValue<'T> -> OptionalValue<'TNew>) -> IVector<'TNew>
+  abstract SelectMissing : option<'TNew -> 'T> * (Address -> OptionalValue<'T> -> OptionalValue<'TNew>) -> IVector<'TNew>
+
+  // TODO: Cleanup the 'SelectMissing' method a bit
+  // (Optional reverse lookup lets us do useful things in virtual vectors...)
 
 
 /// Module with extensions for generic vector type. Given `vec` of type `IVector<T>`, 

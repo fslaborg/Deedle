@@ -65,7 +65,7 @@ let createBoxedVector (vector:IVector<'TValue>) =
         | VectorData.Sequence list ->
             VectorData.Sequence(Seq.map (OptionalValue.map box) list)
       member x.Select(f) = vector.Select(f)
-      member x.SelectMissing(f) = vector.SelectMissing(OptionalValue.map box >> f)
+      member x.SelectMissing(rev, f) = vector.SelectMissing(rev |> Option.map (fun f -> f >> unbox), fun addr v -> f addr (OptionalValue.map box v))
     interface IVector with
       member x.ObjectSequence = vector.ObjectSequence
       member x.SuppressPrinting = vector.SuppressPrinting
@@ -193,7 +193,7 @@ let changeType<'R> (vector:IVector) =
   | vector ->
       { new VectorCallSite<IVector<'R>> with
           override x.Invoke<'T>(col:IVector<'T>) = 
-            col.Select(Convert.changeType<'R>) }
+            col.SelectMissing(Some(Convert.changeType<'T>), fun a -> OptionalValue.map Convert.changeType<'R>) }
       |> vector.Invoke
 
 // A "generic function" that tries to change the type of vector elements
@@ -284,13 +284,13 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, columnCo
       vector.DataArray |> ReadOnlyCollection.ofArray |> VectorData.SparseList 
 
     member vector.Select(f) = 
-      (vector :> IVector<_>).SelectMissing(OptionalValue.map f)
+      (vector :> IVector<_>).SelectMissing(None, fun _ -> OptionalValue.map f)
 
-    member vector.SelectMissing(f) = 
+    member vector.SelectMissing(_, f) = 
       let isNA = MissingValues.isNA<'TNewValue>() 
       let flattenNA (value:OptionalValue<_>) = 
         if value.HasValue && isNA value.Value then OptionalValue.Missing else value
-      let data = vector.DataArray |> Array.map (f >> flattenNA)
+      let data = vector.DataArray |> Array.mapi (fun i v -> f (Address.ofInt i) v |> flattenNA)
       builder.CreateMissing(data)
 
   // Non-generic interface is fully implemented as "virtual"   

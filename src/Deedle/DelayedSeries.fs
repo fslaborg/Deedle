@@ -181,7 +181,7 @@ type DelayedVector<'K, 'V when 'K : equality> (source:DelayedSource<'K, 'V>) =
   interface IVector<'V> with
     member x.GetValue(index) = source.Values.GetValue(index)
     member x.Data = source.Values.Data
-    member x.SelectMissing(f) = source.Values.SelectMissing(f)
+    member x.SelectMissing(rev, f) = source.Values.SelectMissing(rev, f)
     member x.Select(f) = source.Values.Select(f)
 
 
@@ -231,6 +231,7 @@ and DelayedIndexBuilder() =
     member x.Union(sc1, sc2) = builder.Union(sc1, sc2)
     member x.Intersect(sc1, sc2) = builder.Intersect(sc1, sc2)
     member x.Merge(scs, transform) = builder.Merge(scs, transform)
+    member x.Search(sc, idx, value) = builder.Search(sc, idx, value)
     member x.LookupLevel(sc, key) = builder.LookupLevel(sc, key)
     member x.WithIndex(index1, f, vector) = builder.WithIndex(index1, f, vector)
     member x.Reindex(index1, index2, semantics, vector, cond) = builder.Reindex(index1, index2, semantics, vector, cond)

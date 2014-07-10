@@ -274,11 +274,16 @@ and IIndexBuilder =
   /// Create a new index by picking a new key value for each key in the original index
   /// (used e.g. when we have a frame and want to use specified column as a new index).
   abstract WithIndex :
-    IIndex<'K> * (Address -> OptionalValue<'TNewKey>) * VectorConstruction -> 
+    IIndex<'K> * IVector<'TNewKey> * VectorConstruction -> 
     SeriesConstruction<'TNewKey>
 
   /// Drop an item associated with the specified key from the index. 
   abstract DropItem : SeriesConstruction<'K> * 'K -> SeriesConstruction<'K> 
+
+  /// Get items associated with the specified key from the index. This method takes
+  /// `ICustomLookup<K>` which provides an implementation of `ICustomKey<K>`. This 
+  /// is used for custom equality testing (for example, when getting a level of a hierarchical index)
+  abstract Search : SeriesConstruction<'K> * IVector<'V> * 'V -> SeriesConstruction<'K>
 
   /// Get items associated with the specified key from the index. This method takes
   /// `ICustomLookup<K>` which provides an implementation of `ICustomKey<K>`. This 

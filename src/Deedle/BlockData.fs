@@ -58,7 +58,7 @@ and BlockStoreVector<'K, 'V when 'K : equality>(store:BlockStore<'K, 'V>) =
   interface IVector<'V> with
     member x.GetValue(index) = store.ValueAt(index)
     member x.Data = seq { for i in 0L .. store.Length-1L -> store.ValueAt(i) } |> VectorData.Sequence
-    member x.SelectMissing(f) = failwith "SelectMissing: TODO!!"
+    member x.SelectMissing(rev, f) = failwith "SelectMissing: TODO!!"
     member x.Select(f) = failwith "Select: TODO!!"
 
 and BlockStoreIndexBuilder() = 
@@ -73,6 +73,7 @@ and BlockStoreIndexBuilder() =
     member x.Union(sc1, sc2) = failwith "Union"
     member x.Intersect(sc1, sc2) = failwith "Intersect"
     member x.Merge(scs, transform) = failwith "Merge"
+    member x.Search(sc, ve, va) = failwith "Search"
     member x.LookupLevel(sc, key) = failwith "LookupLevel"
     member x.WithIndex(index1, f, vector) = failwith "WithIndex"
     member x.Reindex(index1, index2, semantics, vector, cond) = failwith "ReIndex"

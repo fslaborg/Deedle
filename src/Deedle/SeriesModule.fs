@@ -469,6 +469,10 @@ module Series =
   let mapKeys (f:'K -> 'R) (series:Series<'K, 'T>) = 
     series.SelectKeys(fun kvp -> f kvp.Key)
 
+  [<CompiledName("Transform")>]
+  let transform (f:'T -> 'R) (g:'R -> 'T) (series:Series<'K, 'T>) = 
+    series.Transform(Func<_, _>(f), Func<_, _>(g))
+
   /// Given a series containing optional values, flatten the option values.
   /// That is, `None` values become missing values of the series and `Some` values
   /// become ordinary values in the resulting series.
@@ -1285,7 +1289,7 @@ module Series =
   let internal sortByCommand (f:'T -> 'V) (series:Series<'K, 'T>) =
     let index = series.Index
     let vector = series.Vector
-    let fseries = Series(index, vector.SelectMissing (OptionalValue.map f), series.VectorBuilder, series.IndexBuilder)
+    let fseries = Series(index, vector.SelectMissing(None, fun _ -> OptionalValue.map f), series.VectorBuilder, series.IndexBuilder)
     fseries |> sortWithCommand compare
 
   /// Returns a new series, containing the observations of the original series sorted using

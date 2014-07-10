@@ -445,10 +445,10 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
     /// Build a new index by getting a key for each old key using the specified function
     member builder.WithIndex<'K, 'TNewKey when 'K : equality  and 'TNewKey : equality>
-        (index1:IIndex<'K>, f:Address -> OptionalValue<'TNewKey>, vector) =
+        (index1:IIndex<'K>, indexVector:IVector<'TNewKey>, vector) =
       let newKeys =
         [| for KeyValue(key, oldAddress) in index1.Mappings do
-             let newKey = f oldAddress
+             let newKey = indexVector.GetValue oldAddress
              if newKey.HasValue then yield newKey.Value, oldAddress |]
       
       let newIndex = LinearIndex<'TNewKey>(Seq.map fst newKeys |> ReadOnlyCollection.ofSeq, builder)
@@ -474,6 +474,9 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
                   yield newAddress, oldAddress.Value |> snd }
       Vectors.Relocate(vector, index2.KeyCount, relocations)
 
+
+    member builder.Search( (index, vector), searchVector, searchValue) = 
+      failwith "Searching is not implemented (yet)"
 
     member builder.LookupLevel( (index, vector), searchKey:ICustomLookup<'K> ) =
       let matching = 

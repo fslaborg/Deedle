@@ -358,11 +358,28 @@ and
     
     // TODO: Review the change here - does it make things faster? slower? neutral?
 
+    let newVector = vector.SelectMissing(None, fun addr value ->
+      value |> OptionalValue.bind (fun v -> 
+        // If a required value is missing, then skip over this
+        let key = index.KeyAt(addr)
+        try OptionalValue(f.Invoke(KeyValuePair(key, v), Address.asInt addr))
+        with :? MissingValueException -> OptionalValue.Missing ))  
+    (*
     let newVector = vectorBuilder.InitMissing(index.KeyCount, fun addr ->
       vector.GetValue(addr) |> OptionalValue.bind (fun v -> 
         // If a required value is missing, then skip over this
         let key = index.KeyAt(addr)
         try OptionalValue(f.Invoke(KeyValuePair(key, v), Address.asInt addr))
+        with :? MissingValueException -> OptionalValue.Missing ))  
+    *)
+    let newIndex = indexBuilder.Project(index)
+    Series<'K, 'R>(newIndex, newVector, vectorBuilder, indexBuilder )
+
+  /// [category:Projection and filtering]
+  member x.Transform<'R>(forward:System.Func<'V, 'R>, reverse:System.Func<'R, 'V>) = 
+    let newVector = vector.SelectMissing(Some reverse.Invoke, fun _ value ->
+      value |> OptionalValue.bind (fun v -> 
+        try OptionalValue(forward.Invoke(v))
         with :? MissingValueException -> OptionalValue.Missing ))  
     let newIndex = indexBuilder.Project(index)
     Series<'K, 'R>(newIndex, newVector, vectorBuilder, indexBuilder )
@@ -1000,7 +1017,7 @@ and
       if series.KeyCount = 0 then 
         "(Empty)"
       else
-        let firstKey, _ = series.Index.KeyRange 
+        let firstKey = series.GetKeyAt(0)
         let levels = CustomKey.Get(firstKey).Levels
         let previous = Array.init levels (fun _ -> ref None)
         let reset i () = for j in i + 1 .. levels - 1 do previous.[j] := None

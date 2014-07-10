@@ -963,6 +963,16 @@ module Frame =
   let filterRowValues f (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.filterValues f |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnKeys
 
+
+  let filterRowsBy column (value:'V) (frame:Frame<'R, 'C>) = 
+    let column = frame.GetColumn<'V>(column)
+    //frame.IndexBuilder.DropItem
+    //column
+    failwith "TODO"
+
+    // IVector<'T> * 'T -> IIndex
+
+
   /// Builds a new data frame whose rows are the results of applying the specified
   /// function on the rows of the input data frame. The function is called
   /// with the row key and object series that represents the row data.

@@ -453,7 +453,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Accessors and slicing]
   member frame.ColumnsDense = 
-    let newData = data.SelectMissing(fun vect -> 
+    let newData = data.SelectMissing(None, fun _ vect -> 
       // Assuming that the data has all values - which should be an invariant...
       let all = rowIndex.Mappings |> Seq.forall (fun (KeyValue(key, addr)) -> vect.Value.GetObject(addr).HasValue)
       if all then OptionalValue(ObjectSeries(rowIndex, boxVector vect.Value, vectorBuilder, indexBuilder))
@@ -1532,10 +1532,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// [category:Indexing]
   member frame.IndexRows<'TNewRowIndex when 'TNewRowIndex : equality>(column, keepColumn) : Frame<'TNewRowIndex, _> = 
     let columnVec = frame.GetColumn<'TNewRowIndex>(column)
-    let lookup addr = columnVec.Vector.GetValue(addr)
     
     // Reindex according to column & drop the column (if not keepColumn)
-    let newRowIndex, rowCmd = frame.IndexBuilder.WithIndex(frame.RowIndex, lookup, Vectors.Return 0)
+    let newRowIndex, rowCmd = frame.IndexBuilder.WithIndex(frame.RowIndex, columnVec.Vector, Vectors.Return 0)
     let newColumnIndex, colCmd = 
       if keepColumn then frame.ColumnIndex, Vectors.Return 0
       else frame.IndexBuilder.DropItem((frame.ColumnIndex, Vectors.Return 0), column)
