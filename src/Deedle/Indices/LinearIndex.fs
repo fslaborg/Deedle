@@ -263,7 +263,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       // Turn each location into vector construction using LinearRangeIndex
       let vectorConstructions =
         locations |> Seq.map (fun (kind, lo, hi) ->
-          let cmd = Vectors.GetRange(vector, (lo, hi)) 
+          let cmd = Vectors.GetRange(vector, Vectors.Range(lo, hi)) 
           let index = LinearRangeIndex(index, lo, hi)
           kind, (index :> IIndex<_>, cmd) )
 
@@ -343,7 +343,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       // (NOTE: This is the same code as in the 'Aggregate' method!)
       let vectorConstructions =
         locations |> Array.ofSeq |> Array.map (fun (k, (lo, hi)) ->
-          let cmd = Vectors.GetRange(vector, (lo, hi)) 
+          let cmd = Vectors.GetRange(vector, Vectors.Range(lo, hi)) 
           let index = LinearRangeIndex(index, lo, hi)
           k, (index :> IIndex<_>, cmd) )
 
@@ -373,11 +373,11 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
         if offset > 0 then 
           // If offset > 0 then skip first offet keys and take matching values from the start
           (int64 offset, index.KeyCount - 1L),
-          (0L, index.KeyCount - 1L - int64 offset)
+          Vectors.Range(0L, index.KeyCount - 1L - int64 offset)
         else 
           // If offset < 0 then skip first -offset values and take matching keys from the start
           (0L, index.KeyCount - 1L + int64 offset),
-          (int64 -offset, index.KeyCount - 1L)
+          Vectors.Range(int64 -offset, index.KeyCount - 1L)
 
       // If the shifted start/end is out of range of the index, return empty index & vector
       if indexLo > indexHi then 
@@ -494,7 +494,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
         ( (index:IIndex<'K>, vector), key ) = 
       match index.Lookup(key, Lookup.Exact, fun _ -> true) with
       | OptionalValue.Present(addr) ->
-          let newVector = Vectors.DropRange(vector, (snd addr, snd addr))
+          let newVector = Vectors.DropRange(vector, Vectors.Range(snd addr, snd addr))
           let newKeys = index.Keys |> Seq.filter ((<>) key)
           let newIndex = LinearIndex<_>(newKeys |> ReadOnlyCollection.ofSeq, builder, index.IsOrdered)
           upcast newIndex, newVector
@@ -508,7 +508,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
         let newIndex = LinearIndex<_>(ReadOnlyCollection.empty, builder, ordered=true)
         upcast newIndex, Vectors.Empty(0L)
       else
-        let newVector = Vectors.GetRange(vector, (lo, hi))
+        let newVector = Vectors.GetRange(vector, Vectors.Range(lo, hi))
         let newKeys = index.Keys.[int lo .. int hi]
         let newIndex = builder.Create(newKeys, if index.IsOrdered then Some true else None)
         newIndex, newVector
@@ -551,7 +551,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
         newIndex, Vectors.Empty(0L)
       else
         let newIndex = LinearRangeIndex(index, loBound, hiBound) :> IIndex<_>
-        let newVector = Vectors.GetRange(vector, (loBound, hiBound))
+        let newVector = Vectors.GetRange(vector, Vectors.Range(loBound, hiBound))
         newIndex, newVector
 
 

@@ -66,12 +66,6 @@ open Deedle.Vectors
 open Deedle.VectorHelpers
 open Deedle.Internal
 
-type ISubVectorRange = interface end
-
-type SubVectorRange =
-  | Range of int64 * int64
-  | Custom of ISubVectorRange
-
 type IVirtualVectorSource =
   abstract ElementType : System.Type
   abstract Length : int64
@@ -79,8 +73,8 @@ type IVirtualVectorSource =
 type IVirtualVectorSource<'V> = 
   inherit IVirtualVectorSource
   abstract ValueAt : int64 -> OptionalValue<'V>
-  abstract GetSubVector : SubVectorRange -> IVirtualVectorSource<'V>
-  abstract LookupRange : 'V -> SubVectorRange
+  abstract GetSubVector : VectorRange -> IVirtualVectorSource<'V>
+  abstract LookupRange : 'V -> VectorRange
   abstract LookupValue : 'V * Lookup * Func<Addressing.Address, bool> -> OptionalValue<'V * Addressing.Address> 
 
 type VirtualVector<'V>(source:IVirtualVectorSource<'V>) = 
@@ -155,14 +149,14 @@ type VirtualVectorBuilder() =
     member builder.AsyncBuild<'T>(cmd, args) = baseBuilder.AsyncBuild<'T>(cmd, args)
     member builder.Build<'T>(cmd, args) = 
       match cmd with 
-      | GetRange(source, (loRange, hiRange)) ->
+      | GetRange(source, range) ->
           let restrictRange (vector:IVector<'T2>) =
             match vector with
             | :? VirtualVector<'T2> as source ->
-                let subSource = source.Source.GetSubVector(Range(loRange, hiRange))
+                let subSource = source.Source.GetSubVector(range)
                 VirtualVector<'T2>(subSource) :> IVector<'T2>
             | source -> 
-                let cmd = GetRange(Return 0, (loRange, hiRange))
+                let cmd = GetRange(Return 0, range)
                 baseBuilder.Build(cmd, [| source |])
 
           match build source args with
@@ -291,13 +285,17 @@ and VirtualIndexBuilder() =
 
     member x.Search((index:IIndex<'K>, vector), searchVector:IVector<'V>, searchValue) = 
       match index, searchVector with
+      | (:? VirtualOrdinalIndex as index), (:? VirtualVector<'V> as searchVector) ->
+          let subVec = searchVector.Source.LookupRange(searchValue)
+          
+
+          failwith "!!"
+
       | (:? VirtualOrderedIndex<'K> as index), (:? VirtualVector<'V> as searchVector) ->
           let mapping = searchVector.Source.LookupRange(searchValue)
-          
-          // TODO: Work in progres...
-          //index.Source
-          //searchVector.Source.Length
-          failwith "!"
+          let newIndex = VirtualOrderedIndex(index.Source.GetSubVector(mapping))
+          newIndex :> _, GetRange(vector, mapping)
+
       | _ ->
           failwith "TODO: Search - search would cause materialization"
 
@@ -337,13 +335,13 @@ and VirtualIndexBuilder() =
       | :? VirtualOrderedIndex<'K> as index ->
           // TODO: Range checks
           let newIndex = VirtualOrderedIndex(index.Source.GetSubVector(Range(lo, hi)))
-          let newVector = Vectors.GetRange(vector, (lo, hi))
+          let newVector = Vectors.GetRange(vector, Vectors.Range(lo, hi))
           newIndex :> IIndex<'K>, newVector
 
       | :? VirtualOrdinalIndex when hi < lo -> emptyConstruction()
       | :? VirtualOrdinalIndex & (:? IIndex<int64> as index) -> 
           // TODO: range checks
-          let newVector = Vectors.GetRange(vector, (lo, hi))
+          let newVector = Vectors.GetRange(vector, Vectors.Range(lo, hi))
           let keyLo, keyHi = index.KeyRange
           let newIndex = VirtualOrdinalIndex(keyLo + lo, keyLo + hi)
           unbox<IIndex<'K>> newIndex, newVector
@@ -380,7 +378,7 @@ and VirtualIndexBuilder() =
           let loIdx, hiIdx = getRangeKey 0L Lookup.Greater optLo, getRangeKey (index.Source.Length-1L) Lookup.Smaller optHi
 
           // TODO: probably range checks
-          let newVector = Vectors.GetRange(vector, (loIdx, hiIdx))
+          let newVector = Vectors.GetRange(vector, Vectors.Range(loIdx, hiIdx))
           let newIndex = VirtualOrderedIndex(index.Source.GetSubVector(Range(loIdx, hiIdx)))
           unbox<IIndex<'K>> newIndex, newVector
 
@@ -393,7 +391,7 @@ and VirtualIndexBuilder() =
           let loIdx, hiIdx = loKey - (fst index.KeyRange), hiKey - (fst index.KeyRange)
 
           // TODO: range checks
-          let newVector = Vectors.GetRange(vector, (loIdx, hiIdx))
+          let newVector = Vectors.GetRange(vector, Vectors.Range(loIdx, hiIdx))
           let newIndex = VirtualOrdinalIndex(loKey, hiKey)
           unbox<IIndex<'K>> newIndex, newVector
       | _ -> 

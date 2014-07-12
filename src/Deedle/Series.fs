@@ -787,7 +787,7 @@ and
         Vectors.Append(Vectors.Return 0, Vectors.Empty(newIndex.KeyCount - int64 x.KeyCount))
       else 
         // Get sub-range of the source vector
-        Vectors.GetRange(Vectors.Return 0, (Address.zero, newIndex.KeyCount - 1L))
+        Vectors.GetRange(Vectors.Return 0, Vectors.Range(Address.zero, newIndex.KeyCount - 1L))
 
     let newVector = vectorBuilder.Build(vectorCmd, [| vector |])
     Series<'TNewKey, _>(newIndex, newVector, vectorBuilder, indexBuilder)

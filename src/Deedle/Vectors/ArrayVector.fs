@@ -138,26 +138,30 @@ type ArrayVectorBuilder() =
                   newData.[newIndex] <- OptionalValue(data.[oldIndex])
           vectorBuilder.CreateMissing(newData)
 
-      | DropRange(source, (loRange, hiRange)) ->
-          // Create a new array without the specified range. For Optional, call the 
-          // builder recursively as this may turn Optional representation to NonOptional
-          let loRange, hiRange = Address.asInt loRange, Address.asInt hiRange
-          match builder.buildArrayVector source arguments with 
-          | VectorOptional data -> 
-              vectorBuilder.CreateMissing(Array.dropRange loRange hiRange data) 
-          | VectorNonOptional data -> 
-              VectorNonOptional(Array.dropRange loRange hiRange data) |> av
+      | DropRange(source, range) ->
+          match range with
+          | Range(loRange, hiRange) ->
+              // Create a new array without the specified range. For Optional, call the 
+              // builder recursively as this may turn Optional representation to NonOptional
+              let loRange, hiRange = Address.asInt loRange, Address.asInt hiRange
+              match builder.buildArrayVector source arguments with 
+              | VectorOptional data -> 
+                  vectorBuilder.CreateMissing(Array.dropRange loRange hiRange data) 
+              | VectorNonOptional data -> 
+                  VectorNonOptional(Array.dropRange loRange hiRange data) |> av
 
-      | GetRange(source, (loRange, hiRange)) ->
-          // Get the specified sub-range. For Optional, call the builder recursively 
-          // as this may turn Optional representation to NonOptional
-          let loRange, hiRange = Address.asInt loRange, Address.asInt hiRange
-          if hiRange < loRange then VectorNonOptional [||] |> av else
-          match builder.buildArrayVector source arguments with 
-          | VectorOptional data -> 
-              vectorBuilder.CreateMissing(data.[loRange .. hiRange])
-          | VectorNonOptional data -> 
-              VectorNonOptional(data.[loRange .. hiRange]) |> av
+      | GetRange(source, range) ->
+          match range with
+          | Range(loRange, hiRange) ->
+              // Get the specified sub-range. For Optional, call the builder recursively 
+              // as this may turn Optional representation to NonOptional
+              let loRange, hiRange = Address.asInt loRange, Address.asInt hiRange
+              if hiRange < loRange then VectorNonOptional [||] |> av else
+              match builder.buildArrayVector source arguments with 
+              | VectorOptional data -> 
+                  vectorBuilder.CreateMissing(data.[loRange .. hiRange])
+              | VectorNonOptional data -> 
+                  VectorNonOptional(data.[loRange .. hiRange]) |> av
 
       | Append(first, second) ->
           // Convert both vectors to ArrayVectors and append them (this preserves

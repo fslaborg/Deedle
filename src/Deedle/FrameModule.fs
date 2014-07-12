@@ -749,7 +749,7 @@ module Frame =
   [<CompiledName("IndexRowsWith")>]
   let indexRowsWith (keys:seq<'R2>) (frame:Frame<'R1, 'C>) = 
     let newRowIndex = frame.IndexBuilder.Create(keys, None)
-    let getRange = VectorHelpers.getVectorRange frame.VectorBuilder (0L, frame.RowIndex.KeyCount-1L)
+    let getRange = VectorHelpers.getVectorRange frame.VectorBuilder (Range(0L, frame.RowIndex.KeyCount-1L))
     let newData = frame.Data.Select(getRange)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
@@ -887,7 +887,7 @@ module Frame =
         |> v.Invoke)
       Frame(Index.ofKeys [], frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder) 
     else
-      let cmd = GetRange(Return 0, (int64 lo, int64 hi))
+      let cmd = GetRange(Return 0, Range(int64 lo, int64 hi))
       let newData = frame.Data.Select(transformColumn frame.VectorBuilder cmd)
       let newKeys = frame.RowIndex.Keys.[lo .. hi]
       let idx = frame.IndexBuilder.Create(newKeys, if frame.RowIndex.IsOrdered then Some true else None)
@@ -966,11 +966,10 @@ module Frame =
 
   let filterRowsBy column (value:'V) (frame:Frame<'R, 'C>) = 
     let column = frame.GetColumn<'V>(column)
-    //frame.IndexBuilder.DropItem
-    //column
-    failwith "TODO"
-
-    // IVector<'T> * 'T -> IIndex
+    let newRowIndex, cmd = 
+      frame.IndexBuilder.Search( (frame.RowIndex, Vectors.Return 0), column.Vector, value)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder cmd)
+    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
 
   /// Builds a new data frame whose rows are the results of applying the specified

@@ -18,7 +18,15 @@ open Deedle.Virtual
 // Tracking source
 // ------------------------------------------------------------------------------------------------
 
-type TrackingSource<'T>(lo, hi, valueAt:int64 -> 'T, ?asLong:'T -> int64) = 
+type LinearSubRange =
+  { Offset : int; Step : int }
+  interface Vectors.IVectorRange 
+  interface seq<int64> with
+    member x.GetEnumerator() : System.Collections.Generic.IEnumerator<int64> = failwith "hard!"
+  interface System.Collections.IEnumerable with
+    member x.GetEnumerator() : System.Collections.IEnumerator = failwith "hard!"
+
+type TrackingSource<'T>(lo, hi, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?search) = 
   member val AccessListCell = ref [] with get, set
   member val LookupListCell = ref [] with get, set
   member val IsTracking = true with get, set
@@ -32,7 +40,9 @@ type TrackingSource<'T>(lo, hi, valueAt:int64 -> 'T, ?asLong:'T -> int64) =
 
   interface IVirtualVectorSource<'T> with
     member x.LookupRange(v) = 
-      failwith "TODO"
+      match search with
+      | Some f -> let o, s = f v in Vectors.Custom { Offset = o; Step = s }
+      | None -> failwith "Search not supported"
 
     member x.LookupValue(k, l, c) = 
       if x.IsTracking then x.LookupListCell := (k, l) :: !x.LookupListCell
@@ -48,19 +58,30 @@ type TrackingSource<'T>(lo, hi, valueAt:int64 -> 'T, ?asLong:'T -> int64) =
 
     member x.GetSubVector(range) = 
       match range with
-      | Range(nlo, nhi) ->
+      | Vectors.Range(nlo, nhi) ->
           if nhi < nlo then invalidOp "hi < lo"
           elif nlo < 0L then invalidOp "lo < 0"
           elif nhi > hi then invalidOp "hi > max"
           else TrackingSource
                 ( lo+nlo, lo+nhi, valueAt, ?asLong=asLong, HasMissing = x.HasMissing, IsTracking = x.IsTracking, 
                   LookupListCell = x.LookupListCell, AccessListCell = x.AccessListCell ) :> _
+      | Vectors.Custom (:? LinearSubRange as lr) ->
+          let valueAt i = valueAt(lo + int64 lr.Offset + (int64 lr.Step * i))
+          let count = (hi + lo + 1L) / int64 lr.Step 
+          let count = if (hi + lo + 1L) % int64 lr.Step > int64 lr.Offset then count+1L else count
+          TrackingSource
+            ( 0L, count-1L, valueAt, ?asLong=asLong, HasMissing = x.HasMissing, IsTracking = x.IsTracking, 
+              LookupListCell = x.LookupListCell, AccessListCell = x.AccessListCell ) :> _
       | _ -> failwith "unexpected custom range!"
 
 type TrackingSource =
   static member CreateLongs(lo, hi) = TrackingSource<int64>(lo, hi, id, id)
   static member CreateFloats(lo, hi) = TrackingSource<float>(lo, hi, float)
-  static member CreateStrings(lo, hi) = TrackingSource<string>(lo, hi, sprintf "str(%d)")
+  static member CreateStrings(lo, hi) = 
+    let strings = "lorem ipsum dolor sit amet consectetur adipiscing elit".Split(' ')
+    let search v = 
+      strings |> Seq.findIndex ((=) v), strings.Length
+    TrackingSource<string>(lo, hi, (fun i -> strings.[int i % strings.Length]), search=search)
   static member CreateTicks(lo, hi) = 
     let start = DateTimeOffset(DateTime(2000, 1, 1), TimeSpan.FromHours(-1.0))
     let asTicks ticks = start.Ticks + ticks * 987654321L
@@ -198,6 +219,13 @@ let createSimpleFrame() =
   let frame = Virtual.CreateOrdinalFrame( ["S1"; "S2"], [s1; s2] )
   s1, s2, frame
 
+let createSimpleTimeFrame() =
+  let idxSrc = TrackingSource.CreateTimes(0L, 10000000L)
+  let s1 = TrackingSource.CreateLongs(0L, 10000000L)
+  let s2 = TrackingSource.CreateStrings(0L, 10000000L, HasMissing=false)
+  let frame = Virtual.CreateFrame(idxSrc, ["S1"; "S2"], [s1; s2] )
+  idxSrc, s1, s2, frame
+
 let createNumericFrame() =
   let s1 = TrackingSource.CreateFloats(0L, 10000000L, HasMissing=false)
   let s2 = TrackingSource.CreateFloats(0L, 10000000L)
@@ -210,6 +238,8 @@ let createTicksFrame() =
   let frame = Virtual.CreateOrdinalFrame( ["Ticks"; "Values"], [s1; s2] )
   s1, s2, frame
 
+// ------------------------------------------------------------------------------------------------
+
 [<Test>]
 let ``Can format virtual frame without evaluating it`` () = 
   let s1, s2, frame = createSimpleFrame()
@@ -221,7 +251,7 @@ let ``Can format virtual frame without evaluating it`` () =
 let ``Accessing row evaluates only the required values`` () = 
   let s1, s2, frame = createSimpleFrame()
   frame.GetRow<obj>(5000000L).["S1"] |> shouldEqual <| box 5000000L
-  frame.["S2", 5000000L] |> shouldEqual <| box "str(5000000)"
+  frame.["S2", 5000000L] |> shouldEqual <| box "lorem"
   s1.AccessList |> shouldEqual [5000000L]
   s2.AccessList |> shouldEqual [5000000L]
 
@@ -264,7 +294,7 @@ let ``Can perform slicing on frame using the Rows property`` () =
   f4.GetColumn<string>("S2") 
   |> Series.values
   |> List.ofSeq
-  |> shouldEqual ["str(500001)"; "str(500002)"; "str(500004)"; "str(500005)"]
+  |> shouldEqual ["ipsum"; "dolor"; "amet"; "consectetur"]
 
 [<Test>]
 let ``Can access Columns of a virtual frame without evaluating the data`` () =
@@ -300,6 +330,39 @@ let ``Can index frame by a ordered column computed using series transform`` () =
   prev < date 2010 1 1 |> shouldEqual true
   next > date 2010 1 1 |> shouldEqual true
   ((date 2010 1 1) - prev).Ticks + (next - (date 2010 1 1)).Ticks |> shouldEqual 987654321L
+
+[<Test>]
+let ``Can filter virtual frame by a value in a non-index column`` () = 
+  let idx, s1, s2, f = createSimpleTimeFrame()
+  let partsLength =
+    "lorem ipsum dolor sit amet consectetur adipiscing elit".Split(' ')
+    |> Seq.map (fun s -> f |> Frame.filterRowsBy "S2" s)
+    |> Seq.map (fun f -> f.RowCount)
+    |> Seq.sum
+  partsLength |> shouldEqual f.RowCount
+  idx.AccessList |> shouldEqual []
+  s1.AccessList |> shouldEqual []
+  s2.AccessList |> shouldEqual []
+
+[<Test>]
+let ``Can access items of a virtual filtered frame without evaluating it`` () =
+  let idx, s1, s2, f = createSimpleTimeFrame()
+  let lorem = f |> Frame.filterRowsBy "S2" "lorem"
+  lorem.Rows.[ith 5000000L].["S2"] |> unbox |> shouldEqual "lorem"
+  lorem.Rows.[ith 5000001L] |> shouldEqual OptionalValue.Missing
+  lorem.Rows.TryGet(date 2001 1 1) |> shouldEqual OptionalValue.Missing
+
+  let res = f |> Frame.filterRowsBy "S2" "dolor"
+  let res = f |> Frame.filterRowsBy "S2" "sit"
+  let res = f |> Frame.filterRowsBy "S2" "amet"
+  let res = f |> Frame.filterRowsBy "S2" "consectetur"
+  let res = f |> Frame.filterRowsBy "S2" "adipiscing"
+  let res = f |> Frame.filterRowsBy "S2" "elit"
+
+// 0 1 2 3 4 5 6 7 8 9 a b c d    len = 14
+// x     x     x     x     x
+//   x     x     x     x     x    offs,step = 1,3
+
 
 // TODO: Tests for frame with datetimeoffset index
 
