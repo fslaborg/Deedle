@@ -141,6 +141,9 @@ type IIndex<'K when 'K : equality> =
   /// Returns a sequence of all keys in the index.
   abstract Keys : ReadOnlyCollection<'K>
 
+  /// Returns the keys of the index as a vector.
+  abstract KeyVector : IVector<'K>
+
   /// Performs reverse lookup - and returns key for a specified address
   abstract KeyAt : Address -> 'K
 

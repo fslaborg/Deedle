@@ -196,6 +196,7 @@ type DelayedIndex<'K, 'V when 'K : equality> (source:DelayedSource<'K, 'V>) =
     member x.Builder = DelayedIndexBuilder() :> IIndexBuilder
     member x.KeyRange = source.RangeMin, source.RangeMax
     member x.Keys = source.Index.Keys
+    member x.KeyVector = source.Index.KeyVector
     member x.Locate(key) = source.Index.Locate(key)
     member x.Lookup(key, semantics, check) = source.Index.Lookup(key, semantics, check)
     member x.Mappings = source.Index.Mappings

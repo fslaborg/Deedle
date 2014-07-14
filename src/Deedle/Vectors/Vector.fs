@@ -130,11 +130,11 @@ open Deedle.Addressing
 
 type IVectorRange = 
   inherit seq<int64>
+  abstract Count : int64
 
 type VectorRange =
   | Range of int64 * int64
   | Custom of IVectorRange
-
 
 /// Representes a "variable" in the mini-DSL below
 type VectorHole = int
