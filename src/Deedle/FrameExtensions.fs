@@ -300,20 +300,13 @@ module FSharpFrameExtensions =
   ///
   let (=>) a b = a, b
 
+  /// Custom operator that can be used when constructing a frame from observations
+  /// of series. The operator simply returns a tuple, but it upcasts the series 
+  /// argument so you don't have to do manual casting. For example:
+  ///
+  ///     frame [ "k1" =?> series [0 => "a"]; "k2" =?> series ["x" => "y"] ]
+  ///
   let (=?>) a (b:ISeries<_>) = a, b
-  
-  /// Custom operator that can be used for applying fuction to all elements of 
-  /// a series. This provides a nicer syntactic sugar for the `Series.mapValues` 
-  /// function. For example:
-  ///
-  ///     // Given a float series and a function on floats
-  ///     let s1 = Series.ofValues [ 1.0 .. 10.0 ]
-  ///     let adjust v = max 10.0 v
-  ///
-  ///     // Apply "adjust (v + v)" to all elements
-  ///     adjust $ (s1 + s1)
-  ///
-  let ($) f series = Series.mapValues f series
 
   /// A function for constructing data frame from a sequence of name - column pairs.
   /// This provides a nicer syntactic sugar for `Frame.ofColumns`.
