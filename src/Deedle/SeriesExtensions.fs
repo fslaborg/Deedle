@@ -356,6 +356,18 @@ type SeriesExtensions =
   [<Extension>]
   static member LastKey(series:Series<'K, 'V>) = series.KeyRange |> snd
 
+  [<Extension>]
+  static member FirstValue(series:Series<'K, 'V>) = series |> Series.firstValue
+
+  [<Extension>]
+  static member LastValue(series:Series<'K, 'V>) = series |> Series.lastValue
+
+  [<Extension>]
+  static member TryFirstValue(series:Series<'K, 'V>) = series |> Series.tryFirstValue
+
+  [<Extension>]
+  static member TryLastValue(series:Series<'K, 'V>) = series |> Series.tryLastValue
+
   // ----------------------------------------------------------------------------------------------
   // Missing values
   // ----------------------------------------------------------------------------------------------
@@ -509,9 +521,6 @@ type SeriesExtensions =
   ///
   /// ## Parameters
   ///  - `series` - An input series to be resampled
-  ///  - `fillMode` - When set to `Lookup.NearestSmaller` or `Lookup.NearestGreater`, 
-  ///     the function searches for a nearest available observation in an neighboring chunk.
-  ///     Otherwise, the function `f` is called with an empty series as an argument.
   ///  - `keyProj` - A function that transforms keys from original space to a new 
   ///    space (which is then used for grouping based on equivalence)
   ///  - `nextKey` - A function that gets the next key in the transformed space
@@ -523,7 +532,7 @@ type SeriesExtensions =
   /// [category:Lookup, resampling and scaling]
   [<Extension>]
   static member ResampleUniform(series:Series<'K, 'V>, keyProj:Func<_, _>, nextKey:Func<_, _>) =
-    Series.resampleUniformInto Lookup.ExactOrSmaller keyProj.Invoke nextKey.Invoke Series.lastValue series
+    Series.resampleUniformInto Lookup.ExactOrSmaller keyProj.Invoke nextKey.Invoke Series.tryLastValue series |> Series.flatten
 
   /// Resample the series based on equivalence class on the keys and also generate values 
   /// for all keys of the target space that are between the minimal and maximal key of the
@@ -550,7 +559,7 @@ type SeriesExtensions =
   /// [category:Lookup, resampling and scaling]
   [<Extension>]
   static member ResampleUniform(series:Series<'K1, 'V>, keyProj:Func<'K1, 'K2>, nextKey:Func<'K2, 'K2>, fillMode:Lookup) =
-    Series.resampleUniformInto fillMode keyProj.Invoke nextKey.Invoke Series.lastValue series
+    Series.resampleUniformInto fillMode keyProj.Invoke nextKey.Invoke Series.tryLastValue series |> Series.flatten
 
   /// Sample an (ordered) series by finding the value at the exact or closest prior key 
   /// for some new sequence of keys. 

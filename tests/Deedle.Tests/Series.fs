@@ -425,6 +425,13 @@ let ``Resample uniform - get the latest available value for each date (TestDaySa
   actual |> shouldEqual expected
 
 [<Test>]
+let ``Resample uniform with exact lookup`` () = 
+  let input = series [ 0 => 1.0; 1 => 2.0; 4 => 5.0; 5 => 6.0 ]
+  let expected = series [ 0 => 1.0; 1 => 2.0; 2 => nan; 3 => nan; 4 => 5.0; 5 => 6.0 ]
+  let actual = SeriesExtensions.ResampleUniform(input, Func<_,_>(id), (fun x -> x + 1), Lookup.Exact)
+  actual |> shouldEqual expected
+
+[<Test>]
 let ``Sample by time span - get the first available sample for each minute (TestMinuteSampling)`` () =
   let input = (generate (DateTime(2011, 12, 2)) (TimeSpan.FromSeconds(2.5)) 50)
   let expected = 
@@ -460,7 +467,7 @@ let ``Sample by keys - get the nearest previous key or <missing> (TestExplicitTi
   actual |> shouldEqual expected
 
 [<Test>]
-let ``Reample uniform - select value of nearest previous key or fill with earlier (TestForwardFillSampling)`` () =
+let ``Resample uniform - select value of nearest previous key or fill with earlier (TestForwardFillSampling)`` () =
   let input = 
     [ "5/25/2012", 1.0; "5/26/2012", 2.0; "5/29/2012", 5.0; "5/30/2012", 6.0 ]
     |> series |> Series.mapKeys parseDateUSA 
