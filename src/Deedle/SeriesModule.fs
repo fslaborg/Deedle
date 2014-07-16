@@ -380,10 +380,22 @@ module Series =
   [<CompiledName("GetLastValue")>]
   let lastValue (series:Series< 'K , 'V >) = series |> get (series.KeyRange |> snd)
 
+  /// Returns the last value of the series if one exists.
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("TryGetLastValue")>]
+  let tryLastValue (series:Series< 'K , 'V >) = 
+    if series.KeyCount > 0 then series |> tryGet (series.KeyRange |> snd) else None
+
   /// Returns the first value of the series. This fails if the first value is missing.
   /// [category:Accessing series data and lookup]
   [<CompiledName("GetFirstValue")>]
   let firstValue (series:Series< 'K , 'V >) = series |> get (series.KeyRange |> fst)
+
+  /// Returns the last value of the series if one exists.
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("TryGetFirstValue")>]
+  let tryFirstValue (series:Series< 'K , 'V >) = 
+    if series.KeyCount > 0 then series |> tryGet (series.KeyRange |> fst) else None
 
   /// Returns the (non-missing) values of the series as a sequence
   /// [category:Accessing series data and lookup]
