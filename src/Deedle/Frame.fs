@@ -466,6 +466,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
        let rowReader = createObjRowReader data vectorBuilder columnIndex.KeyCount addr
        OptionalValue(ObjectSeries(columnIndex, rowReader, vectorBuilder, indexBuilder))
     let vector = vectorBuilder.InitMissing(rowIndex.KeyCount, fun a -> getRow (Address.ofInt64 a))
+
+    //rowIndex.asVector....
     RowSeries<'TRowKey, 'TColumnKey>(rowIndex, vector, frame)
 
   /// [category:Accessors and slicing]

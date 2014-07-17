@@ -20,7 +20,8 @@ open Deedle.Virtual
 
 type LinearSubRange =
   { Offset : int; Step : int }
-  interface Vectors.IVectorRange 
+  interface Vectors.IVectorRange with
+    member x.Count = failwith "Count not supported"
   interface seq<int64> with
     member x.GetEnumerator() : System.Collections.Generic.IEnumerator<int64> = failwith "hard!"
   interface System.Collections.IEnumerable with
@@ -79,8 +80,9 @@ type TrackingSource =
   static member CreateFloats(lo, hi) = TrackingSource<float>(lo, hi, float)
   static member CreateStrings(lo, hi) = 
     let strings = "lorem ipsum dolor sit amet consectetur adipiscing elit".Split(' ')
-    let search v = 
-      strings |> Seq.findIndex ((=) v), strings.Length
+    let search = function
+      | LookupKind.Lookup v -> strings |> Seq.findIndex ((=) v), strings.Length
+      | _ -> failwith "Scan not supported"
     TrackingSource<string>(lo, hi, (fun i -> strings.[int i % strings.Length]), search=search)
   static member CreateTicks(lo, hi) = 
     let start = DateTimeOffset(DateTime(2000, 1, 1), TimeSpan.FromHours(-1.0))
@@ -213,11 +215,13 @@ let ``Can perform slicing on time series without evaluating it`` () =
 // Virtual frame tests
 // ------------------------------------------------------------------------------------------------
 
-let createSimpleFrame() =
-  let s1 = TrackingSource.CreateLongs(0L, 10000000L)
-  let s2 = TrackingSource.CreateStrings(0L, 10000000L)
+let createSimpleFrameSize size =
+  let s1 = TrackingSource.CreateLongs(0L, size)
+  let s2 = TrackingSource.CreateStrings(0L, size)
   let frame = Virtual.CreateOrdinalFrame( ["S1"; "S2"], [s1; s2] )
   s1, s2, frame
+
+let createSimpleFrame() = createSimpleFrameSize(10000000L)
 
 let createSimpleTimeFrame() =
   let idxSrc = TrackingSource.CreateTimes(0L, 10000000L)
@@ -349,9 +353,14 @@ let ``Can access items of a virtual filtered frame without evaluating it`` () =
   let idx, s1, s2, f = createSimpleTimeFrame()
   let lorem = f |> Frame.filterRowsBy "S2" "lorem"
   lorem.Rows.[ith 5000000L].["S2"] |> unbox |> shouldEqual "lorem"
+<<<<<<< HEAD
   lorem.Rows.TryGet(ith 5000001L) |> shouldEqual OptionalValue.Missing
   lorem.Rows.Get(date 2001 1 1, Lookup.ExactOrSmaller)
   lorem.Rows.Get(date 2001 1 1, Lookup.ExactOrGreater)
+=======
+//  lorem.Rows.[ith 5000001L] |> shouldEqual OptionalValue.Missing
+  lorem.Rows.TryGet(date 2001 1 1) |> shouldEqual OptionalValue.Missing
+>>>>>>> 7d3836d247d13168dc271f29f79dae3f8528682d
 
   let res = f |> Frame.filterRowsBy "S2" "dolor"
   let res = f |> Frame.filterRowsBy "S2" "sit"
@@ -359,6 +368,21 @@ let ``Can access items of a virtual filtered frame without evaluating it`` () =
   let res = f |> Frame.filterRowsBy "S2" "consectetur"
   let res = f |> Frame.filterRowsBy "S2" "adipiscing"
   let res = f |> Frame.filterRowsBy "S2" "elit"
+
+  ()
+
+
+// let idx, s1, s2, f = createSimpleTimeFrame() // TODO: THe reindexing only works with RAW frames atm.
+
+let s1, s2, f = createSimpleFrameSize(100000L)
+
+// f.Rows
+// |> Series.filter (fun _ row -> row.GetAs<string>("S2").Length > 5)
+
+let cond = f.Rows |> Series.map (fun _ row -> row.GetAs<string>("S2").Length > 5)
+f?Cond <- cond
+f
+f |> Frame.filterRowsBy "Cond" true
 
 // 0 1 2 3 4 5 6 7 8 9 a b c d    len = 14
 // x     x     x     x     x

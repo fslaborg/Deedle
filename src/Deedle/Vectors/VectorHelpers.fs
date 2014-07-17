@@ -34,6 +34,11 @@ let prettyPrintVector (vector:IVector<'T>) =
   | VectorData.SparseList list -> printSequence "sparse" (Seq.map (fun v -> v.ToString()) list) 
   | VectorData.Sequence list -> printSequence "seq" (Seq.map (fun v -> v.ToString()) list) 
 
+type VectorRange with
+  member x.Count = 
+    match x with
+    | Custom c -> c.Count
+    | Range (lo, hi) -> hi - lo + 1L
 
 // --------------------------------------------------------------------------------------
 // Derived/wrapped implementations of the IVector<'T> interface

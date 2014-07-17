@@ -66,6 +66,10 @@ open Deedle.Vectors
 open Deedle.VectorHelpers
 open Deedle.Internal
 
+type LookupKind<'V> = 
+  | Scan of (Address -> OptionalValue<'V> -> bool)
+  | Lookup of 'V
+
 type IVirtualVectorSource =
   abstract ElementType : System.Type
   abstract Length : int64
@@ -74,8 +78,41 @@ type IVirtualVectorSource<'V> =
   inherit IVirtualVectorSource
   abstract ValueAt : int64 -> OptionalValue<'V>
   abstract GetSubVector : VectorRange -> IVirtualVectorSource<'V>
-  abstract LookupRange : 'V -> VectorRange
+  abstract LookupRange : LookupKind<'V> -> VectorRange
   abstract LookupValue : 'V * Lookup * Func<Addressing.Address, bool> -> OptionalValue<'V * Addressing.Address> 
+
+type IVirtualSourceBuilder =
+  abstract Create : seq<int64> -> IVirtualVectorSource<int64>
+
+module VirtualVectorSource = 
+  let rec map rev f (source:IVirtualVectorSource<'V>) = 
+    let withReverseLookup op = 
+      match rev with 
+      | None -> failwith "Cannot lookup on virtual vector without reverse lookup"
+      | Some g -> op g
+
+    { new IVirtualVectorSource<'TNew> with
+        member x.ValueAt(idx) = f (Address.ofInt64 idx) (source.ValueAt(idx)) // TODO: Are we calculating the address correctly here??
+        member x.LookupRange(search) = 
+          // TODO: Test me
+          match search with
+          | LookupKind.Scan sf -> source.LookupRange(LookupKind.Scan(fun a ov -> sf a (f a ov))) // TODO: explain me
+          | LookupKind.Lookup lv -> source.LookupRange(LookupKind.Scan(fun a ov ->
+              match f a ov with
+              | OptionalValue.Present r -> Object.Equals(r, lv)
+              | _ -> false))
+
+        member x.LookupValue(v, l, c) = 
+          withReverseLookup (fun g ->
+              source.LookupValue(g v, l, c)
+              |> OptionalValue.bind (fun (v, a) ->  // TODO: Make me nice and readable!
+                  f a (OptionalValue v)
+                  |> OptionalValue.map (fun v -> v, a))  )
+
+        member x.GetSubVector(range) = map rev f (source.GetSubVector(range))
+      interface IVirtualVectorSource with
+        member x.ElementType = typeof<'TNew>
+        member x.Length = source.Length }
 
 type VirtualVector<'V>(source:IVirtualVectorSource<'V>) = 
   member vector.Source = source
@@ -89,40 +126,13 @@ type VirtualVector<'V>(source:IVirtualVectorSource<'V>) =
     member vector.GetValue(index) = source.ValueAt(index)
     member vector.Data = seq { for i in Seq.range 0L (source.Length-1L) -> source.ValueAt(i) } |> VectorData.Sequence
     member vector.SelectMissing<'TNew>(rev, f:Address -> OptionalValue<'V> -> OptionalValue<'TNew>) = 
-      
-      let withReverseLookup op = 
-        match rev with 
-        | None -> failwith "Cannot lookup on virtual vector without reverse lookup"
-        | Some g -> op g
-
-      let rec mapSource (source:IVirtualVectorSource<'V>) = 
-        { new IVirtualVectorSource<'TNew> with
-            member x.ValueAt(idx) = f (Address.ofInt64 idx) (source.ValueAt(idx)) // TODO: Are we calculating the address correctly here??
-            member x.LookupRange(v) = 
-              // TODO: Not tested
-              withReverseLookup (fun g -> source.LookupRange(g v))
-            member x.LookupValue(v, l, c) = 
-              withReverseLookup (fun g ->
-                  source.LookupValue(g v, l, c)
-                  |> OptionalValue.bind (fun (v, a) ->  // TODO: Make me nice and readable!
-                      f a (OptionalValue v)
-                      |> OptionalValue.map (fun v -> v, a))  )
-
-            member x.GetSubVector(range) = mapSource (source.GetSubVector(range))
-          interface IVirtualVectorSource with
-            member x.ElementType = typeof<'TNew>
-            member x.Length = source.Length }
-      VirtualVector(mapSource source) :> _
-
+      VirtualVector(VirtualVectorSource.map rev f source) :> _
     member vector.Select(f) = 
       (vector :> IVector<_>).SelectMissing(None, fun _ -> OptionalValue.map f)
 
-type VirtualVectorBuilder() =
+type VirtualVectorBuilder(sourceBuilder:IVirtualSourceBuilder) as this = //TODO: May be slow
   let baseBuilder = VectorBuilder.Instance
-  static let vectorBuilder = VirtualVectorBuilder() :> IVectorBuilder
-  let build cmd args = vectorBuilder.Build(cmd, args)
-
-  static member Instance = vectorBuilder
+  let build cmd args = (this :> IVectorBuilder).Build(cmd, args)
 
   interface IVectorBuilder with
     member builder.Create(values) = baseBuilder.Create(values)
@@ -136,11 +146,31 @@ type VirtualVectorBuilder() =
               if v.HasValue && not (isNa v.Value) then v
               else OptionalValue.Missing 
             member x.LookupValue(v, l, c) = failwith "cannot lookup on vector created by init"
-            member x.LookupRange(_) = failwith "cannot lookup on vector created by init"
+            member x.LookupRange(lookup) = 
+              match lookup with 
+              | LookupKind.Scan sf -> 
+                  let scanIndices = 
+                    seq {
+                      for i in 0L .. size - 1L do // TODO: .. is slow
+                        let v = f (Address.ofInt64 i)
+                        if sf (Address.ofInt64 i) v then 
+                          yield i } |> Array.ofSeq
+
+                  { new IVectorRange with
+                      member x.Count = scanIndices |> Seq.length |> int64 // TODO: SLOW!
+                    interface seq<int64> with 
+                      member x.GetEnumerator() = (scanIndices :> seq<_>).GetEnumerator() // TODO: SLow
+                    interface System.Collections.IEnumerable with
+                      member x.GetEnumerator() = scanIndices.GetEnumerator() } //TODO: Slow
+                  |> VectorRange.Custom
+
+              | _ -> failwith "cannot lookup on vector created by init"
+
             member x.GetSubVector(sub) =
               match sub with 
               | Range(nlo, nhi) -> createSource (lo+nlo) (lo+nhi)
-              | _ -> failwith "cannot get custom subrange of a vector created by init" // TODO: ?
+              | Custom indices -> sourceBuilder.Create(indices) |> VirtualVectorSource.map None (fun a _ -> f a)
+
           interface IVirtualVectorSource with
             member x.ElementType = typeof<'T>
             member x.Length = (hi-lo+1L) }
@@ -199,6 +229,7 @@ type VirtualOrderedIndex<'K when 'K : equality>(source:IVirtualVectorSource<'K>)
     member x.Builder = VirtualIndexBuilder.Instance :> _
     member x.KeyRange = keyAtOffset 0L, keyAtOffset (source.Length-1L)
     member x.Keys = Array.init (int source.Length) (int64 >> keyAtAddr) |> ReadOnlyCollection.ofArray
+    member x.KeyVector = VirtualVector<'K>(source) :> _
     member x.Mappings = 
       Seq.range 0L (source.Length - 1L) 
       |> Seq.map (fun i -> KeyValuePair(keyAtOffset i, Address.ofInt64 i))
@@ -221,6 +252,7 @@ and VirtualOrdinalIndex(range) =
       if addr < 0L || addr >= size then invalidArg "addr" "Out of range"
       else keyOfAddr lo addr
     member x.KeyCount = size
+    member x.KeyVector = failwith "key vector of ordinal index"
     member x.IsEmpty = size = 0L
     member x.Builder = VirtualIndexBuilder.Instance :> _
     member x.KeyRange = range
@@ -286,13 +318,12 @@ and VirtualIndexBuilder() =
     member x.Search((index:IIndex<'K>, vector), searchVector:IVector<'V>, searchValue) = 
       match index, searchVector with
       | (:? VirtualOrdinalIndex as index), (:? VirtualVector<'V> as searchVector) ->
-          let subVec = searchVector.Source.LookupRange(searchValue)
-          
-
-          failwith "!!"
+          let mapping = searchVector.Source.LookupRange(LookupKind.Lookup searchValue)
+          let newIndex = VirtualOrdinalIndex(0L, mapping.Count - 1L);
+          unbox<IIndex<'K>> newIndex, GetRange(vector, mapping)
 
       | (:? VirtualOrderedIndex<'K> as index), (:? VirtualVector<'V> as searchVector) ->
-          let mapping = searchVector.Source.LookupRange(searchValue)
+          let mapping = searchVector.Source.LookupRange(LookupKind.Lookup searchValue)
           let newIndex = VirtualOrderedIndex(index.Source.GetSubVector(mapping))
           newIndex :> _, GetRange(vector, mapping)
 
@@ -406,28 +437,28 @@ type VirtualVectorHelper =
 type Virtual() =
   static let createMi = typeof<VirtualVectorHelper>.GetMethod("Create")
 
-  static let createFrame rowIndex columnIndex (sources:seq<IVirtualVectorSource>) = 
+  static let createFrame sourceBuilder rowIndex columnIndex (sources:seq<IVirtualVectorSource>) = 
     let data = 
       sources 
       |> Seq.map (fun source -> 
           createMi.MakeGenericMethod(source.ElementType).Invoke(null, [| source |]) :?> IVector)
       |> Vector.ofValues
-    Frame<_, _>(rowIndex, columnIndex, data, VirtualIndexBuilder.Instance, VirtualVectorBuilder.Instance)
+    Frame<_, _>(rowIndex, columnIndex, data, VirtualIndexBuilder.Instance, VirtualVectorBuilder(sourceBuilder))
 
-  static member CreateOrdinalSeries(source) =
+  static member CreateOrdinalSeries(source, sourceBuilder) =
     let vector = VirtualVector(source)
     let index = VirtualOrdinalIndex(0L, source.Length-1L)
-    Series(index, vector, VirtualVectorBuilder.Instance, VirtualIndexBuilder.Instance)
+    Series(index, vector, VirtualVectorBuilder(sourceBuilder), VirtualIndexBuilder.Instance)
 
-  static member CreateSeries(indexSource:IVirtualVectorSource<_>, valueSource:IVirtualVectorSource<_>) =
+  static member CreateSeries(indexSource:IVirtualVectorSource<_>, valueSource:IVirtualVectorSource<_>, sourceBuilder) =
     if valueSource.Length <> indexSource.Length then
       invalidOp "CreateSeries: Index and value source should have the same length"
 
     let vector = VirtualVector(valueSource)
     let index = VirtualOrderedIndex(indexSource)
-    Series(index, vector, VirtualVectorBuilder.Instance, VirtualIndexBuilder.Instance)
+    Series(index, vector, VirtualVectorBuilder(sourceBuilder), VirtualIndexBuilder.Instance)
 
-  static member CreateOrdinalFrame(keys, sources:seq<IVirtualVectorSource>) = 
+  static member CreateOrdinalFrame(keys, sources:seq<IVirtualVectorSource>, sourceBuilder) = 
     let count = sources |> Seq.fold (fun st src ->
       match st with 
       | None -> Some(src.Length) 
@@ -435,13 +466,13 @@ type Virtual() =
       | _ -> invalidArg "sources" "Sources should have the same length!" ) None
     if count = None then invalidArg "sources" "At least one column is required"
     let count = count.Value
-    createFrame (VirtualOrdinalIndex(0L, count-1L)) (Index.ofKeys keys) sources
+    createFrame sourceBuilder (VirtualOrdinalIndex(0L, count-1L)) (Index.ofKeys keys) sources
 
-  static member CreateFrame(indexSource:IVirtualVectorSource<_>, keys, sources:seq<IVirtualVectorSource>) = 
+  static member CreateFrame(indexSource:IVirtualVectorSource<_>, keys, sources:seq<IVirtualVectorSource>, sourceBuilder) = 
     for sc in sources do 
       if sc.Length <> indexSource.Length then
         invalidArg "sources" "Sources should have the same length as index!"
-    createFrame (VirtualOrderedIndex indexSource) (Index.ofKeys keys) sources
+    createFrame sourceBuilder (VirtualOrderedIndex indexSource) (Index.ofKeys keys) sources
     
 
 
