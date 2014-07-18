@@ -368,7 +368,7 @@ module Series =
   /// Returns the last key of the series, or throws exception if one doesn't exist
   /// [category:Accessing series data and lookup]
   [<CompiledName("GetLastKey")>]
-  let lastKey (series:Series< 'K , 'V >) = series.Index.KeyAt (series.KeyCount |> int64)
+  let lastKey (series:Series< 'K , 'V >) = series.Index.KeyAt (series.KeyCount - 1 |> int64)
 
   /// Returns the first key of the series, or throws exception if one doesn't exist
   /// [category:Accessing series data and lookup]
