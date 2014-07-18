@@ -351,10 +351,10 @@ type SeriesExtensions =
   // --- end
 
   [<Extension>]
-  static member FirstKey(series:Series<'K, 'V>) = series.KeyRange |> fst
+  static member FirstKey(series:Series<'K, 'V>) = series |> Series.firstKey
 
   [<Extension>]
-  static member LastKey(series:Series<'K, 'V>) = series.KeyRange |> snd
+  static member LastKey(series:Series<'K, 'V>) = series |> Series.lastKey
 
   [<Extension>]
   static member FirstValue(series:Series<'K, 'V>) = series |> Series.firstValue

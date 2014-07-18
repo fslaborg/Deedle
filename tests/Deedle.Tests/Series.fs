@@ -64,6 +64,20 @@ let ``Can lookup previous and next elements (exclusively) in ordered series`` ()
   ordered.Get(3, Lookup.Greater) |> shouldEqual "nazdar"
   ordered.Get(3, Lookup.Smaller) |> shouldEqual "bye"
 
+[<Test>]
+let ``Can get first and last key of an ordered series`` () =
+  ordered |> Series.firstKey |> shouldEqual 1
+  ordered |> Series.lastKey |> shouldEqual 5
+  
+[<Test>]
+let ``Can get first and last key of an unordered series`` () =
+  unordered |> Series.firstKey |> shouldEqual 3
+  unordered |> Series.lastKey |> shouldEqual 5
+
+[<Test>]
+let ``Can get key range of an ordered series`` () =
+  ordered.KeyRange |> shouldEqual (1, 5)
+
 // ------------------------------------------------------------------------------------------------
 // Value conversions
 // ------------------------------------------------------------------------------------------------

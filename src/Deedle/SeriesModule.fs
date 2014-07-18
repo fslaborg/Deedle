@@ -365,37 +365,37 @@ module Series =
   [<CompiledName("HasNot")>]
   let hasNot key (series:Series<'K, 'T>) = series.TryGet(key).HasValue
 
-  /// Returns the last key of the series
+  /// Returns the last key of the series, or throws exception if one doesn't exist
   /// [category:Accessing series data and lookup]
   [<CompiledName("GetLastKey")>]
-  let lastKey (series:Series< 'K , 'V >) = series.KeyRange |> snd
+  let lastKey (series:Series< 'K , 'V >) = series.Index.KeyAt (series.KeyCount - 1 |> int64)
 
-  /// Returns the first key of the series
+  /// Returns the first key of the series, or throws exception if one doesn't exist
   /// [category:Accessing series data and lookup]
   [<CompiledName("GetFirstKey")>]
-  let firstKey (series:Series< 'K , 'V >) = series.KeyRange |> fst
+  let firstKey (series:Series< 'K , 'V >) = series.Index.KeyAt 0L
 
   /// Returns the last value of the series. This fails if the last value is missing.
   /// [category:Accessing series data and lookup]
   [<CompiledName("GetLastValue")>]
-  let lastValue (series:Series< 'K , 'V >) = series |> get (series.KeyRange |> snd)
+  let lastValue (series:Series< 'K , 'V >) = series |> getAt (series.KeyCount-1) 
 
   /// Returns the last value of the series if one exists.
   /// [category:Accessing series data and lookup]
   [<CompiledName("TryGetLastValue")>]
   let tryLastValue (series:Series< 'K , 'V >) = 
-    if series.KeyCount > 0 then series |> tryGet (series.KeyRange |> snd) else None
+    if series.KeyCount > 0 then series |> getAt (series.KeyCount-1) |> Some else None
 
   /// Returns the first value of the series. This fails if the first value is missing.
   /// [category:Accessing series data and lookup]
   [<CompiledName("GetFirstValue")>]
-  let firstValue (series:Series< 'K , 'V >) = series |> get (series.KeyRange |> fst)
+  let firstValue (series:Series< 'K , 'V >) = series |> getAt 0
 
   /// Returns the last value of the series if one exists.
   /// [category:Accessing series data and lookup]
   [<CompiledName("TryGetFirstValue")>]
   let tryFirstValue (series:Series< 'K , 'V >) = 
-    if series.KeyCount > 0 then series |> tryGet (series.KeyRange |> fst) else None
+    if series.KeyCount > 0 then series |> getAt 0 |> Some else None
 
   /// Returns the (non-missing) values of the series as a sequence
   /// [category:Accessing series data and lookup]
