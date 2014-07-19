@@ -13,7 +13,7 @@ open Deedle.Indices
 
 /// Module that contains functions for working with ranges - most importantly
 /// it handles flattening of trees constructed by unioning & intersecting ranges
-module Ranges = 
+module internal Ranges = 
   type Ranges<'T> = 
     | Range of (('T * BoundaryBehavior) * ('T * BoundaryBehavior))
     | Intersect of Ranges<'T> * Ranges<'T>
@@ -107,9 +107,9 @@ open System.Collections.Generic
 open System.Collections.ObjectModel
 
 /// Specifies the ranges for which data need to be provided
-type DelayedSourceRanges<'K> = (('K * BoundaryBehavior) * ('K * BoundaryBehavior))[]
+type internal DelayedSourceRanges<'K> = (('K * BoundaryBehavior) * ('K * BoundaryBehavior))[]
 /// Result that should be returned in response to `DelayedSourceRanges` request
-type DelayedSourceData<'K, 'V> = Async<seq<KeyValuePair<'K, 'V>>>[]
+type internal DelayedSourceData<'K, 'V> = Async<seq<KeyValuePair<'K, 'V>>>[]
 
 /// This type represents data source for constructing delayed series. To construct
 /// a delayed series, use `DelayedSeries.Create` (this creates index and vector 
@@ -117,8 +117,8 @@ type DelayedSourceData<'K, 'V> = Async<seq<KeyValuePair<'K, 'V>>>[]
 ///
 /// The function `loader` is called outside of the `async` (on the calling thread)
 /// but the returned async computations are invoked on background thread.
-type DelayedSource<'K, 'V when 'K : equality>
-    ( rangeMin:'K, rangeMax:'K, ranges:Ranges<'K>, distance:('K * 'K -> int64) option, keyAt:option<Address -> 'K>, suppressPrinting, 
+type internal DelayedSource<'K, 'V when 'K : equality>
+    ( rangeMin:'K, rangeMax:'K, ranges:Ranges<'K>, 
       loader:DelayedSourceRanges<'K> -> DelayedSourceData<'K, 'V>) =
 
   static let vectorBuilder = VectorBuilder.Instance
@@ -146,21 +146,17 @@ type DelayedSource<'K, 'V when 'K : equality>
       let index = indexBuilder.Create(Seq.map fst data, Some true)
       return index, vector } |> Async.StartAsTask)
 
-  member x.SuppressPrinting = suppressPrinting
-  member x.KeyAt = keyAt 
-
   member x.Ranges = ranges
   member x.RangeMax = rangeMax
   member x.RangeMin = rangeMin
-  member x.RangeSize = distance |> Option.map (fun f -> f (rangeMin, rangeMax))
 
   member x.Loader = loader
   member x.AsyncData = asyncData.Value
   member x.Index = fst asyncData.Value.Result
   member x.Values = snd asyncData.Value.Result
 
-  member x.With(?loader, ?ranges) = 
-    DelayedSource<'K, 'V>(rangeMin, rangeMax, defaultArg ranges x.Ranges, distance, keyAt, suppressPrinting, defaultArg loader x.Loader)
+  member x.With(?loader, ?ranges) =  
+    DelayedSource<'K, 'V>(rangeMin, rangeMax, defaultArg ranges x.Ranges, defaultArg loader x.Loader) 
 
 // --------------------------------------------------------------------------------------
 // Delayed vector, index & index builder
@@ -168,13 +164,13 @@ type DelayedSource<'K, 'V when 'K : equality>
 
 /// A delayed vector that is linked to a DelayedSource specified during construction
 /// (This simply delegates all operations to the 'source.Values' vector)
-type DelayedVector<'K, 'V when 'K : equality> (source:DelayedSource<'K, 'V>) = 
+type internal DelayedVector<'K, 'V when 'K : equality> internal (source:DelayedSource<'K, 'V>) = 
   member x.Source = source
   // Boilerplate - all operations on the vector just force the retrieval 
   // of the data and then delegate the request to the actual vector
   interface IVector with
     member val ElementType = typeof<'V>
-    member x.SuppressPrinting = source.SuppressPrinting
+    member x.SuppressPrinting = true
     member x.GetObject(index) = source.Values.GetObject(index)
     member x.ObjectSequence = source.Values.ObjectSequence
     member x.Invoke(site) = site.Invoke<'V>(x)
@@ -187,11 +183,11 @@ type DelayedVector<'K, 'V when 'K : equality> (source:DelayedSource<'K, 'V>) =
 
 /// Delayed index that is lnked to a DelayedSource specified during construction
 /// (This simply delegates all operations to the 'source.Keys' index)
-type DelayedIndex<'K, 'V when 'K : equality> (source:DelayedSource<'K, 'V>) = 
+type internal DelayedIndex<'K, 'V when 'K : equality> internal (source:DelayedSource<'K, 'V>) = 
   member x.Source = source
   interface IIndex<'K> with
-    member x.KeyAt index = match source.KeyAt with Some ka -> ka index | _ -> source.Index.KeyAt index 
-    member x.KeyCount = match source.RangeSize with Some size -> size | _ -> source.Index.KeyCount
+    member x.KeyAt index = source.Index.KeyAt index 
+    member x.KeyCount = source.Index.KeyCount
     member x.IsEmpty = false
     member x.Builder = DelayedIndexBuilder() :> IIndexBuilder
     member x.KeyRange = source.RangeMin, source.RangeMax
@@ -207,19 +203,19 @@ type DelayedIndex<'K, 'V when 'K : equality> (source:DelayedSource<'K, 'V>) =
 
 /// In the DelayedIndexBuilder, we do not know the type of values, so this 
 /// is a less generic interface that gives us a way for accessing it...
-and IDelayedIndex<'K when 'K : equality> =
+and internal IDelayedIndex<'K when 'K : equality> =
   abstract Invoke<'R> : DelayedIndexFunction<'K, 'R> -> 'R
   abstract SourceIndex : IIndex<'K>
   
 /// A polymorphic function that is passed to IDelayedIndex.Invoke
-and DelayedIndexFunction<'K, 'R when 'K : equality> = 
+and internal DelayedIndexFunction<'K, 'R when 'K : equality> = 
   abstract Invoke<'V> : DelayedIndex<'K, 'V> -> 'R
 
 /// Delayed index builder - this is where interesting things happen. Most operations
 /// are still delegated to LinearIndexBuilder, but the `GetRange` method looks at the
 /// index and if it is DelayedIndex, then it uses the `Source` to build a new `Source`
 /// with a restricted range.
-and DelayedIndexBuilder() =
+and internal DelayedIndexBuilder() =
   let builder = IndexBuilder.Instance
   interface IIndexBuilder with
     member x.Create(keys:seq<_>, ordered) = builder.Create(keys, ordered)
@@ -237,23 +233,7 @@ and DelayedIndexBuilder() =
     member x.Reindex(index1, index2, semantics, vector, cond) = builder.Reindex(index1, index2, semantics, vector, cond)
     member x.DropItem(sc, key) = builder.DropItem(sc, key)
     member x.Resample(index, keys, close, vect, selector) = builder.Resample(index, keys, close, vect, selector)
-    
-    member this.GetAddressRange( (index:IIndex<'K>, vector), range) = 
-      match index with
-      | :? IDelayedIndex<'K> as index ->
-        // See comment below for how DelayedIndexFunction works
-        { new DelayedIndexFunction<'K, _> with
-            member x.Invoke<'V>(index:DelayedIndex<'K, 'V>) =
-              match index.Source.KeyAt with
-              | Some keyAt ->
-                  let lo = Some(keyAt(fst range), BoundaryBehavior.Inclusive)
-                  let hi = Some(keyAt(snd range), BoundaryBehavior.Inclusive)
-                  (this :> IIndexBuilder).GetRange( (index :> _, vector), (lo, hi)) 
-              | _ -> builder.GetAddressRange( (index :> _, vector), range)  }
-        |> index.Invoke
-      | _ ->
-        builder.GetAddressRange( (index, vector), range) 
-      
+    member this.GetAddressRange( (index:IIndex<'K>, vector), range) = builder.GetAddressRange( (index, vector), range) 
     
     member x.Project(index:IIndex<'K>) = 
       // If the index is delayed, then projection evaluates it
@@ -317,34 +297,7 @@ and DelayedIndexBuilder() =
                     else
                       let source = restrictSource lv.Source.Ranges lv.Source.Loader
                       DelayedVector(source) :> IVector
-                | :? DelayedVector<'K, int64> as lv -> 
-                      let ranges = Intersect(range, lv.Source.Ranges)
-                      let source = lv.Source.With(ranges=ranges, loader=lv.Source.Loader)
-                      DelayedVector(source) :> IVector
-                | :? DelayedVector<'K, float> as lv -> 
-                      let ranges = Intersect(range, lv.Source.Ranges)
-                      let source = lv.Source.With(ranges=ranges, loader=lv.Source.Loader)
-                      DelayedVector(source) :> IVector
-                | :? DelayedVector<'K, Guid> as lv -> 
-                      let ranges = Intersect(range, lv.Source.Ranges)
-                      let source = lv.Source.With(ranges=ranges, loader=lv.Source.Loader)
-                      DelayedVector(source) :> IVector
-                | :? DelayedVector<'K, string> as lv -> 
-                      let ranges = Intersect(range, lv.Source.Ranges)
-                      let source = lv.Source.With(ranges=ranges, loader=lv.Source.Loader)
-                      DelayedVector(source) :> IVector
-                | :? DelayedVector<'K, byte> as lv -> 
-                      let ranges = Intersect(range, lv.Source.Ranges)
-                      let source = lv.Source.With(ranges=ranges, loader=lv.Source.Loader)
-                      DelayedVector(source) :> IVector
-                | :? DelayedVector<'K, int16> as lv -> 
-                      let ranges = Intersect(range, lv.Source.Ranges)
-                      let source = lv.Source.With(ranges=ranges, loader=lv.Source.Loader)
-                      DelayedVector(source) :> IVector
                 | _ -> 
-                    //let cmd = builder.GetRange(index, optLo, optHi, Vectors.Return 0)
-                    //ArrayVector.ArrayVectorBuilder.Instance.Build(cmd, [| vector |]) :> IVector
-                    
                     failwith "TODO: This should probably be supported?")
               newIndex :> IIndex<'K>, cmd }
         |> index.Invoke
@@ -391,9 +344,6 @@ type DelayedSeries =
   ///
   /// ## Parameters
   /// 
-  ///  - `suppressPrinting` - When set to `true`, the series will print as 
-  ///    `(Suppressed)` in F# Interactive. Otherwise, slicing is used to get the 
-  ///    first and last few elements.
   ///  - `min` - The smallest key that should be present in the created series.
   ///  - `min` - The greatests key that should be present in the created series.
   ///  - `loader` - A delegate which returns a task that loads the data in a specified 
@@ -406,8 +356,8 @@ type DelayedSeries =
   /// For more information see the [lazy data loading tutorial](../lazysource.html).
   /// The operation calls `loader` (and so creates the tasks) on the thread that is
   /// requesting the result.
-  static member Create(min, max, distance, keyAt, suppressPrinting, loader:Func<_, _, _, _, Task<seq<KeyValuePair<'K, 'V>>>>) : Series<'K, 'V> =
-    DelayedSeries.Create(min, max, distance, keyAt, suppressPrinting, fun (l, lb) (h, hb)-> Async.AwaitTask (loader.Invoke(l,lb,h,hb)))
+  static member Create(min, max, loader:Func<_, _, _, _, Task<seq<KeyValuePair<'K, 'V>>>>) : Series<'K, 'V> =
+    DelayedSeries.Create(min, max, fun (l, lb) (h, hb)-> Async.AwaitTask (loader.Invoke(l,lb,h,hb)))
 
   /// An F#-friendly function that creates lazily loaded series. The method requires
   /// the overall range of the series (smallest and greatest key) and a function that
@@ -416,9 +366,6 @@ type DelayedSeries =
   ///
   /// ## Parameters
   /// 
-  ///  - `suppressPrinting` - When set to `true`, the series will print as 
-  ///    `(Suppressed)` in F# Interactive. Otherwise, slicing is used to get the 
-  ///    first and last few elements.
   ///  - `min` - The smallest key that should be present in the created series.
   ///  - `min` - The greatests key that should be present in the created series.
   ///  - `loader` - A function which returns an asynchronous workflow that loads the data in a 
@@ -429,21 +376,11 @@ type DelayedSeries =
   /// ## Remarks
   ///
   /// For more information see the [lazy data loading tutorial](../lazysource.html).
-  static member Create(min, max, distance, keyAt, suppressPrinting, loader:_ -> _ -> Async<_>) : Series<'K, 'V> =
+  static member Create(min, max, loader:_ -> _ -> Async<_>) : Series<'K, 'V> =
     let initRange = Ranges.Range((min, BoundaryBehavior.Inclusive), (max, BoundaryBehavior.Inclusive))
-    let series = DelayedSource<'K, 'V>(min, max, initRange, distance, keyAt, suppressPrinting, fun ranges -> 
+    let series = DelayedSource<'K, 'V>(min, max, initRange, fun ranges -> 
       ranges |> Array.map (fun (l, h) -> loader l h))
     let index = DelayedIndex(series)
     let vector = DelayedVector(series)
     let vectorBuilder = VectorBuilder.Instance
     Series<'K, 'V>(index, vector, vectorBuilder, DelayedIndexBuilder())
-
-  /// An F#-friendly function that creates lazily loaded series. 
-  /// For detailed documentation, refer to the overload with all parameters.
-  static member Create(min, max, loader:Func<_, _, _, _, Task<seq<KeyValuePair<'K, 'V>>>>) : Series<'K, 'V> =
-    DelayedSeries.Create(min, max, None, None, true, loader)
-
-  /// An F#-friendly function that creates lazily loaded series. 
-  /// For detailed documentation, refer to the overload with all parameters.
-  static member Create(min, max, loader:_ -> _ -> Async<_>) : Series<'K, 'V> =
-    DelayedSeries.Create(min, max, None, None, true, loader)
