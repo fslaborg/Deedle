@@ -465,9 +465,20 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let getRow addr =
        let rowReader = createObjRowReader data vectorBuilder columnIndex.KeyCount addr
        OptionalValue(ObjectSeries(columnIndex, rowReader, vectorBuilder, indexBuilder))
-    let vector = vectorBuilder.InitMissing(rowIndex.KeyCount, fun a -> getRow (Address.ofInt64 a))
 
-    //rowIndex.asVector....
+    
+    let vectors = [ for n in 0L .. columnIndex.KeyCount-1L -> Vectors.Return(int n) ]
+    let transform = VectorValueListTransform.Create(fun (values:OptionalValue<obj> list) ->
+      let vec = Vector.ofOptionalValues values
+      OptionalValue(box (ObjectSeries(Series(columnIndex, vec, vectorBuilder, indexBuilder)))) )
+
+    let cmd = Vectors.CombineN(vectors, transform)
+    let boxedData = [| for v in data.DataSequence -> boxVector v.Value |]
+    let vector = vectorBuilder.Build(cmd, boxedData).Select(fun o -> unbox<ObjectSeries<'TColumnKey>> o)
+    
+
+    //let vector = vectorBuilder.InitMissing(rowIndex.KeyCount, fun a -> getRow (Address.ofInt64 a))
+    //let vector = rowIndex.KeyVector.SelectMissing(None, fun a _ -> getRow (Address.ofInt64 a))
     RowSeries<'TRowKey, 'TColumnKey>(rowIndex, vector, frame)
 
   /// [category:Accessors and slicing]

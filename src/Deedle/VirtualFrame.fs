@@ -65,6 +65,7 @@ open Deedle.Addressing
 open Deedle.Vectors
 open Deedle.VectorHelpers
 open Deedle.Internal
+open System.Runtime.CompilerServices
 
 type LookupKind<'V> = 
   | Scan of (Address -> OptionalValue<'V> -> bool)
@@ -73,6 +74,7 @@ type LookupKind<'V> =
 type IVirtualVectorSource =
   abstract ElementType : System.Type
   abstract Length : int64
+  abstract GetSubVector : VectorRange -> IVirtualVectorSource
 
 type IVirtualVectorSource<'V> = 
   inherit IVirtualVectorSource
@@ -85,6 +87,28 @@ type IVirtualSourceBuilder =
   abstract Create : seq<int64> -> IVirtualVectorSource<int64>
 
 module VirtualVectorSource = 
+  let rec boxSource (source:IVirtualVectorSource<'T>) =
+    { new IVirtualVectorSource<obj> with
+        member x.ValueAt(idx) = source.ValueAt(idx) |> OptionalValue.map box
+        member x.LookupRange(search) = failwith "Search not implemented on combined vector"
+        member x.LookupValue(v, l, c) = failwith "Lookup not implemented on combined vector" 
+        member x.GetSubVector(range) = boxSource (source.GetSubVector(range))
+      interface IVirtualVectorSource with
+        member x.ElementType = typeof<obj>
+        member x.GetSubVector(range) = boxSource (source.GetSubVector(range)) :> _
+        member x.Length = source.Length }
+
+  let rec combine (f:OptionalValue<'T> list -> OptionalValue<'R>) (sources:IVirtualVectorSource<'T> list) : IVirtualVectorSource<'R> = 
+    { new IVirtualVectorSource<'R> with
+        member x.ValueAt(idx) = f [ for s in sources -> s.ValueAt(idx)  ]
+        member x.LookupRange(search) = failwith "Search not implemented on combined vector"
+        member x.LookupValue(v, l, c) = failwith "Lookup not implemented on combined vector" 
+        member x.GetSubVector(range) = combine f [ for s in sources -> s.GetSubVector(range) ]
+      interface IVirtualVectorSource with
+        member x.ElementType = typeof<'R>
+        member x.GetSubVector(range) = combine f [ for s in sources -> s.GetSubVector(range) ] :> _
+        member x.Length = sources |> Seq.map (fun s -> s.Length) |> Seq.reduce (fun a b -> if a <> b then failwith "Length mismatch" else a) }
+
   let rec map rev f (source:IVirtualVectorSource<'V>) = 
     let withReverseLookup op = 
       match rev with 
@@ -94,6 +118,7 @@ module VirtualVectorSource =
     { new IVirtualVectorSource<'TNew> with
         member x.ValueAt(idx) = f (Address.ofInt64 idx) (source.ValueAt(idx)) // TODO: Are we calculating the address correctly here??
         member x.LookupRange(search) = 
+          (*
           // TODO: Test me
           match search with
           | LookupKind.Scan sf -> source.LookupRange(LookupKind.Scan(fun a ov -> sf a (f a ov))) // TODO: explain me
@@ -101,6 +126,28 @@ module VirtualVectorSource =
               match f a ov with
               | OptionalValue.Present r -> Object.Equals(r, lv)
               | _ -> false))
+              *)
+          let scanFunc = 
+            match search with
+            | LookupKind.Scan sf -> fun a ov -> sf a (f a ov)
+            | LookupKind.Lookup lv -> fun a ov -> 
+                match f a ov with
+                | OptionalValue.Present(rv) -> Object.Equals(lv, rv) // TODO: Object.Equals is not so good here
+                | _ -> false
+          
+          let scanIndices = 
+            Seq.range 0L (source.Length-1L)
+            |> Seq.filter (fun i -> 
+                scanFunc (Address.ofInt64 i) (source.ValueAt(i)) )
+            |> Array.ofSeq
+
+          { new IVectorRange with
+              member x.Count = scanIndices |> Seq.length |> int64 // TODO: SLOW!
+            interface seq<int64> with 
+              member x.GetEnumerator() = (scanIndices :> seq<_>).GetEnumerator() // TODO: SLow
+            interface System.Collections.IEnumerable with
+              member x.GetEnumerator() = scanIndices.GetEnumerator() } //TODO: Slow
+          |> VectorRange.Custom
 
         member x.LookupValue(v, l, c) = 
           withReverseLookup (fun g ->
@@ -112,7 +159,18 @@ module VirtualVectorSource =
         member x.GetSubVector(range) = map rev f (source.GetSubVector(range))
       interface IVirtualVectorSource with
         member x.ElementType = typeof<'TNew>
+        member x.GetSubVector(range) = map rev f (source.GetSubVector(range)) :> _
         member x.Length = source.Length }
+
+[<Extension>]
+type VirtualVectorSourceExtensions =
+  [<Extension>]
+  static member Select<'T, 'R>(source:IVirtualVectorSource<'T>, func:Func<Address, OptionalValue<'T>, OptionalValue<'R>>) =
+    VirtualVectorSource.map None (fun a v -> func.Invoke(a, v))
+  [<Extension>]
+  static member Select<'T, 'R>(source:IVirtualVectorSource<'T>, func:Func<Address, OptionalValue<'T>, OptionalValue<'R>>, rev:Func<'R, 'T>) =
+    VirtualVectorSource.map (Some rev.Invoke) (fun a v -> func.Invoke(a, v))
+
 
 type VirtualVector<'V>(source:IVirtualVectorSource<'V>) = 
   member vector.Source = source
@@ -129,6 +187,18 @@ type VirtualVector<'V>(source:IVirtualVectorSource<'V>) =
       VirtualVector(VirtualVectorSource.map rev f source) :> _
     member vector.Select(f) = 
       (vector :> IVector<_>).SelectMissing(None, fun _ -> OptionalValue.map f)
+
+module VirtualVectorHelpers = 
+  let rec unboxVector (vector:IVector<'V>) : IVector<'V> =
+    match vector with
+    | :? IBoxedVector as boxed -> 
+        { new VectorCallSite<IVector<'V>> with
+            member x.Invoke<'T>(typed:IVector<'T>) = 
+              match typed with
+              | :? VirtualVector<'T> as vt -> unbox<IVector<'V>> (VirtualVector(VirtualVectorSource.boxSource vt.Source)) // 'V = obj
+              | _ -> vector } 
+        |> boxed.UnboxedVector.Invoke
+    | vec -> vec
 
 type VirtualVectorBuilder(sourceBuilder:IVirtualSourceBuilder) as this = //TODO: May be slow
   let baseBuilder = VectorBuilder.Instance
@@ -173,6 +243,7 @@ type VirtualVectorBuilder(sourceBuilder:IVirtualSourceBuilder) as this = //TODO:
 
           interface IVirtualVectorSource with
             member x.ElementType = typeof<'T>
+            member x.GetSubVector(sub) = (x :?> IVirtualVectorSource<'T>).GetSubVector(sub) :> _
             member x.Length = (hi-lo+1L) }
       VirtualVector(createSource 0L (size-1L)) :> _
 
@@ -196,6 +267,18 @@ type VirtualVectorBuilder(sourceBuilder:IVirtualSourceBuilder) as this = //TODO:
                     boxVector (restrictRange underlying) |> unbox<IVector<'T>> }
                |> boxed.UnboxedVector.Invoke
           | vector -> restrictRange vector 
+      | CombineN(sources, transform) ->
+          let builtSources = sources |> List.map (fun source -> VirtualVectorHelpers.unboxVector (build source args)) |> Array.ofSeq
+          let allVirtual = builtSources |> Array.forall (fun vec -> vec :? VirtualVector<'T>)
+          if allVirtual then
+            let sources = builtSources |> Array.map (function :? VirtualVector<'T> as v -> v.Source | _ -> failwith "assertion failed") |> List.ofSeq
+            let func = transform.GetFunction<'T>()
+            let newSource = VirtualVectorSource.combine func sources
+            VirtualVector(newSource) :> _
+          else
+            let cmd = CombineN([ for i in 0 .. builtSources.Length-1 -> Return i ], transform)
+            baseBuilder.Build(cmd, builtSources)
+
       | _ ->    
         baseBuilder.Build<'T>(cmd, args)
 
@@ -242,20 +325,21 @@ type VirtualOrderedIndex<'K when 'K : equality>(source:IVirtualVectorSource<'K>)
     member x.Lookup(key, semantics, check) = 
       source.LookupValue(key, semantics, Func<_, _>(check))
 
-and VirtualOrdinalIndex(range) =
-  let lo, hi = range
-  let size = hi - lo + 1L
+and VirtualOrdinalIndex(source:IVirtualVectorSource<int64>, offset) =
+  let lo, hi = offset, offset + source.Length - 1L
+  let size = source.Length
   do if size < 0L then invalidArg "range" "Invalid range"
-  member x.Range = range
+  member x.Range = lo, hi
+  member x.Source = source
   interface IIndex<int64> with
     member x.KeyAt(addr) = 
       if addr < 0L || addr >= size then invalidArg "addr" "Out of range"
       else keyOfAddr lo addr
     member x.KeyCount = size
-    member x.KeyVector = failwith "key vector of ordinal index"
+    member x.KeyVector = VirtualVector(source) :> _
     member x.IsEmpty = size = 0L
     member x.Builder = VirtualIndexBuilder.Instance :> _
-    member x.KeyRange = range
+    member x.KeyRange = lo, hi
     member x.Keys = Array.init (int size) (Address.ofInt >> (keyOfAddr lo)) |> ReadOnlyCollection.ofArray
     member x.Mappings = 
       Seq.range 0L (size - 1L) 
@@ -292,7 +376,7 @@ and VirtualIndexBuilder() =
   let baseBuilder = IndexBuilder.Instance
 
   let emptyConstruction () =
-    let newIndex = VirtualOrdinalIndex(0L, -1L)
+    let newIndex = Index.ofKeys []
     unbox<IIndex<'K>> newIndex, Vectors.Empty(0L)
 
   static let indexBuilder = VirtualIndexBuilder()
@@ -319,7 +403,7 @@ and VirtualIndexBuilder() =
       match index, searchVector with
       | (:? VirtualOrdinalIndex as index), (:? VirtualVector<'V> as searchVector) ->
           let mapping = searchVector.Source.LookupRange(LookupKind.Lookup searchValue)
-          let newIndex = VirtualOrdinalIndex(0L, mapping.Count - 1L);
+          let newIndex = VirtualOrdinalIndex(index.Source.GetSubVector(mapping), 0L);
           unbox<IIndex<'K>> newIndex, GetRange(vector, mapping)
 
       | (:? VirtualOrderedIndex<'K> as index), (:? VirtualVector<'V> as searchVector) ->
@@ -370,11 +454,12 @@ and VirtualIndexBuilder() =
           newIndex :> IIndex<'K>, newVector
 
       | :? VirtualOrdinalIndex when hi < lo -> emptyConstruction()
-      | :? VirtualOrdinalIndex & (:? IIndex<int64> as index) -> 
+      | :? VirtualOrdinalIndex as index ->
           // TODO: range checks
-          let newVector = Vectors.GetRange(vector, Vectors.Range(lo, hi))
-          let keyLo, keyHi = index.KeyRange
-          let newIndex = VirtualOrdinalIndex(keyLo + lo, keyLo + hi)
+          let range = Vectors.Range(lo, hi)
+          let newVector = Vectors.GetRange(vector, range)
+          let keyLo, keyHi = (index :> IIndex<_>).KeyRange
+          let newIndex = VirtualOrdinalIndex(index.Source.GetSubVector(range), keyLo + lo) // TODO: Is the 'lo' calculation right?
           unbox<IIndex<'K>> newIndex, newVector
       | _ -> 
           baseBuilder.GetAddressRange((index, vector), (lo, hi))
@@ -413,7 +498,7 @@ and VirtualIndexBuilder() =
           let newIndex = VirtualOrderedIndex(index.Source.GetSubVector(Range(loIdx, hiIdx)))
           unbox<IIndex<'K>> newIndex, newVector
 
-      | :? VirtualOrdinalIndex & (:? IIndex<int64> as index) -> 
+      | :? VirtualOrdinalIndex as ordIndex & (:? IIndex<int64> as index) -> 
           let getRangeKey proj next = function
             | None -> proj index.KeyRange 
             | Some(k, BoundaryBehavior.Inclusive) -> unbox<int64> k
@@ -422,8 +507,9 @@ and VirtualIndexBuilder() =
           let loIdx, hiIdx = loKey - (fst index.KeyRange), hiKey - (fst index.KeyRange)
 
           // TODO: range checks
-          let newVector = Vectors.GetRange(vector, Vectors.Range(loIdx, hiIdx))
-          let newIndex = VirtualOrdinalIndex(loKey, hiKey)
+          let range = Vectors.Range(loIdx, hiIdx)
+          let newVector = Vectors.GetRange(vector, range)
+          let newIndex = VirtualOrdinalIndex(ordIndex.Source.GetSubVector(range), loKey) // ToDO: is the 'lokey' right?
           unbox<IIndex<'K>> newIndex, newVector
       | _ -> 
           baseBuilder.GetRange((index, vector), (optLo, optHi))
@@ -447,7 +533,8 @@ type Virtual() =
 
   static member CreateOrdinalSeries(source, sourceBuilder) =
     let vector = VirtualVector(source)
-    let index = VirtualOrdinalIndex(0L, source.Length-1L)
+    let indexSource = VirtualVectorSource.map None (fun a _ -> OptionalValue(Address.asInt64 a)) source
+    let index = VirtualOrdinalIndex(indexSource, 0L)
     Series(index, vector, VirtualVectorBuilder(sourceBuilder), VirtualIndexBuilder.Instance)
 
   static member CreateSeries(indexSource:IVirtualVectorSource<_>, valueSource:IVirtualVectorSource<_>, sourceBuilder) =
@@ -458,7 +545,7 @@ type Virtual() =
     let index = VirtualOrderedIndex(indexSource)
     Series(index, vector, VirtualVectorBuilder(sourceBuilder), VirtualIndexBuilder.Instance)
 
-  static member CreateOrdinalFrame(keys, sources:seq<IVirtualVectorSource>, sourceBuilder) = 
+  static member CreateOrdinalFrame(keys, sources:seq<IVirtualVectorSource>, indexSource, sourceBuilder) = 
     let count = sources |> Seq.fold (fun st src ->
       match st with 
       | None -> Some(src.Length) 
@@ -466,7 +553,7 @@ type Virtual() =
       | _ -> invalidArg "sources" "Sources should have the same length!" ) None
     if count = None then invalidArg "sources" "At least one column is required"
     let count = count.Value
-    createFrame sourceBuilder (VirtualOrdinalIndex(0L, count-1L)) (Index.ofKeys keys) sources
+    createFrame sourceBuilder (VirtualOrdinalIndex(indexSource, 0L)) (Index.ofKeys keys) sources
 
   static member CreateFrame(indexSource:IVirtualVectorSource<_>, keys, sources:seq<IVirtualVectorSource>, sourceBuilder) = 
     for sc in sources do 
