@@ -152,8 +152,8 @@ type Frame =
   // sequence of (series / kvps / kvps with object series)
 
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
-  static member FromColumns(rows:seq<Series<'ColKey,'V>>) = 
-    FrameUtils.fromColumns IndexBuilder.Instance VectorBuilder.Instance (Series(rows |> Seq.mapi (fun i _ -> i), rows))
+  static member FromColumns(cols:seq<Series<'ColKey,'V>>) = 
+    FrameUtils.fromColumns IndexBuilder.Instance VectorBuilder.Instance (Series(cols |> Seq.mapi (fun i _ -> i), cols))
 
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member FromColumns(columns:seq<KeyValuePair<'ColKey, Series<'RowKey, 'V>>>) = 

@@ -353,8 +353,14 @@ let ``Can access items of a virtual filtered frame without evaluating it`` () =
   let idx, s1, s2, f = createSimpleTimeFrame()
   let lorem = f |> Frame.filterRowsBy "S2" "lorem"
   lorem.Rows.[ith 5000000L].["S2"] |> unbox |> shouldEqual "lorem"
+<<<<<<< HEAD
+  lorem.Rows.TryGet(ith 5000001L) |> shouldEqual OptionalValue.Missing
+  lorem.Rows.Get(date 2001 1 1, Lookup.ExactOrSmaller)
+  lorem.Rows.Get(date 2001 1 1, Lookup.ExactOrGreater)
+=======
 //  lorem.Rows.[ith 5000001L] |> shouldEqual OptionalValue.Missing
   lorem.Rows.TryGet(date 2001 1 1) |> shouldEqual OptionalValue.Missing
+>>>>>>> 7d3836d247d13168dc271f29f79dae3f8528682d
 
   let res = f |> Frame.filterRowsBy "S2" "dolor"
   let res = f |> Frame.filterRowsBy "S2" "sit"
