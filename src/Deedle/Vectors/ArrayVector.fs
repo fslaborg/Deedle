@@ -66,9 +66,6 @@ type ArrayVectorBuilder() =
       if hasNAs then av <| VectorOptional(MissingValues.createMissingOrNAArray optValues)
       else av <| VectorNonOptional(optValues |> Array.map (fun v -> v.Value))
 
-    member builder.InitMissing(size, f) =
-      vectorBuilder.CreateMissing(Array.init (int size) (int64 >> f))
-
     /// Asynchronous version - limited implementation for AsyncMaterialize
     member builder.AsyncBuild<'T>(command:VectorConstruction, arguments:IVector<'T>[]) = async {
       match command with

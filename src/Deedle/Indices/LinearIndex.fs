@@ -74,7 +74,6 @@ type LinearIndex<'K when 'K : equality>
 
   interface IIndex<'K> with
     member x.Keys = keys
-    member x.KeyVector = Vector.ofValues keys
     member x.KeyCount = int64 keys.Count
     member x.Builder = builder
 
@@ -187,7 +186,6 @@ type LinearRangeIndex<'K when 'K : equality>
 
     // The rest of the functionality is delegated to 'actualIndex'
     member x.Keys = actualIndex.Value.Keys
-    member x.KeyVector = Vector.ofValues actualIndex.Value.Keys
     member x.Locate(key) = actualIndex.Value.Locate(key)
     member x.Lookup(key, semantics, check) = actualIndex.Value.Lookup(key, semantics, check)
     member x.Mappings = actualIndex.Value.Mappings

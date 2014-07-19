@@ -39,7 +39,6 @@ and BlockStoreIndex<'K, 'V when 'K : equality>(store:BlockStore<'K, 'V>) =
     member x.Builder = failwith "Builder: TODO!!" :> IIndexBuilder
     member x.KeyRange = store.KeyAt(0L), store.KeyAt(store.Length - 1L)
     member x.Keys = Array.init (int store.Length) (int64 >> store.KeyAt) |> ReadOnlyCollection.ofArray 
-    member x.KeyVector = Array.init (int store.Length) (int64 >> store.KeyAt) |> Vector.ofValues
     member x.Locate(key) = 
       let loc = store.LookupKey(key, Lookup.Exact, fun _ -> true)
       if loc.HasValue then snd loc.Value else Addressing.Address.Invalid
