@@ -95,12 +95,14 @@ open Deedle.VectorHelpers
 [<AutoOpen>]
 module internal VectorHelperExtensions =
 
+  let private rowReaderFunc (values:OptionalValue<obj> list) : OptionalValue<obj> =
+    OptionalValue(box (ArrayVectorBuilder.Instance.CreateMissing(Array.ofList values)))
+
   type RowReaderTransform() =
     interface IRowReaderTransform
     interface INaryTransform with
       member vt.GetFunction<'R>() = 
-        unbox<OptionalValue<'R> list -> OptionalValue<'R>> (fun (values:OptionalValue<obj> list) ->
-          ArrayVectorBuilder.Instance.CreateMissing(Array.ofList values) )
+        unbox<OptionalValue<'R> list -> OptionalValue<'R>> rowReaderFunc
 
   type NaryTransform with
     static member GetRowReader = 

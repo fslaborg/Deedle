@@ -173,6 +173,18 @@ type ArrayVectorBuilder() =
           | AsVectorOptional first, AsVectorOptional second ->
               VectorOptional(Array.append first second) |> av
 
+      | Combine([left; right], VectorListTransform.Binary op) ->
+          // OPTIMIZATION: If we have binary operation applied to two vectors,
+          // we can process them more directly (which is hopefuly faster!)
+          match builder.buildArrayVector left arguments,builder.buildArrayVector right arguments with
+          | AsVectorOptional left, AsVectorOptional right ->
+              let merge = op.GetFunction<'T>()
+              let filled = Array.init (max left.Length right.Length) (fun idx ->
+                let lv = if idx >= left.Length then OptionalValue.Missing else left.[idx]
+                let rv = if idx >= right.Length then OptionalValue.Missing else right.[idx]
+                merge lv rv)
+              vectorBuilder.CreateMissing(filled)
+
       | CombinedRelocations(relocs, op) ->
           // OPTIMIZATION: Matches when we want to combine N vectors (as below) but
           // each vector is specified by a Relocate construction. In that case, we do
@@ -207,18 +219,6 @@ type ArrayVectorBuilder() =
           let rowCount = int length
           let rows = Array.init rowCount (fun a -> getRow (Address.ofInt a)) 
           rows |> builder.Create |> unbox
-
-      | Combine([left; right], VectorListTransform.Binary op) ->
-          // OPTIMIZATION: If we have binary operation applied to two vectors,
-          // we can process them more directly (which is hopefuly faster!)
-          match builder.buildArrayVector left arguments,builder.buildArrayVector right arguments with
-          | AsVectorOptional left, AsVectorOptional right ->
-              let merge = op.GetFunction<'T>()
-              let filled = Array.init (max left.Length right.Length) (fun idx ->
-                let lv = if idx >= left.Length then OptionalValue.Missing else left.[idx]
-                let rv = if idx >= right.Length then OptionalValue.Missing else right.[idx]
-                merge lv rv)
-              vectorBuilder.CreateMissing(filled)
 
       | Combine(vectors, op) ->
           let merge = op.GetFunction<'T>()
