@@ -368,6 +368,11 @@ module MissingValues =
       else (fun v -> Object.Equals(null, box v))
     nanTest
 
+  let flattenNA<'T> () =
+    let isNaOfT = isNA<'T>()
+    fun (value:OptionalValue<_>) ->
+      if value.HasValue && isNaOfT value.Value then OptionalValue.Missing else value
+
   let inline containsNA (data:'T[]) = 
     let isNA = isNA<'T>() 
     Array.exists isNA data

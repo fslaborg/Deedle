@@ -68,6 +68,9 @@ type IVector =
   /// instance of vector passed as a statically typed vector (ie. IVector<ElementType>)
   abstract Invoke : VectorCallSite<'R> -> 'R
 
+  /// Returns the number of elements in the vector
+  abstract Length : int64
+
 /// Represents a generic function `\forall.'T.(IVector<'T> -> 'R)`. The function can be 
 /// generically invoked on an argument of type `IVector` using `IVector.Invoke`
 and VectorCallSite<'R> =
@@ -142,7 +145,7 @@ type VectorHole = int
 /// Represent a transformation that is applied when combining two vectors
 /// (because we are combining untyped `IVector` values, the transformation
 /// is also untyped)
-type IVectorValueTransform =
+type IBinaryTransform =
   /// Returns a function that combines two values stored in vectors into a new vector value.
   /// Although generic, this function will only be called with the `T` set to the
   /// type of vector that is being built. Since `VectorConstruction` is not generic,
@@ -150,14 +153,17 @@ type IVectorValueTransform =
   abstract GetFunction<'T> : unit -> (OptionalValue<'T> -> OptionalValue<'T> -> OptionalValue<'T>)
 
 /// Represent a tranformation that is applied when combining N vectors
-type IVectorValueListTransform =
-  /// Returns a binary function that can be used for folding the values iteratively
-  /// (This can return None, which disallows some optimizations, but is fine)
-  abstract GetBinaryFunction<'T> : unit -> option<OptionalValue<'T> * OptionalValue<'T> -> OptionalValue<'T>>
-
+type INaryTransform =
   /// Returns a function that combines N values stored in vectors into a new vector value
   abstract GetFunction<'T> : unit -> (OptionalValue<'T> list -> OptionalValue<'T>)
 
+type IRowReaderTransform = interface end
+
+[<RequireQualifiedAccess>]
+type VectorListTransform = 
+  | Binary of IBinaryTransform
+  | Nary of INaryTransform
+  
 /// Specifies how to fill missing values in a vector (when using the 
 /// `VectorConstruction.FillMissing` command). This can only fill missing
 /// values using strategy that does not require access to index keys - 
@@ -204,15 +210,10 @@ type VectorConstruction =
   /// Append two vectors after each other
   | Append of VectorConstruction * VectorConstruction
 
-  /// Combine two aligned vectors. The `IVectorValueTransform` object
-  /// specifies how to merge values (in case there is a value at a given address
-  /// in both of the vectors).
-  | Combine of VectorConstruction * VectorConstruction * IVectorValueTransform
-
   /// Combine N aligned vectors. The `IVectorValueListTransform` object
   /// specifies how to merge values (in case there is a value at a given address
   /// in more than one of the vectors).
-  | CombineN of VectorConstruction list * IVectorValueListTransform
+  | Combine of VectorConstruction list * VectorListTransform
 
   /// Create a vector that has missing values filled using the specified direction
   /// (forward means that n-th value will contain (n-i)-th value where (n-i) is the

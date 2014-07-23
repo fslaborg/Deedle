@@ -73,21 +73,43 @@ let testAll () =
 
 open Deedle
 
-(*
 let rnd = System.Random(0)
 
 let s0 = series <| Array.init 10000 (fun i -> i => rnd.NextDouble())
 let f0 = frame [ for i in 0 .. 10 -> i => s0 ]
 let f1 = frame [ for i in 0 .. 100 -> i => s0 ]
-*)
-//let s1 = series <| Array.init 1000000 (fun i -> i => rnd.NextDouble())
-//let s2 = series <| Array.init 10000000 (fun i -> i => rnd.NextDouble())
+
+let s1 = series <| Array.init 1000000 (fun i -> i*2 => rnd.NextDouble())
+let s2 = series <| Array.init 1000000 (fun i -> i*2+1 => rnd.NextDouble())
+
+let ss1 = series <| Array.init 100 (fun i -> i*2 => rnd.NextDouble())
+let ss2 = series <| Array.init 100 (fun i -> i*2+1 => rnd.NextDouble())
+
 
 let testOne() =      
+
+  printfn "Slow KeyCount"
+  timed 5 (fun () ->
+    f1.Rows.KeyCount |> ignore
+  )
+  printfn "Fast KeyCount"
+  timed 5 (fun () ->
+    f1.FastRows.KeyCount |> ignore
+  )
+  
+  printfn "Slow iterate"
+  timed 5 (fun () ->
+    f1.Rows |> Series.mapValues (fun r -> r.GetAs<float>(5)) |> ignore
+  )
+  printfn "Fast iterate"
+  timed 5 (fun () ->
+    f1.FastRows |> Series.mapValues (fun r -> r.GetAs<float>(5)) |> ignore
+  )
+
+  (*
   timed 5 (fun () ->
 
-    Deedle.Tests.VirtualFrame.``Counting values does not evaluate the series`` ()
-    |> ignore
+    ()
   
     // 75 ms ~> 40 ms
     //f0 + s0 |> ignore
@@ -117,6 +139,7 @@ let testOne() =
     ()
 
   )
+  *)
 
 //do testAll()
 do testOne()

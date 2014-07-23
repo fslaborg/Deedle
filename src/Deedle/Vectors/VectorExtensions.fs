@@ -81,3 +81,28 @@ type Vector =
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member inline CreateMissing(data:seq<System.Nullable<'T>>) = 
     VectorBuilder.Instance.CreateMissing(data |> Array.ofSeq |> Array.map OptionalValue.ofNullable)
+
+// ------------------------------------------------------------------------------------------------
+// 
+// ------------------------------------------------------------------------------------------------
+
+namespace Deedle
+
+open Deedle.Vectors
+open Deedle.Vectors.ArrayVector
+open Deedle.VectorHelpers
+
+[<AutoOpen>]
+module internal VectorHelperExtensions =
+
+  type RowReaderTransform() =
+    interface IRowReaderTransform
+    interface INaryTransform with
+      member vt.GetFunction<'R>() = 
+        unbox<OptionalValue<'R> list -> OptionalValue<'R>> (fun (values:OptionalValue<obj> list) ->
+          ArrayVectorBuilder.Instance.CreateMissing(Array.ofList values) )
+
+  type NaryTransform with
+    static member GetRowReader = 
+      RowReaderTransform() :> INaryTransform
+      |> VectorListTransform.Nary

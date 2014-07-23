@@ -253,10 +253,10 @@ and IIndexBuilder =
   /// Append two indices and builds corresponding vector transformations
   /// for both vectors that match the left and the right index. If the indices
   /// are ordered, the ordering should be preserved (the keys should be aligned).
-  /// The specified `IVectorValueTransform` defines how to deal with the case when
+  /// The specified `VectorListTransform` defines how to deal with the case when
   /// a key is defined in both indices (i.e. which value should be in the new vector).
   abstract Merge :
-    list<SeriesConstruction<'K>> * IVectorValueListTransform -> 
+    list<SeriesConstruction<'K>> * VectorListTransform -> 
     IIndex<'K> * VectorConstruction
 
   /// Given an old index and a new index, build a vector transformation that reorders

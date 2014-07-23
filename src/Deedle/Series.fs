@@ -449,7 +449,7 @@ and
     // (LeftOrRight - specifies that when column exist in both data frames then fail)
     let newIndex, cmd = 
       indexBuilder.Merge( [(index, Vectors.Return 0); (otherSeries.Index, Vectors.Return 1)], 
-                           VectorValueListTransform.AtMostOne )
+                           BinaryTransform.AtMostOne )
     let newVector = vectorBuilder.Build(cmd, [| series.Vector; otherSeries.Vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
@@ -465,7 +465,7 @@ and
     let vectors = otherSeries |> Array.map (fun s -> s.Vector)
 
     let newIndex, cmd = 
-      indexBuilder.Merge( (index, Vectors.Return 0)::constrs, VectorValueListTransform.AtMostOne )
+      indexBuilder.Merge( (index, Vectors.Return 0)::constrs, NaryTransform.AtMostOne )
     let newVector = vectorBuilder.Build(cmd, [| yield series.Vector; yield! vectors |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
@@ -474,10 +474,10 @@ and
     let newIndex, vec1, vec2 = indexBuilder.Union( (series.Index, Vectors.Return 0), (another.Index, Vectors.Return 1) )
     let transform = 
       match behavior with
-      | UnionBehavior.PreferRight -> VectorHelpers.VectorValueTransform.RightIfAvailable
-      | UnionBehavior.Exclusive -> VectorHelpers.VectorValueTransform.LeftOrRight
-      | _ -> VectorHelpers.VectorValueTransform.LeftIfAvailable
-    let vecCmd = Vectors.Combine(vec1, vec2, transform)
+      | UnionBehavior.PreferRight -> BinaryTransform.RightIfAvailable
+      | UnionBehavior.Exclusive -> BinaryTransform.AtMostOne
+      | _ -> BinaryTransform.LeftIfAvailable
+    let vecCmd = Vectors.Combine([vec1; vec2], transform)
     let newVec = vectorBuilder.Build(vecCmd, [| series.Vector; another.Vector |])
     Series(newIndex, newVec, vectorBuilder, indexBuilder)
 

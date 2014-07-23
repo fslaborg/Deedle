@@ -9,6 +9,7 @@ open Deedle
 open Deedle.Addressing
 open Deedle.Internal
 open Deedle.Vectors
+open Deedle.VectorHelpers
 
 /// Internal representation of the ArrayVector. To make this more 
 /// efficient, we distinguish between "sparse" vectors that have missing 
@@ -34,9 +35,12 @@ type ArrayVectorBuilder() =
   let av data = ArrayVector(data) :> IVector<_>
 
   /// Treat vector as containing optionals
-  let (|AsVectorOptional|) = function
+  let asVectorOptional = function
     | VectorOptional d -> d
     | VectorNonOptional d -> Array.map (fun v -> OptionalValue v) d
+
+  /// Treat vector as containing optionals
+  let (|AsVectorOptional|) = asVectorOptional
 
   /// Builds a vector using the specified commands, ensures that the
   /// returned vector is ArrayVector (if no, it converts it) and then
@@ -169,18 +173,7 @@ type ArrayVectorBuilder() =
           | AsVectorOptional first, AsVectorOptional second ->
               VectorOptional(Array.append first second) |> av
 
-      | Combine(left, right, op) ->
-          // Convert both vectors to ArrayVectors and zip them
-          match builder.buildArrayVector left arguments,builder.buildArrayVector right arguments with
-          | AsVectorOptional left, AsVectorOptional right ->
-              let merge = op.GetFunction<'T>()
-              let filled = Array.init (max left.Length right.Length) (fun idx ->
-                let lv = if idx >= left.Length then OptionalValue.Missing else left.[idx]
-                let rv = if idx >= right.Length then OptionalValue.Missing else right.[idx]
-                merge lv rv)
-              vectorBuilder.CreateMissing(filled)
-
-      | VectorHelpers.CombinedRelocations(relocs, op) ->
+      | CombinedRelocations(relocs, op) ->
           // OPTIMIZATION: Matches when we want to combine N vectors (as below) but
           // each vector is specified by a Relocate construction. In that case, we do
           // not need to build intermediate relocated vectors, but can directly build
@@ -191,7 +184,7 @@ type ArrayVectorBuilder() =
           // binary function (as we add vectors as we go, rather than building full list)
           let data = relocs |> List.map (fun (v, _, r) -> 
             (|AsVectorOptional|) (builder.buildArrayVector v arguments), r)
-          let merge = op.GetBinaryFunction<'T>().Value // IsSome=true is checked by CombinedRelocations 
+          let merge = op.GetFunction<'T>()
           let count = relocs |> List.map (fun (_, l, _) -> l) |> List.max
           let filled = Array.create (int count) OptionalValue.Missing
           
@@ -199,17 +192,41 @@ type ArrayVectorBuilder() =
             for newIndex, oldIndex in vreloc do
               let newIndex, oldIndex = Address.asInt newIndex, Address.asInt oldIndex
               if oldIndex < vdata.Length && oldIndex >= 0 then
-                filled.[newIndex] <- merge (filled.[newIndex], vdata.[oldIndex])
+                filled.[newIndex] <- merge filled.[newIndex] vdata.[oldIndex]
           vectorBuilder.CreateMissing(filled)
 
-      | CombineN(vectors, op) ->
+      | Combine(vectors, VectorListTransform.Nary (:? IRowReaderTransform)) ->
+          let builder = builder :> IVectorBuilder
           let data = 
             vectors 
-            |> List.map (fun v -> builder.buildArrayVector v arguments) 
-            |> List.map (function AsVectorOptional o -> o)
+            |> List.map (fun v -> builder.Build(v, arguments) :> IVector)
+            |> Array.ofSeq
+          let length = data |> Seq.map (fun d -> d.Length) |> Seq.max
+          let getRow addr = 
+            box (createObjRowReader (builder.Create data) vectorBuilder (int64 data.Length) addr )
+          let rowCount = int length
+          let rows = Array.init rowCount (fun a -> getRow (Address.ofInt a)) 
+          rows |> builder.Create |> unbox
 
+      | Combine([left; right], VectorListTransform.Binary op) ->
+          // OPTIMIZATION: If we have binary operation applied to two vectors,
+          // we can process them more directly (which is hopefuly faster!)
+          match builder.buildArrayVector left arguments,builder.buildArrayVector right arguments with
+          | AsVectorOptional left, AsVectorOptional right ->
+              let merge = op.GetFunction<'T>()
+              let filled = Array.init (max left.Length right.Length) (fun idx ->
+                let lv = if idx >= left.Length then OptionalValue.Missing else left.[idx]
+                let rv = if idx >= right.Length then OptionalValue.Missing else right.[idx]
+                merge lv rv)
+              vectorBuilder.CreateMissing(filled)
+
+      | Combine(vectors, op) ->
           let merge = op.GetFunction<'T>()
-          let filled = Array.init (data |> List.map (fun v -> v.Length) |> List.reduce max) (fun idx ->
+          let data = vectors |> List.map (fun v -> 
+            asVectorOptional (builder.buildArrayVector v arguments))
+
+          let length = data |> Seq.map (fun v -> v.Length) |> Seq.max
+          let filled = Array.init length (fun idx ->
             data 
             |> List.map (fun v -> if idx > v.Length then OptionalValue.Missing else v.[idx]) 
             |> merge)  
@@ -232,7 +249,7 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
   member internal vector.Representation = representation
 
   // To string formatting & equality support
-  override vector.ToString() = VectorHelpers.prettyPrintVector vector
+  override vector.ToString() = prettyPrintVector vector
   override vector.Equals(another) = 
     match another with
     | null -> false
@@ -243,6 +260,10 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
 
   // Implement the untyped vector interface
   interface IVector with
+    member x.Length = 
+      match representation with
+      | VectorOptional opts -> int64 opts.Length
+      | VectorNonOptional opts -> int64 opts.Length
     member x.ObjectSequence = 
       match representation with
       | VectorOptional opts -> opts |> Seq.map (OptionalValue.map box)
@@ -274,9 +295,7 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
     // A version of Select that can transform missing values to actual values (we always 
     // end up with array that may contain missing values, so use CreateMissing)
     member vector.SelectMissing<'TNewValue>(_, f) = 
-      let isNA = MissingValues.isNA<'TNewValue>() 
-      let flattenNA (value:OptionalValue<_>) = 
-        if value.HasValue && isNA value.Value then OptionalValue.Missing else value
+      let flattenNA = MissingValues.flattenNA<'TNewValue>() 
       let data = 
         match representation with
         | VectorNonOptional data ->
@@ -287,4 +306,9 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
 
     // Select function does not call 'f' on missing values.
     member vector.Select<'TNewValue>(f:'T -> 'TNewValue) = 
-      (vector :> IVector<_>).SelectMissing(None, fun _ -> OptionalValue.map f)
+      match representation with
+      | VectorNonOptional data ->
+          data |> Array.map f |> ArrayVectorBuilder.Instance.Create
+      | VectorOptional data ->
+          data |> Array.map (OptionalValue.map f)
+          |> ArrayVectorBuilder.Instance.CreateMissing

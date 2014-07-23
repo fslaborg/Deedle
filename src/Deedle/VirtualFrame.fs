@@ -169,6 +169,7 @@ type VirtualVector<'V>(source:IVirtualVectorSource<'V>) =
   member vector.Source = source
   interface IVector with
     member val ElementType = typeof<'V>
+    member vector.Length = source.Length
     member vector.SuppressPrinting = false
     member vector.GetObject(index) = source.ValueAt(index) |> OptionalValue.map box
     member vector.ObjectSequence = seq { for i in Seq.range 0L (source.Length-1L) -> source.ValueAt(i) |> OptionalValue.map box }
@@ -264,7 +265,7 @@ type VirtualVectorBuilder() =
                     boxVector (restrictRange underlying) |> unbox<IVector<'T>> }
                |> boxed.UnboxedVector.Invoke
           | vector -> restrictRange vector 
-      | CombineN(sources, transform) ->
+      | Combine(sources, transform) ->
           let builtSources = sources |> List.map (fun source -> VirtualVectorHelpers.unboxVector (build source args)) |> Array.ofSeq
           let allVirtual = builtSources |> Array.forall (fun vec -> vec :? VirtualVector<'T>)
           if allVirtual then
@@ -273,7 +274,7 @@ type VirtualVectorBuilder() =
             let newSource = VirtualVectorSource.combine func sources
             VirtualVector(newSource) :> _
           else
-            let cmd = CombineN([ for i in 0 .. builtSources.Length-1 -> Return i ], transform)
+            let cmd = Combine([ for i in 0 .. builtSources.Length-1 -> Return i ], transform)
             baseBuilder.Build(cmd, builtSources)
 
       | _ ->    

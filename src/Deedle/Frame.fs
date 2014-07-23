@@ -207,7 +207,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
         | OptionalValue.Present (TryConvert asV1 lv), OptionalValue.Present (TryConvert asV2 rv) ->
             let lvVect : IVector<Choice<'V1, 'V2, 'V3>> = lv.Select(Choice1Of3)
             let lrVect : IVector<Choice<'V1, 'V2, 'V3>> = rv.Select(Choice2Of3)
-            let res = Vectors.Combine(f1cmd, f2cmd, VectorValueTransform.CreateLifted (fun l r ->
+            let res = Vectors.Combine([f1cmd; f2cmd], BinaryTransform.CreateLifted (fun l r ->
               match l, r with
               | Choice1Of3 l, Choice2Of3 r -> op.Invoke(l, r) |> Choice3Of3
               | _ -> failwith "Zip: Got invalid vector while zipping" ))
@@ -261,7 +261,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     // Append the column indices and get transformation to combine them
     // (LeftOrRight - specifies that when column exist in both data frames then fail)
     let newColumnIndex, colCmd = 
-      indexBuilder.Merge( [(columnIndex, Vectors.Return 0); (otherFrame.ColumnIndex, Vectors.Return 1) ], VectorValueListTransform.AtMostOne)
+      indexBuilder.Merge( [(columnIndex, Vectors.Return 0); (otherFrame.ColumnIndex, Vectors.Return 1) ], BinaryTransform.AtMostOne)
     // Apply transformation to both data vectors
     let newThisData = data.Select(transformColumn vectorBuilder thisRowCmd)
     let newOtherData = otherFrame.Data.Select(transformColumn vectorBuilder otherRowCmd)
@@ -400,7 +400,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     // Merge the row indices and get a transformation that combines N vectors
     // (AtMostOne - specifies that when the vectors are merged, there should be no overlap)
     let constrs = frames |> Seq.mapi (fun i f -> f.RowIndex, Vectors.Return(i)) |> List.ofSeq
-    let newRowIndex, rowCmd = indexBuilder.Merge(constrs, VectorValueListTransform.AtMostOne)
+    let newRowIndex, rowCmd = indexBuilder.Merge(constrs, NaryTransform.AtMostOne)
 
     // Define a function to construct result vector via the above row command, which will dynamically
     // dispatch to a type-specific generic implementation
@@ -416,7 +416,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       |> witnessVec.Invoke
 
     // define the transformation itself, piecing components together
-    let append = VectorValueListTransform.Create(fun (lst: OptionalValue<IVector> list) ->
+    let append = NaryTransform.Create(fun (lst: OptionalValue<IVector> list) ->
       let witnessVec = 
         match lst |> Seq.tryFind (fun v -> v.HasValue) with
         | Some(v) -> v.Value
@@ -461,25 +461,14 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     ColumnSeries(Series(columnIndex, newData, vectorBuilder, indexBuilder))
 
   /// [category:Accessors and slicing]
-  member frame.Rows =
-    let getRow addr =
-       let rowReader = createObjRowReader data vectorBuilder columnIndex.KeyCount addr
-       OptionalValue(ObjectSeries(columnIndex, rowReader, vectorBuilder, indexBuilder))
-
-    
+  member frame.Rows =    
     let vectors = [ for n in 0L .. columnIndex.KeyCount-1L -> Vectors.Return(int n) ]
-    let transform = VectorValueListTransform.Create(fun (values:OptionalValue<obj> list) ->
-      let vec = Vector.ofOptionalValues values
-      OptionalValue(box (ObjectSeries(Series(columnIndex, vec, vectorBuilder, indexBuilder)))) )
-
-    let cmd = Vectors.CombineN(vectors, transform)
+    let cmd = Vectors.Combine(vectors, NaryTransform.GetRowReader)
     let boxedData = [| for v in data.DataSequence -> boxVector v.Value |]
-    let vector = vectorBuilder.Build(cmd, boxedData).Select(fun o -> unbox<ObjectSeries<'TColumnKey>> o)
-    
-
-    //let vector = vectorBuilder.InitMissing(rowIndex.KeyCount, fun a -> getRow (Address.ofInt64 a))
-    //let vector = rowIndex.KeyVector.SelectMissing(None, fun a _ -> getRow (Address.ofInt64 a))
-    RowSeries<'TRowKey, 'TColumnKey>(rowIndex, vector, frame)
+    let vector = vectorBuilder.Build(cmd, boxedData).Select(fun o -> 
+      let rowReader = unbox<IVector<obj>> o
+      ObjectSeries(columnIndex, rowReader, vectorBuilder, indexBuilder) )
+    RowSeries<'TRowKey, 'TColumnKey>(rowIndex, vector, frame)    
 
   /// [category:Accessors and slicing]
   member frame.RowsDense = 
@@ -905,7 +894,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     // (so that we can apply the transformation repeatedly on columns)
     let newIndex, frameCmd, seriesCmd = 
       createJoinTransformation frame.IndexBuilder JoinKind.Outer Lookup.Exact frame.RowIndex series.Index (Vectors.Return 0) (Vectors.Return 1)
-    let opCmd = Vectors.Combine(frameCmd, seriesCmd, VectorValueTransform.CreateLifted(op))
+    let opCmd = Vectors.Combine([frameCmd; seriesCmd], BinaryTransform.CreateLifted(op))
 
     // Apply the transformation on all columns that can be converted to 'T
     let newData = frame.Data.Select(fun vector ->
