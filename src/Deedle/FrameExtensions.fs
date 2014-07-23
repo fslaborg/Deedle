@@ -978,6 +978,11 @@ type FrameExtensions =
     frame.Rows.GetItems(rowKeys) |> FrameUtils.fromRows frame.IndexBuilder frame.VectorBuilder
 
   [<Extension>]
+  static member FilterRowsBy<'TRowKey, 'TColumnKey, 'V when 'TRowKey : equality and 'TColumnKey : equality>
+      (frame:Frame<'TRowKey, 'TColumnKey>, column, value) = 
+    Frame.filterRowsBy column value frame
+
+  [<Extension>]
   static member GetRowsAt(frame:Frame<'TRowKey, 'TColumnKey>, [<ParamArray>] indices:int[]) = 
     let keys = indices |> Array.map frame.Rows.GetKeyAt
     let values = indices |> Array.map (fun i -> frame.Rows.GetAt(i) :> ISeries<_>)
