@@ -725,6 +725,26 @@ type Stats =
   static member kurt (frame:Frame<'R, 'C>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Stats.kurt)  
 
+  /// For each numerical column, returns the minimal values as a series.
+  /// The function skips over missing and `NaN` values. When there are no values,
+  /// the result is `NaN`.
+  ///
+  /// [category:Frame statistics]
+  static member min (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ s -> 
+      let res = Stats.min s 
+      defaultArg res nan )  
+
+  /// For each numerical column, returns the maximal values as a series.
+  /// The function skips over missing and `NaN` values. When there are no values,
+  /// the result is `NaN`.
+  ///
+  /// [category:Frame statistics]
+  static member max (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ s -> 
+      let res = Stats.max s 
+      defaultArg res nan )  
+
   // ------------------------------------------------------------------------------------
   // Statistics applied to a single level of a multi-level indexed series
   // ------------------------------------------------------------------------------------
