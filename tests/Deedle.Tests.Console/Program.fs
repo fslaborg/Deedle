@@ -87,7 +87,9 @@ let ss2 = series <| Array.init 100 (fun i -> i*2+1 => rnd.NextDouble())
 
 
 let testOne() =      
+  ()
 
+(*
   printfn "Slow KeyCount"
   timed 5 (fun () ->
     f1.Rows.KeyCount |> ignore
@@ -105,6 +107,7 @@ let testOne() =
   timed 5 (fun () ->
     f1.FastRows |> Series.mapValues (fun r -> r.GetAs<float>(5)) |> ignore
   )
+*)
 
   (*
   timed 5 (fun () ->
