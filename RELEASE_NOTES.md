@@ -54,3 +54,6 @@
    and filling of missing values uses "safe" conversion (allows conversion to bigger numeric type)
  * Avoid boxing when filling missing values (#222)
  * Fix documentation bugs (#221, #226) and update formatters from FsLab
+
+### 1.0.3
+ * Added Stats.min and Stats.max for frame
