@@ -46,6 +46,7 @@
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <ItemGroup>
     <Compile Include="../Common/FsUnit.fs">
       <Link>FsUnit.fs</Link>
@@ -55,31 +56,44 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="CSharpFormat">
+      <HintPath>..\..\packages\FSharp.Formatting.2.4.18\lib\net40\CSharpFormat.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="FSharp.CodeFormat">
-      <HintPath>..\..\packages\FSharp.Formatting.2.0.2\lib\net40\FSharp.CodeFormat.dll</HintPath>
+      <HintPath>..\..\packages\FSharp.Formatting.2.4.18\lib\net40\FSharp.CodeFormat.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="FSharp.CompilerBinding">
-      <HintPath>..\..\packages\FSharp.Formatting.2.0.2\lib\net40\FSharp.CompilerBinding.dll</HintPath>
+    <Reference Include="FSharp.Compiler.Service">
+      <HintPath>..\..\packages\FSharp.Compiler.Service.0.0.58\lib\net45\FSharp.Compiler.Service.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="FSharp.Data.DesignTime">
-      <HintPath>..\..\bin\FSharp.Data.DesignTime.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Literate">
-      <HintPath>..\..\packages\FSharp.Formatting.2.0.2\lib\net40\FSharp.Literate.dll</HintPath>
+      <HintPath>..\..\packages\FSharp.Formatting.2.4.18\lib\net40\FSharp.Literate.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.Markdown">
-      <HintPath>..\..\packages\FSharp.Formatting.2.0.2\lib\net40\FSharp.Markdown.dll</HintPath>
+      <HintPath>..\..\packages\FSharp.Formatting.2.4.18\lib\net40\FSharp.Markdown.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.MetadataFormat">
-      <HintPath>..\..\packages\FSharp.Formatting.2.0.2\lib\net40\FSharp.MetadataFormat.dll</HintPath>
+      <HintPath>..\..\packages\FSharp.Formatting.2.4.18\lib\net40\FSharp.MetadataFormat.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FSharp.PowerPack">
+      <HintPath>..\..\packages\FSPowerPack.Core.Community.3.0.0.0\Lib\Net40\FSharp.PowerPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FSharp.PowerPack.Linq">
+      <HintPath>..\..\packages\FSPowerPack.Linq.Community.3.0.0.0\Lib\Net40\FSharp.PowerPack.Linq.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.PowerPack.Metadata">
-      <HintPath>..\..\packages\FSharp.Formatting.2.0.2\lib\net40\FSharp.PowerPack.Metadata.dll</HintPath>
+      <HintPath>..\..\packages\FSPowerPack.Metadata.Community.3.0.0.0\Lib\Net40\FSharp.PowerPack.Metadata.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FSharp.PowerPack.Parallel.Seq">
+      <HintPath>..\..\packages\FSPowerPack.Parallel.Seq.Community.3.0.0.0\Lib\Net40\FSharp.PowerPack.Parallel.Seq.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="mscorlib" />
@@ -99,8 +113,8 @@
       <HintPath>..\..\packages\Microsoft.AspNet.Razor.2.0.30506.0\lib\net40\System.Web.Razor.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

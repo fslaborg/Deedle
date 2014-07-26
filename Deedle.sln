@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle", "src\Deedle\Deedle.fsproj", "{22729065-4C30-4E43-A63F-4F3338A03878}"
 EndProject
@@ -14,15 +14,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{245F1283-3
 		docs\content\frame.fsx = docs\content\frame.fsx
 		docs\content\index.fsx = docs\content\index.fsx
 		docs\content\lazysource.fsx = docs\content\lazysource.fsx
-		docs\content\stats.fsx = docs\content\stats.fsx
 		docs\content\rinterop.fsx = docs\content\rinterop.fsx
 		docs\content\series.fsx = docs\content\series.fsx
+		docs\content\stats.fsx = docs\content\stats.fsx
 		docs\content\tutorial.fsx = docs\content\tutorial.fsx
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{B6AFD701-8A05-4A18-A3F3-EDAF8D7530E8}"
 	ProjectSection(SolutionItems) = preProject
 		build.fsx = build.fsx
+		nuget\Deedle.Excel.nuspec = nuget\Deedle.Excel.nuspec
 		nuget\Deedle.nuspec = nuget\Deedle.nuspec
 		nuget\Deedle.RPlugin.nuspec = nuget\Deedle.RPlugin.nuspec
 		nuget\Deedle.RProvider.nuspec = nuget\Deedle.RProvider.nuspec
@@ -41,8 +42,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{8BD8
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{C45F5ABF-7BCD-4C3A-BD51-81E0769E0F29}"
 	ProjectSection(SolutionItems) = preProject
-		docs\tools\generate.fsx = docs\tools\generate.fsx
 		docs\tools\formatters.fsx = docs\tools\formatters.fsx
+		docs\tools\generate.fsx = docs\tools\generate.fsx
 		docs\tools\packages.config = docs\tools\packages.config
 	EndProjectSection
 EndProject
@@ -54,6 +55,8 @@ EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.RProvider.Plugin", "src\Deedle.RProvider.Plugin\Deedle.RProvider.Plugin.fsproj", "{57951E3F-AC36-4AE5-A5F5-D1B86ACA4854}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharp.DocSnippets", "docs\csharp\CSharp.DocSnippets.csproj", "{1700F933-C7B2-48E6-80F3-E1C1B677BA6D}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.Excel", "src\Deedle.Excel\Deedle.Excel.fsproj", "{8C50057D-29EF-41AD-B91A-84B49CDBD047}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +76,10 @@ Global
 		{1700F933-C7B2-48E6-80F3-E1C1B677BA6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1700F933-C7B2-48E6-80F3-E1C1B677BA6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1700F933-C7B2-48E6-80F3-E1C1B677BA6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C50057D-29EF-41AD-B91A-84B49CDBD047}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C50057D-29EF-41AD-B91A-84B49CDBD047}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C50057D-29EF-41AD-B91A-84B49CDBD047}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C50057D-29EF-41AD-B91A-84B49CDBD047}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

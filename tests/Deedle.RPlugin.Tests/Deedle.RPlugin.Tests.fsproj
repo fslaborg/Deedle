@@ -68,13 +68,19 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="RDotNet">
-      <HintPath>..\..\bin\RDotNet.dll</HintPath>
+      <HintPath>..\..\packages\R.Net.Community.1.5.15\lib\net40\RDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="RDotNet.NativeLibrary">
+      <HintPath>..\..\packages\R.Net.Community.1.5.15\lib\net40\RDotNet.NativeLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="RDotNet.FSharp">
+      <HintPath>..\..\packages\R.Net.Community.FSharp.0.1.6\lib\net40\RDotNet.FSharp.dll</HintPath>
     </Reference>
     <Reference Include="RProvider">
-      <HintPath>..\..\packages\RProvider.1.0.13\lib\net40\RProvider.dll</HintPath>
+      <HintPath>..\..\packages\RProvider.1.0.15\lib\net40\RProvider.dll</HintPath>
     </Reference>
     <Reference Include="RProvider.Runtime">
-      <HintPath>..\..\packages\RProvider.1.0.13\lib\net40\RProvider.Runtime.dll</HintPath>
+      <HintPath>..\..\packages\RProvider.1.0.15\lib\net40\RProvider.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

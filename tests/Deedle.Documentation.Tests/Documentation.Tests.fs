@@ -54,9 +54,9 @@ module DocumentationTests =
     if not (Directory.Exists(dir)) then Directory.CreateDirectory(dir) |> ignore
 
     Literate.ProcessScriptFile
-      ( Path.Combine(sources, file), template, Path.Combine(output, file), 
+      ( Path.Combine(sources, file), template, Path.Combine(output, file)) (*, 
         errorHandler = errorHandler,
-        fsharpCompiler = compiler )
+        fsharpCompiler = compiler )*)
     errorCount.Value
 
   // ------------------------------------------------------------------------------------
