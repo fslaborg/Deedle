@@ -511,11 +511,14 @@ let saveToImage filename =
         excelApp.DisplayAlerts <- false
         chart.Delete()
 
-type KeepInSync (collection : INotifyCollectionChanged) =
-    member x.Collection = collection
-
-type DynamicExcel(app) =
+type DynamicExcel(app, ?keepInSync) =
     let mutable localExcelApp : Application=app
+    let mutable keepInSync = defaultArg keepInSync false
+
+    member x.KeepInSync
+        with get () = keepInSync
+        and set (choice) = keepInSync <- choice
+
     member private this.createInstance() = 
         if localExcelApp = null then 
             localExcelApp <- openNewExcelApplication()
@@ -530,15 +533,16 @@ type DynamicExcel(app) =
             Async.StartAsTask <|
                 async {
                     excel.createInstance()
-                    match box value with
-                    | :? KeepInSync as k -> toExcel r <| k.Collection
-                    | _ -> toExcel r <| value
+                    if excel.KeepInSync then
+                        match box value with
+                        | :? INotifyCollectionChanged as c -> toExcel r <| c
+                        | _ -> toExcel r <| value
                     }
             |> ignore
 
         match box value with
-        | :? KeepInSync as k ->
-            k.Collection.CollectionChanged.Add <| fun arg ->
+        | :? INotifyCollectionChanged as c ->
+            c.CollectionChanged.Add <| fun arg ->
                 asyncToExcel()
         | _ -> ()
 

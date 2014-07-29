@@ -9,7 +9,6 @@ will be automatically reflected to Excel.
 #r "OfficeApi.dll"
 #r "VBIDEApi.dll"
 #r "Deedle.dll"
-//#r "Deedle.Excel.dll"
 #load "Excel.fs"
 
 // Define your library scripting code here
@@ -44,9 +43,11 @@ let second = Series(dateRange (DateTime(2014,1,1)) 10, rand 10)
 
 let df1 = Frame(["first"; "second"], [first; second])
 
-// Wrapping the Frame in KeepInSync will ensure that row or column changes
-// in the Frame will be automatically reflected to the Excel sheet.
-xl?A1 <- (KeepInSync(df1))
+// Setting the KeepInSync flag will result in the excel sheet
+// being kept in sync with the Deedle data frame for all frames
+// mapped to an excel sheet through the xl session instance.
+xl.KeepInSync <- true
+xl?A1 <- df1
 
 let third = Series(dateRange (DateTime(2014,1,1)) 10, rand 10)
 df1?third <- third
