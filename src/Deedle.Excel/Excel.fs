@@ -7,6 +7,7 @@ open NetOffice.ExcelApi
 open System
 open System.Collections.Specialized
 open System.Diagnostics
+open System.Reflection
 
 type IExportExcelTable =
     abstract ColumnHeaders : obj[,]
@@ -514,8 +515,12 @@ let saveToImage filename =
 type DynamicExcel(app, ?keepInSync) =
     let mutable localExcelApp : Application=app
     let mutable keepInSync = defaultArg keepInSync false
+    let fsiAssembly =
+        lazy
+            System.AppDomain.CurrentDomain.GetAssemblies()
+            |> Array.tryFind (fun assm -> assm.GetName().Name = "FSI-ASSEMBLY`")
 
-    member x.KeepInSync
+    member this.KeepInSync
         with get () = keepInSync
         and set (choice) = keepInSync <- choice
 
@@ -527,26 +532,34 @@ type DynamicExcel(app, ?keepInSync) =
 
     member this.Reset() = excelApp <- null
     static member (?) (excel : DynamicExcel, r : string) = (getRealRange r).Value2
-    
-    static member (?<-)(excel : DynamicExcel, r : string, value : 'a) : unit = 
-        let asyncToExcel () =
+
+    member this.syncToExcel (r : string, value : 'a, ?sheet : string) =
+        this.createInstance()
+        match sheet with
+        | Some sheetName -> this.SwitchSheet sheetName
+        | None -> ()
+        match box value with
+        | :? INotifyCollectionChanged as c -> toExcel r <| c
+        | _ -> toExcel r <| value
+
+    member this.asyncToExcel (r : string, value : 'a, ?sheet : string, ?force : bool) =
+        if (defaultArg force this.KeepInSync) then
             Async.StartAsTask <|
                 async {
-                    excel.createInstance()
-                    if excel.KeepInSync then
-                        match box value with
-                        | :? INotifyCollectionChanged as c -> toExcel r <| c
-                        | _ -> toExcel r <| value
+                    match sheet with
+                    | Some s -> this.syncToExcel(r, value, s)
+                    | None -> this.syncToExcel(r, value)
                     }
             |> ignore
-
+    
+    static member (?<-)(excel : DynamicExcel, r : string, value : 'a) : unit = 
         match box value with
         | :? INotifyCollectionChanged as c ->
             c.CollectionChanged.Add <| fun arg ->
-                asyncToExcel()
+                excel.asyncToExcel(r, value)
         | _ -> ()
 
-        asyncToExcel()
+        excel.asyncToExcel(r, value, force = true)
 
     member this.SwitchSheet(name : string) = 
         this.createInstance()
@@ -564,7 +577,10 @@ type DynamicExcel(app, ?keepInSync) =
             (?<-) this (defaultArg cell "A1") (seq
                                                |> Seq.map (fun (n, xs) -> (n, Series.ofValues xs))
                                                |> Frame.ofColumns)
-            
+
+    static member FsiToExcel () =
+        ()
+
 let xl = DynamicExcel(excelApp)
 
 type Xl with
@@ -578,4 +594,87 @@ type Xl with
         fun start -> 
             let te = XlHelper.deedleFrameToExcel t
             XlHelper.asTable te start ShowRowHeaders ShowColumnHeaders TableTitle TableStyle ShowFilter
+
+let (|GenericSeries|_|) s =
+    let stype = typeof<Series<_,_>>.GetGenericTypeDefinition()
+    let atype = s.GetType()
+    if atype.IsGenericType && atype.GetGenericTypeDefinition() = stype then
+        Some(atype.GetGenericArguments())
+    else
+        None
+
+let (|GenericFrame|_|) f =
+    let ftype = typeof<Frame<_,_>>.GetGenericTypeDefinition()
+    let atype = f.GetType()
+    if atype.IsGenericType && atype.GetGenericTypeDefinition() = ftype then
+        Some(atype.GetGenericArguments())
+    else
+        None
+
+/// Inspect the FSharp interactive session and find all Series and Frames
+let GetFsiSeriesAndFrames () = [|
+    let fsiAssembly =
+        System.AppDomain.CurrentDomain.GetAssemblies()
+        |> Array.tryFind (fun assm -> assm.GetName().Name = "FSI-ASSEMBLY")
+    let types =
+        match fsiAssembly with
+        | Some fsia -> fsia.GetTypes()
+        | None -> Array.empty
+    for t in types do
+        if t.Name.StartsWith("FSI_") then
+            let flags = BindingFlags.Static ||| BindingFlags.NonPublic ||| BindingFlags.Public
+            for pi in t.GetProperties(flags) do
+                if not(pi.Name.Contains("@"))
+                        && pi.GetIndexParameters().Length = 0
+                        && (pi.PropertyType <> typeof<Unit>)
+                        then
+                    let pv = pi.GetValue(null, Array.empty)
+                    if pv <> null then
+                        match pv with
+                        | GenericSeries argTypes | GenericFrame argTypes ->
+                            yield pi.Name, pi.PropertyType, pi.GetValue(null, Array.empty)
+                        | _ ->
+                            ()
+    |]
+
+let internal makeGenericType (baseType : Type) (types : Type list) =
+    if (not baseType.IsGenericTypeDefinition) then
+        invalidArg "baseType" "The base type must be a generic type definition"
+    baseType.MakeGenericType (types |> List.toArray)
+
+let internal makeISeriesTypeOf itemType =
+    makeGenericType typedefof<ISeries<_>> [ itemType; ]
+
+type internal DynamicFrame =
+    abstract Invoke<'t> : string * 't -> obj
+
+let internal asFrame name aSeries =
+    let TSeries = aSeries.GetType()
+    let TSeriesArgs = TSeries.GetGenericArguments();
+    let TSeriesKey, TSeriesValue = TSeriesArgs.[0], TSeriesArgs.[1]
+    let TFrameColumnKeys = typeof<string>
+    let assembly = System.Reflection.Assembly.GetAssembly(TSeries)
+    let module_ = assembly.GetType("Deedle.FSharpFrameExtensions")
+    let func_ = module_.GetMethod("frame")
+    let TISeriesOfTSeriesValue = makeISeriesTypeOf TSeriesKey
+    let funcOfTSeries = func_.MakeGenericMethod( [| TFrameColumnKeys; TISeriesOfTSeriesValue; TSeriesKey |] )
+    let castTo = { new DynamicFrame with member __.Invoke(name : string, arg : 't) = funcOfTSeries.Invoke(null, [| [ name => arg ]; |]) }
+    let castToMethod = typeof<DynamicFrame>.GetMethod("Invoke")
+    castToMethod.MakeGenericMethod([|TISeriesOfTSeriesValue|]).Invoke(castTo, [|name; aSeries|])
+
+/// Copy all Series and Frames in the FSharp interactive session to
+/// Excel. A sheet is created for each Series and each Frame.
+let FsiToExcel () =
+    Async.StartAsTask <|
+        async {
+            for n, t, v in GetFsiSeriesAndFrames() do
+                xl.SwitchSheet n
+                match v with
+                | GenericSeries typeargs ->
+                    xl.syncToExcel("A1", (asFrame n v), n)
+                | GenericFrame typeargs ->
+                    xl.syncToExcel("A1", v, n)
+                | _ -> ()
+        }
+    |> ignore
 

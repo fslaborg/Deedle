@@ -55,3 +55,10 @@ df1?third <- third
 // It's handy to remember to do this, especially in fsi before restarting your session
 // otherwise, you'll get zombie excel instances that you'll need to kill
 let closeExcel () = excelApp.Dispose()
+
+GetFsiSeriesAndFrames() |> Array.map (fun entry->
+    let n, t, v = entry
+    n
+    )
+
+FsiToExcel()
