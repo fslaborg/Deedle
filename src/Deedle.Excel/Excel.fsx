@@ -11,8 +11,6 @@ will be automatically reflected to Excel.
 #r "Deedle.dll"
 #load "Excel.fs"
 
-// Define your library scripting code here
-
 open System
 open System.Collections.Specialized
 open Deedle
@@ -56,9 +54,12 @@ df1?third <- third
 // otherwise, you'll get zombie excel instances that you'll need to kill
 let closeExcel () = excelApp.Dispose()
 
-GetFsiSeriesAndFrames() |> Array.map (fun entry->
-    let n, t, v = entry
-    n
-    )
+[|
+for values in GetFsiSeriesAndFrames(Array.empty).Values do
+    for v in values do
+        yield v.name
+|]
 
-FsiToExcel()
+let fourth = Series(dateRange (DateTime(2014,1,1)) 10, rand 10)
+// Synchronize all Deedle Series and Frames to Excel
+DeedleToExcel(fsi.AddPrintTransformer)

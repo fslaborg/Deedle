@@ -4,7 +4,9 @@ open Deedle
 
 open NetOffice.ExcelApi
 
+open Microsoft.FSharp.Collections
 open System
+open System.Collections.Generic
 open System.Collections.Specialized
 open System.Diagnostics
 open System.Reflection
@@ -136,7 +138,6 @@ let switchSheet (sheetName : string) =
     | None ->
         let active = getActiveWorkbook()
         let currentSheet = active.ActiveSheet
-        let w = active.Worksheets.Add(null, currentSheet) :?> Worksheet
         let w = active.Worksheets.Add(null, currentSheet) :?> Worksheet
         w.Name <- sheetName
         w.Activate()
@@ -515,6 +516,8 @@ let saveToImage filename =
 type DynamicExcel(app, ?keepInSync) =
     let mutable localExcelApp : Application=app
     let mutable keepInSync = defaultArg keepInSync false
+    let syncLock = obj()
+
     let fsiAssembly =
         lazy
             System.AppDomain.CurrentDomain.GetAssemblies()
@@ -534,6 +537,7 @@ type DynamicExcel(app, ?keepInSync) =
     static member (?) (excel : DynamicExcel, r : string) = (getRealRange r).Value2
 
     member this.syncToExcel (r : string, value : 'a, ?sheet : string) =
+        lock syncLock <| fun () ->
         this.createInstance()
         match sheet with
         | Some sheetName -> this.SwitchSheet sheetName
@@ -551,15 +555,17 @@ type DynamicExcel(app, ?keepInSync) =
                     | None -> this.syncToExcel(r, value)
                     }
             |> ignore
-    
-    static member (?<-)(excel : DynamicExcel, r : string, value : 'a) : unit = 
+
+    member this.registerSyncToExcel (r : string, value : 'a, ?sheet : string) =
         match box value with
         | :? INotifyCollectionChanged as c ->
             c.CollectionChanged.Add <| fun arg ->
-                excel.asyncToExcel(r, value)
+                this.asyncToExcel(r, value, ?sheet = sheet)
         | _ -> ()
-
-        excel.asyncToExcel(r, value, force = true)
+        this.syncToExcel(r, value, ?sheet = sheet)
+    
+    static member (?<-)(excel : DynamicExcel, r : string, value : 'a) : unit = 
+        excel.registerSyncToExcel(r, value)
 
     member this.SwitchSheet(name : string) = 
         this.createInstance()
@@ -577,9 +583,6 @@ type DynamicExcel(app, ?keepInSync) =
             (?<-) this (defaultArg cell "A1") (seq
                                                |> Seq.map (fun (n, xs) -> (n, Series.ofValues xs))
                                                |> Frame.ofColumns)
-
-    static member FsiToExcel () =
-        ()
 
 let xl = DynamicExcel(excelApp)
 
@@ -611,31 +614,43 @@ let (|GenericFrame|_|) f =
     else
         None
 
-/// Inspect the FSharp interactive session and find all Series and Frames
-let GetFsiSeriesAndFrames () = [|
-    let fsiAssembly =
+let internal FsiAssembly =
+    lazy
         System.AppDomain.CurrentDomain.GetAssemblies()
         |> Array.tryFind (fun assm -> assm.GetName().Name = "FSI-ASSEMBLY")
-    let types =
-        match fsiAssembly with
-        | Some fsia -> fsia.GetTypes()
-        | None -> Array.empty
-    for t in types do
-        if t.Name.StartsWith("FSI_") then
-            let flags = BindingFlags.Static ||| BindingFlags.NonPublic ||| BindingFlags.Public
-            for pi in t.GetProperties(flags) do
-                if not(pi.Name.Contains("@"))
-                        && pi.GetIndexParameters().Length = 0
-                        && (pi.PropertyType <> typeof<Unit>)
-                        then
-                    let pv = pi.GetValue(null, Array.empty)
-                    if pv <> null then
-                        match pv with
-                        | GenericSeries argTypes | GenericFrame argTypes ->
-                            yield pi.Name, pi.PropertyType, pi.GetValue(null, Array.empty)
-                        | _ ->
-                            ()
-    |]
+
+let GetCurrentFsiTypes () =
+    match FsiAssembly.Force() with
+    | Some fsia -> fsia.GetTypes()
+    | None -> Array.empty
+
+type FsiVariable = {
+    name : string
+    type_ : Type
+    value : obj
+    }
+
+/// Inspect the FSharp interactive session and find all Series and Frames
+let GetFsiSeriesAndFrames (knownTypes : ICollection<Type>) =
+    dict [|
+        let types = GetCurrentFsiTypes()
+        for t in types do
+            if t.Name.StartsWith("FSI") && not(knownTypes.Contains(t)) then
+                yield t, [|
+                    let flags = BindingFlags.Static ||| BindingFlags.NonPublic ||| BindingFlags.Public
+                    for pi in t.GetProperties(flags) do
+                        if not(pi.Name.Contains("@"))
+                                && pi.GetIndexParameters().Length = 0
+                                && pi.PropertyType <> typeof<Unit>
+                                then
+                            let pv = pi.GetValue(null, Array.empty)
+                            if pv <> null then
+                                match pv with
+                                | GenericSeries argTypes | GenericFrame argTypes ->
+                                    yield { name = pi.Name; type_ = pi.PropertyType; value = pi.GetValue(null, Array.empty); }
+                                | _ -> ()
+                |]
+        |]
 
 let internal makeGenericType (baseType : Type) (types : Type list) =
     if (not baseType.IsGenericTypeDefinition) then
@@ -648,7 +663,7 @@ let internal makeISeriesTypeOf itemType =
 type internal DynamicFrame =
     abstract Invoke<'t> : string * 't -> obj
 
-let internal asFrame name aSeries =
+let asFrame name aSeries =
     let TSeries = aSeries.GetType()
     let TSeriesArgs = TSeries.GetGenericArguments();
     let TSeriesKey, TSeriesValue = TSeriesArgs.[0], TSeriesArgs.[1]
@@ -664,17 +679,34 @@ let internal asFrame name aSeries =
 
 /// Copy all Series and Frames in the FSharp interactive session to
 /// Excel. A sheet is created for each Series and each Frame.
-let FsiToExcel () =
-    Async.StartAsTask <|
-        async {
-            for n, t, v in GetFsiSeriesAndFrames() do
-                xl.SwitchSheet n
-                match v with
-                | GenericSeries typeargs ->
-                    xl.syncToExcel("A1", (asFrame n v), n)
-                | GenericFrame typeargs ->
-                    xl.syncToExcel("A1", v, n)
-                | _ -> ()
-        }
-    |> ignore
+/// As series and frames are added to the session they will be added to
+/// the current Excel workbook as new sheets.
+let DeedleToExcel (addPrintTransformer : ('t -> obj) -> unit) =
+    let variableToExcel (v : FsiVariable) =
+        match v.value with
+        | GenericSeries typeargs ->
+            // series are immutable, no need to register and listen
+            xl.syncToExcel("A1", (asFrame v.name v.value), v.name)
+        | GenericFrame typeargs ->
+            // frames can have rows and columns added, register to listen for changes
+            xl.registerSyncToExcel("A1", v.value, v.name)
+        | _ -> ()
+    let allToExcel (valueCollections : System.Collections.Generic.ICollection<FsiVariable[]>) =
+        Async.StartAsTask <|
+            async {
+                for values in valueCollections do
+                    for v in values do
+                        variableToExcel v
+            }
+        |> ignore
+    let seriesAndFrames = GetFsiSeriesAndFrames Array.empty
+    let knownFsiTypes = new System.Collections.Generic.List<_>(seriesAndFrames.Keys)
+    xl.KeepInSync <- true
+    allToExcel seriesAndFrames.Values
+    addPrintTransformer <| fun (_ : 't) ->
+        let newSeriesAndFrames = GetFsiSeriesAndFrames knownFsiTypes
+        knownFsiTypes.AddRange(newSeriesAndFrames.Keys)
+        allToExcel newSeriesAndFrames.Values
+        null
+
 
