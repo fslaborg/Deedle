@@ -62,8 +62,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Excel.fs" />
+    <None Include="Excel.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
-    <None Include="Excel.fsx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Deedle\Deedle.fsproj">

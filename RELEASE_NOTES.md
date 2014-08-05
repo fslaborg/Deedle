@@ -57,3 +57,6 @@
 
 ### 1.0.3
  * Added Stats.min and Stats.max for frame
+
+### 1.0.4-rc1
+ * Added Excel integration
