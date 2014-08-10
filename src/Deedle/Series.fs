@@ -465,7 +465,7 @@ and
     let vectors = otherSeries |> Array.map (fun s -> s.Vector)
 
     let newIndex, cmd = 
-      indexBuilder.Merge( (index, Vectors.Return 0)::constrs, NaryTransform.AtMostOne )
+      indexBuilder.Merge( (index, Vectors.Return 0)::constrs, BinaryTransform.AtMostOne )
     let newVector = vectorBuilder.Build(cmd, [| yield series.Vector; yield! vectors |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
