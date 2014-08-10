@@ -105,6 +105,6 @@ module internal VectorHelperExtensions =
         unbox<OptionalValue<'R> list -> OptionalValue<'R>> rowReaderFunc
 
   type NaryTransform with
-    static member GetRowReader = 
+    static member RowReader = 
       RowReaderTransform() :> INaryTransform
       |> VectorListTransform.Nary

@@ -82,6 +82,35 @@ let createBoxedVector (vector:IVector<'TValue>) =
         // underlying (more precisely typed) vector of this boxed vector!
         vector.Invoke(site) }
 
+/// Creates a boxed vector - returns IBoxedVector that delegates all functionality to 
+/// the vector specified as an argument and boxes all values on the fly
+let mapVectorLazy f (vector:IVector<'TValue>) : IVector<'TResult> = 
+  { new System.Object() with
+      member x.Equals(another) = vector.Equals(another)
+      member x.GetHashCode() = vector.GetHashCode()
+    interface IVector<'TResult> with
+      member x.GetValue(a) = vector.GetValue(a) |> OptionalValue.map f
+      member x.Data = 
+        match vector.Data with
+        | VectorData.DenseList list -> 
+            VectorData.DenseList(ReadOnlyCollection.map f list)
+        | VectorData.SparseList list ->
+            VectorData.SparseList(ReadOnlyCollection.map (OptionalValue.map f) list)
+        | VectorData.Sequence list ->
+            VectorData.Sequence(Seq.map (OptionalValue.map f) list)
+      member x.Select(g) = vector.Select(f >> g)
+      member x.SelectMissing(rev, g) = vector.SelectMissing(rev |> Option.map (fun f -> f >> unbox), fun addr v -> g addr (OptionalValue.map f v))
+    interface IVector with
+      member x.Length = vector.Length
+      member x.ObjectSequence = vector.ObjectSequence
+      member x.SuppressPrinting = vector.SuppressPrinting
+      member x.ElementType = typeof<obj>
+      member x.GetObject(i) = vector.GetObject(i) 
+      member x.Invoke(site) = 
+        // Note: This means that the call site will be invoked on the 
+        // underlying (more precisely typed) vector of this boxed vector!
+        vector.Invoke(site) }
+
 // --------------------------------------------------------------------------------------
 // Generic operations 
 // --------------------------------------------------------------------------------------
@@ -130,7 +159,8 @@ type BinaryTransform =
   static member inline Create<'T>(operation:OptionalValue<'T> -> OptionalValue<'T> -> OptionalValue<'T>) = 
     { new IBinaryTransform with
         member vt.GetFunction<'R>() = 
-          unbox<OptionalValue<'R> -> OptionalValue<'R> -> OptionalValue<'R>> (box operation) } 
+          unbox<OptionalValue<'R> -> OptionalValue<'R> -> OptionalValue<'R>> (box operation) 
+        member vt.IsMissingUnit = false } 
     |> VectorListTransform.Binary
 
   /// Creates a transformation that applies the specified function on `'T` values 
@@ -138,21 +168,24 @@ type BinaryTransform =
     { new IBinaryTransform with
         member vt.GetFunction<'R>() = (fun (l:OptionalValue<'R>) (r:OptionalValue<'R>) -> 
           if l.HasValue && r.HasValue then OptionalValue((unbox<'R -> 'R -> 'R> (box operation)) l.Value r.Value)
-          else OptionalValue.Missing )}
+          else OptionalValue.Missing )
+        member vt.IsMissingUnit = false }
     |> VectorListTransform.Binary
 
   /// A generic transformation that prefers the left value (if it is not missing)
   static member LeftIfAvailable =
     { new IBinaryTransform with
         member vt.GetFunction<'R>() = (fun (l:OptionalValue<'R>) (r:OptionalValue<'R>) -> 
-          if l.HasValue then l else r) }
+          if l.HasValue then l else r) 
+        member vt.IsMissingUnit = true }
     |> VectorListTransform.Binary
 
   /// A generic transformation that prefers the left value (if it is not missing)
   static member RightIfAvailable =
     { new IBinaryTransform with
         member vt.GetFunction<'R>() = (fun (l:OptionalValue<'R>) (r:OptionalValue<'R>) -> 
-          if r.HasValue then r else l) }
+          if r.HasValue then r else l)
+        member vt.IsMissingUnit = true }
     |> VectorListTransform.Binary
 
   /// A generic transformation that works when at most one value is defined
@@ -160,7 +193,8 @@ type BinaryTransform =
     { new IBinaryTransform with
         member vt.GetFunction<'R>() = (fun (l:OptionalValue<'R>) (r:OptionalValue<'R>) -> 
           if l.HasValue && r.HasValue then invalidOp "Combining vectors failed - both vectors have a value."
-          if l.HasValue then l else r) }
+          if l.HasValue then l else r)
+        member vt.IsMissingUnit = true }
     |> VectorListTransform.Binary
 
 type NaryTransform =
@@ -279,8 +313,8 @@ let (|AsFloatVector|_|) v : option<IVector<float>> =
 /// internal representation of the frame (specified by `data` and `columnCount`).
 /// The type is generic and automatically converts the values from the underlying
 /// (untyped) vector to the specified type.
-type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, columnCount:int64, rowAddress) =
-
+type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddress) =
+  
   // Comparison and get hash code follows the ArrayVector implementation
   override vector.Equals(another) = 
     match another with
@@ -291,7 +325,7 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, columnCo
   override vector.GetHashCode() = vector.DataSequence |> Seq.structuralHash
 
   member private vector.DataArray =
-    Array.init (int columnCount) (fun addr -> (vector :> IVector<_>).GetValue(Address.ofInt addr))
+    Array.init (int data.Length) (fun addr -> (vector :> IVector<_>).GetValue(Address.ofInt addr))
       
   // In the generic vector implementation, we
   // read data as objects and perform conversion
@@ -326,12 +360,12 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, columnCo
 
 /// Creates a virtual vector for reading "row" of a data frame. 
 // For more information, see the `RowReaderVector<'T>` type.
-let inline createRowReader (data:IVector<IVector>) (builder:IVectorBuilder) columnCount rowAddress =
-  RowReaderVector<'T>(data, builder, columnCount, rowAddress) :> IVector<'T>
+let inline createRowReader (data:IVector<IVector>) (builder:IVectorBuilder) rowAddress =
+  RowReaderVector<'T>(data, builder, rowAddress) :> IVector<'T>
  
 /// The same as `createRowReader`, but returns `obj` vector as the result
-let inline createObjRowReader data builder colmap addr : IVector<obj> = 
-  createRowReader data builder colmap addr
+let inline createObjRowReader data builder addr : IVector<obj> = 
+  createRowReader data builder addr
 
 /// Helper type that is used via reflection
 type TryValuesHelper =

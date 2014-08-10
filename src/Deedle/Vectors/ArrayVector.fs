@@ -151,6 +151,7 @@ type ArrayVectorBuilder() =
               | VectorNonOptional data -> 
                   VectorNonOptional(Array.dropRange loRange hiRange data) |> av
 
+
       | GetRange(source, range) ->
           match range with
           | Range(loRange, hiRange) ->
@@ -164,6 +165,7 @@ type ArrayVectorBuilder() =
               | VectorNonOptional data -> 
                   VectorNonOptional(data.[loRange .. hiRange]) |> av
 
+
       | Append(first, second) ->
           // Convert both vectors to ArrayVectors and append them (this preserves
           // the kind of representation - Optional will stay Optional etc.)
@@ -172,6 +174,7 @@ type ArrayVectorBuilder() =
               VectorNonOptional(Array.append first second) |> av
           | AsVectorOptional first, AsVectorOptional second ->
               VectorOptional(Array.append first second) |> av
+
 
       | CombinedRelocations(relocs, op) ->
           // OPTIMIZATION: Matches when we want to combine N vectors (as below) but
@@ -187,65 +190,87 @@ type ArrayVectorBuilder() =
           let merge = op.GetFunction<'T>()
           let count = relocs |> List.map (fun (_, l, _) -> l) |> List.max
           let filled : OptionalValue<_>[] = Array.create (int count) OptionalValue.Missing
+
+          if op.IsMissingUnit then
+              // If the Missing value is unit of the operation, we can start with 
+              // Missing and skip applying the function for values not in the vector
+              // (This gives notable speedup for merging of vectors)
+              for vdata, vreloc in data do
+                for newIndex, oldIndex in vreloc do
+                  let newIndex, oldIndex = Address.asInt newIndex, Address.asInt oldIndex
+                  if oldIndex < vdata.Length && oldIndex >= 0 then
+                    filled.[newIndex] <- merge filled.[newIndex] vdata.[oldIndex]
           
-          // Handle first vector differently - just write the values into the
-          // 'filled' array without merging; all values are initialized to missing
-          let head, rest = List.head data, List.tail data
-          let vdata, vreloc = head
+          else                    
+              // Handle first vector differently - just write the values into the
+              // 'filled' array without merging; all values are initialized to missing
+              let head, rest = List.head data, List.tail data
+              let vdata, vreloc = head
+              for newIndex, oldIndex in vreloc do
+                let newIndex, oldIndex = Address.asInt newIndex, Address.asInt oldIndex
+                if oldIndex < vdata.Length && oldIndex >= 0 then
+                  filled.[newIndex] <- vdata.[oldIndex]
 
-          for newIndex, oldIndex in vreloc do
-            let newIndex, oldIndex = Address.asInt newIndex, Address.asInt oldIndex
-            if oldIndex < vdata.Length && oldIndex >= 0 then
-              filled.[newIndex] <- vdata.[oldIndex]
-
-          // For "2 .. " vectors, merge present values; then iterate over all 
-          // values that have not been accessed (typically when the vector is smaller)
-          // and merge the existing value with missing - this is important e.g. 
-          // because 1 + N/A = N/A
-
-          // The accessed array is created just once and re-used
-          let accessed = Array.create (int count) false
-
-          for vdata, vreloc in rest do
-            for newIndex, oldIndex in vreloc do
-              let newIndex, oldIndex = Address.asInt newIndex, Address.asInt oldIndex
-              if oldIndex < vdata.Length && oldIndex >= 0 then
-                accessed.[newIndex] <- true
-                filled.[newIndex] <- merge filled.[newIndex] vdata.[oldIndex]
-
-            // Merge all values not accessed & reset the accessed array
-            for i = 0 to accessed.Length - 1 do
-              if not accessed.[i] then filled.[i] <- merge filled.[i] OptionalValue.Missing
-              accessed.[i] <- false
+              // For "2 .. " vectors, merge present values; then iterate over all 
+              // values that have not been accessed (typically when the vector is smaller)
+              // and merge the existing value with missing - this is important e.g. 
+              // because 1 + N/A = N/A
+              let accessed = Array.create (int count) false 
+              for vdata, vreloc in rest do
+                for newIndex, oldIndex in vreloc do
+                  let newIndex, oldIndex = Address.asInt newIndex, Address.asInt oldIndex
+                  if oldIndex < vdata.Length && oldIndex >= 0 then
+                    accessed.[newIndex] <- true
+                    filled.[newIndex] <- merge filled.[newIndex] vdata.[oldIndex]
+                // Merge all values not accessed & reset the accessed array
+                for i = 0 to accessed.Length - 1 do
+                  if not accessed.[i] then filled.[i] <- merge filled.[i] OptionalValue.Missing
+                  accessed.[i] <- false
 
           filled |> vectorBuilder.CreateMissing
 
+
       | Combine(vectors, VectorListTransform.Nary (:? IRowReaderTransform)) ->
-          // OPTIMIZATION: 
-          let builder = builder :> IVectorBuilder
+          // OPTIMIZATION: The `IRowReaderTransform` interface is a marker telling us that 
+          // we are creating `IVector<obj`> where `obj` is a boxed `IVector<obj>` 
+          // representing the row formed by all of the specified vectors combined.
+          //
+          // We short-circuit the default implementation (which actually allocates the 
+          // vectors) and we create a vector of virtualized "row readers".
           let data = 
             vectors 
-            |> List.map (fun v -> builder.Build(v, arguments) :> IVector)
+            |> List.map (fun v -> vectorBuilder.Build(v, arguments) :> IVector)
             |> Array.ofSeq
           let length = data |> Seq.map (fun d -> d.Length) |> Seq.max
-          let getRow addr = 
-            box (createObjRowReader (builder.Create data) vectorBuilder (int64 data.Length) addr )
+
+          // Using `createObjRowReader` to get a row reader for a specified address
+          let frameData = lazy vectorBuilder.Create data
+          let getRow addr = createObjRowReader frameData.Value vectorBuilder addr
+
+          // Because Build is `IVector<'T>[] -> IVector<'T>`, there is some nasty boxing.
+          // This case is only called with `'T = obj` and so we create `IVector<obj>` containing 
+          // `obj = IVector<obj>` as the row readers (the caller in Rows then unbox this)
           let rowCount = int length
-          let rows = Array.init rowCount (fun a -> getRow (Address.ofInt a)) 
-          rows |> builder.Create |> unbox
+          let rows = Array.init rowCount (fun a -> box (getRow (Address.ofInt a)))
+          VectorNonOptional(rows) |> av |> unbox
+
 
       | Combine(vectors, op) ->
+          // Handles all remaining Combine cases - construct the vectors to be combined 
+          // recursively and then combine them using a `'T list -> 'T` function (which is
+          // either the specified one or `List.reduce` applied to a binary function)
           let merge = op.GetFunction<'T>()
           let data = vectors |> List.map (fun v -> 
             asVectorOptional (builder.buildArrayVector v arguments))
-
-          let length = data |> Seq.map (fun v -> v.Length) |> Seq.max
-          let filled = Array.init length (fun idx ->
-            data 
-            |> List.map (fun v -> if idx > v.Length then OptionalValue.Missing else v.[idx]) 
-            |> merge)  
-
+          let length = 
+            data |> Seq.map Array.length |> Seq.max
+          let filled = 
+            Array.init length (fun idx ->
+              data 
+              |> List.map (fun v -> if idx > v.Length then OptionalValue.Missing else v.[idx]) 
+              |> merge)  
           vectorBuilder.CreateMissing(filled)
+
 
       | CustomCommand(vectors, f) ->
           let vectors = List.map (fun v -> vectorBuilder.Build(v, arguments) :> IVector) vectors
