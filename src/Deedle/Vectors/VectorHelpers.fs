@@ -96,11 +96,20 @@ let createBoxedVector (vector:IVector<'TValue>) =
         vector.Invoke(site) }
 
 
+/// Used to mark vectors that are just light-weight wrappers over some computation
+/// When vector builders perform operations on those, they might want to use the
+/// fully evaluated unwrapped value so that they can e.g. check for 
+/// interface implementations
+type IWrappedVector<'T> = 
+  inherit IVector<'T>
+  abstract UnwrapVector : unit -> IVector<'T>
+
 /// Creates a vector that lazily applies the specified projection `f` on 
 /// the values of the source `vector`. In general, Deedle does not secretly delay
 /// computations, so this should be used with care. Currently, we only use this
 /// to avoid allocations in `df.Rows`.
 let lazyMapVector f (vector:IVector<'TValue>) : IVector<'TResult> = 
+  let unwrapVector = lazy vector.Select(f)
   { new System.Object() with
       member x.Equals(another) = vector.Equals(another)
       member x.GetHashCode() = vector.GetHashCode()
@@ -117,6 +126,8 @@ let lazyMapVector f (vector:IVector<'TValue>) : IVector<'TResult> =
       member x.Select(g) = vector.Select(f >> g)
       member x.SelectMissing(g) = vector.SelectMissing(fun addr v -> g addr (OptionalValue.map f v))
       member x.Convert(h, g) = invalidOp "lazyMapVector: Conversion is not supported"
+    interface IWrappedVector<'TResult> with
+      member x.UnwrapVector() = unwrapVector.Value
     interface IVector with
       member x.Length = vector.Length
       member x.ObjectSequence = vector.ObjectSequence

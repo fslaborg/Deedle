@@ -266,7 +266,9 @@ type VirtualVectorBuilder() =
                   member x.Invoke(underlying:IVector<'U>) = 
                     boxVector (restrictRange underlying) |> unbox<IVector<'T>> }
                |> boxed.UnboxedVector.Invoke
+          | :? IWrappedVector<'T> as vector -> restrictRange (vector.UnwrapVector())
           | vector -> restrictRange vector 
+
       | Combine(sources, transform) ->
           let builtSources = sources |> List.map (fun source -> VirtualVectorHelpers.unboxVector (build source args)) |> Array.ofSeq
           let allVirtual = builtSources |> Array.forall (fun vec -> vec :? VirtualVector<'T>)
