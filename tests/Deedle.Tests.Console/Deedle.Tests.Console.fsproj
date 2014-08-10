@@ -62,6 +62,21 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Deedle.CSharp.Tests\Deedle.CSharp.Tests.csproj">
+      <Name>Deedle.CSharp.Tests</Name>
+      <Project>{b0584275-6e9d-4db8-a35d-4f37b623f97e}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Deedle.PerfTests\Deedle.PerfTests.fsproj">
+      <Name>Deedle.PerfTests</Name>
+      <Project>{0275c56b-9a00-4578-a826-a6cf1f089086}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Deedle.RPlugin.Tests\Deedle.RPlugin.Tests.fsproj">
+      <Name>Deedle.RPlugin.Tests</Name>
+      <Project>{51d38bde-02e7-45d4-a135-dc478b7c57e9}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\Deedle.Tests\Deedle.Tests.fsproj">
       <Name>Deedle.Tests</Name>
       <Project>{484a96e6-d217-47ee-974c-5d7b3cfb401e}</Project>
