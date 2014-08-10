@@ -142,6 +142,7 @@ type VectorRange =
 /// Representes a "variable" in the mini-DSL below
 type VectorHole = int
 
+
 /// Represent a transformation that is applied when combining two vectors
 /// (because we are combining untyped `IVector` values, the transformation
 /// is also untyped)
@@ -151,6 +152,12 @@ type IBinaryTransform =
   /// type of vector that is being built. Since `VectorConstruction` is not generic,
   /// the type cannot be statically propagated.
   abstract GetFunction<'T> : unit -> (OptionalValue<'T> -> OptionalValue<'T> -> OptionalValue<'T>)
+
+  /// Assuming `*` is the result of `GetFunction`, this property returns true when 
+  /// for all `x` it is the case that `Missing * x = x = x * Missing`. This enables
+  /// certain optimizations (as we do not have to call `*` when one argument is N/A)
+  abstract IsMissingUnit : bool
+
 
 /// Represent a tranformation that is applied when combining N vectors
 type INaryTransform =
