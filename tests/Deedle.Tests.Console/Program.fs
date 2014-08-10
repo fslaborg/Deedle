@@ -87,9 +87,9 @@ let ss2 = series <| Array.init 100 (fun i -> i*2+1 => rnd.NextDouble())
 
 
 let testOne() =      
-
   //Deedle.Tests.VirtualFrame.``Can add computed series as a new column to a frame with the same index``()
   Deedle.Tests.Performance.``Merge 1000 ordered 1k long series (single Merge)``()
+  Deedle.Tests.Frame.``Applying (+) on frame & series introduces missing values``()
 
 (*
   printfn "Slow KeyCount"

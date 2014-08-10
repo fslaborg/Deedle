@@ -173,18 +173,6 @@ type ArrayVectorBuilder() =
           | AsVectorOptional first, AsVectorOptional second ->
               VectorOptional(Array.append first second) |> av
 
-      | Combine([left; right], VectorListTransform.Binary op) ->
-          // OPTIMIZATION: If we have binary operation applied to two vectors,
-          // we can process them more directly (which is hopefuly faster!)
-          match builder.buildArrayVector left arguments,builder.buildArrayVector right arguments with
-          | AsVectorOptional left, AsVectorOptional right ->
-              let merge = op.GetFunction<'T>()
-              let filled = Array.init (max left.Length right.Length) (fun idx ->
-                let lv = if idx >= left.Length then OptionalValue.Missing else left.[idx]
-                let rv = if idx >= right.Length then OptionalValue.Missing else right.[idx]
-                merge lv rv)
-              vectorBuilder.CreateMissing(filled)
-
       | CombinedRelocations(relocs, op) ->
           // OPTIMIZATION: Matches when we want to combine N vectors (as below) but
           // each vector is specified by a Relocate construction. In that case, we do
@@ -198,16 +186,42 @@ type ArrayVectorBuilder() =
             (|AsVectorOptional|) (builder.buildArrayVector v arguments), r)
           let merge = op.GetFunction<'T>()
           let count = relocs |> List.map (fun (_, l, _) -> l) |> List.max
-          let filled = Array.create (int count) OptionalValue.Missing
+          let filled : OptionalValue<_>[] = Array.create (int count) OptionalValue.Missing
           
-          for vdata, vreloc in data do
+          // Handle first vector differently - just write the values into the
+          // 'filled' array without merging; all values are initialized to missing
+          let head, rest = List.head data, List.tail data
+          let vdata, vreloc = head
+
+          for newIndex, oldIndex in vreloc do
+            let newIndex, oldIndex = Address.asInt newIndex, Address.asInt oldIndex
+            if oldIndex < vdata.Length && oldIndex >= 0 then
+              filled.[newIndex] <- vdata.[oldIndex]
+
+          // For "2 .. " vectors, merge present values; then iterate over all 
+          // values that have not been accessed (typically when the vector is smaller)
+          // and merge the existing value with missing - this is important e.g. 
+          // because 1 + N/A = N/A
+
+          // The accessed array is created just once and re-used
+          let accessed = Array.create (int count) false
+
+          for vdata, vreloc in rest do
             for newIndex, oldIndex in vreloc do
               let newIndex, oldIndex = Address.asInt newIndex, Address.asInt oldIndex
               if oldIndex < vdata.Length && oldIndex >= 0 then
+                accessed.[newIndex] <- true
                 filled.[newIndex] <- merge filled.[newIndex] vdata.[oldIndex]
-          vectorBuilder.CreateMissing(filled)
+
+            // Merge all values not accessed & reset the accessed array
+            for i = 0 to accessed.Length - 1 do
+              if not accessed.[i] then filled.[i] <- merge filled.[i] OptionalValue.Missing
+              accessed.[i] <- false
+
+          filled |> vectorBuilder.CreateMissing
 
       | Combine(vectors, VectorListTransform.Nary (:? IRowReaderTransform)) ->
+          // OPTIMIZATION: 
           let builder = builder :> IVectorBuilder
           let data = 
             vectors 
