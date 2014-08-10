@@ -86,7 +86,7 @@ let ss1 = series <| Array.init 100 (fun i -> i*2 => rnd.NextDouble())
 let ss2 = series <| Array.init 100 (fun i -> i*2+1 => rnd.NextDouble())
 
 let testOne() =      
-
+(*
   timed 10 (fun () ->
     s1.Select(fun kvp -> kvp.Value * 2.0) |> ignore
 
@@ -102,7 +102,8 @@ let testOne() =
 
     // 177
   )
-  
+*)
+  ()  
 //  Deedle.Tests.Frame.``Applying (+) on frame & series introduces missing values``()
 
 (*
