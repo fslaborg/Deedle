@@ -462,12 +462,12 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Accessors and slicing]
   member frame.Rows =    
-    let vectors = [ for n in 0L .. columnIndex.KeyCount-1L -> Vectors.Return(int n) ]
+    let vectors = [ for n in Seq.range 0L (columnIndex.KeyCount-1L) -> Vectors.Return(int n) ]
     let cmd = Vectors.Combine(vectors, NaryTransform.RowReader)
     let boxedData = [| for v in data.DataSequence -> boxVector v.Value |]
     let vector = 
       vectorBuilder.Build(cmd, boxedData)
-      |> VectorHelpers.mapVectorLazy (fun o -> 
+      |> VectorHelpers.lazyMapVector (fun o -> 
           let rowReader = unbox<IVector<obj>> o
           ObjectSeries(columnIndex, rowReader, vectorBuilder, indexBuilder) )
     RowSeries<'TRowKey, 'TColumnKey>(rowIndex, vector, frame)    
@@ -533,7 +533,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let rowAddress = rowIndex.Locate(rowKey)
     if rowAddress = Address.Invalid then OptionalValue.Missing
     else 
-      let vector = createRowReader data vectorBuilder columnIndex.KeyCount rowAddress
+      let vector = createRowReader data vectorBuilder rowAddress
       OptionalValue(Series(columnIndex, vector, vectorBuilder, indexBuilder))
 
   /// Returns a row with the specieifed key wrapped in `OptionalValue`. When the specified key 
@@ -697,7 +697,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
         if count >= rowCount then 
           Vector.ofValues (Seq.take count series)
         else
-          let nulls = seq { for i in 1 .. rowCount - count -> None }
+          let nulls = seq { for i in Seq.range 1 (rowCount - count) -> None }
           Vector.ofOptionalValues (Seq.append (Seq.map Some series) nulls)
 
       let series = Series(frame.RowIndex, vector, vectorBuilder, indexBuilder)

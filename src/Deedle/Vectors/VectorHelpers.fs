@@ -82,9 +82,8 @@ let createBoxedVector (vector:IVector<'TValue>) =
         // underlying (more precisely typed) vector of this boxed vector!
         vector.Invoke(site) }
 
-/// Creates a boxed vector - returns IBoxedVector that delegates all functionality to 
-/// the vector specified as an argument and boxes all values on the fly
-let mapVectorLazy f (vector:IVector<'TValue>) : IVector<'TResult> = 
+/// 
+let lazyMapVector f (vector:IVector<'TValue>) : IVector<'TResult> = 
   { new System.Object() with
       member x.Equals(another) = vector.Equals(another)
       member x.GetHashCode() = vector.GetHashCode()

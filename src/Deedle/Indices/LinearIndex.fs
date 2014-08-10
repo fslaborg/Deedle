@@ -129,7 +129,7 @@ type LinearIndex<'K when 'K : equality>
       | _, (Lookup.Greater | Lookup.ExactOrGreater) when ordered.Value ->
           let inclusive = semantics = Lookup.ExactOrGreater
           let addrOpt = Array.binarySearchNearestGreater key comparer inclusive keys
-          let indices = addrOpt |> Option.map (fun v -> seq { v .. keys.Count - 1 })
+          let indices = addrOpt |> Option.map (fun v -> Seq.range v (keys.Count - 1) )
           let indices = defaultArg indices Seq.empty
           indices 
           |> Seq.filter (Address.ofInt >> check)

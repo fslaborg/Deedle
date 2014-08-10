@@ -419,7 +419,7 @@ module ReadOnlyCollection =
   /// Transform all elements of ReadOnlyCollection using the specified function
   let inline map f (list:ReadOnlyCollection<'T>) = 
     let res = Array.zeroCreate list.Count
-    for i in 0 .. list.Count - 1 do res.[i] <- f list.[i]
+    for i = 0 to list.Count - 1 do res.[i] <- f list.[i]
     Array.AsReadOnly(res)
   
   /// Count elements of the ReadOnlyCollection
@@ -581,7 +581,7 @@ module Seq =
     let available = min cacheCount count
     cacheIndex <- (cacheIndex - available + count) % count
     let cacheIndex = cacheIndex
-    seq { for i in 0 .. available - 1 do yield cache.[(cacheIndex + i) % count] }
+    seq { for i in range 0 (available - 1) do yield cache.[(cacheIndex + i) % count] }
     
   // lastFew 3 List.empty<int> |> List.ofSeq = []
   // lastFew 3 [ 1 .. 10 ]  |> List.ofSeq = [ 8; 9; 10]
@@ -605,7 +605,7 @@ module Seq =
     let readNext() = let p = !lastPointer in lastPointer := (!lastPointer + 1) % endCount; lastItems.[p]
     let readRest() = 
       lastPointer := (!lastPointer + endCount - !written) % endCount
-      seq { for i in 1 .. !written -> readNext() }
+      seq { for i in range 1 !written -> readNext() }
 
     use en = getEnumerator input 
     let rec skipToEnd() = 

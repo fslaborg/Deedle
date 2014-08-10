@@ -85,10 +85,17 @@ let s2 = series <| Array.init 1000000 (fun i -> i*2+1 => rnd.NextDouble())
 let ss1 = series <| Array.init 100 (fun i -> i*2 => rnd.NextDouble())
 let ss2 = series <| Array.init 100 (fun i -> i*2+1 => rnd.NextDouble())
 
+let f12 = frame ["S1" => s1; "S2" => s2 ]
 
 let testOne() =      
-  //Deedle.Tests.VirtualFrame.``Can add computed series as a new column to a frame with the same index``()
-  Deedle.Tests.Frame.``Applying (+) on frame & series introduces missing values``()
+
+  timed 5 (fun () ->
+    f12.Rows.KeyCount |> ignore
+
+    // 2135
+  )
+  
+//  Deedle.Tests.Frame.``Applying (+) on frame & series introduces missing values``()
 
 (*
   printfn "Slow KeyCount"
