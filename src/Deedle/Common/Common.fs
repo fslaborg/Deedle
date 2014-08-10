@@ -419,7 +419,7 @@ module ReadOnlyCollection =
   /// Transform all elements of ReadOnlyCollection using the specified function
   let inline map f (list:ReadOnlyCollection<'T>) = 
     let res = Array.zeroCreate list.Count
-    for i = 0 to list.Count - 1 do res.[i] <- f list.[i]
+    for i in 0 .. list.Count - 1 do res.[i] <- f list.[i]
     Array.AsReadOnly(res)
   
   /// Count elements of the ReadOnlyCollection
