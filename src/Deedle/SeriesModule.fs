@@ -430,7 +430,6 @@ module Series =
   let filterAll f (series:Series<'K, 'T>) = 
     series.WhereOptional(fun kvp -> f kvp.Key (OptionalValue.asOption kvp.Value))
 
-
   /// Returns a new series whose values are the results of applying the given function to
   /// values of the original series. This function skips over missing values and call the
   /// function with both keys and values.
@@ -469,9 +468,22 @@ module Series =
   let mapKeys (f:'K -> 'R) (series:Series<'K, 'T>) = 
     series.SelectKeys(fun kvp -> f kvp.Key)
 
-  [<CompiledName("Transform")>]
-  let transform (f:'T -> 'R) (g:'R -> 'T) (series:Series<'K, 'T>) = 
-    series.Transform(Func<_, _>(f), Func<_, _>(g))
+  /// Retruns a new series whose values are converted using the specified conversion function.
+  /// This operation is like `mapValues`, but it requires a pair of function that converts 
+  /// the values in _both ways_. 
+  ///
+  /// ## Parameters
+  ///  - `forward` - Function that converts original values to the new
+  ///  - `backward` - Function that converts new values back to the original
+  ///
+  /// ## Remarks
+  /// This operation is only interesting when working with virtualized data sources. Using the
+  /// `convert` function makes it possible to perfom additional operations on the resulting
+  /// series - for example lookup - by converting the new value back and using the lookup of
+  /// the underlying virtualized source.
+  [<CompiledName("Convert")>]
+  let convert (forward:'T -> 'R) (backward:'R -> 'T) (series:Series<'K, 'T>) = 
+    series.Convert(Func<_, _>(forward), Func<_, _>(backward))
 
   /// Given a series containing optional values, flatten the option values.
   /// That is, `None` values become missing values of the series and `Some` values
@@ -1289,7 +1301,7 @@ module Series =
   let internal sortByCommand (f:'T -> 'V) (series:Series<'K, 'T>) =
     let index = series.Index
     let vector = series.Vector
-    let fseries = Series(index, vector.SelectMissing(None, fun _ -> OptionalValue.map f), series.VectorBuilder, series.IndexBuilder)
+    let fseries = Series(index, vector.SelectMissing(fun _ -> OptionalValue.map f), series.VectorBuilder, series.IndexBuilder)
     fseries |> sortWithCommand compare
 
   /// Returns a new series, containing the observations of the original series sorted using

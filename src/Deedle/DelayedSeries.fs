@@ -178,8 +178,9 @@ type internal DelayedVector<'K, 'V when 'K : equality> internal (source:DelayedS
   interface IVector<'V> with
     member x.GetValue(index) = source.Values.GetValue(index)
     member x.Data = source.Values.Data
-    member x.SelectMissing(rev, f) = source.Values.SelectMissing(rev, f)
+    member x.SelectMissing(f) = source.Values.SelectMissing(f)
     member x.Select(f) = source.Values.Select(f)
+    member x.Convert(f, g) = source.Values.Convert(f, g)
 
 
 /// Delayed index that is lnked to a DelayedSource specified during construction

@@ -355,32 +355,18 @@ and
 
   /// [category:Projection and filtering]
   member x.Select<'R>(f:System.Func<KeyValuePair<'K, 'V>, int, 'R>) = 
-    
-    // TODO: Review the change here - does it make things faster? slower? neutral?
-
-    let newVector = vector.SelectMissing(None, fun addr value ->
+    let newVector = vector.SelectMissing(fun addr value ->
       value |> OptionalValue.bind (fun v -> 
-        // If a required value is missing, then skip over this
         let key = index.KeyAt(addr)
         try OptionalValue(f.Invoke(KeyValuePair(key, v), Address.asInt addr))
         with :? MissingValueException -> OptionalValue.Missing ))  
-    (*
-    let newVector = vectorBuilder.InitMissing(index.KeyCount, fun addr ->
-      vector.GetValue(addr) |> OptionalValue.bind (fun v -> 
-        // If a required value is missing, then skip over this
-        let key = index.KeyAt(addr)
-        try OptionalValue(f.Invoke(KeyValuePair(key, v), Address.asInt addr))
-        with :? MissingValueException -> OptionalValue.Missing ))  
-    *)
+
     let newIndex = indexBuilder.Project(index)
     Series<'K, 'R>(newIndex, newVector, vectorBuilder, indexBuilder )
 
   /// [category:Projection and filtering]
-  member x.Transform<'R>(forward:System.Func<'V, 'R>, reverse:System.Func<'R, 'V>) = 
-    let newVector = vector.SelectMissing(Some reverse.Invoke, fun _ value ->
-      value |> OptionalValue.bind (fun v -> 
-        try OptionalValue(forward.Invoke(v))
-        with :? MissingValueException -> OptionalValue.Missing ))  
+  member x.Convert<'R>(forward:System.Func<'V, 'R>, backward:System.Func<'R, 'V>) = 
+    let newVector = vector.Convert(forward.Invoke, backward.Invoke)
     let newIndex = indexBuilder.Project(index)
     Series<'K, 'R>(newIndex, newVector, vectorBuilder, indexBuilder )
 

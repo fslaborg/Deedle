@@ -280,10 +280,11 @@ and IIndexBuilder =
   /// Drop an item associated with the specified key from the index. 
   abstract DropItem : SeriesConstruction<'K> * 'K -> SeriesConstruction<'K> 
 
-  /// Get items associated with the specified key from the index. This method takes
-  /// `ICustomLookup<K>` which provides an implementation of `ICustomKey<K>`. This 
-  /// is used for custom equality testing (for example, when getting a level of a hierarchical index)
-  abstract Search : SeriesConstruction<'K> * IVector<'V> * 'V -> SeriesConstruction<'K>
+  /// Get a series construction that restricts the range of the input to only 
+  /// locations where the specified vector contains the specified value.
+  /// (used to filter frame rows according to a column value)
+  abstract Search<'K, 'V when 'K : equality and 'V : equality> : 
+    SeriesConstruction<'K> * IVector<'V> * 'V -> SeriesConstruction<'K>
 
   /// Get items associated with the specified key from the index. This method takes
   /// `ICustomLookup<K>` which provides an implementation of `ICustomKey<K>`. This 

@@ -93,16 +93,19 @@ and IVector<'T> =
 
   /// Apply the specified function to all values stored in the vector and return
   /// a new vector (not necessarily of the same representation) with the results.
-  abstract Select : ('T -> 'TNew) -> IVector<'TNew>
+  /// The function handles missing values - it is called with optional values and
+  /// may return a missing value as a result of the transformation.
+  abstract SelectMissing : (Address -> OptionalValue<'T> -> OptionalValue<'TNew>) -> IVector<'TNew>
 
   /// Apply the specified function to all values stored in the vector and return
   /// a new vector (not necessarily of the same representation) with the results.
-  /// The function handles missing values - it is called with optional values and
-  /// may return a missing value as a result of the transformation.
-  abstract SelectMissing : option<'TNew -> 'T> * (Address -> OptionalValue<'T> -> OptionalValue<'TNew>) -> IVector<'TNew>
+  abstract Select : ('T -> 'TNew) -> IVector<'TNew>
 
-  // TODO: Cleanup the 'SelectMissing' method a bit
-  // (Optional reverse lookup lets us do useful things in virtual vectors...)
+  /// Create a vector whose values are converted using the specified function, but
+  /// can be converted back using another specified function. For virtualized vectors,
+  /// this enables e.g. efficient lookup on the returned vectors (by delegating the
+  /// lookup to the original source)
+  abstract Convert : ('T -> 'TNew) * ('TNew -> 'T) -> IVector<'TNew>
 
 
 /// Module with extensions for generic vector type. Given `vec` of type `IVector<T>`, 
@@ -128,24 +131,25 @@ open Deedle
 open Deedle.Internal
 open Deedle.Addressing
 
-/// Represents a range inside a vector
-/// type VectorRange = Address * Address
-
-type IVectorRange = 
-  inherit seq<int64>
-  abstract Count : int64
-
+/// Represents a range inside a vector. This can be either a continuous range as 
+/// specified by `Range` or a custom range that can be turned into a sequence of indices. 
 type VectorRange =
   | Range of int64 * int64
   | Custom of IVectorRange
 
+/// A sequence of indicies together with the total number. Use `VectorRange.ofSeq` to
+/// create one from a sequence. This can be implemented by concrete vector/index 
+/// builders to allow further optimizations (e.g. when the underlying source directly
+/// supports range operations)
+and IVectorRange = 
+  inherit seq<int64>
+  abstract Count : int64
+
 /// Representes a "variable" in the mini-DSL below
 type VectorHole = int
 
-
-/// Represent a transformation that is applied when combining two vectors
-/// (because we are combining untyped `IVector` values, the transformation
-/// is also untyped)
+/// Represent a transformation that is applied when combining two vectors (because 
+/// we are combining untyped `IVector` values, the transformation is also untyped)
 type IBinaryTransform =
   /// Returns a function that combines two values stored in vectors into a new vector value.
   /// Although generic, this function will only be called with the `T` set to the
@@ -158,19 +162,25 @@ type IBinaryTransform =
   /// certain optimizations (as we do not have to call `*` when one argument is N/A)
   abstract IsMissingUnit : bool
 
-
 /// Represent a tranformation that is applied when combining N vectors
+/// (This follows exactly the same pattern as `IBinaryTransform`)
 type INaryTransform =
   /// Returns a function that combines N values stored in vectors into a new vector value
   abstract GetFunction<'T> : unit -> (OptionalValue<'T> list -> OptionalValue<'T>)
 
-type IRowReaderTransform = interface end
-
+/// A transformation on vector(s) can specified as binary or as N-ary. A binary transformation
+/// can be applied to N elements using `List.reduce`, but allows optimizations.
 [<RequireQualifiedAccess>]
 type VectorListTransform = 
   | Binary of IBinaryTransform
   | Nary of INaryTransform
   
+/// When an `INaryTransform` implements this interface, it is a special well-known
+/// transformation that creates a _row reader_ vector to be used in `frame.Rows`.
+/// (See the implementation in the `Build` operation in `ArrayVector.fs`)
+type IRowReaderTransform = 
+  inherit INaryTransform
+
 /// Specifies how to fill missing values in a vector (when using the 
 /// `VectorConstruction.FillMissing` command). This can only fill missing
 /// values using strategy that does not require access to index keys - 

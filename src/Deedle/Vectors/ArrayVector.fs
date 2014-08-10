@@ -150,7 +150,11 @@ type ArrayVectorBuilder() =
                   vectorBuilder.CreateMissing(Array.dropRange loRange hiRange data) 
               | VectorNonOptional data -> 
                   VectorNonOptional(Array.dropRange loRange hiRange data) |> av
-
+          
+          | Custom range ->
+              // NOTE: This is never currently needed in Deedle 
+              // (DropRange is only used when dropping a single item at the moment)
+              failwith "DropRange does not support Custom ranges at he moment"
 
       | GetRange(source, range) ->
           match range with
@@ -164,6 +168,15 @@ type ArrayVectorBuilder() =
                   vectorBuilder.CreateMissing(data.[loRange .. hiRange])
               | VectorNonOptional data -> 
                   VectorNonOptional(data.[loRange .. hiRange]) |> av
+
+          | Custom(indices) ->
+              // Get vector with the specified indices. Optional may turn to 
+              // NonOptional, but NonOptional will stay NonOptional
+              match builder.buildArrayVector source arguments with 
+              | VectorOptional data ->
+                  [| for idx in indices -> data.[int idx] |] |> vectorBuilder.CreateMissing 
+              | VectorNonOptional data ->
+                  [| for idx in indices -> data.[int idx] |] |> VectorNonOptional |> av
 
 
       | Append(first, second) ->
@@ -333,7 +346,7 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
 
     // A version of Select that can transform missing values to actual values (we always 
     // end up with array that may contain missing values, so use CreateMissing)
-    member vector.SelectMissing<'TNewValue>(_, f) = 
+    member vector.SelectMissing<'TNewValue>(f) = 
       let flattenNA = MissingValues.flattenNA<'TNewValue>() 
       let data = 
         match representation with
@@ -349,5 +362,7 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
       | VectorNonOptional data ->
           data |> Array.map f |> ArrayVectorBuilder.Instance.Create
       | VectorOptional data ->
-          data |> Array.map (OptionalValue.map f)
-          |> ArrayVectorBuilder.Instance.CreateMissing
+          data |> Array.map (OptionalValue.map f) |> ArrayVectorBuilder.Instance.CreateMissing
+
+    // Conversion on array vectors does not deleay
+    member vector.Convert(f, _) = (vector :> IVector<'T>).Select(f)

@@ -453,7 +453,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Accessors and slicing]
   member frame.ColumnsDense = 
-    let newData = data.SelectMissing(None, fun _ vect -> 
+    let newData = data.SelectMissing(fun _ vect -> 
       // Assuming that the data has all values - which should be an invariant...
       let all = rowIndex.Mappings |> Seq.forall (fun (KeyValue(key, addr)) -> vect.Value.GetObject(addr).HasValue)
       if all then OptionalValue(ObjectSeries(rowIndex, boxVector vect.Value, vectorBuilder, indexBuilder))
@@ -1402,6 +1402,7 @@ and FrameUtils =
               else OptionalValue.Missing)
             it.Vector :> IVector }
       |> VectorHelpers.createValueDispatcher
+    
     // Create data vectors
     let data = 
       columnIndex.Keys 
@@ -1415,7 +1416,7 @@ and FrameUtils =
             let someValue = defaultArg someValue (obj())
             columnCreator key someValue
           with :? System.InvalidCastException | :? System.FormatException ->
-            // If that failes, the sequence is heterogeneous
+            // If that fails, the sequence is heterogeneous
             // so we try again and pass object as a witness
             columnCreator key (obj()) )
       |> Array.ofSeq |> FrameUtils.vectorBuilder.Create

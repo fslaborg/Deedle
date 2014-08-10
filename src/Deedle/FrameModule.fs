@@ -964,6 +964,19 @@ module Frame =
     frame.Rows |> Series.filterValues f |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnKeys
 
 
+  /// Returns a new data frame containing only the rows of the input frame
+  /// for which the specified `column` has the specified `value`. The operation
+  /// may be implemented via an index for virtualized Deedle frames.
+  /// 
+  /// ## Parameters
+  ///  - `frame` - Input data frame to be transformed
+  ///  - `column` - The name of the column to be matched
+  ///  - `value` - Required value of the column. Note that the function
+  ///    is generic and no conversions are performed, so the value has
+  ///    to match including the actual type.
+  ///
+  /// [category:Frame transformations]
+  [<CompiledName("WhereRowsBy")>]
   let filterRowsBy column (value:'V) (frame:Frame<'R, 'C>) = 
     let column = frame.GetColumn<'V>(column)
     let newRowIndex, cmd = 

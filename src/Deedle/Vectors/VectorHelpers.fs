@@ -35,10 +35,21 @@ let prettyPrintVector (vector:IVector<'T>) =
   | VectorData.Sequence list -> printSequence "seq" (Seq.map (fun v -> v.ToString()) list) 
 
 type VectorRange with
+  /// Returns the number of elements in the range
   member x.Count = 
     match x with
     | Custom c -> c.Count
     | Range (lo, hi) -> hi - lo + 1L
+
+  /// Creates a `Custom` range from a sequence of indices
+  static member ofSeq(indices, count) =
+    { new IVectorRange with
+        member x.Count = count
+      interface seq<int64> with 
+        member x.GetEnumerator() = (indices :> seq<_>).GetEnumerator() 
+      interface System.Collections.IEnumerable with
+        member x.GetEnumerator() = indices.GetEnumerator() :> _ } 
+    |> VectorRange.Custom
 
 // --------------------------------------------------------------------------------------
 // Derived/wrapped implementations of the IVector<'T> interface
@@ -50,6 +61,7 @@ type VectorRange with
 type IBoxedVector = 
   inherit IVector<obj>
   abstract UnboxedVector : IVector
+
 
 /// Creates a boxed vector - returns IBoxedVector that delegates all functionality to 
 /// the vector specified as an argument and boxes all values on the fly
@@ -70,7 +82,8 @@ let createBoxedVector (vector:IVector<'TValue>) =
         | VectorData.Sequence list ->
             VectorData.Sequence(Seq.map (OptionalValue.map box) list)
       member x.Select(f) = vector.Select(f)
-      member x.SelectMissing(rev, f) = vector.SelectMissing(rev |> Option.map (fun f -> f >> unbox), fun addr v -> f addr (OptionalValue.map box v))
+      member x.SelectMissing(f) = vector.SelectMissing(fun addr v -> f addr (OptionalValue.map box v))
+      member x.Convert(f, g) = vector.Convert(box >> f, g >> unbox)
     interface IVector with
       member x.Length = vector.Length
       member x.ObjectSequence = vector.ObjectSequence
@@ -82,7 +95,11 @@ let createBoxedVector (vector:IVector<'TValue>) =
         // underlying (more precisely typed) vector of this boxed vector!
         vector.Invoke(site) }
 
-/// 
+
+/// Creates a vector that lazily applies the specified projection `f` on 
+/// the values of the source `vector`. In general, Deedle does not secretly delay
+/// computations, so this should be used with care. Currently, we only use this
+/// to avoid allocations in `df.Rows`.
 let lazyMapVector f (vector:IVector<'TValue>) : IVector<'TResult> = 
   { new System.Object() with
       member x.Equals(another) = vector.Equals(another)
@@ -98,17 +115,15 @@ let lazyMapVector f (vector:IVector<'TValue>) : IVector<'TResult> =
         | VectorData.Sequence list ->
             VectorData.Sequence(Seq.map (OptionalValue.map f) list)
       member x.Select(g) = vector.Select(f >> g)
-      member x.SelectMissing(rev, g) = vector.SelectMissing(rev |> Option.map (fun f -> f >> unbox), fun addr v -> g addr (OptionalValue.map f v))
+      member x.SelectMissing(g) = vector.SelectMissing(fun addr v -> g addr (OptionalValue.map f v))
+      member x.Convert(h, g) = invalidOp "lazyMapVector: Conversion is not supported"
     interface IVector with
       member x.Length = vector.Length
       member x.ObjectSequence = vector.ObjectSequence
       member x.SuppressPrinting = vector.SuppressPrinting
-      member x.ElementType = typeof<obj>
+      member x.ElementType = typeof<'TResult>
       member x.GetObject(i) = vector.GetObject(i) 
-      member x.Invoke(site) = 
-        // Note: This means that the call site will be invoked on the 
-        // underlying (more precisely typed) vector of this boxed vector!
-        vector.Invoke(site) }
+      member x.Invoke(site) = invalidOp "lazyMapVector: Invocation is not supported" }
 
 // --------------------------------------------------------------------------------------
 // Generic operations 
@@ -214,6 +229,8 @@ type NaryTransform =
     |> VectorListTransform.Nary
 
 type VectorListTransform with
+  /// Returns a function that can aggregate a list of values. This is either the
+  /// original N-ary reduce function or binary function extended using List.reduce
   member x.GetFunction<'T>() = 
     match x with
     | VectorListTransform.Nary n -> n.GetFunction<'T>()
@@ -246,7 +263,7 @@ let changeType<'R> (vector:IVector) =
   | vector ->
       { new VectorCallSite<IVector<'R>> with
           override x.Invoke<'T>(col:IVector<'T>) = 
-            col.SelectMissing(Some(Convert.changeType<'T>), fun a -> OptionalValue.map Convert.changeType<'R>) }
+            col.Convert(Convert.changeType<'R>, Convert.changeType<'T>) }
       |> vector.Invoke
 
 // A "generic function" that tries to change the type of vector elements
@@ -337,16 +354,18 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddre
     member vector.Data = 
       vector.DataArray |> ReadOnlyCollection.ofArray |> VectorData.SparseList 
 
-    member vector.Select(f) = 
-      (vector :> IVector<_>).SelectMissing(None, fun _ -> OptionalValue.map f)
-
-    member vector.SelectMissing(_, f) = 
+    member vector.SelectMissing(f) = 
       let isNA = MissingValues.isNA<'TNewValue>() 
       let flattenNA (value:OptionalValue<_>) = 
         if value.HasValue && isNA value.Value then OptionalValue.Missing else value
       let data = vector.DataArray |> Array.mapi (fun i v -> f (Address.ofInt i) v |> flattenNA)
       builder.CreateMissing(data)
 
+    member vector.Select(f) = 
+      (vector :> IVector<_>).SelectMissing(fun _ -> OptionalValue.map f)
+
+    member vector.Convert(f, _) = (vector :> IVector<_>).Select(f)
+      
   // Non-generic interface is fully implemented as "virtual"   
   interface IVector with
     member x.Length = data.Length
