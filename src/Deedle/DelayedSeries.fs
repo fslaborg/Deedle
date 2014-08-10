@@ -155,6 +155,9 @@ type internal DelayedSource<'K, 'V when 'K : equality>
   member x.Index = fst asyncData.Value.Result
   member x.Values = snd asyncData.Value.Result
 
+  member x.With(?loader, ?ranges) =  
+    DelayedSource<'K, 'V>(rangeMin, rangeMax, defaultArg ranges x.Ranges, defaultArg loader x.Loader) 
+
 // --------------------------------------------------------------------------------------
 // Delayed vector, index & index builder
 // --------------------------------------------------------------------------------------
@@ -167,6 +170,7 @@ type internal DelayedVector<'K, 'V when 'K : equality> internal (source:DelayedS
   // of the data and then delegate the request to the actual vector
   interface IVector with
     member val ElementType = typeof<'V>
+    member x.Length = source.Values.Length
     member x.SuppressPrinting = true
     member x.GetObject(index) = source.Values.GetObject(index)
     member x.ObjectSequence = source.Values.ObjectSequence
@@ -174,7 +178,7 @@ type internal DelayedVector<'K, 'V when 'K : equality> internal (source:DelayedS
   interface IVector<'V> with
     member x.GetValue(index) = source.Values.GetValue(index)
     member x.Data = source.Values.Data
-    member x.SelectMissing(f) = source.Values.SelectMissing(f)
+    member x.SelectMissing(rev, f) = source.Values.SelectMissing(rev, f)
     member x.Select(f) = source.Values.Select(f)
 
 
@@ -183,7 +187,7 @@ type internal DelayedVector<'K, 'V when 'K : equality> internal (source:DelayedS
 type internal DelayedIndex<'K, 'V when 'K : equality> internal (source:DelayedSource<'K, 'V>) = 
   member x.Source = source
   interface IIndex<'K> with
-    member x.KeyAt index = source.Index.KeyAt index
+    member x.KeyAt index = source.Index.KeyAt index 
     member x.KeyCount = source.Index.KeyCount
     member x.IsEmpty = false
     member x.Builder = DelayedIndexBuilder() :> IIndexBuilder
@@ -224,11 +228,13 @@ and internal DelayedIndexBuilder() =
     member x.Union(sc1, sc2) = builder.Union(sc1, sc2)
     member x.Intersect(sc1, sc2) = builder.Intersect(sc1, sc2)
     member x.Merge(scs, transform) = builder.Merge(scs, transform)
+    member x.Search(sc, idx, value) = builder.Search(sc, idx, value)
     member x.LookupLevel(sc, key) = builder.LookupLevel(sc, key)
     member x.WithIndex(index1, f, vector) = builder.WithIndex(index1, f, vector)
     member x.Reindex(index1, index2, semantics, vector, cond) = builder.Reindex(index1, index2, semantics, vector, cond)
     member x.DropItem(sc, key) = builder.DropItem(sc, key)
     member x.Resample(index, keys, close, vect, selector) = builder.Resample(index, keys, close, vect, selector)
+    member this.GetAddressRange( (index:IIndex<'K>, vector), range) = builder.GetAddressRange( (index, vector), range) 
     
     member x.Project(index:IIndex<'K>) = 
       // If the index is delayed, then projection evaluates it
@@ -261,7 +267,7 @@ and internal DelayedIndexBuilder() =
       | _ ->
         builder.AsyncMaterialize((index, vector))
 
-    member x.GetRange(index, optLo:option<'K * _>, optHi:option<'K * _>, vector) = 
+    member x.GetRange((index, vector), (optLo:option<'K * _>, optHi:option<'K * _>)) = 
       match index with
       | :? IDelayedIndex<'K> as index ->
         // Use 'index.Invoke' to run the 'Invoke' method of the following
@@ -277,7 +283,7 @@ and internal DelayedIndexBuilder() =
               // range and returns a source for this portion of data
               let restrictSource otherRange loader = 
                 let ranges = Intersect(range, otherRange)
-                DelayedSource<'K, 'V>(index.Source.RangeMin, index.Source.RangeMax, ranges, loader)
+                index.Source.With(ranges=ranges, loader=loader)
                 
               // Create a new Delayed source for this index with more restricted range
               let source = restrictSource index.Source.Ranges index.Source.Loader
@@ -293,15 +299,11 @@ and internal DelayedIndexBuilder() =
                       let source = restrictSource lv.Source.Ranges lv.Source.Loader
                       DelayedVector(source) :> IVector
                 | _ -> 
-                    //let  = builder.GetRange(index, optLo, optHi, Vectors.Return 0)
-                    //ArrayVector.ArrayVectorBuilder.Instance.Build(cmd, [| vector |])
-                    
-
                     failwith "TODO: This should probably be supported?")
               newIndex :> IIndex<'K>, cmd }
         |> index.Invoke
       | _ ->
-        builder.GetRange(index, optLo, optHi, vector)
+        builder.GetRange( (index, vector), (optLo, optHi) )
 
 // --------------------------------------------------------------------------------------
 // Public API for creating delayed series

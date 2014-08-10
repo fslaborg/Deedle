@@ -3,7 +3,7 @@
 #load "Deedle.fsx"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #r "../../packages/FsCheck.0.9.1.0/lib/net40-Client/FsCheck.dll"
-#r "../../packages/FSharp.Data.2.0.5/lib/net40/FSharp.Data.dll"
+#r "../../packages/FSharp.Data.2.0.8/lib/net40/FSharp.Data.dll"
 #load "../Common/FsUnit.fs"
 #else
 module Deedle.Tests.Frame
@@ -45,7 +45,7 @@ let ``Can create empty data frame and empty series`` () =
 let ``Can read MSFT data from CSV file`` () =
   let df = msft()
   df.RowKeys |> Seq.length |> shouldEqual 6527
-  df.ColumnKeys |> Seq.length |> shouldEqual 7
+  df.ColumnKeys |> Seq.length |> shouldEqual 6
 
 [<Test>]
 let ``Can read MSFT data from CSV file truncated`` () =
@@ -54,10 +54,18 @@ let ``Can read MSFT data from CSV file truncated`` () =
   df.ColumnKeys |> Seq.length |> shouldEqual 7
 
 [<Test>]
+let ``Can read MSFT data from CSV file using a specified index column`` () =
+  let df = Frame.ReadCsv<DateTime>(__SOURCE_DIRECTORY__ + "/data/MSFT.csv", "Date", inferRows=10, maxRows=27) 
+  df.RowKeys |> Seq.length |> shouldEqual 27
+  df.ColumnKeys |> Seq.length |> shouldEqual 6
+  df.RowKeys |> Seq.head |> shouldEqual (DateTime(2012, 1, 27))
+
+[<Test>]
 let ``Can read MSFT data from CSV file without header row`` () =
   let df = msftNoHeaders()
   let expected = msft()  
-  let actual = df |> Frame.indexColsWith expected.ColumnKeys |> Frame.indexRowsDate "Date"
+  let colKeys = Seq.append ["Date"] expected.ColumnKeys
+  let actual = df |> Frame.indexColsWith colKeys |> Frame.indexRowsDate "Date"
   actual |> shouldEqual expected 
 
 [<Test>]
@@ -83,8 +91,8 @@ let ``Can save MSFT data as CSV file and read it afterwards (with default args)`
   let file = System.IO.Path.GetTempFileName()
   let expected = msft()
   expected.SaveCsv(file)
-  let actual = Frame.ReadCsv(file) |> Frame.indexRowsDate "Date"
-  actual |> shouldEqual expected
+  let actual = Frame.ReadCsv(file) 
+  actual |> shouldEqual (Frame.indexRowsOrdinally expected)
 
 [<Test>]
 let ``Saving dates uses consistently invariant cultrue by default`` () =
@@ -107,13 +115,11 @@ let ``Can save MSFT data as CSV file and read it afterwards (with custom format)
   let file = System.IO.Path.GetTempFileName()
   let cz = System.Globalization.CultureInfo.GetCultureInfo("cs-CZ")
   let expected = msft()
-  expected.DropColumn("Date")
   expected.SaveCsv(file, keyNames=["Date"], separator=';', culture=cz)
   let actual = 
     Frame.ReadCsv(file, separators=";", culture="cs-CZ")
     |> Frame.indexRowsString "Date" 
     |> Frame.mapRowKeys (fun s -> DateTime.Parse(s, cz) )
-    |> Frame.dropCol "Date"
   actual |> shouldEqual expected
 
 [<Test>]
@@ -182,6 +188,13 @@ let ``Can read simple sequence of records`` () =
   let df = Frame.ofRecords prices
   set df.ColumnKeys |> shouldEqual (set ["Open"; "High"; "Low"; "Close"])
   df |> Frame.countRows |> shouldEqual prices.Length
+
+[<Test>]  
+let ``Can read simple sequence of records using a specified column as index`` () =
+  let rows = typedRows ()
+  let df = Frame.ofRecords<DateTime>(rows, "Date") 
+  set df.ColumnKeys |> shouldEqual (set ["Volume"; "Price"])
+  df.RowKeys |> Seq.head |> shouldEqual rows.[0].Date
 
 [<Test>]  
 let ``Can expand properties of a simple record sequence`` () =
@@ -485,7 +498,7 @@ let ``Can group 10x5k data frame by row of type string and nest it (in less than
 
 [<Test>]
 let ``Applying numerical operation to frame does not affect non-numeric series`` () =
-  let df = msft() * 2.0
+  let df = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/MSFT.csv", inferRows=10) * 2.0
   let actual = df.GetColumn<DateTime>("Date").GetAt(0).Date 
   actual |> shouldEqual (DateTime(2012, 1, 27))
   
@@ -1146,7 +1159,20 @@ let ``Can index rows using transformation function``() =
     Frame.ofColumns [ "A" => series [ 3.0 => 1.0; 4.0 => 2.0 ]; 
                       "B" => series [ 3.0 => 2.0; 4.0 => 3.0 ] ]
   actual |> shouldEqual expected
-  
+
+[<Test>]
+let ``Indexing with a column drops the column from the frame by default``() =
+  let sample = 
+    [ "K" =?> series [ 1 => 1; 2 => 2 ]
+      "A" =?> series [ 1 => 1.0; 2 => 2.0 ]
+      "B" =?> series [ 1 => 2.0; 2 => 3.0 ] ] |> frame
+
+  let actual = sample |> Frame.indexRowsInt "K"
+  set actual.ColumnKeys |> shouldEqual <| set ["A"; "B"]
+  let actual = sample.IndexRows<int>("K")
+  set actual.ColumnKeys |> shouldEqual <| set ["A"; "B"]
+  let actual = sample.IndexRows<int>("K", keepColumn=true)
+  set actual.ColumnKeys |> shouldEqual <| set ["K"; "A"; "B"]  
 
 [<Test>]
 let ``Can reindex ordinally``() =

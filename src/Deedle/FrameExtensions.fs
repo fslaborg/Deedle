@@ -152,58 +152,58 @@ type Frame =
   // sequence of (series / kvps / kvps with object series)
 
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
-  static member FromColumns(rows:seq<Series<'ColKey,'V>>) = 
-    FrameUtils.fromColumns(Series(rows |> Seq.mapi (fun i _ -> i), rows))
+  static member FromColumns(cols:seq<Series<'ColKey,'V>>) = 
+    FrameUtils.fromColumns IndexBuilder.Instance VectorBuilder.Instance (Series(cols |> Seq.mapi (fun i _ -> i), cols))
 
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member FromColumns(columns:seq<KeyValuePair<'ColKey, Series<'RowKey, 'V>>>) = 
     let colKeys = columns |> Seq.map (fun kvp -> kvp.Key)
     let colSeries = columns |> Seq.map (fun kvp -> kvp.Value)
-    FrameUtils.fromColumns(Series(colKeys, colSeries))
+    FrameUtils.fromColumns IndexBuilder.Instance VectorBuilder.Instance (Series(colKeys, colSeries))
 
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member FromColumns(columns:seq<KeyValuePair<'ColKey, ObjectSeries<'RowKey>>>) = 
     let colKeys = columns |> Seq.map (fun kvp -> kvp.Key)
     let colSeries = columns |> Seq.map (fun kvp -> kvp.Value)
-    FrameUtils.fromColumns(Series(colKeys, colSeries))
+    FrameUtils.fromColumns IndexBuilder.Instance VectorBuilder.Instance (Series(colKeys, colSeries))
 
   // series of (series / object series)
   
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member FromColumns(cols:Series<'TColKey, ObjectSeries<'TRowKey>>) = 
-    FrameUtils.fromColumns(cols)
+    FrameUtils.fromColumns IndexBuilder.Instance VectorBuilder.Instance cols
 
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member FromColumns(cols:Series<'TColKey, Series<'TRowKey, 'V>>) = 
-    FrameUtils.fromColumns(cols)
+    FrameUtils.fromColumns IndexBuilder.Instance VectorBuilder.Instance cols
 
   // sequence of series / sequence of kvps / sequence of kvps with object series
 
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member FromRows(rows:seq<Series<'ColKey,'V>>) = 
-    FrameUtils.fromRows(Series(rows |> Seq.mapi (fun i _ -> i), rows))
+    FrameUtils.fromRows IndexBuilder.Instance VectorBuilder.Instance (Series(rows |> Seq.mapi (fun i _ -> i), rows))
 
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member FromRows(rows:seq<KeyValuePair<'RowKey, Series<'ColKey, 'V>>>) = 
     let rowKeys = rows |> Seq.map (fun kvp -> kvp.Key)
     let rowSeries = rows |> Seq.map (fun kvp -> kvp.Value)
-    FrameUtils.fromRows(Series(rowKeys, rowSeries))
+    FrameUtils.fromRows IndexBuilder.Instance VectorBuilder.Instance (Series(rowKeys, rowSeries))
 
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member FromRows(rows:seq<KeyValuePair<'RowKey, ObjectSeries<'ColKey>>>) = 
     let rowKeys = rows |> Seq.map (fun kvp -> kvp.Key)
     let rowSeries = rows |> Seq.map (fun kvp -> kvp.Value)
-    FrameUtils.fromRows(Series(rowKeys, rowSeries))
+    FrameUtils.fromRows IndexBuilder.Instance VectorBuilder.Instance (Series(rowKeys, rowSeries))
 
   // series of (series / object series)
   
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member FromRows(rows:Series<'TColKey, ObjectSeries<'TRowKey>>) = 
-    FrameUtils.fromRows(rows)
+    FrameUtils.fromRows IndexBuilder.Instance VectorBuilder.Instance rows
 
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member FromRows(rows:Series<'TColKey, Series<'TRowKey, 'V>>) = 
-    FrameUtils.fromRows(rows)
+    FrameUtils.fromRows IndexBuilder.Instance VectorBuilder.Instance rows
 
   // ----------------------------------------------------------------------------------------------
   // Creating frame from values, records or from 2D array
@@ -272,7 +272,7 @@ type Frame =
       let col = Array.init (array.GetLength(0)) (fun r -> array.[r,c])
       vectors.[c] <- VectorBuilder.Instance.Create(col) :> IVector
     let data = VectorBuilder.Instance.Create(vectors)
-    Frame(rowIndex, colIndex, data)
+    Frame(rowIndex, colIndex, data, IndexBuilder.Instance, VectorBuilder.Instance)
 
   // ----------------------------------------------------------------------------------------------
   // Creating other frames
@@ -280,13 +280,13 @@ type Frame =
 
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member CreateEmpty() =
-    Frame<'R, 'C>(Index.ofKeys [], Index.ofKeys [], Vector.ofValues [])
+    Frame<'R, 'C>(Index.ofKeys [], Index.ofKeys [], Vector.ofValues [], IndexBuilder.Instance, VectorBuilder.Instance)
 
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member FromRowKeys<'K when 'K : equality>(keys:seq<'K>) =
     let rowIndex = FrameUtils.indexBuilder.Create(keys, None)
     let colIndex = FrameUtils.indexBuilder.Create([], None)
-    Frame<_, string>(rowIndex, colIndex, FrameUtils.vectorBuilder.Create [||])
+    Frame<_, string>(rowIndex, colIndex, FrameUtils.vectorBuilder.Create [||], IndexBuilder.Instance, VectorBuilder.Instance)
 
 
 [<AutoOpen>]
@@ -326,10 +326,38 @@ module FSharpFrameExtensions =
   ///
   let frame columns = 
     let names, values = columns |> Array.ofSeq |> Array.unzip
-    FrameUtils.fromColumns(Series(names, values))
+    FrameUtils.fromColumns IndexBuilder.Instance VectorBuilder.Instance (Series(names, values))
 
   type Frame with
     // NOTE: When changing the parameters below, do not forget to update 'frame.fsx'!
+
+    /// Load data frame from a CSV file. The operation automatically reads column names from the 
+    /// CSV file (if they are present) and infers the type of values for each column. Columns
+    /// of primitive types (`int`, `float`, etc.) are converted to the right type. Columns of other
+    /// types (such as dates) are not converted automatically.
+    ///
+    /// ## Parameters
+    ///
+    ///  * `path` - Specifies a file name or an web location of the resource.
+    ///  * `indexCol` - Specifies the column that should be used as an index in the 
+    ///     resulting frame. The type is specified via a type parameter, e.g. use
+    ///     `Frame.ReadCsv<int>("file.csv", indexCol="Day")`.
+    ///  * `hasHeaders` - Specifies whether the input CSV file has header row
+    ///  * `inferTypes` - Specifies whether the method should attempt to infer types
+    ///    of columns automatically (set this to `false` if you want to specify schema)
+    ///  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
+    ///    rows to use for type inference. The default value is 0, meaninig all rows.
+    ///  * `schema` - A string that specifies CSV schema. See the documentation for 
+    ///    information about the schema format.
+    ///  * `separators` - A string that specifies one or more (single character) separators
+    ///    that are used to separate columns in the CSV file. Use for example `";"` to 
+    ///    parse semicolon separated files.
+    ///  * `culture` - Specifies the name of the culture that is used when parsing 
+    ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
+    static member ReadCsv<'R when 'R : equality>(path:string, indexCol, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture, ?maxRows) : Frame<'R, _> =
+      use reader = new StreamReader(path)
+      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema TextConversions.DefaultMissingValues separators culture maxRows
+      |> Frame.indexRows indexCol
 
     /// Load data frame from a CSV file. The operation automatically reads column names from the 
     /// CSV file (if they are present) and infers the type of values for each column. Columns
@@ -382,24 +410,24 @@ module FSharpFrameExtensions =
     /// The column indices of individual rows are unioned, so if a row has fewer
     /// columns, it will be successfully added, but there will be missing values.
     static member ofRowsOrdinal(rows:seq<#Series<_, _>>) = 
-      FrameUtils.fromRows(Series(rows |> Seq.mapi (fun i _ -> i), rows))
+      FrameUtils.fromRows IndexBuilder.Instance VectorBuilder.Instance (Series(rows |> Seq.mapi (fun i _ -> i), rows))
 
     static member ofRows(rows:seq<_ * #ISeries<_>>) = 
       let names, values = rows |> List.ofSeq |> List.unzip
-      FrameUtils.fromRows(Series(names, values))
+      FrameUtils.fromRows IndexBuilder.Instance VectorBuilder.Instance (Series(names, values))
 
     static member ofRows(rows) = 
-      FrameUtils.fromRows(rows)
+      FrameUtils.fromRows IndexBuilder.Instance VectorBuilder.Instance rows
 
     static member ofRowKeys(keys) = 
       Frame.FromRowKeys(keys)
     
     static member ofColumns(cols) = 
-      FrameUtils.fromColumns(cols)
+      FrameUtils.fromColumns IndexBuilder.Instance VectorBuilder.Instance cols
 
     static member ofColumns(cols:seq<_ * #ISeries<'K>>) = 
       let names, values = cols |> List.ofSeq |> List.unzip
-      FrameUtils.fromColumns(Series(names, values))
+      FrameUtils.fromColumns IndexBuilder.Instance VectorBuilder.Instance (Series(names, values))
     
     /// Create a data frame from a sequence of tuples containing row key, column key and a value
     static member ofValues(values) =
@@ -414,6 +442,11 @@ module FSharpFrameExtensions =
     /// over the specified type parameter `'T` and turns its properties to columns.
     static member ofRecords (values:seq<'T>) =
       Reflection.convertRecordSequence<'T>(values)    
+
+    /// Creates a data frame from a sequence of any .NET objects. The method uses reflection
+    /// over the specified type parameter `'T` and turns its properties to columns.
+    static member ofRecords<'R when 'R : equality> (values:System.Collections.IEnumerable, indexCol:string) =
+      Reflection.convertRecordSequenceUntyped(values).IndexRows<'R>(indexCol)
 
     /// Create data frame from a 2D array of values. The first dimension of the array
     /// is used as rows and the second dimension is treated as columns. Rows and columns
@@ -669,7 +702,7 @@ type FrameExtensions =
   /// [category:Data structure manipulation]
   [<Extension>]
   static member Transpose(frame:Frame<'TRowKey, 'TColumnKey>) = 
-    frame.Columns |> Frame.ofRows
+    frame.Columns |> FrameUtils.fromRows frame.IndexBuilder frame.VectorBuilder
 
   /// Creates a new data frame where all columns are expanded based on runtime
   /// structure of the objects they store. The expansion is performed recrusively
@@ -864,7 +897,7 @@ type FrameExtensions =
   ///  * `condition` - A delegate that specifies the filtering condition.
   [<Extension>]
   static member Where(frame:Frame<'TRowKey, 'TColumnKey>, condition:Func<_, _>) = 
-    frame.Rows.Where(condition) |> Frame.ofRows
+    frame.Rows.Where(condition) |> FrameUtils.fromRows frame.IndexBuilder frame.VectorBuilder
 
   /// Filters frame rows using the specified condtion. Returns a new data frame
   /// that contains rows for which the provided function returned false. The function
@@ -877,23 +910,23 @@ type FrameExtensions =
   ///  * `condition` - A delegate that specifies the filtering condition.
   [<Extension>]
   static member Where(frame:Frame<'TRowKey, 'TColumnKey>, condition:Func<_, _, _>) = 
-    frame.Rows.Where(condition) |> Frame.ofRows
+    frame.Rows.Where(condition) |> FrameUtils.fromRows frame.IndexBuilder frame.VectorBuilder
 
   [<Extension>]
   static member Select(frame:Frame<'TRowKey, 'TColumnKey>, projection:Func<_, _>) = 
-    frame.Rows.Select(projection) |> Frame.ofRows
+    frame.Rows.Select(projection) |> FrameUtils.fromRows frame.IndexBuilder frame.VectorBuilder
 
   [<Extension>]
   static member Select(frame:Frame<'TRowKey, 'TColumnKey>, projection:Func<_, _, _>) = 
-    frame.Rows.Select(projection) |> Frame.ofRows
+    frame.Rows.Select(projection) |> FrameUtils.fromRows frame.IndexBuilder frame.VectorBuilder
 
   [<Extension>]
   static member SelectRowKeys(frame:Frame<'TRowKey, 'TColumnKey>, projection) = 
-    frame.Rows.SelectKeys(projection) |> Frame.ofRows
+    frame.Rows.SelectKeys(projection) |> FrameUtils.fromRows frame.IndexBuilder frame.VectorBuilder
 
   [<Extension>]
   static member SelectColumnKeys(frame:Frame<'TRowKey, 'TColumnKey>, projection) = 
-    frame.Columns.SelectKeys(projection) |> Frame.ofColumns
+    frame.Columns.SelectKeys(projection) |> FrameUtils.fromColumns frame.IndexBuilder frame.VectorBuilder
 
   [<Extension>]
   static member Merge(frame:Frame<'TRowKey, 'TColumnKey>, rowKey, row) = 
@@ -942,7 +975,12 @@ type FrameExtensions =
   /// [category:Fancy accessors]
   [<Extension>]
   static member GetRows(frame:Frame<'TRowKey, 'TColumnKey>, [<ParamArray>] rowKeys:_[]) = 
-    frame.Rows.GetItems(rowKeys) |> Frame.ofRows
+    frame.Rows.GetItems(rowKeys) |> FrameUtils.fromRows frame.IndexBuilder frame.VectorBuilder
+
+  [<Extension>]
+  static member FilterRowsBy<'TRowKey, 'TColumnKey, 'V when 'TRowKey : equality and 'TColumnKey : equality>
+      (frame:Frame<'TRowKey, 'TColumnKey>, column, value) = 
+    Frame.filterRowsBy column value frame
 
   [<Extension>]
   static member GetRowsAt(frame:Frame<'TRowKey, 'TColumnKey>, [<ParamArray>] indices:int[]) = 

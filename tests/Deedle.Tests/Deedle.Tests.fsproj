@@ -46,7 +46,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="FSharp.Data">
-      <HintPath>..\..\packages\FSharp.Data.2.0.5\lib\net40\FSharp.Data.dll</HintPath>
+      <HintPath>..\..\packages\FSharp.Data.2.0.8\lib\net40\FSharp.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MathNet.Numerics">
@@ -71,11 +71,12 @@
     <Compile Include="Common.fs" />
     <Compile Include="Vector.fs" />
     <Compile Include="MultiKey.fs" />
+    <Compile Include="Deque.fs" />
+    <Compile Include="Stats.fs" />
     <Compile Include="Series.fs" />
     <Compile Include="Frame.fs" />
     <Compile Include="LazySeries.fs" />
-    <Compile Include="Deque.fs" />
-    <Compile Include="Stats.fs" />
+    <Compile Include="VirtualFrame.fs" />
     <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup>
