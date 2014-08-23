@@ -257,8 +257,8 @@ type ArrayVectorBuilder() =
           let length = data |> Seq.map (fun d -> d.Length) |> Seq.max
 
           // Using `createObjRowReader` to get a row reader for a specified address
-          let frameData = lazy vectorBuilder.Create data
-          let getRow addr = createObjRowReader frameData.Value vectorBuilder addr
+          let frameData = vectorBuilder.Create data
+          let getRow addr = createObjRowReader frameData vectorBuilder addr
 
           // Because Build is `IVector<'T>[] -> IVector<'T>`, there is some nasty boxing.
           // This case is only called with `'T = obj` and so we create `IVector<obj>` containing 
