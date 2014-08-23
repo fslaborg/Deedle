@@ -461,7 +461,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     ColumnSeries(Series(columnIndex, newData, vectorBuilder, indexBuilder))
 
   /// [category:Accessors and slicing]
-  member frame.RowsDense = 
+  member frame.RowsDense : RowSeries<'TRowKey, 'TColumnKey> = 
     // Create an in-memory series that contains `ObjectSeries` for each
     // row that has a value for each column. This returns an in-memory
     // series because we do not know how many rows we'll need to return.
@@ -477,7 +477,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     RowSeries<_, _>.FromSeries(Series.dropMissing res) 
 
   /// [category:Accessors and slicing]
-  member frame.Rows =    
+  member frame.Rows : RowSeries<'TRowKey, 'TColumnKey> =    
     // This operation needs to work on virtualized frames (by returning a
     // virtualized series) and it also needs to be efficient for in-memory frames.
     // We do this by creating `Combine([...], NaryTransform.RowReader)` command - 
@@ -497,9 +497,16 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
           let rowReader = unbox<IVector<obj>> o
           ObjectSeries(columnIndex, rowReader, vectorBuilder, indexBuilder) )
 
-    // `RowSeriesFromFrame` delegates slicing to the frame by calling 
+    // The following delegates slicing to the frame by calling 
     // `frame.GetSubrange` which is more efficient than re-creating from rows
-    RowSeries<_, _>.FromFrame(rowIndex, vector, frame)
+    //
+    // NOTE: Why do we use `RowSeries<_, _>.FromSeries` above and inline object
+    // expression here? Due to some odd type inference in recursive type definitions,
+    // this is the only way to make it work... :-/
+    { new RowSeries<'TRowKey, 'TColumnKey>(rowIndex, vector, frame.VectorBuilder, frame.IndexBuilder) with
+        override x.GetSlice(lo, hi) = 
+          let inclusive v = v |> Option.map (fun v -> v, BoundaryBehavior.Inclusive)
+          frame.GetSubrange(inclusive lo, inclusive hi) }
 
   /// [category:Accessors and slicing]
   member frame.Item 
@@ -1624,17 +1631,9 @@ and [<AbstractClass>] RowSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality a
   member x.Item with get(items) = x.GetItems(items) |> FrameUtils.fromRows indexBuilder vectorBuilder 
   member x.Item with get(level) = x.GetByLevel(level)
 
-  /// Creates a `RowSeries` from the rows of a given frame 
-  /// (and implements slicing in terms of the original frame)  
-  static member internal FromFrame(index, vector:IVector<ObjectSeries<_>>, frame:Frame<'TRowKey, 'TColumnKey>) =
-    { new RowSeries<'TRowKey, 'TColumnKey>(index, vector, frame.VectorBuilder, frame.IndexBuilder) with
-      override x.GetSlice(lo, hi) = 
-        let inclusive v = v |> Option.map (fun v -> v, BoundaryBehavior.Inclusive)
-        frame.GetSubrange(inclusive lo, inclusive hi) }
-
   /// Creates a `RowSeries` from a filtered series
   /// (and implements slicing in terms of the specified series)  
-  static member internal FromSeries(series:Series<'TRowKey, ObjectSeries<'TColumnKey>>) =
+  static member FromSeries(series:Series<'TRowKey, ObjectSeries<'TColumnKey>>) =
     { new RowSeries<'TRowKey, 'TColumnKey>(series.Index, series.Vector, series.VectorBuilder, series.IndexBuilder) with
         override x.GetSlice(lo, hi) = 
           x.BaseGetSlice(lo, hi) 
