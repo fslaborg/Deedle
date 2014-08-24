@@ -16,9 +16,9 @@
     <tags>@tags@</tags>
     <dependencies>
       <dependency id="Deedle" version="@build.number@" />
-      <dependency id="R.NET" version="1.5.5" />
-      <dependency id="RDotNet.FSharp" version="0.1.2.1" />
-      <dependency id="RProvider" version="1.0.9" />
+      <dependency id="R.NET.Community" version="1.5.15" />
+      <dependency id="R.NET.Community.FSharp" version="0.1.8" />
+      <dependency id="RProvider" version="1.0.13" />
     </dependencies>
   </metadata>
   <files>

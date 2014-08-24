@@ -71,10 +71,10 @@
       <HintPath>..\..\bin\RDotNet.dll</HintPath>
     </Reference>
     <Reference Include="RProvider">
-      <HintPath>..\..\packages\RProvider.1.0.9\lib\RProvider.dll</HintPath>
+      <HintPath>..\..\packages\RProvider.1.0.13\lib\net40\RProvider.dll</HintPath>
     </Reference>
     <Reference Include="RProvider.Runtime">
-      <HintPath>..\..\packages\RProvider.1.0.9\lib\RProvider.Runtime.dll</HintPath>
+      <HintPath>..\..\packages\RProvider.1.0.13\lib\net40\RProvider.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

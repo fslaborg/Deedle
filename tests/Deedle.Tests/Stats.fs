@@ -2,7 +2,7 @@
 #load "../../bin/Deedle.fsx"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #r "../../packages/FsCheck.0.9.1.0/lib/net40-Client/FsCheck.dll"
-#r "../../packages/MathNet.Numerics.3.0.0-beta01/lib/net40/MathNet.Numerics.dll"
+#r "../../packages/MathNet.Numerics.3.0.0/lib/net40/MathNet.Numerics.dll"
 #load "../Common/FsUnit.fs"
 #else
 module Deedle.Tests.Stats
@@ -206,6 +206,22 @@ let ``Advanced level statistics works on sample input`` () =
 let ``Moving minimum works with nan values`` () =
   let s1 = series [ 0 => 1.0; 1 => nan ]
   Stats.movingMin 1 s1 |> shouldEqual <| series [ 0 => 1.0; 1 => nan ]
+
+// ------------------------------------------------------------------------------------------------
+// Statistics on frames
+// ------------------------------------------------------------------------------------------------
+
+let sampleFrame() = 
+  frame 
+    [ "A" =?> Series.ofValues [ 1.0; nan; 2.0; 3.0 ]
+      "B" =?> Series.ofValues [ "hi"; "there"; "!"; "?" ]
+      "C" =?> Series.ofValues [ 3.3; 4.4; 5.5; 6.6 ] ]
+
+[<Test>]
+let ``Can calulate minimum and maximum of numeric series in a frame`` () =
+  let df = sampleFrame()
+  df |> Stats.min |> shouldEqual <| series [ "A" => 1.0; "B" => nan; "C" => 3.3 ]
+  df |> Stats.max |> shouldEqual <| series [ "A" => 3.0; "B" => nan; "C" => 6.6 ]
 
 // ------------------------------------------------------------------------------------------------
 // Some FsCheck tests

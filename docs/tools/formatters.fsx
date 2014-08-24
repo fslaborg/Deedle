@@ -1,12 +1,23 @@
 ﻿module Formatters
-#I "../../packages/FSharp.Formatting.2.4.8/lib/net40"
+#I "../../packages/FSharp.Formatting.2.4.11/lib/net40"
 #r "FSharp.Markdown.dll"
 #r "FSharp.Literate.dll"
 #r "../../bin/Deedle.dll"
 #r "../../packages/FAKE/tools/FakeLib.dll"
+#r "../../packages/R.NET.Community.1.5.15/lib/net40/RDotNet.dll"
+#r "../../packages/RProvider.1.0.13/lib/net40/RProvider.dll"
+#r "../../packages/RProvider.1.0.13/lib/net40/RProvider.Runtime.dll"
+#r "../../packages/MathNet.Numerics.3.0.0/lib/net40/MathNet.Numerics.dll"
 #load "../../packages/FSharp.Charting.0.90.6/FSharp.Charting.fsx"
 
-open Fake
+// --------------------------------------------------------------------------------------
+// NOTE: The rest of the file is copied from the FsLab project:
+// https://github.com/tpetricek/FsLab/blob/master/src/FsLab.Runner/Formatters.fs
+//
+// Sadly, we cannot reference it here as that would be circular dependency... 
+// This means that any changes here should be also submitted to FsLab!
+// --------------------------------------------------------------------------------------
+
 open System.IO
 open Deedle
 open Deedle.Internal
@@ -16,7 +27,7 @@ open FSharp.Charting
 
 // --------------------------------------------------------------------------------------
 // Implements Markdown formatters for common FsLab things - including Deedle series
-// and frames, F# Charting charts and System.Image values
+// and frames, F# Charting charts, System.Image values and Math.NET matrices & vectors
 // --------------------------------------------------------------------------------------
 
 // How many columns and rows from frame should be rendered
@@ -29,6 +40,16 @@ let endRowCount = 4
 // How many items from a series should be rendered
 let startItemCount = 5
 let endItemCount = 3
+
+// How many columns and rows from a matrix should be rendered
+let matrixStartColumnCount = 7
+let matrixEndColumnCount = 2
+let matrixStartRowCount = 10
+let matrixEndRowCount = 4
+
+// How many items from a vector should be rendered
+let vectorStartItemCount = 7
+let vectorEndItemCount = 2
 
 // --------------------------------------------------------------------------------------
 // Helper functions etc.
@@ -46,8 +67,20 @@ let (|SeriesValues|_|) (value:obj) =
     Some(Seq.zip (Seq.cast<obj> keys) vector.ObjectSequence)
   else None
 
+let (|Float|_|) (v:obj) = if v :? float then Some(v :?> float) else None
+let (|Float32|_|) (v:obj) = if v :? float32 then Some(v :?> float32) else None
+
+let inline (|PositiveInfinity|_|) (v: ^T) =
+  if (^T : (static member IsPositiveInfinity: 'T -> bool) (v)) then Some PositiveInfinity else None
+let inline (|NegativeInfinity|_|) (v: ^T) =
+  if (^T : (static member IsNegativeInfinity: 'T -> bool) (v)) then Some NegativeInfinity else None
+let inline (|NaN|_|) (v: ^T) =
+  if (^T : (static member IsNaN: 'T -> bool) (v)) then Some NaN else None
+
 /// Format value as a single-literal paragraph
-let formatValue def = function
+let formatValue (floatFormat:string) def = function
+  | Some(Float v) -> [ Paragraph [Literal (v.ToString(floatFormat)) ]] 
+  | Some(Float32 v) -> [ Paragraph [Literal (v.ToString(floatFormat)) ]] 
   | Some v -> [ Paragraph [Literal (v.ToString()) ]] 
   | _ -> [ Paragraph [Literal def] ]
 
@@ -66,6 +99,9 @@ let mapSteps (startCount, endCount) f g input =
 let fcols = startColumnCount, endColumnCount
 let frows = startRowCount, endRowCount
 let sitms = startItemCount, endItemCount
+let mcols = matrixStartColumnCount, matrixEndColumnCount
+let mrows = matrixStartRowCount, matrixEndRowCount
+let vitms = vectorStartItemCount, vectorEndItemCount
 
 /// Reasonably nice default style for charts
 let chartStyle ch =
@@ -74,12 +110,112 @@ let chartStyle ch =
   |> Chart.WithYAxis(MajorGrid=grid)
   |> Chart.WithXAxis(MajorGrid=grid)
 
+/// Checks if the given directory exists. If not then this functions creates the directory.
+let ensureDirectory dir =
+  let di = new DirectoryInfo(dir)
+  if not di.Exists then di.Create()
+
+/// Combine two paths
+let (@@) a b = Path.Combine(a, b)
+
+// --------------------------------------------------------------------------------------
+// Handling of R
+// --------------------------------------------------------------------------------------
+
+open RDotNet
+open RProvider
+open RProvider.graphics
+open RProvider.grDevices
+open System.Drawing
+open System
+
+/// Evaluation context that also captures R exceptions
+type ExtraEvaluationResult = 
+  { Results : IFsiEvaluationResult
+    CapturedImage : Bitmap option }
+  interface IFsiEvaluationResult
+
+let isEmptyBitmap (img:Bitmap) =
+  seq { 
+    let bits = img.LockBits(Rectangle(0,0,img.Width, img.Height), Imaging.ImageLockMode.ReadOnly, Imaging.PixelFormat.Format32bppArgb)
+    let ptr0 = bits.Scan0 : IntPtr
+    let stride = bits.Stride
+    for i in 0 .. img.Width - 1 do
+      for j in 0 .. img.Height - 1 do
+        let offset = i*4 + stride*j
+        if System.Runtime.InteropServices.Marshal.ReadInt32(ptr0,offset) <> -1 then
+          yield false }
+  |> Seq.isEmpty            
+
+let captureDevice f = 
+  let file = Path.GetTempFileName() + ".png"   
+  let isRavailable =
+    try R.png(file) |> ignore; true 
+    with _ -> false
+
+  let res = f()
+  let img = 
+    if isRavailable then
+      R.dev_off() |> ignore
+      try
+        let bmp = Image.FromStream(new MemoryStream(File.ReadAllBytes file)) :?> Bitmap
+        File.Delete(file)
+        if isEmptyBitmap bmp then None else Some bmp 
+      with :? System.IO.IOException -> None
+    else None
+
+  { Results = res; CapturedImage = img } :> IFsiEvaluationResult
+
+// --------------------------------------------------------------------------------------
+// Handling of Math.NET Numerics Matrices
+// --------------------------------------------------------------------------------------
+
+open MathNet.Numerics
+open MathNet.Numerics.LinearAlgebra
+
+let inline formatMathValue (floatFormat:string) = function
+  | PositiveInfinity -> "\\infty"
+  | NegativeInfinity -> "-\\infty"
+  | NaN -> "\\times"
+  | Float v -> v.ToString(floatFormat)
+  | Float32 v -> v.ToString(floatFormat)
+  | v -> v.ToString()
+
+let formatMatrix (formatValue: 'T -> string) (matrix: Matrix<'T>) =
+  let mappedColumnCount = min (matrixStartColumnCount + matrixEndColumnCount + 1) matrix.ColumnCount
+  String.concat Environment.NewLine
+    [ "\\begin{bmatrix}"
+      matrix.EnumerateRows()
+        |> mapSteps mrows id (function
+          | Some row -> row |> mapSteps mcols id (function Some v -> formatValue v | _ -> "\\cdots") |> String.concat " & "
+          | None -> Array.zeroCreate matrix.ColumnCount |> mapSteps mcols id (function Some v -> "\\vdots" | _ -> "\\ddots") |> String.concat " & ")
+        |> String.concat ("\\\\ " + Environment.NewLine)
+      "\\end{bmatrix}" ]
+
+let formatVector (formatValue: 'T -> string) (vector: Vector<'T>) =
+  String.concat Environment.NewLine
+    [ "\\begin{bmatrix}"
+      vector.Enumerate()
+        |> mapSteps vitms id (function | Some v -> formatValue v | _ -> "\\cdots")
+        |> String.concat " & "
+      "\\end{bmatrix}" ]
+
 // --------------------------------------------------------------------------------------
 // Build FSI evaluator
 // --------------------------------------------------------------------------------------
 
+let mutable currentOutputKind = OutputKind.Html
+let InlineMultiformatBlock(html, latex) =
+  let block =
+    { new MarkdownEmbedParagraphs with
+        member x.Render() =
+          if currentOutputKind = OutputKind.Html then [ InlineBlock html ] else [ InlineBlock latex ] }
+  EmbedParagraphs(block)
+
+let MathDisplay(latex) = Span [ LatexDisplayMath latex ]
+
 /// Builds FSI evaluator that can render System.Image, F# Charts, series & frames
-let createFsiEvaluator root output =
+let createFsiEvaluator root output (floatFormat:string) =
 
   /// Counter for saving files
   let imageCounter = 
@@ -95,7 +231,7 @@ let createFsiEvaluator root output =
         let file = "chart" + id + ".png"
         ensureDirectory (output @@ "images")
         img.Save(output @@ "images" @@ file, System.Drawing.Imaging.ImageFormat.Png) 
-        Some [ Paragraph [DirectImage ("Chart", (root + "/images/" + file, None))]  ]
+        Some [ Paragraph [DirectImage ("", (root + "/images/" + file, None))]  ]
 
     | :? ChartTypes.GenericChart as ch ->
         // Pretty print F# Chart - save the chart to the "images" directory 
@@ -107,16 +243,16 @@ let createFsiEvaluator root output =
         // We need to reate host control, but it does not have to be visible
         ( use ctl = new ChartControl(chartStyle ch, Dock = DockStyle.Fill, Width=500, Height=300)
           ch.CopyAsBitmap().Save(output @@ "images" @@ file, System.Drawing.Imaging.ImageFormat.Png) )
-        Some [ Paragraph [DirectImage ("Chart", (root + "/images/" + file, None))]  ]
+        Some [ Paragraph [DirectImage ("", (root + "/images/" + file, None))]  ]
 
     | SeriesValues s ->
         // Pretty print series!
         let heads  = s |> mapSteps sitms fst (function Some k -> td (k.ToString()) | _ -> td " ... ")
-        let row    = s |> mapSteps sitms snd (function Some v -> formatValue "N/A" (OptionalValue.asOption v) | _ -> td " ... ")
+        let row    = s |> mapSteps sitms snd (function Some v -> formatValue floatFormat "N/A" (OptionalValue.asOption v) | _ -> td " ... ")
         let aligns = s |> mapSteps sitms id (fun _ -> AlignDefault)
-        [ InlineBlock "<div class=\"deedleseries\">"
+        [ InlineMultiformatBlock("<div class=\"deedleseries\">", "\\vspace{1em}")
           TableBlock(Some ((td "Keys")::heads), AlignDefault::aligns, [ (td "Values")::row ]) 
-          InlineBlock "</div>" ] |> Some
+          InlineMultiformatBlock("</div>","\\vspace{1em}") ] |> Some
 
     | :? IFrame as f ->
       // Pretty print frame!
@@ -131,17 +267,38 @@ let createFsiEvaluator root output =
                 | Some(k, Some d) -> "N/A", k.ToString(), Series.observationsAll d |> Seq.map snd 
                 | Some(k, _) -> "N/A", k.ToString(), f.ColumnKeys |> Seq.map (fun _ -> None)
                 | None -> " ... ", " ... ", f.ColumnKeys |> Seq.map (fun _ -> None)
-              let row = data |> mapSteps fcols id (function Some v -> formatValue def v | _ -> td " ... ")
+              let row = data |> mapSteps fcols id (function Some v -> formatValue floatFormat def v | _ -> td " ... ")
               (td k)::row )
           Some [ 
-            InlineBlock "<div class=\"deedleframe\">"
+            InlineMultiformatBlock("<div class=\"deedleframe\">","\\vspace{1em}")
             TableBlock(Some ([]::heads), AlignDefault::aligns, rows) 
-            InlineBlock "</div>"
+            InlineMultiformatBlock("</div>","\\vspace{1em}")
           ] }
       |> f.Apply
+
+    | :? Matrix<float> as m -> Some [ MathDisplay (m |> formatMatrix (formatMathValue floatFormat)) ]
+    | :? Matrix<float32> as m -> Some [ MathDisplay (m |> formatMatrix (formatMathValue floatFormat)) ]
+    | :? Vector<float> as v -> Some [ MathDisplay (v |> formatVector (formatMathValue floatFormat)) ]
+    | :? Vector<float32> as v -> Some [ MathDisplay (v |> formatVector (formatMathValue floatFormat)) ]
+
     | _ -> None 
     
   // Create FSI evaluator, register transformations & return
-  let fsiEvaluator = FsiEvaluator()
+  let fsiEvaluator = FsiEvaluator() 
   fsiEvaluator.RegisterTransformation(transformation)
-  fsiEvaluator
+  let fsiEvaluator = fsiEvaluator :> IFsiEvaluator
+  { new IFsiEvaluator with
+      member x.Evaluate(text, asExpr, file) = 
+        captureDevice (fun () -> 
+          fsiEvaluator.Evaluate(text, asExpr, file))
+
+      member x.Format(res, kind) = 
+        let res = res :?> ExtraEvaluationResult
+        match kind, res.CapturedImage with
+        | FsiEmbedKind.Output, Some img -> 
+            [ match (res.Results :?> FsiEvaluationResult).Output with
+              | Some s  when not (String.IsNullOrWhiteSpace(s)) ->
+                  yield! fsiEvaluator.Format(res.Results, kind)
+              | _ -> ()
+              yield! transformation(img, typeof<Image>).Value ]
+        | _ -> fsiEvaluator.Format(res.Results, kind) }

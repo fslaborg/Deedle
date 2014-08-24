@@ -35,10 +35,21 @@ let prettyPrintVector (vector:IVector<'T>) =
   | VectorData.Sequence list -> printSequence "seq" (Seq.map (fun v -> v.ToString()) list) 
 
 type VectorRange with
+  /// Returns the number of elements in the range
   member x.Count = 
     match x with
     | Custom c -> c.Count
     | Range (lo, hi) -> hi - lo + 1L
+
+  /// Creates a `Custom` range from a sequence of indices
+  static member ofSeq(indices, count) =
+    { new IVectorRange with
+        member x.Count = count
+      interface seq<int64> with 
+        member x.GetEnumerator() = (indices :> seq<_>).GetEnumerator() 
+      interface System.Collections.IEnumerable with
+        member x.GetEnumerator() = indices.GetEnumerator() :> _ } 
+    |> VectorRange.Custom
 
 // --------------------------------------------------------------------------------------
 // Derived/wrapped implementations of the IVector<'T> interface
@@ -50,6 +61,7 @@ type VectorRange with
 type IBoxedVector = 
   inherit IVector<obj>
   abstract UnboxedVector : IVector
+
 
 /// Creates a boxed vector - returns IBoxedVector that delegates all functionality to 
 /// the vector specified as an argument and boxes all values on the fly
@@ -70,7 +82,8 @@ let createBoxedVector (vector:IVector<'TValue>) =
         | VectorData.Sequence list ->
             VectorData.Sequence(Seq.map (OptionalValue.map box) list)
       member x.Select(f) = vector.Select(f)
-      member x.SelectMissing(rev, f) = vector.SelectMissing(rev |> Option.map (fun f -> f >> unbox), fun addr v -> f addr (OptionalValue.map box v))
+      member x.SelectMissing(f) = vector.SelectMissing(fun addr v -> f addr (OptionalValue.map box v))
+      member x.Convert(f, g) = vector.Convert(box >> f, g >> unbox)
     interface IVector with
       member x.Length = vector.Length
       member x.ObjectSequence = vector.ObjectSequence
@@ -82,9 +95,21 @@ let createBoxedVector (vector:IVector<'TValue>) =
         // underlying (more precisely typed) vector of this boxed vector!
         vector.Invoke(site) }
 
-/// Creates a boxed vector - returns IBoxedVector that delegates all functionality to 
-/// the vector specified as an argument and boxes all values on the fly
-let mapVectorLazy f (vector:IVector<'TValue>) : IVector<'TResult> = 
+
+/// Used to mark vectors that are just light-weight wrappers over some computation
+/// When vector builders perform operations on those, they might want to use the
+/// fully evaluated unwrapped value so that they can e.g. check for 
+/// interface implementations
+type IWrappedVector<'T> = 
+  inherit IVector<'T>
+  abstract UnwrapVector : unit -> IVector<'T>
+
+/// Creates a vector that lazily applies the specified projection `f` on 
+/// the values of the source `vector`. In general, Deedle does not secretly delay
+/// computations, so this should be used with care. Currently, we only use this
+/// to avoid allocations in `df.Rows`.
+let lazyMapVector f (vector:IVector<'TValue>) : IVector<'TResult> = 
+  let unwrapVector = lazy vector.Select(f)
   { new System.Object() with
       member x.Equals(another) = vector.Equals(another)
       member x.GetHashCode() = vector.GetHashCode()
@@ -99,17 +124,17 @@ let mapVectorLazy f (vector:IVector<'TValue>) : IVector<'TResult> =
         | VectorData.Sequence list ->
             VectorData.Sequence(Seq.map (OptionalValue.map f) list)
       member x.Select(g) = vector.Select(f >> g)
-      member x.SelectMissing(rev, g) = vector.SelectMissing(rev |> Option.map (fun f -> f >> unbox), fun addr v -> g addr (OptionalValue.map f v))
+      member x.SelectMissing(g) = vector.SelectMissing(fun addr v -> g addr (OptionalValue.map f v))
+      member x.Convert(h, g) = invalidOp "lazyMapVector: Conversion is not supported"
+    interface IWrappedVector<'TResult> with
+      member x.UnwrapVector() = unwrapVector.Value
     interface IVector with
       member x.Length = vector.Length
       member x.ObjectSequence = vector.ObjectSequence
       member x.SuppressPrinting = vector.SuppressPrinting
-      member x.ElementType = typeof<obj>
+      member x.ElementType = typeof<'TResult>
       member x.GetObject(i) = vector.GetObject(i) 
-      member x.Invoke(site) = 
-        // Note: This means that the call site will be invoked on the 
-        // underlying (more precisely typed) vector of this boxed vector!
-        vector.Invoke(site) }
+      member x.Invoke(site) = invalidOp "lazyMapVector: Invocation is not supported" }
 
 // --------------------------------------------------------------------------------------
 // Generic operations 
@@ -215,6 +240,8 @@ type NaryTransform =
     |> VectorListTransform.Nary
 
 type VectorListTransform with
+  /// Returns a function that can aggregate a list of values. This is either the
+  /// original N-ary reduce function or binary function extended using List.reduce
   member x.GetFunction<'T>() = 
     match x with
     | VectorListTransform.Nary n -> n.GetFunction<'T>()
@@ -240,19 +267,20 @@ let transformColumn (vectorBuilder:IVectorBuilder) rowCmd (vector:IVector) =
         vectorBuilder.Build<'T>(rowCmd, [| col |]) :> IVector }
   |> vector.Invoke
 
-// A "generic function" that changes the type of vector elements
-let changeType<'R> (vector:IVector) = 
+// A generic vector operation that converts the elements of the 
+// vector to the specified type using the specified kind of conversion.
+let convertType<'R> conversionKind (vector:IVector) = 
   match unboxVector vector with
   | :? IVector<'R> as res -> res
   | vector ->
       { new VectorCallSite<IVector<'R>> with
           override x.Invoke<'T>(col:IVector<'T>) = 
-            col.SelectMissing(Some(Convert.changeType<'T>), fun a -> OptionalValue.map Convert.changeType<'R>) }
+            col.Convert(Convert.convertType<'R> conversionKind, Convert.convertType<'T> conversionKind) }
       |> vector.Invoke
 
-// A "generic function" that tries to change the type of vector elements
-let tryChangeType<'R> (vector:IVector) : OptionalValue<IVector<'R>> = 
-  let shouldBeConvertible (o:obj) = o :? 'R || o :? IConvertible
+// A generic vector operation that attempts to convert the elements of the 
+// vector to the specified type using the specified kind of conversion.
+let tryConvertType<'R> conversionKind (vector:IVector) : OptionalValue<IVector<'R>> = 
   match unboxVector vector with
   | :? IVector<'R> as res -> OptionalValue(res)
   | vector ->
@@ -265,35 +293,13 @@ let tryChangeType<'R> (vector:IVector) : OptionalValue<IVector<'R>> =
                   if v.HasValue && (box v.Value) <> null 
                   then Some (box v.Value) else None) 
               |> Seq.headOrNone 
-              |> Option.map shouldBeConvertible
+              |> Option.map (Convert.canConvertType<'R> conversionKind)
+
             if first = Some(false) then OptionalValue.Missing
             else 
               // We still cannot be sure that it will actually work
-              try OptionalValue(col.Select(fun v -> Convert.changeType<'R> v))
+              try OptionalValue(col.Select(fun v -> Convert.convertType<'R> conversionKind v))
               with :? InvalidCastException | :? FormatException -> OptionalValue.Missing }
-      |> vector.Invoke
-
-// A "generic function" that tries to cast the type of vector elements
-let tryCastType<'R> (vector:IVector) : OptionalValue<IVector<'R>> = 
-  let shouldBeCastable (o:obj) = o :? 'R
-  match unboxVector vector with
-  | :? IVector<'R> as res -> OptionalValue(res)
-  | vector ->
-      { new VectorCallSite<OptionalValue<IVector<'R>>> with
-          override x.Invoke<'T>(col:IVector<'T>) = 
-            // Check the first non-missing value to see if we should even try doing the conversion
-            let first = 
-              col.DataSequence 
-              |> Seq.choose (fun v -> 
-                  if v.HasValue && (box v.Value) <> null 
-                  then Some (box v.Value) else None) 
-              |> Seq.headOrNone 
-              |> Option.map shouldBeCastable
-            if first = Some(false) then OptionalValue.Missing
-            else 
-              // We still cannot be sure that it will actually work
-              try OptionalValue(col.Select(fun v -> unbox<'R> v))
-              with :? InvalidCastException -> OptionalValue.Missing }
       |> vector.Invoke
 
 /// A "generic function" that drops a specified range from any vector
@@ -306,7 +312,7 @@ let getVectorRange (builder:IVectorBuilder) range (vector:IVector) =
 
 /// Active pattern that calls the `tryChangeType<float>` function
 let (|AsFloatVector|_|) v : option<IVector<float>> = 
-  OptionalValue.asOption (tryChangeType v)
+  OptionalValue.asOption (tryConvertType ConversionKind.Flexible v)
 
 
 /// A virtual vector for reading "row" of a data frame. The virtual vector accesses
@@ -333,21 +339,23 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddre
     member x.GetValue(columnAddress) = 
       let vector = data.GetValue(columnAddress)
       if not vector.HasValue then OptionalValue.Missing
-      else vector.Value.GetObject(rowAddress) |> OptionalValue.map (Convert.changeType<'T>)
+      else vector.Value.GetObject(rowAddress) |> OptionalValue.map (Convert.convertType<'T> ConversionKind.Flexible)
 
     member vector.Data = 
       vector.DataArray |> ReadOnlyCollection.ofArray |> VectorData.SparseList 
 
-    member vector.Select(f) = 
-      (vector :> IVector<_>).SelectMissing(None, fun _ -> OptionalValue.map f)
-
-    member vector.SelectMissing(_, f) = 
+    member vector.SelectMissing(f) = 
       let isNA = MissingValues.isNA<'TNewValue>() 
       let flattenNA (value:OptionalValue<_>) = 
         if value.HasValue && isNA value.Value then OptionalValue.Missing else value
       let data = vector.DataArray |> Array.mapi (fun i v -> f (Address.ofInt i) v |> flattenNA)
       builder.CreateMissing(data)
 
+    member vector.Select(f) = 
+      (vector :> IVector<_>).SelectMissing(fun _ -> OptionalValue.map f)
+
+    member vector.Convert(f, _) = (vector :> IVector<_>).Select(f)
+      
   // Non-generic interface is fully implemented as "virtual"   
   interface IVector with
     member x.Length = data.Length
@@ -395,7 +403,7 @@ let toArray2D<'R> rowCount colCount (data:IVector<IVector>) (defaultValue:Lazy<'
     data.DataSequence
     |> Seq.iteri (fun c vector ->
       if vector.HasValue then
-        changeType(vector.Value).DataSequence
+        (convertType ConversionKind.Flexible vector.Value).DataSequence
         |> Seq.iteri (fun r v -> 
             res.[r,c] <- if v.HasValue then v.Value else defaultValue.Value )
       else for r = 0 to rowCount - 1 do res.[r, c] <- defaultValue.Value )
@@ -452,7 +460,7 @@ module Inference =
 /// Helper object called by createTypedVector via reflection
 type CreateTypedVectorHelper = 
   static member Create<'T>(builder:IVectorBuilder, data:obj[]) =
-    builder.Create(Array.map Convert.changeType<'T> data)
+    builder.Create(Array.map (Convert.convertType<'T> ConversionKind.Flexible) data)
 
 /// Given object array, create a typed vector of the best possible type
 let createTypedVector (builder:IVectorBuilder) (vectorType:System.Type) (data:obj[]) =

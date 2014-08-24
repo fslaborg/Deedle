@@ -19,9 +19,12 @@ module internal Ranges =
     | Intersect of Ranges<'T> * Ranges<'T>
     | Union of Ranges<'T> * Ranges<'T>
 
-  let containsRange f input =
+  let containsRange (comparer:System.Collections.Generic.IComparer<_>) f input =
+    let (<) a b = comparer.Compare(a, b) < 0
     let rec loop = function
-      | Range(l, h) -> f l h
+      | Range(((lo, lobh) as l), ((hi, hibh) as h)) -> 
+          if (lo < hi) || (lo = hi && lobh = BoundaryBehavior.Inclusive && hibh = BoundaryBehavior.Inclusive) 
+            then f l h else false
       | Union(lo, hi) -> loop lo || loop hi
       | Intersect(lo, hi) -> loop lo && loop hi
     loop input
@@ -31,14 +34,14 @@ module internal Ranges =
   let containsSub (comparer:System.Collections.Generic.IComparer<_>) rlo rhi input =
     let (<=) a b = comparer.Compare(a, b) <= 0
     let (>=) a b = comparer.Compare(a, b) >= 0
-    input |> containsRange (fun (lo, _) (hi, _) ->
+    input |> containsRange comparer (fun (lo, _) (hi, _) ->
       rlo >= lo && rhi <= hi)
 
   /// Test if a range contains the specified value
   let contains (comparer:System.Collections.Generic.IComparer<_>) x input =
     let (<) a b = comparer.Compare(a, b) < 0
     let (>) a b = comparer.Compare(a, b) > 0
-    input |> containsRange (fun (lo, lob) (hi, hib) ->
+    input |> containsRange comparer (fun (lo, lob) (hi, hib) ->
       (x > lo && x < hi) || (x = lo && lob = Inclusive) || (x = hi && hib = Inclusive))
 
   /// Returns an ordered sequence of exclusive ranges
@@ -49,12 +52,16 @@ module internal Ranges =
     let (>=) a b = comparer.Compare(a, b) >= 0
 
     // First we get all boundary points in the range tree and sort them
-    let rec getBoundaries ranges = seq {
-      match ranges with 
-      | Range((lo, _), (hi, _)) -> yield! [lo; hi]
-      | Union(l, r) | Intersect(l, r) -> 
-          yield! getBoundaries l
-          yield! getBoundaries r }
+    let rec getBoundaries ranges = 
+      seq {
+        match ranges with 
+        | Range((lo, lobh), (hi, hibh)) -> 
+            if (lo < hi) || (lo = hi && lobh = BoundaryBehavior.Inclusive && hibh = BoundaryBehavior.Inclusive) 
+              then yield! [lo; hi]
+        | Union(l, r) | Intersect(l, r) -> 
+            yield! getBoundaries l
+            yield! getBoundaries r }
+
     let allRanges = Seq.concat [seq [overallMin; overallMax]; getBoundaries ranges]
     let sorted = System.Linq.Enumerable.Distinct(allRanges) |> Array.ofSeq
     Array.sortInPlaceWith (fun a b -> comparer.Compare(a, b)) sorted
@@ -133,7 +140,7 @@ type internal DelayedSource<'K, 'V when 'K : equality>
   // Lazy computation that returns started task whil loads the data 
   // (we use task here so that we can cache the result)
   let asyncData = Lazy.Create(fun () -> 
-    let ranges = flattenRanges rangeMin rangeMax comparer ranges |> Array.ofSeq
+    let ranges = flattenRanges rangeMin rangeMax comparer ranges |> Array.ofSeq 
     let ops = loader ranges
     async {
       let data = new ResizeArray<_>(1000)
@@ -178,8 +185,9 @@ type internal DelayedVector<'K, 'V when 'K : equality> internal (source:DelayedS
   interface IVector<'V> with
     member x.GetValue(index) = source.Values.GetValue(index)
     member x.Data = source.Values.Data
-    member x.SelectMissing(rev, f) = source.Values.SelectMissing(rev, f)
+    member x.SelectMissing(f) = source.Values.SelectMissing(f)
     member x.Select(f) = source.Values.Select(f)
+    member x.Convert(f, g) = source.Values.Convert(f, g)
 
 
 /// Delayed index that is lnked to a DelayedSource specified during construction

@@ -47,7 +47,7 @@ let (|NumericIndex|StringIndex|) (items:string[]) =
 let convertIndex (names:string[]) : option<IIndex<'R>> =
   try 
     names 
-    |> Array.map (Convert.changeType<'R>)
+    |> Array.map (Convert.convertType<'R> ConversionKind.Flexible)
     |> Index.ofKeys |> Some
   with _ -> None
 
@@ -65,7 +65,7 @@ let convertVector (vector:IVector) : obj =
         // If there are missing values and we do not have filler, try converting to float
         let hasMissing = col.DataSequence |> Seq.exists (fun v -> not v.HasValue)
         if hasMissing && missingVal.IsNone then
-          let colNum = VectorHelpers.tryChangeType<float> col
+          let colNum = VectorHelpers.tryConvertType<float> ConversionKind.Flexible col
           if colNum.HasValue then
             box [| for v in colNum.Value.DataSequence -> if v.HasValue then v.Value else nan  |]
           else

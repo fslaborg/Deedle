@@ -365,25 +365,37 @@ module Series =
   [<CompiledName("HasNot")>]
   let hasNot key (series:Series<'K, 'T>) = series.TryGet(key).HasValue
 
-  /// Returns the last key of the series
+  /// Returns the last key of the series, or throws exception if one doesn't exist
   /// [category:Accessing series data and lookup]
   [<CompiledName("GetLastKey")>]
-  let lastKey (series:Series< 'K , 'V >) = series.KeyRange |> snd
+  let lastKey (series:Series< 'K , 'V >) = series.Index.KeyAt (series.KeyCount - 1 |> int64)
 
-  /// Returns the first key of the series
+  /// Returns the first key of the series, or throws exception if one doesn't exist
   /// [category:Accessing series data and lookup]
   [<CompiledName("GetFirstKey")>]
-  let firstKey (series:Series< 'K , 'V >) = series.KeyRange |> fst
+  let firstKey (series:Series< 'K , 'V >) = series.Index.KeyAt 0L
 
   /// Returns the last value of the series. This fails if the last value is missing.
   /// [category:Accessing series data and lookup]
   [<CompiledName("GetLastValue")>]
-  let lastValue (series:Series< 'K , 'V >) = series |> get (series.KeyRange |> snd)
+  let lastValue (series:Series< 'K , 'V >) = series |> getAt (series.KeyCount-1) 
+
+  /// Returns the last value of the series if one exists.
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("TryGetLastValue")>]
+  let tryLastValue (series:Series< 'K , 'V >) = 
+    if series.KeyCount > 0 then series |> getAt (series.KeyCount-1) |> Some else None
 
   /// Returns the first value of the series. This fails if the first value is missing.
   /// [category:Accessing series data and lookup]
   [<CompiledName("GetFirstValue")>]
-  let firstValue (series:Series< 'K , 'V >) = series |> get (series.KeyRange |> fst)
+  let firstValue (series:Series< 'K , 'V >) = series |> getAt 0
+
+  /// Returns the last value of the series if one exists.
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("TryGetFirstValue")>]
+  let tryFirstValue (series:Series< 'K , 'V >) = 
+    if series.KeyCount > 0 then series |> getAt 0 |> Some else None
 
   /// Returns the (non-missing) values of the series as a sequence
   /// [category:Accessing series data and lookup]
@@ -430,7 +442,6 @@ module Series =
   let filterAll f (series:Series<'K, 'T>) = 
     series.WhereOptional(fun kvp -> f kvp.Key (OptionalValue.asOption kvp.Value))
 
-
   /// Returns a new series whose values are the results of applying the given function to
   /// values of the original series. This function skips over missing values and call the
   /// function with both keys and values.
@@ -469,9 +480,22 @@ module Series =
   let mapKeys (f:'K -> 'R) (series:Series<'K, 'T>) = 
     series.SelectKeys(fun kvp -> f kvp.Key)
 
-  [<CompiledName("Transform")>]
-  let transform (f:'T -> 'R) (g:'R -> 'T) (series:Series<'K, 'T>) = 
-    series.Transform(Func<_, _>(f), Func<_, _>(g))
+  /// Retruns a new series whose values are converted using the specified conversion function.
+  /// This operation is like `mapValues`, but it requires a pair of function that converts 
+  /// the values in _both ways_. 
+  ///
+  /// ## Parameters
+  ///  - `forward` - Function that converts original values to the new
+  ///  - `backward` - Function that converts new values back to the original
+  ///
+  /// ## Remarks
+  /// This operation is only interesting when working with virtualized data sources. Using the
+  /// `convert` function makes it possible to perfom additional operations on the resulting
+  /// series - for example lookup - by converting the new value back and using the lookup of
+  /// the underlying virtualized source.
+  [<CompiledName("Convert")>]
+  let convert (forward:'T -> 'R) (backward:'R -> 'T) (series:Series<'K, 'T>) = 
+    series.Convert(Func<_, _>(forward), Func<_, _>(backward))
 
   /// Given a series containing optional values, flatten the option values.
   /// That is, `None` values become missing values of the series and `Some` values
@@ -1289,7 +1313,7 @@ module Series =
   let internal sortByCommand (f:'T -> 'V) (series:Series<'K, 'T>) =
     let index = series.Index
     let vector = series.Vector
-    let fseries = Series(index, vector.SelectMissing(None, fun _ -> OptionalValue.map f), series.VectorBuilder, series.IndexBuilder)
+    let fseries = Series(index, vector.SelectMissing(fun _ -> OptionalValue.map f), series.VectorBuilder, series.IndexBuilder)
     fseries |> sortWithCommand compare
 
   /// Returns a new series, containing the observations of the original series sorted using
@@ -1829,7 +1853,7 @@ module Series =
       | OptionalValue.Present(a, b) -> OptionalValue.ofOption(op (OptionalValue.asOption a) (OptionalValue.asOption b))
       | _ -> OptionalValue.Missing )
 
-  /// Align and zip two series using outer join and exact key matching (use `zipAlignInto`
+  /// Align and zip two series using inner join and exact key matching (use `zipAlignInto`
   /// for more options). The function calls the specified function `op` to combine values 
   /// from the two series
   ///

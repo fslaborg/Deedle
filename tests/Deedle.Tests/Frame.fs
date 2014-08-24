@@ -95,6 +95,27 @@ let ``Can save MSFT data as CSV file and read it afterwards (with default args)`
   actual |> shouldEqual (Frame.indexRowsOrdinally expected)
 
 [<Test>]
+let ``Can save MSFT data as CSV to a TextWriter and read it afterwards (with default args)`` () =
+  let builder = new System.Text.StringBuilder()
+  use writer = new System.IO.StringWriter(builder)
+  let expected = msft()
+  expected.SaveCsv(writer)
+  use reader = new System.IO.StringReader(builder.ToString())
+  let actual = Frame.ReadCsv(reader) 
+  actual |> shouldEqual (Frame.indexRowsOrdinally expected)
+
+[<Test>]
+let ``Can save MSFT data as CSV to a TextWriter and read it afterwards (using FrameExtensions)`` () =
+  let cz = System.Globalization.CultureInfo.GetCultureInfo("cs-CZ")
+  let builder = new System.Text.StringBuilder()
+  use writer = new System.IO.StringWriter(builder)
+  let expected = msft()
+  FrameExtensions.SaveCsv (expected, writer, false, null, ';', cz)
+  use reader = new System.IO.StringReader(builder.ToString())
+  let actual = Frame.ReadCsv(reader, hasHeaders=true, separators=";", culture="cs-CZ") 
+  actual |> shouldEqual (Frame.indexRowsOrdinally expected)
+
+[<Test>]
 let ``Saving dates uses consistently invariant cultrue by default`` () =
   let file = System.IO.Path.GetTempFileName()
   let df = frame [ "A" => series [ DateTime(2014, 1, 29, 12, 39, 45) => 1.0; DateTime(2014, 1, 29) => 2.1] ]
@@ -348,6 +369,14 @@ let ``Filter all rows keeps column keys`` () =
   filt.["X"] |> shouldEqual (series [])
   filt.["Y"] |> shouldEqual (series [])
   (fun () -> filt.["Z"] |> ignore) |> should throw (typeof<ArgumentException>)
+
+[<Test>]
+let ``Filter frame rows by column value`` () =
+  let df = frame [ "X" =?> series [| "a" => true; "c" => false; "e" => true; "f" => false |]
+                   "Y" =?> series [| "a" => 4.0; "c" => nan; "e" => 6.0; "f" => 4.0 |] ]    
+  (df |> Frame.filterRowsBy "X" true)?Y |> shouldEqual <| series [ "a" => 4.0; "e" => 6.0 ]
+  (df |> Frame.filterRowsBy "X" false)?Y |> shouldEqual <| series [ "c" => nan; "f" => 4.0 ]
+  (df |> Frame.filterRowsBy "Y" 4).GetColumn<bool>("X") |> shouldEqual <| series [ "a" => true; "f" => false ]
 
 // ------------------------------------------------------------------------------------------------
 // Row access
@@ -870,6 +899,11 @@ let ``Fill missing values using the specified constant``() =
   filled.Rows.[0].As<float>() |> shouldEqual <| series ["A" => 0.0; "B" => 0.0; "C" => 0.0; "D" => 0.0 ]
   filled.Rows.[10].As<float>() |> shouldEqual <| series ["A" => 10.0; "B" => 0.0; "C" => 10.0; "D" => 10.0 ]
 
+[<Test>]
+let ``Can fill missing values in a frame containing decimals`` () =
+  let df1 = frame [ "A" => Series.ofOptionalObservations [ 1 => None; 2 => Some 0.2M ] ]
+  let df2 = df1 |> Frame.fillMissingWith 0.1
+  df2?A |> shouldEqual <| series [1 => 0.1; 2 => 0.2]
 
 // ------------------------------------------------------------------------------------------------
 // Operations - join & zip (handling missing values)
@@ -1182,3 +1216,61 @@ let ``Can reindex ordinally``() =
     |> Frame.indexRowsOrdinally
   let expected = [0; 1] |> Seq.ofList
   actual.RowKeys |> shouldEqual expected
+
+// ------------------------------------------------------------------------------------------------
+// Operations - mapping
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can map over frame values``() =
+  let actual = 
+    Frame.ofColumns [ "A" =?> series [ 1 => 1; 2 => 2 ]; 
+                      "B" =?> series [ 1 => 2.0; 2 => 3.0 ];
+                      "C" =?> series [ 1 => "a"; 2 => "b" ] ]
+    
+  let expected = 
+    Frame.ofColumns [ "A" =?> series [ 1 => "x"; 2 => "x" ]; 
+                      "B" =?> series [ 1 => "x"; 2 => "y" ];
+                      "C" =?> series [ 1 => "a"; 2 => "b" ] ]
+  
+  let f v = if v <= 2.0 then "x" else "y"
+
+  actual |> Frame.mapValues f |> shouldEqual expected
+  f $ actual |> shouldEqual expected
+
+[<Test>]
+let ``Can map over frame keys and values``() =
+  let actual = 
+    Frame.ofColumns [ "A" =?> series [ 1 => 1; 2 => 2 ]; 
+                      "B" =?> series [ 1 => 2.0; 2 => 3.0 ];
+                      "C" =?> series [ 1 => "a"; 2 => "b" ] ]
+    
+  let expected = 
+    Frame.ofColumns [ "A" =?> series [ 1 => "x"; 2 => "y" ]; 
+                      "B" =?> series [ 1 => "y"; 2 => "y" ];
+                      "C" =?> series [ 1 => "a"; 2 => "b" ] ]
+  
+  let f r c v = if r < 2 && c <> "B" && v <= 2.0 then "x" else "y"
+  actual |> Frame.map f |> shouldEqual expected
+
+// ----------------------------------------------------------------------------------------------
+// Obsolete Stream operations
+// ----------------------------------------------------------------------------------------------
+#nowarn "44"
+
+[<Test>]
+let ``Saving CSV to a stream closes the stream when complete`` () =
+  use stream = new System.IO.MemoryStream()
+  stream.CanWrite |> shouldEqual true
+  let expected = msft()
+  expected.SaveCsv(stream)
+  stream.CanWrite |> shouldEqual false
+
+[<Test>]
+let ``Saving CSV to a stream via the extension method closes the stream when complete`` () =
+  let cz = System.Globalization.CultureInfo.GetCultureInfo("cs-CZ")
+  use stream = new System.IO.MemoryStream()
+  stream.CanWrite |> shouldEqual true
+  let expected = msft()
+  FrameExtensions.SaveCsv (expected, stream, true, ["Date"], ';', cz)
+  stream.CanWrite |> shouldEqual false

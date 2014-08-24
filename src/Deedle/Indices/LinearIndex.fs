@@ -13,6 +13,7 @@ open Deedle.Keys
 open Deedle.Addressing
 open Deedle.Internal
 open Deedle.Indices
+open Deedle.VectorHelpers
 open System.Diagnostics
 open System.Collections.ObjectModel
 
@@ -129,7 +130,7 @@ type LinearIndex<'K when 'K : equality>
       | _, (Lookup.Greater | Lookup.ExactOrGreater) when ordered.Value ->
           let inclusive = semantics = Lookup.ExactOrGreater
           let addrOpt = Array.binarySearchNearestGreater key comparer inclusive keys
-          let indices = addrOpt |> Option.map (fun v -> seq { v .. keys.Count - 1 })
+          let indices = addrOpt |> Option.map (fun v -> Seq.range v (keys.Count - 1) )
           let indices = defaultArg indices Seq.empty
           indices 
           |> Seq.filter (Address.ofInt >> check)
@@ -475,9 +476,22 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       Vectors.Relocate(vector, index2.KeyCount, relocations)
 
 
+    /// Search the values of the specified vector & collect keys at the matching indices
     member builder.Search( (index, vector), searchVector, searchValue) = 
-      failwith "Searching is not implemented (yet)"
+      let newKeys = ResizeArray<_>()
+      let newIndices = ResizeArray<_>()
+      for i in 0 .. (min index.Keys.Count (int searchVector.Length)) - 1 do
+        let v = searchVector.GetValue(int64 i) 
+        if v.HasValue && v.Value = searchValue then 
+          newKeys.Add(index.Keys.[i])
+          newIndices.Add(int64 i)
+        
+      let newIndex = LinearIndex<'TNewKey>(newKeys |> ReadOnlyCollection.ofSeq, builder)
+      let range = Vectors.VectorRange.ofSeq(newIndices, int64 newIndices.Count)
+      upcast newIndex, Vectors.GetRange(vector, range)
 
+
+    // Hiearchical level lookup according to the specified search key
     member builder.LookupLevel( (index, vector), searchKey:ICustomLookup<'K> ) =
       let matching = 
         [| for KeyValue(key, addr) in index.Mappings do

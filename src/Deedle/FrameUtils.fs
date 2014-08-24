@@ -171,7 +171,7 @@ module internal Reflection =
 
     // Iterate over all the fields and turn them into vectors
     [ for (KeyValue(fieldName, fieldTyp)) in fields ->
-        let it = expanded.SelectMissing(None, fun _ -> OptionalValue.bind (fun lookup -> 
+        let it = expanded.SelectMissing(fun _ -> OptionalValue.bind (fun lookup -> 
           match lookup.TryGetValue(fieldName) with
           | true, (_, v) -> OptionalValue(v)
           | _ -> OptionalValue.Missing)).DataSequence
@@ -389,7 +389,7 @@ module internal FrameUtils =
   let readCsv (reader:TextReader) hasHeaders inferTypes inferRows schema (missingValues:string[]) separators culture maxRows =
     let schema = defaultArg schema ""
     let schema = if schema = null then "" else schema
-    let inferRows = defaultArg inferRows 0
+    let inferRows = defaultArg inferRows 100
     let safeMode = false // Irrelevant - all DF values can be missing
     let preferOptionals = true // Ignored
     let culture = defaultArg culture ""
@@ -405,31 +405,40 @@ module internal FrameUtils =
       elif typ = typeof<int64> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertInteger64(culture, Some(s))) data) :> IVector
       else Vector.ofValues data :> IVector
 
+    // If the stream does not support seeking, we read the entire dataset into memory 
+    // because we need to iterate over the stream twice; once for inferring the schema 
+    // and the second for actually pushing it into a frame.    
+    let stream = 
+        match reader with
+        | :? StreamReader as sr when sr.BaseStream.CanSeek -> sr.BaseStream 
+        | _ -> new MemoryStream(System.Text.Encoding.UTF8.GetBytes(reader.ReadToEnd())) :> Stream
+
     // If 'inferTypes' is specified (or by default), use the CSV type inference
-    // to load information about types in the CSV file. By default, use the entire
-    // content (but inferRows can be set to smaller number). Otherwise we just
+    // to load information about types in the CSV file. By default, use the first
+    // 100 rows (but inferRows can be set to another value). Otherwise we just
     // "infer" all columns as string.
-    let data = CsvFile.Load(reader, ?separators=separators, ?hasHeaders=hasHeaders)
-    let inferedProperties = 
-      if not (inferTypes = Some false) then
-        data.InferColumnTypes(inferRows, missingValues, cultureInfo, schema, safeMode, preferOptionals)
-      else 
-        let headers = 
-          match data.Headers with 
-          | None -> [| for i in 1 .. data.NumberOfColumns -> sprintf "Column%d" i |]
-          | Some headers -> headers
-        [ for c in headers -> PrimitiveInferedProperty.Create(c, typeof<string>, true, None) ]
+    let data = CsvFile.Load(stream, ?separators=separators, ?hasHeaders=hasHeaders)
+    let inferredProperties =
+        match inferTypes with
+        | Some true | None ->
+            data.InferColumnTypes(inferRows, missingValues, cultureInfo, schema, safeMode, preferOptionals)
+        | Some false ->
+            let headers = 
+                match data.Headers with 
+                | None -> [| for i in 1 .. data.NumberOfColumns -> sprintf "Column%d" i |]
+                | Some headers -> headers
+            [ for c in headers -> PrimitiveInferedProperty.Create(c, typeof<string>, true, None) ]
 
     // Load the data and convert the values to the appropriate type
     let data = 
       match maxRows with 
-      | Some(nrows) ->  data.Truncate(nrows).Cache() 
+      | Some(nrows) -> data.Truncate(nrows).Cache() 
       | None -> data.Cache()
 
     // Generate columns using the inferred properties 
-    let columnIndex = Index.ofKeys [ for p in inferedProperties -> p.Name ]
+    let columnIndex = Index.ofKeys [ for p in inferredProperties -> p.Name ]
     let columns = 
-      inferedProperties |> Seq.mapi (fun i prop ->
+      inferredProperties |> Seq.mapi (fun i prop ->
         [| for row in data.Rows -> row.Columns.[i] |]
         |> createVector prop.RuntimeType )
     let rowIndex = Index.ofKeys [ 0 .. (Seq.length data.Rows) - 1 ]

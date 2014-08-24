@@ -4,6 +4,21 @@ namespace Deedle
 open System
 open System.Runtime.CompilerServices
 
+/// Represents different kinds of type conversions that can be used by Deedle internally.
+/// This is used, for example, when converting `ObjectSeries<'K>` to `Series<'K, 'T>` - 
+/// The conversion kind can be specified as an argument to allow certain conversions.
+type ConversionKind = 
+  /// Specifies that the type has to match exactly and no conversions are performed.
+  | Exact = 0
+  /// Allows conversions that widen numeric types, but nothing else. This includes
+  /// conversions on decimals `decimal -> float32 -> float` and also from integers 
+  /// to floating points (`int -> decimal` etc.)
+  | Safe = 1
+  /// Allows the use of arbitrary .NET conversions. This uses `Convert.ChangeType`, which
+  /// performs numerical conversions, parsing of strings, uses `IConvertable` and more.
+  | Flexible = 2
+
+
 /// Thrown when a value at the specified index does not exist in the data frame or series.
 /// This exception is thrown only when the key is defined, but the value is not available,
 /// in other situations `KeyNotFoundException` is thrown
@@ -581,7 +596,7 @@ module Seq =
     let available = min cacheCount count
     cacheIndex <- (cacheIndex - available + count) % count
     let cacheIndex = cacheIndex
-    seq { for i in 0 .. available - 1 do yield cache.[(cacheIndex + i) % count] }
+    seq { for i in range 0 (available - 1) do yield cache.[(cacheIndex + i) % count] }
     
   // lastFew 3 List.empty<int> |> List.ofSeq = []
   // lastFew 3 [ 1 .. 10 ]  |> List.ofSeq = [ 8; 9; 10]
@@ -605,7 +620,7 @@ module Seq =
     let readNext() = let p = !lastPointer in lastPointer := (!lastPointer + 1) % endCount; lastItems.[p]
     let readRest() = 
       lastPointer := (!lastPointer + endCount - !written) % endCount
-      seq { for i in 1 .. !written -> readNext() }
+      seq { for i in range 1 !written -> readNext() }
 
     use en = getEnumerator input 
     let rec skipToEnd() = 
@@ -1210,16 +1225,84 @@ module Formatting =
 
 /// [omit]
 module Convert =
-  let nullableType = typedefof<System.Nullable<_>>
+  let private nullableType = typedefof<System.Nullable<_>>
 
-  /// Helper function that converts value to a specified type
-  /// (this aims to be as flexible as possible)
-  let changeType<'T> (value:obj) =
-    // Check if we can cast first - one would think that System.Convert
-    // should handle this, but it fails to convert nullables (e.g. bool to bool?)
-    if value :? 'T then value :?> 'T
-    else System.Convert.ChangeType(value, typeof<'T>) :?> 'T
-    
+  /// Conversions that are "safe" as a list of "source -> target" types
+  let private safeConversions =
+    [ // Conversions from smaller integers to larger integers
+      typeof<uint8>, typeof<int16>
+      typeof<int8>, typeof<int16>
+      typeof<uint16>, typeof<int32>
+      typeof<int16>, typeof<int32>
+      typeof<uint32>, typeof<int64>
+      typeof<int32>, typeof<int64>
+      // Conversions from u/int64 to decimal are legal too
+      typeof<int64>, typeof<decimal>
+      typeof<uint64>, typeof<decimal>
+      // Conversions decimal -> float32 -> float are allowed
+      typeof<decimal>, typeof<float32>
+      typeof<float32>, typeof<float> ]
+
+  /// Dictionary that maps target type (e.g. 'float32') to all the source types that can be
+  /// safely converted to it (e.g. 'decimal,int64,unit64,int32,uint32,int16,uint16,int8,uint8')
+  let private sourcesByTarget =
+    let lookupFromTarget =        
+      safeConversions    
+      |> Seq.groupBy snd
+      |> Seq.map (fun (k, s) -> k, [ for f, _ in s -> f ])
+      |> dict
+
+    // For each target type, find all the allowed sources (recursively)
+    let rec allSourcesFor typ = seq {
+      match lookupFromTarget.TryGetValue(typ) with
+      | false, _ -> ()
+      | true, sources ->
+          yield! sources
+          for sourceTyp in sources do
+            yield! allSourcesFor sourceTyp }
+
+    [ for _, target in safeConversions ->
+        target, dict [ for s in allSourcesFor target -> s, true] ] |> dict
+
+  /// Helper function that converts value to a specified type. The conversion
+  /// is done using the specified conversion kind, which specifies the level
+  /// of flexibility (Exact - cast, Safe - according to 'sourcesByTarget', 
+  /// Flexible - anything that System.Convert allows)
+  let convertType<'T> conversionKind (value:obj) =
+    match conversionKind with
+    | ConversionKind.Flexible ->
+        // Check if we can cast first (one would think that System.Convert
+        // should handle this, but it fails to convert nullables e.g. bool to bool?)
+        if value :? 'T then value :?> 'T
+        else System.Convert.ChangeType(value, typeof<'T>) :?> 'T
+    | ConversionKind.Safe ->
+        if value :? 'T then value :?> 'T
+        elif value <> null then
+          match sourcesByTarget.TryGetValue(typeof<'T>) with
+          | true, sources when sources.ContainsKey(value.GetType()) ->
+              System.Convert.ChangeType(value, typeof<'T>) :?> 'T
+          | _ -> raise <| InvalidCastException(sprintf "Cannot safely convert %s to %s" (value.GetType().Name) (typeof<'T>.Name))
+        else raise <| InvalidCastException(sprintf "Cannot safely convert null to %s" (typeof<'T>.Name))
+    | ConversionKind.Exact -> value :?> 'T
+    | _ -> invalidArg "conversionKind" "Invalid value"
+
+  /// A function that returns `true` when `convertType<'T>` is expected
+  /// to succeed on the specified value (this is approximation - it may
+  /// return 'true' even if the conversion fails, but not the other way round)
+  let canConvertType<'T> conversionKind (value:obj) =
+    match conversionKind with
+    | ConversionKind.Flexible ->
+        value :? 'T || value :? IConvertible
+    | ConversionKind.Safe ->
+        if value :? 'T then true
+        elif value :? IConvertible then
+          match sourcesByTarget.TryGetValue(typeof<'T>) with
+          | true, sources -> sources.ContainsKey(value.GetType())
+          | _ -> false
+        else false
+    | ConversionKind.Exact -> value :? 'T
+    | _ -> invalidArg "conversionKind" "Invalid value"
+
 // --------------------------------------------------------------------------------------
 // Support for C# dynamic
 // --------------------------------------------------------------------------------------

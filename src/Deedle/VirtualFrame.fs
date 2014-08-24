@@ -177,10 +177,12 @@ type VirtualVector<'V>(source:IVirtualVectorSource<'V>) =
   interface IVector<'V> with
     member vector.GetValue(index) = source.ValueAt(index)
     member vector.Data = seq { for i in Seq.range 0L (source.Length-1L) -> source.ValueAt(i) } |> VectorData.Sequence
-    member vector.SelectMissing<'TNew>(rev, f:Address -> OptionalValue<'V> -> OptionalValue<'TNew>) = 
-      VirtualVector(VirtualVectorSource.map rev f source) :> _
+    member vector.SelectMissing<'TNew>(f:Address -> OptionalValue<'V> -> OptionalValue<'TNew>) = 
+      VirtualVector(VirtualVectorSource.map None f source) :> _
     member vector.Select(f) = 
-      (vector :> IVector<_>).SelectMissing(None, fun _ -> OptionalValue.map f)
+      (vector :> IVector<_>).SelectMissing(fun _ -> OptionalValue.map f)
+    member vector.Convert(f, g) = 
+      VirtualVector(VirtualVectorSource.map (Some g) (fun _ -> OptionalValue.map f) source) :> _
 
 module VirtualVectorHelpers = 
   let rec unboxVector (vector:IVector<'V>) : IVector<'V> =
@@ -264,7 +266,9 @@ type VirtualVectorBuilder() =
                   member x.Invoke(underlying:IVector<'U>) = 
                     boxVector (restrictRange underlying) |> unbox<IVector<'T>> }
                |> boxed.UnboxedVector.Invoke
+          | :? IWrappedVector<'T> as vector -> restrictRange (vector.UnwrapVector())
           | vector -> restrictRange vector 
+
       | Combine(sources, transform) ->
           let builtSources = sources |> List.map (fun source -> VirtualVectorHelpers.unboxVector (build source args)) |> Array.ofSeq
           let allVirtual = builtSources |> Array.forall (fun vec -> vec :? VirtualVector<'T>)

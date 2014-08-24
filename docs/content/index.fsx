@@ -84,7 +84,7 @@ Samples & documentation
 -----------------------
 
 The library comes with comprehensible documentation. The tutorials and articles are 
-automatically generated from `*.fsx` files in [the samples folder][samples]. The API
+automatically generated from `*.fsx` files in [the docs folder][docs]. The API
 reference is automatically generated from Markdown comments in the library implementation.
 
  * [Quick start tutorial](tutorial.html) shows how to use the most important 
@@ -97,7 +97,7 @@ reference is automatically generated from Markdown comments in the library imple
    relevant when working with time series data (such as stock prices). This includes sliding
    windows, chunking, sampling and statistics.
 
- * [Calculating frame ans series statistics](stats.fsx) shows how to calculate statistical
+ * [Calculating frame and series statistics](stats.html) shows how to calculate statistical
    indicators such as mean, variance, skweness and other. The tutorial also covers moving
    window and expanding window statistics.
 
@@ -135,10 +135,11 @@ redistribution for both commercial and non-commercial purposes. For more informa
 [License file][license] in the GitHub repository. 
 
 
-  [samples]: https://github.com/blueMountainCapital/Deedle/tree/master/samples
-  [gh]: https://github.com/blueMountainCapital/Deedle
-  [issues]: https://github.com/blueMountainCapital/Deedle/issues
-  [readme]: https://github.com/blueMountainCapital/Deedle/blob/master/README.md
-  [license]: https://github.com/blueMountainCapital/Deedle/blob/master/LICENSE.md
+  [docs]: https://github.com/BlueMountainCapital/Deedle/tree/master/docs/content
+  [samples]: https://github.com/BlueMountainCapital/Deedle/tree/master/docs/content/samples
+  [gh]: https://github.com/BlueMountainCapital/Deedle
+  [issues]: https://github.com/BlueMountainCapital/Deedle/issues
+  [readme]: https://github.com/BlueMountainCapital/Deedle/blob/master/README.md
+  [license]: https://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md
   [fsharp-dwg]: http://fsharp.org/technical-groups/
 *)

@@ -355,32 +355,18 @@ and
 
   /// [category:Projection and filtering]
   member x.Select<'R>(f:System.Func<KeyValuePair<'K, 'V>, int, 'R>) = 
-    
-    // TODO: Review the change here - does it make things faster? slower? neutral?
-
-    let newVector = vector.SelectMissing(None, fun addr value ->
+    let newVector = vector.SelectMissing(fun addr value ->
       value |> OptionalValue.bind (fun v -> 
-        // If a required value is missing, then skip over this
         let key = index.KeyAt(addr)
         try OptionalValue(f.Invoke(KeyValuePair(key, v), Address.asInt addr))
         with :? MissingValueException -> OptionalValue.Missing ))  
-    (*
-    let newVector = vectorBuilder.InitMissing(index.KeyCount, fun addr ->
-      vector.GetValue(addr) |> OptionalValue.bind (fun v -> 
-        // If a required value is missing, then skip over this
-        let key = index.KeyAt(addr)
-        try OptionalValue(f.Invoke(KeyValuePair(key, v), Address.asInt addr))
-        with :? MissingValueException -> OptionalValue.Missing ))  
-    *)
+
     let newIndex = indexBuilder.Project(index)
     Series<'K, 'R>(newIndex, newVector, vectorBuilder, indexBuilder )
 
   /// [category:Projection and filtering]
-  member x.Transform<'R>(forward:System.Func<'V, 'R>, reverse:System.Func<'R, 'V>) = 
-    let newVector = vector.SelectMissing(Some reverse.Invoke, fun _ value ->
-      value |> OptionalValue.bind (fun v -> 
-        try OptionalValue(forward.Invoke(v))
-        with :? MissingValueException -> OptionalValue.Missing ))  
+  member x.Convert<'R>(forward:System.Func<'V, 'R>, backward:System.Func<'R, 'V>) = 
+    let newVector = vector.Convert(forward.Invoke, backward.Invoke)
     let newIndex = indexBuilder.Project(index)
     Series<'K, 'R>(newIndex, newVector, vectorBuilder, indexBuilder )
 
@@ -403,6 +389,30 @@ and
            f.Invoke(KeyValuePair(key, vector.GetValue(addr))))
     let newIndex = indexBuilder.Project(index)
     Series<'K, 'R>(newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
+
+  /// [category:Projection and filtering]
+  member x.SelectValues<'T>(f:System.Func<'V, 'T>) = 
+    let newVector =
+      index.Mappings |> Array.ofSeq |> Array.map (fun (KeyValue(key, addr)) -> 
+        match vector.GetValue(addr) |> OptionalValue.asOption with 
+        | Some v -> OptionalValue(f.Invoke(v))
+        | None   -> OptionalValue.Missing)
+    let newIndex = indexBuilder.Project(index)
+    Series<'K, 'T>(newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
+  
+  /// Custom operator that can be used for applying fuction to all elements of 
+  /// a series. This provides a nicer syntactic sugar for the `Series.mapValues` 
+  /// function. For example:
+  ///
+  ///     // Given a float series and a function on floats
+  ///     let s1 = Series.ofValues [ 1.0 .. 10.0 ]
+  ///     let adjust v = max 10.0 v
+  ///
+  ///     // Apply "adjust (v + v)" to all elements
+  ///     adjust $ (s1 + s1)
+  ///
+  static member ($) (f, series: Series<'K,'V>) = 
+    series.SelectValues(Func<_,_>(f))
 
   /// [category:Projection and filtering]
   member x.Reversed =
@@ -508,8 +518,17 @@ and
   /// [category:Merging, joining and zipping]
   member series.ZipInner<'V2>(otherSeries:Series<'K, 'V2>) : Series<'K, 'V * 'V2> =
     let newIndex, lVec, rVec = series.ZipHelper(otherSeries, JoinKind.Inner, Lookup.Exact)
-    let zipv = rVec.Data.Values |> Seq.zip lVec.Data.Values |> Vector.ofValues
-    Series(newIndex, zipv, vectorBuilder, indexBuilder)
+    
+    let vecRes = 
+      Vectors.Combine([Vectors.Return 0; Vectors.Return 1], 
+        BinaryTransform.CreateLifted<Choice<'V, 'V2, 'V * 'V2>>(fun l r ->
+          match l, r with
+          | Choice1Of3 l, Choice2Of3 r -> Choice3Of3(l, r)
+          | _ -> failwith "logic error"))
+
+    let zipV = vectorBuilder.Build<Choice<'V, 'V2, 'V * 'V2>>(vecRes, [| lVec.Select(Choice1Of3); rVec.Select(Choice2Of3) |])
+    let zipV = zipV.Select(function Choice3Of3 v -> v | _ -> failwith "logic error")
+    Series(newIndex, zipV, vectorBuilder, indexBuilder)
 
   // ----------------------------------------------------------------------------------------------
   // Resampling
@@ -1066,46 +1085,54 @@ type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vecto
   new(series:Series<'K, obj>) = 
     ObjectSeries<_>(series.Index, series.Vector, series.VectorBuilder, series.IndexBuilder)
 
-  member x.GetValues<'R>(strict) = 
-    if strict then System.Linq.Enumerable.OfType<'R>(x.Values)
-    else x.Values |> Seq.choose (fun v ->
-      try Some(Convert.changeType<'R> v) 
+  member x.GetValues<'R>(conversionKind) = 
+    x.Values |> Seq.choose (fun v ->
+      try Some(Convert.convertType<'R> conversionKind v) 
       with _ -> None)
 
-  member x.GetValues<'R>() = x.GetValues<'R>(true)
+  member x.GetValues<'R>() = x.GetValues<'R>(ConversionKind.Safe)
 
   member x.GetAs<'R>(column) : 'R = 
-    Convert.changeType<'R> (x.Get(column))
+    Convert.convertType<'R> ConversionKind.Flexible (x.Get(column))
 
   member x.GetAs<'R>(column, fallback) : 'R =
     let address = index.Lookup(column, Lookup.Exact, fun _ -> true) 
     match address with
     | OptionalValue.Present a -> 
         match (vector.GetValue(snd a)) with
-        | OptionalValue.Present v -> Convert.changeType<'R> v
+        | OptionalValue.Present v -> Convert.convertType<'R> ConversionKind.Flexible v
         | OptionalValue.Missing   -> fallback
     | OptionalValue.Missing -> keyNotFound column
 
   member x.GetAtAs<'R>(index) : 'R = 
-    Convert.changeType<'R> (x.GetAt(index))
+    Convert.convertType<'R> ConversionKind.Flexible (x.GetAt(index))
+
+  member x.GetAtAs<'R>(index, conversionKind) : 'R = 
+    Convert.convertType<'R> conversionKind (x.GetAt(index))
 
   member x.TryGetAs<'R>(column) : OptionalValue<'R> = 
-    x.TryGet(column) |> OptionalValue.map (fun v -> Convert.changeType<'R> v)
+    x.TryGet(column) |> OptionalValue.map (fun v -> Convert.convertType<'R> ConversionKind.Flexible v)
+
+  member x.TryGetAs<'R>(column, conversionKind) : OptionalValue<'R> = 
+    x.TryGet(column) |> OptionalValue.map (fun v -> Convert.convertType<'R> conversionKind v)
 
   static member (?) (series:ObjectSeries<_>, name:string) = 
     series.GetAs<float>(name, nan)
 
-  member x.TryAs<'R>(strict) : OptionalValue<Series<_, 'R>> =
-    let typed = 
-      if strict then VectorHelpers.tryCastType vector
-      else VectorHelpers.tryChangeType vector
-    typed |> OptionalValue.map (fun vec -> 
+  member x.TryAs<'R>(conversionKind) : OptionalValue<Series<_, 'R>> =
+    VectorHelpers.tryConvertType conversionKind vector
+    |> OptionalValue.map (fun vec -> 
       let newIndex = indexBuilder.Project(index)
       Series(newIndex, vec, vectorBuilder, indexBuilder))
 
-  member x.TryAs<'R>() =
-    x.TryAs<'R>(false)
+  member x.TryAs<'R>() = x.TryAs<'R>(ConversionKind.Safe)
 
   member x.As<'R>() =
     let newIndex = indexBuilder.Project(index)
-    Series(newIndex, VectorHelpers.changeType<'R> vector, vectorBuilder, indexBuilder)
+    Series(newIndex, VectorHelpers.convertType<'R> ConversionKind.Flexible vector, vectorBuilder, indexBuilder)
+
+
+  [<Obsolete("GetValues(bool) is obsolete. Use GetValues(ConversionKind) instead.")>]
+  member x.GetValues<'R>(strict) = x.GetValues(if strict then ConversionKind.Exact else ConversionKind.Flexible)
+  [<Obsolete("TryAs(bool) is obsolete. Use TryAs(ConversionKind) instead.")>]
+  member x.TryAs<'R>(strict) = x.TryAs<'R>(if strict then ConversionKind.Exact else ConversionKind.Flexible)

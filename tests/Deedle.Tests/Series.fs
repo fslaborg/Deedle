@@ -64,6 +64,20 @@ let ``Can lookup previous and next elements (exclusively) in ordered series`` ()
   ordered.Get(3, Lookup.Greater) |> shouldEqual "nazdar"
   ordered.Get(3, Lookup.Smaller) |> shouldEqual "bye"
 
+[<Test>]
+let ``Can get first and last key of an ordered series`` () =
+  ordered |> Series.firstKey |> shouldEqual 1
+  ordered |> Series.lastKey |> shouldEqual 5
+  
+[<Test>]
+let ``Can get first and last key of an unordered series`` () =
+  unordered |> Series.firstKey |> shouldEqual 3
+  unordered |> Series.lastKey |> shouldEqual 5
+
+[<Test>]
+let ``Can get key range of an ordered series`` () =
+  ordered.KeyRange |> shouldEqual (1, 5)
+
 // ------------------------------------------------------------------------------------------------
 // Value conversions
 // ------------------------------------------------------------------------------------------------
@@ -425,6 +439,13 @@ let ``Resample uniform - get the latest available value for each date (TestDaySa
   actual |> shouldEqual expected
 
 [<Test>]
+let ``Resample uniform with exact lookup`` () = 
+  let input = series [ 0 => 1.0; 1 => 2.0; 4 => 5.0; 5 => 6.0 ]
+  let expected = series [ 0 => 1.0; 1 => 2.0; 2 => nan; 3 => nan; 4 => 5.0; 5 => 6.0 ]
+  let actual = SeriesExtensions.ResampleUniform(input, Func<_,_>(id), (fun x -> x + 1), Lookup.Exact)
+  actual |> shouldEqual expected
+
+[<Test>]
 let ``Sample by time span - get the first available sample for each minute (TestMinuteSampling)`` () =
   let input = (generate (DateTime(2011, 12, 2)) (TimeSpan.FromSeconds(2.5)) 50)
   let expected = 
@@ -460,7 +481,7 @@ let ``Sample by keys - get the nearest previous key or <missing> (TestExplicitTi
   actual |> shouldEqual expected
 
 [<Test>]
-let ``Reample uniform - select value of nearest previous key or fill with earlier (TestForwardFillSampling)`` () =
+let ``Resample uniform - select value of nearest previous key or fill with earlier (TestForwardFillSampling)`` () =
   let input = 
     [ "5/25/2012", 1.0; "5/26/2012", 2.0; "5/29/2012", 5.0; "5/30/2012", 6.0 ]
     |> series |> Series.mapKeys parseDateUSA 
@@ -613,7 +634,7 @@ let ``Slicing of ordered series works when keys are out of series key range``() 
   s.[20.0 .. 5.0].Values |> List.ofSeq |> shouldEqual []
 
 // ------------------------------------------------------------------------------------------------
-// Appending and joining
+// Ziping
 // ------------------------------------------------------------------------------------------------
   
 let a =
@@ -698,6 +719,19 @@ let ``Can left-zip two empty series`` () =
   let s1 = series ([] : list<int * int>)
   let s2 = s1.Zip(s1, JoinKind.Left)
   s2 |> shouldEqual (series [])
+
+[<Test>]
+let ``zipInner should not break alignment of the index (#233)``() = 
+  let x = series [ 0 => nan; 1 => nan; 2 => 1.0; 3 => 2.0 ] 
+  let y = series [ 0 => nan; 1 => nan; 2 => 3.0; 3 => 4.0 ]
+  let expected = 
+    [ 0 => None; 1 => None; 2 => Some(1.0, 3.0); 3 => Some(2.0, 4.0) ]
+    |> Series.ofOptionalObservations 
+  Series.zipInner x y |> shouldEqual expected
+
+// ------------------------------------------------------------------------------------------------
+// Appending and joining
+// ------------------------------------------------------------------------------------------------
 
 [<Test>]
 let ``Can append two sample series`` () =
