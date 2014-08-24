@@ -18,12 +18,13 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.Documentation.Tests"
 		{22729065-4C30-4E43-A63F-4F3338A03878} = {22729065-4C30-4E43-A63F-4F3338A03878}
 	EndProjectSection
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.Tests.Console", "tests\Deedle.Tests.Console\Deedle.Tests.Console.fsproj", "{09D8960B-9703-425E-AF0B-FA39525F5B9C}"
-	ProjectSection(ProjectDependencies) = postProject
-		{22729065-4C30-4E43-A63F-4F3338A03878} = {22729065-4C30-4E43-A63F-4F3338A03878}
-	EndProjectSection
-EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle", "src\Deedle\Deedle.fsproj", "{22729065-4C30-4E43-A63F-4F3338A03878}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.PerfTest.Core", "tests\PerformanceTools\Deedle.PerfTest.Core\Deedle.PerfTest.Core.fsproj", "{D1E7603A-AA82-4517-8605-360DC708B0E9}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.PerfTest", "tests\PerformanceTools\Deedle.PerfTest\Deedle.PerfTest.fsproj", "{371F8CE6-B031-4589-843F-583FE9180948}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.PerfTests", "tests\Deedle.PerfTests\Deedle.PerfTests.fsproj", "{0275C56B-9A00-4578-A826-A6CF1F089086}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,14 +42,22 @@ Global
 		{B0584275-6E9D-4DB8-A35D-4F37B623F97E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{09D8960B-9703-425E-AF0B-FA39525F5B9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{09D8960B-9703-425E-AF0B-FA39525F5B9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{09D8960B-9703-425E-AF0B-FA39525F5B9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{09D8960B-9703-425E-AF0B-FA39525F5B9C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{22729065-4C30-4E43-A63F-4F3338A03878}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{22729065-4C30-4E43-A63F-4F3338A03878}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22729065-4C30-4E43-A63F-4F3338A03878}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22729065-4C30-4E43-A63F-4F3338A03878}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1E7603A-AA82-4517-8605-360DC708B0E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1E7603A-AA82-4517-8605-360DC708B0E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1E7603A-AA82-4517-8605-360DC708B0E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1E7603A-AA82-4517-8605-360DC708B0E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{371F8CE6-B031-4589-843F-583FE9180948}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{371F8CE6-B031-4589-843F-583FE9180948}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{371F8CE6-B031-4589-843F-583FE9180948}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{371F8CE6-B031-4589-843F-583FE9180948}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0275C56B-9A00-4578-A826-A6CF1F089086}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0275C56B-9A00-4578-A826-A6CF1F089086}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0275C56B-9A00-4578-A826-A6CF1F089086}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0275C56B-9A00-4578-A826-A6CF1F089086}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

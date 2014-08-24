@@ -3,7 +3,7 @@
 #load "Deedle.fsx"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #r "../../packages/FsCheck.0.9.1.0/lib/net40-Client/FsCheck.dll"
-#r "../../packages/FSharp.Data.2.0.5/lib/net40/FSharp.Data.dll"
+#r "../../packages/FSharp.Data.2.0.8/lib/net40/FSharp.Data.dll"
 #r "../PerformanceTools/bin/Deedle.PerfTest.Core.dll"
 #load "../Common/FsUnit.fs"
 #else
