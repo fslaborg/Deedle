@@ -399,6 +399,29 @@ module FSharpFrameExtensions =
     static member ReadCsv(stream:Stream, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture, ?maxRows) =
       FrameUtils.readCsv (new StreamReader(stream)) hasHeaders inferTypes inferRows schema TextConversions.DefaultMissingValues separators culture maxRows
 
+    /// Load data frame from a CSV file. The operation automatically reads column names from the 
+    /// CSV file (if they are present) and infers the type of values for each column. Columns
+    /// of primitive types (`int`, `float`, etc.) are converted to the right type. Columns of other
+    /// types (such as dates) are not converted automatically.
+    ///
+    /// ## Parameters
+    ///
+    ///  * `reader` - Specifies the `TextReader`, positioned at the beginning of CSV data
+    ///  * `hasHeaders` - Specifies whether the input CSV file has header row
+    ///  * `inferTypes` - Specifies whether the method should attempt to infer types
+    ///    of columns automatically (set this to `false` if you want to specify schema)
+    ///  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
+    ///    rows to use for type inference. The default value is 0, meaninig all rows.
+    ///  * `schema` - A string that specifies CSV schema. See the documentation for 
+    ///    information about the schema format.
+    ///  * `separators` - A string that specifies one or more (single character) separators
+    ///    that are used to separate columns in the CSV file. Use for example `";"` to 
+    ///    parse semicolon separated files.
+    ///  * `culture` - Specifies the name of the culture that is used when parsing 
+    ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
+    static member ReadCsv(reader:TextReader, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture, ?maxRows) =
+      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema TextConversions.DefaultMissingValues separators culture maxRows
+
     /// Creates a data frame with ordinal Integer index from a sequence of rows.
     /// The column indices of individual rows are unioned, so if a row has fewer
     /// columns, it will be successfully added, but there will be missing values.
@@ -451,13 +474,28 @@ module FSharpFrameExtensions =
       Frame.FromArray2D(array)
 
   type Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality> with
-    /// Save data frame to a CSV file or to a `Stream`. When calling the operation,
+    /// Creates a new data frame resulting from a 'pivot' operation. Consider a denormalized data 
+    /// frame representing a table: column labels are field names & table values are observations
+    /// of those fields. pivotTable buckets the rows along two axes, according to the values of 
+    /// the columns `r` and `c`; and then computes a value for the frame of rows that land in each 
+    /// bucket.
+    ///
+    /// ## Parameters
+    ///  - `r` - A column key to group on for the resulting row index
+    ///  - `c` - A column key to group on for the resulting col index
+    ///  - `op` - A function computing a value from the corresponding bucket frame 
+    ///
+    /// [category:Frame operations]
+    member frame.PivotTable<'R, 'C, 'T when 'R : equality and 'C : equality>(r:'TColumnKey, c:'TColumnKey, op:Frame<'TRowKey,'TColumnKey> -> 'T) =
+      frame |> Frame.pivotTable (fun k os -> os.GetAs<'R>(r)) (fun k os -> os.GetAs<'C>(c)) op
+
+    /// Save data frame to a CSV file` or a `TextWriter`. When calling the operation,
     /// you can specify whether you want to save the row keys or not (and headers for the keys)
     /// and you can also specify the separator (use `\t` for writing TSV files). When specifying
     /// file name ending with `.tsv`, the `\t` separator is used automatically.
     ///
     /// ## Parameters
-    ///  - `stream` - Specifies the output stream where the CSV data should be written
+    ///  - `writer` - Specifies the TextWriter to which the CSV data should be written
     ///  - `includeRowKeys` - When set to `true`, the row key is also written to the output file
     ///  - `keyNames` - Can be used to specify the CSV headers for row key (or keys, for multi-level index)
     ///  - `separator` - Specify the column separator in the file (the default is `\t` for 
@@ -465,10 +503,10 @@ module FSharpFrameExtensions =
     ///  - `culture` - Specify the `CultureInfo` object used for formatting numerical data
     ///
     /// [category:Input and output]
-    member frame.SaveCsv(stream:Stream, ?includeRowKeys, ?keyNames, ?separator, ?culture) = 
-      FrameUtils.writeCsv (new StreamWriter(stream)) None separator culture includeRowKeys keyNames frame
+    member frame.SaveCsv(writer:TextWriter, ?includeRowKeys, ?keyNames, ?separator, ?culture) = 
+      FrameUtils.writeCsv (writer) None separator culture includeRowKeys keyNames frame
 
-    /// Save data frame to a CSV file or to a `Stream`. When calling the operation,
+    /// Save data frame to a CSV file or a `TextWriter`. When calling the operation,
     /// you can specify whether you want to save the row keys or not (and headers for the keys)
     /// and you can also specify the separator (use `\t` for writing TSV files). When specifying
     /// file name ending with `.tsv`, the `\t` separator is used automatically.
@@ -486,22 +524,7 @@ module FSharpFrameExtensions =
       use writer = new StreamWriter(path)
       FrameUtils.writeCsv writer (Some path) separator culture includeRowKeys keyNames frame
 
-    /// Creates a new data frame resulting from a 'pivot' operation. Consider a denormalized data 
-    /// frame representing a table: column labels are field names & table values are observations
-    /// of those fields. pivotTable buckets the rows along two axes, according to the values of 
-    /// the columns `r` and `c`; and then computes a value for the frame of rows that land in each 
-    /// bucket.
-    ///
-    /// ## Parameters
-    ///  - `r` - A column key to group on for the resulting row index
-    ///  - `c` - A column key to group on for the resulting col index
-    ///  - `op` - A function computing a value from the corresponding bucket frame 
-    ///
-    /// [category:Frame operations]
-    member frame.PivotTable<'R, 'C, 'T when 'R : equality and 'C : equality>(r:'TColumnKey, c:'TColumnKey, op:Frame<'TRowKey,'TColumnKey> -> 'T) =
-      frame |> Frame.pivotTable (fun k os -> os.GetAs<'R>(r)) (fun k os -> os.GetAs<'C>(c)) op
-
-    /// Save data frame to a CSV file or to a `Stream`. When calling the operation,
+    /// Save data frame to a CSV file or to a `TextWriter`. When calling the operation,
     /// you can specify whether you want to save the row keys or not (and headers for the keys)
     /// and you can also specify the separator (use `\t` for writing TSV files). When specifying
     /// file name ending with `.tsv`, the `\t` separator is used automatically.
@@ -520,6 +543,13 @@ module FSharpFrameExtensions =
 
     member frame.ToDataTable(rowKeyNames) = 
       FrameUtils.toDataTable rowKeyNames frame
+
+    /// [omit]
+    [<Obsolete("Use overload taking TextWriter instead")>] 
+    member frame.SaveCsv(stream:Stream, ?includeRowKeys, ?keyNames, ?separator, ?culture) = 
+      use writer = new StreamWriter(stream)
+      FrameUtils.writeCsv (writer) None separator culture includeRowKeys keyNames frame
+
 
 module FrameBuilder =
   type Columns<'R, 'C when 'C : equality and 'R : equality>() = 
@@ -770,7 +800,7 @@ type FrameExtensions =
   /// file name ending with `.tsv`, the `\t` separator is used automatically.
   ///
   /// ## Parameters
-  ///  - `stream` - Specifies the output stream where the CSV data should be written
+  ///  - `writer` - Specifies the text writer to which the CSV data should be written
   ///  - `includeRowKeys` - When set to `true`, the row key is also written to the output file
   ///  - `keyNames` - Can be used to specify the CSV headers for row key (or keys, for multi-level index)
   ///  - `separator` - Specify the column separator in the file (the default is `\t` for 
@@ -779,11 +809,11 @@ type FrameExtensions =
   ///
   /// [category:Input and output]
   [<Extension>]
-  static member SaveCsv(frame:Frame<'R, 'C>, stream:Stream, [<Optional>] includeRowKeys, [<Optional>] keyNames, [<Optional>] separator, [<Optional>] culture) = 
+  static member SaveCsv(frame:Frame<'R, 'C>, writer: TextWriter, [<Optional>] includeRowKeys, [<Optional>] keyNames, [<Optional>] separator, [<Optional>] culture) = 
     let separator = if separator = '\000' then None else Some separator
     let culture = if culture = null then None else Some culture
     let keyNames = if keyNames = Unchecked.defaultof<_> then None else Some keyNames
-    FrameUtils.writeCsv (new StreamWriter(stream)) None separator culture (Some includeRowKeys) keyNames frame
+    FrameUtils.writeCsv (writer) None separator culture (Some includeRowKeys) keyNames frame
 
   /// Save data frame to a CSV file or to a `Stream`. When calling the operation,
   /// you can specify whether you want to save the row keys or not (and headers for the keys)
@@ -1110,12 +1140,24 @@ type FrameExtensions =
   // Obsolete - kept for temporary compatibility
   // ----------------------------------------------------------------------------------------------
 
+  /// [omit]
   [<Extension; Obsolete("Use SortByKeys instead. This function will be removed in futrue versions.")>]
   static member OrderRows(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.sortRowsByKey frame
+  /// [omit]
   [<Extension; Obsolete("Use SortByKeys instead. This function will be removed in futrue versions.")>]
   static member SortByRowKey(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.sortRowsByKey frame
+  /// [omit]
   [<Extension; Obsolete("Use SortByKeys instead. This function will be removed in futrue versions.")>]
   static member OrderColumns(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.sortColsByKey frame
+  /// [omit]
   [<Extension; Obsolete("Use SortByKeys instead. This function will be removed in futrue versions.")>]
   static member SortByColKey(frame:Frame<'TRowKey, 'TColumnKey>) = Frame.sortColsByKey frame
+  /// [omit]
+  [<Extension; Obsolete("Use overload taking TextWriter instead")>] 
+  static member SaveCsv(frame:Frame<'R, 'C>, stream:Stream, [<Optional>] includeRowKeys, [<Optional>] keyNames, [<Optional>] separator, [<Optional>] culture) = 
+    let separator = if separator = '\000' then None else Some separator
+    let culture = if culture = null then None else Some culture
+    let keyNames = if keyNames = Unchecked.defaultof<_> then None else Some keyNames
+    use writer = new StreamWriter(stream)
+    FrameUtils.writeCsv (writer) None separator culture (Some includeRowKeys) keyNames frame
   

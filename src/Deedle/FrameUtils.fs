@@ -386,7 +386,7 @@ module internal FrameUtils =
 
 
   /// Load data from a CSV file using F# Data API
-  let readCsv (reader:StreamReader) hasHeaders inferTypes inferRows schema (missingValues:string[]) separators culture maxRows =
+  let readCsv (reader:TextReader) hasHeaders inferTypes inferRows schema (missingValues:string[]) separators culture maxRows =
     let schema = defaultArg schema ""
     let schema = if schema = null then "" else schema
     let inferRows = defaultArg inferRows 100
@@ -409,8 +409,9 @@ module internal FrameUtils =
     // because we need to iterate over the stream twice; once for inferring the schema 
     // and the second for actually pushing it into a frame.    
     let stream = 
-      if reader.BaseStream.CanSeek then reader.BaseStream 
-      else (new MemoryStream(System.Text.Encoding.UTF8.GetBytes(reader.ReadToEnd())) :> Stream)
+        match reader with
+        | :? StreamReader as sr when sr.BaseStream.CanSeek -> sr.BaseStream 
+        | _ -> new MemoryStream(System.Text.Encoding.UTF8.GetBytes(reader.ReadToEnd())) :> Stream
 
     // If 'inferTypes' is specified (or by default), use the CSV type inference
     // to load information about types in the CSV file. By default, use the first

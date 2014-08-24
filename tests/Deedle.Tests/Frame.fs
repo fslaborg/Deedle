@@ -95,6 +95,27 @@ let ``Can save MSFT data as CSV file and read it afterwards (with default args)`
   actual |> shouldEqual (Frame.indexRowsOrdinally expected)
 
 [<Test>]
+let ``Can save MSFT data as CSV to a TextWriter and read it afterwards (with default args)`` () =
+  let builder = new System.Text.StringBuilder()
+  use writer = new System.IO.StringWriter(builder)
+  let expected = msft()
+  expected.SaveCsv(writer)
+  use reader = new System.IO.StringReader(builder.ToString())
+  let actual = Frame.ReadCsv(reader) 
+  actual |> shouldEqual (Frame.indexRowsOrdinally expected)
+
+[<Test>]
+let ``Can save MSFT data as CSV to a TextWriter and read it afterwards (using FrameExtensions)`` () =
+  let cz = System.Globalization.CultureInfo.GetCultureInfo("cs-CZ")
+  let builder = new System.Text.StringBuilder()
+  use writer = new System.IO.StringWriter(builder)
+  let expected = msft()
+  FrameExtensions.SaveCsv (expected, writer, false, null, ';', cz)
+  use reader = new System.IO.StringReader(builder.ToString())
+  let actual = Frame.ReadCsv(reader, hasHeaders=true, separators=";", culture="cs-CZ") 
+  actual |> shouldEqual (Frame.indexRowsOrdinally expected)
+
+[<Test>]
 let ``Saving dates uses consistently invariant cultrue by default`` () =
   let file = System.IO.Path.GetTempFileName()
   let df = frame [ "A" => series [ DateTime(2014, 1, 29, 12, 39, 45) => 1.0; DateTime(2014, 1, 29) => 2.1] ]
@@ -1232,4 +1253,24 @@ let ``Can map over frame keys and values``() =
   let f r c v = if r < 2 && c <> "B" && v <= 2.0 then "x" else "y"
   actual |> Frame.map f |> shouldEqual expected
 
- 
+// ----------------------------------------------------------------------------------------------
+// Obsolete Stream operations
+// ----------------------------------------------------------------------------------------------
+#nowarn "44"
+
+[<Test>]
+let ``Saving CSV to a stream closes the stream when complete`` () =
+  use stream = new System.IO.MemoryStream()
+  stream.CanWrite |> shouldEqual true
+  let expected = msft()
+  expected.SaveCsv(stream)
+  stream.CanWrite |> shouldEqual false
+
+[<Test>]
+let ``Saving CSV to a stream via the extension method closes the stream when complete`` () =
+  let cz = System.Globalization.CultureInfo.GetCultureInfo("cs-CZ")
+  use stream = new System.IO.MemoryStream()
+  stream.CanWrite |> shouldEqual true
+  let expected = msft()
+  FrameExtensions.SaveCsv (expected, stream, true, ["Date"], ';', cz)
+  stream.CanWrite |> shouldEqual false
