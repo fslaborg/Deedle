@@ -96,6 +96,15 @@ let ``Documentation generated correctly `` file =
             not (msg.Contains("'datasets' is not defined") || msg.Contains("'base' is not defined") || 
               msg.Contains("'zoo' is not defined") || msg.Contains("'R' is not defined"))
         | EvaluationFailed _ -> false )
+    
+    elif file.Contains("series.fsx") && Type.GetType("Mono.Runtime") <> null then
+      // WORKAROUND: FSharp.Charting which is used in 'series.fsx' does not work on Mono
+      // and so the evaluation fails for various reasons - ignore that for now
+      // (and use Foogle.Charts instead in the future!)
+      errors |> List.filter (function
+        | CompileError _ -> true
+        | EvaluationFailed _ -> false )
+
     else errors 
 
   if errors <> [] then
