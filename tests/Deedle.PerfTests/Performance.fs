@@ -163,7 +163,7 @@ let ``Realign 1M series according to a key array`` () =
 #if BELOW_0_9_13
   actual.KeyRange |> fst |> shouldEqual 1
 #else
-  actual.FirstKey() |> shouldEqual 1
+  Series.firstKey actual |> shouldEqual 1
 #endif
 
 [<Test; PerfTest(Iterations=10)>]
