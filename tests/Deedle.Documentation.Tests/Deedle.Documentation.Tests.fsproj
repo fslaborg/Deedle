@@ -41,7 +41,7 @@
     <Compile Include="../Common/FsUnit.fs">
       <Link>FsUnit.fs</Link>
     </Compile>
-    <Compile Include="Documentation.Tests.fs" />
+    <Compile Include="DocTests.fs" />
     <None Include="packages.config" />
     <None Include="app.config" />
   </ItemGroup>
