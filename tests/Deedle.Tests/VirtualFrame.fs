@@ -283,7 +283,7 @@ let ``Can map over frame rows without evaluating it`` () =
   let mapped = frame |> Frame.mapRows (fun k row -> sqrt row?S1)
   mapped.[10000L] |> shouldEqual 100.0
   s1.AccessList |> shouldEqual [10000L]
-  s2.AccessList |> shouldEqual [10000L] // TODO: Improve implementation of CombineN, so that this is empty!
+  s2.AccessList |> shouldEqual []
 
 [<Test>]
 let ``Can perform slicing on frame using the Rows property`` () =

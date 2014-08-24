@@ -55,10 +55,12 @@
     <Compile Include="Vectors\VectorHelpers.fs" />
     <Compile Include="Vectors\ArrayVector.fs" />
     <Compile Include="Vectors\VectorExtensions.fs" />
+    <Compile Include="Vectors\VirtualVector.fs" />
     <Compile Include="Indices\MultiKey.fs" />
     <Compile Include="Indices\Index.fs" />
     <Compile Include="Indices\LinearIndex.fs" />
     <Compile Include="Indices\IndexExtensions.fs" />
+    <Compile Include="Indices\VirtualIndex.fs" />
     <Compile Include="JoinHelpers.fs" />
     <Compile Include="Series.fs" />
     <Compile Include="SeriesModule.fs" />
