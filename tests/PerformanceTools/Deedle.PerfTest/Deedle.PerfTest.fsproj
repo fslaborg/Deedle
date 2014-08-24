@@ -45,7 +45,7 @@
       <HintPath>..\..\..\bin\Deedle.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Compiler.Service">
-      <HintPath>..\..\..\packages\FSharp.Compiler.Service.0.0.44\lib\net40\FSharp.Compiler.Service.dll</HintPath>
+      <HintPath>..\..\..\packages\FSharp.Compiler.Service.0.0.59\lib\net40\FSharp.Compiler.Service.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Data">
       <HintPath>..\..\..\packages\FSharp.Data.2.0.8\lib\net40\FSharp.Data.dll</HintPath>
