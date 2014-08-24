@@ -79,17 +79,74 @@ let s0 = series <| Array.init 10000 (fun i -> i => rnd.NextDouble())
 let f0 = frame [ for i in 0 .. 10 -> i => s0 ]
 let f1 = frame [ for i in 0 .. 100 -> i => s0 ]
 
-//let s1 = series <| Array.init 1000000 (fun i -> i => rnd.NextDouble())
-//let s2 = series <| Array.init 10000000 (fun i -> i => rnd.NextDouble())
+let s1 = series <| Array.init 1000000 (fun i -> i*2 => rnd.NextDouble())
+let s2 = series <| Array.init 1000000 (fun i -> i*2+1 => rnd.NextDouble())
+
+let ss1 = series <| Array.init 100 (fun i -> i*2 => rnd.NextDouble())
+let ss2 = series <| Array.init 100 (fun i -> i*2+1 => rnd.NextDouble())
 
 let testOne() =      
   timed 5 (fun () ->
+    s1.ZipInner(s1)
+    |> ignore
+  )
+  timed 5 (fun () ->
+    s1.ZipInner(s1)
+    |> ignore
+  )
+  // 1288ms
+  // 1286ms
 
+(*
+  timed 10 (fun () ->
+    s1.Select(fun kvp -> kvp.Value * 2.0) |> ignore
+
+    // Selection
+    // Sorting
+
+    // 390
+  )
+
+  timed 10 (fun () ->
+    for i in 0 .. 5000 do 
+      ss1.Select(fun kvp -> kvp.Value * 2.0) |> ignore
+
+    // 177
+  )
+*)
+  ()  
+//  Deedle.Tests.Frame.``Applying (+) on frame & series introduces missing values``()
+
+(*
+  printfn "Slow KeyCount"
+  timed 5 (fun () ->
+    f1.Rows.KeyCount |> ignore
+  )
+  printfn "Fast KeyCount"
+  timed 5 (fun () ->
+    f1.FastRows.KeyCount |> ignore
+  )
+  
+  printfn "Slow iterate"
+  timed 5 (fun () ->
+    f1.Rows |> Series.mapValues (fun r -> r.GetAs<float>(5)) |> ignore
+  )
+  printfn "Fast iterate"
+  timed 5 (fun () ->
+    f1.FastRows |> Series.mapValues (fun r -> r.GetAs<float>(5)) |> ignore
+  )
+*)
+
+  (*
+  timed 5 (fun () ->
+
+    ()
+  
     // 75 ms ~> 40 ms
     //f0 + s0 |> ignore
 
     // 750 ms ~> 360 ms
-    f1 + s0 |> ignore
+    //f1 + s0 |> ignore
 
     // 315ms
     //for i in 0 .. 1000 do (s0 |> Stats.movingMin 100 |> ignore)
@@ -113,6 +170,7 @@ let testOne() =
     ()
 
   )
+  *)
 
 //do testAll()
 do testOne()

@@ -249,7 +249,7 @@ type SeriesExtensions =
   /// provides `HasValue` for testing if the value is available.
   [<Extension>]
   static member GetAllObservations(series:Series<'K, 'T>) = seq {
-    for key, address in series.Index.Mappings ->
+    for KeyValue(key, address) in series.Index.Mappings ->
       KeyValuePair(key, series.Vector.GetValue(address)) }
 
   /// Returns all (optional) values. The values are returned using the 
@@ -257,7 +257,7 @@ type SeriesExtensions =
   /// if the value is available.
   [<Extension>]
   static member GetAllValues(series:Series<'K, 'T>) = seq {
-    for key, address in series.Index.Mappings -> 
+    for KeyValue(key, address) in series.Index.Mappings -> 
       series.Vector.GetValue(address) }
 
   /// Return observations with available values. The operation skips over 
@@ -265,7 +265,7 @@ type SeriesExtensions =
   /// `Double.NaN`, or those that are missing due to outer join etc.).
   [<Extension>]
   static member GetObservations(series:Series<'K, 'T>) = seq { 
-    for key, address in series.Index.Mappings do
+    for KeyValue(key, address) in series.Index.Mappings do
       let v = series.Vector.GetValue(address)
       if v.HasValue then yield KeyValuePair(key, v.Value) }
 

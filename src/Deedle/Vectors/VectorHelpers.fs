@@ -34,6 +34,22 @@ let prettyPrintVector (vector:IVector<'T>) =
   | VectorData.SparseList list -> printSequence "sparse" (Seq.map (fun v -> v.ToString()) list) 
   | VectorData.Sequence list -> printSequence "seq" (Seq.map (fun v -> v.ToString()) list) 
 
+type VectorRange with
+  /// Returns the number of elements in the range
+  member x.Count = 
+    match x with
+    | Custom c -> c.Count
+    | Range (lo, hi) -> hi - lo + 1L
+
+  /// Creates a `Custom` range from a sequence of indices
+  static member ofSeq(indices, count) =
+    { new IVectorRange with
+        member x.Count = count
+      interface seq<int64> with 
+        member x.GetEnumerator() = (indices :> seq<_>).GetEnumerator() 
+      interface System.Collections.IEnumerable with
+        member x.GetEnumerator() = indices.GetEnumerator() :> _ } 
+    |> VectorRange.Custom
 
 // --------------------------------------------------------------------------------------
 // Derived/wrapped implementations of the IVector<'T> interface
@@ -45,6 +61,7 @@ let prettyPrintVector (vector:IVector<'T>) =
 type IBoxedVector = 
   inherit IVector<obj>
   abstract UnboxedVector : IVector
+
 
 /// Creates a boxed vector - returns IBoxedVector that delegates all functionality to 
 /// the vector specified as an argument and boxes all values on the fly
@@ -65,8 +82,10 @@ let createBoxedVector (vector:IVector<'TValue>) =
         | VectorData.Sequence list ->
             VectorData.Sequence(Seq.map (OptionalValue.map box) list)
       member x.Select(f) = vector.Select(f)
-      member x.SelectMissing(f) = vector.SelectMissing(OptionalValue.map box >> f)
+      member x.SelectMissing(f) = vector.SelectMissing(fun addr v -> f addr (OptionalValue.map box v))
+      member x.Convert(f, g) = vector.Convert(box >> f, g >> unbox)
     interface IVector with
+      member x.Length = vector.Length
       member x.ObjectSequence = vector.ObjectSequence
       member x.SuppressPrinting = vector.SuppressPrinting
       member x.ElementType = typeof<obj>
@@ -75,6 +94,47 @@ let createBoxedVector (vector:IVector<'TValue>) =
         // Note: This means that the call site will be invoked on the 
         // underlying (more precisely typed) vector of this boxed vector!
         vector.Invoke(site) }
+
+
+/// Used to mark vectors that are just light-weight wrappers over some computation
+/// When vector builders perform operations on those, they might want to use the
+/// fully evaluated unwrapped value so that they can e.g. check for 
+/// interface implementations
+type IWrappedVector<'T> = 
+  inherit IVector<'T>
+  abstract UnwrapVector : unit -> IVector<'T>
+
+/// Creates a vector that lazily applies the specified projection `f` on 
+/// the values of the source `vector`. In general, Deedle does not secretly delay
+/// computations, so this should be used with care. Currently, we only use this
+/// to avoid allocations in `df.Rows`.
+let lazyMapVector f (vector:IVector<'TValue>) : IVector<'TResult> = 
+  let unwrapVector = lazy vector.Select(f)
+  { new System.Object() with
+      member x.Equals(another) = vector.Equals(another)
+      member x.GetHashCode() = vector.GetHashCode()
+    interface IVector<'TResult> with
+      member x.GetValue(a) = vector.GetValue(a) |> OptionalValue.map f
+      member x.Data = 
+        match vector.Data with
+        | VectorData.DenseList list -> 
+            VectorData.DenseList(ReadOnlyCollection.map f list)
+        | VectorData.SparseList list ->
+            VectorData.SparseList(ReadOnlyCollection.map (OptionalValue.map f) list)
+        | VectorData.Sequence list ->
+            VectorData.Sequence(Seq.map (OptionalValue.map f) list)
+      member x.Select(g) = vector.Select(f >> g)
+      member x.SelectMissing(g) = vector.SelectMissing(fun addr v -> g addr (OptionalValue.map f v))
+      member x.Convert(h, g) = invalidOp "lazyMapVector: Conversion is not supported"
+    interface IWrappedVector<'TResult> with
+      member x.UnwrapVector() = unwrapVector.Value
+    interface IVector with
+      member x.Length = vector.Length
+      member x.ObjectSequence = vector.ObjectSequence
+      member x.SuppressPrinting = vector.SuppressPrinting
+      member x.ElementType = typeof<'TResult>
+      member x.GetObject(i) = vector.GetObject(i) 
+      member x.Invoke(site) = invalidOp "lazyMapVector: Invocation is not supported" }
 
 // --------------------------------------------------------------------------------------
 // Generic operations 
@@ -119,52 +179,73 @@ let createValueDispatcher<'R> (callSite:ValueCallSite<'R>) =
 
 /// A type that implements common vector value transformations and 
 /// a helper method for creating transformation on values of known types
-type VectorValueTransform =
+type BinaryTransform =
   /// Creates a transformation that applies the specified function on `'T` values 
   static member inline Create<'T>(operation:OptionalValue<'T> -> OptionalValue<'T> -> OptionalValue<'T>) = 
-    { new IVectorValueTransform with
+    { new IBinaryTransform with
         member vt.GetFunction<'R>() = 
-          unbox<OptionalValue<'R> -> OptionalValue<'R> -> OptionalValue<'R>> (box operation) }
+          unbox<OptionalValue<'R> -> OptionalValue<'R> -> OptionalValue<'R>> (box operation) 
+        member vt.IsMissingUnit = false } 
+    |> VectorListTransform.Binary
+
   /// Creates a transformation that applies the specified function on `'T` values 
-  static member CreateLifted<'T>(operation:'T -> 'T -> 'T) = 
-    { new IVectorValueTransform with
+  static member inline CreateLifted<'T>(operation:'T -> 'T -> 'T) = 
+    { new IBinaryTransform with
         member vt.GetFunction<'R>() = (fun (l:OptionalValue<'R>) (r:OptionalValue<'R>) -> 
-          if l.HasValue && r.HasValue then OptionalValue((unbox<'R -> 'R -> 'R> operation) l.Value r.Value)
-          else OptionalValue.Missing )}
+          if l.HasValue && r.HasValue then OptionalValue((unbox<'R -> 'R -> 'R> (box operation)) l.Value r.Value)
+          else OptionalValue.Missing )
+        member vt.IsMissingUnit = false }
+    |> VectorListTransform.Binary
+
   /// A generic transformation that prefers the left value (if it is not missing)
   static member LeftIfAvailable =
-    { new IVectorValueTransform with
+    { new IBinaryTransform with
         member vt.GetFunction<'R>() = (fun (l:OptionalValue<'R>) (r:OptionalValue<'R>) -> 
-          if l.HasValue then l else r) }
+          if l.HasValue then l else r) 
+        member vt.IsMissingUnit = true }
+    |> VectorListTransform.Binary
+
   /// A generic transformation that prefers the left value (if it is not missing)
   static member RightIfAvailable =
-    { new IVectorValueTransform with
+    { new IBinaryTransform with
         member vt.GetFunction<'R>() = (fun (l:OptionalValue<'R>) (r:OptionalValue<'R>) -> 
-          if r.HasValue then r else l) }
-  /// A generic transformation that works when at most one value is defined
-  static member LeftOrRight =
-    { new IVectorValueTransform with
-        member vt.GetFunction<'R>() = (fun (l:OptionalValue<'R>) (r:OptionalValue<'R>) -> 
-          if l.HasValue && r.HasValue then invalidOp "Combining vectors failed - both vectors have a value."
-          if l.HasValue then l else r) }
+          if r.HasValue then r else l)
+        member vt.IsMissingUnit = true }
+    |> VectorListTransform.Binary
 
-type VectorValueListTransform =
-  /// Creates a transformation that applies the specified function on `'T` values list
-  static member Create<'T>(operation:OptionalValue<'T> list -> OptionalValue<'T>) = 
-    { new IVectorValueListTransform with
-        member vt.GetBinaryFunction<'R>() : option<OptionalValue<'R> * _ -> _> = None
-        member vt.GetFunction<'R>() = 
-          unbox<OptionalValue<'R> list -> OptionalValue<'R>> (box operation) }
   /// A generic transformation that works when at most one value is defined
   static member AtMostOne =
-    { new IVectorValueListTransform with
-        member vt.GetBinaryFunction<'R>() = Some(fun (l:OptionalValue<'R>, r:OptionalValue<'R>) ->
+    { new IBinaryTransform with
+        member vt.GetFunction<'R>() = (fun (l:OptionalValue<'R>) (r:OptionalValue<'R>) -> 
           if l.HasValue && r.HasValue then invalidOp "Combining vectors failed - both vectors have a value."
           if l.HasValue then l else r)
+        member vt.IsMissingUnit = true }
+    |> VectorListTransform.Binary
+
+type NaryTransform =
+  /// Creates a transformation that applies the specified function on `'T` values list
+  static member Create<'T>(operation:OptionalValue<'T> list -> OptionalValue<'T>) = 
+    { new INaryTransform with
+        member vt.GetFunction<'R>() = 
+          unbox<OptionalValue<'R> list -> OptionalValue<'R>> (box operation) }
+    |> VectorListTransform.Nary
+
+  /// A generic transformation that works when at most one value is defined
+  static member AtMostOne =
+    { new INaryTransform with
         member vt.GetFunction<'R>() = (fun (l:OptionalValue<'R> list) ->
           l |> List.fold (fun s v -> 
             if s.HasValue && v.HasValue then invalidOp "Combining vectors failed - more than one vector has a value."
             if v.HasValue then v else s) OptionalValue.Missing) }
+    |> VectorListTransform.Nary
+
+type VectorListTransform with
+  /// Returns a function that can aggregate a list of values. This is either the
+  /// original N-ary reduce function or binary function extended using List.reduce
+  member x.GetFunction<'T>() = 
+    match x with
+    | VectorListTransform.Nary n -> n.GetFunction<'T>()
+    | VectorListTransform.Binary b -> let f = b.GetFunction<'T>() in List.reduce f
 
 // A "generic function" that boxes all values of a vector (IVector<'T> -> IVector<obj>)
 let boxVector (vector:IVector) =
@@ -194,7 +275,7 @@ let convertType<'R> conversionKind (vector:IVector) =
   | vector ->
       { new VectorCallSite<IVector<'R>> with
           override x.Invoke<'T>(col:IVector<'T>) = 
-            col.Select(Convert.convertType<'R> conversionKind) }
+            col.Convert(Convert.convertType<'R> conversionKind, Convert.convertType<'T> conversionKind) }
       |> vector.Invoke
 
 // A generic vector operation that attempts to convert the elements of the 
@@ -233,12 +314,13 @@ let getVectorRange (builder:IVectorBuilder) range (vector:IVector) =
 let (|AsFloatVector|_|) v : option<IVector<float>> = 
   OptionalValue.asOption (tryConvertType ConversionKind.Flexible v)
 
+
 /// A virtual vector for reading "row" of a data frame. The virtual vector accesses
 /// internal representation of the frame (specified by `data` and `columnCount`).
 /// The type is generic and automatically converts the values from the underlying
 /// (untyped) vector to the specified type.
-type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, columnCount:int64, rowAddress) =
-
+type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddress) =
+  
   // Comparison and get hash code follows the ArrayVector implementation
   override vector.Equals(another) = 
     match another with
@@ -249,7 +331,7 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, columnCo
   override vector.GetHashCode() = vector.DataSequence |> Seq.structuralHash
 
   member private vector.DataArray =
-    Array.init (int columnCount) (fun addr -> (vector :> IVector<_>).GetValue(Address.ofInt addr))
+    Array.init (int data.Length) (fun addr -> (vector :> IVector<_>).GetValue(Address.ofInt addr))
       
   // In the generic vector implementation, we
   // read data as objects and perform conversion
@@ -262,18 +344,21 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, columnCo
     member vector.Data = 
       vector.DataArray |> ReadOnlyCollection.ofArray |> VectorData.SparseList 
 
-    member vector.Select(f) = 
-      (vector :> IVector<_>).SelectMissing(OptionalValue.map f)
-
     member vector.SelectMissing(f) = 
       let isNA = MissingValues.isNA<'TNewValue>() 
       let flattenNA (value:OptionalValue<_>) = 
         if value.HasValue && isNA value.Value then OptionalValue.Missing else value
-      let data = vector.DataArray |> Array.map (f >> flattenNA)
+      let data = vector.DataArray |> Array.mapi (fun i v -> f (Address.ofInt i) v |> flattenNA)
       builder.CreateMissing(data)
 
+    member vector.Select(f) = 
+      (vector :> IVector<_>).SelectMissing(fun _ -> OptionalValue.map f)
+
+    member vector.Convert(f, _) = (vector :> IVector<_>).Select(f)
+      
   // Non-generic interface is fully implemented as "virtual"   
   interface IVector with
+    member x.Length = data.Length
     member x.ObjectSequence = x.DataArray |> Seq.map (OptionalValue.map box)
     member x.SuppressPrinting = false
     member x.ElementType = typeof<'T>
@@ -283,12 +368,12 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, columnCo
 
 /// Creates a virtual vector for reading "row" of a data frame. 
 // For more information, see the `RowReaderVector<'T>` type.
-let inline createRowReader (data:IVector<IVector>) (builder:IVectorBuilder) columnCount rowAddress =
-  RowReaderVector<'T>(data, builder, columnCount, rowAddress) :> IVector<'T>
+let inline createRowReader (data:IVector<IVector>) (builder:IVectorBuilder) rowAddress =
+  RowReaderVector<'T>(data, builder, rowAddress) :> IVector<'T>
  
 /// The same as `createRowReader`, but returns `obj` vector as the result
-let inline createObjRowReader data builder colmap addr : IVector<obj> = 
-  createRowReader data builder colmap addr
+let inline createObjRowReader data builder addr : IVector<obj> = 
+  createRowReader data builder addr
 
 /// Helper type that is used via reflection
 type TryValuesHelper =
@@ -406,16 +491,14 @@ let rec substitute ((oldVar, newVar) as subst) = function
   | DropRange(vc, r) -> DropRange(substitute subst vc, r)
   | GetRange(vc, r) -> GetRange(substitute subst vc, r)
   | Append(l, r) -> Append(substitute subst l, substitute subst r)
-  | Combine(l, r, c) -> Combine(substitute subst l, substitute subst r, c)
-  | CombineN(lst, c) -> CombineN(List.map (substitute subst) lst, c)
+  | Combine(lst, c) -> Combine(List.map (substitute subst) lst, c)
   | CustomCommand(vcs, f) -> CustomCommand(List.map (substitute subst) vcs, f)
   | AsyncCustomCommand(vcs, f) -> AsyncCustomCommand(List.map (substitute subst) vcs, f)
 
 /// Matches when the vector command represents a combination
-/// of N relocated vectors (that is CombineN [Relocate ..; Relocate ..; ...])
+/// of N relocated vectors (that is Combine [Relocate ..; Relocate ..; ...])
 let (|CombinedRelocations|_|) = function
-  | CombineN(list, op) ->
-      if op.GetBinaryFunction<unit>().IsNone then None else
+  | Combine(list, VectorListTransform.Binary op) ->
       if list |> List.forall (function Relocate _ -> true | _ -> false) then
         let parts = list |> List.map (function Relocate(a,b,c) -> (a,b,c) | _ -> failwith "logic error")
         Some(parts, op)

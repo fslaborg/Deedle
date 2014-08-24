@@ -526,11 +526,12 @@ module Frame =
   /// [category:Grouping, windowing and chunking]
   [<CompiledName("PivotTable")>]
   let pivotTable (rowGrp:'R -> ObjectSeries<'C> -> 'RNew) (colGrp:'R -> ObjectSeries<'C> -> 'CNew) (op:Frame<'R, 'C> -> 'T) (frame:Frame<'R, 'C>): Frame<'RNew, 'CNew> =
+    let fromRows = FrameUtils.fromRows frame.IndexBuilder frame.VectorBuilder
     frame.Rows                                                                    //    Series<'R,ObjectSeries<'C>>
     |> Series.groupInto (fun r g -> colGrp r g) (fun _ g -> g)                    // -> Series<'CNew, Series<'R,ObjectSeries<'C>>>
     |> Series.mapValues (Series.groupInto (fun c g -> rowGrp c g) (fun _ g -> g)) // -> Series<'CNew, Series<'RNew, Series<'R',ObjectSeries<'C>>>>
-    |> Series.mapValues (Series.mapValues (FrameUtils.fromRows >> op))            // -> Series<'CNew, Series<'RNew, 'T>>
-    |> FrameUtils.fromColumns                                                     // -> Frame<'RNew, 'CNew, 'T>
+    |> Series.mapValues (Series.mapValues (fromRows >> op))                       // -> Series<'CNew, Series<'RNew, 'T>>
+    |> FrameUtils.fromColumns frame.IndexBuilder frame.VectorBuilder              // -> Frame<'RNew, 'CNew, 'T>
 
   /// Creates a sliding window using the specified size. The result is a series
   /// containing data frames that represent individual windows.
@@ -543,7 +544,7 @@ module Frame =
   /// [category:Grouping, windowing and chunking]
   [<CompiledName("Window")>]
   let window size (frame:Frame<'R, 'C>) = 
-    let fromRows rs = rs |> FrameUtils.fromRowsAndColumnKeys frame.ColumnKeys
+    let fromRows rs = rs |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnKeys
     frame.Rows |> Series.windowInto size fromRows
 
   /// Creates a sliding window using the specified size and then applies the provided 
@@ -558,7 +559,7 @@ module Frame =
   /// [category:Grouping, windowing and chunking]
   [<CompiledName("WindowInto")>]
   let windowInto size f (frame:Frame<'R, 'C>) = 
-    let fromRows rs = rs |> FrameUtils.fromRowsAndColumnKeys frame.ColumnKeys
+    let fromRows rs = rs |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnKeys
     frame.Rows |> Series.windowInto size (fromRows >> f)
 
 
@@ -601,7 +602,7 @@ module Frame =
         Vector.ofValues (colVec.ToArray()) :> IVector
         VectorHelpers.createTypedVector frame.VectorBuilder valTyp (valVec.ToArray()) ]
       |> Vector.ofValues
-    Frame(rowIndex, colIndex, data)
+    Frame(rowIndex, colIndex, data, frame.IndexBuilder, frame.VectorBuilder)
 
 
   /// This function is the opposite of `stack`. It takes a data frame
@@ -637,7 +638,7 @@ module Frame =
     let newIdx = Index.ofKeys keys
     let relocs = frame.IndexBuilder.Reindex(frame.RowIndex, newIdx, Lookup.Exact, VectorConstruction.Return 0, fun _ -> true)
     let cmd v =  VectorHelpers.transformColumn frame.VectorBuilder relocs v
-    Frame<_, _>(newIdx, frame.ColumnIndex, frame.Data.Select(cmd))
+    Frame<_, _>(newIdx, frame.ColumnIndex, frame.Data.Select(cmd), frame.IndexBuilder, frame.VectorBuilder)
 
   /// Returns a data frame whose rows are indexed based on the specified column of the original
   /// data frame. The generic type parameter is specifies the type of the values in the required 
@@ -735,7 +736,7 @@ module Frame =
   [<CompiledName("IndexColumnsWith")>]
   let indexColsWith (keys:seq<'C2>) (frame:Frame<'R, 'C1>) = 
     if Seq.length frame.ColumnKeys <> Seq.length keys then invalidArg "keys" "New keys do not match current column index length"
-    Frame<_, _>(frame.RowIndex, Index.ofKeys keys, frame.Data)
+    Frame<_, _>(frame.RowIndex, Index.ofKeys keys, frame.Data, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Replace the row index of the frame with the provided sequence of row keys.
   /// The rows of the frame are assigned keys according to the provided order.
@@ -748,9 +749,9 @@ module Frame =
   [<CompiledName("IndexRowsWith")>]
   let indexRowsWith (keys:seq<'R2>) (frame:Frame<'R1, 'C>) = 
     let newRowIndex = frame.IndexBuilder.Create(keys, None)
-    let getRange = VectorHelpers.getVectorRange frame.VectorBuilder (0L, frame.RowIndex.KeyCount-1L)
+    let getRange = VectorHelpers.getVectorRange frame.VectorBuilder (Range(0L, frame.RowIndex.KeyCount-1L))
     let newData = frame.Data.Select(getRange)
-    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
+    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Replace the row index of the frame with ordinarilly generated integers starting from zero.
   /// The rows of the frame are assigned index according to the current order, or in a
@@ -781,7 +782,7 @@ module Frame =
   /// [category:Sorting and index manipulation]
   [<CompiledName("Transpose")>]
   let transpose (frame:Frame<'R, 'TColumnKey>) = 
-    frame.Columns |> FrameUtils.fromRows
+    frame.Columns |> FrameUtils.fromRows frame.IndexBuilder frame.VectorBuilder
 
   /// Returns a data frame that contains the same data as the input, 
   /// but whose rows are an ordered series. This allows using operations that are
@@ -792,7 +793,7 @@ module Frame =
   let sortRowsByKey (frame:Frame<'R, 'C>) = 
     let newRowIndex, rowCmd = frame.IndexBuilder.OrderIndex(frame.RowIndex, Vectors.Return 0)
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
-    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
+    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Returns a data frame that contains the same data as the input, 
   /// but whose rows are ordered on a particular column of the frame. 
@@ -802,7 +803,7 @@ module Frame =
   let sortRows colKey (frame:Frame<'R,'C>) =
     let newRowIndex, rowCmd = frame.GetColumn(colKey) |> Series.sortWithCommand compare
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
-    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
+    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Returns a data frame that contains the same data as the input, 
   /// but whose rows are ordered on a particular column of the frame. 
@@ -812,7 +813,7 @@ module Frame =
   let sortRowsWith colKey compareFunc (frame:Frame<'R,'C>) =
     let newRowIndex, rowCmd = frame.GetColumn(colKey) |> Series.sortWithCommand compareFunc
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
-    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
+    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Returns a data frame that contains the same data as the input, 
   /// but whose rows are ordered on a particular column of the frame. 
@@ -822,7 +823,7 @@ module Frame =
   let sortRowsBy colKey (f:'T -> 'V) (frame:Frame<'R,'C>) =
     let newRowIndex, rowCmd = frame.GetColumn(colKey) |> Series.sortByCommand f
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
-    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData)
+    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Returns a data frame that contains the same data as the input, 
   /// but whose columns are an ordered series. This allows using operations that are
@@ -833,7 +834,7 @@ module Frame =
   let sortColsByKey (frame:Frame<'R, 'C>) = 
     let newColIndex, rowCmd = frame.IndexBuilder.OrderIndex(frame.ColumnIndex, Vectors.Return 0)
     let newData = frame.VectorBuilder.Build(rowCmd, [| frame.Data |])
-    Frame<_, _>(frame.RowIndex, newColIndex, newData)
+    Frame<_, _>(frame.RowIndex, newColIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Creates a new data frame where all columns are expanded based on runtime
   /// structure of the objects they store. The expansion is performed recrusively
@@ -884,13 +885,13 @@ module Frame =
             member x.Invoke<'T>(v:IVector<'T>) = 
               Vector.ofValues ([]:'T list) :> IVector }
         |> v.Invoke)
-      Frame(Index.ofKeys [], frame.ColumnIndex, newData) 
+      Frame(Index.ofKeys [], frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder) 
     else
-      let cmd = GetRange(Return 0, (int64 lo, int64 hi))
+      let cmd = GetRange(Return 0, Range(int64 lo, int64 hi))
       let newData = frame.Data.Select(transformColumn frame.VectorBuilder cmd)
       let newKeys = frame.RowIndex.Keys.[lo .. hi]
       let idx = frame.IndexBuilder.Create(newKeys, if frame.RowIndex.IsOrdered then Some true else None)
-      Frame(idx, frame.ColumnIndex, newData)
+      Frame(idx, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder) 
 
   /// Returns a frame that contains the specified `count` of rows from the 
   /// original frame; `count` must be smaller or equal to the original number of rows.
@@ -945,8 +946,8 @@ module Frame =
   ///
   /// [category:Frame transformations]
   [<CompiledName("WhereRows")>]
-  let inline filterRows f (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.filter f |> FrameUtils.fromRowsAndColumnKeys frame.ColumnKeys
+  let filterRows f (frame:Frame<'R, 'C>) = 
+    frame.Rows |> Series.filter f |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnKeys
 
   /// Returns a new data frame containing only the rows of the input frame
   /// for which the specified predicate returns `true`. The predicate is called
@@ -959,8 +960,30 @@ module Frame =
   ///
   /// [category:Frame transformations]
   [<CompiledName("WhereRowValues")>]
-  let inline filterRowValues f (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.filterValues f |> FrameUtils.fromRowsAndColumnKeys frame.ColumnKeys
+  let filterRowValues f (frame:Frame<'R, 'C>) = 
+    frame.Rows |> Series.filterValues f |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnKeys
+
+
+  /// Returns a new data frame containing only the rows of the input frame
+  /// for which the specified `column` has the specified `value`. The operation
+  /// may be implemented via an index for virtualized Deedle frames.
+  /// 
+  /// ## Parameters
+  ///  - `frame` - Input data frame to be transformed
+  ///  - `column` - The name of the column to be matched
+  ///  - `value` - Required value of the column. Note that the function
+  ///    is generic and no conversions are performed, so the value has
+  ///    to match including the actual type.
+  ///
+  /// [category:Frame transformations]
+  [<CompiledName("WhereRowsBy")>]
+  let filterRowsBy column (value:'V) (frame:Frame<'R, 'C>) = 
+    let column = frame.GetColumn<'V>(column)
+    let newRowIndex, cmd = 
+      frame.IndexBuilder.Search( (frame.RowIndex, Vectors.Return 0), column.Vector, value)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder cmd)
+    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
+
 
   /// Builds a new data frame whose rows are the results of applying the specified
   /// function on the rows of the input data frame. The function is called
@@ -1000,7 +1023,7 @@ module Frame =
   [<CompiledName("SelectRowKeys")>]
   let mapRowKeys (f:'R1 -> 'R2) (frame:Frame<_, 'C>) = 
     let newRowIndex = frame.IndexBuilder.Create(frame.RowIndex.Keys |> Seq.map f, None)
-    Frame(newRowIndex, frame.ColumnIndex, frame.Data)
+    Frame(newRowIndex, frame.ColumnIndex, frame.Data, frame.IndexBuilder, frame.VectorBuilder)
 
 
   /// Returns a new data frame containing only the columns of the input frame
@@ -1013,8 +1036,8 @@ module Frame =
   ///
   /// [category:Frame transformations]
   [<CompiledName("WhereColumns")>]
-  let inline filterCols f (frame:Frame<'R, 'C>) = 
-    frame.Columns |> Series.filter f |> FrameUtils.fromColumns
+  let filterCols f (frame:Frame<'R, 'C>) = 
+    frame.Columns |> Series.filter f |> FrameUtils.fromColumns frame.IndexBuilder frame.VectorBuilder
 
   /// Returns a new data frame containing only the columns of the input frame
   /// for which the specified predicate returns `true`. The predicate is called
@@ -1027,8 +1050,8 @@ module Frame =
   ///
   /// [category:Frame transformations]
   [<CompiledName("WhereColumnValues")>]
-  let inline filterColValues f (frame:Frame<'R, 'C>) = 
-    frame.Columns |> Series.filterValues f |> FrameUtils.fromColumns
+  let filterColValues f (frame:Frame<'R, 'C>) = 
+    frame.Columns |> Series.filterValues f |> FrameUtils.fromColumns frame.IndexBuilder frame.VectorBuilder
 
   /// Builds a new data frame whose columns are the results of applying the specified
   /// function on the columns of the input data frame. The function is called
@@ -1040,8 +1063,8 @@ module Frame =
   ///
   /// [category:Frame transformations]
   [<CompiledName("SelectColumns")>]
-  let inline mapCols f (frame:Frame<'R, 'C>) = 
-    frame.Columns |> Series.map f |> FrameUtils.fromColumns
+  let mapCols f (frame:Frame<'R, 'C>) = 
+    frame.Columns |> Series.map f |> FrameUtils.fromColumns frame.IndexBuilder frame.VectorBuilder
 
   /// Builds a new data frame whose columns are the results of applying the specified
   /// function on the columns of the input data frame. The function is called
@@ -1054,8 +1077,8 @@ module Frame =
   ///
   /// [category:Frame transformations]
   [<CompiledName("SelectColumnValues")>]
-  let inline mapColValues f (frame:Frame<'R, 'C>) = 
-    frame.Columns |> Series.mapValues f |> FrameUtils.fromColumns
+  let mapColValues f (frame:Frame<'R, 'C>) = 
+    frame.Columns |> Series.mapValues f |> FrameUtils.fromColumns frame.IndexBuilder frame.VectorBuilder
 
   /// Builds a new data frame whose column keys are the results of applying the
   /// specified function on the column keys of the original data frame.
@@ -1068,7 +1091,7 @@ module Frame =
   [<CompiledName("SelectColumnKeys")>]
   let mapColKeys f (frame:Frame<'R, 'C>) = 
     let newColIndex = frame.IndexBuilder.Create(frame.ColumnIndex.Keys |> Seq.map f, None)
-    Frame(frame.RowIndex, newColIndex, frame.Data)
+    Frame(frame.RowIndex, newColIndex, frame.Data, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Builds a new data frame whose values are the results of applying the specified
   /// function on these values, but only for those columns which can be converted 
@@ -1151,7 +1174,7 @@ module Frame =
     let newRowIndex, cmd = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), offset)
     let vectorBuilder = VectorBuilder.Instance
     let newData = frame.Data.Select(VectorHelpers.transformColumn vectorBuilder cmd)
-    Frame(newRowIndex, frame.ColumnIndex, newData)
+    Frame(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Returns a frame with columns containing difference between an original value and
   /// a value at the specified offset. For example, calling `Frame.diff 1 s` returns a 
@@ -1173,11 +1196,11 @@ module Frame =
     let vectorBuilder = VectorBuilder.Instance
     let newRowIndex, vectorR = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), offset)
     let _, vectorL = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), -offset)
-    let cmd = Vectors.Combine(vectorL, vectorR, VectorValueTransform.Create<float>(OptionalValue.map2 (-)))
+    let cmd = Vectors.Combine([vectorL; vectorR], BinaryTransform.Create<float>(OptionalValue.map2 (-)))
     let newData = frame.Data.Select(function
         | AsFloatVector vf -> VectorBuilder.Instance.Build(cmd, [| vf |]) :> IVector
         | vector -> vector)
-    Frame(newRowIndex, frame.ColumnIndex, newData)
+    Frame(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
 
   // ----------------------------------------------------------------------------------------------
@@ -1206,7 +1229,7 @@ module Frame =
     if List.isEmpty exceptions then 
       // All succeeded, so we can build new data frame
       let newData = newTryData.Select(fun v -> v.Value)
-      Frame<_, _>(frame.RowIndex, frame.ColumnIndex, newData)
+      Frame<_, _>(frame.RowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
     else
       // Some exceptions, aggregate all of them
       let exceptions = exceptions |> List.collect (function
@@ -1260,7 +1283,7 @@ module Frame =
   let fillMissing direction (frame:Frame<'R, 'C>) =
     let fillCmd = Vectors.FillMissing(Vectors.Return 0, VectorFillMissing.Direction direction)
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder fillCmd)
-    Frame<_, _>(frame.RowIndex, frame.ColumnIndex, newData)
+    Frame<_, _>(frame.RowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Fill missing values in the frame using the specified function. The specified
   /// function is called with all series and keys for which the frame does not 
@@ -1290,7 +1313,7 @@ module Frame =
   /// [category:Missing values]
   [<CompiledName("DropSparseRows")>]
   let dropSparseRows (frame:Frame<'R, 'C>) = 
-    frame.RowsDense |> Series.dropMissing |> FrameUtils.fromRows
+    frame.RowsDense |> Series.dropMissing |> FrameUtils.fromRows frame.IndexBuilder frame.VectorBuilder
 
   /// Creates a new data frame that contains only those columns of the original 
   /// data frame that are _dense_, meaning that they have a value for each row.
@@ -1300,7 +1323,7 @@ module Frame =
   /// [category:Missing values]
   [<CompiledName("DropSparseColumns")>]
   let dropSparseCols (frame:Frame<'R, 'C>) = 
-    frame.ColumnsDense |> Series.dropMissing |> FrameUtils.fromColumns
+    frame.ColumnsDense |> Series.dropMissing |> FrameUtils.fromColumns frame.IndexBuilder frame.VectorBuilder
 
   /// Returns the columns of the data frame that do not have any missing values.
   /// The operation returns a series (indexed by the column keys of the source frame) 
@@ -1466,7 +1489,9 @@ module Frame =
   /// [category:Hierarchical index operations]
   [<CompiledName("ReduceLevel")>]
   let reduceLevel (levelSel:_ -> 'K) (op:'T -> 'T -> 'T) (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<'T>() |> Series.map (fun _ -> Series.reduceLevel levelSel op) |> FrameUtils.fromColumns
+    frame.GetColumns<'T>() 
+    |> Series.map (fun _ -> Series.reduceLevel levelSel op) 
+    |> FrameUtils.fromColumns frame.IndexBuilder frame.VectorBuilder
 
   /// Apply a specified function to a group of values in each series according to the specified 
   /// level of a hierarchical row key. For each group of rows as specified by `levelSel`, the function 
@@ -1487,7 +1512,9 @@ module Frame =
   /// [category:Hierarchical index operations]
   [<CompiledName("ApplyLevel")>]
   let applyLevel (levelSel:_ -> 'K) (op:_ -> 'T) (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<'T>() |> Series.map (fun _ s -> Series.applyLevel levelSel op s) |> FrameUtils.fromColumns
+    frame.GetColumns<'T>() 
+    |> Series.map (fun _ s -> Series.applyLevel levelSel op s) 
+    |> FrameUtils.fromColumns frame.IndexBuilder frame.VectorBuilder
 
   /// Given a frame with two-level row index, returns a series indexed by the first
   /// part of the key, containing frames representing individual groups. This function

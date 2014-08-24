@@ -349,6 +349,14 @@ let ``Filter all rows keeps column keys`` () =
   filt.["Y"] |> shouldEqual (series [])
   (fun () -> filt.["Z"] |> ignore) |> should throw (typeof<ArgumentException>)
 
+[<Test>]
+let ``Filter frame rows by column value`` () =
+  let df = frame [ "X" =?> series [| "a" => true; "c" => false; "e" => true; "f" => false |]
+                   "Y" =?> series [| "a" => 4.0; "c" => nan; "e" => 6.0; "f" => 4.0 |] ]    
+  (df |> Frame.filterRowsBy "X" true)?Y |> shouldEqual <| series [ "a" => 4.0; "e" => 6.0 ]
+  (df |> Frame.filterRowsBy "X" false)?Y |> shouldEqual <| series [ "c" => nan; "f" => 4.0 ]
+  (df |> Frame.filterRowsBy "Y" 4).GetColumn<bool>("X") |> shouldEqual <| series [ "a" => true; "f" => false ]
+
 // ------------------------------------------------------------------------------------------------
 // Row access
 // ------------------------------------------------------------------------------------------------

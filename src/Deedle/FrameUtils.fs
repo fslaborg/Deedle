@@ -171,7 +171,7 @@ module internal Reflection =
 
     // Iterate over all the fields and turn them into vectors
     [ for (KeyValue(fieldName, fieldTyp)) in fields ->
-        let it = expanded.SelectMissing(OptionalValue.bind (fun lookup -> 
+        let it = expanded.SelectMissing(fun _ -> OptionalValue.bind (fun lookup -> 
           match lookup.TryGetValue(fieldName) with
           | true, (_, v) -> OptionalValue(v)
           | _ -> OptionalValue.Missing)).DataSequence
@@ -211,7 +211,7 @@ module internal Reflection =
     let frameData = 
       [| for convFunc in convertors -> convFunc.Invoke(data) |]
       |> vectorBuilder.Create
-    Frame<int, string>(Index.ofKeys [0 .. (Seq.length data) - 1], colIndex, frameData)
+    Frame<int, string>(Index.ofKeys [0 .. (Seq.length data) - 1], colIndex, frameData, IndexBuilder.Instance, VectorBuilder.Instance)
 
   /// Helper that makes it possible to call convertRecordSequence on untyped enumerable
   type ConvertRecordHelper =
@@ -382,7 +382,7 @@ module internal FrameUtils =
       |> Vector.ofValues
     let rowIndex = Index.ofKeys [ 0 .. count - 1 ]
     let colIndex = Index.ofKeys [ for i in 0 .. fields - 1 -> reader.GetName(i) ]
-    Frame<int, string>(rowIndex, colIndex, frameData)
+    Frame<int, string>(rowIndex, colIndex, frameData, IndexBuilder.Instance, VectorBuilder.Instance)
 
 
   /// Load data from a CSV file using F# Data API
@@ -441,7 +441,7 @@ module internal FrameUtils =
         [| for row in data.Rows -> row.Columns.[i] |]
         |> createVector prop.RuntimeType )
     let rowIndex = Index.ofKeys [ 0 .. (Seq.length data.Rows) - 1 ]
-    Frame(rowIndex, columnIndex, Vector.ofValues columns)
+    Frame(rowIndex, columnIndex, Vector.ofValues columns, IndexBuilder.Instance, VectorBuilder.Instance)
 
 
   /// Create data frame from a sequence of values using
@@ -454,7 +454,7 @@ module internal FrameUtils =
         // TODO: "infer" type for the column
         col, Series(Array.map rowSel items, Array.map valSel items) )
     |> Series.ofObservations
-    |> FrameUtils.fromColumns
+    |> FrameUtils.fromColumns IndexBuilder.Instance VectorBuilder.Instance
 
   /// Expand properties of vectors recursively. Nothing is done when `nesting = 0`.
   let expandVectors nesting dynamic (frame:Frame<'R, string>) =
@@ -474,7 +474,7 @@ module internal FrameUtils =
     let newCols = loop nesting cols |> Array.ofSeq
     let newColIndex = Index.ofKeys (Seq.map fst newCols)
     let newData = Vector.ofValues (Seq.map snd newCols)
-    Frame<_, _>(frame.RowIndex, newColIndex, newData)
+    Frame<_, _>(frame.RowIndex, newColIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Expand properties of vectors recursively. Nothing is done when `nesting = 0`.
   let expandColumns expandNames (frame:Frame<'R, string>) =
@@ -486,4 +486,4 @@ module internal FrameUtils =
       else [name, vector]) |> Array.ofSeq
     let newColIndex = Index.ofKeys (Seq.map fst newCols)
     let newData = Vector.ofValues (Seq.map snd newCols)
-    Frame<_, _>(frame.RowIndex, newColIndex, newData)
+    Frame<_, _>(frame.RowIndex, newColIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
