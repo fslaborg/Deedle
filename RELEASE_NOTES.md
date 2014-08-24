@@ -57,3 +57,7 @@
 
 ### 1.0.3
  * Added Stats.min and Stats.max for frame
+
+### 1.0.4
+ * Merge BigDeedle pull request (#247)
+ * Fix PivotTable (#248) and CSV writing (#242)
