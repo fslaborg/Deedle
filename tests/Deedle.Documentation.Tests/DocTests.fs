@@ -34,31 +34,36 @@ let output = Path.GetTempPath() @@ "Deedle.Docs"
 if Directory.Exists(output) then Directory.Delete(output, true)
 do Directory.CreateDirectory(output) |> ignore
 
+/// Represents evaluation or compilation error returned by `processFile`
+type TestError =
+  | EvaluationFailed of FsiEvaluationFailedInfo
+  | CompileError of string * SourceError
+  override x.ToString() = 
+    match x with
+    | EvaluationFailed(err) ->
+        sprintf "%s: %A\nSource:\n%s\n\nError:%s" (defaultArg err.File "unknown") err.Exception.Message err.Text err.StdErr
+    | CompileError(file, SourceError(startl, endl, kind, msg)) -> 
+        sprintf "%s (%d:%d-%d:%d): %O - %s" file (fst startl) (snd startl) (fst endl) (snd endl) kind msg
 
 /// Process a specified file in the documentation folder and return 
 /// the total number of unexpected errors found (print them to the output too)
 let processFile file =
   printfn "Processing '%s'" file
-
   let dir = Path.GetDirectoryName(Path.Combine(output, file))
   if not (Directory.Exists(dir)) then Directory.CreateDirectory(dir) |> ignore
 
+  // Process the file and capture evaluation errors
   let evaluationErrors = ResizeArray()
-#if INTERACTIVE
   let fsiEvaluator = FsiEvaluator()
   fsiEvaluator.EvaluationFailed |> Event.add evaluationErrors.Add
   let literateDoc = Literate.ParseScriptFile(Path.Combine(sources, file), fsiEvaluator = fsiEvaluator)
-#else
-  let literateDoc = Literate.ParseScriptFile(Path.Combine(sources, file)) 
-#endif
-  Seq.append
-    (literateDoc.Errors 
-     |> Seq.choose (fun (SourceError(startl, endl, kind, msg)) ->
-       if msg <> "Multiple references to 'mscorlib.dll' are not permitted" then
-         Some <| sprintf "%A %s (%s)" (startl, endl) msg file
-       else None))
-    (evaluationErrors |> Seq.map (fun x -> x.ToString()))
-  |> String.concat "\n"
+
+  // Return compile & evaluation errors
+  [ for (SourceError(startl, endl, kind, msg)) as err in literateDoc.Errors do
+      if msg <> "Multiple references to 'mscorlib.dll' are not permitted" then
+        yield CompileError(file, err)
+    for err in evaluationErrors do
+      yield EvaluationFailed(err) ]
 
 // ------------------------------------------------------------------------------------
 // Core API documentation
@@ -78,7 +83,8 @@ for file in docFiles do
 [<TestCaseSource "docFiles">]
 let ``Documentation generated correctly `` file = 
   let errors = processFile file
-  if errors <> "" then
+  if errors <> [] then
+    let errors = errors |> Seq.map (sprintf "%O") |> String.concat "\n"
     Assert.Fail("Found errors when processing file '" + file + "':\n" + errors)
 
 #endif

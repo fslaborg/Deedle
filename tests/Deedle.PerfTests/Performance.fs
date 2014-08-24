@@ -50,7 +50,7 @@ let frameTwoCol1M =
   |> Frame.indexColsWith ["Key"; "Value"]
 
 // Load sample data sets
-let titanic = Frame.ReadCsv(__SOURCE_DIRECTORY__ + @"\..\Performance\data\Titanic.csv")
+let titanic = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/../Performance/data/Titanic.csv")
 
 // ------------------------------------------------------------------------------------------------
 // Compatibility
