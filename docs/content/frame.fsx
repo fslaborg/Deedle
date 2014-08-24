@@ -717,7 +717,8 @@ we get the following two by two table:
 Note, we could also use the `PivotTable` member method along with a type annotation on the
 result for readability:
 *)
-let table : Frame<string,bool> = titanic.PivotTable("Sex", "Survived", Frame.countRows);;
+let table : Frame<string,bool> = 
+  titanic.PivotTable("Sex", "Survived", Frame.countRows)
 
 (**
 The pivot table operation takes the source frame, partitions the data (rows) based on the 
