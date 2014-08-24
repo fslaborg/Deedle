@@ -76,7 +76,8 @@ let docFiles =
 
 #if INTERACTIVE
 for file in docFiles do 
-    printfn "%s" (processFile file)
+    let errors = processFile file
+    errors |> Seq.map (sprintf "%O") |> String.concat "\n" |> printfn "%s"
 #else
 
 [<Test>]
