@@ -127,7 +127,7 @@ let tryGetDateTimeKeys (zoo:SymbolicExpression) fromDateTime =
     |> Seq.map (fun v -> DateTime.ParseExact(v, "yyyy-MM-dd HH:mm:ss", invcult))
     |> Seq.map fromDateTime
     |> Some
-  with :? RDotNet.ParseException -> None
+  with :? RDotNet.ParseException | :? RDotNet.EvaluationException -> None
 
 /// Try converting the specified symbolic expression to a time series
 let tryCreateTimeSeries fromDateTime (symExpr:SymbolicExpression) : option<Series<'K, 'V>> = 

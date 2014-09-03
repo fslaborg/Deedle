@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<head>
+  <title>Vega Scaffold</title>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="http://trifacta.github.com/vega/vega.js"></script>
+  <!--<script src="http://trifacta.github.com/vega/d3.geo.projection.min.js"></script>-->
+</head>
+<body>
+<div id="vis"></div>
+
+<script type="text/javascript">
+// parse a spec and create a visualization view
+function parse(spec) {
+  vg.parse.spec(spec, function(chart) { chart({el:"#vis"}).update(); });
+}
+  parse(JSON.parse('{\
+  "width": 300,\
+  "height": 480,\
+  "data": [\
+    {\
+      "name": "table",\
+      "values": [\
+          {"dir":"0.9.12", "test":"Accessing float series via object series", "value":100.00}, {"dir":"1.0.0", "test":"Accessing float series via object series", "value":0.02}, {"dir":"0.9.12", "test":"Building a large (1M items) series from two arrays", "value":100.00}, {"dir":"1.0.0", "test":"Building a large (1M items) series from two arrays", "value":0.96}, {"dir":"0.9.12", "test":"Diff 20x10k frame by offset 10", "value":100.00}, {"dir":"1.0.0", "test":"Diff 20x10k frame by offset 10", "value":0.48}, {"dir":"0.9.12", "test":"Get frames columns and re-create frame", "value":100.00}, {"dir":"1.0.0", "test":"Get frames columns and re-create frame", "value":0.63}, {"dir":"0.9.12", "test":"Group by column and subtract group averages", "value":100.00}, {"dir":"1.0.0", "test":"Group by column and subtract group averages", "value":25.68}, {"dir":"0.9.12", "test":"Merge 10 frames of size 1k (repeated Merge)", "value":100.00}, {"dir":"1.0.0", "test":"Merge 10 frames of size 1k (repeated Merge)", "value":13.86}, {"dir":"0.9.12", "test":"Merge 3 ordered 300k long series (repeating Merge)", "value":100.00}, {"dir":"1.0.0", "test":"Merge 3 ordered 300k long series (repeating Merge)", "value":16.39}, {"dir":"0.9.12", "test":"Merge 3 unordered 300k long series (repeating Merge)", "value":100.00}, {"dir":"1.0.0", "test":"Merge 3 unordered 300k long series (repeating Merge)", "value":13.60}, {"dir":"0.9.12", "test":"Merge 6 ordered 300k long series (repeating Merge)", "value":100.00}, {"dir":"1.0.0", "test":"Merge 6 ordered 300k long series (repeating Merge)", "value":14.42}, {"dir":"0.9.12", "test":"Merge 6 unordered 300k long series (repeating Merge)", "value":100.00}, {"dir":"1.0.0", "test":"Merge 6 unordered 300k long series (repeating Merge)", "value":12.86}, {"dir":"0.9.12", "test":"Numerical operators on 100x10k frame and series", "value":100.00}, {"dir":"1.0.0", "test":"Numerical operators on 100x10k frame and series", "value":4.97}, {"dir":"0.9.12", "test":"Numerical operators on 10x10k frame and series", "value":100.00}, {"dir":"1.0.0", "test":"Numerical operators on 10x10k frame and series", "value":4.75}, {"dir":"0.9.12", "test":"Numerical operators on 20x10k frame", "value":100.00}, {"dir":"1.0.0", "test":"Numerical operators on 20x10k frame", "value":35.25}, {"dir":"0.9.12", "test":"Realign 1M series according to a key array", "value":100.00}, {"dir":"1.0.0", "test":"Realign 1M series according to a key array", "value":13.59}, {"dir":"0.9.12", "test":"Resample 1M series using 100 blocks (backward)", "value":100.00}, {"dir":"1.0.0", "test":"Resample 1M series using 100 blocks (backward)", "value":4.93}, {"dir":"0.9.12", "test":"Resample 1M series using 100 blocks (forward)", "value":100.00}, {"dir":"1.0.0", "test":"Resample 1M series using 100 blocks (forward)", "value":4.78}, {"dir":"0.9.12", "test":"Resample 1M series using 10000 blocks", "value":100.00}, {"dir":"1.0.0", "test":"Resample 1M series using 10000 blocks", "value":7.99}, {"dir":"0.9.12", "test":"Resample 1M series using 10000 blocks (backward)", "value":100.00}, {"dir":"1.0.0", "test":"Resample 1M series using 10000 blocks (backward)", "value":8.00}, {"dir":"0.9.12", "test":"Resample 1M series using 10000 blocks (forward)", "value":100.00}, {"dir":"1.0.0", "test":"Resample 1M series using 10000 blocks (forward)", "value":8.06}, {"dir":"0.9.12", "test":"Shift 20x10k frame by offset 10", "value":100.00}, {"dir":"1.0.0", "test":"Shift 20x10k frame by offset 10", "value":0.05}, {"dir":"0.9.12", "test":"Stack values of a 1000x1000 frame", "value":100.00}, {"dir":"1.0.0", "test":"Stack values of a 1000x1000 frame", "value":17.98}, {"dir":"0.9.12", "test":"Titanic survival rate based on gender (groupRowsBy)", "value":100.00}, {"dir":"1.0.0", "test":"Titanic survival rate based on gender (groupRowsBy)", "value":43.40}\
+      ]\
+    }\
+  ],\
+  "legends": [\
+    {\
+      "fill": "color",\
+      "title": "Performance tests",\
+      "properties": {\
+        "symbols": {\
+          "fillOpacity": {\
+            "value": 0.5\
+          },\
+          "stroke": {\
+            "value": "transparent"\
+          }\
+        }\
+      }\
+    }\
+  ],\
+  "scales": [\
+    {\
+      "name": "cat",\
+      "type": "ordinal",\
+      "range": "height",\
+      "padding": 0.2,\
+      "domain": {\
+        "data": "table",\
+        "field": "data.test"\
+      }\
+    },\
+    {\
+      "name": "val",\
+      "range": "width",\
+      "type": "linear",\
+      "round": true,\
+      "nice": true,\
+      "clamp": true,\
+      "domainMax": 120,\
+      "domain": {\
+        "data": "table",\
+        "field": "data.value"\
+      }\
+    },\
+    {\
+      "name": "color",\
+      "type": "ordinal",\
+      "range": ["#1f77b4", "#68C433"] \
+    }\
+  ],\
+  "axes": [\
+    {\
+      "type": "y",\
+      "scale": "cat",\
+      "tickSize": 0,\
+      "tickPadding": 8\
+    },\
+    {\
+      "type": "x",\
+      "scale": "val",\
+      "title": "Time (ms)"\
+    }\
+  ],\
+  "marks": [\
+    {\
+      "type": "group",\
+      "from": {\
+        "data": "table",\
+        "transform": [\
+          {\
+            "type": "facet",\
+            "keys": [\
+              "data.test"\
+            ]\
+          }\
+        ]\
+      },\
+      "properties": {\
+        "enter": {\
+          "y": {\
+            "scale": "cat",\
+            "field": "key"\
+          },\
+          "height": {\
+            "scale": "cat",\
+            "band": true\
+          }\
+        }\
+      },\
+      "scales": [\
+        {\
+          "name": "pos",\
+          "type": "ordinal",\
+          "range": "height",\
+          "domain": {\
+            "field": "data.dir"\
+          }\
+        }\
+      ],\
+      "marks": [\
+        {\
+          "type": "rect",\
+          "properties": {\
+            "enter": {\
+              "y": {\
+                "scale": "pos",\
+                "field": "data.dir"\
+              },\
+              "height": {\
+                "scale": "pos",\
+                "mult": 0.8,\
+                "band": true\
+              },\
+              "x": {\
+                "scale": "val",\
+                "field": "data.value"\
+              },\
+              "x2": {\
+                "scale": "val",\
+                "value": 0\
+              },\
+              "fill": {\
+                "scale": "color",\
+                "field": "data.dir"\
+              }\
+            }\
+          }\
+        },\
+        {\
+          "type": "text",\
+          "properties": {\
+            "enter": {\
+              "y": {\
+                "scale": "pos",\
+                "field": "data.dir"\
+              },\
+              "dy": {\
+                "scale": "pos",\
+                "band": true,\
+                "mult": 0.5\
+              },\
+              "x": {\
+                "scale": "val",\
+                "field": "data.value",\
+                "offset": 4\
+              },\
+              "fill": {\
+                "scale": "color",\
+                "field": "data.dir"\
+              },\
+              "align": {\
+                "value": "left"\
+              },\
+              "baseline": {\
+                "value": "middle"\
+              },\
+              "text": {\
+                "field": "data.value"\
+              }\
+            }\
+          }\
+        }\
+      ]\
+    }\
+  ]\
+}'));
+</script>
+</body>
+</html>

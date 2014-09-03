@@ -294,7 +294,7 @@ jan234?MsftOpen |> Stats.mean
 // Get values corresponding to entire January 2013
 let jan = joinedIn.Rows.[DateTime(2013, 1, 1) .. DateTime(2013, 1, 31)] 
 
-(*** include-value: Frame.map(round (jan*100.0))/100.0 |> Frame.mapRowKeys (fun dt -> dt.ToShortDateString()) ***)
+(*** include-value:round (jan*100.0)/100.0 |> Frame.mapRowKeys (fun dt -> dt.ToShortDateString()) ***)
 
 // Calculate means over the period
 jan?FbOpen |> Stats.mean
@@ -519,7 +519,7 @@ on the second component. We can also use `Frame.getNumericColumns` in combinatio
 `Stats.levelMean` to get means for all first-level groups:
 *)
 monthly 
-|> Frame.getNumericColumns
+|> Frame.getNumericCols
 |> Series.mapValues (Stats.levelMean fst)
 |> Frame.ofColumns
 

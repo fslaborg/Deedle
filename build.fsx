@@ -96,6 +96,10 @@ Target "Build" (fun _ ->
     !! (project + ".sln")
       |> MSBuildRelease "" "Rebuild"
       |> Log "AppBuild-Output: "
+
+    !! ("tests/PerformanceTools.sln")
+      |> MSBuildRelease "" "Rebuild"
+      |> Log "AppBuild-Output: "
   
     !! (project + ".Tests.sln")
       |> MSBuildRelease "" "Rebuild"
