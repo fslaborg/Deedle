@@ -569,6 +569,19 @@ module Array =
     res.ToArray()
 
 
+/// This module contains additional functions for working with lists. 
+module List =
+  /// Returns an option value that is Some when the specified function 'f'
+  /// succeeds for all values from the input list. Otherwise returns None. 
+  let tryChooseBy f input = 
+    let rec loop acc = function
+      | [] -> Some (List.rev acc)
+      | x::xs ->
+          match f x with
+          | Some v -> loop (v::acc) xs
+          | None -> None
+    loop [] input
+
 /// This module contains additional functions for working with sequences. 
 /// `Deedle.Internals` is opened, it extends the standard `Seq` module.
 module Seq = 

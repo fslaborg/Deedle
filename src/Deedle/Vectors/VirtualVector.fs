@@ -24,6 +24,7 @@ type IVirtualVectorSource<'V> =
   inherit IVirtualVectorSource
   abstract ValueAt : int64 -> OptionalValue<'V>
   abstract GetSubVector : VectorRange -> IVirtualVectorSource<'V>
+  abstract MergeWith : IVirtualVectorSource<'V> list -> IVirtualVectorSource<'V>
   abstract LookupRange : LookupKind<'V> -> VectorRange
   abstract LookupValue : 'V * Lookup * Func<Addressing.Address, bool> -> OptionalValue<'V * Addressing.Address> 
 
@@ -32,15 +33,34 @@ type IVirtualVectorSource<'V> =
 // ------------------------------------------------------------------------------------------------
 
 module VirtualVectorSource = 
+  type IBoxedVectorSource<'T> =
+    abstract Source : IVirtualVectorSource<'T> 
+
   let rec boxSource (source:IVirtualVectorSource<'T>) =
     { new IVirtualVectorSource<obj> with
         member x.ValueAt(idx) = source.ValueAt(idx) |> OptionalValue.map box
         member x.LookupRange(search) = failwith "Search not implemented on combined vector"
         member x.LookupValue(v, l, c) = failwith "Lookup not implemented on combined vector" 
         member x.GetSubVector(range) = boxSource (source.GetSubVector(range))
+        member x.MergeWith(sources) = 
+          let sources = 
+            sources |> List.tryChooseBy (function
+            | :? IBoxedVectorSource<'T> as src -> Some(src.Source)
+            | _ -> None)
+          match sources with 
+          | None -> failwith "Cannot box frames or series not created by combine"
+          | Some sources ->
+              boxSource (source.MergeWith(sources))
+
+      interface IBoxedVectorSource<'T> with
+        member x.Source = source
       interface IVirtualVectorSource with
         member x.ElementType = typeof<obj>
         member x.Length = source.Length }
+
+  type ICombinedVectorSource<'T> =
+    abstract Sources : IVirtualVectorSource<'T> list
+    abstract Function : unit // TODO: Check that the applied function is the same
 
   let rec combine (f:OptionalValue<'T> list -> OptionalValue<'R>) (sources:IVirtualVectorSource<'T> list) : IVirtualVectorSource<'R> = 
     { new IVirtualVectorSource<'R> with
@@ -48,9 +68,33 @@ module VirtualVectorSource =
         member x.LookupRange(search) = failwith "Search not implemented on combined vector"
         member x.LookupValue(v, l, c) = failwith "Lookup not implemented on combined vector" 
         member x.GetSubVector(range) = combine f [ for s in sources -> s.GetSubVector(range) ]
+        member x.MergeWith(sources) = 
+          // For every source, we get a list of sources that were used to produce it
+          let sources = 
+            (x::sources) |> List.tryChooseBy (function
+            | :? ICombinedVectorSource<'T> as src -> Some(src.Sources |> Array.ofSeq)
+            | _ -> None)
+          match sources with 
+          | None -> failwith "Cannot merge frames or series not created by combine"
+          | Some sources ->
+              // Make sure that all sources are combinations of the same number of vectors 
+              let length = sources |> Seq.map Array.length |> Seq.reduce (fun a b -> if a <> b then failwith "Length mismatch" else a)
+              let toCombine =
+                [ for i in 0 .. length - 1 ->
+                    let sh,st = match [ for s in sources -> s.[i] ] with sh::st -> sh, st | _ -> failwith "Merge requires one or more sources"  // ....
+                    sh.MergeWith(st) ]
+              combine f toCombine 
+
+      interface ICombinedVectorSource<'T> with
+        member x.Sources = sources
+        member x.Function = () 
       interface IVirtualVectorSource with
         member x.ElementType = typeof<'R>
         member x.Length = sources |> Seq.map (fun s -> s.Length) |> Seq.reduce (fun a b -> if a <> b then failwith "Length mismatch" else a) }
+
+  type IMappedVectorSource<'T, 'R> = 
+    abstract Source : IVirtualVectorSource<'T>
+    abstract Function : unit // TODO: Check that the applied function is the same
 
   let rec map rev f (source:IVirtualVectorSource<'V>) = 
     let withReverseLookup op = 
@@ -60,6 +104,14 @@ module VirtualVectorSource =
 
     { new IVirtualVectorSource<'TNew> with
         member x.ValueAt(idx) = f (Address.ofInt64 idx) (source.ValueAt(idx)) // TODO: Are we calculating the address correctly here??
+        member x.MergeWith(sources) = 
+          let sources = sources |> List.tryChooseBy (function
+              | :? IMappedVectorSource<'V, 'TNew> as src -> Some(src.Source) | _ -> None)
+          match sources with 
+          | None -> failwith "Cannot merge frames or series not created by combine"
+          | Some sources ->
+              map rev f (source.MergeWith(sources)) // TODO: Check that the function is the same
+
         member x.LookupRange(search) = 
           (*
           // TODO: Test me
@@ -100,6 +152,9 @@ module VirtualVectorSource =
                   |> OptionalValue.map (fun v -> v, a))  )
 
         member x.GetSubVector(range) = map rev f (source.GetSubVector(range))
+      interface IMappedVectorSource<'V, 'TNew> with
+        member x.Source = source
+        member x.Function = ()
       interface IVirtualVectorSource with
         member x.ElementType = typeof<'TNew>
         member x.Length = source.Length }
@@ -200,6 +255,11 @@ type VirtualVectorBuilder() =
     member builder.AsyncBuild<'T>(cmd, args) = baseBuilder.AsyncBuild<'T>(cmd, args)
     member builder.Build<'T>(cmd, args) = 
       match cmd with 
+      | Return vectorVar -> 
+          match args.[vectorVar] with
+          | :? IWrappedVector<'T> as w -> w.UnwrapVector()
+          | v -> v
+
       | GetRange(source, range) ->
           let restrictRange (vector:IVector<'T2>) =
             match vector with
@@ -241,6 +301,27 @@ type VirtualVectorBuilder() =
                     let subSources = [ for s in sources -> s.GetSubVector(range) ]
                     let subVectors = Vector.ofValues [ for s in subSources -> VirtualVector(s) :> IVector ]
                     createRowReader subVectors subSources
+                  member x.MergeWith(sources) = 
+                    // For every source, we get a list of sources that were used to produce it
+                    let sources = 
+                      (x::sources) |> List.tryChooseBy (function
+                      | :? VirtualVectorSource.ICombinedVectorSource<'T> as src -> Some(src.Sources |> Array.ofSeq)
+                      | _ -> None)
+                    match sources with 
+                    | None -> failwith "Cannot merge frames or series not created by combine"
+                    | Some sources ->
+                        // Make sure that all sources are combinations of the same number of vectors 
+                        let length = sources |> Seq.map Array.length |> Seq.reduce (fun a b -> if a <> b then failwith "Length mismatch" else a)
+                        let toCombine =
+                          [ for i in 0 .. length - 1 ->
+                              let sh,st = match [ for s in sources -> s.[i] ] with sh::st -> sh, st | _ -> failwith "Merge requires one or more sources"  // ....
+                              sh.MergeWith(st) ]
+                        let data = Vector.ofValues [ for s in toCombine -> VirtualVector(s) :> IVector ]
+                        createRowReader data toCombine
+
+                interface VirtualVectorSource.ICombinedVectorSource<'T> with
+                  member x.Sources = sources
+                  member x.Function = () 
                 interface IVirtualVectorSource with
                   member x.ElementType = typeof<IVector<obj>>
                   member x.Length = sources |> Seq.map (fun s -> s.Length) |> Seq.reduce (fun a b -> if a <> b then failwith "Length mismatch" else a) }
@@ -268,5 +349,13 @@ type VirtualVectorBuilder() =
             let cmd = Combine([ for i in 0 .. builtSources.Length-1 -> Return i ], transform)
             baseBuilder.Build(cmd, builtSources)
 
+      | Append(first, second) ->
+          match build first args, build second args with
+          | (:? VirtualVector<'T> as first), (:? VirtualVector<'T> as second) ->
+              let newSource = first.Source.MergeWith([second.Source])
+              VirtualVector(newSource) :> _
+          | _ ->
+              failwith "Append would materialize vectors"
       | _ ->    
-        baseBuilder.Build<'T>(cmd, args)
+          //failwith "VectorBuilder.Build - this would be slow"
+          baseBuilder.Build<'T>(cmd, args)

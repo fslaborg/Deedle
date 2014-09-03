@@ -111,12 +111,24 @@ and VirtualIndexBuilder() =
     member x.Union(sc1, sc2) = failwith "Union"
     member x.Intersect(sc1, sc2) = failwith "Intersect"
     member x.Merge(scs:list<SeriesConstruction<'K>>, transform) = 
-      for index, vector in scs do 
-        match index with
-        | :? VirtualOrderedIndex<'K>
-        | :? VirtualOrdinalIndex -> failwith "TODO: Reindex - ordered/ordinal index - avoid materialization!"
-        | _ -> ()
-      baseBuilder.Merge(scs, transform)
+      let orderedSources = 
+        scs |> List.tryChooseBy (function
+          | :? VirtualOrderedIndex<'K> as idx, vec -> Some(idx.Source, vec)
+          | _ -> None)
+      match orderedSources with
+      | Some sources ->
+          let newIndex = [ for s, _ in sources -> s ]
+          let newIndex2 = (List.head newIndex).MergeWith(List.tail newIndex)
+          let newVector = sources |> Seq.map snd |> Seq.reduce (fun a b -> Vectors.Append(a, b))
+          VirtualOrderedIndex(newIndex2) :> _, newVector
+
+      | _ -> 
+        for index, vector in scs do 
+          match index with
+          | :? VirtualOrderedIndex<'K>
+          | :? VirtualOrdinalIndex -> failwith "TODO: Reindex - ordered/ordinal index - avoid materialization!"
+          | _ -> ()
+        baseBuilder.Merge(scs, transform)
 
     member x.Search((index:IIndex<'K>, vector), searchVector:IVector<'V>, searchValue) = 
       match index, searchVector with
