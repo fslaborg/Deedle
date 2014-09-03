@@ -425,7 +425,7 @@ let ``Can access items of a virtual filtered frame without evaluating it`` () =
   lorem.Rows.Get(date 2001 1 1, Lookup.ExactOrSmaller).["S2"] |> unbox |> shouldEqual "lorem"
   lorem.Rows.Get(date 2001 1 1, Lookup.ExactOrGreater).["S2"] |> unbox |> shouldEqual "lorem"  
   lorem.Rows.Get(date 2001 1 1, Lookup.ExactOrGreater)?S1 - lorem.Rows.Get(date 2001 1 1, Lookup.ExactOrSmaller)?S1 |> shouldEqual 8.0
-  set s1.AccessList |> shouldEqual <| set [320176L; 320177L; 625000L]
+  set s1.AccessList |> shouldEqual <| set [320176L; 320177L]
   set s2.AccessList |> shouldEqual <| set [320176L; 320177L; 625000L]
 
 [<Test>]
