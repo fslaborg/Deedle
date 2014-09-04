@@ -210,11 +210,11 @@ let ``Moving minimum works with nan values`` () =
 [<Test>]
 let ``maxBy and minBy work`` () =
   let s = series [ 0 => 1.0; 1 => nan; 2 => 5.0 ]
-  s |> Stats.maxBy id |> shouldEqual (Some 5.0)
-  s |> Stats.minBy id |> shouldEqual (Some 1.0)
+  s |> Stats.maxBy id |> shouldEqual (Some (2, 5.0))
+  s |> Stats.minBy id |> shouldEqual (Some (0, 1.0))
 
-  s |> Stats.maxBy (fun x -> -x) |> shouldEqual (Some -1.0)
-  s |> Stats.minBy (fun x -> -x) |> shouldEqual (Some -5.0)
+  s |> Stats.maxBy (fun x -> -x) |> shouldEqual (Some (0, 1.0))
+  s |> Stats.minBy (fun x -> -x) |> shouldEqual (Some (2, 5.0))
 
 // ------------------------------------------------------------------------------------------------
 // Statistics on frames
