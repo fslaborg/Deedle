@@ -231,10 +231,6 @@ let ``Can calulate minimum and maximum of numeric series in a frame`` () =
   let df = sampleFrame()
   df |> Stats.min |> shouldEqual <| series [ "A" => 1.0; "B" => nan; "C" => 3.3 ]
   df |> Stats.max |> shouldEqual <| series [ "A" => 3.0; "B" => nan; "C" => 6.6 ]
-  
-  // minBy and maxBy
-  df |> Stats.minBy id |> shouldEqual <| series [ "A" => 1.0; "B" => nam; "C" => 3.3 ]
-  df |> Stats.maxBy id |> shouldEqual <| series [ "A" => 3.0; "B" => nan; "C" => 6.6 ]
 
 // ------------------------------------------------------------------------------------------------
 // Some FsCheck tests
