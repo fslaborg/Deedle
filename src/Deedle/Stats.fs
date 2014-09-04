@@ -606,7 +606,7 @@ type Stats =
   /// [category:Series statistics]
   static member inline minBy f (series:Series<'K, 'T>) = 
     if series.ValueCount = 0 then None
-    else Some(series |> Series.observations |> Seq.maxBy (snd >> f))
+    else Some(series |> Series.observations |> Seq.minBy (snd >> f))
 
   /// Returns the median of the elements of the series.
   ///
