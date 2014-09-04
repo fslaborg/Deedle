@@ -207,6 +207,15 @@ let ``Moving minimum works with nan values`` () =
   let s1 = series [ 0 => 1.0; 1 => nan ]
   Stats.movingMin 1 s1 |> shouldEqual <| series [ 0 => 1.0; 1 => nan ]
 
+[<Test>]
+let ``maxBy and minBy work`` () =
+  let s = series [ 0 => 1.0; 1 => nan; 2 => 5.0 ]
+  s |> Stats.maxBy id |> shouldEqual (Some 5.0)
+  s |> Stats.minBy id |> shouldEqual (Some 1.0)
+
+  s |> Stats.maxBy (fun x -> -x) |> shouldEqual (Some -1.0)
+  s |> Stats.minBy (fun x -> -x) |> shouldEqual (Some -5.0)
+
 // ------------------------------------------------------------------------------------------------
 // Statistics on frames
 // ------------------------------------------------------------------------------------------------
