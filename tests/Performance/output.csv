@@ -1,0 +1,563 @@
+Version,Test,Time
+0.9.12,"Numerical operators on 20x10k frame",1655
+0.9.12,"Numerical operators on 20x10k frame",1670
+0.9.12,"Numerical operators on 20x10k frame",1674
+0.9.12,"Numerical operators on 20x10k frame",1685
+0.9.12,"Numerical operators on 20x10k frame",1363
+0.9.12,"Numerical operators on 20x10k frame",1660
+0.9.12,"Numerical operators on 20x10k frame",1359
+0.9.12,"Numerical operators on 20x10k frame",1690
+0.9.12,"Numerical operators on 20x10k frame",1363
+0.9.12,"Numerical operators on 20x10k frame",1354
+0.9.12,"Numerical operators on 100x10k frame and series",5624
+0.9.12,"Numerical operators on 100x10k frame and series",5630
+0.9.12,"Numerical operators on 100x10k frame and series",5641
+0.9.12,"Numerical operators on 100x10k frame and series",5691
+0.9.12,"Numerical operators on 100x10k frame and series",5583
+0.9.12,"Numerical operators on 100x10k frame and series",5941
+0.9.12,"Numerical operators on 100x10k frame and series",5566
+0.9.12,"Numerical operators on 100x10k frame and series",5959
+0.9.12,"Numerical operators on 100x10k frame and series",5694
+0.9.12,"Numerical operators on 100x10k frame and series",5706
+0.9.12,"Numerical operators on 10x10k frame and series",1493
+0.9.12,"Numerical operators on 10x10k frame and series",588
+0.9.12,"Numerical operators on 10x10k frame and series",583
+0.9.12,"Numerical operators on 10x10k frame and series",587
+0.9.12,"Numerical operators on 10x10k frame and series",590
+0.9.12,"Numerical operators on 10x10k frame and series",588
+0.9.12,"Numerical operators on 10x10k frame and series",592
+0.9.12,"Numerical operators on 10x10k frame and series",823
+0.9.12,"Numerical operators on 10x10k frame and series",584
+0.9.12,"Numerical operators on 10x10k frame and series",584
+0.9.12,"Building a large (1M items) series from two arrays",892
+0.9.12,"Building a large (1M items) series from two arrays",918
+0.9.12,"Building a large (1M items) series from two arrays",942
+0.9.12,"Building a large (1M items) series from two arrays",1097
+0.9.12,"Building a large (1M items) series from two arrays",902
+0.9.12,"Building a large (1M items) series from two arrays",910
+0.9.12,"Building a large (1M items) series from two arrays",895
+0.9.12,"Building a large (1M items) series from two arrays",924
+0.9.12,"Building a large (1M items) series from two arrays",1154
+0.9.12,"Building a large (1M items) series from two arrays",920
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",38
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",36
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",37
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",37
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",32
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",39
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",32
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",39
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",32
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",39
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",32
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",39
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",32
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",39
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",32
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",39
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",32
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",39
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",32
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",39
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",32
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",39
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",33
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",39
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",32
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",36
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",36
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",33
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",36
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",33
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",37
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",32
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",37
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",33
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",37
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",33
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",37
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",32
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",37
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",33
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",37
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",32
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",37
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",32
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",37
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",32
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",41
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",33
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",39
+0.9.12,"Titanic survival rate based on gender (groupRowsBy)",32
+0.9.12,"Realign 1M series according to a key array",3580
+0.9.12,"Realign 1M series according to a key array",3602
+0.9.12,"Realign 1M series according to a key array",3615
+0.9.12,"Realign 1M series according to a key array",3615
+0.9.12,"Realign 1M series according to a key array",3584
+0.9.12,"Realign 1M series according to a key array",3651
+0.9.12,"Realign 1M series according to a key array",3595
+0.9.12,"Realign 1M series according to a key array",3597
+0.9.12,"Realign 1M series according to a key array",3605
+0.9.12,"Realign 1M series according to a key array",3632
+0.9.12,"Group by column and subtract group averages",4646
+0.9.12,"Group by column and subtract group averages",4618
+0.9.12,"Group by column and subtract group averages",4662
+0.9.12,"Group by column and subtract group averages",4642
+0.9.12,"Group by column and subtract group averages",4647
+0.9.12,"Group by column and subtract group averages",4692
+0.9.12,"Group by column and subtract group averages",4695
+0.9.12,"Group by column and subtract group averages",5309
+0.9.12,"Group by column and subtract group averages",4004
+0.9.12,"Group by column and subtract group averages",4318
+0.9.12,"Get frames columns and re-create frame",2108
+0.9.12,"Get frames columns and re-create frame",2104
+0.9.12,"Get frames columns and re-create frame",2100
+0.9.12,"Get frames columns and re-create frame",2172
+0.9.12,"Get frames columns and re-create frame",2101
+0.9.12,"Get frames columns and re-create frame",2098
+0.9.12,"Get frames columns and re-create frame",2105
+0.9.12,"Get frames columns and re-create frame",2104
+0.9.12,"Get frames columns and re-create frame",2101
+0.9.12,"Get frames columns and re-create frame",2102
+0.9.12,"Accessing float series via object series",8653
+0.9.12,"Accessing float series via object series",8569
+0.9.12,"Accessing float series via object series",9268
+0.9.12,"Accessing float series via object series",9437
+0.9.12,"Resample 1M series using 10000 blocks",1959
+0.9.12,"Resample 1M series using 10000 blocks",1961
+0.9.12,"Resample 1M series using 10000 blocks",1951
+0.9.12,"Resample 1M series using 10000 blocks",1934
+0.9.12,"Resample 1M series using 10000 blocks",1961
+0.9.12,"Resample 1M series using 10000 blocks",1976
+0.9.12,"Resample 1M series using 10000 blocks",1978
+0.9.12,"Resample 1M series using 10000 blocks",1982
+0.9.12,"Resample 1M series using 10000 blocks",1989
+0.9.12,"Resample 1M series using 10000 blocks",2293
+0.9.12,"Resample 1M series using 10000 blocks (forward)",1958
+0.9.12,"Resample 1M series using 10000 blocks (forward)",1956
+0.9.12,"Resample 1M series using 10000 blocks (forward)",1998
+0.9.12,"Resample 1M series using 10000 blocks (forward)",1989
+0.9.12,"Resample 1M series using 10000 blocks (forward)",1986
+0.9.12,"Resample 1M series using 10000 blocks (forward)",1961
+0.9.12,"Resample 1M series using 10000 blocks (forward)",1953
+0.9.12,"Resample 1M series using 10000 blocks (forward)",2265
+0.9.12,"Resample 1M series using 10000 blocks (forward)",1916
+0.9.12,"Resample 1M series using 10000 blocks (forward)",1953
+0.9.12,"Resample 1M series using 10000 blocks (backward)",1980
+0.9.12,"Resample 1M series using 10000 blocks (backward)",1972
+0.9.12,"Resample 1M series using 10000 blocks (backward)",1964
+0.9.12,"Resample 1M series using 10000 blocks (backward)",2357
+0.9.12,"Resample 1M series using 10000 blocks (backward)",2288
+0.9.12,"Resample 1M series using 10000 blocks (backward)",2505
+0.9.12,"Resample 1M series using 10000 blocks (backward)",1979
+0.9.12,"Resample 1M series using 10000 blocks (backward)",1970
+0.9.12,"Resample 1M series using 10000 blocks (backward)",1977
+0.9.12,"Resample 1M series using 10000 blocks (backward)",1974
+0.9.12,"Resample 1M series using 100 blocks (forward)",2085
+0.9.12,"Resample 1M series using 100 blocks (forward)",2074
+0.9.12,"Resample 1M series using 100 blocks (forward)",2079
+0.9.12,"Resample 1M series using 100 blocks (forward)",3613
+0.9.12,"Resample 1M series using 100 blocks (forward)",2650
+0.9.12,"Resample 1M series using 100 blocks (forward)",2458
+0.9.12,"Resample 1M series using 100 blocks (forward)",2084
+0.9.12,"Resample 1M series using 100 blocks (forward)",2109
+0.9.12,"Resample 1M series using 100 blocks (forward)",2079
+0.9.12,"Resample 1M series using 100 blocks (forward)",2078
+0.9.12,"Resample 1M series using 100 blocks (backward)",2077
+0.9.12,"Resample 1M series using 100 blocks (backward)",2060
+0.9.12,"Resample 1M series using 100 blocks (backward)",2068
+0.9.12,"Resample 1M series using 100 blocks (backward)",2050
+0.9.12,"Resample 1M series using 100 blocks (backward)",2052
+0.9.12,"Resample 1M series using 100 blocks (backward)",2047
+0.9.12,"Resample 1M series using 100 blocks (backward)",2056
+0.9.12,"Resample 1M series using 100 blocks (backward)",2046
+0.9.12,"Resample 1M series using 100 blocks (backward)",2047
+0.9.12,"Resample 1M series using 100 blocks (backward)",2065
+0.9.12,"Shift 20x10k frame by offset 10",7533
+0.9.12,"Shift 20x10k frame by offset 10",7306
+0.9.12,"Shift 20x10k frame by offset 10",7312
+0.9.12,"Shift 20x10k frame by offset 10",6506
+0.9.12,"Shift 20x10k frame by offset 10",6847
+0.9.12,"Shift 20x10k frame by offset 10",6922
+0.9.12,"Diff 20x10k frame by offset 10",6597
+0.9.12,"Diff 20x10k frame by offset 10",6587
+0.9.12,"Diff 20x10k frame by offset 10",6211
+0.9.12,"Diff 20x10k frame by offset 10",6204
+0.9.12,"Diff 20x10k frame by offset 10",6242
+0.9.12,"Diff 20x10k frame by offset 10",6334
+0.9.12,"Stack values of a 1000x1000 frame",1828
+0.9.12,"Stack values of a 1000x1000 frame",2071
+0.9.12,"Stack values of a 1000x1000 frame",1813
+0.9.12,"Stack values of a 1000x1000 frame",1737
+0.9.12,"Stack values of a 1000x1000 frame",2168
+0.9.12,"Stack values of a 1000x1000 frame",2089
+0.9.12,"Stack values of a 1000x1000 frame",2154
+0.9.12,"Stack values of a 1000x1000 frame",1768
+0.9.12,"Stack values of a 1000x1000 frame",2166
+0.9.12,"Stack values of a 1000x1000 frame",2099
+0.9.12,"Merge 10 frames of size 1k (repeated Merge)",411
+0.9.12,"Merge 10 frames of size 1k (repeated Merge)",412
+0.9.12,"Merge 10 frames of size 1k (repeated Merge)",419
+0.9.12,"Merge 10 frames of size 1k (repeated Merge)",418
+0.9.12,"Merge 10 frames of size 1k (repeated Merge)",418
+0.9.12,"Merge 3 ordered 300k long series (repeating Merge)",3634
+0.9.12,"Merge 3 ordered 300k long series (repeating Merge)",3463
+0.9.12,"Merge 3 ordered 300k long series (repeating Merge)",3485
+0.9.12,"Merge 3 ordered 300k long series (repeating Merge)",3565
+0.9.12,"Merge 3 ordered 300k long series (repeating Merge)",3546
+0.9.12,"Merge 3 ordered 300k long series (repeating Merge)",3648
+0.9.12,"Merge 3 ordered 300k long series (repeating Merge)",3567
+0.9.12,"Merge 3 ordered 300k long series (repeating Merge)",3497
+0.9.12,"Merge 3 ordered 300k long series (repeating Merge)",3533
+0.9.12,"Merge 3 ordered 300k long series (repeating Merge)",3563
+0.9.12,"Merge 6 ordered 300k long series (repeating Merge)",15458
+0.9.12,"Merge 6 ordered 300k long series (repeating Merge)",16929
+0.9.12,"Merge 6 ordered 300k long series (repeating Merge)",16442
+0.9.12,"Merge 6 ordered 300k long series (repeating Merge)",17355
+0.9.12,"Merge 6 ordered 300k long series (repeating Merge)",16885
+0.9.12,"Merge 3 unordered 300k long series (repeating Merge)",4628
+0.9.12,"Merge 3 unordered 300k long series (repeating Merge)",4576
+0.9.12,"Merge 3 unordered 300k long series (repeating Merge)",4586
+0.9.12,"Merge 3 unordered 300k long series (repeating Merge)",4526
+0.9.12,"Merge 3 unordered 300k long series (repeating Merge)",4611
+0.9.12,"Merge 3 unordered 300k long series (repeating Merge)",4164
+0.9.12,"Merge 3 unordered 300k long series (repeating Merge)",4130
+0.9.12,"Merge 3 unordered 300k long series (repeating Merge)",4672
+0.9.12,"Merge 3 unordered 300k long series (repeating Merge)",4160
+0.9.12,"Merge 3 unordered 300k long series (repeating Merge)",4130
+0.9.12,"Merge 6 unordered 300k long series (repeating Merge)",17822
+0.9.12,"Merge 6 unordered 300k long series (repeating Merge)",19465
+0.9.12,"Merge 6 unordered 300k long series (repeating Merge)",19088
+0.9.12,"Merge 6 unordered 300k long series (repeating Merge)",18611
+0.9.12,"Merge 6 unordered 300k long series (repeating Merge)",19137
+1.0.0,"Numerical operators on 20x10k frame",537
+1.0.0,"Numerical operators on 20x10k frame",533
+1.0.0,"Numerical operators on 20x10k frame",532
+1.0.0,"Numerical operators on 20x10k frame",524
+1.0.0,"Numerical operators on 20x10k frame",539
+1.0.0,"Numerical operators on 20x10k frame",534
+1.0.0,"Numerical operators on 20x10k frame",538
+1.0.0,"Numerical operators on 20x10k frame",644
+1.0.0,"Numerical operators on 20x10k frame",538
+1.0.0,"Numerical operators on 20x10k frame",535
+1.0.0,"Numerical operators on 100x10k frame and series",291
+1.0.0,"Numerical operators on 100x10k frame and series",301
+1.0.0,"Numerical operators on 100x10k frame and series",235
+1.0.0,"Numerical operators on 100x10k frame and series",295
+1.0.0,"Numerical operators on 100x10k frame and series",301
+1.0.0,"Numerical operators on 100x10k frame and series",290
+1.0.0,"Numerical operators on 100x10k frame and series",302
+1.0.0,"Numerical operators on 100x10k frame and series",289
+1.0.0,"Numerical operators on 100x10k frame and series",233
+1.0.0,"Numerical operators on 100x10k frame and series",299
+1.0.0,"Numerical operators on 10x10k frame and series",89
+1.0.0,"Numerical operators on 10x10k frame and series",29
+1.0.0,"Numerical operators on 10x10k frame and series",26
+1.0.0,"Numerical operators on 10x10k frame and series",27
+1.0.0,"Numerical operators on 10x10k frame and series",29
+1.0.0,"Numerical operators on 10x10k frame and series",25
+1.0.0,"Numerical operators on 10x10k frame and series",29
+1.0.0,"Numerical operators on 10x10k frame and series",25
+1.0.0,"Numerical operators on 10x10k frame and series",26
+1.0.0,"Numerical operators on 10x10k frame and series",28
+1.0.0,"Building a large (1M items) series from two arrays",10
+1.0.0,"Building a large (1M items) series from two arrays",9
+1.0.0,"Building a large (1M items) series from two arrays",9
+1.0.0,"Building a large (1M items) series from two arrays",9
+1.0.0,"Building a large (1M items) series from two arrays",9
+1.0.0,"Building a large (1M items) series from two arrays",9
+1.0.0,"Building a large (1M items) series from two arrays",10
+1.0.0,"Building a large (1M items) series from two arrays",9
+1.0.0,"Building a large (1M items) series from two arrays",9
+1.0.0,"Building a large (1M items) series from two arrays",9
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",21
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",16
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",16
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",16
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",16
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",16
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",17
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",16
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",16
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",16
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (groupRowsBy)",15
+1.0.0,"Titanic survival rate based on gender (pivotTable)",17
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",17
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",17
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",18
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",17
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",17
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",17
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",17
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Titanic survival rate based on gender (pivotTable)",16
+1.0.0,"Realign 1M series according to a key array",578
+1.0.0,"Realign 1M series according to a key array",434
+1.0.0,"Realign 1M series according to a key array",426
+1.0.0,"Realign 1M series according to a key array",569
+1.0.0,"Realign 1M series according to a key array",542
+1.0.0,"Realign 1M series according to a key array",442
+1.0.0,"Realign 1M series according to a key array",599
+1.0.0,"Realign 1M series according to a key array",459
+1.0.0,"Realign 1M series according to a key array",427
+1.0.0,"Realign 1M series according to a key array",426
+1.0.0,"Group by column and subtract group averages",1172
+1.0.0,"Group by column and subtract group averages",1140
+1.0.0,"Group by column and subtract group averages",1199
+1.0.0,"Group by column and subtract group averages",1148
+1.0.0,"Group by column and subtract group averages",1198
+1.0.0,"Group by column and subtract group averages",1141
+1.0.0,"Group by column and subtract group averages",1150
+1.0.0,"Group by column and subtract group averages",1198
+1.0.0,"Group by column and subtract group averages",1153
+1.0.0,"Group by column and subtract group averages",1374
+1.0.0,"Get frames columns and re-create frame",13
+1.0.0,"Get frames columns and re-create frame",15
+1.0.0,"Get frames columns and re-create frame",13
+1.0.0,"Get frames columns and re-create frame",13
+1.0.0,"Get frames columns and re-create frame",14
+1.0.0,"Get frames columns and re-create frame",13
+1.0.0,"Get frames columns and re-create frame",13
+1.0.0,"Get frames columns and re-create frame",13
+1.0.0,"Get frames columns and re-create frame",13
+1.0.0,"Get frames columns and re-create frame",13
+1.0.0,"Accessing float series via object series",2
+1.0.0,"Accessing float series via object series",2
+1.0.0,"Accessing float series via object series",2
+1.0.0,"Accessing float series via object series",2
+1.0.0,"Resample 1M series using 10000 blocks",192
+1.0.0,"Resample 1M series using 10000 blocks",168
+1.0.0,"Resample 1M series using 10000 blocks",134
+1.0.0,"Resample 1M series using 10000 blocks",168
+1.0.0,"Resample 1M series using 10000 blocks",137
+1.0.0,"Resample 1M series using 10000 blocks",182
+1.0.0,"Resample 1M series using 10000 blocks",165
+1.0.0,"Resample 1M series using 10000 blocks",173
+1.0.0,"Resample 1M series using 10000 blocks",137
+1.0.0,"Resample 1M series using 10000 blocks",140
+1.0.0,"Resample 1M series using 10000 blocks (forward)",181
+1.0.0,"Resample 1M series using 10000 blocks (forward)",172
+1.0.0,"Resample 1M series using 10000 blocks (forward)",175
+1.0.0,"Resample 1M series using 10000 blocks (forward)",131
+1.0.0,"Resample 1M series using 10000 blocks (forward)",138
+1.0.0,"Resample 1M series using 10000 blocks (forward)",177
+1.0.0,"Resample 1M series using 10000 blocks (forward)",165
+1.0.0,"Resample 1M series using 10000 blocks (forward)",172
+1.0.0,"Resample 1M series using 10000 blocks (forward)",173
+1.0.0,"Resample 1M series using 10000 blocks (forward)",123
+1.0.0,"Resample 1M series using 10000 blocks (backward)",165
+1.0.0,"Resample 1M series using 10000 blocks (backward)",179
+1.0.0,"Resample 1M series using 10000 blocks (backward)",176
+1.0.0,"Resample 1M series using 10000 blocks (backward)",182
+1.0.0,"Resample 1M series using 10000 blocks (backward)",125
+1.0.0,"Resample 1M series using 10000 blocks (backward)",151
+1.0.0,"Resample 1M series using 10000 blocks (backward)",179
+1.0.0,"Resample 1M series using 10000 blocks (backward)",169
+1.0.0,"Resample 1M series using 10000 blocks (backward)",178
+1.0.0,"Resample 1M series using 10000 blocks (backward)",174
+1.0.0,"Resample 1M series using 100 blocks (forward)",104
+1.0.0,"Resample 1M series using 100 blocks (forward)",100
+1.0.0,"Resample 1M series using 100 blocks (forward)",101
+1.0.0,"Resample 1M series using 100 blocks (forward)",101
+1.0.0,"Resample 1M series using 100 blocks (forward)",201
+1.0.0,"Resample 1M series using 100 blocks (forward)",101
+1.0.0,"Resample 1M series using 100 blocks (forward)",101
+1.0.0,"Resample 1M series using 100 blocks (forward)",99
+1.0.0,"Resample 1M series using 100 blocks (forward)",100
+1.0.0,"Resample 1M series using 100 blocks (forward)",106
+1.0.0,"Resample 1M series using 100 blocks (backward)",101
+1.0.0,"Resample 1M series using 100 blocks (backward)",101
+1.0.0,"Resample 1M series using 100 blocks (backward)",98
+1.0.0,"Resample 1M series using 100 blocks (backward)",99
+1.0.0,"Resample 1M series using 100 blocks (backward)",102
+1.0.0,"Resample 1M series using 100 blocks (backward)",100
+1.0.0,"Resample 1M series using 100 blocks (backward)",104
+1.0.0,"Resample 1M series using 100 blocks (backward)",102
+1.0.0,"Resample 1M series using 100 blocks (backward)",105
+1.0.0,"Resample 1M series using 100 blocks (backward)",101
+1.0.0,"Shift 20x10k frame by offset 10",3
+1.0.0,"Shift 20x10k frame by offset 10",3
+1.0.0,"Shift 20x10k frame by offset 10",4
+1.0.0,"Shift 20x10k frame by offset 10",3
+1.0.0,"Shift 20x10k frame by offset 10",3
+1.0.0,"Shift 20x10k frame by offset 10",6
+1.0.0,"Diff 20x10k frame by offset 10",31
+1.0.0,"Diff 20x10k frame by offset 10",30
+1.0.0,"Diff 20x10k frame by offset 10",32
+1.0.0,"Diff 20x10k frame by offset 10",30
+1.0.0,"Diff 20x10k frame by offset 10",31
+1.0.0,"Diff 20x10k frame by offset 10",30
+1.0.0,"Take 500k elements from a 1M element series",5
+1.0.0,"Take 500k elements from a 1M element series",6
+1.0.0,"Take 500k elements from a 1M element series",5
+1.0.0,"Take 500k elements from a 1M element series",5
+1.0.0,"Take 500k elements from a 1M element series",6
+1.0.0,"Take 500k elements from a 1M element series",5
+1.0.0,"Take 500k elements from a 1M element series",5
+1.0.0,"Take 500k elements from a 1M element series",5
+1.0.0,"Take 500k elements from a 1M element series",5
+1.0.0,"Take 500k elements from a 1M element series",6
+1.0.0,"Stack values of a 1000x1000 frame",307
+1.0.0,"Stack values of a 1000x1000 frame",348
+1.0.0,"Stack values of a 1000x1000 frame",336
+1.0.0,"Stack values of a 1000x1000 frame",400
+1.0.0,"Stack values of a 1000x1000 frame",312
+1.0.0,"Stack values of a 1000x1000 frame",408
+1.0.0,"Stack values of a 1000x1000 frame",332
+1.0.0,"Stack values of a 1000x1000 frame",381
+1.0.0,"Stack values of a 1000x1000 frame",392
+1.0.0,"Stack values of a 1000x1000 frame",360
+1.0.0,"Merge 10 frames of size 1k (repeated Merge)",57
+1.0.0,"Merge 10 frames of size 1k (repeated Merge)",57
+1.0.0,"Merge 10 frames of size 1k (repeated Merge)",57
+1.0.0,"Merge 10 frames of size 1k (repeated Merge)",57
+1.0.0,"Merge 10 frames of size 1k (repeated Merge)",60
+1.0.0,"Merge 3 ordered 300k long series (repeating Merge)",556
+1.0.0,"Merge 3 ordered 300k long series (repeating Merge)",587
+1.0.0,"Merge 3 ordered 300k long series (repeating Merge)",595
+1.0.0,"Merge 3 ordered 300k long series (repeating Merge)",577
+1.0.0,"Merge 3 ordered 300k long series (repeating Merge)",573
+1.0.0,"Merge 3 ordered 300k long series (repeating Merge)",667
+1.0.0,"Merge 3 ordered 300k long series (repeating Merge)",570
+1.0.0,"Merge 3 ordered 300k long series (repeating Merge)",561
+1.0.0,"Merge 3 ordered 300k long series (repeating Merge)",571
+1.0.0,"Merge 3 ordered 300k long series (repeating Merge)",561
+1.0.0,"Merge 6 ordered 300k long series (repeating Merge)",2406
+1.0.0,"Merge 6 ordered 300k long series (repeating Merge)",2466
+1.0.0,"Merge 6 ordered 300k long series (repeating Merge)",2400
+1.0.0,"Merge 6 ordered 300k long series (repeating Merge)",2311
+1.0.0,"Merge 6 ordered 300k long series (repeating Merge)",2399
+1.0.0,"Merge 3 ordered 300k long series (single Merge)",312
+1.0.0,"Merge 3 ordered 300k long series (single Merge)",319
+1.0.0,"Merge 3 ordered 300k long series (single Merge)",512
+1.0.0,"Merge 3 ordered 300k long series (single Merge)",323
+1.0.0,"Merge 3 ordered 300k long series (single Merge)",450
+1.0.0,"Merge 3 ordered 300k long series (single Merge)",310
+1.0.0,"Merge 3 ordered 300k long series (single Merge)",314
+1.0.0,"Merge 3 ordered 300k long series (single Merge)",481
+1.0.0,"Merge 3 ordered 300k long series (single Merge)",310
+1.0.0,"Merge 3 ordered 300k long series (single Merge)",456
+1.0.0,"Merge 6 ordered 300k long series (single Merge)",683
+1.0.0,"Merge 6 ordered 300k long series (single Merge)",855
+1.0.0,"Merge 6 ordered 300k long series (single Merge)",807
+1.0.0,"Merge 6 ordered 300k long series (single Merge)",832
+1.0.0,"Merge 6 ordered 300k long series (single Merge)",683
+1.0.0,"Merge 1000 ordered 1k long series (single Merge)",1507
+1.0.0,"Merge 1000 ordered 1k long series (single Merge)",1454
+1.0.0,"Merge 1000 ordered 1k long series (single Merge)",1356
+1.0.0,"Merge 1000 ordered 1k long series (single Merge)",1353
+1.0.0,"Merge 1000 ordered 1k long series (single Merge)",1346
+1.0.0,"Merge 3 unordered 300k long series (repeating Merge)",696
+1.0.0,"Merge 3 unordered 300k long series (repeating Merge)",565
+1.0.0,"Merge 3 unordered 300k long series (repeating Merge)",558
+1.0.0,"Merge 3 unordered 300k long series (repeating Merge)",558
+1.0.0,"Merge 3 unordered 300k long series (repeating Merge)",653
+1.0.0,"Merge 3 unordered 300k long series (repeating Merge)",551
+1.0.0,"Merge 3 unordered 300k long series (repeating Merge)",562
+1.0.0,"Merge 3 unordered 300k long series (repeating Merge)",671
+1.0.0,"Merge 3 unordered 300k long series (repeating Merge)",647
+1.0.0,"Merge 3 unordered 300k long series (repeating Merge)",549
+1.0.0,"Merge 6 unordered 300k long series (repeating Merge)",2643
+1.0.0,"Merge 6 unordered 300k long series (repeating Merge)",2500
+1.0.0,"Merge 6 unordered 300k long series (repeating Merge)",2321
+1.0.0,"Merge 6 unordered 300k long series (repeating Merge)",2450
+1.0.0,"Merge 6 unordered 300k long series (repeating Merge)",2187
+1.0.0,"Merge 3 unordered 300k long series (single Merge)",308
+1.0.0,"Merge 3 unordered 300k long series (single Merge)",459
+1.0.0,"Merge 3 unordered 300k long series (single Merge)",314
+1.0.0,"Merge 3 unordered 300k long series (single Merge)",442
+1.0.0,"Merge 3 unordered 300k long series (single Merge)",480
+1.0.0,"Merge 3 unordered 300k long series (single Merge)",314
+1.0.0,"Merge 3 unordered 300k long series (single Merge)",311
+1.0.0,"Merge 3 unordered 300k long series (single Merge)",471
+1.0.0,"Merge 3 unordered 300k long series (single Merge)",424
+1.0.0,"Merge 3 unordered 300k long series (single Merge)",301
+1.0.0,"Merge 6 unordered 300k long series (single Merge)",903
+1.0.0,"Merge 6 unordered 300k long series (single Merge)",625
+1.0.0,"Merge 6 unordered 300k long series (single Merge)",832
+1.0.0,"Merge 6 unordered 300k long series (single Merge)",791
+1.0.0,"Merge 6 unordered 300k long series (single Merge)",764
+1.0.0,"Merge 1000 unordered 1k long series (single Merge)",959
+1.0.0,"Merge 1000 unordered 1k long series (single Merge)",861
+1.0.0,"Merge 1000 unordered 1k long series (single Merge)",793
+1.0.0,"Merge 1000 unordered 1k long series (single Merge)",763
+1.0.0,"Merge 1000 unordered 1k long series (single Merge)",770

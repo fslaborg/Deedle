@@ -5,14 +5,12 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{79f004b4-093b-49c8-b7bf-7b3ef7cc829e}</ProjectGuid>
+    <ProjectGuid>{0275c56b-9a00-4578-a826-a6cf1f089086}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>FSharp.Data.Tests.DesignTime</RootNamespace>
-    <AssemblyName>Deedle.Documentation.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <Name>FSharp.Data.Tests.DesignTime</Name>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
+    <RootNamespace>Deedle.Tests</RootNamespace>
+    <AssemblyName>Deedle.PerfTests</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <Name>Deedle.Tests</Name>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
@@ -26,7 +24,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Debug\FSharp.Data.Tests.DesignTime.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Deedle.Tests.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -35,59 +33,46 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Release\FSharp.Data.Tests.DesignTime.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Deedle.Tests.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="../Common/FsUnit.fs">
-      <Link>FsUnit.fs</Link>
-    </Compile>
-    <Compile Include="DocTests.fs" />
-    <None Include="packages.config" />
-    <None Include="app.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="CSharpFormat">
-      <HintPath>..\..\packages\FSharp.Formatting.2.4.21\lib\net40\CSharpFormat.dll</HintPath>
+    <Reference Include="Deedle">
+      <HintPath>..\..\bin\Deedle.dll</HintPath>
     </Reference>
-    <Reference Include="FSharp.CodeFormat">
-      <HintPath>..\..\packages\FSharp.Formatting.2.4.21\lib\net40\FSharp.CodeFormat.dll</HintPath>
+    <Reference Include="Deedle.PerfTest.Core">
+      <HintPath>..\PerformanceTools\bin\Deedle.PerfTest.Core.dll</HintPath>
     </Reference>
-    <Reference Include="FSharp.Compiler.Interactive.Settings">
-      <HintPath>..\..\lib\FSharp.Compiler.Interactive.Settings.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="FSharp.Compiler.Service">
-      <HintPath>..\..\packages\FSharp.Compiler.Service.0.0.59\lib\net40\FSharp.Compiler.Service.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.Literate">
-      <HintPath>..\..\packages\FSharp.Formatting.2.4.21\lib\net40\FSharp.Literate.dll</HintPath>
+    <Reference Include="FsCheck">
+      <HintPath>..\..\packages\FsCheck.0.9.1.0\lib\net40-Client\FsCheck.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>False</Private>
     </Reference>
-    <Reference Include="FSharp.Markdown">
-      <HintPath>..\..\packages\FSharp.Formatting.2.4.21\lib\net40\FSharp.Markdown.dll</HintPath>
+    <Reference Include="FSharp.Data">
+      <HintPath>..\..\packages\FSharp.Data.2.0.8\lib\net40\FSharp.Data.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="FSharp.MetadataFormat">
-      <HintPath>..\..\packages\FSharp.Formatting.2.4.21\lib\net40\FSharp.MetadataFormat.dll</HintPath>
+    <Reference Include="MathNet.Numerics">
+      <HintPath>..\..\packages\MathNet.Numerics.3.0.0\lib\net40\MathNet.Numerics.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="nunit.framework">
       <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="RazorEngine">
-      <HintPath>..\..\packages\RazorEngine.3.3.0\lib\net40\RazorEngine.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Numerics" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Web.Razor">
-      <HintPath>..\..\packages\Microsoft.AspNet.Razor.2.0.30506.0\lib\net40\System.Web.Razor.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../Common/FsUnit.fs">
+      <Link>FsUnit.fs</Link>
+    </Compile>
+    <Compile Include="Performance.fs" />
+    <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

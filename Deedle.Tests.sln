@@ -20,6 +20,13 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.Documentation.Tests"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.RPlugin.Tests", "tests\Deedle.RPlugin.Tests\Deedle.RPlugin.Tests.fsproj", "{51D38BDE-02E7-45D4-A135-DC478B7C57E9}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.PerfTests", "tests\Deedle.PerfTests\Deedle.PerfTests.fsproj", "{0275C56B-9A00-4578-A826-A6CF1F089086}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Performance", "Performance", "{DEA1237A-77B6-4988-AC8C-065C546435BB}"
+	ProjectSection(SolutionItems) = preProject
+		tests\PerformanceTools\performance.fsx = tests\PerformanceTools\performance.fsx
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,11 +46,17 @@ Global
 		{B0584275-6E9D-4DB8-A35D-4F37B623F97E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0584275-6E9D-4DB8-A35D-4F37B623F97E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{51D38BDE-02E7-45D4-A135-DC478B7C57E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{51D38BDE-02E7-45D4-A135-DC478B7C57E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51D38BDE-02E7-45D4-A135-DC478B7C57E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51D38BDE-02E7-45D4-A135-DC478B7C57E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0275C56B-9A00-4578-A826-A6CF1F089086}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0275C56B-9A00-4578-A826-A6CF1F089086}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0275C56B-9A00-4578-A826-A6CF1F089086}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0275C56B-9A00-4578-A826-A6CF1F089086}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
