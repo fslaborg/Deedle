@@ -7,40 +7,6 @@
 // Index is an interface and so you can define your own. 
 // --------------------------------------------------------------------------------------
 
-/// Represents different behaviors of key lookup in series. For unordered series,
-/// the only available option is `Lookup.Exact` which finds the exact key - methods
-/// fail or return missing value if the key is not available in the index. For ordered
-/// series `Lookup.Greater` finds the first greater key (e.g. later date) with
-/// a value. `Lookup.Smaller` searches for the first smaller key. The options
-/// `Lookup.ExactOrGreater` and `Lookup.ExactOrSmaller` finds the exact key (if it is
-/// present) and otherwise search for the nearest larger or smaller key, respectively.
-[<System.Flags>]
-type Lookup = 
-  /// Lookup a value associated with the exact specified key. 
-  /// If the key is not available, then fail or return missing value. 
-  | Exact = 1
-
-  /// Lookup a value associated with the specified key or with the nearest
-  /// greater key that has a value available. Fails (or returns missing value)
-  /// only when the specified key is greater than all available keys.
-  | ExactOrGreater = 3
-
-  /// Lookup a value associated with the specified key or with the nearest
-  /// smaller key that has a value available. Fails (or returns missing value)
-  /// only when the specified key is smaller than all available keys.
-  | ExactOrSmaller = 5
-
-  /// Lookup a value associated with a key that is greater than the specified one.
-  /// Fails (or returns missing value) when the specified key is greater or equal
-  /// to the greatest available key.
-  | Greater = 2
-
-  /// Lookup a value associated with a key that is smaller than the specified one.
-  /// Fails (or returns missing value) when the specified key is smaller or equal
-  /// to the smallest available key.
-  | Smaller = 4
-
-
 /// Represents a strategy for aggregating data in an ordered series into data segments.
 /// To create a value of this type from C#, use the non-generic `Aggregation` type.
 /// Data can be aggregate using floating windows or chunks of a specified size or 
