@@ -15,10 +15,10 @@
     <copyright>Copyright 2014</copyright>
     <tags>@tags@</tags>
     <dependencies>
-      <dependency id="Deedle" version="@build.number@" />
-      <dependency id="R.NET.Community" version="1.5.15" />
-      <dependency id="R.NET.Community.FSharp" version="0.1.8" />
-      <dependency id="RProvider" version="1.0.13" />
+      <dependency id="Deedle" version="[@build.number@]" />
+      <dependency id="R.NET.Community" version="[1.5.15]" />
+      <dependency id="R.NET.Community.FSharp" version="[0.1.8]" />
+      <dependency id="RProvider" version="[1.0.16]" />
     </dependencies>
   </metadata>
   <files>
