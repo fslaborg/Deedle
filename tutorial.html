@@ -121,6 +121,7 @@ to create a series:</p>
 
 <div class="deedleseries">
 
+
 <table>
 <thead>
 <tr class="header">
@@ -143,6 +144,7 @@ to create a series:</p>
 
 </div>
 
+
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
 <span class="l">2: </span>
@@ -162,6 +164,7 @@ to create a series:</p>
 </table>
 
 <div class="deedleseries">
+
 
 <table>
 <thead>
@@ -184,6 +187,7 @@ to create a series:</p>
 
 
 </div>
+
 
 <p>Note that the series type is generic. <code>Series&lt;K, T&gt;</code> represents a series
 with keys of type <code>K</code> and values of type <code>T</code>. Let's now generate series
@@ -215,6 +219,7 @@ with 10 day value range and random values:</p>
 
 <div class="deedleseries">
 
+
 <table>
 <thead>
 <tr class="header">
@@ -233,21 +238,22 @@ with 10 day value range and random values:</p>
 <tbody>
 <tr class="odd">
 <td><p>Values</p></td>
-<td><p>0.29</p></td>
-<td><p>0.96</p></td>
-<td><p>0.44</p></td>
-<td><p>0.77</p></td>
-<td><p>0.51</p></td>
+<td><p>.56</p></td>
+<td><p>.46</p></td>
+<td><p>.45</p></td>
+<td><p>.37</p></td>
+<td><p>.56</p></td>
 <td><p> ... </p></td>
-<td><p>0.49</p></td>
-<td><p>0.22</p></td>
-<td><p>0.43</p></td>
+<td><p>.47</p></td>
+<td><p>.6</p></td>
+<td><p>.36</p></td>
 </tr>
 </tbody>
 </table>
 
 
 </div>
+
 
 <p>Now we can easily construct a data frame that has two columns - one representing
 the <code>first</code> series and another representing the <code>second</code> series:</p>
@@ -264,6 +270,7 @@ the <code>first</code> series and another representing the <code>second</code> s
 
 <div class="deedleframe">
 
+
 <table>
 <thead>
 <tr class="header">
@@ -276,58 +283,59 @@ the <code>first</code> series and another representing the <code>second</code> s
 <tr class="odd">
 <td><p>1/1/2013 12:00:00 AM</p></td>
 <td><p>10</p></td>
-<td><p>0.292222497655182</p></td>
+<td><p>.5575</p></td>
 </tr>
 <tr class="even">
 <td><p>1/2/2013 12:00:00 AM</p></td>
 <td><p>N/A</p></td>
-<td><p>0.956666441614119</p></td>
+<td><p>.4597</p></td>
 </tr>
 <tr class="odd">
 <td><p>1/3/2013 12:00:00 AM</p></td>
 <td><p>N/A</p></td>
-<td><p>0.439410960040712</p></td>
+<td><p>.4465</p></td>
 </tr>
 <tr class="even">
 <td><p>1/4/2013 12:00:00 AM</p></td>
 <td><p>20</p></td>
-<td><p>0.769034442849939</p></td>
+<td><p>.3719</p></td>
 </tr>
 <tr class="odd">
 <td><p>1/5/2013 12:00:00 AM</p></td>
 <td><p>N/A</p></td>
-<td><p>0.511746502719701</p></td>
+<td><p>.556</p></td>
 </tr>
 <tr class="even">
 <td><p>1/6/2013 12:00:00 AM</p></td>
 <td><p>N/A</p></td>
-<td><p>0.306629649971905</p></td>
+<td><p>.6739</p></td>
 </tr>
 <tr class="odd">
 <td><p>1/7/2013 12:00:00 AM</p></td>
 <td><p>N/A</p></td>
-<td><p>0.636521204671134</p></td>
+<td><p>.6901</p></td>
 </tr>
 <tr class="even">
 <td><p>1/8/2013 12:00:00 AM</p></td>
 <td><p>30</p></td>
-<td><p>0.485456442220815</p></td>
+<td><p>.4735</p></td>
 </tr>
 <tr class="odd">
 <td><p>1/9/2013 12:00:00 AM</p></td>
 <td><p>N/A</p></td>
-<td><p>0.22019981789412</p></td>
+<td><p>.5984</p></td>
 </tr>
 <tr class="even">
 <td><p>1/10/2013 12:00:00 AM</p></td>
 <td><p>N/A</p></td>
-<td><p>0.434437368267419</p></td>
+<td><p>.3631</p></td>
 </tr>
 </tbody>
 </table>
 
 
 </div>
+
 
 <p>The type representing a data frame has two generic parameters:
 <code>Frame&lt;TRowKey, TColumnKey&gt;</code>. The first parameter is represents the type of
@@ -421,6 +429,7 @@ names and types of properties of a record and creates a data frame with the same
 </table>
 
 <div class="deedleframe">
+
 
 <table>
 <thead>
@@ -572,6 +581,7 @@ names and types of properties of a record and creates a data frame with the same
 
 </div>
 
+
 <p>When loading the data, the data frame analyses the values and automatically converts
 them to the most appropriate type. However, no conversion is automatically performed
 for dates and times - the user needs to decide what is the desirable representation
@@ -667,7 +677,7 @@ that shows their difference:</p>
 </tr>
 </table>
 
-<p><img src="http://bluemountaincapital.github.io/Deedle/images/chart2.png" alt="Chart" /></p>
+<p><img src="http://bluemountaincapital.github.io/Deedle/images/chart2.png" alt="" /></p>
 
 <p>When selecting columns using <code>f.Columns.[ .. ]</code> it is possible to use a list of columns
 (as we did), a single column key, or a range (if the associated index is ordered). 
@@ -721,7 +731,7 @@ can do this, we need to rename their columns, because duplicate keys are not all
 </tr>
 </table>
 
-<p><img src="http://bluemountaincapital.github.io/Deedle/images/chart3.png" alt="Chart" /></p>
+<p><img src="http://bluemountaincapital.github.io/Deedle/images/chart3.png" alt="" /></p>
 
 <a name="selecting"></a>
 
@@ -801,8 +811,145 @@ keys (using a list) or a range (using the slicing syntax):</p>
 </tr>
 </table>
 
-<pre><code>Value 'Frame.map(round (jan*100.0))/100.0 |&gt; Frame.mapRowKeys (fun dt -&gt; dt.ToShortDateString())' could not be evaluated
-</code></pre>
+<div class="deedleframe">
+
+
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th><p>MsftOpen</p></th>
+<th><p>MsftClose</p></th>
+<th><p>MsftDiff</p></th>
+<th><p>FbOpen</p></th>
+<th><p>FbClose</p></th>
+<th><p>FbDiff</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p>1/2/2013</p></td>
+<td><p>27.25</p></td>
+<td><p>27.62</p></td>
+<td><p>-.37</p></td>
+<td><p>27.44</p></td>
+<td><p>28</p></td>
+<td><p>-.56</p></td>
+</tr>
+<tr class="even">
+<td><p>1/3/2013</p></td>
+<td><p>27.63</p></td>
+<td><p>27.25</p></td>
+<td><p>.38</p></td>
+<td><p>27.88</p></td>
+<td><p>27.77</p></td>
+<td><p>.11</p></td>
+</tr>
+<tr class="odd">
+<td><p>1/4/2013</p></td>
+<td><p>27.27</p></td>
+<td><p>26.74</p></td>
+<td><p>.53</p></td>
+<td><p>28.01</p></td>
+<td><p>28.76</p></td>
+<td><p>-.75</p></td>
+</tr>
+<tr class="even">
+<td><p>1/7/2013</p></td>
+<td><p>26.77</p></td>
+<td><p>26.69</p></td>
+<td><p>.08</p></td>
+<td><p>28.69</p></td>
+<td><p>29.42</p></td>
+<td><p>-.73</p></td>
+</tr>
+<tr class="odd">
+<td><p>1/8/2013</p></td>
+<td><p>26.75</p></td>
+<td><p>26.55</p></td>
+<td><p>.2</p></td>
+<td><p>29.51</p></td>
+<td><p>29.06</p></td>
+<td><p>.45</p></td>
+</tr>
+<tr class="even">
+<td><p>1/9/2013</p></td>
+<td><p>26.72</p></td>
+<td><p>26.7</p></td>
+<td><p>.02</p></td>
+<td><p>29.67</p></td>
+<td><p>30.59</p></td>
+<td><p>-.92</p></td>
+</tr>
+<tr class="odd">
+<td><p>1/10/2013</p></td>
+<td><p>26.65</p></td>
+<td><p>26.46</p></td>
+<td><p>.19</p></td>
+<td><p>30.6</p></td>
+<td><p>31.3</p></td>
+<td><p>-.7</p></td>
+</tr>
+<tr class="even">
+<td><p>1/11/2013</p></td>
+<td><p>26.49</p></td>
+<td><p>26.83</p></td>
+<td><p>-.34</p></td>
+<td><p>31.28</p></td>
+<td><p>31.72</p></td>
+<td><p>-.44</p></td>
+</tr>
+<tr class="odd">
+<td><p> ... </p></td>
+<td><p> ... </p></td>
+<td><p> ... </p></td>
+<td><p> ... </p></td>
+<td><p> ... </p></td>
+<td><p> ... </p></td>
+<td><p> ... </p></td>
+</tr>
+<tr class="even">
+<td><p>1/28/2013</p></td>
+<td><p>28.01</p></td>
+<td><p>27.91</p></td>
+<td><p>.1</p></td>
+<td><p>31.88</p></td>
+<td><p>32.47</p></td>
+<td><p>-.59</p></td>
+</tr>
+<tr class="odd">
+<td><p>1/29/2013</p></td>
+<td><p>27.82</p></td>
+<td><p>28.01</p></td>
+<td><p>-.19</p></td>
+<td><p>32</p></td>
+<td><p>30.79</p></td>
+<td><p>1.21</p></td>
+</tr>
+<tr class="even">
+<td><p>1/30/2013</p></td>
+<td><p>28.01</p></td>
+<td><p>27.85</p></td>
+<td><p>.16</p></td>
+<td><p>30.98</p></td>
+<td><p>31.24</p></td>
+<td><p>-.26</p></td>
+</tr>
+<tr class="odd">
+<td><p>1/31/2013</p></td>
+<td><p>27.79</p></td>
+<td><p>27.45</p></td>
+<td><p>.34</p></td>
+<td><p>29.15</p></td>
+<td><p>30.98</p></td>
+<td><p>-1.83</p></td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -860,75 +1007,79 @@ can be used to ilustrate the idea):</p>
 
 <div class="deedleseries">
 
+
 <table>
 <thead>
 <tr class="header">
 <th><p>Keys</p></th>
-<th><p>5/21/2014 12:00:00 AM</p></th>
-<th><p>5/22/2014 12:00:00 AM</p></th>
-<th><p>5/23/2014 12:00:00 AM</p></th>
-<th><p>5/24/2014 12:00:00 AM</p></th>
-<th><p>5/25/2014 12:00:00 AM</p></th>
+<th><p>9/11/2014 12:00:00 AM</p></th>
+<th><p>9/12/2014 12:00:00 AM</p></th>
+<th><p>9/13/2014 12:00:00 AM</p></th>
+<th><p>9/14/2014 12:00:00 AM</p></th>
+<th><p>9/15/2014 12:00:00 AM</p></th>
 <th><p> ... </p></th>
-<th><p>5/28/2014 12:00:00 AM</p></th>
-<th><p>5/29/2014 12:00:00 AM</p></th>
-<th><p>5/30/2014 12:00:00 AM</p></th>
+<th><p>9/18/2014 12:00:00 AM</p></th>
+<th><p>9/19/2014 12:00:00 AM</p></th>
+<th><p>9/20/2014 12:00:00 AM</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td><p>Values</p></td>
-<td><p>0.4</p></td>
-<td><p>0.36</p></td>
-<td><p>0.81</p></td>
-<td><p>0.41</p></td>
-<td><p>0.4</p></td>
+<td><p>.94</p></td>
+<td><p>.75</p></td>
+<td><p>.03</p></td>
+<td><p>.17</p></td>
+<td><p>.59</p></td>
 <td><p> ... </p></td>
-<td><p>0.2</p></td>
-<td><p>0.4</p></td>
-<td><p>0.12</p></td>
+<td><p>.16</p></td>
+<td><p>.78</p></td>
+<td><p>.23</p></td>
 </tr>
 </tbody>
 </table>
 
 
 </div>
+
 
 <div class="deedleseries">
 
+
 <table>
 <thead>
 <tr class="header">
 <th><p>Keys</p></th>
-<th><p>5/21/2014 11:09:39 PM</p></th>
-<th><p>5/22/2014 11:09:39 PM</p></th>
-<th><p>5/23/2014 11:09:39 PM</p></th>
-<th><p>5/24/2014 11:09:39 PM</p></th>
-<th><p>5/25/2014 11:09:39 PM</p></th>
+<th><p>9/11/2014 11:45:08 AM</p></th>
+<th><p>9/12/2014 11:45:08 AM</p></th>
+<th><p>9/13/2014 11:45:08 AM</p></th>
+<th><p>9/14/2014 11:45:08 AM</p></th>
+<th><p>9/15/2014 11:45:08 AM</p></th>
 <th><p> ... </p></th>
-<th><p>5/28/2014 11:09:39 PM</p></th>
-<th><p>5/29/2014 11:09:39 PM</p></th>
-<th><p>5/30/2014 11:09:39 PM</p></th>
+<th><p>9/18/2014 11:45:08 AM</p></th>
+<th><p>9/19/2014 11:45:08 AM</p></th>
+<th><p>9/20/2014 11:45:08 AM</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td><p>Values</p></td>
-<td><p>0.4</p></td>
-<td><p>0.36</p></td>
-<td><p>0.81</p></td>
-<td><p>0.41</p></td>
-<td><p>0.4</p></td>
+<td><p>.94</p></td>
+<td><p>.75</p></td>
+<td><p>.03</p></td>
+<td><p>.17</p></td>
+<td><p>.59</p></td>
 <td><p> ... </p></td>
-<td><p>0.2</p></td>
-<td><p>0.4</p></td>
-<td><p>0.12</p></td>
+<td><p>.16</p></td>
+<td><p>.78</p></td>
+<td><p>.23</p></td>
 </tr>
 </tbody>
 </table>
 
 
 </div>
+
 
 <p>The indexing operation written as <code>daysSeries.[date]</code> uses <em>exact</em> semantics so it will 
 fail if the exact date is not available. When using <code>Get</code> method, we can provide an
@@ -1220,9 +1371,9 @@ on the second component. We can also use <code>Frame.getNumericColumns</code> in
 </td>
 <td class="snippet"><pre class="fssnip">
 <span onmouseout="hideTip(event, 'fs94', 290)" onmouseover="showTip(event, 'fs94', 290)" class="i">monthly</span> 
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 291)" onmouseover="showTip(event, 'fs21', 291)" class="i">Frame</span><span class="o">.</span><span class="i">getNumericColumns</span>
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 292)" onmouseover="showTip(event, 'fs9', 292)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs100', 293)" onmouseover="showTip(event, 'fs100', 293)" class="i">mapValues</span> (<span onmouseout="hideTip(event, 'fs67', 294)" onmouseover="showTip(event, 'fs67', 294)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs101', 295)" onmouseover="showTip(event, 'fs101', 295)" class="i">levelMean</span> <span onmouseout="hideTip(event, 'fs102', 296)" onmouseover="showTip(event, 'fs102', 296)" class="i">fst</span>)
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 297)" onmouseover="showTip(event, 'fs21', 297)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs23', 298)" onmouseover="showTip(event, 'fs23', 298)" class="i">ofColumns</span></pre>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 291)" onmouseover="showTip(event, 'fs21', 291)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs100', 292)" onmouseover="showTip(event, 'fs100', 292)" class="i">getNumericCols</span>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 293)" onmouseover="showTip(event, 'fs9', 293)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs101', 294)" onmouseover="showTip(event, 'fs101', 294)" class="i">mapValues</span> (<span onmouseout="hideTip(event, 'fs67', 295)" onmouseover="showTip(event, 'fs67', 295)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs102', 296)" onmouseover="showTip(event, 'fs102', 296)" class="i">levelMean</span> <span onmouseout="hideTip(event, 'fs103', 297)" onmouseover="showTip(event, 'fs103', 297)" class="i">fst</span>)
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 298)" onmouseover="showTip(event, 'fs21', 298)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs23', 299)" onmouseover="showTip(event, 'fs23', 299)" class="i">ofColumns</span></pre>
 </td>
 </tr>
 </table>
@@ -1251,7 +1402,7 @@ together with means for all available numeric columns.</p>
 <div class="tip" id="fs18">let rnd = System.Random()<br />&#160;&#160;seq { for i in 0 .. (count - 1) -&gt; rnd.NextDouble() }</div>
 <div class="tip" id="fs19">val second : Series&lt;DateTime,float&gt;<br /><br />Full name: Tutorial.second</div>
 <div class="tip" id="fs20">val df1 : Frame&lt;DateTime,string&gt;<br /><br />Full name: Tutorial.df1</div>
-<div class="tip" id="fs21">Multiple items<br />module Frame<br /><br />from Deedle<br /><br />--------------------<br />type Frame =<br />&#160;&#160;static member CreateEmpty : unit -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br />&#160;&#160;static member FromArray2D : array:&#39;T [,] -&gt; Frame&lt;int,int&gt;<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,ObjectSeries&lt;&#39;RowKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : rows:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;ColKey,int&gt; (requires equality)<br />&#160;&#160;static member FromRecords : values:seq&lt;&#39;T&gt; -&gt; Frame&lt;int,string&gt;<br />&#160;&#160;static member FromRecords : series:Series&lt;&#39;K,&#39;R&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRowKeys : keys:seq&lt;&#39;K&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;...<br /><br />Full name: Deedle.Frame<br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =<br />&#160;&#160;interface IDynamicMetaObjectProvider<br />&#160;&#160;interface INotifyCollectionChanged<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface IFrame<br />&#160;&#160;new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;private new : rowIndex:IIndex&lt;&#39;TRowKey&gt; * columnIndex:IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; -&gt; unit<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; -&gt; unit<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;...<br /><br />Full name: Deedle.Frame&lt;_,_&gt;<br /><br />--------------------<br />new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
+<div class="tip" id="fs21">Multiple items<br />module Frame<br /><br />from Deedle<br /><br />--------------------<br />type Frame =<br />&#160;&#160;static member CreateEmpty : unit -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br />&#160;&#160;static member FromArray2D : array:&#39;T [,] -&gt; Frame&lt;int,int&gt;<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,ObjectSeries&lt;&#39;RowKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;ColKey,int&gt; (requires equality)<br />&#160;&#160;static member FromRecords : values:seq&lt;&#39;T&gt; -&gt; Frame&lt;int,string&gt;<br />&#160;&#160;static member FromRecords : series:Series&lt;&#39;K,&#39;R&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRowKeys : keys:seq&lt;&#39;K&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;...<br /><br />Full name: Deedle.Frame<br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =<br />&#160;&#160;interface IDynamicMetaObjectProvider<br />&#160;&#160;interface INotifyCollectionChanged<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface IFrame<br />&#160;&#160;new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;new : rowIndex:IIndex&lt;&#39;TRowKey&gt; * columnIndex:IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; * indexBuilder:IIndexBuilder * vectorBuilder:IVectorBuilder -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; -&gt; unit<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; -&gt; unit<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;...<br /><br />Full name: Deedle.Frame&lt;_,_&gt;<br /><br />--------------------<br />new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />new : rowIndex:Indices.IIndex&lt;&#39;TRowKey&gt; * columnIndex:Indices.IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; * indexBuilder:Indices.IIndexBuilder * vectorBuilder:Vectors.IVectorBuilder -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
 <div class="tip" id="fs22">val df2 : Frame&lt;DateTime,string&gt;<br /><br />Full name: Tutorial.df2</div>
 <div class="tip" id="fs23">static member Frame.ofColumns : cols:Series&lt;&#39;a0,#ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a2,&#39;a0&gt; (requires equality and equality)<br />static member Frame.ofColumns : cols:seq&lt;&#39;a0 * #ISeries&lt;&#39;K&gt;&gt; -&gt; Frame&lt;&#39;K,&#39;a0&gt; (requires equality and equality)</div>
 <div class="tip" id="fs24">val df3 : Frame&lt;string,DateTime&gt;<br /><br />Full name: Tutorial.df3</div>
@@ -1268,7 +1419,7 @@ together with means for all available numeric columns.</p>
 <div class="tip" id="fs35">val df5 : Frame&lt;int,string&gt;<br /><br />Full name: Tutorial.df5</div>
 <div class="tip" id="fs36">static member Frame.ofRecords : series:Series&lt;&#39;K,&#39;R&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />static member Frame.ofRecords : values:seq&lt;&#39;T&gt; -&gt; Frame&lt;int,string&gt;<br />static member Frame.ofRecords : values:Collections.IEnumerable * indexCol:string -&gt; Frame&lt;&#39;R,string&gt; (requires equality)</div>
 <div class="tip" id="fs37">val msftCsv : Frame&lt;int,string&gt;<br /><br />Full name: Tutorial.msftCsv</div>
-<div class="tip" id="fs38">static member Frame.ReadCsv : path:string * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : stream:IO.Stream * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : path:string * indexCol:string * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int -&gt; Frame&lt;&#39;R,string&gt; (requires equality)</div>
+<div class="tip" id="fs38">static member Frame.ReadCsv : path:string * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : stream:IO.Stream * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : reader:IO.TextReader * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : path:string * indexCol:string * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int -&gt; Frame&lt;&#39;R,string&gt; (requires equality)</div>
 <div class="tip" id="fs39">val fbCsv : Frame&lt;int,string&gt;<br /><br />Full name: Tutorial.fbCsv</div>
 <div class="tip" id="fs40">val msftOrd : Frame&lt;DateTime,string&gt;<br /><br />Full name: Tutorial.msftOrd</div>
 <div class="tip" id="fs41">val indexRowsDate : column:&#39;C -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;DateTime,&#39;C&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.indexRowsDate</div>
@@ -1330,9 +1481,10 @@ together with means for all available numeric columns.</p>
 <div class="tip" id="fs97">property DateTime.Year: int</div>
 <div class="tip" id="fs98">property DateTime.Month: int</div>
 <div class="tip" id="fs99">property Frame.Rows: RowSeries&lt;(DateTime * DateTime),string&gt;</div>
-<div class="tip" id="fs100">val mapValues : f:(&#39;T -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt; (requires equality)<br /><br />Full name: Deedle.Series.mapValues</div>
-<div class="tip" id="fs101">static member Stats.levelMean : level:(&#39;K -&gt; &#39;L) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt; (requires equality and equality)</div>
-<div class="tip" id="fs102">val fst : tuple:(&#39;T1 * &#39;T2) -&gt; &#39;T1<br /><br />Full name: Microsoft.FSharp.Core.Operators.fst</div>
+<div class="tip" id="fs100">val getNumericCols : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,Series&lt;&#39;R,float&gt;&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.getNumericCols</div>
+<div class="tip" id="fs101">val mapValues : f:(&#39;T -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt; (requires equality)<br /><br />Full name: Deedle.Series.mapValues</div>
+<div class="tip" id="fs102">static member Stats.levelMean : level:(&#39;K -&gt; &#39;L) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt; (requires equality and equality)</div>
+<div class="tip" id="fs103">val fst : tuple:(&#39;T1 * &#39;T2) -&gt; &#39;T1<br /><br />Full name: Microsoft.FSharp.Core.Operators.fst</div>
 
         </div>
         <div class="span3">

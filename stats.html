@@ -62,13 +62,14 @@ snippet loads <code>AirQuality.csv</code> and shows the values in the <code>Ozon
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">air</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">ReadCsv</span>(<span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="i">root</span> <span class="o">+</span> <span class="s">&quot;</span><span class="s">AirQuality</span><span class="s">.</span><span class="s">csv</span><span class="s">&quot;</span>, <span class="i">separators</span><span class="o">=</span><span class="s">&quot;</span><span class="s">;</span><span class="s">&quot;</span>)
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">ozone</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs1', 6)" onmouseover="showTip(event, 'fs1', 6)" class="i">air</span><span class="o">?</span><span class="i">Ozone</span></pre>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs9', 12)" onmouseover="showTip(event, 'fs9', 12)" class="i">air</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs10', 13)" onmouseover="showTip(event, 'fs10', 13)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs11', 14)" onmouseover="showTip(event, 'fs11', 14)" class="i">ReadCsv</span>(<span onmouseout="hideTip(event, 'fs8', 15)" onmouseover="showTip(event, 'fs8', 15)" class="i">root</span> <span class="o">+</span> <span class="s">&quot;</span><span class="s">AirQuality</span><span class="s">.</span><span class="s">csv</span><span class="s">&quot;</span>, <span class="i">separators</span><span class="o">=</span><span class="s">&quot;</span><span class="s">;</span><span class="s">&quot;</span>)
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs12', 16)" onmouseover="showTip(event, 'fs12', 16)" class="i">ozone</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 17)" onmouseover="showTip(event, 'fs9', 17)" class="i">air</span><span class="o">?</span><span class="i">Ozone</span></pre>
 </td>
 </tr>
 </table>
 
 <div class="deedleseries">
+
 
 <table>
 <thead>
@@ -104,6 +105,7 @@ snippet loads <code>AirQuality.csv</code> and shows the values in the <code>Ozon
 
 </div>
 
+
 <h3>Series statistics</h3>
 
 <p>Given a series <code>ozone</code>, we can use a number of <code>Stats</code> functions to calculate 
@@ -119,16 +121,17 @@ stores mean extremes and median of the input series:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="i">series</span> [
-  <span class="s">&quot;</span><span class="s">Mean</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="i">round</span> (<span onmouseout="hideTip(event, 'fs8', 9)" onmouseover="showTip(event, 'fs8', 9)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 10)" onmouseover="showTip(event, 'fs9', 10)" class="i">mean</span> <span onmouseout="hideTip(event, 'fs5', 11)" onmouseover="showTip(event, 'fs5', 11)" class="i">ozone</span>)
-  <span class="s">&quot;</span><span class="s">Max</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs10', 12)" onmouseover="showTip(event, 'fs10', 12)" class="i">Option</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs11', 13)" onmouseover="showTip(event, 'fs11', 13)" class="i">get</span> (<span onmouseout="hideTip(event, 'fs8', 14)" onmouseover="showTip(event, 'fs8', 14)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs12', 15)" onmouseover="showTip(event, 'fs12', 15)" class="i">max</span> <span onmouseout="hideTip(event, 'fs5', 16)" onmouseover="showTip(event, 'fs5', 16)" class="i">ozone</span>)
-  <span class="s">&quot;</span><span class="s">Min</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs10', 17)" onmouseover="showTip(event, 'fs10', 17)" class="i">Option</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs11', 18)" onmouseover="showTip(event, 'fs11', 18)" class="i">get</span> (<span onmouseout="hideTip(event, 'fs8', 19)" onmouseover="showTip(event, 'fs8', 19)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs13', 20)" onmouseover="showTip(event, 'fs13', 20)" class="i">min</span> <span onmouseout="hideTip(event, 'fs5', 21)" onmouseover="showTip(event, 'fs5', 21)" class="i">ozone</span>)
-  <span class="s">&quot;</span><span class="s">Median</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs8', 22)" onmouseover="showTip(event, 'fs8', 22)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs14', 23)" onmouseover="showTip(event, 'fs14', 23)" class="i">median</span> <span onmouseout="hideTip(event, 'fs5', 24)" onmouseover="showTip(event, 'fs5', 24)" class="i">ozone</span> ]</pre>
+<span onmouseout="hideTip(event, 'fs13', 18)" onmouseover="showTip(event, 'fs13', 18)" class="i">series</span> [
+  <span class="s">&quot;</span><span class="s">Mean</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs14', 19)" onmouseover="showTip(event, 'fs14', 19)" class="i">round</span> (<span onmouseout="hideTip(event, 'fs15', 20)" onmouseover="showTip(event, 'fs15', 20)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 21)" onmouseover="showTip(event, 'fs16', 21)" class="i">mean</span> <span onmouseout="hideTip(event, 'fs12', 22)" onmouseover="showTip(event, 'fs12', 22)" class="i">ozone</span>)
+  <span class="s">&quot;</span><span class="s">Max</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs17', 23)" onmouseover="showTip(event, 'fs17', 23)" class="i">Option</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs18', 24)" onmouseover="showTip(event, 'fs18', 24)" class="i">get</span> (<span onmouseout="hideTip(event, 'fs15', 25)" onmouseover="showTip(event, 'fs15', 25)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 26)" onmouseover="showTip(event, 'fs19', 26)" class="i">max</span> <span onmouseout="hideTip(event, 'fs12', 27)" onmouseover="showTip(event, 'fs12', 27)" class="i">ozone</span>)
+  <span class="s">&quot;</span><span class="s">Min</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs17', 28)" onmouseover="showTip(event, 'fs17', 28)" class="i">Option</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs18', 29)" onmouseover="showTip(event, 'fs18', 29)" class="i">get</span> (<span onmouseout="hideTip(event, 'fs15', 30)" onmouseover="showTip(event, 'fs15', 30)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs20', 31)" onmouseover="showTip(event, 'fs20', 31)" class="i">min</span> <span onmouseout="hideTip(event, 'fs12', 32)" onmouseover="showTip(event, 'fs12', 32)" class="i">ozone</span>)
+  <span class="s">&quot;</span><span class="s">Median</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs15', 33)" onmouseover="showTip(event, 'fs15', 33)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 34)" onmouseover="showTip(event, 'fs21', 34)" class="i">median</span> <span onmouseout="hideTip(event, 'fs12', 35)" onmouseover="showTip(event, 'fs12', 35)" class="i">ozone</span> ]</pre>
 </td>
 </tr>
 </table>
 
 <div class="deedleseries">
+
 
 <table>
 <thead>
@@ -154,6 +157,7 @@ stores mean extremes and median of the input series:</p>
 
 </div>
 
+
 <p>To make the output simpler, we round the value of the mean (although the result is
 a floating point number). Note that the value is calculated from the <em>available</em> values
 in the series. All of the statistical functions skip over missing values in the 
@@ -178,22 +182,29 @@ the <code>air</code> data set and build a frame that shows the values (series) i
 <span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs15', 25)" onmouseover="showTip(event, 'fs15', 25)" class="i">info</span> <span class="o">=</span> 
-  [ <span class="s">&quot;</span><span class="s">Mean</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs8', 26)" onmouseover="showTip(event, 'fs8', 26)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 27)" onmouseover="showTip(event, 'fs9', 27)" class="i">mean</span> <span onmouseout="hideTip(event, 'fs1', 28)" onmouseover="showTip(event, 'fs1', 28)" class="i">air</span>
-    <span class="s">&quot;</span><span class="s">+</span><span class="s">/</span><span class="s">-</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs8', 29)" onmouseover="showTip(event, 'fs8', 29)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 30)" onmouseover="showTip(event, 'fs16', 30)" class="i">stdDev</span> <span onmouseout="hideTip(event, 'fs1', 31)" onmouseover="showTip(event, 'fs1', 31)" class="i">air</span> ] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs17', 32)" onmouseover="showTip(event, 'fs17', 32)" class="i">frame</span></pre>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs22', 36)" onmouseover="showTip(event, 'fs22', 36)" class="i">info</span> <span class="o">=</span> 
+  [ <span class="s">&quot;</span><span class="s">Min</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs15', 37)" onmouseover="showTip(event, 'fs15', 37)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs20', 38)" onmouseover="showTip(event, 'fs20', 38)" class="i">min</span> <span onmouseout="hideTip(event, 'fs9', 39)" onmouseover="showTip(event, 'fs9', 39)" class="i">air</span>
+    <span class="s">&quot;</span><span class="s">Max</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs15', 40)" onmouseover="showTip(event, 'fs15', 40)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 41)" onmouseover="showTip(event, 'fs19', 41)" class="i">max</span> <span onmouseout="hideTip(event, 'fs9', 42)" onmouseover="showTip(event, 'fs9', 42)" class="i">air</span>
+    <span class="s">&quot;</span><span class="s">Mean</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs15', 43)" onmouseover="showTip(event, 'fs15', 43)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 44)" onmouseover="showTip(event, 'fs16', 44)" class="i">mean</span> <span onmouseout="hideTip(event, 'fs9', 45)" onmouseover="showTip(event, 'fs9', 45)" class="i">air</span>
+    <span class="s">&quot;</span><span class="s">+</span><span class="s">/</span><span class="s">-</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs15', 46)" onmouseover="showTip(event, 'fs15', 46)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs23', 47)" onmouseover="showTip(event, 'fs23', 47)" class="i">stdDev</span> <span onmouseout="hideTip(event, 'fs9', 48)" onmouseover="showTip(event, 'fs9', 48)" class="i">air</span> ] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs24', 49)" onmouseover="showTip(event, 'fs24', 49)" class="i">frame</span></pre>
 </td>
 </tr>
 </table>
 
 <div class="deedleframe">
 
+
 <table>
 <thead>
 <tr class="header">
 <th></th>
+<th><p>Min</p></th>
+<th><p>Max</p></th>
 <th><p>Mean</p></th>
 <th><p>+/-</p></th>
 </tr>
@@ -201,31 +212,43 @@ the <code>air</code> data set and build a frame that shows the values (series) i
 <tbody>
 <tr class="odd">
 <td><p>Ozone</p></td>
+<td><p>1</p></td>
+<td><p>168</p></td>
 <td><p>42.14</p></td>
 <td><p>33.13</p></td>
 </tr>
 <tr class="even">
 <td><p>Solar.R</p></td>
+<td><p>7</p></td>
+<td><p>334</p></td>
 <td><p>185.93</p></td>
 <td><p>90.06</p></td>
 </tr>
 <tr class="odd">
 <td><p>Wind</p></td>
+<td><p>1.7</p></td>
+<td><p>20.7</p></td>
 <td><p>9.96</p></td>
 <td><p>3.52</p></td>
 </tr>
 <tr class="even">
 <td><p>Temp</p></td>
+<td><p>56</p></td>
+<td><p>97</p></td>
 <td><p>77.88</p></td>
 <td><p>9.47</p></td>
 </tr>
 <tr class="odd">
 <td><p>Month</p></td>
+<td><p>5</p></td>
+<td><p>9</p></td>
 <td><p>6.99</p></td>
 <td><p>1.42</p></td>
 </tr>
 <tr class="even">
 <td><p>Day</p></td>
+<td><p>1</p></td>
+<td><p>31</p></td>
 <td><p>15.8</p></td>
 <td><p>8.86</p></td>
 </tr>
@@ -234,6 +257,7 @@ the <code>air</code> data set and build a frame that shows the values (series) i
 
 
 </div>
+
 
 <p>Missing values are handled in the same way as when calculating statistics of a series
 and are skipped. If this is not desirable, you can use functions from the <a href="reference/deedle-seriesmodule.html">Series 
@@ -264,13 +288,14 @@ moving window of length 3:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span onmouseout="hideTip(event, 'fs5', 33)" onmouseover="showTip(event, 'fs5', 33)" class="i">ozone</span>
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs8', 34)" onmouseover="showTip(event, 'fs8', 34)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs18', 35)" onmouseover="showTip(event, 'fs18', 35)" class="i">movingMean</span> <span class="n">3</span></pre>
+<span onmouseout="hideTip(event, 'fs12', 50)" onmouseover="showTip(event, 'fs12', 50)" class="i">ozone</span>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs15', 51)" onmouseover="showTip(event, 'fs15', 51)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs25', 52)" onmouseover="showTip(event, 'fs25', 52)" class="i">movingMean</span> <span class="n">3</span></pre>
 </td>
 </tr>
 </table>
 
 <div class="deedleseries">
+
 
 <table>
 <thead>
@@ -298,13 +323,14 @@ moving window of length 3:</p>
 <td><p> ... </p></td>
 <td><p>22</p></td>
 <td><p>16</p></td>
-<td><p>17.3333333333333</p></td>
+<td><p>17.3333</p></td>
 </tr>
 </tbody>
 </table>
 
 
 </div>
+
 
 <p>The keys of the resulting series are the same as the keys of the input series. Statistical
 moving functions (count, sum, mean, variance, standard deviation, skewness and kurtosis)
@@ -323,13 +349,14 @@ value over a smaller window:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span onmouseout="hideTip(event, 'fs5', 36)" onmouseover="showTip(event, 'fs5', 36)" class="i">ozone</span>
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs8', 37)" onmouseover="showTip(event, 'fs8', 37)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 38)" onmouseover="showTip(event, 'fs19', 38)" class="i">movingMin</span> <span class="n">3</span></pre>
+<span onmouseout="hideTip(event, 'fs12', 53)" onmouseover="showTip(event, 'fs12', 53)" class="i">ozone</span>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs15', 54)" onmouseover="showTip(event, 'fs15', 54)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs26', 55)" onmouseover="showTip(event, 'fs26', 55)" class="i">movingMin</span> <span class="n">3</span></pre>
 </td>
 </tr>
 </table>
 
 <div class="deedleseries">
+
 
 <table>
 <thead>
@@ -364,6 +391,7 @@ value over a smaller window:</p>
 
 
 </div>
+
 
 <p>Here, the first value is missing, because the one-element window containing just the first value
 contains only missing values. However, the value for the key <em>1</em>, because the two-element window
@@ -402,15 +430,16 @@ Here, we align the two series using a frame, so that we can easily see the resul
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs20', 39)" onmouseover="showTip(event, 'fs20', 39)" class="i">exp</span> <span class="o">=</span>
-  [ <span class="s">&quot;</span><span class="s">Ozone</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs5', 40)" onmouseover="showTip(event, 'fs5', 40)" class="i">ozone</span> 
-    <span class="s">&quot;</span><span class="s">Mean</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs8', 41)" onmouseover="showTip(event, 'fs8', 41)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 42)" onmouseover="showTip(event, 'fs21', 42)" class="i">expandingMean</span>(<span onmouseout="hideTip(event, 'fs5', 43)" onmouseover="showTip(event, 'fs5', 43)" class="i">ozone</span>)
-    <span class="s">&quot;</span><span class="s">+</span><span class="s">/</span><span class="s">-</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs8', 44)" onmouseover="showTip(event, 'fs8', 44)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 45)" onmouseover="showTip(event, 'fs22', 45)" class="i">expandingStdDev</span>(<span onmouseout="hideTip(event, 'fs5', 46)" onmouseover="showTip(event, 'fs5', 46)" class="i">ozone</span>) ] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs17', 47)" onmouseover="showTip(event, 'fs17', 47)" class="i">frame</span></pre>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs27', 56)" onmouseover="showTip(event, 'fs27', 56)" class="i">exp</span> <span class="o">=</span>
+  [ <span class="s">&quot;</span><span class="s">Ozone</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs12', 57)" onmouseover="showTip(event, 'fs12', 57)" class="i">ozone</span> 
+    <span class="s">&quot;</span><span class="s">Mean</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs15', 58)" onmouseover="showTip(event, 'fs15', 58)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs28', 59)" onmouseover="showTip(event, 'fs28', 59)" class="i">expandingMean</span>(<span onmouseout="hideTip(event, 'fs12', 60)" onmouseover="showTip(event, 'fs12', 60)" class="i">ozone</span>)
+    <span class="s">&quot;</span><span class="s">+</span><span class="s">/</span><span class="s">-</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs15', 61)" onmouseover="showTip(event, 'fs15', 61)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs29', 62)" onmouseover="showTip(event, 'fs29', 62)" class="i">expandingStdDev</span>(<span onmouseout="hideTip(event, 'fs12', 63)" onmouseover="showTip(event, 'fs12', 63)" class="i">ozone</span>) ] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs24', 64)" onmouseover="showTip(event, 'fs24', 64)" class="i">frame</span></pre>
 </td>
 </tr>
 </table>
 
 <div class="deedleframe">
+
 
 <table>
 <thead>
@@ -506,6 +535,7 @@ Here, we align the two series using a frame, so that we can easily see the resul
 
 </div>
 
+
 <p>As the example illustrates, expanding window statistics typically returns a series that starts
 with some missing values. Here, the first mean is missing (because one-element window contains
 no values) and the first two standard deviations are missing (<code>stdDev</code> is define only for two
@@ -535,9 +565,9 @@ day between May and September. We can create a frame with two-level row key usin
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs23', 48)" onmouseover="showTip(event, 'fs23', 48)" class="i">dateFormat</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs24', 49)" onmouseover="showTip(event, 'fs24', 49)" class="i">CultureInfo</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs25', 50)" onmouseover="showTip(event, 'fs25', 50)" class="i">CurrentCulture</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs26', 51)" onmouseover="showTip(event, 'fs26', 51)" class="i">DateTimeFormat</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs27', 52)" onmouseover="showTip(event, 'fs27', 52)" class="i">byMonth</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs1', 53)" onmouseover="showTip(event, 'fs1', 53)" class="i">air</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 54)" onmouseover="showTip(event, 'fs2', 54)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs28', 55)" onmouseover="showTip(event, 'fs28', 55)" class="i">indexRowsUsing</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs29', 56)" onmouseover="showTip(event, 'fs29', 56)" class="i">r</span> <span class="k">-&gt;</span>
-    <span onmouseout="hideTip(event, 'fs23', 57)" onmouseover="showTip(event, 'fs23', 57)" class="i">dateFormat</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs30', 58)" onmouseover="showTip(event, 'fs30', 58)" class="i">GetMonthName</span>(<span onmouseout="hideTip(event, 'fs29', 59)" onmouseover="showTip(event, 'fs29', 59)" class="i">r</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs31', 60)" onmouseover="showTip(event, 'fs31', 60)" class="i">GetAs</span>(<span class="s">&quot;</span><span class="s">Month</span><span class="s">&quot;</span>)), <span onmouseout="hideTip(event, 'fs29', 61)" onmouseover="showTip(event, 'fs29', 61)" class="i">r</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs31', 62)" onmouseover="showTip(event, 'fs31', 62)" class="i">GetAs</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs32', 63)" onmouseover="showTip(event, 'fs32', 63)" class="i">int</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Day</span><span class="s">&quot;</span>))</pre>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs30', 65)" onmouseover="showTip(event, 'fs30', 65)" class="i">dateFormat</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs31', 66)" onmouseover="showTip(event, 'fs31', 66)" class="i">CultureInfo</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs32', 67)" onmouseover="showTip(event, 'fs32', 67)" class="i">CurrentCulture</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs33', 68)" onmouseover="showTip(event, 'fs33', 68)" class="i">DateTimeFormat</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs34', 69)" onmouseover="showTip(event, 'fs34', 69)" class="i">byMonth</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 70)" onmouseover="showTip(event, 'fs9', 70)" class="i">air</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs10', 71)" onmouseover="showTip(event, 'fs10', 71)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs35', 72)" onmouseover="showTip(event, 'fs35', 72)" class="i">indexRowsUsing</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs36', 73)" onmouseover="showTip(event, 'fs36', 73)" class="i">r</span> <span class="k">-&gt;</span>
+    <span onmouseout="hideTip(event, 'fs30', 74)" onmouseover="showTip(event, 'fs30', 74)" class="i">dateFormat</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs37', 75)" onmouseover="showTip(event, 'fs37', 75)" class="i">GetMonthName</span>(<span onmouseout="hideTip(event, 'fs36', 76)" onmouseover="showTip(event, 'fs36', 76)" class="i">r</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 77)" onmouseover="showTip(event, 'fs38', 77)" class="i">GetAs</span>(<span class="s">&quot;</span><span class="s">Month</span><span class="s">&quot;</span>)), <span onmouseout="hideTip(event, 'fs36', 78)" onmouseover="showTip(event, 'fs36', 78)" class="i">r</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 79)" onmouseover="showTip(event, 'fs38', 79)" class="i">GetAs</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs39', 80)" onmouseover="showTip(event, 'fs39', 80)" class="i">int</span><span class="o">&gt;</span>(<span class="s">&quot;</span><span class="s">Day</span><span class="s">&quot;</span>))</pre>
 </td>
 </tr>
 </table>
@@ -555,13 +585,14 @@ first level (individual months) using functions prefixed with <code>level</code>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span onmouseout="hideTip(event, 'fs27', 64)" onmouseover="showTip(event, 'fs27', 64)" class="i">byMonth</span><span class="o">?</span><span class="i">Ozone</span>
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs8', 65)" onmouseover="showTip(event, 'fs8', 65)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs33', 66)" onmouseover="showTip(event, 'fs33', 66)" class="i">levelMean</span> <span onmouseout="hideTip(event, 'fs34', 67)" onmouseover="showTip(event, 'fs34', 67)" class="i">fst</span></pre>
+<span onmouseout="hideTip(event, 'fs34', 81)" onmouseover="showTip(event, 'fs34', 81)" class="i">byMonth</span><span class="o">?</span><span class="i">Ozone</span>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs15', 82)" onmouseover="showTip(event, 'fs15', 82)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs40', 83)" onmouseover="showTip(event, 'fs40', 83)" class="i">levelMean</span> <span onmouseout="hideTip(event, 'fs41', 84)" onmouseover="showTip(event, 'fs41', 84)" class="i">fst</span></pre>
 </td>
 </tr>
 </table>
 
 <div class="deedleseries">
+
 
 <table>
 <thead>
@@ -578,16 +609,17 @@ first level (individual months) using functions prefixed with <code>level</code>
 <tr class="odd">
 <td><p>Values</p></td>
 <td><p>22.92</p></td>
-<td><p>29.4444444444444</p></td>
-<td><p>59.1153846153846</p></td>
-<td><p>59.9615384615385</p></td>
-<td><p>31.448275862069</p></td>
+<td><p>29.4444</p></td>
+<td><p>59.1154</p></td>
+<td><p>59.9615</p></td>
+<td><p>31.4483</p></td>
 </tr>
 </tbody>
 </table>
 
 
 </div>
+
 
 <p>Currently, the <code>Stats</code> type does not include a function that would let you apply multi-level
 statistical functions on entire data frames, but this can easily be implemented using the
@@ -602,16 +634,17 @@ statistical functions on entire data frames, but this can easily be implemented 
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span onmouseout="hideTip(event, 'fs27', 68)" onmouseover="showTip(event, 'fs27', 68)" class="i">byMonth</span>
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 69)" onmouseover="showTip(event, 'fs2', 69)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs35', 70)" onmouseover="showTip(event, 'fs35', 70)" class="i">sliceCols</span> [<span class="s">&quot;</span><span class="s">Ozone</span><span class="s">&quot;</span>;<span class="s">&quot;</span><span class="s">Solar</span><span class="s">.</span><span class="s">R</span><span class="s">&quot;</span>;<span class="s">&quot;</span><span class="s">Wind</span><span class="s">&quot;</span>;<span class="s">&quot;</span><span class="s">Temp</span><span class="s">&quot;</span>]
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 71)" onmouseover="showTip(event, 'fs2', 71)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs36', 72)" onmouseover="showTip(event, 'fs36', 72)" class="i">getNumericCols</span>
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs37', 73)" onmouseover="showTip(event, 'fs37', 73)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 74)" onmouseover="showTip(event, 'fs38', 74)" class="i">mapValues</span> (<span onmouseout="hideTip(event, 'fs8', 75)" onmouseover="showTip(event, 'fs8', 75)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs33', 76)" onmouseover="showTip(event, 'fs33', 76)" class="i">levelMean</span> <span onmouseout="hideTip(event, 'fs34', 77)" onmouseover="showTip(event, 'fs34', 77)" class="i">fst</span>)
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs2', 78)" onmouseover="showTip(event, 'fs2', 78)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs39', 79)" onmouseover="showTip(event, 'fs39', 79)" class="i">ofRows</span></pre>
+<span onmouseout="hideTip(event, 'fs34', 85)" onmouseover="showTip(event, 'fs34', 85)" class="i">byMonth</span>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs10', 86)" onmouseover="showTip(event, 'fs10', 86)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs42', 87)" onmouseover="showTip(event, 'fs42', 87)" class="i">sliceCols</span> [<span class="s">&quot;</span><span class="s">Ozone</span><span class="s">&quot;</span>;<span class="s">&quot;</span><span class="s">Solar</span><span class="s">.</span><span class="s">R</span><span class="s">&quot;</span>;<span class="s">&quot;</span><span class="s">Wind</span><span class="s">&quot;</span>;<span class="s">&quot;</span><span class="s">Temp</span><span class="s">&quot;</span>]
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs10', 88)" onmouseover="showTip(event, 'fs10', 88)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs43', 89)" onmouseover="showTip(event, 'fs43', 89)" class="i">getNumericCols</span>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs44', 90)" onmouseover="showTip(event, 'fs44', 90)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs45', 91)" onmouseover="showTip(event, 'fs45', 91)" class="i">mapValues</span> (<span onmouseout="hideTip(event, 'fs15', 92)" onmouseover="showTip(event, 'fs15', 92)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs40', 93)" onmouseover="showTip(event, 'fs40', 93)" class="i">levelMean</span> <span onmouseout="hideTip(event, 'fs41', 94)" onmouseover="showTip(event, 'fs41', 94)" class="i">fst</span>)
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs10', 95)" onmouseover="showTip(event, 'fs10', 95)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 96)" onmouseover="showTip(event, 'fs46', 96)" class="i">ofRows</span></pre>
 </td>
 </tr>
 </table>
 
 <div class="deedleframe">
+
 
 <table>
 <thead>
@@ -628,33 +661,33 @@ statistical functions on entire data frames, but this can easily be implemented 
 <tr class="odd">
 <td><p>Ozone</p></td>
 <td><p>22.92</p></td>
-<td><p>29.4444444444444</p></td>
-<td><p>59.1153846153846</p></td>
-<td><p>59.9615384615385</p></td>
-<td><p>31.448275862069</p></td>
+<td><p>29.4444</p></td>
+<td><p>59.1154</p></td>
+<td><p>59.9615</p></td>
+<td><p>31.4483</p></td>
 </tr>
 <tr class="even">
 <td><p>Solar.R</p></td>
-<td><p>181.296296296296</p></td>
-<td><p>190.166666666667</p></td>
-<td><p>216.483870967742</p></td>
-<td><p>171.857142857143</p></td>
-<td><p>167.433333333333</p></td>
+<td><p>181.2963</p></td>
+<td><p>190.1667</p></td>
+<td><p>216.4839</p></td>
+<td><p>171.8571</p></td>
+<td><p>167.4333</p></td>
 </tr>
 <tr class="odd">
 <td><p>Wind</p></td>
-<td><p>11.6225806451613</p></td>
-<td><p>10.2666666666667</p></td>
-<td><p>8.94193548387097</p></td>
-<td><p>8.79354838709678</p></td>
+<td><p>11.6226</p></td>
+<td><p>10.2667</p></td>
+<td><p>8.9419</p></td>
+<td><p>8.7935</p></td>
 <td><p>10.18</p></td>
 </tr>
 <tr class="even">
 <td><p>Temp</p></td>
-<td><p>65.5483870967742</p></td>
+<td><p>65.5484</p></td>
 <td><p>79.1</p></td>
-<td><p>83.9032258064516</p></td>
-<td><p>83.9677419354839</p></td>
+<td><p>83.9032</p></td>
+<td><p>83.9677</p></td>
 <td><p>76.9</p></td>
 </tr>
 </tbody>
@@ -663,49 +696,57 @@ statistical functions on entire data frames, but this can easily be implemented 
 
 </div>
 
+
 <p>If we used <code>Frame.getNumericCols</code> directly, we would also calculate the mean of "Day" and 
 "Month" columns, which does not make much sense in this example. For that reason, the snippet
 first calls <code>sliceCols</code> to get only relevant columns.</p>
 
-<div class="tip" id="fs1">val air : Frame&lt;int,string&gt;<br /><br />Full name: Stats.air</div>
-<div class="tip" id="fs2">Multiple items<br />module Frame<br /><br />from Deedle<br /><br />--------------------<br />type Frame =<br />&#160;&#160;static member CreateEmpty : unit -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br />&#160;&#160;static member FromArray2D : array:&#39;T [,] -&gt; Frame&lt;int,int&gt;<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,ObjectSeries&lt;&#39;RowKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : rows:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;ColKey,int&gt; (requires equality)<br />&#160;&#160;static member FromRecords : values:seq&lt;&#39;T&gt; -&gt; Frame&lt;int,string&gt;<br />&#160;&#160;static member FromRecords : series:Series&lt;&#39;K,&#39;R&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRowKeys : keys:seq&lt;&#39;K&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;...<br /><br />Full name: Deedle.Frame<br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =<br />&#160;&#160;interface IDynamicMetaObjectProvider<br />&#160;&#160;interface INotifyCollectionChanged<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface IFrame<br />&#160;&#160;new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;private new : rowIndex:IIndex&lt;&#39;TRowKey&gt; * columnIndex:IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; -&gt; unit<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; -&gt; unit<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;...<br /><br />Full name: Deedle.Frame&lt;_,_&gt;<br /><br />--------------------<br />new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
-<div class="tip" id="fs3">static member Frame.ReadCsv : path:string * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : stream:Stream * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : path:string * indexCol:string * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int -&gt; Frame&lt;&#39;R,string&gt; (requires equality)</div>
-<div class="tip" id="fs4">val root : string<br /><br />Full name: Stats.root</div>
-<div class="tip" id="fs5">val ozone : Series&lt;int,float&gt;<br /><br />Full name: Stats.ozone</div>
-<div class="tip" id="fs6">val series : observations:seq&lt;&#39;a * &#39;b&gt; -&gt; Series&lt;&#39;a,&#39;b&gt; (requires equality)<br /><br />Full name: Deedle.FSharpSeriesExtensions.series</div>
-<div class="tip" id="fs7">val round : value:&#39;T -&gt; &#39;T (requires member Round)<br /><br />Full name: Microsoft.FSharp.Core.Operators.round</div>
-<div class="tip" id="fs8">type Stats =<br />&#160;&#160;static member count : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,int&gt; (requires equality and equality)<br />&#160;&#160;static member count : series:Series&lt;&#39;K,&#39;V&gt; -&gt; int (requires equality)<br />&#160;&#160;static member expandingCount : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingKurt : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingMax : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingMean : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingMin : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingSkew : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingStdDev : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingSum : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;...<br /><br />Full name: Deedle.Stats</div>
-<div class="tip" id="fs9">static member Stats.mean : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt; (requires equality and equality)<br />static member Stats.mean : series:Series&lt;&#39;K,float&gt; -&gt; float (requires equality)</div>
-<div class="tip" id="fs10">module Option<br /><br />from Microsoft.FSharp.Core</div>
-<div class="tip" id="fs11">val get : option:&#39;T option -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.Option.get</div>
-<div class="tip" id="fs12">static member Stats.max : series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V option (requires equality and comparison)</div>
-<div class="tip" id="fs13">static member Stats.min : series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V option (requires equality and comparison)</div>
-<div class="tip" id="fs14">static member Stats.median : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt; (requires equality and equality)<br />static member Stats.median : series:Series&lt;&#39;K,float&gt; -&gt; float (requires equality)</div>
-<div class="tip" id="fs15">val info : Frame&lt;string,string&gt;<br /><br />Full name: Stats.info</div>
-<div class="tip" id="fs16">static member Stats.stdDev : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt; (requires equality and equality)<br />static member Stats.stdDev : series:Series&lt;&#39;K,float&gt; -&gt; float (requires equality)</div>
-<div class="tip" id="fs17">val frame : columns:seq&lt;&#39;a * #ISeries&lt;&#39;c&gt;&gt; -&gt; Frame&lt;&#39;c,&#39;a&gt; (requires equality and equality)<br /><br />Full name: Deedle.FSharpFrameExtensions.frame</div>
-<div class="tip" id="fs18">static member Stats.movingMean : size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)</div>
-<div class="tip" id="fs19">static member Stats.movingMin : size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)</div>
-<div class="tip" id="fs20">val exp : Frame&lt;int,string&gt;<br /><br />Full name: Stats.exp</div>
-<div class="tip" id="fs21">static member Stats.expandingMean : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)</div>
-<div class="tip" id="fs22">static member Stats.expandingStdDev : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)</div>
-<div class="tip" id="fs23">val dateFormat : DateTimeFormatInfo<br /><br />Full name: Stats.dateFormat</div>
-<div class="tip" id="fs24">Multiple items<br />type CultureInfo =<br />&#160;&#160;new : name:string -&gt; CultureInfo + 3 overloads<br />&#160;&#160;member Calendar : Calendar<br />&#160;&#160;member ClearCachedData : unit -&gt; unit<br />&#160;&#160;member Clone : unit -&gt; obj<br />&#160;&#160;member CompareInfo : CompareInfo<br />&#160;&#160;member CultureTypes : CultureTypes<br />&#160;&#160;member DateTimeFormat : DateTimeFormatInfo with get, set<br />&#160;&#160;member DisplayName : string<br />&#160;&#160;member EnglishName : string<br />&#160;&#160;member Equals : value:obj -&gt; bool<br />&#160;&#160;...<br /><br />Full name: System.Globalization.CultureInfo<br /><br />--------------------<br />CultureInfo(name: string) : unit<br />CultureInfo(culture: int) : unit<br />CultureInfo(name: string, useUserOverride: bool) : unit<br />CultureInfo(culture: int, useUserOverride: bool) : unit</div>
-<div class="tip" id="fs25">property CultureInfo.CurrentCulture: CultureInfo</div>
-<div class="tip" id="fs26">property CultureInfo.DateTimeFormat: DateTimeFormatInfo</div>
-<div class="tip" id="fs27">val byMonth : Frame&lt;(string * int),string&gt;<br /><br />Full name: Stats.byMonth</div>
-<div class="tip" id="fs28">val indexRowsUsing : f:(ObjectSeries&lt;&#39;C&gt; -&gt; &#39;R2) -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;&#39;R2,&#39;C&gt; (requires equality and equality and equality)<br /><br />Full name: Deedle.Frame.indexRowsUsing</div>
-<div class="tip" id="fs29">val r : ObjectSeries&lt;string&gt;</div>
-<div class="tip" id="fs30">DateTimeFormatInfo.GetMonthName(month: int) : string</div>
-<div class="tip" id="fs31">member ObjectSeries.GetAs : column:&#39;K -&gt; &#39;R<br />member ObjectSeries.GetAs : column:&#39;K * fallback:&#39;R -&gt; &#39;R</div>
-<div class="tip" id="fs32">Multiple items<br />val int : value:&#39;T -&gt; int (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.int<br /><br />--------------------<br />type int = int32<br /><br />Full name: Microsoft.FSharp.Core.int<br /><br />--------------------<br />type int&lt;&#39;Measure&gt; = int<br /><br />Full name: Microsoft.FSharp.Core.int&lt;_&gt;</div>
-<div class="tip" id="fs33">static member Stats.levelMean : level:(&#39;K -&gt; &#39;L) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt; (requires equality and equality)</div>
-<div class="tip" id="fs34">val fst : tuple:(&#39;T1 * &#39;T2) -&gt; &#39;T1<br /><br />Full name: Microsoft.FSharp.Core.Operators.fst</div>
-<div class="tip" id="fs35">val sliceCols : columns:seq&lt;&#39;C&gt; -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.sliceCols</div>
-<div class="tip" id="fs36">val getNumericCols : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,Series&lt;&#39;R,float&gt;&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.getNumericCols</div>
-<div class="tip" id="fs37">Multiple items<br />module Series<br /><br />from Deedle<br /><br />--------------------<br />type Series =<br />&#160;&#160;static member ofNullables : values:seq&lt;Nullable&lt;&#39;a0&gt;&gt; -&gt; Series&lt;int,&#39;a0&gt; (requires default constructor and value type and &#39;a0 :&gt; ValueType)<br />&#160;&#160;static member ofObservations : observations:seq&lt;&#39;a0 * &#39;a1&gt; -&gt; Series&lt;&#39;a0,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofOptionalObservations : observations:seq&lt;&#39;K * &#39;a1 option&gt; -&gt; Series&lt;&#39;K,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofValues : values:seq&lt;&#39;a0&gt; -&gt; Series&lt;int,&#39;a0&gt;<br /><br />Full name: Deedle.FSharpSeriesExtensions.Series<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface ISeries&lt;&#39;K&gt;<br />&#160;&#160;new : pairs:seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : index:IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member After : lowerExclusive:&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * observationSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,KeyValuePair&lt;&#39;TNewKey,OptionalValue&lt;&#39;R&gt;&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * keySelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,OptionalValue&lt;&#39;R&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member AsyncMaterialize : unit -&gt; Async&lt;Series&lt;&#39;K,&#39;V&gt;&gt;<br />&#160;&#160;member Before : upperExclusive:&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;...<br /><br />Full name: Deedle.Series&lt;_,_&gt;<br /><br />--------------------<br />new : pairs:seq&lt;Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : index:Indices.IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:Vectors.IVectorBuilder * indexBuilder:Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
-<div class="tip" id="fs38">val mapValues : f:(&#39;T -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt; (requires equality)<br /><br />Full name: Deedle.Series.mapValues</div>
-<div class="tip" id="fs39">static member Frame.ofRows : rows:seq&lt;&#39;a0 * #ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a0,&#39;a2&gt; (requires equality and equality)<br />static member Frame.ofRows : rows:Series&lt;&#39;a0,#ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a0,&#39;a2&gt; (requires equality and equality)</div>
+<div class="tip" id="fs1">namespace System</div>
+<div class="tip" id="fs2">namespace System.Globalization</div>
+<div class="tip" id="fs3">namespace System.IO</div>
+<div class="tip" id="fs4">namespace FSharp</div>
+<div class="tip" id="fs5">Multiple items<br />namespace System.Data<br /><br />--------------------<br />namespace Microsoft.FSharp.Data</div>
+<div class="tip" id="fs6">namespace Deedle</div>
+<div class="tip" id="fs7">namespace FSharp.Charting</div>
+<div class="tip" id="fs8">val root : string<br /><br />Full name: Stats.root</div>
+<div class="tip" id="fs9">val air : Frame&lt;int,string&gt;<br /><br />Full name: Stats.air</div>
+<div class="tip" id="fs10">Multiple items<br />module Frame<br /><br />from Deedle<br /><br />--------------------<br />type Frame =<br />&#160;&#160;static member CreateEmpty : unit -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br />&#160;&#160;static member FromArray2D : array:&#39;T [,] -&gt; Frame&lt;int,int&gt;<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:Series&lt;&#39;TColKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,ObjectSeries&lt;&#39;RowKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : columns:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt; (requires equality and equality)<br />&#160;&#160;static member FromColumns : cols:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;ColKey,int&gt; (requires equality)<br />&#160;&#160;static member FromRecords : values:seq&lt;&#39;T&gt; -&gt; Frame&lt;int,string&gt;<br />&#160;&#160;static member FromRecords : series:Series&lt;&#39;K,&#39;R&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;static member FromRowKeys : keys:seq&lt;&#39;K&gt; -&gt; Frame&lt;&#39;K,string&gt; (requires equality)<br />&#160;&#160;...<br /><br />Full name: Deedle.Frame<br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =<br />&#160;&#160;interface IDynamicMetaObjectProvider<br />&#160;&#160;interface INotifyCollectionChanged<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface IFrame<br />&#160;&#160;new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;new : rowIndex:IIndex&lt;&#39;TRowKey&gt; * columnIndex:IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; * indexBuilder:IIndexBuilder * vectorBuilder:IVectorBuilder -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; -&gt; unit<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; -&gt; unit<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;...<br /><br />Full name: Deedle.Frame&lt;_,_&gt;<br /><br />--------------------<br />new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />new : rowIndex:Indices.IIndex&lt;&#39;TRowKey&gt; * columnIndex:Indices.IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; * indexBuilder:Indices.IIndexBuilder * vectorBuilder:Vectors.IVectorBuilder -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
+<div class="tip" id="fs11">static member Frame.ReadCsv : path:string * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : stream:Stream * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : reader:TextReader * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : path:string * indexCol:string * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int -&gt; Frame&lt;&#39;R,string&gt; (requires equality)</div>
+<div class="tip" id="fs12">val ozone : Series&lt;int,float&gt;<br /><br />Full name: Stats.ozone</div>
+<div class="tip" id="fs13">val series : observations:seq&lt;&#39;a * &#39;b&gt; -&gt; Series&lt;&#39;a,&#39;b&gt; (requires equality)<br /><br />Full name: Deedle.FSharpSeriesExtensions.series</div>
+<div class="tip" id="fs14">val round : value:&#39;T -&gt; &#39;T (requires member Round)<br /><br />Full name: Microsoft.FSharp.Core.Operators.round</div>
+<div class="tip" id="fs15">type Stats =<br />&#160;&#160;static member count : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,int&gt; (requires equality and equality)<br />&#160;&#160;static member count : series:Series&lt;&#39;K,&#39;V&gt; -&gt; int (requires equality)<br />&#160;&#160;static member expandingCount : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingKurt : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingMax : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingMean : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingMin : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingSkew : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingStdDev : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingSum : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;...<br /><br />Full name: Deedle.Stats</div>
+<div class="tip" id="fs16">static member Stats.mean : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt; (requires equality and equality)<br />static member Stats.mean : series:Series&lt;&#39;K,float&gt; -&gt; float (requires equality)</div>
+<div class="tip" id="fs17">module Option<br /><br />from Microsoft.FSharp.Core</div>
+<div class="tip" id="fs18">val get : option:&#39;T option -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.Option.get</div>
+<div class="tip" id="fs19">static member Stats.max : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt; (requires equality and equality)<br />static member Stats.max : series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V option (requires equality and comparison)</div>
+<div class="tip" id="fs20">static member Stats.min : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt; (requires equality and equality)<br />static member Stats.min : series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V option (requires equality and comparison)</div>
+<div class="tip" id="fs21">static member Stats.median : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt; (requires equality and equality)<br />static member Stats.median : series:Series&lt;&#39;K,float&gt; -&gt; float (requires equality)</div>
+<div class="tip" id="fs22">val info : Frame&lt;string,string&gt;<br /><br />Full name: Stats.info</div>
+<div class="tip" id="fs23">static member Stats.stdDev : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt; (requires equality and equality)<br />static member Stats.stdDev : series:Series&lt;&#39;K,float&gt; -&gt; float (requires equality)</div>
+<div class="tip" id="fs24">val frame : columns:seq&lt;&#39;a * #ISeries&lt;&#39;c&gt;&gt; -&gt; Frame&lt;&#39;c,&#39;a&gt; (requires equality and equality)<br /><br />Full name: Deedle.FSharpFrameExtensions.frame</div>
+<div class="tip" id="fs25">static member Stats.movingMean : size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)</div>
+<div class="tip" id="fs26">static member Stats.movingMin : size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)</div>
+<div class="tip" id="fs27">val exp : Frame&lt;int,string&gt;<br /><br />Full name: Stats.exp</div>
+<div class="tip" id="fs28">static member Stats.expandingMean : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)</div>
+<div class="tip" id="fs29">static member Stats.expandingStdDev : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)</div>
+<div class="tip" id="fs30">val dateFormat : DateTimeFormatInfo<br /><br />Full name: Stats.dateFormat</div>
+<div class="tip" id="fs31">Multiple items<br />type CultureInfo =<br />&#160;&#160;new : name:string -&gt; CultureInfo + 3 overloads<br />&#160;&#160;member Calendar : Calendar<br />&#160;&#160;member ClearCachedData : unit -&gt; unit<br />&#160;&#160;member Clone : unit -&gt; obj<br />&#160;&#160;member CompareInfo : CompareInfo<br />&#160;&#160;member CultureTypes : CultureTypes<br />&#160;&#160;member DateTimeFormat : DateTimeFormatInfo with get, set<br />&#160;&#160;member DisplayName : string<br />&#160;&#160;member EnglishName : string<br />&#160;&#160;member Equals : value:obj -&gt; bool<br />&#160;&#160;...<br /><br />Full name: System.Globalization.CultureInfo<br /><br />--------------------<br />CultureInfo(name: string) : unit<br />CultureInfo(culture: int) : unit<br />CultureInfo(name: string, useUserOverride: bool) : unit<br />CultureInfo(culture: int, useUserOverride: bool) : unit</div>
+<div class="tip" id="fs32">property CultureInfo.CurrentCulture: CultureInfo</div>
+<div class="tip" id="fs33">property CultureInfo.DateTimeFormat: DateTimeFormatInfo</div>
+<div class="tip" id="fs34">val byMonth : Frame&lt;(string * int),string&gt;<br /><br />Full name: Stats.byMonth</div>
+<div class="tip" id="fs35">val indexRowsUsing : f:(ObjectSeries&lt;&#39;C&gt; -&gt; &#39;R2) -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;&#39;R2,&#39;C&gt; (requires equality and equality and equality)<br /><br />Full name: Deedle.Frame.indexRowsUsing</div>
+<div class="tip" id="fs36">val r : ObjectSeries&lt;string&gt;</div>
+<div class="tip" id="fs37">DateTimeFormatInfo.GetMonthName(month: int) : string</div>
+<div class="tip" id="fs38">member ObjectSeries.GetAs : column:&#39;K -&gt; &#39;R<br />member ObjectSeries.GetAs : column:&#39;K * fallback:&#39;R -&gt; &#39;R</div>
+<div class="tip" id="fs39">Multiple items<br />val int : value:&#39;T -&gt; int (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.int<br /><br />--------------------<br />type int = int32<br /><br />Full name: Microsoft.FSharp.Core.int<br /><br />--------------------<br />type int&lt;&#39;Measure&gt; = int<br /><br />Full name: Microsoft.FSharp.Core.int&lt;_&gt;</div>
+<div class="tip" id="fs40">static member Stats.levelMean : level:(&#39;K -&gt; &#39;L) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt; (requires equality and equality)</div>
+<div class="tip" id="fs41">val fst : tuple:(&#39;T1 * &#39;T2) -&gt; &#39;T1<br /><br />Full name: Microsoft.FSharp.Core.Operators.fst</div>
+<div class="tip" id="fs42">val sliceCols : columns:seq&lt;&#39;C&gt; -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.sliceCols</div>
+<div class="tip" id="fs43">val getNumericCols : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,Series&lt;&#39;R,float&gt;&gt; (requires equality and equality)<br /><br />Full name: Deedle.Frame.getNumericCols</div>
+<div class="tip" id="fs44">Multiple items<br />module Series<br /><br />from Deedle<br /><br />--------------------<br />type Series =<br />&#160;&#160;static member ofNullables : values:seq&lt;Nullable&lt;&#39;a0&gt;&gt; -&gt; Series&lt;int,&#39;a0&gt; (requires default constructor and value type and &#39;a0 :&gt; ValueType)<br />&#160;&#160;static member ofObservations : observations:seq&lt;&#39;a0 * &#39;a1&gt; -&gt; Series&lt;&#39;a0,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofOptionalObservations : observations:seq&lt;&#39;K * &#39;a1 option&gt; -&gt; Series&lt;&#39;K,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofValues : values:seq&lt;&#39;a0&gt; -&gt; Series&lt;int,&#39;a0&gt;<br /><br />Full name: Deedle.FSharpSeriesExtensions.Series<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface ISeries&lt;&#39;K&gt;<br />&#160;&#160;new : pairs:seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : index:IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member After : lowerExclusive:&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * observationSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,KeyValuePair&lt;&#39;TNewKey,OptionalValue&lt;&#39;R&gt;&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * keySelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,OptionalValue&lt;&#39;R&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member AsyncMaterialize : unit -&gt; Async&lt;Series&lt;&#39;K,&#39;V&gt;&gt;<br />&#160;&#160;member Before : upperExclusive:&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;...<br /><br />Full name: Deedle.Series&lt;_,_&gt;<br /><br />--------------------<br />new : pairs:seq&lt;Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : index:Indices.IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:Vectors.IVectorBuilder * indexBuilder:Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
+<div class="tip" id="fs45">val mapValues : f:(&#39;T -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt; (requires equality)<br /><br />Full name: Deedle.Series.mapValues</div>
+<div class="tip" id="fs46">static member Frame.ofRows : rows:seq&lt;&#39;a0 * #ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a0,&#39;a2&gt; (requires equality and equality)<br />static member Frame.ofRows : rows:Series&lt;&#39;a0,#ISeries&lt;&#39;a2&gt;&gt; -&gt; Frame&lt;&#39;a0,&#39;a2&gt; (requires equality and equality)</div>
 
         </div>
         <div class="span3">
