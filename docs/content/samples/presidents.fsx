@@ -3,7 +3,7 @@
 // ----------------------------------------------------------------------------
 #nowarn "58"
 #I "../../../bin"
-#I "../../../packages/FSharp.Data.2.0.8/lib/net40"
+#I "../../../packages/FSharp.Data.2.0.14/lib/net40"
 #I "../../../packages/FSharp.Charting.0.90.6"
 
 #r "FSharp.Data.dll"

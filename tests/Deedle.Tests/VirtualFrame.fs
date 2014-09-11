@@ -13,6 +13,7 @@ open FsUnit
 open NUnit.Framework
 open Deedle
 open Deedle.Virtual
+open Deedle.Vectors.Virtual
 
 // ------------------------------------------------------------------------------------------------
 // Tracking source
@@ -27,19 +28,26 @@ type LinearSubRange =
   interface System.Collections.IEnumerable with
     member x.GetEnumerator() : System.Collections.IEnumerator = failwith "hard!"
 
-type TrackingSource<'T>(lo, hi, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?search) = 
+type TrackingSource<'T>(ranges, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?search) = 
   member val AccessListCell = ref [] with get, set
   member val LookupListCell = ref [] with get, set
   member val IsTracking = true with get, set
   member val HasMissing = true with get, set
   member x.AccessList = List.rev x.AccessListCell.Value
   member x.LookupList = List.rev x.LookupListCell.Value
+  member x.Ranges = ranges
 
   interface IVirtualVectorSource with
-    member x.Length = hi - lo + 1L
+    member x.Length = ranges |> Seq.sumBy (fun (lo, hi) -> hi - lo + 1L)
     member x.ElementType = typeof<'T>
 
   interface IVirtualVectorSource<'T> with
+    member x.MergeWith(sources) = 
+      let ranges = [ yield! x.Ranges; for x in sources do yield! (x :?> TrackingSource<'T>).Ranges ]
+      TrackingSource
+        ( ranges, valueAt, ?asLong=asLong, HasMissing = x.HasMissing, IsTracking = x.IsTracking, 
+          LookupListCell = x.LookupListCell, AccessListCell = x.AccessListCell ) :> _
+
     member x.LookupRange(v) = 
       match search with
       | Some f -> let o, s = f v in Vectors.Custom { Offset = o; Step = s }
@@ -48,50 +56,115 @@ type TrackingSource<'T>(lo, hi, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?searc
     member x.LookupValue(k, l, c) = 
       if x.IsTracking then x.LookupListCell := (k, l) :: !x.LookupListCell
       let asLong = match asLong with None -> failwith "Lookup not supported" | Some g -> g
-      IndexUtilsModule.binarySearch (hi - lo + 1L) (Func<_, _>(fun i -> asLong (valueAt (lo + i)))) (asLong k) l c
-      |> OptionalValue.map (fun i -> valueAt i, i )
+      let found = ranges |> Seq.fold (fun state (lo, hi) ->
+          match state with
+          | Choice1Of2(offset) ->
+              let res = 
+                IndexUtilsModule.binarySearch (hi - lo + 1L) (Func<_, _>(fun i -> asLong (valueAt (lo + i)))) (asLong k) l c
+                |> OptionalValue.map (fun i -> valueAt (lo + i), (offset + i) )
+              if res.HasValue then Choice2Of2(res)
+              else Choice1Of2(offset + hi - lo + 1L)
+          | res -> res ) (Choice1Of2 0L)
+      match found with 
+      | Choice2Of2 r -> r
+      | _ -> OptionalValue.Missing
 
     member x.ValueAt addr = 
-      //printfn "Value at: %A is %A" addr (lo + addr)
-      if x.IsTracking then x.AccessListCell := (lo + addr) :: !x.AccessListCell
-      if x.HasMissing && (addr % 3L = 0L) then OptionalValue.Missing
-      else OptionalValue(valueAt (lo + addr))
+      let res = 
+        ranges |> List.fold (fun state (lo, hi) ->
+          match state with
+          | Choice1Of2 offset ->
+              if addr >= offset && addr <= offset+hi-lo then
+                Choice2Of2((addr - offset) + lo)
+              else Choice1Of2(offset + hi - lo + 1L)
+          | res -> res) (Choice1Of2 0L)
+      match res with
+      | Choice2Of2 absAddr ->
+          if x.IsTracking then x.AccessListCell := absAddr  :: !x.AccessListCell
+          if x.HasMissing && (addr % 3L = 0L) then OptionalValue.Missing
+          else OptionalValue(valueAt absAddr )
+      | _ -> failwith "ValueAt: out of range"
 
     member x.GetSubVector(range) = 
       match range with
       | Vectors.Range(nlo, nhi) ->
           if nhi < nlo then invalidOp "hi < lo"
           elif nlo < 0L then invalidOp "lo < 0"
-          elif nhi > hi then invalidOp "hi > max"
-          else TrackingSource
-                ( lo+nlo, lo+nhi, valueAt, ?asLong=asLong, HasMissing = x.HasMissing, IsTracking = x.IsTracking, 
-                  LookupListCell = x.LookupListCell, AccessListCell = x.AccessListCell ) :> _
+          elif nhi > (x:>IVirtualVectorSource).Length then invalidOp "hi > max"
+
+          // This is not entirely correct, but it works well enough for tests..
+          let _, ranges = 
+            ranges |> List.fold (fun (offset, ranges) (lo, hi) ->
+              let ranges = ((offset, offset+hi-lo), (lo, hi)) :: ranges
+              (offset + hi - lo + 1L), ranges ) (0L, [])
+          let ranges = List.rev ranges
+
+          let subRange = 
+            ranges |> List.tryPick (fun ((lo, hi), (absLo, absHi)) ->
+              if nlo >= lo && nhi <= hi then
+                Some(absLo + (nlo - lo), absHi + (nhi - hi))
+              else None)
+          
+          let absLo, absHi = 
+            match subRange with Some(r) -> r | _ -> failwith "GetSubVector: TODO - get sub range not handled" 
+
+          TrackingSource
+            ( [absLo, absHi], valueAt, ?asLong=asLong, HasMissing = x.HasMissing, IsTracking = x.IsTracking, 
+
+              LookupListCell = x.LookupListCell, AccessListCell = x.AccessListCell ) :> _
       | Vectors.Custom (:? LinearSubRange as lr) ->
+          let lo, hi = 
+            match ranges with
+            | [lo, hi] -> lo, hi
+            | _ -> failwith "Getting linear subrange is not implemented on merged sources"
           let valueAt i = valueAt(lo + int64 lr.Offset + (int64 lr.Step * i))
           let count = (hi + lo + 1L) / int64 lr.Step 
           let count = if (hi + lo + 1L) % int64 lr.Step > int64 lr.Offset then count+1L else count
           TrackingSource
-            ( 0L, count-1L, valueAt, ?asLong=asLong, HasMissing = x.HasMissing, IsTracking = x.IsTracking, 
+            ( [0L, count-1L], valueAt, ?asLong=asLong, HasMissing = x.HasMissing, IsTracking = x.IsTracking, 
               LookupListCell = x.LookupListCell, AccessListCell = x.AccessListCell ) :> _
       | _ -> failwith "unexpected custom range!"
 
 type TrackingSource =
-  static member CreateLongs(lo, hi) = TrackingSource<int64>(lo, hi, id, id)
-  static member CreateFloats(lo, hi) = TrackingSource<float>(lo, hi, float)
+  static member CreateLongs(lo, hi) = TrackingSource<int64>([lo, hi], id, id)
+  static member CreateFloats(lo, hi) = TrackingSource<float>([lo, hi], float)
   static member CreateStrings(lo, hi) = 
     let strings = "lorem ipsum dolor sit amet consectetur adipiscing elit".Split(' ')
     let search = function
       | LookupKind.Lookup v -> strings |> Seq.findIndex ((=) v), strings.Length
       | _ -> failwith "Scan not supported"
-    TrackingSource<string>(lo, hi, (fun i -> strings.[int i % strings.Length]), search=search)
+    TrackingSource<string>([lo, hi], (fun i -> strings.[int i % strings.Length]), search=search)
   static member CreateTicks(lo, hi) = 
     let start = DateTimeOffset(DateTime(2000, 1, 1), TimeSpan.FromHours(-1.0))
     let asTicks ticks = start.Ticks + ticks * 987654321L
-    TrackingSource<int64>(lo, hi, asTicks, id, HasMissing=false)
+    TrackingSource<int64>([lo, hi], asTicks, id, HasMissing=false)
   static member CreateTimes(lo, hi) = 
     let start = DateTimeOffset(DateTime(2000, 1, 1), TimeSpan.FromHours(-1.0))
     let asDto ticks = start.AddTicks(ticks * 123456789L)
-    TrackingSource<DateTimeOffset>(lo, hi, asDto, (fun dto -> dto.UtcTicks), HasMissing=false)
+    TrackingSource<DateTimeOffset>([lo, hi], asDto, (fun dto -> dto.UtcTicks), HasMissing=false)
+
+let date y m d = DateTimeOffset(DateTime(y, m, d), TimeSpan.FromHours(-1.0))
+let ith i = (date 2000 1 1).AddTicks(i * 123456789L)
+let fromTicks (t:int64) = DateTimeOffset(t, TimeSpan.FromHours(0.0)).ToOffset(TimeSpan.FromHours(8.0))
+let toTicks (dto:DateTimeOffset) = dto.UtcTicks
+
+// ------------------------------------------------------------------------------------------------
+// Some trivial testing for TrackingSource
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Lookup and ValueAt works on merged tracking sources`` () =
+  let source1 = TrackingSource.CreateTimes(0L, 10L) :> IVirtualVectorSource<_>
+  let source2 = TrackingSource.CreateTimes(10000000L, 10000010L) :> IVirtualVectorSource<_>
+  let sources = source1.MergeWith [source2]
+  source1.ValueAt(0L).Value |> shouldEqual (ith 0L)
+  source2.ValueAt(0L).Value |> shouldEqual (ith 10000000L)
+  sources.ValueAt(11L).Value |> shouldEqual (ith 10000000L)
+  sources.LookupValue(ith 0L, Lookup.Exact, fun _ -> true).Value |> fst |> shouldEqual (ith 0L)
+  sources.LookupValue(ith 10L, Lookup.Exact, fun _ -> true).Value |> fst |> shouldEqual (ith 10L)
+  sources.LookupValue(ith 100L, Lookup.Exact, fun _ -> true).HasValue |> shouldEqual false
+  sources.LookupValue(ith 10000000L, Lookup.Exact, fun _ -> true).Value |> fst |> shouldEqual (ith 10000000L)
+  sources.LookupValue(ith 10000010L, Lookup.Exact, fun _ -> true).Value |> fst |> shouldEqual (ith 10000010L)
 
 // ------------------------------------------------------------------------------------------------
 // Virtual series tests
@@ -168,11 +241,6 @@ let createTimeSeries () =
   let valSrc = TrackingSource.CreateFloats(0L, 10000000L)
   let sv = Virtual.CreateSeries(idxSrc, valSrc)
   idxSrc, valSrc, sv
-
-let date y m d = DateTimeOffset(DateTime(y, m, d), TimeSpan.FromHours(-1.0))
-let ith i = (date 2000 1 1).AddTicks(i * 123456789L)
-let fromTicks (t:int64) = DateTimeOffset(t, TimeSpan.FromHours(0.0)).ToOffset(TimeSpan.FromHours(8.0))
-let toTicks (dto:DateTimeOffset) = dto.UtcTicks
 
 [<Test>]
 let ``Can access elements in an ordered time series without evaluating it`` () =
@@ -283,7 +351,7 @@ let ``Can map over frame rows without evaluating it`` () =
   let mapped = frame |> Frame.mapRows (fun k row -> sqrt row?S1)
   mapped.[10000L] |> shouldEqual 100.0
   s1.AccessList |> shouldEqual [10000L]
-  s2.AccessList |> shouldEqual [10000L] // TODO: Improve implementation of CombineN, so that this is empty!
+  s2.AccessList |> shouldEqual []
 
 [<Test>]
 let ``Can perform slicing on frame using the Rows property`` () =
@@ -357,7 +425,7 @@ let ``Can access items of a virtual filtered frame without evaluating it`` () =
   lorem.Rows.Get(date 2001 1 1, Lookup.ExactOrSmaller).["S2"] |> unbox |> shouldEqual "lorem"
   lorem.Rows.Get(date 2001 1 1, Lookup.ExactOrGreater).["S2"] |> unbox |> shouldEqual "lorem"  
   lorem.Rows.Get(date 2001 1 1, Lookup.ExactOrGreater)?S1 - lorem.Rows.Get(date 2001 1 1, Lookup.ExactOrSmaller)?S1 |> shouldEqual 8.0
-  set s1.AccessList |> shouldEqual <| set [320176L; 320177L; 625000L]
+  set s1.AccessList |> shouldEqual <| set [320176L; 320177L]
   set s2.AccessList |> shouldEqual <| set [320176L; 320177L; 625000L]
 
 [<Test>]
@@ -370,6 +438,40 @@ let ``Filtering items by value behaves correctly at the beginning & end`` () =
     |> set
   lastValues |> shouldEqual <| set [9999993; 9999994; 9999995; 9999996; 9999997; 9999998; 9999999; 10000000]
  
+
+[<Test>]
+let ``Can merge virtual frames indexed by time`` () = 
+  let idx, s1, s2, f = createSimpleTimeFrame()
+  let fs = f.Rows.[date 2000 1 1 .. date 2001 1 1]
+  let fe = f.Rows.[date 2002 1 1 .. date 2003 1 1]
+  let m = fs.Merge(fe)
+  m.RowCount |> shouldEqual (fs.RowCount + fe.RowCount)
+  m.Rows.[ith 1L] |> shouldEqual <| fs.Rows.[ith 1L]
+  m.Rows.[ith 1000000L] |> shouldEqual <| fs.Rows.[ith 1000000L]
+  m.Rows.[ith 7000000L] |> shouldEqual <| fe.Rows.[ith 7000000L]
+  m.Rows.[ith 7670246L] |> shouldEqual <| fe.Rows.[ith 7670246L]
+
+
+[<Test>]
+let ``Can merge virtual series of rows indexed by time`` () = 
+  let idx, s1, s2, f = createSimpleTimeFrame()
+  let fsr = f.Rows.[date 2000 1 1 .. date 2001 1 1].Rows
+  let fer = f.Rows.[date 2002 1 1 .. date 2003 1 1].Rows
+  let fmr = fsr.Merge(fer)
+  fmr.KeyCount |> shouldEqual (fsr.KeyCount + fer.KeyCount)
+  fmr.[ith 1L] |> shouldEqual <| fsr.[ith 1L]
+  fmr.[ith 1000000L] |> shouldEqual <| fsr.[ith 1000000L]
+  fmr.[ith 7000000L] |> shouldEqual <| fer.[ith 7000000L]
+  fmr.[ith 7670246L] |> shouldEqual <| fer.[ith 7670246L]
+
+
+// TODO: Merge ordinally indexed virtual frames
+
+
+
+
+
+ // ------------------------------------------------------------------------------------------------
 
 //let idx, s1, s2, f = createSimpleTimeFrame() // TODO: THe reindexing only works with RAW frames atm.
 

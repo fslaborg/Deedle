@@ -8,7 +8,7 @@
 #I "../../packages/Deedle.1.0.4/lib/net40"
 #I "../../../packages/Deedle.1.0.4/lib/net40"
 // Also reference path with FSharp.Data.DesignTime.dll
-#I "../FSharp.Data.2.0.8/lib/net40/"
+#I "../FSharp.Data.2.0.14/lib/net40/"
 // Reference Deedle
 #r "Deedle.dll"
 

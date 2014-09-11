@@ -55,10 +55,12 @@
     <Compile Include="Vectors\VectorHelpers.fs" />
     <Compile Include="Vectors\ArrayVector.fs" />
     <Compile Include="Vectors\VectorExtensions.fs" />
+    <Compile Include="Vectors\VirtualVector.fs" />
     <Compile Include="Indices\MultiKey.fs" />
     <Compile Include="Indices\Index.fs" />
     <Compile Include="Indices\LinearIndex.fs" />
     <Compile Include="Indices\IndexExtensions.fs" />
+    <Compile Include="Indices\VirtualIndex.fs" />
     <Compile Include="JoinHelpers.fs" />
     <Compile Include="Series.fs" />
     <Compile Include="SeriesModule.fs" />
@@ -81,7 +83,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="FSharp.Data">
-      <HintPath>..\..\packages\FSharp.Data.2.0.8\lib\net40\FSharp.Data.dll</HintPath>
+      <HintPath>..\..\packages\FSharp.Data.2.0.14\lib\net40\FSharp.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="mscorlib" />
@@ -99,7 +101,7 @@
   </Target>
   -->
   <Target Name="AfterBuild">
-    <Copy SourceFiles="..\..\packages\FSharp.Data.2.0.8\lib\net40\FSharp.Data.DesignTime.dll" DestinationFolder="$(ProjectDir)..\..\bin" />
-    <Copy SourceFiles="..\..\packages\FSharp.Data.2.0.8\lib\net40\FSharp.Data.DesignTime.pdb" DestinationFolder="$(ProjectDir)..\..\bin" />
+    <Copy SourceFiles="..\..\packages\FSharp.Data.2.0.14\lib\net40\FSharp.Data.DesignTime.dll" DestinationFolder="$(ProjectDir)..\..\bin" />
+    <Copy SourceFiles="..\..\packages\FSharp.Data.2.0.14\lib\net40\FSharp.Data.DesignTime.pdb" DestinationFolder="$(ProjectDir)..\..\bin" />
   </Target>
 </Project>
