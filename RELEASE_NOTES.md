@@ -62,3 +62,6 @@
  * Merge BigDeedle pull request (#247), add merging on big frames
  * Fix PivotTable (#248) and CSV writing (#242)
  * Update R provider reference to 1.0.16 (support shadow copy in F# 3.2.1)
+
+### 1.0.5
+ * Update R provider reference to 1.0.17

@@ -14,9 +14,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{245F1283-3
 		docs\content\frame.fsx = docs\content\frame.fsx
 		docs\content\index.fsx = docs\content\index.fsx
 		docs\content\lazysource.fsx = docs\content\lazysource.fsx
-		docs\content\stats.fsx = docs\content\stats.fsx
 		docs\content\rinterop.fsx = docs\content\rinterop.fsx
 		docs\content\series.fsx = docs\content\series.fsx
+		docs\content\stats.fsx = docs\content\stats.fsx
 		docs\content\tutorial.fsx = docs\content\tutorial.fsx
 	EndProjectSection
 EndProject
@@ -25,7 +25,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{B6AF
 		build.fsx = build.fsx
 		nuget\Deedle.nuspec = nuget\Deedle.nuspec
 		nuget\Deedle.RPlugin.nuspec = nuget\Deedle.RPlugin.nuspec
-		nuget\Deedle.RProvider.nuspec = nuget\Deedle.RProvider.nuspec
 		README.md = README.md
 		RELEASE_NOTES.md = RELEASE_NOTES.md
 	EndProjectSection
@@ -41,8 +40,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{8BD8
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{C45F5ABF-7BCD-4C3A-BD51-81E0769E0F29}"
 	ProjectSection(SolutionItems) = preProject
-		docs\tools\generate.fsx = docs\tools\generate.fsx
 		docs\tools\formatters.fsx = docs\tools\formatters.fsx
+		docs\tools\generate.fsx = docs\tools\generate.fsx
 		docs\tools\packages.config = docs\tools\packages.config
 	EndProjectSection
 EndProject

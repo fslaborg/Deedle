@@ -65,10 +65,10 @@
       <HintPath>..\..\packages\R.NET.Community.1.5.15\lib\net40\RDotNet.NativeLibrary.dll</HintPath>
     </Reference>
     <Reference Include="RProvider">
-      <HintPath>..\..\packages\RProvider.1.0.16\lib\net40\RProvider.dll</HintPath>
+      <HintPath>..\..\packages\RProvider.1.0.17\lib\net40\RProvider.dll</HintPath>
     </Reference>
     <Reference Include="RProvider.Runtime">
-      <HintPath>..\..\packages\RProvider.1.0.16\lib\net40\RProvider.Runtime.dll</HintPath>
+      <HintPath>..\..\packages\RProvider.1.0.17\lib\net40\RProvider.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>False</Private>
@@ -92,10 +92,10 @@
   </Target>
   -->
   <Target Name="AfterBuild">
-    <Copy SourceFiles="..\..\packages\RProvider.1.0.16\RProvider.fsx" DestinationFolder="$(ProjectDir)..\..\bin" />
-    <Copy SourceFiles="..\..\packages\RProvider.1.0.16\lib\net40\RProvider.DesignTime.dll" DestinationFolder="$(ProjectDir)..\..\bin" />
-    <Copy SourceFiles="..\..\packages\RProvider.1.0.16\lib\net40\RProvider.DesignTime.pdb" DestinationFolder="$(ProjectDir)..\..\bin" />
-    <Copy SourceFiles="..\..\packages\RProvider.1.0.16\lib\net40\RProvider.Server.exe" DestinationFolder="$(ProjectDir)..\..\bin" />
-    <Copy SourceFiles="..\..\packages\RProvider.1.0.16\lib\net40\RProvider.Server.pdb" DestinationFolder="$(ProjectDir)..\..\bin" />
+    <Copy SourceFiles="..\..\packages\RProvider.1.0.17\RProvider.fsx" DestinationFolder="$(ProjectDir)..\..\bin" />
+    <Copy SourceFiles="..\..\packages\RProvider.1.0.17\lib\net40\RProvider.DesignTime.dll" DestinationFolder="$(ProjectDir)..\..\bin" />
+    <Copy SourceFiles="..\..\packages\RProvider.1.0.17\lib\net40\RProvider.DesignTime.pdb" DestinationFolder="$(ProjectDir)..\..\bin" />
+    <Copy SourceFiles="..\..\packages\RProvider.1.0.17\lib\net40\RProvider.Server.exe" DestinationFolder="$(ProjectDir)..\..\bin" />
+    <Copy SourceFiles="..\..\packages\RProvider.1.0.17\lib\net40\RProvider.Server.pdb" DestinationFolder="$(ProjectDir)..\..\bin" />
   </Target>
 </Project>
