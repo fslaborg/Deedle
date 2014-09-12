@@ -544,7 +544,7 @@ module Frame =
   /// [category:Grouping, windowing and chunking]
   [<CompiledName("Window")>]
   let window size (frame:Frame<'R, 'C>) = 
-    let fromRows rs = rs |> FrameUtils.fromRowsAndColumnKeys frame.ColumnIndex.Keys frame.VectorBuilder frame.ColumnKeys
+    let fromRows rs = rs |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnIndex.Keys
     frame.Rows |> Series.windowInto size fromRows
 
   /// Creates a sliding window using the specified size and then applies the provided 
@@ -559,7 +559,7 @@ module Frame =
   /// [category:Grouping, windowing and chunking]
   [<CompiledName("WindowInto")>]
   let windowInto size f (frame:Frame<'R, 'C>) = 
-    let fromRows rs = rs |> FrameUtils.fromRowsAndColumnKeys frame.ColumnIndex.Keys frame.VectorBuilder frame.ColumnKeys
+    let fromRows rs = rs |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnIndex.Keys 
     frame.Rows |> Series.windowInto size (fromRows >> f)
 
 
@@ -946,7 +946,7 @@ module Frame =
   ///
   /// [category:Frame transformations]
   [<CompiledName("WhereRows")>]
-  let inline filterRows f (frame:Frame<'R, 'C>) = 
+  let filterRows f (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.filter f |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnIndex.Keys
 
   /// Returns a new data frame containing only the rows of the input frame
@@ -960,7 +960,7 @@ module Frame =
   ///
   /// [category:Frame transformations]
   [<CompiledName("WhereRowValues")>]
-  let inline filterRowValues f (frame:Frame<'R, 'C>) = 
+  let filterRowValues f (frame:Frame<'R, 'C>) = 
     frame.Rows |> Series.filterValues f |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnIndex.Keys
 
 
