@@ -137,6 +137,40 @@ type 'T tryval = TryValue<'T>
 type 'T opt = OptionalValue<'T>
 
 
+/// Represents different behaviors of key lookup in series. For unordered series,
+/// the only available option is `Lookup.Exact` which finds the exact key - methods
+/// fail or return missing value if the key is not available in the index. For ordered
+/// series `Lookup.Greater` finds the first greater key (e.g. later date) with
+/// a value. `Lookup.Smaller` searches for the first smaller key. The options
+/// `Lookup.ExactOrGreater` and `Lookup.ExactOrSmaller` finds the exact key (if it is
+/// present) and otherwise search for the nearest larger or smaller key, respectively.
+[<System.Flags>]
+type Lookup = 
+  /// Lookup a value associated with the exact specified key. 
+  /// If the key is not available, then fail or return missing value. 
+  | Exact = 1
+
+  /// Lookup a value associated with the specified key or with the nearest
+  /// greater key that has a value available. Fails (or returns missing value)
+  /// only when the specified key is greater than all available keys.
+  | ExactOrGreater = 3
+
+  /// Lookup a value associated with the specified key or with the nearest
+  /// smaller key that has a value available. Fails (or returns missing value)
+  /// only when the specified key is smaller than all available keys.
+  | ExactOrSmaller = 5
+
+  /// Lookup a value associated with a key that is greater than the specified one.
+  /// Fails (or returns missing value) when the specified key is greater or equal
+  /// to the greatest available key.
+  | Greater = 2
+
+  /// Lookup a value associated with a key that is smaller than the specified one.
+  /// Fails (or returns missing value) when the specified key is smaller or equal
+  /// to the smallest available key.
+  | Smaller = 4
+
+
 /// Specifies in which direction should we look when performing operations such as
 /// `Series.Pairwise`. 
 ///
@@ -383,6 +417,11 @@ module MissingValues =
       else (fun v -> Object.Equals(null, box v))
     nanTest
 
+  let flattenNA<'T> () =
+    let isNaOfT = isNA<'T>()
+    fun (value:OptionalValue<_>) ->
+      if value.HasValue && isNaOfT value.Value then OptionalValue.Missing else value
+
   let inline containsNA (data:'T[]) = 
     let isNA = isNA<'T>() 
     Array.exists isNA data
@@ -530,9 +569,42 @@ module Array =
     res.ToArray()
 
 
+/// This module contains additional functions for working with lists. 
+module List =
+  /// Returns an option value that is Some when the specified function 'f'
+  /// succeeds for all values from the input list. Otherwise returns None. 
+  let tryChooseBy f input = 
+    let rec loop acc = function
+      | [] -> Some (List.rev acc)
+      | x::xs ->
+          match f x with
+          | Some v -> loop (v::acc) xs
+          | None -> None
+    loop [] input
+
 /// This module contains additional functions for working with sequences. 
 /// `Deedle.Internals` is opened, it extends the standard `Seq` module.
 module Seq = 
+  
+  /// A helper function that generates a sequence for the specified range of
+  /// int or int64 values. This is notably faster than using `lo .. hi`.
+  let inline range (lo:^T) (hi:^T) = 
+    let one = LanguagePrimitives.GenericOne
+    { new IEnumerable< ^T > with
+        member x.GetEnumerator() =
+          let current = ref (lo - one)
+          { new IEnumerator< ^T > with
+              member x.Current = current.Value
+            interface System.Collections.IEnumerator with
+              member x.Current = box current.Value
+              member x.MoveNext() = 
+                if current.Value >= hi then false
+                else current.Value <- current.Value + one; true
+              member x.Reset() = current.Value <- lo - one
+            interface System.IDisposable with
+              member x.Dispose() = ()  }
+      interface System.Collections.IEnumerable with
+        member x.GetEnumerator() = (x :?> IEnumerable< ^T >).GetEnumerator() :> _ }
 
   /// Comapre two sequences using the `Equals` method. Returns true
   /// when all their elements are equal and they have the same size.
@@ -571,7 +643,7 @@ module Seq =
     let available = min cacheCount count
     cacheIndex <- (cacheIndex - available + count) % count
     let cacheIndex = cacheIndex
-    seq { for i in 0 .. available - 1 do yield cache.[(cacheIndex + i) % count] }
+    seq { for i in range 0 (available - 1) do yield cache.[(cacheIndex + i) % count] }
     
   // lastFew 3 List.empty<int> |> List.ofSeq = []
   // lastFew 3 [ 1 .. 10 ]  |> List.ofSeq = [ 8; 9; 10]
@@ -595,7 +667,7 @@ module Seq =
     let readNext() = let p = !lastPointer in lastPointer := (!lastPointer + 1) % endCount; lastItems.[p]
     let readRest() = 
       lastPointer := (!lastPointer + endCount - !written) % endCount
-      seq { for i in 1 .. !written -> readNext() }
+      seq { for i in range 1 !written -> readNext() }
 
     use en = getEnumerator input 
     let rec skipToEnd() = 

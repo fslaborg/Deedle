@@ -1,7 +1,7 @@
 ﻿(*** hide ***)
 #load "../../bin/Deedle.fsx"
 #load "../../packages/FSharp.Charting.0.90.6/FSharp.Charting.fsx"
-#r "../../packages/FSharp.Data.2.0.8/lib/net40/FSharp.Data.dll"
+#r "../../packages/FSharp.Data.2.0.14/lib/net40/FSharp.Data.dll"
 open System
 open System.IO
 open FSharp.Data
@@ -234,11 +234,12 @@ We'll use the data frame `people` which contains three columns - `Name` of type 
 `Age` of type `int` and `Countries` of type `string list` (we created it from F# records
 in [the previous section](#creating-recd)):
 
-               Name    Age Countries          
-    Joe     -> Joe     51  [UK; US; UK]       
-    Tomas   -> Tomas   28  [CZ; UK; US; ... ] 
-    Eve     -> Eve     2   [FR]               
-    Suzanne -> Suzanne 15  [US]   
+    [lang=text]
+               Age Countries          
+    Joe     -> 51  [UK; US; UK]       
+    Tomas   -> 28  [CZ; UK; US; ... ] 
+    Eve     -> 2   [FR]               
+    Suzanne -> 15  [US]   
 
 To get a column (series) from a frame `df`, you can use operations that are exposed directly
 by the data frame, or you can use `df.Columns` which returns all columns of the frame as a
@@ -248,8 +249,8 @@ series of series.
 // Get the 'Age' column as a series of 'float' values
 // (the '?' operator converts values automatically)
 people?Age
-// Get the 'Name' column as a series of 'string' values
-people.GetColumn<string>("Name")
+// Get the 'Countries' column as a series of 'string list' values
+people.GetColumn<string list>("Countries")
 // Get all frame columns as a series of series
 people.Columns
 
@@ -288,22 +289,21 @@ people.Columns?Countries
 // [fsi:  Suzanne -> [US]]
 
 // Get column & try get column using members
-people.Columns.Get("Name")
+people.Columns.Get("Countries")
 people.Columns.TryGet("CreditCard")
 // Get column at a specified offset
 people.Columns.GetAt(0)
 
 // Get column as object series and convert it
 // to a typed Series<string, string>
-people.Columns?Name.As<string>()
-// Try converting column to Series<string, int>
-people.Columns?Name.TryAs<int>()
-
+people.Columns?Age.As<int>()
+// Try converting column to Series<string, string>
+people.Columns?Age.TryAs<string>()
 (**
 The type `ObjectSeries<string>` has a few methods in addition to ordinary `Series<K, V>` type.
 On the lines 18 and 20, we use `As<T>` and `TryAs<T>` that can be used to convert object series
 to a series with statically known type of values. The expression on line 18 is equivalent to
-`people.GetColumn<string>("Name")`, but it is not specific to frame columns - you can use the
+`people.GetColumn<obj>("Age")`, but it is not specific to frame columns - you can use the
 same approach to work with frame rows (using `people.Rows`) if your data set has rows of 
 homogeneous types.
 
@@ -645,7 +645,7 @@ byClassAndPort?Age
 
 // Averages for all numeric columns
 byClassAndPort
-|> Frame.getNumericColumns
+|> Frame.getNumericCols
 |> Series.dropMissing
 |> Series.mapValues (Stats.levelMean Pair.get1And2Of3)
 |> Frame.ofColumns
@@ -668,6 +668,7 @@ group, counts them (to get a number of `true` and `false` values) and then creat
 a series with the results. The result looks as the following table (some values
 were omitted):
 
+    [lang=text]
              True  False     
     C 1  ->  59    26        
       2  ->  9     8         
@@ -712,6 +713,13 @@ we get the following two by two table:
 *)
 
 (*** include-it:pivot1 ***)
+
+(**
+Note, we could also use the `PivotTable` member method along with a type annotation on the
+result for readability:
+*)
+let table : Frame<string,bool> = 
+  titanic.PivotTable("Sex", "Survived", Frame.countRows)
 
 (**
 The pivot table operation takes the source frame, partitions the data (rows) based on the 
@@ -818,7 +826,7 @@ decades?``Slovak Republic`` |> Stats.levelMean fst
 
 // Calculate means per decateds for all countries
 decades
-|> Frame.getNumericColumns 
+|> Frame.getNumericCols
 |> Series.mapValues (Stats.levelMean fst)
 |> Frame.ofColumns
 

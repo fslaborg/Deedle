@@ -84,7 +84,7 @@ let constructFrame (df:DataFrame) rowIndex colIndex =
   let data = Array.init df.ColumnCount (fun colIndex ->
     let colData = rows |> Array.map (fun r -> r.[colIndex])
     VectorHelpers.createInferredTypeVector Vectors.ArrayVector.ArrayVectorBuilder.Instance colData)
-  Some(Frame<_,_>(rowIndex, colIndex, Vector.ofValues data))
+  Some(Frame<_,_>(rowIndex, colIndex, Vector.ofValues data, IndexBuilder.Instance, VectorBuilder.Instance))
 
 /// Convert R expression to a data frame and return frame of an
 /// appropriate type, based on the values of the indices
@@ -127,7 +127,7 @@ let tryGetDateTimeKeys (zoo:SymbolicExpression) fromDateTime =
     |> Seq.map (fun v -> DateTime.ParseExact(v, "yyyy-MM-dd HH:mm:ss", invcult))
     |> Seq.map fromDateTime
     |> Some
-  with :? RDotNet.ParseException -> None
+  with :? RDotNet.ParseException | :? RDotNet.EvaluationException -> None
 
 /// Try converting the specified symbolic expression to a time series
 let tryCreateTimeSeries fromDateTime (symExpr:SymbolicExpression) : option<Series<'K, 'V>> = 

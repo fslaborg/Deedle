@@ -125,7 +125,7 @@ module internal StatsHelpers =
     if b = 0.0 || s.nobs < 3.0 then nan 
     else (sqrt (s.nobs * (s.nobs - 1.0)) * c) / ((s.nobs - 2.0) * pown r 3)
   
-  /// Calculate kurtsis from `Sums`; requires `moment=4`
+  /// Calculate kurtosis from `Sums`; requires `moment=4`
   let internal kurtSums s =
     let a = s.sum / s.nobs
     let r = a * a
@@ -606,7 +606,7 @@ type Stats =
   /// [category:Series statistics]
   static member inline minBy f (series:Series<'K, 'T>) = 
     if series.ValueCount = 0 then None
-    else Some(series |> Series.observations |> Seq.maxBy (snd >> f))
+    else Some(series |> Series.observations |> Seq.minBy (snd >> f))
 
   /// Returns the median of the elements of the series.
   ///
@@ -724,6 +724,26 @@ type Stats =
   /// [category:Frame statistics]
   static member kurt (frame:Frame<'R, 'C>) = 
     frame.GetColumns<float>() |> Series.map (fun _ -> Stats.kurt)  
+
+  /// For each numerical column, returns the minimal values as a series.
+  /// The function skips over missing and `NaN` values. When there are no values,
+  /// the result is `NaN`.
+  ///
+  /// [category:Frame statistics]
+  static member min (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ s -> 
+      let res = Stats.min s 
+      defaultArg res nan )  
+
+  /// For each numerical column, returns the maximal values as a series.
+  /// The function skips over missing and `NaN` values. When there are no values,
+  /// the result is `NaN`.
+  ///
+  /// [category:Frame statistics]
+  static member max (frame:Frame<'R, 'C>) = 
+    frame.GetColumns<float>() |> Series.map (fun _ s -> 
+      let res = Stats.max s 
+      defaultArg res nan )  
 
   // ------------------------------------------------------------------------------------
   // Statistics applied to a single level of a multi-level indexed series

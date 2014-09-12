@@ -3,7 +3,7 @@
 #load "Deedle.fsx"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #r "../../packages/FsCheck.0.9.1.0/lib/net40-Client/FsCheck.dll"
-#r "../../packages/FSharp.Data.2.0.8/lib/net40/FSharp.Data.dll"
+#r "../../packages/FSharp.Data.2.0.14/lib/net40/FSharp.Data.dll"
 #load "../Common/FsUnit.fs"
 #else
 module Deedle.Tests.Frame
@@ -92,6 +92,27 @@ let ``Can save MSFT data as CSV file and read it afterwards (with default args)`
   let expected = msft()
   expected.SaveCsv(file)
   let actual = Frame.ReadCsv(file) 
+  actual |> shouldEqual (Frame.indexRowsOrdinally expected)
+
+[<Test>]
+let ``Can save MSFT data as CSV to a TextWriter and read it afterwards (with default args)`` () =
+  let builder = new System.Text.StringBuilder()
+  use writer = new System.IO.StringWriter(builder)
+  let expected = msft()
+  expected.SaveCsv(writer)
+  use reader = new System.IO.StringReader(builder.ToString())
+  let actual = Frame.ReadCsv(reader) 
+  actual |> shouldEqual (Frame.indexRowsOrdinally expected)
+
+[<Test>]
+let ``Can save MSFT data as CSV to a TextWriter and read it afterwards (using FrameExtensions)`` () =
+  let cz = System.Globalization.CultureInfo.GetCultureInfo("cs-CZ")
+  let builder = new System.Text.StringBuilder()
+  use writer = new System.IO.StringWriter(builder)
+  let expected = msft()
+  FrameExtensions.SaveCsv (expected, writer, false, null, ';', cz)
+  use reader = new System.IO.StringReader(builder.ToString())
+  let actual = Frame.ReadCsv(reader, hasHeaders=true, separators=";", culture="cs-CZ") 
   actual |> shouldEqual (Frame.indexRowsOrdinally expected)
 
 [<Test>]
@@ -348,6 +369,14 @@ let ``Filter all rows keeps column keys`` () =
   filt.["X"] |> shouldEqual (series [])
   filt.["Y"] |> shouldEqual (series [])
   (fun () -> filt.["Z"] |> ignore) |> should throw (typeof<ArgumentException>)
+
+[<Test>]
+let ``Filter frame rows by column value`` () =
+  let df = frame [ "X" =?> series [| "a" => true; "c" => false; "e" => true; "f" => false |]
+                   "Y" =?> series [| "a" => 4.0; "c" => nan; "e" => 6.0; "f" => 4.0 |] ]    
+  (df |> Frame.filterRowsBy "X" true)?Y |> shouldEqual <| series [ "a" => 4.0; "e" => 6.0 ]
+  (df |> Frame.filterRowsBy "X" false)?Y |> shouldEqual <| series [ "c" => nan; "f" => 4.0 ]
+  (df |> Frame.filterRowsBy "Y" 4).GetColumn<bool>("X") |> shouldEqual <| series [ "a" => true; "f" => false ]
 
 // ------------------------------------------------------------------------------------------------
 // Row access
@@ -1187,3 +1216,61 @@ let ``Can reindex ordinally``() =
     |> Frame.indexRowsOrdinally
   let expected = [0; 1] |> Seq.ofList
   actual.RowKeys |> shouldEqual expected
+
+// ------------------------------------------------------------------------------------------------
+// Operations - mapping
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can map over frame values``() =
+  let actual = 
+    Frame.ofColumns [ "A" =?> series [ 1 => 1; 2 => 2 ]; 
+                      "B" =?> series [ 1 => 2.0; 2 => 3.0 ];
+                      "C" =?> series [ 1 => "a"; 2 => "b" ] ]
+    
+  let expected = 
+    Frame.ofColumns [ "A" =?> series [ 1 => "x"; 2 => "x" ]; 
+                      "B" =?> series [ 1 => "x"; 2 => "y" ];
+                      "C" =?> series [ 1 => "a"; 2 => "b" ] ]
+  
+  let f v = if v <= 2.0 then "x" else "y"
+
+  actual |> Frame.mapValues f |> shouldEqual expected
+  f $ actual |> shouldEqual expected
+
+[<Test>]
+let ``Can map over frame keys and values``() =
+  let actual = 
+    Frame.ofColumns [ "A" =?> series [ 1 => 1; 2 => 2 ]; 
+                      "B" =?> series [ 1 => 2.0; 2 => 3.0 ];
+                      "C" =?> series [ 1 => "a"; 2 => "b" ] ]
+    
+  let expected = 
+    Frame.ofColumns [ "A" =?> series [ 1 => "x"; 2 => "y" ]; 
+                      "B" =?> series [ 1 => "y"; 2 => "y" ];
+                      "C" =?> series [ 1 => "a"; 2 => "b" ] ]
+  
+  let f r c v = if r < 2 && c <> "B" && v <= 2.0 then "x" else "y"
+  actual |> Frame.map f |> shouldEqual expected
+
+// ----------------------------------------------------------------------------------------------
+// Obsolete Stream operations
+// ----------------------------------------------------------------------------------------------
+#nowarn "44"
+
+[<Test>]
+let ``Saving CSV to a stream closes the stream when complete`` () =
+  use stream = new System.IO.MemoryStream()
+  stream.CanWrite |> shouldEqual true
+  let expected = msft()
+  expected.SaveCsv(stream)
+  stream.CanWrite |> shouldEqual false
+
+[<Test>]
+let ``Saving CSV to a stream via the extension method closes the stream when complete`` () =
+  let cz = System.Globalization.CultureInfo.GetCultureInfo("cs-CZ")
+  use stream = new System.IO.MemoryStream()
+  stream.CanWrite |> shouldEqual true
+  let expected = msft()
+  FrameExtensions.SaveCsv (expected, stream, true, ["Date"], ';', cz)
+  stream.CanWrite |> shouldEqual false

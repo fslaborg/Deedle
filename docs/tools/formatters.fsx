@@ -1,12 +1,12 @@
 ﻿module Formatters
-#I "../../packages/FSharp.Formatting.2.4.11/lib/net40"
+#I "../../packages/FSharp.Formatting.2.4.21/lib/net40"
 #r "FSharp.Markdown.dll"
 #r "FSharp.Literate.dll"
 #r "../../bin/Deedle.dll"
 #r "../../packages/FAKE/tools/FakeLib.dll"
 #r "../../packages/R.NET.Community.1.5.15/lib/net40/RDotNet.dll"
-#r "../../packages/RProvider.1.0.13/lib/net40/RProvider.dll"
-#r "../../packages/RProvider.1.0.13/lib/net40/RProvider.Runtime.dll"
+#r "../../packages/RProvider.1.0.17/lib/net40/RProvider.dll"
+#r "../../packages/RProvider.1.0.17/lib/net40/RProvider.Runtime.dll"
 #r "../../packages/MathNet.Numerics.3.0.0/lib/net40/MathNet.Numerics.dll"
 #load "../../packages/FSharp.Charting.0.90.6/FSharp.Charting.fsx"
 

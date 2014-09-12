@@ -44,7 +44,7 @@ module internal JoinHelpers =
        restriction.IsOrdered && sourceIndex.IsOrdered &&
        not restriction.IsEmpty then
       let min, max = restriction.KeyRange
-      sourceIndex.Builder.GetRange(sourceIndex, Some(min, BoundaryBehavior.Inclusive), Some(max, BoundaryBehavior.Inclusive), vector)
+      sourceIndex.Builder.GetRange((sourceIndex, vector), (Some(min, BoundaryBehavior.Inclusive), Some(max, BoundaryBehavior.Inclusive)))
     else sourceIndex, vector
 
   /// When using fancy lookup, first fill values in the vector, before doing the join

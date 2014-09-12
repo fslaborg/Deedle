@@ -51,6 +51,8 @@ type IVector =
   /// instance of vector passed as a statically typed vector (ie. IVector<ElementType>)
   abstract Invoke : VectorCallSite<'R> -> 'R
 
+  /// Returns the number of elements in the vector
+  abstract Length : int64
 
 /// Represents a generic function `\forall.'T.(IVector<'T> -> 'R)`. The function can be 
 /// generically invoked on an argument of type `IVector` using `IVector.Invoke`
@@ -74,13 +76,19 @@ and IVector<'T> =
 
   /// Apply the specified function to all values stored in the vector and return
   /// a new vector (not necessarily of the same representation) with the results.
-  abstract Select : ('T -> 'TNew) -> IVector<'TNew>
+  /// The function handles missing values - it is called with optional values and
+  /// may return a missing value as a result of the transformation.
+  abstract SelectMissing : (Address -> OptionalValue<'T> -> OptionalValue<'TNew>) -> IVector<'TNew>
 
   /// Apply the specified function to all values stored in the vector and return
   /// a new vector (not necessarily of the same representation) with the results.
-  /// The function handles missing values - it is called with optional values and
-  /// may return a missing value as a result of the transformation.
-  abstract SelectMissing : (OptionalValue<'T> -> OptionalValue<'TNew>) -> IVector<'TNew>
+  abstract Select : ('T -> 'TNew) -> IVector<'TNew>
+
+  /// Create a vector whose values are converted using the specified function, but
+  /// can be converted back using another specified function. For virtualized vectors,
+  /// this enables e.g. efficient lookup on the returned vectors (by delegating the
+  /// lookup to the original source)
+  abstract Convert : ('T -> 'TNew) * ('TNew -> 'T) -> IVector<'TNew>
 
 
 /// Module with extensions for generic vector type. Given `vec` of type `IVector<T>`, 
@@ -106,30 +114,55 @@ open Deedle
 open Deedle.Internal
 open Deedle.Addressing
 
-/// Represents a range inside a vector
-type VectorRange = Address * Address
+/// Represents a range inside a vector. This can be either a continuous range as 
+/// specified by `Range` or a custom range that can be turned into a sequence of indices. 
+type VectorRange =
+  | Range of int64 * int64
+  | Custom of IVectorRange
+
+/// A sequence of indicies together with the total number. Use `VectorRange.ofSeq` to
+/// create one from a sequence. This can be implemented by concrete vector/index 
+/// builders to allow further optimizations (e.g. when the underlying source directly
+/// supports range operations)
+and IVectorRange = 
+  inherit seq<int64>
+  abstract Count : int64
 
 /// Representes a "variable" in the mini-DSL below
 type VectorHole = int
 
-/// Represent a transformation that is applied when combining two vectors
-/// (because we are combining untyped `IVector` values, the transformation
-/// is also untyped)
-type IVectorValueTransform =
+/// Represent a transformation that is applied when combining two vectors (because 
+/// we are combining untyped `IVector` values, the transformation is also untyped)
+type IBinaryTransform =
   /// Returns a function that combines two values stored in vectors into a new vector value.
   /// Although generic, this function will only be called with the `T` set to the
   /// type of vector that is being built. Since `VectorConstruction` is not generic,
   /// the type cannot be statically propagated.
   abstract GetFunction<'T> : unit -> (OptionalValue<'T> -> OptionalValue<'T> -> OptionalValue<'T>)
 
-/// Represent a tranformation that is applied when combining N vectors
-type IVectorValueListTransform =
-  /// Returns a binary function that can be used for folding the values iteratively
-  /// (This can return None, which disallows some optimizations, but is fine)
-  abstract GetBinaryFunction<'T> : unit -> option<OptionalValue<'T> * OptionalValue<'T> -> OptionalValue<'T>>
+  /// Assuming `*` is the result of `GetFunction`, this property returns true when 
+  /// for all `x` it is the case that `Missing * x = x = x * Missing`. This enables
+  /// certain optimizations (as we do not have to call `*` when one argument is N/A)
+  abstract IsMissingUnit : bool
 
+/// Represent a tranformation that is applied when combining N vectors
+/// (This follows exactly the same pattern as `IBinaryTransform`)
+type INaryTransform =
   /// Returns a function that combines N values stored in vectors into a new vector value
   abstract GetFunction<'T> : unit -> (OptionalValue<'T> list -> OptionalValue<'T>)
+
+/// A transformation on vector(s) can specified as binary or as N-ary. A binary transformation
+/// can be applied to N elements using `List.reduce`, but allows optimizations.
+[<RequireQualifiedAccess>]
+type VectorListTransform = 
+  | Binary of IBinaryTransform
+  | Nary of INaryTransform
+  
+/// When an `INaryTransform` implements this interface, it is a special well-known
+/// transformation that creates a _row reader_ vector to be used in `frame.Rows`.
+/// (See the implementation in the `Build` operation in `ArrayVector.fs`)
+type IRowReaderTransform = 
+  inherit INaryTransform
 
 /// Specifies how to fill missing values in a vector (when using the 
 /// `VectorConstruction.FillMissing` command). This can only fill missing
@@ -177,15 +210,10 @@ type VectorConstruction =
   /// Append two vectors after each other
   | Append of VectorConstruction * VectorConstruction
 
-  /// Combine two aligned vectors. The `IVectorValueTransform` object
-  /// specifies how to merge values (in case there is a value at a given address
-  /// in both of the vectors).
-  | Combine of VectorConstruction * VectorConstruction * IVectorValueTransform
-
   /// Combine N aligned vectors. The `IVectorValueListTransform` object
   /// specifies how to merge values (in case there is a value at a given address
   /// in more than one of the vectors).
-  | CombineN of VectorConstruction list * IVectorValueListTransform
+  | Combine of VectorConstruction list * VectorListTransform
 
   /// Create a vector that has missing values filled using the specified direction
   /// (forward means that n-th value will contain (n-i)-th value where (n-i) is the
@@ -212,7 +240,7 @@ type IVectorBuilder =
   /// For example `Double.NaN` or `null` should be turned into a missing
   /// value in the returned vector.
   abstract Create : 'T[] -> IVector<'T>
-  
+
   /// Create a vector from an array containing values that may be missing. 
   /// Even if a value is passed, it may be a missing value such as `Double.NaN`
   /// or `null`. The vector builder should hanlde this.

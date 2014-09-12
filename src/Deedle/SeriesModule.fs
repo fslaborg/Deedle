@@ -214,7 +214,7 @@ module Series =
   /// [category:Accessing series data and lookup]
   [<CompiledName("GetObservations")>]
   let observations (series:Series<'K, 'T>) = seq { 
-    for key, address in series.Index.Mappings do
+    for KeyValue(key, address) in series.Index.Mappings do
       let v = series.Vector.GetValue(address)
       if v.HasValue then yield key, v.Value }
   
@@ -223,7 +223,7 @@ module Series =
   /// [category:Accessing series data and lookup]
   [<CompiledName("GetAllObservations")>]
   let observationsAll (series:Series<'K, 'T>) = seq { 
-    for key, address in series.Index.Mappings ->
+    for KeyValue(key, address) in series.Index.Mappings ->
       key, OptionalValue.asOption (series.Vector.GetValue(address)) }
 
   /// Create a new series that contains values for all provided keys.
@@ -365,25 +365,37 @@ module Series =
   [<CompiledName("HasNot")>]
   let hasNot key (series:Series<'K, 'T>) = series.TryGet(key).HasValue
 
-  /// Returns the last key of the series
+  /// Returns the last key of the series, or throws exception if one doesn't exist
   /// [category:Accessing series data and lookup]
   [<CompiledName("GetLastKey")>]
-  let lastKey (series:Series< 'K , 'V >) = series.KeyRange |> snd
+  let lastKey (series:Series< 'K , 'V >) = series.Index.KeyAt (series.KeyCount - 1 |> int64)
 
-  /// Returns the first key of the series
+  /// Returns the first key of the series, or throws exception if one doesn't exist
   /// [category:Accessing series data and lookup]
   [<CompiledName("GetFirstKey")>]
-  let firstKey (series:Series< 'K , 'V >) = series.KeyRange |> fst
+  let firstKey (series:Series< 'K , 'V >) = series.Index.KeyAt 0L
 
   /// Returns the last value of the series. This fails if the last value is missing.
   /// [category:Accessing series data and lookup]
   [<CompiledName("GetLastValue")>]
-  let lastValue (series:Series< 'K , 'V >) = series |> get (series.KeyRange |> snd)
+  let lastValue (series:Series< 'K , 'V >) = series |> getAt (series.KeyCount-1) 
+
+  /// Returns the last value of the series if one exists.
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("TryGetLastValue")>]
+  let tryLastValue (series:Series< 'K , 'V >) = 
+    if series.KeyCount > 0 then series |> getAt (series.KeyCount-1) |> Some else None
 
   /// Returns the first value of the series. This fails if the first value is missing.
   /// [category:Accessing series data and lookup]
   [<CompiledName("GetFirstValue")>]
-  let firstValue (series:Series< 'K , 'V >) = series |> get (series.KeyRange |> fst)
+  let firstValue (series:Series< 'K , 'V >) = series |> getAt 0
+
+  /// Returns the last value of the series if one exists.
+  /// [category:Accessing series data and lookup]
+  [<CompiledName("TryGetFirstValue")>]
+  let tryFirstValue (series:Series< 'K , 'V >) = 
+    if series.KeyCount > 0 then series |> getAt 0 |> Some else None
 
   /// Returns the (non-missing) values of the series as a sequence
   /// [category:Accessing series data and lookup]
@@ -430,7 +442,6 @@ module Series =
   let filterAll f (series:Series<'K, 'T>) = 
     series.WhereOptional(fun kvp -> f kvp.Key (OptionalValue.asOption kvp.Value))
 
-
   /// Returns a new series whose values are the results of applying the given function to
   /// values of the original series. This function skips over missing values and call the
   /// function with both keys and values.
@@ -469,6 +480,23 @@ module Series =
   let mapKeys (f:'K -> 'R) (series:Series<'K, 'T>) = 
     series.SelectKeys(fun kvp -> f kvp.Key)
 
+  /// Retruns a new series whose values are converted using the specified conversion function.
+  /// This operation is like `mapValues`, but it requires a pair of function that converts 
+  /// the values in _both ways_. 
+  ///
+  /// ## Parameters
+  ///  - `forward` - Function that converts original values to the new
+  ///  - `backward` - Function that converts new values back to the original
+  ///
+  /// ## Remarks
+  /// This operation is only interesting when working with virtualized data sources. Using the
+  /// `convert` function makes it possible to perfom additional operations on the resulting
+  /// series - for example lookup - by converting the new value back and using the lookup of
+  /// the underlying virtualized source.
+  [<CompiledName("Convert")>]
+  let convert (forward:'T -> 'R) (backward:'R -> 'T) (series:Series<'K, 'T>) = 
+    series.Convert(Func<_, _>(forward), Func<_, _>(backward))
+
   /// Given a series containing optional values, flatten the option values.
   /// That is, `None` values become missing values of the series and `Some` values
   /// become ordinary values in the resulting series.
@@ -477,15 +505,6 @@ module Series =
   [<CompiledName("Flatten")>]
   let flatten (series:Series<'K, 'T option>) = 
     series |> mapAll (fun _ v -> match v with Some x -> x | _ -> None)
-
-  /// Internal helper used by `skip`, `take`, etc.
-  let internal getRange lo hi (series:Series<'K, 'T>) = 
-    if hi < lo then Series([],[]) else
-      let cmd = GetRange(Return 0, (int64 lo, int64 hi))
-      let vec = series.VectorBuilder.Build(cmd, [| series.Vector |])
-      let newKeys = series.Index.Keys.[lo .. hi]
-      let idx = series.IndexBuilder.Create(newKeys, if series.IsOrdered then Some true else None)
-      Series(idx, vec, series.VectorBuilder, series.IndexBuilder)
 
   /// Returns a series that contains the specified number of keys from the original series. 
   ///
@@ -498,7 +517,7 @@ module Series =
   let take count (series:Series<'K, 'T>) =
     if count > series.KeyCount || count < 0 then 
       invalidArg "count" "Must be greater than zero and less than the number of keys."
-    getRange 0 (count - 1) series
+    series.GetAddressRange(0, count - 1)
 
   /// Returns a series that contains the specified number of keys from the 
   /// original series. The keys are taken from the end of the series. 
@@ -512,7 +531,7 @@ module Series =
   let takeLast count (series:Series<'K, 'T>) =
     if count > series.KeyCount || count < 0 then 
       invalidArg "count" "Must be greater than zero and less than the number of keys."
-    getRange (series.KeyCount-count) (series.KeyCount-1) series
+    series.GetAddressRange(series.KeyCount-count, series.KeyCount-1)
 
   /// Returns a series that contains the data from the original series,
   /// except for the first `count` keys.
@@ -526,7 +545,7 @@ module Series =
   let skip count (series:Series<'K, 'T>) =
     if count > series.KeyCount || count < 0 then 
       invalidArg "count" "Must be greater than zero and less than the number of keys."
-    getRange count (series.KeyCount-1) series
+    series.GetAddressRange(count, series.KeyCount-1)
 
   /// Returns a series that contains the data from the original series,
   /// except for the last `count` keys.
@@ -540,7 +559,7 @@ module Series =
   let skipLast count (series:Series<'K, 'T>) =
     if count > series.KeyCount || count < 0 then 
       invalidArg "count" "Must be greater than zero and less than the number of keys."
-    getRange 0 (series.KeyCount-1-count) series
+    series.GetAddressRange(0, series.KeyCount-1-count)
 
   /// Returns a new fully evaluated series. If the source series contains a lazy index or
   /// lazy vectors, these are forced to evaluate and the resulting series is fully loaded in memory.
@@ -632,7 +651,7 @@ module Series =
     let vectorBuilder = VectorBuilder.Instance
     let newIndex, vectorR = series.Index.Builder.Shift((series.Index, Vectors.Return 0), offset)
     let _, vectorL = series.Index.Builder.Shift((series.Index, Vectors.Return 0), -offset)
-    let cmd = Vectors.Combine(vectorL, vectorR, VectorValueTransform.Create< ^T >(OptionalValue.map2 (-)))
+    let cmd = Vectors.Combine([vectorL; vectorR], BinaryTransform.Create< ^T >(OptionalValue.map2 (-)))
     let newVector = vectorBuilder.Build(cmd, [| series.Vector |])
     Series(newIndex, newVector, vectorBuilder, series.Index.Builder)
 
@@ -1272,18 +1291,18 @@ module Series =
     let values = series.Vector
 
     let missingCompare a b =
-      let v1 = values.GetValue(snd a) |> OptionalValue.asOption
-      let v2 = values.GetValue(snd b) |> OptionalValue.asOption 
+      let v1 = values.GetValue(a) |> OptionalValue.asOption
+      let v2 = values.GetValue(b) |> OptionalValue.asOption 
       match v1, v2 with
       | Some x, Some y -> compareFunc x y
       | None,   Some y -> -1
       | Some x, None   -> 1
       | None,   None   -> 0
 
-    let newKeys, newLocs =
-      index.Mappings |> Array.ofSeq 
-                     |> Array.sortWith missingCompare 
-                     |> (fun arr -> arr |> Array.map fst, arr |> Array.map snd)
+    let sorted = index.Mappings |> Array.ofSeq 
+    sorted |> Array.sortInPlaceWith (fun kva kvb -> missingCompare kva.Value kvb.Value) 
+    let newKeys = sorted |> Array.map (fun kvp -> kvp.Key)
+    let newLocs = sorted |> Array.map (fun kvp -> kvp.Value)
 
     let newIndex = Index.ofKeys newKeys
     let len = int64 newKeys.Length
@@ -1294,7 +1313,7 @@ module Series =
   let internal sortByCommand (f:'T -> 'V) (series:Series<'K, 'T>) =
     let index = series.Index
     let vector = series.Vector
-    let fseries = Series(index, vector.SelectMissing (OptionalValue.map f), series.VectorBuilder, series.IndexBuilder)
+    let fseries = Series(index, vector.SelectMissing(fun _ -> OptionalValue.map f), series.VectorBuilder, series.IndexBuilder)
     fseries |> sortWithCommand compare
 
   /// Returns a new series, containing the observations of the original series sorted using

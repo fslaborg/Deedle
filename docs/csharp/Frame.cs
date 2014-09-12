@@ -77,7 +77,7 @@ namespace CSharp
         .IndexColumnsWith(new[] { "Year", "GDP", "Population", "Debt", "?" });
       // [/index-cols]
 
-   debtByYear.Print();
+      debtByYear.Print();
 
       // ------------------------------------------------------------
       // Joining and aligning data frames
@@ -90,9 +90,9 @@ namespace CSharp
       var joinOut = msft.Join(fb, JoinKind.Outer);
       // [/join-inout]
 
-   joinIn.Print();
-   joinOut.Print();
-   Console.ReadLine();
+      joinIn.Print();
+      joinOut.Print();
+      Console.ReadLine();
 
       // [join-lookup]
       // Shift MSFT observations by +1 hour for testing

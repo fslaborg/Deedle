@@ -9,6 +9,7 @@ open Deedle
 open Deedle.Addressing
 open Deedle.Internal
 open Deedle.Vectors
+open Deedle.VectorHelpers
 
 /// Internal representation of the ArrayVector. To make this more 
 /// efficient, we distinguish between "sparse" vectors that have missing 
@@ -34,9 +35,12 @@ type ArrayVectorBuilder() =
   let av data = ArrayVector(data) :> IVector<_>
 
   /// Treat vector as containing optionals
-  let (|AsVectorOptional|) = function
+  let asVectorOptional = function
     | VectorOptional d -> d
     | VectorNonOptional d -> Array.map (fun v -> OptionalValue v) d
+
+  /// Treat vector as containing optionals
+  let (|AsVectorOptional|) = asVectorOptional
 
   /// Builds a vector using the specified commands, ensures that the
   /// returned vector is ArrayVector (if no, it converts it) and then
@@ -135,26 +139,45 @@ type ArrayVectorBuilder() =
                   newData.[newIndex] <- OptionalValue(data.[oldIndex])
           vectorBuilder.CreateMissing(newData)
 
-      | DropRange(source, (loRange, hiRange)) ->
-          // Create a new array without the specified range. For Optional, call the 
-          // builder recursively as this may turn Optional representation to NonOptional
-          let loRange, hiRange = Address.asInt loRange, Address.asInt hiRange
-          match builder.buildArrayVector source arguments with 
-          | VectorOptional data -> 
-              vectorBuilder.CreateMissing(Array.dropRange loRange hiRange data) 
-          | VectorNonOptional data -> 
-              VectorNonOptional(Array.dropRange loRange hiRange data) |> av
+      | DropRange(source, range) ->
+          match range with
+          | Range(loRange, hiRange) ->
+              // Create a new array without the specified range. For Optional, call the 
+              // builder recursively as this may turn Optional representation to NonOptional
+              let loRange, hiRange = Address.asInt loRange, Address.asInt hiRange
+              match builder.buildArrayVector source arguments with 
+              | VectorOptional data -> 
+                  vectorBuilder.CreateMissing(Array.dropRange loRange hiRange data) 
+              | VectorNonOptional data -> 
+                  VectorNonOptional(Array.dropRange loRange hiRange data) |> av
+          
+          | Custom range ->
+              // NOTE: This is never currently needed in Deedle 
+              // (DropRange is only used when dropping a single item at the moment)
+              failwith "DropRange does not support Custom ranges at he moment"
 
-      | GetRange(source, (loRange, hiRange)) ->
-          // Get the specified sub-range. For Optional, call the builder recursively 
-          // as this may turn Optional representation to NonOptional
-          let loRange, hiRange = Address.asInt loRange, Address.asInt hiRange
-          if hiRange < loRange then VectorNonOptional [||] |> av else
-          match builder.buildArrayVector source arguments with 
-          | VectorOptional data -> 
-              vectorBuilder.CreateMissing(data.[loRange .. hiRange])
-          | VectorNonOptional data -> 
-              VectorNonOptional(data.[loRange .. hiRange]) |> av
+      | GetRange(source, range) ->
+          match range with
+          | Range(loRange, hiRange) ->
+              // Get the specified sub-range. For Optional, call the builder recursively 
+              // as this may turn Optional representation to NonOptional
+              let loRange, hiRange = Address.asInt loRange, Address.asInt hiRange
+              if hiRange < loRange then VectorNonOptional [||] |> av else
+              match builder.buildArrayVector source arguments with 
+              | VectorOptional data -> 
+                  vectorBuilder.CreateMissing(data.[loRange .. hiRange])
+              | VectorNonOptional data -> 
+                  VectorNonOptional(data.[loRange .. hiRange]) |> av
+
+          | Custom(indices) ->
+              // Get vector with the specified indices. Optional may turn to 
+              // NonOptional, but NonOptional will stay NonOptional
+              match builder.buildArrayVector source arguments with 
+              | VectorOptional data ->
+                  [| for idx in indices -> data.[int idx] |] |> vectorBuilder.CreateMissing 
+              | VectorNonOptional data ->
+                  [| for idx in indices -> data.[int idx] |] |> VectorNonOptional |> av
+
 
       | Append(first, second) ->
           // Convert both vectors to ArrayVectors and append them (this preserves
@@ -165,18 +188,8 @@ type ArrayVectorBuilder() =
           | AsVectorOptional first, AsVectorOptional second ->
               VectorOptional(Array.append first second) |> av
 
-      | Combine(left, right, op) ->
-          // Convert both vectors to ArrayVectors and zip them
-          match builder.buildArrayVector left arguments,builder.buildArrayVector right arguments with
-          | AsVectorOptional left, AsVectorOptional right ->
-              let merge = op.GetFunction<'T>()
-              let filled = Array.init (max left.Length right.Length) (fun idx ->
-                let lv = if idx >= left.Length then OptionalValue.Missing else left.[idx]
-                let rv = if idx >= right.Length then OptionalValue.Missing else right.[idx]
-                merge lv rv)
-              vectorBuilder.CreateMissing(filled)
 
-      | VectorHelpers.CombinedRelocations(relocs, op) ->
+      | CombinedRelocations(relocs, op) ->
           // OPTIMIZATION: Matches when we want to combine N vectors (as below) but
           // each vector is specified by a Relocate construction. In that case, we do
           // not need to build intermediate relocated vectors, but can directly build
@@ -187,30 +200,90 @@ type ArrayVectorBuilder() =
           // binary function (as we add vectors as we go, rather than building full list)
           let data = relocs |> List.map (fun (v, _, r) -> 
             (|AsVectorOptional|) (builder.buildArrayVector v arguments), r)
-          let merge = op.GetBinaryFunction<'T>().Value // IsSome=true is checked by CombinedRelocations 
+          let merge = op.GetFunction<'T>()
           let count = relocs |> List.map (fun (_, l, _) -> l) |> List.max
-          let filled = Array.create (int count) OptionalValue.Missing
-          
-          for vdata, vreloc in data do
-            for newIndex, oldIndex in vreloc do
-              let newIndex, oldIndex = Address.asInt newIndex, Address.asInt oldIndex
-              if oldIndex < vdata.Length && oldIndex >= 0 then
-                filled.[newIndex] <- merge (filled.[newIndex], vdata.[oldIndex])
-          vectorBuilder.CreateMissing(filled)
+          let filled : OptionalValue<_>[] = Array.create (int count) OptionalValue.Missing
 
-      | CombineN(vectors, op) ->
+          if op.IsMissingUnit then
+              // If the Missing value is unit of the operation, we can start with 
+              // Missing and skip applying the function for values not in the vector
+              // (This gives notable speedup for merging of vectors)
+              for vdata, vreloc in data do
+                for newIndex, oldIndex in vreloc do
+                  let newIndex, oldIndex = Address.asInt newIndex, Address.asInt oldIndex
+                  if oldIndex < vdata.Length && oldIndex >= 0 then
+                    filled.[newIndex] <- merge filled.[newIndex] vdata.[oldIndex]
+          
+          else                    
+              // Handle first vector differently - just write the values into the
+              // 'filled' array without merging; all values are initialized to missing
+              let head, rest = List.head data, List.tail data
+              let vdata, vreloc = head
+              for newIndex, oldIndex in vreloc do
+                let newIndex, oldIndex = Address.asInt newIndex, Address.asInt oldIndex
+                if oldIndex < vdata.Length && oldIndex >= 0 then
+                  filled.[newIndex] <- vdata.[oldIndex]
+
+              // For "2 .. " vectors, merge present values; then iterate over all 
+              // values that have not been accessed (typically when the vector is smaller)
+              // and merge the existing value with missing - this is important e.g. 
+              // because 1 + N/A = N/A
+              let accessed = Array.create (int count) false 
+              for vdata, vreloc in rest do
+                for newIndex, oldIndex in vreloc do
+                  let newIndex, oldIndex = Address.asInt newIndex, Address.asInt oldIndex
+                  if oldIndex < vdata.Length && oldIndex >= 0 then
+                    accessed.[newIndex] <- true
+                    filled.[newIndex] <- merge filled.[newIndex] vdata.[oldIndex]
+                // Merge all values not accessed & reset the accessed array
+                for i = 0 to accessed.Length - 1 do
+                  if not accessed.[i] then filled.[i] <- merge filled.[i] OptionalValue.Missing
+                  accessed.[i] <- false
+
+          filled |> vectorBuilder.CreateMissing
+
+
+      | Combine(vectors, VectorListTransform.Nary (:? IRowReaderTransform)) ->
+          // OPTIMIZATION: The `IRowReaderTransform` interface is a marker telling us that 
+          // we are creating `IVector<obj`> where `obj` is a boxed `IVector<obj>` 
+          // representing the row formed by all of the specified vectors combined.
+          //
+          // We short-circuit the default implementation (which actually allocates the 
+          // vectors) and we create a vector of virtualized "row readers".
           let data = 
             vectors 
-            |> List.map (fun v -> builder.buildArrayVector v arguments) 
-            |> List.map (function AsVectorOptional o -> o)
+            |> List.map (fun v -> vectorBuilder.Build(v, arguments) :> IVector)
+            |> Array.ofSeq
+          let length = data |> Seq.map (fun d -> d.Length) |> Seq.max
 
+          // Using `createObjRowReader` to get a row reader for a specified address
+          let frameData = vectorBuilder.Create data
+          let getRow addr = createObjRowReader frameData vectorBuilder addr
+
+          // Because Build is `IVector<'T>[] -> IVector<'T>`, there is some nasty boxing.
+          // This case is only called with `'T = obj` and so we create `IVector<obj>` containing 
+          // `obj = IVector<obj>` as the row readers (the caller in Rows then unbox this)
+          let rowCount = int length
+          let rows = Array.init rowCount (fun a -> box (getRow (Address.ofInt a)))
+          VectorNonOptional(rows) |> av |> unbox
+
+
+      | Combine(vectors, op) ->
+          // Handles all remaining Combine cases - construct the vectors to be combined 
+          // recursively and then combine them using a `'T list -> 'T` function (which is
+          // either the specified one or `List.reduce` applied to a binary function)
           let merge = op.GetFunction<'T>()
-          let filled = Array.init (data |> List.map (fun v -> v.Length) |> List.reduce max) (fun idx ->
-            data 
-            |> List.map (fun v -> if idx > v.Length then OptionalValue.Missing else v.[idx]) 
-            |> merge)  
-
+          let data = vectors |> List.map (fun v -> 
+            asVectorOptional (builder.buildArrayVector v arguments))
+          let length = 
+            data |> Seq.map Array.length |> Seq.max
+          let filled = 
+            Array.init length (fun idx ->
+              data 
+              |> List.map (fun v -> if idx > v.Length then OptionalValue.Missing else v.[idx]) 
+              |> merge)  
           vectorBuilder.CreateMissing(filled)
+
 
       | CustomCommand(vectors, f) ->
           let vectors = List.map (fun v -> vectorBuilder.Build(v, arguments) :> IVector) vectors
@@ -228,7 +301,7 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
   member internal vector.Representation = representation
 
   // To string formatting & equality support
-  override vector.ToString() = VectorHelpers.prettyPrintVector vector
+  override vector.ToString() = prettyPrintVector vector
   override vector.Equals(another) = 
     match another with
     | null -> false
@@ -239,6 +312,10 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
 
   // Implement the untyped vector interface
   interface IVector with
+    member x.Length = 
+      match representation with
+      | VectorOptional opts -> int64 opts.Length
+      | VectorNonOptional opts -> int64 opts.Length
     member x.ObjectSequence = 
       match representation with
       | VectorOptional opts -> opts |> Seq.map (OptionalValue.map box)
@@ -270,17 +347,22 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
     // A version of Select that can transform missing values to actual values (we always 
     // end up with array that may contain missing values, so use CreateMissing)
     member vector.SelectMissing<'TNewValue>(f) = 
-      let isNA = MissingValues.isNA<'TNewValue>() 
-      let flattenNA (value:OptionalValue<_>) = 
-        if value.HasValue && isNA value.Value then OptionalValue.Missing else value
+      let flattenNA = MissingValues.flattenNA<'TNewValue>() 
       let data = 
         match representation with
         | VectorNonOptional data ->
-            data |> Array.map (fun v -> OptionalValue(v) |> f |> flattenNA)
+            data |> Array.mapi (fun i v -> f (Address.ofInt i) (OptionalValue v) |> flattenNA)
         | VectorOptional data ->
-            data |> Array.map (f >> flattenNA)
+            data |> Array.mapi (fun i v -> f (Address.ofInt i) v |> flattenNA)
       ArrayVectorBuilder.Instance.CreateMissing(data)
 
     // Select function does not call 'f' on missing values.
     member vector.Select<'TNewValue>(f:'T -> 'TNewValue) = 
-      (vector :> IVector<_>).SelectMissing(OptionalValue.map f)
+      match representation with
+      | VectorNonOptional data ->
+          data |> Array.map f |> ArrayVectorBuilder.Instance.Create
+      | VectorOptional data ->
+          data |> Array.map (OptionalValue.map f) |> ArrayVectorBuilder.Instance.CreateMissing
+
+    // Conversion on array vectors does not deleay
+    member vector.Convert(f, _) = (vector :> IVector<'T>).Select(f)

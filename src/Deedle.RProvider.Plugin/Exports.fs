@@ -21,7 +21,7 @@ type DataFrameToR() =
       { new IFrameOperation<_> with
           member x.Invoke(frame) =
             let args = 
-              [| for r, addr in frame.ColumnIndex.Mappings do
+              [| for KeyValue(r, addr) in frame.ColumnIndex.Mappings do
                   let c = frame.Data.GetValue(addr)
                   if c.HasValue then 
                     let data = convertVector c.Value

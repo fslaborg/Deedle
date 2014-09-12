@@ -48,13 +48,42 @@ module FSharpVectorExtensions =
       VectorBuilder.Instance.CreateMissing(data |> Array.ofSeq)
 
 // ------------------------------------------------------------------------------------------------
-// C# frienly operations for creating vectors
-// ------------------------------------------------------------------------------------------------
 
 namespace Deedle.Vectors
 
 open Deedle
+open Deedle.VectorHelpers
 open Deedle.Vectors.ArrayVector
+
+// ------------------------------------------------------------------------------------------------
+// Additional vector helpers that have to be defined after ArrayVector
+// ------------------------------------------------------------------------------------------------
+
+[<AutoOpen>]
+module internal VectorHelperExtensions =
+
+  /// Returns `OptionalValue<obj>` which is a boxed version of `OptionalValue<IVector<obj>>`
+  /// (where the vector contains values from the specified list of values)
+  let private rowReaderFunc (values:OptionalValue<obj> list) : OptionalValue<obj> =
+    OptionalValue(box (ArrayVectorBuilder.Instance.CreateMissing(Array.ofList values)))
+
+  /// Transformation that creates a row reader. This also implements the
+  /// `IRowReaderTransform` so that it can be replaced by a more optimial implementation
+  type RowReaderTransform() =
+    interface IRowReaderTransform
+    interface INaryTransform with
+      member vt.GetFunction<'R>() = 
+        unbox<OptionalValue<'R> list -> OptionalValue<'R>> rowReaderFunc
+
+  type NaryTransform with
+    /// Returns the well-known `IRowReaderTransform` transformation
+    static member RowReader = 
+      RowReaderTransform() :> INaryTransform
+      |> VectorListTransform.Nary
+
+// ------------------------------------------------------------------------------------------------
+// C# frienly operations for creating vectors
+// ------------------------------------------------------------------------------------------------
 
 /// Type that provides access to creating vectors (represented as arrays)
 type Vector = 

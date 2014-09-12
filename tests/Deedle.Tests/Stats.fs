@@ -207,6 +207,31 @@ let ``Moving minimum works with nan values`` () =
   let s1 = series [ 0 => 1.0; 1 => nan ]
   Stats.movingMin 1 s1 |> shouldEqual <| series [ 0 => 1.0; 1 => nan ]
 
+[<Test>]
+let ``maxBy and minBy work`` () =
+  let s = series [ 0 => 1.0; 1 => nan; 2 => 5.0 ]
+  s |> Stats.maxBy id |> shouldEqual (Some (2, 5.0))
+  s |> Stats.minBy id |> shouldEqual (Some (0, 1.0))
+
+  s |> Stats.maxBy (fun x -> -x) |> shouldEqual (Some (0, 1.0))
+  s |> Stats.minBy (fun x -> -x) |> shouldEqual (Some (2, 5.0))
+
+// ------------------------------------------------------------------------------------------------
+// Statistics on frames
+// ------------------------------------------------------------------------------------------------
+
+let sampleFrame() = 
+  frame 
+    [ "A" =?> Series.ofValues [ 1.0; nan; 2.0; 3.0 ]
+      "B" =?> Series.ofValues [ "hi"; "there"; "!"; "?" ]
+      "C" =?> Series.ofValues [ 3.3; 4.4; 5.5; 6.6 ] ]
+
+[<Test>]
+let ``Can calulate minimum and maximum of numeric series in a frame`` () =
+  let df = sampleFrame()
+  df |> Stats.min |> shouldEqual <| series [ "A" => 1.0; "B" => nan; "C" => 3.3 ]
+  df |> Stats.max |> shouldEqual <| series [ "A" => 3.0; "B" => nan; "C" => 6.6 ]
+
 // ------------------------------------------------------------------------------------------------
 // Some FsCheck tests
 // ------------------------------------------------------------------------------------------------

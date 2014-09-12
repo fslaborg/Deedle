@@ -7,40 +7,6 @@
 // Index is an interface and so you can define your own. 
 // --------------------------------------------------------------------------------------
 
-/// Represents different behaviors of key lookup in series. For unordered series,
-/// the only available option is `Lookup.Exact` which finds the exact key - methods
-/// fail or return missing value if the key is not available in the index. For ordered
-/// series `Lookup.Greater` finds the first greater key (e.g. later date) with
-/// a value. `Lookup.Smaller` searches for the first smaller key. The options
-/// `Lookup.ExactOrGreater` and `Lookup.ExactOrSmaller` finds the exact key (if it is
-/// present) and otherwise search for the nearest larger or smaller key, respectively.
-[<System.Flags>]
-type Lookup = 
-  /// Lookup a value associated with the exact specified key. 
-  /// If the key is not available, then fail or return missing value. 
-  | Exact = 1
-
-  /// Lookup a value associated with the specified key or with the nearest
-  /// greater key that has a value available. Fails (or returns missing value)
-  /// only when the specified key is greater than all available keys.
-  | ExactOrGreater = 3
-
-  /// Lookup a value associated with the specified key or with the nearest
-  /// smaller key that has a value available. Fails (or returns missing value)
-  /// only when the specified key is smaller than all available keys.
-  | ExactOrSmaller = 5
-
-  /// Lookup a value associated with a key that is greater than the specified one.
-  /// Fails (or returns missing value) when the specified key is greater or equal
-  /// to the greatest available key.
-  | Greater = 2
-
-  /// Lookup a value associated with a key that is smaller than the specified one.
-  /// Fails (or returns missing value) when the specified key is smaller or equal
-  /// to the smallest available key.
-  | Smaller = 4
-
-
 /// Represents a strategy for aggregating data in an ordered series into data segments.
 /// To create a value of this type from C#, use the non-generic `Aggregation` type.
 /// Data can be aggregate using floating windows or chunks of a specified size or 
@@ -125,6 +91,7 @@ open Deedle.Keys
 open Deedle.Internal
 open Deedle.Addressing
 open Deedle.Vectors
+open System.Collections.Generic
 open System.Collections.ObjectModel
 
 /// Specifies the boundary behavior for the `IIndexBuilder.GetRange` operation
@@ -162,7 +129,7 @@ type IIndex<'K when 'K : equality> =
   abstract Lookup : key:'K * lookup:Lookup * condition:(Address -> bool) -> OptionalValue<'K * Address>  
 
   /// Returns all key-address mappings in the index
-  abstract Mappings : seq<'K * Address>
+  abstract Mappings : seq<KeyValuePair<'K, Address>>
 
   /// Returns the minimal and maximal key associated with the index.
   /// (the operation may fail for unordered indices)
@@ -225,11 +192,16 @@ and IIndexBuilder =
   /// (evaluated) index with the same keys.
   abstract Project : IIndex<'K> -> IIndex<'K>
 
+  /// Create a new index that represents sub-range of an existing index.
+  /// The range is specified as a pair of addresses, which means that it can be 
+  /// used by operations such as "series.Take(5)" (which do not rely on keys)
+  abstract GetAddressRange : SeriesConstruction<'K> * (Address * Address) -> SeriesConstruction<'K>
+
   /// Create a new index that represents sub-range of an existing index. The range is specified
   /// as a pair of options (when `None`, the original left/right boundary should be used) 
   /// that contain boundary behavior and the boundary key.
   abstract GetRange : 
-    IIndex<'K> * option<'K * BoundaryBehavior> * option<'K * BoundaryBehavior> * VectorConstruction ->
+    SeriesConstruction<'K> * (option<'K * BoundaryBehavior> * option<'K * BoundaryBehavior>) ->
     SeriesConstruction<'K>
 
   /// Creates a union of two indices and builds corresponding vector transformations
@@ -247,10 +219,10 @@ and IIndexBuilder =
   /// Append two indices and builds corresponding vector transformations
   /// for both vectors that match the left and the right index. If the indices
   /// are ordered, the ordering should be preserved (the keys should be aligned).
-  /// The specified `IVectorValueTransform` defines how to deal with the case when
+  /// The specified `VectorListTransform` defines how to deal with the case when
   /// a key is defined in both indices (i.e. which value should be in the new vector).
   abstract Merge :
-    list<SeriesConstruction<'K>> * IVectorValueListTransform -> 
+    list<SeriesConstruction<'K>> * VectorListTransform -> 
     IIndex<'K> * VectorConstruction
 
   /// Given an old index and a new index, build a vector transformation that reorders
@@ -268,11 +240,17 @@ and IIndexBuilder =
   /// Create a new index by picking a new key value for each key in the original index
   /// (used e.g. when we have a frame and want to use specified column as a new index).
   abstract WithIndex :
-    IIndex<'K> * (Address -> OptionalValue<'TNewKey>) * VectorConstruction -> 
+    IIndex<'K> * IVector<'TNewKey> * VectorConstruction -> 
     SeriesConstruction<'TNewKey>
 
   /// Drop an item associated with the specified key from the index. 
   abstract DropItem : SeriesConstruction<'K> * 'K -> SeriesConstruction<'K> 
+
+  /// Get a series construction that restricts the range of the input to only 
+  /// locations where the specified vector contains the specified value.
+  /// (used to filter frame rows according to a column value)
+  abstract Search<'K, 'V when 'K : equality and 'V : equality> : 
+    SeriesConstruction<'K> * IVector<'V> * 'V -> SeriesConstruction<'K>
 
   /// Get items associated with the specified key from the index. This method takes
   /// `ICustomLookup<K>` which provides an implementation of `ICustomKey<K>`. This 

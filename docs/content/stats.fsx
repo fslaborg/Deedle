@@ -73,7 +73,9 @@ the `air` data set and build a frame that shows the values (series) in two colum
 *)
 (*** define-output: airinfo ***)
 let info = 
-  [ "Mean" => Stats.mean air
+  [ "Min" => Stats.min air
+    "Max" => Stats.max air
+    "Mean" => Stats.mean air
     "+/-" => Stats.stdDev air ] |> frame
 (*** include-value: round(info*100.0)/100.0 ***)
 
