@@ -708,8 +708,8 @@ and
           |> OptionalValue.map (fun v -> 
               let kvp = KeyValuePair(key, v)
               keySelector.Invoke(kvp))), 
-        VectorConstruction.Return 0)
-    let newIndex  = Index.ofKeys (cmd |> Seq.map fst)
+        VectorConstruction.Return 0) 
+    let newIndex  = Index.ofKeys (cmd |> ReadOnlyCollection.map fst)
     let newGroups = cmd |> Seq.map snd |> Seq.map (fun sc -> 
         Series(fst sc, vectorBuilder.Build(snd sc, [| x.Vector |]), vectorBuilder, indexBuilder))
     Series<'TNewKey, _>(newIndex, Vector.ofValues newGroups, vectorBuilder, indexBuilder)
@@ -732,7 +732,7 @@ and
           yield f.Invoke(k, smaller, bigger) }
       |> Seq.toArray
 
-    let newIndex = Index.ofKeys keys
+    let newIndex = Index.ofKeys (ReadOnlyCollection.ofSeq keys)
     let newValues = newObs
     Series(newIndex, Vector.ofValues newValues, vectorBuilder, indexBuilder)
 
@@ -747,7 +747,7 @@ and
         match index.Locate(k) with
         | addr when addr >= 0L -> getter addr
         | _                    -> OptionalValue.Missing }
-    let newIndex = Index.ofKeys newKeys
+    let newIndex = Index.ofKeys (ReadOnlyCollection.ofSeq newKeys)
     let newVector = findAll x.Vector.GetValue |> Vector.ofOptionalValues
     Series<_,_>(newIndex, newVector, vectorBuilder, indexBuilder)
 
@@ -1029,8 +1029,13 @@ and
   new(keys:seq<_>, values:seq<_>) = 
     let vectorBuilder = VectorBuilder.Instance
     let indexBuilder = IndexBuilder.Instance
-    Series( Index.ofKeys keys, vectorBuilder.Create (Array.ofSeq values),
+    Series( Index.ofKeys (ReadOnlyCollection.ofSeq keys), vectorBuilder.Create (Array.ofSeq values),
             vectorBuilder, indexBuilder )
+
+  new(keys:_[], values:_[]) = 
+    let vectorBuilder = VectorBuilder.Instance
+    let indexBuilder = IndexBuilder.Instance
+    Series(Index.ofKeys (ReadOnlyCollection.ofArray keys), vectorBuilder.Create values, vectorBuilder, indexBuilder )
 
 // ------------------------------------------------------------------------------------------------
 // Untyped series

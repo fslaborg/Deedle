@@ -72,24 +72,35 @@ let testAll () =
 // ------------------------------------------------------------------------------------------------
 
 open Deedle
-
+(*
 let rnd = System.Random(0)
 
 let s0 = series <| Array.init 10000 (fun i -> i => rnd.NextDouble())
 let f0 = frame [ for i in 0 .. 10 -> i => s0 ]
 let f1 = frame [ for i in 0 .. 100 -> i => s0 ]
 
+f1 |> Frame.groupRowsByIndex (fun n -> n%10) |> ignore // 1200ms
+f1 |> Frame.groupRowsByInt 0 |> ignore // 1300
+
 //let s1 = series <| Array.init 1000000 (fun i -> i => rnd.NextDouble())
 //let s2 = series <| Array.init 10000000 (fun i -> i => rnd.NextDouble())
-
+*)
 let testOne() =      
   timed 5 (fun () ->
+
+    
+
+
+    // 760ms ~> 660ms ~> 580ms
+
+    let vs = [ for i in 0 .. 10 -> i => float i ]
+    Array.init 100000 (fun _ -> series vs) |> ignore
 
     // 75 ms ~> 40 ms
     //f0 + s0 |> ignore
 
     // 750 ms ~> 360 ms
-    f1 + s0 |> ignore
+    //f1 + s0 |> ignore
 
     // 315ms
     //for i in 0 .. 1000 do (s0 |> Stats.movingMin 100 |> ignore)
