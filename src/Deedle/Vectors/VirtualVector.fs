@@ -54,7 +54,7 @@ type IVirtualVectorSource<'V> =
 
   /// Merge the current source with a list of other sources
   /// (used by functions such as `Frame.merge` and `Frame.mergeAll`)
-  abstract MergeWith : IVirtualVectorSource<'V> list -> IVirtualVectorSource<'V>
+  abstract MergeWith : seq<IVirtualVectorSource<'V>> -> IVirtualVectorSource<'V>
 
 // ------------------------------------------------------------------------------------------------
 // Virtual vectors
@@ -80,7 +80,7 @@ module VirtualVectorSource =
         member x.GetSubVector(range) = boxSource (source.GetSubVector(range))
         member x.MergeWith(sources) = 
           let sources = 
-            sources |> List.tryChooseBy (function
+            sources |> List.ofSeq |> List.tryChooseBy (function
             | :? IBoxedVectorSource<'T> as src -> Some(src.Source)
             | _ -> None)
           match sources with 
@@ -103,7 +103,7 @@ module VirtualVectorSource =
         member x.MergeWith(sources) = 
           // For every source, we get a list of sources that were used to produce it
           let sources = 
-            (x::sources) |> List.tryChooseBy (function
+            Seq.append [x] sources |> List.ofSeq |> List.tryChooseBy (function
             | :? ICombinedVectorSource<'T> as src -> Some(src.Sources |> Array.ofSeq)
             | _ -> None)
           match sources with 
@@ -133,7 +133,7 @@ module VirtualVectorSource =
     { new IVirtualVectorSource<'TNew> with
         member x.ValueAt(idx) = f (Address.ofInt64 idx) (source.ValueAt(idx)) // TODO: Are we calculating the address correctly here??
         member x.MergeWith(sources) = 
-          let sources = sources |> List.tryChooseBy (function
+          let sources = sources |> List.ofSeq |> List.tryChooseBy (function
               | :? IMappedVectorSource<'V, 'TNew> as src -> Some(src.Source) | _ -> None)
           match sources with 
           | None -> failwith "Cannot merge frames or series not created by combine"
@@ -329,7 +329,7 @@ type VirtualVectorBuilder() =
                   member x.MergeWith(sources) = 
                     // For every source, we get a list of sources that were used to produce it
                     let sources = 
-                      (x::sources) |> List.tryChooseBy (function
+                      Seq.append [x] sources |> List.ofSeq |> List.tryChooseBy (function
                       | :? VirtualVectorSource.ICombinedVectorSource<'T> as src -> Some(src.Sources |> Array.ofSeq)
                       | _ -> None)
                     match sources with 
