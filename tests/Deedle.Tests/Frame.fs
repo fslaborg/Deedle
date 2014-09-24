@@ -187,6 +187,20 @@ let ``Creating frame from sorted series returns sorted frame``() =
   df1.RowIndex.IsOrdered  |> shouldEqual true
   df2.RowIndex.IsOrdered  |> shouldEqual true
 
+[<Test>]
+let ``Can create empty frame``() =
+  let d : Frame<int, string> = frame []
+  d.RowCount |> shouldEqual 0
+  d.ColumnCount |> shouldEqual 0
+
+[<Test>]
+let ``Adding first column to an empty frame fixes the row keys``() =
+  let d : Frame<int, string> = frame []
+  d?Test1 <- series [ 1 => 1.1; 3 => 3.3 ]
+  d?Test2 <- series [ 1 => 1.1; 2 => 2.2; 3 => 3.3 ]
+  d.RowKeys |> set |> shouldEqual <| set [1; 3]
+  d.ColumnKeys |> set |> shouldEqual <| set ["Test1"; "Test2"]
+
 // ------------------------------------------------------------------------------------------------
 // Input and output (from records)
 // ------------------------------------------------------------------------------------------------
