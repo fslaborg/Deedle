@@ -254,7 +254,9 @@ type ArrayVectorBuilder() =
             vectors 
             |> List.map (fun v -> vectorBuilder.Build(v, arguments) :> IVector)
             |> Array.ofSeq
-          let length = data |> Seq.map (fun d -> d.Length) |> Seq.max
+          let length = 
+            if data.Length = 0 then 0L
+            else data |> Seq.map (fun d -> d.Length) |> Seq.max
 
           // Using `createObjRowReader` to get a row reader for a specified address
           let frameData = vectorBuilder.Create data
