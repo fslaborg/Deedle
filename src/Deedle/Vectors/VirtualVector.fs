@@ -1,8 +1,10 @@
-﻿// ------------------------------------------------------------------------------------------------
-// Virtual vectors
-// ------------------------------------------------------------------------------------------------
+﻿namespace Deedle.Vectors.Virtual
 
-namespace Deedle.Vectors.Virtual
+// ------------------------------------------------------------------------------------------------
+// Virtual vector - implements a virtualized data storage for Deedle (together with 
+// VirtualIndex.fs). The actual data store needs to implement an interface `IVirtualVectorSource`, 
+// which represents essentially a key-value mapping with some lookup capabilities
+// ------------------------------------------------------------------------------------------------
 
 open System
 open Deedle
@@ -12,21 +14,47 @@ open Deedle.VectorHelpers
 open Deedle.Internal
 open System.Runtime.CompilerServices
 
-type LookupKind<'V> = 
-  | Scan of (Address -> OptionalValue<'V> -> bool)
-  | Lookup of 'V
-
+/// Non-generic part of the `IVirtualVectorSource<'V>` interface, which 
+/// provides some basic information about the virtualized data source
 type IVirtualVectorSource =
+  /// Returns the type of elements - essentially typeof<'V> for IVirtualVectorSource<'V>
   abstract ElementType : System.Type
+
+  /// Returns the length of the source - by design, Big Deedle always 
+  /// needs to know the length of the source (e.g. for binary search)
   abstract Length : int64
 
+
+/// Represents a data source for Big Deedle. The interface is used both as a representation
+/// of data source for `VirtualVector` (this file) and `VirtualIndex` (another file). The 
+/// index uses `Length` and `ValueAt` to perform binary search when looking for a key; the
+/// vector simply provides an access to values using `ValueAt`. 
 type IVirtualVectorSource<'V> = 
   inherit IVirtualVectorSource
+
+  /// Returns the value at the specifid address. We assume that the address is in range 
+  /// [0L, Length-1L] and that each location has a value (or has a missing value, but is valid)
   abstract ValueAt : int64 -> OptionalValue<'V>
-  abstract GetSubVector : VectorRange -> IVirtualVectorSource<'V>
-  abstract MergeWith : IVirtualVectorSource<'V> list -> IVirtualVectorSource<'V>
-  abstract LookupRange : LookupKind<'V> -> VectorRange
+
+  /// Find a range (continuous or a sequence of indices) such that all values in the range are 
+  /// the specified value. This is used, for example, when filtering frame based on column
+  /// value (say column "PClass" has a value "1").
+  ///
+  /// If the data source has some "clever" representation of the range, it can return
+  /// `Custom of IVectorRange` - which is then passed to `GetSubVector`.
+  abstract LookupRange : 'V -> VectorRange
+
+  /// Find the address associated with the specified value. This is used by the 
+  /// index and it has the same signature as `IIndex<'K>.Lookup` (see `Index.fs`).
   abstract LookupValue : 'V * Lookup * Func<Addressing.Address, bool> -> OptionalValue<'V * Addressing.Address> 
+
+  /// Returns a virtual source for the specified range (used when performing splicing on the 
+  /// frame/series, both using address or using keys - which are obtained using Lookup)
+  abstract GetSubVector : VectorRange -> IVirtualVectorSource<'V>
+
+  /// Merge the current source with a list of other sources
+  /// (used by functions such as `Frame.merge` and `Frame.mergeAll`)
+  abstract MergeWith : IVirtualVectorSource<'V> list -> IVirtualVectorSource<'V>
 
 // ------------------------------------------------------------------------------------------------
 // Virtual vectors
@@ -35,6 +63,14 @@ type IVirtualVectorSource<'V> =
 module VirtualVectorSource = 
   type IBoxedVectorSource<'T> =
     abstract Source : IVirtualVectorSource<'T> 
+
+  type ICombinedVectorSource<'T> =
+    abstract Sources : IVirtualVectorSource<'T> list
+    abstract Function : unit // TODO: Check that the applied function is the same
+
+  type IMappedVectorSource<'T, 'R> = 
+    abstract Source : IVirtualVectorSource<'T>
+    abstract Function : unit // TODO: Check that the applied function is the same
 
   let rec boxSource (source:IVirtualVectorSource<'T>) =
     { new IVirtualVectorSource<obj> with
@@ -57,10 +93,6 @@ module VirtualVectorSource =
       interface IVirtualVectorSource with
         member x.ElementType = typeof<obj>
         member x.Length = source.Length }
-
-  type ICombinedVectorSource<'T> =
-    abstract Sources : IVirtualVectorSource<'T> list
-    abstract Function : unit // TODO: Check that the applied function is the same
 
   let rec combine (f:OptionalValue<'T> list -> OptionalValue<'R>) (sources:IVirtualVectorSource<'T> list) : IVirtualVectorSource<'R> = 
     { new IVirtualVectorSource<'R> with
@@ -92,10 +124,6 @@ module VirtualVectorSource =
         member x.ElementType = typeof<'R>
         member x.Length = sources |> Seq.map (fun s -> s.Length) |> Seq.reduce (fun a b -> if a <> b then failwith "Length mismatch" else a) }
 
-  type IMappedVectorSource<'T, 'R> = 
-    abstract Source : IVirtualVectorSource<'T>
-    abstract Function : unit // TODO: Check that the applied function is the same
-
   let rec map rev f (source:IVirtualVectorSource<'V>) = 
     let withReverseLookup op = 
       match rev with 
@@ -122,12 +150,9 @@ module VirtualVectorSource =
               | OptionalValue.Present r -> Object.Equals(r, lv)
               | _ -> false))
               *)
-          let scanFunc = 
-            match search with
-            | LookupKind.Scan sf -> fun a ov -> sf a (f a ov)
-            | LookupKind.Lookup lv -> fun a ov -> 
+          let scanFunc a ov = 
                 match f a ov with
-                | OptionalValue.Present(rv) -> Object.Equals(lv, rv) // TODO: Object.Equals is not so good here
+                | OptionalValue.Present(rv) -> Object.Equals(search, rv) // TODO: Object.Equals is not so good here
                 | _ -> false
           
           let scanIndices = 
