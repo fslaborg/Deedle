@@ -189,7 +189,7 @@ type ArrayVectorBuilder() =
               VectorOptional(Array.append first second) |> av
 
 
-      | CombinedRelocations(relocs, op) ->
+      | CombinedRelocations(count, relocs, op) ->
           // OPTIMIZATION: Matches when we want to combine N vectors (as below) but
           // each vector is specified by a Relocate construction. In that case, we do
           // not need to build intermediate relocated vectors, but can directly build
@@ -201,7 +201,6 @@ type ArrayVectorBuilder() =
           let data = relocs |> List.map (fun (v, _, r) -> 
             (|AsVectorOptional|) (builder.buildArrayVector v arguments), r)
           let merge = op.GetFunction<'T>()
-          let count = relocs |> List.map (fun (_, l, _) -> l) |> List.max
           let filled : OptionalValue<_>[] = Array.create (int count) OptionalValue.Missing
 
           if op.IsMissingUnit then
@@ -243,7 +242,7 @@ type ArrayVectorBuilder() =
           filled |> vectorBuilder.CreateMissing
 
 
-      | Combine(vectors, VectorListTransform.Nary (:? IRowReaderTransform)) ->
+      | Combine(length, vectors, VectorListTransform.Nary (:? IRowReaderTransform)) ->
           // OPTIMIZATION: The `IRowReaderTransform` interface is a marker telling us that 
           // we are creating `IVector<obj`> where `obj` is a boxed `IVector<obj>` 
           // representing the row formed by all of the specified vectors combined.
@@ -254,7 +253,6 @@ type ArrayVectorBuilder() =
             vectors 
             |> List.map (fun v -> vectorBuilder.Build(v, arguments) :> IVector)
             |> Array.ofSeq
-          let length = data |> Seq.map (fun d -> d.Length) |> Seq.max
 
           // Using `createObjRowReader` to get a row reader for a specified address
           let frameData = vectorBuilder.Create data
@@ -268,17 +266,15 @@ type ArrayVectorBuilder() =
           VectorNonOptional(rows) |> av |> unbox
 
 
-      | Combine(vectors, op) ->
+      | Combine(length, vectors, op) ->
           // Handles all remaining Combine cases - construct the vectors to be combined 
           // recursively and then combine them using a `'T list -> 'T` function (which is
           // either the specified one or `List.reduce` applied to a binary function)
           let merge = op.GetFunction<'T>()
           let data = vectors |> List.map (fun v -> 
             asVectorOptional (builder.buildArrayVector v arguments))
-          let length = 
-            data |> Seq.map Array.length |> Seq.max
           let filled = 
-            Array.init length (fun idx ->
+            Array.init (int length) (fun idx ->
               data 
               |> List.map (fun v -> if idx > v.Length then OptionalValue.Missing else v.[idx]) 
               |> merge)  

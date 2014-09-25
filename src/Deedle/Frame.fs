@@ -207,7 +207,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
         | OptionalValue.Present (TryConvert asV1 lv), OptionalValue.Present (TryConvert asV2 rv) ->
             let lvVect : IVector<Choice<'V1, 'V2, 'V3>> = lv.Select(Choice1Of3)
             let lrVect : IVector<Choice<'V1, 'V2, 'V3>> = rv.Select(Choice2Of3)
-            let res = Vectors.Combine([f1cmd; f2cmd], BinaryTransform.CreateLifted (fun l r ->
+            let res = Vectors.Combine(rowIndex.KeyCount, [f1cmd; f2cmd], BinaryTransform.CreateLifted (fun l r ->
               match l, r with
               | Choice1Of3 l, Choice2Of3 r -> op.Invoke(l, r) |> Choice3Of3
               | _ -> failwith "Zip: Got invalid vector while zipping" ))
@@ -487,7 +487,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
     // Combine all vectors and build the result
     let vectors = [ for n in Seq.range 0L (columnIndex.KeyCount-1L) -> Vectors.Return(int n) ]
-    let cmd = Vectors.Combine(vectors, NaryTransform.RowReader)
+    let cmd = Vectors.Combine(rowIndex.KeyCount, vectors, NaryTransform.RowReader)
     let boxedData = [| for v in data.DataSequence -> boxVector v.Value |]
     let vector = vectorBuilder.Build(cmd, boxedData)
 
@@ -939,7 +939,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     // (so that we can apply the transformation repeatedly on columns)
     let newIndex, frameCmd, seriesCmd = 
       createJoinTransformation frame.IndexBuilder JoinKind.Outer Lookup.Exact frame.RowIndex series.Index (Vectors.Return 0) (Vectors.Return 1)
-    let opCmd = Vectors.Combine([frameCmd; seriesCmd], BinaryTransform.CreateLifted(op))
+    let opCmd = Vectors.Combine(newIndex.KeyCount, [frameCmd; seriesCmd], BinaryTransform.CreateLifted(op))
 
     // Apply the transformation on all columns that can be converted to 'T
     let newData = frame.Data.Select(fun vector ->

@@ -1196,7 +1196,7 @@ module Frame =
     let vectorBuilder = VectorBuilder.Instance
     let newRowIndex, vectorR = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), offset)
     let _, vectorL = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), -offset)
-    let cmd = Vectors.Combine([vectorL; vectorR], BinaryTransform.Create<float>(OptionalValue.map2 (-)))
+    let cmd = Vectors.Combine(newRowIndex.KeyCount, [vectorL; vectorR], BinaryTransform.Create<float>(OptionalValue.map2 (-)))
     let newData = frame.Data.Select(function
         | AsFloatVector vf -> VectorBuilder.Instance.Build(cmd, [| vf |]) :> IVector
         | vector -> vector)
