@@ -304,7 +304,7 @@ type VirtualVectorBuilder() =
           | :? IWrappedVector<'T> as vector -> restrictRange (vector.UnwrapVector())
           | vector -> restrictRange vector 
 
-      | Combine(vectors, ((VectorListTransform.Nary (:? IRowReaderTransform)) as transform)) ->
+      | Combine(count, vectors, ((VectorListTransform.Nary (:? IRowReaderTransform)) as transform)) ->
           // OPTIMIZATION: The `IRowReaderTransform` interface is a marker telling us that 
           // we are creating `IVector<obj`> where `obj` is a boxed `IVector<obj>` 
           // representing the row formed by all of the specified vectors combined.
@@ -359,10 +359,10 @@ type VirtualVectorBuilder() =
             // `obj = IVector<obj>` as the row readers (the caller in Rows then unbox this)
             VirtualVector(VirtualVectorSource.map None (fun _ -> OptionalValue.map box) newSource) |> unbox<IVector<'T>>
           else
-            let cmd = Combine([ for i in 0 .. builtSources.Length-1 -> Return i ], transform)
+            let cmd = Combine(count, [ for i in 0 .. builtSources.Length-1 -> Return i ], transform)
             baseBuilder.Build(cmd, builtSources)
 
-      | Combine(sources, transform) ->
+      | Combine(length, sources, transform) ->
           let builtSources = sources |> List.map (fun source -> VirtualVectorHelpers.unboxVector (build source args)) |> Array.ofSeq
           let allVirtual = builtSources |> Array.forall (fun vec -> vec :? VirtualVector<'T>)
           if allVirtual then
@@ -371,7 +371,7 @@ type VirtualVectorBuilder() =
             let newSource = VirtualVectorSource.combine func sources
             VirtualVector(newSource) :> _
           else
-            let cmd = Combine([ for i in 0 .. builtSources.Length-1 -> Return i ], transform)
+            let cmd = Combine(length, [ for i in 0 .. builtSources.Length-1 -> Return i ], transform)
             baseBuilder.Build(cmd, builtSources)
 
       | Append(first, second) ->

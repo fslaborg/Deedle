@@ -213,7 +213,7 @@ type VectorConstruction =
   /// Combine N aligned vectors. The `IVectorValueListTransform` object
   /// specifies how to merge values (in case there is a value at a given address
   /// in more than one of the vectors).
-  | Combine of VectorConstruction list * VectorListTransform
+  | Combine of int64 * VectorConstruction list * VectorListTransform
 
   /// Create a vector that has missing values filled using the specified direction
   /// (forward means that n-th value will contain (n-i)-th value where (n-i) is the
