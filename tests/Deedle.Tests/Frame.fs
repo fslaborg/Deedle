@@ -201,6 +201,11 @@ let ``Adding first column to an empty frame fixes the row keys``() =
   d.RowKeys |> set |> shouldEqual <| set [1; 3]
   d.ColumnKeys |> set |> shouldEqual <| set ["Test1"; "Test2"]
 
+[<Test>]
+let ``Rows of an empty frame should return empty series``() =
+  let d : Frame<int, string> = Frame.ofRowKeys [1;2;3]
+  d.Rows.[1].As<float>() |> shouldEqual <| series []
+
 // ------------------------------------------------------------------------------------------------
 // Input and output (from records)
 // ------------------------------------------------------------------------------------------------

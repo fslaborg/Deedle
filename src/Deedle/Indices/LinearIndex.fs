@@ -441,7 +441,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
         else mergeUnordered()
       let vectors = constructions |> List.map snd
       let newIndex, vectors = makeSeriesConstructions keysAndRelocs vectors ordered
-      newIndex, Vectors.Combine(vectors, transform)
+      newIndex, Vectors.Combine(newIndex.KeyCount, vectors, transform)
 
 
     /// Build a new index by getting a key for each old key using the specified function

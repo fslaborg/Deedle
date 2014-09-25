@@ -487,7 +487,7 @@ and
       | UnionBehavior.PreferRight -> BinaryTransform.RightIfAvailable
       | UnionBehavior.Exclusive -> BinaryTransform.AtMostOne
       | _ -> BinaryTransform.LeftIfAvailable
-    let vecCmd = Vectors.Combine([vec1; vec2], transform)
+    let vecCmd = Vectors.Combine(newIndex.KeyCount, [vec1; vec2], transform)
     let newVec = vectorBuilder.Build(vecCmd, [| series.Vector; another.Vector |])
     Series(newIndex, newVec, vectorBuilder, indexBuilder)
 
@@ -520,7 +520,7 @@ and
     let newIndex, lVec, rVec = series.ZipHelper(otherSeries, JoinKind.Inner, Lookup.Exact)
     
     let vecRes = 
-      Vectors.Combine([Vectors.Return 0; Vectors.Return 1], 
+      Vectors.Combine(newIndex.KeyCount, [Vectors.Return 0; Vectors.Return 1], 
         BinaryTransform.CreateLifted<Choice<'V, 'V2, 'V * 'V2>>(fun l r ->
           match l, r with
           | Choice1Of3 l, Choice2Of3 r -> Choice3Of3(l, r)

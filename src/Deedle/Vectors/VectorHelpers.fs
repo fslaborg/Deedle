@@ -491,16 +491,16 @@ let rec substitute ((oldVar, newVar) as subst) = function
   | DropRange(vc, r) -> DropRange(substitute subst vc, r)
   | GetRange(vc, r) -> GetRange(substitute subst vc, r)
   | Append(l, r) -> Append(substitute subst l, substitute subst r)
-  | Combine(lst, c) -> Combine(List.map (substitute subst) lst, c)
+  | Combine(l, lst, c) -> Combine(l, List.map (substitute subst) lst, c)
   | CustomCommand(vcs, f) -> CustomCommand(List.map (substitute subst) vcs, f)
   | AsyncCustomCommand(vcs, f) -> AsyncCustomCommand(List.map (substitute subst) vcs, f)
 
 /// Matches when the vector command represents a combination
 /// of N relocated vectors (that is Combine [Relocate ..; Relocate ..; ...])
 let (|CombinedRelocations|_|) = function
-  | Combine(list, VectorListTransform.Binary op) ->
+  | Combine(l, list, VectorListTransform.Binary op) ->
       if list |> List.forall (function Relocate _ -> true | _ -> false) then
         let parts = list |> List.map (function Relocate(a,b,c) -> (a,b,c) | _ -> failwith "logic error")
-        Some(parts, op)
+        Some(l, parts, op)
       else None
   | _ -> None
