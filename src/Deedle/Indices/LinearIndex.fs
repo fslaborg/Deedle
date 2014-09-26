@@ -23,9 +23,8 @@ open System.Collections.ObjectModel
 type LinearIndex<'K when 'K : equality> 
   internal (keys:ReadOnlyCollection<'K>, builder, ?ordered) =
 
-  // Build a lookup table etc.
   let comparer = Comparer<'K>.Default
-  let ordered = Lazy.Create(fun () -> 
+  let isOrdered () = 
     // If the caller specified whether the series is ordered, or custom comparer, use that;
     // Otherwise, we do check if it is comparable or nullable (for other types
     // comparer.Compare fails).
@@ -42,7 +41,7 @@ type LinearIndex<'K when 'K : equality>
           typeof<'K>.IsGenericTypeDefinition && typeof<'K>.GetGenericTypeDefinition() = typedefof<Nullable<_>> ->
             try Seq.isSorted keys comparer 
             with _ -> false
-    | _ -> false )
+    | _ -> false 
 
   let makeLookup () = 
     let dict = Dictionary<'K, Address>()
@@ -57,7 +56,15 @@ type LinearIndex<'K when 'K : equality>
           idx <- idx + 1L
     dict
 
-  let lookup = lazy makeLookup()
+  let mutable ordered = Unchecked.defaultof<Nullable<bool>>
+  let mutable lookup = null
+
+  member private x.lookupMap = 
+    if lookup = null then lookup <- makeLookup()
+    lookup
+  member private x.isOrdered = 
+    if not ordered.HasValue then ordered <- Nullable(isOrdered())
+    ordered.Value
 
   /// Exposes keys array for use in the index builder
   member internal index.KeyCollection = keys
@@ -86,19 +93,19 @@ type LinearIndex<'K when 'K : equality>
 
     /// Returns the range of keys - makes sense only for ordered index
     member x.KeyRange = 
-      if not ordered.Value then invalidOp "KeyRange is not supported for unordered index."
+      if not x.isOrdered then invalidOp "KeyRange is not supported for unordered index."
       keys.[0], keys.[keys.Count - 1]
 
     /// Get the address for the specified key, low on ceremony
     member x.Locate(key) =
-       match lookup.Value.TryGetValue(key) with
+       match x.lookupMap.TryGetValue(key) with
        | true, res -> res
        | _         -> Address.Invalid
 
     /// Get the address for the specified key.
     /// The 'semantics' specifies fancy lookup methods.
     member x.Lookup(key, semantics, check) = 
-      match lookup.Value.TryGetValue(key), semantics with
+      match x.lookupMap.TryGetValue(key), semantics with
 
       // First, handle the case when the value exists in the index (return it only if 
       // 'check' returns 'true' and the caller wants Exact, ExactOrSmaller or ExactOrGreater)
@@ -115,7 +122,7 @@ type LinearIndex<'K when 'K : equality>
       
       // 
       // Find the index & generate all previous indices so that we can 'check' them
-      | _, (Lookup.Smaller | Lookup.ExactOrSmaller) when ordered.Value ->
+      | _, (Lookup.Smaller | Lookup.ExactOrSmaller) when x.isOrdered ->
           let inclusive = semantics = Lookup.ExactOrSmaller
           let addrOpt = Array.binarySearchNearestSmaller key comparer inclusive keys
           let indices = addrOpt |> Option.map (fun v -> seq { v .. -1 .. 0 })
@@ -127,7 +134,7 @@ type LinearIndex<'K when 'K : equality>
           |> OptionalValue.map (fun idx -> keys.[idx], Address.ofInt idx)
 
       // Find the index & generate all next indices so that we can 'check' them
-      | _, (Lookup.Greater | Lookup.ExactOrGreater) when ordered.Value ->
+      | _, (Lookup.Greater | Lookup.ExactOrGreater) when x.isOrdered ->
           let inclusive = semantics = Lookup.ExactOrGreater
           let addrOpt = Array.binarySearchNearestGreater key comparer inclusive keys
           let indices = addrOpt |> Option.map (fun v -> Seq.range v (keys.Count - 1) )
@@ -144,7 +151,7 @@ type LinearIndex<'K when 'K : equality>
     /// Returns all mappings of the index (key -> address) 
     member x.Mappings = keys |> Seq.mapi (fun i k -> KeyValuePair(k, Address.ofInt i))
     /// Are the keys of the index ordered?
-    member x.IsOrdered = ordered.Value
+    member x.IsOrdered = x.isOrdered
     member x.Comparer = comparer
 
 // --------------------------------------------------------------------------------------
@@ -291,7 +298,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
                   newAddr, index.Locate(k) }
         let newIndex = builder.Create(win, None)
         key, (newIndex, Vectors.Relocate(vector, len, relocations)))
-
+      |> ReadOnlyCollection.ofSeq
 
     /// Create chunks based on the specified key sequence
     member builder.Resample<'K, 'TNewKey, 'R when 'K : equality and 'TNewKey : equality> 
@@ -575,9 +582,10 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
 namespace Deedle 
 
-open System.Collections.Generic
 open Deedle.Internal
 open Deedle.Indices.Linear
+open System.Collections.Generic
+open System.Collections.ObjectModel
 
 /// Defines non-generic `Index` type that provides functions for building indices
 /// (hard-bound to `LinearIndexBuilder` type). In F#, the module is automatically opened
@@ -590,14 +598,31 @@ module FSharpIndexExtensions =
   /// using the built-in `LinearVector` type.
   type Index = 
     /// Create an index from a sequence of keys and check if they are sorted or not
-    static member ofKeys<'T when 'T : equality>(keys:seq<'T>) =
+    static member ofKeys<'T when 'T : equality>(keys:ReadOnlyCollection<'T>) =
       LinearIndexBuilder.Instance.Create<'T>(keys, None)
 
     /// Create an index from a sequence of keys and assume they are not sorted
     /// (the resulting index is also not sorted).
-    static member ofUnorderedKeys<'T when 'T : equality>(keys:seq<'T>) = 
+    static member ofUnorderedKeys<'T when 'T : equality>(keys:ReadOnlyCollection<'T>) = 
       LinearIndexBuilder.Instance.Create<'T>(keys, Some false)        
 
+    /// Create an index from a sequence of keys and check if they are sorted or not
+    static member ofKeys<'T when 'T : equality>(keys:'T[]) =
+      Index.ofKeys(ReadOnlyCollection.ofArray keys)
+
+    /// Create an index from a sequence of keys and assume they are not sorted
+    /// (the resulting index is also not sorted).
+    static member ofUnorderedKeys<'T when 'T : equality>(keys:'T[]) = 
+      Index.ofUnorderedKeys(ReadOnlyCollection.ofArray keys)
+
+    /// Create an index from a sequence of keys and check if they are sorted or not
+    static member ofKeys<'T when 'T : equality>(keys:'T list) =
+      Index.ofKeys(ReadOnlyCollection.ofSeq keys)
+
+    /// Create an index from a sequence of keys and assume they are not sorted
+    /// (the resulting index is also not sorted).
+    static member ofUnorderedKeys<'T when 'T : equality>(keys:'T list) = 
+      Index.ofUnorderedKeys(ReadOnlyCollection.ofSeq keys)
 
 /// Type that provides access to creating indices (represented as `LinearIndex` values)
 type Index =

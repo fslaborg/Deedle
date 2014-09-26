@@ -544,7 +544,7 @@ module Frame =
   /// [category:Grouping, windowing and chunking]
   [<CompiledName("Window")>]
   let window size (frame:Frame<'R, 'C>) = 
-    let fromRows rs = rs |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnKeys
+    let fromRows rs = rs |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnIndex.Keys
     frame.Rows |> Series.windowInto size fromRows
 
   /// Creates a sliding window using the specified size and then applies the provided 
@@ -559,7 +559,7 @@ module Frame =
   /// [category:Grouping, windowing and chunking]
   [<CompiledName("WindowInto")>]
   let windowInto size f (frame:Frame<'R, 'C>) = 
-    let fromRows rs = rs |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnKeys
+    let fromRows rs = rs |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnIndex.Keys 
     frame.Rows |> Series.windowInto size (fromRows >> f)
 
 
@@ -635,7 +635,7 @@ module Frame =
   [<CompiledName("RealignRows")>]
   let realignRows keys (frame:Frame<'R, 'C>) = 
     // form realignment on index, then apply column-wise
-    let newIdx = Index.ofKeys keys
+    let newIdx = Index.ofKeys (ReadOnlyCollection.ofSeq keys)
     let relocs = frame.IndexBuilder.Reindex(frame.RowIndex, newIdx, Lookup.Exact, VectorConstruction.Return 0, fun _ -> true)
     let cmd v =  VectorHelpers.transformColumn frame.VectorBuilder relocs v
     Frame<_, _>(newIdx, frame.ColumnIndex, frame.Data.Select(cmd), frame.IndexBuilder, frame.VectorBuilder)
@@ -736,7 +736,7 @@ module Frame =
   [<CompiledName("IndexColumnsWith")>]
   let indexColsWith (keys:seq<'C2>) (frame:Frame<'R, 'C1>) = 
     if Seq.length frame.ColumnKeys <> Seq.length keys then invalidArg "keys" "New keys do not match current column index length"
-    Frame<_, _>(frame.RowIndex, Index.ofKeys keys, frame.Data, frame.IndexBuilder, frame.VectorBuilder)
+    Frame<_, _>(frame.RowIndex, Index.ofKeys (ReadOnlyCollection.ofSeq keys), frame.Data, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Replace the row index of the frame with the provided sequence of row keys.
   /// The rows of the frame are assigned keys according to the provided order.
@@ -947,7 +947,7 @@ module Frame =
   /// [category:Frame transformations]
   [<CompiledName("WhereRows")>]
   let filterRows f (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.filter f |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnKeys
+    frame.Rows |> Series.filter f |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnIndex.Keys
 
   /// Returns a new data frame containing only the rows of the input frame
   /// for which the specified predicate returns `true`. The predicate is called
@@ -961,7 +961,7 @@ module Frame =
   /// [category:Frame transformations]
   [<CompiledName("WhereRowValues")>]
   let filterRowValues f (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Series.filterValues f |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnKeys
+    frame.Rows |> Series.filterValues f |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnIndex.Keys
 
 
   /// Returns a new data frame containing only the rows of the input frame

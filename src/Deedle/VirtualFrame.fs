@@ -57,6 +57,7 @@ type IndexUtils =
 
 // ------------------------------------------------------------------------------------------------
 open Deedle
+open Deedle.Internal
 open Deedle.Vectors.Virtual
 open Deedle.Indices.Virtual
 
@@ -88,7 +89,7 @@ type Virtual() =
     let index = VirtualOrderedIndex(indexSource)
     Series(index, vector, VirtualVectorBuilder.Instance, VirtualIndexBuilder.Instance)
 
-  static member CreateOrdinalFrame(keys, sources:seq<IVirtualVectorSource>) = 
+  static member CreateOrdinalFrame(keys:seq<_>, sources:seq<IVirtualVectorSource>) = 
     let count = sources |> Seq.fold (fun st src ->
       match st with 
       | None -> Some(src.Length) 
@@ -96,13 +97,13 @@ type Virtual() =
       | _ -> invalidArg "sources" "Sources should have the same length!" ) None
     if count = None then invalidArg "sources" "At least one column is required"
     let count = count.Value
-    createFrame (VirtualOrdinalIndex(0L, count-1L)) (Index.ofKeys keys) sources
+    createFrame (VirtualOrdinalIndex(0L, count-1L)) (Index.ofKeys (ReadOnlyCollection.ofSeq keys)) sources
 
   static member CreateFrame(indexSource:IVirtualVectorSource<_>, keys, sources:seq<IVirtualVectorSource>) = 
     for sc in sources do 
       if sc.Length <> indexSource.Length then
         invalidArg "sources" "Sources should have the same length as index!"
-    createFrame (VirtualOrderedIndex indexSource) (Index.ofKeys keys) sources
+    createFrame (VirtualOrderedIndex indexSource) (Index.ofKeys (ReadOnlyCollection.ofSeq keys)) sources
     
 
 

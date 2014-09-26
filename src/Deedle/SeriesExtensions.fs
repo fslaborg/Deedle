@@ -28,7 +28,8 @@ module FSharpSeriesExtensions =
     /// the observations of the series. Consider using a shorthand 
     /// `series` function instead.
     static member ofObservations(observations) = 
-      Series(Seq.map fst observations, Seq.map snd observations)
+      let observations = Array.ofSeq observations
+      Series(Array.map fst observations, Array.map snd observations)
 
     /// Create a series from the specified sequence of values. The keys
     /// of the resulting series are generated ordinarilly, starting from 0.

@@ -289,7 +289,7 @@ and IIndexBuilder =
   /// The operation results in a sequence of unique labels along with corresponding 
   /// series construction objects which can be applied to arbitrary vectors/columns.
   abstract GroupBy : index:IIndex<'K> * keySelector:('K -> OptionalValue<'TNewKey>) * VectorConstruction -> 
-    ('TNewKey * SeriesConstruction<'K>) seq when 'TNewKey : equality
+    ReadOnlyCollection<'TNewKey * SeriesConstruction<'K>> when 'TNewKey : equality
 
   /// Aggregate data into non-overlapping chunks by aligning them to the
   /// specified keys. The second parameter specifies the direction. If it is

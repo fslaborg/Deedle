@@ -65,3 +65,7 @@
 
 ### 1.0.5
  * Update R provider reference to 1.0.17
+
+### 1.0.6
+ * Fix bugs related to frame with no columns (#272)
+ * Remove FSharp.Core dependency from BigDeedle public API

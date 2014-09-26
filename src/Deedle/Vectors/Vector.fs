@@ -13,23 +13,6 @@ type VectorData<'T> =
   | SparseList of ReadOnlyCollection<OptionalValue<'T>>
   | Sequence of seq<OptionalValue<'T>>
 
-  /// Returns only the non-missing (ie present) values within a vector
-  member x.Values : seq<'T> =
-    match x with
-    | DenseList l -> 
-      seq { yield! l }
-    | SparseList l -> 
-      seq { 
-        for v in l do 
-          if v.HasValue then 
-            yield v.Value }
-    | Sequence l -> 
-      seq { 
-        for v in l do 
-          if v.HasValue then 
-            yield v.Value }
-
-
 // --------------------------------------------------------------------------------------
 // Interfaces (generic & non-generic) for representing vectors
 // --------------------------------------------------------------------------------------

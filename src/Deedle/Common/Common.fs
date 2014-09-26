@@ -407,7 +407,7 @@ module MissingValues =
 
   // TODO: Possibly optimize (in some cases) using static member constraints?
 
-  let isNA<'T> () =
+  let inline isNA<'T> () =
     let ty = typeof<'T>
     let isNullable = ty.IsGenericType && (ty.GetGenericTypeDefinition() = typedefof<Nullable<_>>)
     let nanTest : 'T -> bool =

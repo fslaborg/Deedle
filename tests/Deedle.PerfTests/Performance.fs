@@ -328,3 +328,17 @@ let ``Merge 1000 unordered 1k long series (single Merge)`` () =
 let ``Fill forward missing values in 100x10k frame`` () =
   let filled = frame100x10000WithNans |> Frame.fillMissing Direction.Forward 
   filled.Rows.[10000].GetAs<float>(50) |> shouldEqual 9999.0
+
+[<Test;PerfTest(Iterations=5)>]
+let ``Creating small (10) series from array`` () =
+  let vs = Array.init 10 (fun i -> i, float i)
+  let a = Array.init 100000 (fun _ -> series vs)
+  a.[5].KeyCount |> shouldEqual 10
+  a.[5].[5] |> shouldEqual 5.0
+
+[<Test;PerfTest(Iterations=5)>]
+let ``Creating large (10k) series from array`` () =
+  let vs = Array.init 10000 (fun i -> i, float i)
+  let a = Array.init 100 (fun _ -> series vs)
+  a.[5].KeyCount |> shouldEqual 10000
+  a.[5].[5000] |> shouldEqual 5000.0

@@ -130,9 +130,7 @@ type TrackingSource =
   static member CreateFloats(lo, hi) = TrackingSource<float>([lo, hi], float)
   static member CreateStrings(lo, hi) = 
     let strings = "lorem ipsum dolor sit amet consectetur adipiscing elit".Split(' ')
-    let search = function
-      | LookupKind.Lookup v -> strings |> Seq.findIndex ((=) v), strings.Length
-      | _ -> failwith "Scan not supported"
+    let search v = strings |> Seq.findIndex ((=) v), strings.Length
     TrackingSource<string>([lo, hi], (fun i -> strings.[int i % strings.Length]), search=search)
   static member CreateTicks(lo, hi) = 
     let start = DateTimeOffset(DateTime(2000, 1, 1), TimeSpan.FromHours(-1.0))

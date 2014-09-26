@@ -16,6 +16,7 @@ open Deedle.JoinHelpers
 open System
 open System.ComponentModel
 open System.Collections.Generic
+open System.Collections.ObjectModel
 open System.Runtime.InteropServices
 open System.Collections.Specialized
 open Microsoft.FSharp.Quotations
@@ -101,7 +102,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// as a static member here. The function is optimised for the case when all series share the
   /// same index (by checking object reference equality)
   static let fromColumnsNonGeneric indexBuilder vectorBuilder (seriesConv:'S -> ISeries<_>) (nested:Series<_, 'S>) = 
-    let columns = Series.observations nested
+    let columns = Series.observations nested |> Array.ofSeq
     let rowIndex = Seq.headOrNone columns |> Option.map (fun (_, s) -> (seriesConv s).Index)
     match rowIndex with 
     | Some rowIndex when (columns |> Seq.forall (fun (_, s) -> Object.ReferenceEquals((seriesConv s).Index, rowIndex))) ->
@@ -110,7 +111,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
         let vector = columns |> Seq.map (fun (_, s) -> 
           // When the nested series data is in 'IBoxedVector', get the unboxed representation
           unboxVector (seriesConv s).Vector) |> Vector.ofValues
-        Frame<_, _>(rowIndex, Index.ofKeys (Seq.map fst columns), vector, indexBuilder, vectorBuilder)
+        Frame<_, _>(rowIndex, Index.ofKeys (Array.map fst columns), vector, indexBuilder, vectorBuilder)
 
     | _ ->
         // Create new row index by unioning all keys
@@ -748,9 +749,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       rowIndex <- series.Index
       isEmpty <- false
       data <- Vector.ofValues [series.Vector]
-      frame.setColumnIndex (Index.ofKeys [column])
+      frame.setColumnIndex (Index.ofKeys [| column |])
     else
-      let other = Frame(series.Index, Index.ofUnorderedKeys [column], Vector.ofValues [series.Vector], indexBuilder, vectorBuilder)
+      let other = Frame(series.Index, Index.ofUnorderedKeys [| column |], Vector.ofValues [series.Vector], indexBuilder, vectorBuilder)
       let joined = frame.Join(other, JoinKind.Left, lookup)
       data <- joined.Data
       frame.setColumnIndex joined.ColumnIndex
@@ -906,16 +907,16 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member frame.RenameColumns(columnKeys) =
     if Seq.length columnIndex.Keys <> Seq.length columnKeys then 
       invalidArg "columnKeys" "The number of new column keys does not match with the number of columns"
-    frame.setColumnIndex (Index.ofKeys columnKeys)
+    frame.setColumnIndex (Index.ofKeys (ReadOnlyCollection.ofSeq columnKeys))
 
   /// [category:Series operations]
   member frame.RenameColumn(oldKey, newKey) =
     let newKeys = columnIndex.Keys |> Seq.map (fun k -> if k = oldKey then newKey else k)
-    frame.setColumnIndex (Index.ofKeys newKeys)
+    frame.setColumnIndex (Index.ofKeys (ReadOnlyCollection.ofSeq newKeys))
 
   /// [category:Series operations]
   member frame.RenameColumns(mapping:Func<_, _>) =
-    frame.setColumnIndex (Index.ofKeys (Seq.map mapping.Invoke columnIndex.Keys))
+    frame.setColumnIndex (Index.ofKeys (ReadOnlyCollection.map mapping.Invoke columnIndex.Keys))
 
   /// [category:Series operations]
   static member (?<-) (frame:Frame<_, _>, column, series:Series<'T, 'V>) =
@@ -1430,7 +1431,7 @@ and FrameUtils =
   /// Create data frame from a series of rows
   static member fromRowsAndColumnKeys<'TRowKey, 'TColumnKey, 'TSeries
         when 'TRowKey : equality and 'TColumnKey : equality and 'TSeries :> ISeries<'TColumnKey>> 
-      indexBuilder vectorBuilder colKeys (nested:Series<'TRowKey, 'TSeries>) =
+      indexBuilder vectorBuilder (colKeys:ReadOnlyCollection<_>) (nested:Series<'TRowKey, 'TSeries>) =
 
     // Create column index from keys of all rows
     let columnIndex = colKeys |> Index.ofKeys
@@ -1475,7 +1476,7 @@ and FrameUtils =
       indexBuilder vectorBuilder (nested:Series<'TRowKey, 'TSeries>) =
 
     // Create column index from keys of all rows
-    let columnIndex = nested.Values |> Seq.collect (fun sr -> sr.Index.Keys) |> Seq.distinct |> Array.ofSeq
+    let columnIndex = nested.Values |> Seq.collect (fun sr -> sr.Index.Keys) |> Seq.distinct |> ReadOnlyCollection.ofSeq
     FrameUtils.fromRowsAndColumnKeys indexBuilder vectorBuilder columnIndex nested
 
   /// Create data frame from a series of columns
@@ -1503,12 +1504,12 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       |> Seq.zip offsets                                // seq of (dstloc, (rowkey, (srcloc, label)))
       |> Seq.map (fun (dst, (rowkey, (src, grp))) -> 
          (grp, rowkey), (dst, src))                     // seq of (label, rowkey), (dstloc, srcloc)
+      |> ReadOnlyCollection.ofSeq
 
     let addressify (a, b) = (Address.ofInt a, Address.ofInt b)
 
-    let keys, locs = relocs |> (fun r ->                
-      Seq.map fst r, 
-      Seq.map (snd >> addressify) r)
+    let keys = ReadOnlyCollection.map fst relocs 
+    let locs = ReadOnlyCollection.map (snd >> addressify) relocs
 
     let newIndex = Index.ofKeys keys
     let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 n, locs)
@@ -1527,12 +1528,13 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       |> Seq.zip labels                                  // seq of (label, (rowkey, offset)) 
       |> Seq.groupBy (fun (g, (r, i)) -> g)              // seq of (label, seq of (label * (rowkey * offset)
       |> Seq.map (fun (g, s) -> (g, s |> Seq.map snd))   // seq of (label, seq of (rowkey, offset))
+      |> ReadOnlyCollection.ofSeq
 
-    let newIndex  = Index.ofKeys (relocs |> Seq.map fst) // index of labels
+    let newIndex  = Index.ofKeys (relocs |> ReadOnlyCollection.map fst) // index of labels
  
     let groups = relocs |> Seq.map (fun (g, idx) ->
-      let newIndex = Index.ofKeys(idx |> Seq.map fst)    // index of rowkeys
-      let newLocs  = idx |> Seq.map snd                  // seq of offsets
+      let newIndex = Index.ofKeys(idx |> Seq.map fst |> ReadOnlyCollection.ofSeq)    // index of rowkeys
+      let newLocs  = idx |> Seq.map snd                                              // seq of offsets
       let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 newIndex.KeyCount, newLocs |> Seq.mapi (fun a b -> (int64 a, int64 b)))
       let newData  = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder cmd)
       Frame<_, _>(newIndex, frame.ColumnIndex, newData, indexBuilder, vectorBuilder) )

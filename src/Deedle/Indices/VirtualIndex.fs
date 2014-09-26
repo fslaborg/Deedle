@@ -133,12 +133,12 @@ and VirtualIndexBuilder() =
     member x.Search((index:IIndex<'K>, vector), searchVector:IVector<'V>, searchValue) = 
       match index, searchVector with
       | (:? VirtualOrdinalIndex as index), (:? VirtualVector<'V> as searchVector) ->
-          let mapping = searchVector.Source.LookupRange(LookupKind.Lookup searchValue)
+          let mapping = searchVector.Source.LookupRange(searchValue)
           let newIndex = VirtualOrdinalIndex(0L, mapping.Count-1L);
           unbox<IIndex<'K>> newIndex, GetRange(vector, mapping)
 
       | (:? VirtualOrderedIndex<'K> as index), (:? VirtualVector<'V> as searchVector) ->
-          let mapping = searchVector.Source.LookupRange(LookupKind.Lookup searchValue)
+          let mapping = searchVector.Source.LookupRange(searchValue)
           let newIndex = VirtualOrderedIndex(index.Source.GetSubVector(mapping))
           newIndex :> _, GetRange(vector, mapping)
 

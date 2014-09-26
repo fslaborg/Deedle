@@ -473,7 +473,7 @@ module internal FrameUtils =
 
     let cols = Seq.zip frame.ColumnKeys (frame.Data.DataSequence |> Seq.map OptionalValue.get)
     let newCols = loop nesting cols |> Array.ofSeq
-    let newColIndex = Index.ofKeys (Seq.map fst newCols)
+    let newColIndex = Index.ofKeys (Array.map fst newCols)
     let newData = Vector.ofValues (Seq.map snd newCols)
     Frame<_, _>(frame.RowIndex, newColIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
@@ -485,6 +485,6 @@ module internal FrameUtils =
       if Set.contains name expandNames then 
         [ for n, v in Reflection.expandUntypedVector false vector -> name + "." + n, v ]
       else [name, vector]) |> Array.ofSeq
-    let newColIndex = Index.ofKeys (Seq.map fst newCols)
+    let newColIndex = Index.ofKeys (Array.map fst newCols)
     let newData = Vector.ofValues (Seq.map snd newCols)
     Frame<_, _>(frame.RowIndex, newColIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
