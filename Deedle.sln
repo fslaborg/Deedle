@@ -1,8 +1,13 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{B003806F-9C76-4BE6-B3EB-54102529E4FC}"
+	ProjectSection(SolutionItems) = preProject
+		paket.dependencies = paket.dependencies
+		paket.lock = paket.lock
+	EndProjectSection
+EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle", "src\Deedle\Deedle.fsproj", "{22729065-4C30-4E43-A63F-4F3338A03878}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{245F1283-32FA-4B38-AC76-448B8AE5F7AC}"
@@ -42,7 +47,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{C45F5ABF
 	ProjectSection(SolutionItems) = preProject
 		docs\tools\formatters.fsx = docs\tools\formatters.fsx
 		docs\tools\generate.fsx = docs\tools\generate.fsx
-		docs\tools\packages.config = docs\tools\packages.config
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{839C977B-55D4-4EFC-8B81-290357C836D3}"
@@ -79,7 +83,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{8BD8876A-28FC-4B7D-89E4-09AC07794D0E} = {245F1283-32FA-4B38-AC76-448B8AE5F7AC}
 		{C45F5ABF-7BCD-4C3A-BD51-81E0769E0F29} = {245F1283-32FA-4B38-AC76-448B8AE5F7AC}
-		{1700F933-C7B2-48E6-80F3-E1C1B677BA6D} = {245F1283-32FA-4B38-AC76-448B8AE5F7AC}
 		{839C977B-55D4-4EFC-8B81-290357C836D3} = {C45F5ABF-7BCD-4C3A-BD51-81E0769E0F29}
+		{1700F933-C7B2-48E6-80F3-E1C1B677BA6D} = {245F1283-32FA-4B38-AC76-448B8AE5F7AC}
 	EndGlobalSection
 EndGlobal

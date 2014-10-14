@@ -1,0 +1,29 @@
+NUGET
+  remote: https://nuget.org/api/v2
+  specs:
+    FAKE (3.10.0)
+    FsCheck (0.9.1.0)
+    FSharp.Charting (0.90.7)
+    FSharp.Compiler.Service (0.0.67)
+    FSharp.Data (2.1.0)
+      Zlib.Portable (>= 1.10.0)
+    FSharp.Formatting (2.4.36)
+      FSharp.Compiler.Service (0.0.67)
+      Microsoft.AspNet.Razor (2.0.30506.0)
+      RazorEngine (3.3.0)
+    MathNet.Numerics (3.3.0)
+      TaskParallelLibrary (>= 1.0.2856) - net35
+    Microsoft.AspNet.Razor (2.0.30506.0)
+    NuGet.CommandLine (2.8.3)
+    NUnit (2.6.3)
+    NUnit.Runners (2.6.3)
+    R.NET.Community (1.5.15)
+    R.NET.Community.FSharp (0.1.8)
+      R.NET.Community (>= 1.5.15)
+    RazorEngine (3.3.0)
+      Microsoft.AspNet.Razor (>= 2.0.30506.0)
+    RProvider (1.0.17)
+      R.NET.Community (1.5.15)
+      R.NET.Community.FSharp (0.1.8)
+    TaskParallelLibrary (1.0.2856) - net35
+    Zlib.Portable (1.10.0)

@@ -1,7 +1,7 @@
-﻿(*** hide ***)
+(*** hide ***)
 #I "../../../bin/"
-#I "../../../packages/FSharp.Charting.0.90.6"
-#I "../../../packages/Deedle.0.9.5"
+#I "../../../packages/FSharp.Charting"
+#I "../../../packages/Deedle"
 #load "FSharp.Charting.fsx"
 #load "Deedle.fsx"
 open System

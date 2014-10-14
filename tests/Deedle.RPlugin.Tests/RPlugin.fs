@@ -3,7 +3,7 @@
 #r "../../bin/RProvider.dll"
 #r "../../bin/RProvider.Runtime.dll"
 #r "../../bin/RDotNet.dll"
-#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
+#r "../../packages/NUnit/lib/nunit.framework.dll"
 #load "../Common/FsUnit.fs"
 #else
 module Deedle.RPlugin.Tests
