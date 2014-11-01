@@ -84,8 +84,9 @@ type ArrayVectorBuilder() =
     /// Given a vector construction command(s) produces a new IVector
     /// (the result is typically ArrayVector, but this is not guaranteed)
     member builder.Build<'T>(command:VectorConstruction, arguments:IVector<'T>[]) = 
+     try
       match command with
-      | Return vectorVar -> arguments.[vectorVar]
+      | Return vectorVar -> try arguments.[vectorVar] with   e -> printfn "failed at #0, vectorVar = %d" vectorVar; reraise()
       | Empty 0L -> vectorBuilder.Create [||]
       | Empty size -> vectorBuilder.CreateMissing (Array.create (int size) OptionalValue.Missing)
       | FillMissing(source, dir) ->
@@ -290,7 +291,9 @@ type ArrayVectorBuilder() =
       | AsyncCustomCommand(vectors, f) ->
           let vectors = List.map (fun v -> vectorBuilder.Build(v, arguments) :> IVector) vectors
           Async.RunSynchronously(f vectors) :?> IVector<_>
-
+     with   e -> 
+         try printfn "failed at ALL, command = %A, arguments = %A" command arguments with _ -> ()
+         reraise()
 /// --------------------------------------------------------------------------------------
 
 /// Vector that stores data in an array. The data is stored using the
