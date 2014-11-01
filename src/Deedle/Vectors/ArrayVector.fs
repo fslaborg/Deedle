@@ -84,8 +84,9 @@ type ArrayVectorBuilder() =
     /// Given a vector construction command(s) produces a new IVector
     /// (the result is typically ArrayVector, but this is not guaranteed)
     member builder.Build<'T>(command:VectorConstruction, arguments:IVector<'T>[]) = 
+     try
       match command with
-      | Return vectorVar -> arguments.[vectorVar]
+      | Return vectorVar -> try arguments.[vectorVar] with   e -> printfn "failed at #0, vectorVar = %d" vectorVar; reraise()
       | Empty 0L -> vectorBuilder.Create [||]
       | Empty size -> vectorBuilder.CreateMissing (Array.create (int size) OptionalValue.Missing)
       | FillMissing(source, dir) ->
@@ -101,13 +102,13 @@ type ArrayVectorBuilder() =
 
               if dir = Direction.Forward then
                 for i in 0 .. newData.Length - 1 do
-                  let it = newData.[i]
+                  let it = try newData.[i] with e -> printfn "failed at #1, i = %d" i; reraise()
                   if it.HasValue then prev <- it
                   else newData.[i] <- prev
                   optionals <- optionals || (not newData.[i].HasValue)
               else 
                 for i in newData.Length-1 .. -1 .. 0 do
-                  let it = newData.[i]
+                  let it = try newData.[i] with e -> printfn "failed at #2, i = %d" i; reraise()
                   if it.HasValue then prev <- it
                   else newData.[i] <- prev
                   optionals <- optionals || (not newData.[i].HasValue)
@@ -131,12 +132,12 @@ type ArrayVectorBuilder() =
               for newIndex, oldIndex in relocations do
                 let newIndex, oldIndex = Address.asInt newIndex, Address.asInt oldIndex
                 if oldIndex < data.Length && oldIndex >= 0 then
-                  newData.[newIndex] <- data.[oldIndex]
+                  try newData.[newIndex] <- data.[oldIndex] with e -> printfn "failed at #3, newIndex = %d" newIndex; reraise()
           | VectorNonOptional data ->
               for newIndex, oldIndex in relocations do
                 let newIndex, oldIndex = Address.asInt newIndex, Address.asInt oldIndex
                 if oldIndex < data.Length && oldIndex >= 0 then
-                  newData.[newIndex] <- OptionalValue(data.[oldIndex])
+                  try newData.[newIndex] <- OptionalValue(data.[oldIndex]) with e -> printfn "failed at #3, newIndex = %d" newIndex; reraise()
           vectorBuilder.CreateMissing(newData)
 
       | DropRange(source, range) ->
@@ -165,18 +166,18 @@ type ArrayVectorBuilder() =
               if hiRange < loRange then VectorNonOptional [||] |> av else
               match builder.buildArrayVector source arguments with 
               | VectorOptional data -> 
-                  vectorBuilder.CreateMissing(data.[loRange .. hiRange])
+                  try vectorBuilder.CreateMissing(data.[loRange .. hiRange]) with e -> printfn "failed at #7, loRange = %d, hiRange = %d" loRange hiRange; reraise()
               | VectorNonOptional data -> 
-                  VectorNonOptional(data.[loRange .. hiRange]) |> av
+                  try VectorNonOptional(data.[loRange .. hiRange]) |> av with e -> printfn "failed at #8, loRange = %d, hiRange = %d" loRange hiRange; reraise()
 
           | Custom(indices) ->
               // Get vector with the specified indices. Optional may turn to 
               // NonOptional, but NonOptional will stay NonOptional
               match builder.buildArrayVector source arguments with 
               | VectorOptional data ->
-                  [| for idx in indices -> data.[int idx] |] |> vectorBuilder.CreateMissing 
+                  [| for idx in indices -> try data.[int idx] with e -> (printfn "failed at #9, int idx = %d" (int idx); reraise()) |] |> vectorBuilder.CreateMissing 
               | VectorNonOptional data ->
-                  [| for idx in indices -> data.[int idx] |] |> VectorNonOptional |> av
+                  [| for idx in indices -> try data.[int idx] with e -> (printfn "failed at #10, int idx = %d" (int idx); reraise()) |] |> VectorNonOptional |> av
 
 
       | Append(first, second) ->
@@ -211,8 +212,8 @@ type ArrayVectorBuilder() =
                 for newIndex, oldIndex in vreloc do
                   let newIndex, oldIndex = Address.asInt newIndex, Address.asInt oldIndex
                   if oldIndex < vdata.Length && oldIndex >= 0 then
-                    filled.[newIndex] <- merge filled.[newIndex] vdata.[oldIndex]
-          
+                    try filled.[newIndex] <- merge filled.[newIndex] vdata.[oldIndex] with e -> printfn "failed at #12, newIndex = %d, oldIndex = %d" newIndex oldIndex; reraise()
+
           else                    
               // Handle first vector differently - just write the values into the
               // 'filled' array without merging; all values are initialized to missing
@@ -221,7 +222,7 @@ type ArrayVectorBuilder() =
               for newIndex, oldIndex in vreloc do
                 let newIndex, oldIndex = Address.asInt newIndex, Address.asInt oldIndex
                 if oldIndex < vdata.Length && oldIndex >= 0 then
-                  filled.[newIndex] <- vdata.[oldIndex]
+                  try filled.[newIndex] <- vdata.[oldIndex] with e -> printfn "failed at #13, newIndex = %d, oldIndex = %d" newIndex oldIndex; reraise()
 
               // For "2 .. " vectors, merge present values; then iterate over all 
               // values that have not been accessed (typically when the vector is smaller)
@@ -232,12 +233,14 @@ type ArrayVectorBuilder() =
                 for newIndex, oldIndex in vreloc do
                   let newIndex, oldIndex = Address.asInt newIndex, Address.asInt oldIndex
                   if oldIndex < vdata.Length && oldIndex >= 0 then
-                    accessed.[newIndex] <- true
-                    filled.[newIndex] <- merge filled.[newIndex] vdata.[oldIndex]
+                    try accessed.[newIndex] <- true with e -> printfn "failed at #14, newIndex = %d" newIndex; reraise()
+                    try filled.[newIndex] <- merge filled.[newIndex] vdata.[oldIndex] with e -> printfn "failed at #15, newIndex = %d, oldIndex = %d" newIndex oldIndex; reraise()
                 // Merge all values not accessed & reset the accessed array
                 for i = 0 to accessed.Length - 1 do
-                  if not accessed.[i] then filled.[i] <- merge filled.[i] OptionalValue.Missing
-                  accessed.[i] <- false
+                  try 
+                    if not accessed.[i] then filled.[i] <- merge filled.[i] OptionalValue.Missing
+                    accessed.[i] <- false
+                  with e -> printfn "failed at #17, i = %d" i; reraise()
 
           filled |> vectorBuilder.CreateMissing
 
@@ -276,7 +279,7 @@ type ArrayVectorBuilder() =
           let filled = 
             Array.init (int length) (fun idx ->
               data 
-              |> List.map (fun v -> if idx > v.Length then OptionalValue.Missing else v.[idx]) 
+              |> List.map (fun v -> if idx > v.Length then OptionalValue.Missing else try v.[idx] with e -> printfn "failed at #23,idx = %d" idx; reraise()) 
               |> merge)  
           vectorBuilder.CreateMissing(filled)
 
@@ -288,7 +291,9 @@ type ArrayVectorBuilder() =
       | AsyncCustomCommand(vectors, f) ->
           let vectors = List.map (fun v -> vectorBuilder.Build(v, arguments) :> IVector) vectors
           Async.RunSynchronously(f vectors) :?> IVector<_>
-
+     with   e -> 
+         try printfn "failed at ALL, command = %A, arguments = %A" command arguments with _ -> ()
+         reraise()
 /// --------------------------------------------------------------------------------------
 
 /// Vector that stores data in an array. The data is stored using the
