@@ -232,8 +232,8 @@ type ArrayVectorBuilder() =
                 for newIndex, oldIndex in vreloc do
                   let newIndex, oldIndex = Address.asInt newIndex, Address.asInt oldIndex
                   if oldIndex < vdata.Length && oldIndex >= 0 then
-                    try accessed.[newIndex] <- true e -> printfn "failed at #14, newIndex = %d" newIndex; reraise()
-                    try filled.[newIndex] <- merge filled.[newIndex] vdata.[oldIndex] e -> printfn "failed at #15, newIndex = %d, oldIndex = %d" newIndex oldIndex; reraise()
+                    try accessed.[newIndex] <- true with e -> printfn "failed at #14, newIndex = %d" newIndex; reraise()
+                    try filled.[newIndex] <- merge filled.[newIndex] vdata.[oldIndex] with e -> printfn "failed at #15, newIndex = %d, oldIndex = %d" newIndex oldIndex; reraise()
                 // Merge all values not accessed & reset the accessed array
                 for i = 0 to accessed.Length - 1 do
                   try 
@@ -278,7 +278,7 @@ type ArrayVectorBuilder() =
           let filled = 
             Array.init (int length) (fun idx ->
               data 
-              |> List.map (fun v -> if idx > v.Length then OptionalValue.Missing else try v.[idx] e -> printfn "failed at #23,idx = %d" idx; reraise()) 
+              |> List.map (fun v -> if idx > v.Length then OptionalValue.Missing else try v.[idx] with e -> printfn "failed at #23,idx = %d" idx; reraise()) 
               |> merge)  
           vectorBuilder.CreateMissing(filled)
 
