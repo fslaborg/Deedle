@@ -80,9 +80,13 @@ for file in docFiles do
     errors |> Seq.map (sprintf "%O") |> String.concat "\n" |> printfn "%s"
 #else
 
+let runningOnMono = try System.Type.GetType("Mono.Runtime") <> null with _ -> false         
+ 
 [<Test>]
 [<TestCaseSource "docFiles">]
 let ``Documentation generated correctly `` file = 
+ // Do not run this test on Mono, we generate docs on Windows
+ if not runningOnMono then
   let errors = processFile file
 
   let errors =  
