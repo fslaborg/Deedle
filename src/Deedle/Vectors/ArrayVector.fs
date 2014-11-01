@@ -101,13 +101,13 @@ type ArrayVectorBuilder() =
 
               if dir = Direction.Forward then
                 for i in 0 .. newData.Length - 1 do
-                  let it = try newData.[i] with e -> printfn "failed at #1, i = %d" i; reraise e
+                  let it = try newData.[i] with e -> printfn "failed at #1, i = %d" i; reraise()
                   if it.HasValue then prev <- it
                   else newData.[i] <- prev
                   optionals <- optionals || (not newData.[i].HasValue)
               else 
                 for i in newData.Length-1 .. -1 .. 0 do
-                  let it = try newData.[i] with e -> printfn "failed at #2, i = %d" i; reraise e
+                  let it = try newData.[i] with e -> printfn "failed at #2, i = %d" i; reraise()
                   if it.HasValue then prev <- it
                   else newData.[i] <- prev
                   optionals <- optionals || (not newData.[i].HasValue)
@@ -131,7 +131,7 @@ type ArrayVectorBuilder() =
               for newIndex, oldIndex in relocations do
                 let newIndex, oldIndex = Address.asInt newIndex, Address.asInt oldIndex
                 if oldIndex < data.Length && oldIndex >= 0 then
-                  try newData.[newIndex] <- data.[oldIndex] with e -> printfn "failed at #3, newIndex = %d" newIndex; reraise e
+                  try newData.[newIndex] <- data.[oldIndex] with e -> printfn "failed at #3, newIndex = %d" newIndex; reraise()
           | VectorNonOptional data ->
               for newIndex, oldIndex in relocations do
                 let newIndex, oldIndex = Address.asInt newIndex, Address.asInt oldIndex
@@ -165,9 +165,9 @@ type ArrayVectorBuilder() =
               if hiRange < loRange then VectorNonOptional [||] |> av else
               match builder.buildArrayVector source arguments with 
               | VectorOptional data -> 
-                  try vectorBuilder.CreateMissing(data.[loRange .. hiRange]) with e -> printfn "failed at #1, loRange = %d, hiRange = %d" loRange hiRange; reraise e
+                  try vectorBuilder.CreateMissing(data.[loRange .. hiRange]) with e -> printfn "failed at #1, loRange = %d, hiRange = %d" loRange hiRange; reraise()
               | VectorNonOptional data -> 
-                  try VectorNonOptional(data.[loRange .. hiRange]) |> av with e -> printfn "failed at #1, loRange = %d, hiRange = %d" loRange hiRange; reraise e
+                  try VectorNonOptional(data.[loRange .. hiRange]) |> av with e -> printfn "failed at #1, loRange = %d, hiRange = %d" loRange hiRange; reraise()
 
           | Custom(indices) ->
               // Get vector with the specified indices. Optional may turn to 
