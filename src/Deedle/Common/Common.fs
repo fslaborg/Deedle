@@ -12,7 +12,6 @@ type ConversionKind =
   | Exact = 0
   /// Allows conversions that widen numeric types, but nothing else. This includes
   /// conversions on decimals `decimal -> float32 -> float` and also from integers 
-  /// to floating points (`int -> decimal` etc.)
   | Safe = 1
   /// Allows the use of arbitrary .NET conversions. This uses `Convert.ChangeType`, which
   /// performs numerical conversions, parsing of strings, uses `IConvertable` and more.
@@ -518,7 +517,7 @@ module Array =
   let inline dropRange first last (data:'T[]) =
     if last < first then invalidOp "The first index must be smaller than or equal to the last."
     if first < 0 || last >= data.Length then invalidArg "first" "The index must be within the array range."
-    Array.append (data.[.. first - 1]) (data.[last + 1 ..])
+    Array.append (if first = 0 then [| |] else data.[.. first - 1]) (if last = data.Length - 1 then [| |] else data.[last 
 
   /// Implementation of binary search
   let inline private binarySearch key (comparer:System.Collections.Generic.IComparer<'T>) (array:ReadOnlyCollection<'T>) =
