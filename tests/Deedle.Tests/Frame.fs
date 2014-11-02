@@ -160,6 +160,30 @@ let ``Can create frame from IDataReader``() =
   |> shouldEqual expected
 
 // ------------------------------------------------------------------------------------------------
+// Typed access to frame rows
+// ------------------------------------------------------------------------------------------------
+
+type IMsftRow =
+  abstract Open : float
+  abstract High : float
+  abstract Low : float
+  abstract Close : float
+  abstract Volume : int64
+  abstract ``Adj Close`` : float
+
+[<Test>]
+let ``Can access rows as a typed series via an interface`` () = 
+  let df = msft()
+  let rows = df.GetRowsAs<IMsftRow>()
+  rows.[DateTime(2000, 10, 10)].Close |> shouldEqual <| df.Rows.[DateTime(2000, 10, 10)]?Close
+
+[<Test>]
+let ``Cannot access typed rows when column is not available`` () =
+  let df = frame [ "Open" => Series.ofValues [ 1 .. 10 ] ]
+  let error = try ignore(df.GetRowsAs<IMsftRow>()); "" with e -> e.Message
+  error |> should contain "High"
+
+// ------------------------------------------------------------------------------------------------
 // Constructing frames and getting frame data
 // ------------------------------------------------------------------------------------------------
 

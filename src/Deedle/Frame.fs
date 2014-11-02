@@ -98,6 +98,15 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     if not columnIndex.HasValue then OptionalValue.Missing else
     data.GetValue (snd columnIndex.Value)
 
+  /// Create vector of row reader objects. This method creates 
+  /// `IVector<obj>` where each `obj` is actually a boxed `IVector<obj>`
+  /// that provides access to data of individual rows of the frame.
+  let createCombinedRowVector () =
+    let vectors = [ for n in Seq.range 0L (columnIndex.KeyCount-1L) -> Vectors.Return(int n) ]
+    let cmd = Vectors.Combine(rowIndex.KeyCount, vectors, NaryTransform.RowReader)
+    let boxedData = [| for v in data.DataSequence -> boxVector v.Value |]
+    vectorBuilder.Build(cmd, boxedData)
+
   /// Create frame from a series of columns. This is used inside Frame and so we have to have it
   /// as a static member here. The function is optimised for the case when all series share the
   /// same index (by checking object reference equality)
@@ -486,14 +495,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     // rather than actually creating the vectors, it returns a lazy vector of
     // `IVector<obj>` values created using `createRowReader`.
 
-    // Combine all vectors and build the result
-    let vectors = [ for n in Seq.range 0L (columnIndex.KeyCount-1L) -> Vectors.Return(int n) ]
-    let cmd = Vectors.Combine(rowIndex.KeyCount, vectors, NaryTransform.RowReader)
-    let boxedData = [| for v in data.DataSequence -> boxVector v.Value |]
-    let vector = vectorBuilder.Build(cmd, boxedData)
-
     // We get a vector containing boxed `IVector<obj>` - we turn it into a
     // vector containing `ObjectSeries`, but lazily to avoid allocations
+    let vector = createCombinedRowVector () 
     let vector = vector |> VectorHelpers.lazyMapVector (fun o -> 
           let rowReader = unbox<IVector<obj>> o
           ObjectSeries(columnIndex, rowReader, vectorBuilder, indexBuilder) )
@@ -508,6 +512,30 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
         override x.GetSlice(lo, hi) = 
           let inclusive v = v |> Option.map (fun v -> v, BoundaryBehavior.Inclusive)
           frame.GetSubrange(inclusive lo, inclusive hi) }
+
+  /// [category:Accessors and slicing]
+  member frame.GetRowsAs<'TRow>() : Series<'TRowKey, 'TRow> =    
+    // This is similar to 'frame.Rows' but rather than returning 'ObjectSeries',
+    // we build a Series that contains values of the 'TRow interface.
+
+    if typeof<'TColumnKey> <> typeof<string> then 
+      failwith "The GetRows operation can only be used when column key is a string."
+
+    let keys = columnIndex.Keys |> Seq.map unbox<string> |> List.ofSeq 
+    let rowBuilder = VectorHelpers.createTypedRowBuilder<'TRow> keys (fun column ->
+      let address = columnIndex.Locate(unbox<'TColumnKey> column)
+      if address = Address.Invalid then
+        failwithf "The interface member '%s' does not exist in the column index." column
+      address )
+
+    // We get a vector containing boxed `IVector<obj>` - we turn it into a
+    // vector containing `ObjectSeries`, but lazily to avoid allocations
+    let vector = createCombinedRowVector () 
+    let vector = vector |> VectorHelpers.lazyMapVector (fun o -> 
+      let rowReader = unbox<IVector<obj>> o
+      rowBuilder rowReader )
+
+    Series<'TRowKey, 'TRow>(rowIndex, vector, vectorBuilder, indexBuilder)
 
   /// [category:Accessors and slicing]
   member frame.Item 

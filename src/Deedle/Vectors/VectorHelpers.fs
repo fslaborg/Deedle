@@ -481,6 +481,109 @@ let createInferredTypeVector (builder:IVectorBuilder) (data:obj[]) =
     if v = null then Inference.Top else v.GetType()) |> findCommonSupertype
   createTypedVector builder vectorType data
 
+// --------------------------------------------------------------------------------------
+// Implementing interface using Reflection Emit
+// --------------------------------------------------------------------------------------
+
+open System.Reflection
+open System.Reflection.Emit
+
+/// Dynamic assembly & module for storing generated types
+let private typedRowModule = Lazy.Create(fun _ -> 
+  let name = new AssemblyName("TypedRowAssembly")
+  let asmBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.RunAndCollect)
+  asmBuilder.DefineDynamicModule(name.Name) )
+
+/// Helper module with various MemberInfo and similar values
+module private Reflection = 
+  let objCtor = typeof<obj>.GetConstructor([| |])
+  let convertType = typeof<OptionalValue>.Assembly.GetType("Deedle.Internal.Convert").GetMethod("convertType")
+
+/// Cache for optimizing 'createTypedRowBuilder'
+let private createdTypedRowsCache = Dictionary<Type * string list, obj>()
+
+/// Counter of generated types to avoid name clashes
+let private typeCounter = ref 0
+
+/// Creates a type that implements the interface specified by 'TRow and
+/// maps property getters to corresponding values in a vector. The function
+/// returns a function that creates 'TRow implementations when given data
+/// as `IVector<obj>` values. The addresses in the vector are resolved when
+/// generating the type using the specified `columnIndex` lookup.
+let createTypedRowBuilder<'TRow> columnKeys (columnIndex:string -> Address) =
+  let rowType = typeof<'TRow>
+  match createdTypedRowsCache.TryGetValue( (rowType, columnKeys) ) with
+  | true, res -> 
+      unbox<IVector<obj> -> 'TRow> res
+
+  | false, _ ->
+      incr typeCounter
+      let typeName = sprintf "Impl%s@%d" rowType.Name typeCounter.Value
+      let rowImpl = 
+        typedRowModule.Value.DefineType
+          (typeName, TypeAttributes.Public, typeof<obj>, [| rowType |])
+
+      // Local field to store the vector with actual data
+      let vecField = rowImpl.DefineField("vector", typeof<IVector<obj>>, FieldAttributes.Private)
+
+      // new(vector:IVector<obj>) = 
+      //   base()
+      //   this.vector <- vector
+      let ctor = rowImpl.DefineConstructor(MethodAttributes.Public, CallingConventions.Standard, [| typeof<IVector<obj>> |])
+      let ilgen = ctor.GetILGenerator()
+      ilgen.Emit(OpCodes.Ldarg_0)
+      ilgen.Emit(OpCodes.Callvirt, Reflection.objCtor)
+      ilgen.Emit(OpCodes.Ldarg_0)
+      ilgen.Emit(OpCodes.Ldarg_1)
+      ilgen.Emit(OpCodes.Stfld, vecField)
+      ilgen.Emit(OpCodes.Ret)
+
+      // For every getter field, generate code that accesses the vector
+      for m in rowType.GetMethods() do
+        if not m.IsSpecialName || not (m.Name.StartsWith("get_")) then
+          raise (new InvalidOperationException("Only readonly properties are supported in the interface!"))
+
+        // override this.Foo : R =
+        //   let local = vector.GetValue( <Address of "Foo"> )
+        //   Convert.convertType<R>(ConversionKind.Flexible, local.Value)
+        let impl = rowImpl.DefineMethod(m.Name, MethodAttributes.Public ||| MethodAttributes.Virtual ||| MethodAttributes.SpecialName, m.ReturnType, [| |])
+        let ilgen = impl.GetILGenerator()
+        let localOpt = ilgen.DeclareLocal(typeof<OptionalValue<obj>>)
+        ilgen.Emit(OpCodes.Ldarg_0)
+        ilgen.Emit(OpCodes.Ldfld, vecField)
+        ilgen.Emit(OpCodes.Ldc_I8, columnIndex (m.Name.Substring(4)))
+        ilgen.Emit(OpCodes.Callvirt, typeof<IVector<obj>>.GetMethod("GetValue"))
+        ilgen.Emit(OpCodes.Stloc, localOpt)
+
+        ilgen.Emit(OpCodes.Ldc_I4, int ConversionKind.Flexible)
+        ilgen.Emit(OpCodes.Ldloca_S, localOpt)
+        ilgen.Emit(OpCodes.Call, typeof<OptionalValue<obj>>.GetProperty("Value").GetGetMethod())
+        ilgen.Emit(OpCodes.Call, Reflection.convertType.MakeGenericMethod(m.ReturnType))
+        ilgen.Emit(OpCodes.Ret)
+  
+        rowImpl.DefineMethodOverride(impl, m)
+
+      // Build the type and build a dynamic delegate for creating it
+      let rowImplType = rowImpl.CreateType()
+      let makeRow = DynamicMethod("Make" + rowType.Name, rowType, [| typeof<IVector<obj>> |])
+      let ilgen = makeRow.GetILGenerator()
+      ilgen.Emit(OpCodes.Ldarg_0)
+      ilgen.Emit(OpCodes.Newobj, rowImplType.GetConstructor( [| typeof<IVector<obj>> |] ))
+      ilgen.Emit(OpCodes.Ret)
+
+      // Return a function that can be used for creating interface 
+      // instances from IVector<obj> values storing the data
+      let createRowImpl : System.Func<IVector<obj>, 'TRow> = 
+        unbox (makeRow.CreateDelegate(typeof<System.Func<IVector<obj>, 'TRow>>))
+      
+      // Save the created function in a cache before returning it
+      createdTypedRowsCache.Add((rowType, columnKeys), createRowImpl.Invoke)
+      createRowImpl.Invoke
+
+// --------------------------------------------------------------------------------------
+// Vector constructions
+// --------------------------------------------------------------------------------------
+
 /// Substitute variable hole for another in a vector construction
 let rec substitute ((oldVar, newVar) as subst) = function
   | Return v when v = oldVar -> Return newVar
