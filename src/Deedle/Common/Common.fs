@@ -518,7 +518,9 @@ module Array =
   let inline dropRange first last (data:'T[]) =
     if last < first then invalidOp "The first index must be smaller than or equal to the last."
     if first < 0 || last >= data.Length then invalidArg "first" "The index must be within the array range."
-    Array.append (data.[.. first - 1]) (data.[last + 1 ..])
+    let part1 = if first = 0 then [| |] else data.[.. first - 1]
+    let part2 = if last = data.Length - 1 then [| |] else data.[last + 1 ..]
+    Array.append part1 part2
 
   /// Implementation of binary search
   let inline private binarySearch key (comparer:System.Collections.Generic.IComparer<'T>) (array:ReadOnlyCollection<'T>) =
