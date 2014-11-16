@@ -36,16 +36,17 @@ let prettyPrintVector (vector:IVector<'T>) =
 
 type VectorRange with
   /// Returns the number of elements in the range
+  [<Obsolete("depends on implementation, here works only for linear")>] // 
   member x.Count = 
     match x with
     | Custom c -> c.Count
-    | Range (lo, hi) -> hi - lo + 1L
+    | Range (lo, hi) -> Address.distance lo hi
 
   /// Creates a `Custom` range from a sequence of indices
-  static member ofSeq(indices, count) =
+  static member ofSeq(indices : seq<Address>, count) =
     { new IVectorRange with
         member x.Count = count
-      interface seq<int64> with 
+      interface seq<Address> with 
         member x.GetEnumerator() = (indices :> seq<_>).GetEnumerator() 
       interface System.Collections.IEnumerable with
         member x.GetEnumerator() = indices.GetEnumerator() :> _ } 
@@ -72,6 +73,7 @@ let createBoxedVector (vector:IVector<'TValue>) =
     interface IBoxedVector with
       member x.UnboxedVector = vector :> IVector
     interface IVector<obj> with
+      member x.GetAddress(i) = vector.GetAddress(i)
       member x.GetValue(a) = vector.GetObject(a)
       member x.Data = 
         match vector.Data with
@@ -114,6 +116,7 @@ let lazyMapVector f (vector:IVector<'TValue>) : IVector<'TResult> =
       member x.Equals(another) = vector.Equals(another)
       member x.GetHashCode() = vector.GetHashCode()
     interface IVector<'TResult> with
+      member x.GetAddress(i) = vector.GetAddress(i)
       member x.GetValue(a) = vector.GetValue(a) |> OptionalValue.map f
       member x.Data = 
         match vector.Data with
@@ -336,6 +339,7 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddre
   // In the generic vector implementation, we
   // read data as objects and perform conversion
   interface IVector<'T> with
+    member x.GetAddress(i) = data.GetAddress(i)
     member x.GetValue(columnAddress) = 
       let vector = data.GetValue(columnAddress)
       if not vector.HasValue then OptionalValue.Missing
@@ -344,11 +348,11 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddre
     member vector.Data = 
       vector.DataArray |> ReadOnlyCollection.ofArray |> VectorData.SparseList 
 
-    member vector.SelectMissing(f) = 
+    member vector.SelectMissing(f) = //: Address -> OptionalValue<'T> -> OptionalValue<_>
       let isNA = MissingValues.isNA<'TNewValue>() 
       let flattenNA (value:OptionalValue<_>) = 
         if value.HasValue && isNA value.Value then OptionalValue.Missing else value
-      let data = vector.DataArray |> Array.mapi (fun i v -> f (Address.ofInt i) v |> flattenNA)
+      let data = vector.DataArray |> Array.mapi (fun i v -> f (Address.ofInt(i)) v |> flattenNA)
       builder.CreateMissing(data)
 
     member vector.Select(f) = 

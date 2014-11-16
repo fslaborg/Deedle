@@ -52,7 +52,7 @@ type LinearIndex<'K when 'K : equality>
           let info = sprintf "Duplicate key '%A'. Duplicate keys are not allowed in the index." k
           invalidArg "keys" info
       | _ -> 
-          dict.[k] <- idx  
+          dict.[k] <- Address.ofInt64 idx  
           idx <- idx + 1L
     dict
 
@@ -84,6 +84,7 @@ type LinearIndex<'K when 'K : equality>
     member x.Keys = keys
     member x.KeyCount = int64 keys.Count
     member x.Builder = builder
+    member x.AddressAt(index) = Address.ofInt64 index
 
     /// Perform reverse lookup and return key for an address
     member x.KeyAt(address) = keys.[Address.asInt address]
@@ -100,7 +101,7 @@ type LinearIndex<'K when 'K : equality>
     member x.Locate(key) =
        match x.lookupMap.TryGetValue(key) with
        | true, res -> res
-       | _         -> Address.Invalid
+       | _         -> Address.invalid
 
     /// Get the address for the specified key.
     /// The 'semantics' specifies fancy lookup methods.
@@ -179,6 +180,7 @@ type LinearRangeIndex<'K when 'K : equality>
   override index.GetHashCode() = actualIndex.Value.GetHashCode()
 
   interface IIndex<'K> with
+    member x.AddressAt(index) = Address.ofInt64 index
     // Operations that can be implemented without evaluating the index
     member x.KeyCount = endAddress - startAddress + 1L
     member x.KeyAt(address) = index.KeyAt(Address.ofInt64 (startAddress + (Address.asInt64 address)))
@@ -189,7 +191,7 @@ type LinearRangeIndex<'K when 'K : equality>
     // KeyRange and IsOrdered are easy if we know that the range is sorted
     member x.KeyRange = 
       if not index.IsOrdered then actualIndex.Value.KeyRange
-      else index.KeyAt(startAddress), index.KeyAt(endAddress)
+      else index.KeyAt(Address.ofInt64 startAddress), index.KeyAt(Address.ofInt64 endAddress)
     member x.IsOrdered = index.IsOrdered || actualIndex.Value.IsOrdered
 
     // The rest of the functionality is delegated to 'actualIndex'
@@ -209,10 +211,10 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
   /// Given the result of one of the 'Seq.align[All][Un]Ordered' functions,
   /// build new index and 'Vectors.Relocate' commands for each vector
-  let makeSeriesConstructions (keys:'K[], relocations:list<(Address * Address)[]>) vectors ordered : (IIndex<_> * list<_>) = 
+  let makeSeriesConstructions (keys:'K[], relocations:list<(int64 * int64)[]>) vectors ordered : (IIndex<_> * list<_>) = 
     let newIndex = LinearIndex<_>(ReadOnlyCollection.ofArray keys, LinearIndexBuilder.Instance, ?ordered=ordered)
     let newVectors = (vectors, relocations) ||> List.mapi2 (fun i vec reloc ->
-      Vectors.Relocate(vec, int64 keys.Length, reloc) )
+      Vectors.Relocate(vec, int64 keys.Length, reloc |> Array.map (fun (f,s) -> (Address.ofInt64(f), Address.ofInt64(s) ))) )
     ( upcast newIndex, newVectors )
 
   /// Calls 'makeSeriesConstructions' on two vectors 
@@ -261,7 +263,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       // For ChunkSize and WindowSize, this can be done faster, because we can just calculate
       // the locations of chunks/windows based on the number of the keys. For chunking/windowing
       // based on conditions, we actually need to iterate over all the keys...
-      let locations = 
+      let locations = //: seq<DataSegmentKind * Address * Address>= 
         match aggregation with 
         | ChunkSize(size, boundary) -> Seq.chunkRangesWithBounds (int64 size) boundary index.KeyCount
         | WindowSize(size, boundary) -> Seq.windowRangesWithBounds (int64 size) boundary index.KeyCount
@@ -271,7 +273,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       // Turn each location into vector construction using LinearRangeIndex
       let vectorConstructions =
         locations |> Seq.map (fun (kind, lo, hi) ->
-          let cmd = Vectors.GetRange(vector, Vectors.Range(lo, hi)) 
+          let cmd = Vectors.GetRange(vector, Vectors.Range(Address.ofInt64 lo, Address.ofInt64 hi)) 
           let index = LinearRangeIndex(index, lo, hi)
           kind, (index :> IIndex<_>, cmd) )
 
@@ -294,7 +296,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       |> Seq.map (fun (key, win) ->
         let len = Seq.length win |> int64
         let relocations = 
-            seq { for k, newAddr in Seq.zip win (Address.generateRange(0L, len-1L)) -> 
+            seq { for k, newAddr in Seq.zip win (Address.generateRange(Address.ofInt64 0L, Address.ofInt64 (len-1L))) -> 
                   newAddr, index.Locate(k) }
         let newIndex = builder.Create(win, None)
         key, (newIndex, Vectors.Relocate(vector, len, relocations)))
@@ -319,15 +321,15 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           // At the end, we get missing value (when the key is greater), so we pad it with KeyCount
           let keyLocations = keys |> Seq.map (fun k ->  
             let addr = index.Lookup(k, Lookup.ExactOrGreater, fun _ -> true)
-            k, if addr.HasValue then snd addr.Value else index.KeyCount )
+            k, if addr.HasValue then snd addr.Value else Address.ofInt64 index.KeyCount )
 
           // To make sure we produce the last chunk, append one pair at the end
-          Seq.append keyLocations [Unchecked.defaultof<_>, index.KeyCount]
+          Seq.append keyLocations [Unchecked.defaultof<_>, Address.ofInt64 index.KeyCount]
           |> Seq.pairwise 
           |> Seq.mapi (fun i ((k, prev), (_, next)) -> 
               // The next offset always starts *after* the end, so - 1L
               // Expand the first chunk to start at position 0L
-              k, ((if i = 0 then 0L else prev), next - 1L))
+              k, ((if i = 0 then Address.zero else prev), Address.decrement next))
         else
           // In the "Backward" direction, the specified key should be the last key of the chunk
           let keyLen = Seq.length keys
@@ -336,15 +338,15 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           // At the beginning, we get missing value (when the key is smaller), so we pad it with 0L
           let keyLocations =  keys |> Seq.map (fun k ->
             let addr = index.Lookup(k, Lookup.ExactOrSmaller, fun _ -> true)
-            k, if addr.HasValue then snd addr.Value else 0L ) 
+            k, if addr.HasValue then snd addr.Value else Address.zero ) 
           
           // To make sure we produce the first chunk, append one pair at the beginning
-          Seq.append [Unchecked.defaultof<_>, -1L] keyLocations
+          Seq.append [Unchecked.defaultof<_>, Address.invalid] keyLocations
           |> Seq.pairwise
           |> Seq.mapi (fun i ((_, prev), (k, next)) ->
               // The previous offset always starts *before* the start, so + 1L
               // Expand the last chunk to start at the position KeyCount-1L
-              k, (prev + 1L, if i = keyLen - 1 then index.KeyCount - 1L else next))
+              k, (Address.increment prev, if i = keyLen - 1 then Address.ofInt64(index.KeyCount - 1L) else next))
 
 
       // Turn each location into vector construction using LinearRangeIndex
@@ -352,7 +354,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       let vectorConstructions =
         locations |> Array.ofSeq |> Array.map (fun (k, (lo, hi)) ->
           let cmd = Vectors.GetRange(vector, Vectors.Range(lo, hi)) 
-          let index = LinearRangeIndex(index, lo, hi)
+          let index = LinearRangeIndex(index, Address.asInt64 lo, Address.asInt64 hi)
           k, (index :> IIndex<_>, cmd) )
 
       // Run the specified selector function
@@ -381,11 +383,11 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
         if offset > 0 then 
           // If offset > 0 then skip first offet keys and take matching values from the start
           (int64 offset, index.KeyCount - 1L),
-          Vectors.Range(0L, index.KeyCount - 1L - int64 offset)
+          Vectors.Range(Address.ofInt64(0L), Address.ofInt64(index.KeyCount - 1L - int64 offset))
         else 
           // If offset < 0 then skip first -offset values and take matching keys from the start
           (0L, index.KeyCount - 1L + int64 offset),
-          Vectors.Range(int64 -offset, index.KeyCount - 1L)
+          Vectors.Range(Address.ofInt64(int64 -offset), Address.ofInt64(index.KeyCount - 1L))
 
       // If the shifted start/end is out of range of the index, return empty index & vector
       if indexLo > indexHi then 
@@ -407,7 +409,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
             Seq.alignUnordered index1.Keys index2.Keys false, None
         else
           Seq.alignUnordered index1.Keys index2.Keys false, Some false
-      makeTwoSeriesConstructions keysAndRelocs vector1 vector2 ordered 
+      makeTwoSeriesConstructions keysAndRelocs vector1 vector2 ordered
 
 
     /// Intersect the index with another. This is the same as
@@ -461,7 +463,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       
       let newIndex = LinearIndex<'TNewKey>(Seq.map fst newKeys |> ReadOnlyCollection.ofSeq, builder)
       let len = (newIndex :> IIndex<_>).KeyCount
-      let relocations = Seq.zip (Address.generateRange(0L, len-1L)) (Seq.map snd newKeys)
+      let relocations = Seq.zip (Address.generateRange(Address.ofInt64(0L), Address.ofInt64(len-1L))) (Seq.map snd newKeys)
       upcast newIndex, Vectors.Relocate(vector, int64 newKeys.Length, relocations)
 
 
@@ -472,7 +474,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
             seq {  
               for KeyValue(key, newAddress) in index2.Mappings do
                 let oldAddress = index1.Locate(key)
-                if oldAddress <> Address.Invalid && condition oldAddress then 
+                if oldAddress <> Address.invalid && condition oldAddress then 
                   yield newAddress, oldAddress }
         else
             seq {  
@@ -488,13 +490,13 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       let newKeys = ResizeArray<_>()
       let newIndices = ResizeArray<_>()
       for i in 0 .. (min index.Keys.Count (int searchVector.Length)) - 1 do
-        let v = searchVector.GetValue(int64 i) 
+        let v = searchVector.GetValue(Address.ofInt i) 
         if v.HasValue && v.Value = searchValue then 
           newKeys.Add(index.Keys.[i])
           newIndices.Add(int64 i)
         
       let newIndex = LinearIndex<'TNewKey>(newKeys |> ReadOnlyCollection.ofSeq, builder)
-      let range = Vectors.VectorRange.ofSeq(newIndices, int64 newIndices.Count)
+      let range = Vectors.VectorRange.ofSeq(newIndices |> Seq.map Address.ofInt64, int64 newIndices.Count)
       upcast newIndex, Vectors.GetRange(vector, range)
 
 
@@ -504,7 +506,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
         [| for KeyValue(key, addr) in index.Mappings do
              if searchKey.Matches(key) then yield addr, key |]
       let len = matching.Length |> int64
-      let relocs = Seq.zip (Address.generateRange(0L, len-1L)) (Seq.map fst matching)
+      let relocs = Seq.zip (Address.generateRange(Address.ofInt64(0L), Address.ofInt64(len-1L))) (Seq.map fst matching)
       let newIndex = LinearIndex<_>(Seq.map snd matching |> ReadOnlyCollection.ofSeq, builder, index.IsOrdered)
       let newVector = Vectors.Relocate(vector, len, relocs)
       upcast newIndex, newVector
@@ -571,7 +573,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
         let newIndex = LinearIndex<_>(ReadOnlyCollection.ofArray [||], builder, true) :> IIndex<_>
         newIndex, Vectors.Empty(0L)
       else
-        let newIndex = LinearRangeIndex(index, loBound, hiBound) :> IIndex<_>
+        let newIndex = LinearRangeIndex(index, Address.asInt64 loBound, Address.asInt64 hiBound) :> IIndex<_>
         let newVector = Vectors.GetRange(vector, Vectors.Range(loBound, hiBound))
         newIndex, newVector
 

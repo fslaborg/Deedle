@@ -183,7 +183,8 @@ type internal DelayedVector<'K, 'V when 'K : equality> internal (source:DelayedS
     member x.ObjectSequence = source.Values.ObjectSequence
     member x.Invoke(site) = site.Invoke<'V>(x)
   interface IVector<'V> with
-    member x.GetValue(index) = source.Values.GetValue(index)
+    member x.GetAddress(index) = source.Index.AddressAt(index)
+    member x.GetValue(address) = source.Values.GetValue(address)
     member x.Data = source.Values.Data
     member x.SelectMissing(f) = source.Values.SelectMissing(f)
     member x.Select(f) = source.Values.Select(f)
@@ -195,6 +196,7 @@ type internal DelayedVector<'K, 'V when 'K : equality> internal (source:DelayedS
 type internal DelayedIndex<'K, 'V when 'K : equality> internal (source:DelayedSource<'K, 'V>) = 
   member x.Source = source
   interface IIndex<'K> with
+    member x.AddressAt(index) = source.Index.AddressAt(index)
     member x.KeyAt index = source.Index.KeyAt index 
     member x.KeyCount = source.Index.KeyCount
     member x.IsEmpty = false

@@ -174,9 +174,9 @@ type ArrayVectorBuilder() =
               // NonOptional, but NonOptional will stay NonOptional
               match builder.buildArrayVector source arguments with 
               | VectorOptional data ->
-                  [| for idx in indices -> data.[int idx] |] |> vectorBuilder.CreateMissing 
+                  [| for address in indices -> data.[Address.asInt address] |] |> vectorBuilder.CreateMissing 
               | VectorNonOptional data ->
-                  [| for idx in indices -> data.[int idx] |] |> VectorNonOptional |> av
+                  [| for address in indices -> data.[Address.asInt address] |] |> VectorNonOptional |> av
 
 
       | Append(first, second) ->
@@ -329,8 +329,9 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
 
   // Implement the typed vector interface
   interface IVector<'T> with
-    member vector.GetValue(index) = 
-      let index = Address.asInt index
+    member vector.GetAddress(index) = Address.ofInt64 index
+    member vector.GetValue(address) = 
+      let index = Address.asInt address
       match representation with
       | VectorOptional data when index < data.Length -> data.[index]
       | VectorNonOptional data when index < data.Length -> OptionalValue(data.[index])

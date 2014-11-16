@@ -69,6 +69,9 @@ and IVector<'T> =
   /// Returns value stored in the vector at a specified address. 
   abstract GetValue : Address -> OptionalValue<'T>
 
+  /// Get address at a specified index. 
+  abstract GetAddress : int64 -> Address
+
   /// Returns all data of the vector in one of the supported formats. Depending
   /// on the vector, data may be returned as a continuous block of memory using
   /// `ReadOnlyCollection<T>` or as a lazy sequence `seq<T>`.
@@ -117,7 +120,7 @@ open Deedle.Addressing
 /// Represents a range inside a vector. This can be either a continuous range as 
 /// specified by `Range` or a custom range that can be turned into a sequence of indices. 
 type VectorRange =
-  | Range of int64 * int64
+  | Range of Address * Address
   | Custom of IVectorRange
 
 /// A sequence of indicies together with the total number. Use `VectorRange.ofSeq` to
@@ -125,7 +128,7 @@ type VectorRange =
 /// builders to allow further optimizations (e.g. when the underlying source directly
 /// supports range operations)
 and IVectorRange = 
-  inherit seq<int64>
+  inherit seq<Address>
   abstract Count : int64
 
 /// Representes a "variable" in the mini-DSL below

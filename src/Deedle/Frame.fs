@@ -557,7 +557,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// [category:Accessors and slicing]
   member frame.TryGetRow<'T>(rowKey) : OptionalValue<Series<_, 'T>> =
     let rowAddress = rowIndex.Locate(rowKey)
-    if rowAddress = Address.Invalid then OptionalValue.Missing
+    if rowAddress = Address.invalid then OptionalValue.Missing
     else 
       let vector = createRowReader data vectorBuilder rowAddress
       OptionalValue(Series(columnIndex, vector, vectorBuilder, indexBuilder))
@@ -1225,8 +1225,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     if frame.RowIndex.KeyCount <= int64 (startCount + endCount) then
       seq { for obs in frame.Rows.Observations -> Choice1Of3(obs.Key, obs.Value) } 
     else
-      let starts = frame.GetAddressRange(0L, int64 (startCount - 1))
-      let ends = frame.GetAddressRange(frame.RowIndex.KeyCount - int64 endCount, frame.RowIndex.KeyCount - 1L)
+      let starts = frame.GetAddressRange(Address.zero, frame.RowIndex.AddressAt(int64 (startCount - 1)))
+      let ends = frame.GetAddressRange(frame.RowIndex.AddressAt(frame.RowIndex.KeyCount - int64 endCount), frame.RowIndex.AddressAt(frame.RowIndex.KeyCount - 1L))
       seq { for obs in starts.Rows.Observations do yield Choice1Of3(obs.Key, obs.Value)
             yield Choice2Of3()
             for obs in ends.Rows.Observations do yield Choice1Of3(obs.Key, obs.Value) }
@@ -1284,10 +1284,10 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       // Get the number of levels in column/row index
       let colLevels = 
         if frame.ColumnIndex.KeyCount = 0L then 1 
-        else CustomKey.Get(frame.ColumnIndex.KeyAt(0L)).Levels
+        else CustomKey.Get(frame.ColumnIndex.KeyAt(Address.zero)).Levels
       let rowLevels = 
         if frame.RowIndex.KeyCount = 0L then 1 
-        else CustomKey.Get(frame.RowIndex.KeyAt(0L)).Levels
+        else CustomKey.Get(frame.RowIndex.KeyAt(Address.zero)).Levels
 
       /// Format type with a few special cases for common types
       let formatType (typ:System.Type) =
@@ -1535,7 +1535,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let groups = relocs |> Seq.map (fun (g, idx) ->
       let newIndex = Index.ofKeys(idx |> Seq.map fst |> ReadOnlyCollection.ofSeq)    // index of rowkeys
       let newLocs  = idx |> Seq.map snd                                              // seq of offsets
-      let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 newIndex.KeyCount, newLocs |> Seq.mapi (fun a b -> (int64 a, int64 b)))
+      let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 newIndex.KeyCount, 
+                                      newLocs |> Seq.mapi (fun a b -> (newIndex.AddressAt(int64 a), newIndex.AddressAt(int64 b))))
       let newData  = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder cmd)
       Frame<_, _>(newIndex, frame.ColumnIndex, newData, indexBuilder, vectorBuilder) )
  

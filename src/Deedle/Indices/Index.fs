@@ -110,6 +110,9 @@ type IIndex<'K when 'K : equality> =
   /// Performs reverse lookup - and returns key for a specified address
   abstract KeyAt : Address -> 'K
 
+  /// Return address at a specified index
+  abstract AddressAt : int64 -> Address
+
   /// Returns the number of keys in the index
   abstract KeyCount : int64
 
@@ -141,7 +144,7 @@ type IIndex<'K when 'K : equality> =
   /// Returns a comparer associated with the values used by the current index.
   abstract Comparer : System.Collections.Generic.Comparer<'K>
 
-  /// Returns an index builder that canbe used for constructing new indices of the
+  /// Returns an index builder that can be used for constructing new indices of the
   /// same kind as the current index (e.g. a lazy index returns a lazy index builder)
   abstract Builder : IIndexBuilder
 
