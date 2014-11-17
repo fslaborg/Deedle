@@ -582,7 +582,7 @@ module Frame =
       for col = 0 to colKeys.Count - 1 do
         let vec = rows.[col]
         if vec.HasValue then 
-          let value = vec.Value.GetObject(Address.ofInt row)
+          let value = vec.Value.GetObject(vec.Value.GetAddress <| int64 row)
           if value.HasValue then 
             rowVec.Add(rowKeys.[row])
             colVec.Add(colKeys.[col])
@@ -749,7 +749,7 @@ module Frame =
   [<CompiledName("IndexRowsWith")>]
   let indexRowsWith (keys:seq<'R2>) (frame:Frame<'R1, 'C>) = 
     let newRowIndex = frame.IndexBuilder.Create(keys, None)
-    let getRange = VectorHelpers.getVectorRange frame.VectorBuilder (Range(Address.zero, frame.RowIndex.AddressAt(frame.RowIndex.KeyCount-1L)))
+    let getRange = VectorHelpers.getVectorRange frame.VectorBuilder (Range(frame.RowIndex.AddressAt(0L), frame.RowIndex.AddressAt(frame.RowIndex.KeyCount-1L)))
     let newData = frame.Data.Select(getRange)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
@@ -901,7 +901,7 @@ module Frame =
   let take count (frame:Frame<'R, 'C>) =
     if count > frame.RowCount || count < 0 then 
       invalidArg "count" "Must be greater than zero and less than the number of keys."
-    getRange Address.zero (frame.RowIndex.AddressAt(count - 1 |> int64)) frame
+    getRange (frame.RowIndex.AddressAt(0L)) (frame.RowIndex.AddressAt(count - 1 |> int64)) frame
 
   /// Returns a frame that contains the specified `count` of rows from the 
   /// original frame. The rows are taken from the end of the frame; `count`
@@ -934,7 +934,7 @@ module Frame =
   let skipLast count (frame:Frame<'R, 'C>) = 
     if count > frame.RowCount || count < 0 then 
       invalidArg "count" "Must be greater than zero and less than the number of keys."
-    getRange Address.zero (frame.RowIndex.AddressAt((frame.RowCount-1-count) |> int64))  frame
+    getRange (frame.RowIndex.AddressAt(0L)) (frame.RowIndex.AddressAt((frame.RowCount-1-count) |> int64))  frame
 
   /// Returns a new data frame containing only the rows of the input frame
   /// for which the specified predicate returns `true`. The predicate is called

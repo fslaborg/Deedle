@@ -15,21 +15,22 @@ open Deedle.Vectors.Virtual
 open System.Collections.Generic
 open System.Collections.ObjectModel
 
-module Helpers2 = 
-  let inline addrOfKey lo key = Address.ofInt64 (key - lo)
-  let inline keyOfAddr lo addr = lo + (Address.asInt64 addr)
+//module Helpers2 = 
+//  let inline addrOfKey lo key = Address.ofInt64 (key - lo)
+//  let inline keyOfAddr lo addr = lo + (Address.asInt64 addr)
 
-open Helpers2
+//open Helpers2
 
 type VirtualOrderedIndex<'K when 'K : equality>(source:IVirtualVectorSource<'K>) =
   // TODO: Assert that the source is ordered
   // TODO: Another assumption here is that the source contains no NA values
-  let keyAtOffset i = source.ValueAt(Address.ofInt64 i).Value
+  let keyAtOffset i = source.ValueAt(source.AddressAt i).Value
   let keyAtAddr i = source.ValueAt(i).Value
   member x.Source = source
 
   interface IIndex<'K> with
     member x.AddressAt(index:int64) = source.AddressAt(index)
+    member x.IndexAt(address) = source.IndexAt(address)
     member x.KeyAt(addr) = keyAtAddr addr
     member x.KeyCount = source.Length
     member x.IsEmpty = source.Length = 0L
@@ -40,7 +41,7 @@ type VirtualOrderedIndex<'K when 'K : equality>(source:IVirtualVectorSource<'K>)
       Array.init (int source.Length) (int64 >> source.AddressAt >> keyAtAddr) |> ReadOnlyCollection.ofSeq
     member x.Mappings = 
       Seq.range 0L (source.Length - 1L) 
-      |> Seq.map (fun i -> KeyValuePair(keyAtOffset i, Address.ofInt64 i))
+      |> Seq.map (fun i -> KeyValuePair(keyAtOffset i, source.AddressAt i))
     member x.IsOrdered = true
     member x.Comparer = Comparer<'K>.Default
 
@@ -51,22 +52,29 @@ type VirtualOrderedIndex<'K when 'K : equality>(source:IVirtualVectorSource<'K>)
       source.LookupValue(key, semantics, Func<_, _>(check))
 
 and VirtualOrdinalIndex(lo:int64, hi:int64) =
+  let addrOfKey lo key = Address.ofInt64 (key - lo)
+  let keyOfAddr lo addr = lo + (Address.asInt64 addr)
   let size = hi - lo + 1L
   do if size < 0L then invalidArg "range" "Invalid range"
   member x.Range = lo, hi
+
+  member private x.AddressAt(index:int64) = addrOfKey lo index
+  member private x.IndexAt(address:Address) : int64 = keyOfAddr lo address
+
   interface IIndex<int64> with
-    member x.AddressAt(index:int64) = addrOfKey lo index // TODO! check this
+    member x.AddressAt(index:int64) = x.AddressAt(index:int64)
+    member x.IndexAt(address:Address) = x.IndexAt(address:Address)
     member x.KeyAt(addr) = 
-      if addr < Address.ofInt64 0L || addr >= Address.ofInt64 size then invalidArg "addr" "Out of range"
+      if addr < x.AddressAt(0L) || addr >= x.AddressAt size then invalidArg "addr" "Out of range"
       else keyOfAddr lo addr
     member x.KeyCount = size
     member x.IsEmpty = size = 0L
     member x.Builder = VirtualIndexBuilder.Instance :> _
     member x.KeyRange = lo, hi
-    member x.Keys = Array.init (int size) (Address.ofInt >> (keyOfAddr lo)) |> ReadOnlyCollection.ofArray
+    member x.Keys = Array.init (int size) (int64 >> x.AddressAt >> (keyOfAddr lo)) |> ReadOnlyCollection.ofArray
     member x.Mappings = 
       Seq.range 0L (size - 1L) 
-      |> Seq.map (fun i -> KeyValuePair(keyOfAddr lo (Address.ofInt64 i), Address.ofInt64 i))
+      |> Seq.map (fun i -> KeyValuePair(keyOfAddr lo (x.AddressAt i), x.AddressAt i))
     member x.IsOrdered = true
     member x.Comparer = Comparer<int64>.Default
 
@@ -76,7 +84,7 @@ and VirtualOrdinalIndex(lo:int64, hi:int64) =
 
     member x.Lookup(key, semantics, check) = 
       let rec scan step (addr:Address) =
-        if addr < Address.ofInt64 0L || addr >= Address.ofInt64 size then OptionalValue.Missing
+        if addr < x.AddressAt 0L || addr >= x.AddressAt size then OptionalValue.Missing
         elif check (addr) then OptionalValue( (keyOfAddr lo (addr), addr) )
         else scan step (step addr)
       if semantics = Lookup.Exact then
@@ -138,8 +146,11 @@ and VirtualIndexBuilder() =
       match index, searchVector with
       | (:? VirtualOrdinalIndex as index), (:? VirtualVector<'V> as searchVector) ->
           let mapping = searchVector.Source.LookupRange(searchValue)
-          let newIndex = VirtualOrdinalIndex(0L, mapping.Count-1L);
-          unbox<IIndex<'K>> newIndex, GetRange(vector, mapping)
+          match mapping with
+          | Custom c -> 
+            let newIndex = VirtualOrdinalIndex(0L, c.Count-1L);
+            unbox<IIndex<'K>> newIndex, GetRange(vector, mapping)
+          | Range (lo,hi) -> failwith "VirtualVectorSource.LookupRange returns only Custom VectorRange"
 
       | (:? VirtualOrderedIndex<'K> as index), (:? VirtualVector<'V> as searchVector) ->
           let mapping = searchVector.Source.LookupRange(searchValue)

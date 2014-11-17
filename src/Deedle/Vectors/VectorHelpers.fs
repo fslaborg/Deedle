@@ -35,13 +35,6 @@ let prettyPrintVector (vector:IVector<'T>) =
   | VectorData.Sequence list -> printSequence "seq" (Seq.map (fun v -> v.ToString()) list) 
 
 type VectorRange with
-  /// Returns the number of elements in the range
-  [<Obsolete("depends on implementation, here works only for linear")>] // 
-  member x.Count = 
-    match x with
-    | Custom c -> c.Count
-    | Range (lo, hi) -> Address.distance lo hi
-
   /// Creates a `Custom` range from a sequence of indices
   static member ofSeq(indices : seq<Address>, count) =
     { new IVectorRange with
@@ -73,7 +66,6 @@ let createBoxedVector (vector:IVector<'TValue>) =
     interface IBoxedVector with
       member x.UnboxedVector = vector :> IVector
     interface IVector<obj> with
-      member x.GetAddress(i) = vector.GetAddress(i)
       member x.GetValue(a) = vector.GetObject(a)
       member x.Data = 
         match vector.Data with
@@ -87,6 +79,8 @@ let createBoxedVector (vector:IVector<'TValue>) =
       member x.SelectMissing(f) = vector.SelectMissing(fun addr v -> f addr (OptionalValue.map box v))
       member x.Convert(f, g) = vector.Convert(box >> f, g >> unbox)
     interface IVector with
+      member x.GetAddress(i) = vector.GetAddress(i)
+      member x.GetIndex(a) = vector.GetIndex(a)
       member x.Length = vector.Length
       member x.ObjectSequence = vector.ObjectSequence
       member x.SuppressPrinting = vector.SuppressPrinting
@@ -116,7 +110,6 @@ let lazyMapVector f (vector:IVector<'TValue>) : IVector<'TResult> =
       member x.Equals(another) = vector.Equals(another)
       member x.GetHashCode() = vector.GetHashCode()
     interface IVector<'TResult> with
-      member x.GetAddress(i) = vector.GetAddress(i)
       member x.GetValue(a) = vector.GetValue(a) |> OptionalValue.map f
       member x.Data = 
         match vector.Data with
@@ -132,6 +125,8 @@ let lazyMapVector f (vector:IVector<'TValue>) : IVector<'TResult> =
     interface IWrappedVector<'TResult> with
       member x.UnwrapVector() = unwrapVector.Value
     interface IVector with
+      member x.GetAddress(i) = vector.GetAddress(i)
+      member x.GetIndex(a) = vector.GetIndex(a)
       member x.Length = vector.Length
       member x.ObjectSequence = vector.ObjectSequence
       member x.SuppressPrinting = vector.SuppressPrinting
@@ -334,12 +329,13 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddre
   override vector.GetHashCode() = vector.DataSequence |> Seq.structuralHash
 
   member private vector.DataArray =
-    Array.init (int data.Length) (fun addr -> (vector :> IVector<_>).GetValue(Address.ofInt addr))
+    Array.init (int data.Length) (fun index -> 
+      let v = (vector :> IVector<_>)
+      v.GetValue(v.GetAddress(int64 index)))
       
   // In the generic vector implementation, we
   // read data as objects and perform conversion
   interface IVector<'T> with
-    member x.GetAddress(i) = data.GetAddress(i)
     member x.GetValue(columnAddress) = 
       let vector = data.GetValue(columnAddress)
       if not vector.HasValue then OptionalValue.Missing
@@ -352,7 +348,9 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddre
       let isNA = MissingValues.isNA<'TNewValue>() 
       let flattenNA (value:OptionalValue<_>) = 
         if value.HasValue && isNA value.Value then OptionalValue.Missing else value
-      let data = vector.DataArray |> Array.mapi (fun i v -> f (Address.ofInt(i)) v |> flattenNA)
+      let data = 
+        vector.DataArray 
+        |> Array.mapi (fun idx v -> f (data.GetAddress(int64 idx)) v |> flattenNA)
       builder.CreateMissing(data)
 
     member vector.Select(f) = 
@@ -362,6 +360,8 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddre
       
   // Non-generic interface is fully implemented as "virtual"   
   interface IVector with
+    member x.GetAddress(i) = data.GetAddress(i)
+    member x.GetIndex(a) = data.GetIndex(a)
     member x.Length = data.Length
     member x.ObjectSequence = x.DataArray |> Seq.map (OptionalValue.map box)
     member x.SuppressPrinting = false

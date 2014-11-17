@@ -526,7 +526,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   ///
   /// [category:Accessors and slicing]
   member frame.GetRowKeyAt(index) = 
-    frame.RowIndex.KeyAt(Address.ofInt index)
+    frame.RowIndex.KeyAt(frame.RowIndex.AddressAt index)
 
   /// Returns a row of the data frame that is located at the specified int offset.
   /// This does not use the row key and directly accesses the frame data. This method
@@ -542,7 +542,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member frame.GetRowAt<'T>(index) : Series<_, 'T> = 
     if index < 0 || int64 index >= rowIndex.KeyCount then
       raise (new ArgumentOutOfRangeException("index", "Index must be positive and smaller than the number of rows."))
-    let rowAddress = Address.ofInt index
+    let rowAddress = rowIndex.AddressAt <| int64 index
     let vector = createRowReader data vectorBuilder rowAddress
     Series(columnIndex, vector, vectorBuilder, indexBuilder)
 
@@ -1225,7 +1225,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     if frame.RowIndex.KeyCount <= int64 (startCount + endCount) then
       seq { for obs in frame.Rows.Observations -> Choice1Of3(obs.Key, obs.Value) } 
     else
-      let starts = frame.GetAddressRange(Address.zero, frame.RowIndex.AddressAt(int64 (startCount - 1)))
+      let starts = frame.GetAddressRange(frame.RowIndex.AddressAt(0L), frame.RowIndex.AddressAt(int64 (startCount - 1)))
       let ends = frame.GetAddressRange(frame.RowIndex.AddressAt(frame.RowIndex.KeyCount - int64 endCount), frame.RowIndex.AddressAt(frame.RowIndex.KeyCount - 1L))
       seq { for obs in starts.Rows.Observations do yield Choice1Of3(obs.Key, obs.Value)
             yield Choice2Of3()
@@ -1284,10 +1284,10 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       // Get the number of levels in column/row index
       let colLevels = 
         if frame.ColumnIndex.KeyCount = 0L then 1 
-        else CustomKey.Get(frame.ColumnIndex.KeyAt(Address.zero)).Levels
+        else CustomKey.Get(frame.ColumnIndex.KeyAt(frame.ColumnIndex.AddressAt(0L))).Levels
       let rowLevels = 
         if frame.RowIndex.KeyCount = 0L then 1 
-        else CustomKey.Get(frame.RowIndex.KeyAt(Address.zero)).Levels
+        else CustomKey.Get(frame.RowIndex.KeyAt(frame.RowIndex.AddressAt(0L))).Levels
 
       /// Format type with a few special cases for common types
       let formatType (typ:System.Type) =
@@ -1506,7 +1506,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
          (grp, rowkey), (dst, src))                     // seq of (label, rowkey), (dstloc, srcloc)
       |> ReadOnlyCollection.ofSeq
 
-    let addressify (a, b) = (Address.ofInt a, Address.ofInt b)
+    let addressify (a, b) = (frame.RowIndex.AddressAt <| int64 a, frame.RowIndex.AddressAt <| int64 b)
 
     let keys = ReadOnlyCollection.map fst relocs 
     let locs = ReadOnlyCollection.map (snd >> addressify) relocs

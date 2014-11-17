@@ -296,6 +296,10 @@ type ArrayVectorBuilder() =
 and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) = 
   member internal vector.Representation = representation
 
+  // will inline op_Explicit(value: int64) : Address from the Address type
+  member inline private vector.GetAddress(index) = Address.ofInt64 index
+  member inline private vector.GetIndex(address : Address) = Address.asInt64 address
+
   // To string formatting & equality support
   override vector.ToString() = prettyPrintVector vector
   override vector.Equals(another) = 
@@ -327,9 +331,12 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
       | VectorNonOptional data when index < data.Length -> OptionalValue(box data.[index])
       | _ -> OptionalValue.Missing
 
+    member vector.GetAddress(index) = vector.GetAddress index
+    member vector.GetIndex(address : Address) = vector.GetIndex(address)
+    
+
   // Implement the typed vector interface
   interface IVector<'T> with
-    member vector.GetAddress(index) = Address.ofInt64 index
     member vector.GetValue(address) = 
       let index = Address.asInt address
       match representation with

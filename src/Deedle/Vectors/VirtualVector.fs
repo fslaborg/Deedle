@@ -37,7 +37,7 @@ type IVirtualVectorSource<'V> =
 
   /// Return address at a specified index
   abstract AddressAt : int64 -> Address
-
+  abstract IndexAt : Address -> int64
   /// Find a range (continuous or a sequence of indices) such that all values in the range are 
   /// the specified value. This is used, for example, when filtering frame based on column
   /// value (say column "PClass" has a value "1").
@@ -77,6 +77,7 @@ module VirtualVectorSource =
   let rec boxSource (source:IVirtualVectorSource<'T>) =
     { new IVirtualVectorSource<obj> with
         member x.AddressAt(index) = source.AddressAt(index)
+        member x.IndexAt(address) = source.IndexAt(address)
         member x.ValueAt(address) = source.ValueAt(address) |> OptionalValue.map box
         member x.LookupRange(search) = failwith "Search not implemented on combined vector"
         member x.LookupValue(v, l, c) = failwith "Lookup not implemented on combined vector" 
@@ -102,6 +103,7 @@ module VirtualVectorSource =
   let rec combine (f:OptionalValue<'T> list -> OptionalValue<'R>) (sources:IVirtualVectorSource<'T> list) : IVirtualVectorSource<'R> = 
     { new IVirtualVectorSource<'R> with
         member x.AddressAt(index) = sources |> Seq.map (fun s -> s.AddressAt(index) ) |> Seq.reduce (fun a b -> if a <> b then failwith "Address mismatch" else a)
+        member x.IndexAt(address) = sources |> Seq.map (fun s -> s.IndexAt(address) ) |> Seq.reduce (fun a b -> if a <> b then failwith "Address mismatch" else a)
         member x.ValueAt(address) = f [ for s in sources -> s.ValueAt(address)  ]
         member x.LookupRange(search) = failwith "Search not implemented on combined vector"
         member x.LookupValue(v, l, c) = failwith "Lookup not implemented on combined vector" 
@@ -138,6 +140,7 @@ module VirtualVectorSource =
 
     { new IVirtualVectorSource<'TNew> with
         member x.AddressAt(index) = source.AddressAt(index)
+        member x.IndexAt(address) = source.IndexAt(address)
         member x.ValueAt(address) = f (address) (source.ValueAt(address)) // TODO: Are we calculating the address correctly here??
         member x.MergeWith(sources) = 
           let sources = sources |> List.ofSeq |> List.tryChooseBy (function
@@ -214,8 +217,9 @@ type VirtualVector<'V>(source:IVirtualVectorSource<'V>) =
     member vector.GetObject(index) = source.ValueAt(index) |> OptionalValue.map box
     member vector.ObjectSequence = seq { for i in Seq.range 0L (source.Length-1L) -> source.ValueAt(source.AddressAt(i)) |> OptionalValue.map box }
     member vector.Invoke(site) = site.Invoke<'V>(vector)
-  interface IVector<'V> with
     member vector.GetAddress(index) = source.AddressAt(index)
+    member vector.GetIndex(address : Address) = source.IndexAt(address)
+  interface IVector<'V> with
     member vector.GetValue(address) = source.ValueAt(address)
     member vector.Data = seq { for i in Seq.range 0L (source.Length-1L) -> source.ValueAt(source.AddressAt(i)) } |> VectorData.Sequence
     member vector.SelectMissing<'TNew>(f:Address -> OptionalValue<'V> -> OptionalValue<'TNew>) = 
@@ -330,6 +334,7 @@ type VirtualVectorBuilder() =
             let rec createRowReader (vectors:IVector<IVector>) (sources:IVirtualVectorSource<'T> list) : IVirtualVectorSource<IVector<obj>> = 
               { new IVirtualVectorSource<IVector<obj>> with
                   member x.AddressAt(index) = sources |> Seq.map (fun s -> s.AddressAt(index) ) |> Seq.reduce (fun a b -> if a <> b then failwith "Address mismatch" else a)
+                  member x.IndexAt(address) = sources |> Seq.map (fun s -> s.IndexAt(address) ) |> Seq.reduce (fun a b -> if a <> b then failwith "Address mismatch" else a)
                   member x.ValueAt(address) = 
                     OptionalValue(RowReaderVector<_>(vectors, builder, address) :> IVector<_>)
                   member x.LookupRange(search) = failwith "Search not implemented on combined vector"

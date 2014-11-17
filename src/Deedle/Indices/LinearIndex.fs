@@ -80,11 +80,16 @@ type LinearIndex<'K when 'K : equality>
   override index.GetHashCode() =
     keys |> Seq.structuralHash
 
+  // will inline op_Explicit(value: int64) : Address from the Address type
+  member inline private x.AddressAt(index) = Address.ofInt64 index
+  member inline private x.IndexAt(address) = Address.asInt64 address
+
   interface IIndex<'K> with
     member x.Keys = keys
     member x.KeyCount = int64 keys.Count
     member x.Builder = builder
-    member x.AddressAt(index) = Address.ofInt64 index
+    member x.AddressAt(index) = x.AddressAt(index)
+    member x.IndexAt(address) = x.IndexAt(address)
 
     /// Perform reverse lookup and return key for an address
     member x.KeyAt(address) = keys.[Address.asInt address]
@@ -179,8 +184,13 @@ type LinearRangeIndex<'K when 'K : equality>
   override index.Equals(another) = actualIndex.Value.Equals(another) 
   override index.GetHashCode() = actualIndex.Value.GetHashCode()
 
+  // will inline op_Explicit(value: int64) : Address from the Address type
+  member inline private x.AddressAt(index) = Address.ofInt64 index
+  member inline private x.IndexAt(address) = Address.asInt64 address
+
   interface IIndex<'K> with
-    member x.AddressAt(index) = Address.ofInt64 index
+    member x.AddressAt(index) = x.AddressAt(index)
+    member x.IndexAt(address) = x.IndexAt(address)
     // Operations that can be implemented without evaluating the index
     member x.KeyCount = endAddress - startAddress + 1L
     member x.KeyAt(address) = index.KeyAt(Address.ofInt64 (startAddress + (Address.asInt64 address)))
@@ -288,7 +298,6 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
     member builder.GroupBy<'K, 'TNewKey when 'K : equality and 'TNewKey : equality>
         (index:IIndex<'K>,  keySel:'K -> OptionalValue<'TNewKey>, vector) =
       let builder = (builder :> IIndexBuilder)
-      
       // Build a sequence of indices & vector constructions representing the groups
       let windows = index.Keys |> Seq.groupBy keySel |> Seq.choose (fun (k, v) -> 
         if k.HasValue then Some(k.Value, v) else None)
@@ -296,8 +305,8 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       |> Seq.map (fun (key, win) ->
         let len = Seq.length win |> int64
         let relocations = 
-            seq { for k, newAddr in Seq.zip win (Address.generateRange(Address.ofInt64 0L, Address.ofInt64 (len-1L))) -> 
-                  newAddr, index.Locate(k) }
+            seq { for k, newAddr in Seq.zip win (Seq.range 0L (len-1L) ) -> 
+                  Address.ofInt64 newAddr, index.Locate(k) }
         let newIndex = builder.Create(win, None)
         key, (newIndex, Vectors.Relocate(vector, len, relocations)))
       |> ReadOnlyCollection.ofSeq
@@ -329,7 +338,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           |> Seq.mapi (fun i ((k, prev), (_, next)) -> 
               // The next offset always starts *after* the end, so - 1L
               // Expand the first chunk to start at position 0L
-              k, ((if i = 0 then Address.zero else prev), Address.decrement next))
+              k, ((if i = 0 then Address.ofInt64 0L else prev), Address.decrement next))
         else
           // In the "Backward" direction, the specified key should be the last key of the chunk
           let keyLen = Seq.length keys
@@ -338,7 +347,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           // At the beginning, we get missing value (when the key is smaller), so we pad it with 0L
           let keyLocations =  keys |> Seq.map (fun k ->
             let addr = index.Lookup(k, Lookup.ExactOrSmaller, fun _ -> true)
-            k, if addr.HasValue then snd addr.Value else Address.zero ) 
+            k, if addr.HasValue then snd addr.Value else Address.ofInt64 0L ) 
           
           // To make sure we produce the first chunk, append one pair at the beginning
           Seq.append [Unchecked.defaultof<_>, Address.invalid] keyLocations
@@ -463,7 +472,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       
       let newIndex = LinearIndex<'TNewKey>(Seq.map fst newKeys |> ReadOnlyCollection.ofSeq, builder)
       let len = (newIndex :> IIndex<_>).KeyCount
-      let relocations = Seq.zip (Address.generateRange(Address.ofInt64(0L), Address.ofInt64(len-1L))) (Seq.map snd newKeys)
+      let relocations = Seq.zip (Seq.range 0L (len-1L) |> Seq.map Address.ofInt64) (Seq.map snd newKeys)
       upcast newIndex, Vectors.Relocate(vector, int64 newKeys.Length, relocations)
 
 
@@ -506,7 +515,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
         [| for KeyValue(key, addr) in index.Mappings do
              if searchKey.Matches(key) then yield addr, key |]
       let len = matching.Length |> int64
-      let relocs = Seq.zip (Address.generateRange(Address.ofInt64(0L), Address.ofInt64(len-1L))) (Seq.map fst matching)
+      let relocs = Seq.zip (Seq.range 0L (len-1L) |> Seq.map Address.ofInt64) (Seq.map fst matching)
       let newIndex = LinearIndex<_>(Seq.map snd matching |> ReadOnlyCollection.ofSeq, builder, index.IsOrdered)
       let newVector = Vectors.Relocate(vector, len, relocs)
       upcast newIndex, newVector
@@ -532,7 +541,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
         upcast newIndex, Vectors.Empty(0L)
       else
         let newVector = Vectors.GetRange(vector, Vectors.Range(lo, hi))
-        let newKeys = index.Keys.[int lo .. int hi]
+        let newKeys = index.Keys.[Address.asInt lo .. Address.asInt hi]
         let newIndex = builder.Create(newKeys, if index.IsOrdered then Some true else None)
         newIndex, newVector
 
@@ -541,7 +550,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
     member builder.GetRange<'K when 'K : equality >((index:IIndex<'K>, vector), (lo, hi)) =
 
       // Default values are specified by the entire range
-      let minAddr, maxAddr = Address.zero, Address.ofInt64 (index.KeyCount - 1L)
+      let minAddr, maxAddr = Address.ofInt64 0L, Address.ofInt64 (index.KeyCount - 1L)
 
       let loBound = 
         match lo with

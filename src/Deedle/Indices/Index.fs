@@ -113,6 +113,9 @@ type IIndex<'K when 'K : equality> =
   /// Return address at a specified index
   abstract AddressAt : int64 -> Address
 
+  /// Return index at a specified address
+  abstract IndexAt : Address -> int64
+
   /// Returns the number of keys in the index
   abstract KeyCount : int64
 
