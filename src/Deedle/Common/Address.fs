@@ -29,10 +29,8 @@ module Deedle.Addressing
     end
 
 
-  // Implement generic helper type similar to Address module.
-  // When IAddress is a structure there is no boxing while accessing properties (at least true for C#)
-  // http://stackoverflow.com/a/1289537/801189
-  [<AbstractClass>]
+  // Implement generic helper type similar to Address module, with op_Explicit constraints.
+  [<AbstractClass;Sealed>]
   type private AddressHelper<'T when 'T :> IAddress<'T>
                         and 'T : comparison 
                         and 'T : struct 
@@ -44,7 +42,7 @@ module Deedle.Addressing
     static let invalid = zero.Decrement()
     static member inline Increment(address : 'T) : 'T = address.Increment()
     static member inline Decrement(address : 'T) : 'T = address.Decrement()
-    /// Invalid address in defined as zero address decremented once
+    /// Invalid address in defined as zero address decremented
     static member inline Invalid with get() : 'T = invalid
     static member inline AsInt64<'T>(addr : 'T) : int64 = int64 addr
     static member inline OfInt64<'T>(value : int64) : 'T = 
@@ -53,9 +51,9 @@ module Deedle.Addressing
    
   /// Represents a type used for addressing values in a linear vector/index
   [<CustomEquality; CustomComparison>]
-  type Address = // linear address
+  type Address =
     struct
-      val private value : int64 // TODO Private
+      val private value : int64
       new(index:int64) = {value = index}
     end
     override x.Equals(yobj) =
@@ -76,8 +74,8 @@ module Deedle.Addressing
     static member op_Explicit(value: int64) : Address = Address(value)
 
     interface IAddress<Address> with
-      member x.Decrement() = Address(x.value - 1L)
-      member x.Increment() = Address(x.value + 1L)
+      member x.Decrement() = if x.value <> -1L then Address(x.value - 1L) else Address(-1L)
+      member x.Increment() = if x.value <> -1L then Address(x.value + 1L) else Address(-1L)
 
   type AddressHelper = AddressHelper<Address>
 
@@ -85,13 +83,9 @@ module Deedle.Addressing
   [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
   module Address =
     let invalid : Address = AddressHelper.Invalid
-    //[<ObsoleteAttribute("This must be used only in linear vector/index and ordinal idx.")>]
     let inline asInt64 (x:Address) : int64 = AddressHelper.AsInt64(x)
-    //[<ObsoleteAttribute("This must be used only in linear vector/index and ordinal idx.")>]
     let inline asInt (x:Address) : int = int <| AddressHelper.AsInt64(x)
-    //[<ObsoleteAttribute("This must be used only in linear vector/index and ordinal idx.")>]
     let inline ofInt64 (x:int64) : Address = AddressHelper.OfInt64(x)
-    //[<ObsoleteAttribute("This must be used only in linear vector/index and ordinal idx.")>]
     let inline ofInt (x:int) : Address = AddressHelper.OfInt64(int64 x)
     let inline increment (x:Address) = AddressHelper.Increment(x)
     let inline decrement (x:Address) = AddressHelper.Decrement(x)
