@@ -358,7 +358,7 @@ and
     let newVector = vector.SelectMissing(fun addr value ->
       value |> OptionalValue.bind (fun v -> 
         let key = index.KeyAt(addr)
-        try OptionalValue(f.Invoke(KeyValuePair(key, v), int <| index.IndexAt addr))
+        try OptionalValue(f.Invoke(KeyValuePair(key, v), int <| index.OffsetAt addr))
         with :? MissingValueException -> OptionalValue.Missing ))  
 
     let newIndex = indexBuilder.Project(index)

@@ -297,8 +297,8 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
   member internal vector.Representation = representation
 
   // will inline op_Explicit(value: int64) : Address from the Address type
-  member inline private vector.GetAddress(index) = Address.ofInt64 index
-  member inline private vector.GetIndex(address : Address) = Address.asInt64 address
+  member inline private vector.GetAddress(offset) = Address.ofInt64 offset
+  member inline private vector.GetOffset(address : Address) = Address.asInt64 address
 
   // To string formatting & equality support
   override vector.ToString() = prettyPrintVector vector
@@ -332,7 +332,7 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
       | _ -> OptionalValue.Missing
 
     member vector.GetAddress(index) = vector.GetAddress index
-    member vector.GetIndex(address : Address) = vector.GetIndex(address)
+    member vector.GetOffset(address : Address) = vector.GetOffset(address)
     
 
   // Implement the typed vector interface

@@ -220,8 +220,8 @@ type VirtualVector<'V>(source:IVirtualVectorSource<'V>) =
     member vector.GetObject(index) = source.ValueAt(index) |> OptionalValue.map box
     member vector.ObjectSequence = seq { for i in Seq.range 0L (source.Length-1L) -> source.ValueAt(source.AddressAt(i)) |> OptionalValue.map box }
     member vector.Invoke(site) = site.Invoke<'V>(vector)
-    member vector.GetAddress(index) = source.AddressAt(index)
-    member vector.GetIndex(address : Address) = source.IndexAt(address)
+    member vector.GetAddress(offset) = source.AddressAt(offset)
+    member vector.GetOffset(address : Address) = source.IndexAt(address)
   interface IVector<'V> with
     member vector.GetValue(address) = source.ValueAt(address)
     member vector.Data = seq { for i in Seq.range 0L (source.Length-1L) -> source.ValueAt(source.AddressAt(i)) } |> VectorData.Sequence

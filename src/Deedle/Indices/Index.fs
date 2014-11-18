@@ -110,11 +110,11 @@ type IIndex<'K when 'K : equality> =
   /// Performs reverse lookup - and returns key for a specified address
   abstract KeyAt : Address -> 'K
 
-  /// Return address at a specified index
+  /// Return address at a specified offset
   abstract AddressAt : int64 -> Address
 
-  /// Return index at a specified address
-  abstract IndexAt : Address -> int64
+  /// Return an offset at a specified address
+  abstract OffsetAt : Address -> int64
 
   /// Returns the number of keys in the index
   abstract KeyCount : int64

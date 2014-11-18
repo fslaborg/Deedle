@@ -54,10 +54,10 @@ type IVector =
   /// Returns the number of elements in the vector
   abstract Length : int64
 
-  /// Get address at a specified index. 
+  /// Get address at a specified offset. 
   abstract GetAddress : int64 -> Address
-  /// Get an index of an address.
-  abstract GetIndex : Address -> int64
+  /// Get an offset of an address.
+  abstract GetOffset : Address -> int64
 
 /// Represents a generic function `\forall.'T.(IVector<'T> -> 'R)`. The function can be 
 /// generically invoked on an argument of type `IVector` using `IVector.Invoke`

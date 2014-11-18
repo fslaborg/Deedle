@@ -54,7 +54,7 @@ module Deedle.Addressing
   type Address =
     struct
       val private value : int64
-      new(index:int64) = {value = index}
+      new(value:int64) = {value = value}
     end
     override x.Equals(yobj) =
       match yobj with

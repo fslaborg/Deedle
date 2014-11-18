@@ -80,7 +80,7 @@ let createBoxedVector (vector:IVector<'TValue>) =
       member x.Convert(f, g) = vector.Convert(box >> f, g >> unbox)
     interface IVector with
       member x.GetAddress(i) = vector.GetAddress(i)
-      member x.GetIndex(a) = vector.GetIndex(a)
+      member x.GetOffset(a) = vector.GetOffset(a)
       member x.Length = vector.Length
       member x.ObjectSequence = vector.ObjectSequence
       member x.SuppressPrinting = vector.SuppressPrinting
@@ -126,7 +126,7 @@ let lazyMapVector f (vector:IVector<'TValue>) : IVector<'TResult> =
       member x.UnwrapVector() = unwrapVector.Value
     interface IVector with
       member x.GetAddress(i) = vector.GetAddress(i)
-      member x.GetIndex(a) = vector.GetIndex(a)
+      member x.GetOffset(a) = vector.GetOffset(a)
       member x.Length = vector.Length
       member x.ObjectSequence = vector.ObjectSequence
       member x.SuppressPrinting = vector.SuppressPrinting
@@ -361,7 +361,7 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddre
   // Non-generic interface is fully implemented as "virtual"   
   interface IVector with
     member x.GetAddress(i) = data.GetAddress(i)
-    member x.GetIndex(a) = data.GetIndex(a)
+    member x.GetOffset(a) = data.GetOffset(a)
     member x.Length = data.Length
     member x.ObjectSequence = x.DataArray |> Seq.map (OptionalValue.map box)
     member x.SuppressPrinting = false

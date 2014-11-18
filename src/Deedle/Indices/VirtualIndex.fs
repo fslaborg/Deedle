@@ -29,8 +29,8 @@ type VirtualOrderedIndex<'K when 'K : equality>(source:IVirtualVectorSource<'K>)
   member x.Source = source
 
   interface IIndex<'K> with
-    member x.AddressAt(index:int64) = source.AddressAt(index)
-    member x.IndexAt(address) = source.IndexAt(address)
+    member x.AddressAt(offset:int64) = source.AddressAt(offset)
+    member x.OffsetAt(address) = source.IndexAt(address)
     member x.KeyAt(addr) = keyAtAddr addr
     member x.KeyCount = source.Length
     member x.IsEmpty = source.Length = 0L
@@ -54,47 +54,47 @@ type VirtualOrderedIndex<'K when 'K : equality>(source:IVirtualVectorSource<'K>)
 and VirtualOrdinalIndex(lo:int64, hi:int64) =
   // for ordinal index key : int, index : int64, address : Address
   // assume that address = index
-  let indexOfKey lo key : int64 = key - lo
-  let keyOfIndex lo index : int64 = lo + index
+  let offsetOfKey lo key : int64 = key - lo
+  let keyOfOffset lo index : int64 = lo + index
 
   let size = hi - lo + 1L
   do if size < 0L then invalidArg "range" "Invalid range"
   member x.Range = lo, hi
 
-  member private x.AddressAt(index:int64) = Address.ofInt64 index //indexOfKey lo index
-  member private x.IndexAt(address:Address) : int64 = Address.asInt64 address //keyOfIndex lo address
+  member private x.AddressAt(offset:int64) = Address.ofInt64 offset //indexOfKey lo index
+  member private x.OffsetAt(address:Address) : int64 = Address.asInt64 address //keyOfIndex lo address
 
   interface IIndex<int64> with
-    member x.AddressAt(index:int64) = x.AddressAt(index:int64)
-    member x.IndexAt(address:Address) = x.IndexAt(address:Address)
+    member x.AddressAt(offset:int64) = x.AddressAt(offset:int64)
+    member x.OffsetAt(address:Address) = x.OffsetAt(address:Address)
     member x.KeyAt(addr) = 
       if addr < x.AddressAt(0L) || addr >= x.AddressAt size then invalidArg "addr" "Out of range"
-      else keyOfIndex lo (x.IndexAt(addr))
+      else keyOfOffset lo (x.OffsetAt(addr))
     member x.KeyCount = size
     member x.IsEmpty = size = 0L
     member x.Builder = VirtualIndexBuilder.Instance :> _
     member x.KeyRange = lo, hi
-    member x.Keys = Array.init (int size) (int64 >> (keyOfIndex lo)) |> ReadOnlyCollection.ofArray
+    member x.Keys = Array.init (int size) (int64 >> (keyOfOffset lo)) |> ReadOnlyCollection.ofArray
     member x.Mappings = 
       let seq = 
         Seq.range 0L (size - 1L) 
-        |> Seq.map (fun i -> KeyValuePair(keyOfIndex lo i, x.AddressAt i))
+        |> Seq.map (fun i -> KeyValuePair(keyOfOffset lo i, x.AddressAt i))
         |> Seq.toArray
       seq :> seq<_>
     member x.IsOrdered = true
     member x.Comparer = Comparer<int64>.Default
 
     member x.Locate(key) = 
-      if key >= lo && key <= hi then x.AddressAt <| indexOfKey lo key
+      if key >= lo && key <= hi then x.AddressAt <| offsetOfKey lo key
       else Address.invalid
 
     member x.Lookup(key, semantics, check) = 
       let rec scan step (addr:Address) =
         if addr < x.AddressAt 0L || addr >= x.AddressAt size then OptionalValue.Missing
-        elif check (addr) then OptionalValue( (keyOfIndex lo (x.IndexAt addr), addr) )
+        elif check (addr) then OptionalValue( (keyOfOffset lo (x.OffsetAt addr), addr) )
         else scan step (step addr)
       if semantics = Lookup.Exact then
-        let addr = (x.AddressAt <| indexOfKey lo key)
+        let addr = (x.AddressAt <| offsetOfKey lo key)
         if key >= lo && key <= hi && check addr then
           OptionalValue((key, addr))
         else OptionalValue.Missing
@@ -104,9 +104,9 @@ and VirtualOrdinalIndex(lo:int64, hi:int64) =
           elif semantics &&& Lookup.Smaller = Lookup.Smaller then Address.decrement //(-) 1L
           else invalidArg "semantics" "Invalid lookup semantics"
         let start =
-          let index = indexOfKey key lo
+          let offset = offsetOfKey key lo
           if semantics = Lookup.Greater || semantics = Lookup.Smaller 
-            then step (x.AddressAt index) else (x.AddressAt index)
+            then step (x.AddressAt offset) else (x.AddressAt offset)
         scan step start
 
 

@@ -81,15 +81,15 @@ type LinearIndex<'K when 'K : equality>
     keys |> Seq.structuralHash
 
   // will inline op_Explicit(value: int64) : Address from the Address type
-  member inline private x.AddressAt(index) = Address.ofInt64 index
-  member inline private x.IndexAt(address) = Address.asInt64 address
+  member inline private x.AddressAt(offset) = Address.ofInt64 offset
+  member inline private x.OffsetAt(address) = Address.asInt64 address
 
   interface IIndex<'K> with
     member x.Keys = keys
     member x.KeyCount = int64 keys.Count
     member x.Builder = builder
-    member x.AddressAt(index) = x.AddressAt(index)
-    member x.IndexAt(address) = x.IndexAt(address)
+    member x.AddressAt(offset) = x.AddressAt(offset)
+    member x.OffsetAt(address) = x.OffsetAt(address)
 
     /// Perform reverse lookup and return key for an address
     member x.KeyAt(address) = keys.[Address.asInt address]
@@ -185,12 +185,12 @@ type LinearRangeIndex<'K when 'K : equality>
   override index.GetHashCode() = actualIndex.Value.GetHashCode()
 
   // will inline op_Explicit(value: int64) : Address from the Address type
-  member inline private x.AddressAt(index) = Address.ofInt64 index
-  member inline private x.IndexAt(address) = Address.asInt64 address
+  member inline private x.AddressAt(offset) = Address.ofInt64 offset
+  member inline private x.OffsetAt(address) = Address.asInt64 address
 
   interface IIndex<'K> with
-    member x.AddressAt(index) = x.AddressAt(index)
-    member x.IndexAt(address) = x.IndexAt(address)
+    member x.AddressAt(offset) = x.AddressAt(offset)
+    member x.OffsetAt(address) = x.OffsetAt(address)
     // Operations that can be implemented without evaluating the index
     member x.KeyCount = endAddress - startAddress + 1L
     member x.KeyAt(address) = index.KeyAt(Address.ofInt64 (startAddress + (Address.asInt64 address)))
