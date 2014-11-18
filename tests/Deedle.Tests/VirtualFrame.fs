@@ -29,22 +29,32 @@ type LinearSubRange =
   interface System.Collections.IEnumerable with
     member x.GetEnumerator() : System.Collections.IEnumerator = failwith "hard!"
 
-type TrackingSource<'T>(ranges, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?search) = 
-  member val AccessListCell = ref [] with get, set
+type TrackingSource<'T>(ranges:(int64*int64) list, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?search) = 
+  let ranges = ranges //|> Seq.map (fun (f,s) -> Address(f),Address(s))
+  member val AccessListCell : int64 list ref = ref [] with get, set
   member val LookupListCell = ref [] with get, set
   member val IsTracking = true with get, set
   member val HasMissing = true with get, set
   member x.AccessList = List.rev x.AccessListCell.Value
   member x.LookupList = List.rev x.LookupListCell.Value
-  member x.Ranges = ranges
+  member x.Ranges = ranges 
+  member x.Length = ranges |> Seq.sumBy (fun (lo, hi) -> hi - lo + 1L)
+  member x.AddressAt(index) = 
+    let res = Address.ofInt64 index
+    res
+  member x.IndexAt(address) = 
+    let res = Address.asInt64 address
+    res
 
   interface IVirtualVectorSource with
-    member x.Length = ranges |> Seq.sumBy (fun (lo, hi) -> hi - lo + 1L)
+    member x.Length = x.Length
     member x.ElementType = typeof<'T>
+    member x.AddressAt(index) = 
+      let res = x.AddressAt(index)
+      res
+    member x.IndexAt(address) = x.IndexAt(address)
 
   interface IVirtualVectorSource<'T> with
-    member x.AddressAt(index) = Address.ofInt64 index
-    member x.IndexAt(address) = Address.asInt64 address
     member x.MergeWith(sources) = 
       let ranges = [ yield! x.Ranges; for x in sources do yield! (x :?> TrackingSource<'T>).Ranges ]
       TrackingSource
@@ -74,30 +84,30 @@ type TrackingSource<'T>(ranges, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?searc
       | _ -> OptionalValue.Missing
 
     member x.ValueAt addr = 
-      let addr = Address.asInt64 addr
+      let r = ranges
       let res = 
-        ranges |> List.fold (fun state (lo, hi) ->
+        r |> List.fold (fun (state:Choice<int64,int64>) (lo, hi) ->
           match state with
           | Choice1Of2 offset ->
-              if addr >= offset && addr <= offset+hi-lo then
-                Choice2Of2((addr - offset) + lo)
+              if (Address.asInt64 addr) >= offset && (Address.asInt64 addr) <= offset+hi-lo then
+                Choice2Of2(((int64 addr) - offset) + lo)
               else Choice1Of2(offset + hi - lo + 1L)
           | res -> res) (Choice1Of2 0L)
       match res with
       | Choice2Of2 absAddr ->
           if x.IsTracking then x.AccessListCell := absAddr  :: !x.AccessListCell
-          if x.HasMissing && (addr % 3L = 0L) then OptionalValue.Missing
+          if x.HasMissing && ((int64 addr) % 3L = 0L) then OptionalValue.Missing
           else OptionalValue(valueAt absAddr )
-      | _ -> failwith "ValueAt: out of range"
+      | Choice1Of2 oor -> failwith <| "ValueAt: out of range: " + oor.ToString()
 
     member x.GetSubVector(range) = 
       match range with
-      | Vectors.Range(nlo, nhi) ->
-          let nlo = Address.asInt64 nlo
-          let nhi = Address.asInt64 nhi
+      | Vectors.Range (nlo, nhi) ->
+//          let nlo = Address.asInt64 nlo
+//          let nhi = Address.asInt64 nhi
           if nhi < nlo then invalidOp "hi < lo"
-          elif nlo < 0L then invalidOp "lo < 0"
-          elif nhi > (x:>IVirtualVectorSource).Length then invalidOp "hi > max"
+          elif nlo < x.AddressAt(0L) then invalidOp "lo < 0"
+          elif nhi > x.AddressAt(x.Length-1L) then invalidOp "hi > max" // TODO -1
 
           // This is not entirely correct, but it works well enough for tests..
           let _, ranges = 
@@ -108,8 +118,8 @@ type TrackingSource<'T>(ranges, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?searc
 
           let subRange = 
             ranges |> List.tryPick (fun ((lo, hi), (absLo, absHi)) ->
-              if nlo >= lo && nhi <= hi then
-                Some(absLo + (nlo - lo), absHi + (nhi - hi))
+              if nlo >= x.AddressAt lo && nhi <= x.AddressAt hi then
+                Some(absLo + (x.IndexAt(nlo) - lo), absHi + (x.IndexAt(nhi) - hi))
               else None)
           
           let absLo, absHi = 

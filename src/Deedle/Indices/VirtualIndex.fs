@@ -52,44 +52,51 @@ type VirtualOrderedIndex<'K when 'K : equality>(source:IVirtualVectorSource<'K>)
       source.LookupValue(key, semantics, Func<_, _>(check))
 
 and VirtualOrdinalIndex(lo:int64, hi:int64) =
-  let addrOfKey lo key = Address.ofInt64 (key - lo)
-  let keyOfAddr lo addr = lo + (Address.asInt64 addr)
+  // for ordinal index key : int, index : int64, address : Address
+  // assume that address = index
+  let indexOfKey lo key : int64 = key - lo
+  let keyOfIndex lo index : int64 = lo + index
+
   let size = hi - lo + 1L
   do if size < 0L then invalidArg "range" "Invalid range"
   member x.Range = lo, hi
 
-  member private x.AddressAt(index:int64) = addrOfKey lo index
-  member private x.IndexAt(address:Address) : int64 = keyOfAddr lo address
+  member private x.AddressAt(index:int64) = Address.ofInt64 index //indexOfKey lo index
+  member private x.IndexAt(address:Address) : int64 = Address.asInt64 address //keyOfIndex lo address
 
   interface IIndex<int64> with
     member x.AddressAt(index:int64) = x.AddressAt(index:int64)
     member x.IndexAt(address:Address) = x.IndexAt(address:Address)
     member x.KeyAt(addr) = 
       if addr < x.AddressAt(0L) || addr >= x.AddressAt size then invalidArg "addr" "Out of range"
-      else keyOfAddr lo addr
+      else keyOfIndex lo (x.IndexAt(addr))
     member x.KeyCount = size
     member x.IsEmpty = size = 0L
     member x.Builder = VirtualIndexBuilder.Instance :> _
     member x.KeyRange = lo, hi
-    member x.Keys = Array.init (int size) (int64 >> x.AddressAt >> (keyOfAddr lo)) |> ReadOnlyCollection.ofArray
+    member x.Keys = Array.init (int size) (int64 >> (keyOfIndex lo)) |> ReadOnlyCollection.ofArray
     member x.Mappings = 
-      Seq.range 0L (size - 1L) 
-      |> Seq.map (fun i -> KeyValuePair(keyOfAddr lo (x.AddressAt i), x.AddressAt i))
+      let seq = 
+        Seq.range 0L (size - 1L) 
+        |> Seq.map (fun i -> KeyValuePair(keyOfIndex lo i, x.AddressAt i))
+        |> Seq.toArray
+      seq :> seq<_>
     member x.IsOrdered = true
     member x.Comparer = Comparer<int64>.Default
 
     member x.Locate(key) = 
-      if key >= lo && key <= hi then addrOfKey lo key
+      if key >= lo && key <= hi then x.AddressAt <| indexOfKey lo key
       else Address.invalid
 
     member x.Lookup(key, semantics, check) = 
       let rec scan step (addr:Address) =
         if addr < x.AddressAt 0L || addr >= x.AddressAt size then OptionalValue.Missing
-        elif check (addr) then OptionalValue( (keyOfAddr lo (addr), addr) )
+        elif check (addr) then OptionalValue( (keyOfIndex lo (x.IndexAt addr), addr) )
         else scan step (step addr)
       if semantics = Lookup.Exact then
-        if key >= lo && key <= hi && check (addrOfKey lo key) then
-          OptionalValue( (key, addrOfKey lo key) )
+        let addr = (x.AddressAt <| indexOfKey lo key)
+        if key >= lo && key <= hi && check addr then
+          OptionalValue((key, addr))
         else OptionalValue.Missing
       else
         let step = 
@@ -97,9 +104,9 @@ and VirtualOrdinalIndex(lo:int64, hi:int64) =
           elif semantics &&& Lookup.Smaller = Lookup.Smaller then Address.decrement //(-) 1L
           else invalidArg "semantics" "Invalid lookup semantics"
         let start =
-          let addr = addrOfKey key lo
+          let index = indexOfKey key lo
           if semantics = Lookup.Greater || semantics = Lookup.Smaller 
-            then step (addr) else (addr)
+            then step (x.AddressAt index) else (x.AddressAt index)
         scan step start
 
 

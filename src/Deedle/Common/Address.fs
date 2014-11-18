@@ -85,19 +85,19 @@ module Deedle.Addressing
   [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
   module Address =
     let invalid : Address = AddressHelper.Invalid
-    //[<ObsoleteAttribute("This must be only in linear vector/index and ordinal idx.")>]
+    //[<ObsoleteAttribute("This must be used only in linear vector/index and ordinal idx.")>]
     let inline asInt64 (x:Address) : int64 = AddressHelper.AsInt64(x)
-    //[<ObsoleteAttribute("This must be only in linear vector/index and ordinal idx.")>]
+    //[<ObsoleteAttribute("This must be used only in linear vector/index and ordinal idx.")>]
     let inline asInt (x:Address) : int = int <| AddressHelper.AsInt64(x)
-    //[<ObsoleteAttribute("This must be only in linear vector/index and ordinal idx.")>]
+    //[<ObsoleteAttribute("This must be used only in linear vector/index and ordinal idx.")>]
     let inline ofInt64 (x:int64) : Address = AddressHelper.OfInt64(x)
-    //[<ObsoleteAttribute("This must be only in linear vector/index and ordinal idx.")>]
+    //[<ObsoleteAttribute("This must be used only in linear vector/index and ordinal idx.")>]
     let inline ofInt (x:int) : Address = AddressHelper.OfInt64(int64 x)
     let inline increment (x:Address) = AddressHelper.Increment(x)
     let inline decrement (x:Address) = AddressHelper.Decrement(x)
 
 
-//  // In fsi a, b and c show the same timing (c.50 msec), d is more than 20 times slower
+//  // In fsi a, b and c show the same timing (40-50 msec after fsi reset), d is more than 20 times slower (c.1100 msec after fsi reset)
 //  let a = Array.init 10000000 (fun i -> Address.ofInt64(int64 i)) |> Array.length
 //  let b = Array.init 10000000 (fun i -> Address(int64 i)) |> Array.length
 //  let c = Array.init 10000000 (fun i -> (int64 i)) |> Array.length
