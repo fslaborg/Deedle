@@ -572,20 +572,19 @@ module Frame =
   let stack (frame:Frame<'R, 'C>) =
     let rowKeys = frame.RowIndex.Keys
     let colKeys = frame.ColumnIndex.Keys
-    let rows = frame.Data.DataSequence |> Array.ofSeq
 
     // Build arrays with row keys, column keys and values
     let rowVec = ResizeArray<_>()
     let colVec = ResizeArray<_>()
     let valVec = ResizeArray<_>()
-    for row = 0 to rowKeys.Count - 1 do
-      for col = 0 to colKeys.Count - 1 do
-        let vec = rows.[col]
+    for rowKey in rowKeys do
+      for colKey in colKeys do
+        let vec = frame.Data.GetValue(frame.ColumnIndex.Locate(colKey))
         if vec.HasValue then 
-          let value = vec.Value.GetObject(vec.Value.GetAddress <| int64 row)
+          let value = vec.Value.GetObject(frame.RowIndex.Locate(rowKey))
           if value.HasValue then 
-            rowVec.Add(rowKeys.[row])
-            colVec.Add(colKeys.[col])
+            rowVec.Add(rowKey)
+            colVec.Add(colKey)
             valVec.Add(value.Value)
 
     // Infer type of the values in the "value" vector 
