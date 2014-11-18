@@ -13,7 +13,7 @@ module Deedle.Addressing
   /// An address is a comparable value type with default constructor.
   /// Default constructor returns the smallest possible (zero) address.
   /// Decrementing zero address results in an invalid address.
-  /// Any transformation or operation on invalid address results in an invalid address or invalidOp.
+  /// Any operation with invalid address results in invalidOp (but incrementing it returns zero - linear implementation depends on this).
   /// Address type must implement explicit conversion to and from int64.
   /// Zero address is always 0L, invalid address is always -1L.
   type IAddress<'T when 'T :> IAddress<'T>
@@ -74,8 +74,8 @@ module Deedle.Addressing
     static member op_Explicit(value: int64) : Address = Address(value)
 
     interface IAddress<Address> with
-      member x.Decrement() = if x.value <> -1L then Address(x.value - 1L) else Address(-1L)
-      member x.Increment() = if x.value <> -1L then Address(x.value + 1L) else Address(-1L)
+      member x.Decrement() = Address(x.value - 1L)
+      member x.Increment() = Address(x.value + 1L)
 
   type AddressHelper = AddressHelper<Address>
 
