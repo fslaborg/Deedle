@@ -69,6 +69,43 @@ type Deedle.Series<'K, 'V when 'K : equality> with
 // Performance tests
 // ------------------------------------------------------------------------------------------------
 
+type ITitanicRow =
+  abstract PassengerId : int
+  abstract Survived : bool
+  abstract Pclass : int
+  abstract Name : string
+
+[<Test>]
+let ``Can access rows as a typed series via an interface`` () = 
+  let rows = titanic.GetRowsAs<ITitanicRow>()
+  // ~160ms
+  for i in 0 .. 250 do 
+    rows.Values |> Seq.filter (fun r -> r.Survived) |> Seq.length |> ignore
+
+  // ~322ms
+  for i in 0 .. 250 do 
+    titanic.Rows.Values |> Seq.filter (fun r -> r.GetAs "Survived") |> Seq.length |> ignore
+
+  // 30ms
+  do
+    let r = rows.[400]
+    let mutable c = 0
+    for i in 0 .. 1000000 do
+      c <- c + r.Pclass 
+
+  // 700ms
+  do
+    let r = titanic.Rows.[400]
+    let mutable c = 0
+    for i in 0 .. 1000000 do
+      c <- c + r.GetAs<int>("Pclass")
+
+  // ~12ms
+  for i in 0 .. 250 do 
+    titanic.Rows |> ignore
+
+
+
 [<Test; PerfTest(Iterations=10)>]
 let ``Numerical operators on 20x10k frame``() =
   let add = frame20x10000 + frame20x10000

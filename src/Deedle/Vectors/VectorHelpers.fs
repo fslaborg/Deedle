@@ -458,14 +458,14 @@ module Inference =
     | _, _ -> Bottom
 
 /// Helper object called by createTypedVector via reflection
-type CreateTypedVectorHelper = 
+type createTypedRowReaderHelper = 
   static member Create<'T>(builder:IVectorBuilder, data:obj[]) =
     builder.Create(Array.map (Convert.convertType<'T> ConversionKind.Flexible) data)
 
 /// Given object array, create a typed vector of the best possible type
 let createTypedVector (builder:IVectorBuilder) (vectorType:System.Type) (data:obj[]) =
   let flags = System.Reflection.BindingFlags.NonPublic ||| System.Reflection.BindingFlags.Static
-  let createMi = typeof<CreateTypedVectorHelper>.GetMethod("Create", flags).MakeGenericMethod [| vectorType |]
+  let createMi = typeof<createTypedRowReaderHelper>.GetMethod("Create", flags).MakeGenericMethod [| vectorType |]
   createMi.Invoke(null, [| builder; data |]) :?> IVector
 
 /// Find common super type of the specified .NET types
@@ -492,93 +492,125 @@ open System.Reflection.Emit
 let private typedRowModule = Lazy.Create(fun _ -> 
   let name = new AssemblyName("TypedRowAssembly")
   let asmBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.RunAndCollect)
-  asmBuilder.DefineDynamicModule(name.Name) )
+  asmBuilder.DefineDynamicModule(name.Name, name.Name+".dll") )
 
 /// Helper module with various MemberInfo and similar values
 module private Reflection = 
   let objCtor = typeof<obj>.GetConstructor([| |])
-  let convertType = typeof<OptionalValue>.Assembly.GetType("Deedle.Internal.Convert").GetMethod("convertType")
-
-/// Cache for optimizing 'createTypedRowBuilder'
-let private createdTypedRowsCache = Dictionary<Type * string list, obj>()
+  let addrTyp = typeof<Addressing.Address>
 
 /// Counter of generated types to avoid name clashes
 let private typeCounter = ref 0
 
-/// Creates a type that implements the interface specified by 'TRow and
-/// maps property getters to corresponding values in a vector. The function
-/// returns a function that creates 'TRow implementations when given data
-/// as `IVector<obj>` values. The addresses in the vector are resolved when
-/// generating the type using the specified `columnIndex` lookup.
-let createTypedRowBuilder<'TRow> columnKeys (columnIndex:string -> Address) =
+let createTypedRowReaderHelper (ctor:System.Func<IVector<IVector>, Addressing.Address, 'TRow>) length (data:IVector<IVector>)  =
+  { //new System.Object() with
+      //member x.Equals(another) = vector.Equals(another)
+      //member x.GetHashCode() = vector.GetHashCode()
+    new IVector<'TRow> with
+      member x.GetValue(a) = OptionalValue(ctor.Invoke(data, a)) // ??? TODO: Handle missing properly
+      member x.Data = 
+        seq { for i in Seq.range 0L (length-1L) -> (x :> IVector<_>).GetValue(i) }
+        |> VectorData.Sequence
+      member x.Select(g) = failwith "Select"
+      member x.SelectMissing(g) = failwith "SelectMissing"
+      member x.Convert(h, g) = failwith "Convert"
+    interface IVector with
+      member x.Length = length
+      member x.ObjectSequence = failwith "ObjectSequence"
+      member x.SuppressPrinting = false
+      member x.ElementType = typeof<'TRow>
+      member x.GetObject(i) = failwith "GetObject"
+      member x.Invoke(site) = failwith "Invoke" }
+
+let createTypedRowReader<'TRow> keys (columnIndex:string -> Address) = 
   let rowType = typeof<'TRow>
-  match createdTypedRowsCache.TryGetValue( (rowType, columnKeys) ) with
-  | true, res -> 
-      unbox<IVector<obj> -> 'TRow> res
+  incr typeCounter
+  let typeName = sprintf "Impl%s@%d" rowType.Name typeCounter.Value
+  let rowImpl = 
+    typedRowModule.Value.DefineType
+      (typeName, TypeAttributes.Public, typeof<obj>, [| rowType |])
 
-  | false, _ ->
-      incr typeCounter
-      let typeName = sprintf "Impl%s@%d" rowType.Name typeCounter.Value
-      let rowImpl = 
-        typedRowModule.Value.DefineType
-          (typeName, TypeAttributes.Public, typeof<obj>, [| rowType |])
-
-      // Local field to store the vector with actual data
-      let vecField = rowImpl.DefineField("vector", typeof<IVector<obj>>, FieldAttributes.Private)
-
-      // new(vector:IVector<obj>) = 
-      //   base()
-      //   this.vector <- vector
-      let ctor = rowImpl.DefineConstructor(MethodAttributes.Public, CallingConventions.Standard, [| typeof<IVector<obj>> |])
-      let ilgen = ctor.GetILGenerator()
-      ilgen.Emit(OpCodes.Ldarg_0)
-      ilgen.Emit(OpCodes.Callvirt, Reflection.objCtor)
-      ilgen.Emit(OpCodes.Ldarg_0)
-      ilgen.Emit(OpCodes.Ldarg_1)
-      ilgen.Emit(OpCodes.Stfld, vecField)
-      ilgen.Emit(OpCodes.Ret)
-
-      // For every getter field, generate code that accesses the vector
-      for m in rowType.GetMethods() do
+  let columnTypes = 
+    [ for m in rowType.GetMethods() ->
         if not m.IsSpecialName || not (m.Name.StartsWith("get_")) then
           raise (new InvalidOperationException("Only readonly properties are supported in the interface!"))
+        typedefof<IVector<_>>.MakeGenericType(m.ReturnType) ]
 
-        // override this.Foo : R =
-        //   let local = vector.GetValue( <Address of "Foo"> )
-        //   Convert.convertType<R>(ConversionKind.Flexible, local.Value)
-        let impl = rowImpl.DefineMethod(m.Name, MethodAttributes.Public ||| MethodAttributes.Virtual ||| MethodAttributes.SpecialName, m.ReturnType, [| |])
-        let ilgen = impl.GetILGenerator()
-        let localOpt = ilgen.DeclareLocal(typeof<OptionalValue<obj>>)
-        ilgen.Emit(OpCodes.Ldarg_0)
-        ilgen.Emit(OpCodes.Ldfld, vecField)
-        ilgen.Emit(OpCodes.Ldc_I8, columnIndex (m.Name.Substring(4)))
-        ilgen.Emit(OpCodes.Callvirt, typeof<IVector<obj>>.GetMethod("GetValue"))
-        ilgen.Emit(OpCodes.Stloc, localOpt)
+  let vecFields = 
+    columnTypes |> List.mapi (fun i vecTy ->
+        rowImpl.DefineField(sprintf "vector_%d" i, vecTy, FieldAttributes.Private))
+  let addrField = rowImpl.DefineField("address", typeof<Addressing.Address>, FieldAttributes.Private)
 
-        ilgen.Emit(OpCodes.Ldc_I4, int ConversionKind.Flexible)
-        ilgen.Emit(OpCodes.Ldloca_S, localOpt)
-        ilgen.Emit(OpCodes.Call, typeof<OptionalValue<obj>>.GetProperty("Value").GetGetMethod())
-        ilgen.Emit(OpCodes.Call, Reflection.convertType.MakeGenericMethod(m.ReturnType))
-        ilgen.Emit(OpCodes.Ret)
+  let ctor = rowImpl.DefineConstructor(MethodAttributes.Public, CallingConventions.Standard, Reflection.addrTyp::columnTypes |> Array.ofSeq)
+  let ilgen = ctor.GetILGenerator()
+  ilgen.Emit(OpCodes.Ldarg_0)
+  ilgen.Emit(OpCodes.Callvirt, Reflection.objCtor)
+
+  ilgen.Emit(OpCodes.Ldarg_0)
+  ilgen.Emit(OpCodes.Ldarg_1)
+  ilgen.Emit(OpCodes.Stfld, addrField)
   
-        rowImpl.DefineMethodOverride(impl, m)
+  vecFields |> List.iteri (fun i vecField -> 
+    ilgen.Emit(OpCodes.Ldarg_0)
+    ilgen.Emit(OpCodes.Ldarg, 1(*this*) + 1(*address*) + i)
+    ilgen.Emit(OpCodes.Stfld, vecField) )
+  
+  ilgen.Emit(OpCodes.Ret)
 
-      // Build the type and build a dynamic delegate for creating it
-      let rowImplType = rowImpl.CreateType()
-      let makeRow = DynamicMethod("Make" + rowType.Name, rowType, [| typeof<IVector<obj>> |])
-      let ilgen = makeRow.GetILGenerator()
-      ilgen.Emit(OpCodes.Ldarg_0)
-      ilgen.Emit(OpCodes.Newobj, rowImplType.GetConstructor( [| typeof<IVector<obj>> |] ))
-      ilgen.Emit(OpCodes.Ret)
+  for m, fld in Seq.zip (rowType.GetMethods()) vecFields do
+    let impl = rowImpl.DefineMethod(m.Name, MethodAttributes.Public ||| MethodAttributes.Virtual ||| MethodAttributes.SpecialName, m.ReturnType, [| |])
+    let ilgen = impl.GetILGenerator()
 
-      // Return a function that can be used for creating interface 
-      // instances from IVector<obj> values storing the data
-      let createRowImpl : System.Func<IVector<obj>, 'TRow> = 
-        unbox (makeRow.CreateDelegate(typeof<System.Func<IVector<obj>, 'TRow>>))
-      
-      // Save the created function in a cache before returning it
-      createdTypedRowsCache.Add((rowType, columnKeys), createRowImpl.Invoke)
-      createRowImpl.Invoke
+    let optTyp = typedefof<OptionalValue<_>>.MakeGenericType(fld.FieldType.GetGenericArguments().[0])
+    let localOpt = ilgen.DeclareLocal(optTyp)
+
+    ilgen.Emit(OpCodes.Ldarg_0)
+    ilgen.Emit(OpCodes.Ldfld, fld)
+    ilgen.Emit(OpCodes.Ldarg_0)
+    ilgen.Emit(OpCodes.Ldfld, addrField)
+    ilgen.Emit(OpCodes.Callvirt, fld.FieldType.GetMethod("GetValue"))
+    ilgen.Emit(OpCodes.Stloc, localOpt)
+
+    ilgen.Emit(OpCodes.Ldloca_S, localOpt)
+    ilgen.Emit(OpCodes.Call, optTyp.GetProperty("Value").GetGetMethod())
+    ilgen.Emit(OpCodes.Ret)
+  
+    rowImpl.DefineMethodOverride(impl, m)
+
+  let rowImplType = rowImpl.CreateType()
+  
+  let makeRow = DynamicMethod("Make" + rowType.Name, rowType, [| typeof<IVector<IVector>>; typeof<Address> |])
+  let ilgen = makeRow.GetILGenerator()
+
+  let locals = 
+    [ for m in rowType.GetMethods() ->
+        let localOpt = ilgen.DeclareLocal(typeof<OptionalValue<IVector>>)
+        ilgen.Emit(OpCodes.Ldarg_0)
+        ilgen.Emit(OpCodes.Ldc_I8, columnIndex (m.Name.Substring(4)))
+        ilgen.Emit(OpCodes.Callvirt, typeof<IVector<IVector>>.GetMethod("GetValue"))
+        ilgen.Emit(OpCodes.Stloc, localOpt)
+        localOpt, m.ReturnType ]
+
+  ilgen.Emit(OpCodes.Ldarg_1)
+  for loc, retTy in locals do 
+    ilgen.Emit(OpCodes.Ldloca, loc)
+    ilgen.Emit(OpCodes.Call, typeof<OptionalValue<IVector>>.GetProperty("Value").GetGetMethod())
+    ilgen.Emit(OpCodes.Castclass, typedefof<IVector<_>>.MakeGenericType(retTy))
+
+  let ctor = rowImplType.GetConstructors().[0]
+  ilgen.Emit(OpCodes.Newobj, ctor)
+  ilgen.Emit(OpCodes.Ret)
+
+  // Return a function that can be used for creating interface 
+  // instances from IVector<obj> values storing the data
+  let createRowImpl : System.Func<IVector<IVector>, Address, 'TRow> = 
+    unbox (makeRow.CreateDelegate(typeof<System.Func<IVector<IVector>, Address, 'TRow>>))
+
+  //let f = titanic.GetType().GetField("data@83", System.Reflection.BindingFlags.NonPublic ||| System.Reflection.BindingFlags.Instance)
+  //let data : IVector<IVector> = failwith "!" // f.GetValue(titanic) :?> IVector<IVector>
+
+  createTypedRowReaderHelper createRowImpl
+
 
 // --------------------------------------------------------------------------------------
 // Vector constructions
