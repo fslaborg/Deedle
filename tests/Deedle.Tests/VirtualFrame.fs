@@ -389,7 +389,7 @@ let ``Can add computed series as a new column to a frame with the same index``()
   set s2.AccessList |> shouldEqual <| set [5000001L]
 
 [<Test>]
-let ``Can index frame by a ordered column computed using series transform`` () =
+let ``Can index frame by an ordered column computed using series transform`` () =
   let s1, s2, f = createTicksFrame()
   f?Times <- f.GetColumn<int64>("Ticks") |> Series.convert fromTicks toTicks
   let byTimes = f |> Frame.indexRowsDateOffs "Times"
@@ -400,6 +400,18 @@ let ``Can index frame by a ordered column computed using series transform`` () =
   prev < date 2010 1 1 |> shouldEqual true
   next > date 2010 1 1 |> shouldEqual true
   ((date 2010 1 1) - prev).Ticks + (next - (date 2010 1 1)).Ticks |> shouldEqual 987654321L
+
+[<Test>]
+let ``Can replace column in a frame with a computed column (with the same index)``() =
+  let s1, s2, f = createNumericFrame()
+  let byDense = f.IndexRows<int>("Dense")
+  let sparseAsString = byDense.GetColumn<string>("Sparse")
+  byDense.ReplaceColumn("Sparse", sparseAsString)
+  // The 'Sparse' column is represented as vector of strings
+  f.Format(true).Contains("(string)") |> shouldEqual false
+  byDense.Format(true).Contains("(string)") |> shouldEqual true 
+
+// ------------------------------------------------------------------------------------------------
 
 [<Test>]
 let ``Can filter virtual frame by a value in a non-index column`` () = 
