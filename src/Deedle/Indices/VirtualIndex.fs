@@ -106,7 +106,10 @@ and VirtualIndexBuilder() =
     member x.Create<'K when 'K : equality>(keys:ReadOnlyCollection<'K>, ordered:option<bool>) : IIndex<'K> = failwith "Create"
     member x.Aggregate(index, aggregation, vector, selector) = failwith "Aggregate"
     member x.GroupBy(index, keySel, vector) = failwith "GroupBy"
-    member x.OrderIndex(sc) = failwith "OrderIndex"
+    member x.OrderIndex( (index, vector) ) = 
+      if index.IsOrdered then index, vector
+      else failwith "OrderIndex"
+
     member x.Shift(sc, offset) = failwith "Shift"
     member x.Union(sc1, sc2) = failwith "Union"
     member x.Intersect(sc1, sc2) = failwith "Intersect"

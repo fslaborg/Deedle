@@ -411,6 +411,13 @@ let ``Can replace column in a frame with a computed column (with the same index)
   f.Format(true).Contains("(string)") |> shouldEqual false
   byDense.Format(true).Contains("(string)") |> shouldEqual true 
 
+[<Test>]
+let ``Sorting a virtual frame that is already sorted does not throw an exception`` () =
+  let s1, s2, f1 = createSimpleFrame()
+  let f2 = f1.SortRowsByKey()
+  f1.RowIndex.IsOrdered |> shouldEqual true
+  f2.RowIndex.IsOrdered |> shouldEqual true
+
 // ------------------------------------------------------------------------------------------------
 
 [<Test>]
