@@ -572,20 +572,19 @@ module Frame =
   let stack (frame:Frame<'R, 'C>) =
     let rowKeys = frame.RowIndex.Keys
     let colKeys = frame.ColumnIndex.Keys
-    let rows = frame.Data.DataSequence |> Array.ofSeq
 
     // Build arrays with row keys, column keys and values
     let rowVec = ResizeArray<_>()
     let colVec = ResizeArray<_>()
     let valVec = ResizeArray<_>()
-    for row = 0 to rowKeys.Count - 1 do
-      for col = 0 to colKeys.Count - 1 do
-        let vec = rows.[col]
+    for rowKey in rowKeys do
+      for colKey in colKeys do
+        let vec = frame.Data.GetValue(frame.ColumnIndex.Locate(colKey))
         if vec.HasValue then 
-          let value = vec.Value.GetObject(Address.ofInt row)
+          let value = vec.Value.GetObject(frame.RowIndex.Locate(rowKey))
           if value.HasValue then 
-            rowVec.Add(rowKeys.[row])
-            colVec.Add(colKeys.[col])
+            rowVec.Add(rowKey)
+            colVec.Add(colKey)
             valVec.Add(value.Value)
 
     // Infer type of the values in the "value" vector 
@@ -749,7 +748,7 @@ module Frame =
   [<CompiledName("IndexRowsWith")>]
   let indexRowsWith (keys:seq<'R2>) (frame:Frame<'R1, 'C>) = 
     let newRowIndex = frame.IndexBuilder.Create(keys, None)
-    let getRange = VectorHelpers.getVectorRange frame.VectorBuilder (Range(0L, frame.RowIndex.KeyCount-1L))
+    let getRange = VectorHelpers.getVectorRange frame.VectorBuilder (Range(frame.RowIndex.AddressAt(0L), frame.RowIndex.AddressAt(frame.RowIndex.KeyCount-1L)))
     let newData = frame.Data.Select(getRange)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
@@ -887,10 +886,10 @@ module Frame =
         |> v.Invoke)
       Frame(Index.ofKeys [], frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder) 
     else
-      let cmd = GetRange(Return 0, Range(int64 lo, int64 hi))
+      let cmd = GetRange(Return 0, Range(lo, hi))
       let newData = frame.Data.Select(transformColumn frame.VectorBuilder cmd)
-      let newKeys = frame.RowIndex.Keys.[lo .. hi]
-      let idx = frame.IndexBuilder.Create(newKeys, if frame.RowIndex.IsOrdered then Some true else None)
+      let newKeys, _ = frame.RowIndex.Builder.GetAddressRange((frame.RowIndex, Vectors.Return 0), (lo,hi))
+      let idx = frame.IndexBuilder.Create(newKeys.Keys, if frame.RowIndex.IsOrdered then Some true else None)
       Frame(idx, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder) 
 
   /// Returns a frame that contains the specified `count` of rows from the 
@@ -901,7 +900,7 @@ module Frame =
   let take count (frame:Frame<'R, 'C>) =
     if count > frame.RowCount || count < 0 then 
       invalidArg "count" "Must be greater than zero and less than the number of keys."
-    getRange 0 (count - 1) frame
+    getRange (frame.RowIndex.AddressAt(0L)) (frame.RowIndex.AddressAt(count - 1 |> int64)) frame
 
   /// Returns a frame that contains the specified `count` of rows from the 
   /// original frame. The rows are taken from the end of the frame; `count`
@@ -912,7 +911,7 @@ module Frame =
   let takeLast count (frame:Frame<'R, 'C>) =
     if count > frame.RowCount || count < 0 then 
       invalidArg "count" "Must be greater than zero and less than the number of rows."
-    getRange (frame.RowCount-count) (frame.RowCount-1) frame
+    getRange (frame.RowIndex.AddressAt(frame.RowCount-count |> int64))  (frame.RowIndex.AddressAt(frame.RowCount-1 |> int64)) frame
 
   /// Returns a frame that contains the data from the original frame,
   /// except for the first `count` rows; `count` must be smaller or equal 
@@ -923,7 +922,7 @@ module Frame =
   let skip count (frame:Frame<'R, 'C>) =
     if count > frame.RowCount || count < 0 then 
       invalidArg "count" "Must be greater than zero and less than the number of rows."
-    getRange count (frame.RowCount-1) frame
+    getRange (frame.RowIndex.AddressAt(count |> int64)) (frame.RowIndex.AddressAt((frame.RowCount-1) |> int64)) frame
 
   /// Returns a frame that contains the data from the original frame,
   /// except for the last `count` rows; `count` must be smaller or equal to the
@@ -934,7 +933,7 @@ module Frame =
   let skipLast count (frame:Frame<'R, 'C>) = 
     if count > frame.RowCount || count < 0 then 
       invalidArg "count" "Must be greater than zero and less than the number of keys."
-    getRange 0 (frame.RowCount-1-count) frame
+    getRange (frame.RowIndex.AddressAt(0L)) (frame.RowIndex.AddressAt((frame.RowCount-1-count) |> int64))  frame
 
   /// Returns a new data frame containing only the rows of the input frame
   /// for which the specified predicate returns `true`. The predicate is called

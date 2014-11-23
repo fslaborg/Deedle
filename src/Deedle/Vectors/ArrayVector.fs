@@ -174,9 +174,9 @@ type ArrayVectorBuilder() =
               // NonOptional, but NonOptional will stay NonOptional
               match builder.buildArrayVector source arguments with 
               | VectorOptional data ->
-                  [| for idx in indices -> data.[int idx] |] |> vectorBuilder.CreateMissing 
+                  [| for address in indices -> data.[Address.asInt address] |] |> vectorBuilder.CreateMissing 
               | VectorNonOptional data ->
-                  [| for idx in indices -> data.[int idx] |] |> VectorNonOptional |> av
+                  [| for address in indices -> data.[Address.asInt address] |] |> VectorNonOptional |> av
 
 
       | Append(first, second) ->
@@ -296,6 +296,10 @@ type ArrayVectorBuilder() =
 and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) = 
   member internal vector.Representation = representation
 
+  // will inline op_Explicit(value: int64) : Address from the Address type
+  member inline private vector.GetAddress(offset) = Address.ofInt64 offset
+  member inline private vector.GetOffset(address : Address) = Address.asInt64 address
+
   // To string formatting & equality support
   override vector.ToString() = prettyPrintVector vector
   override vector.Equals(another) = 
@@ -327,10 +331,14 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
       | VectorNonOptional data when index < data.Length -> OptionalValue(box data.[index])
       | _ -> OptionalValue.Missing
 
+    member vector.GetAddress(index) = vector.GetAddress index
+    member vector.GetOffset(address : Address) = vector.GetOffset(address)
+    
+
   // Implement the typed vector interface
   interface IVector<'T> with
-    member vector.GetValue(index) = 
-      let index = Address.asInt index
+    member vector.GetValue(address) = 
+      let index = Address.asInt address
       match representation with
       | VectorOptional data when index < data.Length -> data.[index]
       | VectorNonOptional data when index < data.Length -> OptionalValue(data.[index])

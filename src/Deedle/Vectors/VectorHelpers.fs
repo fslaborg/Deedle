@@ -35,17 +35,11 @@ let prettyPrintVector (vector:IVector<'T>) =
   | VectorData.Sequence list -> printSequence "seq" (Seq.map (fun v -> v.ToString()) list) 
 
 type VectorRange with
-  /// Returns the number of elements in the range
-  member x.Count = 
-    match x with
-    | Custom c -> c.Count
-    | Range (lo, hi) -> hi - lo + 1L
-
   /// Creates a `Custom` range from a sequence of indices
-  static member ofSeq(indices, count) =
+  static member ofSeq(indices : seq<Address>, count) =
     { new IVectorRange with
         member x.Count = count
-      interface seq<int64> with 
+      interface seq<Address> with 
         member x.GetEnumerator() = (indices :> seq<_>).GetEnumerator() 
       interface System.Collections.IEnumerable with
         member x.GetEnumerator() = indices.GetEnumerator() :> _ } 
@@ -85,6 +79,8 @@ let createBoxedVector (vector:IVector<'TValue>) =
       member x.SelectMissing(f) = vector.SelectMissing(fun addr v -> f addr (OptionalValue.map box v))
       member x.Convert(f, g) = vector.Convert(box >> f, g >> unbox)
     interface IVector with
+      member x.GetAddress(i) = vector.GetAddress(i)
+      member x.GetOffset(a) = vector.GetOffset(a)
       member x.Length = vector.Length
       member x.ObjectSequence = vector.ObjectSequence
       member x.SuppressPrinting = vector.SuppressPrinting
@@ -129,6 +125,8 @@ let lazyMapVector f (vector:IVector<'TValue>) : IVector<'TResult> =
     interface IWrappedVector<'TResult> with
       member x.UnwrapVector() = unwrapVector.Value
     interface IVector with
+      member x.GetAddress(i) = vector.GetAddress(i)
+      member x.GetOffset(a) = vector.GetOffset(a)
       member x.Length = vector.Length
       member x.ObjectSequence = vector.ObjectSequence
       member x.SuppressPrinting = vector.SuppressPrinting
@@ -331,7 +329,9 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddre
   override vector.GetHashCode() = vector.DataSequence |> Seq.structuralHash
 
   member private vector.DataArray =
-    Array.init (int data.Length) (fun addr -> (vector :> IVector<_>).GetValue(Address.ofInt addr))
+    Array.init (int data.Length) (fun index -> 
+      let v = (vector :> IVector<_>)
+      v.GetValue(v.GetAddress(int64 index)))
       
   // In the generic vector implementation, we
   // read data as objects and perform conversion
@@ -344,11 +344,13 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddre
     member vector.Data = 
       vector.DataArray |> ReadOnlyCollection.ofArray |> VectorData.SparseList 
 
-    member vector.SelectMissing(f) = 
+    member vector.SelectMissing(f) = //: Address -> OptionalValue<'T> -> OptionalValue<_>
       let isNA = MissingValues.isNA<'TNewValue>() 
       let flattenNA (value:OptionalValue<_>) = 
         if value.HasValue && isNA value.Value then OptionalValue.Missing else value
-      let data = vector.DataArray |> Array.mapi (fun i v -> f (Address.ofInt i) v |> flattenNA)
+      let data = 
+        vector.DataArray 
+        |> Array.mapi (fun idx v -> f (data.GetAddress(int64 idx)) v |> flattenNA)
       builder.CreateMissing(data)
 
     member vector.Select(f) = 
@@ -358,6 +360,8 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddre
       
   // Non-generic interface is fully implemented as "virtual"   
   interface IVector with
+    member x.GetAddress(i) = data.GetAddress(i)
+    member x.GetOffset(a) = data.GetOffset(a)
     member x.Length = data.Length
     member x.ObjectSequence = x.DataArray |> Seq.map (OptionalValue.map box)
     member x.SuppressPrinting = false

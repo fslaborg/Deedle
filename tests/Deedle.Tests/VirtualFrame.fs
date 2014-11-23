@@ -12,6 +12,7 @@ open System
 open FsUnit
 open NUnit.Framework
 open Deedle
+open Deedle.Addressing
 open Deedle.Virtual
 open Deedle.Vectors.Virtual
 
@@ -23,23 +24,35 @@ type LinearSubRange =
   { Offset : int; Step : int }
   interface Vectors.IVectorRange with
     member x.Count = failwith "Count not supported"
-  interface seq<int64> with
-    member x.GetEnumerator() : System.Collections.Generic.IEnumerator<int64> = failwith "hard!"
+  interface seq<Address> with
+    member x.GetEnumerator() : System.Collections.Generic.IEnumerator<Address> = failwith "hard!"
   interface System.Collections.IEnumerable with
     member x.GetEnumerator() : System.Collections.IEnumerator = failwith "hard!"
 
-type TrackingSource<'T>(ranges, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?search) = 
-  member val AccessListCell = ref [] with get, set
+type TrackingSource<'T>(ranges:(int64*int64) list, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?search) = 
+  let ranges = ranges //|> Seq.map (fun (f,s) -> Address(f),Address(s))
+  member val AccessListCell : int64 list ref = ref [] with get, set
   member val LookupListCell = ref [] with get, set
   member val IsTracking = true with get, set
   member val HasMissing = true with get, set
   member x.AccessList = List.rev x.AccessListCell.Value
   member x.LookupList = List.rev x.LookupListCell.Value
-  member x.Ranges = ranges
+  member x.Ranges = ranges 
+  member x.Length = ranges |> Seq.sumBy (fun (lo, hi) -> hi - lo + 1L)
+  member x.AddressAt(index) = 
+    let res = Address.ofInt64 index
+    res
+  member x.IndexAt(address) = 
+    let res = Address.asInt64 address
+    res
 
   interface IVirtualVectorSource with
-    member x.Length = ranges |> Seq.sumBy (fun (lo, hi) -> hi - lo + 1L)
+    member x.Length = x.Length
     member x.ElementType = typeof<'T>
+    member x.AddressAt(index) = 
+      let res = x.AddressAt(index)
+      res
+    member x.IndexAt(address) = x.IndexAt(address)
 
   interface IVirtualVectorSource<'T> with
     member x.MergeWith(sources) = 
@@ -54,6 +67,7 @@ type TrackingSource<'T>(ranges, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?searc
       | None -> failwith "Search not supported"
 
     member x.LookupValue(k, l, c) = 
+      let c = Func<int64,bool>(fun i -> c.Invoke(Address.ofInt64 i))
       if x.IsTracking then x.LookupListCell := (k, l) :: !x.LookupListCell
       let asLong = match asLong with None -> failwith "Lookup not supported" | Some g -> g
       let found = ranges |> Seq.fold (fun state (lo, hi) ->
@@ -66,31 +80,34 @@ type TrackingSource<'T>(ranges, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?searc
               else Choice1Of2(offset + hi - lo + 1L)
           | res -> res ) (Choice1Of2 0L)
       match found with 
-      | Choice2Of2 r -> r
+      | Choice2Of2 r -> OptionalValue((fst r.Value, Address.ofInt64(snd r.Value)))
       | _ -> OptionalValue.Missing
 
     member x.ValueAt addr = 
+      let r = ranges
       let res = 
-        ranges |> List.fold (fun state (lo, hi) ->
+        r |> List.fold (fun (state:Choice<int64,int64>) (lo, hi) ->
           match state with
           | Choice1Of2 offset ->
-              if addr >= offset && addr <= offset+hi-lo then
-                Choice2Of2((addr - offset) + lo)
+              if (Address.asInt64 addr) >= offset && (Address.asInt64 addr) <= offset+hi-lo then
+                Choice2Of2(((int64 addr) - offset) + lo)
               else Choice1Of2(offset + hi - lo + 1L)
           | res -> res) (Choice1Of2 0L)
       match res with
       | Choice2Of2 absAddr ->
           if x.IsTracking then x.AccessListCell := absAddr  :: !x.AccessListCell
-          if x.HasMissing && (addr % 3L = 0L) then OptionalValue.Missing
+          if x.HasMissing && ((int64 addr) % 3L = 0L) then OptionalValue.Missing
           else OptionalValue(valueAt absAddr )
-      | _ -> failwith "ValueAt: out of range"
+      | Choice1Of2 oor -> failwith <| "ValueAt: out of range: " + oor.ToString()
 
     member x.GetSubVector(range) = 
       match range with
-      | Vectors.Range(nlo, nhi) ->
+      | Vectors.Range (nlo, nhi) ->
+//          let nlo = Address.asInt64 nlo
+//          let nhi = Address.asInt64 nhi
           if nhi < nlo then invalidOp "hi < lo"
-          elif nlo < 0L then invalidOp "lo < 0"
-          elif nhi > (x:>IVirtualVectorSource).Length then invalidOp "hi > max"
+          elif nlo < x.AddressAt(0L) then invalidOp "lo < 0"
+          elif nhi > x.AddressAt(x.Length-1L) then invalidOp "hi > max" // TODO -1
 
           // This is not entirely correct, but it works well enough for tests..
           let _, ranges = 
@@ -101,8 +118,8 @@ type TrackingSource<'T>(ranges, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?searc
 
           let subRange = 
             ranges |> List.tryPick (fun ((lo, hi), (absLo, absHi)) ->
-              if nlo >= lo && nhi <= hi then
-                Some(absLo + (nlo - lo), absHi + (nhi - hi))
+              if nlo >= x.AddressAt lo && nhi <= x.AddressAt hi then
+                Some(absLo + (x.IndexAt(nlo) - lo), absHi + (x.IndexAt(nhi) - hi))
               else None)
           
           let absLo, absHi = 
@@ -155,9 +172,9 @@ let ``Lookup and ValueAt works on merged tracking sources`` () =
   let source1 = TrackingSource.CreateTimes(0L, 10L) :> IVirtualVectorSource<_>
   let source2 = TrackingSource.CreateTimes(10000000L, 10000010L) :> IVirtualVectorSource<_>
   let sources = source1.MergeWith [source2]
-  source1.ValueAt(0L).Value |> shouldEqual (ith 0L)
-  source2.ValueAt(0L).Value |> shouldEqual (ith 10000000L)
-  sources.ValueAt(11L).Value |> shouldEqual (ith 10000000L)
+  source1.ValueAt(Address.ofInt64 0L).Value |> shouldEqual (ith 0L)
+  source2.ValueAt(Address.ofInt64 0L).Value |> shouldEqual (ith 10000000L)
+  sources.ValueAt(Address.ofInt64 11L).Value |> shouldEqual (ith 10000000L)
   sources.LookupValue(ith 0L, Lookup.Exact, fun _ -> true).Value |> fst |> shouldEqual (ith 0L)
   sources.LookupValue(ith 10L, Lookup.Exact, fun _ -> true).Value |> fst |> shouldEqual (ith 10L)
   sources.LookupValue(ith 100L, Lookup.Exact, fun _ -> true).HasValue |> shouldEqual false

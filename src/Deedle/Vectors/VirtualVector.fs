@@ -24,6 +24,9 @@ type IVirtualVectorSource =
   /// needs to know the length of the source (e.g. for binary search)
   abstract Length : int64
 
+  /// Return address at a specified index
+  abstract AddressAt : int64 -> Address
+  abstract IndexAt : Address -> int64
 
 /// Represents a data source for Big Deedle. The interface is used both as a representation
 /// of data source for `VirtualVector` (this file) and `VirtualIndex` (another file). The 
@@ -34,7 +37,9 @@ type IVirtualVectorSource<'V> =
 
   /// Returns the value at the specifid address. We assume that the address is in range 
   /// [0L, Length-1L] and that each location has a value (or has a missing value, but is valid)
-  abstract ValueAt : int64 -> OptionalValue<'V>
+  abstract ValueAt : Address -> OptionalValue<'V>
+
+
 
   /// Find a range (continuous or a sequence of indices) such that all values in the range are 
   /// the specified value. This is used, for example, when filtering frame based on column
@@ -74,7 +79,7 @@ module VirtualVectorSource =
 
   let rec boxSource (source:IVirtualVectorSource<'T>) =
     { new IVirtualVectorSource<obj> with
-        member x.ValueAt(idx) = source.ValueAt(idx) |> OptionalValue.map box
+        member x.ValueAt(address) = source.ValueAt(address) |> OptionalValue.map box
         member x.LookupRange(search) = failwith "Search not implemented on combined vector"
         member x.LookupValue(v, l, c) = failwith "Lookup not implemented on combined vector" 
         member x.GetSubVector(range) = boxSource (source.GetSubVector(range))
@@ -87,16 +92,20 @@ module VirtualVectorSource =
           | None -> failwith "Cannot box frames or series not created by combine"
           | Some sources ->
               boxSource (source.MergeWith(sources))
-
+      
       interface IBoxedVectorSource<'T> with
         member x.Source = source
       interface IVirtualVectorSource with
         member x.ElementType = typeof<obj>
-        member x.Length = source.Length }
+        member x.Length = source.Length
+        member x.AddressAt(index) = source.AddressAt(index)
+        member x.IndexAt(address) = source.IndexAt(address)
+
+    }
 
   let rec combine (f:OptionalValue<'T> list -> OptionalValue<'R>) (sources:IVirtualVectorSource<'T> list) : IVirtualVectorSource<'R> = 
     { new IVirtualVectorSource<'R> with
-        member x.ValueAt(idx) = f [ for s in sources -> s.ValueAt(idx)  ]
+        member x.ValueAt(address) = f [ for s in sources -> s.ValueAt(address)  ]
         member x.LookupRange(search) = failwith "Search not implemented on combined vector"
         member x.LookupValue(v, l, c) = failwith "Lookup not implemented on combined vector" 
         member x.GetSubVector(range) = combine f [ for s in sources -> s.GetSubVector(range) ]
@@ -116,13 +125,15 @@ module VirtualVectorSource =
                     let sh,st = match [ for s in sources -> s.[i] ] with sh::st -> sh, st | _ -> failwith "Merge requires one or more sources"  // ....
                     sh.MergeWith(st) ]
               combine f toCombine 
-
       interface ICombinedVectorSource<'T> with
         member x.Sources = sources
         member x.Function = () 
       interface IVirtualVectorSource with
+        member x.AddressAt(index) = sources |> Seq.map (fun s -> s.AddressAt(index) ) |> Seq.reduce (fun a b -> if a <> b then failwith "Address mismatch" else a)
+        member x.IndexAt(address) = sources |> Seq.map (fun s -> s.IndexAt(address) ) |> Seq.reduce (fun a b -> if a <> b then failwith "Address mismatch" else a)
         member x.ElementType = typeof<'R>
-        member x.Length = sources |> Seq.map (fun s -> s.Length) |> Seq.reduce (fun a b -> if a <> b then failwith "Length mismatch" else a) }
+        member x.Length = sources |> Seq.map (fun s -> s.Length) |> Seq.reduce (fun a b -> if a <> b then failwith "Length mismatch" else a) 
+    }
 
   let rec map rev f (source:IVirtualVectorSource<'V>) = 
     let withReverseLookup op = 
@@ -131,7 +142,7 @@ module VirtualVectorSource =
       | Some g -> op g
 
     { new IVirtualVectorSource<'TNew> with
-        member x.ValueAt(idx) = f (Address.ofInt64 idx) (source.ValueAt(idx)) // TODO: Are we calculating the address correctly here??
+        member x.ValueAt(address) = f (address) (source.ValueAt(address)) // TODO: Are we calculating the address correctly here??
         member x.MergeWith(sources) = 
           let sources = sources |> List.ofSeq |> List.tryChooseBy (function
               | :? IMappedVectorSource<'V, 'TNew> as src -> Some(src.Source) | _ -> None)
@@ -155,15 +166,16 @@ module VirtualVectorSource =
                 | OptionalValue.Present(rv) -> Object.Equals(search, rv) // TODO: Object.Equals is not so good here
                 | _ -> false
           
-          let scanIndices = 
+          let scanIndices : Address array = 
             Seq.range 0L (source.Length-1L)
+            |> Seq.map source.AddressAt
             |> Seq.filter (fun i -> 
-                scanFunc (Address.ofInt64 i) (source.ValueAt(i)) )
+                scanFunc (i) (source.ValueAt(i)) )
             |> Array.ofSeq
 
           { new IVectorRange with
               member x.Count = scanIndices |> Seq.length |> int64 // TODO: SLOW!
-            interface seq<int64> with 
+            interface seq<Address> with 
               member x.GetEnumerator() = (scanIndices :> seq<_>).GetEnumerator() // TODO: SLow
             interface System.Collections.IEnumerable with
               member x.GetEnumerator() = scanIndices.GetEnumerator() } //TODO: Slow
@@ -177,12 +189,16 @@ module VirtualVectorSource =
                   |> OptionalValue.map (fun v -> v, a))  )
 
         member x.GetSubVector(range) = map rev f (source.GetSubVector(range))
+      
       interface IMappedVectorSource<'V, 'TNew> with
         member x.Source = source
         member x.Function = ()
       interface IVirtualVectorSource with
         member x.ElementType = typeof<'TNew>
-        member x.Length = source.Length }
+        member x.Length = source.Length
+        member x.AddressAt(index) = source.AddressAt(index)
+        member x.IndexAt(address) = source.IndexAt(address)
+    }
 
 
 [<Extension>]
@@ -202,11 +218,13 @@ type VirtualVector<'V>(source:IVirtualVectorSource<'V>) =
     member vector.Length = source.Length
     member vector.SuppressPrinting = false
     member vector.GetObject(index) = source.ValueAt(index) |> OptionalValue.map box
-    member vector.ObjectSequence = seq { for i in Seq.range 0L (source.Length-1L) -> source.ValueAt(i) |> OptionalValue.map box }
+    member vector.ObjectSequence = seq { for i in Seq.range 0L (source.Length-1L) -> source.ValueAt(source.AddressAt(i)) |> OptionalValue.map box }
     member vector.Invoke(site) = site.Invoke<'V>(vector)
+    member vector.GetAddress(offset) = source.AddressAt(offset)
+    member vector.GetOffset(address : Address) = source.IndexAt(address)
   interface IVector<'V> with
-    member vector.GetValue(index) = source.ValueAt(index)
-    member vector.Data = seq { for i in Seq.range 0L (source.Length-1L) -> source.ValueAt(i) } |> VectorData.Sequence
+    member vector.GetValue(address) = source.ValueAt(address)
+    member vector.Data = seq { for i in Seq.range 0L (source.Length-1L) -> source.ValueAt(source.AddressAt(i)) } |> VectorData.Sequence
     member vector.SelectMissing<'TNew>(f:Address -> OptionalValue<'V> -> OptionalValue<'TNew>) = 
       VirtualVector(VirtualVectorSource.map None f source) :> _
     member vector.Select(f) = 
@@ -318,8 +336,8 @@ type VirtualVectorBuilder() =
 
             let rec createRowReader (vectors:IVector<IVector>) (sources:IVirtualVectorSource<'T> list) : IVirtualVectorSource<IVector<obj>> = 
               { new IVirtualVectorSource<IVector<obj>> with
-                  member x.ValueAt(idx) = 
-                    OptionalValue(RowReaderVector<_>(vectors, builder, Address.ofInt64 idx) :> IVector<_>)
+                  member x.ValueAt(address) = 
+                    OptionalValue(RowReaderVector<_>(vectors, builder, address) :> IVector<_>)
                   member x.LookupRange(search) = failwith "Search not implemented on combined vector"
                   member x.LookupValue(v, l, c) = failwith "Lookup not implemented on combined vector" 
                   member x.GetSubVector(range) = 
@@ -349,7 +367,10 @@ type VirtualVectorBuilder() =
                   member x.Function = () 
                 interface IVirtualVectorSource with
                   member x.ElementType = typeof<IVector<obj>>
-                  member x.Length = sources |> Seq.map (fun s -> s.Length) |> Seq.reduce (fun a b -> if a <> b then failwith "Length mismatch" else a) }
+                  member x.Length = sources |> Seq.map (fun s -> s.Length) |> Seq.reduce (fun a b -> if a <> b then failwith "Length mismatch" else a) 
+                  member x.AddressAt(index) = sources |> Seq.map (fun s -> s.AddressAt(index) ) |> Seq.reduce (fun a b -> if a <> b then failwith "Address mismatch" else a)
+                  member x.IndexAt(address) = sources |> Seq.map (fun s -> s.IndexAt(address) ) |> Seq.reduce (fun a b -> if a <> b then failwith "Address mismatch" else a)
+              }
 
             let data = Vector.ofValues [ for v in builtSources -> v :> IVector ]
             let newSource = createRowReader data sources
