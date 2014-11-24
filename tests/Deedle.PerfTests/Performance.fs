@@ -75,36 +75,23 @@ type ITitanicRow =
   abstract Pclass : int
   abstract Name : string
 
-[<Test>]
-let ``Can access rows as a typed series via an interface`` () = 
+[<Test; PerfTest(Iterations=50)>]
+let ``Sum column using typed rows`` () = 
   let rows = titanic.GetRowsAs<ITitanicRow>()
-  // ~160ms
-  for i in 0 .. 250 do 
-    rows.Values |> Seq.filter (fun r -> r.Survived) |> Seq.length |> ignore
-
-  // ~322ms
-  for i in 0 .. 250 do 
-    titanic.Rows.Values |> Seq.filter (fun r -> r.GetAs "Survived") |> Seq.length |> ignore
-
-  // 30ms
-  do
-    let r = rows.[400]
+  for j in 0 .. 10 do
     let mutable c = 0
-    for i in 0 .. 1000000 do
-      c <- c + r.Pclass 
+    for i in fst rows.KeyRange .. snd rows.KeyRange do
+      c <- c + rows.[i].Pclass 
+    c |> shouldEqual 2057
 
-  // 700ms
-  do
-    let r = titanic.Rows.[400]
+[<Test; PerfTest(Iterations=5)>]
+let ``Sum column using untyped rows`` () = 
+  let rows = titanic.Rows
+  for j in 0 .. 10 do
     let mutable c = 0
-    for i in 0 .. 1000000 do
-      c <- c + r.GetAs<int>("Pclass")
-
-  // ~12ms
-  for i in 0 .. 250 do 
-    titanic.Rows |> ignore
-
-
+    for i in fst rows.KeyRange .. snd rows.KeyRange do
+      c <- c + titanic.Rows.[i].GetAs<int>("Pclass")
+    c |> shouldEqual 2057
 
 [<Test; PerfTest(Iterations=10)>]
 let ``Numerical operators on 20x10k frame``() =

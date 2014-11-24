@@ -164,19 +164,30 @@ let ``Can create frame from IDataReader``() =
 // ------------------------------------------------------------------------------------------------
 
 type IMsftRow =
-  abstract Open : float
-  abstract High : float
-  abstract Low : float
-  abstract Close : float
-  abstract Volume : int64
-  abstract ``Adj Close`` : float
+  abstract Open : decimal
+  abstract High : decimal
+  abstract Low : decimal
+  abstract Close : decimal
+  abstract Volume : int
+  abstract ``Adj Close`` : decimal
 
 [<Test>]
 let ``Can access rows as a typed series via an interface`` () = 
   let df = msft()
   let rows = df.GetRowsAs<IMsftRow>()
-  rows.[DateTime(2000, 10, 10)].Close |> shouldEqual <| df.Rows.[DateTime(2000, 10, 10)]?Close
+  rows.[DateTime(2000, 10, 10)].Close 
+  |> shouldEqual <| df.Rows.[DateTime(2000, 10, 10)].GetAs<decimal>("Close")
 
+type IAandOptB =
+  abstract A : float
+  abstract B : OptionalValue<float>
+
+[<Test>]
+let ``Can access missing data via typed rows`` () = 
+  let df = frame [ "A" => Series.ofValues [1.0; 2.0]; "B" => Series.ofValues [1.0] ]
+  df.GetRowsAs<IAandOptB>().[0].B |> shouldEqual <| OptionalValue(1.0)
+  df.GetRowsAs<IAandOptB>().[1].B |> shouldEqual <| OptionalValue.Missing
+  
 [<Test>]
 let ``Cannot access typed rows when column is not available`` () =
   let df = frame [ "Open" => Series.ofValues [ 1 .. 10 ] ]
