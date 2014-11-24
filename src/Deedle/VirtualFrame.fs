@@ -78,7 +78,7 @@ type Virtual() =
 
   static member CreateOrdinalSeries(source) =
     let vector = VirtualVector(source)
-    let index = VirtualOrdinalIndex(0L, source.Length-1L)
+    let index = VirtualOrdinalIndex(Ranges.Create [ 0L, source.Length-1L ])
     Series(index, vector, VirtualVectorBuilder.Instance, VirtualIndexBuilder.Instance)
 
   static member CreateSeries(indexSource:IVirtualVectorSource<_>, valueSource:IVirtualVectorSource<_>) =
@@ -97,7 +97,7 @@ type Virtual() =
       | _ -> invalidArg "sources" "Sources should have the same length!" ) None
     if count = None then invalidArg "sources" "At least one column is required"
     let count = count.Value
-    createFrame (VirtualOrdinalIndex(0L, count-1L)) (Index.ofKeys (ReadOnlyCollection.ofSeq keys)) sources
+    createFrame (VirtualOrdinalIndex(Ranges.Create [0L, count-1L])) (Index.ofKeys (ReadOnlyCollection.ofSeq keys)) sources
 
   static member CreateFrame(indexSource:IVirtualVectorSource<_>, keys, sources:seq<IVirtualVectorSource>) = 
     for sc in sources do 
