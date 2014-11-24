@@ -171,12 +171,23 @@ type IMsftRow =
   abstract Volume : int
   abstract ``Adj Close`` : decimal
 
+type IMsftFloatSubRow =
+  abstract High : float
+  abstract Low : float
+
 [<Test>]
 let ``Can access rows as a typed series via an interface`` () = 
   let df = msft()
   let rows = df.GetRowsAs<IMsftRow>()
   rows.[DateTime(2000, 10, 10)].Close 
   |> shouldEqual <| df.Rows.[DateTime(2000, 10, 10)].GetAs<decimal>("Close")
+
+[<Test>]
+let ``Can access rows as a typed series via an interface with convertible types`` () = 
+  let df = msft()
+  let rows = df.GetRowsAs<IMsftFloatSubRow>()
+  rows.[DateTime(2000, 10, 10)].High
+  |> shouldEqual <| df.Rows.[DateTime(2000, 10, 10)]?High
 
 type IAandOptB =
   abstract A : float
@@ -190,7 +201,7 @@ let ``Can access missing data via typed rows`` () =
   
 [<Test>]
 let ``Cannot access typed rows when column is not available`` () =
-  let df = frame [ "Open" => Series.ofValues [ 1 .. 10 ] ]
+  let df = frame [ "Open" => Series.ofValues [ 1.0M .. 10.0M ] ]
   let error = try ignore(df.GetRowsAs<IMsftRow>()); "" with e -> e.Message
   error |> should contain "High"
 

@@ -75,14 +75,26 @@ type ITitanicRow =
   abstract Pclass : int
   abstract Name : string
 
+type ITitanicFloatPClassRow =
+  abstract Pclass : float
+
 [<Test; PerfTest(Iterations=50)>]
 let ``Sum column using typed rows`` () = 
   let rows = titanic.GetRowsAs<ITitanicRow>()
-  for j in 0 .. 10 do
+  for j in 0 .. 10 do 
     let mutable c = 0
     for i in fst rows.KeyRange .. snd rows.KeyRange do
       c <- c + rows.[i].Pclass 
     c |> shouldEqual 2057
+
+[<Test; PerfTest(Iterations=50)>]
+let ``Sum column using typed rows with conversion`` () = 
+  let rows = titanic.GetRowsAs<ITitanicFloatPClassRow>() 
+  for j in 0 .. 10 do 
+    let mutable c = 0.0
+    for i in fst rows.KeyRange .. snd rows.KeyRange do
+      c <- c + rows.[i].Pclass 
+    c |> shouldEqual 2057.0
 
 [<Test; PerfTest(Iterations=5)>]
 let ``Sum column using untyped rows`` () = 
