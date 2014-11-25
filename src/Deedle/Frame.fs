@@ -515,9 +515,6 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Accessors and slicing]
   member frame.GetRowsAs<'TRow>() : Series<'TRowKey, 'TRow> =    
-    // This is similar to 'frame.Rows' but rather than returning 'ObjectSeries',
-    // we build a Series that contains values of the 'TRow interface.
-
     if typeof<'TColumnKey> <> typeof<string> then 
       failwith "The GetRows operation can only be used when column key is a string."
 
@@ -527,14 +524,6 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       if address = Address.Invalid then
         failwithf "The interface member '%s' does not exist in the column index." column
       address )
-
-    // We get a vector containing boxed `IVector<obj>` - we turn it into a
-    // vector containing `ObjectSeries`, but lazily to avoid allocations
-    //let vector = createCombinedRowVector () 
-
-    //let vector = vector |> VectorHelpers.lazyMapVector (fun o -> 
-    //  let rowReader = unbox<IVector<obj>> o
-    //  rowBuilder rowReader )
 
     let vector = rowBuilder rowIndex.KeyCount data
     Series<'TRowKey, 'TRow>(rowIndex, vector, vectorBuilder, indexBuilder)
