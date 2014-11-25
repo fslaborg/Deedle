@@ -81,7 +81,7 @@ type TrackingSource<'T>(ranges, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?searc
       match res with
       | Choice2Of2 absAddr ->
           if x.IsTracking then x.AccessListCell := absAddr  :: !x.AccessListCell
-          if x.HasMissing && (addr % 3L = 0L) then OptionalValue.Missing
+          if x.HasMissing && (absAddr % 3L = 0L) then OptionalValue.Missing
           else OptionalValue(valueAt absAddr )
       | _ -> failwith "ValueAt: out of range"
 
@@ -196,10 +196,18 @@ let ``Can take, skip etc. without evaluating the series`` () =
   src.AccessList |> Seq.length |> shouldEqual 10
   s1 |> Series.skipLast (10000000-9) |> Stats.sum |> shouldEqual 27.0
   src.AccessList |> Seq.length |> shouldEqual 20
-  s1 |> Series.skip (10000000-9) |> Stats.sum |> shouldEqual 59999973.0
+  s1 |> Series.skip (10000000-9) |> Stats.sum |> shouldEqual 69999967.0
   src.AccessList |> Seq.length |> shouldEqual 30
-  s1 |> Series.takeLast 10 |> Stats.sum |> shouldEqual 59999973.0
+  s1 |> Series.takeLast 10 |> Stats.sum |> shouldEqual 69999967.0
   src.AccessList |> Seq.length |> shouldEqual 40
+
+[<Test>]
+let ``Sliced series contains same values as original series`` () = 
+  let src = TrackingSource.CreateFloats(0L, 10000000L)
+  let s1 = Virtual.CreateOrdinalSeries(src)
+  let s2 = s1.[5123457L .. 5123557L]
+  for i in 5123457L .. 5123557L do
+    s1.TryGet(i) |> shouldEqual <| s2.TryGet(i)
 
 [<Test>]
 let ``Can perform slicing without evaluating the series`` () = 
@@ -208,7 +216,7 @@ let ``Can perform slicing without evaluating the series`` () =
   let s2 = s1.[10000000L-9L ..]
   let s3 = s1.[.. 9L]
 
-  (Stats.sum s2) + (Stats.sum s3) |> shouldEqual 60000000.0
+  (Stats.sum s2) + (Stats.sum s3) |> shouldEqual 69999994.0
   src.AccessList |> Seq.length |> shouldEqual 20
   src.AccessList |> Seq.sum |> shouldEqual 100000000L
 
@@ -361,10 +369,14 @@ let ``Can perform slicing on frame using the Rows property`` () =
   f4.RowIndex.KeyRange
   |> shouldEqual (500000L, 500005L)
 
+  let expected = 
+    [ for i in 500000L .. 500005L -> 
+        f1.GetColumn<string>("S2").TryGet(i) |> OptionalValue.asOption ]
+
   f4.GetColumn<string>("S2") 
-  |> Series.values
+  |> Series.valuesAll
   |> List.ofSeq
-  |> shouldEqual ["ipsum"; "dolor"; "amet"; "consectetur"]
+  |> shouldEqual expected
 
 [<Test>]
 let ``Can access Columns of a virtual frame without evaluating the data`` () =
@@ -389,7 +401,7 @@ let ``Can add computed series as a new column to a frame with the same index``()
   set s2.AccessList |> shouldEqual <| set [5000001L]
 
 [<Test>]
-let ``Can index frame by a ordered column computed using series transform`` () =
+let ``Can index frame by an ordered column computed using series transform`` () =
   let s1, s2, f = createTicksFrame()
   f?Times <- f.GetColumn<int64>("Ticks") |> Series.convert fromTicks toTicks
   let byTimes = f |> Frame.indexRowsDateOffs "Times"
@@ -400,6 +412,57 @@ let ``Can index frame by a ordered column computed using series transform`` () =
   prev < date 2010 1 1 |> shouldEqual true
   next > date 2010 1 1 |> shouldEqual true
   ((date 2010 1 1) - prev).Ticks + (next - (date 2010 1 1)).Ticks |> shouldEqual 987654321L
+
+[<Test>]
+let ``Can replace column in a frame with a computed column (with the same index)``() =
+  let s1, s2, f = createNumericFrame()
+  let byDense = f.IndexRows<int>("Dense")
+  let sparseAsString = byDense.GetColumn<string>("Sparse")
+  byDense.ReplaceColumn("Sparse", sparseAsString)
+  // The 'Sparse' column is represented as vector of strings
+  f.Format(true).Contains("(string)") |> shouldEqual false
+  byDense.Format(true).Contains("(string)") |> shouldEqual true 
+
+[<Test>]
+let ``Sorting a virtual frame that is already sorted does not throw an exception`` () =
+  let s1, s2, f1 = createSimpleFrame()
+  let f2 = f1.SortRowsByKey()
+  f1.RowIndex.IsOrdered |> shouldEqual true
+  f2.RowIndex.IsOrdered |> shouldEqual true
+
+[<Test>]
+let ``Can merge ordinally-indexed virtual frames`` () = 
+  let s1, s2, f = createSimpleFrame()
+  let fs = f.Rows.[1000000L .. 2000000L]
+  let fe = f.Rows.[5000001L .. 6000001L]
+  let m = fs.Merge(fe)
+
+  for idx, fpart in [ 1000000L,fs; 1500000L,fs; 2000000L,fs; 5000001L,fe; 5500001L,fe; 6000001L,fe ] do
+    m.Rows.[idx] |> shouldEqual f.Rows.[idx]
+    m.Rows.[idx] |> shouldEqual fpart.Rows.[idx]
+  
+[<Test>]
+let ``Can merge ordinally-indexed virtual series of rows`` () = 
+  let s1, s2, f = createSimpleFrame()
+  let fsr = f.Rows.[1000000L .. 2000000L].Rows
+  let fer = f.Rows.[5000001L .. 6000001L].Rows
+  let fmr = fsr.Merge(fer)
+
+  fmr.KeyCount |> shouldEqual (fsr.KeyCount + fer.KeyCount)
+  for idx, fpart in [ 1000000L,fsr; 1500000L,fsr; 2000000L,fsr; 5000001L,fer; 5500001L,fer; 6000001L,fer ] do
+    fmr.[idx] |> shouldEqual f.Rows.[idx]
+    fmr.[idx] |> shouldEqual fpart.[idx]
+
+[<Test>]
+let ``Merging overlapping ordinally-indexed virtual frames fails`` () = 
+  let s1, s2, f = createSimpleFrame()
+  let f0 = f.Rows.[1000000L .. 2000000L]
+  (fun _ -> f0.Merge(f.Rows.[2000000L .. 3000000L]) |> ignore) |> shouldThrow<InvalidOperationException>
+  (fun _ -> f0.Merge(f.Rows.[0900000L .. 1000000L]) |> ignore) |> shouldThrow<InvalidOperationException>
+  (fun _ -> f0.Merge(f.Rows.[0500000L .. 1500000L]) |> ignore) |> shouldThrow<InvalidOperationException>
+  (fun _ -> f0.Merge(f.Rows.[1500000L .. 2500000L]) |> ignore) |> shouldThrow<InvalidOperationException>
+
+// ------------------------------------------------------------------------------------------------
 
 [<Test>]
 let ``Can filter virtual frame by a value in a non-index column`` () = 
@@ -463,7 +526,6 @@ let ``Can merge virtual series of rows indexed by time`` () =
   fmr.[ith 7670246L] |> shouldEqual <| fer.[ith 7670246L]
 
 
-// TODO: Merge ordinally indexed virtual frames
 
 
 

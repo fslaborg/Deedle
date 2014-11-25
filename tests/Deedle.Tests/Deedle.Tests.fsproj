@@ -76,6 +76,7 @@
     <Compile Include="Series.fs" />
     <Compile Include="Frame.fs" />
     <Compile Include="LazySeries.fs" />
+    <Compile Include="Ranges.fs" />
     <Compile Include="VirtualFrame.fs" />
     <None Include="packages.config" />
   </ItemGroup>

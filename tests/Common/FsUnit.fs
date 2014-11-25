@@ -88,6 +88,14 @@ type Recorder<'T>() =
 module Extensions =
   // like "should equal", but validates same-type
   let shouldEqual (x: 'a) (y: 'a) = Assert.AreEqual(x, y, sprintf "Expected: %A\nActual: %A" x y)
+  let shouldThrow<'T> f = 
+    try 
+      f() 
+      Assert.Fail("Expected failure, but the operation succeeded.")
+    with e ->
+      if e.GetType() <> typeof<'T> then
+        Assert.Fail(sprintf "Expected exception '%s' but got '%s'." typeof<'T>.Name (e.GetType().Name))
+
   let notEqual x = new NotConstraint(new EqualConstraint(x))
 
   type Range = Within of float * float
