@@ -69,3 +69,7 @@
 ### 1.0.6
  * Fix bugs related to frame with no columns (#272)
  * Remove FSharp.Core dependency from BigDeedle public API
+
+### 1.0.7
+ * Add typed frame access (frame.GetRowsAs<T>) (#281)
+ * BigDeedle improvements (#284, #285)
