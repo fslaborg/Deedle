@@ -73,3 +73,4 @@
 ### 1.0.7
  * Add typed frame access (frame.GetRowsAs<T>) (#281)
  * BigDeedle improvements (#284, #285)
+ * Expose type information via frame.ColumnTypes

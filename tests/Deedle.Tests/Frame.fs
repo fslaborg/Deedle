@@ -159,6 +159,12 @@ let ``Can create frame from IDataReader``() =
   Frame.ReadReader(dt.CreateDataReader())
   |> shouldEqual expected
 
+[<Test>]
+let ``Can get type information about columns`` () =
+  let df = frame [ "A" =?> series [1=>1.0]; "B" =?> series [1=>"hi"] ]
+  df.ColumnTypes |> List.ofSeq
+  |> shouldEqual <| [typeof<float>; typeof<string>]
+
 // ------------------------------------------------------------------------------------------------
 // Typed access to frame rows
 // ------------------------------------------------------------------------------------------------
