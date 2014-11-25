@@ -457,6 +457,10 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member frame.ColumnKeys = columnIndex.Keys :> seq<_>
 
   /// [category:Accessors and slicing]
+  member frame.ColumnTypes = 
+    seq { for kvp in columnIndex.Mappings -> data.GetValue(kvp.Value).Value.ElementType }
+
+  /// [category:Accessors and slicing]
   member frame.Columns = 
     let newData = data.Select(fun vect -> ObjectSeries<_>(rowIndex, boxVector vect, vectorBuilder, indexBuilder))
     ColumnSeries(Series(columnIndex, newData, vectorBuilder, indexBuilder))
