@@ -1,5 +1,5 @@
 ﻿module Formatters
-#I "../../packages/FSharp.Formatting.2.4.21/lib/net40"
+#I "../../packages/FSharp.Formatting.2.4.36/lib/net40"
 #r "FSharp.Markdown.dll"
 #r "FSharp.Literate.dll"
 #r "../../bin/Deedle.dll"

@@ -160,6 +160,52 @@ let ``Can create frame from IDataReader``() =
   |> shouldEqual expected
 
 // ------------------------------------------------------------------------------------------------
+// Typed access to frame rows
+// ------------------------------------------------------------------------------------------------
+
+type IMsftRow =
+  abstract Open : decimal
+  abstract High : decimal
+  abstract Low : decimal
+  abstract Close : decimal
+  abstract Volume : int
+  abstract ``Adj Close`` : decimal
+
+type IMsftFloatSubRow =
+  abstract High : float
+  abstract Low : float
+
+[<Test>]
+let ``Can access rows as a typed series via an interface`` () = 
+  let df = msft()
+  let rows = df.GetRowsAs<IMsftRow>()
+  rows.[DateTime(2000, 10, 10)].Close 
+  |> shouldEqual <| df.Rows.[DateTime(2000, 10, 10)].GetAs<decimal>("Close")
+
+[<Test>]
+let ``Can access rows as a typed series via an interface with convertible types`` () = 
+  let df = msft()
+  let rows = df.GetRowsAs<IMsftFloatSubRow>()
+  rows.[DateTime(2000, 10, 10)].High
+  |> shouldEqual <| df.Rows.[DateTime(2000, 10, 10)]?High
+
+type IAandOptB =
+  abstract A : float
+  abstract B : OptionalValue<float>
+
+[<Test>]
+let ``Can access missing data via typed rows`` () = 
+  let df = frame [ "A" => Series.ofValues [1.0; 2.0]; "B" => Series.ofValues [1.0] ]
+  df.GetRowsAs<IAandOptB>().[0].B |> shouldEqual <| OptionalValue(1.0)
+  df.GetRowsAs<IAandOptB>().[1].B |> shouldEqual <| OptionalValue.Missing
+  
+[<Test>]
+let ``Cannot access typed rows when column is not available`` () =
+  let df = frame [ "Open" => Series.ofValues [ 1.0M .. 10.0M ] ]
+  let error = try ignore(df.GetRowsAs<IMsftRow>()); "" with e -> e.Message
+  error |> should contain "High"
+
+// ------------------------------------------------------------------------------------------------
 // Constructing frames and getting frame data
 // ------------------------------------------------------------------------------------------------
 

@@ -183,7 +183,6 @@ let peopleNested =
 
 // Expand the 'People' column
 peopleNested |> Frame.expandCols ["People"]
-
 (*** include-it:ppl ***)
 
 (**
@@ -235,13 +234,9 @@ We'll use the data frame `people` which contains three columns - `Name` of type 
 `Age` of type `int` and `Countries` of type `string list` (we created it from F# records
 in [the previous section](#creating-recd)):
 
-    [lang=text]
-               Age Countries          
-    Joe     -> 51  [UK; US; UK]       
-    Tomas   -> 28  [CZ; UK; US; ... ] 
-    Eve     -> 2   [FR]               
-    Suzanne -> 15  [US]   
-
+*)
+(*** include-value:people ***)
+(**
 To get a column (series) from a frame `df`, you can use operations that are exposed directly
 by the data frame, or you can use `df.Columns` which returns all columns of the frame as a
 series of series.
@@ -322,6 +317,35 @@ the value to a given type. You could also achieve the same thing by writing `row
 and then casting the result to `string list`, but the `GetAs` method provides a more convenient
 syntax.
 
+### Typed access to rows
+
+Accessing columns using `ObjectSeries<T>` is fine for simple tasks, but it has two problems.
+First, it is not type-safe and you can easily get a runtime exception if you specify wrong
+type. Second, it involves boxing and unboxing and so it may be inefficient.
+
+To address these two issues, Deedle provides another alternative. You can specify an _interface_
+that defines the types of columns once and then use this interface to get a series of rows
+where every row is an instance of the interface:
+*)
+/// Expected columns & their types in a row
+type IPerson = 
+  abstract Age : int
+  abstract Countries : string list
+
+// Get rows as series of 'IPerson' values
+let rows = people.GetRowsAs<IPerson>()
+rows.["Tomas"].Countries 
+(**
+You still need to be careful and define the types in the `IPerson` interface correctly, but
+once the `GetRowsAs<IPerson>` call returns a value, you will be able to access the rows in
+a nice typed way. Alternatively, you can also specify the type with `OptionalValue<T>`, in 
+case you want to explicitly handle missing values.
+*)
+/// Alternative that lets us handle missing 'Age' values
+type IPersonOpt = 
+  abstract Age : OptionalValue<int>
+  abstract Countries : string list
+(**
 ### Adding rows and columns
 
 The series type is _immutable_ and so it is not possible to add new values to a series or 

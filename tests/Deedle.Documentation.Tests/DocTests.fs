@@ -2,10 +2,10 @@
 // Test that the documentation is generated correctly withtout F# errors 
 // --------------------------------------------------------------------------------------
 #if INTERACTIVE
-#I "../../packages/FSharp.Formatting.2.4.21/lib/net40"
+#I "../../packages/FSharp.Formatting.2.4.36/lib/net40"
 #I "../../packages/RazorEngine.3.3.0/lib/net40/"
 #r "../../packages/Microsoft.AspNet.Razor.2.0.30506.0/lib/net40/System.Web.Razor.dll"
-#r "../../packages/FSharp.Compiler.Service.0.0.59/lib/net40/FSharp.Compiler.Service.dll"
+#r "../../packages/FSharp.Compiler.Service.0.0.67/lib/net40/FSharp.Compiler.Service.dll"
 #r "RazorEngine.dll"
 #r "FSharp.Literate.dll"
 #r "FSharp.CodeFormat.dll"
