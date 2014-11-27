@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -13,7 +13,6 @@
     <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
     <Name>Deedle.RProvider.Plugin</Name>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -51,33 +50,14 @@
   <ItemGroup>
     <Compile Include="Convertors.fs" />
     <Compile Include="Exports.fs" />
-    <None Include="packages.config" />
+    <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
-    <Reference Include="RDotNet">
-      <HintPath>..\..\packages\R.NET.Community.1.5.15\lib\net40\RDotNet.dll</HintPath>
-    </Reference>
-    <Reference Include="RDotNet.FSharp">
-      <HintPath>..\..\packages\R.NET.Community.FSharp.0.1.8\lib\net40\RDotNet.FSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="RDotNet.NativeLibrary">
-      <HintPath>..\..\packages\R.NET.Community.1.5.15\lib\net40\RDotNet.NativeLibrary.dll</HintPath>
-    </Reference>
-    <Reference Include="RProvider">
-      <HintPath>..\..\packages\RProvider.1.0.17\lib\net40\RProvider.dll</HintPath>
-    </Reference>
-    <Reference Include="RProvider.Runtime">
-      <HintPath>..\..\packages\RProvider.1.0.17\lib\net40\RProvider.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Numerics" />
     <ProjectReference Include="..\Deedle\Deedle.fsproj">
       <Name>Deedle</Name>
       <Project>{22729065-4c30-4e43-a63f-4f3338a03878}</Project>
@@ -92,10 +72,72 @@
   </Target>
   -->
   <Target Name="AfterBuild">
-    <Copy SourceFiles="..\..\packages\RProvider.1.0.17\RProvider.fsx" DestinationFolder="$(ProjectDir)..\..\bin" />
-    <Copy SourceFiles="..\..\packages\RProvider.1.0.17\lib\net40\RProvider.DesignTime.dll" DestinationFolder="$(ProjectDir)..\..\bin" />
-    <Copy SourceFiles="..\..\packages\RProvider.1.0.17\lib\net40\RProvider.DesignTime.pdb" DestinationFolder="$(ProjectDir)..\..\bin" />
-    <Copy SourceFiles="..\..\packages\RProvider.1.0.17\lib\net40\RProvider.Server.exe" DestinationFolder="$(ProjectDir)..\..\bin" />
-    <Copy SourceFiles="..\..\packages\RProvider.1.0.17\lib\net40\RProvider.Server.pdb" DestinationFolder="$(ProjectDir)..\..\bin" />
+    <Copy SourceFiles="..\..\packages\RProvider\RProvider.fsx" DestinationFolder="$(ProjectDir)..\..\bin" />
+    <Copy SourceFiles="..\..\packages\RProvider\lib\net40\RProvider.DesignTime.dll" DestinationFolder="$(ProjectDir)..\..\bin" />
+    <Copy SourceFiles="..\..\packages\RProvider\lib\net40\RProvider.DesignTime.pdb" DestinationFolder="$(ProjectDir)..\..\bin" />
+    <Copy SourceFiles="..\..\packages\RProvider\lib\net40\RProvider.Server.exe" DestinationFolder="$(ProjectDir)..\..\bin" />
+    <Copy SourceFiles="..\..\packages\RProvider\lib\net40\RProvider.Server.pdb" DestinationFolder="$(ProjectDir)..\..\bin" />
   </Target>
+  <Import Project="..\..\.paket\paket.targets" />
+  <Choose>
+    <When Condition="($(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3')) Or ($(TargetFrameworkIdentifier) == 'MonoAndroid') Or ($(TargetFrameworkIdentifier) == 'MonoTouch')">
+      <ItemGroup>
+        <Reference Include="RDotNet.NativeLibrary">
+          <HintPath>..\..\packages\R.NET.Community\lib\net40\RDotNet.NativeLibrary.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="RDotNet">
+          <HintPath>..\..\packages\R.NET.Community\lib\net40\RDotNet.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Numerics">
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="($(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3')) Or ($(TargetFrameworkIdentifier) == 'MonoAndroid') Or ($(TargetFrameworkIdentifier) == 'MonoTouch')">
+      <ItemGroup>
+        <Reference Include="RDotNet.FSharp">
+          <HintPath>..\..\packages\R.NET.Community.FSharp\lib\net40\RDotNet.FSharp.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="($(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3')) Or ($(TargetFrameworkIdentifier) == 'MonoAndroid') Or ($(TargetFrameworkIdentifier) == 'MonoTouch')">
+      <ItemGroup>
+        <Reference Include="FSharp.Core">
+          <HintPath>..\..\packages\RProvider\lib\net40\FSharp.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="RProvider.DesignTime">
+          <HintPath>..\..\packages\RProvider\lib\net40\RProvider.DesignTime.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="RProvider.Runtime">
+          <HintPath>..\..\packages\RProvider\lib\net40\RProvider.Runtime.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="RProvider.Server">
+          <HintPath>..\..\packages\RProvider\lib\net40\RProvider.Server.exe</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="RProvider">
+          <HintPath>..\..\packages\RProvider\lib\net40\RProvider.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
 </Project>

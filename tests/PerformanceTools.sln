@@ -1,8 +1,14 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{2791DDF0-F88B-49AA-B3EF-202C8B21BB0F}"
+ ProjectSection(SolutionItems) = preProject
+		..\..\deedle\paket.dependencies = ..\..\deedle\paket.dependencies
+		..\..\deedle\paket.lock = ..\..\deedle\paket.lock
+	EndProjectSection
+EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.PerfTest.Core", "PerformanceTools\Deedle.PerfTest.Core\Deedle.PerfTest.Core.fsproj", "{D1E7603A-AA82-4517-8605-360DC708B0E9}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.PerfTest", "PerformanceTools\Deedle.PerfTest\Deedle.PerfTest.fsproj", "{371F8CE6-B031-4589-843F-583FE9180948}"

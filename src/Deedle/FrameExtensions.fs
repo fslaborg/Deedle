@@ -15,6 +15,7 @@ open System.Collections.Generic
 open FSharp.Data.Runtime
 open Deedle.Keys
 open Deedle.Vectors 
+open FSharp.Data
 
 /// Provides static methods for creating frames, reading frame data
 /// from CSV files and database (via IDataReader). The type also provides

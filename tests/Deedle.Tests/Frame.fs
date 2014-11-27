@@ -1,9 +1,9 @@
 ﻿#if INTERACTIVE
 #I "../../bin"
 #load "Deedle.fsx"
-#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
-#r "../../packages/FsCheck.0.9.1.0/lib/net40-Client/FsCheck.dll"
-#r "../../packages/FSharp.Data.2.0.14/lib/net40/FSharp.Data.dll"
+#r "../../packages/NUnit/lib/nunit.framework.dll"
+#r "../../packages/FsCheck/lib/net40-Client/FsCheck.dll"
+#r "../../packages/FSharp.Data/lib/net40/FSharp.Data.dll"
 #load "../Common/FsUnit.fs"
 #else
 module Deedle.Tests.Frame

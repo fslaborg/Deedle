@@ -1,10 +1,10 @@
-﻿// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 // Load everything & add extensions for F# charting
 // ----------------------------------------------------------------------------
 #nowarn "58"
 #I "../../../bin"
-#I "../../../packages/FSharp.Data.2.0.14/lib/net40"
-#I "../../../packages/FSharp.Charting.0.90.6"
+#I "../../../packages/FSharp.Data/lib/net40"
+#I "../../../packages/FSharp.Charting"
 
 #r "FSharp.Data.dll"
 #load "FSharp.Charting.fsx"

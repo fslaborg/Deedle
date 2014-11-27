@@ -2,10 +2,10 @@
 // Load everything 
 // ----------------------------------------------------------------------------
 
-#I "../../../packages/FSharp.Charting.0.90.6"
+#I "../../../packages/FSharp.Charting"
 #r "../../../bin/MathNet.Numerics.dll"
 #load "../../bin/Deedle.fsx"
-#r "../../../packages/FSharp.Data.2.0.14/lib/net40/FSharp.Data.dll"
+#r "../../../packages/FSharp.Data/lib/net40/FSharp.Data.dll"
 #load "FSharp.Charting.fsx"
 
 open System

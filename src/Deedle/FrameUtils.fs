@@ -398,7 +398,7 @@ module internal FrameUtils =
 
     let createVector typ (data:string[]) = 
       let missingValuesStr = String.Join(",", missingValues)
-      if typ = typeof<bool> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertBoolean(culture, Some(s))) data) :> IVector
+      if typ = typeof<bool> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertBoolean(Some(s))) data) :> IVector
       elif typ = typeof<decimal> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertDecimal(culture, Some(s))) data) :> IVector
       elif typ = typeof<float> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertFloat(culture, missingValuesStr, Some(s))) data) :> IVector
       elif typ = typeof<int> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertInteger(culture, Some(s))) data) :> IVector
