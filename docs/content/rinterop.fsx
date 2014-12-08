@@ -2,6 +2,10 @@
 #nowarn "211"
 #I "../../packages/FSharp.Charting"
 #I "../../packages/RProvider/"
+// <Temporary workaround> (loading RProvider.fsx should do this, but not atm. using Paket dir structure)
+#I "../../packages/RProvider/lib/net40/" 
+#I "../../packages/R.NET.Community/lib/net40/"
+// </Temporary workaround>
 #I @"../../bin"
 open System
 let airQuality = __SOURCE_DIRECTORY__ + "/data/AirQuality.csv"

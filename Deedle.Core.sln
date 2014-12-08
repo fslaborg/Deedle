@@ -1,12 +1,11 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{1D865FE1-0F3D-4F98-BBEC-1D03B8A00931}"
- ProjectSection(SolutionItems) = preProject
-		..\deedle\paket.dependencies = ..\deedle\paket.dependencies
-		..\deedle\paket.lock = ..\deedle\paket.lock
+	ProjectSection(SolutionItems) = preProject
+		paket.dependencies = paket.dependencies
+		paket.lock = paket.lock
 	EndProjectSection
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.Tests", "tests\Deedle.Tests\Deedle.Tests.fsproj", "{484A96E6-D217-47EE-974C-5D7B3CFB401E}"
@@ -33,6 +32,7 @@ EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.PerfTests", "tests\Deedle.PerfTests\Deedle.PerfTests.fsproj", "{0275C56B-9A00-4578-A826-A6CF1F089086}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D1E7603A-AA82-4517-8605-360DC708B0E9} = {D1E7603A-AA82-4517-8605-360DC708B0E9}
+		{22729065-4C30-4E43-A63F-4F3338A03878} = {22729065-4C30-4E43-A63F-4F3338A03878}
 		{371F8CE6-B031-4589-843F-583FE9180948} = {371F8CE6-B031-4589-843F-583FE9180948}
 	EndProjectSection
 EndProject
