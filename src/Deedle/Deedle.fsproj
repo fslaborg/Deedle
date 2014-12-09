@@ -44,6 +44,9 @@
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
   <ItemGroup>
+    <Compile Include="FSharp.Data\Stubs.fs" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="..\..\paket-files\fsharp\FSharp.Data\src\CommonRuntime\TextConversions.fs">
       <Paket>True</Paket>
       <Link>FSharp.Data/TextConversions.fs</Link>
@@ -72,7 +75,6 @@
       <Paket>True</Paket>
       <Link>FSharp.Data/CsvInference.fs</Link>
     </Compile>
-    <Compile Include="FSharp.Data\Stubs.fs" />
     <Compile Include="Common\AssemblyInfo.fs" />
     <Compile Include="Common\Attributes.fs" />
     <Compile Include="Common\BinomialHeap.fs" />
