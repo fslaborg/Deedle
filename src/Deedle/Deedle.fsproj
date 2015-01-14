@@ -44,6 +44,13 @@
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
   <ItemGroup>
+    <Compile Include="FSharp.Data\TextConversions.fsi" />
+    <Compile Include="FSharp.Data\TextRuntime.fsi" />
+    <Compile Include="FSharp.Data\StructuralTypes.fsi" />
+    <Compile Include="FSharp.Data\StructuralInference.fsi" />
+    <Compile Include="FSharp.Data\CsvRuntime.fsi" />
+    <Compile Include="FSharp.Data\CsvFile.fsi" />
+    <Compile Include="FSharp.Data\CsvInference.fsi" />
     <Compile Include="FSharp.Data\Stubs.fs" />
   </ItemGroup>
   <ItemGroup>

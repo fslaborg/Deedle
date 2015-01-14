@@ -1,6 +1,8 @@
+// This file implements stubs that are required by the code imported from F# Data
+// (this is actually never executed and so we can just throw an exception)
 namespace FSharp.Data.Runtime
 
-module NameUtils =
+module internal NameUtils =
   let nicePascalName name = name
   let uniqueGenerator _ =
     let set = new System.Collections.Generic.HashSet<_>()
@@ -12,6 +14,6 @@ module NameUtils =
       set.Add(newName) |> ignore
       newName
 
-module IO =
+module internal IO =
   let asyncReadTextAtRuntime a b c d e f : Async<System.IO.TextReader> = 
     failwith "asyncReadTextAtRuntime: F# Data stub - not implemented"
