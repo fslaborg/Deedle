@@ -1,7 +1,11 @@
-﻿(*** hide ***)
+(*** hide ***)
 #nowarn "211"
-#I "../../packages/FSharp.Charting.0.90.6"
-#I "../../packages/RProvider.1.0.17/"
+#I "../../packages/FSharp.Charting"
+#I "../../packages/RProvider/"
+// <Temporary workaround> (loading RProvider.fsx should do this, but not atm. using Paket dir structure)
+#I "../../packages/RProvider/lib/net40/" 
+#I "../../packages/R.NET.Community/lib/net40/"
+// </Temporary workaround>
 #I @"../../bin"
 open System
 let airQuality = __SOURCE_DIRECTORY__ + "/data/AirQuality.csv"
@@ -51,8 +55,8 @@ Getting started
 In a typical project ("F# Tutorial"), the NuGet packages are installed in the `../packages`
 directory. To use R provider and Deedle, you need to write something like this:
 *)
-#I "../packages/Deedle.0.9.9-beta/"
-#I "../packages/RProvider.1.0.17/"
+#I "../packages/Deedle/"
+#I "../packages/RProvider/"
 #load "RProvider.fsx"
 #load "Deedle.fsx"
 
@@ -63,7 +67,7 @@ open Deedle
 
 If you're not using NuGet from Visual Studio, then you'll need to manually copy the
 file `Deedle.RProvider.Plugin.dll` from the package `Deedle.RPlugin` to the 
-directory where `RProvider.dll` is located (in `RProvider.1.0.17/lib`). Once that's
+directory where `RProvider.dll` is located (in `RProvider/lib`). Once that's
 done, the R provider will automatically find the plugin.
 
 <a name="frames"></a>

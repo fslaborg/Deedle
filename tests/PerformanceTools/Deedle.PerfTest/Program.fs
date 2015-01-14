@@ -56,7 +56,7 @@ module internal Compiler =
       yield! [ "-r"; microsoft @@"Framework" @@ ".NETFramework" @@ "v4.5" @@ "System.Data.dll" ]
 
       // Generate "--define" argument for all symbols
-      for def in config.Defines.Defines do
+      for def in config.Defines do
         yield "--define:" + def.Symbol
 
       // Generate "-r" argument for all libraries to be referenced

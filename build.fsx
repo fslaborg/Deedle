@@ -69,12 +69,7 @@ Target "UpdateFsxVersions" (fun _ ->
 )
 
 // --------------------------------------------------------------------------------------
-// Clean build results & restore NuGet packages
-
-Target "RestorePackages" (fun _ ->
-    !! "./**/packages.config"
-    |> Seq.iter (RestorePackage (fun p -> { p with ToolPath = "./.nuget/NuGet.exe" }))
-)
+// Clean build results
 
 Target "Clean" (fun _ ->
     CleanDirs ["bin"; "temp" ]
@@ -116,14 +111,11 @@ Target "BuildCore" (fun _ ->
 // Run the unit tests using test runner & kill test runner when complete
 
 Target "RunTests" (fun _ ->
-    let nunitVersion = GetPackageVersion "packages" "NUnit.Runners"
-    let nunitPath = sprintf "packages/NUnit.Runners.%s/Tools" nunitVersion
     ActivateFinalTarget "CloseTestRunner"
 
     !! "tests/Deedle.*Tests/bin/Release/Deedle*Tests*.dll"
     |> NUnit (fun p ->
         { p with
-            ToolPath = nunitPath
             DisableShadowCopy = true
             TimeOut = TimeSpan.FromMinutes 20.
             OutputFile = "TestResults.xml" })
@@ -223,7 +215,6 @@ Target "All" DoNothing
 Target "AllCore" DoNothing
 
 "Clean"
-  ==> "RestorePackages"
   ==> "UpdateFsxVersions"
   ==> "AssemblyInfo"
   ==> "Build"
