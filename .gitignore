@@ -1,4 +1,5 @@
 bin
+paket-files/
 temp/
 docs/output
 docs/csharp/obj

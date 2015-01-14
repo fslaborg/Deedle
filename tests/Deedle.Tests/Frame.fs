@@ -262,15 +262,14 @@ let ``Rows of an empty frame should return empty series``() =
 // Input and output (from records)
 // ------------------------------------------------------------------------------------------------
 
-type MSFT = FSharp.Data.CsvProvider<"data/MSFT.csv">
 type Price = { Open : decimal; High : decimal; Low : Decimal; Close : decimal }
 type Stock = { Date : DateTime; Volume : int; Price : Price }
 
 let typedRows () = 
-  let msft = MSFT.Load(__SOURCE_DIRECTORY__ + "/data/MSFT.csv")
-  [| for r in msft.Rows -> 
-      let p = { Open = r.Open; Close = r.Close; High = r.High; Low = r.High }
-      { Date = r.Date; Volume = r.Volume; Price = p } |]
+  [| for (KeyValue(k,r)) in msft().Rows.Observations -> 
+      let p = { Open = r.GetAs<decimal>("Open"); Close = r.GetAs<decimal>("Close"); 
+                High = r.GetAs<decimal>("High"); Low = r.GetAs<decimal>("High") }
+      { Date = k; Volume = r.GetAs<int>("Volume"); Price = p } |]
 let typedPrices () = 
   [| for r in typedRows () -> r.Price |]
 
