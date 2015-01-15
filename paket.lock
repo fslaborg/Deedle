@@ -5,14 +5,14 @@ NUGET
     FsCheck (0.9.1.0)
     FSharp.Charting (0.90.7)
     FSharp.Compiler.Service (0.0.67)
-    FSharp.Data (2.1.0)
+    FSharp.Data (2.1.1)
       Zlib.Portable (>= 1.10.0)
     FSharp.Formatting (2.4.36)
       FSharp.Compiler.Service (0.0.67)
       Microsoft.AspNet.Razor (2.0.30506.0)
       RazorEngine (3.3.0)
     MathNet.Numerics (3.3.0)
-      TaskParallelLibrary (>= 1.0.2856) - net35
+      TaskParallelLibrary (>= 1.0.2856) - >= net35 < net40
     Microsoft.AspNet.Razor (2.0.30506.0)
     NuGet.CommandLine (2.8.3)
     NUnit (2.6.3)
