@@ -55,20 +55,6 @@ Target "AssemblyInfo" (fun _ ->
 )
 
 // --------------------------------------------------------------------------------------
-// Update the assembly version numbers in the script file.
-
-open System.IO
-
-Target "UpdateFsxVersions" (fun _ ->
-    let pattern = "packages/Deedle.(.*)/lib/net40"
-    let replacement = sprintf "packages/Deedle.%s/lib/net40" release.NugetVersion
-    let path = "./src/Deedle/Deedle.fsx"
-    let text = File.ReadAllText(path)
-    let text = Text.RegularExpressions.Regex.Replace(text, pattern, replacement)
-    File.WriteAllText(path, text)
-)
-
-// --------------------------------------------------------------------------------------
 // Clean build results
 
 Target "Clean" (fun _ ->
@@ -215,7 +201,6 @@ Target "All" DoNothing
 Target "AllCore" DoNothing
 
 "Clean"
-  ==> "UpdateFsxVersions"
   ==> "AssemblyInfo"
   ==> "Build"
   ==> "All" 

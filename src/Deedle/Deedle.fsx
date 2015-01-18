@@ -1,15 +1,14 @@
 #nowarn "211"
-// Try including various folders where Deedle might be (version updated by FAKE)
-#I "../../bin"
-#I "../bin"
-#I "bin"
-#I "lib"
+// Standard NuGet or Paket location
+#I "."
 #I "lib/net40"
-#I "../packages/Deedle.1.0.7/lib/net40"
-#I "../../packages/Deedle.1.0.7/lib/net40"
-#I "../../../packages/Deedle.1.0.7/lib/net40"
-// Also reference path with FSharp.Data.DesignTime.dll
-#I "../FSharp.Data/lib/net40/"
+
+// Try various folders that people might like
+#I "bin"
+#I "../bin"
+#I "../../bin"
+#I "lib"
+
 // Reference Deedle
 #r "Deedle.dll"
 
