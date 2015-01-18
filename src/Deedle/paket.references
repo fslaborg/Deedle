@@ -1,1 +1,7 @@
-FSharp.Data
+File:TextConversions.fs FSharp.Data
+File:TextRuntime.fs FSharp.Data
+File:StructuralTypes.fs FSharp.Data
+File:StructuralInference.fs FSharp.Data
+File:CsvRuntime.fs FSharp.Data
+File:CsvFile.fs FSharp.Data
+File:CsvInference.fs FSharp.Data
