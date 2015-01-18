@@ -4,6 +4,7 @@
 #I "../bin"
 #I "bin"
 #I "lib"
+#I "lib/net40"
 #I "../packages/Deedle.1.0.7/lib/net40"
 #I "../../packages/Deedle.1.0.7/lib/net40"
 #I "../../../packages/Deedle.1.0.7/lib/net40"
