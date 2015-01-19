@@ -118,7 +118,6 @@ Target "NuGet" (fun _ ->
     // Format the description to fit on a single line (remove \r\n and double-spaces)
     let description = description.Replace("\r", "").Replace("\n", "").Replace("  ", " ")
     let rpluginDescription = rpluginDescription.Replace("\r", "").Replace("\n", "").Replace("  ", " ")
-    let nugetPath = ".nuget/nuget.exe"
     NuGet (fun p -> 
         { p with   
             Authors = authors
@@ -129,7 +128,6 @@ Target "NuGet" (fun _ ->
             ReleaseNotes = String.concat " " release.Notes
             Tags = tags
             OutputPath = "bin"
-            ToolPath = nugetPath
             AccessKey = getBuildParamOrDefault "nugetkey" ""
             Publish = hasBuildParam "nugetkey" })
         ("nuget/" + project + ".nuspec")
@@ -143,7 +141,11 @@ Target "NuGet" (fun _ ->
             ReleaseNotes = String.concat " " release.Notes
             Tags = tags
             OutputPath = "bin"
-            ToolPath = nugetPath
+            Dependencies = 
+              [ "Deedle", release.NugetVersion
+                "R.NET.Community", GetPackageVersion "packages" "R.NET.Community"
+                "R.NET.Community.FSharp", GetPackageVersion "packages" "R.NET.Community.FSharp"
+                "RProvider", GetPackageVersion "packages" "RProvider" ]
             AccessKey = getBuildParamOrDefault "nugetkey" ""
             Publish = hasBuildParam "nugetkey" })
         ("nuget/Deedle.RPlugin.nuspec")
@@ -172,7 +174,16 @@ Target "ReleaseDocs" (fun _ ->
 Target "ReleaseBinaries" (fun _ ->
     Repository.clone "" (gitHome + "/" + gitName + ".git") "temp/release"
     Branches.checkoutBranch "temp/release" "release"
+    
+    // Delete old files and copy in new files
+    !! "temp/release/*" |> DeleteFiles
+    "temp/release/bin" |> CleanDir
     CopyRecursive "bin" "temp/release/bin" true |> printfn "%A"
+    !! "temp/release/bin/*.nupkg" |> DeleteFiles
+    "temp/release/bin/Deedle.fsx" |> MoveFile "temp/release"
+    "temp/release/bin/RProvider.fsx" |> MoveFile "temp/release"
+
+    CommandHelper.runSimpleGitCommand "temp/release" "add bin/*" |> printfn "%s"
     let cmd = sprintf """commit -a -m "Update binaries for version %s""" release.NugetVersion
     CommandHelper.runSimpleGitCommand "temp/release" cmd |> printfn "%s"
     Branches.push "temp/release"

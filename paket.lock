@@ -1,7 +1,7 @@
 NUGET
   remote: https://nuget.org/api/v2
   specs:
-    FAKE (3.14.4)
+    FAKE (3.14.5)
     FsCheck (0.9.1.0)
     FSharp.Charting (0.90.9)
     FSharp.Compiler.Service (0.0.82)
@@ -17,7 +17,7 @@ NUGET
     R.NET.Community (1.5.16)
     R.NET.Community.FSharp (0.1.9)
       R.NET.Community (>= 1.5.16)
-    RProvider (1.1.6)
+    RProvider (1.1.8)
       R.NET.Community (1.5.16)
       R.NET.Community.FSharp (0.1.9)
     TaskParallelLibrary (1.0.2856.0) - >= net35 < net40

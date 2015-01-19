@@ -70,10 +70,10 @@
  * Fix bugs related to frame with no columns (#272)
  * Remove FSharp.Core dependency from BigDeedle public API
 
-### 1.0.7-beta
+### 1.0.7
  * Add typed frame access (frame.GetRowsAs<T>) (#281)
  * BigDeedle improvements (#284, #285)
  * Expose type information via frame.ColumnTypes (#286)
  * Simplify load script (#292)
  * Remove F# Data dependency & use Paket (#288, #293)
- * Update depndencies (F# Formatting 2.6.2 and RProvider 1.1.6)
+ * Update depndencies (F# Formatting 2.6.2 and RProvider 1.1.8)

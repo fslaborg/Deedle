@@ -10,7 +10,6 @@ nuget NUnit.Runners
 nuget RProvider
 nuget Nuget.CommandLine
 nuget FAKE
-nuget FSharp.Data
 
 github fsharp/FSharp.Data src/CommonRuntime/TextConversions.fs
 github fsharp/FSharp.Data src/CommonRuntime/TextRuntime.fs
