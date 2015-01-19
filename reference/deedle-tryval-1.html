@@ -45,6 +45,74 @@
 <p>A type alias for the <code>TryValue&lt;T&gt;</code> type. The type alias can be used
 to make F# type declarations that explcitly handle exceptions more succinct.</p>
 </div>
+  <h3>Instance members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Instance member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '960', 960)" onmouseover="showTip(event, '960', 960)">
+            Exception
+          </code>
+          <div class="tip" id="960">
+            <strong>Signature:</strong> exn<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L124-124" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the exception captured by this value. When <code>HasValue = true</code>, 
+accessing the property throws <code>InvalidOperationException</code>.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '961', 961)" onmouseover="showTip(event, '961', 961)">
+            HasValue
+          </code>
+          <div class="tip" id="961">
+            <strong>Signature:</strong> bool<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L119-119" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns <code>true</code> when the <code>TryValue&lt;T&gt;</code> object represents a 
+successfully calculated value</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '962', 962)" onmouseover="showTip(event, '962', 962)">
+            Value
+          </code>
+          <div class="tip" id="962">
+            <strong>Signature:</strong> &#39;T<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L114-114" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the value of <code>TryValue&lt;T&gt;</code> when the value is present; 
+otherwise, throws an exception that was captured</p>
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
         </div>
         <div class="span3">

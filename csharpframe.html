@@ -38,7 +38,7 @@
       <div class="row">
         <div class="span9" id="main">
           
-<h1>Data frame manipulation in C#</h1>
+<h1><a name="Data-frame-manipulation-in-C" class="anchor" href="#Data-frame-manipulation-in-C">Data frame manipulation in C#</a></h1>
 
 <p>In this section, we look at working with Deedle data frame. Data frame lets you manipulate and
 analyze data consisting of multiple features (properties) with multiple observations (records).
@@ -52,7 +52,7 @@ from GitHub and run the samples.</p>
 
 <a name="understanding"></a>
 
-<h2>What is a data frame</h2>
+<h2><a name="What-is-a-data-frame" class="anchor" href="#What-is-a-data-frame">What is a data frame</a></h2>
 
 <ul>
 <li><p><strong>Row and column key to values</strong> - data frame is represented using a type <code>Frame&lt;TRowKey, TColKey&gt;</code> and
@@ -76,7 +76,7 @@ This makes research-style operations more convenient and makes the library more 
 
 <a name="creating"></a>
 
-<h2>Creating and loading data frames</h2>
+<h2><a name="Creating-and-loading-data-frames" class="anchor" href="#Creating-and-loading-data-frames">Creating and loading data frames</a></h2>
 
 <p>Let's start with a number of examples showing how to create data frames. The most common scenario is that you
 already have some code that reads the data - perhaps from a database or some other source - and you want 
@@ -99,7 +99,8 @@ so the result of the <code>Print</code> method looks as follows:</p>
 0 -&gt; ID_0  997104221
 1 -&gt; ID_1  50365464
 2 -&gt; ID_2  1777994880
-(...)</pre></td></tr></table>
+(...)
+</pre></td></tr></table>
 
 <p>As an alternative, you can also construct data frame by generating a collection of explicitly created rows. 
 A row is just a series of type <code>Series&lt;TColKey, TValue&gt;</code> so you can use any of the techniques described in 
@@ -137,11 +138,12 @@ as follows:</p>
 :       ...        ...   ...   ...   ...   ...        ...
 6972 -&gt; 1986-03-17 29.00 29.75 29.00 29.50 133171200  0.08
 6973 -&gt; 1986-03-14 28.00 29.50 28.00 29.00 308160000  0.07
-6974 -&gt; 1986-03-13 25.50 29.25 25.50 28.00 1031788800 0.07</pre></td></tr></table>
+6974 -&gt; 1986-03-13 25.50 29.25 25.50 28.00 1031788800 0.07
+</pre></td></tr></table>
 
 <a name="indices"></a>
 
-<h2>Working with row and column indices</h2>
+<h2><a name="Working-with-row-and-column-indices" class="anchor" href="#Working-with-row-and-column-indices">Working with row and column indices</a></h2>
 
 <p>Reading data from CSV file or from .NET objects typically gives us data frame <code>Frame&lt;int, string&gt;</code> where the
 rows are indexed by <code>int</code> (representing the number of the row) and columns are names (<code>string</code> values). 
@@ -188,11 +190,12 @@ other types as column indices. The resulting data set looks as follows:</p>
 1901 -&gt; 1901 22.269  77.680     18.60  i
 :       ...  ...     ...        ...    ...
 2013 -&gt; 2013 16202.7 316.847    124.84 g
-2014 -&gt; 2014 17011.4 319.594    125.16 g</pre></td></tr></table>
+2014 -&gt; 2014 17011.4 319.594    125.16 g
+</pre></td></tr></table>
 
 <a name="joining"></a>
 
-<h2>Joining and aligning data frames</h2>
+<h2><a name="Joining-and-aligning-data-frames" class="anchor" href="#Joining-and-aligning-data-frames">Joining and aligning data frames</a></h2>
 
 <p>A common scenario is when you have multiple data sets from different data sources and want to join
 them into a single data frame. For example, we earlier loaded stock prices for Microsoft and Facebook
@@ -241,7 +244,7 @@ a value). You can also use <code>Lookup.NearestGreater</code> to search in the o
 
 <a name="data"></a>
 
-<h2>Accessing data and series operations</h2>
+<h2><a name="Accessing-data-and-series-operations" class="anchor" href="#Accessing-data-and-series-operations">Accessing data and series operations</a></h2>
 
 <p>Now that we looked at loading (or generating) data and combining data from multiple data sources,
 let's look how we can obtain data from the data frame. First, we look at getting data for a specified
@@ -305,7 +308,7 @@ of the indexer and <code>GetAs</code> when you need to obtain a numeric value fo
 
 <a name="linq"></a>
 
-<h2>LINQ to data frame</h2>
+<h2><a name="LINQ-to-data-frame" class="anchor" href="#LINQ-to-data-frame">LINQ to data frame</a></h2>
 
 <p>The type representing a collection of rows and columns (obtained using <code>df.Rows</code> and <code>df.Columns</code>)
 implements some of the well-known LINQ operations. These can be used to transform data in the
@@ -343,7 +346,7 @@ back into data frame using <code>Frame.FromRows</code>. Now you could use the <c
 the number of days when Microsoft was more expensive with the number of days when Facebook price
 was higher.</p>
 
-<h2>Calculating with data frames</h2>
+<h2><a name="Calculating-with-data-frames" class="anchor" href="#Calculating-with-data-frames">Calculating with data frames</a></h2>
 
 <p>Finally, we can also write calculations that work over the entire data frame. The methods are
 similar to the methods for calculating with series <a href="csharpseries.html">discussed in another article</a>.
@@ -379,7 +382,8 @@ to round the value to two fractional digits.</p>
 3/17/1986 -&gt; 1986-03-17  3.45       1.69       
 :            ...         ...        ...        
 11/6/2013 -&gt; 2013-11-06  3.89       4.03       
-11/7/2013 -&gt; 2013-11-07  1.9        -1.81      </pre></td></tr></table>
+11/7/2013 -&gt; 2013-11-07  1.9        -1.81      
+</pre></td></tr></table>
 
 <p>It is worth noting that the <code>SeriesApply</code> function is applied on all numerical columns, but
 all other columns (such as <code>MsftDate</code>) are left unchanged. You can also see that the first 

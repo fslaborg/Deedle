@@ -56,16 +56,16 @@ To allow invocation via Reflection, the vector exposes type of elements as <code
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '420', 420)" onmouseover="showTip(event, '420', 420)">
+          <code onmouseout="hideTip(event, '642', 642)" onmouseover="showTip(event, '642', 642)">
             ElementType
           </code>
-          <div class="tip" id="420">
+          <div class="tip" id="642">
             <strong>Signature:</strong> Type<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L57-57" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L40-40" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -79,16 +79,16 @@ vector as an argument.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '421', 421)" onmouseover="showTip(event, '421', 421)">
+          <code onmouseout="hideTip(event, '643', 643)" onmouseover="showTip(event, '643', 643)">
             GetObject(arg1)
           </code>
-          <div class="tip" id="421">
+          <div class="tip" id="643">
             <strong>Signature:</strong> Address -&gt; OptionalValue&lt;obj&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L65-65" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L48-48" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -100,16 +100,16 @@ untyped version of <code>GetValue</code> method on a typed vector.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '422', 422)" onmouseover="showTip(event, '422', 422)">
+          <code onmouseout="hideTip(event, '644', 644)" onmouseover="showTip(event, '644', 644)">
             Invoke(arg1)
           </code>
-          <div class="tip" id="422">
+          <div class="tip" id="644">
             <strong>Signature:</strong> VectorCallSite&lt;&#39;R&gt; -&gt; &#39;R<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'R          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L69-69" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L52-52" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -121,16 +121,36 @@ instance of vector passed as a statically typed vector (ie. IVector<ElementType>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '423', 423)" onmouseover="showTip(event, '423', 423)">
+          <code onmouseout="hideTip(event, '645', 645)" onmouseover="showTip(event, '645', 645)">
+            Length
+          </code>
+          <div class="tip" id="645">
+            <strong>Signature:</strong> int64<br />
+              <strong>Modifiers:</strong> abstract<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L55-55" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the number of elements in the vector</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '646', 646)" onmouseover="showTip(event, '646', 646)">
             ObjectSequence
           </code>
-          <div class="tip" id="423">
+          <div class="tip" id="646">
             <strong>Signature:</strong> seq&lt;OptionalValue&lt;obj&gt;&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L51-51" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L34-34" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -141,16 +161,16 @@ instance of vector passed as a statically typed vector (ie. IVector<ElementType>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '424', 424)" onmouseover="showTip(event, '424', 424)">
+          <code onmouseout="hideTip(event, '647', 647)" onmouseover="showTip(event, '647', 647)">
             SuppressPrinting
           </code>
-          <div class="tip" id="424">
+          <div class="tip" id="647">
             <strong>Signature:</strong> bool<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L61-61" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L44-44" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>

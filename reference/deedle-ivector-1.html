@@ -56,16 +56,39 @@ alternative representation of data.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '414', 414)" onmouseover="showTip(event, '414', 414)">
+          <code onmouseout="hideTip(event, '637', 637)" onmouseover="showTip(event, '637', 637)">
+            Convert(arg1, arg2)
+          </code>
+          <div class="tip" id="637">
+            <strong>Signature:</strong> ((&#39;T -&gt; &#39;TNew) * (&#39;TNew -&gt; &#39;T)) -&gt; IVector&lt;&#39;TNew&gt;<br />
+              <strong>Modifiers:</strong> abstract<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L91-91" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Create a vector whose values are converted using the specified function, but
+can be converted back using another specified function. For virtualized vectors,
+this enables e.g. efficient lookup on the returned vectors (by delegating the
+lookup to the original source)</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '638', 638)" onmouseover="showTip(event, '638', 638)">
             Data
           </code>
-          <div class="tip" id="414">
+          <div class="tip" id="638">
             <strong>Signature:</strong> VectorData&lt;&#39;T&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L90-90" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L75-75" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -78,16 +101,16 @@ on the vector, data may be returned as a continuous block of memory using
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '417', 417)" onmouseover="showTip(event, '417', 417)">
+          <code onmouseout="hideTip(event, '639', 639)" onmouseover="showTip(event, '639', 639)">
             GetValue(arg1)
           </code>
-          <div class="tip" id="417">
+          <div class="tip" id="639">
             <strong>Signature:</strong> Address -&gt; OptionalValue&lt;&#39;T&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L85-85" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L70-70" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -98,16 +121,16 @@ on the vector, data may be returned as a continuous block of memory using
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '418', 418)" onmouseover="showTip(event, '418', 418)">
+          <code onmouseout="hideTip(event, '640', 640)" onmouseover="showTip(event, '640', 640)">
             Select(arg1)
           </code>
-          <div class="tip" id="418">
+          <div class="tip" id="640">
             <strong>Signature:</strong> ((&#39;T -&gt; &#39;TNew)) -&gt; IVector&lt;&#39;TNew&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'TNew          </div>
+                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L94-94" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L85-85" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -119,16 +142,16 @@ a new vector (not necessarily of the same representation) with the results.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '419', 419)" onmouseover="showTip(event, '419', 419)">
+          <code onmouseout="hideTip(event, '641', 641)" onmouseover="showTip(event, '641', 641)">
             SelectMissing(arg1)
           </code>
-          <div class="tip" id="419">
-            <strong>Signature:</strong> ((OptionalValue&lt;&#39;T&gt; -&gt; OptionalValue&lt;&#39;TNew&gt;)) -&gt; IVector&lt;&#39;TNew&gt;<br />
+          <div class="tip" id="641">
+            <strong>Signature:</strong> ((Address -&gt; OptionalValue&lt;&#39;T&gt; -&gt; OptionalValue&lt;&#39;TNew&gt;)) -&gt; IVector&lt;&#39;TNew&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'TNew          </div>
+                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L100-100" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L81-81" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>

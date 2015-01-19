@@ -38,7 +38,7 @@
       <div class="row">
         <div class="span9" id="main">
           
-<h1>F# Data Frame design notes</h1>
+<h1><a name="F-Data-Frame-design-notes" class="anchor" href="#F-Data-Frame-design-notes">F# Data Frame design notes</a></h1>
 
 <p>This is the first version of F# Data Frame library and so we are still actively looking
 at how to improve the design. The best place for discussions is either the <a href="https://github.com/BlueMountainCapital/Deedle/issues">issue list
@@ -56,7 +56,7 @@ the basic objects) that can be used to provide a wide range of useful functions 
 available as extension members and in F# modules). We are generally quite happy to include
 more extension members and functions for commonly used operations, so feel free to contribute!</p>
 
-<h2>Library principles</h2>
+<h2><a name="Library-principles" class="anchor" href="#Library-principles">Library principles</a></h2>
 
 <ul>
 <li><p><strong>F# and C# friendly</strong> - We want to make sure that the library works from both F# and C#.
@@ -93,7 +93,7 @@ series.</p>
 to re-bind when you're writing some research script.</p></li>
 </ul>
 
-<h2>Library internals</h2>
+<h2><a name="Library-internals" class="anchor" href="#Library-internals">Library internals</a></h2>
 
 <p>The following types are (mostly) not directly visible to the user, but they represent the
 "minimal" core that changes infrequently. You could use them when extending the library:</p>
@@ -144,7 +144,7 @@ etc. You can also get all rows as a series of (column) series and all columns as
 series of (row) series - they are available as extension methods and in the <code>Frame</code> module.</p></li>
 </ul>
 
-<h2>Discussion and open questions</h2>
+<h2><a name="Discussion-and-open-questions" class="anchor" href="#Discussion-and-open-questions">Discussion and open questions</a></h2>
 
 <p>We're hoping that the design of the internals is now reasonable, but the end user API may
 still be missing some useful functionality (let us know if you need some!) Here are a few

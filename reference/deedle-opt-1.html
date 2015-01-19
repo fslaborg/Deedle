@@ -45,6 +45,101 @@
 <p>A type alias for the <code>OptionalValue&lt;T&gt;</code> type. The type alias can be used
 to make F# type definitions that use optional values directly more succinct.</p>
 </div>
+  <h3>Instance members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Instance member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '956', 956)" onmouseover="showTip(event, '956', 956)">
+            HasValue
+          </code>
+          <div class="tip" id="956">
+            <strong>Signature:</strong> bool<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L43-43" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Gets a value indicating whether the current <code>OptionalValue&lt;T&gt;</code> has a value</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '957', 957)" onmouseover="showTip(event, '957', 957)">
+            Value
+          </code>
+          <div class="tip" id="957">
+            <strong>Signature:</strong> &#39;T<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L48-48" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the value stored in the current <code>OptionalValue&lt;T&gt;</code>. 
+Exceptions:
+  <code>InvalidOperationException</code> - Thrown when <code>HasValue</code> is <code>false</code>.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '958', 958)" onmouseover="showTip(event, '958', 958)">
+            ValueOrDefault
+          </code>
+          <div class="tip" id="958">
+            <strong>Signature:</strong> &#39;T<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L54-54" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the value stored in the current <code>OptionalValue&lt;T&gt;</code> or 
+the default value of the type <code>T</code> when a value is not present.</p>
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>Static members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Static member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '959', 959)" onmouseover="showTip(event, '959', 959)">
+            Missing
+          </code>
+          <div class="tip" id="959">
+            <strong>Signature:</strong> OptionalValue&lt;&#39;T&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L61-61" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a new instance of <code>OptionalValue&lt;T&gt;</code> that does not contain a value.</p>
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
         </div>
         <div class="span3">

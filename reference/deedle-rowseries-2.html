@@ -42,6 +42,9 @@
 
 <h1>RowSeries<'TRowKey, 'TColumnKey></h1>
 <div class="xmldoc">
+<p>Represents a series of rows from a frame. The type inherits from a series of 
+series representing individual rows (<code>Series&lt;'TRowKey, ObjectSeries&lt;'TColumnKey&gt;&gt;</code>) but
+hides slicing operations with new versions that return frames.</p>
 </div>
   <h3>Constructors</h3>
   <table class="table table-bordered member-list">
@@ -52,33 +55,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '460', 460)" onmouseover="showTip(event, '460', 460)">
-            new(series)
-          </code>
-          <div class="tip" id="460">
-            <strong>Signature:</strong> series:Series&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;&gt; -&gt; RowSeries&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1580-1580" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '461', 461)" onmouseover="showTip(event, '461', 461)">
+          <code onmouseout="hideTip(event, '687', 687)" onmouseover="showTip(event, '687', 687)">
             new(...)
           </code>
-          <div class="tip" id="461">
+          <div class="tip" id="687">
             <strong>Signature:</strong> (index:IIndex&lt;&#39;TRowKey&gt; * vector:IVector&lt;ObjectSeries&lt;&#39;TColumnKey&gt;&gt; * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder) -&gt; RowSeries&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1578-1578" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1668-1668" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -96,15 +81,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '464', 464)" onmouseover="showTip(event, '464', 464)">
+          <code onmouseout="hideTip(event, '688', 688)" onmouseover="showTip(event, '688', 688)">
             GetByLevel(level)
           </code>
-          <div class="tip" id="464">
+          <div class="tip" id="688">
             <strong>Signature:</strong> level:ICustomLookup&lt;&#39;TRowKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1586-1586" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1677-1677" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -114,15 +99,16 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '465', 465)" onmouseover="showTip(event, '465', 465)">
-            GetSlice(lo, hi)
+          <code onmouseout="hideTip(event, '689', 689)" onmouseover="showTip(event, '689', 689)">
+            GetSlice(arg1, arg2)
           </code>
-          <div class="tip" id="465">
-            <strong>Signature:</strong> (lo:&#39;TRowKey option * hi:&#39;TRowKey option) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+          <div class="tip" id="689">
+            <strong>Signature:</strong> (&#39;TRowKey option * &#39;TRowKey option) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+              <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1584-1584" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1673-1673" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -132,37 +118,65 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '466', 466)" onmouseover="showTip(event, '466', 466)">
-            [level]
-          </code>
-          <div class="tip" id="466">
-            <strong>Signature:</strong> level:ICustomLookup&lt;&#39;TRowKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1588-1588" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '467', 467)" onmouseover="showTip(event, '467', 467)">
+          <code onmouseout="hideTip(event, '690', 690)" onmouseover="showTip(event, '690', 690)">
             [items]
           </code>
-          <div class="tip" id="467">
+          <div class="tip" id="690">
             <strong>Signature:</strong> items:seq&lt;&#39;TRowKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1587-1587" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1678-1678" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '691', 691)" onmouseover="showTip(event, '691', 691)">
+            [level]
+          </code>
+          <div class="tip" id="691">
+            <strong>Signature:</strong> level:ICustomLookup&lt;&#39;TRowKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1679-1679" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>Static members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Static member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '692', 692)" onmouseover="showTip(event, '692', 692)">
+            FromSeries(series)
+          </code>
+          <div class="tip" id="692">
+            <strong>Signature:</strong> series:Series&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;&gt; -&gt; RowSeries&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1683-1683" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Creates a <code>RowSeries</code> from a filtered series
+(and implements slicing in terms of the specified series)</p>
+
         </td>
       </tr>
     </tbody>

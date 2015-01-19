@@ -38,7 +38,7 @@
       <div class="row">
         <div class="span9" id="main">
           
-<h1>Calculating frame and series statistics</h1>
+<h1><a name="Calculating-frame-and-series-statistics" class="anchor" href="#Calculating-frame-and-series-statistics">Calculating frame and series statistics</a></h1>
 
 <p>The <code>Stats</code> type contains functions for fast calculation of statistics over
 series and frames as well as over a moving and an expanding window in a series. 
@@ -49,7 +49,7 @@ easily using the <code>Frame.getNumericCols</code> function.</p>
 
 <a name="stats"></a>
 
-<h2>Series and frame statistics</h2>
+<h2><a name="Series-and-frame-statistics" class="anchor" href="#Series-and-frame-statistics">Series and frame statistics</a></h2>
 
 <p>In this section, we look at calculating simple statistics over data frame and
 series. An important aspect is handling of missing values, so we demonstrate that
@@ -106,7 +106,7 @@ snippet loads <code>AirQuality.csv</code> and shows the values in the <code>Ozon
 </div>
 
 
-<h3>Series statistics</h3>
+<h3><a name="Series-statistics" class="anchor" href="#Series-statistics">Series statistics</a></h3>
 
 <p>Given a series <code>ozone</code>, we can use a number of <code>Stats</code> functions to calculate 
 statistics. The following example creates a series (indexed by strings) that
@@ -169,7 +169,7 @@ This makes it possible to use the functions not just on floating point numbers, 
 also on series of integers and other types. Other statistical functions such as 
 <code>Stats.mean</code> return <code>nan</code> when no values are available.</p>
 
-<h3>Frame statistics</h3>
+<h3><a name="Frame-statistics" class="anchor" href="#Frame-statistics">Frame statistics</a></h3>
 
 <p>Functions such as <code>Stats.mean</code> can be called on series, but also on entire data frames.
 In that case, they calculate the statistics for each column of a data frame and return
@@ -271,7 +271,7 @@ and <a href="reference/deedle-stats.html#section1">Frame statistics</a> sections
 
 <a name="moving"></a>
 
-<h2>Moving window statistics</h2>
+<h2><a name="Moving-window-statistics" class="anchor" href="#Moving-window-statistics">Moving window statistics</a></h2>
 
 <p>The <code>Stats</code> type provides an efficient implementation of moving window statistics. The
 implementation uses an online algorithm so that it does not have to re-calculate the 
@@ -397,7 +397,7 @@ value over a smaller window:</p>
 contains only missing values. However, the value for the key <em>1</em>, because the two-element window
 (starting from the beginning of the series) contains two elements.</p>
 
-<h3>Remarks</h3>
+<h3><a name="Remarks" class="anchor" href="#Remarks">Remarks</a></h3>
 
 <p>The windowing functions in the <code>Stats</code> type support an efficient calculations over a fixed-size
 windows specified by the size of the window. They also provide one, fixed, boundary behavior.
@@ -409,7 +409,7 @@ chunking</a> section in the API reference.</p>
 
 <a name="exp"></a>
 
-<h2>Expanding windows</h2>
+<h2><a name="Expanding-windows" class="anchor" href="#Expanding-windows">Expanding windows</a></h2>
 
 <p>Expanding window means that the window starts as a single-element sized window at the beginning
 of a series and expands as it moves over the series. For a time-series data ordered by time,
@@ -543,7 +543,7 @@ and more values). The only exception is <code>expandingSum</code>, because the s
 
 <a name="multi"></a>
 
-<h2>Multi-level indexed statistics</h2>
+<h2><a name="Multi-level-indexed-statistics" class="anchor" href="#Multi-level-indexed-statistics">Multi-level indexed statistics</a></h2>
 
 <p>For a series with multi-level (hierarchical) index, the functions prefixed with <code>level</code> provide 
 a way to apply statistical operation on a single level of the index. Series with multi-level 

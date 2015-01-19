@@ -38,7 +38,7 @@
       <div class="row">
         <div class="span9" id="main">
           
-<h1>Deedle in 10 minutes using F#</h1>
+<h1><a name="Deedle-in-10-minutes-using-F" class="anchor" href="#Deedle-in-10-minutes-using-F">Deedle in 10 minutes using F#</a></h1>
 
 <p>This document is a quick overview of the most important features of F# data frame library.
 You can also get this page as an <a href="https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/tutorial.fsx">F# script file</a>
@@ -63,8 +63,8 @@ works similarly:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="prep">#I</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">packages</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Charting</span><span class="s">.</span><span class="s">0</span><span class="s">.</span><span class="s">90</span><span class="s">.</span><span class="s">6</span><span class="s">&quot;</span>
-<span class="prep">#I</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">packages</span><span class="s">/</span><span class="s">Deedle</span><span class="s">.</span><span class="s">0</span><span class="s">.</span><span class="s">9</span><span class="s">.</span><span class="s">5</span><span class="s">&quot;</span>
+<span class="prep">#I</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">packages</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Charting</span><span class="s">&quot;</span>
+<span class="prep">#I</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">packages</span><span class="s">/</span><span class="s">Deedle</span><span class="s">&quot;</span>
 <span class="prep">#load</span> <span class="s">&quot;</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Charting</span><span class="s">.</span><span class="s">fsx</span><span class="s">&quot;</span>
 <span class="prep">#load</span> <span class="s">&quot;</span><span class="s">Deedle</span><span class="s">.</span><span class="s">fsx</span><span class="s">&quot;</span>
 
@@ -77,7 +77,7 @@ works similarly:</p>
 
 <a name="creating"></a>
 
-<h2>Creating series and frames</h2>
+<h2><a name="Creating-series-and-frames" class="anchor" href="#Creating-series-and-frames">Creating series and frames</a></h2>
 
 <p>A data frame is a collection of series with unique column names (although these
 do not actually have to be strings). So, to create a data frame, we first need
@@ -238,15 +238,15 @@ with 10 day value range and random values:</p>
 <tbody>
 <tr class="odd">
 <td><p>Values</p></td>
-<td><p>.5</p></td>
-<td><p>.4</p></td>
-<td><p>.5</p></td>
-<td><p>.82</p></td>
-<td><p>.74</p></td>
-<td><p> ... </p></td>
-<td><p>.56</p></td>
+<td><p>.48</p></td>
+<td><p>.06</p></td>
+<td><p>.33</p></td>
 <td><p>.88</p></td>
-<td><p>.42</p></td>
+<td><p>.59</p></td>
+<td><p> ... </p></td>
+<td><p>.14</p></td>
+<td><p>.25</p></td>
+<td><p>.12</p></td>
 </tr>
 </tbody>
 </table>
@@ -283,52 +283,52 @@ the <code>first</code> series and another representing the <code>second</code> s
 <tr class="odd">
 <td><p>1/1/2013 12:00:00 AM</p></td>
 <td><p>10</p></td>
-<td><p>.4956</p></td>
+<td><p>.4773</p></td>
 </tr>
 <tr class="even">
 <td><p>1/2/2013 12:00:00 AM</p></td>
 <td><p>N/A</p></td>
-<td><p>.3962</p></td>
+<td><p>.0578</p></td>
 </tr>
 <tr class="odd">
 <td><p>1/3/2013 12:00:00 AM</p></td>
 <td><p>N/A</p></td>
-<td><p>.4959</p></td>
+<td><p>.3257</p></td>
 </tr>
 <tr class="even">
 <td><p>1/4/2013 12:00:00 AM</p></td>
 <td><p>20</p></td>
-<td><p>.8242</p></td>
+<td><p>.8846</p></td>
 </tr>
 <tr class="odd">
 <td><p>1/5/2013 12:00:00 AM</p></td>
 <td><p>N/A</p></td>
-<td><p>.7429</p></td>
+<td><p>.5915</p></td>
 </tr>
 <tr class="even">
 <td><p>1/6/2013 12:00:00 AM</p></td>
 <td><p>N/A</p></td>
-<td><p>.7185</p></td>
+<td><p>.4431</p></td>
 </tr>
 <tr class="odd">
 <td><p>1/7/2013 12:00:00 AM</p></td>
 <td><p>N/A</p></td>
-<td><p>.7094</p></td>
+<td><p>.7961</p></td>
 </tr>
 <tr class="even">
 <td><p>1/8/2013 12:00:00 AM</p></td>
 <td><p>30</p></td>
-<td><p>.5576</p></td>
+<td><p>.1362</p></td>
 </tr>
 <tr class="odd">
 <td><p>1/9/2013 12:00:00 AM</p></td>
 <td><p>N/A</p></td>
-<td><p>.8804</p></td>
+<td><p>.2471</p></td>
 </tr>
 <tr class="even">
 <td><p>1/10/2013 12:00:00 AM</p></td>
 <td><p>N/A</p></td>
-<td><p>.4204</p></td>
+<td><p>.1245</p></td>
 </tr>
 </tbody>
 </table>
@@ -589,7 +589,7 @@ of dates (e.g. <code>DateTime</code>, <code>DateTimeOffset</code> or some custom
 
 <a name="reindexing-and-joins"></a>
 
-<h2>Specifying index and joining</h2>
+<h2><a name="Specifying-index-and-joining" class="anchor" href="#Specifying-index-and-joining">Specifying index and joining</a></h2>
 
 <p>Now we have <code>fbCsv</code> and <code>msftCsv</code> frames containing stock prices, but they are
 indexed with ordinal numbers. This means that we can get e.g. 4th price. 
@@ -735,7 +735,7 @@ can do this, we need to rename their columns, because duplicate keys are not all
 
 <a name="selecting"></a>
 
-<h2>Selecting values and slicing</h2>
+<h2><a name="Selecting-values-and-slicing" class="anchor" href="#Selecting-values-and-slicing">Selecting values and slicing</a></h2>
 
 <p>The data frame provides two key properties that we can use to access the data. The 
 <code>Rows</code> property returns a series containing individual rows (as a series) and <code>Columns</code>
@@ -981,7 +981,7 @@ first day is 2 January)</p>
 
 <a name="timeseries"></a>
 
-<h2>Using ordered time series</h2>
+<h2><a name="Using-ordered-time-series" class="anchor" href="#Using-ordered-time-series">Using ordered time series</a></h2>
 
 <p>As already mentioned, if we have an ordered series or an ordered data frame, then we can
 leverage the ordering in a number of ways. In the previous example, slicing used lower
@@ -1012,29 +1012,29 @@ can be used to ilustrate the idea):</p>
 <thead>
 <tr class="header">
 <th><p>Keys</p></th>
-<th><p>9/26/2014 12:00:00 AM</p></th>
-<th><p>9/27/2014 12:00:00 AM</p></th>
-<th><p>9/28/2014 12:00:00 AM</p></th>
-<th><p>9/29/2014 12:00:00 AM</p></th>
-<th><p>9/30/2014 12:00:00 AM</p></th>
+<th><p>1/19/2015 12:00:00 AM</p></th>
+<th><p>1/20/2015 12:00:00 AM</p></th>
+<th><p>1/21/2015 12:00:00 AM</p></th>
+<th><p>1/22/2015 12:00:00 AM</p></th>
+<th><p>1/23/2015 12:00:00 AM</p></th>
 <th><p> ... </p></th>
-<th><p>10/3/2014 12:00:00 AM</p></th>
-<th><p>10/4/2014 12:00:00 AM</p></th>
-<th><p>10/5/2014 12:00:00 AM</p></th>
+<th><p>1/26/2015 12:00:00 AM</p></th>
+<th><p>1/27/2015 12:00:00 AM</p></th>
+<th><p>1/28/2015 12:00:00 AM</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td><p>Values</p></td>
-<td><p>.83</p></td>
-<td><p>.85</p></td>
-<td><p>.6</p></td>
-<td><p>.31</p></td>
-<td><p>.54</p></td>
+<td><p>.29</p></td>
+<td><p>.94</p></td>
+<td><p>.23</p></td>
+<td><p>.55</p></td>
+<td><p>.66</p></td>
 <td><p> ... </p></td>
-<td><p>.37</p></td>
-<td><p>.99</p></td>
-<td><p>.45</p></td>
+<td><p>.95</p></td>
+<td><p>.59</p></td>
+<td><p>.71</p></td>
 </tr>
 </tbody>
 </table>
@@ -1050,29 +1050,29 @@ can be used to ilustrate the idea):</p>
 <thead>
 <tr class="header">
 <th><p>Keys</p></th>
-<th><p>9/26/2014 12:49:05 PM</p></th>
-<th><p>9/27/2014 12:49:05 PM</p></th>
-<th><p>9/28/2014 12:49:05 PM</p></th>
-<th><p>9/29/2014 12:49:05 PM</p></th>
-<th><p>9/30/2014 12:49:05 PM</p></th>
+<th><p>1/19/2015 9:53:34 PM</p></th>
+<th><p>1/20/2015 9:53:34 PM</p></th>
+<th><p>1/21/2015 9:53:34 PM</p></th>
+<th><p>1/22/2015 9:53:34 PM</p></th>
+<th><p>1/23/2015 9:53:34 PM</p></th>
 <th><p> ... </p></th>
-<th><p>10/3/2014 12:49:05 PM</p></th>
-<th><p>10/4/2014 12:49:05 PM</p></th>
-<th><p>10/5/2014 12:49:05 PM</p></th>
+<th><p>1/26/2015 9:53:34 PM</p></th>
+<th><p>1/27/2015 9:53:34 PM</p></th>
+<th><p>1/28/2015 9:53:34 PM</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td><p>Values</p></td>
-<td><p>.83</p></td>
-<td><p>.85</p></td>
-<td><p>.6</p></td>
-<td><p>.31</p></td>
-<td><p>.54</p></td>
+<td><p>.29</p></td>
+<td><p>.94</p></td>
+<td><p>.23</p></td>
+<td><p>.55</p></td>
+<td><p>.66</p></td>
 <td><p> ... </p></td>
-<td><p>.37</p></td>
-<td><p>.99</p></td>
-<td><p>.45</p></td>
+<td><p>.95</p></td>
+<td><p>.59</p></td>
+<td><p>.71</p></td>
 </tr>
 </tbody>
 </table>
@@ -1177,7 +1177,7 @@ the same way.</p>
 
 <a name="projections"></a>
 
-<h2>Projection and filtering</h2>
+<h2><a name="Projection-and-filtering" class="anchor" href="#Projection-and-filtering">Projection and filtering</a></h2>
 
 <p>For filtering and projection, series provides <code>Where</code> and <code>Select</code> methods and 
 corresponding <code>Series.map</code> and <code>Series.filter</code> functions (there is also <code>Series.mapValues</code>
@@ -1274,7 +1274,7 @@ just the two columns we need from the original data frame.</p>
 
 <a name="grouping"></a>
 
-<h2>Grouping and aggregation</h2>
+<h2><a name="Grouping-and-aggregation" class="anchor" href="#Grouping-and-aggregation">Grouping and aggregation</a></h2>
 
 <p>As a last thing, we briefly look at grouping and aggregation. For more information
 about grouping of time series data, see <a href="series.html">the time series features tutorial</a>

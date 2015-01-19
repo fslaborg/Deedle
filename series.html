@@ -38,7 +38,7 @@
       <div class="row">
         <div class="span9" id="main">
           
-<h1>Working with series and time series data in F#</h1>
+<h1><a name="Working-with-series-and-time-series-data-in-F" class="anchor" href="#Working-with-series-and-time-series-data-in-F">Working with series and time series data in F#</a></h1>
 
 <p>In this section, we look at F# data frame library features that are useful when working
 with time series data or, more generally, any ordered series. Although we mainly look at
@@ -49,7 +49,7 @@ joining series.</p>
 <p>You can also get this page as an <a href="https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/series.fsx">F# script file</a>
 from GitHub and run the samples interactively.</p>
 
-<h2>Generating input data</h2>
+<h2><a name="Generating-input-data" class="anchor" href="#Generating-input-data">Generating input data</a></h2>
 
 <p>For the purpose of this tutorial, we'll need some input data. For simplicitly, we use the
 following function which generates random prices using the geometric Brownian motion.
@@ -127,7 +127,7 @@ and tweak the chart look, you should see something like this:</p>
 
 <a name="alignment"></a>
 
-<h2>Data alignment and zipping</h2>
+<h2><a name="Data-alignment-and-zipping" class="anchor" href="#Data-alignment-and-zipping">Data alignment and zipping</a></h2>
 
 <p>One of the key features of the data frame library for working with time series data is 
 <em>automatic alignment</em> based on the keys. When we have multiple time series with date 
@@ -177,7 +177,7 @@ multiple series and align them automatically to specified date keys.</p>
 </tr>
 </table>
 
-<h3>Zipping time series</h3>
+<h3><a name="Zipping-time-series" class="anchor" href="#Zipping-time-series">Zipping time series</a></h3>
 
 <p>Let's first look at operations that are available on the <code>Series&lt;K, V&gt;</code> type. A series
 exposes <code>Zip</code> operation that can combine multiple series into a single series of pairs.
@@ -249,7 +249,7 @@ component of the tuple may be missing. To represent this, the library uses the <
 (a type alias for <code>OptionalValue&lt;T&gt;</code>). This is not necessary when we use data frame to 
 work with multiple columns.</p>
 
-<h3>Joining data frames</h3>
+<h3><a name="Joining-data-frames" class="anchor" href="#Joining-data-frames">Joining data frames</a></h3>
 
 <p>When we store data in data frames, we do not need to use tuples to represent combined values.
 Instead, we can simply use data frame with multiple columns. To see how this works, let's first
@@ -391,13 +391,13 @@ another is half-hourly), then you can create data frame with missing values usin
 
 <a name="windowing"></a>
 
-<h2>Windowing, chunking and pairwise</h2>
+<h2><a name="Windowing-chunking-and-pairwise" class="anchor" href="#Windowing-chunking-and-pairwise">Windowing, chunking and pairwise</a></h2>
 
 <p>Windowing and chunking are two operations on ordered series that allow aggregating
 the values of series into groups. Both of these operations work on consecutive elements,
 which contrast with <a href="tutorial.html#grouping">grouping</a> that does not use order.</p>
 
-<h3>Sliding windows</h3>
+<h3><a name="Sliding-windows" class="anchor" href="#Sliding-windows">Sliding windows</a></h3>
 
 <p>Sliding window creates windows of certain size (or certain condition). The window
 "slides" over the input series and provides a view on a part of the series. The
@@ -561,7 +561,7 @@ is complete or not. For example:</p>
 </tr>
 </table>
 
-<h3>Window size conditions</h3>
+<h3><a name="Window-size-conditions" class="anchor" href="#Window-size-conditions">Window size conditions</a></h3>
 
 <p>The previous examples generated windows of fixed size. However, there are two other
 options for specifying when a window ends.</p>
@@ -605,7 +605,7 @@ each window):</p>
 </tr>
 </table>
 
-<h3>Chunking series</h3>
+<h3><a name="Chunking-series" class="anchor" href="#Chunking-series">Chunking series</a></h3>
 
 <p>Chunking is similar to windowing, but it creates non-overlapping chunks, 
 rather than (overlapping) sliding windows. The size of chunk can be specified
@@ -666,7 +666,7 @@ However, in practice it is more convenient to use the helpers presented here -
 in some rare cases, you might need to use <code>Series.aggregate</code> as it provides
 a few other options.</p>
 
-<h3>Pairwise</h3>
+<h3><a name="Pairwise" class="anchor" href="#Pairwise">Pairwise</a></h3>
 
 <p>A special form of windowing is building a series of pairs containing a current
 and previous value from the input series (in other words, the key for each pair
@@ -719,7 +719,7 @@ starting from the first one gives you the current price:</p>
 
 <a name="sampling"></a>
 
-<h2>Sampling and resampling time series</h2>
+<h2><a name="Sampling-and-resampling-time-series" class="anchor" href="#Sampling-and-resampling-time-series">Sampling and resampling time series</a></h2>
 
 <p>Given a time series with high-frequency prices, sampling or resampling makes 
 it possible to get time series with representative values at lower frequency.
@@ -741,7 +741,7 @@ observations in the input sequence.</p></li>
 <p>Finally, the library also provides a few helper functions that are specifically
 desinged for series with keys of types <code>DateTime</code> and <code>DateTimeOffset</code>.</p>
 
-<h3>Lookup</h3>
+<h3><a name="Lookup" class="anchor" href="#Lookup">Lookup</a></h3>
 
 <p>Given a series <code>hf</code>, you can get a value at a specified key using <code>hf.Get(key)</code>
 or using <code>hf |&gt; Series.get key</code>. However, it is also possible to find values
@@ -806,7 +806,7 @@ lookup and <code>Series.lookupAll</code> when you want more flexible lookup:</p>
 quick sampling of large (or high-frequency) data. When we want to calculate
 a new value based on multiple values, we need to use resampling.</p>
 
-<h3>Resampling</h3>
+<h3><a name="Resampling" class="anchor" href="#Resampling">Resampling</a></h3>
 
 <p>Series supports two kinds of resamplings. The first kind is similar to lookup
 in that we have to explicitly specify keys. The difference is that resampling
@@ -891,7 +891,7 @@ source has keys <code>DateTimeOffset</code> (representing date with time) while 
 keys are of the type returned by the projection (here, <code>DateTime</code> representing just
 dates).</p>
 
-<h3>Uniform resampling</h3>
+<h3><a name="Uniform-resampling" class="anchor" href="#Uniform-resampling">Uniform resampling</a></h3>
 
 <p>In the previous section, we looked at <code>resampleEquiv</code>, which is useful if you want
 to sample time series by keys with "lower resolution" - for example, sample date time
@@ -992,7 +992,7 @@ function with <code>Lookup.ExactOrSmaller</code>, so the value 17.51 is picked f
 of the previous day (<code>Lookup.ExactOrGreater</code> would pick 18.80 and <code>Lookup.Exact</code> would give
 us an empty series for that date).</p>
 
-<h3>Sampling time series</h3>
+<h3><a name="Sampling-time-series" class="anchor" href="#Sampling-time-series">Sampling time series</a></h3>
 
 <p>Perhaps the most common sampling operation that you might want to do is to sample time series
 by a specified <code>TimeSpan</code>. Although this can be easily done by using some of the functions above,
@@ -1034,12 +1034,12 @@ the library provides helper functions exactly for this purpose:</p>
 
 <a name="stats"></a>
 
-<h2>Calculations and statistics</h2>
+<h2><a name="Calculations-and-statistics" class="anchor" href="#Calculations-and-statistics">Calculations and statistics</a></h2>
 
 <p>In the final section of this tutorial, we look at writing some calculations over time series. Many of the
 functions demonstrated here can be also used on unordered data frames and series.</p>
 
-<h3>Shifting and differences</h3>
+<h3><a name="Shifting-and-differences" class="anchor" href="#Shifting-and-differences">Shifting and differences</a></h3>
 
 <p>First of all, let's look at functions that we need when we need to compare subsequent values in
 the series. We already demonstrated how to do this using <code>Series.pairwise</code>. In many cases,
@@ -1119,7 +1119,7 @@ So far, we also used the functional notation (e.g. <code>sample |&gt; Series.dif
 all operations can be called using the member syntax - very often, this gives you
 a shorter syntax. This is also shown in the next few snippets.</p>
 
-<h3>Operators and functions</h3>
+<h3><a name="Operators-and-functions" class="anchor" href="#Operators-and-functions">Operators and functions</a></h3>
 
 <p>Time series also supports a large number of standard F# functions such as <code>log</code> and <code>abs</code>.
 You can also use standard numerical operators to apply some operation to all elements
@@ -1208,7 +1208,7 @@ align the series (using either <code>Series.join</code> or <code>Series.joinAlig
 containing tuples and then apply <code>Series.mapValues</code>. The library also provides the <code>$</code> operator
 that simplifies the last step - <code>f $ s</code> applies the function <code>f</code> to all values of the series <code>s</code>.</p>
 
-<h3>Data frame operations</h3>
+<h3><a name="Data-frame-operations" class="anchor" href="#Data-frame-operations">Data frame operations</a></h3>
 
 <p>Finally, many of the time series operations demonstrated above can be applied to entire
 data frames as well. This is particularly useful if you have data frame that contains multiple

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>IVirtualVectorSource<'V> - Deedle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="BlueMountain Capital">
+
+    <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/deedle.css" />
+    <script type="text/javascript" src="http://bluemountaincapital.github.io/Deedle/content/tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
+          <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
+        </ul>
+        <h3 class="muted"><a href="http://bluemountaincapital.github.io/Deedle/index.html">Deedle</a></h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+
+
+
+<h1>IVirtualVectorSource<'V></h1>
+<div class="xmldoc">
+<p>Represents a data source for Big Deedle. The interface is used both as a representation
+of data source for <code>VirtualVector</code> (this file) and <code>VirtualIndex</code> (another file). The 
+index uses <code>Length</code> and <code>ValueAt</code> to perform binary search when looking for a key; the
+vector simply provides an access to values using <code>ValueAt</code>.</p>
+</div>
+  <h3>Instance members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Instance member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1069', 1069)" onmouseover="showTip(event, '1069', 1069)">
+            GetSubVector(arg1)
+          </code>
+          <div class="tip" id="1069">
+            <strong>Signature:</strong> VectorRange -&gt; IVirtualVectorSource&lt;&#39;V&gt;<br />
+              <strong>Modifiers:</strong> abstract<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L53-53" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a virtual source for the specified range (used when performing splicing on the 
+frame/series, both using address or using keys - which are obtained using Lookup)</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1070', 1070)" onmouseover="showTip(event, '1070', 1070)">
+            LookupRange(arg1)
+          </code>
+          <div class="tip" id="1070">
+            <strong>Signature:</strong> &#39;V -&gt; VectorRange<br />
+              <strong>Modifiers:</strong> abstract<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L45-45" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Find a range (continuous or a sequence of indices) such that all values in the range are 
+the specified value. This is used, for example, when filtering frame based on column
+value (say column "PClass" has a value "1").</p>
+
+<p>If the data source has some "clever" representation of the range, it can return
+<code>Custom of IVectorRange</code> - which is then passed to <code>GetSubVector</code>.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1071', 1071)" onmouseover="showTip(event, '1071', 1071)">
+            LookupValue(arg1, arg2, arg3)
+          </code>
+          <div class="tip" id="1071">
+            <strong>Signature:</strong> (&#39;V * Lookup * Func&lt;Address,bool&gt;) -&gt; OptionalValue&lt;&#39;V * Address&gt;<br />
+              <strong>Modifiers:</strong> abstract<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L49-49" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Find the address associated with the specified value. This is used by the 
+index and it has the same signature as <code>IIndex&lt;'K&gt;.Lookup</code> (see <code>Index.fs</code>).</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1072', 1072)" onmouseover="showTip(event, '1072', 1072)">
+            MergeWith(arg1)
+          </code>
+          <div class="tip" id="1072">
+            <strong>Signature:</strong> seq&lt;IVirtualVectorSource&lt;&#39;V&gt;&gt; -&gt; IVirtualVectorSource&lt;&#39;V&gt;<br />
+              <strong>Modifiers:</strong> abstract<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L57-57" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Merge the current source with a list of other sources
+(used by functions such as <code>Frame.merge</code> and <code>Frame.mergeAll</code>)</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1073', 1073)" onmouseover="showTip(event, '1073', 1073)">
+            ValueAt(arg1)
+          </code>
+          <div class="tip" id="1073">
+            <strong>Signature:</strong> int64 -&gt; OptionalValue&lt;&#39;V&gt;<br />
+              <strong>Modifiers:</strong> abstract<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L37-37" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the value at the specifid address. We assume that the address is in range 
+[0L, Length-1L] and that each location has a value (or has a missing value, but is valid)</p>
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+        </div>
+        <div class="span3">
+          <a href="http://bluemountaincapital.github.io/Deedle/index.html">
+            <img src="http://bluemountaincapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          </a>
+
+          <ul class="nav nav-list" id="menu">
+            <li class="nav-header">Deedle</li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/index.html">Home page</a></li>
+            <li class="divider"></li>
+            <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
+            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/design.html">Design notes</a></li>
+            <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
+            
+            <li class="nav-header">Using from F#</li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/series.html">Working with time series</a>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/frame.html">Working with data frames</a>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/stats.html">Statistics &amp; calculations</a>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using Deedle with R</a>
+            </li>
+
+            <li class="nav-header">Using from C#</li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/csharpintro.html">Getting started</a></li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html">Working with data series</a>
+            </li>
+            <li>
+              <a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html">Working with data frames</a>
+            </li>
+
+            <li class="nav-header">Documentation</li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
+            <li class="divider"></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-stats.html">Stats module</a></li>
+
+            <li class="nav-header">Samples</li>
+            <li><a href="http://bluemountaincapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/BlueMountainCapital/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <script>
+      (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+          (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+      })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+      ga('create', 'UA-45379232-1', 'bluemountaincapital.github.io');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>

@@ -79,6 +79,7 @@ in the <code>Series</code> module are grouped in a number of categories and docu
       <li><a href="#section6">Sampling, resampling and advanced lookup</a></li>            
       <li><a href="#section7">Series transformations</a></li>            
       <li><a href="#section8">Sorting and index manipulation</a></li>            
+      <li><a href="#section9">Other module members</a></li>            
   </ul>
 
 <!-- Render nested types and modules, if there are any -->
@@ -110,10 +111,10 @@ integer offset (and ignore the keys of the series)</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '77', 77)" onmouseover="showTip(event, '77', 77)">
+          <code onmouseout="hideTip(event, '171', 171)" onmouseover="showTip(event, '171', 171)">
             countKeys series
           </code>
-          <div class="tip" id="77">
+          <div class="tip" id="171">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; int<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -131,10 +132,10 @@ value available.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '78', 78)" onmouseover="showTip(event, '78', 78)">
+          <code onmouseout="hideTip(event, '172', 172)" onmouseover="showTip(event, '172', 172)">
             countValues series
           </code>
-          <div class="tip" id="78">
+          <div class="tip" id="172">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; int<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -152,10 +153,10 @@ missing values or not available values (such as values created from <code>null</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '79', 79)" onmouseover="showTip(event, '79', 79)">
+          <code onmouseout="hideTip(event, '173', 173)" onmouseover="showTip(event, '173', 173)">
             firstKey series
           </code>
-          <div class="tip" id="79">
+          <div class="tip" id="173">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;K<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
@@ -164,22 +165,22 @@ missing values or not available values (such as values created from <code>null</
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns the first key of the series</p>
+          <p>Returns the first key of the series, or throws exception if one doesn't exist</p>
 
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '80', 80)" onmouseover="showTip(event, '80', 80)">
+          <code onmouseout="hideTip(event, '174', 174)" onmouseover="showTip(event, '174', 174)">
             firstValue series
           </code>
-          <div class="tip" id="80">
+          <div class="tip" id="174">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L386-386" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L392-392" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -190,10 +191,10 @@ missing values or not available values (such as values created from <code>null</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '81', 81)" onmouseover="showTip(event, '81', 81)">
+          <code onmouseout="hideTip(event, '175', 175)" onmouseover="showTip(event, '175', 175)">
             get key series
           </code>
-          <div class="tip" id="81">
+          <div class="tip" id="175">
             <strong>Signature:</strong> key:&#39;K -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;T<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -210,10 +211,10 @@ Uses exact lookup semantics for key lookup - use <code>lookup</code> for more op
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '82', 82)" onmouseover="showTip(event, '82', 82)">
+          <code onmouseout="hideTip(event, '176', 176)" onmouseover="showTip(event, '176', 176)">
             getAll keys series
           </code>
-          <div class="tip" id="82">
+          <div class="tip" id="176">
             <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -236,10 +237,10 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '83', 83)" onmouseover="showTip(event, '83', 83)">
+          <code onmouseout="hideTip(event, '177', 177)" onmouseover="showTip(event, '177', 177)">
             getAt index series
           </code>
-          <div class="tip" id="83">
+          <div class="tip" id="177">
             <strong>Signature:</strong> index:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;T<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -255,10 +256,10 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '84', 84)" onmouseover="showTip(event, '84', 84)">
+          <code onmouseout="hideTip(event, '178', 178)" onmouseover="showTip(event, '178', 178)">
             has key series
           </code>
-          <div class="tip" id="84">
+          <div class="tip" id="178">
             <strong>Signature:</strong> key:&#39;K -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; bool<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -275,10 +276,10 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '85', 85)" onmouseover="showTip(event, '85', 85)">
+          <code onmouseout="hideTip(event, '179', 179)" onmouseover="showTip(event, '179', 179)">
             hasAll keys series
           </code>
-          <div class="tip" id="85">
+          <div class="tip" id="179">
             <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; bool<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -295,10 +296,10 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '86', 86)" onmouseover="showTip(event, '86', 86)">
+          <code onmouseout="hideTip(event, '180', 180)" onmouseover="showTip(event, '180', 180)">
             hasNone keys series
           </code>
-          <div class="tip" id="86">
+          <div class="tip" id="180">
             <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; bool<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -315,10 +316,10 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '87', 87)" onmouseover="showTip(event, '87', 87)">
+          <code onmouseout="hideTip(event, '181', 181)" onmouseover="showTip(event, '181', 181)">
             hasNot key series
           </code>
-          <div class="tip" id="87">
+          <div class="tip" id="181">
             <strong>Signature:</strong> key:&#39;K -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; bool<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -335,10 +336,10 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '88', 88)" onmouseover="showTip(event, '88', 88)">
+          <code onmouseout="hideTip(event, '182', 182)" onmouseover="showTip(event, '182', 182)">
             hasSome keys series
           </code>
-          <div class="tip" id="88">
+          <div class="tip" id="182">
             <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; bool<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -355,15 +356,15 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '89', 89)" onmouseover="showTip(event, '89', 89)">
+          <code onmouseout="hideTip(event, '183', 183)" onmouseover="showTip(event, '183', 183)">
             keys series
           </code>
-          <div class="tip" id="89">
+          <div class="tip" id="183">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;&#39;K&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L401-401" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L413-413" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -374,10 +375,10 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '90', 90)" onmouseover="showTip(event, '90', 90)">
+          <code onmouseout="hideTip(event, '184', 184)" onmouseover="showTip(event, '184', 184)">
             lastKey series
           </code>
-          <div class="tip" id="90">
+          <div class="tip" id="184">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;K<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
@@ -386,17 +387,17 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns the last key of the series</p>
+          <p>Returns the last key of the series, or throws exception if one doesn't exist</p>
 
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '91', 91)" onmouseover="showTip(event, '91', 91)">
+          <code onmouseout="hideTip(event, '185', 185)" onmouseover="showTip(event, '185', 185)">
             lastValue series
           </code>
-          <div class="tip" id="91">
+          <div class="tip" id="185">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
@@ -412,10 +413,10 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '92', 92)" onmouseover="showTip(event, '92', 92)">
+          <code onmouseout="hideTip(event, '186', 186)" onmouseover="showTip(event, '186', 186)">
             lookup key lookup series
           </code>
-          <div class="tip" id="92">
+          <div class="tip" id="186">
             <strong>Signature:</strong> key:&#39;K -&gt; lookup:Lookup -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;T<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -432,10 +433,10 @@ Use the specified lookup semantics - for exact matching, use <code>get</code></p
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '93', 93)" onmouseover="showTip(event, '93', 93)">
+          <code onmouseout="hideTip(event, '187', 187)" onmouseover="showTip(event, '187', 187)">
             lookupAll keys lookup series
           </code>
-          <div class="tip" id="93">
+          <div class="tip" id="187">
             <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; lookup:Lookup -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -459,10 +460,10 @@ Use the specified lookup semantics - for exact matching, use <code>getAll</code>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '94', 94)" onmouseover="showTip(event, '94', 94)">
+          <code onmouseout="hideTip(event, '188', 188)" onmouseover="showTip(event, '188', 188)">
             observations series
           </code>
-          <div class="tip" id="94">
+          <div class="tip" id="188">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;&#39;K * &#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -480,10 +481,10 @@ all keys with missing values (such as values created from <code>null</code>,
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '95', 95)" onmouseover="showTip(event, '95', 95)">
+          <code onmouseout="hideTip(event, '189', 189)" onmouseover="showTip(event, '189', 189)">
             observationsAll series
           </code>
-          <div class="tip" id="95">
+          <div class="tip" id="189">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;&#39;K * &#39;T option&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -499,10 +500,10 @@ all keys with missing values (such as values created from <code>null</code>,
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '96', 96)" onmouseover="showTip(event, '96', 96)">
+          <code onmouseout="hideTip(event, '190', 190)" onmouseover="showTip(event, '190', 190)">
             sample keys series
           </code>
-          <div class="tip" id="96">
+          <div class="tip" id="190">
             <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -525,10 +526,29 @@ for some new sequence of keys.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '97', 97)" onmouseover="showTip(event, '97', 97)">
+          <code onmouseout="hideTip(event, '191', 191)" onmouseover="showTip(event, '191', 191)">
+            tryFirstValue series
+          </code>
+          <div class="tip" id="191">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V option<br />
+                          <strong>Type parameters:</strong> 'K, 'V          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L397-397" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the last value of the series if one exists.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '192', 192)" onmouseover="showTip(event, '192', 192)">
             tryGet key series
           </code>
-          <div class="tip" id="97">
+          <div class="tip" id="192">
             <strong>Signature:</strong> key:&#39;K -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;T option<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -546,10 +566,10 @@ Uses exact lookup semantics for key lookup - use <code>tryLookup</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '98', 98)" onmouseover="showTip(event, '98', 98)">
+          <code onmouseout="hideTip(event, '193', 193)" onmouseover="showTip(event, '193', 193)">
             tryGetAt index series
           </code>
-          <div class="tip" id="98">
+          <div class="tip" id="193">
             <strong>Signature:</strong> index:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;T option<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -565,10 +585,29 @@ Uses exact lookup semantics for key lookup - use <code>tryLookup</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '99', 99)" onmouseover="showTip(event, '99', 99)">
+          <code onmouseout="hideTip(event, '194', 194)" onmouseover="showTip(event, '194', 194)">
+            tryLastValue series
+          </code>
+          <div class="tip" id="194">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V option<br />
+                          <strong>Type parameters:</strong> 'K, 'V          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L386-386" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the last value of the series if one exists.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '195', 195)" onmouseover="showTip(event, '195', 195)">
             tryLookup key lookup series
           </code>
-          <div class="tip" id="99">
+          <div class="tip" id="195">
             <strong>Signature:</strong> key:&#39;K -&gt; lookup:Lookup -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;T option<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -586,10 +625,10 @@ Use the specified lookup semantics - for exact matching, use <code>tryGet</code>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '100', 100)" onmouseover="showTip(event, '100', 100)">
+          <code onmouseout="hideTip(event, '196', 196)" onmouseover="showTip(event, '196', 196)">
             tryLookupObservation key lookup series
           </code>
-          <div class="tip" id="100">
+          <div class="tip" id="196">
             <strong>Signature:</strong> key:&#39;K -&gt; lookup:Lookup -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; (&#39;K * &#39;T) option<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -608,15 +647,15 @@ available, <code>None</code> is returned.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '101', 101)" onmouseover="showTip(event, '101', 101)">
+          <code onmouseout="hideTip(event, '197', 197)" onmouseover="showTip(event, '197', 197)">
             values series
           </code>
-          <div class="tip" id="101">
+          <div class="tip" id="197">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L391-391" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L403-403" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -627,15 +666,15 @@ available, <code>None</code> is returned.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '102', 102)" onmouseover="showTip(event, '102', 102)">
+          <code onmouseout="hideTip(event, '198', 198)" onmouseover="showTip(event, '198', 198)">
             valuesAll series
           </code>
-          <div class="tip" id="102">
+          <div class="tip" id="198">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;&#39;T option&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L396-396" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L408-408" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -676,15 +715,15 @@ that take a size. There is also <code>pairwise</code> function for sliding windo
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '188', 188)" onmouseover="showTip(event, '188', 188)">
+          <code onmouseout="hideTip(event, '199', 199)" onmouseover="showTip(event, '199', 199)">
             aggregate aggregation keySelector series
           </code>
-          <div class="tip" id="188">
+          <div class="tip" id="199">
             <strong>Signature:</strong> aggregation:Aggregation&lt;&#39;K&gt; -&gt; keySelector:(DataSegment&lt;Series&lt;&#39;K,&#39;T&gt;&gt; -&gt; &#39;TNewKey) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;TNewKey,DataSegment&lt;Series&lt;&#39;K,&#39;T&gt;&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'TNewKey          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L788-788" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L807-807" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -706,15 +745,15 @@ a discriminated union listing various chunking and windowing conditions.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '189', 189)" onmouseover="showTip(event, '189', 189)">
+          <code onmouseout="hideTip(event, '200', 200)" onmouseover="showTip(event, '200', 200)">
             aggregateInto (...)
           </code>
-          <div class="tip" id="189">
+          <div class="tip" id="200">
             <strong>Signature:</strong> aggregation:Aggregation&lt;&#39;K&gt; -&gt; keySelector:(DataSegment&lt;Series&lt;&#39;K,&#39;T&gt;&gt; -&gt; &#39;TNewKey) -&gt; f:(DataSegment&lt;Series&lt;&#39;K,&#39;T&gt;&gt; -&gt; OptionalValue&lt;&#39;R&gt;) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'TNewKey, 'R          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L806-806" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L825-825" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -738,15 +777,15 @@ a discriminated union listing various chunking and windowing conditions.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '190', 190)" onmouseover="showTip(event, '190', 190)">
+          <code onmouseout="hideTip(event, '201', 201)" onmouseover="showTip(event, '201', 201)">
             chunk size series
           </code>
-          <div class="tip" id="190">
+          <div class="tip" id="201">
             <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1075-1075" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1094-1094" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -766,15 +805,15 @@ skips incomplete chunks - you can use <code>Series.chunkSize</code> for more opt
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '191', 191)" onmouseover="showTip(event, '191', 191)">
+          <code onmouseout="hideTip(event, '202', 202)" onmouseover="showTip(event, '202', 202)">
             chunkDist distance series
           </code>
-          <div class="tip" id="191">
+          <div class="tip" id="202">
             <strong>Signature:</strong> distance:^D -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,Series&lt;^K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> ^D, ^K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L986-986" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1005-1005" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -797,15 +836,15 @@ keys of the series.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '192', 192)" onmouseover="showTip(event, '192', 192)">
+          <code onmouseout="hideTip(event, '203', 203)" onmouseover="showTip(event, '203', 203)">
             chunkDistInto distance f series
           </code>
-          <div class="tip" id="192">
+          <div class="tip" id="203">
             <strong>Signature:</strong> distance:^D -&gt; f:(Series&lt;^K,&#39;T&gt; -&gt; &#39;R) -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> ^D, ^K, 'T, 'R          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L970-970" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L989-989" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -829,15 +868,15 @@ keys of the series.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '193', 193)" onmouseover="showTip(event, '193', 193)">
+          <code onmouseout="hideTip(event, '204', 204)" onmouseover="showTip(event, '204', 204)">
             chunkInto size f series
           </code>
-          <div class="tip" id="193">
+          <div class="tip" id="204">
             <strong>Signature:</strong> size:int -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'R          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1062-1062" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1081-1081" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -858,15 +897,15 @@ skips incomplete chunks - you can use <code>Series.chunkSizeInto</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '194', 194)" onmouseover="showTip(event, '194', 194)">
+          <code onmouseout="hideTip(event, '205', 205)" onmouseover="showTip(event, '205', 205)">
             chunkSize (arg1, arg2) series
           </code>
-          <div class="tip" id="194">
+          <div class="tip" id="205">
             <strong>Signature:</strong> (int * Boundary) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L951-951" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L970-970" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -889,15 +928,15 @@ or <code>Boundary.AtEnding</code> (to produce incomplete chunks at the end of se
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '195', 195)" onmouseover="showTip(event, '195', 195)">
+          <code onmouseout="hideTip(event, '206', 206)" onmouseover="showTip(event, '206', 206)">
             chunkSizeInto (arg1, arg2) f series
           </code>
-          <div class="tip" id="195">
+          <div class="tip" id="206">
             <strong>Signature:</strong> (int * Boundary) -&gt; f:(DataSegment&lt;Series&lt;&#39;K,&#39;T&gt;&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'R          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L935-935" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L954-954" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -922,15 +961,15 @@ or <code>Boundary.AtEnding</code> (to produce incomplete chunks at the end of se
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '196', 196)" onmouseover="showTip(event, '196', 196)">
+          <code onmouseout="hideTip(event, '207', 207)" onmouseover="showTip(event, '207', 207)">
             chunkWhile cond series
           </code>
-          <div class="tip" id="196">
+          <div class="tip" id="207">
             <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1019-1019" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1038-1038" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -952,15 +991,15 @@ to determine when a window should end.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '197', 197)" onmouseover="showTip(event, '197', 197)">
+          <code onmouseout="hideTip(event, '208', 208)" onmouseover="showTip(event, '208', 208)">
             chunkWhileInto cond f series
           </code>
-          <div class="tip" id="197">
-            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?441087) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?441087&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'T, '?441087          </div>
+          <div class="tip" id="208">
+            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?466389) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?466389&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T, '?466389          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1004-1004" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1023-1023" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -983,15 +1022,15 @@ to determine when a window should end.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '198', 198)" onmouseover="showTip(event, '198', 198)">
+          <code onmouseout="hideTip(event, '209', 209)" onmouseover="showTip(event, '209', 209)">
             groupBy keySelector series
           </code>
-          <div class="tip" id="198">
+          <div class="tip" id="209">
             <strong>Signature:</strong> keySelector:(&#39;K -&gt; &#39;T -&gt; &#39;TNewKey) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;TNewKey,Series&lt;&#39;K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'TNewKey          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1137-1137" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1156-1156" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1012,15 +1051,15 @@ key and value. The new key must support equality testing.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '199', 199)" onmouseover="showTip(event, '199', 199)">
+          <code onmouseout="hideTip(event, '210', 210)" onmouseover="showTip(event, '210', 210)">
             groupInto keySelector f series
           </code>
-          <div class="tip" id="199">
+          <div class="tip" id="210">
             <strong>Signature:</strong> keySelector:(&#39;K -&gt; &#39;T -&gt; &#39;TNewKey) -&gt; f:(&#39;TNewKey -&gt; Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;TNewValue) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;TNewKey,&#39;TNewValue&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'TNewKey, 'TNewValue          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1124-1124" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1143-1143" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1042,15 +1081,15 @@ key and value. The new key must support equality testing.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '200', 200)" onmouseover="showTip(event, '200', 200)">
+          <code onmouseout="hideTip(event, '211', 211)" onmouseover="showTip(event, '211', 211)">
             pairwise series
           </code>
-          <div class="tip" id="200">
+          <div class="tip" id="211">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,(&#39;T * &#39;T)&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1095-1095" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1114-1114" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1068,23 +1107,22 @@ value for the first key).</p>
 
 <pre><code>let input = series [ 1 =&gt; 'a'; 2 =&gt; 'b'; 3 =&gt; 'c']
 let res = input |&gt; Series.pairwise
-res = series [2 =&gt; ('a', 'b'); 3 =&gt; ('b', 'c') ]
-</code></pre>
+res = series [2 =&gt; ('a', 'b'); 3 =&gt; ('b', 'c') ]</code></pre>
 
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '201', 201)" onmouseover="showTip(event, '201', 201)">
+          <code onmouseout="hideTip(event, '212', 212)" onmouseover="showTip(event, '212', 212)">
             pairwiseWith f series
           </code>
-          <div class="tip" id="201">
-            <strong>Signature:</strong> f:(&#39;K -&gt; &#39;T * &#39;T -&gt; &#39;?441111) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?441111&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'T, '?441111          </div>
+          <div class="tip" id="212">
+            <strong>Signature:</strong> f:(&#39;K -&gt; &#39;T * &#39;T -&gt; &#39;?466413) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?466413&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T, '?466413          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1108-1108" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1127-1127" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1104,15 +1142,15 @@ The returned series is one key shorter (it does not contain a  value for the fir
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '202', 202)" onmouseover="showTip(event, '202', 202)">
+          <code onmouseout="hideTip(event, '213', 213)" onmouseover="showTip(event, '213', 213)">
             window size series
           </code>
-          <div class="tip" id="202">
+          <div class="tip" id="213">
             <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1048-1048" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1067-1067" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1132,15 +1170,15 @@ skips incomplete chunks - you can use <code>Series.windowSize</code> for more op
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '203', 203)" onmouseover="showTip(event, '203', 203)">
+          <code onmouseout="hideTip(event, '214', 214)" onmouseover="showTip(event, '214', 214)">
             windowDist distance series
           </code>
-          <div class="tip" id="203">
+          <div class="tip" id="214">
             <strong>Signature:</strong> distance:^D -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,Series&lt;^K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> ^D, ^K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L882-882" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L901-901" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1163,15 +1201,15 @@ keys of the series.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '204', 204)" onmouseover="showTip(event, '204', 204)">
+          <code onmouseout="hideTip(event, '215', 215)" onmouseover="showTip(event, '215', 215)">
             windowDistInto distance f series
           </code>
-          <div class="tip" id="204">
-            <strong>Signature:</strong> distance:^?441053 -&gt; f:(Series&lt;^K,&#39;T&gt; -&gt; &#39;?441056) -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,&#39;?441056&gt;<br />
-                          <strong>Type parameters:</strong> ^?441053, ^K, 'T, '?441056          </div>
+          <div class="tip" id="215">
+            <strong>Signature:</strong> distance:^?466355 -&gt; f:(Series&lt;^K,&#39;T&gt; -&gt; &#39;?466358) -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,&#39;?466358&gt;<br />
+                          <strong>Type parameters:</strong> ^?466355, ^K, 'T, '?466358          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L864-864" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L883-883" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1195,15 +1233,15 @@ keys of the series.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '205', 205)" onmouseover="showTip(event, '205', 205)">
+          <code onmouseout="hideTip(event, '216', 216)" onmouseover="showTip(event, '216', 216)">
             windowInto size f series
           </code>
-          <div class="tip" id="205">
+          <div class="tip" id="216">
             <strong>Signature:</strong> size:int -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'R          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1035-1035" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1054-1054" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1224,15 +1262,15 @@ This function skips incomplete chunks - you can use <code>Series.windowSizeInto<
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '206', 206)" onmouseover="showTip(event, '206', 206)">
+          <code onmouseout="hideTip(event, '217', 217)" onmouseover="showTip(event, '217', 217)">
             windowSize (arg1, arg2) series
           </code>
-          <div class="tip" id="206">
+          <div class="tip" id="217">
             <strong>Signature:</strong> (int * Boundary) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L845-845" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L864-864" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1255,15 +1293,15 @@ or <code>Boundary.AtEnding</code> (to produce incomplete windows at the end of s
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '207', 207)" onmouseover="showTip(event, '207', 207)">
+          <code onmouseout="hideTip(event, '218', 218)" onmouseover="showTip(event, '218', 218)">
             windowSizeInto (arg1, arg2) f series
           </code>
-          <div class="tip" id="207">
+          <div class="tip" id="218">
             <strong>Signature:</strong> (int * Boundary) -&gt; f:(DataSegment&lt;Series&lt;&#39;K,&#39;T&gt;&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'R          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L825-825" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L844-844" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1288,15 +1326,15 @@ or <code>Boundary.AtEnding</code> (to produce incomplete windows at the end of s
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '208', 208)" onmouseover="showTip(event, '208', 208)">
+          <code onmouseout="hideTip(event, '219', 219)" onmouseover="showTip(event, '219', 219)">
             windowWhile cond series
           </code>
-          <div class="tip" id="208">
+          <div class="tip" id="219">
             <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L915-915" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L934-934" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1318,15 +1356,15 @@ to determine when a window should end.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '209', 209)" onmouseover="showTip(event, '209', 209)">
+          <code onmouseout="hideTip(event, '220', 220)" onmouseover="showTip(event, '220', 220)">
             windowWhileInto cond f series
           </code>
-          <div class="tip" id="209">
-            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?441064) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?441064&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'T, '?441064          </div>
+          <div class="tip" id="220">
+            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?466366) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?466366&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T, '?466366          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L900-900" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L919-919" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1375,15 +1413,15 @@ so the above could be written just as <code>input |&gt; Stats.levelMean fst</cod
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '215', 215)" onmouseover="showTip(event, '215', 215)">
+          <code onmouseout="hideTip(event, '221', 221)" onmouseover="showTip(event, '221', 221)">
             applyLevel level op series
           </code>
-          <div class="tip" id="215">
+          <div class="tip" id="221">
             <strong>Signature:</strong> level:(&#39;K1 -&gt; &#39;K2) -&gt; op:(Series&lt;&#39;K1,&#39;V&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V, 'R          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L734-734" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L753-753" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1407,15 +1445,15 @@ the aggregates of each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '216', 216)" onmouseover="showTip(event, '216', 216)">
+          <code onmouseout="hideTip(event, '222', 222)" onmouseover="showTip(event, '222', 222)">
             applyLevelOptional level op series
           </code>
-          <div class="tip" id="216">
+          <div class="tip" id="222">
             <strong>Signature:</strong> level:(&#39;K1 -&gt; &#39;K2) -&gt; op:(Series&lt;&#39;K1,&#39;V&gt; -&gt; &#39;R option) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V, 'R          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L752-752" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L771-771" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1440,15 +1478,15 @@ case the group will have no representation in the resulting series.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '217', 217)" onmouseover="showTip(event, '217', 217)">
+          <code onmouseout="hideTip(event, '223', 223)" onmouseover="showTip(event, '223', 223)">
             reduceLevel level op series
           </code>
-          <div class="tip" id="217">
+          <div class="tip" id="223">
             <strong>Signature:</strong> level:(&#39;K1 -&gt; &#39;K2) -&gt; op:(&#39;T -&gt; &#39;T -&gt; &#39;T) -&gt; series:Series&lt;&#39;K1,&#39;T&gt; -&gt; Series&lt;&#39;K2,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L769-769" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L788-788" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1508,7 +1546,7 @@ series of tuples).</p>
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1744-1744" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1763-1763" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1529,7 +1567,7 @@ specifying merging behavior.</p>
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1769-1769" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1788-1788" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1550,7 +1588,7 @@ of series to be merged is large.</p>
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1760-1760" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1779-1779" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1581,7 +1619,7 @@ from the first or the second series, respectively.</li>
                           <strong>Type parameters:</strong> 'K, 'V1, 'V2          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1782-1782" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1801-1801" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1602,7 +1640,7 @@ to use join on frames instead.</p>
                           <strong>Type parameters:</strong> 'K, 'V1, 'V2          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1801-1801" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1820-1820" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1636,7 +1674,7 @@ Supported values are <code>Lookup.Exact</code>, <code>Lookup.ExactOrSmaller</cod
                           <strong>Type parameters:</strong> 'V1, 'V2, 'R, 'K          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1830-1830" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1849-1849" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1672,7 +1710,7 @@ or outer join, some of the values may be missing. The function can also return
                           <strong>Type parameters:</strong> 'K, 'V1, 'V2          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1809-1809" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1828-1828" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1692,11 +1730,11 @@ a series of tuples with values from the two series.</p>
                           <strong>Type parameters:</strong> 'V1, 'V2, 'R, 'K          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1848-1848" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1867-1867" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Align and zip two series using outer join and exact key matching (use <code>zipAlignInto</code>
+          <p>Align and zip two series using inner join and exact key matching (use <code>zipAlignInto</code>
 for more options). The function calls the specified function <code>op</code> to combine values 
 from the two series</p>
 
@@ -1735,15 +1773,15 @@ The remaining functions provide different mechanism for filling the missing valu
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '239', 239)" onmouseover="showTip(event, '239', 239)">
+          <code onmouseout="hideTip(event, '232', 232)" onmouseover="showTip(event, '232', 232)">
             dropMissing series
           </code>
-          <div class="tip" id="239">
+          <div class="tip" id="232">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1168-1168" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1187-1187" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1760,23 +1798,22 @@ only those keys for which there is a value available in the original one.</p>
 
 <pre><code>let s = series [ 1 =&gt; 1.0; 2 =&gt; Double.NaN ]
 s |&gt; Series.dropMissing 
-[fsi:val it : Series&lt;int,float&gt; = series [ 1 =&gt; 1]
-</code></pre>
+[fsi:val it : Series&lt;int,float&gt; = series [ 1 =&gt; 1]</code></pre>
 
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '240', 240)" onmouseover="showTip(event, '240', 240)">
+          <code onmouseout="hideTip(event, '233', 233)" onmouseover="showTip(event, '233', 233)">
             fillMissing direction series
           </code>
-          <div class="tip" id="240">
+          <div class="tip" id="233">
             <strong>Signature:</strong> direction:Direction -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1229-1229" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1248-1248" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1803,23 +1840,22 @@ for the nearest greater key.</li>
 sample |&gt; Series.fillMissing Direction.Backward
 
 // Returns a series consisting of [&lt;missing&gt;; 1; 1; 3]
-sample |&gt; Series.fillMissing Direction.Forward 
-</code></pre>
+sample |&gt; Series.fillMissing Direction.Forward </code></pre>
 
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '241', 241)" onmouseover="showTip(event, '241', 241)">
+          <code onmouseout="hideTip(event, '234', 234)" onmouseover="showTip(event, '234', 234)">
             fillMissingBetween (...)
           </code>
-          <div class="tip" id="241">
+          <div class="tip" id="234">
             <strong>Signature:</strong> (startKey:&#39;K * endKey:&#39;K) -&gt; direction:Direction -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1247-1247" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1266-1266" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1842,15 +1878,15 @@ for the nearest greater key.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '242', 242)" onmouseover="showTip(event, '242', 242)">
+          <code onmouseout="hideTip(event, '235', 235)" onmouseover="showTip(event, '235', 235)">
             fillMissingInside direction series
           </code>
-          <div class="tip" id="242">
+          <div class="tip" id="235">
             <strong>Signature:</strong> direction:Direction -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1259-1259" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1278-1278" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1861,15 +1897,15 @@ for the nearest greater key.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '243', 243)" onmouseover="showTip(event, '243', 243)">
+          <code onmouseout="hideTip(event, '236', 236)" onmouseover="showTip(event, '236', 236)">
             fillMissingUsing f series
           </code>
-          <div class="tip" id="243">
+          <div class="tip" id="236">
             <strong>Signature:</strong> f:(&#39;K -&gt; &#39;T) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1187-1187" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1206-1206" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1896,15 +1932,15 @@ For example see <a href="../frame.html#missing">handling missing values in the t
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '244', 244)" onmouseover="showTip(event, '244', 244)">
+          <code onmouseout="hideTip(event, '237', 237)" onmouseover="showTip(event, '237', 237)">
             fillMissingWith value series
           </code>
-          <div class="tip" id="244">
-            <strong>Signature:</strong> value:&#39;?441132 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
-                          <strong>Type parameters:</strong> '?441132, 'K, 'T          </div>
+          <div class="tip" id="237">
+            <strong>Signature:</strong> value:&#39;?466434 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
+                          <strong>Type parameters:</strong> '?466434, 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1200-1200" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1219-1219" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1922,15 +1958,15 @@ For example see <a href="../frame.html#missing">handling missing values in the t
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '245', 245)" onmouseover="showTip(event, '245', 245)">
+          <code onmouseout="hideTip(event, '238', 238)" onmouseover="showTip(event, '238', 238)">
             withMissingFrom other series
           </code>
-          <div class="tip" id="245">
+          <div class="tip" id="238">
             <strong>Signature:</strong> other:Series&lt;&#39;K,&#39;S&gt; -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'S, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1150-1150" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1169-1169" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1967,15 +2003,15 @@ a constant using <code>fillErrorsWith</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '249', 249)" onmouseover="showTip(event, '249', 249)">
+          <code onmouseout="hideTip(event, '239', 239)" onmouseover="showTip(event, '239', 239)">
             fillErrorsWith value series
           </code>
-          <div class="tip" id="249">
+          <div class="tip" id="239">
             <strong>Signature:</strong> value:&#39;T -&gt; series:Series&lt;&#39;K,&#39;T tryval&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'T, 'K          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L712-712" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L731-731" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1987,15 +2023,15 @@ values are filled with the specified constant value.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '250', 250)" onmouseover="showTip(event, '250', 250)">
+          <code onmouseout="hideTip(event, '240', 240)" onmouseover="showTip(event, '240', 240)">
             tryErrors series
           </code>
-          <div class="tip" id="250">
+          <div class="tip" id="240">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V tryval&gt; -&gt; Series&lt;&#39;K,exn&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L690-690" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L709-709" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2007,15 +2043,15 @@ contained in the source series. The exceptions are returned as a series.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '251', 251)" onmouseover="showTip(event, '251', 251)">
+          <code onmouseout="hideTip(event, '241', 241)" onmouseover="showTip(event, '241', 241)">
             tryMap f series
           </code>
-          <div class="tip" id="251">
+          <div class="tip" id="241">
             <strong>Signature:</strong> f:(&#39;K -&gt; &#39;T -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R tryval&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'R          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L670-670" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L689-689" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2028,15 +2064,15 @@ with an exception <code>e</code> or <code>Success(v)</code> containing a value <
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '252', 252)" onmouseover="showTip(event, '252', 252)">
+          <code onmouseout="hideTip(event, '242', 242)" onmouseover="showTip(event, '242', 242)">
             trySuccesses series
           </code>
-          <div class="tip" id="252">
+          <div class="tip" id="242">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V tryval&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L701-701" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L720-720" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2048,15 +2084,15 @@ contained in the source series. The input elements containing exceptions are ign
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '253', 253)" onmouseover="showTip(event, '253', 253)">
+          <code onmouseout="hideTip(event, '243', 243)" onmouseover="showTip(event, '243', 243)">
             tryValues series
           </code>
-          <div class="tip" id="253">
+          <div class="tip" id="243">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T tryval&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L679-679" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L698-698" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2097,15 +2133,15 @@ observations in the input sequence.</p></li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '273', 273)" onmouseover="showTip(event, '273', 273)">
+          <code onmouseout="hideTip(event, '244', 244)" onmouseover="showTip(event, '244', 244)">
             lookupTime interval dir lookup series
           </code>
-          <div class="tip" id="273">
+          <div class="tip" id="244">
             <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; lookup:Lookup -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,^V&gt;<br />
                           <strong>Type parameters:</strong> ^K, ^V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1702-1702" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1721-1721" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2139,15 +2175,15 @@ values at exact keys will be returned; <code>NearestGreater</code> returns the n
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '274', 274)" onmouseover="showTip(event, '274', 274)">
+          <code onmouseout="hideTip(event, '245', 245)" onmouseover="showTip(event, '245', 245)">
             lookupTimeAt (...)
           </code>
-          <div class="tip" id="274">
+          <div class="tip" id="245">
             <strong>Signature:</strong> start:^K -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; lookup:Lookup -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,^V&gt;<br />
                           <strong>Type parameters:</strong> ^K, ^V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1729-1729" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1748-1748" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2182,15 +2218,15 @@ values at exact keys will be returned; <code>NearestGreater</code> returns the n
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '275', 275)" onmouseover="showTip(event, '275', 275)">
+          <code onmouseout="hideTip(event, '246', 246)" onmouseover="showTip(event, '246', 246)">
             resample keys dir series
           </code>
-          <div class="tip" id="275">
+          <div class="tip" id="246">
             <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; dir:Direction -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;V&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1430-1430" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1449-1449" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2220,15 +2256,15 @@ used as the greatest keys in a chunk.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '276', 276)" onmouseover="showTip(event, '276', 276)">
+          <code onmouseout="hideTip(event, '247', 247)" onmouseover="showTip(event, '247', 247)">
             resampleEquiv keyProj series
           </code>
-          <div class="tip" id="276">
+          <div class="tip" id="247">
             <strong>Signature:</strong> keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; series:Series&lt;&#39;K1,&#39;V1&gt; -&gt; Series&lt;&#39;K2,Series&lt;&#39;K1,&#39;V1&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V1          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1479-1479" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1498-1498" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2259,15 +2295,15 @@ series, similar functionality can be implemented using <code>Series.groupBy</cod
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '277', 277)" onmouseover="showTip(event, '277', 277)">
+          <code onmouseout="hideTip(event, '248', 248)" onmouseover="showTip(event, '248', 248)">
             resampleEquivInto keyProj f series
           </code>
-          <div class="tip" id="277">
+          <div class="tip" id="248">
             <strong>Signature:</strong> keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; f:(Series&lt;&#39;K1,&#39;V1&gt; -&gt; &#39;V2) -&gt; series:Series&lt;&#39;K1,&#39;V1&gt; -&gt; Series&lt;&#39;K2,&#39;V2&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V1, 'V2          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1454-1454" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1473-1473" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2300,15 +2336,15 @@ series, similar functionality can be implemented using <code>Series.groupBy</cod
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '278', 278)" onmouseover="showTip(event, '278', 278)">
+          <code onmouseout="hideTip(event, '249', 249)" onmouseover="showTip(event, '249', 249)">
             resampleInto keys dir f series
           </code>
-          <div class="tip" id="278">
-            <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; dir:Direction -&gt; f:(&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;?441180) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;?441180&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V, '?441180          </div>
+          <div class="tip" id="249">
+            <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; dir:Direction -&gt; f:(&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;?466482) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;?466482&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V, '?466482          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1409-1409" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1428-1428" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2340,15 +2376,15 @@ single value. Note that this function may be called with empty series.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '279', 279)" onmouseover="showTip(event, '279', 279)">
+          <code onmouseout="hideTip(event, '250', 250)" onmouseover="showTip(event, '250', 250)">
             resampleUniform (...)
           </code>
-          <div class="tip" id="279">
+          <div class="tip" id="250">
             <strong>Signature:</strong> fillMode:Lookup -&gt; keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; nextKey:(&#39;K2 -&gt; &#39;K2) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,Series&lt;&#39;K1,&#39;V&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1564-1564" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1583-1583" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2384,15 +2420,15 @@ space (which is then used for grouping based on equivalence)</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '280', 280)" onmouseover="showTip(event, '280', 280)">
+          <code onmouseout="hideTip(event, '251', 251)" onmouseover="showTip(event, '251', 251)">
             resampleUniformInto (...)
           </code>
-          <div class="tip" id="280">
-            <strong>Signature:</strong> fillMode:Lookup -&gt; keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; nextKey:(&#39;K2 -&gt; &#39;K2) -&gt; f:(Series&lt;&#39;K1,&#39;V&gt; -&gt; &#39;?441197) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;?441197&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2, 'V, '?441197          </div>
+          <div class="tip" id="251">
+            <strong>Signature:</strong> fillMode:Lookup -&gt; keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; nextKey:(&#39;K2 -&gt; &#39;K2) -&gt; f:(Series&lt;&#39;K1,&#39;V&gt; -&gt; &#39;?466499) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;?466499&gt;<br />
+                          <strong>Type parameters:</strong> 'K1, 'K2, 'V, '?466499          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1510-1510" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1529-1529" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2432,15 +2468,15 @@ single value. The function may be called on empty series when <code>fillMode</co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '281', 281)" onmouseover="showTip(event, '281', 281)">
+          <code onmouseout="hideTip(event, '252', 252)" onmouseover="showTip(event, '252', 252)">
             sampleTime interval dir series
           </code>
-          <div class="tip" id="281">
-            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?441211,^?441212&gt; -&gt; Series&lt;^?441211,Series&lt;^?441211,^?441212&gt;&gt;<br />
-                          <strong>Type parameters:</strong> ^?441211, ^?441212          </div>
+          <div class="tip" id="252">
+            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?466513,^?466514&gt; -&gt; Series&lt;^?466513,Series&lt;^?466513,^?466514&gt;&gt;<br />
+                          <strong>Type parameters:</strong> ^?466513, ^?466514          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1658-1658" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1677-1677" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2469,15 +2505,15 @@ used as the greatest keys in a chunk.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '282', 282)" onmouseover="showTip(event, '282', 282)">
+          <code onmouseout="hideTip(event, '253', 253)" onmouseover="showTip(event, '253', 253)">
             sampleTimeAt start interval dir series
           </code>
-          <div class="tip" id="282">
-            <strong>Signature:</strong> start:^?441214 -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?441214,^?441215&gt; -&gt; Series&lt;^?441214,Series&lt;^?441214,^?441215&gt;&gt;<br />
-                          <strong>Type parameters:</strong> ^?441214, ^?441215          </div>
+          <div class="tip" id="253">
+            <strong>Signature:</strong> start:^?466516 -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?466516,^?466517&gt; -&gt; Series&lt;^?466516,Series&lt;^?466516,^?466517&gt;&gt;<br />
+                          <strong>Type parameters:</strong> ^?466516, ^?466517          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1678-1678" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1697-1697" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2507,15 +2543,15 @@ used as the greatest keys in a chunk.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '283', 283)" onmouseover="showTip(event, '283', 283)">
+          <code onmouseout="hideTip(event, '254', 254)" onmouseover="showTip(event, '254', 254)">
             sampleTimeAtInto (...)
           </code>
-          <div class="tip" id="283">
-            <strong>Signature:</strong> start:^K -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?441209) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?441209&gt;<br />
-                          <strong>Type parameters:</strong> ^K, ^V, '?441209          </div>
+          <div class="tip" id="254">
+            <strong>Signature:</strong> start:^K -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?466511) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?466511&gt;<br />
+                          <strong>Type parameters:</strong> ^K, ^V, '?466511          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1637-1637" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1656-1656" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2546,15 +2582,15 @@ used as the greatest keys in a chunk.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '284', 284)" onmouseover="showTip(event, '284', 284)">
+          <code onmouseout="hideTip(event, '255', 255)" onmouseover="showTip(event, '255', 255)">
             sampleTimeInto interval dir f series
           </code>
-          <div class="tip" id="284">
-            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?441205) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?441205&gt;<br />
-                          <strong>Type parameters:</strong> ^K, ^V, '?441205          </div>
+          <div class="tip" id="255">
+            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?466507) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?466507&gt;<br />
+                          <strong>Type parameters:</strong> ^K, ^V, '?466507          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1614-1614" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1633-1633" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2619,15 +2655,15 @@ the specified offset. This can be used e.g. to get previous value for each key u
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '285', 285)" onmouseover="showTip(event, '285', 285)">
+          <code onmouseout="hideTip(event, '256', 256)" onmouseover="showTip(event, '256', 256)">
             diff offset series
           </code>
-          <div class="tip" id="285">
+          <div class="tip" id="256">
             <strong>Signature:</strong> offset:int -&gt; series:Series&lt;&#39;K,^T&gt; -&gt; Series&lt;&#39;K,^T&gt;<br />
                           <strong>Type parameters:</strong> 'K, ^T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L631-631" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L650-650" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2652,15 +2688,15 @@ when negative, subtracts the future values from the current values.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '286', 286)" onmouseover="showTip(event, '286', 286)">
+          <code onmouseout="hideTip(event, '257', 257)" onmouseover="showTip(event, '257', 257)">
             filter f series
           </code>
-          <div class="tip" id="286">
+          <div class="tip" id="257">
             <strong>Signature:</strong> f:(&#39;K -&gt; &#39;T -&gt; bool) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L413-413" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L425-425" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2673,15 +2709,15 @@ values, use <code>filterAll</code> instead.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '287', 287)" onmouseover="showTip(event, '287', 287)">
+          <code onmouseout="hideTip(event, '258', 258)" onmouseover="showTip(event, '258', 258)">
             filterAll f series
           </code>
-          <div class="tip" id="287">
+          <div class="tip" id="258">
             <strong>Signature:</strong> f:(&#39;K -&gt; &#39;T option -&gt; bool) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L430-430" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L442-442" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2693,15 +2729,15 @@ returns <code>true</code>. The predicate is called for missing values as well.</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '288', 288)" onmouseover="showTip(event, '288', 288)">
+          <code onmouseout="hideTip(event, '259', 259)" onmouseover="showTip(event, '259', 259)">
             filterValues f series
           </code>
-          <div class="tip" id="288">
+          <div class="tip" id="259">
             <strong>Signature:</strong> f:(&#39;T -&gt; bool) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'T, 'K          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L422-422" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L434-434" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2714,15 +2750,15 @@ just the value. See also <code>filterAll</code> and <code>filter</code> for more
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '289', 289)" onmouseover="showTip(event, '289', 289)">
+          <code onmouseout="hideTip(event, '260', 260)" onmouseover="showTip(event, '260', 260)">
             flatten series
           </code>
-          <div class="tip" id="289">
+          <div class="tip" id="260">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T option&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L478-478" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L506-506" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2735,15 +2771,15 @@ become ordinary values in the resulting series.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '290', 290)" onmouseover="showTip(event, '290', 290)">
+          <code onmouseout="hideTip(event, '261', 261)" onmouseover="showTip(event, '261', 261)">
             foldValues op init series
           </code>
-          <div class="tip" id="290">
-            <strong>Signature:</strong> op:(&#39;?440997 -&gt; &#39;T -&gt; &#39;?440997) -&gt; init:&#39;?440997 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?440997<br />
-                          <strong>Type parameters:</strong> '?440997, 'T, 'K          </div>
+          <div class="tip" id="261">
+            <strong>Signature:</strong> op:(&#39;?466299 -&gt; &#39;T -&gt; &#39;?466299) -&gt; init:&#39;?466299 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?466299<br />
+                          <strong>Type parameters:</strong> '?466299, 'T, 'K          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L611-611" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L630-630" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2763,15 +2799,15 @@ individual values. The folding starts with the specified initial value.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '291', 291)" onmouseover="showTip(event, '291', 291)">
+          <code onmouseout="hideTip(event, '262', 262)" onmouseover="showTip(event, '262', 262)">
             force series
           </code>
-          <div class="tip" id="291">
+          <div class="tip" id="262">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L550-550" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L569-569" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2783,15 +2819,15 @@ lazy vectors, these are forced to evaluate and the resulting series is fully loa
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '292', 292)" onmouseover="showTip(event, '292', 292)">
+          <code onmouseout="hideTip(event, '263', 263)" onmouseover="showTip(event, '263', 263)">
             map f series
           </code>
-          <div class="tip" id="292">
+          <div class="tip" id="263">
             <strong>Signature:</strong> f:(&#39;K -&gt; &#39;T -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'R          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L440-440" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L451-451" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2804,15 +2840,15 @@ function with both keys and values.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '293', 293)" onmouseover="showTip(event, '293', 293)">
+          <code onmouseout="hideTip(event, '264', 264)" onmouseover="showTip(event, '264', 264)">
             mapAll f series
           </code>
-          <div class="tip" id="293">
+          <div class="tip" id="264">
             <strong>Signature:</strong> f:(&#39;K -&gt; &#39;T option -&gt; &#39;R option) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T, 'R          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L460-460" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L471-471" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2826,15 +2862,15 @@ the result.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '294', 294)" onmouseover="showTip(event, '294', 294)">
+          <code onmouseout="hideTip(event, '265', 265)" onmouseover="showTip(event, '265', 265)">
             mapKeys f series
           </code>
-          <div class="tip" id="294">
+          <div class="tip" id="265">
             <strong>Signature:</strong> f:(&#39;K -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;R,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'R, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L469-469" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L480-480" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2846,15 +2882,15 @@ keys of the original series.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '295', 295)" onmouseover="showTip(event, '295', 295)">
+          <code onmouseout="hideTip(event, '266', 266)" onmouseover="showTip(event, '266', 266)">
             mapValues f series
           </code>
-          <div class="tip" id="295">
+          <div class="tip" id="266">
             <strong>Signature:</strong> f:(&#39;T -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'T, 'R, 'K          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L450-450" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L461-461" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2868,15 +2904,15 @@ function with just values. It is also aliased using the <code>$</code> operator 
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '296', 296)" onmouseover="showTip(event, '296', 296)">
+          <code onmouseout="hideTip(event, '267', 267)" onmouseover="showTip(event, '267', 267)">
             reduceValues op series
           </code>
-          <div class="tip" id="296">
+          <div class="tip" id="267">
             <strong>Signature:</strong> op:(&#39;T -&gt; &#39;T -&gt; &#39;T) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;T<br />
                           <strong>Type parameters:</strong> 'T, 'K          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L595-595" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L614-614" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2895,15 +2931,15 @@ individual values. Fails if the series contains no values.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '297', 297)" onmouseover="showTip(event, '297', 297)">
+          <code onmouseout="hideTip(event, '268', 268)" onmouseover="showTip(event, '268', 268)">
             scanAllValues foldFunc init series
           </code>
-          <div class="tip" id="297">
+          <div class="tip" id="268">
             <strong>Signature:</strong> foldFunc:(&#39;R option -&gt; &#39;T option -&gt; &#39;R option) -&gt; init:&#39;R option -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'T, 'K          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L582-582" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L601-601" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2924,15 +2960,15 @@ application, and yielding a new series having the original index and newly produ
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '298', 298)" onmouseover="showTip(event, '298', 298)">
+          <code onmouseout="hideTip(event, '269', 269)" onmouseover="showTip(event, '269', 269)">
             scanValues foldFunc init series
           </code>
-          <div class="tip" id="298">
+          <div class="tip" id="269">
             <strong>Signature:</strong> foldFunc:(&#39;R -&gt; &#39;T -&gt; &#39;R) -&gt; init:&#39;R -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'T, 'K          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L568-568" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L587-587" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2954,15 +2990,15 @@ Any application involving a missing value yields a missing value.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '299', 299)" onmouseover="showTip(event, '299', 299)">
+          <code onmouseout="hideTip(event, '270', 270)" onmouseover="showTip(event, '270', 270)">
             shift offset series
           </code>
-          <div class="tip" id="299">
+          <div class="tip" id="270">
             <strong>Signature:</strong> offset:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L656-656" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L675-675" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2991,15 +3027,15 @@ use <code>Series.diff</code> which will be a little bit faster.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '300', 300)" onmouseover="showTip(event, '300', 300)">
+          <code onmouseout="hideTip(event, '271', 271)" onmouseover="showTip(event, '271', 271)">
             skip count series
           </code>
-          <div class="tip" id="300">
+          <div class="tip" id="271">
             <strong>Signature:</strong> count:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L526-526" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L545-545" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3018,15 +3054,15 @@ except for the first <code>count</code> keys.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '301', 301)" onmouseover="showTip(event, '301', 301)">
+          <code onmouseout="hideTip(event, '272', 272)" onmouseover="showTip(event, '272', 272)">
             skipLast count series
           </code>
-          <div class="tip" id="301">
+          <div class="tip" id="272">
             <strong>Signature:</strong> count:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L540-540" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L559-559" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3045,15 +3081,15 @@ except for the last <code>count</code> keys.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '302', 302)" onmouseover="showTip(event, '302', 302)">
+          <code onmouseout="hideTip(event, '273', 273)" onmouseover="showTip(event, '273', 273)">
             take count series
           </code>
-          <div class="tip" id="302">
+          <div class="tip" id="273">
             <strong>Signature:</strong> count:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L498-498" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L517-517" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3071,15 +3107,15 @@ except for the last <code>count</code> keys.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '303', 303)" onmouseover="showTip(event, '303', 303)">
+          <code onmouseout="hideTip(event, '274', 274)" onmouseover="showTip(event, '274', 274)">
             takeLast count series
           </code>
-          <div class="tip" id="303">
+          <div class="tip" id="274">
             <strong>Signature:</strong> count:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L512-512" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L531-531" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3122,15 +3158,15 @@ a list of keys use <code>realign</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '304', 304)" onmouseover="showTip(event, '304', 304)">
+          <code onmouseout="hideTip(event, '275', 275)" onmouseover="showTip(event, '275', 275)">
             indexOrdinally series
           </code>
-          <div class="tip" id="304">
+          <div class="tip" id="275">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;int,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1373-1373" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1392-1392" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3142,15 +3178,15 @@ ordinal index formed by <code>int</code> values starting from 0.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '305', 305)" onmouseover="showTip(event, '305', 305)">
+          <code onmouseout="hideTip(event, '276', 276)" onmouseover="showTip(event, '276', 276)">
             indexWith keys series
           </code>
-          <div class="tip" id="305">
+          <div class="tip" id="276">
             <strong>Signature:</strong> keys:seq&lt;&#39;K2&gt; -&gt; series:Series&lt;&#39;K1,&#39;T&gt; -&gt; Series&lt;&#39;K2,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K2, 'K1, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1382-1382" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1401-1401" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3163,15 +3199,15 @@ contains <em>more</em> keys, the values for additional keys are missing.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '306', 306)" onmouseover="showTip(event, '306', 306)">
+          <code onmouseout="hideTip(event, '277', 277)" onmouseover="showTip(event, '277', 277)">
             realign keys series
           </code>
-          <div class="tip" id="306">
+          <div class="tip" id="277">
             <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1365-1365" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1384-1384" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3185,15 +3221,15 @@ input sequence, the returned series will contain a missing value.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '307', 307)" onmouseover="showTip(event, '307', 307)">
+          <code onmouseout="hideTip(event, '278', 278)" onmouseover="showTip(event, '278', 278)">
             rev series
           </code>
-          <div class="tip" id="307">
+          <div class="tip" id="278">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1355-1355" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1374-1374" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3204,15 +3240,15 @@ input sequence, the returned series will contain a missing value.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '308', 308)" onmouseover="showTip(event, '308', 308)">
+          <code onmouseout="hideTip(event, '279', 279)" onmouseover="showTip(event, '279', 279)">
             sort series
           </code>
-          <div class="tip" id="308">
+          <div class="tip" id="279">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1348-1348" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1367-1367" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3224,15 +3260,15 @@ on the default ordering defined on the values of the series.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '309', 309)" onmouseover="showTip(event, '309', 309)">
+          <code onmouseout="hideTip(event, '280', 280)" onmouseover="showTip(event, '280', 280)">
             sortBy proj series
           </code>
-          <div class="tip" id="309">
+          <div class="tip" id="280">
             <strong>Signature:</strong> proj:(&#39;T -&gt; &#39;V) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'T, 'V, 'K          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1326-1326" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1345-1345" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3252,15 +3288,15 @@ value contained in the original input series.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '310', 310)" onmouseover="showTip(event, '310', 310)">
+          <code onmouseout="hideTip(event, '281', 281)" onmouseover="showTip(event, '281', 281)">
             sortByKey series
           </code>
-          <div class="tip" id="310">
+          <div class="tip" id="281">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1338-1338" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1357-1357" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3277,15 +3313,15 @@ value contained in the original input series.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '311', 311)" onmouseover="showTip(event, '311', 311)">
+          <code onmouseout="hideTip(event, '282', 282)" onmouseover="showTip(event, '282', 282)">
             sortWith comparer series
           </code>
-          <div class="tip" id="311">
+          <div class="tip" id="282">
             <strong>Signature:</strong> comparer:(&#39;V -&gt; &#39;V -&gt; int) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'V, 'K          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1311-1311" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1330-1330" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3300,6 +3336,50 @@ the specified comparison function.</p>
 negative integer when the first value is smaller, positive when it is greater and
 0 when the values are equal.</li>
 </ul>
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+    <h2>Other module members<a name="section9">&#160;</a></h2>    
+  <h3>Functions and values</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Function or value</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '283', 283)" onmouseover="showTip(event, '283', 283)">
+            convert forward backward series
+          </code>
+          <div class="tip" id="283">
+            <strong>Signature:</strong> forward:(&#39;T -&gt; &#39;R) -&gt; backward:(&#39;R -&gt; &#39;T) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
+                          <strong>Type parameters:</strong> 'T, 'R, 'K          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L497-497" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Retruns a new series whose values are converted using the specified conversion function.
+This operation is like <code>mapValues</code>, but it requires a pair of function that converts 
+the values in <em>both ways</em>.</p>
+
+<h2>Parameters</h2>
+
+<ul>
+<li><code>forward</code> - Function that converts original values to the new</li>
+<li><code>backward</code> - Function that converts new values back to the original</li>
+</ul>
+
+<h2>Remarks</h2>
+
+<p>This operation is only interesting when working with virtualized data sources. Using the
+<code>convert</code> function makes it possible to perfom additional operations on the resulting
+series - for example lookup - by converting the new value back and using the lookup of
+the underlying virtualized source.</p>
 
         </td>
       </tr>

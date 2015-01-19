@@ -38,7 +38,7 @@
       <div class="row">
         <div class="span9" id="main">
           
-<h1>Time series manipulation in C#</h1>
+<h1><a name="Time-series-manipulation-in-C" class="anchor" href="#Time-series-manipulation-in-C">Time series manipulation in C#</a></h1>
 
 <p>In this section, we look at Deedle features that are useful when working with series data 
 in C#. A series can be either ordered (e.g. time series) or unordered. Although we mainly
@@ -52,7 +52,7 @@ from GitHub and run the samples.</p>
 
 <a name="understanding"></a>
 
-<h2>What is a series</h2>
+<h2><a name="What-is-a-series" class="anchor" href="#What-is-a-series">What is a series</a></h2>
 
 <ul>
 <li><p><strong>Key value mapping</strong> - a series is represented by a type <code>Series&lt;K, V&gt;</code> from the <code>Deedle</code> namespace. The type
@@ -78,14 +78,14 @@ missing data.</p></li>
 
 <a name="creating"></a>
 
-<h2>Creating and loading series</h2>
+<h2><a name="Creating-and-loading-series" class="anchor" href="#Creating-and-loading-series">Creating and loading series</a></h2>
 
 <p>Once you referenced the <a href="http://nuget.org/packages/Deedle">Deedle NuGet package</a> and opened
 the <code>Deedle</code> namespace, you can create series in a number of ways. The Deedle library implements
 the builder object pattern, so if you want to create a series explicitly, you can use
 the generic <code>SeriesBuilder</code> type.</p>
 
-<h3>Using series builder</h3>
+<h3><a name="Using-series-builder" class="anchor" href="#Using-series-builder">Using series builder</a></h3>
 
 <p>If you want to create a series with explicitly given list of key-value pairs, you can use the C# 
 collection initializer syntax and <code>SeriesBuilder&lt;K, V&gt;</code>. The series builder exposes a property
@@ -101,7 +101,8 @@ if you want to add elements one by one in a loop. The above snippet uses extensi
 
 <table class="pre"><tr><td><pre lang="text">1 -&gt; one
 2 -&gt; two
-3 -&gt; three</pre></td></tr></table>
+3 -&gt; three
+</pre></td></tr></table>
 
 <p>Another feature supported by the series builder is the C# <code>dynamic</code> keyword. If you want to 
 create a series that maps <code>string</code> keys to values (e.g. when building a row that you want
@@ -122,7 +123,7 @@ nameNums.Print();</pre></td></tr></table>
 use property setter syntax to add values for strng keys <code>One</code>, <code>Two</code> and <code>Three</code>. Then we
 convert the original series builder to a series and print it.</p>
 
-<h3>Converting collections to series</h3>
+<h3><a name="Converting-collections-to-series" class="anchor" href="#Converting-collections-to-series">Converting collections to series</a></h3>
 
 <p>Using the series builder is useful if you want to create series with some data explicitly from
 code. However, more commonly, you already have the data you want to use in some collection.
@@ -178,13 +179,13 @@ of the later examples in this tutorial.</p>
 
 <a name="lookup"></a>
 
-<h2>Lookup and slicing</h2>
+<h2><a name="Lookup-and-slicing" class="anchor" href="#Lookup-and-slicing">Lookup and slicing</a></h2>
 
 <p>Given a series, the first thing that we might want to do is to access the data in the series.
 In this section, we look at <em>lookup</em> operations that can be used to retrieve values from
 series and <em>slicing</em> operations that give us a sub-series.</p>
 
-<h3>Lookup by key and index</h3>
+<h3><a name="Lookup-by-key-and-index" class="anchor" href="#Lookup-by-key-and-index">Lookup by key and index</a></h3>
 
 <p>A series supports C# indexer that takes the series <em>key</em> as an argument. Given a series
 <code>Series&lt;K, V&gt;</code> and a key of type <code>K</code>, you can access the associated value using indexer.
@@ -216,7 +217,7 @@ methods that return the result as <code>OptionalValue&lt;T&gt;</code>:</p>
 properties. If the value contained in a series is a value type, then you can also turn the
 result into a more convenient nullable type using <code>AsNullable</code> extension method.</p>
 
-<h3>Lookup and slicing for ordered series</h3>
+<h3><a name="Lookup-and-slicing-for-ordered-series" class="anchor" href="#Lookup-and-slicing-for-ordered-series">Lookup and slicing for ordered series</a></h3>
 
 <p>The operations discussed so far work on any series. However, more is available if the series 
 is ordered (e.g. time series representing MSFT stock prices that we loaded in the previous 
@@ -268,7 +269,7 @@ see <a href="lazysource.html">lazy data loading tutorial</a>.</p>
 
 <a name="calc"></a>
 
-<h2>Statistics and calculations</h2>
+<h2><a name="Statistics-and-calculations" class="anchor" href="#Statistics-and-calculations">Statistics and calculations</a></h2>
 
 <p>If a series contains numeric values (typically <code>double</code>) then we can perform various statistical
 operations and calculations with the series. The Deedle library supports standard numeric 
@@ -351,7 +352,7 @@ the series contains missing values)</li>
 
 <a name="missing"></a>
 
-<h2>Handling missing values</h2>
+<h2><a name="Handling-missing-values" class="anchor" href="#Handling-missing-values">Handling missing values</a></h2>
 
 <p>When discussing <a href="#understanding">what is a series</a>, we noted that series can contains
 missing values. This can happen when creating series from <code>OptionalValue&lt;T&gt;</code> values or,
@@ -396,7 +397,7 @@ at the beginning (or the end) of the series.</p>
 
 <a name="linq"></a>
 
-<h2>LINQ to series</h2>
+<h2><a name="LINQ-to-series" class="anchor" href="#LINQ-to-series">LINQ to series</a></h2>
 
 <p>The <code>Series&lt;K, V&gt;</code> type implements some of the methods supported by the C# LINQ pattern,
 which means that you can process series in a familiar way and, to some extent, you can 
@@ -435,7 +436,7 @@ variable bound in the <code>from</code> clause is key value pair containing the 
 
 <a name="aggregation"></a>
 
-<h2>Grouping, windowing and chunking</h2>
+<h2><a name="Grouping-windowing-and-chunking" class="anchor" href="#Grouping-windowing-and-chunking">Grouping, windowing and chunking</a></h2>
 
 <p>Deedle supports a number of operations that can be used to group or aggregate data. There
 are two operations - for any (possibly unordered) series, <em>grouping</em> works by obtaining a new 
@@ -443,7 +444,7 @@ key for each observation and then grouping the input by such keys; <em>aggregati
 on ordered series. It aggregates consecutive elements (possibly with overlap) of the series -
 a typical use of aggregation is getting floating windows of certain length.</p>
 
-<h3>Grouping series</h3>
+<h3><a name="Grouping-series" class="anchor" href="#Grouping-series">Grouping series</a></h3>
 
 <p>The grouping operation is similar to <code>GroupBy</code> from LINQ. It takes a <em>key selector</em> that produces
 a new key and a <em>value selector</em> that produces new value for a group of values with the same key.
@@ -461,7 +462,7 @@ buckets.Print();</pre></td></tr></table>
 write aggregation that returns series with missing values for some key (e.g. when the group 
 does not contain any valid value).</p>
 
-<h3>Floating windows and chunking</h3>
+<h3><a name="Floating-windows-and-chunking" class="anchor" href="#Floating-windows-and-chunking">Floating windows and chunking</a></h3>
 
 <p>When working with time series (e.g. stock prices), floating windows can be used to take the 
 average value over certain number of previous values. The following example takes 5 last 
@@ -497,7 +498,7 @@ current and previous value:</p>
 <span class="k">var</span> twoDayAvgs <span class="o">=</span> msft2012.Pairwise().Select(kvp <span class="o">=</span><span class="o">&gt;</span> 
   (kvp.Value.Item1 <span class="o">+</span> kvp.Value.Item2) <span class="o">/</span> 2.0);</pre></td></tr></table>
 
-<h3>General (ordered) aggregation</h3>
+<h3><a name="General-ordered-aggregation" class="anchor" href="#General-ordered-aggregation">General (ordered) aggregation</a></h3>
 
 <p>For chunking and windowing, previous examples always used a fixed number of elements to specify
 when a window/chunk ends. However, you might want to use more advanced conditions. This can be
@@ -528,7 +529,7 @@ until the function returns <code>false</code> and then it starts a new chunk.</p
 
 <a name="sampling"></a>
 
-<h2>Indexing and sampling</h2>
+<h2><a name="Indexing-and-sampling" class="anchor" href="#Indexing-and-sampling">Indexing and sampling</a></h2>
 
 <p>In the last section of the series overview, we look at a number of operations that can be 
 performed with the index of the series such as transformations and sampling. Index transformation
@@ -537,7 +538,7 @@ to transform the keys so that you can align multiple series). Sampling is useful
 a series with higher resolution of data than necessary, or when you need to transform data
 to uniform observations.</p>
 
-<h3>Transforming the index</h3>
+<h3><a name="Transforming-the-index" class="anchor" href="#Transforming-the-index">Transforming the index</a></h3>
 
 <p>The first operation on the index is similar to <code>Select</code>, but instead of selecting new values,
 we select new keys. For example, given our <code>msft2012</code> series which has <code>DateTime</code> values as
@@ -571,7 +572,7 @@ same length), we can use the <code>IndexWith</code> method. Here, we replace the
 It can also change whether the series is ordered or not (here, the resulting series has
 <code>DateTime</code> keys and is ordered).</p>
 
-<h3>Time series sampling</h3>
+<h3><a name="Time-series-sampling" class="anchor" href="#Time-series-sampling">Time series sampling</a></h3>
 
 <p>When a series is ordered and the keys represent (typically) dates or times, we can use a number
 of sampling operations. There are two kinds of sampling operations:</p>

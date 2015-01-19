@@ -38,7 +38,7 @@
       <div class="row">
         <div class="span9" id="main">
           
-<h1>Creating lazily loaded series</h1>
+<h1><a name="Creating-lazily-loaded-series" class="anchor" href="#Creating-lazily-loaded-series">Creating lazily loaded series</a></h1>
 
 <p>When loading data from an external data source (such as a database), you might
 want to create a <em>virtual</em> time series that represents the data source, but 
@@ -50,7 +50,7 @@ necessary to load the entire data set into memory.</p>
 method. It returns an ordinary data series of type <code>Series&lt;K, V&gt;</code> which has a 
 delayed internal representation.</p>
 
-<h2>Creating lazy series</h2>
+<h2><a name="Creating-lazy-series" class="anchor" href="#Creating-lazy-series">Creating lazy series</a></h2>
 
 <p>We will not use a real database in this tutorial, but let's say that you have the
 following function which loads data for a given day range:</p>
@@ -133,7 +133,7 @@ boundary (and possibly more values). This is not a problem, because the lazy loa
 automatically skips over such values. But if you want, you can use <code>lob</code> and <code>hib</code> 
 parameters to build a more optimal SQL query.</p>
 
-<h2>Using un-evaluated series</h2>
+<h2><a name="Using-un-evaluated-series" class="anchor" href="#Using-un-evaluated-series">Using un-evaluated series</a></h2>
 
 <p>Let's now have a look at the operations that we can perform on un-evaluated series.
 Any operation that actually accesses values or keys of the series (such as <code>Series.observations</code>
