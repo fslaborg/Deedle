@@ -89,11 +89,12 @@ type Frame =
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member ReadCsv
     ( location:string, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] skipTypeInference, [<Optional>] inferRows, 
-      [<Optional>] schema, [<Optional>] separators, [<Optional>] culture, [<Optional>] maxRows:Nullable<int>) =
+      [<Optional>] schema, [<Optional>] separators, [<Optional>] culture, [<Optional>] maxRows:Nullable<int>,
+      [<Optional>] missingValues ) =
     use reader = new StreamReader(location)
     FrameUtils.readCsv 
       reader (if hasHeaders.HasValue then Some hasHeaders.Value else None)
-      (Some (not skipTypeInference)) (Some inferRows) (Some schema) TextConversions.DefaultMissingValues 
+      (Some (not skipTypeInference)) (Some inferRows) (Some schema) (Some missingValues)
       (if separators = null then None else Some separators) (Some culture)
       (if maxRows.HasValue then Some maxRows.Value else None)
 
@@ -119,15 +120,18 @@ type Frame =
   ///    parse semicolon separated files.
   ///  * `culture` - Specifies the name of the culture that is used when parsing 
   ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
-  ///
+  ///  * `maxRows` - The maximal number of rows that should be read from the CSV file.
+  ///  * `missingValues` - An array of strings that contains values which should be treated
+  ///    as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".
   /// [category:Input and output]
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member ReadCsv
     ( stream:Stream, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] skipTypeInference, [<Optional>] inferRows, 
-      [<Optional>] schema, [<Optional>] separators, [<Optional>] culture, [<Optional>] maxRows:Nullable<int>) =
+      [<Optional>] schema, [<Optional>] separators, [<Optional>] culture, [<Optional>] maxRows:Nullable<int>,
+      [<Optional>] missingValues) =
     FrameUtils.readCsv 
       (new StreamReader(stream)) (if hasHeaders.HasValue then Some hasHeaders.Value else None)
-      (Some (not skipTypeInference)) (Some inferRows) (Some schema) TextConversions.DefaultMissingValues 
+      (Some (not skipTypeInference)) (Some inferRows) (Some schema) (Some missingValues) 
       (if separators = null then None else Some separators) (Some culture)
       (if maxRows.HasValue then Some maxRows.Value else None)
 
@@ -348,9 +352,14 @@ module FSharpFrameExtensions =
     ///    parse semicolon separated files.
     ///  * `culture` - Specifies the name of the culture that is used when parsing 
     ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
-    static member ReadCsv<'R when 'R : equality>(path:string, indexCol, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture, ?maxRows) : Frame<'R, _> =
+    ///  * `maxRows` - The maximal number of rows that should be read from the CSV file.
+    ///  * `missingValues` - An array of strings that contains values which should be treated
+    ///    as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".
+    static member ReadCsv<'R when 'R : equality>
+        ( path:string, indexCol, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, 
+          ?culture, ?maxRows, ?missingValues ) : Frame<'R, _> =
       use reader = new StreamReader(path)
-      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema TextConversions.DefaultMissingValues separators culture maxRows
+      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows
       |> Frame.indexRows indexCol
 
     /// Load data frame from a CSV file. The operation automatically reads column names from the 
@@ -373,9 +382,14 @@ module FSharpFrameExtensions =
     ///    parse semicolon separated files.
     ///  * `culture` - Specifies the name of the culture that is used when parsing 
     ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
-    static member ReadCsv(path:string, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture, ?maxRows) =
+    ///  * `maxRows` - The maximal number of rows that should be read from the CSV file.
+    ///  * `missingValues` - An array of strings that contains values which should be treated
+    ///    as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".
+    static member ReadCsv
+        ( path:string, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, 
+          ?culture, ?maxRows, ?missingValues ) =
       use reader = new StreamReader(path)
-      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema TextConversions.DefaultMissingValues separators culture maxRows
+      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows
 
     /// Load data frame from a CSV file. The operation automatically reads column names from the 
     /// CSV file (if they are present) and infers the type of values for each column. Columns
@@ -397,8 +411,13 @@ module FSharpFrameExtensions =
     ///    parse semicolon separated files.
     ///  * `culture` - Specifies the name of the culture that is used when parsing 
     ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
-    static member ReadCsv(stream:Stream, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture, ?maxRows) =
-      FrameUtils.readCsv (new StreamReader(stream)) hasHeaders inferTypes inferRows schema TextConversions.DefaultMissingValues separators culture maxRows
+    ///  * `maxRows` - The maximal number of rows that should be read from the CSV file.
+    ///  * `missingValues` - An array of strings that contains values which should be treated
+    ///    as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".
+    static member ReadCsv
+        ( stream:Stream, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, 
+          ?culture, ?maxRows, ?missingValues ) =
+      FrameUtils.readCsv (new StreamReader(stream)) hasHeaders inferTypes inferRows schema missingValues separators culture maxRows
 
     /// Load data frame from a CSV file. The operation automatically reads column names from the 
     /// CSV file (if they are present) and infers the type of values for each column. Columns
@@ -420,8 +439,13 @@ module FSharpFrameExtensions =
     ///    parse semicolon separated files.
     ///  * `culture` - Specifies the name of the culture that is used when parsing 
     ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
-    static member ReadCsv(reader:TextReader, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture, ?maxRows) =
-      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema TextConversions.DefaultMissingValues separators culture maxRows
+    ///  * `maxRows` - The maximal number of rows that should be read from the CSV file.
+    ///  * `missingValues` - An array of strings that contains values which should be treated
+    ///    as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".
+    static member ReadCsv
+        ( reader:TextReader, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, 
+          ?separators, ?culture, ?maxRows, ?missingValues ) =
+      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows
 
     /// Creates a data frame with ordinal Integer index from a sequence of rows.
     /// The column indices of individual rows are unioned, so if a row has fewer
