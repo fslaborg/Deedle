@@ -14,6 +14,8 @@ open System.Runtime.InteropServices
 /// The data structure provides O(1) RemoveFirst and RemoveLast. Add is 
 /// O(1) when the deque has enough internal capacity, otherwise it extends
 /// the array 2x (so amortized cost is O(1) too).
+///
+/// [omit]
 [<SerializableAttribute>]
 type Deque<'T>(initCapacity : int) = 
     let mutable capacity = initCapacity

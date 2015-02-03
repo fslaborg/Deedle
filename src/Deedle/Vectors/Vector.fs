@@ -29,6 +29,8 @@ open Deedle.Addressing
 /// to the values via a generic address. This type should be only used directly when
 /// extending the DataFrame library and adding a new way of storing or loading data.
 /// To allow invocation via Reflection, the vector exposes type of elements as `System.Type`.
+///
+/// [category:Vectors and indices]
 type IVector = 
   /// Returns all values of the vector as a sequence of optional objects
   abstract ObjectSequence : seq<OptionalValue<obj>>
@@ -56,6 +58,8 @@ type IVector =
 
 /// Represents a generic function `\forall.'T.(IVector<'T> -> 'R)`. The function can be 
 /// generically invoked on an argument of type `IVector` using `IVector.Invoke`
+///
+/// [category:Vectors and indices]
 and VectorCallSite<'R> =
   abstract Invoke<'T> : IVector<'T> -> 'R
 
@@ -64,6 +68,8 @@ and VectorCallSite<'R> =
 /// The vector provides a minimal interface that is required by series and can be
 /// implemented in a number of ways to provide vector backed by database or an
 /// alternative representation of data.
+///
+/// [category:Vectors and indices]
 and IVector<'T> = 
   inherit IVector 
   /// Returns value stored in the vector at a specified address. 
@@ -94,8 +100,10 @@ and IVector<'T> =
 /// Module with extensions for generic vector type. Given `vec` of type `IVector<T>`, 
 /// the extension property `vec.DataSequence` returns all data of the vector converted
 /// to the "least common denominator" data structure - `IEnumerable<T>`.
+///
+/// [category:Vectors and indices]
 [<AutoOpen>]
-module VectorExtensions = 
+module ``F# Vector extensions (core)`` = 
   type IVector<'TValue> with
     /// Returns the data of the vector as a lazy sequence. (This preserves the 
     /// order of elements in the vector and so it also returns missing values.)

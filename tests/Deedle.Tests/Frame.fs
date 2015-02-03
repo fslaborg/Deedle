@@ -95,6 +95,17 @@ let ``Can save MSFT data as CSV file and read it afterwards (with default args)`
   actual |> shouldEqual (Frame.indexRowsOrdinally expected)
 
 [<Test>]
+let ``Can read CSV file that contains custom missing value formats`` () =
+  let csv =
+    "First,Second,Third\n" +
+    "1.0,WhoKnows??,2.0\n" +
+    "3.0,4.0,WhoKnows?"
+  use reader = new System.IO.StringReader(csv)
+  let actual = Frame.ReadCsv(reader, missingValues=[| "WhoKnows??" |]) 
+  actual.Rows.[1].GetAs<string>("Third") |> shouldEqual "WhoKnows?"
+  actual.Rows.[0].TryGetAs<float>("Second").HasValue |> shouldEqual false
+
+[<Test>]
 let ``Can save MSFT data as CSV to a TextWriter and read it afterwards (with default args)`` () =
   let builder = new System.Text.StringBuilder()
   use writer = new System.IO.StringWriter(builder)
@@ -164,6 +175,13 @@ let ``Can get type information about columns`` () =
   let df = frame [ "A" =?> series [1=>1.0]; "B" =?> series [1=>"hi"] ]
   df.ColumnTypes |> List.ofSeq
   |> shouldEqual <| [typeof<float>; typeof<string>]
+
+[<Test>]
+let ``Can turn a frame into DataTable`` () = 
+  let df = msft()
+  let table = df.ToDataTable(["Year"])
+  table.Rows.[10].["Open"] :?> decimal |> float |> shouldEqual <| df.Rows.GetAt(10)?Open
+  table.Rows.[10].["Year"] :?> DateTime |> shouldEqual <| df.Rows.GetKeyAt(10)
 
 // ------------------------------------------------------------------------------------------------
 // Typed access to frame rows

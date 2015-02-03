@@ -12,6 +12,11 @@ open Deedle.Keys
 open Deedle.Indices
 open Deedle.Internal
 
+/// The type implements C# and F# extension methods that add numerical operations 
+/// to Deedle series. With a few exceptions, the methods are only available for 
+/// series containing floating-point values, that is `Series<'K, float>`.
+///
+/// [category:Frame and series operations]
 [<Extension>]
 type SeriesStatsExtensions =
 

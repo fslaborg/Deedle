@@ -209,6 +209,7 @@
 /// individual groups (`Series<'K1, Frame<'K2, 'C>>`). The `nestBy` function can be 
 /// used to perform group by operation and return the result as a series of frems.
 ///
+/// [category:Frame and series operations]
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]    
 module Frame = 
   open System

@@ -345,6 +345,8 @@ open Deedle.Vectors.ArrayVector
 /// The arguments `min` and `max` specfify the complete range of the series. The 
 /// function passed to `Create` is called with minimal and maximal required key
 /// (`lo` and `hi`) and with two values that specify boundary behaviour.
+///
+/// [category:Specialized frame and series types]
 type DelayedSeries =
   /// A C#-friendly function that creates lazily loaded series. The method requires
   /// the overall range of the series (smallest and greatest key) and a function that

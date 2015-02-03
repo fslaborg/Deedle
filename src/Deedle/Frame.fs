@@ -24,6 +24,8 @@ open VectorHelpers
 
 /// Represents the underlying (raw) data of the frame in a format that can
 /// be used for exporting data frame to other formats etc. (DataTable, CSV, Excel)
+///
+/// [category:Core frame and series types]
 type FrameData =
   { /// A sequence of keys for all column. Individual key is an array
     /// which contains multiple values for hierarchical indices
@@ -42,6 +44,8 @@ type FrameData =
 /// interface is to allow writing code that works on arbitrary data frames (you 
 /// need to provide an implementation of the `IFrameOperation<'V>` which contains
 /// a generic method `Invoke` that will be called with the typed data frame).
+///
+/// [category:Specialized frame and series types]
 type IFrame = 
   /// Calls the `Invoke` method of the specified interface `IFrameOperation<'V>`
   /// with the typed data frame as an argument
@@ -49,6 +53,8 @@ type IFrame =
 
 /// Represents an operation that can be invoked on `Frame<'R, 'C>`. The operation
 /// is generic in the type of row and column keys.
+///
+/// [category:Specialized frame and series types]
 and IFrameOperation<'V> =
   abstract Invoke : Frame<'R, 'C> -> 'V
 
@@ -56,13 +62,18 @@ and IFrameOperation<'V> =
 // Data frame
 // --------------------------------------------------------------------------------------
 
-/// A frame contains one Index, with multiple Vecs
-/// (because this is dynamic, we need to store them as IVec)
+/// A frame is the key Deedle data structure (together with series). It represents a 
+/// data table (think spreadsheet or CSV file) with multiple rows and columns. The frame 
+/// consists of row index, column index and data. The indices are used for efficient 
+/// lookup when accessing data by the row key `'TRowKey` or by the column key 
+/// `'TColumnKey`. Deedle frames are optimized for the scenario when all values in a given 
+/// column are of the same type (but types of different columns can differ).
 ///
 /// ## Joining, zipping and appending
 /// More info
 ///
 ///
+/// [category:Core frame and series types]
 and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>
     ( rowIndex:IIndex<'TRowKey>, columnIndex:IIndex<'TColumnKey>, 
       data:IVector<IVector>, indexBuilder:IIndexBuilder, vectorBuilder:IVectorBuilder) =
@@ -1649,6 +1660,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 /// Represents a series of columns from a frame. The type inherits from a series of 
 /// series representing individual columns (`Series<'TColumnKey, ObjectSeries<'TRowKey>>`) but
 /// hides slicing operations with new versions that return frames.
+///
+/// [category:Specialized frame and series types]
 and ColumnSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>(index, vector, vectorBuilder, indexBuilder) =
   inherit Series<'TColumnKey, ObjectSeries<'TRowKey>>(index, vector, vectorBuilder, indexBuilder)
   new(series:Series<'TColumnKey, ObjectSeries<'TRowKey>>) = 
@@ -1665,6 +1678,8 @@ and ColumnSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey 
 /// Represents a series of rows from a frame. The type inherits from a series of 
 /// series representing individual rows (`Series<'TRowKey, ObjectSeries<'TColumnKey>>`) but
 /// hides slicing operations with new versions that return frames.
+///
+/// [category:Specialized frame and series types]
 and [<AbstractClass>] RowSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>
     (index:IIndex<'TRowKey>, vector:IVector<ObjectSeries<'TColumnKey>>, vectorBuilder, indexBuilder) = 
   inherit Series<'TRowKey, ObjectSeries<'TColumnKey>>(index, vector, vectorBuilder, indexBuilder) 
