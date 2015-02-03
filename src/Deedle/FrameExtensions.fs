@@ -77,7 +77,7 @@ type Frame =
   ///  * `skipTypeInference` - Specifies whether the method should skip inferring types
   ///    of columns automatically (when set to `true` you need to provide explicit `schema`)
   ///  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
-  ///    rows to use for type inference. The default value is 0, meaninig all rows.
+  ///    rows to use for type inference. The default value is 100.
   ///  * `schema` - A string that specifies CSV schema. See the documentation for 
   ///    information about the schema format.
   ///  * `separators` - A string that specifies one or more (single character) separators
@@ -90,13 +90,14 @@ type Frame =
   /// [category:Input and output]
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member ReadCsv
-    ( location:string, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] skipTypeInference, [<Optional>] inferRows, 
+    ( location:string, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] skipTypeInference, [<Optional>] inferRows:Nullable<int>,
       [<Optional>] schema, [<Optional>] separators, [<Optional>] culture, [<Optional>] maxRows:Nullable<int>,
       [<Optional>] missingValues ) =
     use reader = new StreamReader(location)
     FrameUtils.readCsv 
       reader (if hasHeaders.HasValue then Some hasHeaders.Value else None)
-      (Some (not skipTypeInference)) (Some inferRows) (Some schema) (Some missingValues)
+      (Some (not skipTypeInference)) (if inferRows.HasValue then Some inferRows.Value else None) 
+      (Some schema) (Some missingValues)
       (if separators = null then None else Some separators) (Some culture)
       (if maxRows.HasValue then Some maxRows.Value else None)
 
@@ -114,7 +115,7 @@ type Frame =
   ///  * `skipTypeInference` - Specifies whether the method should skip inferring types
   ///    of columns automatically (when set to `true` you need to provide explicit `schema`)
   ///  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
-  ///    rows to use for type inference. The default value is 0, meaninig all rows.
+  ///    rows to use for type inference. The default value is 100.
   ///  * `schema` - A string that specifies CSV schema. See the documentation for 
   ///    information about the schema format.
   ///  * `separators` - A string that specifies one or more (single character) separators
@@ -129,12 +130,13 @@ type Frame =
   /// [category:Input and output]
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member ReadCsv
-    ( stream:Stream, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] skipTypeInference, [<Optional>] inferRows, 
+    ( stream:Stream, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] skipTypeInference, [<Optional>] inferRows:Nullable<int>, 
       [<Optional>] schema, [<Optional>] separators, [<Optional>] culture, [<Optional>] maxRows:Nullable<int>,
       [<Optional>] missingValues) =
     FrameUtils.readCsv 
       (new StreamReader(stream)) (if hasHeaders.HasValue then Some hasHeaders.Value else None)
-      (Some (not skipTypeInference)) (Some inferRows) (Some schema) (Some missingValues) 
+      (Some (not skipTypeInference)) (if inferRows.HasValue then Some inferRows.Value else None) 
+      (Some schema) (Some missingValues) 
       (if separators = null then None else Some separators) (Some culture)
       (if maxRows.HasValue then Some maxRows.Value else None)
 
@@ -411,7 +413,7 @@ module ``F# Frame extensions`` =
     ///  * `inferTypes` - Specifies whether the method should attempt to infer types
     ///    of columns automatically (set this to `false` if you want to specify schema)
     ///  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
-    ///    rows to use for type inference. The default value is 0, meaninig all rows.
+    ///    rows to use for type inference. The default value is 100.
     ///  * `schema` - A string that specifies CSV schema. See the documentation for 
     ///    information about the schema format.
     ///  * `separators` - A string that specifies one or more (single character) separators
@@ -442,7 +444,7 @@ module ``F# Frame extensions`` =
     ///  * `inferTypes` - Specifies whether the method should attempt to infer types
     ///    of columns automatically (set this to `false` if you want to specify schema)
     ///  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
-    ///    rows to use for type inference. The default value is 0, meaninig all rows.
+    ///    rows to use for type inference. The default value is 100.
     ///  * `schema` - A string that specifies CSV schema. See the documentation for 
     ///    information about the schema format.
     ///  * `separators` - A string that specifies one or more (single character) separators
@@ -472,7 +474,7 @@ module ``F# Frame extensions`` =
     ///  * `inferTypes` - Specifies whether the method should attempt to infer types
     ///    of columns automatically (set this to `false` if you want to specify schema)
     ///  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
-    ///    rows to use for type inference. The default value is 0, meaninig all rows.
+    ///    rows to use for type inference. The default value is 100.
     ///  * `schema` - A string that specifies CSV schema. See the documentation for 
     ///    information about the schema format.
     ///  * `separators` - A string that specifies one or more (single character) separators
