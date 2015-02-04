@@ -395,8 +395,8 @@ module internal FrameUtils =
     let culture = defaultArg culture ""
     let culture = if culture = null then "" else culture
     let cultureInfo = System.Globalization.CultureInfo.GetCultureInfo(culture)
-    let missingValues = defaultArg missingValues [||]
-    let missingValues = if missingValues = null then [||] else missingValues
+    let missingValues = defaultArg missingValues TextConversions.DefaultMissingValues
+    let missingValues = if missingValues = null then TextConversions.DefaultMissingValues else missingValues
 
     // Default parameters that cannot be overriden (Frames can always contain NAs)
     let safeMode = false 
