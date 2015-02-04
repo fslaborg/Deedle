@@ -828,7 +828,7 @@ and
     let newIndex, cmd = indexBuilder.AsyncMaterialize(index, Vectors.Return 0)
     let newIndex = newIndex |> Async.RunSynchronously
     let newVector = vectorBuilder.Build(cmd, [| vector |])
-    Series<_, _>(newIndex, newVector, vectorBuilder, indexBuilder)
+    Series<_, _>(newIndex, newVector, vectorBuilder, newIndex.Builder)
     
   // ----------------------------------------------------------------------------------------------
   // Operators and F# functions

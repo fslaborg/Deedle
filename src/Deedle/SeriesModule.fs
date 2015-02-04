@@ -185,7 +185,7 @@ open Deedle.VectorHelpers
 ///
 /// Given two series, there are two ways to combine the values. If the keys in the series
 /// are not overlapping (or you want to throw away values from one or the other series), 
-/// then you cna use `merge` or `mergeUsing`. To merge more than 2 series efficiently, use 
+/// then you can use `merge` or `mergeUsing`. To merge more than 2 series efficiently, use 
 /// the `mergeAll` function, which has been optimized for large number of series.
 ///
 /// If you want to align two series, you can use the _zipping_ operation. This aligns

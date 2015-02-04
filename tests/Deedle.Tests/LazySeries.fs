@@ -30,21 +30,21 @@ let loadIntegers (lo, lob) (hi, hib) = async {
 [<Test>]
 let ``No call is made when series is created and formatted`` () =
   let r = Recorder()
-  let ls = DelayedSeries.Create(0, 100, spy2 r loadIntegers)
-  ls.Format |> ignore
+  let ls = DelayedSeries.FromValueLoader(0, 100, spy2 r loadIntegers)
+  ls.Format() |> ignore
   r.Values |> shouldEqual []
 
 [<Test>]
 let ``No call is made when series is created and we get the key range`` () =
   let r = Recorder()
-  let ls = DelayedSeries.Create(0, 100, spy2 r loadIntegers)
+  let ls = DelayedSeries.FromValueLoader(0, 100, spy2 r loadIntegers)
   ls.KeyRange |> ignore
   r.Values |> shouldEqual []
 
 [<Test>]
 let ``After creates lower bound exclusive restriction`` () =
   let r = Recorder()
-  let ls = DelayedSeries.Create(0, 100, spy2 r loadIntegers)
+  let ls = DelayedSeries.FromValueLoader(0, 100, spy2 r loadIntegers)
   let actual = ls.After(90) |> Series.observations |> List.ofSeq 
   actual |> shouldEqual [ for i in 91 .. 100 -> i, i ]
   r.Values |> shouldEqual [(90, Exclusive), (100, Inclusive)]
@@ -52,7 +52,7 @@ let ``After creates lower bound exclusive restriction`` () =
 [<Test>]
 let ``Before creates upper bound exclusive restriction`` () =
   let r = Recorder()
-  let ls = DelayedSeries.Create(0, 100, spy2 r loadIntegers)
+  let ls = DelayedSeries.FromValueLoader(0, 100, spy2 r loadIntegers)
   let actual = ls.Before(10) |> Series.observations |> List.ofSeq 
   actual |> shouldEqual [ for i in 0 .. 9 -> i, i ]
   r.Values |> shouldEqual [(0, Inclusive), (10, Exclusive)]
@@ -60,7 +60,7 @@ let ``Before creates upper bound exclusive restriction`` () =
 [<Test>]
 let ``Multiple range restrictions are combined for sample calls`` () =
   let r = Recorder()
-  let ls = DelayedSeries.Create(0, 100, spy2 r loadIntegers)
+  let ls = DelayedSeries.FromValueLoader(0, 100, spy2 r loadIntegers)
   let ls = ls.Before(90)
   let ls = ls.After(10)
   let actual = ls |> Series.observations |> List.ofSeq 
@@ -69,20 +69,20 @@ let ``Multiple range restrictions are combined for sample calls`` () =
 
 [<Test>]
 let ``Multiple conflicting range restrictions (at the end) lead to empty results`` () =
-  let ls = DelayedSeries.Create(0, 100, fun _ _ -> async { 
+  let ls = DelayedSeries.FromValueLoader(0, 100, fun _ _ -> async { 
     return seq { for i in 0 .. 100 -> KeyValue.Create(i, i) } })   
   ls.Between(100,99).KeyCount |> shouldEqual 0
 
 [<Test>]
 let ``Multiple conflicting range restrictions (in the middle) lead to empty results`` () =
-  let ls = DelayedSeries.Create(0, 100, fun _ _ -> async { 
+  let ls = DelayedSeries.FromValueLoader(0, 100, fun _ _ -> async { 
     return seq { for i in 0 .. 100 -> KeyValue.Create(i, i) } })   
   ls.Between(90,89).KeyCount |> shouldEqual 0
   
 [<Test>]
 let ``Splicing syntax creates inclusive restrictions`` () = 
   let r = Recorder()
-  let ls = DelayedSeries.Create(0, 100, spy2 r loadIntegers)
+  let ls = DelayedSeries.FromValueLoader(0, 100, spy2 r loadIntegers)
   let spliced = ls.[50 .. 60]
   let actual = spliced |> Series.observations |> List.ofSeq
   actual |> shouldEqual [ for i in 50 .. 60 -> i, i ]
@@ -91,7 +91,7 @@ let ``Splicing syntax creates inclusive restrictions`` () =
 [<Test>]
 let ``Adding to data frame creates restriction based on data frame key range`` () = 
   let r = Recorder()
-  let ls = DelayedSeries.Create(0, 100, spy2 r loadIntegers)
+  let ls = DelayedSeries.FromValueLoader(0, 100, spy2 r loadIntegers)
   let df = Frame.ofRowKeys [ 20 .. 30 ]
   df?Test <- ls
   let actual = df?Test |> Series.observations |> List.ofSeq
@@ -100,7 +100,7 @@ let ``Adding to data frame creates restriction based on data frame key range`` (
 
 [<Test>]
 let ``Created series does not contain out-of-range keys, even if the source provides them`` () = 
-  let ls = DelayedSeries.Create(0, 100, fun _ _ -> async { 
+  let ls = DelayedSeries.FromValueLoader(0, 100, fun _ _ -> async { 
     return seq { for i in 0 .. 100 -> KeyValue.Create(i, i) }  })
   ls.[0 .. 0] |> Series.keys |> List.ofSeq |> shouldEqual [0]
   ls.[.. 0] |> Series.keys |> List.ofSeq |> shouldEqual [0]
@@ -110,7 +110,7 @@ let ``Created series does not contain out-of-range keys, even if the source prov
 
 [<Test>]
 let ``Can add projection of a lazy vector to a data frame`` () = 
-  let ls = DelayedSeries.Create(0, 100, fun _ _ -> async { 
+  let ls = DelayedSeries.FromValueLoader(0, 100, fun _ _ -> async { 
     return seq { for i in 0 .. 100 -> KeyValue.Create(i, i) }  })
   let df = Frame.ofColumns [ "Lazy" => ls ]
   df?Test <- ((+) 1) $ ls 
@@ -123,7 +123,7 @@ let ``Can add projection of a lazy vector to a data frame`` () =
 [<Test>]
 let ``Can materialize series asynchronously`` () =
   let r = Recorder()
-  let ls = DelayedSeries.Create(0, 100, spy2 r loadIntegers).[40 .. 60]
+  let ls = DelayedSeries.FromValueLoader(0, 100, spy2 r loadIntegers).[40 .. 60]
   let ms = ls.AsyncMaterialize() |> Async.RunSynchronously 
   r.Values |> shouldEqual [(40, Inclusive), (60, Inclusive)]
   ms |> shouldEqual (series [ for i in 40 .. 60 -> i, i] )
@@ -131,7 +131,7 @@ let ``Can materialize series asynchronously`` () =
 [<Test>]
 let ``Discarding async materialization does not call the loader`` () =
   let r = Recorder()
-  let ls = DelayedSeries.Create(0, 100, spy2 r loadIntegers).[40 .. 60]
+  let ls = DelayedSeries.FromValueLoader(0, 100, spy2 r loadIntegers).[40 .. 60]
   ls.AsyncMaterialize() |> ignore
   System.Threading.Thread.Sleep(100)
   r.Values |> shouldEqual []
@@ -139,7 +139,7 @@ let ``Discarding async materialization does not call the loader`` () =
 [<Test>]
 let ``Materializing materialized series is a no-op`` () =
   let r = Recorder()
-  let ls = DelayedSeries.Create(0, 100, spy2 r loadIntegers).[40 .. 60]
+  let ls = DelayedSeries.FromValueLoader(0, 100, spy2 r loadIntegers).[40 .. 60]
   let ms = ls.AsyncMaterialize() |> Async.RunSynchronously 
   r.Values |> shouldEqual [(40, Inclusive), (60, Inclusive)]
   let ms2 = ms.AsyncMaterialize() |> Async.RunSynchronously
