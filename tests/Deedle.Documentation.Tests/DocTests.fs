@@ -4,8 +4,8 @@
 #if INTERACTIVE
 #I "../../packages/FSharp.Formatting/lib/net40"
 #I "../../packages/RazorEngine/lib/net40/"
-#r "../../packages/Microsoft.AspNet.Razor/lib/net40/System.Web.Razor.dll"
 #r "../../packages/FSharp.Compiler.Service/lib/net40/FSharp.Compiler.Service.dll"
+#r "System.Web.Razor.dll"
 #r "RazorEngine.dll"
 #r "FSharp.Literate.dll"
 #r "FSharp.CodeFormat.dll"
@@ -82,8 +82,12 @@ for file in docFiles do
 
 [<Test>]
 [<TestCaseSource "docFiles">]
-let ``Documentation generated correctly `` file = 
-  let errors = processFile file
+let ``Documentation generated correctly `` (file:string) = 
+  let errors = 
+    // WORKAROUND: The R type provider fails on Travis because it does not have R installed
+    // (This should be removed once we close #91 in RProvider)
+    if file.Contains("rinterop.fsx") && Type.GetType("Mono.Runtime") <> null then []
+    else processFile file
 
   let errors =  
     // WORKAROUND: The R type provider does not seem to work in the NUnit context 
@@ -96,7 +100,7 @@ let ``Documentation generated correctly `` file =
             not (msg.Contains("'datasets' is not defined") || msg.Contains("'base' is not defined") || 
               msg.Contains("'zoo' is not defined") || msg.Contains("'R' is not defined"))
         | EvaluationFailed _ -> false )
-    
+ 
     elif (file.Contains("series.fsx") || file.Contains("tutorial.fsx")) && Type.GetType("Mono.Runtime") <> null then
       // WORKAROUND: FSharp.Charting which is used in some examples does not work on Mono
       // and so the evaluation fails for various reasons - ignore that for now

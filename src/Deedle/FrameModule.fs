@@ -209,6 +209,7 @@
 /// individual groups (`Series<'K1, Frame<'K2, 'C>>`). The `nestBy` function can be 
 /// used to perform group by operation and return the result as a series of frems.
 ///
+/// [category:Frame and series operations]
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]    
 module Frame = 
   open System
@@ -1313,7 +1314,17 @@ module Frame =
   /// [category:Missing values]
   [<CompiledName("DropSparseRows")>]
   let dropSparseRows (frame:Frame<'R, 'C>) = 
-    frame.RowsDense |> Series.dropMissing |> FrameUtils.fromRows frame.IndexBuilder frame.VectorBuilder
+    // Create a combined vector that has 'true' for rows which have some values
+    let hasSomeFlagVector = 
+      frame.Data 
+      |> createRowVector 
+          frame.VectorBuilder frame.RowIndex.KeyCount frame.ColumnIndex.KeyCount 
+          (fun rowReader -> rowReader.DataSequence |> Seq.exists (fun opt -> opt.HasValue))
+    // Collect all rows that have at least some values
+    let newRowIndex, cmd = 
+      frame.IndexBuilder.Search( (frame.RowIndex, Vectors.Return 0), hasSomeFlagVector, true)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder cmd)
+    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Creates a new data frame that contains only those columns of the original 
   /// data frame that are _dense_, meaning that they have a value for each row.
@@ -1323,7 +1334,14 @@ module Frame =
   /// [category:Missing values]
   [<CompiledName("DropSparseColumns")>]
   let dropSparseCols (frame:Frame<'R, 'C>) = 
-    frame.ColumnsDense |> Series.dropMissing |> FrameUtils.fromColumns frame.IndexBuilder frame.VectorBuilder
+    let newColKeys, newData =
+      [| for KeyValue(colKey, addr) in frame.ColumnIndex.Mappings do
+            match frame.Data.GetValue(addr) with
+            | OptionalValue.Present(vec) when vec.ObjectSequence |> Seq.exists (fun o -> o.HasValue) ->
+                yield colKey, vec
+            | _ -> () |] |> Array.unzip
+    let colIndex = frame.IndexBuilder.Create(ReadOnlyCollection.ofArray newColKeys, None)
+    Frame(frame.RowIndex, colIndex, frame.VectorBuilder.Create(newData), frame.IndexBuilder, frame.VectorBuilder )
 
   /// Returns the columns of the data frame that do not have any missing values.
   /// The operation returns a series (indexed by the column keys of the source frame) 

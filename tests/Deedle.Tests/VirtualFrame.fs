@@ -527,8 +527,11 @@ let ``Can merge virtual series of rows indexed by time`` () =
 
 
 
-
-
+// TODO:
+//  let idx, s1, s2, f = createSimpleTimeFrame()
+//  f.DropColumn("S2")
+//  f.AddColumn("S3", sin f?S1)
+//  f |> Frame.dropSparseRows
 
 
  // ------------------------------------------------------------------------------------------------

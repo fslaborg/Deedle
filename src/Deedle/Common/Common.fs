@@ -7,6 +7,8 @@ open System.Runtime.CompilerServices
 /// Represents different kinds of type conversions that can be used by Deedle internally.
 /// This is used, for example, when converting `ObjectSeries<'K>` to `Series<'K, 'T>` - 
 /// The conversion kind can be specified as an argument to allow certain conversions.
+///
+/// [category:Parameters and results of various operations]
 type ConversionKind = 
   /// Specifies that the type has to match exactly and no conversions are performed.
   | Exact = 0
@@ -22,6 +24,8 @@ type ConversionKind =
 /// Thrown when a value at the specified index does not exist in the data frame or series.
 /// This exception is thrown only when the key is defined, but the value is not available,
 /// in other situations `KeyNotFoundException` is thrown
+///
+/// [category:Primitive types and values]
 type MissingValueException(key:obj, message) =
   inherit Exception(message)
   /// The key that has been accessed
@@ -37,6 +41,8 @@ type MissingValueException(key:obj, message) =
 /// standard F# `option<T>` type instead. However, there the `OptionalValue` module
 /// contains helper functions for using this type from F# as well as `Missing` and
 /// `Present` active patterns.
+///
+/// [category:Primitive types and values]
 [<Struct; CustomEquality; NoComparison>]
 type OptionalValue<'T> private (hasValue:bool, value:'T) = 
   /// Gets a value indicating whether the current `OptionalValue<T>` has a value
@@ -85,6 +91,8 @@ type OptionalValue<'T> private (hasValue:bool, value:'T) =
    
 /// Non-generic type that makes it easier to create `OptionalValue<T>` values
 /// from C# by benefiting the type inference for generic method invocations.
+///
+/// [category:Primitive types and values]
 type OptionalValue =
   /// Creates an `OptionalValue<T>` from a nullable value of type `T?`
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
@@ -105,6 +113,8 @@ type OptionalValue =
 /// which may be either a value or an exception. The type is a discriminated union,
 /// so it can be processed using F# pattern matching, or using `Value`, `HasValue`
 /// and `Exception` properties
+///
+/// [category:Primitive types and values]
 type TryValue<'T> =
   | Success of 'T
   | Error of exn
@@ -130,10 +140,14 @@ type TryValue<'T> =
 
 /// A type alias for the `TryValue<T>` type. The type alias can be used
 /// to make F# type declarations that explcitly handle exceptions more succinct.
+///
+/// [category:Primitive types and values]
 type 'T tryval = TryValue<'T>
 
 /// A type alias for the `OptionalValue<T>` type. The type alias can be used
 /// to make F# type definitions that use optional values directly more succinct.
+///
+/// [category:Primitive types and values]
 type 'T opt = OptionalValue<'T>
 
 
@@ -144,6 +158,8 @@ type 'T opt = OptionalValue<'T>
 /// a value. `Lookup.Smaller` searches for the first smaller key. The options
 /// `Lookup.ExactOrGreater` and `Lookup.ExactOrSmaller` finds the exact key (if it is
 /// present) and otherwise search for the nearest larger or smaller key, respectively.
+///
+/// [category:Parameters and results of various operations]
 [<System.Flags>]
 type Lookup = 
   /// Lookup a value associated with the exact specified key. 
@@ -188,6 +204,8 @@ type Lookup =
 ///     abc.Pairwise(direction=Direction.Backward)
 ///     [fsi:[ 2 => ("a", "b"); 3 => ("b", "c") ]]
 ///
+///
+/// [category:Parameters and results of various operations]
 type Direction = 
   | Backward = 0
   | Forward = 1 
@@ -197,6 +215,8 @@ type Direction =
 /// produced at the beginning (`AtBeginning`) or at the end (`AtEnding`) or
 /// skipped (`Skip`). For chunking, combinations are allowed too - to skip incomplete
 /// chunk at the beginning, use `Boundary.Skip ||| Boundary.AtBeginning`.
+///
+/// [category:Parameters and results of various operations]
 [<Flags>]
 type Boundary =
   | AtBeginning = 1
@@ -204,6 +224,8 @@ type Boundary =
   | Skip = 4
 
 /// Represents a kind of `DataSegment<T>`. See that type for more information.
+///
+/// [category:Parameters and results of various operations]
 type DataSegmentKind = Complete | Incomplete
 
 /// Represents a segment of a series or sequence. The value is returned from 
@@ -226,6 +248,8 @@ type DataSegmentKind = Complete | Incomplete
 ///
 /// If you do not need to distinguish the two cases, you can use the `Data` property
 /// to get the array representing the segment data.
+///
+/// [category:Parameters and results of various operations]
 type DataSegment<'T> = 
   | DataSegment of DataSegmentKind * 'T
   /// Returns the data associated with the segment
@@ -243,6 +267,8 @@ type DataSegment<'T> =
     
 
 /// Provides helper functions and active patterns for working with `DataSegment` values
+///
+/// [category:Parameters and results of various operations]
 module DataSegment = 
   /// A complete active pattern that extracts the kind and data from a `DataSegment`
   /// value. This makes it easier to write functions that only need data:
@@ -279,6 +305,8 @@ module DataSegment =
 /// Extension methods for working with optional values from C#. These make
 /// it easier to provide default values and convert optional values to 
 /// `Nullable` (when the contained value is value type)
+///
+/// [category:Primitive types and values]
 [<Extension>]
 type OptionalValueExtensions =
   
@@ -296,6 +324,8 @@ type OptionalValueExtensions =
 
 /// Provides various helper functions for using the `OptionalValue<T>` type from F#
 /// (The functions are similar to those in the standard `Option` module).
+///
+/// [category:Primitive types and values]
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module OptionalValue = 
 
@@ -383,10 +413,14 @@ open System.Collections.ObjectModel
 
 /// An internal exception that is used to handle the case when comparison fails
 /// (even though the type implements IComparable and everything...)
+///
+/// [omit]
 type ComparisonFailedException() =
   inherit Exception() 
 
 /// Simple helper functions for throwing exceptions
+///
+/// [omit]
 [<AutoOpen>]
 module internal ExceptionHelpers =
   /// Throws `MissingValueException` with a nicely formatted error message for the specified key
@@ -444,6 +478,7 @@ module MissingValues =
 // Internals - various functions for working with collections
 // --------------------------------------------------------------------------------------
 
+/// [omit]
 [<AutoOpen>]
 module ReadOnlyCollectionExtensions = 
   type ReadOnlyCollection<'T> with 

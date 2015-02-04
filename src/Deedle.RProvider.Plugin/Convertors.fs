@@ -101,7 +101,7 @@ let createDefaultFrame (symExpr:SymbolicExpression) =
 
 /// Convert R expression to a data frame of the specified (expected) type
 let tryCreateFrame (symExpr:SymbolicExpression) : option<Frame<'R, 'C>> =
-  match symExpr with
+  match R.as_data_frame(symExpr) with
   | RDotNet.ActivePatterns.DataFrame df ->
       match convertIndex df.RowNames, convertIndex df.ColumnNames with
       | Some rowIndex, Some colIndex -> constructFrame df rowIndex colIndex
