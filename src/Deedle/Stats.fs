@@ -341,6 +341,7 @@ open StatsHelpers
 /// windowing functions from the `Series` module such as `Series.windowSizeInto` or
 /// `Series.chunkSizeInto`.
 ///
+/// [category:Frame and series operations]
 type Stats = 
 
   // ------------------------------------------------------------------------------------

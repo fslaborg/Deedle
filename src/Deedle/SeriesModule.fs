@@ -200,6 +200,7 @@ open Deedle.VectorHelpers
 /// operation. The result will be a frame with two columns (which is easier to use than
 /// series of tuples).
 ///
+/// [category:Frame and series operations]
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Series = 
 

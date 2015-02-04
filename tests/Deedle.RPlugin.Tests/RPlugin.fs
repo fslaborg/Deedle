@@ -11,7 +11,7 @@ module Deedle.RPlugin.Tests
 
 open Deedle
 open RProvider
-open RProvider.``base``
+open RProvider.stats
 open RProvider.datasets
 open RProvider.zoo
 open FsUnit
@@ -119,3 +119,10 @@ let ``Filling missing values preserves type of columns (and allows R interop)`` 
   let df2 = df1 |> Frame.fillMissing Direction.Forward
   let df3 = R.as_data_frame(df2).GetValue<Frame<int, string>>()
   df3 |> shouldEqual df2
+
+[<Test>]
+let ``Can get the result of R.cor as a Deedle frame (#212)`` () =
+  let df = R.cor(R.mtcars).GetValue<Frame<string, string>>()
+  let actual = (round df?mpg).Values |> List.ofSeq
+  let expected = [1.; -1.; -1.; -1.; 1.; -1.; 0.; 1.; 1.; 0.; -1.]
+  actual |> shouldEqual expected

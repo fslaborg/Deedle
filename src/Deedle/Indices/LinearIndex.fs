@@ -590,8 +590,10 @@ open System.Collections.ObjectModel
 /// Defines non-generic `Index` type that provides functions for building indices
 /// (hard-bound to `LinearIndexBuilder` type). In F#, the module is automatically opened
 /// using `AutoOpen`. The methods are not designed for the use from C#.
+///
+/// [category:Vectors and indices]
 [<AutoOpen>]
-module FSharpIndexExtensions =
+module ``F# Index extensions`` =
   open System
 
   /// Type that provides a simple access to creating indices represented
@@ -625,6 +627,8 @@ module FSharpIndexExtensions =
       Index.ofUnorderedKeys(ReadOnlyCollection.ofSeq keys)
 
 /// Type that provides access to creating indices (represented as `LinearIndex` values)
+///
+/// [category:Vectors and indices]
 type Index =
   /// Create an index from a sequence of keys and check if they are sorted or not
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]

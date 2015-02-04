@@ -9,17 +9,23 @@
 namespace Deedle.Internal
 
 open System.Collections.Generic
- 
+
 /// Tree where nodes contain values and zero or more child trees.
 /// For each node, we store rank - the number of children
+///
+/// [omit]
 type RankedTree<'T> = Node of int * 'T * RankedTree<'T> list
   
 /// Binomial heap stores a list of trees together with custom comparer
+///
+/// [omit]
 type BinomialHeap<'T> = 
   { Comparer : IComparer<'T>
     Heap : RankedTree<'T> list }
  
 /// Module with functions for working with binomial heaps
+///
+/// [omit]
 module BinomialHeap =
   /// Active pattern that makes it easier to deal with results from IComparer
   let (|LT|GT|EQ|) n =

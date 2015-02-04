@@ -1,12 +1,7 @@
 (*** hide ***)
 #nowarn "211"
 #I "../../packages/FSharp.Charting"
-#I "../../packages/RProvider/"
-// <Temporary workaround> (loading RProvider.fsx should do this, but not atm. using Paket dir structure)
-#I "../../packages/RProvider/lib/net40/" 
-#I "../../packages/R.NET.Community/lib/net40/"
-// </Temporary workaround>
-#I @"../../bin"
+#I "../../bin"
 open System
 let airQuality = __SOURCE_DIRECTORY__ + "/data/AirQuality.csv"
 
@@ -28,35 +23,25 @@ The Deedle library comes with extension that automatically converts between Deed
 [zoo package](http://cran.r-project.org/web/packages/zoo/index.html) (Z's ordered 
 observations).
 
-To use Deedle and R provider together, all you need to do is to install the following
-NuGet package (this depends on the R provider and Deedle, so you do not need anything
-else).
-
-<div class="row">
-  <div class="span1"></div>
-  <div class="span6">
-    <div class="well well-small" id="nuget">
-      The F# DataFrame library can be <a href="https://nuget.org/packages/Deedle.RPlugin">installed from NuGet</a>:
-      <pre>PM> Install-Package Deedle.RPlugin</pre>
-    </div>
-  </div>
-  <div class="span1"></div>
-</div>
-
 This page is a quick overview showing how to pass data between R and Deedle.
 You can also get this page as an [F# script file](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/rinterop.fsx)
 from GitHub and run the samples interactively.
 
 <a name="setup"></a>
 
+
 Getting started
 ---------------
+
+To use Deedle and R provider together, all you need to do is to install the 
+[**Deedle.RPlugin** package](https://nuget.org/packages/Deedle.RPlugin), which
+installes both as dependencies. Alternatively, you can use the [**FsLab**
+package](http://www.nuget.org/packages/FsLab), which also includes additional
+data access, data science and visualization libraries.
 
 In a typical project ("F# Tutorial"), the NuGet packages are installed in the `../packages`
 directory. To use R provider and Deedle, you need to write something like this:
 *)
-#I "../packages/Deedle/"
-#I "../packages/RProvider/"
 #load "RProvider.fsx"
 #load "Deedle.fsx"
 
@@ -89,16 +74,14 @@ open RProvider.datasets
 // Get mtcars as an untyped object
 R.mtcars.Value
 
-(*** include-it:mtcars ***)
-
 // Get mtcars as a typed Deedle frame
 let mtcars : Frame<string, string> = R.mtcars.GetValue()
-
+(*** include-value:mtcars ***)
 (**
 The first sample uses the `Value` property to convert the data set to a boxed Deedle
 frame of type `obj`. This is a great way to explore the data, but when you want to do 
 some further processing, you need to specify the type of the data frame that you want
-to get. This is done on line 13 where we get `mtcars` as a Deedle frame with both rows
+to get. This is done on line 7 where we get `mtcars` as a Deedle frame with both rows
 and columns indexed by `string`.
 
 To see that this is a standard Deedle data frame, let's group the cars by the number of

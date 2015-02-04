@@ -24,6 +24,8 @@ open VectorHelpers
 
 /// Represents the underlying (raw) data of the frame in a format that can
 /// be used for exporting data frame to other formats etc. (DataTable, CSV, Excel)
+///
+/// [category:Core frame and series types]
 type FrameData =
   { /// A sequence of keys for all column. Individual key is an array
     /// which contains multiple values for hierarchical indices
@@ -42,6 +44,8 @@ type FrameData =
 /// interface is to allow writing code that works on arbitrary data frames (you 
 /// need to provide an implementation of the `IFrameOperation<'V>` which contains
 /// a generic method `Invoke` that will be called with the typed data frame).
+///
+/// [category:Specialized frame and series types]
 type IFrame = 
   /// Calls the `Invoke` method of the specified interface `IFrameOperation<'V>`
   /// with the typed data frame as an argument
@@ -49,6 +53,8 @@ type IFrame =
 
 /// Represents an operation that can be invoked on `Frame<'R, 'C>`. The operation
 /// is generic in the type of row and column keys.
+///
+/// [category:Specialized frame and series types]
 and IFrameOperation<'V> =
   abstract Invoke : Frame<'R, 'C> -> 'V
 
@@ -56,13 +62,18 @@ and IFrameOperation<'V> =
 // Data frame
 // --------------------------------------------------------------------------------------
 
-/// A frame contains one Index, with multiple Vecs
-/// (because this is dynamic, we need to store them as IVec)
+/// A frame is the key Deedle data structure (together with series). It represents a 
+/// data table (think spreadsheet or CSV file) with multiple rows and columns. The frame 
+/// consists of row index, column index and data. The indices are used for efficient 
+/// lookup when accessing data by the row key `'TRowKey` or by the column key 
+/// `'TColumnKey`. Deedle frames are optimized for the scenario when all values in a given 
+/// column are of the same type (but types of different columns can differ).
 ///
 /// ## Joining, zipping and appending
 /// More info
 ///
 ///
+/// [category:Core frame and series types]
 and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>
     ( rowIndex:IIndex<'TRowKey>, columnIndex:IIndex<'TColumnKey>, 
       data:IVector<IVector>, indexBuilder:IIndexBuilder, vectorBuilder:IVectorBuilder) =
@@ -97,15 +108,6 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let columnIndex = columnIndex.Lookup(column)
     if not columnIndex.HasValue then OptionalValue.Missing else
     data.GetValue (snd columnIndex.Value)
-
-  /// Create vector of row reader objects. This method creates 
-  /// `IVector<obj>` where each `obj` is actually a boxed `IVector<obj>`
-  /// that provides access to data of individual rows of the frame.
-  let createCombinedRowVector () =
-    let vectors = [ for n in Seq.range 0L (columnIndex.KeyCount-1L) -> Vectors.Return(int n) ]
-    let cmd = Vectors.Combine(rowIndex.KeyCount, vectors, NaryTransform.RowReader)
-    let boxedData = [| for v in data.DataSequence -> boxVector v.Value |]
-    vectorBuilder.Build(cmd, boxedData)
 
   /// Create frame from a series of columns. This is used inside Frame and so we have to have it
   /// as a static member here. The function is optimised for the case when all series share the
@@ -498,13 +500,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     // the `RowReader` case is then detected by the ArrayVectorBuilder and 
     // rather than actually creating the vectors, it returns a lazy vector of
     // `IVector<obj>` values created using `createRowReader`.
-
-    // We get a vector containing boxed `IVector<obj>` - we turn it into a
-    // vector containing `ObjectSeries`, but lazily to avoid allocations
-    let vector = createCombinedRowVector () 
-    let vector = vector |> VectorHelpers.lazyMapVector (fun o -> 
-          let rowReader = unbox<IVector<obj>> o
-          ObjectSeries(columnIndex, rowReader, vectorBuilder, indexBuilder) )
+    let vector =
+      data |> createRowVector vectorBuilder rowIndex.KeyCount columnIndex.KeyCount (fun rowReader ->
+        ObjectSeries(columnIndex, rowReader, vectorBuilder, indexBuilder) )
 
     // The following delegates slicing to the frame by calling 
     // `frame.GetSubrange` which is more efficient than re-creating from rows
@@ -1649,6 +1647,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 /// Represents a series of columns from a frame. The type inherits from a series of 
 /// series representing individual columns (`Series<'TColumnKey, ObjectSeries<'TRowKey>>`) but
 /// hides slicing operations with new versions that return frames.
+///
+/// [category:Specialized frame and series types]
 and ColumnSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>(index, vector, vectorBuilder, indexBuilder) =
   inherit Series<'TColumnKey, ObjectSeries<'TRowKey>>(index, vector, vectorBuilder, indexBuilder)
   new(series:Series<'TColumnKey, ObjectSeries<'TRowKey>>) = 
@@ -1665,6 +1665,8 @@ and ColumnSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey 
 /// Represents a series of rows from a frame. The type inherits from a series of 
 /// series representing individual rows (`Series<'TRowKey, ObjectSeries<'TColumnKey>>`) but
 /// hides slicing operations with new versions that return frames.
+///
+/// [category:Specialized frame and series types]
 and [<AbstractClass>] RowSeries<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equality>
     (index:IIndex<'TRowKey>, vector:IVector<ObjectSeries<'TColumnKey>>, vectorBuilder, indexBuilder) = 
   inherit Series<'TRowKey, ObjectSeries<'TColumnKey>>(index, vector, vectorBuilder, indexBuilder) 

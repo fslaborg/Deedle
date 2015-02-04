@@ -2,6 +2,8 @@
 /// keys of various types to address, which is then used to get a value from the vector.
 /// In the current implementation, the address is just `int64`, but most address-related
 /// functionality is in a separate module to make this easy to change.
+///
+/// [category:Vectors and indices]
 module Deedle.Addressing
 
 /// Represents a type used for addressing values in a vector

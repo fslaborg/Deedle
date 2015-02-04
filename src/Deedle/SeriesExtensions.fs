@@ -19,8 +19,10 @@ open Deedle.Internal
 /// Contains extensions for creating values of type `Series<'K, 'V>` including
 /// a type with functions such as `Series.ofValues` and the `series` function.
 /// The module is automatically opened for all F# code that references `Deedle`.
+///
+/// [category:Core frame and series types]
 [<AutoOpen>]
-module FSharpSeriesExtensions =
+module ``F# Series extensions`` =
   open System
 
   type Series = 
@@ -64,8 +66,12 @@ module FSharpSeriesExtensions =
   let series observations = Series.ofObservations observations
 
 
-/// Contains extension methods for various instances of `IEnumerable` that
-/// can be used for creating `Series<'K, 'V>` from the `IEnumerable` value.
+/// Contains C#-friendly extension methods for various instances of `IEnumerable` 
+/// that can be used for creating `Series<'K, 'V>` from the `IEnumerable` value.
+/// You can create an ordinal series from `IEnumerable<'T>` or an indexed series from
+/// `IEnumerable<KeyValuePair<'K, 'V>>` or from `IEnumerable<KeyValuePair<'K, OptionalValue<'V>>>`.
+///
+/// [category:Frame and series operations]
 [<Extension>]
 type EnumerableExtensions =
   /// Convert the `IEnumerable` to a `Series`, using the keys and values of
@@ -107,6 +113,7 @@ type EnumerableExtensions =
 ///     sb.ID = 1;
 ///     sb.Value = 3.4;
 ///
+/// [category:Specialized frame and series types]
 type SeriesBuilder<'K, 'V when 'K : equality and 'V : equality>() = 
   let mutable keys = []
   let mutable values = []
@@ -178,6 +185,8 @@ type SeriesBuilder<'K, 'V when 'K : equality and 'V : equality>() =
 
 /// A simple class that inherits from `SeriesBuilder<'K, obj>` and can be
 /// used instead of writing `SeriesBuilder<'K, obj>` with two type arguments.
+///
+/// [category:Specialized frame and series types]
 type SeriesBuilder<'K when 'K : equality>() =
   inherit SeriesBuilder<'K, obj>()
 
@@ -185,6 +194,12 @@ type SeriesBuilder<'K when 'K : equality>() =
 // Extensions providing nice C#-friendly API
 // --------------------------------------------------------------------------------------
 
+/// The type implements C# and F# extension methods for the `Series<'K, 'V>` type.
+/// The members are automatically available when you import the `Deedle` namespace.
+/// The type contains object-oriented counterparts to most of the functionality 
+/// from the `Series` module.
+///
+/// [category:Frame and series operations]
 [<Extension>]
 type SeriesExtensions =
 

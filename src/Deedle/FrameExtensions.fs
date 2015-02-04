@@ -20,6 +20,8 @@ open FSharp.Data
 /// Provides static methods for creating frames, reading frame data
 /// from CSV files and database (via IDataReader). The type also provides
 /// global configuration for reflection-based expansion.
+///
+/// [category:Frame and series operations]
 type Frame =
 
   // ----------------------------------------------------------------------------------------------
@@ -75,7 +77,7 @@ type Frame =
   ///  * `skipTypeInference` - Specifies whether the method should skip inferring types
   ///    of columns automatically (when set to `true` you need to provide explicit `schema`)
   ///  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
-  ///    rows to use for type inference. The default value is 0, meaninig all rows.
+  ///    rows to use for type inference. The default value is 100.
   ///  * `schema` - A string that specifies CSV schema. See the documentation for 
   ///    information about the schema format.
   ///  * `separators` - A string that specifies one or more (single character) separators
@@ -88,12 +90,14 @@ type Frame =
   /// [category:Input and output]
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member ReadCsv
-    ( location:string, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] skipTypeInference, [<Optional>] inferRows, 
-      [<Optional>] schema, [<Optional>] separators, [<Optional>] culture, [<Optional>] maxRows:Nullable<int>) =
+    ( location:string, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] skipTypeInference, [<Optional>] inferRows:Nullable<int>,
+      [<Optional>] schema, [<Optional>] separators, [<Optional>] culture, [<Optional>] maxRows:Nullable<int>,
+      [<Optional>] missingValues ) =
     use reader = new StreamReader(location)
     FrameUtils.readCsv 
       reader (if hasHeaders.HasValue then Some hasHeaders.Value else None)
-      (Some (not skipTypeInference)) (Some inferRows) (Some schema) TextConversions.DefaultMissingValues 
+      (Some (not skipTypeInference)) (if inferRows.HasValue then Some inferRows.Value else None) 
+      (Some schema) (Some missingValues)
       (if separators = null then None else Some separators) (Some culture)
       (if maxRows.HasValue then Some maxRows.Value else None)
 
@@ -111,7 +115,7 @@ type Frame =
   ///  * `skipTypeInference` - Specifies whether the method should skip inferring types
   ///    of columns automatically (when set to `true` you need to provide explicit `schema`)
   ///  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
-  ///    rows to use for type inference. The default value is 0, meaninig all rows.
+  ///    rows to use for type inference. The default value is 100.
   ///  * `schema` - A string that specifies CSV schema. See the documentation for 
   ///    information about the schema format.
   ///  * `separators` - A string that specifies one or more (single character) separators
@@ -119,15 +123,20 @@ type Frame =
   ///    parse semicolon separated files.
   ///  * `culture` - Specifies the name of the culture that is used when parsing 
   ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
+  ///  * `maxRows` - The maximal number of rows that should be read from the CSV file.
+  ///  * `missingValues` - An array of strings that contains values which should be treated
+  ///    as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".
   ///
   /// [category:Input and output]
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member ReadCsv
-    ( stream:Stream, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] skipTypeInference, [<Optional>] inferRows, 
-      [<Optional>] schema, [<Optional>] separators, [<Optional>] culture, [<Optional>] maxRows:Nullable<int>) =
+    ( stream:Stream, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] skipTypeInference, [<Optional>] inferRows:Nullable<int>, 
+      [<Optional>] schema, [<Optional>] separators, [<Optional>] culture, [<Optional>] maxRows:Nullable<int>,
+      [<Optional>] missingValues) =
     FrameUtils.readCsv 
       (new StreamReader(stream)) (if hasHeaders.HasValue then Some hasHeaders.Value else None)
-      (Some (not skipTypeInference)) (Some inferRows) (Some schema) TextConversions.DefaultMissingValues 
+      (Some (not skipTypeInference)) (if inferRows.HasValue then Some inferRows.Value else None) 
+      (Some schema) (Some missingValues) 
       (if separators = null then None else Some separators) (Some culture)
       (if maxRows.HasValue then Some maxRows.Value else None)
 
@@ -290,8 +299,37 @@ type Frame =
     Frame<_, string>(rowIndex, colIndex, FrameUtils.vectorBuilder.Create [||], IndexBuilder.Instance, VectorBuilder.Instance)
 
 
+/// This module contains F# functions and extensions for working with frames. This
+/// includes operations for creating frames such as the `frame` function, `=>` operator
+/// and `Frame.ofRows`, `Frame.ofColumns` and `Frame.ofRowKeys` functions. The module
+/// also provides additional F# extension methods including `ReadCsv`, `SaveCsv` and `PivotTable`.
+///
+/// ## Frame construction
+/// The functions and methods in this group can be used to create frames. If you are creating
+/// a frame from a number of sample values, you can use `frame` and the `=>` operator (or the
+/// `=?>` opreator which is useful if you have multiple series of distinct types):
+///
+///     frame [ "Column 1" => series [ 1 => 1.0; 2 => 2.0 ]
+///             "Column 2" => series [ 3 => 3.0 ] ]
+///
+/// Aside from this, the various type extensions let you write `Frame.ofXyz` to construct frames
+/// from data in various formats - `Frame.ofRows` and `Frame.ofColumns` create frame from a series
+/// or a sequence of rows or columns; `Frame.ofRecords` creates a frame from .NET objects using
+/// Reflection and `Frame.ofRowKeys` creates an empty frame with the specified keys.
+///
+/// ## Frame operations
+/// The group contains two overloads of the F#-friendly version of the `PivotTable` method.
+///
+/// ## Input and output
+/// This group of extensions includes a number of overloads for the `ReadCsv` and `SaveCsv` 
+/// methods. The methods here are designed to be used from F# and so they are F#-style extensions
+/// and they use F#-style optional arguments. In general, the overlads take either a path or
+/// `TextReader`/`TextWriter`. Also note that `ReadCsv<'R>(path, indexCol, ...)` lets you specify
+/// the column to be used as the index.
+///
+/// [category:Frame and series operations]
 [<AutoOpen>]
-module FSharpFrameExtensions =
+module ``F# Frame extensions`` =
 
   /// Custom operator that can be used when constructing series from observations
   /// or frames from key-row or key-column pairs. The operator simply returns a 
@@ -299,6 +337,7 @@ module FSharpFrameExtensions =
   ///
   ///     series [ "k1" => 1; "k2" => 15 ]
   ///
+  /// [category:Frame construction]
   let (=>) a b = a, b
 
   /// Custom operator that can be used when constructing a frame from observations
@@ -307,6 +346,7 @@ module FSharpFrameExtensions =
   ///
   ///     frame [ "k1" =?> series [0 => "a"]; "k2" =?> series ["x" => "y"] ]
   ///
+  /// [category:Frame construction]
   let (=?>) a (b:ISeries<_>) = a, b
 
   /// A function for constructing data frame from a sequence of name - column pairs.
@@ -318,6 +358,7 @@ module FSharpFrameExtensions =
   ///     frame [ "A" => series [ 1 => 30.0; 2 => 35.0 ]
   ///             "B" => series [ 1 => 30.0; 3 => 40.0 ] ]
   ///
+  /// [category:Frame construction]
   let frame columns = 
     let names, values = columns |> Array.ofSeq |> Array.unzip
     FrameUtils.fromColumns IndexBuilder.Instance VectorBuilder.Instance (Series(names, values))
@@ -348,9 +389,16 @@ module FSharpFrameExtensions =
     ///    parse semicolon separated files.
     ///  * `culture` - Specifies the name of the culture that is used when parsing 
     ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
-    static member ReadCsv<'R when 'R : equality>(path:string, indexCol, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture, ?maxRows) : Frame<'R, _> =
+    ///  * `maxRows` - The maximal number of rows that should be read from the CSV file.
+    ///  * `missingValues` - An array of strings that contains values which should be treated
+    ///    as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".
+    ///
+    /// [category:Input and output]
+    static member ReadCsv<'R when 'R : equality>
+        ( path:string, indexCol, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, 
+          ?culture, ?maxRows, ?missingValues ) : Frame<'R, _> =
       use reader = new StreamReader(path)
-      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema TextConversions.DefaultMissingValues separators culture maxRows
+      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows
       |> Frame.indexRows indexCol
 
     /// Load data frame from a CSV file. The operation automatically reads column names from the 
@@ -365,7 +413,7 @@ module FSharpFrameExtensions =
     ///  * `inferTypes` - Specifies whether the method should attempt to infer types
     ///    of columns automatically (set this to `false` if you want to specify schema)
     ///  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
-    ///    rows to use for type inference. The default value is 0, meaninig all rows.
+    ///    rows to use for type inference. The default value is 100.
     ///  * `schema` - A string that specifies CSV schema. See the documentation for 
     ///    information about the schema format.
     ///  * `separators` - A string that specifies one or more (single character) separators
@@ -373,9 +421,16 @@ module FSharpFrameExtensions =
     ///    parse semicolon separated files.
     ///  * `culture` - Specifies the name of the culture that is used when parsing 
     ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
-    static member ReadCsv(path:string, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture, ?maxRows) =
+    ///  * `maxRows` - The maximal number of rows that should be read from the CSV file.
+    ///  * `missingValues` - An array of strings that contains values which should be treated
+    ///    as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".
+    ///
+    /// [category:Input and output]
+    static member ReadCsv
+        ( path:string, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, 
+          ?culture, ?maxRows, ?missingValues ) =
       use reader = new StreamReader(path)
-      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema TextConversions.DefaultMissingValues separators culture maxRows
+      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows
 
     /// Load data frame from a CSV file. The operation automatically reads column names from the 
     /// CSV file (if they are present) and infers the type of values for each column. Columns
@@ -389,7 +444,7 @@ module FSharpFrameExtensions =
     ///  * `inferTypes` - Specifies whether the method should attempt to infer types
     ///    of columns automatically (set this to `false` if you want to specify schema)
     ///  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
-    ///    rows to use for type inference. The default value is 0, meaninig all rows.
+    ///    rows to use for type inference. The default value is 100.
     ///  * `schema` - A string that specifies CSV schema. See the documentation for 
     ///    information about the schema format.
     ///  * `separators` - A string that specifies one or more (single character) separators
@@ -397,8 +452,15 @@ module FSharpFrameExtensions =
     ///    parse semicolon separated files.
     ///  * `culture` - Specifies the name of the culture that is used when parsing 
     ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
-    static member ReadCsv(stream:Stream, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture, ?maxRows) =
-      FrameUtils.readCsv (new StreamReader(stream)) hasHeaders inferTypes inferRows schema TextConversions.DefaultMissingValues separators culture maxRows
+    ///  * `maxRows` - The maximal number of rows that should be read from the CSV file.
+    ///  * `missingValues` - An array of strings that contains values which should be treated
+    ///    as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".
+    ///
+    /// [category:Input and output]
+    static member ReadCsv
+        ( stream:Stream, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, 
+          ?culture, ?maxRows, ?missingValues ) =
+      FrameUtils.readCsv (new StreamReader(stream)) hasHeaders inferTypes inferRows schema missingValues separators culture maxRows
 
     /// Load data frame from a CSV file. The operation automatically reads column names from the 
     /// CSV file (if they are present) and infers the type of values for each column. Columns
@@ -412,7 +474,7 @@ module FSharpFrameExtensions =
     ///  * `inferTypes` - Specifies whether the method should attempt to infer types
     ///    of columns automatically (set this to `false` if you want to specify schema)
     ///  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
-    ///    rows to use for type inference. The default value is 0, meaninig all rows.
+    ///    rows to use for type inference. The default value is 100.
     ///  * `schema` - A string that specifies CSV schema. See the documentation for 
     ///    information about the schema format.
     ///  * `separators` - A string that specifies one or more (single character) separators
@@ -420,48 +482,88 @@ module FSharpFrameExtensions =
     ///    parse semicolon separated files.
     ///  * `culture` - Specifies the name of the culture that is used when parsing 
     ///    values in the CSV file (such as `"en-US"`). The default is invariant culture. 
-    static member ReadCsv(reader:TextReader, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, ?culture, ?maxRows) =
-      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema TextConversions.DefaultMissingValues separators culture maxRows
+    ///  * `maxRows` - The maximal number of rows that should be read from the CSV file.
+    ///  * `missingValues` - An array of strings that contains values which should be treated
+    ///    as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".
+    ///
+    /// [category:Input and output]
+    static member ReadCsv
+        ( reader:TextReader, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, 
+          ?separators, ?culture, ?maxRows, ?missingValues ) =
+      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows
 
-    /// Creates a data frame with ordinal Integer index from a sequence of rows.
+    /// Creates a frame with ordinal Integer index from a sequence of rows.
     /// The column indices of individual rows are unioned, so if a row has fewer
     /// columns, it will be successfully added, but there will be missing values.
-    static member ofRowsOrdinal(rows:seq<#Series<_, _>>) = 
+    ///
+    /// [category:Frame construction]
+    static member ofRowsOrdinal(rows:seq<#Series<'K, 'V>>) = 
       FrameUtils.fromRows IndexBuilder.Instance VectorBuilder.Instance (Series(rows |> Seq.mapi (fun i _ -> i), rows))
 
-    static member ofRows(rows:seq<_ * #ISeries<_>>) = 
+    /// Creates a frame from a sequence of row keys and row series pairs. 
+    /// The row series can contain values of any type, but it has to be the same 
+    /// for all the series - if you have heterogenously typed series, use `=?>`.
+    ///
+    /// [category:Frame construction]
+    static member ofRows(rows:seq<'R * #ISeries<'C>>) = 
       let names, values = rows |> List.ofSeq |> List.unzip
       FrameUtils.fromRows IndexBuilder.Instance VectorBuilder.Instance (Series(names, values))
 
-    static member ofRows(rows) = 
+    /// Creates a frame from a series that maps row keys to a nested series 
+    /// containing values for each row.
+    ///
+    /// [category:Frame construction]
+    static member ofRows(rows) : Frame<'R, 'C> = 
       FrameUtils.fromRows IndexBuilder.Instance VectorBuilder.Instance rows
 
-    static member ofRowKeys(keys) = 
+    /// Creates a frame with the specified row keys, but no columns (and no data).
+    /// This is useful if you want to build a frame gradually and restrict all the
+    /// later added data to a sequence of row keys known in advance.
+    ///
+    /// [category:Frame construction]
+    static member ofRowKeys(keys:seq<'R>) = 
       Frame.FromRowKeys(keys)
     
-    static member ofColumns(cols) = 
+    /// Creates a frame from a series that maps column keys to a nested series 
+    /// containing values for each column.
+    ///
+    /// [category:Frame construction]
+    static member ofColumns(cols) : Frame<'R, 'C> = 
       FrameUtils.fromColumns IndexBuilder.Instance VectorBuilder.Instance cols
 
-    static member ofColumns(cols:seq<_ * #ISeries<'K>>) = 
+    /// Creates a frame from a sequence of column keys and column series pairs. 
+    /// The column series can contain values of any type, but it has to be the same 
+    /// for all the series - if you have heterogenously typed series, use `=?>`.
+    ///
+    /// [category:Frame construction]
+    static member ofColumns(cols:seq<'C * #ISeries<'R>>) = 
       let names, values = cols |> List.ofSeq |> List.unzip
       FrameUtils.fromColumns IndexBuilder.Instance VectorBuilder.Instance (Series(names, values))
     
-    /// Create a data frame from a sequence of tuples containing row key, column key and a value
-    static member ofValues(values) =
+    /// Create a data frame from a sequence of tuples containing row key, column key and a value.
+    ///
+    /// [category:Frame construction]
+    static member ofValues(values:seq<'R * 'C * 'V>) =
       Frame.FromValues(values)
 
     /// Creates a data frame from a series containing any .NET objects. The method uses reflection
     /// over the specified type parameter `'T` and turns its properties to columns.
+    ///
+    /// [category:Frame construction]
     static member ofRecords (series:Series<'K, 'R>) =
       Frame.FromRecords(series)
 
     /// Creates a data frame from a sequence of any .NET objects. The method uses reflection
     /// over the specified type parameter `'T` and turns its properties to columns.
+    ///
+    /// [category:Frame construction]
     static member ofRecords (values:seq<'T>) =
       Reflection.convertRecordSequence<'T>(values)    
 
     /// Creates a data frame from a sequence of any .NET objects. The method uses reflection
     /// over the specified type parameter `'T` and turns its properties to columns.
+    ///
+    /// [category:Frame construction]
     static member ofRecords<'R when 'R : equality> (values:System.Collections.IEnumerable, indexCol:string) =
       Reflection.convertRecordSequenceUntyped(values).IndexRows<'R>(indexCol)
 
@@ -471,6 +573,8 @@ module FSharpFrameExtensions =
     ///
     /// ## Parameters
     ///  - `array` - A two-dimensional array to be converted into a data frame
+    ///
+    /// [category:Frame construction]
     static member ofArray2D (array:'T[,]) = 
       Frame.FromArray2D(array)
 
@@ -490,7 +594,7 @@ module FSharpFrameExtensions =
     member frame.PivotTable<'R, 'C, 'T when 'R : equality and 'C : equality>(r:'TColumnKey, c:'TColumnKey, op:Frame<'TRowKey,'TColumnKey> -> 'T) =
       frame |> Frame.pivotTable (fun k os -> os.GetAs<'R>(r)) (fun k os -> os.GetAs<'C>(c)) op
 
-    /// Save data frame to a CSV file` or a `TextWriter`. When calling the operation,
+    /// Save data frame to a CSV file or a `TextWriter`. When calling the operation,
     /// you can specify whether you want to save the row keys or not (and headers for the keys)
     /// and you can also specify the separator (use `\t` for writing TSV files). When specifying
     /// file name ending with `.tsv`, the `\t` separator is used automatically.
@@ -542,6 +646,17 @@ module FSharpFrameExtensions =
       use writer = new StreamWriter(path)
       FrameUtils.writeCsv writer (Some path) None None (Some true) (Some keyNames) frame
 
+    /// Returns the data of the frame as a .NET `DataTable` object. The column keys are
+    /// automatically converted to strings that are used as column names. The row index is
+    /// turned into an additional column with the specified name (the function takes the name
+    /// as a sequence to support hierarchical keys, but typically you can write just
+    /// `frame.ToDataTable(["KeyName"])`.
+    ///
+    /// ## Parameters
+    ///  - `rowKeyNames` - Specifies the names of the row key components (or just a single
+    ///    row key name if the row index is not hierarchical).
+    ///
+    /// [category:Input and output]
     member frame.ToDataTable(rowKeyNames) = 
       FrameUtils.toDataTable rowKeyNames frame
 
@@ -551,7 +666,20 @@ module FSharpFrameExtensions =
       use writer = new StreamWriter(stream)
       FrameUtils.writeCsv (writer) None separator culture includeRowKeys keyNames frame
 
-
+/// Type that can be used for creating frames using the C# collection initializer syntax.
+/// You can use `new FrameBuilder.Columns<...>` to create a new frame from columns or you
+/// can use `new FrameBuilder.Rows<...>` to create a new frame from rows.
+///
+/// ## Example
+/// The following creates a new frame with columns `Foo` and `Bar`:
+/// 
+///     var sampleFrame =
+///       new FrameBuilder.Columns<int, string> {
+///         { "Foo", new SeriesBuilder<int> { {1,11.1}, {2,22.4} }.Series }
+///         { "Bar", new SeriesBuilder<int> { {1,42.42} }.Series }
+///       }.Frame;
+///
+/// [category:Frame and series operations]
 module FrameBuilder =
   type Columns<'R, 'C when 'C : equality and 'R : equality>() = 
     let mutable series = []
@@ -575,12 +703,17 @@ module FrameBuilder =
       member x.GetEnumerator() = 
         (series |> List.rev |> Seq.map (fun (k, v) -> KeyValuePair(k, v))).GetEnumerator()
 
-
+/// A type with extension method for `KeyValuePair<'K, 'V>` that makes
+/// it possible to create values using just `KeyValue.Create`.
+///
+/// [category:Primitive types and values]
 type KeyValue =
   static member Create<'K, 'V>(key:'K, value:'V) = KeyValuePair(key, value)
 
 
-/// Some comment
+/// Contains C# and F# extension methods for the `Frame<'R, 'C>` type. The members are 
+/// automatically available when you import the `Deedle` namespace. The type contains 
+/// object-oriented counterparts to most of the functionality from the `Frame` module.
 ///
 /// ## Data structure manipulation
 /// Summary 1
@@ -590,6 +723,8 @@ type KeyValue =
 ///
 /// ## Missing values
 /// Summary 3
+///
+/// [category:Frame and series operations]
 [<Extension>]
 type FrameExtensions =
   // ----------------------------------------------------------------------------------------------
@@ -858,6 +993,17 @@ type FrameExtensions =
     let culture = if culture = null then None else Some culture
     FrameUtils.writeCsv writer (Some path) separator culture (Some true) (Some keyNames) frame
 
+  /// Returns the data of the frame as a .NET `DataTable` object. The column keys are
+  /// automatically converted to strings that are used as column names. The row index is
+  /// turned into an additional column with the specified name (the function takes the name
+  /// as a sequence to support hierarchical keys, but typically you can write just
+  /// `frame.ToDataTable(["KeyName"])`.
+  ///
+  /// ## Parameters
+  ///  - `rowKeyNames` - Specifies the names of the row key components (or just a single
+  ///    row key name if the row index is not hierarchical).
+  ///
+  /// [category:Input and output]
   [<Extension>]
   static member ToDataTable(frame:Frame<'R, 'C>, rowKeyNames) = 
     FrameUtils.toDataTable rowKeyNames frame

@@ -15,6 +15,8 @@ open Deedle.VectorHelpers
 /// This enumeration specifeis the behavior of `Union` operation on series when there are
 /// overlapping keys in two series that are being unioned. The options include prefering values
 /// from the left/right series or throwing an exception when both values are available.
+///
+/// [category:Parameters and results of various operations]
 type UnionBehavior =
   /// When there are values available in both series that are being unioned, prefer the left value.
   | PreferLeft = 0
@@ -30,6 +32,8 @@ type UnionBehavior =
 /// Represents an untyped series with keys of type `K` and values of some unknown type
 /// (This type should not generally be used directly, but it can be used when you need
 /// to write code that works on a sequence of series of heterogeneous types).
+///
+/// [category:Core frame and series types]
 type ISeries<'K when 'K : equality> =
   /// Returns the vector containing data of the series (as an untyped vector)
   abstract Vector : Deedle.IVector
@@ -41,6 +45,8 @@ type ISeries<'K when 'K : equality> =
 
 /// The type `Series<K, V>` represents a data series consisting of values `V` indexed by
 /// keys `K`. The keys of a series may or may not be ordered 
+///
+/// [category:Core frame and series types]
 and
   Series<'K, 'V when 'K : equality>
     ( index:IIndex<'K>, vector:IVector<'V>,
@@ -1084,6 +1090,12 @@ and
 // Untyped series
 // ------------------------------------------------------------------------------------------------
 
+/// Represents a series containing boxed values. This type is inherited from `Series<'K, obj>` 
+/// and it adds additional operations for accessing values with unboxing. This includes operations
+/// such as `os.GetAs<'T>`, `os.TryGetAs<'T>` and `os.TryAs<'T>` which (attempt to) convert
+/// values to the specified type `'T`.
+///
+/// [category:Specialized frame and series types]
 type ObjectSeries<'K when 'K : equality> internal(index:IIndex<_>, vector, vectorBuilder, indexBuilder) = 
   inherit Series<'K, obj>(index, vector, vectorBuilder, indexBuilder)
 

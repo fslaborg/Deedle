@@ -378,3 +378,42 @@ let ``Creating large (10k) series from array`` () =
   let a = Array.init 100 (fun _ -> series vs)
   a.[5].KeyCount |> shouldEqual 10000
   a.[5].[5000] |> shouldEqual 5000.0
+
+
+let smallRowSparseFrame = 
+  frame [ for k in ["A"; "B"; "C"] ->
+            k => Series.ofValues [ for i in 0 .. 9 -> if i%2=0 then float i else nan ] ]
+let bigRowSparseFrame = 
+  frame [ for k in ['A' .. 'Z'] ->
+            k => Series.ofValues [ for i in 0 .. 10000 -> if i%2=0 then float i else nan ] ]
+let smallColSparseFrame = 
+  frame [ for k in ["A"; "B"; "C"] ->
+            k => Series.ofValues [ for i in 0 .. 9 -> if i%2=0&&k<>"B" then float i else nan ] ]
+let bigColSparseFrame = 
+  frame [ for k in ['A' .. 'Z'] ->
+            k => Series.ofValues [ for i in 0 .. 10000 -> if (int k)%3<>1 then float i else nan ] ]
+
+[<Test;PerfTest(Iterations=10)>]
+let ``Drop sparse rows from a small frame`` () =
+  let a = Array.init 100 (fun _ -> smallRowSparseFrame |> Frame.dropSparseRows)
+  a.[0].RowCount |> shouldEqual 5
+
+[<Test;PerfTest(Iterations=15)>]
+let ``Drop sparse rows from a large frame`` () =
+  let a = bigRowSparseFrame |> Frame.dropSparseRows
+  a.RowCount |> shouldEqual 5001
+
+[<Test;PerfTest(Iterations=10)>]
+let ``Drop sparse columns from a small frame`` () =
+  let a = Array.init 1000 (fun _ -> smallColSparseFrame |> Frame.dropSparseCols) 
+  a.[0].ColumnCount |> shouldEqual 2
+
+[<Test;PerfTest(Iterations=20)>]
+let ``Drop sparse columns from a large frame`` () =
+  let a = bigColSparseFrame |> Frame.dropSparseCols
+  a.ColumnCount |> shouldEqual 18
+
+
+
+
+

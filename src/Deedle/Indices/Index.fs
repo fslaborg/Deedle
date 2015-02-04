@@ -12,6 +12,8 @@
 /// Data can be aggregate using floating windows or chunks of a specified size or 
 /// by specifying a condition on two keys (i.e. end a window/chunk when the condition
 /// no longer holds).
+///
+/// [category:Parameters and results of various operations]
 type Aggregation<'K> =
   /// Aggregate data into floating windows of a specified size 
   /// and the provided handling of boundary elements.
@@ -35,6 +37,8 @@ type Aggregation<'K> =
 /// A non-generic type that simplifies the construction of `Aggregation<K>` values
 /// from C#. It provides methods for constructing different kinds of aggregation
 /// strategies for ordered series.
+///
+/// [category:Parameters and results of various operations]
 type Aggregation =
   /// Aggregate data into floating windows of a specified size 
   /// and the provided handling of boundary elements.
