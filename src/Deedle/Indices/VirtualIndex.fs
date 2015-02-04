@@ -260,6 +260,11 @@ and VirtualIndexBuilder() =
 
 
     member x.Search((index:IIndex<'K>, vector), searchVector:IVector<'V>, searchValue) = 
+      let searchVector = 
+        match searchVector with
+        | :? IWrappedVector<'V> as wrapped -> wrapped.UnwrapVector()
+        | _ -> searchVector
+
       match index, searchVector with
       | (:? VirtualOrdinalIndex as index), (:? VirtualVector<'V> as searchVector) ->
           let mapping = searchVector.Source.LookupRange(searchValue)

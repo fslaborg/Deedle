@@ -1341,6 +1341,50 @@ let ``Can map over frame keys and values``() =
   let f r c v = if r < 2 && c <> "B" && v <= 2.0 then "x" else "y"
   actual |> Frame.map f |> shouldEqual expected
 
+// ------------------------------------------------------------------------------------------------
+// Operations - missing
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Dropping sparse rows preserves columns (#277)``() = 
+  let emptyFrame = 
+    frame [ for k in ["A"; "B"; "C"] ->
+              k => Series.ofValues [ for i in 0 .. 9 -> nan ] ]
+  let actual = emptyFrame |> Frame.dropSparseRows
+  let expected = frame ([ "A" => series []; "B" => series []; "C" => series [] ] : list<string * Series<int, float>>)
+  actual |> shouldEqual <| expected
+
+[<Test>]
+let ``Dropping sparse rows works on sample frame``() = 
+  let sparseFrame = 
+    frame [ for k in ["A"; "B"; "C"] ->
+              k => Series.ofValues [ for i in 0 .. 5 -> if i%2=0 then float i else nan ] ]
+  let actual = sparseFrame |> Frame.dropSparseRows
+  let expected = 
+    frame [ "A" => series [0 => 0.0; 2 => 2.0; 4 => 4.0 ]
+            "B" => series [0 => 0.0; 2 => 2.0; 4 => 4.0 ]
+            "C" => series [0 => 0.0; 2 => 2.0; 4 => 4.0 ] ]
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Dropping sparse columns preserves columns``() = 
+  let emptyFrame = 
+    frame [ for k in ["A"; "B"; "C"] ->
+              k => Series.ofValues [ for i in 0 .. 9 -> nan ] ]
+  let actual = emptyFrame |> Frame.dropSparseCols
+  let expected = Frame.ofRowKeys [0 .. 9]
+  actual |> shouldEqual <| expected
+
+[<Test>]
+let ``Dropping sparse columns works on sample frame``() = 
+  let sparseFrame = 
+    frame [ for k in ["A"; "B"; "C"] ->
+              k => Series.ofValues [ for i in 0 .. 5 -> if i%2=0&&k="B" then float i else nan ] ]
+  let actual = sparseFrame |> Frame.dropSparseCols
+  let expected = 
+    frame [ "B" => series [0 => 0.0; 1 => nan; 2 => 2.0; 3 => nan; 4 => 4.0; 5 => nan ] ]
+  actual |> shouldEqual expected
+
 // ----------------------------------------------------------------------------------------------
 // Obsolete Stream operations
 // ----------------------------------------------------------------------------------------------

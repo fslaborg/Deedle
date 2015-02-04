@@ -109,15 +109,6 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     if not columnIndex.HasValue then OptionalValue.Missing else
     data.GetValue (snd columnIndex.Value)
 
-  /// Create vector of row reader objects. This method creates 
-  /// `IVector<obj>` where each `obj` is actually a boxed `IVector<obj>`
-  /// that provides access to data of individual rows of the frame.
-  let createCombinedRowVector () =
-    let vectors = [ for n in Seq.range 0L (columnIndex.KeyCount-1L) -> Vectors.Return(int n) ]
-    let cmd = Vectors.Combine(rowIndex.KeyCount, vectors, NaryTransform.RowReader)
-    let boxedData = [| for v in data.DataSequence -> boxVector v.Value |]
-    vectorBuilder.Build(cmd, boxedData)
-
   /// Create frame from a series of columns. This is used inside Frame and so we have to have it
   /// as a static member here. The function is optimised for the case when all series share the
   /// same index (by checking object reference equality)
@@ -509,13 +500,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     // the `RowReader` case is then detected by the ArrayVectorBuilder and 
     // rather than actually creating the vectors, it returns a lazy vector of
     // `IVector<obj>` values created using `createRowReader`.
-
-    // We get a vector containing boxed `IVector<obj>` - we turn it into a
-    // vector containing `ObjectSeries`, but lazily to avoid allocations
-    let vector = createCombinedRowVector () 
-    let vector = vector |> VectorHelpers.lazyMapVector (fun o -> 
-          let rowReader = unbox<IVector<obj>> o
-          ObjectSeries(columnIndex, rowReader, vectorBuilder, indexBuilder) )
+    let vector =
+      data |> createRowVector vectorBuilder rowIndex.KeyCount columnIndex.KeyCount (fun rowReader ->
+        ObjectSeries(columnIndex, rowReader, vectorBuilder, indexBuilder) )
 
     // The following delegates slicing to the frame by calling 
     // `frame.GetSubrange` which is more efficient than re-creating from rows
