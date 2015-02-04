@@ -151,9 +151,13 @@ type internal DelayedSource<'K, 'V when 'K : equality>
         vectors.Add( rangeVector )
 
       // Append all the indices & vectors that we got for segments
-      let newIndex, cmd = indexBuilder.Merge( List.ofSeq constrs, BinaryTransform.AtMostOne )
-      let newVector = vectorBuilder.Build(cmd, vectors.ToArray())
-      return newIndex, newVector } |> Async.StartAsTask)
+      match constrs.Count with
+      | 0 -> return indexBuilder.Create([], None), vectorBuilder.Create([||])
+      | 1 -> return fst constrs.[0], vectors.[0]
+      | _ -> 
+          let newIndex, cmd = indexBuilder.Merge( List.ofSeq constrs, BinaryTransform.AtMostOne )
+          let newVector = vectorBuilder.Build(cmd, vectors.ToArray())
+          return newIndex, newVector } |> Async.StartAsTask)
 
   member x.Ranges = ranges
   member x.RangeMax = rangeMax

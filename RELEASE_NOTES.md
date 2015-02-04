@@ -77,3 +77,6 @@
  * Simplify load script (#292)
  * Remove F# Data dependency & use Paket (#288, #293)
  * Update depndencies (F# Formatting 2.6.2 and RProvider 1.1.8)
+
+### 1.1.0-beta
+ * Enable materializing delayed series into a virtual series

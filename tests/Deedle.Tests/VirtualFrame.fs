@@ -604,5 +604,5 @@ let ``Can materialize a delayed series into a virtual series`` () =
   let idxAccess = idxSource.AccessList |> Seq.distinct |> List.ofSeq |> List.sort
   let valAccess = valSource.AccessList |> Seq.distinct |> List.ofSeq |> List.sort
 
-  idxAccess |> shouldEqual <| [ 33235401L .. 33235415L ] @ [ 35789803L .. 35789817L ]
-  valAccess |> shouldEqual <| [ 33235401L .. 33235415L ] @ [ 35789803L .. 35789817L ]
+  idxAccess |> shouldEqual <| [ 33235401L .. 33235415L ] @ [ 46014466L .. 46014480L ]
+  valAccess |> shouldEqual <| [ 33235401L .. 33235415L ] @ [ 46014466L .. 46014480L ]
