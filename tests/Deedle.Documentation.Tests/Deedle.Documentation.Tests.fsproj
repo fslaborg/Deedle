@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>FSharp.Data.Tests.DesignTime</RootNamespace>
     <AssemblyName>Deedle.Documentation.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <Name>FSharp.Data.Tests.DesignTime</Name>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
