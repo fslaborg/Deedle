@@ -410,7 +410,7 @@ let ``Drop sparse columns from a small frame`` () =
 
 [<Test;PerfTest(Iterations=20)>]
 let ``Drop sparse columns from a large frame`` () =
-  let a = bigColSparseFrame |> Frame.dropSparseColsOld 
+  let a = bigColSparseFrame |> Frame.dropSparseCols
   a.ColumnCount |> shouldEqual 18
 
 
