@@ -532,11 +532,12 @@ type Stats =
   static member inline count (series:Series<'K, 'V>) = series.ValueCount
 
   /// Returns the sum of the values in a series. The function skips over missing values
-  /// and `NaN` values. When there are no available values, the result is 0.
+  /// and `NaN` values. When there are no available values, the result is NaN.
   ///
   /// [category:Series statistics]
   static member inline sum (series:Series<'K, float>) = 
-    series.Values |> Seq.sum 
+    series.Values |> Seq.fold (fun sum v -> 
+      if Double.IsNaN sum then v else sum + v) nan
 
   /// Sum that operates only any appropriate numeric type. When there are no available 
   /// values, the result is zero of the approriate numeric type.

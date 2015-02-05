@@ -216,6 +216,14 @@ let ``maxBy and minBy work`` () =
   s |> Stats.maxBy (fun x -> -x) |> shouldEqual (Some (0, 1.0))
   s |> Stats.minBy (fun x -> -x) |> shouldEqual (Some (2, 5.0))
 
+[<Test>]
+let ``sum returns NaN for empty series`` () = 
+  series [ ] |> Stats.sum |> should be NaN
+
+[<Test>]
+let ``sum does not return NaN for series with missing values`` () = 
+  series [ 1 => nan; 2 => 1.0; 3 => 2.0 ] |> Stats.sum |> shouldEqual 3.0
+
 // ------------------------------------------------------------------------------------------------
 // Statistics on frames
 // ------------------------------------------------------------------------------------------------
