@@ -7,7 +7,7 @@ NUGET
     FSharp.Compiler.Service (0.0.82)
     FSharp.Data (2.1.1)
       Zlib.Portable (>= 1.10.0)
-    FSharp.Formatting (2.7.1)
+    FSharp.Formatting (2.7.4)
       FSharp.Compiler.Service (>= 0.0.82)
       FSharpVSPowerTools.Core (>= 1.7.0)
     FSharpVSPowerTools.Core (1.7.0)
