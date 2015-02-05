@@ -43,26 +43,29 @@ type LinearIndex<'K when 'K : equality>
             with _ -> false
     | _ -> false 
 
-  let makeLookup () = 
-    let dict = Dictionary<'K, Address>()
-    let mutable idx = 0L
-    for k in keys do 
-      match dict.TryGetValue(k) with
-      | true, list -> 
-          let info = sprintf "Duplicate key '%A'. Duplicate keys are not allowed in the index." k
-          invalidArg "keys" info
-      | _ -> 
-          dict.[k] <- idx  
-          idx <- idx + 1L
-    dict
-
   let mutable ordered = Unchecked.defaultof<Nullable<bool>>
   let mutable lookup = null
 
+  let ensureLookup () = 
+    if lookup = null then
+      let dict = Dictionary<'K, Address>()
+      let mutable idx = 0L
+      for k in keys do 
+        match dict.TryGetValue(k) with
+        | true, list -> 
+            let info = sprintf "Duplicate key '%A'. Duplicate keys are not allowed in the index." k
+            invalidArg "keys" info
+        | _ -> 
+            dict.[k] <- idx  
+            idx <- idx + 1L
+      lookup <- dict
+
   member private x.lookupMap = 
-    if lookup = null then lookup <- makeLookup()
+    ensureLookup ()
     lookup
+
   member private x.isOrdered = 
+    ensureLookup ()
     if not ordered.HasValue then ordered <- Nullable(isOrdered())
     ordered.Value
 
@@ -81,8 +84,8 @@ type LinearIndex<'K when 'K : equality>
     keys |> Seq.structuralHash
 
   interface IIndex<'K> with
-    member x.Keys = keys
-    member x.KeyCount = int64 keys.Count
+    member x.Keys = ensureLookup (); keys
+    member x.KeyCount = ensureLookup (); int64 keys.Count
     member x.Builder = builder
 
     /// Perform reverse lookup and return key for an address
@@ -149,7 +152,9 @@ type LinearIndex<'K when 'K : equality>
       | _ -> OptionalValue.Missing
 
     /// Returns all mappings of the index (key -> address) 
-    member x.Mappings = keys |> Seq.mapi (fun i k -> KeyValuePair(k, Address.ofInt i))
+    member x.Mappings = 
+      ensureLookup ()
+      keys |> Seq.mapi (fun i k -> KeyValuePair(k, Address.ofInt i))
     /// Are the keys of the index ordered?
     member x.IsOrdered = x.isOrdered
     member x.Comparer = comparer
