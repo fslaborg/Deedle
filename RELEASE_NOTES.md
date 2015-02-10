@@ -43,10 +43,10 @@
 ### 1.0.0-alpha2
  * Update to a new pre-release of RProvider
 
-### 1.0.0 
+### 1.0.0
  * Performance and API design improvements
 
-### 1.0.1 
+### 1.0.1
  * Update RProvider references
 
 ### 1.0.2
@@ -77,3 +77,13 @@
  * Simplify load script (#292)
  * Remove F# Data dependency & use Paket (#288, #293)
  * Update depndencies (F# Formatting 2.6.2 and RProvider 1.1.8)
+
+### 1.1.1-beta
+ * Allow specifying custom NA values (#231)
+ * Documentation improvements and add F# Frame extension docs (#254)
+ * Use 100 rows for inference by default in C# and fix docs (#271)
+ * Fix R interop documentation issue (#287)
+ * More flexible conversion from R frames (#212)
+ * Dropping sparse rows/columns should preserve frame structure (#277)
+ * Change Stats.sum to return NaN for empty series (#259)
+ * Change C#-version of ReadCsv to accept inferTypes param (#270)

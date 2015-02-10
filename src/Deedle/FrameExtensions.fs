@@ -74,8 +74,8 @@ type Frame =
   ///  * `location` - Specifies a file name or an web location of the resource.
   ///  * `hasHeaders` - Specifies whether the input CSV file has header row
   ///     (when not set, the default value is `true`)
-  ///  * `skipTypeInference` - Specifies whether the method should skip inferring types
-  ///    of columns automatically (when set to `true` you need to provide explicit `schema`)
+  ///  * `inferTypes` - Specifies whether the method should attempt to infer types
+  ///    of columns automatically (set this to `false` if you want to specify schema)
   ///  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
   ///    rows to use for type inference. The default value is 100.
   ///  * `schema` - A string that specifies CSV schema. See the documentation for 
@@ -90,13 +90,15 @@ type Frame =
   /// [category:Input and output]
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member ReadCsv
-    ( location:string, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] skipTypeInference, [<Optional>] inferRows:Nullable<int>,
+    ( location:string, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] inferTypes:Nullable<bool>, [<Optional>] inferRows:Nullable<int>,
       [<Optional>] schema, [<Optional>] separators, [<Optional>] culture, [<Optional>] maxRows:Nullable<int>,
       [<Optional>] missingValues ) =
     use reader = new StreamReader(location)
     FrameUtils.readCsv 
-      reader (if hasHeaders.HasValue then Some hasHeaders.Value else None)
-      (Some (not skipTypeInference)) (if inferRows.HasValue then Some inferRows.Value else None) 
+      reader 
+      (if hasHeaders.HasValue then Some hasHeaders.Value else None)
+      (if inferTypes.HasValue then Some inferTypes.Value else None)
+      (if inferRows.HasValue then Some inferRows.Value else None) 
       (Some schema) (Some missingValues)
       (if separators = null then None else Some separators) (Some culture)
       (if maxRows.HasValue then Some maxRows.Value else None)
@@ -112,8 +114,8 @@ type Frame =
   ///  * `stream` - Specifies the input stream, opened at the beginning of CSV data
   ///  * `hasHeaders` - Specifies whether the input CSV file has header row
   ///     (when not set, the default value is `true`)
-  ///  * `skipTypeInference` - Specifies whether the method should skip inferring types
-  ///    of columns automatically (when set to `true` you need to provide explicit `schema`)
+  ///  * `inferTypes` - Specifies whether the method should attempt to infer types
+  ///    of columns automatically (set this to `false` if you want to specify schema)
   ///  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
   ///    rows to use for type inference. The default value is 100.
   ///  * `schema` - A string that specifies CSV schema. See the documentation for 
@@ -130,12 +132,14 @@ type Frame =
   /// [category:Input and output]
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member ReadCsv
-    ( stream:Stream, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] skipTypeInference, [<Optional>] inferRows:Nullable<int>, 
+    ( stream:Stream, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] inferTypes:Nullable<bool>, [<Optional>] inferRows:Nullable<int>, 
       [<Optional>] schema, [<Optional>] separators, [<Optional>] culture, [<Optional>] maxRows:Nullable<int>,
       [<Optional>] missingValues) =
     FrameUtils.readCsv 
-      (new StreamReader(stream)) (if hasHeaders.HasValue then Some hasHeaders.Value else None)
-      (Some (not skipTypeInference)) (if inferRows.HasValue then Some inferRows.Value else None) 
+      (new StreamReader(stream)) 
+      (if hasHeaders.HasValue then Some hasHeaders.Value else None)
+      (if inferTypes.HasValue then Some inferTypes.Value else None)
+      (if inferRows.HasValue then Some inferRows.Value else None) 
       (Some schema) (Some missingValues) 
       (if separators = null then None else Some separators) (Some culture)
       (if maxRows.HasValue then Some maxRows.Value else None)
