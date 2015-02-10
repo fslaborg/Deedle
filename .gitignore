@@ -28,6 +28,7 @@ TestResult.xml
 *.VisualState.xml
 *.bak
 *.psess
+*.ide
 nuget/*.nuspec
 tests/PerformanceTools/Deedle.PerfTest.Core/obj
 tests/PerformanceTools/Deedle.PerfTest.Core/bin
