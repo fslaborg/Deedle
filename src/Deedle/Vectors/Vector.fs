@@ -56,11 +56,6 @@ type IVector =
   /// Returns the number of elements in the vector
   abstract Length : int64
 
-  /// Get address at a specified offset. 
-  abstract GetAddress : int64 -> Address
-  /// Get an offset of an address.
-  abstract GetOffset : Address -> int64
-
 /// Represents a generic function `\forall.'T.(IVector<'T> -> 'R)`. The function can be 
 /// generically invoked on an argument of type `IVector` using `IVector.Invoke`
 ///
@@ -89,7 +84,7 @@ and IVector<'T> =
   /// a new vector (not necessarily of the same representation) with the results.
   /// The function handles missing values - it is called with optional values and
   /// may return a missing value as a result of the transformation.
-  abstract SelectMissing : (Address -> OptionalValue<'T> -> OptionalValue<'TNew>) -> IVector<'TNew>
+  abstract SelectMissing : (int64 -> Address -> OptionalValue<'T> -> OptionalValue<'TNew>) -> IVector<'TNew>
 
   /// Apply the specified function to all values stored in the vector and return
   /// a new vector (not necessarily of the same representation) with the results.
@@ -176,6 +171,7 @@ type VectorListTransform =
 /// (See the implementation in the `Build` operation in `ArrayVector.fs`)
 type IRowReaderTransform = 
   inherit INaryTransform
+  abstract ColumnAddressAt : int64 -> Address
 
 /// Specifies how to fill missing values in a vector (when using the 
 /// `VectorConstruction.FillMissing` command). This can only fill missing

@@ -29,6 +29,23 @@ type LinearSubRange =
   interface System.Collections.IEnumerable with
     member x.GetEnumerator() : System.Collections.IEnumerator = failwith "hard!"
 
+module Address = LinearAddres
+
+type AddressOperations(ranges:(int64*int64) list, length) = 
+  member x.Ranges = ranges
+  override x.Equals(o) = 
+    match o with
+    | :? AddressOperations as y -> x.Ranges = y.Ranges
+    | _ -> false
+  override x.GetHashCode() = ranges.GetHashCode()
+  interface IAddressOperations with
+    member x.FirstElement = Address.ofInt64 0L
+    member x.LastElement = Address.ofInt64 (length - 1L)
+    member x.Range = Deedle.Internal.Seq.range 0L (length - 1L) |> Seq.map Address.ofInt64
+    member x.OffsetOf(addr) = Address.asInt64 addr
+    member x.AddressOf(idx) = Address.ofInt64 idx
+    member x.Next(a) = Address.increment a 
+
 type TrackingSource<'T>(ranges:(int64*int64) list, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?search) = 
   let ranges = ranges //|> Seq.map (fun (f,s) -> Address(f),Address(s))
   member val AccessListCell : int64 list ref = ref [] with get, set
@@ -49,10 +66,7 @@ type TrackingSource<'T>(ranges:(int64*int64) list, valueAt:int64 -> 'T, ?asLong:
   interface IVirtualVectorSource with
     member x.Length = x.Length
     member x.ElementType = typeof<'T>
-    member x.AddressAt(index) = 
-      let res = x.AddressAt(index)
-      res
-    member x.IndexAt(address) = x.IndexAt(address)
+    member x.AddressOperations = AddressOperations(ranges, int64 x.Length) :> _
 
   interface IVirtualVectorSource<'T> with
     member x.MergeWith(sources) = 
@@ -185,6 +199,7 @@ let ``Lookup and ValueAt works on merged tracking sources`` () =
 // Virtual series tests
 // ------------------------------------------------------------------------------------------------
 
+#if VIRTUAL_ORDINAL_INDEX
 [<Test>]
 let ``Formatting accesses only printed values`` () =
   let src = TrackingSource.CreateLongs(0L, 1000000000L)
@@ -254,6 +269,7 @@ let ``Can materialize virtual series and access it repeatedly`` () =
   sm |> Stats.mean |> ignore
   sm |> Stats.sum |> ignore
   src.AccessList |> shouldEqual [ 100L .. 200L ]
+#endif
 
 // ------------------------------------------------------------------------------------------------
 // Virutal series with ordered index
@@ -306,6 +322,7 @@ let ``Can perform slicing on time series without evaluating it`` () =
 // Virtual frame tests
 // ------------------------------------------------------------------------------------------------
 
+#if VIRTUAL_ORDINAL_INDEX
 let createSimpleFrameSize size =
   let s1 = TrackingSource.CreateLongs(0L, size)
   let s2 = TrackingSource.CreateStrings(0L, size)
@@ -313,6 +330,7 @@ let createSimpleFrameSize size =
   s1, s2, frame
 
 let createSimpleFrame() = createSimpleFrameSize(10000000L)
+#endif
 
 let createSimpleTimeFrame() =
   let idxSrc = TrackingSource.CreateTimes(0L, 10000000L)
@@ -321,6 +339,7 @@ let createSimpleTimeFrame() =
   let frame = Virtual.CreateFrame(idxSrc, ["S1"; "S2"], [s1; s2] )
   idxSrc, s1, s2, frame
 
+#if VIRTUAL_ORDINAL_INDEX
 let createNumericFrame() =
   let s1 = TrackingSource.CreateFloats(0L, 10000000L, HasMissing=false)
   let s2 = TrackingSource.CreateFloats(0L, 10000000L)
@@ -332,9 +351,11 @@ let createTicksFrame() =
   let s2 = TrackingSource.CreateFloats(0L, 10000000L)
   let frame = Virtual.CreateOrdinalFrame( ["Ticks"; "Values"], [s1; s2] )
   s1, s2, frame
+#endif
 
 // ------------------------------------------------------------------------------------------------
 
+#if VIRTUAL_ORDINAL_INDEX
 [<Test>]
 let ``Can format virtual frame without evaluating it`` () = 
   let s1, s2, frame = createSimpleFrame()
@@ -478,12 +499,13 @@ let ``Merging overlapping ordinally-indexed virtual frames fails`` () =
   (fun _ -> f0.Merge(f.Rows.[0900000L .. 1000000L]) |> ignore) |> shouldThrow<InvalidOperationException>
   (fun _ -> f0.Merge(f.Rows.[0500000L .. 1500000L]) |> ignore) |> shouldThrow<InvalidOperationException>
   (fun _ -> f0.Merge(f.Rows.[1500000L .. 2500000L]) |> ignore) |> shouldThrow<InvalidOperationException>
+#endif
 
 // ------------------------------------------------------------------------------------------------
 
 [<Test>]
 let ``Can filter virtual frame by a value in a non-index column`` () = 
-  let idx, s1, s2, f = createSimpleTimeFrame()
+  let idx, s1, s2, f = createSimpleTimeFrame() 
   let partsLength =
     "lorem ipsum dolor sit amet consectetur adipiscing elit".Split(' ')
     |> Seq.map (fun s -> f |> Frame.filterRowsBy "S2" s)

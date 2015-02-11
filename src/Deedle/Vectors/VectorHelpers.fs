@@ -76,11 +76,9 @@ let createBoxedVector (vector:IVector<'TValue>) =
         | VectorData.Sequence list ->
             VectorData.Sequence(Seq.map (OptionalValue.map box) list)
       member x.Select(f) = vector.Select(f)
-      member x.SelectMissing(f) = vector.SelectMissing(fun addr v -> f addr (OptionalValue.map box v))
+      member x.SelectMissing(f) = vector.SelectMissing(fun i addr v -> f i addr (OptionalValue.map box v))
       member x.Convert(f, g) = vector.Convert(box >> f, g >> unbox)
     interface IVector with
-      member x.GetAddress(i) = vector.GetAddress(i)
-      member x.GetOffset(a) = vector.GetOffset(a)
       member x.Length = vector.Length
       member x.ObjectSequence = vector.ObjectSequence
       member x.SuppressPrinting = vector.SuppressPrinting
@@ -120,13 +118,11 @@ let lazyMapVector f (vector:IVector<'TValue>) : IVector<'TResult> =
         | VectorData.Sequence list ->
             VectorData.Sequence(Seq.map (OptionalValue.map f) list)
       member x.Select(g) = vector.Select(f >> g)
-      member x.SelectMissing(g) = vector.SelectMissing(fun addr v -> g addr (OptionalValue.map f v))
+      member x.SelectMissing(g) = vector.SelectMissing(fun i addr v -> g i addr (OptionalValue.map f v))
       member x.Convert(h, g) = invalidOp "lazyMapVector: Conversion is not supported"
     interface IWrappedVector<'TResult> with
       member x.UnwrapVector() = unwrapVector.Value
     interface IVector with
-      member x.GetAddress(i) = vector.GetAddress(i)
-      member x.GetOffset(a) = vector.GetOffset(a)
       member x.Length = vector.Length
       member x.ObjectSequence = vector.ObjectSequence
       member x.SuppressPrinting = vector.SuppressPrinting
@@ -327,7 +323,7 @@ let (|AsFloatVector|_|) v : option<IVector<float>> =
 /// internal representation of the frame (specified by `data` and `columnCount`).
 /// The type is generic and automatically converts the values from the underlying
 /// (untyped) vector to the specified type.
-type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddress) =
+type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddress, colAddressAt) =
   
   // Comparison and get hash code follows the ArrayVector implementation
   override vector.Equals(another) = 
@@ -341,7 +337,7 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddre
   member private vector.DataArray =
     Array.init (int data.Length) (fun index -> 
       let v = (vector :> IVector<_>)
-      v.GetValue(v.GetAddress(int64 index)))
+      v.GetValue(colAddressAt (int64 index)))
       
   // In the generic vector implementation, we
   // read data as objects and perform conversion
@@ -360,18 +356,16 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddre
         if value.HasValue && isNA value.Value then OptionalValue.Missing else value
       let data = 
         vector.DataArray 
-        |> Array.mapi (fun idx v -> f (data.GetAddress(int64 idx)) v |> flattenNA)
+        |> Array.mapi (fun idx v -> f (int64 idx) (colAddressAt (int64 idx)) v |> flattenNA)
       builder.CreateMissing(data)
 
     member vector.Select(f) = 
-      (vector :> IVector<_>).SelectMissing(fun _ -> OptionalValue.map f)
+      (vector :> IVector<_>).SelectMissing(fun _ _ -> OptionalValue.map f)
 
     member vector.Convert(f, _) = (vector :> IVector<_>).Select(f)
       
   // Non-generic interface is fully implemented as "virtual"   
   interface IVector with
-    member x.GetAddress(i) = data.GetAddress(i)
-    member x.GetOffset(a) = data.GetOffset(a)
     member x.Length = data.Length
     member x.ObjectSequence = x.DataArray |> Seq.map (OptionalValue.map box)
     member x.SuppressPrinting = false
@@ -382,12 +376,12 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddre
 
 /// Creates a virtual vector for reading "row" of a data frame. 
 // For more information, see the `RowReaderVector<'T>` type.
-let inline createRowReader (data:IVector<IVector>) (builder:IVectorBuilder) rowAddress =
-  RowReaderVector<'T>(data, builder, rowAddress) :> IVector<'T>
+let inline createRowReader (data:IVector<IVector>) (builder:IVectorBuilder) rowAddress colAddressAt =
+  RowReaderVector<'T>(data, builder, rowAddress, colAddressAt) :> IVector<'T>
  
 /// The same as `createRowReader`, but returns `obj` vector as the result
-let inline createObjRowReader data builder addr : IVector<obj> = 
-  createRowReader data builder addr
+let inline createObjRowReader data builder addr colAddressAt : IVector<obj> = 
+  createRowReader data builder addr colAddressAt
 
 /// Helper type that is used via reflection
 type TryValuesHelper =
@@ -507,7 +501,7 @@ open System.Reflection.Emit
 /// (the `ctor` function takes data and address of the row to be wrapped)
 let mapFrameRowVector 
     (ctor:System.Func<IVector[], Addressing.Address, 'TRow>) 
-    length (addressAt:int64 -> Address) (offsetAt:Address -> int64)
+    length (addressAt:int64 -> Address) 
     (data:IVector[])  =
   { new IVector<'TRow> with
       member x.GetValue(a) = OptionalValue(ctor.Invoke(data, a))
@@ -518,8 +512,6 @@ let mapFrameRowVector
       member x.SelectMissing(g) = failwith "mapFrameRowVector: SelectMissing not supported"
       member x.Convert(h, g) = failwith "mapFrameRowVector: Convert not supported"
     interface IVector with
-      member x.GetAddress(offs) = addressAt offs
-      member x.GetOffset(addr) = offsetAt addr
       member x.Length = length
       member x.ObjectSequence = seq { for i in Seq.range 0L (length-1L) -> x.GetObject(addressAt i) }
       member x.SuppressPrinting = false
@@ -706,14 +698,14 @@ let createTypedRowCreator<'TRow> columnKeys =
 /// (which is expected to have only read-only properties). 
 let createTypedRowReader<'TRow> 
     columnKeys (columnIndex:string -> Address) size 
-    addressAt offsetAt (data:IVector<IVector>) = 
+    addressAt (data:IVector<IVector>) = 
   let ctor, meta = createTypedRowCreator<'TRow> columnKeys
   let subData = 
     [| for name, typ in meta ->
          let colVector = data.GetValue(columnIndex name)
          if colVector.Value.ElementType = typ then colVector.Value
          else convertTypeDynamic typ ConversionKind.Flexible colVector.Value |]
-  mapFrameRowVector ctor size addressAt offsetAt subData
+  mapFrameRowVector ctor size addressAt subData
 
 // --------------------------------------------------------------------------------------
 // Vector constructions

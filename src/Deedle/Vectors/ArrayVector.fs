@@ -11,6 +11,9 @@ open Deedle.Internal
 open Deedle.Vectors
 open Deedle.VectorHelpers
 
+/// 
+module Address = LinearAddres
+
 /// Internal representation of the ArrayVector. To make this more 
 /// efficient, we distinguish between "sparse" vectors that have missing 
 /// values and "dense" vectors without N/As.
@@ -242,7 +245,7 @@ type ArrayVectorBuilder() =
           filled |> vectorBuilder.CreateMissing
 
 
-      | Combine(length, vectors, VectorListTransform.Nary (:? IRowReaderTransform)) ->
+      | Combine(length, vectors, VectorListTransform.Nary (:? IRowReaderTransform as irt)) ->
           // OPTIMIZATION: The `IRowReaderTransform` interface is a marker telling us that 
           // we are creating `IVector<obj`> where `obj` is a boxed `IVector<obj>` 
           // representing the row formed by all of the specified vectors combined.
@@ -256,7 +259,7 @@ type ArrayVectorBuilder() =
 
           // Using `createObjRowReader` to get a row reader for a specified address
           let frameData = vectorBuilder.Create data
-          let getRow addr = createObjRowReader frameData vectorBuilder addr
+          let getRow addr = createObjRowReader frameData vectorBuilder addr irt.ColumnAddressAt
 
           // Because Build is `IVector<'T>[] -> IVector<'T>`, there is some nasty boxing.
           // This case is only called with `'T = obj` and so we create `IVector<obj>` containing 
@@ -331,9 +334,6 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
       | VectorNonOptional data when index < data.Length -> OptionalValue(box data.[index])
       | _ -> OptionalValue.Missing
 
-    member vector.GetAddress(index) = vector.GetAddress index
-    member vector.GetOffset(address : Address) = vector.GetOffset(address)
-    
 
   // Implement the typed vector interface
   interface IVector<'T> with
@@ -355,9 +355,9 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
       let data = 
         match representation with
         | VectorNonOptional data ->
-            data |> Array.mapi (fun i v -> f (Address.ofInt i) (OptionalValue v) |> flattenNA)
+            data |> Array.mapi (fun i v -> f (int64 i) (Address.ofInt i) (OptionalValue v) |> flattenNA)
         | VectorOptional data ->
-            data |> Array.mapi (fun i v -> f (Address.ofInt i) v |> flattenNA)
+            data |> Array.mapi (fun i v -> f (int64 i) (Address.ofInt i) v |> flattenNA)
       ArrayVectorBuilder.Instance.CreateMissing(data)
 
     // Select function does not call 'f' on missing values.

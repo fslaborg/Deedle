@@ -469,7 +469,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Accessors and slicing]
   member frame.ColumnsDense = 
-    let newData = data.SelectMissing(fun _ vect -> 
+    let newData = data.SelectMissing(fun _ _ vect -> 
       // Assuming that the data has all values - which should be an invariant...
       let all = rowIndex.Mappings |> Seq.forall (fun (KeyValue(key, addr)) -> vect.Value.GetObject(addr).HasValue)
       if all then OptionalValue(ObjectSeries(rowIndex, boxVector vect.Value, vectorBuilder, indexBuilder))
@@ -484,7 +484,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let emptySeries = Series<_, _>(rowIndex, Vector.ofValues [], vectorBuilder, indexBuilder)
     let res = emptySeries.SelectOptional (fun row ->
       let rowAddress = rowIndex.Locate(row.Key)
-      let rowVec = createObjRowReader data vectorBuilder rowAddress
+      let rowVec = createObjRowReader data vectorBuilder rowAddress columnIndex.AddressAt
       let all = columnIndex.Mappings |> Seq.forall (fun (KeyValue(key, addr)) -> rowVec.GetValue(addr).HasValue)
       if all then OptionalValue(ObjectSeries(columnIndex, rowVec, vectorBuilder, indexBuilder))
       else OptionalValue.Missing )
@@ -501,7 +501,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     // rather than actually creating the vectors, it returns a lazy vector of
     // `IVector<obj>` values created using `createRowReader`.
     let vector =
-      data |> createRowVector vectorBuilder rowIndex.KeyCount columnIndex.KeyCount (fun rowReader ->
+      data |> createRowVector vectorBuilder rowIndex.KeyCount columnIndex.KeyCount columnIndex.AddressAt (fun rowReader ->
         ObjectSeries(columnIndex, rowReader, vectorBuilder, indexBuilder) )
 
     // The following delegates slicing to the frame by calling 
@@ -527,7 +527,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
         failwithf "The interface member '%s' does not exist in the column index." column
       address )
 
-    let vector = rowBuilder rowIndex.KeyCount rowIndex.AddressAt rowIndex.OffsetAt data
+    let vector = rowBuilder rowIndex.KeyCount rowIndex.AddressAt data
     Series<'TRowKey, 'TRow>(rowIndex, vector, vectorBuilder, indexBuilder)
 
   /// [category:Accessors and slicing]
@@ -564,7 +564,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     if index < 0 || int64 index >= rowIndex.KeyCount then
       raise (new ArgumentOutOfRangeException("index", "Index must be positive and smaller than the number of rows."))
     let rowAddress = rowIndex.AddressAt <| int64 index
-    let vector = createRowReader data vectorBuilder rowAddress
+    let vector = createRowReader data vectorBuilder rowAddress columnIndex.AddressAt
     Series(columnIndex, vector, vectorBuilder, indexBuilder)
 
   /// Returns a row with the specieifed key wrapped in `OptionalValue`. When the specified key 
@@ -580,7 +580,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let rowAddress = rowIndex.Locate(rowKey)
     if rowAddress = Address.invalid then OptionalValue.Missing
     else 
-      let vector = createRowReader data vectorBuilder rowAddress
+      let vector = createRowReader data vectorBuilder rowAddress columnIndex.AddressAt
       OptionalValue(Series(columnIndex, vector, vectorBuilder, indexBuilder))
 
   /// Returns a row with the specieifed key wrapped in `OptionalValue`. When the specified key 
@@ -598,7 +598,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let rowAddress = rowIndex.Lookup(rowKey, lookup, fun _ -> true)
     if not rowAddress.HasValue then OptionalValue.Missing
     else 
-      let vector = createRowReader data vectorBuilder (snd rowAddress.Value)
+      let vector = createRowReader data vectorBuilder (snd rowAddress.Value) columnIndex.AddressAt
       OptionalValue(Series(columnIndex, vector, vectorBuilder, indexBuilder))
 
   /// Returns a row with the specieifed key. This method is generic and returns the result 
@@ -637,7 +637,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let rowAddress = rowIndex.Lookup(rowKey, lookup, fun _ -> true)
     if not rowAddress.HasValue then OptionalValue.Missing
     else 
-      let vector = createRowReader data vectorBuilder (snd rowAddress.Value)
+      let vector = createRowReader data vectorBuilder (snd rowAddress.Value) columnIndex.AddressAt
       let row = Series(columnIndex, vector, vectorBuilder, indexBuilder)
       OptionalValue(KeyValuePair(fst rowAddress.Value, row))
   

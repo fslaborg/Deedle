@@ -20,7 +20,7 @@
     <Optimize>false</Optimize>
     <Tailcalls>true</Tailcalls>
     <OutputPath>../../bin/</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>../../bin/Deedle.xml</DocumentationFile>
   </PropertyGroup>
@@ -29,7 +29,7 @@
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
     <OutputPath>../../bin/</OutputPath>
-    <DefineConstants>TRACE;TYPED_ADDRESS</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>../../bin/Deedle.xml</DocumentationFile>
   </PropertyGroup>

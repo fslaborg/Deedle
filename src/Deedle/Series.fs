@@ -304,10 +304,12 @@ and
   ///
   /// [category:Accessors and slicing]
   member x.TryGetAt(index : int) = 
-    x.Vector.GetValue(x.Vector.GetAddress <| int64 index)
+    x.Vector.GetValue(x.Index.AddressAt(int64 index))
+
   /// [category:Accessors and slicing]
   member x.GetKeyAt(index : int) = 
-    x.Index.KeyAt(x.Vector.GetAddress <| int64 index)
+    x.Index.KeyAt(x.Index.AddressAt(int64 index))
+
   /// [category:Accessors and slicing]
   member x.GetAt(index : int) = 
     x.TryGetAt(index).Value
@@ -361,10 +363,10 @@ and
 
   /// [category:Projection and filtering]
   member x.Select<'R>(f:System.Func<KeyValuePair<'K, 'V>, int, 'R>) = 
-    let newVector = vector.SelectMissing(fun addr value ->
+    let newVector = vector.SelectMissing(fun idx addr value ->
       value |> OptionalValue.bind (fun v -> 
         let key = index.KeyAt(addr)
-        try OptionalValue(f.Invoke(KeyValuePair(key, v), int <| index.OffsetAt addr))
+        try OptionalValue(f.Invoke(KeyValuePair(key, v), int idx))
         with :? MissingValueException -> OptionalValue.Missing ))  
 
     let newIndex = indexBuilder.Project(index)
@@ -782,9 +784,9 @@ and
   member x.Realign(newKeys) = 
     let findAll getter = seq {
       for k in newKeys -> 
-        match index.Locate(k) with
-        | addr when addr >= x.Index.AddressAt(0L) -> getter addr
-        | _                    -> OptionalValue.Missing }
+        let addr = index.Locate(k) 
+        if addr = Address.invalid then OptionalValue.Missing
+        else getter addr }
     let newIndex = Index.ofKeys (ReadOnlyCollection.ofSeq newKeys)
     let newVector = findAll x.Vector.GetValue |> Vector.ofOptionalValues
     Series<_,_>(newIndex, newVector, vectorBuilder, indexBuilder)

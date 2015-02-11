@@ -153,24 +153,26 @@ module Ranges =
 type VirtualOrderedIndex<'K when 'K : equality>(source:IVirtualVectorSource<'K>) =
   // TODO: Assert that the source is ordered
   // TODO: Another assumption here is that the source contains no NA values
-  let keyAtOffset i = source.ValueAt(source.AddressAt i).Value
   let keyAtAddr i = source.ValueAt(i).Value
   member x.Source = source
 
   interface IIndex<'K> with
-    member x.AddressAt(offset:int64) = source.AddressAt(offset)
-    member x.OffsetAt(address) = source.IndexAt(address)
     member x.KeyAt(addr) = keyAtAddr addr
+    member x.AddressAt(offs) = source.AddressOperations.AddressOf offs
     member x.KeyCount = source.Length
     member x.IsEmpty = source.Length = 0L
     member x.Builder = VirtualIndexBuilder.Instance :> _
-    member x.KeyRange = keyAtOffset 0L, keyAtOffset (source.Length-1L)
+    member x.KeyRange = 
+      keyAtAddr source.AddressOperations.FirstElement,
+      keyAtAddr source.AddressOperations.LastElement
     
     member x.Keys : ReadOnlyCollection<'K> = 
-      Array.init (int source.Length) (int64 >> source.AddressAt >> keyAtAddr) |> ReadOnlyCollection.ofSeq
+      source.AddressOperations.Range
+      |> Seq.map keyAtAddr
+      |> ReadOnlyCollection.ofSeq
     member x.Mappings = 
-      Seq.range 0L (source.Length - 1L) 
-      |> Seq.map (fun i -> KeyValuePair(keyAtOffset i, source.AddressAt i))
+      source.AddressOperations.Range
+      |> Seq.map (fun addr -> KeyValuePair(keyAtAddr addr, addr))
     member x.IsOrdered = true
     member x.Comparer = Comparer<'K>.Default
 
@@ -184,13 +186,14 @@ type VirtualOrderedIndex<'K when 'K : equality>(source:IVirtualVectorSource<'K>)
 // VirtualOrdinalIndex - ordinal index where the keys are specified by the given 'Ranges'
 // ------------------------------------------------------------------------------------------------
 
-and VirtualOrdinalIndex(ranges:Ranges) =
+#if VIRTUAL_ORDINAL_INDEX
+and VirtualOrdinalIndex(ranges:Ranges, addressOf:int64 -> Address, offsetOf:Address -> int64) =
   member x.Ranges = ranges
+  member x.AddressOf = addressOf
+  member x.OffsetOf = offsetOf
   interface IIndex<int64> with
-    member x.AddressAt(offset:int64) = Address.ofInt64 offset
-    member x.OffsetAt(address:Address) = Address.asInt64 address
     member x.KeyAt(addr) = 
-      let addr = Address.asInt64 addr
+      let addr = offsetOf addr
       if addr < 0L || addr >= ranges.Size then invalidArg "addr" "Out of range"
       else Ranges.keyOfAddress addr ranges
     member x.KeyCount = ranges.Size
@@ -199,18 +202,17 @@ and VirtualOrdinalIndex(ranges:Ranges) =
     member x.KeyRange = Ranges.keyRange ranges
     member x.Keys = Ranges.keys ranges |> ReadOnlyCollection.ofArray
     member x.Mappings = 
-      seq { let address = ref (Address.ofInt64 0L)
-            for l, h in ranges.Ranges do
+      seq { for l, h in ranges.Ranges do
               for n in l .. h do 
-                yield KeyValuePair(n, address.Value)
-                address := Address.increment address.Value }
+                yield KeyValuePair(n, addressOf n) }
     member x.IsOrdered = true
     member x.Comparer = Comparer<int64>.Default
-    member x.Locate(key) = Address.ofInt64 (Ranges.addressOfKey key ranges)
+    member x.Locate(key) = addressing.AddressOf (Ranges.addressOfKey key ranges)
     member x.Lookup(key, semantics, check) = 
-      Ranges.lookup key semantics (Address.ofInt64 >> check) ranges 
+      Ranges.lookup key semantics (addressing.AddressOf >> check) ranges 
       |> OptionalValue.map (fun (key, addr) ->
-          key, Address.ofInt64 addr)
+          key, addressing.AddressOf addr)
+#endif
 
 // ------------------------------------------------------------------------------------------------
 // VirtualIndexBuilder - implements operations on VirtualOrderedIndex and VirtualOrdinalIndex
@@ -245,10 +247,12 @@ and VirtualIndexBuilder() =
           | :? VirtualOrderedIndex<'K> as idx, vec -> Some(idx.Source, vec)
           | _ -> None)
     
+#if VIRTUAL_ORDINAL_INDEX
       let (|OrdinalSources|_|) : list<SeriesConstruction<_>> -> _ = 
         List.tryChooseBy (function
           | :? VirtualOrdinalIndex as idx, vec -> Some(idx.Ranges, vec)
           | _ -> None)
+#endif
 
       match scs with
       | OrderedSources sources ->
@@ -257,16 +261,19 @@ and VirtualIndexBuilder() =
           let newVector = sources |> Seq.map snd |> Seq.reduce (fun a b -> Vectors.Append(a, b))
           VirtualOrderedIndex(newIndex) :> _, newVector
 
+#if VIRTUAL_ORDINAL_INDEX
       | OrdinalSources sources -> 
           let newRanges = Ranges.Combine (List.map fst sources)
           let newVector = sources |> Seq.map snd |> Seq.reduce (fun a b -> Vectors.Append(a, b))
-          unbox (VirtualOrdinalIndex(newRanges)), newVector
-          
+          unbox (VirtualOrdinalIndex(newRanges, addressing)), newVector
+#endif          
       | _ -> 
           for index, vector in scs do 
             match index with
             | :? VirtualOrderedIndex<'K>
+#if VIRTUAL_ORDINAL_INDEX
             | :? VirtualOrdinalIndex -> failwith "TODO: Merge - ordered/ordinal index - avoid materialization!"
+#endif
             | _ -> ()
           baseBuilder.Merge(scs, transform)
 
@@ -278,15 +285,16 @@ and VirtualIndexBuilder() =
         | _ -> searchVector
 
       match index, searchVector with
+#if VIRTUAL_ORDINAL_INDEX
       | (:? VirtualOrdinalIndex as index), (:? VirtualVector<'V> as searchVector) ->
           let mapping = searchVector.Source.LookupRange(searchValue)
           let count =
             match mapping with
             | VectorRange.Custom(iv) -> iv.Count
-            | VectorRange.Range(lo, hi) -> (Address.asInt64 hi) - (Address.asInt64 lo) + 1L
+            | VectorRange.Range(lo, hi) -> failwith "TODO: (Address.asInt64 hi) - (Address.asInt64 lo) + 1L"
           let newIndex = VirtualOrdinalIndex(Ranges.Create [ 0L, count-1L ])
           unbox<IIndex<'K>> newIndex, GetRange(vector, mapping)
-
+#endif
       | (:? VirtualOrderedIndex<'K> as index), (:? VirtualVector<'V> as searchVector) ->
           let mapping = searchVector.Source.LookupRange(searchValue)
           let newIndex = VirtualOrderedIndex(index.Source.GetSubVector(mapping))
@@ -309,19 +317,26 @@ and VirtualIndexBuilder() =
 
     member x.Reindex(index1:IIndex<'K>, index2:IIndex<'K>, semantics, vector, cond) = 
       match index1, index2 with
+#if VIRTUAL_ORDINAL_INDEX
       | (:? VirtualOrdinalIndex as index1), (:? VirtualOrdinalIndex as index2) when index1.Ranges = index2.Ranges -> 
           vector           
+#endif
       | :? VirtualOrderedIndex<'K>, _ 
       | _, :? VirtualOrderedIndex<'K>
+#if VIRTUAL_ORDINAL_INDEX
       | :? VirtualOrdinalIndex, _ 
-      | _, :? VirtualOrdinalIndex ->
+      | _, :? VirtualOrdinalIndex 
+#endif      
+          ->
           failwith "TODO: Reindex - ordered/ordinal index - avoid materialization!"
       | _ -> baseBuilder.Reindex(index1, index2, semantics, vector, cond)
 
     member x.DropItem((index:IIndex<'K>, vector), key) = 
       match index with
       | :? VirtualOrderedIndex<'K>
+#if VIRTUAL_ORDINAL_INDEX
       | :? VirtualOrdinalIndex -> failwith "TODO: DropItem - ordered/ordinal index - avoid materialization!"
+#endif
       | _ -> baseBuilder.DropItem((index, vector), key)
 
     member x.Resample(index, keys, close, vect, selector) = failwith "Resample"
@@ -334,6 +349,7 @@ and VirtualIndexBuilder() =
           let newVector = Vectors.GetRange(vector, Vectors.Range(lo, hi))
           newIndex :> IIndex<'K>, newVector
 
+#if VIRTUAL_ORDINAL_INDEX
       | :? VirtualOrdinalIndex when hi < lo -> emptyConstruction()
       | :? VirtualOrdinalIndex as index ->
           // TODO: range checks
@@ -342,6 +358,7 @@ and VirtualIndexBuilder() =
           let keyLo, keyHi = (index :> IIndex<_>).KeyRange
           let newIndex = VirtualOrdinalIndex(Ranges.Create [ keyLo + (Address.asInt64 lo), keyLo + (Address.asInt64 hi) ]) 
           unbox<IIndex<'K>> newIndex, newVector
+#endif
       | _ -> 
           baseBuilder.GetAddressRange((index, vector), (lo, hi))
 
@@ -349,6 +366,7 @@ and VirtualIndexBuilder() =
 
     member x.AsyncMaterialize( (index:IIndex<'K>, vector) ) = 
       match index with
+#if VIRTUAL_ORDINAL_INDEX
       | :? VirtualOrdinalIndex -> 
           let newIndex = Linear.LinearIndexBuilder.Instance.Create(index.Keys, Some index.IsOrdered)
           let cmd = Vectors.CustomCommand([vector], fun vectors ->
@@ -359,6 +377,7 @@ and VirtualIndexBuilder() =
                   |> ArrayVector.ArrayVectorBuilder.Instance.CreateMissing  :> IVector }
             |> (List.head vectors).Invoke)
           async.Return(newIndex), cmd
+#endif
       | _ -> async.Return(index), vector
 
     member x.GetRange<'K when 'K : equality>( (index, vector), (optLo:option<'K * _>, optHi:option<'K * _>)) = 
@@ -372,13 +391,15 @@ and VirtualIndexBuilder() =
                 | OptionalValue.Present(_, addr) -> addr
                 | _ -> bound // TODO: Not sure what this means!
 
-          let loIdx, hiIdx = getRangeKey (Address.ofInt64 0L) Lookup.Greater optLo, getRangeKey (Address.ofInt64(index.Source.Length-1L)) Lookup.Smaller optHi
+          let loIdx = getRangeKey index.Source.AddressOperations.FirstElement Lookup.Greater optLo
+          let hiIdx = getRangeKey index.Source.AddressOperations.LastElement Lookup.Smaller optHi
 
           // TODO: probably range checks
           let newVector = Vectors.GetRange(vector, Vectors.Range(loIdx, hiIdx))
           let newIndex = VirtualOrderedIndex(index.Source.GetSubVector(Range(loIdx, hiIdx)))
           unbox<IIndex<'K>> newIndex, newVector
 
+#if VIRTUAL_ORDINAL_INDEX
       | :? VirtualOrdinalIndex as ordIndex & (:? IIndex<int64> as index) -> 
           let getRangeKey proj next = function
             | None -> proj index.KeyRange 
@@ -392,5 +413,6 @@ and VirtualIndexBuilder() =
           let newVector = Vectors.GetRange(vector, range)
           let newIndex = VirtualOrdinalIndex(Ranges.Create [ loKey, hiKey ]) 
           unbox<IIndex<'K>> newIndex, newVector
+#endif
       | _ -> 
           baseBuilder.GetRange((index, vector), (optLo, optHi))

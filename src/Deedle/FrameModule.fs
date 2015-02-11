@@ -1317,7 +1317,7 @@ module Frame =
     let hasSomeFlagVector = 
       frame.Data 
       |> createRowVector 
-          frame.VectorBuilder frame.RowIndex.KeyCount frame.ColumnIndex.KeyCount 
+          frame.VectorBuilder frame.RowIndex.KeyCount frame.ColumnIndex.KeyCount frame.ColumnIndex.AddressAt
           (fun rowReader -> rowReader.DataSequence |> Seq.exists (fun opt -> opt.HasValue))
     // Collect all rows that have at least some values
     let newRowIndex, cmd = 

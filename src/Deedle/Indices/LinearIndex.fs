@@ -17,6 +17,9 @@ open Deedle.VectorHelpers
 open System.Diagnostics
 open System.Collections.ObjectModel
 
+/// 
+module Address = LinearAddres
+
 /// An index that maps keys `K` to offsets `Address`. The keys cannot be duplicated.
 /// The construction checks if the keys are ordered (using the provided or the default
 /// comparer for `K`) and disallows certain operations on unordered indices.
@@ -88,8 +91,8 @@ type LinearIndex<'K when 'K : equality>
     member x.Keys = keys
     member x.KeyCount = int64 keys.Count
     member x.Builder = builder
-    member x.AddressAt(offset) = x.AddressAt(offset)
-    member x.OffsetAt(address) = x.OffsetAt(address)
+    
+    member x.AddressAt(idx) = Address.ofInt64 idx
 
     /// Perform reverse lookup and return key for an address
     member x.KeyAt(address) = keys.[Address.asInt address]
@@ -189,9 +192,8 @@ type LinearRangeIndex<'K when 'K : equality>
   member inline private x.OffsetAt(address) = Address.asInt64 address
 
   interface IIndex<'K> with
-    member x.AddressAt(offset) = x.AddressAt(offset)
-    member x.OffsetAt(address) = x.OffsetAt(address)
     // Operations that can be implemented without evaluating the index
+    member x.AddressAt(idx) = Address.ofInt64 idx
     member x.KeyCount = endAddress - startAddress + 1L
     member x.KeyAt(address) = index.KeyAt(Address.ofInt64 (startAddress + (Address.asInt64 address)))
     member x.IsEmpty = endAddress < startAddress

@@ -1314,7 +1314,7 @@ module Series =
   let internal sortByCommand (f:'T -> 'V) (series:Series<'K, 'T>) =
     let index = series.Index
     let vector = series.Vector
-    let fseries = Series(index, vector.SelectMissing(fun _ -> OptionalValue.map f), series.VectorBuilder, series.IndexBuilder)
+    let fseries = Series(index, vector.SelectMissing(fun _ _ -> OptionalValue.map f), series.VectorBuilder, series.IndexBuilder)
     fseries |> sortWithCommand compare
 
   /// Returns a new series, containing the observations of the original series sorted using
