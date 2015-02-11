@@ -64,6 +64,7 @@
     <Compile Include="LazySeries.fs" />
     <Compile Include="Ranges.fs" />
     <Compile Include="VirtualFrame.fs" />
+    <Compile Include="VirtualPartitioned.fs" />
     <None Include="paket.references" />
   </ItemGroup>
   <PropertyGroup>
