@@ -65,7 +65,7 @@ namespace Deedle.CSharp.Tests
     {
       var df = Frame.FromColumns(new[] {
         KeyValue.Create(1, (new SeriesBuilder<string>() { { "A", true } }).Series),
-        KeyValue.Create(1, (new SeriesBuilder<string>() { { "B", true } }).Series)
+        KeyValue.Create(2, (new SeriesBuilder<string>() { { "B", true } }).Series)
       });
       Assert.Throws<InvalidOperationException>(() =>
         df.ToArray2D<bool>());
@@ -76,7 +76,7 @@ namespace Deedle.CSharp.Tests
     {
       var df = Frame.FromColumns(new[] {
         KeyValue.Create(1, (new SeriesBuilder<string>() { { "A", true } }).Series),
-        KeyValue.Create(1, (new SeriesBuilder<string>() { { "B", true } }).Series)
+        KeyValue.Create(2, (new SeriesBuilder<string>() { { "B", true } }).Series)
       });
       var data = df.ToArray2D<bool>(true);
       var bools = data.OfType<bool>().ToArray();
