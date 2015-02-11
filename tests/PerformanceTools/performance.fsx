@@ -1,14 +1,17 @@
 ﻿#I "../../bin"
 #I "../../packages/FAKE/tools"
-#load "Deedle.fsx"
+#r "Deedle.dll"
 #r "FakeLib.dll"
 #r "bin/Deedle.PerfTest.dll"
+#if INTERACTIVE_IN_VS
+#load "Deedle.fsx" // Does not work when invoked via FAKE
+#endif
 open System
 open System.IO
 open Fake
 open Deedle
 
-let baseline = "0.9.12"
+let baseline = "1.0.0"
 let builds = __SOURCE_DIRECTORY__ @@ "../Performance/builds/"
 let outFile = __SOURCE_DIRECTORY__ @@ "../Performance/output.csv"
 let sources = 

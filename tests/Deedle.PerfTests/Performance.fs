@@ -69,6 +69,10 @@ type Deedle.Series<'K, 'V when 'K : equality> with
 // Performance tests
 // ------------------------------------------------------------------------------------------------
 
+#if BELOW_0_9_13
+#else
+#if BELOW_1_1_1
+#else
 type ITitanicRow =
   abstract PassengerId : int
   abstract Survived : bool
@@ -95,6 +99,8 @@ let ``Sum column using typed rows with conversion`` () =
     for i in fst rows.KeyRange .. snd rows.KeyRange do
       c <- c + rows.[i].Pclass 
     c |> shouldEqual 2057.0
+#endif
+#endif
 
 [<Test; PerfTest(Iterations=5)>]
 let ``Sum column using untyped rows`` () = 
@@ -403,6 +409,10 @@ let ``Drop sparse rows from a large frame`` () =
   let a = bigRowSparseFrame |> Frame.dropSparseRows
   a.RowCount |> shouldEqual 5001
 
+#if BELOW_0_9_13
+#else
+#if BELOW_1_1_1
+#else
 [<Test;PerfTest(Iterations=10)>]
 let ``Drop sparse columns from a small frame`` () =
   let a = Array.init 1000 (fun _ -> smallColSparseFrame |> Frame.dropSparseCols) 
@@ -412,8 +422,5 @@ let ``Drop sparse columns from a small frame`` () =
 let ``Drop sparse columns from a large frame`` () =
   let a = bigColSparseFrame |> Frame.dropSparseCols
   a.ColumnCount |> shouldEqual 18
-
-
-
-
-
+#endif
+#endif
