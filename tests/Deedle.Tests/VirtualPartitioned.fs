@@ -23,7 +23,6 @@ open Deedle.Vectors.Virtual
 /// Represents the shape of a partitioned data store
 type PartitionShape = int[]
 
-
 /// Encoding and decoding int32 pairs as int64 values
 module Address =
   let ofIntPair (part:int, idx:int) : Address = 
@@ -44,7 +43,7 @@ module Address =
 /// together with a range in that global space (and a 
 /// function for generating values for testing purposes)
 type PartitionSource<'T>
-    ( shape:PartitionShape, range, accessListRef, 
+    ( shape:PartitionShape, range, accessListRef,
       valueAt:int -> int -> 'T, partOf : option<'T -> int>,
       asLong:option<'T -> int64> ) = 
   member x.Shape = shape
@@ -72,7 +71,7 @@ type PartitionSource<'T>
     PartitionSource(shape, range, ref [], valueAt, Some partOf, Some asLong)
 
 /// Address operations are associated to a sub-range of the global address space
-type AddressOperations(shape:PartitionShape, range) = 
+type AddressOperations(shape:PartitionShape, range, rangeListRef) = 
   
   // Equality checks that shape & sub-range are the same
   member x.Shape = shape
@@ -92,6 +91,7 @@ type AddressOperations(shape:PartitionShape, range) =
     member x.Range = 
       let (loPart, loIdx), (hiPart, hiIdx) = Address.asIntRange range
       seq { for pi in loPart .. hiPart do
+              rangeListRef := pi::rangeListRef.Value
               let lo, hi = 
                 if pi = loPart && pi = hiPart then loIdx, hiIdx
                 elif pi = loPart then loIdx, shape.[pi]-1
@@ -131,9 +131,11 @@ type AddressOperations(shape:PartitionShape, range) =
       
 
 /// Vector source that represents a range as determined by the 'source'
-type TrackingSource<'T>(source:PartitionSource<'T>) = 
-  let addressing = AddressOperations(source.Shape, source.Range) :> IAddressOperations
+type TrackingSource<'T>(source:PartitionSource<'T>, ?rangeListRef) = 
+  let rangeListRef = defaultArg rangeListRef (ref [])
+  let addressing = AddressOperations(source.Shape, source.Range, rangeListRef) :> IAddressOperations
   member x.AccessList = source.AccessListRef.Value
+  member x.RangeAccessList = rangeListRef.Value
   interface IVirtualVectorSource with
     member x.Length = addressing.Range |> Seq.length |> int64
     member x.ElementType = typeof<'T>
@@ -169,15 +171,48 @@ type TrackingSource<'T>(source:PartitionSource<'T>) =
     member x.ValueAt addr = source.ValueAt(Address.asIntPair addr)
     member x.GetSubVector(range) = 
       match range with 
-      | Vectors.Range(lo, hi) ->
+      | AddressRange.Start(count) ->
+          let loPart, loIdx = Address.asIntPair (fst source.Range)
+          let mutable hiPart, hiIdx = loPart, loIdx
+          let mutable count = count
+          while count > 0L do
+            if count <= int64 (source.Shape.[hiPart]-hiIdx) then
+              hiIdx <- int (count - 1L)
+              count <- 0L
+            else
+              count <- count - int64 source.Shape.[hiPart]
+              hiIdx <- 0
+              hiPart <- hiPart + 1
+          let ps = source.With(newRange = (Address.ofIntPair(loPart, loIdx), Address.ofIntPair(hiPart, hiIdx)))
+          TrackingSource<'T>(ps, rangeListRef) :> IVirtualVectorSource<_>
+
+      | AddressRange.End(count) ->
+          let hiPart, hiIdx = Address.asIntPair (snd source.Range)
+          let mutable loPart, loIdx = hiPart, hiIdx
+          let mutable count = count
+          while count > 0L do
+            if count <= int64 (loIdx+1) then
+              loIdx <- loIdx+1-(int count)
+              count <- 0L
+            else
+              count <- count - int64 (loIdx+1)
+              loPart <- loPart - 1
+              loIdx <- source.Shape.[loPart]-1
+          let ps = source.With(newRange = (Address.ofIntPair(loPart, loIdx), Address.ofIntPair(hiPart, hiIdx)))
+          TrackingSource<'T>(ps, rangeListRef) :> IVirtualVectorSource<_>
+
+      | AddressRange.Fixed(lo, hi) ->
           let ps = source.With(newRange = (lo, hi))
-          TrackingSource<'T>(ps) :> IVirtualVectorSource<_>
+          TrackingSource<'T>(ps, rangeListRef) :> IVirtualVectorSource<_>
       | _ -> failwithf "GetSubVector - custom %A" range
 
 
 /// Returns accessed partitions of a tracking source
 let accessedPartitions (src:TrackingSource<_>) =
   src.AccessList |> Seq.map fst |> Seq.distinct |> Seq.sort |> List.ofSeq
+/// Returns partitions that were accessed via 'Range'
+let accessedRangePartitions (src:TrackingSource<_>) =
+  src.RangeAccessList |> Seq.distinct |> Seq.sort |> List.ofSeq
 
 let date part idx = 
   DateTimeOffset(DateTime(2000 + part, 1, 1).AddHours(float idx))
@@ -214,6 +249,12 @@ let ``Printing series (with small partitions) accesses border partitions`` () =
   ts.Format() |> should containStr "998000005"
   ts.Format() |> should containStr "999000009"
   accessedPartitions idxSrc |> shouldEqual <| [0; 1; 998; 999]
+
+[<Test>]
+let ``Printing series does not require counting items in partitions``() = 
+  let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 100)
+  ts.Format() |> ignore
+  accessedRangePartitions idxSrc |> shouldEqual <| [0; 999]
 
 [<Test>]
 let ``Printing series (with large partitions) accesses border partitions`` () =

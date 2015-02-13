@@ -84,8 +84,9 @@ type Virtual() =
 #endif
 
   static member CreateSeries(indexSource:IVirtualVectorSource<_>, valueSource:IVirtualVectorSource<_>) =
-    if valueSource.Length <> indexSource.Length then
-      invalidOp "CreateSeries: Index and value source should have the same length"
+    // TODO: Check this in some better way?
+    // if valueSource.Length <> indexSource.Length then
+    //  invalidOp "CreateSeries: Index and value source should have the same length"
 
     let vector = VirtualVector(valueSource)
     let index = VirtualOrderedIndex(indexSource)

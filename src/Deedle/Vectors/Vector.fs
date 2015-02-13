@@ -122,20 +122,6 @@ open Deedle
 open Deedle.Internal
 open Deedle.Addressing
 
-/// Represents a range inside a vector. This can be either a continuous range as 
-/// specified by `Range` or a custom range that can be turned into a sequence of indices. 
-type VectorRange =
-  | Range of Address * Address
-  | Custom of IVectorRange
-
-/// A sequence of indicies together with the total number. Use `VectorRange.ofSeq` to
-/// create one from a sequence. This can be implemented by concrete vector/index 
-/// builders to allow further optimizations (e.g. when the underlying source directly
-/// supports range operations)
-and IVectorRange = 
-  inherit seq<Address>
-  abstract Count : int64
-
 /// Representes a "variable" in the mini-DSL below
 type VectorHole = int
 
@@ -211,10 +197,10 @@ type VectorConstruction =
 
   /// Drop the specified range of addresses from the vector 
   /// and return a new vector that excludes the range
-  | DropRange of VectorConstruction * VectorRange 
+  | DropRange of VectorConstruction * AddressRange 
 
   /// Get the specified range of addresses from the vector and return it as a new vector
-  | GetRange of VectorConstruction * VectorRange
+  | GetRange of VectorConstruction * AddressRange 
 
   /// Append two vectors after each other
   | Append of VectorConstruction * VectorConstruction

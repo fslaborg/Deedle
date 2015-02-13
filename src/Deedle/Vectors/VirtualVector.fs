@@ -51,7 +51,7 @@ type IVirtualVectorSource<'V> =
   ///
   /// If the data source has some "clever" representation of the range, it can return
   /// `Custom of IVectorRange` - which is then passed to `GetSubVector`.
-  abstract LookupRange : 'V -> VectorRange
+  abstract LookupRange : 'V -> AddressRange
 
   /// Find the address associated with the specified value. This is used by the 
   /// index and it has the same signature as `IIndex<'K>.Lookup` (see `Index.fs`).
@@ -59,7 +59,7 @@ type IVirtualVectorSource<'V> =
 
   /// Returns a virtual source for the specified range (used when performing splicing on the 
   /// frame/series, both using address or using keys - which are obtained using Lookup)
-  abstract GetSubVector : VectorRange -> IVirtualVectorSource<'V>
+  abstract GetSubVector : AddressRange -> IVirtualVectorSource<'V>
 
   /// Merge the current source with a list of other sources
   /// (used by functions such as `Frame.merge` and `Frame.mergeAll`)
@@ -179,13 +179,13 @@ module VirtualVectorSource =
             |> Seq.map snd
             |> Array.ofSeq
 
-          { new IVectorRange with
+          { new IAddressRange with
               member x.Count = scanIndices |> Seq.length |> int64 // TODO: SLOW!
             interface seq<Address> with 
               member x.GetEnumerator() = (scanIndices :> seq<_>).GetEnumerator() // TODO: SLow
             interface System.Collections.IEnumerable with
               member x.GetEnumerator() = scanIndices.GetEnumerator() } //TODO: Slow
-          |> VectorRange.Custom
+          |> AddressRange.Custom
 
         member x.LookupValue(v, l, c) = 
           withReverseLookup (fun g ->

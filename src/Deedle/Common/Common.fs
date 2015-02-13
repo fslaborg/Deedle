@@ -622,7 +622,15 @@ module List =
 /// This module contains additional functions for working with sequences. 
 /// `Deedle.Internals` is opened, it extends the standard `Seq` module.
 module Seq = 
-  
+
+  /// Skip at most the specified number of elements. This is like
+  /// `Seq.skip`, but it does not throw when the sequence is shorter.
+  let skipAtMost count (input:seq<_>) = 
+    seq { use en = input.GetEnumerator()
+          for n in 0 .. count-1 do en.MoveNext() |> ignore
+          while en.MoveNext() do
+            yield en.Current }
+
   /// A helper function that generates a sequence for the specified range of
   /// int or int64 values. This is notably faster than using `lo .. hi`.
   let inline range (lo:^T) (hi:^T) = 

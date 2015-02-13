@@ -12,7 +12,7 @@ open Deedle.Vectors
 open Deedle.VectorHelpers
 
 /// 
-module Address = LinearAddres
+module Address = LinearAddress
 
 /// Internal representation of the ArrayVector. To make this more 
 /// efficient, we distinguish between "sparse" vectors that have missing 
@@ -20,6 +20,8 @@ module Address = LinearAddres
 type internal ArrayVectorData<'T> =
   | VectorOptional of OptionalValue<'T>[]
   | VectorNonOptional of 'T[]
+  member x.Length = 
+    match x with VectorNonOptional n -> n.Length | VectorOptional n -> n.Length
 
 // --------------------------------------------------------------------------------------
 
@@ -143,36 +145,38 @@ type ArrayVectorBuilder() =
           vectorBuilder.CreateMissing(newData)
 
       | DropRange(source, range) ->
-          match range with
-          | Range(loRange, hiRange) ->
+          let built = builder.buildArrayVector source arguments
+          match range.AsAbsolute(int64 built.Length) with
+          | Choice1Of2(loRange, hiRange) ->
               // Create a new array without the specified range. For Optional, call the 
               // builder recursively as this may turn Optional representation to NonOptional
               let loRange, hiRange = Address.asInt loRange, Address.asInt hiRange
-              match builder.buildArrayVector source arguments with 
+              match built with 
               | VectorOptional data -> 
                   vectorBuilder.CreateMissing(Array.dropRange loRange hiRange data) 
               | VectorNonOptional data -> 
                   VectorNonOptional(Array.dropRange loRange hiRange data) |> av
           
-          | Custom range ->
+          | Choice2Of2 range ->
               // NOTE: This is never currently needed in Deedle 
               // (DropRange is only used when dropping a single item at the moment)
               failwith "DropRange does not support Custom ranges at he moment"
 
       | GetRange(source, range) ->
-          match range with
-          | Range(loRange, hiRange) ->
+          let built = builder.buildArrayVector source arguments
+          match range.AsAbsolute(int64 built.Length) with
+          | Choice1Of2(loRange, hiRange) ->
               // Get the specified sub-range. For Optional, call the builder recursively 
               // as this may turn Optional representation to NonOptional
               let loRange, hiRange = Address.asInt loRange, Address.asInt hiRange
               if hiRange < loRange then VectorNonOptional [||] |> av else
-              match builder.buildArrayVector source arguments with 
+              match built with 
               | VectorOptional data -> 
                   vectorBuilder.CreateMissing(data.[loRange .. hiRange])
               | VectorNonOptional data -> 
                   VectorNonOptional(data.[loRange .. hiRange]) |> av
 
-          | Custom(indices) ->
+          | Choice2Of2(indices) ->
               // Get vector with the specified indices. Optional may turn to 
               // NonOptional, but NonOptional will stay NonOptional
               match builder.buildArrayVector source arguments with 

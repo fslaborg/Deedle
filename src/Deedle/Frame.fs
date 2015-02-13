@@ -1237,17 +1237,18 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     Frame<_, _>(newRowIndex, columnIndex, newData, indexBuilder, vectorBuilder)
 
   /// Internal helper used by `skip`, `take`, etc.
-  member frame.GetAddressRange(lo, hi) = 
-    let newRowIndex, cmd = indexBuilder.GetAddressRange((frame.RowIndex, Vectors.Return 0), (lo, hi))
+  member frame.GetAddressRange(range) = 
+    let newRowIndex, cmd = indexBuilder.GetAddressRange((frame.RowIndex, Vectors.Return 0), range)
     let newData = frame.Data.Select(VectorHelpers.transformColumn vectorBuilder cmd)
     Frame<_, _>(newRowIndex, columnIndex, newData, indexBuilder, vectorBuilder)
 
   member private frame.GetPrintedRowObservations(startCount:int, endCount:int) = 
-    if frame.RowIndex.KeyCount <= int64 (startCount + endCount) then
+    let smaller = frame.RowIndex.Mappings |> Seq.skipAtMost (startCount+endCount) |> Seq.isEmpty
+    if smaller then
       seq { for obs in frame.Rows.Observations -> Choice1Of3(obs.Key, obs.Value) } 
     else
-      let starts = frame.GetAddressRange(frame.RowIndex.AddressAt(0L), frame.RowIndex.AddressAt(int64 (startCount - 1)))
-      let ends = frame.GetAddressRange(frame.RowIndex.AddressAt(frame.RowIndex.KeyCount - int64 endCount), frame.RowIndex.AddressAt(frame.RowIndex.KeyCount - 1L))
+      let starts = frame.GetAddressRange(AddressRange.Start(int64 startCount))
+      let ends = frame.GetAddressRange(AddressRange.End(int64 endCount))
       seq { for obs in starts.Rows.Observations do yield Choice1Of3(obs.Key, obs.Value)
             yield Choice2Of3()
             for obs in ends.Rows.Observations do yield Choice1Of3(obs.Key, obs.Value) }
@@ -1304,10 +1305,10 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     try
       // Get the number of levels in column/row index
       let colLevels = 
-        if frame.ColumnIndex.KeyCount = 0L then 1 
+        if frame.ColumnIndex.IsEmpty then 1 
         else CustomKey.Get(frame.ColumnIndex.KeyAt(frame.ColumnIndex.AddressAt(0L))).Levels
       let rowLevels = 
-        if frame.RowIndex.KeyCount = 0L then 1 
+        if frame.RowIndex.IsEmpty then 1 
         else CustomKey.Get(frame.RowIndex.KeyAt(frame.RowIndex.AddressAt(0L))).Levels
 
       /// Format type with a few special cases for common types

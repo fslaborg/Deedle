@@ -12,6 +12,7 @@ open System
 open FsUnit
 open NUnit.Framework
 open Deedle
+open Deedle.Internal
 open Deedle.Addressing
 open Deedle.Virtual
 open Deedle.Vectors.Virtual
@@ -22,14 +23,14 @@ open Deedle.Vectors.Virtual
 
 type LinearSubRange =
   { Offset : int; Step : int }
-  interface Vectors.IVectorRange with
+  interface IAddressRange with
     member x.Count = failwith "Count not supported"
   interface seq<Address> with
     member x.GetEnumerator() : System.Collections.Generic.IEnumerator<Address> = failwith "hard!"
   interface System.Collections.IEnumerable with
     member x.GetEnumerator() : System.Collections.IEnumerator = failwith "hard!"
 
-module Address = LinearAddres
+module Address = LinearAddress
 
 type AddressOperations(ranges:(int64*int64) list, length) = 
   member x.Ranges = ranges
@@ -115,8 +116,8 @@ type TrackingSource<'T>(ranges:(int64*int64) list, valueAt:int64 -> 'T, ?asLong:
       | Choice1Of2 oor -> failwith <| "ValueAt: out of range: " + oor.ToString()
 
     member x.GetSubVector(range) = 
-      match range with
-      | Vectors.Range (nlo, nhi) ->
+      match range.AsAbsolute(x.Length) with
+      | Choice1Of2(nlo, nhi) ->
 //          let nlo = Address.asInt64 nlo
 //          let nhi = Address.asInt64 nhi
           if nhi < nlo then invalidOp "hi < lo"
@@ -143,7 +144,7 @@ type TrackingSource<'T>(ranges:(int64*int64) list, valueAt:int64 -> 'T, ?asLong:
             ( [absLo, absHi], valueAt, ?asLong=asLong, HasMissing = x.HasMissing, IsTracking = x.IsTracking, 
 
               LookupListCell = x.LookupListCell, AccessListCell = x.AccessListCell ) :> _
-      | Vectors.Custom (:? LinearSubRange as lr) ->
+      | Choice2Of2(:? LinearSubRange as lr) ->
           let lo, hi = 
             match ranges with
             | [lo, hi] -> lo, hi

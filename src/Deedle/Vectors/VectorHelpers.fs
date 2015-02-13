@@ -34,16 +34,16 @@ let prettyPrintVector (vector:IVector<'T>) =
   | VectorData.SparseList list -> printSequence "sparse" (Seq.map (fun v -> v.ToString()) list) 
   | VectorData.Sequence list -> printSequence "seq" (Seq.map (fun v -> v.ToString()) list) 
 
-type VectorRange with
+type AddressRange with
   /// Creates a `Custom` range from a sequence of indices
   static member ofSeq(indices : seq<Address>, count) =
-    { new IVectorRange with
+    { new IAddressRange with
         member x.Count = count
       interface seq<Address> with 
         member x.GetEnumerator() = (indices :> seq<_>).GetEnumerator() 
       interface System.Collections.IEnumerable with
         member x.GetEnumerator() = indices.GetEnumerator() :> _ } 
-    |> VectorRange.Custom
+    |> AddressRange.Custom
 
 // --------------------------------------------------------------------------------------
 // Derived/wrapped implementations of the IVector<'T> interface

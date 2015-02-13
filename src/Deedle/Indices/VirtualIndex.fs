@@ -341,12 +341,12 @@ and VirtualIndexBuilder() =
 
     member x.Resample(index, keys, close, vect, selector) = failwith "Resample"
 
-    member x.GetAddressRange<'K when 'K : equality>((index, vector), (lo, hi)) = 
+    member x.GetAddressRange<'K when 'K : equality>((index, vector), range) = 
       match index with
       | :? VirtualOrderedIndex<'K> as index ->
           // TODO: Range checks
-          let newIndex = VirtualOrderedIndex(index.Source.GetSubVector(Range(lo, hi)))
-          let newVector = Vectors.GetRange(vector, Vectors.Range(lo, hi))
+          let newIndex = VirtualOrderedIndex(index.Source.GetSubVector(range))
+          let newVector = Vectors.GetRange(vector, range)
           newIndex :> IIndex<'K>, newVector
 
 #if VIRTUAL_ORDINAL_INDEX
@@ -360,7 +360,7 @@ and VirtualIndexBuilder() =
           unbox<IIndex<'K>> newIndex, newVector
 #endif
       | _ -> 
-          baseBuilder.GetAddressRange((index, vector), (lo, hi))
+          baseBuilder.GetAddressRange((index, vector), range)
 
     member x.Project(index:IIndex<'K>) = index
 
@@ -395,8 +395,8 @@ and VirtualIndexBuilder() =
           let hiIdx = getRangeKey index.Source.AddressOperations.LastElement Lookup.Smaller optHi
 
           // TODO: probably range checks
-          let newVector = Vectors.GetRange(vector, Vectors.Range(loIdx, hiIdx))
-          let newIndex = VirtualOrderedIndex(index.Source.GetSubVector(Range(loIdx, hiIdx)))
+          let newVector = Vectors.GetRange(vector, AddressRange.Fixed(loIdx, hiIdx))
+          let newIndex = VirtualOrderedIndex(index.Source.GetSubVector(AddressRange.Fixed(loIdx, hiIdx)))
           unbox<IIndex<'K>> newIndex, newVector
 
 #if VIRTUAL_ORDINAL_INDEX
