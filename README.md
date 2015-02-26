@@ -21,6 +21,6 @@ More information can be found in the [documentation](http://bluemountaincapital.
 Automatically generated documentation for all types, modules and functions in the library 
 is available in the [API Reference](http://bluemountaincapital.github.io/Deedle/reference/index.html):
 
- * [`Series` module](http://bluemountaincapital.github.io/Deedle/reference/deedle-seriesmodule.html) for working wiht data and time-series values
+ * [`Series` module](http://bluemountaincapital.github.io/Deedle/reference/deedle-seriesmodule.html) for working with data and time-series values
  * [`Frame` module](http://bluemountaincapital.github.io/Deedle/reference/deedle-framemodule.html) for data frame manipulation
- * [`Stats` module](http://bluemountaincapital.github.io/Deedle/reference/deedle-stats.html) forstatistical functions, moving windows and a lot more.
+ * [`Stats` module](http://bluemountaincapital.github.io/Deedle/reference/deedle-stats.html) for statistical functions, moving windows and a lot more.
