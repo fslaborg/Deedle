@@ -81,6 +81,6 @@ module AddressingExtensions =
           (LinearAddress.ofInt 0, LinearAddress.ofInt64 (count-1L))
           |> Choice1Of2
       | AddressRange.End(count) -> 
-          (LinearAddress.ofInt64 (total - count + 1L), LinearAddress.ofInt64 (total-1L))
+          (LinearAddress.ofInt64 (total - count), LinearAddress.ofInt64 (total-1L))
           |> Choice1Of2
       | AddressRange.Custom(ar) -> Choice2Of2(ar)

@@ -20,7 +20,6 @@ type IAddressOperations =
   abstract Range : seq<Address>
   abstract OffsetOf : Address -> int64
   abstract AddressOf : int64 -> Address
-  abstract Next : Address -> Address
 
 /// Non-generic part of the `IVirtualVectorSource<'V>` interface, which 
 /// provides some basic information about the virtualized data source

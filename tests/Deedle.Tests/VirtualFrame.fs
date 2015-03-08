@@ -45,8 +45,7 @@ type AddressOperations(ranges:(int64*int64) list, length) =
     member x.Range = Deedle.Internal.Seq.range 0L (length - 1L) |> Seq.map Address.ofInt64
     member x.OffsetOf(addr) = Address.asInt64 addr
     member x.AddressOf(idx) = Address.ofInt64 idx
-    member x.Next(a) = Address.increment a 
-
+    
 type TrackingSource<'T>(ranges:(int64*int64) list, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?search) = 
   let ranges = ranges //|> Seq.map (fun (f,s) -> Address(f),Address(s))
   member val AccessListCell : int64 list ref = ref [] with get, set
@@ -78,7 +77,7 @@ type TrackingSource<'T>(ranges:(int64*int64) list, valueAt:int64 -> 'T, ?asLong:
 
     member x.LookupRange(v) = 
       match search with
-      | Some f -> let o, s = f v in Vectors.Custom { Offset = o; Step = s }
+      | Some f -> let o, s = f v in AddressRange.Custom { Offset = o; Step = s }
       | None -> failwith "Search not supported"
 
     member x.LookupValue(k, l, c) = 
@@ -646,6 +645,6 @@ let ``Can materialize a delayed series into a virtual series`` () =
   let idxSource, valSource = r.Values.Head
   let idxAccess = idxSource.AccessList |> Seq.distinct |> List.ofSeq |> List.sort
   let valAccess = valSource.AccessList |> Seq.distinct |> List.ofSeq |> List.sort
-
-  idxAccess |> shouldEqual <| [ 33235401L .. 33235415L ] @ [ 46014466L .. 46014480L ]
-  valAccess |> shouldEqual <| [ 33235401L .. 33235415L ] @ [ 46014466L .. 46014480L ]
+  // In 'idxAccesses', printing checks if skipping 30 elements gives an empty series
+  idxAccess |> shouldEqual <| [ 33235401L .. 33235401L+30L ] @ [ 46014466L .. 46014480L ]
+  valAccess |> shouldEqual <| [ 33235401L .. 33235401L+15L-1L ] @ [ 46014466L .. 46014480L ]

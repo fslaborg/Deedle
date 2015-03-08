@@ -116,18 +116,6 @@ type AddressOperations(shape:PartitionShape, range, rangeListRef) =
 
     member x.OffsetOf(addr) = 
       failwith "AddressOperations.OffsetOf"
-
-    member x.Next(addr) = 
-      let part, idx = Address.asIntPair addr
-      let part, idx = if idx + 1 = shape.[part] then part + 1, idx else part, idx + 1
-
-      // After last partition or on the last partition, but after last index
-      let (hiPart, hiIdx) = Address.asIntPair (snd range)
-      if (part = hiPart + 1) || 
-        (part = hiPart && idx > hiIdx) then 
-        failwith "AddressOperations.Next - out of range"
-
-      Address.ofIntPair(part, idx)
       
 
 /// Vector source that represents a range as determined by the 'source'
@@ -248,7 +236,7 @@ let ``Printing series (with small partitions) accesses border partitions`` () =
   ts.Format() |> should containStr "1000000"
   ts.Format() |> should containStr "998000005"
   ts.Format() |> should containStr "999000009"
-  accessedPartitions idxSrc |> shouldEqual <| [0; 1; 998; 999]
+  accessedPartitions idxSrc |> shouldEqual <| [0; 1; 2; 3; 998; 999]
 
 [<Test>]
 let ``Printing series does not require counting items in partitions``() = 
