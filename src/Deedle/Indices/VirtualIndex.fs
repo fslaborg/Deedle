@@ -157,22 +157,22 @@ type VirtualOrderedIndex<'K when 'K : equality>(source:IVirtualVectorSource<'K>)
   member x.Source = source
 
   interface IIndex<'K> with
-    member x.KeyAt(addr) = keyAtAddr addr
+    member x.KeyAt(addr) = keyAtAddr (Location.delayed(addr, source.AddressOperations))
     member x.AddressAt(offs) = source.AddressOperations.AddressOf offs
     member x.KeyCount = source.Length
     member x.IsEmpty = source.Length = 0L
     member x.Builder = VirtualIndexBuilder.Instance :> _
     member x.KeyRange = 
-      keyAtAddr source.AddressOperations.FirstElement,
-      keyAtAddr source.AddressOperations.LastElement
+      keyAtAddr (Location.known(source.AddressOperations.FirstElement, 0L)),
+      keyAtAddr (Location.delayed(source.AddressOperations.LastElement, source.AddressOperations))
     
     member x.Keys : ReadOnlyCollection<'K> = 
       source.AddressOperations.Range
-      |> Seq.map keyAtAddr
+      |> Seq.mapl (fun idx addr -> keyAtAddr (Location.known(addr, idx)))
       |> ReadOnlyCollection.ofSeq
     member x.Mappings = 
       source.AddressOperations.Range
-      |> Seq.map (fun addr -> KeyValuePair(keyAtAddr addr, addr))
+      |> Seq.mapl (fun idx addr -> KeyValuePair(keyAtAddr (Location.known(addr, idx)), addr))
     member x.IsOrdered = true
     member x.Comparer = Comparer<'K>.Default
 
@@ -367,7 +367,9 @@ and VirtualIndexBuilder() =
     member x.AsyncMaterialize( (index:IIndex<'K>, vector) ) = 
       match index with
 #if VIRTUAL_ORDINAL_INDEX
-      | :? VirtualOrdinalIndex -> 
+      | :? VirtualOrdinalIndex 
+#endif
+      | :? VirtualOrderedIndex<'K> ->
           let newIndex = Linear.LinearIndexBuilder.Instance.Create(index.Keys, Some index.IsOrdered)
           let cmd = Vectors.CustomCommand([vector], fun vectors ->
             { new VectorCallSite<_> with
@@ -377,7 +379,6 @@ and VirtualIndexBuilder() =
                   |> ArrayVector.ArrayVectorBuilder.Instance.CreateMissing  :> IVector }
             |> (List.head vectors).Invoke)
           async.Return(newIndex), cmd
-#endif
       | _ -> async.Return(index), vector
 
     member x.GetRange<'K when 'K : equality>( (index, vector), (optLo:option<'K * _>, optHi:option<'K * _>)) = 

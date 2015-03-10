@@ -623,6 +623,22 @@ module List =
 /// `Deedle.Internals` is opened, it extends the standard `Seq` module.
 module Seq = 
 
+  /// Same as `Seq.choose` but passes 64 bit index (l stands for long) to the function
+  let inline choosel f (input:seq<_>) = seq {
+    let i = ref 0L
+    for v in input do
+      match f i.Value v with
+      | Some res -> yield res 
+      | _ -> ()
+      i := !i + 1L }
+
+  /// Same as `Seq.map` but passes 64 bit index (l stands for long) to the function
+  let inline mapl f (input:seq<_>) = seq {
+    let i = ref 0L
+    for v in input do 
+      yield f i.Value v 
+      i := !i + 1L }
+
   /// Skip at most the specified number of elements. This is like
   /// `Seq.skip`, but it does not throw when the sequence is shorter.
   let skipAtMost count (input:seq<_>) = 

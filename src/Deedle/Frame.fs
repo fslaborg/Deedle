@@ -469,7 +469,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Accessors and slicing]
   member frame.ColumnsDense = 
-    let newData = data.SelectMissing(fun _ _ vect -> 
+    let newData = data.Select(fun _ vect -> 
       // Assuming that the data has all values - which should be an invariant...
       let all = rowIndex.Mappings |> Seq.forall (fun (KeyValue(key, addr)) -> vect.Value.GetObject(addr).HasValue)
       if all then OptionalValue(ObjectSeries(rowIndex, boxVector vect.Value, vectorBuilder, indexBuilder))

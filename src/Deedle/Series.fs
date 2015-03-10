@@ -363,12 +363,11 @@ and
 
   /// [category:Projection and filtering]
   member x.Select<'R>(f:System.Func<KeyValuePair<'K, 'V>, int, 'R>) = 
-    let newVector = vector.SelectMissing(fun idx addr value ->
+    let newVector = vector.Select(fun loc value ->
       value |> OptionalValue.bind (fun v -> 
-        let key = index.KeyAt(addr)
-        try OptionalValue(f.Invoke(KeyValuePair(key, v), int idx))
+        let key = index.KeyAt(loc.Address)
+        try OptionalValue(f.Invoke(KeyValuePair(key, v), int loc.Offset))
         with :? MissingValueException -> OptionalValue.Missing ))  
-
     let newIndex = indexBuilder.Project(index)
     Series<'K, 'R>(newIndex, newVector, vectorBuilder, indexBuilder )
 
@@ -380,7 +379,15 @@ and
 
   /// [category:Projection and filtering]
   member x.Select<'R>(f:System.Func<KeyValuePair<'K, 'V>, 'R>) = 
-    x.Select(fun kvp _ -> f.Invoke kvp)
+    // NOTE: Do not simply call the other 'Select' overload here, because that
+    // would force evaluation of 'loc.Offset' (which may be slow in BigDeedle)
+    let newVector = vector.Select(fun loc value ->
+      value |> OptionalValue.bind (fun v -> 
+        let key = index.KeyAt(loc.Address)
+        try OptionalValue(f.Invoke(KeyValuePair(key, v)))
+        with :? MissingValueException -> OptionalValue.Missing ))  
+    let newIndex = indexBuilder.Project(index)
+    Series<'K, 'R>(newIndex, newVector, vectorBuilder, indexBuilder )
 
   /// [category:Projection and filtering]
   member x.SelectKeys<'R when 'R : equality>(f:System.Func<KeyValuePair<'K, OptionalValue<'V>>, 'R>) = 

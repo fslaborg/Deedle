@@ -63,6 +63,9 @@ type IVector =
 and VectorCallSite<'R> =
   abstract Invoke<'T> : IVector<'T> -> 'R
 
+and IVectorLocation =  
+  abstract Address : Address
+  abstract Offset : int64
 
 /// A generic, typed vector. Represents mapping from addresses to values of type `T`. 
 /// The vector provides a minimal interface that is required by series and can be
@@ -84,11 +87,7 @@ and IVector<'T> =
   /// a new vector (not necessarily of the same representation) with the results.
   /// The function handles missing values - it is called with optional values and
   /// may return a missing value as a result of the transformation.
-  abstract SelectMissing : (int64 -> Address -> OptionalValue<'T> -> OptionalValue<'TNew>) -> IVector<'TNew>
-
-  /// Apply the specified function to all values stored in the vector and return
-  /// a new vector (not necessarily of the same representation) with the results.
-  abstract Select : ('T -> 'TNew) -> IVector<'TNew>
+  abstract Select : (IVectorLocation -> OptionalValue<'T> -> OptionalValue<'TNew>) -> IVector<'TNew>
 
   /// Create a vector whose values are converted using the specified function, but
   /// can be converted back using another specified function. For virtualized vectors,
@@ -105,6 +104,8 @@ and IVector<'T> =
 [<AutoOpen>]
 module ``F# Vector extensions (core)`` = 
   type IVector<'TValue> with
+    member x.Select(f) = x.Select(fun _ -> OptionalValue.map f)
+
     /// Returns the data of the vector as a lazy sequence. (This preserves the 
     /// order of elements in the vector and so it also returns missing values.)
     member x.DataSequence = 
@@ -121,6 +122,13 @@ namespace Deedle.Vectors
 open Deedle
 open Deedle.Internal
 open Deedle.Addressing
+
+
+module Location =
+  let known(addr, offset) = 
+    { new IVectorLocation with
+        member x.Address = addr
+        member x.Offset = offset }
 
 /// Representes a "variable" in the mini-DSL below
 type VectorHole = int

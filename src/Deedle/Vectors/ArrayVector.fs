@@ -354,23 +354,15 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
 
     // A version of Select that can transform missing values to actual values (we always 
     // end up with array that may contain missing values, so use CreateMissing)
-    member vector.SelectMissing<'TNewValue>(f) = 
+    member vector.Select<'TNewValue>(f) = 
       let flattenNA = MissingValues.flattenNA<'TNewValue>() 
       let data = 
         match representation with
         | VectorNonOptional data ->
-            data |> Array.mapi (fun i v -> f (int64 i) (Address.ofInt i) (OptionalValue v) |> flattenNA)
+            data |> Array.mapi (fun i v -> f (Location.known(Address.ofInt i, int64 i)) (OptionalValue v) |> flattenNA)
         | VectorOptional data ->
-            data |> Array.mapi (fun i v -> f (int64 i) (Address.ofInt i) v |> flattenNA)
+            data |> Array.mapi (fun i v -> f (Location.known(Address.ofInt i, int64 i)) v |> flattenNA)
       ArrayVectorBuilder.Instance.CreateMissing(data)
-
-    // Select function does not call 'f' on missing values.
-    member vector.Select<'TNewValue>(f:'T -> 'TNewValue) = 
-      match representation with
-      | VectorNonOptional data ->
-          data |> Array.map f |> ArrayVectorBuilder.Instance.Create
-      | VectorOptional data ->
-          data |> Array.map (OptionalValue.map f) |> ArrayVectorBuilder.Instance.CreateMissing
 
     // Conversion on array vectors does not deleay
     member vector.Convert(f, _) = (vector :> IVector<'T>).Select(f)

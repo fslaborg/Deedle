@@ -100,7 +100,7 @@ module internal VectorHelperExtensions =
     // We get a vector containing boxed `IVector<obj>` - we turn it into a
     // vector containing what the caller specified, but lazily to avoid allocations
     combinedRowVector |> lazyMapVector (unbox<IVector<obj>> >> f)
-
+    
 // ------------------------------------------------------------------------------------------------
 // C# frienly operations for creating vectors
 // ------------------------------------------------------------------------------------------------

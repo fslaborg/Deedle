@@ -193,7 +193,6 @@ type internal DelayedVector<'K, 'V when 'K : equality> internal (source:DelayedS
   interface IVector<'V> with
     member x.GetValue(address) = source.Values.GetValue(address)
     member x.Data = source.Values.Data
-    member x.SelectMissing(f) = source.Values.SelectMissing(f)
     member x.Select(f) = source.Values.Select(f)
     member x.Convert(f, g) = source.Values.Convert(f, g)
 

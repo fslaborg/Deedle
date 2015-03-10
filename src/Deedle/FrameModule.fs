@@ -882,7 +882,7 @@ module Frame =
   let internal getRange lo hi (frame:Frame<'R, 'C>) = 
     if hi < lo then 
       // Create empty vectors of the same type as the inputs
-      let newData = frame.Data.Select(fun v -> 
+      let newData = frame.Data.Select(fun (v:IVector) -> 
         { new VectorCallSite<IVector> with
             member x.Invoke<'T>(v:IVector<'T>) = 
               Vector.ofValues ([]:'T list) :> IVector }
@@ -1232,7 +1232,7 @@ module Frame =
       if v.HasValue then None else Some v.Exception) |> List.ofSeq
     if List.isEmpty exceptions then 
       // All succeeded, so we can build new data frame
-      let newData = newTryData.Select(fun v -> v.Value)
+      let newData = newTryData.Select(fun (v:tryval<_>) -> v.Value)
       Frame<_, _>(frame.RowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
     else
       // Some exceptions, aggregate all of them

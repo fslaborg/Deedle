@@ -97,14 +97,14 @@ type TrackingSource<'T>(ranges:(int64*int64) list, valueAt:int64 -> 'T, ?asLong:
       | Choice2Of2 r -> OptionalValue((fst r.Value, Address.ofInt64(snd r.Value)))
       | _ -> OptionalValue.Missing
 
-    member x.ValueAt addr = 
+    member x.ValueAt loc = 
       let r = ranges
       let res = 
         r |> List.fold (fun (state:Choice<int64,int64>) (lo, hi) ->
           match state with
           | Choice1Of2 offset ->
-              if (Address.asInt64 addr) >= offset && (Address.asInt64 addr) <= offset+hi-lo then
-                Choice2Of2(((int64 addr) - offset) + lo)
+              if (Address.asInt64 loc.Address) >= offset && (Address.asInt64 loc.Address) <= offset+hi-lo then
+                Choice2Of2(((int64 loc.Address) - offset) + lo)
               else Choice1Of2(offset + hi - lo + 1L)
           | res -> res) (Choice1Of2 0L)
       match res with

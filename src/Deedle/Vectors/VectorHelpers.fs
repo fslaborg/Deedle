@@ -75,8 +75,7 @@ let createBoxedVector (vector:IVector<'TValue>) =
             VectorData.SparseList(ReadOnlyCollection.map (OptionalValue.map box) list)
         | VectorData.Sequence list ->
             VectorData.Sequence(Seq.map (OptionalValue.map box) list)
-      member x.Select(f) = vector.Select(f)
-      member x.SelectMissing(f) = vector.SelectMissing(fun i addr v -> f i addr (OptionalValue.map box v))
+      member x.Select(f) = vector.Select(fun loc v -> f loc (OptionalValue.map box v))
       member x.Convert(f, g) = vector.Convert(box >> f, g >> unbox)
     interface IVector with
       member x.Length = vector.Length
@@ -102,7 +101,7 @@ type IWrappedVector<'T> =
 /// the values of the source `vector`. In general, Deedle does not secretly delay
 /// computations, so this should be used with care. Currently, we only use this
 /// to avoid allocations in `df.Rows`.
-let lazyMapVector f (vector:IVector<'TValue>) : IVector<'TResult> = 
+let lazyMapVector (f:'TValue -> 'TResult) (vector:IVector<'TValue>) : IVector<'TResult> = 
   let unwrapVector = lazy vector.Select(f)
   { new System.Object() with
       member x.Equals(another) = vector.Equals(another)
@@ -117,8 +116,7 @@ let lazyMapVector f (vector:IVector<'TValue>) : IVector<'TResult> =
             VectorData.SparseList(ReadOnlyCollection.map (OptionalValue.map f) list)
         | VectorData.Sequence list ->
             VectorData.Sequence(Seq.map (OptionalValue.map f) list)
-      member x.Select(g) = vector.Select(f >> g)
-      member x.SelectMissing(g) = vector.SelectMissing(fun i addr v -> g i addr (OptionalValue.map f v))
+      member x.Select(g) = vector.Select(fun loc v -> g loc (OptionalValue.map f v))
       member x.Convert(h, g) = invalidOp "lazyMapVector: Conversion is not supported"
     interface IWrappedVector<'TResult> with
       member x.UnwrapVector() = unwrapVector.Value
@@ -323,7 +321,7 @@ let (|AsFloatVector|_|) v : option<IVector<float>> =
 /// internal representation of the frame (specified by `data` and `columnCount`).
 /// The type is generic and automatically converts the values from the underlying
 /// (untyped) vector to the specified type.
-type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddress, colAddressAt) =
+type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddress:Address, colAddressAt) =
   
   // Comparison and get hash code follows the ArrayVector implementation
   override vector.Equals(another) = 
@@ -350,17 +348,14 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddre
     member vector.Data = 
       vector.DataArray |> ReadOnlyCollection.ofArray |> VectorData.SparseList 
 
-    member vector.SelectMissing(f) = //: Address -> OptionalValue<'T> -> OptionalValue<_>
+    member vector.Select(f) =
       let isNA = MissingValues.isNA<'TNewValue>() 
       let flattenNA (value:OptionalValue<_>) = 
         if value.HasValue && isNA value.Value then OptionalValue.Missing else value
       let data = 
         vector.DataArray 
-        |> Array.mapi (fun idx v -> f (int64 idx) (colAddressAt (int64 idx)) v |> flattenNA)
+        |> Array.mapi (fun idx v -> f (Location.known(colAddressAt (int64 idx), int64 idx)) v |> flattenNA)
       builder.CreateMissing(data)
-
-    member vector.Select(f) = 
-      (vector :> IVector<_>).SelectMissing(fun _ _ -> OptionalValue.map f)
 
     member vector.Convert(f, _) = (vector :> IVector<_>).Select(f)
       
@@ -390,7 +385,7 @@ type TryValuesHelper =
   static member TryValues<'T>(vector:IVector<'T tryval>) = 
     let exceptions = vector.DataSequence |> Seq.choose OptionalValue.asOption |> Seq.choose (fun tv -> 
       if tv.HasValue then None else Some tv.Exception) |> List.ofSeq
-    if List.isEmpty exceptions then TryValue.Success (vector.Select(fun v -> v.Value) :> IVector)
+    if List.isEmpty exceptions then TryValue.Success (vector.Select(fun (v:tryval<_>) -> v.Value) :> IVector)
     else TryValue.Error (new AggregateException(exceptions))
 
 /// Given an IVector, check if the vector contains `'T tryval` values and if it does,
@@ -509,7 +504,6 @@ let mapFrameRowVector
         seq { for i in Seq.range 0L (length-1L) -> (x :> IVector<_>).GetValue(addressAt i) }
         |> VectorData.Sequence
       member x.Select(g) =  failwith "mapFrameRowVector: Select not supported"
-      member x.SelectMissing(g) = failwith "mapFrameRowVector: SelectMissing not supported"
       member x.Convert(h, g) = failwith "mapFrameRowVector: Convert not supported"
     interface IVector with
       member x.Length = length
