@@ -512,7 +512,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           newIndices.Add(int64 i)
         
       let newIndex = LinearIndex<'TNewKey>(newKeys |> ReadOnlyCollection.ofSeq, builder)
-      let range = AddressRange.ofSeq(newIndices |> Seq.map Address.ofInt64, int64 newIndices.Count)
+      let range = newIndices |> Seq.map Address.ofInt64 |> AddressRange.ofSeq (int64 newIndices.Count)
       upcast newIndex, Vectors.GetRange(vector, range)
 
 

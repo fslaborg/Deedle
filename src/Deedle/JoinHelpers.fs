@@ -38,10 +38,7 @@ type JoinKind =
 /// [omit]
 /// Implements various helpers that are used by Join operations
 module internal JoinHelpers = 
-
-  /// Helper that lets us define parameters in pattern matching; for example 
-  /// "Let 42 (answer, input)" binds "answer=42" and propagates input
-  let (|Let|) arg input = (arg, input)
+  open Deedle.Internal
 
   /// When doing exact join on ordered indices, restrict the new index
   /// so that we do not have to load all data for lazy indices

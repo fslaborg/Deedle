@@ -76,12 +76,10 @@ type Virtual() =
       |> Vector.ofValues
     Frame<_, _>(rowIndex, columnIndex, data, VirtualIndexBuilder.Instance, VirtualVectorBuilder.Instance)
 
-#if VIRTUAL_ORDINAL_INDEX
   static member CreateOrdinalSeries(source) =
     let vector = VirtualVector(source)
-    let index = VirtualOrdinalIndex(Ranges.Create [ 0L, source.Length-1L ])
+    let index = VirtualOrdinalIndex(Ranges.Create [ 0L, source.Length-1L ], source)
     Series(index, vector, VirtualVectorBuilder.Instance, VirtualIndexBuilder.Instance)
-#endif
 
   static member CreateSeries(indexSource:IVirtualVectorSource<_>, valueSource:IVirtualVectorSource<_>) =
     // TODO: Check this in some better way?
@@ -92,17 +90,16 @@ type Virtual() =
     let index = VirtualOrderedIndex(indexSource)
     Series(index, vector, VirtualVectorBuilder.Instance, VirtualIndexBuilder.Instance)
 
-#if VIRTUAL_ORDINAL_INDEX
   static member CreateOrdinalFrame(keys:seq<_>, sources:seq<IVirtualVectorSource>) = 
     let count = sources |> Seq.fold (fun st src ->
       match st with 
       | None -> Some(src.Length) 
       | Some n when n = src.Length -> Some(n)
       | _ -> invalidArg "sources" "Sources should have the same length!" ) None
-    if count = None then invalidArg "sources" "At least one column is required"
+    if count = None then invalidArg "sources" "At least one column is required" // TODO: They should also have the same addressing space
     let count = count.Value
-    createFrame (VirtualOrdinalIndex(Ranges.Create [0L, count-1L])) (Index.ofKeys (ReadOnlyCollection.ofSeq keys)) sources
-#endif
+    let source = sources |> Seq.head
+    createFrame (VirtualOrdinalIndex(Ranges.Create [0L, count-1L], source)) (Index.ofKeys (ReadOnlyCollection.ofSeq keys)) sources
 
   static member CreateFrame(indexSource:IVirtualVectorSource<_>, keys, sources:seq<IVirtualVectorSource>) = 
     for sc in sources do 

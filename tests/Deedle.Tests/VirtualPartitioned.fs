@@ -128,6 +128,7 @@ type TrackingSource<'T>(source:PartitionSource<'T>, ?rangeListRef) =
     member x.Length = addressing.Range |> Seq.length |> int64
     member x.ElementType = typeof<'T>
     member x.AddressOperations = addressing
+    member x.Invoke(op) = op.Invoke(x)
 
   interface IVirtualVectorSource<'T> with
     member x.MergeWith(sources) = failwith "MergeWith"

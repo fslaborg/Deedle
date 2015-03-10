@@ -21,9 +21,12 @@ type IAddressOperations =
   abstract OffsetOf : Address -> int64
   abstract AddressOf : int64 -> Address
 
+type IVirtualVectorSourceOperation<'R> =
+  abstract Invoke<'T> : IVirtualVectorSource<'T> -> 'R
+
 /// Non-generic part of the `IVirtualVectorSource<'V>` interface, which 
 /// provides some basic information about the virtualized data source
-type IVirtualVectorSource =
+and IVirtualVectorSource =
   /// Returns the type of elements - essentially typeof<'V> for IVirtualVectorSource<'V>
   abstract ElementType : System.Type
 
@@ -33,11 +36,13 @@ type IVirtualVectorSource =
 
   abstract AddressOperations : IAddressOperations
   
+  abstract Invoke<'R> : IVirtualVectorSourceOperation<'R> -> 'R
+
 /// Represents a data source for Big Deedle. The interface is used both as a representation
 /// of data source for `VirtualVector` (this file) and `VirtualIndex` (another file). The 
 /// index uses `Length` and `ValueAt` to perform binary search when looking for a key; the
 /// vector simply provides an access to values using `ValueAt`. 
-type IVirtualVectorSource<'V> = 
+and IVirtualVectorSource<'V> = 
   inherit IVirtualVectorSource
 
   /// Returns the value at the specifid address. We assume that the address is in range 
@@ -50,7 +55,7 @@ type IVirtualVectorSource<'V> =
   ///
   /// If the data source has some "clever" representation of the range, it can return
   /// `Custom of IVectorRange` - which is then passed to `GetSubVector`.
-  abstract LookupRange : 'V -> AddressRange
+  abstract LookupRange : 'V -> AddressRange<Address>
 
   /// Find the address associated with the specified value. This is used by the 
   /// index and it has the same signature as `IIndex<'K>.Lookup` (see `Index.fs`).
@@ -58,7 +63,7 @@ type IVirtualVectorSource<'V> =
 
   /// Returns a virtual source for the specified range (used when performing splicing on the 
   /// frame/series, both using address or using keys - which are obtained using Lookup)
-  abstract GetSubVector : AddressRange -> IVirtualVectorSource<'V>
+  abstract GetSubVector : AddressRange<Address> -> IVirtualVectorSource<'V>
 
   /// Merge the current source with a list of other sources
   /// (used by functions such as `Frame.merge` and `Frame.mergeAll`)
@@ -110,7 +115,8 @@ module VirtualVectorSource =
       interface IVirtualVectorSource with
         member x.ElementType = typeof<obj>
         member x.Length = source.Length
-        member x.AddressOperations = source.AddressOperations }
+        member x.AddressOperations = source.AddressOperations 
+        member x.Invoke(op) = op.Invoke(x :?> IVirtualVectorSource<obj>) }
 
   let rec combine (f:OptionalValue<'T> list -> OptionalValue<'R>) (sources:IVirtualVectorSource<'T> list) : IVirtualVectorSource<'R> = 
     { new IVirtualVectorSource<'R> with
@@ -145,6 +151,7 @@ module VirtualVectorSource =
               if a <> b then failwith "Address mismatch" else a)
         member x.ElementType = typeof<'R>
         member x.Length = sources |> Seq.map (fun s -> s.Length) |> Seq.reduce (fun a b -> if a <> b then failwith "Length mismatch" else a) 
+        member x.Invoke(op) = op.Invoke(x :?> IVirtualVectorSource<'R>)
     }
 
   let rec map rev f (source:IVirtualVectorSource<'V>) = 
@@ -178,7 +185,7 @@ module VirtualVectorSource =
                 else None)
             |> Array.ofSeq
 
-          { new IAddressRange with
+          { new IAddressRange<Address> with
               member x.Count = scanIndices |> Seq.length |> int64 // TODO: SLOW!
             interface seq<Address> with 
               member x.GetEnumerator() = (scanIndices :> seq<_>).GetEnumerator() // TODO: SLow
@@ -201,7 +208,8 @@ module VirtualVectorSource =
       interface IVirtualVectorSource with
         member x.AddressOperations = source.AddressOperations
         member x.ElementType = typeof<'TNew>
-        member x.Length = source.Length }
+        member x.Length = source.Length
+        member x.Invoke(op) = op.Invoke(x :?> IVirtualVectorSource<'TNew>) }
 
 
 type VirtualVector<'V>(source:IVirtualVectorSource<'V>) = 
@@ -364,6 +372,7 @@ type VirtualVectorBuilder() =
                   member x.Sources = sources
                   member x.Function = () 
                 interface IVirtualVectorSource with
+                  member x.Invoke(op) = op.Invoke(x :?> IVirtualVectorSource<obj>)
                   member x.ElementType = typeof<IVector<obj>>
                   member x.Length = 
                     sources 

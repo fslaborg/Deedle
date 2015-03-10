@@ -24,7 +24,7 @@ open Deedle.Vectors.Virtual
 
 type LinearSubRange =
   { Offset : int; Step : int }
-  interface IAddressRange with
+  interface IAddressRange<Address> with
     member x.Count = failwith "Count not supported"
   interface seq<Address> with
     member x.GetEnumerator() : System.Collections.Generic.IEnumerator<Address> = failwith "hard!"
@@ -68,6 +68,7 @@ type TrackingSource<'T>(ranges:(int64*int64) list, valueAt:int64 -> 'T, ?asLong:
     member x.Length = x.Length
     member x.ElementType = typeof<'T>
     member x.AddressOperations = AddressOperations(ranges, int64 x.Length) :> _
+    member x.Invoke(op) = op.Invoke(x)
 
   interface IVirtualVectorSource<'T> with
     member x.MergeWith(sources) = 
@@ -200,7 +201,6 @@ let ``Lookup and ValueAt works on merged tracking sources`` () =
 // Virtual series tests
 // ------------------------------------------------------------------------------------------------
 
-#if VIRTUAL_ORDINAL_INDEX
 [<Test>]
 let ``Formatting accesses only printed values`` () =
   let src = TrackingSource.CreateLongs(0L, 1000000000L)
@@ -216,13 +216,13 @@ let ``Counting keys does not evaluate the series`` () =
   src.AccessList |> shouldEqual []
 
 [<Test>]
-let ``Counting values does not evaluate the series`` () =
+let ``Counting values does not run out of memory`` () =
   let src = TrackingSource.CreateLongs(0L, 10000000L, IsTracking=false)
   let series = Virtual.CreateOrdinalSeries(src)
   series.ValueCount |> shouldEqual 6666667
 
 [<Test>]
-let ``Can take, skip etc. without evaluating the series`` () =
+let ``Can take skip etc. without evaluating the series`` () =
   let src = TrackingSource.CreateFloats(0L, 10000000L)
   let s1 = Virtual.CreateOrdinalSeries(src)
   s1 |> Series.take 10 |> Stats.sum |> shouldEqual 27.0
@@ -270,7 +270,6 @@ let ``Can materialize virtual series and access it repeatedly`` () =
   sm |> Stats.mean |> ignore
   sm |> Stats.sum |> ignore
   src.AccessList |> shouldEqual [ 100L .. 200L ]
-#endif
 
 // ------------------------------------------------------------------------------------------------
 // Virutal series with ordered index
@@ -323,7 +322,6 @@ let ``Can perform slicing on time series without evaluating it`` () =
 // Virtual frame tests
 // ------------------------------------------------------------------------------------------------
 
-#if VIRTUAL_ORDINAL_INDEX
 let createSimpleFrameSize size =
   let s1 = TrackingSource.CreateLongs(0L, size)
   let s2 = TrackingSource.CreateStrings(0L, size)
@@ -331,7 +329,6 @@ let createSimpleFrameSize size =
   s1, s2, frame
 
 let createSimpleFrame() = createSimpleFrameSize(10000000L)
-#endif
 
 let createSimpleTimeFrame() =
   let idxSrc = TrackingSource.CreateTimes(0L, 10000000L)
@@ -340,7 +337,6 @@ let createSimpleTimeFrame() =
   let frame = Virtual.CreateFrame(idxSrc, ["S1"; "S2"], [s1; s2] )
   idxSrc, s1, s2, frame
 
-#if VIRTUAL_ORDINAL_INDEX
 let createNumericFrame() =
   let s1 = TrackingSource.CreateFloats(0L, 10000000L, HasMissing=false)
   let s2 = TrackingSource.CreateFloats(0L, 10000000L)
@@ -352,11 +348,9 @@ let createTicksFrame() =
   let s2 = TrackingSource.CreateFloats(0L, 10000000L)
   let frame = Virtual.CreateOrdinalFrame( ["Ticks"; "Values"], [s1; s2] )
   s1, s2, frame
-#endif
 
 // ------------------------------------------------------------------------------------------------
 
-#if VIRTUAL_ORDINAL_INDEX
 [<Test>]
 let ``Can format virtual frame without evaluating it`` () = 
   let s1, s2, frame = createSimpleFrame()
@@ -500,7 +494,6 @@ let ``Merging overlapping ordinally-indexed virtual frames fails`` () =
   (fun _ -> f0.Merge(f.Rows.[0900000L .. 1000000L]) |> ignore) |> shouldThrow<InvalidOperationException>
   (fun _ -> f0.Merge(f.Rows.[0500000L .. 1500000L]) |> ignore) |> shouldThrow<InvalidOperationException>
   (fun _ -> f0.Merge(f.Rows.[1500000L .. 2500000L]) |> ignore) |> shouldThrow<InvalidOperationException>
-#endif
 
 // ------------------------------------------------------------------------------------------------
 

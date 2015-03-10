@@ -20,6 +20,19 @@ open Deedle.Indices.Virtual
 
 let rng = Ranges.Create [| (10L, 19L); (30L, 39L); (50L, 59L) |]
 
+[<Test>]
+let ``Restricting ranges using offset from beginning or end`` () =
+  let res = rng |> Ranges.restrictRanges (AddressRange.Start(15L))
+  res.Ranges |> shouldEqual [(10L, 19L); (30L, 34L)]
+  let res = rng |> Ranges.restrictRanges (AddressRange.End(15L))
+  res.Ranges |> shouldEqual [(35L, 39L); (50L, 59L)]
+
+[<Test>]
+let ``Restricting ranges using fixed restriction`` () =
+  let res = rng |> Ranges.restrictRanges (AddressRange.Fixed(10L, 35L))
+  res.Ranges |> shouldEqual [(10L, 19L); (30L, 35L)]
+  let res = rng |> Ranges.restrictRanges (AddressRange.Fixed(35L, 59L))
+  res.Ranges |> shouldEqual [(35L, 39L); (50L, 59L)]
 
 [<Test>]
 let ``Merging ranges joins ranges`` () = 
@@ -27,7 +40,6 @@ let ``Merging ranges joins ranges`` () =
   let rng2 = Ranges.Create [| (20L, 29L); (60L, 69L) |]
   let res = Ranges.Combine [rng1; rng2]
   res.Ranges |> shouldEqual [10L,39L; 50L,69L]
-
 
 [<Test>]
 let ``Merging overlapping ranges fails`` () = 
@@ -105,5 +117,3 @@ let ``Getting all keys from address returns expected keys`` () =
 let ``Getting all keys using Range.keys returns expected keys`` () =
   Ranges.keys rng
   |> shouldEqual <| Array.concat [ [| 10L .. 19L |]; [| 30L .. 39L |]; [| 50L .. 59L |] ]
-
-
