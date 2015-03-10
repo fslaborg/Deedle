@@ -67,6 +67,7 @@ let createBoxedVector (vector:IVector<'TValue>) =
       member x.UnboxedVector = vector :> IVector
     interface IVector<obj> with
       member x.GetValue(a) = vector.GetObject(a)
+      member x.GetValueAtLocation(l) = vector.GetValueAtLocation(l) |> OptionalValue.map box
       member x.Data = 
         match vector.Data with
         | VectorData.DenseList list -> 
@@ -108,6 +109,7 @@ let lazyMapVector (f:'TValue -> 'TResult) (vector:IVector<'TValue>) : IVector<'T
       member x.GetHashCode() = vector.GetHashCode()
     interface IVector<'TResult> with
       member x.GetValue(a) = vector.GetValue(a) |> OptionalValue.map f
+      member x.GetValueAtLocation(l) = vector.GetValueAtLocation(l) |> OptionalValue.map f
       member x.Data = 
         match vector.Data with
         | VectorData.DenseList list -> 
@@ -344,6 +346,9 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddre
       let vector = data.GetValue(columnAddress)
       if not vector.HasValue then OptionalValue.Missing
       else vector.Value.GetObject(rowAddress) |> OptionalValue.map (Convert.convertType<'T> ConversionKind.Flexible)
+    
+    member x.GetValueAtLocation(loc) = 
+      (x :> IVector<_>).GetValue(loc.Address)
 
     member vector.Data = 
       vector.DataArray |> ReadOnlyCollection.ofArray |> VectorData.SparseList 
@@ -500,6 +505,7 @@ let mapFrameRowVector
     (data:IVector[])  =
   { new IVector<'TRow> with
       member x.GetValue(a) = OptionalValue(ctor.Invoke(data, a))
+      member x.GetValueAtLocation(l) = OptionalValue(ctor.Invoke(data, l.Address))
       member x.Data = 
         seq { for i in Seq.range 0L (length-1L) -> (x :> IVector<_>).GetValue(addressAt i) }
         |> VectorData.Sequence

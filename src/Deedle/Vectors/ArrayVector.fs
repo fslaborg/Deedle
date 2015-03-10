@@ -347,6 +347,8 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
       | VectorOptional data when index < data.Length -> data.[index]
       | VectorNonOptional data when index < data.Length -> OptionalValue(data.[index])
       | _ -> OptionalValue.Missing
+    member x.GetValueAtLocation(loc) = 
+      (x :> IVector<_>).GetValue(loc.Address)
     member vector.Data = 
       match representation with 
       | VectorNonOptional data -> VectorData.DenseList (ReadOnlyCollection.ofArray data)

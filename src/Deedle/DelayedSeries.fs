@@ -192,6 +192,7 @@ type internal DelayedVector<'K, 'V when 'K : equality> internal (source:DelayedS
     member x.Invoke(site) = site.Invoke<'V>(x)
   interface IVector<'V> with
     member x.GetValue(address) = source.Values.GetValue(address)
+    member x.GetValueAtLocation(loc) = source.Values.GetValueAtLocation(loc)
     member x.Data = source.Values.Data
     member x.Select(f) = source.Values.Select(f)
     member x.Convert(f, g) = source.Values.Convert(f, g)

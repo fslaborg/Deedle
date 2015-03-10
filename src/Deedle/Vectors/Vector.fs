@@ -78,6 +78,11 @@ and IVector<'T> =
   /// Returns value stored in the vector at a specified address. 
   abstract GetValue : Address -> OptionalValue<'T>
 
+  /// Returns value stored in the vector at a specified location. 
+  /// This can typically just call 'GetValue(loc.Address)', but it can do something
+  /// more clever using the fact that the caller provided us with the address & offset.
+  abstract GetValueAtLocation : IVectorLocation -> OptionalValue<'T>
+
   /// Returns all data of the vector in one of the supported formats. Depending
   /// on the vector, data may be returned as a continuous block of memory using
   /// `ReadOnlyCollection<T>` or as a lazy sequence `seq<T>`.

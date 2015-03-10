@@ -214,18 +214,20 @@ module Series =
   ///
   /// [category:Accessing series data and lookup]
   [<CompiledName("GetObservations")>]
-  let observations (series:Series<'K, 'T>) = seq { 
-    for KeyValue(key, address) in series.Index.Mappings do
-      let v = series.Vector.GetValue(address)
-      if v.HasValue then yield key, v.Value }
+  let observations (series:Series<'K, 'T>) = 
+    series.Index.Mappings
+    |> Seq.choosel (fun idx kvp ->
+        series.Vector.GetValueAtLocation(Location.known(kvp.Value, idx)) 
+        |> OptionalValue.map (fun v -> kvp.Key, v)
+        |> OptionalValue.asOption )
   
   /// Returns all keys from the sequence, together with the associated (optional) values. 
   ///
   /// [category:Accessing series data and lookup]
   [<CompiledName("GetAllObservations")>]
-  let observationsAll (series:Series<'K, 'T>) = seq { 
-    for KeyValue(key, address) in series.Index.Mappings ->
-      key, OptionalValue.asOption (series.Vector.GetValue(address)) }
+  let observationsAll (series:Series<'K, 'T>) = 
+    series.Index.Mappings |> Seq.mapl (fun idx kvp ->
+      kvp.Key, OptionalValue.asOption (series.Vector.GetValueAtLocation(Location.known(kvp.Value, idx))))
 
   /// Create a new series that contains values for all provided keys.
   /// Use the specified lookup semantics - for exact matching, use `getAll`

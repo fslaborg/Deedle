@@ -91,29 +91,32 @@ and
   /// property or `Series.observation`.
   ///
   /// [category:Series data]
-  member x.Values = seq { 
-    for kvp in index.Mappings do 
-      let v = vector.GetValue(kvp.Value) 
-      if v.HasValue then yield v.Value }
+  member x.Values = 
+    index.Mappings
+    |> Seq.choosel (fun idx kvp ->
+        vector.GetValueAtLocation(Location.known(kvp.Value, idx)) 
+        |> OptionalValue.asOption )
 
   /// Returns a collection of values, including possibly missing values. Note that 
   /// the length of this sequence matches the `Keys` sequence.
   ///
   /// [category:Series data]
-  member x.ValuesAll = seq { 
-    for kvp in index.Mappings do 
-      let v = vector.GetValue(kvp.Value) 
-      yield v.Value }
+  member x.ValuesAll = 
+    index.Mappings
+    |> Seq.mapl (fun idx kvp ->
+        vector.GetValueAtLocation(Location.known(kvp.Value, idx)).Value)
 
   /// Returns a collection of observations that form this series. Note that this property
   /// skips over all missing (or NaN) values. Observations are returned as `KeyValuePair<K, V>` 
   /// objects. For an F# alternative that uses tuples, see `Series.observations`.
   ///
   /// [category:Series data]
-  member x.Observations = seq {
-    for KeyValue(k, a) in index.Mappings do
-      let v = vector.GetValue(a)
-      if v.HasValue then yield KeyValuePair(k, v.Value) }
+  member x.Observations = 
+    index.Mappings
+    |> Seq.choosel (fun idx kvp ->
+        vector.GetValueAtLocation(Location.known(kvp.Value, idx)) 
+        |> OptionalValue.map (fun v -> KeyValuePair(kvp.Key, v))
+        |> OptionalValue.asOption )
 
   /// Returns a collection of observations that form this series. Note that this property
   /// includes all missing (or NaN) values. Observations are returned as 
@@ -121,10 +124,11 @@ and
   /// see `Series.observationsAll`.
   ///
   /// [category:Series data]
-  member x.ObservationsAll = seq {
-    for KeyValue(k, a) in index.Mappings do
-      let v = vector.GetValue(a)
-      yield KeyValuePair(k, v) }
+  member x.ObservationsAll =
+    index.Mappings
+    |> Seq.mapl (fun idx kvp ->
+        let v = vector.GetValueAtLocation(Location.known(kvp.Value, idx)) 
+        KeyValuePair(kvp.Key, v))
 
   /// 
   ///

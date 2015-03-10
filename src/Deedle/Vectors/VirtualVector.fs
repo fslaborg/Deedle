@@ -219,6 +219,7 @@ type VirtualVector<'V>(source:IVirtualVectorSource<'V>) =
   
   interface IVector<'V> with
     member vector.GetValue(address) = source.ValueAt(Location.delayed(address, source.AddressOperations))
+    member x.GetValueAtLocation(loc) = source.ValueAt(loc)
     member vector.Data = 
       source.AddressOperations.Range
       |> Seq.mapl (fun idx addr -> source.ValueAt(Location.known(addr, idx)))
