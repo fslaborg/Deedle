@@ -12,8 +12,8 @@ open Deedle.Keys
 open Deedle.Vectors
 open Deedle.VectorHelpers
 
-/// This enumeration specifeis the behavior of `Union` operation on series when there are
-/// overlapping keys in two series that are being unioned. The options include prefering values
+/// This enumeration specifies the behavior of `Union` operation on series when there are
+/// overlapping keys in two series that are being unioned. The options include preferring values
 /// from the left/right series or throwing an exception when both values are available.
 ///
 /// [category:Parameters and results of various operations]
@@ -419,7 +419,7 @@ and
     let newIndex = indexBuilder.Project(index)
     Series<'K, 'T>(newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
   
-  /// Custom operator that can be used for applying fuction to all elements of 
+  /// Custom operator that can be used for applying a function to all elements of 
   /// a series. This provides a nicer syntactic sugar for the `Series.mapValues` 
   /// function. For example:
   ///
@@ -802,7 +802,7 @@ and
     let newVector = findAll x.Vector.GetValue |> Vector.ofOptionalValues
     Series<_,_>(newIndex, newVector, vectorBuilder, indexBuilder)
 
-  /// Replace the index of the series with ordinarilly generated integers starting from zero.
+  /// Replace the index of the series with ordinally generated integers starting from zero.
   /// The elements of the series are assigned index according to the current order, or in a
   /// non-deterministic way, if the current index is not ordered.
   ///
@@ -816,7 +816,7 @@ and
     let newIndex = indexBuilder.Create(keys, None)
     let vectorCmd = 
       if newIndex.KeyCount = int64 x.KeyCount then
-        // Just return the vecotr, because it has the same length
+        // Just return the vector, because it has the same length
         Vectors.Return 0
       elif newIndex.KeyCount > int64 x.KeyCount then
         // Pad vector with missing values

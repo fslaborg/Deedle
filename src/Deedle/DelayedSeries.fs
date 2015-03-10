@@ -145,7 +145,6 @@ type internal DelayedSource<'K, 'V when 'K : equality>
       let constrs = ResizeArray<_>()
       let vectors = ResizeArray<_>()
       for ((lo, lob), (hi, hib)), op in Seq.zip ranges ops do
-        // TODO: We used to fix boundary conditions if the loader was wrong
         let! rangeIndex, rangeVector = op
         constrs.Add( (rangeIndex, Vectors.Return constrs.Count) )
         vectors.Add( rangeVector )
