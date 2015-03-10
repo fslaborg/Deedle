@@ -78,6 +78,9 @@
  * Remove F# Data dependency & use Paket (#288, #293)
  * Update depndencies (F# Formatting 2.6.2 and RProvider 1.1.8)
 
+### 1.1.0-beta
+ * Enable materializing delayed series into a virtual series
+
 ### 1.1.1-beta
  * Allow specifying custom NA values (#231)
  * Documentation improvements and add F# Frame extension docs (#254)

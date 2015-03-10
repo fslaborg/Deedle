@@ -563,3 +563,49 @@ let ``Can merge virtual series of rows indexed by time`` () =
 // TODO: What if we need to build index from two columns, say 'utcTicks' and 'offset' ??
 // This is not reversible: f |> Frame.mapRows (fun _ row -> niceTimeFromTicks (row.GetAs "Dense"))
 
+
+// ------------------------------------------------------------------------------------------------
+// Integrating virtual series with delayed series
+// ------------------------------------------------------------------------------------------------
+
+open Deedle.Indices
+open Deedle.Indices.Virtual
+open Deedle.Vectors.Virtual
+
+/// Given a range, returns a virtual index * vector pair 
+/// representing data in the specified range
+let dataLoader 
+      spy (lo:DateTimeOffset, lob:BoundaryBehavior) 
+      (hi:DateTimeOffset, hib:BoundaryBehavior) : Async<IIndex<_> * IVector<_>> = async {
+  // TODO: Handle boundary conditions properly
+  let asIndex (dt:DateTimeOffset) = (dt - date 2000 1 1).Ticks / 123456789L
+  let loTicks, hiTicks = asIndex lo, asIndex hi
+  let idxSrc = TrackingSource.CreateTimes(loTicks, hiTicks)
+  let valSrc = TrackingSource.CreateFloats(loTicks, hiTicks)
+  spy (idxSrc, valSrc)
+  let s = Virtual.CreateSeries(idxSrc, valSrc)
+  return VirtualOrderedIndex(idxSrc) :> _, VirtualVector(valSrc) :> _ }
+
+[<Test>]
+let ``Can materialize a delayed series into a virtual series`` () = 
+  // Delayed series from 1 Jan 2000 to 1 Jan 2100
+  let r = Recorder()
+  let delayed = 
+    DelayedSeries.FromIndexVectorLoader
+      ( VirtualVectorBuilder.Instance, VirtualIndexBuilder.Instance, 
+        date 2000 1 1, date 2100 1 1, dataLoader (spy1 r ignore) )
+
+  // Materialize as virtual series for 5 years          
+  let limited = delayed.Between(date 2013 1 1, date 2018 1 1)
+  let series = limited.Materialize()
+
+  series.Format() |> ignore
+
+  series.KeyCount |> shouldEqual 12779080
+  r.Values.Length |> shouldEqual 1
+  let idxSource, valSource = r.Values.Head
+  let idxAccess = idxSource.AccessList |> Seq.distinct |> List.ofSeq |> List.sort
+  let valAccess = valSource.AccessList |> Seq.distinct |> List.ofSeq |> List.sort
+
+  idxAccess |> shouldEqual <| [ 33235401L .. 33235415L ] @ [ 46014466L .. 46014480L ]
+  valAccess |> shouldEqual <| [ 33235401L .. 33235415L ] @ [ 46014466L .. 46014480L ]
