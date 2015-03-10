@@ -156,7 +156,7 @@ type TrackingSource<'T>(source:PartitionSource<'T>, ?rangeListRef) =
       scanPart part
       |> OptionalValue.map (fun i -> source.ValueAt(part, int i).Value, Address.ofIntPair(part, int i) )
 
-    member x.ValueAt addr = source.ValueAt(Address.asIntPair addr)
+    member x.ValueAt loc = source.ValueAt(Address.asIntPair loc.Address)
     member x.GetSubVector(range) = 
       match range with 
       | AddressRange.Start(count) ->
