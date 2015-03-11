@@ -37,13 +37,13 @@ let prettyPrintVector (vector:IVector<'T>) =
 module AddressRange =
   /// Creates a `Custom` range from a sequence of indices
   let ofSeq count (indices : seq<_>) =
-    { new IAddressRange<Address> with
+    { new IRangeRestriction<Address> with
         member x.Count = count
       interface seq<Address> with 
         member x.GetEnumerator() = (indices :> seq<_>).GetEnumerator() 
       interface System.Collections.IEnumerable with
         member x.GetEnumerator() = indices.GetEnumerator() :> _ } 
-    |> AddressRange.Custom
+    |> RangeRestriction.Custom
 
 // --------------------------------------------------------------------------------------
 // Derived/wrapped implementations of the IVector<'T> interface

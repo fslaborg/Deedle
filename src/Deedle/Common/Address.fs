@@ -10,19 +10,35 @@ open System.Linq.Expressions
 
 /// An `Address` value is used as an interface between vectors and indices. The index maps
 /// keys of various types to address, which is then used to get a value from the vector.
-/// In the current implementation, the address is just `int64`, but most address-related
-/// functionality is in a separate module to make this easy to change.
+///
+/// Here is a brief summary of what we assume (and don't assume) about addresses:
+///
+///  - Address is `int64` (although we might need to generalize this in the future)
+///  - Different data sources can use different addressing schemes
+///    (as long as both index and vector use the same scheme)
+///  - Addresses don't have to be continuous (e.g. if the source is partitioned, it
+///    can use 32bit partition index + 32bit offset in the partition)
+///  - In the in-memory representation, address is just index into an array
+///  - In the BigDeedle representation, address is abstracted and comes with
+///    `AddressOperations` that specifies how to use it (tests use linear
+///    offset and partitioned representation)
 ///
 /// [category:Vectors and indices]
 module Addressing =
 
-  type [<Measure>] address
+  /// Address is `int64<address>`. We use unit of measure annotation
+  /// to make sure that correct conversion functions are used.
   type Address = int64<address>
+  and [<Measure>] address
 
   [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
   module Address =
+    /// Represents an invalid address (which is returned from 
+    /// optimized lookup functions when they fail)
     let invalid = -1L<address>
 
+  /// Address operations that are used by the standard in-memory Deedle structures
+  /// (LinearIndex and ArrayVector). Here, address is 
   module LinearAddress =
     let invalid = -1L<address>
     let inline asInt64 (x:Address) : int64 = int64 x
@@ -42,7 +58,7 @@ open Addressing
 /// create one from a sequence. This can be implemented by concrete vector/index 
 /// builders to allow further optimizations (e.g. when the underlying source directly
 /// supports range operations)
-type IAddressRange<'TAddress> = 
+type IRangeRestriction<'TAddress> = 
   inherit seq<'TAddress>
   abstract Count : int64
 
@@ -52,7 +68,7 @@ type IAddressRange<'TAddress> =
 /// sources, `Start` and `End` let us avoid fully evaluating addresses.
 /// `Custom` range can be used for optimizations.
 [<RequireQualifiedAccess>]
-type AddressRange<'TAddress> =
+type RangeRestriction<'TAddress> =
   /// Range specified as a pair of (inclusive) lower and upper addresses
   | Fixed of 'TAddress * 'TAddress
   /// Range referring to the specified number of elements from the start
@@ -60,21 +76,25 @@ type AddressRange<'TAddress> =
   /// Range referring to the specified number of elements from the end
   | End of int64 
   /// Custom range, which is a sequence of indices, or other representation of it
-  | Custom of IAddressRange<'TAddress>
+  | Custom of IRangeRestriction<'TAddress>
 
-module AddressRange =
+/// Provides additional operations for working with the `RangeRestriction<'TAddress>` type
+module RangeRestriction =
+  /// Transforms all absolute addresses in the specified range restriction
+  /// using the provided function (this is useful for mapping between different
+  /// address spaces).
   let map (f:'TOldAddress -> 'TNewAddress) = function
-    | AddressRange.Fixed(lo, hi) -> AddressRange.Fixed(f lo, f hi)
-    | AddressRange.Start n -> AddressRange.Start n
-    | AddressRange.End n -> AddressRange.End n
-    | AddressRange.Custom c ->
-        { new IAddressRange<'TNewAddress> with
+    | RangeRestriction.Fixed(lo, hi) -> RangeRestriction.Fixed(f lo, f hi)
+    | RangeRestriction.Start n -> RangeRestriction.Start n
+    | RangeRestriction.End n -> RangeRestriction.End n
+    | RangeRestriction.Custom c ->
+        { new IRangeRestriction<'TNewAddress> with
             member x.Count = c.Count
           interface System.Collections.IEnumerable with
             member x.GetEnumerator() = (x :?> seq<'TNewAddress>).GetEnumerator() :> _ 
           interface seq<'TNewAddress> with
             member x.GetEnumerator() = (Seq.map f c).GetEnumerator() }
-        |> AddressRange.Custom
+        |> RangeRestriction.Custom
 
 // --------------------------------------------------------------------------------------
 // Internal address range helpers
@@ -90,14 +110,15 @@ open System.Runtime.CompilerServices
 module AddressingExtensions = 
   [<Extension>]
   type AddressRangeExtensions =
+    /// When the address represents an absolute offset, this can be used to turn 'Start' 
+    /// and 'End' restrictions into the usual 'Fixed' restriction. The result is a choice
+    /// with either new absolute range or custom (sequence of addresses)
     [<Extension>]
     static member AsAbsolute(range, total) =
       match range with
-      | AddressRange.Fixed(lo, hi) -> Choice1Of2(lo, hi)
-      | AddressRange.Start(count) ->
-          (LinearAddress.ofInt 0, LinearAddress.ofInt64 (count-1L))
-          |> Choice1Of2
-      | AddressRange.End(count) -> 
-          (LinearAddress.ofInt64 (total - count), LinearAddress.ofInt64 (total-1L))
-          |> Choice1Of2
-      | AddressRange.Custom(ar) -> Choice2Of2(ar)
+      | RangeRestriction.Fixed(lo, hi) -> Choice1Of2(lo, hi)
+      | RangeRestriction.Start(count) ->
+          Choice1Of2(LinearAddress.ofInt 0, LinearAddress.ofInt64 (count-1L))
+      | RangeRestriction.End(count) -> 
+          Choice1Of2(LinearAddress.ofInt64 (total - count), LinearAddress.ofInt64 (total-1L))
+      | RangeRestriction.Custom(ar) -> Choice2Of2(ar)

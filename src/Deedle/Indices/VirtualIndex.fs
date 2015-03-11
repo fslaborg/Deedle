@@ -64,7 +64,7 @@ type VirtualOrderedIndex<'K when 'K : equality>(source:IVirtualVectorSource<'K>)
 // ------------------------------------------------------------------------------------------------
 
 /// 
-and VirtualOrdinalIndex(ranges:Ranges, source:IVirtualVectorSource) =
+and VirtualOrdinalIndex(ranges:Ranges<int64>, source:IVirtualVectorSource) =
   member x.Ranges = ranges
   member x.Source = source
   interface IIndex<int64> with
@@ -74,8 +74,8 @@ and VirtualOrdinalIndex(ranges:Ranges, source:IVirtualVectorSource) =
     member x.IsEmpty = source.AddressOperations.Range |> Seq.isEmpty
     member x.Builder = VirtualIndexBuilder.Instance :> _
     member x.KeyRange = Ranges.keyRange ranges
-    member x.Keys = ranges |> Ranges.keys |> ReadOnlyCollection.ofArray
-    member x.Mappings = Seq.map2 (fun k v -> KeyValuePair(k, v)) (Ranges.keysSeq ranges) source.AddressOperations.Range
+    member x.Keys = ranges |> Ranges.keys |> ReadOnlyCollection.ofSeq
+    member x.Mappings = Seq.map2 (fun k v -> KeyValuePair(k, v)) (Ranges.keys ranges) source.AddressOperations.Range
     member x.IsOrdered = true
     member x.Comparer = Comparer<int64>.Default
     member x.Locate(key) = source.AddressOperations.AddressOf(Ranges.addressOfKey key ranges)
@@ -136,7 +136,7 @@ and VirtualIndexBuilder() =
                 member x.Invoke<'T>(source) =
                   source.MergeWith [for _, s, _ in sources.Tail -> s :?> IVirtualVectorSource<'T> ] :> IVirtualVectorSource }                
             |> firstSource.Invoke
-          let newRanges = Ranges.Combine [ for r, _, _ in sources -> r ]
+          let newRanges = Ranges.combine [ for r, _, _ in sources -> r ]
           let newVector = seq { for _, _, v in sources -> v } |> Seq.reduce (fun a b -> Vectors.Append(a, b))
           unbox (VirtualOrdinalIndex(newRanges, newSource)), newVector
       | _ -> 
@@ -216,7 +216,7 @@ and VirtualIndexBuilder() =
 
       | :? VirtualOrdinalIndex as index ->
           let ordinalRestr = 
-            range |> AddressRange.map (fun addr -> 
+            range |> RangeRestriction.map (fun addr -> 
               Ranges.keyOfAddress (index.Source.AddressOperations.OffsetOf(addr)) index.Ranges)
           
           // TODO: range checks
@@ -261,8 +261,8 @@ and VirtualIndexBuilder() =
           let hiIdx = getRangeKey index.Source.AddressOperations.LastElement Lookup.Smaller optHi
 
           // TODO: probably range checks
-          let newVector = Vectors.GetRange(vector, AddressRange.Fixed(loIdx, hiIdx))
-          let newIndex = VirtualOrderedIndex(index.Source.GetSubVector(AddressRange.Fixed(loIdx, hiIdx)))
+          let newVector = Vectors.GetRange(vector, RangeRestriction.Fixed(loIdx, hiIdx))
+          let newIndex = VirtualOrderedIndex(index.Source.GetSubVector(RangeRestriction.Fixed(loIdx, hiIdx)))
           unbox<IIndex<'K>> newIndex, newVector
 
       | :? VirtualOrdinalIndex as ordIndex & (:? IIndex<int64> as index) -> 
@@ -278,8 +278,8 @@ and VirtualIndexBuilder() =
             ordIndex.Source.AddressOperations.AddressOf (Ranges.addressOfKey hiKey ordIndex.Ranges)
 
           // TODO: range checks
-          let restr = AddressRange.Fixed(loKey, hiKey)
-          let range = AddressRange.Fixed(loAddr, hiAddr)
+          let restr = RangeRestriction.Fixed(loKey, hiKey)
+          let range = RangeRestriction.Fixed(loAddr, hiAddr)
           let newVector = Vectors.GetRange(vector, range)
           let newSource =
             { new IVirtualVectorSourceOperation<_> with

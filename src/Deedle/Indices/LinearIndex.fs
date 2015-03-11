@@ -290,7 +290,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       // Turn each location into vector construction using LinearRangeIndex
       let vectorConstructions =
         locations |> Seq.map (fun (kind, lo, hi) ->
-          let cmd = Vectors.GetRange(vector, AddressRange.Fixed(Address.ofInt64 lo, Address.ofInt64 hi)) 
+          let cmd = Vectors.GetRange(vector, RangeRestriction.Fixed(Address.ofInt64 lo, Address.ofInt64 hi)) 
           let index = LinearRangeIndex(index, lo, hi)
           kind, (index :> IIndex<_>, cmd) )
 
@@ -369,7 +369,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       // (NOTE: This is the same code as in the 'Aggregate' method!)
       let vectorConstructions =
         locations |> Array.ofSeq |> Array.map (fun (k, (lo, hi)) ->
-          let cmd = Vectors.GetRange(vector, AddressRange.Fixed(lo, hi)) 
+          let cmd = Vectors.GetRange(vector, RangeRestriction.Fixed(lo, hi)) 
           let index = LinearRangeIndex(index, Address.asInt64 lo, Address.asInt64 hi)
           k, (index :> IIndex<_>, cmd) )
 
@@ -399,11 +399,11 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
         if offset > 0 then 
           // If offset > 0 then skip first offet keys and take matching values from the start
           (int64 offset, index.KeyCount - 1L),
-          AddressRange.Fixed(Address.ofInt64(0L), Address.ofInt64(index.KeyCount - 1L - int64 offset))
+          RangeRestriction.Fixed(Address.ofInt64(0L), Address.ofInt64(index.KeyCount - 1L - int64 offset))
         else 
           // If offset < 0 then skip first -offset values and take matching keys from the start
           (0L, index.KeyCount - 1L + int64 offset),
-          AddressRange.Fixed(Address.ofInt64(int64 -offset), Address.ofInt64(index.KeyCount - 1L))
+          RangeRestriction.Fixed(Address.ofInt64(int64 -offset), Address.ofInt64(index.KeyCount - 1L))
 
       // If the shifted start/end is out of range of the index, return empty index & vector
       if indexLo > indexHi then 
@@ -533,7 +533,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
         ( (index:IIndex<'K>, vector), key ) = 
       match index.Lookup(key, Lookup.Exact, fun _ -> true) with
       | OptionalValue.Present(addr) ->
-          let newVector = Vectors.DropRange(vector, AddressRange.Fixed(snd addr, snd addr))
+          let newVector = Vectors.DropRange(vector, RangeRestriction.Fixed(snd addr, snd addr))
           let newKeys = index.Keys |> Seq.filter ((<>) key)
           let newIndex = LinearIndex<_>(newKeys |> ReadOnlyCollection.ofSeq, builder, index.IsOrdered)
           upcast newIndex, newVector
@@ -548,7 +548,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           let newIndex = LinearIndex<_>(ReadOnlyCollection.empty, builder, ordered=true)
           upcast newIndex, Vectors.Empty(0L)
       | Choice1Of2(lo, hi) ->
-          let newVector = Vectors.GetRange(vector, AddressRange.Fixed(lo, hi))
+          let newVector = Vectors.GetRange(vector, RangeRestriction.Fixed(lo, hi))
           let newKeys = index.Keys.[Address.asInt lo .. Address.asInt hi]
           let newIndex = builder.Create(newKeys, if index.IsOrdered then Some true else None)
           newIndex, newVector
@@ -594,7 +594,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
         newIndex, Vectors.Empty(0L)
       else
         let newIndex = LinearRangeIndex(index, Address.asInt64 loBound, Address.asInt64 hiBound) :> IIndex<_>
-        let newVector = Vectors.GetRange(vector, AddressRange.Fixed(loBound, hiBound))
+        let newVector = Vectors.GetRange(vector, RangeRestriction.Fixed(loBound, hiBound))
         newIndex, newVector
 
 

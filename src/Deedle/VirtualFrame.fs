@@ -57,6 +57,7 @@ type IndexUtils =
 
 // ------------------------------------------------------------------------------------------------
 open Deedle
+open Deedle.Ranges
 open Deedle.Internal
 open Deedle.Vectors.Virtual
 open Deedle.Indices.Virtual
@@ -78,7 +79,7 @@ type Virtual() =
 
   static member CreateOrdinalSeries(source) =
     let vector = VirtualVector(source)
-    let index = VirtualOrdinalIndex(Ranges.Create [ 0L, source.Length-1L ], source)
+    let index = VirtualOrdinalIndex(Ranges.create [ 0L, source.Length-1L ], source)
     Series(index, vector, VirtualVectorBuilder.Instance, VirtualIndexBuilder.Instance)
 
   static member CreateSeries(indexSource:IVirtualVectorSource<_>, valueSource:IVirtualVectorSource<_>) =
@@ -99,7 +100,7 @@ type Virtual() =
     if count = None then invalidArg "sources" "At least one column is required" // TODO: They should also have the same addressing space
     let count = count.Value
     let source = sources |> Seq.head
-    createFrame (VirtualOrdinalIndex(Ranges.Create [0L, count-1L], source)) (Index.ofKeys (ReadOnlyCollection.ofSeq keys)) sources
+    createFrame (VirtualOrdinalIndex(Ranges.create [0L, count-1L], source)) (Index.ofKeys (ReadOnlyCollection.ofSeq keys)) sources
 
   static member CreateFrame(indexSource:IVirtualVectorSource<_>, keys, sources:seq<IVirtualVectorSource>) = 
     for sc in sources do 

@@ -750,7 +750,7 @@ module Frame =
   let indexRowsWith (keys:seq<'R2>) (frame:Frame<'R1, 'C>) = 
     let newRowIndex = frame.IndexBuilder.Create(keys, None)
     let getRange = 
-      AddressRange.Fixed(frame.RowIndex.AddressAt(0L), frame.RowIndex.AddressAt(frame.RowIndex.KeyCount-1L))
+      RangeRestriction.Fixed(frame.RowIndex.AddressAt(0L), frame.RowIndex.AddressAt(frame.RowIndex.KeyCount-1L))
       |> VectorHelpers.getVectorRange frame.VectorBuilder
     let newData = frame.Data.Select(getRange)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
@@ -889,11 +889,11 @@ module Frame =
         |> v.Invoke)
       Frame(Index.ofKeys [], frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder) 
     else
-      let cmd = GetRange(Return 0, AddressRange.Fixed(lo, hi))
+      let cmd = GetRange(Return 0, RangeRestriction.Fixed(lo, hi))
       let newData = frame.Data.Select(transformColumn frame.VectorBuilder cmd)
       let newKeys, _ = 
         frame.RowIndex.Builder.GetAddressRange
-          ( (frame.RowIndex, Vectors.Return 0), AddressRange.Fixed(lo,hi) )
+          ( (frame.RowIndex, Vectors.Return 0), RangeRestriction.Fixed(lo,hi) )
       let idx = frame.IndexBuilder.Create(newKeys.Keys, if frame.RowIndex.IsOrdered then Some true else None)
       Frame(idx, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder) 
 

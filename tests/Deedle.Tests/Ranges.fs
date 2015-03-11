@@ -12,43 +12,44 @@ open System
 open FsUnit
 open NUnit.Framework
 open Deedle
+open Deedle.Ranges
 open Deedle.Indices.Virtual
 
 // ------------------------------------------------------------------------------------------------
 // Ranges
 // ------------------------------------------------------------------------------------------------
 
-let rng = Ranges.Create [| (10L, 19L); (30L, 39L); (50L, 59L) |]
+let rng = Ranges.create [| (10L, 19L); (30L, 39L); (50L, 59L) |]
 
 [<Test>]
 let ``Restricting ranges using offset from beginning or end`` () =
-  let res = rng |> Ranges.restrictRanges (AddressRange.Start(15L))
-  res.Ranges |> shouldEqual [(10L, 19L); (30L, 34L)]
-  let res = rng |> Ranges.restrictRanges (AddressRange.End(15L))
-  res.Ranges |> shouldEqual [(35L, 39L); (50L, 59L)]
+  let res = rng |> Ranges.restrictRanges (RangeRestriction.Start(15L))
+  res.Ranges |> shouldEqual [| (10L, 19L); (30L, 34L) |]
+  let res = rng |> Ranges.restrictRanges (RangeRestriction.End(15L))
+  res.Ranges |> shouldEqual [| (35L, 39L); (50L, 59L) |]
 
 [<Test>]
 let ``Restricting ranges using fixed restriction`` () =
-  let res = rng |> Ranges.restrictRanges (AddressRange.Fixed(10L, 35L))
-  res.Ranges |> shouldEqual [(10L, 19L); (30L, 35L)]
-  let res = rng |> Ranges.restrictRanges (AddressRange.Fixed(35L, 59L))
-  res.Ranges |> shouldEqual [(35L, 39L); (50L, 59L)]
+  let res = rng |> Ranges.restrictRanges (RangeRestriction.Fixed(10L, 35L))
+  res.Ranges |> shouldEqual [| (10L, 19L); (30L, 35L) |]
+  let res = rng |> Ranges.restrictRanges (RangeRestriction.Fixed(35L, 59L))
+  res.Ranges |> shouldEqual [| (35L, 39L); (50L, 59L) |]
 
 [<Test>]
 let ``Merging ranges joins ranges`` () = 
-  let rng1 = Ranges.Create [| (10L, 19L); (30L, 39L); (50L, 59L) |]
-  let rng2 = Ranges.Create [| (20L, 29L); (60L, 69L) |]
-  let res = Ranges.Combine [rng1; rng2]
-  res.Ranges |> shouldEqual [10L,39L; 50L,69L]
+  let rng1 = Ranges.create [| (10L, 19L); (30L, 39L); (50L, 59L) |]
+  let rng2 = Ranges.create [| (20L, 29L); (60L, 69L) |]
+  let res = Ranges.combine [rng1; rng2]
+  res.Ranges |> shouldEqual [| (10L, 39L); (50L, 69L) |]
 
 [<Test>]
 let ``Merging overlapping ranges fails`` () = 
-  let rng1 = Ranges.Create [| (10L, 19L); (30L, 39L); (50L, 59L) |]
-  let rng2 = Ranges.Create [| (20L, 29L); (45L, 69L) |]
-  let rng3 = Ranges.Create [| (19L, 20L) |]
-  (fun _ -> Ranges.Combine [rng1; rng2] |> ignore)
+  let rng1 = Ranges.create [| (10L, 19L); (30L, 39L); (50L, 59L) |]
+  let rng2 = Ranges.create [| (20L, 29L); (45L, 69L) |]
+  let rng3 = Ranges.create [| (19L, 20L) |]
+  (fun _ -> Ranges.combine [rng1; rng2] |> ignore)
   |> shouldThrow<System.InvalidOperationException>
-  (fun _ -> Ranges.Combine [rng1; rng2] |> ignore)
+  (fun _ -> Ranges.combine [rng1; rng2] |> ignore)
   |> shouldThrow<System.InvalidOperationException>
 
 
@@ -92,10 +93,6 @@ let ``Lookup using key that is between two parts of a range works as expected`` 
         
 
 [<Test>]
-let ``Size of range works on sample input`` () =
-  rng.Size |> shouldEqual 30L
-
-[<Test>]
 let ``Getting key range works on sample input`` () =
   Ranges.keyRange rng |> shouldEqual (10L, 59L)
 
@@ -110,10 +107,10 @@ let ``Key of address & address of key works on sample inputs`` () =
 
 [<Test>]
 let ``Getting all keys from address returns expected keys`` () =
-  [| for a in 0L .. rng.Size - 1L -> Ranges.keyOfAddress a rng |]
+  [| for a in 0L .. 29L -> Ranges.keyOfAddress a rng |]
   |> shouldEqual <| Array.concat [ [| 10L .. 19L |]; [| 30L .. 39L |]; [| 50L .. 59L |] ]
 
 [<Test>]
 let ``Getting all keys using Range.keys returns expected keys`` () =
-  Ranges.keys rng
+  Ranges.keys rng |> Array.ofSeq
   |> shouldEqual <| Array.concat [ [| 10L .. 19L |]; [| 30L .. 39L |]; [| 50L .. 59L |] ]

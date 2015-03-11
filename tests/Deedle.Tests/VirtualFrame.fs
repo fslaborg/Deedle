@@ -24,7 +24,7 @@ open Deedle.Vectors.Virtual
 
 type LinearSubRange =
   { Offset : int; Step : int }
-  interface IAddressRange<Address> with
+  interface IRangeRestriction<Address> with
     member x.Count = failwith "Count not supported"
   interface seq<Address> with
     member x.GetEnumerator() : System.Collections.Generic.IEnumerator<Address> = failwith "hard!"
@@ -79,7 +79,7 @@ type TrackingSource<'T>(ranges:(int64*int64) list, valueAt:int64 -> 'T, ?asLong:
 
     member x.LookupRange(v) = 
       match search with
-      | Some f -> let o, s = f v in AddressRange.Custom { Offset = o; Step = s }
+      | Some f -> let o, s = f v in RangeRestriction.Custom { Offset = o; Step = s }
       | None -> failwith "Search not supported"
 
     member x.LookupValue(k, l, c) = 

@@ -520,7 +520,7 @@ module Series =
   let take count (series:Series<'K, 'T>) =
     if count > series.KeyCount || count < 0 then 
       invalidArg "count" "Must be greater than zero and less than the number of keys."
-    series.GetAddressRange(AddressRange.Start(int64 count))
+    series.GetAddressRange(RangeRestriction.Start(int64 count))
 
   /// Returns a series that contains the specified number of keys from the 
   /// original series. The keys are taken from the end of the series. 
@@ -534,7 +534,7 @@ module Series =
   let takeLast count (series:Series<'K, 'T>) =
     if count > series.KeyCount || count < 0 then 
       invalidArg "count" "Must be greater than zero and less than the number of keys."
-    series.GetAddressRange(AddressRange.End(int64 count))
+    series.GetAddressRange(RangeRestriction.End(int64 count))
 
   /// Returns a series that contains the data from the original series,
   /// except for the first `count` keys.
@@ -548,7 +548,7 @@ module Series =
   let skip count (series:Series<'K, 'T>) =
     if count > series.KeyCount || count < 0 then 
       invalidArg "count" "Must be greater than zero and less than the number of keys."
-    series.GetAddressRange(AddressRange.Fixed(series.Index.AddressAt(count |> int64), series.Index.AddressAt (series.KeyCount - 1 |> int64)))
+    series.GetAddressRange(RangeRestriction.Fixed(series.Index.AddressAt(count |> int64), series.Index.AddressAt (series.KeyCount - 1 |> int64)))
 
   /// Returns a series that contains the data from the original series,
   /// except for the last `count` keys.
@@ -562,7 +562,7 @@ module Series =
   let skipLast count (series:Series<'K, 'T>) =
     if count > series.KeyCount || count < 0 then 
       invalidArg "count" "Must be greater than zero and less than the number of keys."
-    series.GetAddressRange(AddressRange.Fixed(series.Index.AddressAt(0L), series.Index.AddressAt (series.KeyCount - 1 - count |> int64)))
+    series.GetAddressRange(RangeRestriction.Fixed(series.Index.AddressAt(0L), series.Index.AddressAt (series.KeyCount - 1 - count |> int64)))
 
   /// Returns a new fully evaluated series. If the source series contains a lazy index or
   /// lazy vectors, these are forced to evaluate and the resulting series is fully loaded in memory.

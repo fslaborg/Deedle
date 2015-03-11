@@ -1247,8 +1247,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     if smaller then
       seq { for obs in frame.Rows.Observations -> Choice1Of3(obs.Key, obs.Value) } 
     else
-      let starts = frame.GetAddressRange(AddressRange.Start(int64 startCount))
-      let ends = frame.GetAddressRange(AddressRange.End(int64 endCount))
+      let starts = frame.GetAddressRange(RangeRestriction.Start(int64 startCount))
+      let ends = frame.GetAddressRange(RangeRestriction.End(int64 endCount))
       seq { for obs in starts.Rows.Observations do yield Choice1Of3(obs.Key, obs.Value)
             yield Choice2Of3()
             for obs in ends.Rows.Observations do yield Choice1Of3(obs.Key, obs.Value) }

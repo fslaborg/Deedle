@@ -210,10 +210,10 @@ type VectorConstruction =
 
   /// Drop the specified range of addresses from the vector 
   /// and return a new vector that excludes the range
-  | DropRange of VectorConstruction * AddressRange<Address> 
+  | DropRange of VectorConstruction * RangeRestriction<Address> 
 
   /// Get the specified range of addresses from the vector and return it as a new vector
-  | GetRange of VectorConstruction * AddressRange<Address> 
+  | GetRange of VectorConstruction * RangeRestriction<Address> 
 
   /// Append two vectors after each other
   | Append of VectorConstruction * VectorConstruction

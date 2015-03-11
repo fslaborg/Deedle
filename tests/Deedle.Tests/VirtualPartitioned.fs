@@ -160,7 +160,7 @@ type TrackingSource<'T>(source:PartitionSource<'T>, ?rangeListRef) =
     member x.ValueAt loc = source.ValueAt(Address.asIntPair loc.Address)
     member x.GetSubVector(range) = 
       match range with 
-      | AddressRange.Start(count) ->
+      | RangeRestriction.Start(count) ->
           let loPart, loIdx = Address.asIntPair (fst source.Range)
           let mutable hiPart, hiIdx = loPart, loIdx
           let mutable count = count
@@ -175,7 +175,7 @@ type TrackingSource<'T>(source:PartitionSource<'T>, ?rangeListRef) =
           let ps = source.With(newRange = (Address.ofIntPair(loPart, loIdx), Address.ofIntPair(hiPart, hiIdx)))
           TrackingSource<'T>(ps, rangeListRef) :> IVirtualVectorSource<_>
 
-      | AddressRange.End(count) ->
+      | RangeRestriction.End(count) ->
           let hiPart, hiIdx = Address.asIntPair (snd source.Range)
           let mutable loPart, loIdx = hiPart, hiIdx
           let mutable count = count
@@ -190,7 +190,7 @@ type TrackingSource<'T>(source:PartitionSource<'T>, ?rangeListRef) =
           let ps = source.With(newRange = (Address.ofIntPair(loPart, loIdx), Address.ofIntPair(hiPart, hiIdx)))
           TrackingSource<'T>(ps, rangeListRef) :> IVirtualVectorSource<_>
 
-      | AddressRange.Fixed(lo, hi) ->
+      | RangeRestriction.Fixed(lo, hi) ->
           let ps = source.With(newRange = (lo, hi))
           TrackingSource<'T>(ps, rangeListRef) :> IVirtualVectorSource<_>
       | _ -> failwithf "GetSubVector - custom %A" range

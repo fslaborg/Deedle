@@ -823,7 +823,7 @@ and
         Vectors.Append(Vectors.Return 0, Vectors.Empty(newIndex.KeyCount - int64 x.KeyCount))
       else 
         // Get sub-range of the source vector
-        Vectors.GetRange(Vectors.Return 0, AddressRange.Fixed(x.Index.AddressAt(0L), x.Index.AddressAt(newIndex.KeyCount - 1L)))
+        Vectors.GetRange(Vectors.Return 0, RangeRestriction.Fixed(x.Index.AddressAt(0L), x.Index.AddressAt(newIndex.KeyCount - 1L)))
 
     let newVector = vectorBuilder.Build(vectorCmd, [| vector |])
     Series<'TNewKey, _>(newIndex, newVector, vectorBuilder, indexBuilder)
@@ -1006,8 +1006,8 @@ and
     if smaller then
       seq { for obs in series.ObservationsAll -> Choice1Of3(obs.Key, obs.Value) } 
     else
-      let starts = series.GetAddressRange(AddressRange.Start(int64 startCount))
-      let ends = series.GetAddressRange(AddressRange.End(int64 endCount))
+      let starts = series.GetAddressRange(RangeRestriction.Start(int64 startCount))
+      let ends = series.GetAddressRange(RangeRestriction.End(int64 endCount))
       seq { for obs in starts.ObservationsAll do yield Choice1Of3(obs.Key, obs.Value)
             yield Choice2Of3()
             for obs in ends.ObservationsAll do yield Choice1Of3(obs.Key, obs.Value) }
