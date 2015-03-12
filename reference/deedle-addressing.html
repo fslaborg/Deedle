@@ -43,9 +43,21 @@
 <h1>Addressing</h1>
 <div class="xmldoc">
 <p>An <code>Address</code> value is used as an interface between vectors and indices. The index maps
-keys of various types to address, which is then used to get a value from the vector.
-In the current implementation, the address is just <code>int64</code>, but most address-related
-functionality is in a separate module to make this easy to change.</p>
+keys of various types to address, which is then used to get a value from the vector.</p>
+
+<p>Here is a brief summary of what we assume (and don't assume) about addresses:</p>
+
+<ul>
+<li>Address is <code>int64</code> (although we might need to generalize this in the future)</li>
+<li>Different data sources can use different addressing schemes
+(as long as both index and vector use the same scheme)</li>
+<li>Addresses don't have to be continuous (e.g. if the source is partitioned, it
+can use 32bit partition index + 32bit offset in the partition)</li>
+<li>In the in-memory representation, address is just index into an array</li>
+<li>In the BigDeedle representation, address is abstracted and comes with
+<code>AddressOperations</code> that specifies how to use it (tests use linear
+offset and partitioned representation)</li>
+</ul>
 </div>
 
 <!-- Render nested types and modules, if there are any -->
@@ -60,8 +72,15 @@ functionality is in a separate module to make this easy to change.</p>
           <td class="type-name">
             <a href="deedle-addressing-address.html">Address</a>
           </td>
-          <td class="xmldoc"><p>Represents a type used for addressing values in a vector</p>
+          <td class="xmldoc"><p>Address is <code>int64&lt;address&gt;</code>. We use unit of measure annotation
+to make sure that correct conversion functions are used.</p>
 </td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-addressing-address-0.html">address</a>
+          </td>
+          <td class="xmldoc"></td>
         </tr>
     </tbody>
   </table>
@@ -75,6 +94,14 @@ functionality is in a separate module to make this easy to change.</p>
             <a href="deedle-addressing-addressmodule.html">Address</a>
           </td>
           <td class="xmldoc"></td>
+        </tr>
+        <tr>
+          <td class="module-name">
+            <a href="deedle-addressing-linearaddress.html">LinearAddress</a>
+          </td>
+          <td class="xmldoc"><p>Address operations that are used by the standard in-memory Deedle structures
+(LinearIndex and ArrayVector). Here, address is</p>
+</td>
         </tr>
     </tbody>
   </table>

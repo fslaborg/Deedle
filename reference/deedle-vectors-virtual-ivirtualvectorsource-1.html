@@ -56,16 +56,16 @@ vector simply provides an access to values using <code>ValueAt</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1069', 1069)" onmouseover="showTip(event, '1069', 1069)">
+          <code onmouseout="hideTip(event, '1075', 1075)" onmouseover="showTip(event, '1075', 1075)">
             GetSubVector(arg1)
           </code>
-          <div class="tip" id="1069">
-            <strong>Signature:</strong> VectorRange -&gt; IVirtualVectorSource&lt;&#39;V&gt;<br />
+          <div class="tip" id="1075">
+            <strong>Signature:</strong> RangeRestriction&lt;Address&gt; -&gt; IVirtualVectorSource&lt;&#39;V&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L53-53" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L66-66" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -77,16 +77,16 @@ frame/series, both using address or using keys - which are obtained using Lookup
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1070', 1070)" onmouseover="showTip(event, '1070', 1070)">
+          <code onmouseout="hideTip(event, '1076', 1076)" onmouseover="showTip(event, '1076', 1076)">
             LookupRange(arg1)
           </code>
-          <div class="tip" id="1070">
-            <strong>Signature:</strong> &#39;V -&gt; VectorRange<br />
+          <div class="tip" id="1076">
+            <strong>Signature:</strong> &#39;V -&gt; RangeRestriction&lt;Address&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L45-45" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L58-58" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -102,16 +102,16 @@ value (say column "PClass" has a value "1").</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1071', 1071)" onmouseover="showTip(event, '1071', 1071)">
+          <code onmouseout="hideTip(event, '1077', 1077)" onmouseover="showTip(event, '1077', 1077)">
             LookupValue(arg1, arg2, arg3)
           </code>
-          <div class="tip" id="1071">
+          <div class="tip" id="1077">
             <strong>Signature:</strong> (&#39;V * Lookup * Func&lt;Address,bool&gt;) -&gt; OptionalValue&lt;&#39;V * Address&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L49-49" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L62-62" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -123,16 +123,16 @@ index and it has the same signature as <code>IIndex&lt;'K&gt;.Lookup</code> (see
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1072', 1072)" onmouseover="showTip(event, '1072', 1072)">
+          <code onmouseout="hideTip(event, '1078', 1078)" onmouseover="showTip(event, '1078', 1078)">
             MergeWith(arg1)
           </code>
-          <div class="tip" id="1072">
+          <div class="tip" id="1078">
             <strong>Signature:</strong> seq&lt;IVirtualVectorSource&lt;&#39;V&gt;&gt; -&gt; IVirtualVectorSource&lt;&#39;V&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L57-57" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L70-70" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -144,16 +144,16 @@ index and it has the same signature as <code>IIndex&lt;'K&gt;.Lookup</code> (see
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1073', 1073)" onmouseover="showTip(event, '1073', 1073)">
+          <code onmouseout="hideTip(event, '1079', 1079)" onmouseover="showTip(event, '1079', 1079)">
             ValueAt(arg1)
           </code>
-          <div class="tip" id="1073">
-            <strong>Signature:</strong> int64 -&gt; OptionalValue&lt;&#39;V&gt;<br />
+          <div class="tip" id="1079">
+            <strong>Signature:</strong> IVectorLocation -&gt; OptionalValue&lt;&#39;V&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L37-37" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L50-50" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>

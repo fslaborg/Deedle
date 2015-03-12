@@ -42,8 +42,12 @@
 
 <h1>Frame<'TRowKey, 'TColumnKey></h1>
 <div class="xmldoc">
-<p>A frame contains one Index, with multiple Vecs
-(because this is dynamic, we need to store them as IVec)</p>
+<p>A frame is the key Deedle data structure (together with series). It represents a 
+data table (think spreadsheet or CSV file) with multiple rows and columns. The frame 
+consists of row index, column index and data. The indices are used for efficient 
+lookup when accessing data by the row key <code>'TRowKey</code> or by the column key 
+<code>'TColumnKey</code>. Deedle frames are optimized for the scenario when all values in a given 
+column are of the same type (but types of different columns can differ).</p>
 </div>
   <!-- If there is more than 1 category in the type, generate TOC -->
   <h2>Table of contents</h2>
@@ -69,15 +73,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '407', 407)" onmouseover="showTip(event, '407', 407)">
+          <code onmouseout="hideTip(event, '411', 411)" onmouseover="showTip(event, '411', 411)">
             ColumnKeys
           </code>
-          <div class="tip" id="407">
+          <div class="tip" id="411">
             <strong>Signature:</strong> seq&lt;&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L457-457" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L459-459" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -87,15 +91,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '408', 408)" onmouseover="showTip(event, '408', 408)">
+          <code onmouseout="hideTip(event, '412', 412)" onmouseover="showTip(event, '412', 412)">
             Columns
           </code>
-          <div class="tip" id="408">
+          <div class="tip" id="412">
             <strong>Signature:</strong> ColumnSeries&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L464-464" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L466-466" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -105,15 +109,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '409', 409)" onmouseover="showTip(event, '409', 409)">
+          <code onmouseout="hideTip(event, '413', 413)" onmouseover="showTip(event, '413', 413)">
             ColumnsDense
           </code>
-          <div class="tip" id="409">
+          <div class="tip" id="413">
             <strong>Signature:</strong> ColumnSeries&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L469-469" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L471-471" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -123,15 +127,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '410', 410)" onmouseover="showTip(event, '410', 410)">
+          <code onmouseout="hideTip(event, '414', 414)" onmouseover="showTip(event, '414', 414)">
             ColumnTypes
           </code>
-          <div class="tip" id="410">
+          <div class="tip" id="414">
             <strong>Signature:</strong> seq&lt;Type&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L460-460" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L462-462" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -141,15 +145,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '411', 411)" onmouseover="showTip(event, '411', 411)">
+          <code onmouseout="hideTip(event, '415', 415)" onmouseover="showTip(event, '415', 415)">
             GetRow(rowKey, lookup)
           </code>
-          <div class="tip" id="411">
+          <div class="tip" id="415">
             <strong>Signature:</strong> (rowKey:&#39;TRowKey * lookup:Lookup) -&gt; Series&lt;&#39;TColumnKey,&#39;T&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L626-626" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L624-624" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -170,15 +174,15 @@ not exactly match (look for nearest available value with the smaller/greater key
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '412', 412)" onmouseover="showTip(event, '412', 412)">
+          <code onmouseout="hideTip(event, '416', 416)" onmouseover="showTip(event, '416', 416)">
             GetRow(rowKey)
           </code>
-          <div class="tip" id="412">
+          <div class="tip" id="416">
             <strong>Signature:</strong> rowKey:&#39;TRowKey -&gt; Series&lt;&#39;TColumnKey,&#39;T&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L614-614" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L612-612" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -197,15 +201,15 @@ type <code>ObjectSeries&lt;'TCol&gt;</code>, use the <code>frame.Rows</code> pro
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '413', 413)" onmouseover="showTip(event, '413', 413)">
+          <code onmouseout="hideTip(event, '417', 417)" onmouseover="showTip(event, '417', 417)">
             GetRowAt(index)
           </code>
-          <div class="tip" id="413">
+          <div class="tip" id="417">
             <strong>Signature:</strong> index:int -&gt; Series&lt;&#39;TColumnKey,&#39;T&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L565-565" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L563-563" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -227,15 +231,15 @@ matching key at a specified index using <code>GetRowKeyAt</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '414', 414)" onmouseover="showTip(event, '414', 414)">
+          <code onmouseout="hideTip(event, '418', 418)" onmouseover="showTip(event, '418', 418)">
             GetRowKeyAt(index)
           </code>
-          <div class="tip" id="414">
-            <strong>Signature:</strong> index:int -&gt; &#39;TRowKey<br />
+          <div class="tip" id="418">
+            <strong>Signature:</strong> index:int64 -&gt; &#39;TRowKey<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L551-551" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L549-549" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -254,87 +258,15 @@ You can get the corresponding row using <code>GetRowAt</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '415', 415)" onmouseover="showTip(event, '415', 415)">
+          <code onmouseout="hideTip(event, '419', 419)" onmouseover="showTip(event, '419', 419)">
             GetRowsAs()
           </code>
-          <div class="tip" id="415">
+          <div class="tip" id="419">
             <strong>Signature:</strong> unit -&gt; Series&lt;&#39;TRowKey,&#39;TRow&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L521-521" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '416', 416)" onmouseover="showTip(event, '416', 416)">
-            GetSubrange(lo, hi)
-          </code>
-          <div class="tip" id="416">
-            <strong>Signature:</strong> (lo:(&#39;TRowKey * BoundaryBehavior) option * hi:(&#39;TRowKey * BoundaryBehavior) option) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1236-1236" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '417', 417)" onmouseover="showTip(event, '417', 417)">
-            IsEmpty
-          </code>
-          <div class="tip" id="417">
-            <strong>Signature:</strong> bool<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L451-451" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '418', 418)" onmouseover="showTip(event, '418', 418)">
-            [column, row]
-          </code>
-          <div class="tip" id="418">
-            <strong>Signature:</strong> column:&#39;TColumnKey * row:&#39;TRowKey -&gt; obj<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L537-537" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '419', 419)" onmouseover="showTip(event, '419', 419)">
-            RowKeys
-          </code>
-          <div class="tip" id="419">
-            <strong>Signature:</strong> seq&lt;&#39;TRowKey&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L455-455" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L519-519" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -345,14 +277,14 @@ You can get the corresponding row using <code>GetRowAt</code>.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '420', 420)" onmouseover="showTip(event, '420', 420)">
-            Rows
+            GetSubrange(lo, hi)
           </code>
           <div class="tip" id="420">
-            <strong>Signature:</strong> RowSeries&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (lo:(&#39;TRowKey * BoundaryBehavior) option * hi:(&#39;TRowKey * BoundaryBehavior) option) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L494-494" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1234-1234" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -363,14 +295,14 @@ You can get the corresponding row using <code>GetRowAt</code>.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '421', 421)" onmouseover="showTip(event, '421', 421)">
-            RowsDense
+            IsEmpty
           </code>
           <div class="tip" id="421">
-            <strong>Signature:</strong> RowSeries&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> bool<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L478-478" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L453-453" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -381,14 +313,86 @@ You can get the corresponding row using <code>GetRowAt</code>.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '422', 422)" onmouseover="showTip(event, '422', 422)">
-            TryGetRow(rowKey, lookup)
+            [column, row]
           </code>
           <div class="tip" id="422">
+            <strong>Signature:</strong> column:&#39;TColumnKey * row:&#39;TRowKey -&gt; obj<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L535-535" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '423', 423)" onmouseover="showTip(event, '423', 423)">
+            RowKeys
+          </code>
+          <div class="tip" id="423">
+            <strong>Signature:</strong> seq&lt;&#39;TRowKey&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L457-457" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '424', 424)" onmouseover="showTip(event, '424', 424)">
+            Rows
+          </code>
+          <div class="tip" id="424">
+            <strong>Signature:</strong> RowSeries&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L496-496" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '425', 425)" onmouseover="showTip(event, '425', 425)">
+            RowsDense
+          </code>
+          <div class="tip" id="425">
+            <strong>Signature:</strong> RowSeries&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L480-480" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '426', 426)" onmouseover="showTip(event, '426', 426)">
+            TryGetRow(rowKey, lookup)
+          </code>
+          <div class="tip" id="426">
             <strong>Signature:</strong> (rowKey:&#39;TRowKey * lookup:Lookup) -&gt; OptionalValue&lt;Series&lt;&#39;TColumnKey,&#39;T&gt;&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L599-599" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L597-597" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -410,15 +414,15 @@ not exactly match (look for nearest available value with the smaller/greater key
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '423', 423)" onmouseover="showTip(event, '423', 423)">
+          <code onmouseout="hideTip(event, '427', 427)" onmouseover="showTip(event, '427', 427)">
             TryGetRow(rowKey)
           </code>
-          <div class="tip" id="423">
+          <div class="tip" id="427">
             <strong>Signature:</strong> rowKey:&#39;TRowKey -&gt; OptionalValue&lt;Series&lt;&#39;TColumnKey,&#39;T&gt;&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L581-581" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L579-579" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -438,15 +442,15 @@ type <code>ObjectSeries&lt;'TCol&gt;</code>, use the <code>frame.Rows</code> pro
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '424', 424)" onmouseover="showTip(event, '424', 424)">
+          <code onmouseout="hideTip(event, '428', 428)" onmouseover="showTip(event, '428', 428)">
             TryGetRowObservation(rowKey, lookup)
           </code>
-          <div class="tip" id="424">
+          <div class="tip" id="428">
             <strong>Signature:</strong> (rowKey:&#39;TRowKey * lookup:Lookup) -&gt; OptionalValue&lt;KeyValuePair&lt;&#39;TRowKey,Series&lt;&#39;TColumnKey,&#39;T&gt;&gt;&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L638-638" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L636-636" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -476,15 +480,15 @@ not exactly match (look for nearest available value with the smaller/greater key
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '425', 425)" onmouseover="showTip(event, '425', 425)">
+          <code onmouseout="hideTip(event, '429', 429)" onmouseover="showTip(event, '429', 429)">
             GetAllValues(strict)
           </code>
-          <div class="tip" id="425">
+          <div class="tip" id="429">
             <strong>Signature:</strong> strict:ConversionKind -&gt; seq&lt;&#39;R&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L664-664" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L662-662" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -494,15 +498,15 @@ not exactly match (look for nearest available value with the smaller/greater key
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '426', 426)" onmouseover="showTip(event, '426', 426)">
+          <code onmouseout="hideTip(event, '430', 430)" onmouseover="showTip(event, '430', 430)">
             GetAllValues()
           </code>
-          <div class="tip" id="426">
+          <div class="tip" id="430">
             <strong>Signature:</strong> unit -&gt; seq&lt;&#39;R&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L661-661" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L659-659" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -512,15 +516,15 @@ not exactly match (look for nearest available value with the smaller/greater key
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '427', 427)" onmouseover="showTip(event, '427', 427)">
+          <code onmouseout="hideTip(event, '431', 431)" onmouseover="showTip(event, '431', 431)">
             GetColumns()
           </code>
-          <div class="tip" id="427">
+          <div class="tip" id="431">
             <strong>Signature:</strong> unit -&gt; Series&lt;&#39;TColumnKey,Series&lt;&#39;TRowKey,&#39;R&gt;&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L651-651" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L649-649" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -530,15 +534,15 @@ not exactly match (look for nearest available value with the smaller/greater key
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '428', 428)" onmouseover="showTip(event, '428', 428)">
+          <code onmouseout="hideTip(event, '432', 432)" onmouseover="showTip(event, '432', 432)">
             GetRows()
           </code>
-          <div class="tip" id="428">
+          <div class="tip" id="432">
             <strong>Signature:</strong> unit -&gt; Series&lt;&#39;TRowKey,Series&lt;&#39;TColumnKey,&#39;R&gt;&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L656-656" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L654-654" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -548,15 +552,15 @@ not exactly match (look for nearest available value with the smaller/greater key
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '429', 429)" onmouseover="showTip(event, '429', 429)">
+          <code onmouseout="hideTip(event, '433', 433)" onmouseover="showTip(event, '433', 433)">
             ToArray2D()
           </code>
-          <div class="tip" id="429">
+          <div class="tip" id="433">
             <strong>Signature:</strong> unit -&gt; &#39;R [,]<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L684-684" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L682-682" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -570,15 +574,15 @@ be explicitly specified using another overload.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '430', 430)" onmouseover="showTip(event, '430', 430)">
+          <code onmouseout="hideTip(event, '434', 434)" onmouseover="showTip(event, '434', 434)">
             ToArray2D(defaultValue)
           </code>
-          <div class="tip" id="430">
+          <div class="tip" id="434">
             <strong>Signature:</strong> defaultValue:&#39;R -&gt; &#39;R [,]<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L675-675" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L673-673" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -606,15 +610,15 @@ all values to the specified type 'R. When a value is missing, the specified
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '431', 431)" onmouseover="showTip(event, '431', 431)">
+          <code onmouseout="hideTip(event, '435', 435)" onmouseover="showTip(event, '435', 435)">
             Format(startCount, endCount, printTypes)
           </code>
-          <div class="tip" id="431">
+          <div class="tip" id="435">
             <strong>Signature:</strong> (startCount:int * endCount:int * printTypes:bool) -&gt; string<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1305-1305" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1304-1304" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -634,15 +638,15 @@ shows all columns, but a limited number of rows.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '432', 432)" onmouseover="showTip(event, '432', 432)">
+          <code onmouseout="hideTip(event, '436', 436)" onmouseover="showTip(event, '436', 436)">
             Format(startCount, endCount)
           </code>
-          <div class="tip" id="432">
+          <div class="tip" id="436">
             <strong>Signature:</strong> (startCount:int * endCount:int) -&gt; string<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1293-1293" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1292-1292" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -661,15 +665,15 @@ shows all columns, but a limited number of rows.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '433', 433)" onmouseover="showTip(event, '433', 433)">
+          <code onmouseout="hideTip(event, '437', 437)" onmouseover="showTip(event, '437', 437)">
             Format(count)
           </code>
-          <div class="tip" id="433">
+          <div class="tip" id="437">
             <strong>Signature:</strong> count:int -&gt; string<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1281-1281" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1280-1280" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -687,15 +691,15 @@ shows all columns, but a limited number of rows.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '434', 434)" onmouseover="showTip(event, '434', 434)">
+          <code onmouseout="hideTip(event, '438', 438)" onmouseover="showTip(event, '438', 438)">
             Format(printTypes)
           </code>
-          <div class="tip" id="434">
+          <div class="tip" id="438">
             <strong>Signature:</strong> printTypes:bool -&gt; string<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1271-1271" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1270-1270" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -715,15 +719,15 @@ shows all columns, but a limited number of rows.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '435', 435)" onmouseover="showTip(event, '435', 435)">
+          <code onmouseout="hideTip(event, '439', 439)" onmouseover="showTip(event, '439', 439)">
             Format()
           </code>
-          <div class="tip" id="435">
+          <div class="tip" id="439">
             <strong>Signature:</strong> unit -&gt; string<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1260-1260" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1259-1259" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -735,15 +739,15 @@ shows all columns, but a limited number of rows.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '436', 436)" onmouseover="showTip(event, '436', 436)">
+          <code onmouseout="hideTip(event, '440', 440)" onmouseover="showTip(event, '440', 440)">
             GetFrameData()
           </code>
-          <div class="tip" id="436">
+          <div class="tip" id="440">
             <strong>Signature:</strong> unit -&gt; FrameData<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1216-1216" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1214-1214" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -762,10 +766,10 @@ shows all columns, but a limited number of rows.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '437', 437)" onmouseover="showTip(event, '437', 437)">
+          <code onmouseout="hideTip(event, '441', 441)" onmouseover="showTip(event, '441', 441)">
             IndexRows(column)
           </code>
-          <div class="tip" id="437">
+          <div class="tip" id="441">
             <strong>Signature:</strong> column:&#39;TColumnKey -&gt; Frame&lt;&#39;TNewRowIndex,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
@@ -793,10 +797,10 @@ index. Note that the values in the column need to be unique.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '438', 438)" onmouseover="showTip(event, '438', 438)">
+          <code onmouseout="hideTip(event, '442', 442)" onmouseover="showTip(event, '442', 442)">
             IndexRows(column, keepColumn)
           </code>
-          <div class="tip" id="438">
+          <div class="tip" id="442">
             <strong>Signature:</strong> (column:&#39;TColumnKey * keepColumn:bool) -&gt; Frame&lt;&#39;TNewRowIndex,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
@@ -835,15 +839,15 @@ index. Note that the values in the column need to be unique.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '439', 439)" onmouseover="showTip(event, '439', 439)">
+          <code onmouseout="hideTip(event, '443', 443)" onmouseover="showTip(event, '443', 443)">
             Join(colKey, series)
           </code>
-          <div class="tip" id="439">
+          <div class="tip" id="443">
             <strong>Signature:</strong> (colKey:&#39;TColumnKey * series:Series&lt;&#39;TRowKey,&#39;V&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L354-354" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L356-356" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -863,15 +867,15 @@ and unavailable values are marked as missing.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '440', 440)" onmouseover="showTip(event, '440', 440)">
+          <code onmouseout="hideTip(event, '444', 444)" onmouseover="showTip(event, '444', 444)">
             Join(colKey, series, kind)
           </code>
-          <div class="tip" id="440">
+          <div class="tip" id="444">
             <strong>Signature:</strong> (colKey:&#39;TColumnKey * series:Series&lt;&#39;TRowKey,&#39;V&gt; * kind:JoinKind) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L342-342" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L344-344" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -894,15 +898,15 @@ data frame.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '441', 441)" onmouseover="showTip(event, '441', 441)">
+          <code onmouseout="hideTip(event, '445', 445)" onmouseover="showTip(event, '445', 445)">
             Join(colKey, series, kind, lookup)
           </code>
-          <div class="tip" id="441">
+          <div class="tip" id="445">
             <strong>Signature:</strong> (colKey:&#39;TColumnKey * series:Series&lt;&#39;TRowKey,&#39;V&gt; * kind:JoinKind * lookup:Lookup) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L326-326" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L328-328" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -932,15 +936,15 @@ Supported values are <code>Lookup.Exact</code>, <code>Lookup.ExactOrSmaller</cod
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '442', 442)" onmouseover="showTip(event, '442', 442)">
+          <code onmouseout="hideTip(event, '446', 446)" onmouseover="showTip(event, '446', 446)">
             Join(otherFrame)
           </code>
-          <div class="tip" id="442">
+          <div class="tip" id="446">
             <strong>Signature:</strong> otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L304-304" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L306-306" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -958,15 +962,15 @@ overlap and their rows are aligned. The unavailable values are marked as missing
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '443', 443)" onmouseover="showTip(event, '443', 443)">
+          <code onmouseout="hideTip(event, '447', 447)" onmouseover="showTip(event, '447', 447)">
             Join(otherFrame, kind)
           </code>
-          <div class="tip" id="443">
+          <div class="tip" id="447">
             <strong>Signature:</strong> (otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * kind:JoinKind) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L294-294" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L296-296" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -989,15 +993,15 @@ data frame.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '444', 444)" onmouseover="showTip(event, '444', 444)">
+          <code onmouseout="hideTip(event, '448', 448)" onmouseover="showTip(event, '448', 448)">
             Join(otherFrame, kind, lookup)
           </code>
-          <div class="tip" id="444">
+          <div class="tip" id="448">
             <strong>Signature:</strong> (otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * kind:JoinKind * lookup:Lookup) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L267-267" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L269-269" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1026,15 +1030,15 @@ Supported values are <code>Lookup.Exact</code>, <code>Lookup.ExactOrSmaller</cod
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '445', 445)" onmouseover="showTip(event, '445', 445)">
+          <code onmouseout="hideTip(event, '449', 449)" onmouseover="showTip(event, '449', 449)">
             Merge(otherFrames)
           </code>
-          <div class="tip" id="445">
+          <div class="tip" id="449">
             <strong>Signature:</strong> (otherFrames:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; []) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L405-405" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L407-407" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1059,15 +1063,15 @@ keys before calling append.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '446', 446)" onmouseover="showTip(event, '446', 446)">
+          <code onmouseout="hideTip(event, '450', 450)" onmouseover="showTip(event, '450', 450)">
             Merge(otherFrames)
           </code>
-          <div class="tip" id="446">
+          <div class="tip" id="450">
             <strong>Signature:</strong> otherFrames:seq&lt;Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L388-388" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L390-390" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1092,15 +1096,15 @@ keys before calling append.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '447', 447)" onmouseover="showTip(event, '447', 447)">
+          <code onmouseout="hideTip(event, '451', 451)" onmouseover="showTip(event, '451', 451)">
             Merge(otherFrame)
           </code>
-          <div class="tip" id="447">
+          <div class="tip" id="451">
             <strong>Signature:</strong> otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L371-371" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L373-373" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1124,15 +1128,15 @@ keys before calling append.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '448', 448)" onmouseover="showTip(event, '448', 448)">
+          <code onmouseout="hideTip(event, '452', 452)" onmouseover="showTip(event, '452', 452)">
             Zip(otherFrame, op)
           </code>
-          <div class="tip" id="448">
+          <div class="tip" id="452">
             <strong>Signature:</strong> (otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * op:Func&lt;&#39;V1,&#39;V2,&#39;V3&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                           <strong>Type parameters:</strong> 'V3          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L246-246" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L248-248" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1158,15 +1162,15 @@ values in the frames are zipped and which are left unchanged.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '449', 449)" onmouseover="showTip(event, '449', 449)">
+          <code onmouseout="hideTip(event, '453', 453)" onmouseover="showTip(event, '453', 453)">
             Zip(...)
           </code>
-          <div class="tip" id="449">
+          <div class="tip" id="453">
             <strong>Signature:</strong> (otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * columnKind:JoinKind * rowKind:JoinKind * lookup:Lookup * op:Func&lt;&#39;V1,&#39;V2,&#39;V3&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                           <strong>Type parameters:</strong> 'V3          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L195-195" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L197-197" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1206,87 +1210,15 @@ values in the frames are zipped and which are left unchanged.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '450', 450)" onmouseover="showTip(event, '450', 450)">
+          <code onmouseout="hideTip(event, '454', 454)" onmouseover="showTip(event, '454', 454)">
             ( - )(scalar, frame)
           </code>
-          <div class="tip" id="450">
+          <div class="tip" id="454">
             <strong>Signature:</strong> (scalar:int * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1121-1121" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '451', 451)" onmouseover="showTip(event, '451', 451)">
-            ( - )(frame, scalar)
-          </code>
-          <div class="tip" id="451">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * scalar:int) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1118-1118" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '452', 452)" onmouseover="showTip(event, '452', 452)">
-            ( - )(scalar, frame)
-          </code>
-          <div class="tip" id="452">
-            <strong>Signature:</strong> (scalar:float * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1090-1090" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '453', 453)" onmouseover="showTip(event, '453', 453)">
-            ( - )(frame, scalar)
-          </code>
-          <div class="tip" id="453">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * scalar:float) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1087-1087" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '454', 454)" onmouseover="showTip(event, '454', 454)">
-            ( - )(series, frame)
-          </code>
-          <div class="tip" id="454">
-            <strong>Signature:</strong> (series:Series&lt;&#39;TRowKey,int&gt; * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1068-1068" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1119-1119" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1297,14 +1229,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '455', 455)" onmouseover="showTip(event, '455', 455)">
-            ( - )(frame, series)
+            ( - )(frame, scalar)
           </code>
           <div class="tip" id="455">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * series:Series&lt;&#39;TRowKey,int&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * scalar:int) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1056-1056" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1116-1116" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1315,14 +1247,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '456', 456)" onmouseover="showTip(event, '456', 456)">
-            ( - )(series, frame)
+            ( - )(scalar, frame)
           </code>
           <div class="tip" id="456">
-            <strong>Signature:</strong> (series:Series&lt;&#39;TRowKey,float&gt; * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (scalar:float * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1043-1043" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1088-1088" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1333,14 +1265,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '457', 457)" onmouseover="showTip(event, '457', 457)">
-            ( - )(frame, series)
+            ( - )(frame, scalar)
           </code>
           <div class="tip" id="457">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * series:Series&lt;&#39;TRowKey,float&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * scalar:float) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1031-1031" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1085-1085" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1351,14 +1283,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '458', 458)" onmouseover="showTip(event, '458', 458)">
-            ( - )(frame1, frame2)
+            ( - )(series, frame)
           </code>
           <div class="tip" id="458">
-            <strong>Signature:</strong> (frame1:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * frame2:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (series:Series&lt;&#39;TRowKey,int&gt; * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1016-1016" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1066-1066" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1369,14 +1301,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '459', 459)" onmouseover="showTip(event, '459', 459)">
-            ( * )(scalar, frame)
+            ( - )(frame, series)
           </code>
           <div class="tip" id="459">
-            <strong>Signature:</strong> (scalar:int * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * series:Series&lt;&#39;TRowKey,int&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1127-1127" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1054-1054" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1387,14 +1319,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '460', 460)" onmouseover="showTip(event, '460', 460)">
-            ( * )(frame, scalar)
+            ( - )(series, frame)
           </code>
           <div class="tip" id="460">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * scalar:int) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (series:Series&lt;&#39;TRowKey,float&gt; * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1124-1124" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1041-1041" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1405,14 +1337,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '461', 461)" onmouseover="showTip(event, '461', 461)">
-            ( * )(scalar, frame)
+            ( - )(frame, series)
           </code>
           <div class="tip" id="461">
-            <strong>Signature:</strong> (scalar:float * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * series:Series&lt;&#39;TRowKey,float&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1096-1096" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1029-1029" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1423,14 +1355,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '462', 462)" onmouseover="showTip(event, '462', 462)">
-            ( * )(frame, scalar)
+            ( - )(frame1, frame2)
           </code>
           <div class="tip" id="462">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * scalar:float) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (frame1:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * frame2:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1093-1093" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1014-1014" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1441,14 +1373,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '463', 463)" onmouseover="showTip(event, '463', 463)">
-            ( * )(series, frame)
+            ( * )(scalar, frame)
           </code>
           <div class="tip" id="463">
-            <strong>Signature:</strong> (series:Series&lt;&#39;TRowKey,int&gt; * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (scalar:int * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1071-1071" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1125-1125" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1459,14 +1391,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '464', 464)" onmouseover="showTip(event, '464', 464)">
-            ( * )(frame, series)
+            ( * )(frame, scalar)
           </code>
           <div class="tip" id="464">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * series:Series&lt;&#39;TRowKey,int&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * scalar:int) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1059-1059" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1122-1122" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1477,14 +1409,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '465', 465)" onmouseover="showTip(event, '465', 465)">
-            ( * )(series, frame)
+            ( * )(scalar, frame)
           </code>
           <div class="tip" id="465">
-            <strong>Signature:</strong> (series:Series&lt;&#39;TRowKey,float&gt; * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (scalar:float * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1046-1046" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1094-1094" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1495,14 +1427,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '466', 466)" onmouseover="showTip(event, '466', 466)">
-            ( * )(frame, series)
+            ( * )(frame, scalar)
           </code>
           <div class="tip" id="466">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * series:Series&lt;&#39;TRowKey,float&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * scalar:float) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1034-1034" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1091-1091" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1513,14 +1445,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '467', 467)" onmouseover="showTip(event, '467', 467)">
-            ( * )(frame1, frame2)
+            ( * )(series, frame)
           </code>
           <div class="tip" id="467">
-            <strong>Signature:</strong> (frame1:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * frame2:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (series:Series&lt;&#39;TRowKey,int&gt; * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1019-1019" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1069-1069" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1531,14 +1463,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '468', 468)" onmouseover="showTip(event, '468', 468)">
-            ( / )(scalar, frame)
+            ( * )(frame, series)
           </code>
           <div class="tip" id="468">
-            <strong>Signature:</strong> (scalar:int * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * series:Series&lt;&#39;TRowKey,int&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1133-1133" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1057-1057" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1549,14 +1481,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '469', 469)" onmouseover="showTip(event, '469', 469)">
-            ( / )(frame, scalar)
+            ( * )(series, frame)
           </code>
           <div class="tip" id="469">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * scalar:int) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (series:Series&lt;&#39;TRowKey,float&gt; * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1130-1130" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1044-1044" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1567,14 +1499,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '470', 470)" onmouseover="showTip(event, '470', 470)">
-            ( / )(scalar, frame)
+            ( * )(frame, series)
           </code>
           <div class="tip" id="470">
-            <strong>Signature:</strong> (scalar:float * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * series:Series&lt;&#39;TRowKey,float&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1102-1102" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1032-1032" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1585,14 +1517,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '471', 471)" onmouseover="showTip(event, '471', 471)">
-            ( / )(frame, scalar)
+            ( * )(frame1, frame2)
           </code>
           <div class="tip" id="471">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * scalar:float) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (frame1:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * frame2:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1099-1099" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1017-1017" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1603,14 +1535,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '472', 472)" onmouseover="showTip(event, '472', 472)">
-            ( / )(series, frame)
+            ( / )(scalar, frame)
           </code>
           <div class="tip" id="472">
-            <strong>Signature:</strong> (series:Series&lt;&#39;TRowKey,int&gt; * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (scalar:int * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1074-1074" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1131-1131" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1621,14 +1553,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '473', 473)" onmouseover="showTip(event, '473', 473)">
-            ( / )(frame, series)
+            ( / )(frame, scalar)
           </code>
           <div class="tip" id="473">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * series:Series&lt;&#39;TRowKey,int&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * scalar:int) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1062-1062" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1128-1128" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1639,14 +1571,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '474', 474)" onmouseover="showTip(event, '474', 474)">
-            ( / )(series, frame)
+            ( / )(scalar, frame)
           </code>
           <div class="tip" id="474">
-            <strong>Signature:</strong> (series:Series&lt;&#39;TRowKey,float&gt; * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (scalar:float * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1049-1049" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1100-1100" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1657,14 +1589,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '475', 475)" onmouseover="showTip(event, '475', 475)">
-            ( / )(frame, series)
+            ( / )(frame, scalar)
           </code>
           <div class="tip" id="475">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * series:Series&lt;&#39;TRowKey,float&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * scalar:float) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1037-1037" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1097-1097" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1675,14 +1607,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '476', 476)" onmouseover="showTip(event, '476', 476)">
-            ( / )(frame1, frame2)
+            ( / )(series, frame)
           </code>
           <div class="tip" id="476">
-            <strong>Signature:</strong> (frame1:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * frame2:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (series:Series&lt;&#39;TRowKey,int&gt; * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1022-1022" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1072-1072" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1693,14 +1625,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '477', 477)" onmouseover="showTip(event, '477', 477)">
-            ( ~- )(frame)
+            ( / )(frame, series)
           </code>
           <div class="tip" id="477">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * series:Series&lt;&#39;TRowKey,int&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1008-1008" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1060-1060" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1711,14 +1643,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '478', 478)" onmouseover="showTip(event, '478', 478)">
-            ( + )(scalar, frame)
+            ( / )(series, frame)
           </code>
           <div class="tip" id="478">
-            <strong>Signature:</strong> (scalar:int * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (series:Series&lt;&#39;TRowKey,float&gt; * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1115-1115" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1047-1047" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1729,14 +1661,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '479', 479)" onmouseover="showTip(event, '479', 479)">
-            ( + )(frame, scalar)
+            ( / )(frame, series)
           </code>
           <div class="tip" id="479">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * scalar:int) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * series:Series&lt;&#39;TRowKey,float&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1112-1112" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1035-1035" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1747,14 +1679,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '480', 480)" onmouseover="showTip(event, '480', 480)">
-            ( + )(scalar, frame)
+            ( / )(frame1, frame2)
           </code>
           <div class="tip" id="480">
-            <strong>Signature:</strong> (scalar:float * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (frame1:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * frame2:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1084-1084" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1020-1020" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1765,14 +1697,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '481', 481)" onmouseover="showTip(event, '481', 481)">
-            ( + )(frame, scalar)
+            ( ~- )(frame)
           </code>
           <div class="tip" id="481">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * scalar:float) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1081-1081" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1006-1006" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1783,14 +1715,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '482', 482)" onmouseover="showTip(event, '482', 482)">
-            ( + )(series, frame)
+            ( + )(scalar, frame)
           </code>
           <div class="tip" id="482">
-            <strong>Signature:</strong> (series:Series&lt;&#39;TRowKey,int&gt; * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (scalar:int * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1065-1065" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1113-1113" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1801,14 +1733,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '483', 483)" onmouseover="showTip(event, '483', 483)">
-            ( + )(frame, series)
+            ( + )(frame, scalar)
           </code>
           <div class="tip" id="483">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * series:Series&lt;&#39;TRowKey,int&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * scalar:int) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1053-1053" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1110-1110" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1819,14 +1751,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '484', 484)" onmouseover="showTip(event, '484', 484)">
-            ( + )(series, frame)
+            ( + )(scalar, frame)
           </code>
           <div class="tip" id="484">
-            <strong>Signature:</strong> (series:Series&lt;&#39;TRowKey,float&gt; * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (scalar:float * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1040-1040" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1082-1082" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1837,14 +1769,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '485', 485)" onmouseover="showTip(event, '485', 485)">
-            ( + )(frame, series)
+            ( + )(frame, scalar)
           </code>
           <div class="tip" id="485">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * series:Series&lt;&#39;TRowKey,float&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * scalar:float) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1028-1028" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1079-1079" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1855,14 +1787,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '486', 486)" onmouseover="showTip(event, '486', 486)">
-            ( + )(frame1, frame2)
+            ( + )(series, frame)
           </code>
           <div class="tip" id="486">
-            <strong>Signature:</strong> (frame1:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * frame2:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (series:Series&lt;&#39;TRowKey,int&gt; * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1013-1013" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1063-1063" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1873,14 +1805,14 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '487', 487)" onmouseover="showTip(event, '487', 487)">
-            Abs(frame)
+            ( + )(frame, series)
           </code>
           <div class="tip" id="487">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * series:Series&lt;&#39;TRowKey,int&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1160-1160" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1051-1051" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1891,9 +1823,99 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '488', 488)" onmouseover="showTip(event, '488', 488)">
-            Acos(frame)
+            ( + )(series, frame)
           </code>
           <div class="tip" id="488">
+            <strong>Signature:</strong> (series:Series&lt;&#39;TRowKey,float&gt; * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1038-1038" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '489', 489)" onmouseover="showTip(event, '489', 489)">
+            ( + )(frame, series)
+          </code>
+          <div class="tip" id="489">
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * series:Series&lt;&#39;TRowKey,float&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1026-1026" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '490', 490)" onmouseover="showTip(event, '490', 490)">
+            ( + )(frame1, frame2)
+          </code>
+          <div class="tip" id="490">
+            <strong>Signature:</strong> (frame1:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * frame2:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1011-1011" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '491', 491)" onmouseover="showTip(event, '491', 491)">
+            Abs(frame)
+          </code>
+          <div class="tip" id="491">
+            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1158-1158" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '492', 492)" onmouseover="showTip(event, '492', 492)">
+            Acos(frame)
+          </code>
+          <div class="tip" id="492">
+            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1137-1137" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '493', 493)" onmouseover="showTip(event, '493', 493)">
+            Asin(frame)
+          </code>
+          <div class="tip" id="493">
             <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
@@ -1908,10 +1930,10 @@ values in the frames are zipped and which are left unchanged.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '489', 489)" onmouseover="showTip(event, '489', 489)">
-            Asin(frame)
+          <code onmouseout="hideTip(event, '494', 494)" onmouseover="showTip(event, '494', 494)">
+            Atan(frame)
           </code>
-          <div class="tip" id="489">
+          <div class="tip" id="494">
             <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
@@ -1926,105 +1948,15 @@ values in the frames are zipped and which are left unchanged.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '490', 490)" onmouseover="showTip(event, '490', 490)">
-            Atan(frame)
-          </code>
-          <div class="tip" id="490">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1143-1143" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '491', 491)" onmouseover="showTip(event, '491', 491)">
-            Ceiling(frame)
-          </code>
-          <div class="tip" id="491">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1162-1162" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '492', 492)" onmouseover="showTip(event, '492', 492)">
-            Cos(frame)
-          </code>
-          <div class="tip" id="492">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1149-1149" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '493', 493)" onmouseover="showTip(event, '493', 493)">
-            Cosh(frame)
-          </code>
-          <div class="tip" id="493">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1151-1151" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '494', 494)" onmouseover="showTip(event, '494', 494)">
-            Exp(frame)
-          </code>
-          <div class="tip" id="494">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1164-1164" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
           <code onmouseout="hideTip(event, '495', 495)" onmouseover="showTip(event, '495', 495)">
-            Floor(frame)
+            Ceiling(frame)
           </code>
           <div class="tip" id="495">
             <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1166-1166" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1160-1160" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2035,135 +1967,9 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '496', 496)" onmouseover="showTip(event, '496', 496)">
-            Log(frame)
+            Cos(frame)
           </code>
           <div class="tip" id="496">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1170-1170" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '497', 497)" onmouseover="showTip(event, '497', 497)">
-            Log10(frame)
-          </code>
-          <div class="tip" id="497">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1172-1172" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '498', 498)" onmouseover="showTip(event, '498', 498)">
-            Pow(scalar, frame)
-          </code>
-          <div class="tip" id="498">
-            <strong>Signature:</strong> (scalar:float * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1108-1108" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '499', 499)" onmouseover="showTip(event, '499', 499)">
-            Pow(frame, scalar)
-          </code>
-          <div class="tip" id="499">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * scalar:float) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1105-1105" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '500', 500)" onmouseover="showTip(event, '500', 500)">
-            Round(frame)
-          </code>
-          <div class="tip" id="500">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1174-1174" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '501', 501)" onmouseover="showTip(event, '501', 501)">
-            Sign(frame)
-          </code>
-          <div class="tip" id="501">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1176-1176" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '502', 502)" onmouseover="showTip(event, '502', 502)">
-            Sin(frame)
-          </code>
-          <div class="tip" id="502">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1145-1145" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '503', 503)" onmouseover="showTip(event, '503', 503)">
-            Sinh(frame)
-          </code>
-          <div class="tip" id="503">
             <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
@@ -2178,15 +1984,141 @@ values in the frames are zipped and which are left unchanged.</li>
       <tr>
         <td class="member-name">
 
+          <code onmouseout="hideTip(event, '497', 497)" onmouseover="showTip(event, '497', 497)">
+            Cosh(frame)
+          </code>
+          <div class="tip" id="497">
+            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1149-1149" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '498', 498)" onmouseover="showTip(event, '498', 498)">
+            Exp(frame)
+          </code>
+          <div class="tip" id="498">
+            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1162-1162" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '499', 499)" onmouseover="showTip(event, '499', 499)">
+            Floor(frame)
+          </code>
+          <div class="tip" id="499">
+            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1164-1164" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '500', 500)" onmouseover="showTip(event, '500', 500)">
+            Log(frame)
+          </code>
+          <div class="tip" id="500">
+            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1168-1168" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '501', 501)" onmouseover="showTip(event, '501', 501)">
+            Log10(frame)
+          </code>
+          <div class="tip" id="501">
+            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1170-1170" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '502', 502)" onmouseover="showTip(event, '502', 502)">
+            Pow(scalar, frame)
+          </code>
+          <div class="tip" id="502">
+            <strong>Signature:</strong> (scalar:float * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1106-1106" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '503', 503)" onmouseover="showTip(event, '503', 503)">
+            Pow(frame, scalar)
+          </code>
+          <div class="tip" id="503">
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * scalar:float) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1103-1103" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
           <code onmouseout="hideTip(event, '504', 504)" onmouseover="showTip(event, '504', 504)">
-            Sqrt(frame)
+            Round(frame)
           </code>
           <div class="tip" id="504">
             <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1178-1178" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1172-1172" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2197,9 +2129,99 @@ values in the frames are zipped and which are left unchanged.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '505', 505)" onmouseover="showTip(event, '505', 505)">
-            Tan(frame)
+            Sign(frame)
           </code>
           <div class="tip" id="505">
+            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1174-1174" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '506', 506)" onmouseover="showTip(event, '506', 506)">
+            Sin(frame)
+          </code>
+          <div class="tip" id="506">
+            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1143-1143" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '507', 507)" onmouseover="showTip(event, '507', 507)">
+            Sinh(frame)
+          </code>
+          <div class="tip" id="507">
+            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1145-1145" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '508', 508)" onmouseover="showTip(event, '508', 508)">
+            Sqrt(frame)
+          </code>
+          <div class="tip" id="508">
+            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1176-1176" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '509', 509)" onmouseover="showTip(event, '509', 509)">
+            Tan(frame)
+          </code>
+          <div class="tip" id="509">
+            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1151-1151" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '510', 510)" onmouseover="showTip(event, '510', 510)">
+            Tanh(frame)
+          </code>
+          <div class="tip" id="510">
             <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
@@ -2214,33 +2236,15 @@ values in the frames are zipped and which are left unchanged.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '506', 506)" onmouseover="showTip(event, '506', 506)">
-            Tanh(frame)
-          </code>
-          <div class="tip" id="506">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1155-1155" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '507', 507)" onmouseover="showTip(event, '507', 507)">
+          <code onmouseout="hideTip(event, '511', 511)" onmouseover="showTip(event, '511', 511)">
             Truncate(frame)
           </code>
-          <div class="tip" id="507">
+          <div class="tip" id="511">
             <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1168-1168" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1166-1166" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2259,15 +2263,15 @@ values in the frames are zipped and which are left unchanged.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '508', 508)" onmouseover="showTip(event, '508', 508)">
+          <code onmouseout="hideTip(event, '512', 512)" onmouseover="showTip(event, '512', 512)">
             ColumnApply(conversionKind, f)
           </code>
-          <div class="tip" id="508">
+          <div class="tip" id="512">
             <strong>Signature:</strong> (conversionKind:ConversionKind * f:Func&lt;Series&lt;&#39;TRowKey,&#39;T&gt;,ISeries&lt;&#39;TRowKey&gt;&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L862-862" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L860-860" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2277,15 +2281,15 @@ values in the frames are zipped and which are left unchanged.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '509', 509)" onmouseover="showTip(event, '509', 509)">
+          <code onmouseout="hideTip(event, '513', 513)" onmouseover="showTip(event, '513', 513)">
             ColumnApply(f)
           </code>
-          <div class="tip" id="509">
+          <div class="tip" id="513">
             <strong>Signature:</strong> f:Func&lt;Series&lt;&#39;TRowKey,&#39;T&gt;,ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L859-859" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L857-857" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2295,15 +2299,15 @@ values in the frames are zipped and which are left unchanged.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '510', 510)" onmouseover="showTip(event, '510', 510)">
+          <code onmouseout="hideTip(event, '514', 514)" onmouseover="showTip(event, '514', 514)">
             Select(f)
           </code>
-          <div class="tip" id="510">
+          <div class="tip" id="514">
             <strong>Signature:</strong> f:Func&lt;&#39;TRowKey,&#39;TColumnKey,&#39;T1,&#39;T2&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L870-870" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L868-868" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2313,15 +2317,15 @@ values in the frames are zipped and which are left unchanged.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '511', 511)" onmouseover="showTip(event, '511', 511)">
+          <code onmouseout="hideTip(event, '515', 515)" onmouseover="showTip(event, '515', 515)">
             SelectValues(f)
           </code>
-          <div class="tip" id="511">
+          <div class="tip" id="515">
             <strong>Signature:</strong> f:Func&lt;&#39;T1,&#39;T2&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L878-878" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L876-876" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2340,15 +2344,15 @@ values in the frames are zipped and which are left unchanged.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '512', 512)" onmouseover="showTip(event, '512', 512)">
+          <code onmouseout="hideTip(event, '516', 516)" onmouseover="showTip(event, '516', 516)">
             AddColumn(column, series, lookup)
           </code>
-          <div class="tip" id="512">
+          <div class="tip" id="516">
             <strong>Signature:</strong> (column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; * lookup:Lookup) -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L769-769" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L767-767" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2373,15 +2377,15 @@ nearest available value with the smaller/greater key).</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '513', 513)" onmouseover="showTip(event, '513', 513)">
+          <code onmouseout="hideTip(event, '517', 517)" onmouseover="showTip(event, '517', 517)">
             AddColumn(column, series, lookup)
           </code>
-          <div class="tip" id="513">
+          <div class="tip" id="517">
             <strong>Signature:</strong> (column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; * lookup:Lookup) -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L734-734" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L732-732" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2406,15 +2410,15 @@ nearest available value with the smaller/greater key).</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '514', 514)" onmouseover="showTip(event, '514', 514)">
+          <code onmouseout="hideTip(event, '518', 518)" onmouseover="showTip(event, '518', 518)">
             AddColumn(column, series)
           </code>
-          <div class="tip" id="514">
+          <div class="tip" id="518">
             <strong>Signature:</strong> (column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt;) -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L717-717" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L715-715" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2434,15 +2438,15 @@ uses left join and aligns new series to the existing frame keys.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '515', 515)" onmouseover="showTip(event, '515', 515)">
+          <code onmouseout="hideTip(event, '519', 519)" onmouseover="showTip(event, '519', 519)">
             AddColumn(column, series)
           </code>
-          <div class="tip" id="515">
+          <div class="tip" id="519">
             <strong>Signature:</strong> (column:&#39;TColumnKey * series:seq&lt;&#39;V&gt;) -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L705-705" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L703-703" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2463,15 +2467,15 @@ trimmed and if it is shorter, missing values will be added.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '516', 516)" onmouseover="showTip(event, '516', 516)">
+          <code onmouseout="hideTip(event, '520', 520)" onmouseover="showTip(event, '520', 520)">
             DropColumn(column)
           </code>
-          <div class="tip" id="516">
+          <div class="tip" id="520">
             <strong>Signature:</strong> column:&#39;TColumnKey -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L790-790" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L788-788" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2490,87 +2494,15 @@ frame columns. The operation throws if the column key is not found.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '517', 517)" onmouseover="showTip(event, '517', 517)">
+          <code onmouseout="hideTip(event, '521', 521)" onmouseover="showTip(event, '521', 521)">
             GetAllColumns(conversionKind)
           </code>
-          <div class="tip" id="517">
+          <div class="tip" id="521">
             <strong>Signature:</strong> conversionKind:ConversionKind -&gt; seq&lt;KeyValuePair&lt;&#39;TColumnKey,Series&lt;&#39;TRowKey,&#39;R&gt;&gt;&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L923-923" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '518', 518)" onmouseover="showTip(event, '518', 518)">
-            GetAllColumns()
-          </code>
-          <div class="tip" id="518">
-            <strong>Signature:</strong> unit -&gt; seq&lt;KeyValuePair&lt;&#39;TColumnKey,Series&lt;&#39;TRowKey,&#39;R&gt;&gt;&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L904-904" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '519', 519)" onmouseover="showTip(event, '519', 519)">
-            GetColumn(column)
-          </code>
-          <div class="tip" id="519">
-            <strong>Signature:</strong> column:&#39;TColumnKey -&gt; Series&lt;&#39;TRowKey,&#39;R&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L900-900" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '520', 520)" onmouseover="showTip(event, '520', 520)">
-            GetColumn(column, lookup)
-          </code>
-          <div class="tip" id="520">
-            <strong>Signature:</strong> (column:&#39;TColumnKey * lookup:Lookup) -&gt; Series&lt;&#39;TRowKey,&#39;R&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L888-888" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '521', 521)" onmouseover="showTip(event, '521', 521)">
-            GetColumnAt(index)
-          </code>
-          <div class="tip" id="521">
-            <strong>Signature:</strong> index:int -&gt; Series&lt;&#39;TRowKey,&#39;R&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L896-896" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L921-921" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2581,14 +2513,14 @@ frame columns. The operation throws if the column key is not found.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '522', 522)" onmouseover="showTip(event, '522', 522)">
-            [column]
+            GetAllColumns()
           </code>
           <div class="tip" id="522">
-            <strong>Signature:</strong> column:&#39;TColumnKey -&gt; Series&lt;&#39;TRowKey,float&gt;<br />
+            <strong>Signature:</strong> unit -&gt; seq&lt;KeyValuePair&lt;&#39;TColumnKey,Series&lt;&#39;TRowKey,&#39;R&gt;&gt;&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L856-856" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L902-902" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2599,14 +2531,14 @@ frame columns. The operation throws if the column key is not found.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '523', 523)" onmouseover="showTip(event, '523', 523)">
-            [()]
+            GetColumn(column)
           </code>
           <div class="tip" id="523">
-            <strong>Signature:</strong> unit -&gt; &#39;TColumnKey<br />
+            <strong>Signature:</strong> column:&#39;TColumnKey -&gt; Series&lt;&#39;TRowKey,&#39;R&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L855-855" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L898-898" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2617,14 +2549,14 @@ frame columns. The operation throws if the column key is not found.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '524', 524)" onmouseover="showTip(event, '524', 524)">
-            RenameColumn(oldKey, newKey)
+            GetColumn(column, lookup)
           </code>
           <div class="tip" id="524">
-            <strong>Signature:</strong> (oldKey:&#39;TColumnKey * newKey:&#39;TColumnKey) -&gt; unit<br />
+            <strong>Signature:</strong> (column:&#39;TColumnKey * lookup:Lookup) -&gt; Series&lt;&#39;TRowKey,&#39;R&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L936-936" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L886-886" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2635,14 +2567,14 @@ frame columns. The operation throws if the column key is not found.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '525', 525)" onmouseover="showTip(event, '525', 525)">
-            RenameColumns(mapping)
+            GetColumnAt(index)
           </code>
           <div class="tip" id="525">
-            <strong>Signature:</strong> mapping:Func&lt;&#39;TColumnKey,&#39;TColumnKey&gt; -&gt; unit<br />
+            <strong>Signature:</strong> index:int -&gt; Series&lt;&#39;TRowKey,&#39;R&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L941-941" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L894-894" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2653,14 +2585,14 @@ frame columns. The operation throws if the column key is not found.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '526', 526)" onmouseover="showTip(event, '526', 526)">
-            RenameColumns(columnKeys)
+            [column]
           </code>
           <div class="tip" id="526">
-            <strong>Signature:</strong> columnKeys:seq&lt;&#39;TColumnKey&gt; -&gt; unit<br />
+            <strong>Signature:</strong> column:&#39;TColumnKey -&gt; Series&lt;&#39;TRowKey,float&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L930-930" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L854-854" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2671,14 +2603,86 @@ frame columns. The operation throws if the column key is not found.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '527', 527)" onmouseover="showTip(event, '527', 527)">
-            ReplaceColumn(column, data)
+            [()]
           </code>
           <div class="tip" id="527">
+            <strong>Signature:</strong> unit -&gt; &#39;TColumnKey<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L853-853" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '528', 528)" onmouseover="showTip(event, '528', 528)">
+            RenameColumn(oldKey, newKey)
+          </code>
+          <div class="tip" id="528">
+            <strong>Signature:</strong> (oldKey:&#39;TColumnKey * newKey:&#39;TColumnKey) -&gt; unit<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L934-934" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '529', 529)" onmouseover="showTip(event, '529', 529)">
+            RenameColumns(mapping)
+          </code>
+          <div class="tip" id="529">
+            <strong>Signature:</strong> mapping:Func&lt;&#39;TColumnKey,&#39;TColumnKey&gt; -&gt; unit<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L939-939" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '530', 530)" onmouseover="showTip(event, '530', 530)">
+            RenameColumns(columnKeys)
+          </code>
+          <div class="tip" id="530">
+            <strong>Signature:</strong> columnKeys:seq&lt;&#39;TColumnKey&gt; -&gt; unit<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L928-928" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '531', 531)" onmouseover="showTip(event, '531', 531)">
+            ReplaceColumn(column, data)
+          </code>
+          <div class="tip" id="531">
             <strong>Signature:</strong> (column:&#39;TColumnKey * data:seq&lt;&#39;V&gt;) -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L850-850" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L848-848" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2698,15 +2702,15 @@ series is added.)</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '528', 528)" onmouseover="showTip(event, '528', 528)">
+          <code onmouseout="hideTip(event, '532', 532)" onmouseover="showTip(event, '532', 532)">
             ReplaceColumn(column, series)
           </code>
-          <div class="tip" id="528">
+          <div class="tip" id="532">
             <strong>Signature:</strong> (column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt;) -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L838-838" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L836-836" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2726,15 +2730,15 @@ series is added.)</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '529', 529)" onmouseover="showTip(event, '529', 529)">
+          <code onmouseout="hideTip(event, '533', 533)" onmouseover="showTip(event, '533', 533)">
             ReplaceColumn(column, data, lookup)
           </code>
-          <div class="tip" id="529">
+          <div class="tip" id="533">
             <strong>Signature:</strong> (column:&#39;TColumnKey * data:seq&lt;&#39;V&gt; * lookup:Lookup) -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L825-825" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L823-823" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2758,15 +2762,15 @@ nearest available value with the smaller/greater key).</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '530', 530)" onmouseover="showTip(event, '530', 530)">
+          <code onmouseout="hideTip(event, '534', 534)" onmouseover="showTip(event, '534', 534)">
             ReplaceColumn(column, series, lookup)
           </code>
-          <div class="tip" id="530">
+          <div class="tip" id="534">
             <strong>Signature:</strong> (column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; * lookup:Lookup) -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L807-807" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L805-805" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2789,15 +2793,15 @@ nearest available value with the smaller/greater key).</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '531', 531)" onmouseover="showTip(event, '531', 531)">
+          <code onmouseout="hideTip(event, '535', 535)" onmouseover="showTip(event, '535', 535)">
             TryGetColumn(column, lookup)
           </code>
-          <div class="tip" id="531">
+          <div class="tip" id="535">
             <strong>Signature:</strong> (column:&#39;TColumnKey * lookup:Lookup) -&gt; OptionalValue&lt;Series&lt;&#39;TRowKey,&#39;R&gt;&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L907-907" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L905-905" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2807,15 +2811,15 @@ nearest available value with the smaller/greater key).</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '532', 532)" onmouseover="showTip(event, '532', 532)">
+          <code onmouseout="hideTip(event, '536', 536)" onmouseover="showTip(event, '536', 536)">
             TryGetColumnObservation(column, lookup)
           </code>
-          <div class="tip" id="532">
+          <div class="tip" id="536">
             <strong>Signature:</strong> (column:&#39;TColumnKey * lookup:Lookup) -&gt; OptionalValue&lt;KeyValuePair&lt;&#39;TColumnKey,Series&lt;&#39;TRowKey,&#39;R&gt;&gt;&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L912-912" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L910-910" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2833,15 +2837,15 @@ nearest available value with the smaller/greater key).</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '533', 533)" onmouseover="showTip(event, '533', 533)">
+          <code onmouseout="hideTip(event, '537', 537)" onmouseover="showTip(event, '537', 537)">
             ( ? )(frame, column)
           </code>
-          <div class="tip" id="533">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;T,&#39;?463849&gt; * column:&#39;?463849) -&gt; Series&lt;&#39;T,float&gt;<br />
+          <div class="tip" id="537">
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;T,&#39;?479198&gt; * column:&#39;?479198) -&gt; Series&lt;&#39;T,float&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L953-953" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L951-951" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2851,15 +2855,15 @@ nearest available value with the smaller/greater key).</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '534', 534)" onmouseover="showTip(event, '534', 534)">
+          <code onmouseout="hideTip(event, '538', 538)" onmouseover="showTip(event, '538', 538)">
             ( ?&lt;- )(frame, column, data)
           </code>
-          <div class="tip" id="534">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;?463842,&#39;?463843&gt; * column:&#39;?463843 * data:seq&lt;&#39;V&gt;) -&gt; unit<br />
+          <div class="tip" id="538">
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;?479191,&#39;?479192&gt; * column:&#39;?479192 * data:seq&lt;&#39;V&gt;) -&gt; unit<br />
                           <strong>Type parameters:</strong> 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L949-949" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L947-947" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2869,15 +2873,15 @@ nearest available value with the smaller/greater key).</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '535', 535)" onmouseover="showTip(event, '535', 535)">
+          <code onmouseout="hideTip(event, '539', 539)" onmouseover="showTip(event, '539', 539)">
             ( ?&lt;- )(frame, column, series)
           </code>
-          <div class="tip" id="535">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;T,&#39;?463837&gt; * column:&#39;?463837 * series:Series&lt;&#39;T,&#39;V&gt;) -&gt; unit<br />
+          <div class="tip" id="539">
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;T,&#39;?479186&gt; * column:&#39;?479186 * series:Series&lt;&#39;T,&#39;V&gt;) -&gt; unit<br />
                           <strong>Type parameters:</strong> 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L945-945" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L943-943" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2896,11 +2900,11 @@ nearest available value with the smaller/greater key).</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '536', 536)" onmouseover="showTip(event, '536', 536)">
+          <code onmouseout="hideTip(event, '540', 540)" onmouseover="showTip(event, '540', 540)">
             AggregateRowsBy(groupBy, aggBy, aggFunc)
           </code>
-          <div class="tip" id="536">
-            <strong>Signature:</strong> (groupBy:seq&lt;&#39;TColumnKey&gt; * aggBy:seq&lt;&#39;TColumnKey&gt; * aggFunc:Func&lt;Series&lt;&#39;TRowKey,&#39;?464158&gt;,&#39;?464159&gt;) -&gt; Frame&lt;int,&#39;TColumnKey&gt;<br />
+          <div class="tip" id="540">
+            <strong>Signature:</strong> (groupBy:seq&lt;&#39;TColumnKey&gt; * aggBy:seq&lt;&#39;TColumnKey&gt; * aggFunc:Func&lt;Series&lt;&#39;TRowKey,&#39;?479507&gt;,&#39;?479508&gt;) -&gt; Frame&lt;int,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
@@ -2933,15 +2937,15 @@ in <code>aggBy</code> are aggregated according to <code>aggFunc</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '537', 537)" onmouseover="showTip(event, '537', 537)">
+          <code onmouseout="hideTip(event, '541', 541)" onmouseover="showTip(event, '541', 541)">
             new(names, columns)
           </code>
-          <div class="tip" id="537">
+          <div class="tip" id="541">
             <strong>Signature:</strong> (names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1184-1184" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1182-1182" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2951,15 +2955,15 @@ in <code>aggBy</code> are aggregated according to <code>aggFunc</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '538', 538)" onmouseover="showTip(event, '538', 538)">
+          <code onmouseout="hideTip(event, '542', 542)" onmouseover="showTip(event, '542', 542)">
             new(...)
           </code>
-          <div class="tip" id="538">
+          <div class="tip" id="542">
             <strong>Signature:</strong> (rowIndex:IIndex&lt;&#39;TRowKey&gt; * columnIndex:IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; * indexBuilder:IIndexBuilder * vectorBuilder:IVectorBuilder) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L66-66" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L77-77" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2977,106 +2981,33 @@ in <code>aggBy</code> are aggregated according to <code>aggFunc</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '539', 539)" onmouseover="showTip(event, '539', 539)">
+          <code onmouseout="hideTip(event, '543', 543)" onmouseover="showTip(event, '543', 543)">
             Clone()
           </code>
-          <div class="tip" id="539">
+          <div class="tip" id="543">
             <strong>Signature:</strong> unit -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1191-1191" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1189-1189" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '540', 540)" onmouseover="showTip(event, '540', 540)">
-            ColumnApply(strict, f)
-          </code>
-          <div class="tip" id="540">
-            <strong>Signature:</strong> (strict:bool * f:Func&lt;Series&lt;&#39;TRowKey,&#39;T&gt;,ISeries&lt;&#39;TRowKey&gt;&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1437-1437" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '541', 541)" onmouseover="showTip(event, '541', 541)">
-            ColumnCount
-          </code>
-          <div class="tip" id="541">
-            <strong>Signature:</strong> int<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L166-166" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '542', 542)" onmouseover="showTip(event, '542', 542)">
-            ColumnIndex
-          </code>
-          <div class="tip" id="542">
-            <strong>Signature:</strong> IIndex&lt;&#39;TColumnKey&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L163-163" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '543', 543)" onmouseover="showTip(event, '543', 543)">
-            GetAddressRange(lo, hi)
-          </code>
-          <div class="tip" id="543">
-            <strong>Signature:</strong> (lo:Address * hi:Address) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1242-1242" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Internal helper used by <code>skip</code>, <code>take</code>, etc.</p>
-
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '544', 544)" onmouseover="showTip(event, '544', 544)">
-            GetAllColumns(strict)
+            ColumnApply(strict, f)
           </code>
           <div class="tip" id="544">
-            <strong>Signature:</strong> strict:bool -&gt; seq&lt;KeyValuePair&lt;&#39;TColumnKey,Series&lt;&#39;TRowKey,&#39;R&gt;&gt;&gt;<br />
+            <strong>Signature:</strong> (strict:bool * f:Func&lt;Series&lt;&#39;TRowKey,&#39;T&gt;,ISeries&lt;&#39;TRowKey&gt;&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1435-1435" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1436-1436" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3087,9 +3018,82 @@ in <code>aggBy</code> are aggregated according to <code>aggFunc</code>.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '545', 545)" onmouseover="showTip(event, '545', 545)">
-            GroupRowsBy(colKey)
+            ColumnCount
           </code>
           <div class="tip" id="545">
+            <strong>Signature:</strong> int<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L168-168" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '546', 546)" onmouseover="showTip(event, '546', 546)">
+            ColumnIndex
+          </code>
+          <div class="tip" id="546">
+            <strong>Signature:</strong> IIndex&lt;&#39;TColumnKey&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L165-165" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '547', 547)" onmouseover="showTip(event, '547', 547)">
+            GetAddressRange(range)
+          </code>
+          <div class="tip" id="547">
+            <strong>Signature:</strong> range:RangeRestriction&lt;Address&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1240-1240" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Internal helper used by <code>skip</code>, <code>take</code>, etc.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '548', 548)" onmouseover="showTip(event, '548', 548)">
+            GetAllColumns(strict)
+          </code>
+          <div class="tip" id="548">
+            <strong>Signature:</strong> strict:bool -&gt; seq&lt;KeyValuePair&lt;&#39;TColumnKey,Series&lt;&#39;TRowKey,&#39;R&gt;&gt;&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L1434-1434" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '549', 549)" onmouseover="showTip(event, '549', 549)">
+            GroupRowsBy(colKey)
+          </code>
+          <div class="tip" id="549">
             <strong>Signature:</strong> colKey:&#39;TColumnKey -&gt; Frame&lt;(&#39;TGroup * &#39;TRowKey),&#39;TColumnKey&gt;<br />
                       </div>
         </td>
@@ -3104,11 +3108,11 @@ in <code>aggBy</code> are aggregated according to <code>aggFunc</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '546', 546)" onmouseover="showTip(event, '546', 546)">
+          <code onmouseout="hideTip(event, '550', 550)" onmouseover="showTip(event, '550', 550)">
             GroupRowsByIndex(keySelector)
           </code>
-          <div class="tip" id="546">
-            <strong>Signature:</strong> keySelector:Func&lt;&#39;TRowKey,&#39;?464150&gt; -&gt; Frame&lt;(&#39;?464150 * &#39;TRowKey),&#39;TColumnKey&gt;<br />
+          <div class="tip" id="550">
+            <strong>Signature:</strong> keySelector:Func&lt;&#39;TRowKey,&#39;?479499&gt; -&gt; Frame&lt;(&#39;?479499 * &#39;TRowKey),&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
@@ -3122,10 +3126,10 @@ in <code>aggBy</code> are aggregated according to <code>aggFunc</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '547', 547)" onmouseover="showTip(event, '547', 547)">
+          <code onmouseout="hideTip(event, '551', 551)" onmouseover="showTip(event, '551', 551)">
             GroupRowsUsing(f)
           </code>
-          <div class="tip" id="547">
+          <div class="tip" id="551">
             <strong>Signature:</strong> f:Func&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;,&#39;TGroup&gt; -&gt; Frame&lt;(&#39;TGroup * &#39;TRowKey),&#39;TColumnKey&gt;<br />
                       </div>
         </td>
@@ -3140,15 +3144,15 @@ in <code>aggBy</code> are aggregated according to <code>aggFunc</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '548', 548)" onmouseover="showTip(event, '548', 548)">
+          <code onmouseout="hideTip(event, '552', 552)" onmouseover="showTip(event, '552', 552)">
             RowCount
           </code>
-          <div class="tip" id="548">
+          <div class="tip" id="552">
             <strong>Signature:</strong> int<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L165-165" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L167-167" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3158,15 +3162,15 @@ in <code>aggBy</code> are aggregated according to <code>aggFunc</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '549', 549)" onmouseover="showTip(event, '549', 549)">
+          <code onmouseout="hideTip(event, '553', 553)" onmouseover="showTip(event, '553', 553)">
             RowIndex
           </code>
-          <div class="tip" id="549">
+          <div class="tip" id="553">
             <strong>Signature:</strong> IIndex&lt;&#39;TRowKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L162-162" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L164-164" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3184,15 +3188,15 @@ in <code>aggBy</code> are aggregated according to <code>aggFunc</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '550', 550)" onmouseover="showTip(event, '550', 550)">
+          <code onmouseout="hideTip(event, '554', 554)" onmouseover="showTip(event, '554', 554)">
             ( $ )(f, frame)
           </code>
-          <div class="tip" id="550">
-            <strong>Signature:</strong> (f:(&#39;?463794 -&gt; &#39;?463795) * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+          <div class="tip" id="554">
+            <strong>Signature:</strong> (f:(&#39;?479143 -&gt; &#39;?479144) * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L884-884" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Frame.fs#L882-882" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>

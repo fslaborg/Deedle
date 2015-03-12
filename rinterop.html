@@ -53,21 +53,6 @@ is extensible and so it is possible to support conversion between other F# types
 <a href="http://cran.r-project.org/web/packages/zoo/index.html">zoo package</a> (Z's ordered 
 observations).</p>
 
-<p>To use Deedle and R provider together, all you need to do is to install the following
-NuGet package (this depends on the R provider and Deedle, so you do not need anything
-else).</p>
-
-<div class="row">
-  <div class="span1"></div>
-  <div class="span6">
-    <div class="well well-small" id="nuget">
-      The F# DataFrame library can be <a href="https://nuget.org/packages/Deedle.RPlugin">installed from NuGet</a>:
-      <pre>PM> Install-Package Deedle.RPlugin</pre>
-    </div>
-  </div>
-  <div class="span1"></div>
-</div>
-
 <p>This page is a quick overview showing how to pass data between R and Deedle.
 You can also get this page as an <a href="https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/rinterop.fsx">F# script file</a>
 from GitHub and run the samples interactively.</p>
@@ -75,6 +60,12 @@ from GitHub and run the samples interactively.</p>
 <a name="setup"></a>
 
 <h2><a name="Getting-started" class="anchor" href="#Getting-started">Getting started</a></h2>
+
+<p>To use Deedle and R provider together, all you need to do is to install the 
+<a href="https://nuget.org/packages/Deedle.RPlugin"><strong>Deedle.RPlugin</strong> package</a>, which
+installes both as dependencies. Alternatively, you can use the <a href="http://www.nuget.org/packages/FsLab"><strong>FsLab</strong>
+package</a>, which also includes additional
+data access, data science and visualization libraries.</p>
 
 <p>In a typical project ("F# Tutorial"), the NuGet packages are installed in the <code>../packages</code>
 directory. To use R provider and Deedle, you need to write something like this:</p>
@@ -86,19 +77,16 @@ directory. To use R provider and Deedle, you need to write something like this:<
 <span class="l">4: </span>
 <span class="l">5: </span>
 <span class="l">6: </span>
-<span class="l">7: </span>
-<span class="l">8: </span>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="prep">#I</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">packages</span><span class="s">/</span><span class="s">Deedle</span><span class="s">/</span><span class="s">&quot;</span>
-<span class="prep">#I</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">packages</span><span class="s">/</span><span class="s">RProvider</span><span class="s">/</span><span class="s">&quot;</span>
-<span class="prep">#load</span> <span class="s">&quot;</span><span class="s">RProvider</span><span class="s">.</span><span class="s">fsx</span><span class="s">&quot;</span>
-<span class="prep">#load</span> <span class="s">&quot;</span><span class="s">Deedle</span><span class="s">.</span><span class="s">fsx</span><span class="s">&quot;</span>
+<span class="prep">#load</span> <span class="s">&quot;RProvider.fsx&quot;</span>
+<span class="prep">#load</span> <span class="s">&quot;Deedle.fsx&quot;</span>
 
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">RProvider</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="i">RDotNet</span>
-<span class="k">open</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">Deedle</span></pre>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">Deedle</span>
+</pre>
 </td>
 </tr>
 </table>
@@ -125,35 +113,182 @@ the code, you'll get automatic completion when you type <code>R</code> followed 
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs3', 6)" onmouseover="showTip(event, 'fs3', 6)" class="i">RProvider</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="i">datasets</span>
 
 <span class="c">// Get mtcars as an untyped object</span>
-<span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 9)" onmouseover="showTip(event, 'fs8', 9)" class="i">mtcars</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 10)" onmouseover="showTip(event, 'fs9', 10)" class="i">Value</span></pre>
-</td>
-</tr>
-</table>
+<span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 9)" onmouseover="showTip(event, 'fs8', 9)" class="i">mtcars</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 10)" onmouseover="showTip(event, 'fs9', 10)" class="i">Value</span>
 
-<table class="pre"><tr><td><pre><code>No value has been returned</code></pre></td></tr></table>
-
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
-<span class="l">2: </span>
+<span class="c">// Get mtcars as a typed Deedle frame</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs10', 11)" onmouseover="showTip(event, 'fs10', 11)" class="i">mtcars</span> <span class="o">:</span> <span onmouseout="hideTip(event, 'fs11', 12)" onmouseover="showTip(event, 'fs11', 12)" class="t">Frame</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs12', 13)" onmouseover="showTip(event, 'fs12', 13)" class="t">string</span>, <span onmouseout="hideTip(event, 'fs12', 14)" onmouseover="showTip(event, 'fs12', 14)" class="t">string</span><span class="o">&gt;</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs7', 15)" onmouseover="showTip(event, 'fs7', 15)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 16)" onmouseover="showTip(event, 'fs8', 16)" class="i">mtcars</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs13', 17)" onmouseover="showTip(event, 'fs13', 17)" class="f">GetValue</span>()
 </pre>
 </td>
-<td class="snippet"><pre class="fssnip">
-<span class="c">// Get mtcars as a typed Deedle frame</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs10', 11)" onmouseover="showTip(event, 'fs10', 11)" class="i">mtcars</span> <span class="o">:</span> <span onmouseout="hideTip(event, 'fs11', 12)" onmouseover="showTip(event, 'fs11', 12)" class="i">Frame</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs12', 13)" onmouseover="showTip(event, 'fs12', 13)" class="i">string</span>, <span onmouseout="hideTip(event, 'fs12', 14)" onmouseover="showTip(event, 'fs12', 14)" class="i">string</span><span class="o">&gt;</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs7', 15)" onmouseover="showTip(event, 'fs7', 15)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 16)" onmouseover="showTip(event, 'fs8', 16)" class="i">mtcars</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs13', 17)" onmouseover="showTip(event, 'fs13', 17)" class="i">GetValue</span>()</pre>
-</td>
 </tr>
 </table>
+
+<div class="deedleframe">
+
+
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th><p>mpg</p></th>
+<th><p>cyl</p></th>
+<th><p>disp</p></th>
+<th><p> ... </p></th>
+<th><p>am</p></th>
+<th><p>gear</p></th>
+<th><p>carb</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p>Mazda RX4</p></td>
+<td><p>21</p></td>
+<td><p>6</p></td>
+<td><p>160</p></td>
+<td><p> ... </p></td>
+<td><p>1</p></td>
+<td><p>4</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="even">
+<td><p>Mazda RX4 Wag</p></td>
+<td><p>21</p></td>
+<td><p>6</p></td>
+<td><p>160</p></td>
+<td><p> ... </p></td>
+<td><p>1</p></td>
+<td><p>4</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="odd">
+<td><p>Datsun 710</p></td>
+<td><p>22.8</p></td>
+<td><p>4</p></td>
+<td><p>108</p></td>
+<td><p> ... </p></td>
+<td><p>1</p></td>
+<td><p>4</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="even">
+<td><p>Hornet 4 Drive</p></td>
+<td><p>21.4</p></td>
+<td><p>6</p></td>
+<td><p>258</p></td>
+<td><p> ... </p></td>
+<td><p></p></td>
+<td><p>3</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="odd">
+<td><p>Hornet Sportabout</p></td>
+<td><p>18.7</p></td>
+<td><p>8</p></td>
+<td><p>360</p></td>
+<td><p> ... </p></td>
+<td><p></p></td>
+<td><p>3</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="even">
+<td><p>Valiant</p></td>
+<td><p>18.1</p></td>
+<td><p>6</p></td>
+<td><p>225</p></td>
+<td><p> ... </p></td>
+<td><p></p></td>
+<td><p>3</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="odd">
+<td><p>Duster 360</p></td>
+<td><p>14.3</p></td>
+<td><p>8</p></td>
+<td><p>360</p></td>
+<td><p> ... </p></td>
+<td><p></p></td>
+<td><p>3</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="even">
+<td><p>Merc 240D</p></td>
+<td><p>24.4</p></td>
+<td><p>4</p></td>
+<td><p>146.7</p></td>
+<td><p> ... </p></td>
+<td><p></p></td>
+<td><p>4</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="odd">
+<td><p> ... </p></td>
+<td><p> ... </p></td>
+<td><p> ... </p></td>
+<td><p> ... </p></td>
+<td><p> ... </p></td>
+<td><p> ... </p></td>
+<td><p> ... </p></td>
+<td><p> ... </p></td>
+</tr>
+<tr class="even">
+<td><p>Ford Pantera L</p></td>
+<td><p>15.8</p></td>
+<td><p>8</p></td>
+<td><p>351</p></td>
+<td><p> ... </p></td>
+<td><p>1</p></td>
+<td><p>5</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="odd">
+<td><p>Ferrari Dino</p></td>
+<td><p>19.7</p></td>
+<td><p>6</p></td>
+<td><p>145</p></td>
+<td><p> ... </p></td>
+<td><p>1</p></td>
+<td><p>5</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="even">
+<td><p>Maserati Bora</p></td>
+<td><p>15</p></td>
+<td><p>8</p></td>
+<td><p>301</p></td>
+<td><p> ... </p></td>
+<td><p>1</p></td>
+<td><p>5</p></td>
+<td><p>8</p></td>
+</tr>
+<tr class="odd">
+<td><p>Volvo 142E</p></td>
+<td><p>21.4</p></td>
+<td><p>4</p></td>
+<td><p>121</p></td>
+<td><p> ... </p></td>
+<td><p>1</p></td>
+<td><p>4</p></td>
+<td><p>2</p></td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+
 
 <p>The first sample uses the <code>Value</code> property to convert the data set to a boxed Deedle
 frame of type <code>obj</code>. This is a great way to explore the data, but when you want to do 
 some further processing, you need to specify the type of the data frame that you want
-to get. This is done on line 13 where we get <code>mtcars</code> as a Deedle frame with both rows
+to get. This is done on line 7 where we get <code>mtcars</code> as a Deedle frame with both rows
 and columns indexed by <code>string</code>.</p>
 
 <p>To see that this is a standard Deedle data frame, let's group the cars by the number of
@@ -172,19 +307,20 @@ the data, we use the <a href="https://github.com/fsharp/FSharp.Charting">F# Char
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="prep">#load</span> <span class="s">&quot;</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Charting</span><span class="s">.</span><span class="s">fsx</span><span class="s">&quot;</span>
+<span class="prep">#load</span> <span class="s">&quot;FSharp.Charting.fsx&quot;</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs14', 18)" onmouseover="showTip(event, 'fs14', 18)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs15', 19)" onmouseover="showTip(event, 'fs15', 19)" class="i">Charting</span>
 
 <span onmouseout="hideTip(event, 'fs10', 20)" onmouseover="showTip(event, 'fs10', 20)" class="i">mtcars</span>
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs11', 21)" onmouseover="showTip(event, 'fs11', 21)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 22)" onmouseover="showTip(event, 'fs16', 22)" class="i">groupRowsByInt</span> <span class="s">&quot;</span><span class="s">gear</span><span class="s">&quot;</span>
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs11', 23)" onmouseover="showTip(event, 'fs11', 23)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs17', 24)" onmouseover="showTip(event, 'fs17', 24)" class="i">getCol</span> <span class="s">&quot;</span><span class="s">mpg</span><span class="s">&quot;</span>
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs18', 25)" onmouseover="showTip(event, 'fs18', 25)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 26)" onmouseover="showTip(event, 'fs19', 26)" class="i">levelMean</span> <span onmouseout="hideTip(event, 'fs20', 27)" onmouseover="showTip(event, 'fs20', 27)" class="i">fst</span>
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 28)" onmouseover="showTip(event, 'fs21', 28)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 29)" onmouseover="showTip(event, 'fs22', 29)" class="i">observations</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs23', 30)" onmouseover="showTip(event, 'fs23', 30)" class="i">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs24', 31)" onmouseover="showTip(event, 'fs24', 31)" class="i">Column</span></pre>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs11', 21)" onmouseover="showTip(event, 'fs11', 21)" class="t">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 22)" onmouseover="showTip(event, 'fs16', 22)" class="f">groupRowsByInt</span> <span class="s">&quot;gear&quot;</span>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs11', 23)" onmouseover="showTip(event, 'fs11', 23)" class="t">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs17', 24)" onmouseover="showTip(event, 'fs17', 24)" class="f">getCol</span> <span class="s">&quot;mpg&quot;</span>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs18', 25)" onmouseover="showTip(event, 'fs18', 25)" class="t">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 26)" onmouseover="showTip(event, 'fs19', 26)" class="f">levelMean</span> <span onmouseout="hideTip(event, 'fs20', 27)" onmouseover="showTip(event, 'fs20', 27)" class="f">fst</span>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 28)" onmouseover="showTip(event, 'fs21', 28)" class="t">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 29)" onmouseover="showTip(event, 'fs22', 29)" class="f">observations</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs23', 30)" onmouseover="showTip(event, 'fs23', 30)" class="t">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs24', 31)" onmouseover="showTip(event, 'fs24', 31)" class="f">Column</span>
+</pre>
 </td>
 </tr>
 </table>
 
-<table class="pre"><tr><td><pre><code>No value has been returned</code></pre></td></tr></table>
+<p><img src="http://bluemountaincapital.github.io/Deedle/images/chart1.png" alt="" /></p>
 
 <h3><a name="From-Deedle-to-R" class="anchor" href="#From-Deedle-to-R">From Deedle to R</a></h3>
 
@@ -198,7 +334,8 @@ data frame as argument to standard R functions that expect data frame.</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs25', 32)" onmouseover="showTip(event, 'fs25', 32)" class="i">air</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs11', 33)" onmouseover="showTip(event, 'fs11', 33)" class="i">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs26', 34)" onmouseover="showTip(event, 'fs26', 34)" class="i">ReadCsv</span>(<span onmouseout="hideTip(event, 'fs2', 35)" onmouseover="showTip(event, 'fs2', 35)" class="i">airQuality</span>, <span class="i">separators</span><span class="o">=</span><span class="s">&quot;</span><span class="s">;</span><span class="s">&quot;</span>)</pre>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs25', 32)" onmouseover="showTip(event, 'fs25', 32)" class="i">air</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs11', 33)" onmouseover="showTip(event, 'fs11', 33)" class="t">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs26', 34)" onmouseover="showTip(event, 'fs26', 34)" class="f">ReadCsv</span>(<span onmouseout="hideTip(event, 'fs2', 35)" onmouseover="showTip(event, 'fs2', 35)" class="i">airQuality</span>, <span class="i">separators</span><span class="o">=</span><span class="s">&quot;;&quot;</span>)
+</pre>
 </td>
 </tr>
 </table>
@@ -365,13 +502,14 @@ for each column (to do this, we need to open the <code>base</code> package):</p>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs3', 36)" onmouseover="showTip(event, 'fs3', 36)" class="i">RProvider</span><span class="o">.</span><span class="i">``base``</span>
 
 <span class="c">// Pass air data to R and print the R output</span>
-<span onmouseout="hideTip(event, 'fs27', 37)" onmouseover="showTip(event, 'fs27', 37)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs28', 38)" onmouseover="showTip(event, 'fs28', 38)" class="i">as_data_frame</span>(<span onmouseout="hideTip(event, 'fs25', 39)" onmouseover="showTip(event, 'fs25', 39)" class="i">air</span>)
+<span onmouseout="hideTip(event, 'fs27', 37)" onmouseover="showTip(event, 'fs27', 37)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs28', 38)" onmouseover="showTip(event, 'fs28', 38)" class="f">as_data_frame</span>(<span onmouseout="hideTip(event, 'fs25', 39)" onmouseover="showTip(event, 'fs25', 39)" class="i">air</span>)
 
 <span class="c">// Pass air data to R and get column means</span>
-<span onmouseout="hideTip(event, 'fs27', 40)" onmouseover="showTip(event, 'fs27', 40)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs29', 41)" onmouseover="showTip(event, 'fs29', 41)" class="i">colMeans</span>(<span onmouseout="hideTip(event, 'fs25', 42)" onmouseover="showTip(event, 'fs25', 42)" class="i">air</span>)
+<span onmouseout="hideTip(event, 'fs27', 40)" onmouseover="showTip(event, 'fs27', 40)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs29', 41)" onmouseover="showTip(event, 'fs29', 41)" class="f">colMeans</span>(<span onmouseout="hideTip(event, 'fs25', 42)" onmouseover="showTip(event, 'fs25', 42)" class="i">air</span>)
 <span class="fsi">val it : SymbolicExpression =</span>
 <span class="fsi">  Ozone  Solar.R  Wind  Temp  Month   Day </span>
-<span class="fsi">    NaN      NaN  9.96 77.88   6.99  15.8</span></pre>
+<span class="fsi">    NaN      NaN  9.96 77.88   6.99  15.8</span>
+</pre>
 </td>
 </tr>
 </table>
@@ -392,9 +530,10 @@ following simple frame, the <code>Floats</code> column has missing value for key
 <td class="snippet"><pre class="fssnip">
 <span class="c">// Create sample data frame with missing values</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs30', 43)" onmouseover="showTip(event, 'fs30', 43)" class="i">df</span> <span class="o">=</span> 
-  [ <span class="s">&quot;</span><span class="s">Floats</span><span class="s">&quot;</span> <span class="o">=?&gt;</span> <span onmouseout="hideTip(event, 'fs31', 44)" onmouseover="showTip(event, 'fs31', 44)" class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">10.0</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs32', 45)" onmouseover="showTip(event, 'fs32', 45)" class="i">nan</span>; <span class="n">4</span> <span class="o">=&gt;</span> <span class="n">15.0</span>]
-    <span class="s">&quot;</span><span class="s">Names</span><span class="s">&quot;</span>  <span class="o">=?&gt;</span> <span onmouseout="hideTip(event, 'fs31', 46)" onmouseover="showTip(event, 'fs31', 46)" class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="s">&quot;</span><span class="s">one</span><span class="s">&quot;</span>; <span class="n">3</span> <span class="o">=&gt;</span> <span class="s">&quot;</span><span class="s">three</span><span class="s">&quot;</span>; <span class="n">4</span> <span class="o">=&gt;</span> <span class="s">&quot;</span><span class="s">four</span><span class="s">&quot;</span> ] ] 
-  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs33', 47)" onmouseover="showTip(event, 'fs33', 47)" class="i">frame</span></pre>
+  [ <span class="s">&quot;Floats&quot;</span> <span class="o">=?&gt;</span> <span onmouseout="hideTip(event, 'fs31', 44)" onmouseover="showTip(event, 'fs31', 44)" class="f">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">10.0</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs32', 45)" onmouseover="showTip(event, 'fs32', 45)" class="i">nan</span>; <span class="n">4</span> <span class="o">=&gt;</span> <span class="n">15.0</span>]
+    <span class="s">&quot;Names&quot;</span>  <span class="o">=?&gt;</span> <span onmouseout="hideTip(event, 'fs31', 46)" onmouseover="showTip(event, 'fs31', 46)" class="f">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="s">&quot;one&quot;</span>; <span class="n">3</span> <span class="o">=&gt;</span> <span class="s">&quot;three&quot;</span>; <span class="n">4</span> <span class="o">=&gt;</span> <span class="s">&quot;four&quot;</span> ] ] 
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs33', 47)" onmouseover="showTip(event, 'fs33', 47)" class="f">frame</span>
+</pre>
 </td>
 </tr>
 </table>
@@ -414,13 +553,14 @@ stores the data frame in a varaible available in the current R environment:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span onmouseout="hideTip(event, 'fs27', 48)" onmouseover="showTip(event, 'fs27', 48)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs34', 49)" onmouseover="showTip(event, 'fs34', 49)" class="i">assign</span>(<span class="s">&quot;</span><span class="s">x</span><span class="s">&quot;</span>,  <span onmouseout="hideTip(event, 'fs30', 50)" onmouseover="showTip(event, 'fs30', 50)" class="i">df</span>)
+<span onmouseout="hideTip(event, 'fs27', 48)" onmouseover="showTip(event, 'fs27', 48)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs34', 49)" onmouseover="showTip(event, 'fs34', 49)" class="f">assign</span>(<span class="s">&quot;x&quot;</span>,  <span onmouseout="hideTip(event, 'fs30', 50)" onmouseover="showTip(event, 'fs30', 50)" class="i">df</span>)
 <span class="fsi">val it : SymbolicExpression = </span>
 <span class="fsi">     Floats   Names </span>
 <span class="fsi"> 1       10     one </span>
 <span class="fsi"> 2      NaN    &lt;NA&gt; </span>
 <span class="fsi"> 4       15    four </span>
-<span class="fsi"> 3      NaN   three </span></pre>
+<span class="fsi"> 3      NaN   three </span>
+</pre>
 </td>
 </tr>
 </table>
@@ -454,7 +594,7 @@ quarterly time series of the number of australian residents:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span onmouseout="hideTip(event, 'fs7', 51)" onmouseover="showTip(event, 'fs7', 51)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs35', 52)" onmouseover="showTip(event, 'fs35', 52)" class="i">austres</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 53)" onmouseover="showTip(event, 'fs9', 53)" class="i">Value</span>
+<span onmouseout="hideTip(event, 'fs7', 51)" onmouseover="showTip(event, 'fs7', 51)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs35', 52)" onmouseover="showTip(event, 'fs35', 52)" class="i">austres</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 53)" onmouseover="showTip(event, 'fs9', 53)" class="i">Value</span>
 <span class="fsi">val it : obj =</span>
 <span class="fsi">    1971.25 -&gt; 13067.3 </span>
 <span class="fsi">    1971.5  -&gt; 13130.5 </span>
@@ -462,7 +602,8 @@ quarterly time series of the number of australian residents:</p>
 <span class="fsi">    ...     -&gt; ...     </span>
 <span class="fsi">    1992.75 -&gt; 17568.7 </span>
 <span class="fsi">    1993    -&gt; 17627.1 </span>
-<span class="fsi">    1993.25 -&gt; 17661.5 </span></pre>
+<span class="fsi">    1993.25 -&gt; 17661.5 </span>
+</pre>
 </td>
 </tr>
 </table>
@@ -487,16 +628,17 @@ compiler that we expect a series where both keys and values are of type <code>fl
 </td>
 <td class="snippet"><pre class="fssnip">
 <span class="c">// Get series with numbers of australian residents</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs36', 54)" onmouseover="showTip(event, 'fs36', 54)" class="i">austres</span> <span class="o">:</span> <span onmouseout="hideTip(event, 'fs21', 55)" onmouseover="showTip(event, 'fs21', 55)" class="i">Series</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs37', 56)" onmouseover="showTip(event, 'fs37', 56)" class="i">float</span>, <span onmouseout="hideTip(event, 'fs37', 57)" onmouseover="showTip(event, 'fs37', 57)" class="i">float</span><span class="o">&gt;</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs7', 58)" onmouseover="showTip(event, 'fs7', 58)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs35', 59)" onmouseover="showTip(event, 'fs35', 59)" class="i">austres</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs13', 60)" onmouseover="showTip(event, 'fs13', 60)" class="i">GetValue</span>()
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs36', 54)" onmouseover="showTip(event, 'fs36', 54)" class="i">austres</span> <span class="o">:</span> <span onmouseout="hideTip(event, 'fs21', 55)" onmouseover="showTip(event, 'fs21', 55)" class="t">Series</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs37', 56)" onmouseover="showTip(event, 'fs37', 56)" class="t">float</span>, <span onmouseout="hideTip(event, 'fs37', 57)" onmouseover="showTip(event, 'fs37', 57)" class="t">float</span><span class="o">&gt;</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs7', 58)" onmouseover="showTip(event, 'fs7', 58)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs35', 59)" onmouseover="showTip(event, 'fs35', 59)" class="i">austres</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs13', 60)" onmouseover="showTip(event, 'fs13', 60)" class="f">GetValue</span>()
 
 <span class="c">// Get TimeSpan representing (roughly..) two years</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs38', 61)" onmouseover="showTip(event, 'fs38', 61)" class="i">twoYears</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs39', 62)" onmouseover="showTip(event, 'fs39', 62)" class="i">TimeSpan</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs40', 63)" onmouseover="showTip(event, 'fs40', 63)" class="i">FromDays</span>(<span class="n">2.0</span> <span class="o">*</span> <span class="n">365.0</span>)
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs38', 61)" onmouseover="showTip(event, 'fs38', 61)" class="i">twoYears</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs39', 62)" onmouseover="showTip(event, 'fs39', 62)" class="t">TimeSpan</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs40', 63)" onmouseover="showTip(event, 'fs40', 63)" class="f">FromDays</span>(<span class="n">2.0</span> <span class="o">*</span> <span class="n">365.0</span>)
 
 <span class="c">// Calculate means of sliding windows of 2 year size </span>
 <span onmouseout="hideTip(event, 'fs36', 64)" onmouseover="showTip(event, 'fs36', 64)" class="i">austres</span> 
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 65)" onmouseover="showTip(event, 'fs21', 65)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs41', 66)" onmouseover="showTip(event, 'fs41', 66)" class="i">mapKeys</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs42', 67)" onmouseover="showTip(event, 'fs42', 67)" class="i">y</span> <span class="k">-&gt;</span> 
-    <span onmouseout="hideTip(event, 'fs43', 68)" onmouseover="showTip(event, 'fs43', 68)" class="i">DateTime</span>(<span onmouseout="hideTip(event, 'fs44', 69)" onmouseover="showTip(event, 'fs44', 69)" class="i">int</span> <span onmouseout="hideTip(event, 'fs42', 70)" onmouseover="showTip(event, 'fs42', 70)" class="i">y</span>, <span class="n">1</span> <span class="o">+</span> <span onmouseout="hideTip(event, 'fs44', 71)" onmouseover="showTip(event, 'fs44', 71)" class="i">int</span> (<span class="n">12.0</span> <span class="o">*</span> (<span onmouseout="hideTip(event, 'fs42', 72)" onmouseover="showTip(event, 'fs42', 72)" class="i">y</span> <span class="o">-</span> <span onmouseout="hideTip(event, 'fs45', 73)" onmouseover="showTip(event, 'fs45', 73)" class="i">floor</span> <span onmouseout="hideTip(event, 'fs42', 74)" onmouseover="showTip(event, 'fs42', 74)" class="i">y</span>)), <span class="n">1</span>))
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 75)" onmouseover="showTip(event, 'fs21', 75)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 76)" onmouseover="showTip(event, 'fs46', 76)" class="i">windowDistInto</span> <span onmouseout="hideTip(event, 'fs38', 77)" onmouseover="showTip(event, 'fs38', 77)" class="i">twoYears</span> <span onmouseout="hideTip(event, 'fs18', 78)" onmouseover="showTip(event, 'fs18', 78)" class="i">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs47', 79)" onmouseover="showTip(event, 'fs47', 79)" class="i">mean</span></pre>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 65)" onmouseover="showTip(event, 'fs21', 65)" class="t">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs41', 66)" onmouseover="showTip(event, 'fs41', 66)" class="f">mapKeys</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs42', 67)" onmouseover="showTip(event, 'fs42', 67)" class="i">y</span> <span class="k">-&gt;</span> 
+    <span onmouseout="hideTip(event, 'fs43', 68)" onmouseover="showTip(event, 'fs43', 68)" class="t">DateTime</span>(<span onmouseout="hideTip(event, 'fs44', 69)" onmouseover="showTip(event, 'fs44', 69)" class="f">int</span> <span onmouseout="hideTip(event, 'fs42', 70)" onmouseover="showTip(event, 'fs42', 70)" class="i">y</span>, <span class="n">1</span> <span class="o">+</span> <span onmouseout="hideTip(event, 'fs44', 71)" onmouseover="showTip(event, 'fs44', 71)" class="f">int</span> (<span class="n">12.0</span> <span class="o">*</span> (<span onmouseout="hideTip(event, 'fs42', 72)" onmouseover="showTip(event, 'fs42', 72)" class="i">y</span> <span class="o">-</span> <span onmouseout="hideTip(event, 'fs45', 73)" onmouseover="showTip(event, 'fs45', 73)" class="f">floor</span> <span onmouseout="hideTip(event, 'fs42', 74)" onmouseover="showTip(event, 'fs42', 74)" class="i">y</span>)), <span class="n">1</span>))
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 75)" onmouseover="showTip(event, 'fs21', 75)" class="t">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 76)" onmouseover="showTip(event, 'fs46', 76)" class="f">windowDistInto</span> <span onmouseout="hideTip(event, 'fs38', 77)" onmouseover="showTip(event, 'fs38', 77)" class="i">twoYears</span> <span onmouseout="hideTip(event, 'fs18', 78)" onmouseover="showTip(event, 'fs18', 78)" class="t">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs47', 79)" onmouseover="showTip(event, 'fs47', 79)" class="f">mean</span>
+</pre>
 </td>
 </tr>
 </table>
@@ -512,8 +654,9 @@ series from <code>EuStockMarkets</code>:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs48', 80)" onmouseover="showTip(event, 'fs48', 80)" class="i">ftseStr</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs27', 81)" onmouseover="showTip(event, 'fs27', 81)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs49', 82)" onmouseover="showTip(event, 'fs49', 82)" class="i">parse</span>(<span class="i">text</span><span class="o">=</span><span class="s">&quot;&quot;&quot;</span><span class="s">EuStockMarkets</span><span class="s">[</span><span class="s">,</span><span class="s">&quot;</span><span class="s">FTSE</span><span class="s">&quot;</span><span class="s">]</span><span class="s">&quot;&quot;&quot;</span>)
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs50', 83)" onmouseover="showTip(event, 'fs50', 83)" class="i">ftse</span> <span class="o">:</span> <span onmouseout="hideTip(event, 'fs21', 84)" onmouseover="showTip(event, 'fs21', 84)" class="i">Series</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs37', 85)" onmouseover="showTip(event, 'fs37', 85)" class="i">float</span>, <span onmouseout="hideTip(event, 'fs37', 86)" onmouseover="showTip(event, 'fs37', 86)" class="i">float</span><span class="o">&gt;</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs27', 87)" onmouseover="showTip(event, 'fs27', 87)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs51', 88)" onmouseover="showTip(event, 'fs51', 88)" class="i">eval</span>(<span onmouseout="hideTip(event, 'fs48', 89)" onmouseover="showTip(event, 'fs48', 89)" class="i">ftseStr</span>)<span class="o">.</span><span class="i">GetValue</span>()</pre>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs48', 80)" onmouseover="showTip(event, 'fs48', 80)" class="i">ftseStr</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs27', 81)" onmouseover="showTip(event, 'fs27', 81)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs49', 82)" onmouseover="showTip(event, 'fs49', 82)" class="f">parse</span>(<span class="i">text</span><span class="o">=</span><span class="s">&quot;&quot;&quot;EuStockMarkets[,&quot;FTSE&quot;]&quot;&quot;&quot;</span>)
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs50', 83)" onmouseover="showTip(event, 'fs50', 83)" class="i">ftse</span> <span class="o">:</span> <span onmouseout="hideTip(event, 'fs21', 84)" onmouseover="showTip(event, 'fs21', 84)" class="t">Series</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs37', 85)" onmouseover="showTip(event, 'fs37', 85)" class="t">float</span>, <span onmouseout="hideTip(event, 'fs37', 86)" onmouseover="showTip(event, 'fs37', 86)" class="t">float</span><span class="o">&gt;</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs27', 87)" onmouseover="showTip(event, 'fs27', 87)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs51', 88)" onmouseover="showTip(event, 'fs51', 88)" class="f">eval</span>(<span onmouseout="hideTip(event, 'fs48', 89)" onmouseover="showTip(event, 'fs48', 89)" class="i">ftseStr</span>)<span class="o">.</span><span class="f">GetValue</span>()
+</pre>
 </td>
 </tr>
 </table>
@@ -532,11 +675,12 @@ time series with 3 days of randomly generated values starting today:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs52', 90)" onmouseover="showTip(event, 'fs52', 90)" class="i">rnd</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs53', 91)" onmouseover="showTip(event, 'fs53', 91)" class="i">Random</span>()
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs52', 90)" onmouseover="showTip(event, 'fs52', 90)" class="i">rnd</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs53', 91)" onmouseover="showTip(event, 'fs53', 91)" class="t">Random</span>()
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs54', 92)" onmouseover="showTip(event, 'fs54', 92)" class="i">ts</span> <span class="o">=</span> 
   [ <span class="k">for</span> <span onmouseout="hideTip(event, 'fs55', 93)" onmouseover="showTip(event, 'fs55', 93)" class="i">i</span> <span class="k">in</span> <span class="n">0.0</span> <span class="o">..</span> <span class="n">100.0</span> <span class="k">-&gt;</span> 
-      <span onmouseout="hideTip(event, 'fs43', 94)" onmouseover="showTip(event, 'fs43', 94)" class="i">DateTime</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs56', 95)" onmouseover="showTip(event, 'fs56', 95)" class="i">Today</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs57', 96)" onmouseover="showTip(event, 'fs57', 96)" class="i">AddHours</span>(<span onmouseout="hideTip(event, 'fs55', 97)" onmouseover="showTip(event, 'fs55', 97)" class="i">i</span>), <span onmouseout="hideTip(event, 'fs52', 98)" onmouseover="showTip(event, 'fs52', 98)" class="i">rnd</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs58', 99)" onmouseover="showTip(event, 'fs58', 99)" class="i">NextDouble</span>() ] 
-  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs31', 100)" onmouseover="showTip(event, 'fs31', 100)" class="i">series</span></pre>
+      <span onmouseout="hideTip(event, 'fs43', 94)" onmouseover="showTip(event, 'fs43', 94)" class="t">DateTime</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs56', 95)" onmouseover="showTip(event, 'fs56', 95)" class="i">Today</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs57', 96)" onmouseover="showTip(event, 'fs57', 96)" class="f">AddHours</span>(<span onmouseout="hideTip(event, 'fs55', 97)" onmouseover="showTip(event, 'fs55', 97)" class="i">i</span>), <span onmouseout="hideTip(event, 'fs52', 98)" onmouseover="showTip(event, 'fs52', 98)" class="i">rnd</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs58', 99)" onmouseover="showTip(event, 'fs58', 99)" class="f">NextDouble</span>() ] 
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs31', 100)" onmouseover="showTip(event, 'fs31', 100)" class="f">series</span>
+</pre>
 </td>
 </tr>
 </table>
@@ -561,12 +705,13 @@ shows the output that R prints for the value:</p>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs3', 101)" onmouseover="showTip(event, 'fs3', 101)" class="i">RProvider</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs59', 102)" onmouseover="showTip(event, 'fs59', 102)" class="i">zoo</span>
 
 <span class="c">// Just convert time series to R</span>
-<span onmouseout="hideTip(event, 'fs60', 103)" onmouseover="showTip(event, 'fs60', 103)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 104)" onmouseover="showTip(event, 'fs61', 104)" class="i">as_zoo</span>(<span onmouseout="hideTip(event, 'fs54', 105)" onmouseover="showTip(event, 'fs54', 105)" class="i">ts</span>)
+<span onmouseout="hideTip(event, 'fs60', 103)" onmouseover="showTip(event, 'fs60', 103)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 104)" onmouseover="showTip(event, 'fs61', 104)" class="f">as_zoo</span>(<span onmouseout="hideTip(event, 'fs54', 105)" onmouseover="showTip(event, 'fs54', 105)" class="i">ts</span>)
 <span class="c">// Convert and assing to a variable &#39;ts&#39;</span>
-<span onmouseout="hideTip(event, 'fs27', 106)" onmouseover="showTip(event, 'fs27', 106)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs34', 107)" onmouseover="showTip(event, 'fs34', 107)" class="i">assign</span>(<span class="s">&quot;</span><span class="s">ts</span><span class="s">&quot;</span>, <span onmouseout="hideTip(event, 'fs54', 108)" onmouseover="showTip(event, 'fs54', 108)" class="i">ts</span>)
+<span onmouseout="hideTip(event, 'fs27', 106)" onmouseover="showTip(event, 'fs27', 106)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs34', 107)" onmouseover="showTip(event, 'fs34', 107)" class="f">assign</span>(<span class="s">&quot;ts&quot;</span>, <span onmouseout="hideTip(event, 'fs54', 108)" onmouseover="showTip(event, 'fs54', 108)" class="i">ts</span>)
 <span class="c">// [fsi:val it : string =</span>
 <span class="fsi"> 2013-11-07 05:00:00 2013-11-07 06:00:00 2013-11-07 07:00:00 ...</span>
-<span class="fsi"> 0.749946652         0.580584353         0.523962789         ...</span></pre>
+<span class="fsi"> 0.749946652         0.580584353         0.523962789         ...</span>
+</pre>
 </td>
 </tr>
 </table>
@@ -583,7 +728,8 @@ time series.</p>
 </td>
 <td class="snippet"><pre class="fssnip">
 <span class="c">// Rolling mean with window size 20</span>
-<span onmouseout="hideTip(event, 'fs60', 109)" onmouseover="showTip(event, 'fs60', 109)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs62', 110)" onmouseover="showTip(event, 'fs62', 110)" class="i">rollmean</span>(<span onmouseout="hideTip(event, 'fs54', 111)" onmouseover="showTip(event, 'fs54', 111)" class="i">ts</span>, <span class="n">20</span>)</pre>
+<span onmouseout="hideTip(event, 'fs60', 109)" onmouseover="showTip(event, 'fs60', 109)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs62', 110)" onmouseover="showTip(event, 'fs62', 110)" class="f">rollmean</span>(<span onmouseout="hideTip(event, 'fs54', 111)" onmouseover="showTip(event, 'fs54', 111)" class="i">ts</span>, <span class="n">20</span>)
+</pre>
 </td>
 </tr>
 </table>
@@ -614,23 +760,24 @@ and then draws a chart showing the results:</p>
 <span class="c">// Use &#39;rollmean&#39; to calculate mean and &#39;GetValue&#39; to </span>
 <span class="c">// turn the result into a Deedle time series</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs63', 112)" onmouseover="showTip(event, 'fs63', 112)" class="i">tf</span> <span class="o">=</span> 
-  [ <span class="s">&quot;</span><span class="s">Input</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs54', 113)" onmouseover="showTip(event, 'fs54', 113)" class="i">ts</span> 
-    <span class="s">&quot;</span><span class="s">Means5</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs60', 114)" onmouseover="showTip(event, 'fs60', 114)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs62', 115)" onmouseover="showTip(event, 'fs62', 115)" class="i">rollmean</span>(<span onmouseout="hideTip(event, 'fs54', 116)" onmouseover="showTip(event, 'fs54', 116)" class="i">ts</span>, <span class="n">5</span>)<span class="o">.</span><span class="i">GetValue</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs21', 117)" onmouseover="showTip(event, 'fs21', 117)" class="i">Series</span><span class="o">&lt;</span>_, <span onmouseout="hideTip(event, 'fs37', 118)" onmouseover="showTip(event, 'fs37', 118)" class="i">float</span><span class="o">&gt;</span><span class="o">&gt;</span>()
-    <span class="s">&quot;</span><span class="s">Means20</span><span class="s">&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs60', 119)" onmouseover="showTip(event, 'fs60', 119)" class="i">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs62', 120)" onmouseover="showTip(event, 'fs62', 120)" class="i">rollmean</span>(<span onmouseout="hideTip(event, 'fs54', 121)" onmouseover="showTip(event, 'fs54', 121)" class="i">ts</span>, <span class="n">20</span>)<span class="o">.</span><span class="i">GetValue</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs21', 122)" onmouseover="showTip(event, 'fs21', 122)" class="i">Series</span><span class="o">&lt;</span>_, <span onmouseout="hideTip(event, 'fs37', 123)" onmouseover="showTip(event, 'fs37', 123)" class="i">float</span><span class="o">&gt;</span><span class="o">&gt;</span>() ]
-  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs33', 124)" onmouseover="showTip(event, 'fs33', 124)" class="i">frame</span>
+  [ <span class="s">&quot;Input&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs54', 113)" onmouseover="showTip(event, 'fs54', 113)" class="i">ts</span> 
+    <span class="s">&quot;Means5&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs60', 114)" onmouseover="showTip(event, 'fs60', 114)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs62', 115)" onmouseover="showTip(event, 'fs62', 115)" class="f">rollmean</span>(<span onmouseout="hideTip(event, 'fs54', 116)" onmouseover="showTip(event, 'fs54', 116)" class="i">ts</span>, <span class="n">5</span>)<span class="o">.</span><span class="f">GetValue</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs21', 117)" onmouseover="showTip(event, 'fs21', 117)" class="t">Series</span><span class="o">&lt;</span>_, <span onmouseout="hideTip(event, 'fs37', 118)" onmouseover="showTip(event, 'fs37', 118)" class="t">float</span><span class="o">&gt;</span><span class="o">&gt;</span>()
+    <span class="s">&quot;Means20&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs60', 119)" onmouseover="showTip(event, 'fs60', 119)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs62', 120)" onmouseover="showTip(event, 'fs62', 120)" class="f">rollmean</span>(<span onmouseout="hideTip(event, 'fs54', 121)" onmouseover="showTip(event, 'fs54', 121)" class="i">ts</span>, <span class="n">20</span>)<span class="o">.</span><span class="f">GetValue</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs21', 122)" onmouseover="showTip(event, 'fs21', 122)" class="t">Series</span><span class="o">&lt;</span>_, <span onmouseout="hideTip(event, 'fs37', 123)" onmouseover="showTip(event, 'fs37', 123)" class="t">float</span><span class="o">&gt;</span><span class="o">&gt;</span>() ]
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs33', 124)" onmouseover="showTip(event, 'fs33', 124)" class="f">frame</span>
 
 <span class="c">// Chart original input and the two rolling means</span>
-<span onmouseout="hideTip(event, 'fs23', 125)" onmouseover="showTip(event, 'fs23', 125)" class="i">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs64', 126)" onmouseover="showTip(event, 'fs64', 126)" class="i">Combine</span>
-  [ <span onmouseout="hideTip(event, 'fs23', 127)" onmouseover="showTip(event, 'fs23', 127)" class="i">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs65', 128)" onmouseover="showTip(event, 'fs65', 128)" class="i">Line</span>(<span onmouseout="hideTip(event, 'fs21', 129)" onmouseover="showTip(event, 'fs21', 129)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 130)" onmouseover="showTip(event, 'fs22', 130)" class="i">observations</span> <span onmouseout="hideTip(event, 'fs63', 131)" onmouseover="showTip(event, 'fs63', 131)" class="i">tf</span><span class="o">?</span><span class="i">Input</span>)
-    <span onmouseout="hideTip(event, 'fs23', 132)" onmouseover="showTip(event, 'fs23', 132)" class="i">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs65', 133)" onmouseover="showTip(event, 'fs65', 133)" class="i">Line</span>(<span onmouseout="hideTip(event, 'fs21', 134)" onmouseover="showTip(event, 'fs21', 134)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 135)" onmouseover="showTip(event, 'fs22', 135)" class="i">observations</span> <span onmouseout="hideTip(event, 'fs63', 136)" onmouseover="showTip(event, 'fs63', 136)" class="i">tf</span><span class="o">?</span><span class="i">Means5</span>)
-    <span onmouseout="hideTip(event, 'fs23', 137)" onmouseover="showTip(event, 'fs23', 137)" class="i">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs65', 138)" onmouseover="showTip(event, 'fs65', 138)" class="i">Line</span>(<span onmouseout="hideTip(event, 'fs21', 139)" onmouseover="showTip(event, 'fs21', 139)" class="i">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 140)" onmouseover="showTip(event, 'fs22', 140)" class="i">observations</span> <span onmouseout="hideTip(event, 'fs63', 141)" onmouseover="showTip(event, 'fs63', 141)" class="i">tf</span><span class="o">?</span><span class="i">Means20</span>) ]</pre>
+<span onmouseout="hideTip(event, 'fs23', 125)" onmouseover="showTip(event, 'fs23', 125)" class="t">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs64', 126)" onmouseover="showTip(event, 'fs64', 126)" class="f">Combine</span>
+  [ <span onmouseout="hideTip(event, 'fs23', 127)" onmouseover="showTip(event, 'fs23', 127)" class="t">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs65', 128)" onmouseover="showTip(event, 'fs65', 128)" class="f">Line</span>(<span onmouseout="hideTip(event, 'fs21', 129)" onmouseover="showTip(event, 'fs21', 129)" class="t">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 130)" onmouseover="showTip(event, 'fs22', 130)" class="f">observations</span> <span onmouseout="hideTip(event, 'fs63', 131)" onmouseover="showTip(event, 'fs63', 131)" class="i">tf</span><span class="o">?</span><span class="i">Input</span>)
+    <span onmouseout="hideTip(event, 'fs23', 132)" onmouseover="showTip(event, 'fs23', 132)" class="t">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs65', 133)" onmouseover="showTip(event, 'fs65', 133)" class="f">Line</span>(<span onmouseout="hideTip(event, 'fs21', 134)" onmouseover="showTip(event, 'fs21', 134)" class="t">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 135)" onmouseover="showTip(event, 'fs22', 135)" class="f">observations</span> <span onmouseout="hideTip(event, 'fs63', 136)" onmouseover="showTip(event, 'fs63', 136)" class="i">tf</span><span class="o">?</span><span class="i">Means5</span>)
+    <span onmouseout="hideTip(event, 'fs23', 137)" onmouseover="showTip(event, 'fs23', 137)" class="t">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs65', 138)" onmouseover="showTip(event, 'fs65', 138)" class="f">Line</span>(<span onmouseout="hideTip(event, 'fs21', 139)" onmouseover="showTip(event, 'fs21', 139)" class="t">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 140)" onmouseover="showTip(event, 'fs22', 140)" class="f">observations</span> <span onmouseout="hideTip(event, 'fs63', 141)" onmouseover="showTip(event, 'fs63', 141)" class="i">tf</span><span class="o">?</span><span class="i">Means20</span>) ]
+</pre>
 </td>
 </tr>
 </table>
 
 <p>Depending on your random number generator, the resulting chart looks something like this:</p>
 
-<table class="pre"><tr><td><pre><code>No value has been returned</code></pre></td></tr></table>
+<p><img src="http://bluemountaincapital.github.io/Deedle/images/chart2.png" alt="" /></p>
 
 <div class="tip" id="fs1">namespace System</div>
 <div class="tip" id="fs2">val airQuality : string<br /><br />Full name: Rinterop.airQuality</div>
@@ -652,19 +799,19 @@ and then draws a chart showing the results:</p>
 <div class="tip" id="fs18">type Stats =<br />&#160;&#160;static member count : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,int&gt; (requires equality and equality)<br />&#160;&#160;static member count : series:Series&lt;&#39;K,&#39;V&gt; -&gt; int (requires equality)<br />&#160;&#160;static member expandingCount : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingKurt : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingMax : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingMean : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingMin : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingSkew : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingStdDev : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingSum : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;...<br /><br />Full name: Deedle.Stats</div>
 <div class="tip" id="fs19">static member Stats.levelMean : level:(&#39;K -&gt; &#39;L) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt; (requires equality and equality)</div>
 <div class="tip" id="fs20">val fst : tuple:(&#39;T1 * &#39;T2) -&gt; &#39;T1<br /><br />Full name: Microsoft.FSharp.Core.Operators.fst</div>
-<div class="tip" id="fs21">Multiple items<br />module Series<br /><br />from Deedle<br /><br />--------------------<br />type Series =<br />&#160;&#160;static member ofNullables : values:seq&lt;Nullable&lt;&#39;a0&gt;&gt; -&gt; Series&lt;int,&#39;a0&gt; (requires default constructor and value type and &#39;a0 :&gt; ValueType)<br />&#160;&#160;static member ofObservations : observations:seq&lt;&#39;a0 * &#39;a1&gt; -&gt; Series&lt;&#39;a0,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofOptionalObservations : observations:seq&lt;&#39;K * &#39;a1 option&gt; -&gt; Series&lt;&#39;K,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofValues : values:seq&lt;&#39;a0&gt; -&gt; Series&lt;int,&#39;a0&gt;<br /><br />Full name: Deedle.FSharpSeriesExtensions.Series<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface ISeries&lt;&#39;K&gt;<br />&#160;&#160;new : pairs:seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : keys:&#39;K [] * values:&#39;V [] -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : index:IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member After : lowerExclusive:&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * observationSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,KeyValuePair&lt;&#39;TNewKey,OptionalValue&lt;&#39;R&gt;&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * keySelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,OptionalValue&lt;&#39;R&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member AsyncMaterialize : unit -&gt; Async&lt;Series&lt;&#39;K,&#39;V&gt;&gt;<br />&#160;&#160;...<br /><br />Full name: Deedle.Series&lt;_,_&gt;<br /><br />--------------------<br />new : pairs:seq&lt;Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : keys:&#39;K [] * values:&#39;V [] -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : index:Indices.IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:Vectors.IVectorBuilder * indexBuilder:Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
+<div class="tip" id="fs21">Multiple items<br />module Series<br /><br />from Deedle<br /><br />--------------------<br />type Series =<br />&#160;&#160;static member ofNullables : values:seq&lt;Nullable&lt;&#39;a0&gt;&gt; -&gt; Series&lt;int,&#39;a0&gt; (requires default constructor and value type and &#39;a0 :&gt; ValueType)<br />&#160;&#160;static member ofObservations : observations:seq&lt;&#39;a0 * &#39;a1&gt; -&gt; Series&lt;&#39;a0,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofOptionalObservations : observations:seq&lt;&#39;K * &#39;a1 option&gt; -&gt; Series&lt;&#39;K,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofValues : values:seq&lt;&#39;a0&gt; -&gt; Series&lt;int,&#39;a0&gt;<br /><br />Full name: Deedle.F# Series extensions.Series<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface ISeries&lt;&#39;K&gt;<br />&#160;&#160;new : pairs:seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : keys:&#39;K [] * values:&#39;V [] -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : index:IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member After : lowerExclusive:&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * observationSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,KeyValuePair&lt;&#39;TNewKey,OptionalValue&lt;&#39;R&gt;&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * keySelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,OptionalValue&lt;&#39;R&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member AsyncMaterialize : unit -&gt; Async&lt;Series&lt;&#39;K,&#39;V&gt;&gt;<br />&#160;&#160;...<br /><br />Full name: Deedle.Series&lt;_,_&gt;<br /><br />--------------------<br />new : pairs:seq&lt;Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : keys:&#39;K [] * values:&#39;V [] -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : index:Indices.IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:Vectors.IVectorBuilder * indexBuilder:Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
 <div class="tip" id="fs22">val observations : series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;&#39;K * &#39;T&gt; (requires equality)<br /><br />Full name: Deedle.Series.observations</div>
 <div class="tip" id="fs23">type Chart =<br />&#160;&#160;static member Area : data:seq&lt;#value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string -&gt; GenericChart<br />&#160;&#160;static member Area : data:seq&lt;#key * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string -&gt; GenericChart<br />&#160;&#160;static member Bar : data:seq&lt;#value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string -&gt; GenericChart<br />&#160;&#160;static member Bar : data:seq&lt;#key * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string -&gt; GenericChart<br />&#160;&#160;static member BoxPlotFromData : data:seq&lt;#key * #seq&lt;&#39;a2&gt;&gt; * ?Name:string * ?Title:string * ?Color:Color * ?XTitle:string * ?YTitle:string * ?Percentile:int * ?ShowAverage:bool * ?ShowMedian:bool * ?ShowUnusualValues:bool * ?WhiskerPercentile:int -&gt; GenericChart (requires &#39;a2 :&gt; value)<br />&#160;&#160;static member BoxPlotFromStatistics : data:seq&lt;#key * #value * #value * #value * #value * #value * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string * ?Percentile:int * ?ShowAverage:bool * ?ShowMedian:bool * ?ShowUnusualValues:bool * ?WhiskerPercentile:int -&gt; GenericChart<br />&#160;&#160;static member Bubble : data:seq&lt;#value * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string * ?BubbleMaxSize:int * ?BubbleMinSize:int * ?BubbleScaleMax:float * ?BubbleScaleMin:float * ?UseSizeForLabel:bool -&gt; GenericChart<br />&#160;&#160;static member Bubble : data:seq&lt;#key * #value * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string * ?BubbleMaxSize:int * ?BubbleMinSize:int * ?BubbleScaleMax:float * ?BubbleScaleMin:float * ?UseSizeForLabel:bool -&gt; GenericChart<br />&#160;&#160;static member Candlestick : data:seq&lt;#value * #value * #value * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string -&gt; CandlestickChart<br />&#160;&#160;static member Candlestick : data:seq&lt;#key * #value * #value * #value * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string -&gt; CandlestickChart<br />&#160;&#160;...<br /><br />Full name: FSharp.Charting.Chart</div>
 <div class="tip" id="fs24">static member Chart.Column : data:seq&lt;#value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Drawing.Color * ?XTitle:string * ?YTitle:string -&gt; ChartTypes.GenericChart<br />static member Chart.Column : data:seq&lt;#key * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Drawing.Color * ?XTitle:string * ?YTitle:string -&gt; ChartTypes.GenericChart</div>
 <div class="tip" id="fs25">val air : Frame&lt;int,string&gt;<br /><br />Full name: Rinterop.air</div>
-<div class="tip" id="fs26">static member Frame.ReadCsv : path:string * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : stream:IO.Stream * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : reader:IO.TextReader * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : path:string * indexCol:string * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int -&gt; Frame&lt;&#39;R,string&gt; (requires equality)</div>
+<div class="tip" id="fs26">static member Frame.ReadCsv : path:string * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int * ?missingValues:string [] -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : stream:IO.Stream * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int * ?missingValues:string [] -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : reader:IO.TextReader * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int * ?missingValues:string [] -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : path:string * indexCol:string * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int * ?missingValues:string [] -&gt; Frame&lt;&#39;R,string&gt; (requires equality)</div>
 <div class="tip" id="fs27">type R =<br />&#160;&#160;static member ! : ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member != : ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member !_hexmode : ?a: obj -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member !_octmode : ?a: obj -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member $ : ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member $&lt;- : ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member $&lt;-_data_frame : ?x: obj * ?name: obj * ?value: obj -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member $_DLLInfo : ?x: obj * ?name: obj -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member $_data_frame : ?x: obj * ?name: obj -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member $_package__version : ?x: obj * ?name: obj -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;...<br /><br />Full name: RProvider.base.R<br /><em><br /><br />Base R functions</em></div>
 <div class="tip" id="fs28">Multiple items<br />R.as_data_frame(paramsByName: Collections.Generic.IDictionary&lt;string,obj&gt;) : SymbolicExpression<br />R.as_data_frame(?x: obj, ?row_names: obj, ?optional: obj, ?___: obj, ?paramArray: obj []) : SymbolicExpression<br /><em><br /><br />Coerce to a Data Frame</em><br /><br />--------------------<br />R.as_data_frame(paramsByName: Collections.Generic.IDictionary&lt;string,obj&gt;) : SymbolicExpression<br />R.as_data_frame(?x: obj, ?row_names: obj, ?optional: obj, ?___: obj, ?paramArray: obj []) : SymbolicExpression<br /><em><br /><br />Coerce to a Data Frame</em></div>
 <div class="tip" id="fs29">Multiple items<br />R.colMeans(paramsByName: Collections.Generic.IDictionary&lt;string,obj&gt;) : SymbolicExpression<br />R.colMeans(?x: obj, ?na_rm: obj, ?dims: obj) : SymbolicExpression<br /><em><br /><br />No documentation available</em><br /><br />--------------------<br />R.colMeans(paramsByName: Collections.Generic.IDictionary&lt;string,obj&gt;) : SymbolicExpression<br />R.colMeans(?x: obj, ?na_rm: obj, ?dims: obj) : SymbolicExpression<br /><em><br /><br />No documentation available</em></div>
 <div class="tip" id="fs30">val df : Frame&lt;int,string&gt;<br /><br />Full name: Rinterop.df</div>
-<div class="tip" id="fs31">val series : observations:seq&lt;&#39;a * &#39;b&gt; -&gt; Series&lt;&#39;a,&#39;b&gt; (requires equality)<br /><br />Full name: Deedle.FSharpSeriesExtensions.series</div>
+<div class="tip" id="fs31">val series : observations:seq&lt;&#39;a * &#39;b&gt; -&gt; Series&lt;&#39;a,&#39;b&gt; (requires equality)<br /><br />Full name: Deedle.F# Series extensions.series</div>
 <div class="tip" id="fs32">val nan : float<br /><br />Full name: Microsoft.FSharp.Core.Operators.nan</div>
-<div class="tip" id="fs33">val frame : columns:seq&lt;&#39;a * #ISeries&lt;&#39;c&gt;&gt; -&gt; Frame&lt;&#39;c,&#39;a&gt; (requires equality and equality)<br /><br />Full name: Deedle.FSharpFrameExtensions.frame</div>
+<div class="tip" id="fs33">val frame : columns:seq&lt;&#39;a * #ISeries&lt;&#39;c&gt;&gt; -&gt; Frame&lt;&#39;c,&#39;a&gt; (requires equality and equality)<br /><br />Full name: Deedle.F# Frame extensions.frame</div>
 <div class="tip" id="fs34">Multiple items<br />R.assign(paramsByName: Collections.Generic.IDictionary&lt;string,obj&gt;) : SymbolicExpression<br />R.assign(?x: obj, ?value: obj, ?pos: obj, ?envir: obj, ?inherits: obj, ?immediate: obj) : SymbolicExpression<br /><em><br /><br />Assign a Value to a Name</em><br /><br />--------------------<br />R.assign(paramsByName: Collections.Generic.IDictionary&lt;string,obj&gt;) : SymbolicExpression<br />R.assign(?x: obj, ?value: obj, ?pos: obj, ?envir: obj, ?inherits: obj, ?immediate: obj) : SymbolicExpression<br /><em><br /><br />Assign a Value to a Name</em></div>
 <div class="tip" id="fs35">property R.austres: SymbolicExpression</div>
 <div class="tip" id="fs36">val austres : Series&lt;float,float&gt;<br /><br />Full name: Rinterop.austres</div>

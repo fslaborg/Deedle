@@ -74,11 +74,83 @@ function passed to <code>Create</code> is called with minimal and maximal requir
             Create(min, max, loader)
           </code>
           <div class="tip" id="400">
+            <strong>Signature:</strong> (min:&#39;?478461 * max:&#39;?478461 * loader:Func&lt;&#39;?478461,BoundaryBehavior,&#39;?478461,BoundaryBehavior,Task&lt;seq&lt;KeyValuePair&lt;&#39;?478461,&#39;?478462&gt;&gt;&gt;&gt;) -&gt; Series&lt;&#39;?478461,&#39;?478462&gt;<br />
+                          <strong>Type parameters:</strong> '?478461, '?478462          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/DelayedSeries.fs#L444-444" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '401', 401)" onmouseover="showTip(event, '401', 401)">
+            Create(min, max, loader)
+          </code>
+          <div class="tip" id="401">
+            <strong>Signature:</strong> (min:&#39;?478458 * max:&#39;?478458 * loader:(&#39;?478458 * BoundaryBehavior -&gt; &#39;?478458 * BoundaryBehavior -&gt; Async&lt;seq&lt;KeyValuePair&lt;&#39;?478458,&#39;?478459&gt;&gt;&gt;)) -&gt; Series&lt;&#39;?478458,&#39;?478459&gt;<br />
+                          <strong>Type parameters:</strong> '?478458, '?478459          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/DelayedSeries.fs#L442-442" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '402', 402)" onmouseover="showTip(event, '402', 402)">
+            FromIndexVectorLoader(...)
+          </code>
+          <div class="tip" id="402">
+            <strong>Signature:</strong> (vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder * min:&#39;K * max:&#39;K * loader:(&#39;K * BoundaryBehavior -&gt; &#39;K * BoundaryBehavior -&gt; Async&lt;IIndex&lt;&#39;K&gt; * IVector&lt;&#39;V&gt;&gt;)) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/DelayedSeries.fs#L428-428" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '403', 403)" onmouseover="showTip(event, '403', 403)">
+            FromIndexVectorLoader(...)
+          </code>
+          <div class="tip" id="403">
+            <strong>Signature:</strong> (vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder * min:&#39;K * max:&#39;K * loader:Func&lt;&#39;K,BoundaryBehavior,&#39;K,BoundaryBehavior,Task&lt;IIndex&lt;&#39;K&gt; * IVector&lt;&#39;V&gt;&gt;&gt;) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/DelayedSeries.fs#L422-422" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '404', 404)" onmouseover="showTip(event, '404', 404)">
+            FromValueLoader(min, max, loader)
+          </code>
+          <div class="tip" id="404">
             <strong>Signature:</strong> (min:&#39;K * max:&#39;K * loader:(&#39;K * BoundaryBehavior -&gt; &#39;K * BoundaryBehavior -&gt; Async&lt;seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt;&gt;)) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/DelayedSeries.fs#L388-388" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/DelayedSeries.fs#L399-399" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -107,15 +179,15 @@ specified range. The function is called with two tuples consisting of key and
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '401', 401)" onmouseover="showTip(event, '401', 401)">
-            Create(min, max, loader)
+          <code onmouseout="hideTip(event, '405', 405)" onmouseover="showTip(event, '405', 405)">
+            FromValueLoader(min, max, loader)
           </code>
-          <div class="tip" id="401">
+          <div class="tip" id="405">
             <strong>Signature:</strong> (min:&#39;K * max:&#39;K * loader:Func&lt;&#39;K,BoundaryBehavior,&#39;K,BoundaryBehavior,Task&lt;seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt;&gt;&gt;) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/DelayedSeries.fs#L368-368" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/DelayedSeries.fs#L379-379" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
