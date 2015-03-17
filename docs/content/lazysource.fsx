@@ -12,7 +12,7 @@ does not actually load the data until needed. If you apply some range restrictio
 (like slicing) to the data series before using the values, then it is not 
 necessary to load the entire data set into memory.
 
-The F# data frame library supports lazy loading through the `DelayedSeries.Create` 
+Deedle supports lazy loading through the `DelayedSeries.FromValueLoader` 
 method. It returns an ordinary data series of type `Series<K, V>` which has a 
 delayed internal representation.
 
@@ -38,7 +38,7 @@ it means that we will get different values each time a new sub-range of the seri
 is required - but it will suffice for the demonstration.
 
 Now, to create a lazily loaded series, we need to open the `Indices` namespace,
-specify the minimal and maximal value of the series and use `DelayedSeries.Create`:
+specify the minimal and maximal value of the series and use `DelayedSeries.FromValueLoader`:
 *)
 open Deedle.Indices
 
@@ -46,14 +46,14 @@ open Deedle.Indices
 let min, max = DateTime(2010, 1, 1), DateTime(2013, 1, 1)
 
 // Create a lazy series for the given range
-let ls = DelayedSeries.Create(min, max, fun (lo, lob) (hi, hib) -> async { 
+let ls = DelayedSeries.FromValueLoader(min, max, fun (lo, lob) (hi, hib) -> async { 
     printfn "Query: %A - %A" (lo, lob) (hi, hib)
     return generate lo hi })
 
 (**
 To make the diagnostics easier, we print the required range whenever a request
 is made. After running this code, you should not see any output yet.
-The parameter to `DelayedSeries.Create` is a function that takes 4 arguments:
+The parameter to `DelayedSeries.FromValueLoader` is a function that takes 4 arguments:
 
   - `lo` and `hi` specify the low and high boundaries of the range. Their
     type is the type of the key (e.g. `DateTime` in our example)
