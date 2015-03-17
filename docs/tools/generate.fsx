@@ -68,12 +68,12 @@ let references =
     // We replace the list and add required items manually as mcs doesn't like duplicates...
     let getItem name = loadedList |> Seq.find (fun l -> l.Contains name)
     [ (getItem "FSharp.Core").Replace("4.3.0.0", "4.3.1.0")
-      Path.GetFullPath "./../../packages/FSharp.Compiler.Service/lib/net40/FSharp.Compiler.Service.dll"
-      Path.GetFullPath "./../../packages/FSharp.Formatting/lib/net40/System.Web.Razor.dll"
-      Path.GetFullPath "./../../packages/FSharp.Formatting/lib/net40/RazorEngine.dll"
-      Path.GetFullPath "./../../packages/FSharp.Formatting/lib/net40/FSharp.Literate.dll"
-      Path.GetFullPath "./../../packages/FSharp.Formatting/lib/net40/FSharp.CodeFormat.dll"
-      Path.GetFullPath "./../../packages/FSharp.Formatting/lib/net40/FSharp.MetadataFormat.dll" ]
+      Path.GetFullPath(formatting @@ "../FSharp.Compiler.Service/lib/net40/FSharp.Compiler.Service.dll")
+      Path.GetFullPath(formatting @@ "lib/net40/System.Web.Razor.dll")
+      Path.GetFullPath(formatting @@ "lib/net40/RazorEngine.dll")
+      Path.GetFullPath(formatting @@ "lib/net40/FSharp.Literate.dll")
+      Path.GetFullPath(formatting @@ "lib/net40/FSharp.CodeFormat.dll")
+      Path.GetFullPath(formatting @@ "lib/net40/FSharp.MetadataFormat.dll") ]
     |> Some
   else None
 
