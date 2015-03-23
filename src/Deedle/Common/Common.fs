@@ -642,6 +642,14 @@ module Seq =
     if count = 0 then invalidOp "Insufficient number of elements"
     last, count
 
+  /// Generate infinite sequence using the specified function.
+  /// The initial state is returned as the first element.
+  let inline unreduce f start = seq {
+    let state = ref start
+    while true do
+      yield state.Value
+      state := f state.Value }
+
   /// Same as `Seq.choose` but passes 64 bit index (l stands for long) to the function
   let inline choosel f (input:seq<_>) = seq {
     let i = ref 0L

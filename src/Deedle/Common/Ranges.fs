@@ -73,6 +73,7 @@ module Ranges =
       let size = ranges.Operations.Size(l, h)
       if addr < sum + size then ranges.Operations.IncrementBy(l, addr - sum)
       else loop (sum + size) (idx + 1)
+    if addr < 0L then raise <| IndexOutOfRangeException()
     loop 0L 0
 
   /// Returns the address of a given key. For example, given
@@ -142,7 +143,7 @@ module Ranges =
   /// For `Exact` match, this is the same as `addressOfKey`. In other cases,
   /// we first find the place where the key *would* be and then scan in one
   /// or the other direction until 'check' returns 'true' or we find the end.
-  let lookup key semantics check (ranges:Ranges<'T>) =
+  let lookup key semantics (check:'T -> int64 -> bool) (ranges:Ranges<'T>) =
     let inline (<.) a b = ranges.Operations.Compare(a, b) < 0
     let inline (<.) a b = ranges.Operations.Compare(a, b) < 0
     let inline (>=.) a b = ranges.Operations.Compare(a, b) >= 0
@@ -151,7 +152,7 @@ module Ranges =
     if semantics = Lookup.Exact then
       // For exact lookup, we only check one address
       let addr = addressOfKey key ranges
-      if addr <> invalid && check key then
+      if addr <> invalid && check key addr then
         OptionalValue( (key, addr) )
       else OptionalValue.Missing
     else
@@ -159,42 +160,43 @@ module Ranges =
       let step = 
         if semantics &&& Lookup.Greater = Lookup.Greater then (+) 1L
         elif semantics &&& Lookup.Smaller = Lookup.Smaller then (+) -1L
-        else invalidArg "semantics" "Invalid lookup semantics"
+        else invalidArg "semantics" "Invalid lookup semantics (1)"
 
       // Find start
       let start, rangeIdx =
         let rec loop addr idx = 
           if idx >= ranges.Ranges.Length && (semantics &&& Lookup.Greater = Lookup.Greater) then invalid, -1
-          elif idx >= ranges.Ranges.Length && (semantics &&& Lookup.Smaller = Lookup.Smaller) then addr, ranges.Ranges.Length-1 
+          elif idx >= ranges.Ranges.Length && (semantics &&& Lookup.Smaller = Lookup.Smaller) then addr-1L, ranges.Ranges.Length-1 
           else
             let l, h = ranges.Ranges.[idx]
-            if key >=. l && key <=. h then addr + ranges.Operations.Distance(key, l), idx
+            if key >=. l && key <=. h then addr + ranges.Operations.Distance(l, key), idx
             elif key <. l && (semantics &&& Lookup.Greater = Lookup.Greater) then addr, idx
             elif key <. l && (semantics &&& Lookup.Smaller = Lookup.Smaller) then addr - 1L, idx - 1
             else loop (addr + (ranges.Operations.Size(l, h))) (idx + 1)
         loop 0L 0
 
-      if start = invalid then OptionalValue.Missing else
+      if start = invalid || rangeIdx = -1 then OptionalValue.Missing else
       let keyStart = keyOfAddress start ranges
 
       // Scan until 'check' returns true, or until we reach invalid address
-      let addrsToScan = 
+      let keysToScan = 
         if semantics = Lookup.Exact then seq { yield keyStart }
         elif semantics &&& Lookup.Greater = Lookup.Greater then
           seq { yield! ranges.Operations.Range(keyStart, snd ranges.Ranges.[rangeIdx])
                 for lo, hi in ranges.Ranges.[rangeIdx + 1 ..] do
                   yield! ranges.Operations.Range(lo, hi) }
-        elif semantics &&& Lookup.Greater = Lookup.Greater then
+        elif semantics &&& Lookup.Smaller = Lookup.Smaller then
           seq { yield! ranges.Operations.Range(keyStart, fst ranges.Ranges.[rangeIdx])
                 for lo, hi in ranges.Ranges.[.. rangeIdx-1] |> Array.rev do
                   yield! ranges.Operations.Range(hi, lo) }
         else invalidArg "semantics" "Invalid lookup semantics"
 
       // Skip one if needed
-      let addrsToScan = 
-        if keyStart = key && (semantics = Lookup.Greater || semantics = Lookup.Smaller) 
-          then addrsToScan |> Seq.skip 1 else addrsToScan
+      let toScan = 
+        Seq.zip keysToScan (Seq.unreduce step start)
+        |>  ( if keyStart = key && (semantics = Lookup.Greater || semantics = Lookup.Smaller) 
+              then Seq.skip 1 else id )
 
-      addrsToScan |> Seq.tryFind check
+      toScan 
+      |> Seq.tryFind (fun (k, a) -> check k a)
       |> OptionalValue.ofOption
-      |> OptionalValue.map (fun k -> k, addressOfKey k ranges) // TODO: Do we really need 'addressOfKey' here?
