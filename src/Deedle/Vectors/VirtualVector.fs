@@ -69,6 +69,19 @@ and IVirtualVectorSource<'V> =
   /// (used by functions such as `Frame.merge` and `Frame.mergeAll`)
   abstract MergeWith : seq<IVirtualVectorSource<'V>> -> IVirtualVectorSource<'V>
 
+open Deedle.Ranges
+
+type RangesAddressOperations<'TKey when 'TKey : equality>
+      ( ranges:Ranges<'TKey>, 
+        asAddress:System.Func<'TKey, Address>,
+        ofAddress:System.Func<Address, 'TKey> ) =
+  interface IAddressOperations with
+    member x.AddressOf(offset) = asAddress.Invoke(ranges.KeyAtOffset(offset))
+    member x.OffsetOf(addr) = ranges.OffsetOfKey(ofAddress.Invoke(addr))
+    member x.FirstElement = asAddress.Invoke(ranges.FirstKey)
+    member x.LastElement = asAddress.Invoke(ranges.LastKey)
+    member x.Range = ranges.Keys |> Seq.map asAddress.Invoke 
+
 // ------------------------------------------------------------------------------------------------
 // Virtual vectors
 // ------------------------------------------------------------------------------------------------

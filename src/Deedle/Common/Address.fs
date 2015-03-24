@@ -96,6 +96,9 @@ module RangeRestriction =
             member x.GetEnumerator() = (Seq.map f c).GetEnumerator() }
         |> RangeRestriction.Custom
 
+type RangeRestriction<'TAddress> with
+  member x.Select(f:Func<_, _>) = RangeRestriction.map f.Invoke x
+
 // --------------------------------------------------------------------------------------
 // Internal address range helpers
 // --------------------------------------------------------------------------------------

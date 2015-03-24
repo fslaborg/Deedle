@@ -19,7 +19,7 @@ open Deedle.Indices.Virtual
 // Ranges
 // ------------------------------------------------------------------------------------------------
 
-let rng = Ranges.create [| (10L, 19L); (30L, 39L); (50L, 59L) |]
+let rng = Ranges.inlineCreate (+) [| (10L, 19L); (30L, 39L); (50L, 59L) |]
 
 [<Test>]
 let ``Restricting ranges using offset from beginning or end`` () =
@@ -37,16 +37,16 @@ let ``Restricting ranges using fixed restriction`` () =
 
 [<Test>]
 let ``Merging ranges joins ranges`` () = 
-  let rng1 = Ranges.create [| (10L, 19L); (30L, 39L); (50L, 59L) |]
-  let rng2 = Ranges.create [| (20L, 29L); (60L, 69L) |]
+  let rng1 = Ranges.inlineCreate (+) [| (10L, 19L); (30L, 39L); (50L, 59L) |]
+  let rng2 = Ranges.inlineCreate (+) [| (20L, 29L); (60L, 69L) |]
   let res = Ranges.combine [rng1; rng2]
   res.Ranges |> shouldEqual [| (10L, 39L); (50L, 69L) |]
 
 [<Test>]
 let ``Merging overlapping ranges fails`` () = 
-  let rng1 = Ranges.create [| (10L, 19L); (30L, 39L); (50L, 59L) |]
-  let rng2 = Ranges.create [| (20L, 29L); (45L, 69L) |]
-  let rng3 = Ranges.create [| (19L, 20L) |]
+  let rng1 = Ranges.inlineCreate (+) [| (10L, 19L); (30L, 39L); (50L, 59L) |]
+  let rng2 = Ranges.inlineCreate (+) [| (20L, 29L); (45L, 69L) |]
+  let rng3 = Ranges.inlineCreate (+) [| (19L, 20L) |]
   (fun _ -> Ranges.combine [rng1; rng2] |> ignore)
   |> shouldThrow<System.InvalidOperationException>
   (fun _ -> Ranges.combine [rng1; rng2] |> ignore)

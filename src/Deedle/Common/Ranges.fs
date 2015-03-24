@@ -9,44 +9,55 @@ open Deedle
 open Deedle.Internal
 open Deedle.Addressing
 
-type AddressOperations<'T> =
+type RangeKeyOperations<'T> =
   abstract Compare : 'T * 'T -> int
   abstract IncrementBy : 'T * int64 -> 'T
-  abstract Size : 'T * 'T -> int64
   abstract Distance : 'T * 'T -> int64
   abstract Range : 'T * 'T -> seq<'T>
+  abstract ValidateKey : 'T * Lookup -> OptionalValue<'T>
 
 /// Represents a sub-range of an ordinal index. The range can consist of 
 /// multiple blocks, i.e. [ 0..9; 20..29 ]. The pairs represent indices
 /// of first and last element (inclusively) and we also keep size so that
 /// we do not have to recalculate it.
-type Ranges<'T>(ranges:('T * 'T)[], ops:AddressOperations<'T>) = 
+type Ranges<'T when 'T : equality>(ranges:seq<'T * 'T>, ops:RangeKeyOperations<'T>) = 
+  let ranges = Array.ofSeq ranges 
+  do
+    if ranges.Length = 0 then invalidArg "ranges" "Range cannot be empty"
+    for l, h in ranges do 
+      if ops.Compare(l, h) > 0 then 
+        invalidArg "ranges" "Invalid range (first offset is greater than second)"
   member x.Ranges = ranges
   member x.Operations = ops
-  
+
 module Ranges =  
+
   /// Create a range from a sequence of low-high pairs
-  let inline create (ranges:seq< ^T * ^T >) =
+  let inline inlineCreate succ (ranges:seq< ^T * ^T >) =
     let ranges = Array.ofSeq ranges 
     if ranges.Length = 0 then invalidArg "ranges" "Range cannot be empty"
     for l, h in ranges do if l > h then invalidArg "ranges" "Invalid range (first offset is greater than second)"
+    let one = LanguagePrimitives.GenericOne
     let ops = 
-      { new AddressOperations<_> with
+      { new RangeKeyOperations< ^T > with
           member x.Compare(a, b) = compare a b 
-          member x.IncrementBy(a, i) = a + i
+          member x.IncrementBy(a, i) = succ a i
           member x.Distance(l, h) = int64 (h - l)
-          member x.Size(l, h) = int64 (h - l + LanguagePrimitives.GenericOne) 
-          member x.Range(a, b) = if a <= b then Seq.range a b else Seq.rangeStep a b -1L }
+          member x.Range(a, b) = if a <= b then Seq.range a b else Seq.rangeStep a b (-one) 
+          member x.ValidateKey(k, _) = OptionalValue(k) }
+    Ranges(ranges, ops)
+
+  /// Create a range from a sequence of low-high pairs
+  let inline create (ops:RangeKeyOperations<'T>) (ranges:seq< 'T * 'T >) =
     Ranges(ranges, ops)
 
   /// Combine ranges - the arguments don't have to be sorted, but must not overlap
-  let combine(ranges:seq<Ranges<_>>) =
+  let inline combine(ranges:seq<Ranges<'T>>) : Ranges<'T> =
     if Seq.isEmpty ranges then invalidArg "ranges" "Range cannot be empty"
     let ops = (Seq.head ranges).Operations
     let blocks = 
       [ for r in ranges do yield! r.Ranges ] 
       |> List.sortWith (fun (l1, _) (l2, _) -> ops.Compare(l1, l2))
-
     let rec loop (startl, endl) blocks = seq {
       match blocks with 
       | [] -> yield startl, endl
@@ -55,7 +66,7 @@ module Ranges =
       | (s, e)::blocks -> 
           yield startl, endl
           yield! loop (s, e) blocks }
-    create(loop (List.head blocks) (List.tail blocks))
+    create ops (loop (List.head blocks) (List.tail blocks))
 
   /// Represents invalid address
   let invalid = -1L
@@ -70,9 +81,17 @@ module Ranges =
     let rec loop sum idx = 
       if idx >= ranges.Ranges.Length then raise <| IndexOutOfRangeException() else
       let l, h = ranges.Ranges.[idx]
-      let size = ranges.Operations.Size(l, h)
-      if addr < sum + size then ranges.Operations.IncrementBy(l, addr - sum)
-      else loop (sum + size) (idx + 1)
+
+      //let size = ranges.Operations.Distance(l, h)+1L
+      //if addr < sum + size then ranges.Operations.IncrementBy(l, addr - sum)
+
+      // Better approach - avoid getting the size of the whole range!
+      let incremented = ranges.Operations.IncrementBy(l, addr - sum)
+      if ranges.Operations.Compare(incremented, h) <= 0 then incremented
+      else 
+        let size = ranges.Operations.Distance(l, h)+1L
+        loop (sum + size) (idx + 1)
+
     if addr < 0L then raise <| IndexOutOfRangeException()
     loop 0L 0
 
@@ -92,8 +111,10 @@ module Ranges =
       let l, h = ranges.Ranges.[idx]
       if key <. l then invalid
       elif key >=. l && key <=. h then addr + ranges.Operations.Distance(l, key)
-      else loop (addr + ranges.Operations.Size(l, h)) (idx + 1)
-    loop 0L 0
+      else loop (addr + ranges.Operations.Distance(l, h) + 1L) (idx + 1)
+    
+    if ranges.Operations.ValidateKey(key, Lookup.Exact).HasValue
+    then loop 0L 0 else invalid
 
   // Restriction has indices as local addresses 
   let restrictRanges restriction (ranges:Ranges<'T>) =
@@ -139,6 +160,11 @@ module Ranges =
   let inline keys (ranges:Ranges<_>) =
     seq { for l, h in ranges.Ranges do yield! ranges.Operations.Range(l, h) }
 
+  /// Returns the length of the ranges
+  let inline length (ranges:Ranges<_>) =
+    ranges.Ranges |> Array.sumBy (fun (l, h) -> 
+      ranges.Operations.Distance(l, h)+1L)
+
   /// Implements a lookup using the specified semantics & check function.
   /// For `Exact` match, this is the same as `addressOfKey`. In other cases,
   /// we first find the place where the key *would* be and then scan in one
@@ -156,6 +182,11 @@ module Ranges =
         OptionalValue( (key, addr) )
       else OptionalValue.Missing
     else
+      // Validate the key - returns key that is valid value 
+      let keyOpt = ranges.Operations.ValidateKey(key, semantics) 
+      if keyOpt = OptionalValue.Missing then OptionalValue.Missing else 
+      let key = keyOpt.Value
+
       // Otherwise, we scan next addresses in the required direction
       let step = 
         if semantics &&& Lookup.Greater = Lookup.Greater then (+) 1L
@@ -172,7 +203,7 @@ module Ranges =
             if key >=. l && key <=. h then addr + ranges.Operations.Distance(l, key), idx
             elif key <. l && (semantics &&& Lookup.Greater = Lookup.Greater) then addr, idx
             elif key <. l && (semantics &&& Lookup.Smaller = Lookup.Smaller) then addr - 1L, idx - 1
-            else loop (addr + (ranges.Operations.Size(l, h))) (idx + 1)
+            else loop (addr + ranges.Operations.Distance(l, h) + 1L) (idx + 1)
         loop 0L 0
 
       if start = invalid || rangeIdx = -1 then OptionalValue.Missing else
@@ -192,11 +223,25 @@ module Ranges =
         else invalidArg "semantics" "Invalid lookup semantics"
 
       // Skip one if needed
-      let toScan = 
-        Seq.zip keysToScan (Seq.unreduce step start)
-        |>  ( if keyStart = key && (semantics = Lookup.Greater || semantics = Lookup.Smaller) 
-              then Seq.skip 1 else id )
-
-      toScan 
+      Seq.zip keysToScan (Seq.unreduce step start)
+      |>  ( if keyStart = key && (semantics = Lookup.Greater || semantics = Lookup.Smaller) 
+            then Seq.skip 1 else id )
       |> Seq.tryFind (fun (k, a) -> check k a)
       |> OptionalValue.ofOption
+
+type Ranges<'T> with
+  member x.FirstKey = fst (Ranges.keyRange x)
+  member x.LastKey = snd (Ranges.keyRange x)
+  member x.KeyAtOffset(offset) = Ranges.keyOfAddress offset x
+  member x.OffsetOfKey(key) = 
+    let res = Ranges.addressOfKey key x
+    if res = Ranges.invalid then raise <| IndexOutOfRangeException()
+    else res
+  member x.Keys = Ranges.keys x
+  member x.Length = Ranges.length x
+  member x.Lookup(key, semantics, check:Func<_, _, _>) = 
+    Ranges.lookup key semantics (fun a b -> check.Invoke(a, b)) x
+  member x.MergeWith(ranges) = 
+    Ranges.combine [yield x; yield! ranges]
+  member x.Restrict(restriction) = 
+    Ranges.restrictRanges restriction x
