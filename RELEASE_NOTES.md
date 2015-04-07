@@ -91,6 +91,10 @@
  * Change Stats.sum to return NaN for empty series (#259)
  * Change C#-version of ReadCsv to accept inferTypes param (#270)
 
- ### 1.1.2-beta
+### 1.1.2-beta
  * Abstract handling of addresses (mainly for BigDeedle)
  * Avoid accessing series Length in series and frame printing
+
+### 1.1.3-beta
+ * Introduce generic `Ranges<T>` type to simplify working with ranges
+   (mainly useful for custom BigDeedle implementations)
