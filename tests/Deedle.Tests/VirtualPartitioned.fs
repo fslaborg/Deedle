@@ -423,6 +423,16 @@ let ``Can project using Series.map without evaluating the series`` () =
   projected.GetAt(projected.KeyCount-1) |> shouldEqual 9
   valSrc.AccessedData |> shouldEqual [999,4999; 0,0]
 
+[<Test>]
+let ``Can merge non-virtual series with small virtual series`` () =
+  let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
+  let ts1 = ts.[date 10 4900 .. date 11 100 ]
+  let ts2 = series [ for k, v in ts1 |> Series.observations -> k + mins 30 => v + 0.5 ]
+  let merged = ts1.Merge(ts2)
+
+  merged |> Series.diff 1 |> Series.values |> Seq.distinct |> List.ofSeq
+  |> shouldEqual [0.5; 995000.5]
+  
 
 [<Test>]
 let ``Adding column using exact match does not fully evaluate series`` () =

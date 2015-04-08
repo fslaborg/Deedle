@@ -450,8 +450,12 @@ type VirtualVectorBuilder() =
             newData.[newIndex] <- source.GetValue(oldAddress)
           baseBuilder.CreateMissing(newData)
 
-      | DropRange _ -> 
-          failwith "VectorBuilder.Build - DropRange not implemented"
+      | DropRange(source, range) -> 
+          match build source args with
+          | :? VirtualVector<'T> as source -> 
+              failwith "VectorBuilder.Build - DropRange not implemented"
+          | _ -> baseBuilder.Build<'T>(cmd, args)
+
       | FillMissing _ -> 
           failwith "VectorBuilder.Build - FillMissing not implemented"
 

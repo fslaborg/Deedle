@@ -92,6 +92,18 @@ and VirtualOrdinalIndex(ranges:Ranges<int64>, source:IVirtualVectorSource) =
 and VirtualIndexBuilder() = 
   let baseBuilder = IndexBuilder.Instance
 
+  let materializeIndex (index:IIndex<'T>) =
+    Linear.LinearIndexBuilder.Instance.Create(index.Keys, Some index.IsOrdered)
+
+  let materializeVector vector =
+    Vectors.CustomCommand([vector], fun vectors ->
+      { new VectorCallSite<_> with
+          member x.Invoke(vector) =
+            vector.DataSequence
+            |> Array.ofSeq
+            |> ArrayVector.ArrayVectorBuilder.Instance.CreateMissing :> IVector }
+      |> (List.head vectors).Invoke)
+
   static let indexBuilder = VirtualIndexBuilder()
   static member Instance = indexBuilder
 
@@ -136,11 +148,13 @@ and VirtualIndexBuilder() =
           let newVector = seq { for _, _, v in sources -> v } |> Seq.reduce (fun a b -> Vectors.Append(a, b))
           unbox (VirtualOrdinalIndex(newRanges, newSource)), newVector
       | _ -> 
-          for index, vector in scs do 
-            match index with
-            | :? VirtualOrderedIndex<'K>
-            | :? VirtualOrdinalIndex -> failwith "TODO: Merge - ordered/ordinal index - avoid materialization!"
-            | _ -> ()
+          // Materialize virtual vectors
+          let scs = 
+            [ for index, vector in scs ->
+                match index with
+                | :? VirtualOrderedIndex<'K>
+                | :? VirtualOrdinalIndex -> materializeIndex index, materializeVector vector
+                | _ -> index, vector ]
           baseBuilder.Merge(scs, transform)
 
 
@@ -231,15 +245,7 @@ and VirtualIndexBuilder() =
       match index with
       | :? VirtualOrdinalIndex 
       | :? VirtualOrderedIndex<'K> ->
-          let newIndex = Linear.LinearIndexBuilder.Instance.Create(index.Keys, Some index.IsOrdered)
-          let cmd = Vectors.CustomCommand([vector], fun vectors ->
-            { new VectorCallSite<_> with
-                member x.Invoke(vector) =
-                  vector.DataSequence
-                  |> Array.ofSeq
-                  |> ArrayVector.ArrayVectorBuilder.Instance.CreateMissing  :> IVector }
-            |> (List.head vectors).Invoke)
-          async.Return(newIndex), cmd
+          async.Return(materializeIndex index), materializeVector vector
       | _ -> async.Return(index), vector
 
     member x.GetRange<'K when 'K : equality>( (index, vector), (optLo:option<'K * _>, optHi:option<'K * _>)) = 
