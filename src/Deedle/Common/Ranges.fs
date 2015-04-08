@@ -185,7 +185,7 @@ module Ranges =
       // Validate the key - returns key that is valid value 
       let keyOpt = ranges.Operations.ValidateKey(key, semantics) 
       if keyOpt = OptionalValue.Missing then OptionalValue.Missing else 
-      let key = keyOpt.Value
+      let validKey = keyOpt.Value
 
       // Otherwise, we scan next addresses in the required direction
       let step = 
@@ -200,9 +200,9 @@ module Ranges =
           elif idx >= ranges.Ranges.Length && (semantics &&& Lookup.Smaller = Lookup.Smaller) then addr-1L, ranges.Ranges.Length-1 
           else
             let l, h = ranges.Ranges.[idx]
-            if key >=. l && key <=. h then addr + ranges.Operations.Distance(l, key), idx
-            elif key <. l && (semantics &&& Lookup.Greater = Lookup.Greater) then addr, idx
-            elif key <. l && (semantics &&& Lookup.Smaller = Lookup.Smaller) then addr - 1L, idx - 1
+            if validKey >=. l && validKey <=. h then addr + ranges.Operations.Distance(l, validKey), idx
+            elif validKey <. l && (semantics &&& Lookup.Greater = Lookup.Greater) then addr, idx
+            elif validKey <. l && (semantics &&& Lookup.Smaller = Lookup.Smaller) then addr - 1L, idx - 1
             else loop (addr + ranges.Operations.Distance(l, h) + 1L) (idx + 1)
         loop 0L 0
 
