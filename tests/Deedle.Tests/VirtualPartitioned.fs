@@ -62,7 +62,7 @@ type PartitionShape = int[]
 /// `DateTimeOffset` values (which can be directly mapped to addresses, because 
 /// we use a scheme where: partition = year - 2000; offset = <hours since jan 1>
 ///
-/// The `RangeKeyOperations` interface requires operations such as a distance 
+/// The `IRangeKeyOperations` interface requires operations such as a distance 
 /// (number of keys) between two keys; enumeration of all keys in a range etc.
 ///
 /// To implement those, we generally iterate over the partitions and count/add/etc.
@@ -77,7 +77,7 @@ type PartitionRangeOperations(shape:PartitionShape, rangeListRef:ref<_>) =
     int (dt - firstDate dt).TotalHours          
 
   // Implementing BigDeedle interface for Ranges<'T>
-  interface RangeKeyOperations<DateTimeOffset> with
+  interface IRangeKeyOperations<DateTimeOffset> with
     member x.Compare(dt1, dt2) = 
       compare dt1.UtcTicks dt2.UtcTicks
 

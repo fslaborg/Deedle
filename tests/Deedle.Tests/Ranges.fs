@@ -90,27 +90,27 @@ let ``Getting key range works on sample input`` () =
   Ranges.keyRange rng |> shouldEqual (10L, 59L)
 
 [<Test>]
-let ``Key of address & address of key works on sample inputs`` () =
-  Ranges.keyOfAddress 9L rng |> shouldEqual 19L
-  Ranges.keyOfAddress 10L rng |> shouldEqual 30L
-  Ranges.keyOfAddress 29L rng |> shouldEqual 59L
-  Ranges.addressOfKey 19L rng |> shouldEqual 9L
-  Ranges.addressOfKey 30L rng |> shouldEqual 10L
-  Ranges.addressOfKey 59L rng |> shouldEqual 29L
+let ``Key at offset & offset of key works on sample inputs`` () =
+  Ranges.keyAtOffset 9L rng |> shouldEqual 19L
+  Ranges.keyAtOffset 10L rng |> shouldEqual 30L
+  Ranges.keyAtOffset 29L rng |> shouldEqual 59L
+  Ranges.offsetOfKey 19L rng |> shouldEqual 9L
+  Ranges.offsetOfKey 30L rng |> shouldEqual 10L
+  Ranges.offsetOfKey 59L rng |> shouldEqual 29L
 
 [<Test>]
-let ``Key of address & address of key fail as expected on sample inputs`` () =
-  (fun () -> Ranges.keyOfAddress -1L rng |> ignore) 
+let ``Key of offset & offset of key fail as expected on sample inputs`` () =
+  (fun () -> Ranges.keyAtOffset -1L rng |> ignore) 
   |> should throw typeof<System.IndexOutOfRangeException>
-  (fun () -> Ranges.keyOfAddress 30L rng |> ignore) 
+  (fun () -> Ranges.keyAtOffset 30L rng |> ignore) 
   |> should throw typeof<System.IndexOutOfRangeException>
-  Ranges.addressOfKey 9L rng |> shouldEqual Ranges.invalid
-  Ranges.addressOfKey 20L rng |> shouldEqual Ranges.invalid
-  Ranges.addressOfKey 60L rng |> shouldEqual Ranges.invalid
+  Ranges.offsetOfKey 9L rng |> shouldEqual Ranges.invalid
+  Ranges.offsetOfKey 20L rng |> shouldEqual Ranges.invalid
+  Ranges.offsetOfKey 60L rng |> shouldEqual Ranges.invalid
 
 [<Test>]
-let ``Getting all keys from address returns expected keys`` () =
-  [| for a in 0L .. 29L -> Ranges.keyOfAddress a rng |]
+let ``Getting all keys from offset returns expected keys`` () =
+  [| for a in 0L .. 29L -> Ranges.keyAtOffset a rng |]
   |> shouldEqual <| Array.concat [ [| 10L .. 19L |]; [| 30L .. 39L |]; [| 50L .. 59L |] ]
 
 [<Test>]

@@ -68,8 +68,8 @@ and VirtualOrdinalIndex(ranges:Ranges<int64>, source:IVirtualVectorSource) =
   member x.Ranges = ranges
   member x.Source = source
   interface IIndex<int64> with
-    member x.KeyAt(addr) = ranges |> Ranges.addressOfKey (source.AddressOperations.OffsetOf(addr))
-    member x.AddressAt(offs) = ranges |> Ranges.keyOfAddress offs |> source.AddressOperations.AddressOf
+    member x.KeyAt(addr) = ranges |> Ranges.offsetOfKey (source.AddressOperations.OffsetOf(addr))
+    member x.AddressAt(offs) = ranges |> Ranges.keyAtOffset offs |> source.AddressOperations.AddressOf
     member x.KeyCount = source.Length
     member x.IsEmpty = source.AddressOperations.Range |> Seq.isEmpty
     member x.Builder = VirtualIndexBuilder.Instance :> _
@@ -78,7 +78,7 @@ and VirtualOrdinalIndex(ranges:Ranges<int64>, source:IVirtualVectorSource) =
     member x.Mappings = Seq.map2 (fun k v -> KeyValuePair(k, v)) (Ranges.keys ranges) source.AddressOperations.Range
     member x.IsOrdered = true
     member x.Comparer = Comparer<int64>.Default
-    member x.Locate(key) = source.AddressOperations.AddressOf(Ranges.addressOfKey key ranges)
+    member x.Locate(key) = source.AddressOperations.AddressOf(Ranges.offsetOfKey key ranges)
     member x.Lookup(key, semantics, check) = 
       failwith "LOokup!"
       //Ranges.lookup key semantics (addressing.AddressOf >> check) ranges 
@@ -213,7 +213,7 @@ and VirtualIndexBuilder() =
       | :? VirtualOrdinalIndex as index ->
           let ordinalRestr = 
             range |> RangeRestriction.map (fun addr -> 
-              Ranges.keyOfAddress (index.Source.AddressOperations.OffsetOf(addr)) index.Ranges)
+              Ranges.keyAtOffset (index.Source.AddressOperations.OffsetOf(addr)) index.Ranges)
           
           // TODO: range checks
           let newIndex = 
@@ -269,12 +269,12 @@ and VirtualIndexBuilder() =
             | None -> proj index.KeyRange 
             | Some(k, BoundaryBehavior.Inclusive) -> unbox<int64> k
             | Some(k, BoundaryBehavior.Exclusive) -> 
-                Ranges.keyOfAddress (next (Ranges.addressOfKey (unbox<int64> k) ordIndex.Ranges)) ordIndex.Ranges
+                Ranges.keyAtOffset (next (Ranges.offsetOfKey (unbox<int64> k) ordIndex.Ranges)) ordIndex.Ranges
           let loKey, hiKey = getRangeKey fst ((+) 1L) optLo, getRangeKey snd ((-) 1L) optHi
           let loAddr, hiAddr = 
             // TODO: Too many silly conversions there and back again
-            ordIndex.Source.AddressOperations.AddressOf (Ranges.addressOfKey loKey ordIndex.Ranges),
-            ordIndex.Source.AddressOperations.AddressOf (Ranges.addressOfKey hiKey ordIndex.Ranges)
+            ordIndex.Source.AddressOperations.AddressOf (Ranges.offsetOfKey loKey ordIndex.Ranges),
+            ordIndex.Source.AddressOperations.AddressOf (Ranges.offsetOfKey hiKey ordIndex.Ranges)
 
           // TODO: range checks
           let restr = RangeRestriction.Fixed(loKey, hiKey)
