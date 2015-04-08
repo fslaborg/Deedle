@@ -285,7 +285,7 @@ let ``Printing series does not require counting items in partitions``() =
 [<Test>]
 let ``Printing series (with large partitions) accesses border partitions`` () =
   let idxSrc, valSrc, ts = createTimeSeries 100 (fun n -> 5000)
-  ts.KeyCount |> shouldEqual 1000000
+  ts.KeyCount |> shouldEqual 500000
   ts.Format() |> should containStr "0"
   ts.Format() |> should containStr "14"
   ts.Format() |> should containStr "99004985"
