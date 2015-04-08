@@ -41,7 +41,8 @@ type ISeries<'K when 'K : equality> =
   abstract Index : IIndex<'K>
   /// Attempts to get the value at a specified key and return it as `obj`
   abstract TryGetObject : 'K -> OptionalValue<obj>
-
+  /// Returns the vector builder associated with this series
+  abstract VectorBuilder : IVectorBuilder
 
 /// The type `Series<K, V>` represents a data series consisting of values `V` indexed by
 /// keys `K`. The keys of a series may or may not be ordered 
@@ -1000,6 +1001,7 @@ and
     member x.TryGetObject(k) = x.TryGet(k) |> OptionalValue.map box
     member x.Vector = vector :> IVector
     member x.Index = index
+    member x.VectorBuilder = vectorBuilder
 
   member private series.GetPrintedObservations(startCount, endCount) = 
     let smaller = series.Index.Mappings |> Seq.skipAtMost (startCount+endCount) |> Seq.isEmpty

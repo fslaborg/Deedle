@@ -276,7 +276,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       indexBuilder.Merge( [(columnIndex, Vectors.Return 0); (otherFrame.ColumnIndex, Vectors.Return 1) ], BinaryTransform.AtMostOne)
     // Apply transformation to both data vectors
     let newThisData = data.Select(transformColumn vectorBuilder thisRowCmd)
-    let newOtherData = otherFrame.Data.Select(transformColumn vectorBuilder otherRowCmd)
+    let newOtherData = otherFrame.Data.Select(transformColumn otherFrame.VectorBuilder otherRowCmd)
     // Combine column vectors a single vector & return results
     let newData = vectorBuilder.Build(colCmd, [| newThisData; newOtherData |])
     Frame(newRowIndex, newColumnIndex, newData, indexBuilder, vectorBuilder)
@@ -772,7 +772,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       data <- Vector.ofValues [series.Vector]
       frame.setColumnIndex (Index.ofKeys [| column |])
     else
-      let other = Frame(series.Index, Index.ofUnorderedKeys [| column |], Vector.ofValues [series.Vector], indexBuilder, vectorBuilder)
+      let other = 
+        Frame( series.Index, Index.ofUnorderedKeys [| column |], 
+               Vector.ofValues [series.Vector], series.Index.Builder, series.VectorBuilder )
       let joined = frame.Join(other, JoinKind.Left, lookup)
       data <- joined.Data
       frame.setColumnIndex joined.ColumnIndex

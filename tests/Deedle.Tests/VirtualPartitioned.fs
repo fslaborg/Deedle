@@ -21,9 +21,16 @@ open Deedle.Vectors.Virtual
 // Helper modules
 // ------------------------------------------------------------------------------------------------
 
+/// Time zone offset used for all dates in this test
+let tzOffset = TimeSpan.FromHours 5.
 /// Helper function for creating data from partiton/offset
 let date part idx = 
-  DateTimeOffset(DateTime(2000 + part, 1, 1).AddHours(float idx))
+  DateTimeOffset(DateTime(2000 + part, 1, 1).AddHours(float idx), tzOffset)
+/// Helper to create DateTimeOffset without too much typing
+let dateOffs y m d =
+  DateTimeOffset(DateTime(y, m, d), tzOffset)
+/// Helper to create TimeSpan
+let mins m = TimeSpan(0, m, 0)
 
 /// Encoding and decoding int32 pairs as int64 values.
 ///
@@ -65,7 +72,7 @@ type PartitionShape = int[]
 type PartitionRangeOperations(shape:PartitionShape, rangeListRef:ref<_>) = 
   // Helpers for converting to/from addresses
   let firstDate (dt:DateTimeOffset) = 
-    DateTimeOffset(dt.Year, 1, 1, 0, 0, 0, dt.Offset)
+    DateTimeOffset(dt.Year, 1, 1, 0, 0, 0, tzOffset)
   let hours (dt:DateTimeOffset) = 
     int (dt - firstDate dt).TotalHours          
 
@@ -104,7 +111,7 @@ type PartitionRangeOperations(shape:PartitionShape, rangeListRef:ref<_>) =
             else 
               (if y = dt1.Year then hours dt1 else count-1),
               (if y = dt2.Year then hours dt2 else 0)
-          let dt = DateTimeOffset(y, 1, 1, 0, 0, 0, dt1.Offset)
+          let dt = DateTimeOffset(y, 1, 1, 0, 0, 0, tzOffset)
           for h in first .. step .. last do yield dt.AddHours(float h) }
 
     member x.IncrementBy(dt, offset) =
@@ -118,7 +125,7 @@ type PartitionRangeOperations(shape:PartitionShape, rangeListRef:ref<_>) =
         let count = shape.[y - 2000]
         let start = if y = dt.Year then hours dt else 0
         if offset < int64 (count - start) then
-          DateTimeOffset(y, 1, 1, 0, 0, 0, dt.Offset).AddHours(float offset)
+          DateTimeOffset(y, 1, 1, 0, 0, 0, tzOffset).AddHours(float start + float offset)
         else loop (y + 1) (offset - int64 (count - start))        
       loop dt.Year offset        
 
@@ -166,12 +173,12 @@ type TrackingSource<'T>
 
   // We keep `Ranges<DateTimeOffset>` (which is equivalent to keeping)
   let asAddress (dt:DateTimeOffset) = 
-    let hours = (dt - DateTimeOffset(dt.Year, 1, 1, 0, 0, 0, dt.Offset)).TotalHours
+    let hours = (dt - DateTimeOffset(dt.Year, 1, 1, 0, 0, 0, tzOffset)).TotalHours
     if (hours - round(hours) > 1e-9) then failwith "asAddress: Invalid key!"
     Address.ofIntPair(dt.Year-2000, int hours)
   let ofAddress (addr) = 
     let part, idx = Address.asIntPair(addr)
-    DateTimeOffset(DateTime(2000 + part, 1, 1).AddHours(float idx))
+    DateTimeOffset(DateTime(2000 + part, 1, 1).AddHours(float idx), tzOffset)
   let addressing = RangesAddressOperations<DateTimeOffset>(ranges, Func<_, _>(asAddress), Func<_, _>(ofAddress)) :> IAddressOperations
 
   member x.Ranges = ranges
@@ -233,8 +240,8 @@ let accessedDataParts (src:TrackingSource<_>) =
 let createTimeSeries partNum partSize =
   let shape  = [| for i in 1 .. partNum -> partSize i |]
   let range  = [date 0 0, date (shape.Length-1) (shape.[shape.Length-1]-1)]
-  let accessRef = ref [], ref []
-  let ranges = Ranges.create (PartitionRangeOperations(shape, snd accessRef)) range
+  let accessMeta = ref []
+  let ranges = Ranges.create (PartitionRangeOperations(shape, accessMeta)) range
   let idxValues =
     { new TrackingSourceValue<DateTimeOffset> with
         member x.CanLookup = true
@@ -247,8 +254,8 @@ let createTimeSeries partNum partSize =
         member x.AsDate(d) = failwith "AsDate not supported"
         member x.OfDate(d) = failwith "OfDate not supported"
         member x.ValueAt(addr) = let part, idx = Address.asIntPair addr in (float part) * 1000000.0 + (float idx) }
-  let idxSrc = TrackingSource<DateTimeOffset>(accessRef, idxValues, ranges)
-  let valSrc = TrackingSource<float>(accessRef, valValues, ranges)
+  let idxSrc = TrackingSource<DateTimeOffset>((ref [], accessMeta), idxValues, ranges)
+  let valSrc = TrackingSource<float>((ref [], accessMeta), valValues, ranges)
   let sv = Virtual.CreateSeries(idxSrc, valSrc)
   idxSrc, valSrc, sv
 
@@ -314,7 +321,8 @@ let ``Lookup can search within a single partition`` () =
   ts.Get(date 10 5, Lookup.ExactOrGreater) |> shouldEqual 10000005.
   valSrc.AccessedData |> Seq.distinct |> Seq.sort |> List.ofSeq 
   |> shouldEqual <| [(10, 4); (10, 5); (10, 6)]
-  accessedDataParts idxSrc |> shouldEqual [10]
+  accessedDataParts idxSrc |> shouldEqual []
+  accessedDataParts valSrc |> shouldEqual [10]
 
 [<Test>]
 let ``Lookup can search accross partition boundaries`` () =
@@ -323,6 +331,10 @@ let ``Lookup can search accross partition boundaries`` () =
   ts.Get((date 0 9).AddDays(1.0), Lookup.ExactOrGreater) |> shouldEqual 1000000.0
   ts.Get(date 0 9, Lookup.Greater) |> shouldEqual 1000000.0
 
+// ------------------------------------------------------------------------------------------------
+// Slicing and merging
+// ------------------------------------------------------------------------------------------------
+
 [<Test>]
 let ``Getting a subseries accesses only relevant partitions`` () =
   let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 10)
@@ -330,3 +342,150 @@ let ``Getting a subseries accesses only relevant partitions`` () =
   ts.[date 9 0 .. date 11 9].KeyCount |> shouldEqual 30
   accessedMetaParts idxSrc |> shouldEqual [0 .. 11]
   valSrc.AccessedData |> shouldEqual []
+
+[<Test>]
+let ``Lookup into subseries works and accesses correct partitions`` () =
+  let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
+  let sub = ts.[dateOffs 2010 2 1 .. dateOffs 2011 6 1] 
+
+  // Lookup before and after the start/end of the range
+  sub.TryGet(dateOffs 2010 1 1, Lookup.ExactOrGreater)
+  |> shouldEqual <| sub.TryGet(fst sub.KeyRange)
+  sub.TryGet(dateOffs 2011 6 1, Lookup.ExactOrSmaller)
+  |> shouldEqual <| sub.TryGet(snd sub.KeyRange)
+
+  // Additional lookup tests around the boundary
+  let lookupTests = 
+    [ dateOffs 2010 2 1, Lookup.Greater 
+      dateOffs 2010 2 1, Lookup.ExactOrGreater
+      dateOffs 2010 2 1, Lookup.Exact
+      dateOffs 2010 2 1 - mins 10, Lookup.ExactOrGreater
+      dateOffs 2011 6 1, Lookup.Smaller
+      dateOffs 2011 6 1, Lookup.ExactOrSmaller
+      dateOffs 2011 6 1, Lookup.Exact ]
+  for dt, semantics in lookupTests do
+    sub.TryGet(dt, semantics) |> shouldEqual <| ts.TryGet(dt, semantics)
+  
+  // We only accessed the two relevant years  
+  accessedDataParts idxSrc |> shouldEqual <| [10; 11]
+
+
+[<Test>]
+let ``Merging series sub-ranges works as expected`` () =
+  let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
+  let y15a = ts.[dateOffs 2015 2 1 .. dateOffs 2015 3 1 - mins 1 ]
+  let y15b = ts.[dateOffs 2015 3 1 .. dateOffs 2015 4 1 ]
+  let y17a = ts.[dateOffs 2017 2 1 .. dateOffs 2017 3 1 - mins 1 ]
+  let y17b = ts.[dateOffs 2017 3 1 .. dateOffs 2017 4 1 ]
+  let merged = y15a.Merge(y17b, y15b, y17a)
+
+  // Merging correctly joins adjacent ranges (the above is just 2 blocks)
+  let ranges = 
+    ((merged.Index :?> Deedle.Indices.Virtual.VirtualOrderedIndex<DateTimeOffset>).Source 
+      :?> TrackingSource<DateTimeOffset>).Ranges
+  ranges.Ranges.Length |> shouldEqual 2
+
+  // Check number of keys in the merged series
+  merged.KeyCount |> shouldEqual 
+    <| y15a.KeyCount + y15b.KeyCount + y17a.KeyCount + y17b.KeyCount
+
+  // Lookup in the hole between two merged ranges
+  merged.TryGet(dateOffs 2016 2 1, Lookup.Exact).HasValue 
+  |> shouldEqual false
+  merged.Get(dateOffs 2016 2 1, Lookup.Greater) 
+  |> shouldEqual <| y17a.[fst y17a.KeyRange]
+  merged.Get(dateOffs 2016 2 1, Lookup.Smaller) 
+  |> shouldEqual <| y15b.[snd y15b.KeyRange]
+
+  // The accessed values are the same too..
+  merged |> Stats.sum |> should (equalWithin 1e-100) <| 
+    ([y15a; y15b; y17a; y17b] |> Seq.sumBy Stats.sum)
+
+
+[<Test>]
+let ``Slicing with out of range keys, or reversed order produces empty series`` () =
+  let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
+  ts.[dateOffs 1990 1 1 .. dateOffs 1991 1 1].KeyCount |> shouldEqual 0
+  ts.[dateOffs 2500 1 1 .. dateOffs 2400 1 1].KeyCount |> shouldEqual 0
+  ts.[date 999 4999 .. dateOffs 3000 1 1].KeyCount |> shouldEqual 1
+  ts.[dateOffs 1990 1 1 .. date 0 0].KeyCount |> shouldEqual 1
+  
+
+// ------------------------------------------------------------------------------------------------
+// Projection, joins and other operations
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can project using Series.map without evaluating the series`` () =
+  let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
+  let projected = ts |> Series.mapValues (fun v -> int v % 10)
+  projected.GetAt(0) |> shouldEqual 0
+  projected.GetAt(projected.KeyCount-1) |> shouldEqual 9
+  valSrc.AccessedData |> shouldEqual [999,4999; 0,0]
+
+
+[<Test>]
+let ``Adding column using exact match does not fully evaluate series`` () =
+  let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
+  let df =
+    Frame.ofRowKeys 
+      [ for y in 2100 .. 2200 do
+          for m in 1 .. 12 do yield dateOffs y m 1 ]
+  df.AddColumn("Values", ts, Lookup.Exact)
+  for k, v in Series.observations df?Values do
+    ts.[k] |> shouldEqual v
+  accessedDataParts idxSrc |> shouldEqual <| [ 100 .. 200 ]
+
+
+[<Test>]
+let ``Can sort small sub-series of a virtual series`` () =
+  let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
+  let proj v = int v % 10
+  let subseries = ts.[date 100 4990 .. date 101 10]
+  let sorted = subseries |> Series.sortBy proj
+
+  // It has actually been sorted
+  let allValues = sorted.Values |> Seq.map proj |> List.ofSeq
+  List.sort allValues |> shouldEqual <| allValues
+
+  // It should contain the same values
+  let sortedVals = sorted.Values |> List.ofSeq |> List.sort
+  let origVals = subseries.Values |> List.ofSeq |> List.sort 
+  sortedVals |> shouldEqual <| origVals
+
+  // The right data positions were accessed
+  valSrc.AccessedData |> Seq.distinct |> Seq.sort |> List.ofSeq 
+  |> shouldEqual <| 
+      [ for i in 4990 .. 4999 do yield 100, i
+        for i in 0 .. 10 do yield 101, i ]
+
+
+// ------------------------------------------------------------------------------------------------
+// Creating frames with vitual series
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can create frame with two virtual series`` () =
+  let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
+  let ts2 = ts |> Series.mapValues sin
+  let df = frame [ "Value" => ts; "Sin" => ts2 ]
+  
+  df.Format() |> ignore
+  df.GetRowAt<float>(ts.KeyCount/2) |> 
+    shouldEqual <| series ["Value" => 500000000.0; "Sin" => sin 500000000.0]
+
+  accessedDataParts valSrc |> shouldEqual [0; 500; 999]
+
+
+[<Test>]
+let ``Can use ColumnApply and 'abs' on a created frame`` () =
+  let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
+  let ts2 = ts |> Series.mapValues sin
+  let f1 = frame [ "Value" => ts; "Sin" => ts2 ]
+
+  let f2 = f1.ColumnApply(fun (s:Series<_, float>) -> s |> Series.mapValues (fun v -> abs v) :> _) 
+  let f3 = abs f1 
+  let f4 = f2 - f3
+
+  f4.Rows.[date 510 0 .. date 511 4999] |> Stats.sum
+  |> shouldEqual <| series ["Value" => 0.0; "Sin" => 0.0]

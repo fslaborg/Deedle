@@ -75,6 +75,19 @@ type RangesAddressOperations<'TKey when 'TKey : equality>
       ( ranges:Ranges<'TKey>, 
         asAddress:System.Func<'TKey, Address>,
         ofAddress:System.Func<Address, 'TKey> ) =
+  
+  member x.Ranges = ranges
+
+  override x.GetHashCode() =
+    hash (ranges.Ranges, ranges.Operations)
+
+  override x.Equals(other) =
+    match other with 
+    | :? RangesAddressOperations<'TKey> as other -> 
+        other.Ranges.Ranges = ranges.Ranges &&
+        other.Ranges.Operations = ranges.Operations
+    | _ -> false
+
   interface IAddressOperations with
     member x.AddressOf(offset) = asAddress.Invoke(ranges.KeyAtOffset(offset))
     member x.OffsetOf(addr) = ranges.OffsetOfKey(ofAddress.Invoke(addr))
@@ -428,6 +441,23 @@ type VirtualVectorBuilder() =
               VirtualVector(newSource) :> _
           | _ ->
               failwith "Append would materialize vectors"
-      | _ ->    
+
+      | Relocate(source, length, relocations) ->
+          let source = VirtualVectorHelpers.unboxVector (build source args)
+          let newData = Array.zeroCreate (int length)
+          for newIndex, oldAddress in relocations do
+            let newIndex = LinearAddress.asInt newIndex
+            newData.[newIndex] <- source.GetValue(oldAddress)
+          baseBuilder.CreateMissing(newData)
+
+      | DropRange _ -> 
+          failwith "VectorBuilder.Build - DropRange not implemented"
+      | FillMissing _ -> 
+          failwith "VectorBuilder.Build - FillMissing not implemented"
+
+      | Empty _ 
+      | CustomCommand _      
+      | AsyncCustomCommand _ ->
+      //| _ ->    
           //failwith "VectorBuilder.Build - this would be slow"
           baseBuilder.Build<'T>(cmd, args)

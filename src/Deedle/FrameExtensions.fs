@@ -365,7 +365,16 @@ module ``F# Frame extensions`` =
   /// [category:Frame construction]
   let frame columns = 
     let names, values = columns |> Array.ofSeq |> Array.unzip
-    FrameUtils.fromColumns IndexBuilder.Instance VectorBuilder.Instance (Series(names, values))
+    
+    // If all the series have the same builders, then use those for the frame
+    let vbs = [ for s in values -> (s :> ISeries<_>).VectorBuilder ] |> Seq.distinct |> List.ofSeq
+    let ibs = [ for s in values -> (s :> ISeries<_>).Index.Builder ] |> Seq.distinct |> List.ofSeq
+    let vb, ib =
+      match vbs, ibs with
+      | [vb], [ib] -> vb, ib
+      | _ -> VectorBuilder.Instance, IndexBuilder.Instance
+
+    FrameUtils.fromColumns ib vb (Series(names, values))
 
   type Frame with
     // NOTE: When changing the parameters below, do not forget to update 'frame.fsx'!

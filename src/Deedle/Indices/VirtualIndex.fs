@@ -92,10 +92,6 @@ and VirtualOrdinalIndex(ranges:Ranges<int64>, source:IVirtualVectorSource) =
 and VirtualIndexBuilder() = 
   let baseBuilder = IndexBuilder.Instance
 
-  let emptyConstruction () =
-    let newIndex = Index.ofKeys []
-    unbox<IIndex<'K>> newIndex, Vectors.Empty(0L)
-
   static let indexBuilder = VirtualIndexBuilder()
   static member Instance = indexBuilder
 
@@ -250,20 +246,23 @@ and VirtualIndexBuilder() =
       match index with
       | :? VirtualOrderedIndex<'K> as index ->
           let getRangeKey bound lookup = function
-            | None -> bound
+            | None -> Some bound
             | Some(k, beh) -> 
                 let lookup = if beh = BoundaryBehavior.Inclusive then lookup ||| Lookup.Exact else lookup
                 match index.Source.LookupValue(k, lookup, fun _ -> true) with
-                | OptionalValue.Present(_, addr) -> addr
-                | _ -> bound // TODO: Not sure what this means!
+                | OptionalValue.Present(_, addr) -> Some addr
+                | _ -> None
 
           let loIdx = getRangeKey index.Source.AddressOperations.FirstElement Lookup.Greater optLo
           let hiIdx = getRangeKey index.Source.AddressOperations.LastElement Lookup.Smaller optHi
-
-          // TODO: probably range checks
-          let newVector = Vectors.GetRange(vector, RangeRestriction.Fixed(loIdx, hiIdx))
-          let newIndex = VirtualOrderedIndex(index.Source.GetSubVector(RangeRestriction.Fixed(loIdx, hiIdx)))
-          unbox<IIndex<'K>> newIndex, newVector
+          match loIdx, hiIdx with
+          | Some loIdx, Some hiIdx when loIdx <= hiIdx ->
+              let newVector = Vectors.GetRange(vector, RangeRestriction.Fixed(loIdx, hiIdx))
+              let newIndex = VirtualOrderedIndex(index.Source.GetSubVector(RangeRestriction.Fixed(loIdx, hiIdx)))
+              newIndex :> IIndex<'K>, newVector
+          | _ ->
+              Index.ofKeys [] :> _, VectorConstruction.Empty(0L)       
+              
 
       | :? VirtualOrdinalIndex as ordIndex & (:? IIndex<int64> as index) -> 
           let getRangeKey proj next = function
