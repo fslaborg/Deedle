@@ -244,6 +244,15 @@ module VirtualVectorSource =
 
 type VirtualVector<'V>(source:IVirtualVectorSource<'V>) = 
   member vector.Source = source
+
+  override vector.Equals(another) = 
+    match another with
+    | null -> false
+    | :? IVector<'V> as another -> Seq.structuralEquals vector.DataSequence another.DataSequence
+    | _ -> false
+  override vector.GetHashCode() =
+    vector.DataSequence |> Seq.structuralHash
+
   interface IVector with
     member val ElementType = typeof<'V>
     member vector.Length = source.Length

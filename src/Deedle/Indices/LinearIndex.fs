@@ -79,6 +79,7 @@ type LinearIndex<'K when 'K : equality>
   override index.Equals(another) = 
     match another with
     | null -> false
+    | :? IIndex<'K> as another when another.KeyCount <> int64 keys.Count -> false
     | :? IIndex<'K> as another -> Seq.structuralEquals keys another.Keys
     | _ -> false
 

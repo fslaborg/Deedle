@@ -477,6 +477,27 @@ let ``Can sort small sub-series of a virtual series`` () =
       [ for i in 4990 .. 4999 do yield 100, i
         for i in 0 .. 10 do yield 101, i ]
 
+[<Test>]
+let ``Can drop missing values from a small sub-series of a virtual series``() =
+  let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
+  let missings = ts |> Series.mapValues (fun v -> if (int v) % 4 = 0 then nan else v)
+  missings.[date 1 4000 .. date 2 1000] |> Series.dropMissing
+
+[<Test>]
+let ``Equality returns false and works on very large series`` () =
+  let _, _, ts1 = createTimeSeries 5000 (fun n -> 7500)
+  let ts2 = series [date 1 1 => 0.0]
+  ts1 = ts2 |> shouldEqual false
+  ts2 = ts1 |> shouldEqual false
+
+[<Test>]
+let ``Equality test returns true on small virutal series`` () =
+  let _, _, ts1 = createTimeSeries 1000 (fun n -> 5000)
+  let ts1sm = ts1 |> Series.take 10
+  let ts2sm = series [ for i in 0 .. 9 -> date 0 i => float i ]
+  ts1sm = ts2sm |> shouldEqual true
+  ts2sm = ts1sm |> shouldEqual true
+
 // ------------------------------------------------------------------------------------------------
 // Creating frames with vitual series
 // ------------------------------------------------------------------------------------------------

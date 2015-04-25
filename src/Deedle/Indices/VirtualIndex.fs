@@ -33,6 +33,18 @@ type VirtualOrderedIndex<'K when 'K : equality>(source:IVirtualVectorSource<'K>)
   let keyAtAddr i = source.ValueAt(i).Value
   member x.Source = source
 
+  /// Implements structural equality check against another index
+  override index.Equals(another) = 
+    match another with
+    | null -> false
+    | :? IIndex<'K> as another when another.KeyCount <> source.Length -> false
+    | :? IIndex<'K> as another -> Seq.structuralEquals (index :> IIndex<_>).Keys another.Keys
+    | _ -> false
+
+  /// Implement structural hashing against another index
+  override index.GetHashCode() =
+    (index :> IIndex<_>).Keys |> Seq.structuralHash
+
   interface IIndex<'K> with
     member x.KeyAt(addr) = keyAtAddr (Location.delayed(addr, source.AddressOperations))
     member x.AddressAt(offs) = source.AddressOperations.AddressOf offs
@@ -108,8 +120,14 @@ and VirtualIndexBuilder() =
   static member Instance = indexBuilder
 
   interface IIndexBuilder with
-    member x.Create<'K when 'K : equality>(keys:seq<'K>, ordered:option<bool>) : IIndex<'K> = failwith "Create"
-    member x.Create<'K when 'K : equality>(keys:ReadOnlyCollection<'K>, ordered:option<bool>) : IIndex<'K> = failwith "Create"
+    member x.Create<'K when 'K : equality>(keys:seq<'K>, ordered:option<bool>) : IIndex<'K> = 
+      // trace - materializing
+      baseBuilder.Create(keys, ordered)
+    
+    member x.Create<'K when 'K : equality>(keys:ReadOnlyCollection<'K>, ordered:option<bool>) : IIndex<'K> = 
+      // trace - materializing
+      baseBuilder.Create(keys, ordered)
+
     member x.Aggregate(index, aggregation, vector, selector) = failwith "Aggregate"
     member x.GroupBy(index, keySel, vector) = failwith "GroupBy"
     member x.OrderIndex( (index, vector) ) = 
