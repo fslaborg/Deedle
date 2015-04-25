@@ -424,6 +424,14 @@ let ``Can project using Series.map without evaluating the series`` () =
   valSrc.AccessedData |> shouldEqual [999,4999; 0,0]
 
 [<Test>]
+let ``Returning `nan` from Series.map produces missing value`` () =
+  let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
+  let missings = ts |> Series.mapValues (fun v -> if (int v) % 4 = 0 then nan else v)
+  let last5 = missings |> Series.takeLast 5 
+  last5.KeyCount |> shouldEqual 5
+  last5.ValueCount |> shouldEqual 4
+
+[<Test>]
 let ``Can merge non-virtual series with small virtual series`` () =
   let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
   let ts1 = ts.[date 10 4900 .. date 11 100 ]
@@ -468,7 +476,6 @@ let ``Can sort small sub-series of a virtual series`` () =
   |> shouldEqual <| 
       [ for i in 4990 .. 4999 do yield 100, i
         for i in 0 .. 10 do yield 101, i ]
-
 
 // ------------------------------------------------------------------------------------------------
 // Creating frames with vitual series

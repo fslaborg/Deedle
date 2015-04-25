@@ -186,9 +186,13 @@ module VirtualVectorSource =
       | None -> failwith "Cannot lookup on virtual vector without reverse lookup"
       | Some g -> op g
 
+    let flattenNA = MissingValues.flattenNA<'TNew>()
+
     { new IVirtualVectorSource<'TNew> with
         member x.ValueAt(location) = 
           f location (source.ValueAt(location))
+          |> flattenNA
+
         member x.MergeWith(sources) = 
           let sources = sources |> List.ofSeq |> List.tryChooseBy (function
               | :? IMappedVectorSource<'V, 'TNew> as src -> Some(src.Source) | _ -> None)
