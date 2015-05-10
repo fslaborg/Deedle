@@ -58,7 +58,6 @@ type IRangeKeyOperations<'TKey> =
 type Ranges<'T when 'T : equality>(ranges:seq<'T * 'T>, ops:IRangeKeyOperations<'T>) = 
   let ranges = Array.ofSeq ranges 
   do
-    if ranges.Length = 0 then invalidArg "ranges" "Range cannot be empty"
     for l, h in ranges do 
       if ops.Compare(l, h) > 0 then 
         invalidArg "ranges" "Invalid range (first offset is greater than second)"
@@ -81,7 +80,6 @@ module Ranges =
   /// (range key operations used standard arithmetic)
   let inline inlineCreate succ (ranges:seq< ^T * ^T >) =
     let ranges = Array.ofSeq ranges 
-    if ranges.Length = 0 then invalidArg "ranges" "Range cannot be empty"
     for l, h in ranges do if l > h then invalidArg "ranges" "Invalid range (first offset is greater than second)"
     let one = LanguagePrimitives.GenericOne
     let ops = 

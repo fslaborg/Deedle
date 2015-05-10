@@ -481,7 +481,9 @@ let ``Can sort small sub-series of a virtual series`` () =
 let ``Can drop missing values from a small sub-series of a virtual series``() =
   let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
   let missings = ts |> Series.mapValues (fun v -> if (int v) % 4 = 0 then nan else v)
-  missings.[date 1 4000 .. date 2 1000] |> Series.dropMissing
+  let dropped = missings.[date 1 4000 .. date 2 1000] |> Series.dropMissing
+  dropped.KeyCount |> shouldEqual 1500
+  dropped.ValueCount |> shouldEqual 1500
 
 [<Test>]
 let ``Equality returns false and works on very large series`` () =

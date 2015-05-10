@@ -98,3 +98,8 @@
 ### 1.1.3-beta
  * Introduce generic `Ranges<T>` type to simplify working with ranges
    (mainly useful for custom BigDeedle implementations)
+  
+### 1.1.4-beta
+ * Allow creation of empty ranges
+ * Support more operations on virtualized sources
+ * Fix handling of missing values in virtual Series.map

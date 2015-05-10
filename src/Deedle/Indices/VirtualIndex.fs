@@ -37,7 +37,6 @@ type VirtualOrderedIndex<'K when 'K : equality>(source:IVirtualVectorSource<'K>)
   override index.Equals(another) = 
     match another with
     | null -> false
-    | :? IIndex<'K> as another when another.KeyCount <> source.Length -> false
     | :? IIndex<'K> as another -> Seq.structuralEquals (index :> IIndex<_>).Keys another.Keys
     | _ -> false
 
