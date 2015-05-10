@@ -452,7 +452,7 @@ let ``Adding column using exact match does not fully evaluate series`` () =
   df.AddColumn("Values", ts, Lookup.Exact)
   for k, v in Series.observations df?Values do
     ts.[k] |> shouldEqual v
-  accessedDataParts idxSrc |> shouldEqual <| [ 100 .. 200 ]
+  accessedDataParts idxSrc |> shouldEqual <| [ 100 ]
 
 
 [<Test>]
