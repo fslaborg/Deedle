@@ -37,7 +37,7 @@ type VirtualOrderedIndex<'K when 'K : equality>(source:IVirtualVectorSource<'K>)
   override index.Equals(another) = 
     match another with
     | null -> false
-    | :? IIndex<'K> as another -> Seq.structuralEquals (index :> IIndex<_>).Keys another.Keys
+    | :? IIndex<'K> as another -> Seq.structuralEquals (index :> IIndex<_>).KeySequence another.KeySequence
     | _ -> false
 
   /// Implement structural hashing against another index
@@ -54,6 +54,9 @@ type VirtualOrderedIndex<'K when 'K : equality>(source:IVirtualVectorSource<'K>)
       keyAtAddr (Location.known(source.AddressOperations.FirstElement, 0L)),
       keyAtAddr (Location.delayed(source.AddressOperations.LastElement, source.AddressOperations))
     
+    member x.KeySequence : seq<'K> = 
+      source.AddressOperations.Range
+      |> Seq.mapl (fun idx addr -> keyAtAddr (Location.known(addr, idx)))
     member x.Keys : ReadOnlyCollection<'K> = 
       source.AddressOperations.Range
       |> Seq.mapl (fun idx addr -> keyAtAddr (Location.known(addr, idx)))
@@ -86,6 +89,7 @@ and VirtualOrdinalIndex(ranges:Ranges<int64>, source:IVirtualVectorSource) =
     member x.Builder = VirtualIndexBuilder.Instance :> _
     member x.KeyRange = Ranges.keyRange ranges
     member x.Keys = ranges |> Ranges.keys |> ReadOnlyCollection.ofSeq
+    member x.KeySequence = ranges |> Ranges.keys 
     member x.Mappings = Seq.map2 (fun k v -> KeyValuePair(k, v)) (Ranges.keys ranges) source.AddressOperations.Range
     member x.IsOrdered = true
     member x.Comparer = Comparer<int64>.Default

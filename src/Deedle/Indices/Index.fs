@@ -110,6 +110,7 @@ type BoundaryBehavior = Inclusive | Exclusive
 type IIndex<'K when 'K : equality> = 
   /// Returns a sequence of all keys in the index.
   abstract Keys : ReadOnlyCollection<'K>
+  abstract KeySequence : seq<'K>
 
   /// Performs reverse lookup - and returns key for a specified address
   abstract KeyAt : Address -> 'K

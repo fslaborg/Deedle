@@ -79,7 +79,7 @@ type LinearIndex<'K when 'K : equality>
   override index.Equals(another) = 
     match another with
     | null -> false
-    | :? IIndex<'K> as another -> Seq.structuralEquals keys another.Keys
+    | :? IIndex<'K> as another -> Seq.structuralEquals keys another.KeySequence
     | _ -> false
 
   /// Implement structural hashing against another index
@@ -92,6 +92,7 @@ type LinearIndex<'K when 'K : equality>
 
   interface IIndex<'K> with
     member x.Keys = ensureLookup (); keys
+    member x.KeySequence = ensureLookup (); keys :> _
     member x.KeyCount = ensureLookup (); int64 keys.Count
     member x.Builder = builder
     
@@ -213,6 +214,7 @@ type LinearRangeIndex<'K when 'K : equality>
 
     // The rest of the functionality is delegated to 'actualIndex'
     member x.Keys = actualIndex.Value.Keys
+    member x.KeySequence = actualIndex.Value.KeySequence
     member x.Locate(key) = actualIndex.Value.Locate(key)
     member x.Lookup(key, semantics, check) = actualIndex.Value.Lookup(key, semantics, check)
     member x.Mappings = actualIndex.Value.Mappings
