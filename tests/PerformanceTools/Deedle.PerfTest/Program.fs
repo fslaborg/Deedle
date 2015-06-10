@@ -60,7 +60,7 @@ module internal Compiler =
         yield "--define:" + def.Symbol
 
       // Generate "-r" argument for all libraries to be referenced
-      for ref in config.Reference.References do
+      for ref in config.References do
         for lib in refLibs do 
           if lib.Contains(ref.Name) then yield! ["-r"; lib]
       // Generate "-r" argument for Deedle.PerfTest.Core (with the attribute)
