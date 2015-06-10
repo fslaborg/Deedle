@@ -46,6 +46,8 @@
 The vector provides a minimal interface that is required by series and can be
 implemented in a number of ways to provide vector backed by database or an
 alternative representation of data.</p>
+
+
 </div>
   <h3>Instance members</h3>
   <table class="table table-bordered member-list">
@@ -56,10 +58,10 @@ alternative representation of data.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '642', 642)" onmouseover="showTip(event, '642', 642)">
+          <code onmouseout="hideTip(event, '646', 646)" onmouseover="showTip(event, '646', 646)">
             Convert(arg1, arg2)
           </code>
-          <div class="tip" id="642">
+          <div class="tip" id="646">
             <strong>Signature:</strong> ((&#39;T -&gt; &#39;TNew) * (&#39;TNew -&gt; &#39;T)) -&gt; IVector&lt;&#39;TNew&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -74,15 +76,17 @@ can be converted back using another specified function. For virtualized vectors,
 this enables e.g. efficient lookup on the returned vectors (by delegating the
 lookup to the original source)</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '643', 643)" onmouseover="showTip(event, '643', 643)">
+          <code onmouseout="hideTip(event, '647', 647)" onmouseover="showTip(event, '647', 647)">
             Data
           </code>
-          <div class="tip" id="643">
+          <div class="tip" id="647">
             <strong>Signature:</strong> VectorData&lt;&#39;T&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -96,15 +100,17 @@ lookup to the original source)</p>
 on the vector, data may be returned as a continuous block of memory using
 <code>ReadOnlyCollection&lt;T&gt;</code> or as a lazy sequence <code>seq&lt;T&gt;</code>.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '644', 644)" onmouseover="showTip(event, '644', 644)">
+          <code onmouseout="hideTip(event, '648', 648)" onmouseover="showTip(event, '648', 648)">
             GetValue(arg1)
           </code>
-          <div class="tip" id="644">
+          <div class="tip" id="648">
             <strong>Signature:</strong> Address -&gt; OptionalValue&lt;&#39;T&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -116,15 +122,17 @@ on the vector, data may be returned as a continuous block of memory using
             </a>
           <p>Returns value stored in the vector at a specified address.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '645', 645)" onmouseover="showTip(event, '645', 645)">
+          <code onmouseout="hideTip(event, '649', 649)" onmouseover="showTip(event, '649', 649)">
             GetValueAtLocation(arg1)
           </code>
-          <div class="tip" id="645">
+          <div class="tip" id="649">
             <strong>Signature:</strong> IVectorLocation -&gt; OptionalValue&lt;&#39;T&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -138,15 +146,17 @@ on the vector, data may be returned as a continuous block of memory using
 This can typically just call 'GetValue(loc.Address)', but it can do something
 more clever using the fact that the caller provided us with the address &amp; offset.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '646', 646)" onmouseover="showTip(event, '646', 646)">
+          <code onmouseout="hideTip(event, '650', 650)" onmouseover="showTip(event, '650', 650)">
             Select(arg1)
           </code>
-          <div class="tip" id="646">
+          <div class="tip" id="650">
             <strong>Signature:</strong> ((IVectorLocation -&gt; OptionalValue&lt;&#39;T&gt; -&gt; OptionalValue&lt;&#39;TNew&gt;)) -&gt; IVector&lt;&#39;TNew&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -160,6 +170,8 @@ more clever using the fact that the caller provided us with the address &amp; of
 a new vector (not necessarily of the same representation) with the results.
 The function handles missing values - it is called with optional values and
 may return a missing value as a result of the transformation.</p>
+
+
 
         </td>
       </tr>

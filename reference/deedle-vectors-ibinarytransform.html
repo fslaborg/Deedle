@@ -44,6 +44,8 @@
 <div class="xmldoc">
 <p>Represent a transformation that is applied when combining two vectors (because 
 we are combining untyped <code>IVector</code> values, the transformation is also untyped)</p>
+
+
 </div>
   <h3>Instance members</h3>
   <table class="table table-bordered member-list">
@@ -54,10 +56,10 @@ we are combining untyped <code>IVector</code> values, the transformation is also
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1030', 1030)" onmouseover="showTip(event, '1030', 1030)">
+          <code onmouseout="hideTip(event, '1045', 1045)" onmouseover="showTip(event, '1045', 1045)">
             GetFunction()
           </code>
-          <div class="tip" id="1030">
+          <div class="tip" id="1045">
             <strong>Signature:</strong> unit -&gt; OptionalValue&lt;&#39;T&gt; -&gt; OptionalValue&lt;&#39;T&gt; -&gt; OptionalValue&lt;&#39;T&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'T          </div>
@@ -72,15 +74,17 @@ Although generic, this function will only be called with the <code>T</code> set 
 type of vector that is being built. Since <code>VectorConstruction</code> is not generic,
 the type cannot be statically propagated.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1031', 1031)" onmouseover="showTip(event, '1031', 1031)">
+          <code onmouseout="hideTip(event, '1046', 1046)" onmouseover="showTip(event, '1046', 1046)">
             IsMissingUnit
           </code>
-          <div class="tip" id="1031">
+          <div class="tip" id="1046">
             <strong>Signature:</strong> bool<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -93,6 +97,8 @@ the type cannot be statically propagated.</p>
           <p>Assuming <code>*</code> is the result of <code>GetFunction</code>, this property returns true when 
 for all <code>x</code> it is the case that <code>Missing * x = x = x * Missing</code>. This enables
 certain optimizations (as we do not have to call <code>*</code> when one argument is N/A)</p>
+
+
 
         </td>
       </tr>

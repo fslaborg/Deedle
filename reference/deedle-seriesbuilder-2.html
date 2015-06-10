@@ -44,18 +44,45 @@
 <div class="xmldoc">
 <p>The type can be used for creating series using mutation. You can add 
 items using <code>Add</code> and get the resulting series using the <code>Series</code> property.</p>
+
+
         <h2>Using from C#</h2>
 <p>The type supports the C# collection builder pattern:</p>
 
-<pre><code>var s = new SeriesBuilder&lt;string, double&gt;
-  { { "A", 1.0 }, { "B", 2.0 }, { "C", 3.0 } }.Series;
-</code></pre>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">var</span> <span class="i">s</span> <span class="o">=</span> <span class="k">new</span> <span class="i">SeriesBuilder</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">string</span>, <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">double</span><span class="o">&gt;</span>
+  { { <span class="s">&quot;A&quot;</span>, <span class="n">1.0</span> }, { <span class="s">&quot;B&quot;</span>, <span class="n">2.0</span> }, { <span class="s">&quot;C&quot;</span>, <span class="n">3.0</span> } }<span class="o">.</span><span class="i">Series</span>;
+</pre>
+</td>
+</tr>
+</table>
 
 <p>The type also supports the <code>dynamic</code> operator:</p>
 
-<pre><code>dynamic sb = new SeriesBuilder&lt;string, obj&gt;();
-sb.ID = 1;
-sb.Value = 3.4;</code></pre>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">dynamic</span> <span class="i">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="i">SeriesBuilder</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs1', 3)" onmouseover="showTip(event, 'fs1', 3)" class="i">string</span>, <span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="i">obj</span><span class="o">&gt;</span>();
+<span class="i">sb</span><span class="o">.</span><span class="i">ID</span> <span class="o">=</span> <span class="n">1</span>;
+<span class="i">sb</span><span class="o">.</span><span class="i">Value</span> <span class="o">=</span> <span class="n">3.4</span>;
+</pre>
+</td>
+</tr>
+</table>
+
+<div class="tip" id="fs1">Multiple items<br />val string : value:&#39;T -&gt; string<br /><br />Full name: Microsoft.FSharp.Core.Operators.string<br /><br />--------------------<br />type string = System.String<br /><br />Full name: Microsoft.FSharp.Core.string</div>
+<div class="tip" id="fs2">Multiple items<br />val double : value:&#39;T -&gt; float (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.double<br /><br />--------------------<br />type double = System.Double<br /><br />Full name: Microsoft.FSharp.Core.double</div>
+<div class="tip" id="fs3">type obj = System.Object<br /><br />Full name: Microsoft.FSharp.Core.obj</div>
+
 </div>
   <h3>Constructors</h3>
   <table class="table table-bordered member-list">
@@ -66,10 +93,10 @@ sb.Value = 3.4;</code></pre>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '835', 835)" onmouseover="showTip(event, '835', 835)">
+          <code onmouseout="hideTip(event, '840', 840)" onmouseover="showTip(event, '840', 840)">
             new()
           </code>
-          <div class="tip" id="835">
+          <div class="tip" id="840">
             <strong>Signature:</strong> unit -&gt; SeriesBuilder&lt;&#39;K,&#39;V&gt;<br />
                       </div>
         </td>
@@ -92,10 +119,10 @@ sb.Value = 3.4;</code></pre>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '836', 836)" onmouseover="showTip(event, '836', 836)">
+          <code onmouseout="hideTip(event, '841', 841)" onmouseover="showTip(event, '841', 841)">
             Add(key, value)
           </code>
-          <div class="tip" id="836">
+          <div class="tip" id="841">
             <strong>Signature:</strong> (key:&#39;K * value:&#39;V) -&gt; unit<br />
                       </div>
         </td>
@@ -106,15 +133,17 @@ sb.Value = 3.4;</code></pre>
             </a>
           <p>Add specified key and value to the series being build</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '837', 837)" onmouseover="showTip(event, '837', 837)">
+          <code onmouseout="hideTip(event, '842', 842)" onmouseover="showTip(event, '842', 842)">
             Series
           </code>
-          <div class="tip" id="837">
+          <div class="tip" id="842">
             <strong>Signature:</strong> Series&lt;&#39;K,&#39;V&gt;<br />
                       </div>
         </td>
@@ -126,6 +155,8 @@ sb.Value = 3.4;</code></pre>
           <p>Returns the constructed series. The series is an immutable
 copy of the current values and so further additions will not
 change the returned series.</p>
+
+
 
         </td>
       </tr>
@@ -140,10 +171,10 @@ change the returned series.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '838', 838)" onmouseover="showTip(event, '838', 838)">
+          <code onmouseout="hideTip(event, '843', 843)" onmouseover="showTip(event, '843', 843)">
             ( ?&lt;- )(builder, name, value)
           </code>
-          <div class="tip" id="838">
+          <div class="tip" id="843">
             <strong>Signature:</strong> (builder:SeriesBuilder&lt;string,&#39;V&gt; * name:string * value:&#39;V) -&gt; unit<br />
                       </div>
         </td>

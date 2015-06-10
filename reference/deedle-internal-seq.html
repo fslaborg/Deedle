@@ -44,6 +44,8 @@
 <div class="xmldoc">
 <p>This module contains additional functions for working with sequences. 
 <code>Deedle.Internals</code> is opened, it extends the standard <code>Seq</code> module.</p>
+
+
 </div>
 
 <!-- Render nested types and modules, if there are any -->
@@ -61,17 +63,19 @@
             alignAllOrdered collections comparer
           </code>
           <div class="tip" id="307">
-            <strong>Signature:</strong> collections:ReadOnlyCollection&lt;&#39;?482505&gt; [] -&gt; comparer:IComparer&lt;&#39;?482505&gt; -&gt; &#39;?482505 [] * (int64 * int64) [] list<br />
-                          <strong>Type parameters:</strong> '?482505          </div>
+            <strong>Signature:</strong> collections:ReadOnlyCollection&lt;&#39;?494202&gt; [] -&gt; comparer:IComparer&lt;&#39;?494202&gt; -&gt; &#39;?494202 [] * (int64 * int64) [] list<br />
+                          <strong>Type parameters:</strong> '?494202          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L1214-1214" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L1222-1222" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Calls either <code>alignAllOrderedMany</code> or <code>alignAllOrderedFew</code> depending on the number
 of sequences to be aligned. Performance measurements suggest that 150 is the limit
 when the implementation using binomial heap is faster.</p>
+
+
 
         </td>
       </tr>
@@ -86,7 +90,7 @@ when the implementation using binomial heap is faster.</p>
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L1163-1163" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L1171-1171" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -94,6 +98,8 @@ when the implementation using binomial heap is faster.</p>
 This is the same as <code>alignOrdered</code> but for larger number of key sequences.
 Throws ComparisonFailedException when the comparer fails.
 (This performs union on the specified sequences)</p>
+
+
 
         </td>
       </tr>
@@ -108,7 +114,7 @@ Throws ComparisonFailedException when the comparer fails.
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L1108-1108" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L1116-1116" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -116,6 +122,8 @@ Throws ComparisonFailedException when the comparer fails.
 This is the same as <code>alignOrdered</code> but for larger number of key sequences.
 Throws ComparisonFailedException when the comparer fails.
 (This performs union on the specified sequences)</p>
+
+
 
         </td>
       </tr>
@@ -130,11 +138,13 @@ Throws ComparisonFailedException when the comparer fails.
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L1287-1287" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L1295-1295" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Align N unordered sequences of keys (performs union of the keys)</p>
+
+
 
         </td>
       </tr>
@@ -149,7 +159,7 @@ Throws ComparisonFailedException when the comparer fails.
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L1052-1052" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L1060-1060" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -160,6 +170,8 @@ Throws ComparisonFailedException when the comparer fails.</p>
 <p>When <code>intersectionOnly = true</code>, the function only adds keys &amp; relocations
 for keys that appear in both sequences (otherwise, it performs union)</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -169,17 +181,19 @@ for keys that appear in both sequences (otherwise, it performs union)</p>
             alignUnordered s1 s2 intersectionOnly
           </code>
           <div class="tip" id="312">
-            <strong>Signature:</strong> s1:ReadOnlyCollection&lt;&#39;?482511&gt; -&gt; s2:ReadOnlyCollection&lt;&#39;?482511&gt; -&gt; intersectionOnly:bool -&gt; &#39;?482511 [] * (int64 * int64) [] list<br />
-                          <strong>Type parameters:</strong> '?482511          </div>
+            <strong>Signature:</strong> s1:ReadOnlyCollection&lt;&#39;?494208&gt; -&gt; s2:ReadOnlyCollection&lt;&#39;?494208&gt; -&gt; intersectionOnly:bool -&gt; &#39;?494208 [] * (int64 * int64) [] list<br />
+                          <strong>Type parameters:</strong> '?494208          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L1281-1281" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L1289-1289" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Align two unordered sequences of keys. Calls either
 <code>alignUnorderedUnion</code> or <code>alignUnorderedIntersection</code>, based 
 on the <code>intersectionOnly</code> parameter.</p>
+
+
 
         </td>
       </tr>
@@ -194,12 +208,14 @@ on the <code>intersectionOnly</code> parameter.</p>
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L1251-1251" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L1259-1259" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Align two unordered sequences of keys (performs intersection of the keys)
 The resulting relocations are returned as two-element list for symmetry with other functions</p>
+
+
 
         </td>
       </tr>
@@ -214,12 +230,14 @@ The resulting relocations are returned as two-element list for symmetry with oth
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L1221-1221" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L1229-1229" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Align two unordered sequences of keys (performs union of the keys)
 The resulting relocations are returned as two-element list for symmetry with other functions</p>
+
+
 
         </td>
       </tr>
@@ -230,15 +248,17 @@ The resulting relocations are returned as two-element list for symmetry with oth
             choosel f input
           </code>
           <div class="tip" id="315">
-            <strong>Signature:</strong> f:(int64 -&gt; &#39;?482457 -&gt; &#39;?482458 option) -&gt; input:seq&lt;&#39;?482457&gt; -&gt; seq&lt;&#39;?482458&gt;<br />
-                          <strong>Type parameters:</strong> '?482457, '?482458          </div>
+            <strong>Signature:</strong> f:(int64 -&gt; &#39;?494154 -&gt; &#39;?494155 option) -&gt; input:seq&lt;&#39;?494154&gt; -&gt; seq&lt;&#39;?494155&gt;<br />
+                          <strong>Type parameters:</strong> '?494154, '?494155          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L646-646" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L654-654" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Same as <code>Seq.choose</code> but passes 64 bit index (l stands for long) to the function</p>
+
+
 
         </td>
       </tr>
@@ -249,11 +269,11 @@ The resulting relocations are returned as two-element list for symmetry with oth
             chunkedWhile f input
           </code>
           <div class="tip" id="316">
-            <strong>Signature:</strong> f:(&#39;?482483 -&gt; &#39;?482483 -&gt; bool) -&gt; input:seq&lt;&#39;?482483&gt; -&gt; seq&lt;&#39;?482483 []&gt;<br />
-                          <strong>Type parameters:</strong> '?482483          </div>
+            <strong>Signature:</strong> f:(&#39;?494180 -&gt; &#39;?494180 -&gt; bool) -&gt; input:seq&lt;&#39;?494180&gt; -&gt; seq&lt;&#39;?494180 []&gt;<br />
+                          <strong>Type parameters:</strong> '?494180          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L808-808" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L816-816" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -262,6 +282,8 @@ at the beginning and then immediately after the end of the previous chunk.
 To find the end of the chunk, the function calls the provided argument <code>f</code> 
 with the first and the last elements of the chunk as arguments. A chunk 
 ends when <code>f</code> returns <code>false</code>.</p>
+
+
 
         </td>
       </tr>
@@ -272,17 +294,19 @@ ends when <code>f</code> returns <code>false</code>.</p>
             chunkedWithBounds size boundary input
           </code>
           <div class="tip" id="317">
-            <strong>Signature:</strong> size:int -&gt; boundary:Boundary -&gt; input:seq&lt;&#39;?482487&gt; -&gt; seq&lt;DataSegment&lt;&#39;?482487 []&gt;&gt;<br />
-                          <strong>Type parameters:</strong> '?482487          </div>
+            <strong>Signature:</strong> size:int -&gt; boundary:Boundary -&gt; input:seq&lt;&#39;?494184&gt; -&gt; seq&lt;DataSegment&lt;&#39;?494184 []&gt;&gt;<br />
+                          <strong>Type parameters:</strong> '?494184          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L856-856" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L864-864" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Similar to <code>Seq.windowedWithBounds</code>, but generates non-overlapping chunks
 rather than floating windows. See that function for detailed documentation.
 The function may iterate over the sequence repeatedly.</p>
+
+
 
         </td>
       </tr>
@@ -293,11 +317,11 @@ The function may iterate over the sequence repeatedly.</p>
             chunkRangesWhile f input
           </code>
           <div class="tip" id="318">
-            <strong>Signature:</strong> f:(&#39;?482493 -&gt; &#39;?482493 -&gt; bool) -&gt; input:seq&lt;&#39;?482493&gt; -&gt; seq&lt;int64 * int64&gt;<br />
-                          <strong>Type parameters:</strong> '?482493          </div>
+            <strong>Signature:</strong> f:(&#39;?494190 -&gt; &#39;?494190 -&gt; bool) -&gt; input:seq&lt;&#39;?494190&gt; -&gt; seq&lt;int64 * int64&gt;<br />
+                          <strong>Type parameters:</strong> '?494190          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L993-993" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L1001-1001" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -307,6 +331,8 @@ To find the end of the chunk, the function calls the provided argument <code>f</
 with the first and the last elements of the chunk as arguments. A chunk 
 ends when <code>f</code> returns <code>false</code>.
 The function returns the chunks as pairs of their indices.</p>
+
+
 
         </td>
       </tr>
@@ -321,7 +347,7 @@ The function returns the chunks as pairs of their indices.</p>
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L939-939" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L947-947" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -348,6 +374,8 @@ set, the incomplete chunk is (when not <code>Skip</code>) returned at the beginn
 <p>The chunks are specified by <em>inclusive</em> indices, so, e.g. the first chunk in 
 the second example above is returned as a pair (0, 0).</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -357,15 +385,17 @@ the second example above is returned as a pair (0, 0).</p>
             getEnumerator s
           </code>
           <div class="tip" id="320">
-            <strong>Signature:</strong> s:seq&lt;&#39;?482477&gt; -&gt; IEnumerator&lt;&#39;?482477&gt;<br />
-                          <strong>Type parameters:</strong> '?482477          </div>
+            <strong>Signature:</strong> s:seq&lt;&#39;?494174&gt; -&gt; IEnumerator&lt;&#39;?494174&gt;<br />
+                          <strong>Type parameters:</strong> '?494174          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L736-736" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L744-744" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Calls the <code>GetEnumerator</code> method. Simple function to guide type inference.</p>
+
+
 
         </td>
       </tr>
@@ -376,16 +406,18 @@ the second example above is returned as a pair (0, 0).</p>
             headOrNone input
           </code>
           <div class="tip" id="321">
-            <strong>Signature:</strong> input:seq&lt;&#39;?482473&gt; -&gt; &#39;?482473 option<br />
-                          <strong>Type parameters:</strong> '?482473          </div>
+            <strong>Signature:</strong> input:seq&lt;&#39;?494170&gt; -&gt; &#39;?494170 option<br />
+                          <strong>Type parameters:</strong> '?494170          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L713-713" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L721-721" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>If the input is non empty, returns <code>Some(head)</code> where <code>head</code> is 
 the first value. Otherwise, returns <code>None</code>.</p>
+
+
 
         </td>
       </tr>
@@ -400,11 +432,13 @@ the first value. Otherwise, returns <code>None</code>.</p>
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L1011-1011" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L1019-1019" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns true if the specified sequence is sorted.</p>
+
+
 
         </td>
       </tr>
@@ -415,8 +449,8 @@ the first value. Otherwise, returns <code>None</code>.</p>
             lastAndLength input
           </code>
           <div class="tip" id="323">
-            <strong>Signature:</strong> input:seq&lt;&#39;?482455&gt; -&gt; &#39;?482455 * int<br />
-                          <strong>Type parameters:</strong> '?482455          </div>
+            <strong>Signature:</strong> input:seq&lt;&#39;?494150&gt; -&gt; &#39;?494150 * int<br />
+                          <strong>Type parameters:</strong> '?494150          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L636-636" class="github-link">
@@ -425,6 +459,8 @@ the first value. Otherwise, returns <code>None</code>.</p>
             </a>
           <p>Returns the last element and the length of a sequence
 (using just a single iteration over the sequence)</p>
+
+
 
         </td>
       </tr>
@@ -435,17 +471,19 @@ the first value. Otherwise, returns <code>None</code>.</p>
             lastFew count input
           </code>
           <div class="tip" id="324">
-            <strong>Signature:</strong> count:int -&gt; input:seq&lt;&#39;?482475&gt; -&gt; seq&lt;&#39;?482475&gt;<br />
-                          <strong>Type parameters:</strong> '?482475          </div>
+            <strong>Signature:</strong> count:int -&gt; input:seq&lt;&#39;?494172&gt; -&gt; seq&lt;&#39;?494172&gt;<br />
+                          <strong>Type parameters:</strong> '?494172          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L719-719" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L727-727" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns the specified number of elements from the end of the sequence
 Note that this needs to store the specified number of elements in memory
 and it needs to iterate over the entire sequence.</p>
+
+
 
         </td>
       </tr>
@@ -456,15 +494,17 @@ and it needs to iterate over the entire sequence.</p>
             mapl f input
           </code>
           <div class="tip" id="325">
-            <strong>Signature:</strong> f:(int64 -&gt; &#39;?482460 -&gt; &#39;?482461) -&gt; input:seq&lt;&#39;?482460&gt; -&gt; seq&lt;&#39;?482461&gt;<br />
-                          <strong>Type parameters:</strong> '?482460, '?482461          </div>
+            <strong>Signature:</strong> f:(int64 -&gt; &#39;?494157 -&gt; &#39;?494158) -&gt; input:seq&lt;&#39;?494157&gt; -&gt; seq&lt;&#39;?494158&gt;<br />
+                          <strong>Type parameters:</strong> '?494157, '?494158          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L655-655" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L663-663" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Same as <code>Seq.map</code> but passes 64 bit index (l stands for long) to the function</p>
+
+
 
         </td>
       </tr>
@@ -479,12 +519,14 @@ and it needs to iterate over the entire sequence.</p>
                           <strong>Type parameters:</strong> ^T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L690-690" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L698-698" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>A helper function that generates a sequence for the specified range of
 int or int64 values. This is notably faster than using <code>lo .. hi</code>.</p>
+
+
 
         </td>
       </tr>
@@ -499,12 +541,14 @@ int or int64 values. This is notably faster than using <code>lo .. hi</code>.</p
                           <strong>Type parameters:</strong> ^T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L671-671" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L679-679" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>A helper function that generates a sequence for the specified range of
 int or int64 values. This is notably faster than using <code>lo .. step .. hi</code>.</p>
+
+
 
         </td>
       </tr>
@@ -515,16 +559,18 @@ int or int64 values. This is notably faster than using <code>lo .. step .. hi</c
             skipAtMost count input
           </code>
           <div class="tip" id="328">
-            <strong>Signature:</strong> count:int -&gt; input:seq&lt;&#39;?482463&gt; -&gt; seq&lt;&#39;?482463&gt;<br />
-                          <strong>Type parameters:</strong> '?482463          </div>
+            <strong>Signature:</strong> count:int -&gt; input:seq&lt;&#39;?494160&gt; -&gt; seq&lt;&#39;?494160&gt;<br />
+                          <strong>Type parameters:</strong> '?494160          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L663-663" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L671-671" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Skip at most the specified number of elements. This is like
 <code>Seq.skip</code>, but it does not throw when the sequence is shorter.</p>
+
+
 
         </td>
       </tr>
@@ -535,11 +581,11 @@ int or int64 values. This is notably faster than using <code>lo .. step .. hi</c
             startAndEnd startCount endCount input
           </code>
           <div class="tip" id="329">
-            <strong>Signature:</strong> startCount:int -&gt; endCount:int -&gt; input:seq&lt;&#39;?482479&gt; -&gt; seq&lt;Choice&lt;&#39;?482479,unit,&#39;?482479&gt;&gt;<br />
-                          <strong>Type parameters:</strong> '?482479          </div>
+            <strong>Signature:</strong> startCount:int -&gt; endCount:int -&gt; input:seq&lt;&#39;?494176&gt; -&gt; seq&lt;Choice&lt;&#39;?494176,unit,&#39;?494176&gt;&gt;<br />
+                          <strong>Type parameters:</strong> '?494176          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L743-743" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L751-751" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -548,6 +594,8 @@ of the sequence (wrapped in <code>Choice1Of3</code>) followed by one <code>Choic
 and then followed by <code>endCount</code> number of elements at the end of the sequence
 wrapped in <code>Choice3Of3</code>. If the input is shorter than <code>startCount + endCount</code>,
 then all values are returned and wrapped in <code>Choice1Of3</code>.</p>
+
+
 
         </td>
       </tr>
@@ -562,12 +610,14 @@ then all values are returned and wrapped in <code>Choice1Of3</code>.</p>
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L695-695" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L703-703" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Comapre two sequences using the <code>Equals</code> method. Returns true
 when all their elements are equal and they have the same size.</p>
+
+
 
         </td>
       </tr>
@@ -582,11 +632,13 @@ when all their elements are equal and they have the same size.</p>
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L707-707" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L715-715" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Calculate hash code of a sequence, based on the values</p>
+
+
 
         </td>
       </tr>
@@ -597,15 +649,17 @@ when all their elements are equal and they have the same size.</p>
             tryFirstAndLast input
           </code>
           <div class="tip" id="332">
-            <strong>Signature:</strong> input:seq&lt;&#39;?482497&gt; -&gt; (&#39;?482497 * &#39;?482497) option<br />
-                          <strong>Type parameters:</strong> '?482497          </div>
+            <strong>Signature:</strong> input:seq&lt;&#39;?494194&gt; -&gt; (&#39;?494194 * &#39;?494194) option<br />
+                          <strong>Type parameters:</strong> '?494194          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L1022-1022" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L1030-1030" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns the first and the last element from a sequence or 'None' if the sequence is empty</p>
+
+
 
         </td>
       </tr>
@@ -613,14 +667,36 @@ when all their elements are equal and they have the same size.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '333', 333)" onmouseover="showTip(event, '333', 333)">
-            windowedWhile f input
+            unreduce f start
           </code>
           <div class="tip" id="333">
+            <strong>Signature:</strong> f:(&#39;?494152 -&gt; &#39;?494152) -&gt; start:&#39;?494152 -&gt; seq&lt;&#39;?494152&gt;<br />
+                          <strong>Type parameters:</strong> '?494152          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L647-647" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Generate infinite sequence using the specified function.
+The initial state is returned as the first element.</p>
+
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '334', 334)" onmouseover="showTip(event, '334', 334)">
+            windowedWhile f input
+          </code>
+          <div class="tip" id="334">
             <strong>Signature:</strong> f:(&#39;T -&gt; &#39;T -&gt; bool) -&gt; input:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;T []&gt;<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L784-784" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L792-792" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -629,20 +705,22 @@ started for each element. To find the end of the window, the function calls
 the provided argument <code>f</code> with the first and the last elements of the window
 as arguments. A window ends when <code>f</code> returns <code>false</code>.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '334', 334)" onmouseover="showTip(event, '334', 334)">
+          <code onmouseout="hideTip(event, '335', 335)" onmouseover="showTip(event, '335', 335)">
             windowedWithBounds size boundary input
           </code>
-          <div class="tip" id="334">
+          <div class="tip" id="335">
             <strong>Signature:</strong> size:int -&gt; boundary:Boundary -&gt; input:seq&lt;&#39;T&gt; -&gt; seq&lt;DataSegment&lt;&#39;T []&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L833-833" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L841-841" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -659,20 +737,22 @@ size) are returned at the beginning.</li>
 <p>The result is a sequence of <code>DataSegnebt&lt;T&gt;</code> values, which makes it 
 easy to distinguish between complete and incomplete windows.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '335', 335)" onmouseover="showTip(event, '335', 335)">
+          <code onmouseout="hideTip(event, '336', 336)" onmouseover="showTip(event, '336', 336)">
             windowRangesWhile f input
           </code>
-          <div class="tip" id="335">
+          <div class="tip" id="336">
             <strong>Signature:</strong> f:(&#39;T -&gt; &#39;T -&gt; bool) -&gt; input:seq&lt;&#39;T&gt; -&gt; seq&lt;int64 * int64&gt;<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L966-966" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L974-974" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -682,20 +762,22 @@ the provided argument <code>f</code> with the first and the last elements of the
 as arguments. A window ends when <code>f</code> returns <code>false</code>.
 The function returns the windows as pairs of their indices.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '336', 336)" onmouseover="showTip(event, '336', 336)">
+          <code onmouseout="hideTip(event, '337', 337)" onmouseover="showTip(event, '337', 337)">
             windowRangesWithBounds (...)
           </code>
-          <div class="tip" id="336">
+          <div class="tip" id="337">
             <strong>Signature:</strong> size:int64 -&gt; boundary:Boundary -&gt; length:int64 -&gt; seq&lt;DataSegmentKind * int64 * int64&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L904-904" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L912-912" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -720,6 +802,8 @@ of length 4:</p>
 'e' are returned when <code>boundary = Boundary.AtEnding</code>. The middle is returned always.
 The windows are specified by <em>inclusive</em> indices, so, e.g. the first window is returned
 as a pair (0, 0).</p>
+
+
 
         </td>
       </tr>

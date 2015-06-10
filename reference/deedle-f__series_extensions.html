@@ -45,6 +45,8 @@
 <p>Contains extensions for creating values of type <code>Series&lt;'K, 'V&gt;</code> including
 a type with functions such as <code>Series.ofValues</code> and the <code>series</code> function.
 The module is automatically opened for all F# code that references <code>Deedle</code>.</p>
+
+
 </div>
 
 <!-- Render nested types and modules, if there are any -->
@@ -79,8 +81,8 @@ The module is automatically opened for all F# code that references <code>Deedle<
             series observations
           </code>
           <div class="tip" id="36">
-            <strong>Signature:</strong> observations:seq&lt;&#39;?484324 * &#39;?484325&gt; -&gt; Series&lt;&#39;?484324,&#39;?484325&gt;<br />
-                          <strong>Type parameters:</strong> '?484324, '?484325          </div>
+            <strong>Signature:</strong> observations:seq&lt;&#39;?496045 * &#39;?496046&gt; -&gt; Series&lt;&#39;?496045,&#39;?496046&gt;<br />
+                          <strong>Type parameters:</strong> '?496045, '?496046          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L66-66" class="github-link">
@@ -93,8 +95,21 @@ with the <code>=&gt;</code> operator to create key-value pairs.</p>
 
 <h2>Example</h2>
 
-<pre><code>// Creates a series with squares of numbers
-let sqs = series [ 1 =&gt; 1.0; 2 =&gt; 4.0; 3 =&gt; 9.0 ]</code></pre>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="c">// Creates a series with squares of numbers</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">sqs</span> <span class="o">=</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">1.0</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="n">4.0</span>; <span class="n">3</span> <span class="o">=&gt;</span> <span class="n">9.0</span> ]
+</pre>
+</td>
+</tr>
+</table>
+
+<div class="tip" id="fs1">val sqs : obj<br /><br />Full name: docs.sqs</div>
+
 
         </td>
       </tr>

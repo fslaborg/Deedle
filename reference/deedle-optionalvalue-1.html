@@ -52,6 +52,8 @@ type, so it can be used for storing values of any types. When obtained from
 standard F# <code>option&lt;T&gt;</code> type instead. However, there the <code>OptionalValue</code> module
 contains helper functions for using this type from F# as well as <code>Missing</code> and
 <code>Present</code> active patterns.</p>
+
+
 </div>
   <h3>Constructors</h3>
   <table class="table table-bordered member-list">
@@ -62,10 +64,10 @@ contains helper functions for using this type from F# as well as <code>Missing</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '684', 684)" onmouseover="showTip(event, '684', 684)">
+          <code onmouseout="hideTip(event, '688', 688)" onmouseover="showTip(event, '688', 688)">
             new(value)
           </code>
-          <div class="tip" id="684">
+          <div class="tip" id="688">
             <strong>Signature:</strong> value:&#39;T -&gt; OptionalValue&lt;&#39;T&gt;<br />
                       </div>
         </td>
@@ -76,6 +78,8 @@ contains helper functions for using this type from F# as well as <code>Missing</
             </a>
           <p>Creates a new instance of <code>OptionalValue&lt;T&gt;</code> that contains<br />
 the specified <code>T</code> value .</p>
+
+
 
         </td>
       </tr>
@@ -90,10 +94,10 @@ the specified <code>T</code> value .</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '685', 685)" onmouseover="showTip(event, '685', 685)">
+          <code onmouseout="hideTip(event, '689', 689)" onmouseover="showTip(event, '689', 689)">
             HasValue
           </code>
-          <div class="tip" id="685">
+          <div class="tip" id="689">
             <strong>Signature:</strong> bool<br />
                       </div>
         </td>
@@ -104,15 +108,17 @@ the specified <code>T</code> value .</p>
             </a>
           <p>Gets a value indicating whether the current <code>OptionalValue&lt;T&gt;</code> has a value</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '686', 686)" onmouseover="showTip(event, '686', 686)">
+          <code onmouseout="hideTip(event, '690', 690)" onmouseover="showTip(event, '690', 690)">
             Value
           </code>
-          <div class="tip" id="686">
+          <div class="tip" id="690">
             <strong>Signature:</strong> &#39;T<br />
                       </div>
         </td>
@@ -125,15 +131,17 @@ the specified <code>T</code> value .</p>
 Exceptions:
   <code>InvalidOperationException</code> - Thrown when <code>HasValue</code> is <code>false</code>.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '687', 687)" onmouseover="showTip(event, '687', 687)">
+          <code onmouseout="hideTip(event, '691', 691)" onmouseover="showTip(event, '691', 691)">
             ValueOrDefault
           </code>
-          <div class="tip" id="687">
+          <div class="tip" id="691">
             <strong>Signature:</strong> &#39;T<br />
                       </div>
         </td>
@@ -144,6 +152,8 @@ Exceptions:
             </a>
           <p>Returns the value stored in the current <code>OptionalValue&lt;T&gt;</code> or 
 the default value of the type <code>T</code> when a value is not present.</p>
+
+
 
         </td>
       </tr>
@@ -158,10 +168,10 @@ the default value of the type <code>T</code> when a value is not present.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '688', 688)" onmouseover="showTip(event, '688', 688)">
+          <code onmouseout="hideTip(event, '692', 692)" onmouseover="showTip(event, '692', 692)">
             Missing
           </code>
-          <div class="tip" id="688">
+          <div class="tip" id="692">
             <strong>Signature:</strong> OptionalValue&lt;&#39;T&gt;<br />
                       </div>
         </td>
@@ -171,6 +181,8 @@ the default value of the type <code>T</code> when a value is not present.</p>
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns a new instance of <code>OptionalValue&lt;T&gt;</code> that does not contain a value.</p>
+
+
 
         </td>
       </tr>

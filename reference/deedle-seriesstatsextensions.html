@@ -45,6 +45,8 @@
 <p>The type implements C# and F# extension methods that add numerical operations 
 to Deedle series. With a few exceptions, the methods are only available for 
 series containing floating-point values, that is <code>Series&lt;'K, float&gt;</code>.</p>
+
+
 </div>
   <!-- If there is more than 1 category in the type, generate TOC -->
   <h2>Table of contents</h2>
@@ -63,10 +65,10 @@ series containing floating-point values, that is <code>Series&lt;'K, float&gt;</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '890', 890)" onmouseover="showTip(event, '890', 890)">
+          <code onmouseout="hideTip(event, '895', 895)" onmouseover="showTip(event, '895', 895)">
             InterpolateLinear(series, keys, keyDiff)
           </code>
-          <div class="tip" id="890">
+          <div class="tip" id="895">
             <strong>Signature:</strong> (series:Series&lt;&#39;K,float&gt; * keys:seq&lt;&#39;K&gt; * keyDiff:Func&lt;&#39;K,&#39;K,float&gt;) -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -84,6 +86,8 @@ series containing floating-point values, that is <code>Series&lt;'K, float&gt;</
 <li><code>keyDiff</code> - A function representing "subtraction" between two keys</li>
 </ul>
 
+
+
         </td>
       </tr>
     </tbody>
@@ -98,10 +102,10 @@ series containing floating-point values, that is <code>Series&lt;'K, float&gt;</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '891', 891)" onmouseover="showTip(event, '891', 891)">
+          <code onmouseout="hideTip(event, '896', 896)" onmouseover="showTip(event, '896', 896)">
             Kurtosis(series)
           </code>
-          <div class="tip" id="891">
+          <div class="tip" id="896">
             <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -112,15 +116,17 @@ series containing floating-point values, that is <code>Series&lt;'K, float&gt;</
             </a>
           <p>Returns the kurtosis of the elements of the series.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '892', 892)" onmouseover="showTip(event, '892', 892)">
+          <code onmouseout="hideTip(event, '897', 897)" onmouseover="showTip(event, '897', 897)">
             Max(series)
           </code>
-          <div class="tip" id="892">
+          <div class="tip" id="897">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
@@ -131,15 +137,17 @@ series containing floating-point values, that is <code>Series&lt;'K, float&gt;</
             </a>
           <p>Returns the greatest of all elements of the series.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '893', 893)" onmouseover="showTip(event, '893', 893)">
+          <code onmouseout="hideTip(event, '898', 898)" onmouseover="showTip(event, '898', 898)">
             MaxLevel(series, groupSelector)
           </code>
-          <div class="tip" id="893">
+          <div class="tip" id="898">
             <strong>Signature:</strong> (series:Series&lt;&#39;K1,&#39;V&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'V, 'K2          </div>
         </td>
@@ -161,15 +169,17 @@ the greatest element of each group.</p>
 <li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '894', 894)" onmouseover="showTip(event, '894', 894)">
+          <code onmouseout="hideTip(event, '899', 899)" onmouseover="showTip(event, '899', 899)">
             Mean(series)
           </code>
-          <div class="tip" id="894">
+          <div class="tip" id="899">
             <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -180,15 +190,17 @@ the greatest element of each group.</p>
             </a>
           <p>Returns the mean of the elements of the series.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '895', 895)" onmouseover="showTip(event, '895', 895)">
+          <code onmouseout="hideTip(event, '900', 900)" onmouseover="showTip(event, '900', 900)">
             MeanLevel(series, groupSelector)
           </code>
-          <div class="tip" id="895">
+          <div class="tip" id="900">
             <strong>Signature:</strong> (series:Series&lt;&#39;K1,float&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2          </div>
         </td>
@@ -210,15 +222,17 @@ the mean of each group.</p>
 <li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '896', 896)" onmouseover="showTip(event, '896', 896)">
+          <code onmouseout="hideTip(event, '901', 901)" onmouseover="showTip(event, '901', 901)">
             Median(series)
           </code>
-          <div class="tip" id="896">
+          <div class="tip" id="901">
             <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -229,15 +243,17 @@ the mean of each group.</p>
             </a>
           <p>Returns the median of the elements of the series.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '897', 897)" onmouseover="showTip(event, '897', 897)">
+          <code onmouseout="hideTip(event, '902', 902)" onmouseover="showTip(event, '902', 902)">
             MedianLevel(series, groupSelector)
           </code>
-          <div class="tip" id="897">
+          <div class="tip" id="902">
             <strong>Signature:</strong> (series:Series&lt;&#39;K1,float&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2          </div>
         </td>
@@ -259,15 +275,17 @@ the median of each group.</p>
 <li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '898', 898)" onmouseover="showTip(event, '898', 898)">
+          <code onmouseout="hideTip(event, '903', 903)" onmouseover="showTip(event, '903', 903)">
             Min(series)
           </code>
-          <div class="tip" id="898">
+          <div class="tip" id="903">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
@@ -278,15 +296,17 @@ the median of each group.</p>
             </a>
           <p>Returns the smallest of all elements of the series.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '899', 899)" onmouseover="showTip(event, '899', 899)">
+          <code onmouseout="hideTip(event, '904', 904)" onmouseover="showTip(event, '904', 904)">
             MinLevel(series, groupSelector)
           </code>
-          <div class="tip" id="899">
+          <div class="tip" id="904">
             <strong>Signature:</strong> (series:Series&lt;&#39;K1,&#39;V&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'V, 'K2          </div>
         </td>
@@ -308,15 +328,17 @@ the smallest element of each group.</p>
 <li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '900', 900)" onmouseover="showTip(event, '900', 900)">
+          <code onmouseout="hideTip(event, '905', 905)" onmouseover="showTip(event, '905', 905)">
             NumSum(series)
           </code>
-          <div class="tip" id="900">
+          <div class="tip" id="905">
             <strong>Signature:</strong> series:Series&lt;&#39;K,^V&gt; -&gt; ^V<br />
                           <strong>Type parameters:</strong> 'K, ^V          </div>
         </td>
@@ -327,15 +349,17 @@ the smallest element of each group.</p>
             </a>
           <p>Returns the sum of the elements of the series of numeric values.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '901', 901)" onmouseover="showTip(event, '901', 901)">
+          <code onmouseout="hideTip(event, '906', 906)" onmouseover="showTip(event, '906', 906)">
             Skewness(series)
           </code>
-          <div class="tip" id="901">
+          <div class="tip" id="906">
             <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -346,15 +370,17 @@ the smallest element of each group.</p>
             </a>
           <p>Returns the skewness of the elements of the series.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '902', 902)" onmouseover="showTip(event, '902', 902)">
+          <code onmouseout="hideTip(event, '907', 907)" onmouseover="showTip(event, '907', 907)">
             StdDev(series)
           </code>
-          <div class="tip" id="902">
+          <div class="tip" id="907">
             <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -365,15 +391,17 @@ the smallest element of each group.</p>
             </a>
           <p>Returns the standard deviation of the elements of the series.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '903', 903)" onmouseover="showTip(event, '903', 903)">
+          <code onmouseout="hideTip(event, '908', 908)" onmouseover="showTip(event, '908', 908)">
             StdDevLevel(series, groupSelector)
           </code>
-          <div class="tip" id="903">
+          <div class="tip" id="908">
             <strong>Signature:</strong> (series:Series&lt;&#39;K1,float&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2          </div>
         </td>
@@ -395,15 +423,17 @@ the standard deviation of each group.</p>
 <li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '904', 904)" onmouseover="showTip(event, '904', 904)">
+          <code onmouseout="hideTip(event, '909', 909)" onmouseover="showTip(event, '909', 909)">
             Sum(series)
           </code>
-          <div class="tip" id="904">
+          <div class="tip" id="909">
             <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -414,15 +444,17 @@ the standard deviation of each group.</p>
             </a>
           <p>Returns the sum of the elements of the series of float values.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '905', 905)" onmouseover="showTip(event, '905', 905)">
+          <code onmouseout="hideTip(event, '910', 910)" onmouseover="showTip(event, '910', 910)">
             SumLevel(series, groupSelector)
           </code>
-          <div class="tip" id="905">
+          <div class="tip" id="910">
             <strong>Signature:</strong> (series:Series&lt;&#39;K1,float&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'K2          </div>
         </td>
@@ -444,6 +476,8 @@ the sum of each group.</p>
 <li><code>groupSelector</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
 
+
+
         </td>
       </tr>
     </tbody>
@@ -458,10 +492,10 @@ the sum of each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '906', 906)" onmouseover="showTip(event, '906', 906)">
+          <code onmouseout="hideTip(event, '911', 911)" onmouseover="showTip(event, '911', 911)">
             StandardDeviation(series)
           </code>
-          <div class="tip" id="906">
+          <div class="tip" id="911">
             <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>

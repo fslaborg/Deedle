@@ -46,6 +46,8 @@
 and it adds additional operations for accessing values with unboxing. This includes operations
 such as <code>os.GetAs&lt;'T&gt;</code>, <code>os.TryGetAs&lt;'T&gt;</code> and <code>os.TryAs&lt;'T&gt;</code> which (attempt to) convert
 values to the specified type <code>'T</code>.</p>
+
+
 </div>
   <h3>Constructors</h3>
   <table class="table table-bordered member-list">
@@ -56,15 +58,15 @@ values to the specified type <code>'T</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '669', 669)" onmouseover="showTip(event, '669', 669)">
+          <code onmouseout="hideTip(event, '673', 673)" onmouseover="showTip(event, '673', 673)">
             new(series)
           </code>
-          <div class="tip" id="669">
+          <div class="tip" id="673">
             <strong>Signature:</strong> series:Series&lt;&#39;K,obj&gt; -&gt; ObjectSeries&lt;&#39;K&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1114-1114" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1116-1116" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -82,87 +84,15 @@ values to the specified type <code>'T</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '670', 670)" onmouseover="showTip(event, '670', 670)">
+          <code onmouseout="hideTip(event, '674', 674)" onmouseover="showTip(event, '674', 674)">
             As()
           </code>
-          <div class="tip" id="670">
+          <div class="tip" id="674">
             <strong>Signature:</strong> unit -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1159-1159" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '671', 671)" onmouseover="showTip(event, '671', 671)">
-            GetAs(column, fallback)
-          </code>
-          <div class="tip" id="671">
-            <strong>Signature:</strong> (column:&#39;K * fallback:&#39;R) -&gt; &#39;R<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1127-1127" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '672', 672)" onmouseover="showTip(event, '672', 672)">
-            GetAs(column)
-          </code>
-          <div class="tip" id="672">
-            <strong>Signature:</strong> column:&#39;K -&gt; &#39;R<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1124-1124" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '673', 673)" onmouseover="showTip(event, '673', 673)">
-            GetAtAs(index, conversionKind)
-          </code>
-          <div class="tip" id="673">
-            <strong>Signature:</strong> (index:int * conversionKind:ConversionKind) -&gt; &#39;R<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1139-1139" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '674', 674)" onmouseover="showTip(event, '674', 674)">
-            GetAtAs(index)
-          </code>
-          <div class="tip" id="674">
-            <strong>Signature:</strong> index:int -&gt; &#39;R<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1136-1136" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1161-1161" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -173,14 +103,14 @@ values to the specified type <code>'T</code>.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '675', 675)" onmouseover="showTip(event, '675', 675)">
-            GetValues(strict)
+            GetAs(column, fallback)
           </code>
           <div class="tip" id="675">
-            <strong>Signature:</strong> strict:bool -&gt; seq&lt;obj&gt;<br />
+            <strong>Signature:</strong> (column:&#39;K * fallback:&#39;R) -&gt; &#39;R<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1165-1165" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1129-1129" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -191,14 +121,14 @@ values to the specified type <code>'T</code>.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '676', 676)" onmouseover="showTip(event, '676', 676)">
-            GetValues()
+            GetAs(column)
           </code>
           <div class="tip" id="676">
-            <strong>Signature:</strong> unit -&gt; seq&lt;&#39;R&gt;<br />
+            <strong>Signature:</strong> column:&#39;K -&gt; &#39;R<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1122-1122" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1126-1126" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -209,14 +139,14 @@ values to the specified type <code>'T</code>.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '677', 677)" onmouseover="showTip(event, '677', 677)">
-            GetValues(conversionKind)
+            GetAtAs(index, conversionKind)
           </code>
           <div class="tip" id="677">
-            <strong>Signature:</strong> conversionKind:ConversionKind -&gt; seq&lt;&#39;R&gt;<br />
+            <strong>Signature:</strong> (index:int * conversionKind:ConversionKind) -&gt; &#39;R<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1117-1117" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1141-1141" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -227,10 +157,28 @@ values to the specified type <code>'T</code>.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '678', 678)" onmouseover="showTip(event, '678', 678)">
-            TryAs(strict)
+            GetAtAs(index)
           </code>
           <div class="tip" id="678">
-            <strong>Signature:</strong> strict:bool -&gt; OptionalValue&lt;Series&lt;&#39;K,&#39;R&gt;&gt;<br />
+            <strong>Signature:</strong> index:int -&gt; &#39;R<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1138-1138" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '679', 679)" onmouseover="showTip(event, '679', 679)">
+            GetValues(strict)
+          </code>
+          <div class="tip" id="679">
+            <strong>Signature:</strong> strict:bool -&gt; seq&lt;obj&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
@@ -244,33 +192,15 @@ values to the specified type <code>'T</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '679', 679)" onmouseover="showTip(event, '679', 679)">
-            TryAs()
-          </code>
-          <div class="tip" id="679">
-            <strong>Signature:</strong> unit -&gt; OptionalValue&lt;Series&lt;&#39;K,&#39;R&gt;&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1157-1157" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
           <code onmouseout="hideTip(event, '680', 680)" onmouseover="showTip(event, '680', 680)">
-            TryAs(conversionKind)
+            GetValues()
           </code>
           <div class="tip" id="680">
-            <strong>Signature:</strong> conversionKind:ConversionKind -&gt; OptionalValue&lt;Series&lt;&#39;K,&#39;R&gt;&gt;<br />
+            <strong>Signature:</strong> unit -&gt; seq&lt;&#39;R&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1151-1151" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1124-1124" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -281,14 +211,14 @@ values to the specified type <code>'T</code>.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '681', 681)" onmouseover="showTip(event, '681', 681)">
-            TryGetAs(column, conversionKind)
+            GetValues(conversionKind)
           </code>
           <div class="tip" id="681">
-            <strong>Signature:</strong> (column:&#39;K * conversionKind:ConversionKind) -&gt; OptionalValue&lt;&#39;R&gt;<br />
+            <strong>Signature:</strong> conversionKind:ConversionKind -&gt; seq&lt;&#39;R&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1145-1145" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1119-1119" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -299,14 +229,86 @@ values to the specified type <code>'T</code>.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '682', 682)" onmouseover="showTip(event, '682', 682)">
-            TryGetAs(column)
+            TryAs(strict)
           </code>
           <div class="tip" id="682">
+            <strong>Signature:</strong> strict:bool -&gt; OptionalValue&lt;Series&lt;&#39;K,&#39;R&gt;&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1169-1169" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '683', 683)" onmouseover="showTip(event, '683', 683)">
+            TryAs()
+          </code>
+          <div class="tip" id="683">
+            <strong>Signature:</strong> unit -&gt; OptionalValue&lt;Series&lt;&#39;K,&#39;R&gt;&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1159-1159" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '684', 684)" onmouseover="showTip(event, '684', 684)">
+            TryAs(conversionKind)
+          </code>
+          <div class="tip" id="684">
+            <strong>Signature:</strong> conversionKind:ConversionKind -&gt; OptionalValue&lt;Series&lt;&#39;K,&#39;R&gt;&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1153-1153" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '685', 685)" onmouseover="showTip(event, '685', 685)">
+            TryGetAs(column, conversionKind)
+          </code>
+          <div class="tip" id="685">
+            <strong>Signature:</strong> (column:&#39;K * conversionKind:ConversionKind) -&gt; OptionalValue&lt;&#39;R&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1147-1147" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '686', 686)" onmouseover="showTip(event, '686', 686)">
+            TryGetAs(column)
+          </code>
+          <div class="tip" id="686">
             <strong>Signature:</strong> column:&#39;K -&gt; OptionalValue&lt;&#39;R&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1142-1142" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1144-1144" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -324,15 +326,15 @@ values to the specified type <code>'T</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '683', 683)" onmouseover="showTip(event, '683', 683)">
+          <code onmouseout="hideTip(event, '687', 687)" onmouseover="showTip(event, '687', 687)">
             ( ? )(series, name)
           </code>
-          <div class="tip" id="683">
+          <div class="tip" id="687">
             <strong>Signature:</strong> (series:ObjectSeries&lt;string&gt; * name:string) -&gt; float<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1148-1148" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L1150-1150" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>

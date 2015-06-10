@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Ranges<'T> - Deedle</title>
+    <title>IRangeKeyOperations<'TKey> - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="BlueMountain Capital">
@@ -40,43 +40,26 @@
 
 
 
-<h1>Ranges<'T></h1>
+<h1>IRangeKeyOperations<'TKey></h1>
 <div class="xmldoc">
-<p>Represents a sub-range of an ordinal index. The range can consist of 
-multiple blocks, i.e. [ 0..9; 20..29 ]. The pairs represent indices
-of first and last element (inclusively) and we also keep size so that
-we do not have to recalculate it.</p>
+<p>A set of operations on keys that you need to implement in order to use the
+<code>Ranges&lt;'TKey&gt;</code> type. The <code>'TKey</code> type is typically the key of a BigDeedle
+series. It can represent different things, such as:</p>
 
-<p>For more information, see also the documentation for the <code>Ranges</code> module.</p>
+<ul>
+<li><code>int64</code> - if you have ordinally indexed series</li>
+<li><code>Date</code> (of some sort) - if you have daily time series</li>
+<li><code>DateTimeOffset</code> - if you have time series with DTO keys</li>
+</ul>
+
+<p>The operations need to implement the <em>right</em> thing based on the logic of the
+keys. So for example if you have one data point every hour, <code>IncrementBy</code> should
+add the appropriate number of hours. Or if you have keys as business days, the
+<code>IncrementBy</code> operation should add a number of business days (that is, the 
+operations may be simple numerical addition, but may contain more logic).</p>
 
 
 </div>
-  <h3>Constructors</h3>
-  <table class="table table-bordered member-list">
-    <thead>
-      <tr><td>Constructor</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1033', 1033)" onmouseover="showTip(event, '1033', 1033)">
-            new(ranges, ops)
-          </code>
-          <div class="tip" id="1033">
-            <strong>Signature:</strong> (ranges:seq&lt;&#39;T * &#39;T&gt; * ops:IRangeKeyOperations&lt;&#39;T&gt;) -&gt; Ranges&lt;&#39;T&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L58-58" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-    </tbody>
-  </table>
   <h3>Instance members</h3>
   <table class="table table-bordered member-list">
     <thead>
@@ -86,19 +69,20 @@ we do not have to recalculate it.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1034', 1034)" onmouseover="showTip(event, '1034', 1034)">
-            FirstKey
+          <code onmouseout="hideTip(event, '1028', 1028)" onmouseover="showTip(event, '1028', 1028)">
+            Compare(arg1, arg2)
           </code>
-          <div class="tip" id="1034">
-            <strong>Signature:</strong> &#39;T<br />
+          <div class="tip" id="1028">
+            <strong>Signature:</strong> (&#39;TKey * &#39;TKey) -&gt; int<br />
+              <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L292-292" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L32-32" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns the first key in the range</p>
+          <p>Compare two keys. Return +1 if first is larger, -1 if second is larger, 0 otherwise</p>
 
 
 
@@ -107,19 +91,21 @@ we do not have to recalculate it.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1035', 1035)" onmouseover="showTip(event, '1035', 1035)">
-            KeyAtOffset(offset)
+          <code onmouseout="hideTip(event, '1029', 1029)" onmouseover="showTip(event, '1029', 1029)">
+            Distance(arg1, arg2)
           </code>
-          <div class="tip" id="1035">
-            <strong>Signature:</strong> offset:int64 -&gt; &#39;T<br />
+          <div class="tip" id="1029">
+            <strong>Signature:</strong> (&#39;TKey * &#39;TKey) -&gt; int64<br />
+              <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L296-296" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L39-39" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns the key at the specified offset</p>
+          <p>Return distance between two keys - return 0 if the keys are the same 
+(the second key is always larger than the first)</p>
 
 
 
@@ -128,19 +114,20 @@ we do not have to recalculate it.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1036', 1036)" onmouseover="showTip(event, '1036', 1036)">
-            Keys
+          <code onmouseout="hideTip(event, '1030', 1030)" onmouseover="showTip(event, '1030', 1030)">
+            IncrementBy(arg1, arg2)
           </code>
-          <div class="tip" id="1036">
-            <strong>Signature:</strong> seq&lt;&#39;T&gt;<br />
+          <div class="tip" id="1030">
+            <strong>Signature:</strong> (&#39;TKey * int64) -&gt; &#39;TKey<br />
+              <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L303-303" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L35-35" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns a lazy sequence containing all keys</p>
+          <p>Get the n-th next key after the specified key (n is always non-negative)</p>
 
 
 
@@ -149,19 +136,21 @@ we do not have to recalculate it.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1037', 1037)" onmouseover="showTip(event, '1037', 1037)">
-            LastKey
+          <code onmouseout="hideTip(event, '1031', 1031)" onmouseover="showTip(event, '1031', 1031)">
+            Range(arg1, arg2)
           </code>
-          <div class="tip" id="1037">
-            <strong>Signature:</strong> &#39;T<br />
+          <div class="tip" id="1031">
+            <strong>Signature:</strong> (&#39;TKey * &#39;TKey) -&gt; seq&lt;&#39;TKey&gt;<br />
+              <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L294-294" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L43-43" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns the last key in the range</p>
+          <p>Generate keys within the specific range (inclusively). Here, the second
+key <em>can</em> be smaller (in which case the range should be from larger to smaller)</p>
 
 
 
@@ -170,139 +159,23 @@ we do not have to recalculate it.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1038', 1038)" onmouseover="showTip(event, '1038', 1038)">
-            Length
+          <code onmouseout="hideTip(event, '1032', 1032)" onmouseover="showTip(event, '1032', 1032)">
+            ValidateKey(arg1, arg2)
           </code>
-          <div class="tip" id="1038">
-            <strong>Signature:</strong> int64<br />
+          <div class="tip" id="1032">
+            <strong>Signature:</strong> (&#39;TKey * Lookup) -&gt; OptionalValue&lt;&#39;TKey&gt;<br />
+              <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L305-305" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L49-49" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns the length of the ranges</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1039', 1039)" onmouseover="showTip(event, '1039', 1039)">
-            Lookup(key, semantics, check)
-          </code>
-          <div class="tip" id="1039">
-            <strong>Signature:</strong> (key:&#39;T * semantics:Lookup * check:Func&lt;&#39;T,int64,bool&gt;) -&gt; OptionalValue&lt;&#39;T * int64&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L307-307" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Searches for a key in the range (see <code>Ranges.lookup</code> for more info)</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1040', 1040)" onmouseover="showTip(event, '1040', 1040)">
-            MergeWith(ranges)
-          </code>
-          <div class="tip" id="1040">
-            <strong>Signature:</strong> ranges:seq&lt;Ranges&lt;&#39;T&gt;&gt; -&gt; Ranges&lt;&#39;T&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L310-310" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Merge the current range with other specified ranges</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1041', 1041)" onmouseover="showTip(event, '1041', 1041)">
-            OffsetOfKey(key)
-          </code>
-          <div class="tip" id="1041">
-            <strong>Signature:</strong> key:&#39;T -&gt; int64<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L298-298" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns the absolute offset of the key in the ranges</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1042', 1042)" onmouseover="showTip(event, '1042', 1042)">
-            Operations
-          </code>
-          <div class="tip" id="1042">
-            <strong>Signature:</strong> IRangeKeyOperations&lt;&#39;T&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L65-65" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1043', 1043)" onmouseover="showTip(event, '1043', 1043)">
-            Ranges
-          </code>
-          <div class="tip" id="1043">
-            <strong>Signature:</strong> (&#39;T * &#39;T) []<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L64-64" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1044', 1044)" onmouseover="showTip(event, '1044', 1044)">
-            Restrict(restriction)
-          </code>
-          <div class="tip" id="1044">
-            <strong>Signature:</strong> restriction:RangeRestriction&lt;&#39;T&gt; -&gt; Ranges&lt;&#39;T&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L313-313" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Restricts the ranges according to the specified range restriction</p>
+          <p>Find the first valid key around the specified <code>'TKey</code> value. This is used
+when not all <code>'TKey</code> values can appear as keys of the series. If lookup is
+<code>Exact</code>, it should just check validity; for other lookups, this should either
+find first smaller or first larger valid key (but not skip any keys).</p>
 
 
 

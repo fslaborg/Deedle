@@ -46,6 +46,8 @@
 that can be used for creating <code>Series&lt;'K, 'V&gt;</code> from the <code>IEnumerable</code> value.
 You can create an ordinal series from <code>IEnumerable&lt;'T&gt;</code> or an indexed series from
 <code>IEnumerable&lt;KeyValuePair&lt;'K, 'V&gt;&gt;</code> or from <code>IEnumerable&lt;KeyValuePair&lt;'K, OptionalValue&lt;'V&gt;&gt;&gt;</code>.</p>
+
+
 </div>
   <h3>Static members</h3>
   <table class="table table-bordered member-list">
@@ -56,10 +58,10 @@ You can create an ordinal series from <code>IEnumerable&lt;'T&gt;</code> or an i
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '408', 408)" onmouseover="showTip(event, '408', 408)">
+          <code onmouseout="hideTip(event, '411', 411)" onmouseover="showTip(event, '411', 411)">
             ToOrdinalSeries(observations)
           </code>
-          <div class="tip" id="408">
+          <div class="tip" id="411">
             <strong>Signature:</strong> observations:seq&lt;&#39;V&gt; -&gt; Series&lt;int,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'V          </div>
         </td>
@@ -71,15 +73,17 @@ You can create an ordinal series from <code>IEnumerable&lt;'T&gt;</code> or an i
           <p>Convert the <code>IEnumerable</code> to a <code>Series</code>, using the seuqence as the values
 of the resulting series. The keys are generated ordinarilly, starting from 0.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '409', 409)" onmouseover="showTip(event, '409', 409)">
+          <code onmouseout="hideTip(event, '412', 412)" onmouseover="showTip(event, '412', 412)">
             ToSeries(observations)
           </code>
-          <div class="tip" id="409">
+          <div class="tip" id="412">
             <strong>Signature:</strong> observations:seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
@@ -91,15 +95,17 @@ of the resulting series. The keys are generated ordinarilly, starting from 0.</p
           <p>Convert the <code>IEnumerable</code> to a <code>Series</code>, using the keys and values of
 the <code>KeyValuePair</code> as keys and values of the resulting series.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '410', 410)" onmouseover="showTip(event, '410', 410)">
+          <code onmouseout="hideTip(event, '413', 413)" onmouseover="showTip(event, '413', 413)">
             ToSparseSeries(observations)
           </code>
-          <div class="tip" id="410">
+          <div class="tip" id="413">
             <strong>Signature:</strong> observations:seq&lt;KeyValuePair&lt;&#39;K,OptionalValue&lt;&#39;V&gt;&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
@@ -111,6 +117,8 @@ the <code>KeyValuePair</code> as keys and values of the resulting series.</p>
           <p>Convert the <code>IEnumerable</code> to a  <code>Series</code>, using the keys and values of
 the <code>KeyValuePair</code> as keys and values of the resulting series.
 <code>OptionalValue.Missing</code> can be used to denote missing values.</p>
+
+
 
         </td>
       </tr>

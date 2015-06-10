@@ -55,6 +55,8 @@ construction (<code>\forall T. VectorConstruction&lt;T&gt;</code>) that can be a
 different vector types. That would mean adding some more types, so we just model vector
 construction as an untyped operation and the typing is resquired by the <code>Build</code> method
 of the vector builder.</p>
+
+
 </div>
   <h3>Union Cases</h3>
   <table class="table table-bordered member-list">
@@ -65,10 +67,10 @@ of the vector builder.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1042', 1042)" onmouseover="showTip(event, '1042', 1042)">
+          <code onmouseout="hideTip(event, '1057', 1057)" onmouseover="showTip(event, '1057', 1057)">
             Append(...)
           </code>
-          <div class="tip" id="1042">
+          <div class="tip" id="1057">
             <strong>Signature:</strong> VectorConstruction * VectorConstruction<br />
                       </div>
         </td>
@@ -79,15 +81,17 @@ of the vector builder.</p>
             </a>
           <p>Append two vectors after each other</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1043', 1043)" onmouseover="showTip(event, '1043', 1043)">
+          <code onmouseout="hideTip(event, '1058', 1058)" onmouseover="showTip(event, '1058', 1058)">
             AsyncCustomCommand(...)
           </code>
-          <div class="tip" id="1043">
+          <div class="tip" id="1058">
             <strong>Signature:</strong> VectorConstruction list * IVector list -&gt; Async&lt;IVector&gt;<br />
                       </div>
         </td>
@@ -99,15 +103,17 @@ of the vector builder.</p>
           <p>Same as <code>CustomCommand</code> with the difference that the resulting vector is returned
 asynchronously (this is useful for lazy loading and it is used by <code>AsyncBuild</code>).</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1044', 1044)" onmouseover="showTip(event, '1044', 1044)">
+          <code onmouseout="hideTip(event, '1059', 1059)" onmouseover="showTip(event, '1059', 1059)">
             Combine(...)
           </code>
-          <div class="tip" id="1044">
+          <div class="tip" id="1059">
             <strong>Signature:</strong> int64 * VectorConstruction list * VectorListTransform<br />
                       </div>
         </td>
@@ -120,15 +126,17 @@ asynchronously (this is useful for lazy loading and it is used by <code>AsyncBui
 specifies how to merge values (in case there is a value at a given address
 in more than one of the vectors).</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1045', 1045)" onmouseover="showTip(event, '1045', 1045)">
+          <code onmouseout="hideTip(event, '1060', 1060)" onmouseover="showTip(event, '1060', 1060)">
             CustomCommand(...)
           </code>
-          <div class="tip" id="1045">
+          <div class="tip" id="1060">
             <strong>Signature:</strong> VectorConstruction list * IVector list -&gt; IVector<br />
                       </div>
         </td>
@@ -143,15 +151,17 @@ is a list of sub-vectors to be combined (if as in e.g. <code>Append</code>) and 
 second argument is a function that will be called with evaluated vectors and is
 supposed to create the new vector.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1046', 1046)" onmouseover="showTip(event, '1046', 1046)">
+          <code onmouseout="hideTip(event, '1061', 1061)" onmouseover="showTip(event, '1061', 1061)">
             DropRange(...)
           </code>
-          <div class="tip" id="1046">
+          <div class="tip" id="1061">
             <strong>Signature:</strong> VectorConstruction * RangeRestriction&lt;Address&gt;<br />
                       </div>
         </td>
@@ -163,15 +173,17 @@ supposed to create the new vector.</p>
           <p>Drop the specified range of addresses from the vector 
 and return a new vector that excludes the range</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1047', 1047)" onmouseover="showTip(event, '1047', 1047)">
+          <code onmouseout="hideTip(event, '1062', 1062)" onmouseover="showTip(event, '1062', 1062)">
             Empty(int64)
           </code>
-          <div class="tip" id="1047">
+          <div class="tip" id="1062">
             <strong>Signature:</strong> int64<br />
                       </div>
         </td>
@@ -183,15 +195,17 @@ and return a new vector that excludes the range</p>
           <p>Creates an empty vector of the requested type and size
 The returned vector is filled with missing values.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1048', 1048)" onmouseover="showTip(event, '1048', 1048)">
+          <code onmouseout="hideTip(event, '1063', 1063)" onmouseover="showTip(event, '1063', 1063)">
             FillMissing(...)
           </code>
-          <div class="tip" id="1048">
+          <div class="tip" id="1063">
             <strong>Signature:</strong> VectorConstruction * VectorFillMissing<br />
                       </div>
         </td>
@@ -204,15 +218,17 @@ The returned vector is filled with missing values.</p>
 (forward means that n-th value will contain (n-i)-th value where (n-i) is the
 first index that contains a value).</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1049', 1049)" onmouseover="showTip(event, '1049', 1049)">
+          <code onmouseout="hideTip(event, '1064', 1064)" onmouseover="showTip(event, '1064', 1064)">
             GetRange(...)
           </code>
-          <div class="tip" id="1049">
+          <div class="tip" id="1064">
             <strong>Signature:</strong> VectorConstruction * RangeRestriction&lt;Address&gt;<br />
                       </div>
         </td>
@@ -223,15 +239,17 @@ first index that contains a value).</p>
             </a>
           <p>Get the specified range of addresses from the vector and return it as a new vector</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1050', 1050)" onmouseover="showTip(event, '1050', 1050)">
+          <code onmouseout="hideTip(event, '1065', 1065)" onmouseover="showTip(event, '1065', 1065)">
             Relocate(...)
           </code>
-          <div class="tip" id="1050">
+          <div class="tip" id="1065">
             <strong>Signature:</strong> VectorConstruction * int64 * seq&lt;Address * Address&gt;<br />
                       </div>
         </td>
@@ -245,15 +263,17 @@ of relocations (each pair of addresses specifies that an element at a new addres
 should be filled with an element from an old address). The addresses may be out of 
 range!</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1051', 1051)" onmouseover="showTip(event, '1051', 1051)">
+          <code onmouseout="hideTip(event, '1066', 1066)" onmouseover="showTip(event, '1066', 1066)">
             Return(VectorHole)
           </code>
-          <div class="tip" id="1051">
+          <div class="tip" id="1066">
             <strong>Signature:</strong> VectorHole<br />
                       </div>
         </td>
@@ -264,6 +284,8 @@ range!</p>
             </a>
           <p>When constructing vectors, we get an array of vectors to be used as "variables"
 - this element represent getting one of the variables.</p>
+
+
 
         </td>
       </tr>

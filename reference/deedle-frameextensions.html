@@ -45,6 +45,8 @@
 <p>Contains C# and F# extension methods for the <code>Frame&lt;'R, 'C&gt;</code> type. The members are 
 automatically available when you import the <code>Deedle</code> namespace. The type contains 
 object-oriented counterparts to most of the functionality from the <code>Frame</code> module.</p>
+
+
 </div>
   <!-- If there is more than 1 category in the type, generate TOC -->
   <h2>Table of contents</h2>
@@ -60,6 +62,8 @@ object-oriented counterparts to most of the functionality from the <code>Frame</
       <div class="xmldoc">
         <p>Summary 1</p>
 
+
+
       </div>
   <h3>Static members</h3>
   <table class="table table-bordered member-list">
@@ -70,15 +74,15 @@ object-oriented counterparts to most of the functionality from the <code>Frame</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '581', 581)" onmouseover="showTip(event, '581', 581)">
+          <code onmouseout="hideTip(event, '584', 584)" onmouseover="showTip(event, '584', 584)">
             ExpandColumns(frame, names)
           </code>
-          <div class="tip" id="581">
+          <div class="tip" id="584">
             <strong>Signature:</strong> (frame:Frame&lt;&#39;R,string&gt; * names:seq&lt;string&gt;) -&gt; Frame&lt;&#39;R,string&gt;<br />
                           <strong>Type parameters:</strong> 'R          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L902-902" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L911-911" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -92,9 +96,18 @@ properties.</p>
 <p>Given a data frame with a series that contains tuples, you can expand the
 tuple members and get a frame with columns <code>S.Item1</code> and <code>S.Item2</code>:</p>
 
-<pre><code>let df = frame [ "S" =&gt; series [ 1 =&gt; (1, "One"); 2 =&gt; (2, "Two") ] ]  
-df.ExpandColumns ["S"]
-</code></pre>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">df</span> <span class="o">=</span> <span class="i">frame</span> [ <span class="s">&quot;S&quot;</span> <span class="o">=&gt;</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> (<span class="n">1</span>, <span class="s">&quot;One&quot;</span>); <span class="n">2</span> <span class="o">=&gt;</span> (<span class="n">2</span>, <span class="s">&quot;Two&quot;</span>) ] ]  
+<span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="i">df</span><span class="o">.</span><span class="i">ExpandColumns</span> [<span class="s">&quot;S&quot;</span>]
+</pre>
+</td>
+</tr>
+</table>
 
 <h2>Parameters</h2>
 
@@ -103,20 +116,23 @@ df.ExpandColumns ["S"]
 <li><code>frame</code> - Input data frame whose columns will be expanded</li>
 </ul>
 
+<div class="tip" id="fs1">val df : obj<br /><br />Full name: docs.df</div>
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '582', 582)" onmouseover="showTip(event, '582', 582)">
+          <code onmouseout="hideTip(event, '585', 585)" onmouseover="showTip(event, '585', 585)">
             ExpandColumns(frame, nesting, dynamic)
           </code>
-          <div class="tip" id="582">
+          <div class="tip" id="585">
             <strong>Signature:</strong> (frame:Frame&lt;&#39;R,string&gt; * nesting:int * dynamic:bool) -&gt; Frame&lt;&#39;R,string&gt;<br />
                           <strong>Type parameters:</strong> 'R          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L881-881" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L890-890" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -132,20 +148,22 @@ properties.</p>
 <li><code>nesting</code> - The nesting level for expansion. When set to 0, nothing is done.</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '583', 583)" onmouseover="showTip(event, '583', 583)">
+          <code onmouseout="hideTip(event, '586', 586)" onmouseover="showTip(event, '586', 586)">
             IndexColumnsWith(frame, keys)
           </code>
-          <div class="tip" id="583">
+          <div class="tip" id="586">
             <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * keys:seq&lt;&#39;TNewRowIndex&gt;) -&gt; Frame&lt;&#39;R,&#39;TNewRowIndex&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C, 'TNewRowIndex          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L799-799" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L808-808" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -160,20 +178,22 @@ non-deterministic way, if the current column index is not ordered.</p>
 <li><code>keys</code> - A collection of new column keys.</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '584', 584)" onmouseover="showTip(event, '584', 584)">
+          <code onmouseout="hideTip(event, '587', 587)" onmouseover="showTip(event, '587', 587)">
             IndexRowsOrdinally(frame)
           </code>
-          <div class="tip" id="584">
+          <div class="tip" id="587">
             <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;int,&#39;TColumnKey&gt;<br />
                           <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L761-761" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L770-770" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -187,20 +207,22 @@ non-deterministic way, if the current row index is not ordered.</p>
 <li><code>frame</code> - Source data frame whose row index are to be replaced.</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '585', 585)" onmouseover="showTip(event, '585', 585)">
+          <code onmouseout="hideTip(event, '588', 588)" onmouseover="showTip(event, '588', 588)">
             IndexRowsUsing(frame, f)
           </code>
-          <div class="tip" id="585">
+          <div class="tip" id="588">
             <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * f:Func&lt;ObjectSeries&lt;&#39;C&gt;,&#39;R2&gt;) -&gt; Frame&lt;&#39;R2,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C, 'R2          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L786-786" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L795-795" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -214,20 +236,22 @@ a function invoked on each row.</p>
 <li><code>f</code> - A function from row (as object series) to new row key value</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '586', 586)" onmouseover="showTip(event, '586', 586)">
+          <code onmouseout="hideTip(event, '589', 589)" onmouseover="showTip(event, '589', 589)">
             IndexRowsWith(frame, keys)
           </code>
-          <div class="tip" id="586">
+          <div class="tip" id="589">
             <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * keys:seq&lt;&#39;TNewRowIndex&gt;) -&gt; Frame&lt;&#39;TNewRowIndex,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C, 'TNewRowIndex          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L774-774" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L783-783" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -242,20 +266,22 @@ non-deterministic way, if the current row index is not ordered.</p>
 <li><code>keys</code> - A collection of new row keys.</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '587', 587)" onmouseover="showTip(event, '587', 587)">
+          <code onmouseout="hideTip(event, '590', 590)" onmouseover="showTip(event, '590', 590)">
             Nest(frame)
           </code>
-          <div class="tip" id="587">
+          <div class="tip" id="590">
             <strong>Signature:</strong> frame:Frame&lt;Tuple&lt;&#39;TRowKey1,&#39;TRowKey2&gt;,&#39;TColumnKey&gt; -&gt; Series&lt;&#39;TRowKey1,Frame&lt;&#39;TRowKey2,&#39;TColumnKey&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'TRowKey1, 'TRowKey2, 'TColumnKey          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L911-911" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L920-920" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -263,20 +289,22 @@ non-deterministic way, if the current row index is not ordered.</p>
 whose keys are the unique first level keys, and whose values are 
 those corresponding frames selected from the original data.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '588', 588)" onmouseover="showTip(event, '588', 588)">
+          <code onmouseout="hideTip(event, '591', 591)" onmouseover="showTip(event, '591', 591)">
             NestBy(frame, keyselector)
           </code>
-          <div class="tip" id="588">
+          <div class="tip" id="591">
             <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey1,&#39;TColumnKey&gt; * keyselector:Func&lt;&#39;TRowKey1,&#39;TRowKey2&gt;) -&gt; Series&lt;&#39;TRowKey2,Frame&lt;&#39;TRowKey1,&#39;TColumnKey&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'TRowKey1, 'TColumnKey, 'TRowKey2          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L921-921" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L930-930" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -285,20 +313,22 @@ whose keys are the unique results of the keyselector projection, and
 whose values are those corresponding frames selected from the original 
 data.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '589', 589)" onmouseover="showTip(event, '589', 589)">
+          <code onmouseout="hideTip(event, '592', 592)" onmouseover="showTip(event, '592', 592)">
             RealignRows(frame, keys)
           </code>
-          <div class="tip" id="589">
+          <div class="tip" id="592">
             <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * keys:seq&lt;&#39;R&gt;) -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L749-749" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L758-758" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -314,20 +344,22 @@ frame) are assigned missing values.</p>
 frame keys (because the rows are realigned).</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '590', 590)" onmouseover="showTip(event, '590', 590)">
+          <code onmouseout="hideTip(event, '593', 593)" onmouseover="showTip(event, '593', 593)">
             SortColumnsByKey(frame)
           </code>
-          <div class="tip" id="590">
+          <div class="tip" id="593">
             <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                           <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L822-822" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L831-831" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -341,20 +373,22 @@ only available on indexed series such as alignment and inexact lookup.</p>
 <li><code>frame</code> - Source data frame to be ordered.</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '591', 591)" onmouseover="showTip(event, '591', 591)">
+          <code onmouseout="hideTip(event, '594', 594)" onmouseover="showTip(event, '594', 594)">
             SortRows(frame, key)
           </code>
-          <div class="tip" id="591">
+          <div class="tip" id="594">
             <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * key:&#39;TColumnKey) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                           <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L832-832" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L841-841" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -367,20 +401,22 @@ but whose rows are sorted by some column.</p>
 <li><code>frame</code> - Source data frame to be ordered.</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '592', 592)" onmouseover="showTip(event, '592', 592)">
+          <code onmouseout="hideTip(event, '595', 595)" onmouseover="showTip(event, '595', 595)">
             SortRowsBy(frame, key, f)
           </code>
-          <div class="tip" id="592">
+          <div class="tip" id="595">
             <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * key:&#39;TColumnKey * f:Func&lt;&#39;V,&#39;V2&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                           <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, 'V, 'V2          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L854-854" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L863-863" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -393,20 +429,22 @@ but whose rows are sorted by some column.</p>
 <li><code>frame</code> - Source data frame to be ordered.</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '593', 593)" onmouseover="showTip(event, '593', 593)">
+          <code onmouseout="hideTip(event, '596', 596)" onmouseover="showTip(event, '596', 596)">
             SortRowsByKey(frame)
           </code>
-          <div class="tip" id="593">
+          <div class="tip" id="596">
             <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                           <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L811-811" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L820-820" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -420,20 +458,22 @@ only available on indexed series such as alignment and inexact lookup.</p>
 <li><code>frame</code> - Source data frame to be ordered.</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '594', 594)" onmouseover="showTip(event, '594', 594)">
+          <code onmouseout="hideTip(event, '597', 597)" onmouseover="showTip(event, '597', 597)">
             SortRowsWith(frame, key, cmp)
           </code>
-          <div class="tip" id="594">
+          <div class="tip" id="597">
             <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * key:&#39;TColumnKey * cmp:Comparer&lt;&#39;V&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                           <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L843-843" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L852-852" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -446,20 +486,22 @@ but whose rows are sorted by some column.</p>
 <li><code>frame</code> - Source data frame to be ordered.</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '595', 595)" onmouseover="showTip(event, '595', 595)">
+          <code onmouseout="hideTip(event, '598', 598)" onmouseover="showTip(event, '598', 598)">
             Transpose(frame)
           </code>
-          <div class="tip" id="595">
+          <div class="tip" id="598">
             <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TColumnKey,&#39;TRowKey&gt;<br />
                           <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L867-867" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L876-876" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -474,26 +516,30 @@ series is more efficient).</p>
 <li><code>frame</code> - Source data frame to be transposed.</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '596', 596)" onmouseover="showTip(event, '596', 596)">
+          <code onmouseout="hideTip(event, '599', 599)" onmouseover="showTip(event, '599', 599)">
             Unnest(series)
           </code>
-          <div class="tip" id="596">
+          <div class="tip" id="599">
             <strong>Signature:</strong> series:Series&lt;&#39;TRowKey1,Frame&lt;&#39;TRowKey2,&#39;TColumnKey&gt;&gt; -&gt; Frame&lt;Tuple&lt;&#39;TRowKey1,&#39;TRowKey2&gt;,&#39;TColumnKey&gt;<br />
                           <strong>Type parameters:</strong> 'TRowKey1, 'TRowKey2, 'TColumnKey          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L930-930" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L939-939" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Given a series whose values are frames, create a frame resulting
 from the concatenation of all the frames' rows, with the resulting 
 keys having two levels. This is the inverse operation to nest.</p>
+
+
 
         </td>
       </tr>
@@ -509,19 +555,20 @@ keys having two levels. This is the inverse operation to nest.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '597', 597)" onmouseover="showTip(event, '597', 597)">
+          <code onmouseout="hideTip(event, '600', 600)" onmouseover="showTip(event, '600', 600)">
             GetRows(frame, rowKeys)
           </code>
-          <div class="tip" id="597">
+          <div class="tip" id="600">
             <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * rowKeys:&#39;TRowKey []) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                           <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1151-1151" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1160-1160" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           
+
         </td>
       </tr>
     </tbody>
@@ -536,15 +583,15 @@ keys having two levels. This is the inverse operation to nest.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '598', 598)" onmouseover="showTip(event, '598', 598)">
+          <code onmouseout="hideTip(event, '601', 601)" onmouseover="showTip(event, '601', 601)">
             PivotTable(frame, r, c, op)
           </code>
-          <div class="tip" id="598">
+          <div class="tip" id="601">
             <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * r:&#39;C * c:&#39;C * op:Func&lt;Frame&lt;&#39;R,&#39;C&gt;,&#39;T&gt;) -&gt; Frame&lt;&#39;RNew,&#39;CNew&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C, 'RNew, 'CNew, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1028-1028" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1037-1037" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -562,6 +609,8 @@ bucket.</p>
 <li><code>op</code> - A function computing a value from the corresponding bucket frame</li>
 </ul>
 
+
+
         </td>
       </tr>
     </tbody>
@@ -569,6 +618,8 @@ bucket.</p>
     <h2>Input and output<a name="section3">&#160;</a></h2>
       <div class="xmldoc">
         <p>Summary 2</p>
+
+
 
       </div>
   <h3>Static members</h3>
@@ -580,15 +631,15 @@ bucket.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '599', 599)" onmouseover="showTip(event, '599', 599)">
+          <code onmouseout="hideTip(event, '602', 602)" onmouseover="showTip(event, '602', 602)">
             SaveCsv(...)
           </code>
-          <div class="tip" id="599">
+          <div class="tip" id="602">
             <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * path:string * keyNames:seq&lt;string&gt; * separator:char * culture:CultureInfo) -&gt; unit<br />
                           <strong>Type parameters:</strong> 'R, 'C          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L994-994" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1003-1003" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -607,20 +658,22 @@ TSV files and <code>,</code> for CSV files)</li>
 <li><code>culture</code> - Specify the <code>CultureInfo</code> object used for formatting numerical data</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '600', 600)" onmouseover="showTip(event, '600', 600)">
+          <code onmouseout="hideTip(event, '603', 603)" onmouseover="showTip(event, '603', 603)">
             SaveCsv(...)
           </code>
-          <div class="tip" id="600">
+          <div class="tip" id="603">
             <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * path:string * includeRowKeys:bool * keyNames:seq&lt;string&gt; * separator:char * culture:CultureInfo) -&gt; unit<br />
                           <strong>Type parameters:</strong> 'R, 'C          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L973-973" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L982-982" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -640,20 +693,22 @@ TSV files and <code>,</code> for CSV files)</li>
 <li><code>culture</code> - Specify the <code>CultureInfo</code> object used for formatting numerical data</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '601', 601)" onmouseover="showTip(event, '601', 601)">
+          <code onmouseout="hideTip(event, '604', 604)" onmouseover="showTip(event, '604', 604)">
             SaveCsv(...)
           </code>
-          <div class="tip" id="601">
+          <div class="tip" id="604">
             <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * writer:TextWriter * includeRowKeys:bool * keyNames:seq&lt;string&gt; * separator:char * culture:CultureInfo) -&gt; unit<br />
                           <strong>Type parameters:</strong> 'R, 'C          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L952-952" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L961-961" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -673,20 +728,22 @@ TSV files and <code>,</code> for CSV files)</li>
 <li><code>culture</code> - Specify the <code>CultureInfo</code> object used for formatting numerical data</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '602', 602)" onmouseover="showTip(event, '602', 602)">
+          <code onmouseout="hideTip(event, '605', 605)" onmouseover="showTip(event, '605', 605)">
             ToDataTable(frame, rowKeyNames)
           </code>
-          <div class="tip" id="602">
+          <div class="tip" id="605">
             <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * rowKeyNames:seq&lt;string&gt;) -&gt; DataTable<br />
                           <strong>Type parameters:</strong> 'R, 'C          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1012-1012" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1021-1021" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -703,6 +760,8 @@ as a sequence to support hierarchical keys, but typically you can write just
 row key name if the row index is not hierarchical).</li>
 </ul>
 
+
+
         </td>
       </tr>
     </tbody>
@@ -710,6 +769,8 @@ row key name if the row index is not hierarchical).</li>
     <h2>Missing values<a name="section4">&#160;</a></h2>
       <div class="xmldoc">
         <p>Summary 3</p>
+
+
 
       </div>
   <h3>Static members</h3>
@@ -721,15 +782,15 @@ row key name if the row index is not hierarchical).</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '603', 603)" onmouseover="showTip(event, '603', 603)">
+          <code onmouseout="hideTip(event, '606', 606)" onmouseover="showTip(event, '606', 606)">
             DropSparseColumns(frame)
           </code>
-          <div class="tip" id="603">
+          <div class="tip" id="606">
             <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                           <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1288-1288" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1297-1297" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -744,20 +805,22 @@ fewer columns (or no columns at all).</p>
 <li><code>frame</code> - An input data frame that is to be filtered</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '604', 604)" onmouseover="showTip(event, '604', 604)">
+          <code onmouseout="hideTip(event, '607', 607)" onmouseover="showTip(event, '607', 607)">
             DropSparseRows(frame)
           </code>
-          <div class="tip" id="604">
+          <div class="tip" id="607">
             <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                           <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1276-1276" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1285-1285" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -772,20 +835,22 @@ fewer rows (or no rows at all).</p>
 <li><code>frame</code> - An input data frame that is to be filtered</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '605', 605)" onmouseover="showTip(event, '605', 605)">
+          <code onmouseout="hideTip(event, '608', 608)" onmouseover="showTip(event, '608', 608)">
             FillMissing(frame, f)
           </code>
-          <div class="tip" id="605">
+          <div class="tip" id="608">
             <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * f:Func&lt;Series&lt;&#39;TRowKey,&#39;T&gt;,&#39;TRowKey,&#39;T&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                           <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1263-1263" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1272-1272" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -807,20 +872,22 @@ in the series and generates a value to be used in a place where the original
 series contains a missing value.</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '606', 606)" onmouseover="showTip(event, '606', 606)">
+          <code onmouseout="hideTip(event, '609', 609)" onmouseover="showTip(event, '609', 609)">
             FillMissing(frame, direction)
           </code>
-          <div class="tip" id="606">
+          <div class="tip" id="609">
             <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * direction:Direction) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                           <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1243-1243" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1252-1252" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -840,20 +907,22 @@ look for the first value with a smaller key while <code>Forward</code> searches
 for the nearest greater key.</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '607', 607)" onmouseover="showTip(event, '607', 607)">
+          <code onmouseout="hideTip(event, '610', 610)" onmouseover="showTip(event, '610', 610)">
             FillMissing(frame, value)
           </code>
-          <div class="tip" id="607">
+          <div class="tip" id="610">
             <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * value:&#39;T) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                           <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1225-1225" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1234-1234" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -870,6 +939,8 @@ converted to a series of <code>int</code>).</p>
 <li><code>value</code> - A constant value that is used to fill all missing values</li>
 </ul>
 
+
+
         </td>
       </tr>
     </tbody>
@@ -884,15 +955,15 @@ converted to a series of <code>int</code>).</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '608', 608)" onmouseover="showTip(event, '608', 608)">
+          <code onmouseout="hideTip(event, '611', 611)" onmouseover="showTip(event, '611', 611)">
             CountColumns(frame)
           </code>
-          <div class="tip" id="608">
+          <div class="tip" id="611">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; int<br />
                           <strong>Type parameters:</strong> 'R, 'C          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1061-1061" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1070-1070" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -900,20 +971,22 @@ converted to a series of <code>int</code>).</p>
 the total length of the row series, including keys for which there is no 
 value available.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '609', 609)" onmouseover="showTip(event, '609', 609)">
+          <code onmouseout="hideTip(event, '612', 612)" onmouseover="showTip(event, '612', 612)">
             CountRows(frame)
           </code>
-          <div class="tip" id="609">
+          <div class="tip" id="612">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; int<br />
                           <strong>Type parameters:</strong> 'R, 'C          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1055-1055" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1064-1064" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -921,20 +994,22 @@ value available.</p>
 the total length of the row series, including keys for which there is no 
 value available.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '610', 610)" onmouseover="showTip(event, '610', 610)">
+          <code onmouseout="hideTip(event, '613', 613)" onmouseover="showTip(event, '613', 613)">
             Diff(frame, offset)
           </code>
-          <div class="tip" id="610">
+          <div class="tip" id="613">
             <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * offset:int) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                           <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1142-1142" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1151-1151" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -943,8 +1018,16 @@ a value at the specified offset. For example, calling <code>Frame.diff 1 s</code
 frame where previous column values is subtracted from the current ones. In pseudo-code, the
 function behaves as follows:</p>
 
-<pre><code>result[k] = series[k] - series[k - offset]
-</code></pre>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">result</span>[<span class="i">k</span>] <span class="o">=</span> <span class="i">series</span>[<span class="i">k</span>] <span class="o">-</span> <span class="i">series</span>[<span class="i">k</span> <span class="o">-</span> <span class="i">offset</span>]
+</pre>
+</td>
+</tr>
+</table>
 
 <p>Columns that cannot be converted to <code>float</code> are left without a change.</p>
 
@@ -956,74 +1039,22 @@ when negative, subtracts the future values from the current values.</li>
 <li><code>frame</code> - The input frame containing at least some <code>float</code> columns.</li>
 </ul>
 
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
 
-          <code onmouseout="hideTip(event, '611', 611)" onmouseover="showTip(event, '611', 611)">
-            FilterRowsBy(frame, column, value)
-          </code>
-          <div class="tip" id="611">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * column:&#39;TColumnKey * value:obj) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, 'V          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1155-1155" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
 
-          <code onmouseout="hideTip(event, '612', 612)" onmouseover="showTip(event, '612', 612)">
-            GetRowsAt(frame, indices)
-          </code>
-          <div class="tip" id="612">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * indices:int []) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1160-1160" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '613', 613)" onmouseover="showTip(event, '613', 613)">
-            GetSlice(series, lo1, hi1, lo2, hi2)
-          </code>
-          <div class="tip" id="613">
-            <strong>Signature:</strong> (series:RowSeries&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt; * lo1:&#39;K1 option * hi1:&#39;K1 option * lo2:&#39;K2 option * hi2:&#39;K2 option) -&gt; Frame&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey1, 'TRowKey2, 'TColKey, 'K1, 'K2          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1204-1204" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '614', 614)" onmouseover="showTip(event, '614', 614)">
-            GetSlice(series, k1, lo2, hi2)
+            FilterRowsBy(frame, column, value)
           </code>
           <div class="tip" id="614">
-            <strong>Signature:</strong> (series:RowSeries&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt; * k1:&#39;TRowKey1 * lo2:&#39;TRowKey2 option * hi2:&#39;TRowKey2 option) -&gt; Frame&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey1, 'TRowKey2, 'TColKey          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * column:&#39;TColumnKey * value:obj) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1199-1199" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1164-1164" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1034,14 +1065,14 @@ when negative, subtracts the future values from the current values.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '615', 615)" onmouseover="showTip(event, '615', 615)">
-            GetSlice(series, lo1, hi1, k2)
+            GetRowsAt(frame, indices)
           </code>
           <div class="tip" id="615">
-            <strong>Signature:</strong> (series:RowSeries&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt; * lo1:&#39;TRowKey1 option * hi1:&#39;TRowKey1 option * k2:&#39;TRowKey2) -&gt; Frame&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey1, 'TRowKey2, 'TColKey          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * indices:int []) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1194-1194" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1169-1169" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1055,11 +1086,11 @@ when negative, subtracts the future values from the current values.</li>
             GetSlice(series, lo1, hi1, lo2, hi2)
           </code>
           <div class="tip" id="616">
-            <strong>Signature:</strong> (series:RowSeries&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt; * lo1:&#39;TRowKey1 option * hi1:&#39;TRowKey1 option * lo2:&#39;TRowKey2 option * hi2:&#39;TRowKey2 option) -&gt; Frame&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey1, 'TRowKey2, 'TColKey          </div>
+            <strong>Signature:</strong> (series:RowSeries&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt; * lo1:&#39;K1 option * hi1:&#39;K1 option * lo2:&#39;K2 option * hi2:&#39;K2 option) -&gt; Frame&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey1, 'TRowKey2, 'TColKey, 'K1, 'K2          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1188-1188" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1213-1213" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1070,14 +1101,14 @@ when negative, subtracts the future values from the current values.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '617', 617)" onmouseover="showTip(event, '617', 617)">
-            GetSlice(series, lo1, hi1, lo2, hi2)
+            GetSlice(series, k1, lo2, hi2)
           </code>
           <div class="tip" id="617">
-            <strong>Signature:</strong> (series:ColumnSeries&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt; * lo1:&#39;K1 option * hi1:&#39;K1 option * lo2:&#39;K2 option * hi2:&#39;K2 option) -&gt; Frame&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColKey1, 'TColKey2, 'K1, 'K2          </div>
+            <strong>Signature:</strong> (series:RowSeries&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt; * k1:&#39;TRowKey1 * lo2:&#39;TRowKey2 option * hi2:&#39;TRowKey2 option) -&gt; Frame&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey1, 'TRowKey2, 'TColKey          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1182-1182" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1208-1208" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1088,14 +1119,14 @@ when negative, subtracts the future values from the current values.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '618', 618)" onmouseover="showTip(event, '618', 618)">
-            GetSlice(series, k1, lo2, hi2)
+            GetSlice(series, lo1, hi1, k2)
           </code>
           <div class="tip" id="618">
-            <strong>Signature:</strong> (series:ColumnSeries&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt; * k1:&#39;TColKey1 * lo2:&#39;TColKey2 option * hi2:&#39;TColKey2 option) -&gt; Frame&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColKey1, 'TColKey2          </div>
+            <strong>Signature:</strong> (series:RowSeries&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt; * lo1:&#39;TRowKey1 option * hi1:&#39;TRowKey1 option * k2:&#39;TRowKey2) -&gt; Frame&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey1, 'TRowKey2, 'TColKey          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1177-1177" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1203-1203" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1106,14 +1137,14 @@ when negative, subtracts the future values from the current values.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '619', 619)" onmouseover="showTip(event, '619', 619)">
-            GetSlice(series, lo1, hi1, k2)
+            GetSlice(series, lo1, hi1, lo2, hi2)
           </code>
           <div class="tip" id="619">
-            <strong>Signature:</strong> (series:ColumnSeries&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt; * lo1:&#39;TColKey1 option * hi1:&#39;TColKey1 option * k2:&#39;TColKey2) -&gt; Frame&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColKey1, 'TColKey2          </div>
+            <strong>Signature:</strong> (series:RowSeries&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt; * lo1:&#39;TRowKey1 option * hi1:&#39;TRowKey1 option * lo2:&#39;TRowKey2 option * hi2:&#39;TRowKey2 option) -&gt; Frame&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey1, 'TRowKey2, 'TColKey          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1172-1172" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1197-1197" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1127,11 +1158,11 @@ when negative, subtracts the future values from the current values.</li>
             GetSlice(series, lo1, hi1, lo2, hi2)
           </code>
           <div class="tip" id="620">
-            <strong>Signature:</strong> (series:ColumnSeries&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt; * lo1:&#39;TColKey1 option * hi1:&#39;TColKey1 option * lo2:&#39;TColKey2 option * hi2:&#39;TColKey2 option) -&gt; Frame&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColKey1, 'TColKey2          </div>
+            <strong>Signature:</strong> (series:ColumnSeries&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt; * lo1:&#39;K1 option * hi1:&#39;K1 option * lo2:&#39;K2 option * hi2:&#39;K2 option) -&gt; Frame&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColKey1, 'TColKey2, 'K1, 'K2          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1166-1166" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1191-1191" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1142,14 +1173,14 @@ when negative, subtracts the future values from the current values.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '621', 621)" onmouseover="showTip(event, '621', 621)">
-            Merge(frame, rowKey, row)
+            GetSlice(series, k1, lo2, hi2)
           </code>
           <div class="tip" id="621">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * rowKey:&#39;TRowKey * row:ISeries&lt;&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
+            <strong>Signature:</strong> (series:ColumnSeries&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt; * k1:&#39;TColKey1 * lo2:&#39;TColKey2 option * hi2:&#39;TColKey2 option) -&gt; Frame&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColKey1, 'TColKey2          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1106-1106" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1186-1186" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1160,14 +1191,14 @@ when negative, subtracts the future values from the current values.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '622', 622)" onmouseover="showTip(event, '622', 622)">
-            Print(frame, printTypes)
+            GetSlice(series, lo1, hi1, k2)
           </code>
           <div class="tip" id="622">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;K,&#39;V&gt; * printTypes:bool) -&gt; unit<br />
-                          <strong>Type parameters:</strong> 'K, 'V          </div>
+            <strong>Signature:</strong> (series:ColumnSeries&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt; * lo1:&#39;TColKey1 option * hi1:&#39;TColKey1 option * k2:&#39;TColKey2) -&gt; Frame&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColKey1, 'TColKey2          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1039-1039" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1181-1181" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1178,14 +1209,14 @@ when negative, subtracts the future values from the current values.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '623', 623)" onmouseover="showTip(event, '623', 623)">
-            Print(frame)
+            GetSlice(series, lo1, hi1, lo2, hi2)
           </code>
           <div class="tip" id="623">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;K,&#39;V&gt; -&gt; unit<br />
-                          <strong>Type parameters:</strong> 'K, 'V          </div>
+            <strong>Signature:</strong> (series:ColumnSeries&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt; * lo1:&#39;TColKey1 option * hi1:&#39;TColKey1 option * lo2:&#39;TColKey2 option * hi2:&#39;TColKey2 option) -&gt; Frame&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColKey1, 'TColKey2          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1036-1036" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1175-1175" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1196,14 +1227,14 @@ when negative, subtracts the future values from the current values.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '624', 624)" onmouseover="showTip(event, '624', 624)">
-            Reduce(frame, aggregation)
+            Merge(frame, rowKey, row)
           </code>
           <div class="tip" id="624">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * aggregation:Func&lt;&#39;T,&#39;T,&#39;T&gt;) -&gt; Series&lt;&#39;TColumnKey,&#39;T&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, 'T          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * rowKey:&#39;TRowKey * row:ISeries&lt;&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1146-1146" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1115-1115" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1214,14 +1245,14 @@ when negative, subtracts the future values from the current values.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '625', 625)" onmouseover="showTip(event, '625', 625)">
-            Select(frame, projection)
+            Print(frame, printTypes)
           </code>
           <div class="tip" id="625">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;&gt;,int,&#39;?478681&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;?478682&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?478681, '?478682          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;K,&#39;V&gt; * printTypes:bool) -&gt; unit<br />
+                          <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1094-1094" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1048-1048" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1232,14 +1263,14 @@ when negative, subtracts the future values from the current values.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '626', 626)" onmouseover="showTip(event, '626', 626)">
-            Select(frame, projection)
+            Print(frame)
           </code>
           <div class="tip" id="626">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;&gt;,&#39;?478676&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;?478677&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?478676, '?478677          </div>
+            <strong>Signature:</strong> frame:Frame&lt;&#39;K,&#39;V&gt; -&gt; unit<br />
+                          <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1090-1090" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1045-1045" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1250,14 +1281,14 @@ when negative, subtracts the future values from the current values.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '627', 627)" onmouseover="showTip(event, '627', 627)">
-            SelectColumnKeys(frame, projection)
+            Reduce(frame, aggregation)
           </code>
           <div class="tip" id="627">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TColumnKey,OptionalValue&lt;ObjectSeries&lt;&#39;TRowKey&gt;&gt;&gt;,&#39;?478690&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;?478690&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?478690          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * aggregation:Func&lt;&#39;T,&#39;T,&#39;T&gt;) -&gt; Series&lt;&#39;TColumnKey,&#39;T&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1102-1102" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1155-1155" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1268,14 +1299,14 @@ when negative, subtracts the future values from the current values.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '628', 628)" onmouseover="showTip(event, '628', 628)">
-            SelectRowKeys(frame, projection)
+            Select(frame, projection)
           </code>
           <div class="tip" id="628">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TRowKey,OptionalValue&lt;ObjectSeries&lt;&#39;TColumnKey&gt;&gt;&gt;,&#39;?478686&gt;) -&gt; Frame&lt;&#39;?478686,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?478686          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;&gt;,int,&#39;?490302&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;?490303&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?490302, '?490303          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1098-1098" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1103-1103" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1286,14 +1317,68 @@ when negative, subtracts the future values from the current values.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '629', 629)" onmouseover="showTip(event, '629', 629)">
-            Shift(frame, offset)
+            Select(frame, projection)
           </code>
           <div class="tip" id="629">
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;&gt;,&#39;?490297&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;?490298&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?490297, '?490298          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1099-1099" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '630', 630)" onmouseover="showTip(event, '630', 630)">
+            SelectColumnKeys(frame, projection)
+          </code>
+          <div class="tip" id="630">
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TColumnKey,OptionalValue&lt;ObjectSeries&lt;&#39;TRowKey&gt;&gt;&gt;,&#39;?490311&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;?490311&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?490311          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1111-1111" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '631', 631)" onmouseover="showTip(event, '631', 631)">
+            SelectRowKeys(frame, projection)
+          </code>
+          <div class="tip" id="631">
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TRowKey,OptionalValue&lt;ObjectSeries&lt;&#39;TColumnKey&gt;&gt;&gt;,&#39;?490307&gt;) -&gt; Frame&lt;&#39;?490307,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?490307          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1107-1107" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '632', 632)" onmouseover="showTip(event, '632', 632)">
+            Shift(frame, offset)
+          </code>
+          <div class="tip" id="632">
             <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * offset:int) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                           <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1124-1124" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1133-1133" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1302,8 +1387,16 @@ positive, the values are shifted forward and first <code>offset</code> keys are 
 offset is negative, the values are shifted backwards and the last <code>offset</code> keys are dropped.
 Expressed in pseudo-code:</p>
 
-<pre><code>result[k] = series[k - offset]
-</code></pre>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">result</span>[<span class="i">k</span>] <span class="o">=</span> <span class="i">series</span>[<span class="i">k</span> <span class="o">-</span> <span class="i">offset</span>]
+</pre>
+</td>
+</tr>
+</table>
 
 <h2>Parameters</h2>
 
@@ -1317,20 +1410,22 @@ Expressed in pseudo-code:</p>
 <p>If you want to calculate the difference, e.g. <code>df - (Frame.shift 1 df)</code>, you can
 use <code>Frame.diff</code> which will be a little bit faster.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '630', 630)" onmouseover="showTip(event, '630', 630)">
+          <code onmouseout="hideTip(event, '633', 633)" onmouseover="showTip(event, '633', 633)">
             Sum(frame)
           </code>
-          <div class="tip" id="630">
+          <div class="tip" id="633">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1042-1042" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1051-1051" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1340,15 +1435,15 @@ use <code>Frame.diff</code> which will be a little bit faster.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '631', 631)" onmouseover="showTip(event, '631', 631)">
+          <code onmouseout="hideTip(event, '634', 634)" onmouseover="showTip(event, '634', 634)">
             Where(frame, condition)
           </code>
-          <div class="tip" id="631">
+          <div class="tip" id="634">
             <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * condition:Func&lt;KeyValuePair&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;&gt;,int,bool&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                           <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1086-1086" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1095-1095" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1364,20 +1459,22 @@ gives access to the row series and a row index.</p>
 <li><code>condition</code> - A delegate that specifies the filtering condition.</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '632', 632)" onmouseover="showTip(event, '632', 632)">
+          <code onmouseout="hideTip(event, '635', 635)" onmouseover="showTip(event, '635', 635)">
             Where(frame, condition)
           </code>
-          <div class="tip" id="632">
+          <div class="tip" id="635">
             <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * condition:Func&lt;KeyValuePair&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;&gt;,bool&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                           <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1073-1073" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1082-1082" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1393,20 +1490,22 @@ gives access to the row series.</p>
 <li><code>condition</code> - A delegate that specifies the filtering condition.</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '633', 633)" onmouseover="showTip(event, '633', 633)">
+          <code onmouseout="hideTip(event, '636', 636)" onmouseover="showTip(event, '636', 636)">
             Window(frame, size, aggregate)
           </code>
-          <div class="tip" id="633">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * size:int * aggregate:Func&lt;Frame&lt;&#39;R,&#39;C&gt;,&#39;?478660&gt;) -&gt; Series&lt;&#39;R,&#39;?478660&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?478660          </div>
+          <div class="tip" id="636">
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * size:int * aggregate:Func&lt;Frame&lt;&#39;R,&#39;C&gt;,&#39;?490281&gt;) -&gt; Series&lt;&#39;R,&#39;?490281&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?490281          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1048-1048" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1057-1057" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1416,15 +1515,15 @@ gives access to the row series.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '634', 634)" onmouseover="showTip(event, '634', 634)">
+          <code onmouseout="hideTip(event, '637', 637)" onmouseover="showTip(event, '637', 637)">
             Window(frame, size)
           </code>
-          <div class="tip" id="634">
+          <div class="tip" id="637">
             <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * size:int) -&gt; Series&lt;&#39;R,Frame&lt;&#39;R,&#39;C&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1045-1045" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1054-1054" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>

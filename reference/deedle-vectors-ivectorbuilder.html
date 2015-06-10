@@ -44,6 +44,8 @@
 <div class="xmldoc">
 <p>Represents an object that can construct vector values by processing 
 the "mini-DSL" representation <code>VectorConstruction</code>.</p>
+
+
 </div>
   <h3>Instance members</h3>
   <table class="table table-bordered member-list">
@@ -54,10 +56,10 @@ the "mini-DSL" representation <code>VectorConstruction</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1034', 1034)" onmouseover="showTip(event, '1034', 1034)">
+          <code onmouseout="hideTip(event, '1049', 1049)" onmouseover="showTip(event, '1049', 1049)">
             AsyncBuild(arg1, arg2)
           </code>
-          <div class="tip" id="1034">
+          <div class="tip" id="1049">
             <strong>Signature:</strong> (VectorConstruction * IVector&lt;&#39;T&gt; []) -&gt; Async&lt;IVector&lt;&#39;T&gt;&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'T          </div>
@@ -70,15 +72,17 @@ the "mini-DSL" representation <code>VectorConstruction</code>.</p>
           <p>Asynchronous version of <code>Build</code> operation. This is mainly used for 
 <code>AsyncMaterialize</code> and it does not handle fully general vector constructions (yet)</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1035', 1035)" onmouseover="showTip(event, '1035', 1035)">
+          <code onmouseout="hideTip(event, '1050', 1050)" onmouseover="showTip(event, '1050', 1050)">
             Build(arg1, arg2)
           </code>
-          <div class="tip" id="1035">
+          <div class="tip" id="1050">
             <strong>Signature:</strong> (VectorConstruction * IVector&lt;&#39;T&gt; []) -&gt; IVector&lt;&#39;T&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'T          </div>
@@ -92,15 +96,17 @@ the "mini-DSL" representation <code>VectorConstruction</code>.</p>
 is an array of arguments ("variables") that may be referenced from the
 <code>VectorConstruction</code> using the <code>Return 0</code> construct.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1036', 1036)" onmouseover="showTip(event, '1036', 1036)">
+          <code onmouseout="hideTip(event, '1051', 1051)" onmouseover="showTip(event, '1051', 1051)">
             Create(arg1)
           </code>
-          <div class="tip" id="1036">
+          <div class="tip" id="1051">
             <strong>Signature:</strong> (&#39;T []) -&gt; IVector&lt;&#39;T&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'T          </div>
@@ -115,15 +121,17 @@ still represent missing values and the vector should handle this.
 For example <code>Double.NaN</code> or <code>null</code> should be turned into a missing
 value in the returned vector.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1037', 1037)" onmouseover="showTip(event, '1037', 1037)">
+          <code onmouseout="hideTip(event, '1052', 1052)" onmouseover="showTip(event, '1052', 1052)">
             CreateMissing(arg1)
           </code>
-          <div class="tip" id="1037">
+          <div class="tip" id="1052">
             <strong>Signature:</strong> (OptionalValue&lt;&#39;T&gt; []) -&gt; IVector&lt;&#39;T&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'T          </div>
@@ -136,6 +144,8 @@ value in the returned vector.</p>
           <p>Create a vector from an array containing values that may be missing. 
 Even if a value is passed, it may be a missing value such as <code>Double.NaN</code>
 or <code>null</code>. The vector builder should hanlde this.</p>
+
+
 
         </td>
       </tr>

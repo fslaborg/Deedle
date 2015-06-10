@@ -45,6 +45,8 @@
 <p>Represents an untyped series with keys of type <code>K</code> and values of some unknown type
 (This type should not generally be used directly, but it can be used when you need
 to write code that works on a sequence of series of heterogeneous types).</p>
+
+
 </div>
   <h3>Instance members</h3>
   <table class="table table-bordered member-list">
@@ -55,10 +57,10 @@ to write code that works on a sequence of series of heterogeneous types).</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '639', 639)" onmouseover="showTip(event, '639', 639)">
+          <code onmouseout="hideTip(event, '642', 642)" onmouseover="showTip(event, '642', 642)">
             Index
           </code>
-          <div class="tip" id="639">
+          <div class="tip" id="642">
             <strong>Signature:</strong> IIndex&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -70,15 +72,17 @@ to write code that works on a sequence of series of heterogeneous types).</p>
             </a>
           <p>Returns the index containing keys of the series</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '640', 640)" onmouseover="showTip(event, '640', 640)">
+          <code onmouseout="hideTip(event, '643', 643)" onmouseover="showTip(event, '643', 643)">
             TryGetObject(arg1)
           </code>
-          <div class="tip" id="640">
+          <div class="tip" id="643">
             <strong>Signature:</strong> &#39;K -&gt; OptionalValue&lt;obj&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -90,15 +94,17 @@ to write code that works on a sequence of series of heterogeneous types).</p>
             </a>
           <p>Attempts to get the value at a specified key and return it as <code>obj</code></p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '641', 641)" onmouseover="showTip(event, '641', 641)">
+          <code onmouseout="hideTip(event, '644', 644)" onmouseover="showTip(event, '644', 644)">
             Vector
           </code>
-          <div class="tip" id="641">
+          <div class="tip" id="644">
             <strong>Signature:</strong> IVector<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -109,6 +115,30 @@ to write code that works on a sequence of series of heterogeneous types).</p>
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns the vector containing data of the series (as an untyped vector)</p>
+
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '645', 645)" onmouseover="showTip(event, '645', 645)">
+            VectorBuilder
+          </code>
+          <div class="tip" id="645">
+            <strong>Signature:</strong> IVectorBuilder<br />
+              <strong>Modifiers:</strong> abstract<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Series.fs#L45-45" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the vector builder associated with this series</p>
+
+
 
         </td>
       </tr>

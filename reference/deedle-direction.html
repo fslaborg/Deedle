@@ -44,18 +44,42 @@
 <div class="xmldoc">
 <p>Specifies in which direction should we look when performing operations such as
 <code>Series.Pairwise</code>.</p>
+
+
         <h2>Example</h2>
-<pre><code>let abc = 
-  [ 1 =&gt; "a"; 2 =&gt; "b"; 3 =&gt; "c" ]
-  |&gt; Series.ofObservations
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">abc</span> <span class="o">=</span> 
+  [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="s">&quot;a&quot;</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="s">&quot;b&quot;</span>; <span class="n">3</span> <span class="o">=&gt;</span> <span class="s">&quot;c&quot;</span> ]
+  <span class="o">|&gt;</span> <span class="i">Series</span><span class="o">.</span><span class="i">ofObservations</span>
 
-// Using 'Forward' the key of the first element is used
-abc.Pairwise(direction=Direction.Forward)
-[fsi:[ 1 =&gt; ("a", "b"); 2 =&gt; ("b", "c") ]]
+<span class="c">// Using &#39;Forward&#39; the key of the first element is used</span>
+<span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="i">abc</span><span class="o">.</span><span class="i">Pairwise</span>(<span class="i">direction</span><span class="o">=</span><span class="i">Direction</span><span class="o">.</span><span class="i">Forward</span>)
+[<span class="i">fsi</span><span class="o">:</span>[ <span class="n">1</span> <span class="o">=&gt;</span> (<span class="s">&quot;a&quot;</span>, <span class="s">&quot;b&quot;</span>); <span class="n">2</span> <span class="o">=&gt;</span> (<span class="s">&quot;b&quot;</span>, <span class="s">&quot;c&quot;</span>) ]]
 
-// Using 'Backward' the key of the second element is used
-abc.Pairwise(direction=Direction.Backward)
-[fsi:[ 2 =&gt; ("a", "b"); 3 =&gt; ("b", "c") ]]</code></pre>
+<span class="c">// Using &#39;Backward&#39; the key of the second element is used</span>
+<span onmouseout="hideTip(event, 'fs1', 3)" onmouseover="showTip(event, 'fs1', 3)" class="i">abc</span><span class="o">.</span><span class="i">Pairwise</span>(<span class="i">direction</span><span class="o">=</span><span class="i">Direction</span><span class="o">.</span><span class="i">Backward</span>)
+[<span class="i">fsi</span><span class="o">:</span>[ <span class="n">2</span> <span class="o">=&gt;</span> (<span class="s">&quot;a&quot;</span>, <span class="s">&quot;b&quot;</span>); <span class="n">3</span> <span class="o">=&gt;</span> (<span class="s">&quot;b&quot;</span>, <span class="s">&quot;c&quot;</span>) ]]
+</pre>
+</td>
+</tr>
+</table>
+
+<div class="tip" id="fs1">val abc : obj<br /><br />Full name: docs.abc</div>
+
 </div>
   <h3>Record Fields</h3>
   <table class="table table-bordered member-list">
@@ -66,10 +90,10 @@ abc.Pairwise(direction=Direction.Backward)
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '406', 406)" onmouseover="showTip(event, '406', 406)">
+          <code onmouseout="hideTip(event, '409', 409)" onmouseover="showTip(event, '409', 409)">
             Backward
           </code>
-          <div class="tip" id="406">
+          <div class="tip" id="409">
             <strong>Signature:</strong> Direction<br />
               <strong>Modifiers:</strong> static<br />
                       </div>
@@ -85,10 +109,10 @@ abc.Pairwise(direction=Direction.Backward)
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '407', 407)" onmouseover="showTip(event, '407', 407)">
+          <code onmouseout="hideTip(event, '410', 410)" onmouseover="showTip(event, '410', 410)">
             Forward
           </code>
-          <div class="tip" id="407">
+          <div class="tip" id="410">
             <strong>Signature:</strong> Direction<br />
               <strong>Modifiers:</strong> static<br />
                       </div>

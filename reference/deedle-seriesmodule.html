@@ -48,24 +48,41 @@ well with the pipelining (<code>|&gt;</code>) operator. For example, given a ser
 we can use <code>Series.filterValues</code> to filter outliers and then <code>Stats.mean</code> to calculate
 the mean:</p>
 
-<pre><code>ages
-|&gt; Series.filterValues (fun v -&gt; v &gt; 0.0 &amp;&amp; v &lt; 120.0)
-|&gt; Stats.mean
-</code></pre>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">ages</span>
+<span class="o">|&gt;</span> <span class="i">Series</span><span class="o">.</span><span class="i">filterValues</span> (<span class="k">fun</span> <span class="i">v</span> <span class="k">-&gt;</span> <span class="i">v</span> <span class="o">&gt;</span> <span class="n">0.0</span> <span class="o">&amp;&amp;</span> <span class="i">v</span> <span class="o">&lt;</span> <span class="n">120.0</span>)
+<span class="o">|&gt;</span> <span class="i">Stats</span><span class="o">.</span><span class="i">mean</span>
+</pre>
+</td>
+</tr>
+</table>
 
 <p>The module provides comprehensive set of functions for working with series. The same
 API is also exposed using C#-friendly extension methods. In C#, the above snippet could
 be written as:</p>
 
-<pre><code>[lang=csharp]
-ages
-  .Where(kvp =&gt; kvp.Value &gt; 0.0 &amp;&amp; kvp.Value &lt; 120.0)
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip" lang="csharp">ages
+  .Where(kvp <span class="o">=</span><span class="o">&gt;</span> kvp.Value <span class="o">&gt;</span> 0.0 <span class="o">&amp;</span><span class="o">&amp;</span> kvp.Value <span class="o">&lt;</span> 120.0)
   .Mean()
-</code></pre>
+</pre></td></tr></table>
 
 <p>For more information about similar frame-manipulation functions, see the <code>Frame</code> module.
 For more information about C#-friendly extensions, see <code>SeriesExtensions</code>. The functions 
 in the <code>Series</code> module are grouped in a number of categories and documented below.</p>
+
+
 </div>
   <!-- If there is more than 1 category in the type, generate TOC -->
   <h2>Table of contents</h2>
@@ -101,6 +118,8 @@ returns <code>None</code> instead of failing.</li>
 integer offset (and ignore the keys of the series)</li>
 </ul>
 
+
+
       </div>
   <h3>Functions and values</h3>
   <table class="table table-bordered member-list">
@@ -127,6 +146,8 @@ integer offset (and ignore the keys of the series)</li>
 the total length of the series, including keys for which there is no 
 value available.</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -148,6 +169,8 @@ value available.</p>
 missing values or not available values (such as values created from <code>null</code>,
 <code>Double.NaN</code>, or those that are missing due to outer join etc.).</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -166,6 +189,8 @@ missing values or not available values (such as values created from <code>null</
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns the first key of the series, or throws exception if one doesn't exist</p>
+
+
 
         </td>
       </tr>
@@ -186,6 +211,8 @@ missing values or not available values (such as values created from <code>null</
             </a>
           <p>Returns the first value of the series. This fails if the first value is missing.</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -205,6 +232,8 @@ missing values or not available values (such as values created from <code>null</
             </a>
           <p>Get the value for the specified key.
 Uses exact lookup semantics for key lookup - use <code>lookup</code> for more options</p>
+
+
 
         </td>
       </tr>
@@ -232,6 +261,8 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
 <li><code>keys</code> - A sequence of keys that will form the keys of the retunred sequence</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -250,6 +281,8 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns the value at the specified (integer) offset.</p>
+
+
 
         </td>
       </tr>
@@ -271,6 +304,8 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
           <p>Returns true when the series contains value for the specified key
 (This is useful for checking prior to performing a computation)</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -290,6 +325,8 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
             </a>
           <p>Returns true when the series contains value for all of the specified keys
 (This is useful for checking prior to performing a computation)</p>
+
+
 
         </td>
       </tr>
@@ -311,6 +348,8 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
           <p>Returns true when the series does not contains value for any of the specified keys
 (This is useful for checking prior to performing a computation)</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -330,6 +369,8 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
             </a>
           <p>Returns true when the series does not contains value for the specified key
 (This is useful for checking prior to performing a computation)</p>
+
+
 
         </td>
       </tr>
@@ -351,6 +392,8 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
           <p>Returns true when the series contains value for some of the specified keys
 (This is useful for checking prior to performing a computation)</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -369,6 +412,8 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns the keys of the series as a sequence</p>
+
+
 
         </td>
       </tr>
@@ -389,6 +434,8 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
             </a>
           <p>Returns the last key of the series, or throws exception if one doesn't exist</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -407,6 +454,8 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns the last value of the series. This fails if the last value is missing.</p>
+
+
 
         </td>
       </tr>
@@ -427,6 +476,8 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
             </a>
           <p>Get the value for the specified key.
 Use the specified lookup semantics - for exact matching, use <code>get</code></p>
+
+
 
         </td>
       </tr>
@@ -455,6 +506,8 @@ Use the specified lookup semantics - for exact matching, use <code>getAll</code>
 <li><code>lookup</code> - Lookup behavior to use when the value at the specified key does not exist</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -476,6 +529,8 @@ Use the specified lookup semantics - for exact matching, use <code>getAll</code>
 all keys with missing values (such as values created from <code>null</code>,
 <code>Double.NaN</code>, or those that are missing due to outer join etc.).</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -494,6 +549,8 @@ all keys with missing values (such as values created from <code>null</code>,
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns all keys from the sequence, together with the associated (optional) values.</p>
+
+
 
         </td>
       </tr>
@@ -521,6 +578,8 @@ for some new sequence of keys.</p>
 <li><code>keys</code> - A sequence of keys that will form the keys of the retunred sequence</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -539,6 +598,8 @@ for some new sequence of keys.</p>
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns the last value of the series if one exists.</p>
+
+
 
         </td>
       </tr>
@@ -561,6 +622,8 @@ for some new sequence of keys.</p>
 or the value is missing.
 Uses exact lookup semantics for key lookup - use <code>tryLookup</code> for more options</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -580,6 +643,8 @@ Uses exact lookup semantics for key lookup - use <code>tryLookup</code> for more
             </a>
           <p>Returns the value at the specified (integer) offset, or <code>None</code> if the value is missing.</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -598,6 +663,8 @@ Uses exact lookup semantics for key lookup - use <code>tryLookup</code> for more
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns the last value of the series if one exists.</p>
+
+
 
         </td>
       </tr>
@@ -619,6 +686,8 @@ Uses exact lookup semantics for key lookup - use <code>tryLookup</code> for more
           <p>Attempts to get the value for the specified key. If the value is not
 available, <code>None</code> is returned.
 Use the specified lookup semantics - for exact matching, use <code>tryGet</code>.</p>
+
+
 
         </td>
       </tr>
@@ -642,6 +711,8 @@ The search uses the specified lookup semantics and so the returned key
 may differ from the key searched for. If the value is not
 available, <code>None</code> is returned.</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -661,6 +732,8 @@ available, <code>None</code> is returned.</p>
             </a>
           <p>Returns the (non-missing) values of the series as a sequence</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -679,6 +752,8 @@ available, <code>None</code> is returned.</p>
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns the series values (both missing and present) as a sequence</p>
+
+
 
         </td>
       </tr>
@@ -704,6 +779,8 @@ the incomplete chunk at the beginning should be skipped (aligning the last chunk
 <p>The functions ending with <code>Into</code> take a function to be applied to the window/chunk. 
 The functions <code>window</code>, <code>windowInto</code> and <code>chunk</code>, <code>chunkInto</code> are simplified versions
 that take a size. There is also <code>pairwise</code> function for sliding window of size two.</p>
+
+
 
       </div>
   <h3>Functions and values</h3>
@@ -740,6 +817,8 @@ a discriminated union listing various chunking and windowing conditions.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -772,6 +851,8 @@ a discriminated union listing various chunking and windowing conditions.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -799,6 +880,8 @@ skips incomplete chunks - you can use <code>Series.chunkSize</code> for more opt
 <li><code>size</code> - The size of the chunk.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
+
+
 
         </td>
       </tr>
@@ -830,6 +913,8 @@ is an inline function - there must be <code>-</code> operator defined between <c
 keys of the series.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
+
+
 
         </td>
       </tr>
@@ -863,6 +948,8 @@ keys of the series.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -891,6 +978,8 @@ skips incomplete chunks - you can use <code>Series.chunkSizeInto</code> for more
 <li><code>size</code> - The size of the chunk.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
+
+
 
         </td>
       </tr>
@@ -922,6 +1011,8 @@ can be <code>Boundary.Skip</code> (meaning that no incomplete chunks are produce
 or <code>Boundary.AtEnding</code> (to produce incomplete chunks at the end of series)</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
+
+
 
         </td>
       </tr>
@@ -956,6 +1047,8 @@ or <code>Boundary.AtEnding</code> (to produce incomplete chunks at the end of se
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -986,6 +1079,8 @@ to determine when a window should end.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -995,8 +1090,8 @@ to determine when a window should end.</li>
             chunkWhileInto cond f series
           </code>
           <div class="tip" id="211">
-            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?481757) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?481757&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'T, '?481757          </div>
+            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?493417) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?493417&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T, '?493417          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1026-1026" class="github-link">
@@ -1016,6 +1111,8 @@ to determine when a window should end.</li>
 <li><code>f</code> - A value selector that is called to aggregate each chunk.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
+
+
 
         </td>
       </tr>
@@ -1045,6 +1142,8 @@ the newly produced keys, the nested series are indexed with the original keys.</
 key and value. The new key must support equality testing.</li>
 <li><code>series</code> - An input series to be grouped.</li>
 </ul>
+
+
 
         </td>
       </tr>
@@ -1076,6 +1175,8 @@ key and value. The new key must support equality testing.</li>
 <li><code>series</code> - An input series to be grouped.</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -1105,9 +1206,24 @@ value for the first key).</p>
 
 <h2>Example</h2>
 
-<pre><code>let input = series [ 1 =&gt; 'a'; 2 =&gt; 'b'; 3 =&gt; 'c']
-let res = input |&gt; Series.pairwise
-res = series [2 =&gt; ('a', 'b'); 3 =&gt; ('b', 'c') ]</code></pre>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">input</span> <span class="o">=</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="s">&#39;a&#39;</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="s">&#39;b&#39;</span>; <span class="n">3</span> <span class="o">=&gt;</span> <span class="s">&#39;c&#39;</span>]
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">res</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs1', 3)" onmouseover="showTip(event, 'fs1', 3)" class="i">input</span> <span class="o">|&gt;</span> <span class="i">Series</span><span class="o">.</span><span class="i">pairwise</span>
+<span onmouseout="hideTip(event, 'fs2', 4)" onmouseover="showTip(event, 'fs2', 4)" class="i">res</span> <span class="o">=</span> <span class="i">series</span> [<span class="n">2</span> <span class="o">=&gt;</span> (<span class="s">&#39;a&#39;</span>, <span class="s">&#39;b&#39;</span>); <span class="n">3</span> <span class="o">=&gt;</span> (<span class="s">&#39;b&#39;</span>, <span class="s">&#39;c&#39;</span>) ]
+</pre>
+</td>
+</tr>
+</table>
+
+<div class="tip" id="fs1">val input : obj<br /><br />Full name: docs.input</div>
+<div class="tip" id="fs2">val res : obj<br /><br />Full name: docs.res</div>
+
 
         </td>
       </tr>
@@ -1118,8 +1234,8 @@ res = series [2 =&gt; ('a', 'b'); 3 =&gt; ('b', 'c') ]</code></pre>
             pairwiseWith f series
           </code>
           <div class="tip" id="215">
-            <strong>Signature:</strong> f:(&#39;K -&gt; &#39;T * &#39;T -&gt; &#39;?481781) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?481781&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'T, '?481781          </div>
+            <strong>Signature:</strong> f:(&#39;K -&gt; &#39;T * &#39;T -&gt; &#39;?493441) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?493441&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T, '?493441          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1130-1130" class="github-link">
@@ -1136,6 +1252,8 @@ The returned series is one key shorter (it does not contain a  value for the fir
 <li><code>f</code> - A function that is called for each pair to produce result in the final series.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
+
+
 
         </td>
       </tr>
@@ -1164,6 +1282,8 @@ skips incomplete chunks - you can use <code>Series.windowSize</code> for more op
 <li><code>size</code> - The size of the sliding window.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
+
+
 
         </td>
       </tr>
@@ -1196,6 +1316,8 @@ keys of the series.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -1205,8 +1327,8 @@ keys of the series.</li>
             windowDistInto distance f series
           </code>
           <div class="tip" id="218">
-            <strong>Signature:</strong> distance:^?481723 -&gt; f:(Series&lt;^K,&#39;T&gt; -&gt; &#39;?481726) -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,&#39;?481726&gt;<br />
-                          <strong>Type parameters:</strong> ^?481723, ^K, 'T, '?481726          </div>
+            <strong>Signature:</strong> distance:^?493383 -&gt; f:(Series&lt;^K,&#39;T&gt; -&gt; &#39;?493386) -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,&#39;?493386&gt;<br />
+                          <strong>Type parameters:</strong> ^?493383, ^K, 'T, '?493386          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L886-886" class="github-link">
@@ -1227,6 +1349,8 @@ keys of the series.</li>
 <li><code>f</code> - A function that is used to aggregate each window into a single value.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
+
+
 
         </td>
       </tr>
@@ -1256,6 +1380,8 @@ This function skips incomplete chunks - you can use <code>Series.windowSizeInto<
 <li><code>series</code> - The input series to be aggregated.</li>
 <li><code>f</code> - A function that is called on each created window.</li>
 </ul>
+
+
 
         </td>
       </tr>
@@ -1287,6 +1413,8 @@ can be <code>Boundary.Skip</code> (meaning that no incomplete windows are produc
 or <code>Boundary.AtEnding</code> (to produce incomplete windows at the end of series)</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
+
+
 
         </td>
       </tr>
@@ -1321,6 +1449,8 @@ or <code>Boundary.AtEnding</code> (to produce incomplete windows at the end of s
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -1351,6 +1481,8 @@ to determine when a window should end.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -1360,8 +1492,8 @@ to determine when a window should end.</li>
             windowWhileInto cond f series
           </code>
           <div class="tip" id="223">
-            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?481734) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?481734&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'T, '?481734          </div>
+            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?493394) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?493394&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T, '?493394          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L922-922" class="github-link">
@@ -1382,6 +1514,8 @@ to determine when a window should end.</li>
 <li><code>series</code> - The input series to be aggregated.</li>
 </ul>
 
+
+
         </td>
       </tr>
     </tbody>
@@ -1397,11 +1531,22 @@ series at one of the levels. For example, given a series <code>input</code> inde
 two-element tuple, you can calculate mean for different first-level values as
 follows:</p>
 
-<pre><code>input |&gt; applyLevel fst Stats.mean
-</code></pre>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">input</span> <span class="o">|&gt;</span> <span class="i">applyLevel</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">fst</span> <span class="i">Stats</span><span class="o">.</span><span class="i">mean</span>
+</pre>
+</td>
+</tr>
+</table>
 
 <p>Note that the <code>Stats</code> module provides helpers for typical statistical operations,
 so the above could be written just as <code>input |&gt; Stats.levelMean fst</code>.</p>
+
+<div class="tip" id="fs1">val fst : tuple:(&#39;T1 * &#39;T2) -&gt; &#39;T1<br /><br />Full name: Microsoft.FSharp.Core.Operators.fst</div>
+
 
       </div>
   <h3>Functions and values</h3>
@@ -1440,6 +1585,8 @@ the aggregates of each group.</p>
 <li><code>level</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -1473,6 +1620,8 @@ case the group will have no representation in the resulting series.</p>
 <li><code>level</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -1505,6 +1654,8 @@ the aggregates of each group.</p>
 <li><code>level</code> - A delegate that returns a new group key, based on the key in the input series</li>
 </ul>
 
+
+
         </td>
       </tr>
     </tbody>
@@ -1527,6 +1678,8 @@ function to turn the tuple (of possibly missing values) into a new value.</p>
 of working with series. Create two frames with single columns and then use the join
 operation. The result will be a frame with two columns (which is easier to use than
 series of tuples).</p>
+
+
 
       </div>
   <h3>Functions and values</h3>
@@ -1554,6 +1707,8 @@ series of tuples).</p>
 series, an exception is thrown. In that case, you can use <code>mergeUsing</code>, which allows
 specifying merging behavior.</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -1574,6 +1729,8 @@ specifying merging behavior.</p>
           <p>Merge multiple series with distinct keys. When the same key with a value occurs in two
 of the series, an exception is thrown. This function is efficient even when the number
 of series to be merged is large.</p>
+
+
 
         </td>
       </tr>
@@ -1606,6 +1763,8 @@ from the first or the second series, respectively.</li>
 <li><code>series2</code> - the second (right) series to be merged</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -1626,6 +1785,8 @@ from the first or the second series, respectively.</li>
           <p>Align and zip two series using outer join and exact key matching. The function returns
 a series of tuples where both elements may be missing. As a result, it is often easier
 to use join on frames instead.</p>
+
+
 
         </td>
       </tr>
@@ -1660,6 +1821,8 @@ Supported values are <code>Lookup.Exact</code>, <code>Lookup.ExactOrSmaller</cod
 <li><code>series1</code> - The first (left) series to be aligned</li>
 <li><code>series2</code> - The second (right) series to be aligned</li>
 </ul>
+
+
 
         </td>
       </tr>
@@ -1697,6 +1860,8 @@ or outer join, some of the values may be missing. The function can also return
 <li><code>series2</code> - The second (right) series to be aligned</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -1716,6 +1881,8 @@ or outer join, some of the values may be missing. The function can also return
             </a>
           <p>Align and zip two series using inner join and exact key matching. The function returns
 a series of tuples with values from the two series.</p>
+
+
 
         </td>
       </tr>
@@ -1746,6 +1913,8 @@ from the two series</p>
 <li><code>series2</code> - The second (right) series to be aligned</li>
 </ul>
 
+
+
         </td>
       </tr>
     </tbody>
@@ -1762,6 +1931,8 @@ The remaining functions provide different mechanism for filling the missing valu
 <li><code>fillMissingUsing</code> calls a specified function for every missing value</li>
 <li><code>fillMissing</code> and variants propagates values from previous/later keys</li>
 </ul>
+
+
 
       </div>
   <h3>Functions and values</h3>
@@ -1796,9 +1967,25 @@ only those keys for which there is a value available in the original one.</p>
 
 <h2>Example</h2>
 
-<pre><code>let s = series [ 1 =&gt; 1.0; 2 =&gt; Double.NaN ]
-s |&gt; Series.dropMissing 
-[fsi:val it : Series&lt;int,float&gt; = series [ 1 =&gt; 1]</code></pre>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">s</span> <span class="o">=</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">1.0</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="i">Double</span><span class="o">.</span><span class="i">NaN</span> ]
+<span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="i">s</span> <span class="o">|&gt;</span> <span class="i">Series</span><span class="o">.</span><span class="i">dropMissing</span> 
+[<span class="i">fsi</span><span class="o">:</span><span class="k">val</span> <span class="i">it</span> <span class="o">:</span> <span class="i">Series</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs2', 3)" onmouseover="showTip(event, 'fs2', 3)" class="i">int</span>,<span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="i">float</span><span class="o">&gt;</span> <span class="o">=</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">1</span>]
+</pre>
+</td>
+</tr>
+</table>
+
+<div class="tip" id="fs1">val s : obj<br /><br />Full name: docs.s</div>
+<div class="tip" id="fs2">Multiple items<br />val int : value:&#39;T -&gt; int (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.int<br /><br />--------------------<br />type int = int32<br /><br />Full name: Microsoft.FSharp.Core.int<br /><br />--------------------<br />type int&lt;&#39;Measure&gt; = int<br /><br />Full name: Microsoft.FSharp.Core.int&lt;_&gt;</div>
+<div class="tip" id="fs3">Multiple items<br />val float : value:&#39;T -&gt; float (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.float<br /><br />--------------------<br />type float = System.Double<br /><br />Full name: Microsoft.FSharp.Core.float<br /><br />--------------------<br />type float&lt;&#39;Measure&gt; = float<br /><br />Full name: Microsoft.FSharp.Core.float&lt;_&gt;</div>
+
 
         </td>
       </tr>
@@ -1834,13 +2021,31 @@ for the nearest greater key.</li>
 
 <h2>Example</h2>
 
-<pre><code>let sample = Series.ofValues [ Double.NaN; 1.0; Double.NaN; 3.0 ]
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">sample</span> <span class="o">=</span> <span class="i">Series</span><span class="o">.</span><span class="i">ofValues</span> [ <span class="i">Double</span><span class="o">.</span><span class="i">NaN</span>; <span class="n">1.0</span>; <span class="i">Double</span><span class="o">.</span><span class="i">NaN</span>; <span class="n">3.0</span> ]
 
-// Returns a series consisting of [1; 1; 3; 3]
-sample |&gt; Series.fillMissing Direction.Backward
+<span class="c">// Returns a series consisting of [1; 1; 3; 3]</span>
+<span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="i">sample</span> <span class="o">|&gt;</span> <span class="i">Series</span><span class="o">.</span><span class="i">fillMissing</span> <span class="i">Direction</span><span class="o">.</span><span class="i">Backward</span>
 
-// Returns a series consisting of [&lt;missing&gt;; 1; 1; 3]
-sample |&gt; Series.fillMissing Direction.Forward </code></pre>
+<span class="c">// Returns a series consisting of [&lt;missing&gt;; 1; 1; 3]</span>
+<span onmouseout="hideTip(event, 'fs1', 3)" onmouseover="showTip(event, 'fs1', 3)" class="i">sample</span> <span class="o">|&gt;</span> <span class="i">Series</span><span class="o">.</span><span class="i">fillMissing</span> <span class="i">Direction</span><span class="o">.</span><span class="i">Forward</span> 
+</pre>
+</td>
+</tr>
+</table>
+
+<div class="tip" id="fs1">val sample : obj<br /><br />Full name: docs.sample</div>
+
 
         </td>
       </tr>
@@ -1873,6 +2078,8 @@ for the nearest greater key.</li>
 <li><code>endKey</code> - the upper bound at which values should be filled</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -1891,6 +2098,8 @@ for the nearest greater key.</li>
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Fill missing values only between the first and last non-missing values.</p>
+
+
 
         </td>
       </tr>
@@ -1927,6 +2136,8 @@ used in a place where the original series contains a missing value.</li>
 <p>This function can be used to implement more complex interpolation.
 For example see <a href="../frame.html#missing">handling missing values in the tutorial</a></p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -1936,8 +2147,8 @@ For example see <a href="../frame.html#missing">handling missing values in the t
             fillMissingWith value series
           </code>
           <div class="tip" id="240">
-            <strong>Signature:</strong> value:&#39;?481802 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
-                          <strong>Type parameters:</strong> '?481802, 'K, 'T          </div>
+            <strong>Signature:</strong> value:&#39;?493462 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
+                          <strong>Type parameters:</strong> '?493462, 'K, 'T          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1222-1222" class="github-link">
@@ -1952,6 +2163,8 @@ For example see <a href="../frame.html#missing">handling missing values in the t
 <li><code>series</code> - An input series that is to be filled</li>
 <li><code>value</code> - A constant value that is used to fill all missing values</li>
 </ul>
+
+
 
         </td>
       </tr>
@@ -1973,6 +2186,8 @@ For example see <a href="../frame.html#missing">handling missing values in the t
           <p>Returns the current series with the same index but with values missing wherever the 
 corresponding key exists in the other series index with an associated missing value.</p>
 
+
+
         </td>
       </tr>
     </tbody>
@@ -1982,16 +2197,32 @@ corresponding key exists in the other series index with an associated missing va
         <p>The functions in this group can be used to write computations over series that may fail.
 They use the type <code>tryval&lt;'T&gt;</code> which is defined as a discriminated union:</p>
 
-<pre><code>type tryval&lt;'T&gt; = 
-  | Success of 'T
-  | Error of exn
-</code></pre>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="t">tryval</span><span class="o">&lt;</span><span class="o">&#39;</span><span class="i">T</span><span class="o">&gt;</span> <span class="o">=</span> 
+  | <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="p">Success</span> <span class="k">of</span> <span class="o">&#39;</span><span class="i">T</span>
+  | <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="p">Error</span> <span class="k">of</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="t">exn</span>
+</pre>
+</td>
+</tr>
+</table>
 
 <p>The function <code>tryMap</code> lets you create <code>Series&lt;'K, tryval&lt;'T&gt;&gt;</code> by mapping over values
 of an original series. You can then extract values using <code>tryValues</code>, which throws 
 <code>AggregateException</code> if there were any errors. Functions <code>tryErrors</code> and <code>trySuccesses</code>
 give series containing only errors and successes. You can fill failed values with
 a constant using <code>fillErrorsWith</code>.</p>
+
+<div class="tip" id="fs1">type tryval&lt;&#39;T&gt; =<br />&#160;&#160;| Success of &#39;T<br />&#160;&#160;| Error of exn<br /><br />Full name: docs.tryval&lt;_&gt;</div>
+<div class="tip" id="fs2">union case tryval.Success: &#39;T -&gt; tryval&lt;&#39;T&gt;</div>
+<div class="tip" id="fs3">union case tryval.Error: exn -&gt; tryval&lt;&#39;T&gt;</div>
+<div class="tip" id="fs4">type exn = System.Exception<br /><br />Full name: Microsoft.FSharp.Core.exn</div>
+
 
       </div>
   <h3>Functions and values</h3>
@@ -2018,6 +2249,8 @@ a constant using <code>fillErrorsWith</code>.</p>
           <p>Givnen a series of <code>tryval&lt;'V&gt;</code> values, returns a new series where all <code>Error</code> 
 values are filled with the specified constant value.</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -2037,6 +2270,8 @@ values are filled with the specified constant value.</p>
             </a>
           <p>Given a series of <code>tryval&lt;'V&gt;</code> values, returns a series that contains all exceptions
 contained in the source series. The exceptions are returned as a series.</p>
+
+
 
         </td>
       </tr>
@@ -2059,6 +2294,8 @@ contained in the source series. The exceptions are returned as a series.</p>
 of the input series. The result contains <code>Error(e)</code> when the projection fails
 with an exception <code>e</code> or <code>Success(v)</code> containing a value <code>v</code> otherwise.</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -2078,6 +2315,8 @@ with an exception <code>e</code> or <code>Success(v)</code> containing a value <
             </a>
           <p>Given a series of <code>tryval&lt;'V&gt;</code> values, returns a series that contains all values
 contained in the source series. The input elements containing exceptions are ignored.</p>
+
+
 
         </td>
       </tr>
@@ -2099,6 +2338,8 @@ contained in the source series. The input elements containing exceptions are ign
           <p>Obtains values from a series of <code>tryval&lt;'T&gt;</code> values. When the series contains
 one or more failures, the operation throws <code>AggregateException</code>. Otherwise, it
 returns a series containing values.</p>
+
+
 
         </td>
       </tr>
@@ -2122,6 +2363,8 @@ providing functions that generate a uniform sequence of keys (e.g. days),
 the operation also fills value for days that have no corresponding
 observations in the input sequence.</p></li>
 </ul>
+
+
 
       </div>
   <h3>Functions and values</h3>
@@ -2170,6 +2413,8 @@ values at exact keys will be returned; <code>NearestGreater</code> returns the n
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -2213,6 +2458,8 @@ values at exact keys will be returned; <code>NearestGreater</code> returns the n
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -2250,6 +2497,8 @@ used as the greatest keys in a chunk.</li>
 
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
+
+
 
         </td>
       </tr>
@@ -2289,6 +2538,8 @@ keys to a new space.</p>
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered. For unordered
 series, similar functionality can be implemented using <code>Series.groupBy</code>.</p>
+
+
 
         </td>
       </tr>
@@ -2331,6 +2582,8 @@ keys to a new space.</p>
 <code>InvalidOperationException</code> when the series is not ordered. For unordered
 series, similar functionality can be implemented using <code>Series.groupBy</code>.</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -2340,8 +2593,8 @@ series, similar functionality can be implemented using <code>Series.groupBy</cod
             resampleInto keys dir f series
           </code>
           <div class="tip" id="252">
-            <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; dir:Direction -&gt; f:(&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;?481850) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;?481850&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V, '?481850          </div>
+            <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; dir:Direction -&gt; f:(&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;?493510) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;?493510&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V, '?493510          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1431-1431" class="github-link">
@@ -2370,6 +2623,8 @@ single value. Note that this function may be called with empty series.</li>
 
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
+
+
 
         </td>
       </tr>
@@ -2415,6 +2670,8 @@ space (which is then used for grouping based on equivalence)</li>
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -2424,8 +2681,8 @@ space (which is then used for grouping based on equivalence)</li>
             resampleUniformInto (...)
           </code>
           <div class="tip" id="254">
-            <strong>Signature:</strong> fillMode:Lookup -&gt; keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; nextKey:(&#39;K2 -&gt; &#39;K2) -&gt; f:(Series&lt;&#39;K1,&#39;V&gt; -&gt; &#39;?481867) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;?481867&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2, 'V, '?481867          </div>
+            <strong>Signature:</strong> fillMode:Lookup -&gt; keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; nextKey:(&#39;K2 -&gt; &#39;K2) -&gt; f:(Series&lt;&#39;K1,&#39;V&gt; -&gt; &#39;?493527) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;?493527&gt;<br />
+                          <strong>Type parameters:</strong> 'K1, 'K2, 'V, '?493527          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1532-1532" class="github-link">
@@ -2463,6 +2720,8 @@ single value. The function may be called on empty series when <code>fillMode</co
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -2472,8 +2731,8 @@ single value. The function may be called on empty series when <code>fillMode</co
             sampleTime interval dir series
           </code>
           <div class="tip" id="255">
-            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?481881,^?481882&gt; -&gt; Series&lt;^?481881,Series&lt;^?481881,^?481882&gt;&gt;<br />
-                          <strong>Type parameters:</strong> ^?481881, ^?481882          </div>
+            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?493541,^?493542&gt; -&gt; Series&lt;^?493541,Series&lt;^?493541,^?493542&gt;&gt;<br />
+                          <strong>Type parameters:</strong> ^?493541, ^?493542          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1680-1680" class="github-link">
@@ -2500,6 +2759,8 @@ used as the greatest keys in a chunk.</li>
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -2509,8 +2770,8 @@ used as the greatest keys in a chunk.</li>
             sampleTimeAt start interval dir series
           </code>
           <div class="tip" id="256">
-            <strong>Signature:</strong> start:^?481884 -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?481884,^?481885&gt; -&gt; Series&lt;^?481884,Series&lt;^?481884,^?481885&gt;&gt;<br />
-                          <strong>Type parameters:</strong> ^?481884, ^?481885          </div>
+            <strong>Signature:</strong> start:^?493544 -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?493544,^?493545&gt; -&gt; Series&lt;^?493544,Series&lt;^?493544,^?493545&gt;&gt;<br />
+                          <strong>Type parameters:</strong> ^?493544, ^?493545          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1700-1700" class="github-link">
@@ -2538,6 +2799,8 @@ used as the greatest keys in a chunk.</li>
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -2547,8 +2810,8 @@ used as the greatest keys in a chunk.</li>
             sampleTimeAtInto (...)
           </code>
           <div class="tip" id="257">
-            <strong>Signature:</strong> start:^K -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?481879) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?481879&gt;<br />
-                          <strong>Type parameters:</strong> ^K, ^V, '?481879          </div>
+            <strong>Signature:</strong> start:^K -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?493539) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?493539&gt;<br />
+                          <strong>Type parameters:</strong> ^K, ^V, '?493539          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1659-1659" class="github-link">
@@ -2577,6 +2840,8 @@ used as the greatest keys in a chunk.</li>
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -2586,8 +2851,8 @@ used as the greatest keys in a chunk.</li>
             sampleTimeInto interval dir f series
           </code>
           <div class="tip" id="258">
-            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?481875) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?481875&gt;<br />
-                          <strong>Type parameters:</strong> ^K, ^V, '?481875          </div>
+            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?493535) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?493535&gt;<br />
+                          <strong>Type parameters:</strong> ^K, ^V, '?493535          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1636-1636" class="github-link">
@@ -2614,6 +2879,8 @@ used as the greatest keys in a chunk.</li>
 
 <p>This operation is only supported on ordered series. The method throws
 <code>InvalidOperationException</code> when the series is not ordered.</p>
+
+
 
         </td>
       </tr>
@@ -2645,6 +2912,8 @@ the specified offset. This can be used e.g. to get previous value for each key u
 <code>Series.shift 1 ts</code>. The <code>diff</code> function calculates difference from previous value using
 <code>ts - (Series.shift offs ts)</code>.</p>
 
+
+
       </div>
   <h3>Functions and values</h3>
   <table class="table table-bordered member-list">
@@ -2672,8 +2941,16 @@ a value at the specified offset. For example, calling <code>Series.diff 1 s</cod
 series where previous value is subtracted from the current one. In pseudo-code, the
 function behaves as follows:</p>
 
-<pre><code>result[k] = series[k] - series[k - offset]
-</code></pre>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">result</span>[<span class="i">k</span>] <span class="o">=</span> <span class="i">series</span>[<span class="i">k</span>] <span class="o">-</span> <span class="i">series</span>[<span class="i">k</span> <span class="o">-</span> <span class="i">offset</span>]
+</pre>
+</td>
+</tr>
+</table>
 
 <h2>Parameters</h2>
 
@@ -2682,6 +2959,8 @@ function behaves as follows:</p>
 when negative, subtracts the future values from the current values.</li>
 <li><code>series</code> - The input series, containing values that support the <code>-</code> operator.</li>
 </ul>
+
+
 
         </td>
       </tr>
@@ -2704,6 +2983,8 @@ when negative, subtracts the future values from the current values.</li>
 returns <code>true</code>. The function skips over missing values. If you want to handle missing
 values, use <code>filterAll</code> instead.</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -2723,6 +3004,8 @@ values, use <code>filterAll</code> instead.</p>
             </a>
           <p>Returns a new series containing only the elements for which the specified predicate
 returns <code>true</code>. The predicate is called for missing values as well.</p>
+
+
 
         </td>
       </tr>
@@ -2745,6 +3028,8 @@ returns <code>true</code>. The predicate is called for missing values as well.</
 returns <code>true</code>. The function skips over missing values and calls the predicate with
 just the value. See also <code>filterAll</code> and <code>filter</code> for more options.</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -2766,6 +3051,8 @@ just the value. See also <code>filterAll</code> and <code>filter</code> for more
 That is, <code>None</code> values become missing values of the series and <code>Some</code> values
 become ordinary values in the resulting series.</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -2775,8 +3062,8 @@ become ordinary values in the resulting series.</p>
             foldValues op init series
           </code>
           <div class="tip" id="264">
-            <strong>Signature:</strong> op:(&#39;?481667 -&gt; &#39;T -&gt; &#39;?481667) -&gt; init:&#39;?481667 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?481667<br />
-                          <strong>Type parameters:</strong> '?481667, 'T, 'K          </div>
+            <strong>Signature:</strong> op:(&#39;?493327 -&gt; &#39;T -&gt; &#39;?493327) -&gt; init:&#39;?493327 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?493327<br />
+                          <strong>Type parameters:</strong> '?493327, 'T, 'K          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L633-633" class="github-link">
@@ -2793,6 +3080,8 @@ individual values. The folding starts with the specified initial value.</p>
 <li><code>init</code> - An initial value for the aggregation</li>
 <li><code>op</code> - A function that is used to aggregate elements of the series with the current state</li>
 </ul>
+
+
 
         </td>
       </tr>
@@ -2814,6 +3103,8 @@ individual values. The folding starts with the specified initial value.</p>
           <p>Returns a new fully evaluated series. If the source series contains a lazy index or
 lazy vectors, these are forced to evaluate and the resulting series is fully loaded in memory.</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -2834,6 +3125,8 @@ lazy vectors, these are forced to evaluate and the resulting series is fully loa
           <p>Returns a new series whose values are the results of applying the given function to
 values of the original series. This function skips over missing values and call the
 function with both keys and values.</p>
+
+
 
         </td>
       </tr>
@@ -2857,6 +3150,8 @@ values of the original series. This specified function is called even when the v
 is missing. It returns <code>option&lt;'T&gt;</code> so that it can create/eliminate missing values in
 the result.</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -2876,6 +3171,8 @@ the result.</p>
             </a>
           <p>Returns a new series whose keys are the results of applying the given function to
 keys of the original series.</p>
+
+
 
         </td>
       </tr>
@@ -2898,6 +3195,8 @@ keys of the original series.</p>
 values of the original series. This function skips over missing values and call the
 function with just values. It is also aliased using the <code>$</code> operator so you can write
 <code>series $ func</code> for <code>series |&gt; Series.mapValues func</code>.</p>
+
+
 
         </td>
       </tr>
@@ -2925,6 +3224,8 @@ individual values. Fails if the series contains no values.</p>
 <li><code>series</code> - An input series to be aggregated</li>
 <li><code>op</code> - A function that is used to aggregate elements of the series</li>
 </ul>
+
+
 
         </td>
       </tr>
@@ -2954,6 +3255,8 @@ application, and yielding a new series having the original index and newly produ
 <li><code>init</code> - An initial value</li>
 <li><code>series</code> - The series over whose values to scan</li>
 </ul>
+
+
 
         </td>
       </tr>
@@ -2985,6 +3288,8 @@ Any application involving a missing value yields a missing value.</p>
 <li><code>series</code> - The series over whose values to scan</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -3007,8 +3312,16 @@ positive, the values are shifted forward and first <code>offset</code> keys are 
 offset is negative, the values are shifted backwards and the last <code>offset</code> keys are dropped.
 Expressed in pseudo-code:</p>
 
-<pre><code>result[k] = series[k - offset]
-</code></pre>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">result</span>[<span class="i">k</span>] <span class="o">=</span> <span class="i">series</span>[<span class="i">k</span> <span class="o">-</span> <span class="i">offset</span>]
+</pre>
+</td>
+</tr>
+</table>
 
 <h2>Parameters</h2>
 
@@ -3021,6 +3334,8 @@ Expressed in pseudo-code:</p>
 
 <p>If you want to calculate the difference, e.g. <code>s - (Series.shift 1 s)</code>, you can
 use <code>Series.diff</code> which will be a little bit faster.</p>
+
+
 
         </td>
       </tr>
@@ -3049,6 +3364,8 @@ except for the first <code>count</code> keys.</p>
 <li><code>series</code> - Input series from which the keys are taken</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -3076,6 +3393,8 @@ except for the last <code>count</code> keys.</p>
 <li><code>series</code> - Input series from which the keys are taken</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -3101,6 +3420,8 @@ except for the last <code>count</code> keys.</p>
 <li><code>count</code> - Number of keys to take; must be smaller or equal to the original number of keys</li>
 <li><code>series</code> - Input series from which the keys are taken</li>
 </ul>
+
+
 
         </td>
       </tr>
@@ -3129,6 +3450,8 @@ original series. The keys are taken from the end of the series.</p>
 <li><code>series</code> - Input series from which the keys are taken</li>
 </ul>
 
+
+
         </td>
       </tr>
     </tbody>
@@ -3147,6 +3470,8 @@ and using the default comparison (<code>sort</code>).</p>
 <p>In addition, you can also replace the keys of a series with other keys using <code>indexWith</code> 
 or with integers using <code>indexOrdinally</code>. To pick and reorder series values using to match
 a list of keys use <code>realign</code>.</p>
+
+
 
       </div>
   <h3>Functions and values</h3>
@@ -3173,6 +3498,8 @@ a list of keys use <code>realign</code>.</p>
           <p>Return a new series containing the same values as the original series, but with 
 ordinal index formed by <code>int</code> values starting from 0.</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -3193,6 +3520,8 @@ ordinal index formed by <code>int</code> values starting from 0.</p>
           <p>Returns a new series containing the specified keys mapped to the original values of the series.
 When the sequence contains <em>fewer</em> keys, the values from the series are dropped. When it 
 contains <em>more</em> keys, the values for additional keys are missing.</p>
+
+
 
         </td>
       </tr>
@@ -3216,6 +3545,8 @@ the matching value for each of the specified keys. The <code>KeyCount</code> of 
 sequence is the length of <code>keys</code>. If there is no value for the specified keys in the
 input sequence, the returned series will contain a missing value.</p>
 
+
+
         </td>
       </tr>
       <tr>
@@ -3234,6 +3565,8 @@ input sequence, the returned series will contain a missing value.</p>
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns a new series, containing the observations of the original series in a reverse order.</p>
+
+
 
         </td>
       </tr>
@@ -3254,6 +3587,8 @@ input sequence, the returned series will contain a missing value.</p>
             </a>
           <p>Returns a new series, containing the observations of the original series sorted based
 on the default ordering defined on the values of the series.</p>
+
+
 
         </td>
       </tr>
@@ -3283,6 +3618,8 @@ values returned by the specified projection function.</p>
 value contained in the original input series.</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -3307,6 +3644,8 @@ value contained in the original input series.</li>
 <ul>
 <li><code>series</code> - An input series to be sorted</li>
 </ul>
+
+
 
         </td>
       </tr>
@@ -3336,6 +3675,8 @@ the specified comparison function.</p>
 negative integer when the first value is smaller, positive when it is greater and
 0 when the values are equal.</li>
 </ul>
+
+
 
         </td>
       </tr>
@@ -3380,6 +3721,8 @@ the values in <em>both ways</em>.</p>
 <code>convert</code> function makes it possible to perfom additional operations on the resulting
 series - for example lookup - by converting the new value back and using the lookup of
 the underlying virtualized source.</p>
+
+
 
         </td>
       </tr>

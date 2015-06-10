@@ -69,6 +69,8 @@ consists of row index, column index and data. The indices are used for efficient
 lookup when accessing data by the row key <code>'TRowKey</code> or by the column key 
 <code>'TColumnKey</code>. Deedle frames are optimized for the scenario when all values in a given 
 column are of the same type (but types of different columns can differ).</p>
+
+
 </td>
         </tr>
         <tr>
@@ -77,6 +79,8 @@ column are of the same type (but types of different columns can differ).</p>
           </td>
           <td class="xmldoc"><p>Represents the underlying (raw) data of the frame in a format that can
 be used for exporting data frame to other formats etc. (DataTable, CSV, Excel)</p>
+
+
 </td>
         </tr>
         <tr>
@@ -86,6 +90,8 @@ be used for exporting data frame to other formats etc. (DataTable, CSV, Excel)</
           <td class="xmldoc"><p>Represents an untyped series with keys of type <code>K</code> and values of some unknown type
 (This type should not generally be used directly, but it can be used when you need
 to write code that works on a sequence of series of heterogeneous types).</p>
+
+
 </td>
         </tr>
         <tr>
@@ -94,6 +100,8 @@ to write code that works on a sequence of series of heterogeneous types).</p>
           </td>
           <td class="xmldoc"><p>The type <code>Series&lt;K, V&gt;</code> represents a data series consisting of values <code>V</code> indexed by
 keys <code>K</code>. The keys of a series may or may not be ordered</p>
+
+
 </td>
         </tr>
     </tbody>
@@ -110,6 +118,8 @@ keys <code>K</code>. The keys of a series may or may not be ordered</p>
           <td class="xmldoc"><p>Contains extensions for creating values of type <code>Series&lt;'K, 'V&gt;</code> including
 a type with functions such as <code>Series.ofValues</code> and the <code>series</code> function.
 The module is automatically opened for all F# code that references <code>Deedle</code>.</p>
+
+
 </td>
         </tr>
     </tbody>
@@ -131,6 +141,8 @@ The module is automatically opened for all F# code that references <code>Deedle<
 that can be used for creating <code>Series&lt;'K, 'V&gt;</code> from the <code>IEnumerable</code> value.
 You can create an ordinal series from <code>IEnumerable&lt;'T&gt;</code> or an indexed series from
 <code>IEnumerable&lt;KeyValuePair&lt;'K, 'V&gt;&gt;</code> or from <code>IEnumerable&lt;KeyValuePair&lt;'K, OptionalValue&lt;'V&gt;&gt;&gt;</code>.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -140,6 +152,8 @@ You can create an ordinal series from <code>IEnumerable&lt;'T&gt;</code> or an i
           <td class="xmldoc"><p>Provides static methods for creating frames, reading frame data
 from CSV files and database (via IDataReader). The type also provides
 global configuration for reflection-based expansion.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -149,6 +163,8 @@ global configuration for reflection-based expansion.</p>
           <td class="xmldoc"><p>Contains C# and F# extension methods for the <code>Frame&lt;'R, 'C&gt;</code> type. The members are 
 automatically available when you import the <code>Deedle</code> namespace. The type contains 
 object-oriented counterparts to most of the functionality from the <code>Frame</code> module.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -159,6 +175,8 @@ object-oriented counterparts to most of the functionality from the <code>Frame</
 The members are automatically available when you import the <code>Deedle</code> namespace.
 The type contains object-oriented counterparts to most of the functionality 
 from the <code>Series</code> module.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -168,6 +186,8 @@ from the <code>Series</code> module.</p>
           <td class="xmldoc"><p>The type implements C# and F# extension methods that add numerical operations 
 to Deedle series. With a few exceptions, the methods are only available for 
 series containing floating-point values, that is <code>Series&lt;'K, float&gt;</code>.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -181,6 +201,8 @@ series and frames as well as over a moving and an expanding window in a series.<
 no values, or missing values, different functions behave in different ways.
 Statistics (e.g. mean) return missing value when any value is missing, while min/max
 functions return the minimal/maximal element (skipping over missing values).</p>
+
+
 </td>
         </tr>
     </tbody>
@@ -198,6 +220,8 @@ functions return the minimal/maximal element (skipping over missing values).</p>
 includes operations for creating frames such as the <code>frame</code> function, <code>=&gt;</code> operator
 and <code>Frame.ofRows</code>, <code>Frame.ofColumns</code> and <code>Frame.ofRowKeys</code> functions. The module
 also provides additional F# extension methods including <code>ReadCsv</code>, <code>SaveCsv</code> and <code>PivotTable</code>.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -210,11 +234,22 @@ functions work well with the pipelining operator (<code>|&gt;</code>). For examp
 a frame with two columns representing prices, we can use <code>Frame.diff</code> and 
 numerical operators to calculate daily returns like this:</p>
 
-<pre><code>let df = frame [ "MSFT" =&gt; prices1; "AAPL" =&gt; prices2 ]
-let past = df |&gt; Frame.diff 1
-let rets = past / df * 100.0
-rets |&gt; Stats.mean
-</code></pre>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">df</span> <span class="o">=</span> <span class="i">frame</span> [ <span class="s">&quot;MSFT&quot;</span> <span class="o">=&gt;</span> <span class="i">prices1</span>; <span class="s">&quot;AAPL&quot;</span> <span class="o">=&gt;</span> <span class="i">prices2</span> ]
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">past</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs1', 3)" onmouseover="showTip(event, 'fs1', 3)" class="i">df</span> <span class="o">|&gt;</span> <span class="i">Frame</span><span class="o">.</span><span class="i">diff</span> <span class="n">1</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="i">rets</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs2', 5)" onmouseover="showTip(event, 'fs2', 5)" class="i">past</span> <span class="o">/</span> <span onmouseout="hideTip(event, 'fs1', 6)" onmouseover="showTip(event, 'fs1', 6)" class="i">df</span> <span class="o">*</span> <span class="n">100.0</span>
+<span onmouseout="hideTip(event, 'fs3', 7)" onmouseover="showTip(event, 'fs3', 7)" class="i">rets</span> <span class="o">|&gt;</span> <span class="i">Stats</span><span class="o">.</span><span class="i">mean</span>
+</pre>
+</td>
+</tr>
+</table>
 
 <p>Note that the <code>Stats.mean</code> operation is overloaded and works both on series 
 (returning a number) and on frames (returning a series).</p>
@@ -223,6 +258,11 @@ rets |&gt; Stats.mean
 API, see the <code>FrameExtensions</code> type. For working with individual series, see the
 <code>Series</code> module. The functions in the <code>Frame</code> module are grouped in a number of 
 categories and documented below.</p>
+
+<div class="tip" id="fs1">val df : float<br /><br />Full name: docs.df</div>
+<div class="tip" id="fs2">val past : float<br /><br />Full name: docs.past</div>
+<div class="tip" id="fs3">val rets : float<br /><br />Full name: docs.rets</div>
+
 </td>
         </tr>
         <tr>
@@ -232,6 +272,8 @@ categories and documented below.</p>
           <td class="xmldoc"><p>Type that can be used for creating frames using the C# collection initializer syntax.
 You can use <code>new FrameBuilder.Columns&lt;...&gt;</code> to create a new frame from columns or you
 can use <code>new FrameBuilder.Rows&lt;...&gt;</code> to create a new frame from rows.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -244,24 +286,41 @@ well with the pipelining (<code>|&gt;</code>) operator. For example, given a ser
 we can use <code>Series.filterValues</code> to filter outliers and then <code>Stats.mean</code> to calculate
 the mean:</p>
 
-<pre><code>ages
-|&gt; Series.filterValues (fun v -&gt; v &gt; 0.0 &amp;&amp; v &lt; 120.0)
-|&gt; Stats.mean
-</code></pre>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">ages</span>
+<span class="o">|&gt;</span> <span class="i">Series</span><span class="o">.</span><span class="i">filterValues</span> (<span class="k">fun</span> <span class="i">v</span> <span class="k">-&gt;</span> <span class="i">v</span> <span class="o">&gt;</span> <span class="n">0.0</span> <span class="o">&amp;&amp;</span> <span class="i">v</span> <span class="o">&lt;</span> <span class="n">120.0</span>)
+<span class="o">|&gt;</span> <span class="i">Stats</span><span class="o">.</span><span class="i">mean</span>
+</pre>
+</td>
+</tr>
+</table>
 
 <p>The module provides comprehensive set of functions for working with series. The same
 API is also exposed using C#-friendly extension methods. In C#, the above snippet could
 be written as:</p>
 
-<pre><code>[lang=csharp]
-ages
-  .Where(kvp =&gt; kvp.Value &gt; 0.0 &amp;&amp; kvp.Value &lt; 120.0)
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip" lang="csharp">ages
+  .Where(kvp <span class="o">=</span><span class="o">&gt;</span> kvp.Value <span class="o">&gt;</span> 0.0 <span class="o">&amp;</span><span class="o">&amp;</span> kvp.Value <span class="o">&lt;</span> 120.0)
   .Mean()
-</code></pre>
+</pre></td></tr></table>
 
 <p>For more information about similar frame-manipulation functions, see the <code>Frame</code> module.
 For more information about C#-friendly extensions, see <code>SeriesExtensions</code>. The functions 
 in the <code>Series</code> module are grouped in a number of categories and documented below.</p>
+
+
 </td>
         </tr>
     </tbody>
@@ -284,6 +343,8 @@ To create a value of this type from C#, use the non-generic <code>Aggregation</c
 Data can be aggregate using floating windows or chunks of a specified size or 
 by specifying a condition on two keys (i.e. end a window/chunk when the condition
 no longer holds).</p>
+
+
 </td>
         </tr>
         <tr>
@@ -293,6 +354,8 @@ no longer holds).</p>
           <td class="xmldoc"><p>A non-generic type that simplifies the construction of <code>Aggregation&lt;K&gt;</code> values
 from C#. It provides methods for constructing different kinds of aggregation
 strategies for ordered series.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -304,6 +367,8 @@ specifies whether incomplete windows (of smaller than required length) should be
 produced at the beginning (<code>AtBeginning</code>) or at the end (<code>AtEnding</code>) or
 skipped (<code>Skip</code>). For chunking, combinations are allowed too - to skip incomplete
 chunk at the beginning, use <code>Boundary.Skip ||| Boundary.AtBeginning</code>.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -313,6 +378,8 @@ chunk at the beginning, use <code>Boundary.Skip ||| Boundary.AtBeginning</code>.
           <td class="xmldoc"><p>Represents different kinds of type conversions that can be used by Deedle internally.
 This is used, for example, when converting <code>ObjectSeries&lt;'K&gt;</code> to <code>Series&lt;'K, 'T&gt;</code> - 
 The conversion kind can be specified as an argument to allow certain conversions.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -324,6 +391,8 @@ various functions that aggregate data into chunks or floating windows. The
 <code>Complete</code> case represents complete segment (e.g. of the specified size) and
 <code>Boundary</code> represents segment at the boundary (e.g. smaller than the required
 size).</p>
+
+
 </td>
         </tr>
         <tr>
@@ -331,6 +400,8 @@ size).</p>
             <a href="deedle-datasegmentkind.html">DataSegmentKind</a>
           </td>
           <td class="xmldoc"><p>Represents a kind of <code>DataSegment&lt;T&gt;</code>. See that type for more information.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -339,6 +410,8 @@ size).</p>
           </td>
           <td class="xmldoc"><p>Specifies in which direction should we look when performing operations such as
 <code>Series.Pairwise</code>.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -348,6 +421,8 @@ size).</p>
           <td class="xmldoc"><p>Represents a special lookup. This can be used to support hierarchical or duplicate keys
 in an index. A key type <code>K</code> can come with associated <code>ICustomLookup&lt;K&gt;</code> to provide 
 customized pattern matching (equality testing)</p>
+
+
 </td>
         </tr>
         <tr>
@@ -358,6 +433,8 @@ customized pattern matching (equality testing)</p>
 by <code>Series</code> and <code>Frame</code>. Outer join unions the keys (and may introduce
 missing values), inner join takes the intersection of keys; left and
 right joins take the keys of the first or the second series/frame.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -371,6 +448,8 @@ series <code>Lookup.Greater</code> finds the first greater key (e.g. later date)
 a value. <code>Lookup.Smaller</code> searches for the first smaller key. The options
 <code>Lookup.ExactOrGreater</code> and <code>Lookup.ExactOrSmaller</code> finds the exact key (if it is
 present) and otherwise search for the nearest larger or smaller key, respectively.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -380,6 +459,8 @@ present) and otherwise search for the nearest larger or smaller key, respectivel
           <td class="xmldoc"><p>This enumeration specifies the behavior of <code>Union</code> operation on series when there are
 overlapping keys in two series that are being unioned. The options include preferring values
 from the left/right series or throwing an exception when both values are available.</p>
+
+
 </td>
         </tr>
     </tbody>
@@ -394,6 +475,8 @@ from the left/right series or throwing an exception when both values are availab
             <a href="deedle-datasegment.html">DataSegment</a>
           </td>
           <td class="xmldoc"><p>Provides helper functions and active patterns for working with <code>DataSegment</code> values</p>
+
+
 </td>
         </tr>
         <tr>
@@ -401,6 +484,8 @@ from the left/right series or throwing an exception when both values are availab
             <a href="deedle-multikeyextensions.html">MultiKeyExtensions</a>
           </td>
           <td class="xmldoc"><p>F#-friendly functions for creating multi-level keys and lookups</p>
+
+
 </td>
         </tr>
     </tbody>
@@ -420,6 +505,8 @@ from the left/right series or throwing an exception when both values are availab
           </td>
           <td class="xmldoc"><p>A type with extension method for <code>KeyValuePair&lt;'K, 'V&gt;</code> that makes
 it possible to create values using just <code>KeyValue.Create</code>.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -429,6 +516,8 @@ it possible to create values using just <code>KeyValue.Create</code>.</p>
           <td class="xmldoc"><p>Thrown when a value at the specified index does not exist in the data frame or series.
 This exception is thrown only when the key is defined, but the value is not available,
 in other situations <code>KeyNotFoundException</code> is thrown</p>
+
+
 </td>
         </tr>
         <tr>
@@ -445,6 +534,8 @@ type, so it can be used for storing values of any types. When obtained from
 standard F# <code>option&lt;T&gt;</code> type instead. However, there the <code>OptionalValue</code> module
 contains helper functions for using this type from F# as well as <code>Missing</code> and
 <code>Present</code> active patterns.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -453,6 +544,8 @@ contains helper functions for using this type from F# as well as <code>Missing</
           </td>
           <td class="xmldoc"><p>Non-generic type that makes it easier to create <code>OptionalValue&lt;T&gt;</code> values
 from C# by benefiting the type inference for generic method invocations.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -462,6 +555,8 @@ from C# by benefiting the type inference for generic method invocations.</p>
           <td class="xmldoc"><p>Extension methods for working with optional values from C#. These make
 it easier to provide default values and convert optional values to 
 <code>Nullable</code> (when the contained value is value type)</p>
+
+
 </td>
         </tr>
         <tr>
@@ -473,6 +568,8 @@ it easier to provide default values and convert optional values to
 which may be either a value or an exception. The type is a discriminated union,
 so it can be processed using F# pattern matching, or using <code>Value</code>, <code>HasValue</code>
 and <code>Exception</code> properties</p>
+
+
 </td>
         </tr>
         <tr>
@@ -481,6 +578,8 @@ and <code>Exception</code> properties</p>
           </td>
           <td class="xmldoc"><p>A type alias for the <code>OptionalValue&lt;T&gt;</code> type. The type alias can be used
 to make F# type definitions that use optional values directly more succinct.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -489,6 +588,8 @@ to make F# type definitions that use optional values directly more succinct.</p>
           </td>
           <td class="xmldoc"><p>A type alias for the <code>TryValue&lt;T&gt;</code> type. The type alias can be used
 to make F# type declarations that explcitly handle exceptions more succinct.</p>
+
+
 </td>
         </tr>
     </tbody>
@@ -504,6 +605,8 @@ to make F# type declarations that explcitly handle exceptions more succinct.</p>
           </td>
           <td class="xmldoc"><p>Provides various helper functions for using the <code>OptionalValue&lt;T&gt;</code> type from F#
 (The functions are similar to those in the standard <code>Option</code> module).</p>
+
+
 </td>
         </tr>
         <tr>
@@ -511,6 +614,8 @@ to make F# type declarations that explcitly handle exceptions more succinct.</p>
             <a href="deedle-pair.html">Pair</a>
           </td>
           <td class="xmldoc"><p>Module with helper functions for extracting values from hierarchical tuples</p>
+
+
 </td>
         </tr>
     </tbody>
@@ -531,6 +636,8 @@ to make F# type declarations that explcitly handle exceptions more succinct.</p>
           <td class="xmldoc"><p>Represents a series of columns from a frame. The type inherits from a series of 
 series representing individual columns (<code>Series&lt;'TColumnKey, ObjectSeries&lt;'TRowKey&gt;&gt;</code>) but
 hides slicing operations with new versions that return frames.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -542,6 +649,8 @@ constructing data series (of type <code>Series&lt;K, V&gt;</code>) with lazily l
 use this functionality to create series that represents e.g. an entire price history
 in a database, but only loads data that are actually needed. For more information
 see the <a href="../lazysource.html">lazy data loading tutorial</a>.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -552,6 +661,8 @@ see the <a href="../lazysource.html">lazy data loading tutorial</a>.</p>
 interface is to allow writing code that works on arbitrary data frames (you 
 need to provide an implementation of the <code>IFrameOperation&lt;'V&gt;</code> which contains
 a generic method <code>Invoke</code> that will be called with the typed data frame).</p>
+
+
 </td>
         </tr>
         <tr>
@@ -560,6 +671,8 @@ a generic method <code>Invoke</code> that will be called with the typed data fra
           </td>
           <td class="xmldoc"><p>Represents an operation that can be invoked on <code>Frame&lt;'R, 'C&gt;</code>. The operation
 is generic in the type of row and column keys.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -570,6 +683,8 @@ is generic in the type of row and column keys.</p>
 and it adds additional operations for accessing values with unboxing. This includes operations
 such as <code>os.GetAs&lt;'T&gt;</code>, <code>os.TryGetAs&lt;'T&gt;</code> and <code>os.TryAs&lt;'T&gt;</code> which (attempt to) convert
 values to the specified type <code>'T</code>.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -579,6 +694,8 @@ values to the specified type <code>'T</code>.</p>
           <td class="xmldoc"><p>Represents a series of rows from a frame. The type inherits from a series of 
 series representing individual rows (<code>Series&lt;'TRowKey, ObjectSeries&lt;'TColumnKey&gt;&gt;</code>) but
 hides slicing operations with new versions that return frames.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -587,6 +704,8 @@ hides slicing operations with new versions that return frames.</p>
           </td>
           <td class="xmldoc"><p>The type can be used for creating series using mutation. You can add 
 items using <code>Add</code> and get the resulting series using the <code>Series</code> property.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -595,6 +714,8 @@ items using <code>Add</code> and get the resulting series using the <code>Series
           </td>
           <td class="xmldoc"><p>A simple class that inherits from <code>SeriesBuilder&lt;'K, obj&gt;</code> and can be
 used instead of writing <code>SeriesBuilder&lt;'K, obj&gt;</code> with two type arguments.</p>
+
+
 </td>
         </tr>
     </tbody>
@@ -616,6 +737,8 @@ used instead of writing <code>SeriesBuilder&lt;'K, obj&gt;</code> with two type 
 The vector provides a minimal interface that is required by series and can be
 implemented in a number of ways to provide vector backed by database or an
 alternative representation of data.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -626,6 +749,8 @@ alternative representation of data.</p>
 to the values via a generic address. This type should be only used directly when
 extending the DataFrame library and adding a new way of storing or loading data.
 To allow invocation via Reflection, the vector exposes type of elements as <code>System.Type</code>.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -633,6 +758,8 @@ To allow invocation via Reflection, the vector exposes type of elements as <code
             <a href="deedle-index.html">Index</a>
           </td>
           <td class="xmldoc"><p>Type that provides access to creating indices (represented as <code>LinearIndex</code> values)</p>
+
+
 </td>
         </tr>
         <tr>
@@ -641,6 +768,8 @@ To allow invocation via Reflection, the vector exposes type of elements as <code
           </td>
           <td class="xmldoc"><p>Represents a generic function <code>\forall.'T.(IVector&lt;'T&gt; -&gt; 'R)</code>. The function can be 
 generically invoked on an argument of type <code>IVector</code> using <code>IVector.Invoke</code></p>
+
+
 </td>
         </tr>
     </tbody>
@@ -670,6 +799,8 @@ can use 32bit partition index + 32bit offset in the partition)</li>
 <code>AddressOperations</code> that specifies how to use it (tests use linear
 offset and partitioned representation)</li>
 </ul>
+
+
 </td>
         </tr>
         <tr>
@@ -679,6 +810,8 @@ offset and partitioned representation)</li>
           <td class="xmldoc"><p>Defines non-generic <code>Index</code> type that provides functions for building indices
 (hard-bound to <code>LinearIndexBuilder</code> type). In F#, the module is automatically opened
 using <code>AutoOpen</code>. The methods are not designed for the use from C#.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -686,6 +819,8 @@ using <code>AutoOpen</code>. The methods are not designed for the use from C#.</
             <a href="deedle-f__indexbuilder_implementation.html">F# IndexBuilder implementation</a>
           </td>
           <td class="xmldoc"><p>Set concrete IIndexBuilder implementation</p>
+
+
 </td>
         </tr>
         <tr>
@@ -695,6 +830,8 @@ using <code>AutoOpen</code>. The methods are not designed for the use from C#.</
           <td class="xmldoc"><p>Defines non-generic <code>Vector</code> type that provides functions for building vectors
 (hard-bound to <code>ArrayVectorBuilder</code> type). In F#, the module is automatically opened
 using <code>AutoOpen</code>. The methods are not designed for the use from C#.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -704,6 +841,8 @@ using <code>AutoOpen</code>. The methods are not designed for the use from C#.</
           <td class="xmldoc"><p>Module with extensions for generic vector type. Given <code>vec</code> of type <code>IVector&lt;T&gt;</code>, 
 the extension property <code>vec.DataSequence</code> returns all data of the vector converted
 to the "least common denominator" data structure - <code>IEnumerable&lt;T&gt;</code>.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -711,6 +850,8 @@ to the "least common denominator" data structure - <code>IEnumerable&lt;T&gt;</c
             <a href="deedle-f__vectorbuilder_implementation.html">F# VectorBuilder implementation</a>
           </td>
           <td class="xmldoc"><p>Set concrete IVectorBuilder implementation</p>
+
+
 </td>
         </tr>
     </tbody>
@@ -732,6 +873,8 @@ to the "least common denominator" data structure - <code>IEnumerable&lt;T&gt;</c
 create one from a sequence. This can be implemented by concrete vector/index 
 builders to allow further optimizations (e.g. when the underlying source directly
 supports range operations)</p>
+
+
 </td>
         </tr>
         <tr>
@@ -749,6 +892,8 @@ supports range operations)</p>
 range via known addresses is typically sufficient, but for virtual Big Deedle
 sources, <code>Start</code> and <code>End</code> let us avoid fully evaluating addresses.
 <code>Custom</code> range can be used for optimizations.</p>
+
+
 </td>
         </tr>
     </tbody>
@@ -763,6 +908,8 @@ sources, <code>Start</code> and <code>End</code> let us avoid fully evaluating a
             <a href="deedle-rangerestriction.html">RangeRestriction</a>
           </td>
           <td class="xmldoc"><p>Provides additional operations for working with the <code>RangeRestriction&lt;'TAddress&gt;</code> type</p>
+
+
 </td>
         </tr>
     </tbody>
@@ -782,6 +929,8 @@ sources, <code>Start</code> and <code>End</code> let us avoid fully evaluating a
           </td>
           <td class="xmldoc"><p>Asynchronous version of <code>SeriesConstruction&lt;'K&gt;</code>. Returns a workflow that evaluates
 the index, together with a construction to apply (asynchronously) on vectors</p>
+
+
 </td>
         </tr>
         <tr>
@@ -790,6 +939,8 @@ the index, together with a construction to apply (asynchronously) on vectors</p>
           </td>
           <td class="xmldoc"><p>Specifies the boundary behavior for the <code>IIndexBuilder.GetRange</code> operation
 (whether the boundary elements should be included or not)</p>
+
+
 </td>
         </tr>
         <tr>
@@ -801,6 +952,8 @@ of address <code>Address</code>. The <code>IIndex&lt;K&gt;</code> contains minim
 be supported by an index. This type should be only used directly when
 extending the DataFrame library and adding a new way of storing or loading data.
 Values of this type are constructed using the associated <code>IIndexBuilder</code> type.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -812,6 +965,8 @@ other indices. The operations that build a new index from an existing index also
 build <code>VectorConstruction</code> which specifies how to transform vectors aligned with the
 previous index to match the new index. The methods generally take <code>VectorConstruction</code>
 as an input, apply necessary transformations to it and return a new <code>VectorConstruction</code>.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -822,6 +977,8 @@ as an input, apply necessary transformations to it and return a new <code>Vector
 (many of the index operations take/return an index together with a construction
 command that builds a vector matching with the index, so this type alias
 makes this more obvious)</p>
+
+
 </td>
         </tr>
     </tbody>
@@ -842,6 +999,8 @@ makes this more obvious)</p>
           <td class="xmldoc"><p>An index that maps keys <code>K</code> to offsets <code>Address</code>. The keys cannot be duplicated.
 The construction checks if the keys are ordered (using the provided or the default
 comparer for <code>K</code>) and disallows certain operations on unordered indices.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -850,6 +1009,8 @@ comparer for <code>K</code>) and disallows certain operations on unordered indic
           </td>
           <td class="xmldoc"><p>Index builder object that is associated with <code>LinearIndex&lt;K&gt;</code> type. The builder
 provides operations for manipulating linear indices (and the associated vectors).</p>
+
+
 </td>
         </tr>
         <tr>
@@ -861,6 +1022,8 @@ windowing operations where we do not want to allocate a new index for each windo
 This index can be cheaply constructed and it implements many of the standard functions
 without actually allocating the index (e.g. KeyCount, KeyAt, IsEmpty). For more 
 complex index manipulations (including lookup), an actual index is constructed lazily.</p>
+
+
 </td>
         </tr>
     </tbody>
@@ -909,6 +1072,8 @@ complex index manipulations (including lookup), an actual index is constructed l
           </td>
           <td class="xmldoc"><p>This module contains additional functions for working with arrays. 
 <code>Deedle.Internals</code> is opened, it extends the standard <code>Array</code> module.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -916,6 +1081,8 @@ complex index manipulations (including lookup), an actual index is constructed l
             <a href="deedle-internal-list.html">List</a>
           </td>
           <td class="xmldoc"><p>This module contains additional functions for working with lists.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -928,6 +1095,8 @@ the <code>null</code> value, <code>Nullable&lt;T&gt;</code> value with <code>Has
 <code>Single.NaN</code> as well as <code>Double.NaN</code>.</p>
 
 <p>The functions in this module are not intended to be called directly.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -937,6 +1106,8 @@ the <code>null</code> value, <code>Nullable&lt;T&gt;</code> value with <code>Has
           <td class="xmldoc"><p>Provides helper functions for working with <code>ReadOnlyCollection&lt;T&gt;</code> similar to those 
 in the <code>Array</code> module. Most importantly, F# 3.0 does not know that array implements
 <code>IList&lt;T&gt;</code>.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -945,6 +1116,8 @@ in the <code>Array</code> module. Most importantly, F# 3.0 does not know that ar
           </td>
           <td class="xmldoc"><p>This module contains additional functions for working with sequences. 
 <code>Deedle.Internals</code> is opened, it extends the standard <code>Seq</code> module.</p>
+
+
 </td>
         </tr>
     </tbody>
@@ -964,6 +1137,8 @@ in the <code>Array</code> module. Most importantly, F# 3.0 does not know that ar
           </td>
           <td class="xmldoc"><p>Helper type that can be used to get <code>ICustomKey</code> for any object (including objects
 that actually implement the interface and tuples)</p>
+
+
 </td>
         </tr>
         <tr>
@@ -972,6 +1147,8 @@ that actually implement the interface and tuples)</p>
           </td>
           <td class="xmldoc"><p>Represents a special hierarchical key. This is mainly used in pretty printing (where we want to 
 get parts of the keys based on levels. <code>CustomKey.Get</code> provides a way of getting <code>ICustomKey</code>.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -980,6 +1157,8 @@ get parts of the keys based on levels. <code>CustomKey.Get</code> provides a way
           </td>
           <td class="xmldoc"><p>Implements a simple lookup that matches any multi-level key against a specified array of
 optional objects (that represent missing/set parts of a key)</p>
+
+
 </td>
         </tr>
     </tbody>
@@ -995,9 +1174,26 @@ optional objects (that represent missing/set parts of a key)</p>
     <tbody>
         <tr>
           <td class="type-name">
-            <a href="deedle-ranges-addressoperations-1.html">AddressOperations<'T></a>
+            <a href="deedle-ranges-irangekeyoperations-1.html">IRangeKeyOperations<'TKey></a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>A set of operations on keys that you need to implement in order to use the
+<code>Ranges&lt;'TKey&gt;</code> type. The <code>'TKey</code> type is typically the key of a BigDeedle
+series. It can represent different things, such as:</p>
+
+<ul>
+<li><code>int64</code> - if you have ordinally indexed series</li>
+<li><code>Date</code> (of some sort) - if you have daily time series</li>
+<li><code>DateTimeOffset</code> - if you have time series with DTO keys</li>
+</ul>
+
+<p>The operations need to implement the <em>right</em> thing based on the logic of the
+keys. So for example if you have one data point every hour, <code>IncrementBy</code> should
+add the appropriate number of hours. Or if you have keys as business days, the
+<code>IncrementBy</code> operation should add a number of business days (that is, the 
+operations may be simple numerical addition, but may contain more logic).</p>
+
+
+</td>
         </tr>
         <tr>
           <td class="type-name">
@@ -1007,6 +1203,10 @@ optional objects (that represent missing/set parts of a key)</p>
 multiple blocks, i.e. [ 0..9; 20..29 ]. The pairs represent indices
 of first and last element (inclusively) and we also keep size so that
 we do not have to recalculate it.</p>
+
+<p>For more information, see also the documentation for the <code>Ranges</code> module.</p>
+
+
 </td>
         </tr>
     </tbody>
@@ -1020,7 +1220,21 @@ we do not have to recalculate it.</p>
           <td class="module-name">
             <a href="deedle-ranges-ranges.html">Ranges</a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>Provides F# functions for working with the <code>Ranges&lt;'T&gt;</code> type. Note that 
+most of the functions are also exposed as members. The terminology in the
+functions below is:</p>
+
+<ul>
+<li><strong>offset</strong> refers to an absolute <code>int64</code> offset of a key in the range</li>
+<li><strong>key</strong> refers to a key value of type <code>'T</code></li>
+</ul>
+
+<p>Say, you have daily range <code>[ (2015-01-01, 2015-01-10); (2015-02-01, 2015-02-10) ]</code>.
+Then, the keys are the dates and the offsets are 0 .. 9 for the first part and
+10 .. 19 for the second part.</p>
+
+
+</td>
         </tr>
     </tbody>
   </table>
@@ -1039,6 +1253,8 @@ we do not have to recalculate it.</p>
           </td>
           <td class="xmldoc"><p>Represent a transformation that is applied when combining two vectors (because 
 we are combining untyped <code>IVector</code> values, the transformation is also untyped)</p>
+
+
 </td>
         </tr>
         <tr>
@@ -1047,6 +1263,8 @@ we are combining untyped <code>IVector</code> values, the transformation is also
           </td>
           <td class="xmldoc"><p>Represent a tranformation that is applied when combining N vectors
 (This follows exactly the same pattern as <code>IBinaryTransform</code>)</p>
+
+
 </td>
         </tr>
         <tr>
@@ -1056,6 +1274,8 @@ we are combining untyped <code>IVector</code> values, the transformation is also
           <td class="xmldoc"><p>When an <code>INaryTransform</code> implements this interface, it is a special well-known
 transformation that creates a <em>row reader</em> vector to be used in <code>frame.Rows</code>.
 (See the implementation in the <code>Build</code> operation in <code>ArrayVector.fs</code>)</p>
+
+
 </td>
         </tr>
         <tr>
@@ -1064,6 +1284,8 @@ transformation that creates a <em>row reader</em> vector to be used in <code>fra
           </td>
           <td class="xmldoc"><p>Represents an object that can construct vector values by processing 
 the "mini-DSL" representation <code>VectorConstruction</code>.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -1071,6 +1293,8 @@ the "mini-DSL" representation <code>VectorConstruction</code>.</p>
             <a href="deedle-vectors-vector.html">Vector</a>
           </td>
           <td class="xmldoc"><p>Type that provides access to creating vectors (represented as arrays)</p>
+
+
 </td>
         </tr>
         <tr>
@@ -1090,6 +1314,8 @@ construction (<code>\forall T. VectorConstruction&lt;T&gt;</code>) that can be a
 different vector types. That would mean adding some more types, so we just model vector
 construction as an untyped operation and the typing is resquired by the <code>Build</code> method
 of the vector builder.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -1100,6 +1326,8 @@ of the vector builder.</p>
 by functions that operate on vectors (like <code>Series.sum</code>, etc.). The vector may choose
 to return the data as <code>ReadOnlyCollection</code> (with or without N/A values) which is more
 efficient to use or as a lazy sequence (slower, but more general).</p>
+
+
 </td>
         </tr>
         <tr>
@@ -1110,6 +1338,8 @@ efficient to use or as a lazy sequence (slower, but more general).</p>
 <code>VectorConstruction.FillMissing</code> command). This can only fill missing
 values using strategy that does not require access to index keys - 
 either using constant or by propagating values.</p>
+
+
 </td>
         </tr>
         <tr>
@@ -1117,6 +1347,8 @@ either using constant or by propagating values.</p>
             <a href="deedle-vectors-vectorhole.html">VectorHole</a>
           </td>
           <td class="xmldoc"><p>Representes a "variable" in the mini-DSL below</p>
+
+
 </td>
         </tr>
         <tr>
@@ -1125,6 +1357,8 @@ either using constant or by propagating values.</p>
           </td>
           <td class="xmldoc"><p>A transformation on vector(s) can specified as binary or as N-ary. A binary transformation
 can be applied to N elements using <code>List.reduce</code>, but allows optimizations.</p>
+
+
 </td>
         </tr>
     </tbody>
@@ -1159,6 +1393,8 @@ can be applied to N elements using <code>List.reduce</code>, but allows optimiza
 
 <p>Vector that stores data in an array. The data is stored using the
 <code>ArrayVectorData&lt;'T&gt;</code> type (discriminated union)</p>
+
+
 </td>
         </tr>
         <tr>
@@ -1172,6 +1408,8 @@ The vector builder automatically switches between the two possible
 representations of the vector - when a missing value is present, it
 uses <code>ArrayVectorData.VectorOptional</code>, otherwise it uses 
 <code>ArrayVectorData.VectorNonOptional</code>.</p>
+
+
 </td>
         </tr>
     </tbody>
@@ -1189,7 +1427,14 @@ uses <code>ArrayVectorData.VectorOptional</code>, otherwise it uses
           <td class="type-name">
             <a href="deedle-vectors-virtual-iaddressoperations.html">IAddressOperations</a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>Various BigDeedle implementations can use different schemes for working with addresses 
+(for example, address can be just a global offset, or it can be pair of <code>int32</code> values
+that store partition and offset in a partition). This interface represents a specific
+address range and abstracts operations that BigDeedle needs to perform on addresses
+(within the specified range)</p>
+
+
+</td>
         </tr>
         <tr>
           <td class="type-name">
@@ -1197,6 +1442,8 @@ uses <code>ArrayVectorData.VectorOptional</code>, otherwise it uses
           </td>
           <td class="xmldoc"><p>Non-generic part of the <code>IVirtualVectorSource&lt;'V&gt;</code> interface, which 
 provides some basic information about the virtualized data source</p>
+
+
 </td>
         </tr>
         <tr>
@@ -1207,11 +1454,19 @@ provides some basic information about the virtualized data source</p>
 of data source for <code>VirtualVector</code> (this file) and <code>VirtualIndex</code> (another file). The 
 index uses <code>Length</code> and <code>ValueAt</code> to perform binary search when looking for a key; the
 vector simply provides an access to values using <code>ValueAt</code>.</p>
+
+
 </td>
         </tr>
         <tr>
           <td class="type-name">
             <a href="deedle-vectors-virtual-ivirtualvectorsourceoperation-1.html">IVirtualVectorSourceOperation<'R></a>
+          </td>
+          <td class="xmldoc"></td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-vectors-virtual-rangesaddressoperations-1.html">RangesAddressOperations<'TKey></a>
           </td>
           <td class="xmldoc"></td>
         </tr>

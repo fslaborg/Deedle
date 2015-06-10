@@ -43,6 +43,8 @@
 <h1>DataSegment</h1>
 <div class="xmldoc">
 <p>Provides helper functions and active patterns for working with <code>DataSegment</code> values</p>
+
+
 </div>
 
 <!-- Render nested types and modules, if there are any -->
@@ -60,8 +62,8 @@
             data ds
           </code>
           <div class="tip" id="9">
-            <strong>Signature:</strong> ds:DataSegment&lt;&#39;?484798&gt; -&gt; &#39;?484798<br />
-                          <strong>Type parameters:</strong> '?484798          </div>
+            <strong>Signature:</strong> ds:DataSegment&lt;&#39;?496523&gt; -&gt; &#39;?496523<br />
+                          <strong>Type parameters:</strong> '?496523          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L294-294" class="github-link">
@@ -69,6 +71,8 @@
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns the data property of the specified <code>DataSegment&lt;T&gt;</code></p>
+
+
 
         </td>
       </tr>
@@ -79,8 +83,8 @@
             kind ds
           </code>
           <div class="tip" id="10">
-            <strong>Signature:</strong> ds:DataSegment&lt;&#39;?484800&gt; -&gt; DataSegmentKind<br />
-                          <strong>Type parameters:</strong> '?484800          </div>
+            <strong>Signature:</strong> ds:DataSegment&lt;&#39;?496525&gt; -&gt; DataSegmentKind<br />
+                          <strong>Type parameters:</strong> '?496525          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L298-298" class="github-link">
@@ -88,6 +92,8 @@
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns the kind property of the specified <code>DataSegment&lt;T&gt;</code></p>
+
+
 
         </td>
       </tr>
@@ -117,7 +123,9 @@
           <p>A complete active pattern that extracts the kind and data from a <code>DataSegment</code>
 value. This makes it easier to write functions that only need data:</p>
 
-<p>let sumAny = function DataSegment.Any(_, data) -> Stats.sum data</p>
+<p>let sumAny = function DataSegment.Any(_, data) -&gt; Stats.sum data</p>
+
+
 
         </td>
       </tr>
@@ -128,8 +136,8 @@ value. This makes it easier to write functions that only need data:</p>
             ( |Complete|Incomplete| ) ds
           </code>
           <div class="tip" id="12">
-            <strong>Signature:</strong> ds:DataSegment&lt;&#39;?484796&gt; -&gt; Choice&lt;&#39;?484796,&#39;?484796&gt;<br />
-                          <strong>Type parameters:</strong> '?484796          </div>
+            <strong>Signature:</strong> ds:DataSegment&lt;&#39;?496521&gt; -&gt; Choice&lt;&#39;?496521,&#39;?496521&gt;<br />
+                          <strong>Type parameters:</strong> '?496521          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L288-288" class="github-link">
@@ -140,9 +148,23 @@ value. This makes it easier to write functions that only need data:</p>
 differently for complete and incomplete segments. For example, the following 
 returns zero for incomplete segments:</p>
 
-<pre><code>let sumSegmentOrZero = function
-  | DataSegment.Complete(value) -&gt; Stats.sum value
-  | DataSegment.Incomplete _ -&gt; 0.0</code></pre>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="f">sumSegmentOrZero</span> <span class="o">=</span> <span class="k">function</span>
+  | <span class="i">DataSegment</span><span class="o">.</span><span class="i">Complete</span>(<span class="i">value</span>) <span class="k">-&gt;</span> <span class="i">Stats</span><span class="o">.</span><span class="i">sum</span> <span class="i">value</span>
+  | <span class="i">DataSegment</span><span class="o">.</span><span class="i">Incomplete</span> _ <span class="k">-&gt;</span> <span class="n">0.0</span>
+</pre>
+</td>
+</tr>
+</table>
+
+<div class="tip" id="fs1">val sumSegmentOrZero : (obj -&gt; obj)<br /><br />Full name: docs.sumSegmentOrZero</div>
+
 
         </td>
       </tr>

@@ -49,6 +49,8 @@ series and frames as well as over a moving and an expanding window in a series.<
 no values, or missing values, different functions behave in different ways.
 Statistics (e.g. mean) return missing value when any value is missing, while min/max
 functions return the minimal/maximal element (skipping over missing values).</p>
+
+
         <h2>Remarks</h2>
 <p>The windowing functions in the <code>Stats</code> type support calculations over a fixed-size
 windows specified by the size of the window. If you need more complex windowing 
@@ -56,6 +58,8 @@ behavior (such as window based on the distance between keys), different handling
 of boundary, or chunking (calculation over adjacent chunks), you can use chunking and
 windowing functions from the <code>Series</code> module such as <code>Series.windowSizeInto</code> or
 <code>Series.chunkSizeInto</code>.</p>
+
+
 </div>
   <!-- If there is more than 1 category in the type, generate TOC -->
   <h2>Table of contents</h2>
@@ -75,6 +79,8 @@ for all values up to the current key. This means that the result is attached
 to the key at the end of the window. The function names are prefixed
 with <code>expanding</code>.</p>
 
+
+
       </div>
   <h3>Static members</h3>
   <table class="table table-bordered member-list">
@@ -85,10 +91,10 @@ with <code>expanding</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '907', 907)" onmouseover="showTip(event, '907', 907)">
+          <code onmouseout="hideTip(event, '912', 912)" onmouseover="showTip(event, '912', 912)">
             expandingCount(series)
           </code>
-          <div class="tip" id="907">
+          <div class="tip" id="912">
             <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -100,15 +106,17 @@ with <code>expanding</code>.</p>
           <p>Returns a series that contains counts over expanding windows (the value for
 a given key is calculated from all elements with smaller keys).</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '908', 908)" onmouseover="showTip(event, '908', 908)">
+          <code onmouseout="hideTip(event, '913', 913)" onmouseover="showTip(event, '913', 913)">
             expandingKurt(series)
           </code>
-          <div class="tip" id="908">
+          <div class="tip" id="913">
             <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -121,15 +129,17 @@ a given key is calculated from all elements with smaller keys).</p>
 a given key is calculated from all elements with smaller keys); If the 
 entire window contains fewer than 4 values, the result is missing.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '909', 909)" onmouseover="showTip(event, '909', 909)">
+          <code onmouseout="hideTip(event, '914', 914)" onmouseover="showTip(event, '914', 914)">
             expandingMax(series)
           </code>
-          <div class="tip" id="909">
+          <div class="tip" id="914">
             <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -142,15 +152,17 @@ entire window contains fewer than 4 values, the result is missing.</p>
 for a key <em>k</em> in the returned series is the maximum from all elements with
 smaller keys.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '910', 910)" onmouseover="showTip(event, '910', 910)">
+          <code onmouseout="hideTip(event, '915', 915)" onmouseover="showTip(event, '915', 915)">
             expandingMean(series)
           </code>
-          <div class="tip" id="910">
+          <div class="tip" id="915">
             <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -163,15 +175,17 @@ smaller keys.</p>
 a given key is calculated from all elements with smaller keys); If the 
 entire window contains no values, the result is missing.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '911', 911)" onmouseover="showTip(event, '911', 911)">
+          <code onmouseout="hideTip(event, '916', 916)" onmouseover="showTip(event, '916', 916)">
             expandingMin(series)
           </code>
-          <div class="tip" id="911">
+          <div class="tip" id="916">
             <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -184,15 +198,17 @@ entire window contains no values, the result is missing.</p>
 for a key <em>k</em> in the returned series is the minimum from all elements with
 smaller keys.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '912', 912)" onmouseover="showTip(event, '912', 912)">
+          <code onmouseout="hideTip(event, '917', 917)" onmouseover="showTip(event, '917', 917)">
             expandingSkew(series)
           </code>
-          <div class="tip" id="912">
+          <div class="tip" id="917">
             <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -205,15 +221,17 @@ smaller keys.</p>
 a given key is calculated from all elements with smaller keys); If the 
 entire window contains fewer than 3 values, the result is missing.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '913', 913)" onmouseover="showTip(event, '913', 913)">
+          <code onmouseout="hideTip(event, '918', 918)" onmouseover="showTip(event, '918', 918)">
             expandingStdDev(series)
           </code>
-          <div class="tip" id="913">
+          <div class="tip" id="918">
             <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -226,15 +244,17 @@ entire window contains fewer than 3 values, the result is missing.</p>
 value for a given key is calculated from all elements with smaller keys); If the 
 entire window contains fewer than 2 values, the result is missing.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '914', 914)" onmouseover="showTip(event, '914', 914)">
+          <code onmouseout="hideTip(event, '919', 919)" onmouseover="showTip(event, '919', 919)">
             expandingSum(series)
           </code>
-          <div class="tip" id="914">
+          <div class="tip" id="919">
             <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -247,15 +267,17 @@ entire window contains fewer than 2 values, the result is missing.</p>
 a given key is calculated from all elements with smaller keys); If the 
 entire window contains no values, the result is 0.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '915', 915)" onmouseover="showTip(event, '915', 915)">
+          <code onmouseout="hideTip(event, '920', 920)" onmouseover="showTip(event, '920', 920)">
             expandingVariance(series)
           </code>
-          <div class="tip" id="915">
+          <div class="tip" id="920">
             <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -268,6 +290,8 @@ entire window contains no values, the result is 0.</p>
 a given key is calculated from all elements with smaller keys); If the 
 entire window contains fewer than 2 values, the result is missing.</p>
 
+
+
         </td>
       </tr>
     </tbody>
@@ -279,6 +303,8 @@ overloaded. This means that they can be applied to both <code>Series&lt;'K, floa
 to <code>Frame&lt;'R, 'C&gt;</code>. When applied to data frame, the functions apply the 
 statistical calculation to all numerical columns of the frame.</p>
 
+
+
       </div>
   <h3>Static members</h3>
   <table class="table table-bordered member-list">
@@ -289,10 +315,10 @@ statistical calculation to all numerical columns of the frame.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '916', 916)" onmouseover="showTip(event, '916', 916)">
+          <code onmouseout="hideTip(event, '921', 921)" onmouseover="showTip(event, '921', 921)">
             count(frame)
           </code>
-          <div class="tip" id="916">
+          <div class="tip" id="921">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,int&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C          </div>
         </td>
@@ -304,15 +330,17 @@ statistical calculation to all numerical columns of the frame.</p>
           <p>For each column, returns the number of the values in the column. 
 This excludes missing values and values created from <code>Double.NaN</code> etc.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '917', 917)" onmouseover="showTip(event, '917', 917)">
+          <code onmouseout="hideTip(event, '922', 922)" onmouseover="showTip(event, '922', 922)">
             kurt(frame)
           </code>
-          <div class="tip" id="917">
+          <div class="tip" id="922">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C          </div>
         </td>
@@ -325,15 +353,17 @@ This excludes missing values and values created from <code>Double.NaN</code> etc
 The function skips over missing values and <code>NaN</code> values. When there are less than 4 values, 
 the result is NaN.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '918', 918)" onmouseover="showTip(event, '918', 918)">
+          <code onmouseout="hideTip(event, '923', 923)" onmouseover="showTip(event, '923', 923)">
             max(frame)
           </code>
-          <div class="tip" id="918">
+          <div class="tip" id="923">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C          </div>
         </td>
@@ -346,15 +376,17 @@ the result is NaN.</p>
 The function skips over missing and <code>NaN</code> values. When there are no values,
 the result is <code>NaN</code>.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '919', 919)" onmouseover="showTip(event, '919', 919)">
+          <code onmouseout="hideTip(event, '924', 924)" onmouseover="showTip(event, '924', 924)">
             mean(frame)
           </code>
-          <div class="tip" id="919">
+          <div class="tip" id="924">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C          </div>
         </td>
@@ -367,15 +399,17 @@ the result is <code>NaN</code>.</p>
 The function skips over missing values and <code>NaN</code> values. When there are 
 no available values, the result is NaN.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '920', 920)" onmouseover="showTip(event, '920', 920)">
+          <code onmouseout="hideTip(event, '925', 925)" onmouseover="showTip(event, '925', 925)">
             median(frame)
           </code>
-          <div class="tip" id="920">
+          <div class="tip" id="925">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C          </div>
         </td>
@@ -386,15 +420,17 @@ no available values, the result is NaN.</p>
             </a>
           <p>For each numerical column, returns the median of the values in the column.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '921', 921)" onmouseover="showTip(event, '921', 921)">
+          <code onmouseout="hideTip(event, '926', 926)" onmouseover="showTip(event, '926', 926)">
             min(frame)
           </code>
-          <div class="tip" id="921">
+          <div class="tip" id="926">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C          </div>
         </td>
@@ -407,15 +443,17 @@ no available values, the result is NaN.</p>
 The function skips over missing and <code>NaN</code> values. When there are no values,
 the result is <code>NaN</code>.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '922', 922)" onmouseover="showTip(event, '922', 922)">
+          <code onmouseout="hideTip(event, '927', 927)" onmouseover="showTip(event, '927', 927)">
             skew(frame)
           </code>
-          <div class="tip" id="922">
+          <div class="tip" id="927">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C          </div>
         </td>
@@ -428,15 +466,17 @@ the result is <code>NaN</code>.</p>
 The function skips over missing values and <code>NaN</code> values. When there are less than 3 values, 
 the result is NaN.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '923', 923)" onmouseover="showTip(event, '923', 923)">
+          <code onmouseout="hideTip(event, '928', 928)" onmouseover="showTip(event, '928', 928)">
             stdDev(frame)
           </code>
-          <div class="tip" id="923">
+          <div class="tip" id="928">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C          </div>
         </td>
@@ -449,15 +489,17 @@ the result is NaN.</p>
 The function skips over missing values and <code>NaN</code> values. When there are less than 2 values, 
 the result is NaN.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '924', 924)" onmouseover="showTip(event, '924', 924)">
+          <code onmouseout="hideTip(event, '929', 929)" onmouseover="showTip(event, '929', 929)">
             sum(frame)
           </code>
-          <div class="tip" id="924">
+          <div class="tip" id="929">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C          </div>
         </td>
@@ -469,15 +511,17 @@ the result is NaN.</p>
           <p>For each numerical column, returns the sum of the values in the column. 
 The function skips over missing values and <code>NaN</code> values. When there are no</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '925', 925)" onmouseover="showTip(event, '925', 925)">
+          <code onmouseout="hideTip(event, '930', 930)" onmouseover="showTip(event, '930', 930)">
             variance(frame)
           </code>
-          <div class="tip" id="925">
+          <div class="tip" id="930">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C          </div>
         </td>
@@ -490,6 +534,8 @@ The function skips over missing values and <code>NaN</code> values. When there a
 The function skips over missing values and <code>NaN</code> values. When there are less 
 than 2 values, the result is NaN.</p>
 
+
+
         </td>
       </tr>
     </tbody>
@@ -499,6 +545,8 @@ than 2 values, the result is NaN.</p>
         <p>Moving window means that the window has a fixed size and moves over the series.
 In this case, the result of the statisitcs is always attached to the last key
 of the window. The function names are prefixed with <code>moving</code>.</p>
+
+
 
       </div>
   <h3>Static members</h3>
@@ -510,10 +558,10 @@ of the window. The function names are prefixed with <code>moving</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '926', 926)" onmouseover="showTip(event, '926', 926)">
+          <code onmouseout="hideTip(event, '931', 931)" onmouseover="showTip(event, '931', 931)">
             movingCount(size series)
           </code>
-          <div class="tip" id="926">
+          <div class="tip" id="931">
             <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -526,15 +574,17 @@ of the window. The function names are prefixed with <code>moving</code>.</p>
 The first <code>size-1</code> elements of the returned series are always missing; if the 
 entire window contains missing values, the result is 0.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '927', 927)" onmouseover="showTip(event, '927', 927)">
+          <code onmouseout="hideTip(event, '932', 932)" onmouseover="showTip(event, '932', 932)">
             movingKurt(size series)
           </code>
-          <div class="tip" id="927">
+          <div class="tip" id="932">
             <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -547,15 +597,17 @@ entire window contains missing values, the result is 0.</p>
 The first <code>size-1</code> elements of the returned series are always missing; if the 
 entire window contains missing values, the result is also missing.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '928', 928)" onmouseover="showTip(event, '928', 928)">
+          <code onmouseout="hideTip(event, '933', 933)" onmouseover="showTip(event, '933', 933)">
             movingMax(size series)
           </code>
-          <div class="tip" id="928">
+          <div class="tip" id="933">
             <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -568,15 +620,17 @@ entire window contains missing values, the result is also missing.</p>
 The first <code>size-1</code> elements are calculated using smaller windows spanning over <code>1 .. size-1</code> 
 values. If the entire window contains missing values, the result is missing.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '929', 929)" onmouseover="showTip(event, '929', 929)">
+          <code onmouseout="hideTip(event, '934', 934)" onmouseover="showTip(event, '934', 934)">
             movingMean(size series)
           </code>
-          <div class="tip" id="929">
+          <div class="tip" id="934">
             <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -589,15 +643,17 @@ values. If the entire window contains missing values, the result is missing.</p>
 The first <code>size-1</code> elements of the returned series are always missing; if the 
 entire window contains missing values, the result is also missing.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '930', 930)" onmouseover="showTip(event, '930', 930)">
+          <code onmouseout="hideTip(event, '935', 935)" onmouseover="showTip(event, '935', 935)">
             movingMin(size series)
           </code>
-          <div class="tip" id="930">
+          <div class="tip" id="935">
             <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -610,15 +666,17 @@ entire window contains missing values, the result is also missing.</p>
 The first <code>size-1</code> elements are calculated using smaller windows spanning over <code>1 .. size-1</code> 
 values. If the entire window contains missing values, the result is missing.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '931', 931)" onmouseover="showTip(event, '931', 931)">
+          <code onmouseout="hideTip(event, '936', 936)" onmouseover="showTip(event, '936', 936)">
             movingSkew(size series)
           </code>
-          <div class="tip" id="931">
+          <div class="tip" id="936">
             <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -631,15 +689,17 @@ values. If the entire window contains missing values, the result is missing.</p>
 The first <code>size-1</code> elements of the returned series are always missing; if the 
 entire window contains missing values, the result is also missing.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '932', 932)" onmouseover="showTip(event, '932', 932)">
+          <code onmouseout="hideTip(event, '937', 937)" onmouseover="showTip(event, '937', 937)">
             movingStdDev(size series)
           </code>
-          <div class="tip" id="932">
+          <div class="tip" id="937">
             <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -652,15 +712,17 @@ entire window contains missing values, the result is also missing.</p>
 The first <code>size-1</code> elements of the returned series are always missing; if the 
 entire window contains missing values, the result is also missing.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '933', 933)" onmouseover="showTip(event, '933', 933)">
+          <code onmouseout="hideTip(event, '938', 938)" onmouseover="showTip(event, '938', 938)">
             movingSum(size series)
           </code>
-          <div class="tip" id="933">
+          <div class="tip" id="938">
             <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -673,15 +735,17 @@ entire window contains missing values, the result is also missing.</p>
 The first <code>size-1</code> elements of the returned series are always missing; if the 
 entire window contains missing values, the result is 0.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '934', 934)" onmouseover="showTip(event, '934', 934)">
+          <code onmouseout="hideTip(event, '939', 939)" onmouseover="showTip(event, '939', 939)">
             movingVariance(size series)
           </code>
-          <div class="tip" id="934">
+          <div class="tip" id="939">
             <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -694,6 +758,8 @@ entire window contains missing values, the result is 0.</p>
 The first <code>size-1</code> elements of the returned series are always missing; if the 
 entire window contains missing values, the result is also missing.</p>
 
+
+
         </td>
       </tr>
     </tbody>
@@ -705,6 +771,8 @@ functions prefixed with <code>level</code> provide a way to apply statistical op
 a single level of the index. (For example you can sum values along the <code>'K1</code> keys 
 in a series <code>Series&lt;'K1 * 'K2, float&gt;</code> and get <code>Series&lt;'K1, float&gt;</code> as the result.)</p>
 
+
+
       </div>
   <h3>Static members</h3>
   <table class="table table-bordered member-list">
@@ -715,10 +783,10 @@ in a series <code>Series&lt;'K1 * 'K2, float&gt;</code> and get <code>Series&lt;
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '935', 935)" onmouseover="showTip(event, '935', 935)">
+          <code onmouseout="hideTip(event, '940', 940)" onmouseover="showTip(event, '940', 940)">
             levelCount(level series)
           </code>
-          <div class="tip" id="935">
+          <div class="tip" id="940">
             <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;L,int&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'L, 'V          </div>
         </td>
@@ -731,15 +799,17 @@ in a series <code>Series&lt;'K1 * 'K2, float&gt;</code> and get <code>Series&lt;
 returns the number of the values in the group. This excludes missing 
 values and values created from <code>Double.NaN</code> etc.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '936', 936)" onmouseover="showTip(event, '936', 936)">
+          <code onmouseout="hideTip(event, '941', 941)" onmouseover="showTip(event, '941', 941)">
             levelKurt(level series)
           </code>
-          <div class="tip" id="936">
+          <div class="tip" id="941">
             <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'L          </div>
         </td>
@@ -752,15 +822,17 @@ values and values created from <code>Double.NaN</code> etc.</p>
 returns the kurtosis of the values in a series. The function skips over missing values 
 and <code>NaN</code> values. When there are less than 4 values, the result is NaN.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '937', 937)" onmouseover="showTip(event, '937', 937)">
+          <code onmouseout="hideTip(event, '942', 942)" onmouseover="showTip(event, '942', 942)">
             levelMean(level series)
           </code>
-          <div class="tip" id="937">
+          <div class="tip" id="942">
             <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'L          </div>
         </td>
@@ -773,15 +845,17 @@ and <code>NaN</code> values. When there are less than 4 values, the result is Na
 returns the mean of the values in the group. The function skips over missing 
 values and <code>NaN</code> values. When there are no available values, the result is NaN.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '938', 938)" onmouseover="showTip(event, '938', 938)">
+          <code onmouseout="hideTip(event, '943', 943)" onmouseover="showTip(event, '943', 943)">
             levelMedian(level series)
           </code>
-          <div class="tip" id="938">
+          <div class="tip" id="943">
             <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'L          </div>
         </td>
@@ -793,15 +867,17 @@ values and <code>NaN</code> values. When there are no available values, the resu
           <p>For each group with equal keys at the level specified by <code>level</code>, 
 returns the median of the values in the group.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '939', 939)" onmouseover="showTip(event, '939', 939)">
+          <code onmouseout="hideTip(event, '944', 944)" onmouseover="showTip(event, '944', 944)">
             levelSkew(level series)
           </code>
-          <div class="tip" id="939">
+          <div class="tip" id="944">
             <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'L          </div>
         </td>
@@ -814,15 +890,17 @@ returns the median of the values in the group.</p>
 returns the skewness of the values in a series. The function skips over missing 
 values and <code>NaN</code> values. When there are less than 3 values, the result is NaN.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '940', 940)" onmouseover="showTip(event, '940', 940)">
+          <code onmouseout="hideTip(event, '945', 945)" onmouseover="showTip(event, '945', 945)">
             levelStdDev(level series)
           </code>
-          <div class="tip" id="940">
+          <div class="tip" id="945">
             <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'L          </div>
         </td>
@@ -835,15 +913,17 @@ values and <code>NaN</code> values. When there are less than 3 values, the resul
 returns the standard deviation of the values in the group. The function skips over 
 missing values and <code>NaN</code> values. When there are less than 2 values, the result is NaN.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '941', 941)" onmouseover="showTip(event, '941', 941)">
+          <code onmouseout="hideTip(event, '946', 946)" onmouseover="showTip(event, '946', 946)">
             levelSum(level series)
           </code>
-          <div class="tip" id="941">
+          <div class="tip" id="946">
             <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'L          </div>
         </td>
@@ -856,15 +936,17 @@ missing values and <code>NaN</code> values. When there are less than 2 values, t
 returns the sum of the values in the group. The function skips over missing values 
 and <code>NaN</code> values. When there are no available values, the result is 0.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '942', 942)" onmouseover="showTip(event, '942', 942)">
+          <code onmouseout="hideTip(event, '947', 947)" onmouseover="showTip(event, '947', 947)">
             levelVariance(level series)
           </code>
-          <div class="tip" id="942">
+          <div class="tip" id="947">
             <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'L          </div>
         </td>
@@ -876,6 +958,8 @@ and <code>NaN</code> values. When there are no available values, the result is 0
           <p>For each group with equal keys at the level specified by <code>level</code>, 
 returns the variance of the values in the group. The function skips over missing 
 values and <code>NaN</code> values. When there are less than 2 values, the result is NaN.</p>
+
+
 
         </td>
       </tr>
@@ -891,10 +975,10 @@ values and <code>NaN</code> values. When there are less than 2 values, the resul
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '943', 943)" onmouseover="showTip(event, '943', 943)">
+          <code onmouseout="hideTip(event, '948', 948)" onmouseover="showTip(event, '948', 948)">
             interpolate(keys f series)
           </code>
-          <div class="tip" id="943">
+          <div class="tip" id="948">
             <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; (f:(&#39;K -&gt; (&#39;K * &#39;T) option -&gt; (&#39;K * &#39;T) option -&gt; &#39;T)) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
@@ -914,15 +998,17 @@ observations from the series argument. The function must return a new valid floa
 <li><code>f</code> - Function to do the interpolating</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '944', 944)" onmouseover="showTip(event, '944', 944)">
+          <code onmouseout="hideTip(event, '949', 949)" onmouseover="showTip(event, '949', 949)">
             interpolateLinear(keys keyDiff series)
           </code>
-          <div class="tip" id="944">
+          <div class="tip" id="949">
             <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; (keyDiff:(&#39;K -&gt; &#39;K -&gt; float)) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -940,6 +1026,8 @@ observations from the series argument. The function must return a new valid floa
 <li><code>keyDiff</code> - A function representing "subtraction" between two keys</li>
 </ul>
 
+
+
         </td>
       </tr>
     </tbody>
@@ -951,6 +1039,8 @@ statistics calculated over all values of a series. The calculation skips
 over missing values (or <code>nan</code> values), so for example <code>mean</code> returns the
 average of all <em>present</em> values.</p>
 
+
+
       </div>
   <h3>Static members</h3>
   <table class="table table-bordered member-list">
@@ -961,10 +1051,10 @@ average of all <em>present</em> values.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '945', 945)" onmouseover="showTip(event, '945', 945)">
+          <code onmouseout="hideTip(event, '950', 950)" onmouseover="showTip(event, '950', 950)">
             count(series)
           </code>
-          <div class="tip" id="945">
+          <div class="tip" id="950">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; int<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
@@ -976,15 +1066,17 @@ average of all <em>present</em> values.</p>
           <p>Returns the number of the values in a series. This excludes missing values
 and values created from <code>Double.NaN</code> etc.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '946', 946)" onmouseover="showTip(event, '946', 946)">
+          <code onmouseout="hideTip(event, '951', 951)" onmouseover="showTip(event, '951', 951)">
             kurt(series)
           </code>
-          <div class="tip" id="946">
+          <div class="tip" id="951">
             <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -996,15 +1088,17 @@ and values created from <code>Double.NaN</code> etc.</p>
           <p>Returns the kurtosis of the values in a series. The function skips over missing 
 values and <code>NaN</code> values. When there are less than 4 values, the result is NaN.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '947', 947)" onmouseover="showTip(event, '947', 947)">
+          <code onmouseout="hideTip(event, '952', 952)" onmouseover="showTip(event, '952', 952)">
             max(series)
           </code>
-          <div class="tip" id="947">
+          <div class="tip" id="952">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V option<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
@@ -1016,17 +1110,19 @@ values and <code>NaN</code> values. When there are less than 4 values, the resul
           <p>Returns the maximum of the values in a series. The result is an option value.
 When the series contains no values, the result is <code>None</code>.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '948', 948)" onmouseover="showTip(event, '948', 948)">
+          <code onmouseout="hideTip(event, '953', 953)" onmouseover="showTip(event, '953', 953)">
             maxBy(f series)
           </code>
-          <div class="tip" id="948">
-            <strong>Signature:</strong> (f:(&#39;T -&gt; &#39;?478844)) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; (&#39;K * &#39;T) option<br />
-                          <strong>Type parameters:</strong> 'T, '?478844, 'K          </div>
+          <div class="tip" id="953">
+            <strong>Signature:</strong> (f:(&#39;T -&gt; &#39;?490465)) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; (&#39;K * &#39;T) option<br />
+                          <strong>Type parameters:</strong> 'T, '?490465, 'K          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L601-601" class="github-link">
@@ -1036,15 +1132,17 @@ When the series contains no values, the result is <code>None</code>.</p>
           <p>Returns the key and value of the greatest element in the series. The result
 is an optional value. When the series contains no values, the result is <code>None</code>.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '949', 949)" onmouseover="showTip(event, '949', 949)">
+          <code onmouseout="hideTip(event, '954', 954)" onmouseover="showTip(event, '954', 954)">
             mean(series)
           </code>
-          <div class="tip" id="949">
+          <div class="tip" id="954">
             <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -1056,15 +1154,17 @@ is an optional value. When the series contains no values, the result is <code>No
           <p>Returns the mean of the values in a series. The function skips over missing values
 and <code>NaN</code> values. When there are no available values, the result is NaN.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '950', 950)" onmouseover="showTip(event, '950', 950)">
+          <code onmouseout="hideTip(event, '955', 955)" onmouseover="showTip(event, '955', 955)">
             median(series)
           </code>
-          <div class="tip" id="950">
+          <div class="tip" id="955">
             <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -1075,15 +1175,17 @@ and <code>NaN</code> values. When there are no available values, the result is N
             </a>
           <p>Returns the median of the elements of the series.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '951', 951)" onmouseover="showTip(event, '951', 951)">
+          <code onmouseout="hideTip(event, '956', 956)" onmouseover="showTip(event, '956', 956)">
             min(series)
           </code>
-          <div class="tip" id="951">
+          <div class="tip" id="956">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V option<br />
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
@@ -1095,17 +1197,19 @@ and <code>NaN</code> values. When there are no available values, the result is N
           <p>Returns the minimum of the values in a series. The result is an option value.
 When the series contains no values, the result is <code>None</code>.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '952', 952)" onmouseover="showTip(event, '952', 952)">
+          <code onmouseout="hideTip(event, '957', 957)" onmouseover="showTip(event, '957', 957)">
             minBy(f series)
           </code>
-          <div class="tip" id="952">
-            <strong>Signature:</strong> (f:(&#39;T -&gt; &#39;?478848)) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; (&#39;K * &#39;T) option<br />
-                          <strong>Type parameters:</strong> 'T, '?478848, 'K          </div>
+          <div class="tip" id="957">
+            <strong>Signature:</strong> (f:(&#39;T -&gt; &#39;?490469)) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; (&#39;K * &#39;T) option<br />
+                          <strong>Type parameters:</strong> 'T, '?490469, 'K          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L609-609" class="github-link">
@@ -1115,15 +1219,17 @@ When the series contains no values, the result is <code>None</code>.</p>
           <p>Returns the key and value of the least element in the series. The result
 is an optional value. When the series contains no values, the result is <code>None</code>.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '953', 953)" onmouseover="showTip(event, '953', 953)">
+          <code onmouseout="hideTip(event, '958', 958)" onmouseover="showTip(event, '958', 958)">
             numSum(series)
           </code>
-          <div class="tip" id="953">
+          <div class="tip" id="958">
             <strong>Signature:</strong> series:Series&lt;&#39;K,^V&gt; -&gt; ^V<br />
                           <strong>Type parameters:</strong> 'K, ^V          </div>
         </td>
@@ -1135,15 +1241,17 @@ is an optional value. When the series contains no values, the result is <code>No
           <p>Sum that operates only any appropriate numeric type. When there are no available 
 values, the result is zero of the approriate numeric type.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '954', 954)" onmouseover="showTip(event, '954', 954)">
+          <code onmouseout="hideTip(event, '959', 959)" onmouseover="showTip(event, '959', 959)">
             skew(series)
           </code>
-          <div class="tip" id="954">
+          <div class="tip" id="959">
             <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -1155,15 +1263,17 @@ values, the result is zero of the approriate numeric type.</p>
           <p>Returns the skewness of the values in a series. The function skips over missing 
 values and <code>NaN</code> values. When there are less than 3 values, the result is NaN.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '955', 955)" onmouseover="showTip(event, '955', 955)">
+          <code onmouseout="hideTip(event, '960', 960)" onmouseover="showTip(event, '960', 960)">
             stdDev(series)
           </code>
-          <div class="tip" id="955">
+          <div class="tip" id="960">
             <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -1175,15 +1285,17 @@ values and <code>NaN</code> values. When there are less than 3 values, the resul
           <p>Returns the standard deviation of the values in a series. The function skips over 
 missing values and <code>NaN</code> values. When there are less than 2 values, the result is NaN.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '956', 956)" onmouseover="showTip(event, '956', 956)">
+          <code onmouseout="hideTip(event, '961', 961)" onmouseover="showTip(event, '961', 961)">
             sum(series)
           </code>
-          <div class="tip" id="956">
+          <div class="tip" id="961">
             <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -1195,15 +1307,17 @@ missing values and <code>NaN</code> values. When there are less than 2 values, t
           <p>Returns the sum of the values in a series. The function skips over missing values
 and <code>NaN</code> values. When there are no available values, the result is NaN.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '957', 957)" onmouseover="showTip(event, '957', 957)">
+          <code onmouseout="hideTip(event, '962', 962)" onmouseover="showTip(event, '962', 962)">
             variance(series)
           </code>
-          <div class="tip" id="957">
+          <div class="tip" id="962">
             <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -1214,6 +1328,8 @@ and <code>NaN</code> values. When there are no available values, the result is N
             </a>
           <p>Returns the variance of the values in a series. The function skips over missing values
 and <code>NaN</code> values. When there are less than 2 values, the result is NaN.</p>
+
+
 
         </td>
       </tr>

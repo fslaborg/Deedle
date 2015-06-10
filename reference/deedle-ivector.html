@@ -46,6 +46,8 @@
 to the values via a generic address. This type should be only used directly when
 extending the DataFrame library and adding a new way of storing or loading data.
 To allow invocation via Reflection, the vector exposes type of elements as <code>System.Type</code>.</p>
+
+
 </div>
   <h3>Instance members</h3>
   <table class="table table-bordered member-list">
@@ -56,10 +58,10 @@ To allow invocation via Reflection, the vector exposes type of elements as <code
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '647', 647)" onmouseover="showTip(event, '647', 647)">
+          <code onmouseout="hideTip(event, '651', 651)" onmouseover="showTip(event, '651', 651)">
             ElementType
           </code>
-          <div class="tip" id="647">
+          <div class="tip" id="651">
             <strong>Signature:</strong> Type<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -74,15 +76,17 @@ This member is mainly used for internal purposes (to invoke a generic function
 represented by <code>VectorCallSite1&lt;R&gt;</code> with the typed version of the current 
 vector as an argument.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '648', 648)" onmouseover="showTip(event, '648', 648)">
+          <code onmouseout="hideTip(event, '652', 652)" onmouseover="showTip(event, '652', 652)">
             GetObject(arg1)
           </code>
-          <div class="tip" id="648">
+          <div class="tip" id="652">
             <strong>Signature:</strong> Address -&gt; OptionalValue&lt;obj&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -95,15 +99,17 @@ vector as an argument.</p>
           <p>Return value stored in the vector at a specified address. This is simply an
 untyped version of <code>GetValue</code> method on a typed vector.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '649', 649)" onmouseover="showTip(event, '649', 649)">
+          <code onmouseout="hideTip(event, '653', 653)" onmouseover="showTip(event, '653', 653)">
             Invoke(arg1)
           </code>
-          <div class="tip" id="649">
+          <div class="tip" id="653">
             <strong>Signature:</strong> VectorCallSite&lt;&#39;R&gt; -&gt; &#39;R<br />
               <strong>Modifiers:</strong> abstract<br />
                           <strong>Type parameters:</strong> 'R          </div>
@@ -116,15 +122,17 @@ untyped version of <code>GetValue</code> method on a typed vector.</p>
           <p>Invokes the specified generic function (vector call site) with the current 
 instance of vector passed as a statically typed vector (ie. IVector<ElementType>)</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '650', 650)" onmouseover="showTip(event, '650', 650)">
+          <code onmouseout="hideTip(event, '654', 654)" onmouseover="showTip(event, '654', 654)">
             Length
           </code>
-          <div class="tip" id="650">
+          <div class="tip" id="654">
             <strong>Signature:</strong> int64<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -136,15 +144,17 @@ instance of vector passed as a statically typed vector (ie. IVector<ElementType>
             </a>
           <p>Returns the number of elements in the vector</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '651', 651)" onmouseover="showTip(event, '651', 651)">
+          <code onmouseout="hideTip(event, '655', 655)" onmouseover="showTip(event, '655', 655)">
             ObjectSequence
           </code>
-          <div class="tip" id="651">
+          <div class="tip" id="655">
             <strong>Signature:</strong> seq&lt;OptionalValue&lt;obj&gt;&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -156,15 +166,17 @@ instance of vector passed as a statically typed vector (ie. IVector<ElementType>
             </a>
           <p>Returns all values of the vector as a sequence of optional objects</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '652', 652)" onmouseover="showTip(event, '652', 652)">
+          <code onmouseout="hideTip(event, '656', 656)" onmouseover="showTip(event, '656', 656)">
             SuppressPrinting
           </code>
-          <div class="tip" id="652">
+          <div class="tip" id="656">
             <strong>Signature:</strong> bool<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
@@ -176,6 +188,8 @@ instance of vector passed as a statically typed vector (ie. IVector<ElementType>
             </a>
           <p>When <code>true</code>, the formatter in F# Interactive will not attempt to evaluate the
 vector to print it. This is useful when the vector contains lazily loaded data.</p>
+
+
 
         </td>
       </tr>

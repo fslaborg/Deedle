@@ -47,20 +47,42 @@ various functions that aggregate data into chunks or floating windows. The
 <code>Complete</code> case represents complete segment (e.g. of the specified size) and
 <code>Boundary</code> represents segment at the boundary (e.g. smaller than the required
 size).</p>
+
+
         <h2>Example</h2>
 <p>For example (using internal <code>windowed</code> function):</p>
 
-<pre><code>open Deedle.Internal
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">Deedle</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Internal</span>
 
-Seq.windowedWithBounds 3 Boundary.AtBeginning [ 1; 2; 3; 4 ]
-[fsi:  [| DataSegment(Incomplete, [| 1 |])         ]
-[fsi:       DataSegment(Incomplete, [| 1; 2 |])    ]
-[fsi:       DataSegment(Complete [| 1; 2; 3 |])    ]
-[fsi:       DataSegment(Complete [| 2; 3; 4 |]) |] ]
-</code></pre>
+<span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="f">windowedWithBounds</span> <span class="n">3</span> <span class="i">Boundary</span><span class="o">.</span><span class="i">AtBeginning</span> [ <span class="n">1</span>; <span class="n">2</span>; <span class="n">3</span>; <span class="n">4</span> ]
+[<span class="i">fsi</span><span class="o">:</span>  [| <span class="i">DataSegment</span>(<span class="i">Incomplete</span>, [| <span class="n">1</span> |])         ]
+[<span class="i">fsi</span><span class="o">:</span>       <span class="i">DataSegment</span>(<span class="i">Incomplete</span>, [| <span class="n">1</span>; <span class="n">2</span> |])    ]
+[<span class="i">fsi</span><span class="o">:</span>       <span class="i">DataSegment</span>(<span class="i">Complete</span> [| <span class="n">1</span>; <span class="n">2</span>; <span class="n">3</span> |])    ]
+[<span class="i">fsi</span><span class="o">:</span>       <span class="i">DataSegment</span>(<span class="i">Complete</span> [| <span class="n">2</span>; <span class="n">3</span>; <span class="n">4</span> |]) |] ]
+</pre>
+</td>
+</tr>
+</table>
 
 <p>If you do not need to distinguish the two cases, you can use the <code>Data</code> property
 to get the array representing the segment data.</p>
+
+<div class="tip" id="fs1">namespace Deedle</div>
+<div class="tip" id="fs2">namespace Deedle.Internal</div>
+<div class="tip" id="fs3">Multiple items<br />module Seq<br /><br />from Deedle.Internal<br /><br />--------------------<br />module Seq<br /><br />from Microsoft.FSharp.Collections</div>
+<div class="tip" id="fs4">val windowedWithBounds : size:int -&gt; boundary:Deedle.Boundary -&gt; input:seq&lt;&#39;T&gt; -&gt; seq&lt;Deedle.DataSegment&lt;&#39;T []&gt;&gt;<br /><br />Full name: Deedle.Internal.Seq.windowedWithBounds</div>
+
 </div>
   <h3>Union Cases</h3>
   <table class="table table-bordered member-list">
@@ -71,10 +93,10 @@ to get the array representing the segment data.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '395', 395)" onmouseover="showTip(event, '395', 395)">
+          <code onmouseout="hideTip(event, '398', 398)" onmouseover="showTip(event, '398', 398)">
             DataSegment(DataSegmentKind,&#39;T)
           </code>
-          <div class="tip" id="395">
+          <div class="tip" id="398">
             <strong>Signature:</strong> DataSegmentKind * &#39;T<br />
                       </div>
         </td>
@@ -97,10 +119,10 @@ to get the array representing the segment data.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '396', 396)" onmouseover="showTip(event, '396', 396)">
+          <code onmouseout="hideTip(event, '399', 399)" onmouseover="showTip(event, '399', 399)">
             Data
           </code>
-          <div class="tip" id="396">
+          <div class="tip" id="399">
             <strong>Signature:</strong> &#39;T<br />
                       </div>
         </td>
@@ -112,15 +134,17 @@ to get the array representing the segment data.</p>
           <p>Returns the data associated with the segment
 (for boundary segment, this may be smaller than the required window size)</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '397', 397)" onmouseover="showTip(event, '397', 397)">
+          <code onmouseout="hideTip(event, '400', 400)" onmouseover="showTip(event, '400', 400)">
             Kind
           </code>
-          <div class="tip" id="397">
+          <div class="tip" id="400">
             <strong>Signature:</strong> DataSegmentKind<br />
                       </div>
         </td>
@@ -130,6 +154,8 @@ to get the array representing the segment data.</p>
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Return the kind of this segment</p>
+
+
 
         </td>
       </tr>

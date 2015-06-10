@@ -45,6 +45,8 @@
 <p>Provides static methods for creating frames, reading frame data
 from CSV files and database (via IDataReader). The type also provides
 global configuration for reflection-based expansion.</p>
+
+
 </div>
   <!-- If there is more than 1 category in the type, generate TOC -->
   <h2>Table of contents</h2>
@@ -63,10 +65,10 @@ global configuration for reflection-based expansion.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '555', 555)" onmouseover="showTip(event, '555', 555)">
+          <code onmouseout="hideTip(event, '558', 558)" onmouseover="showTip(event, '558', 558)">
             CustomExpanders
           </code>
-          <div class="tip" id="555">
+          <div class="tip" id="558">
             <strong>Signature:</strong> Dictionary&lt;Type,Func&lt;obj,seq&lt;string * Type * obj&gt;&gt;&gt;<br />
                       </div>
         </td>
@@ -86,20 +88,39 @@ expansion as values.</p>
 <code>Item2</code> of type <code>string</code> (and perhaps other properties which makes the default behavior
 inappropriate). You can register custom expander as:</p>
 
-<pre><code>Frame.CustomExpanders.Add(typeof&lt;MyPair&gt;, fun v -&gt; 
-  let a = v :?&gt; MyPair
-  [ "First", typeof&lt;int&gt;, box a.Item1; 
-    "Second", typeof&lt;string&gt;, box a.Item2 ] :&gt; seq&lt;_&gt; )</code></pre>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">Frame</span><span class="o">.</span><span class="i">CustomExpanders</span><span class="o">.</span><span class="i">Add</span>(<span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">typeof</span><span class="o">&lt;</span><span class="i">MyPair</span><span class="o">&gt;</span>, <span class="k">fun</span> <span class="i">v</span> <span class="k">-&gt;</span> 
+  <span class="k">let</span> <span class="i">a</span> <span class="o">=</span> <span class="i">v</span> <span class="o">:?&gt;</span> <span class="i">MyPair</span>
+  [ <span class="s">&quot;First&quot;</span>, <span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="i">typeof</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs2', 3)" onmouseover="showTip(event, 'fs2', 3)" class="i">int</span><span class="o">&gt;</span>, <span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="i">box</span> <span class="i">a</span><span class="o">.</span><span class="i">Item1</span>; 
+    <span class="s">&quot;Second&quot;</span>, <span onmouseout="hideTip(event, 'fs1', 5)" onmouseover="showTip(event, 'fs1', 5)" class="i">typeof</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs4', 6)" onmouseover="showTip(event, 'fs4', 6)" class="i">string</span><span class="o">&gt;</span>, <span onmouseout="hideTip(event, 'fs3', 7)" onmouseover="showTip(event, 'fs3', 7)" class="i">box</span> <span class="i">a</span><span class="o">.</span><span class="i">Item2</span> ] <span class="o">:&gt;</span> <span onmouseout="hideTip(event, 'fs5', 8)" onmouseover="showTip(event, 'fs5', 8)" class="i">seq</span><span class="o">&lt;</span>_<span class="o">&gt;</span> )
+</pre>
+</td>
+</tr>
+</table>
+
+<div class="tip" id="fs1">val typeof&lt;&#39;T&gt; : System.Type<br /><br />Full name: Microsoft.FSharp.Core.Operators.typeof</div>
+<div class="tip" id="fs2">Multiple items<br />val int : value:&#39;T -&gt; int (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.int<br /><br />--------------------<br />type int = int32<br /><br />Full name: Microsoft.FSharp.Core.int<br /><br />--------------------<br />type int&lt;&#39;Measure&gt; = int<br /><br />Full name: Microsoft.FSharp.Core.int&lt;_&gt;</div>
+<div class="tip" id="fs3">val box : value:&#39;T -&gt; obj<br /><br />Full name: Microsoft.FSharp.Core.Operators.box</div>
+<div class="tip" id="fs4">Multiple items<br />val string : value:&#39;T -&gt; string<br /><br />Full name: Microsoft.FSharp.Core.Operators.string<br /><br />--------------------<br />type string = System.String<br /><br />Full name: Microsoft.FSharp.Core.string</div>
+<div class="tip" id="fs5">Multiple items<br />val seq : sequence:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Core.Operators.seq<br /><br />--------------------<br />type seq&lt;&#39;T&gt; = System.Collections.Generic.IEnumerable&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Collections.seq&lt;_&gt;</div>
+
 
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '556', 556)" onmouseover="showTip(event, '556', 556)">
+          <code onmouseout="hideTip(event, '559', 559)" onmouseover="showTip(event, '559', 559)">
             NonExpandableInterfaces
           </code>
-          <div class="tip" id="556">
+          <div class="tip" id="559">
             <strong>Signature:</strong> List&lt;Type&gt;<br />
                       </div>
         </td>
@@ -112,15 +133,17 @@ inappropriate). You can register custom expander as:</p>
 This (mutable, non-thread-safe) collection specifies interfaces whose implementations
 should not be expanded. By default, this includes collections such as IList.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '557', 557)" onmouseover="showTip(event, '557', 557)">
+          <code onmouseout="hideTip(event, '560', 560)" onmouseover="showTip(event, '560', 560)">
             NonExpandableTypes
           </code>
-          <div class="tip" id="557">
+          <div class="tip" id="560">
             <strong>Signature:</strong> HashSet&lt;Type&gt;<br />
                       </div>
         </td>
@@ -132,6 +155,8 @@ should not be expanded. By default, this includes collections such as IList.</p>
           <p>Configures how reflection-based expansion behaves - see also <code>df.ExpandColumns</code>.
 This (mutable, non-thread-safe) collection specifies additional primitive (but reference)
 types that should not be expaneded. By default, this includes DateTime, string, etc.</p>
+
+
 
         </td>
       </tr>
@@ -147,10 +172,10 @@ types that should not be expaneded. By default, this includes DateTime, string, 
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '558', 558)" onmouseover="showTip(event, '558', 558)">
+          <code onmouseout="hideTip(event, '561', 561)" onmouseover="showTip(event, '561', 561)">
             ReadCsv(...)
           </code>
-          <div class="tip" id="558">
+          <div class="tip" id="561">
             <strong>Signature:</strong> (stream:Stream * hasHeaders:Nullable&lt;bool&gt; * inferTypes:Nullable&lt;bool&gt; * inferRows:Nullable&lt;int&gt; * schema:string * separators:string * culture:string * maxRows:Nullable&lt;int&gt; * missingValues:string []) -&gt; Frame&lt;int,string&gt;<br />
                       </div>
         </td>
@@ -186,15 +211,17 @@ values in the CSV file (such as <code>"en-US"</code>). The default is invariant 
 as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '559', 559)" onmouseover="showTip(event, '559', 559)">
+          <code onmouseout="hideTip(event, '562', 562)" onmouseover="showTip(event, '562', 562)">
             ReadCsv(...)
           </code>
-          <div class="tip" id="559">
+          <div class="tip" id="562">
             <strong>Signature:</strong> (location:string * hasHeaders:Nullable&lt;bool&gt; * inferTypes:Nullable&lt;bool&gt; * inferRows:Nullable&lt;int&gt; * schema:string * separators:string * culture:string * maxRows:Nullable&lt;int&gt; * missingValues:string []) -&gt; Frame&lt;int,string&gt;<br />
                       </div>
         </td>
@@ -228,15 +255,17 @@ values in the CSV file (such as <code>"en-US"</code>). The default is invariant 
 <li><code>maxRows</code> - Specifies the maximum number of rows that will be read from the CSV file</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '560', 560)" onmouseover="showTip(event, '560', 560)">
+          <code onmouseout="hideTip(event, '563', 563)" onmouseover="showTip(event, '563', 563)">
             ReadReader(reader)
           </code>
-          <div class="tip" id="560">
+          <div class="tip" id="563">
             <strong>Signature:</strong> reader:IDataReader -&gt; Frame&lt;int,string&gt;<br />
                       </div>
         </td>
@@ -249,6 +278,8 @@ values in the CSV file (such as <code>"en-US"</code>). The default is invariant 
 and for each row, gets all the columns. When a value is <code>DBNull</code>, it is treated
 as missing. The types of created vectors are determined by the field types reported
 by the data reader.</p>
+
+
 
         </td>
       </tr>
@@ -264,10 +295,10 @@ by the data reader.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '561', 561)" onmouseover="showTip(event, '561', 561)">
+          <code onmouseout="hideTip(event, '564', 564)" onmouseover="showTip(event, '564', 564)">
             CreateEmpty()
           </code>
-          <div class="tip" id="561">
+          <div class="tip" id="564">
             <strong>Signature:</strong> unit -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C          </div>
         </td>
@@ -282,10 +313,10 @@ by the data reader.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '562', 562)" onmouseover="showTip(event, '562', 562)">
+          <code onmouseout="hideTip(event, '565', 565)" onmouseover="showTip(event, '565', 565)">
             FromArray2D(array)
           </code>
-          <div class="tip" id="562">
+          <div class="tip" id="565">
             <strong>Signature:</strong> (array:&#39;T [,]) -&gt; Frame&lt;int,int&gt;<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
@@ -304,15 +335,17 @@ of the returned frame are indexed with the element's offset in the array.</p>
 <li><code>array</code> - A two-dimensional array to be converted into a data frame</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '563', 563)" onmouseover="showTip(event, '563', 563)">
+          <code onmouseout="hideTip(event, '566', 566)" onmouseover="showTip(event, '566', 566)">
             FromColumns(cols)
           </code>
-          <div class="tip" id="563">
+          <div class="tip" id="566">
             <strong>Signature:</strong> cols:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt;<br />
                           <strong>Type parameters:</strong> 'TColKey, 'TRowKey, 'V          </div>
         </td>
@@ -327,10 +360,10 @@ of the returned frame are indexed with the element's offset in the array.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '564', 564)" onmouseover="showTip(event, '564', 564)">
+          <code onmouseout="hideTip(event, '567', 567)" onmouseover="showTip(event, '567', 567)">
             FromColumns(cols)
           </code>
-          <div class="tip" id="564">
+          <div class="tip" id="567">
             <strong>Signature:</strong> cols:Series&lt;&#39;TColKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt;<br />
                           <strong>Type parameters:</strong> 'TColKey, 'TRowKey          </div>
         </td>
@@ -345,10 +378,10 @@ of the returned frame are indexed with the element's offset in the array.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '565', 565)" onmouseover="showTip(event, '565', 565)">
+          <code onmouseout="hideTip(event, '568', 568)" onmouseover="showTip(event, '568', 568)">
             FromColumns(columns)
           </code>
-          <div class="tip" id="565">
+          <div class="tip" id="568">
             <strong>Signature:</strong> columns:seq&lt;KeyValuePair&lt;&#39;ColKey,ObjectSeries&lt;&#39;RowKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt;<br />
                           <strong>Type parameters:</strong> 'ColKey, 'RowKey          </div>
         </td>
@@ -363,10 +396,10 @@ of the returned frame are indexed with the element's offset in the array.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '566', 566)" onmouseover="showTip(event, '566', 566)">
+          <code onmouseout="hideTip(event, '569', 569)" onmouseover="showTip(event, '569', 569)">
             FromColumns(columns)
           </code>
-          <div class="tip" id="566">
+          <div class="tip" id="569">
             <strong>Signature:</strong> columns:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt;<br />
                           <strong>Type parameters:</strong> 'ColKey, 'RowKey, 'V          </div>
         </td>
@@ -381,10 +414,10 @@ of the returned frame are indexed with the element's offset in the array.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '567', 567)" onmouseover="showTip(event, '567', 567)">
+          <code onmouseout="hideTip(event, '570', 570)" onmouseover="showTip(event, '570', 570)">
             FromColumns(cols)
           </code>
-          <div class="tip" id="567">
+          <div class="tip" id="570">
             <strong>Signature:</strong> cols:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;ColKey,int&gt;<br />
                           <strong>Type parameters:</strong> 'ColKey, 'V          </div>
         </td>
@@ -399,10 +432,10 @@ of the returned frame are indexed with the element's offset in the array.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '568', 568)" onmouseover="showTip(event, '568', 568)">
+          <code onmouseout="hideTip(event, '571', 571)" onmouseover="showTip(event, '571', 571)">
             FromRecords(values)
           </code>
-          <div class="tip" id="568">
+          <div class="tip" id="571">
             <strong>Signature:</strong> values:seq&lt;&#39;T&gt; -&gt; Frame&lt;int,string&gt;<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
@@ -426,15 +459,17 @@ rows of the resulting frame are automatically indexed by <code>int</code>.</p>
       new { A = 2, B = "Another"}
    });</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '569', 569)" onmouseover="showTip(event, '569', 569)">
+          <code onmouseout="hideTip(event, '572', 572)" onmouseover="showTip(event, '572', 572)">
             FromRecords(series)
           </code>
-          <div class="tip" id="569">
+          <div class="tip" id="572">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;R&gt; -&gt; Frame&lt;&#39;K,string&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'R          </div>
         </td>
@@ -446,15 +481,17 @@ rows of the resulting frame are automatically indexed by <code>int</code>.</p>
           <p>Creates a data frame from a sequence of any .NET objects. The method uses reflection
 over the specified type parameter <code>'T</code> and turns its properties to columns.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '570', 570)" onmouseover="showTip(event, '570', 570)">
+          <code onmouseout="hideTip(event, '573', 573)" onmouseover="showTip(event, '573', 573)">
             FromRowKeys(keys)
           </code>
-          <div class="tip" id="570">
+          <div class="tip" id="573">
             <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; Frame&lt;&#39;K,string&gt;<br />
                           <strong>Type parameters:</strong> 'K          </div>
         </td>
@@ -469,10 +506,10 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '571', 571)" onmouseover="showTip(event, '571', 571)">
+          <code onmouseout="hideTip(event, '574', 574)" onmouseover="showTip(event, '574', 574)">
             FromRows(rows)
           </code>
-          <div class="tip" id="571">
+          <div class="tip" id="574">
             <strong>Signature:</strong> rows:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TColKey,&#39;TRowKey&gt;<br />
                           <strong>Type parameters:</strong> 'TColKey, 'TRowKey, 'V          </div>
         </td>
@@ -487,10 +524,10 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '572', 572)" onmouseover="showTip(event, '572', 572)">
+          <code onmouseout="hideTip(event, '575', 575)" onmouseover="showTip(event, '575', 575)">
             FromRows(rows)
           </code>
-          <div class="tip" id="572">
+          <div class="tip" id="575">
             <strong>Signature:</strong> rows:Series&lt;&#39;TColKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TColKey,&#39;TRowKey&gt;<br />
                           <strong>Type parameters:</strong> 'TColKey, 'TRowKey          </div>
         </td>
@@ -505,10 +542,10 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '573', 573)" onmouseover="showTip(event, '573', 573)">
+          <code onmouseout="hideTip(event, '576', 576)" onmouseover="showTip(event, '576', 576)">
             FromRows(rows)
           </code>
-          <div class="tip" id="573">
+          <div class="tip" id="576">
             <strong>Signature:</strong> rows:seq&lt;KeyValuePair&lt;&#39;RowKey,ObjectSeries&lt;&#39;ColKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt;<br />
                           <strong>Type parameters:</strong> 'RowKey, 'ColKey          </div>
         </td>
@@ -523,10 +560,10 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '574', 574)" onmouseover="showTip(event, '574', 574)">
+          <code onmouseout="hideTip(event, '577', 577)" onmouseover="showTip(event, '577', 577)">
             FromRows(rows)
           </code>
-          <div class="tip" id="574">
+          <div class="tip" id="577">
             <strong>Signature:</strong> rows:seq&lt;KeyValuePair&lt;&#39;RowKey,Series&lt;&#39;ColKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt;<br />
                           <strong>Type parameters:</strong> 'RowKey, 'ColKey, 'V          </div>
         </td>
@@ -541,10 +578,10 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '575', 575)" onmouseover="showTip(event, '575', 575)">
+          <code onmouseout="hideTip(event, '578', 578)" onmouseover="showTip(event, '578', 578)">
             FromRows(rows)
           </code>
-          <div class="tip" id="575">
+          <div class="tip" id="578">
             <strong>Signature:</strong> rows:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;int,&#39;ColKey&gt;<br />
                           <strong>Type parameters:</strong> 'ColKey, 'V          </div>
         </td>
@@ -559,12 +596,12 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '576', 576)" onmouseover="showTip(event, '576', 576)">
+          <code onmouseout="hideTip(event, '579', 579)" onmouseover="showTip(event, '579', 579)">
             FromValues(values)
           </code>
-          <div class="tip" id="576">
-            <strong>Signature:</strong> (values:seq&lt;&#39;?478554 * &#39;?478555 * &#39;?478556&gt;) -&gt; Frame&lt;&#39;?478554,&#39;?478555&gt;<br />
-                          <strong>Type parameters:</strong> '?478554, '?478555, '?478556          </div>
+          <div class="tip" id="579">
+            <strong>Signature:</strong> (values:seq&lt;&#39;?490175 * &#39;?490176 * &#39;?490177&gt;) -&gt; Frame&lt;&#39;?490175,&#39;?490176&gt;<br />
+                          <strong>Type parameters:</strong> '?490175, '?490176, '?490177          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L241-241" class="github-link">
@@ -573,15 +610,17 @@ over the specified type parameter <code>'T</code> and turns its properties to co
             </a>
           <p>Create a data frame from a sequence of tuples containing row key, column key and a value</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '577', 577)" onmouseover="showTip(event, '577', 577)">
+          <code onmouseout="hideTip(event, '580', 580)" onmouseover="showTip(event, '580', 580)">
             FromValues(...)
           </code>
-          <div class="tip" id="577">
+          <div class="tip" id="580">
             <strong>Signature:</strong> (values:seq&lt;&#39;T&gt; * colSel:Func&lt;&#39;T,&#39;C&gt; * rowSel:Func&lt;&#39;T,&#39;R&gt; * valSel:Func&lt;&#39;T,&#39;V&gt;) -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'T, 'C, 'R, 'V          </div>
         </td>
@@ -601,6 +640,8 @@ row key, column key and value for each object in the input sequence.</p>
 <li><code>rowSel</code> - A function that returns the row key of an object</li>
 <li><code>valSel</code> - A function that returns the value of an object</li>
 </ul>
+
+
 
         </td>
       </tr>

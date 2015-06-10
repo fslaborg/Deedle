@@ -45,6 +45,8 @@
 <p>Represents different kinds of type conversions that can be used by Deedle internally.
 This is used, for example, when converting <code>ObjectSeries&lt;'K&gt;</code> to <code>Series&lt;'K, 'T&gt;</code> - 
 The conversion kind can be specified as an argument to allow certain conversions.</p>
+
+
 </div>
   <h3>Record Fields</h3>
   <table class="table table-bordered member-list">
@@ -55,10 +57,10 @@ The conversion kind can be specified as an argument to allow certain conversions
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '392', 392)" onmouseover="showTip(event, '392', 392)">
+          <code onmouseout="hideTip(event, '395', 395)" onmouseover="showTip(event, '395', 395)">
             Exact
           </code>
-          <div class="tip" id="392">
+          <div class="tip" id="395">
             <strong>Signature:</strong> ConversionKind<br />
               <strong>Modifiers:</strong> static<br />
                       </div>
@@ -70,15 +72,17 @@ The conversion kind can be specified as an argument to allow certain conversions
             </a>
           <p>Specifies that the type has to match exactly and no conversions are performed.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '393', 393)" onmouseover="showTip(event, '393', 393)">
+          <code onmouseout="hideTip(event, '396', 396)" onmouseover="showTip(event, '396', 396)">
             Flexible
           </code>
-          <div class="tip" id="393">
+          <div class="tip" id="396">
             <strong>Signature:</strong> ConversionKind<br />
               <strong>Modifiers:</strong> static<br />
                       </div>
@@ -91,15 +95,17 @@ The conversion kind can be specified as an argument to allow certain conversions
           <p>Allows the use of arbitrary .NET conversions. This uses <code>Convert.ChangeType</code>, which
 performs numerical conversions, parsing of strings, uses <code>IConvertable</code> and more.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '394', 394)" onmouseover="showTip(event, '394', 394)">
+          <code onmouseout="hideTip(event, '397', 397)" onmouseover="showTip(event, '397', 397)">
             Safe
           </code>
-          <div class="tip" id="394">
+          <div class="tip" id="397">
             <strong>Signature:</strong> ConversionKind<br />
               <strong>Modifiers:</strong> static<br />
                       </div>
@@ -112,6 +118,8 @@ performs numerical conversions, parsing of strings, uses <code>IConvertable</cod
           <p>Allows conversions that widen numeric types, but nothing else. This includes
 conversions on decimals <code>decimal -&gt; float32 -&gt; float</code> and also from integers 
 to floating points (<code>int -&gt; decimal</code> etc.)</p>
+
+
 
         </td>
       </tr>

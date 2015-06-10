@@ -46,6 +46,8 @@
 includes operations for creating frames such as the <code>frame</code> function, <code>=&gt;</code> operator
 and <code>Frame.ofRows</code>, <code>Frame.ofColumns</code> and <code>Frame.ofRowKeys</code> functions. The module
 also provides additional F# extension methods including <code>ReadCsv</code>, <code>SaveCsv</code> and <code>PivotTable</code>.</p>
+
+
 </div>
   <!-- If there is more than 1 category in the type, generate TOC -->
   <h2>Table of contents</h2>
@@ -63,14 +65,25 @@ also provides additional F# extension methods including <code>ReadCsv</code>, <c
 a frame from a number of sample values, you can use <code>frame</code> and the <code>=&gt;</code> operator (or the
 <code>=?&gt;</code> opreator which is useful if you have multiple series of distinct types):</p>
 
-<pre><code>frame [ "Column 1" =&gt; series [ 1 =&gt; 1.0; 2 =&gt; 2.0 ]
-        "Column 2" =&gt; series [ 3 =&gt; 3.0 ] ]
-</code></pre>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">frame</span> [ <span class="s">&quot;Column 1&quot;</span> <span class="o">=&gt;</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">1.0</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="n">2.0</span> ]
+        <span class="s">&quot;Column 2&quot;</span> <span class="o">=&gt;</span> <span class="i">series</span> [ <span class="n">3</span> <span class="o">=&gt;</span> <span class="n">3.0</span> ] ]
+</pre>
+</td>
+</tr>
+</table>
 
 <p>Aside from this, the various type extensions let you write <code>Frame.ofXyz</code> to construct frames
 from data in various formats - <code>Frame.ofRows</code> and <code>Frame.ofColumns</code> create frame from a series
 or a sequence of rows or columns; <code>Frame.ofRecords</code> creates a frame from .NET objects using
 Reflection and <code>Frame.ofRowKeys</code> creates an empty frame with the specified keys.</p>
+
+
 
       </div>
   <h3>Functions and values</h3>
@@ -86,8 +99,8 @@ Reflection and <code>Frame.ofRowKeys</code> creates an empty frame with the spec
             ( =?&gt; ) a b
           </code>
           <div class="tip" id="13">
-            <strong>Signature:</strong> a:&#39;?484361 -&gt; b:ISeries&lt;&#39;?484362&gt; -&gt; &#39;?484361 * ISeries&lt;&#39;?484362&gt;<br />
-                          <strong>Type parameters:</strong> '?484361, '?484362          </div>
+            <strong>Signature:</strong> a:&#39;?496082 -&gt; b:ISeries&lt;&#39;?496083&gt; -&gt; &#39;?496082 * ISeries&lt;&#39;?496083&gt;<br />
+                          <strong>Type parameters:</strong> '?496082, '?496083          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L354-354" class="github-link">
@@ -98,7 +111,18 @@ Reflection and <code>Frame.ofRowKeys</code> creates an empty frame with the spec
 of series. The operator simply returns a tuple, but it upcasts the series 
 argument so you don't have to do manual casting. For example:</p>
 
-<pre><code>frame [ "k1" =?&gt; series [0 =&gt; "a"]; "k2" =?&gt; series ["x" =&gt; "y"] ]</code></pre>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">frame</span> [ <span class="s">&quot;k1&quot;</span> <span class="o">=?&gt;</span> <span class="i">series</span> [<span class="n">0</span> <span class="o">=&gt;</span> <span class="s">&quot;a&quot;</span>]; <span class="s">&quot;k2&quot;</span> <span class="o">=?&gt;</span> <span class="i">series</span> [<span class="s">&quot;x&quot;</span> <span class="o">=&gt;</span> <span class="s">&quot;y&quot;</span>] ]
+</pre>
+</td>
+</tr>
+</table>
+
+
 
         </td>
       </tr>
@@ -109,8 +133,8 @@ argument so you don't have to do manual casting. For example:</p>
             ( =&gt; ) a b
           </code>
           <div class="tip" id="14">
-            <strong>Signature:</strong> a:&#39;?484358 -&gt; b:&#39;?484359 -&gt; &#39;?484358 * &#39;?484359<br />
-                          <strong>Type parameters:</strong> '?484358, '?484359          </div>
+            <strong>Signature:</strong> a:&#39;?496079 -&gt; b:&#39;?496080 -&gt; &#39;?496079 * &#39;?496080<br />
+                          <strong>Type parameters:</strong> '?496079, '?496080          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L345-345" class="github-link">
@@ -121,7 +145,18 @@ argument so you don't have to do manual casting. For example:</p>
 or frames from key-row or key-column pairs. The operator simply returns a 
 tuple, but it provides a more convenient syntax. For example:</p>
 
-<pre><code>series [ "k1" =&gt; 1; "k2" =&gt; 15 ]</code></pre>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">series</span> [ <span class="s">&quot;k1&quot;</span> <span class="o">=&gt;</span> <span class="n">1</span>; <span class="s">&quot;k2&quot;</span> <span class="o">=&gt;</span> <span class="n">15</span> ]
+</pre>
+</td>
+</tr>
+</table>
+
+
 
         </td>
       </tr>
@@ -132,8 +167,8 @@ tuple, but it provides a more convenient syntax. For example:</p>
             frame columns
           </code>
           <div class="tip" id="15">
-            <strong>Signature:</strong> columns:seq&lt;&#39;?484364 * &#39;?484365&gt; -&gt; Frame&lt;&#39;?484366,&#39;?484364&gt;<br />
-                          <strong>Type parameters:</strong> '?484364, '?484365, '?484366          </div>
+            <strong>Signature:</strong> columns:seq&lt;&#39;?496085 * &#39;?496086&gt; -&gt; Frame&lt;&#39;?496087,&#39;?496085&gt;<br />
+                          <strong>Type parameters:</strong> '?496085, '?496086, '?496087          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L366-366" class="github-link">
@@ -147,8 +182,20 @@ This provides a nicer syntactic sugar for <code>Frame.ofColumns</code>.</p>
 
 <p>To create a simple frame with two columns, you can write:</p>
 
-<pre><code>frame [ "A" =&gt; series [ 1 =&gt; 30.0; 2 =&gt; 35.0 ]
-        "B" =&gt; series [ 1 =&gt; 30.0; 3 =&gt; 40.0 ] ]</code></pre>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">frame</span> [ <span class="s">&quot;A&quot;</span> <span class="o">=&gt;</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">30.0</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="n">35.0</span> ]
+        <span class="s">&quot;B&quot;</span> <span class="o">=&gt;</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">30.0</span>; <span class="n">3</span> <span class="o">=&gt;</span> <span class="n">40.0</span> ] ]
+</pre>
+</td>
+</tr>
+</table>
+
+
 
         </td>
       </tr>
@@ -171,7 +218,7 @@ This provides a nicer syntactic sugar for <code>Frame.ofColumns</code>.</p>
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L582-582" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L591-591" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -185,6 +232,8 @@ of the returned frame are indexed with the element's offset in the array.</p>
 <li><code>array</code> - A two-dimensional array to be converted into a data frame</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -194,16 +243,18 @@ of the returned frame are indexed with the element's offset in the array.</p>
             ofColumns(cols)
           </code>
           <div class="tip" id="17">
-            <strong>Signature:</strong> cols:Series&lt;&#39;C,&#39;?484388&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'C, '?484388, 'R          </div>
+            <strong>Signature:</strong> cols:Series&lt;&#39;C,&#39;?496109&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, '?496109, 'R          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L535-535" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L544-544" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Creates a frame from a series that maps column keys to a nested series 
 containing values for each column.</p>
+
+
 
         </td>
       </tr>
@@ -214,17 +265,19 @@ containing values for each column.</p>
             ofColumns(cols)
           </code>
           <div class="tip" id="18">
-            <strong>Signature:</strong> (cols:seq&lt;&#39;C * &#39;?484392&gt;) -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'C, '?484392, 'R          </div>
+            <strong>Signature:</strong> (cols:seq&lt;&#39;C * &#39;?496113&gt;) -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, '?496113, 'R          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L543-543" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L552-552" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Creates a frame from a sequence of column keys and column series pairs. 
 The column series can contain values of any type, but it has to be the same 
 for all the series - if you have heterogenously typed series, use <code>=?&gt;</code>.</p>
+
+
 
         </td>
       </tr>
@@ -239,12 +292,14 @@ for all the series - if you have heterogenously typed series, use <code>=?&gt;</
                           <strong>Type parameters:</strong> 'K, 'R          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L557-557" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L566-566" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Creates a data frame from a series containing any .NET objects. The method uses reflection
 over the specified type parameter <code>'T</code> and turns its properties to columns.</p>
+
+
 
         </td>
       </tr>
@@ -259,12 +314,14 @@ over the specified type parameter <code>'T</code> and turns its properties to co
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L564-564" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L573-573" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Creates a data frame from a sequence of any .NET objects. The method uses reflection
 over the specified type parameter <code>'T</code> and turns its properties to columns.</p>
+
+
 
         </td>
       </tr>
@@ -279,12 +336,14 @@ over the specified type parameter <code>'T</code> and turns its properties to co
                           <strong>Type parameters:</strong> 'R          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L571-571" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L580-580" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Creates a data frame from a sequence of any .NET objects. The method uses reflection
 over the specified type parameter <code>'T</code> and turns its properties to columns.</p>
+
+
 
         </td>
       </tr>
@@ -299,13 +358,15 @@ over the specified type parameter <code>'T</code> and turns its properties to co
                           <strong>Type parameters:</strong> 'R          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L528-528" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L537-537" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Creates a frame with the specified row keys, but no columns (and no data).
 This is useful if you want to build a frame gradually and restrict all the
 later added data to a sequence of row keys known in advance.</p>
+
+
 
         </td>
       </tr>
@@ -316,17 +377,19 @@ later added data to a sequence of row keys known in advance.</p>
             ofRows(rows)
           </code>
           <div class="tip" id="23">
-            <strong>Signature:</strong> (rows:seq&lt;&#39;R * &#39;?484378&gt;) -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'R, '?484378, 'C          </div>
+            <strong>Signature:</strong> (rows:seq&lt;&#39;R * &#39;?496099&gt;) -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, '?496099, 'C          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L512-512" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L521-521" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Creates a frame from a sequence of row keys and row series pairs. 
 The row series can contain values of any type, but it has to be the same 
 for all the series - if you have heterogenously typed series, use <code>=?&gt;</code>.</p>
+
+
 
         </td>
       </tr>
@@ -337,16 +400,18 @@ for all the series - if you have heterogenously typed series, use <code>=?&gt;</
             ofRows(rows)
           </code>
           <div class="tip" id="24">
-            <strong>Signature:</strong> rows:Series&lt;&#39;R,&#39;?484382&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'R, '?484382, 'C          </div>
+            <strong>Signature:</strong> rows:Series&lt;&#39;R,&#39;?496103&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, '?496103, 'C          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L520-520" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L529-529" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Creates a frame from a series that maps row keys to a nested series 
 containing values for each row.</p>
+
+
 
         </td>
       </tr>
@@ -357,17 +422,19 @@ containing values for each row.</p>
             ofRowsOrdinal(rows)
           </code>
           <div class="tip" id="25">
-            <strong>Signature:</strong> rows:seq&lt;&#39;?484373&gt; -&gt; Frame&lt;int,&#39;K&gt;<br />
-                          <strong>Type parameters:</strong> '?484373, 'K, 'V          </div>
+            <strong>Signature:</strong> rows:seq&lt;&#39;?496094&gt; -&gt; Frame&lt;int,&#39;K&gt;<br />
+                          <strong>Type parameters:</strong> '?496094, 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L504-504" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L513-513" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Creates a frame with ordinal Integer index from a sequence of rows.
 The column indices of individual rows are unioned, so if a row has fewer
 columns, it will be successfully added, but there will be missing values.</p>
+
+
 
         </td>
       </tr>
@@ -382,11 +449,13 @@ columns, it will be successfully added, but there will be missing values.</p>
                           <strong>Type parameters:</strong> 'R, 'C, 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L550-550" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L559-559" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Create a data frame from a sequence of tuples containing row key, column key and a value.</p>
+
+
 
         </td>
       </tr>
@@ -395,6 +464,8 @@ columns, it will be successfully added, but there will be missing values.</p>
     <h2>Frame operations<a name="section1">&#160;</a></h2>    
       <div class="xmldoc">
         <p>The group contains two overloads of the F#-friendly version of the <code>PivotTable</code> method.</p>
+
+
 
       </div>
   <h3>Type extensions</h3>
@@ -414,7 +485,7 @@ columns, it will be successfully added, but there will be missing values.</p>
                           <strong>Type parameters:</strong> 'R, 'C, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L598-598" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L607-607" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -432,6 +503,8 @@ bucket.</p>
 <li><code>op</code> - A function computing a value from the corresponding bucket frame</li>
 </ul>
 
+
+
         </td>
       </tr>
     </tbody>
@@ -443,6 +516,8 @@ methods. The methods here are designed to be used from F# and so they are F#-sty
 and they use F#-style optional arguments. In general, the overlads take either a path or
 <code>TextReader</code>/<code>TextWriter</code>. Also note that <code>ReadCsv&lt;'R&gt;(path, indexCol, ...)</code> lets you specify
 the column to be used as the index.</p>
+
+
 
       </div>
   <h3>Type extensions</h3>
@@ -462,7 +537,7 @@ the column to be used as the index.</p>
                           <strong>Type parameters:</strong> 'R          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L401-401" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L410-410" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -495,6 +570,8 @@ values in the CSV file (such as <code>"en-US"</code>). The default is invariant 
 as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -508,7 +585,7 @@ as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L433-433" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L442-442" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -538,6 +615,8 @@ values in the CSV file (such as <code>"en-US"</code>). The default is invariant 
 as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -551,7 +630,7 @@ as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L464-464" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L473-473" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -581,6 +660,8 @@ values in the CSV file (such as <code>"en-US"</code>). The default is invariant 
 as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -594,7 +675,7 @@ as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L494-494" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L503-503" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -624,6 +705,8 @@ values in the CSV file (such as <code>"en-US"</code>). The default is invariant 
 as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -637,7 +720,7 @@ as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L615-615" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L624-624" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -657,6 +740,8 @@ TSV files and <code>,</code> for CSV files)</li>
 <li><code>culture</code> - Specify the <code>CultureInfo</code> object used for formatting numerical data</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -670,7 +755,7 @@ TSV files and <code>,</code> for CSV files)</li>
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L632-632" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L641-641" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -690,6 +775,8 @@ TSV files and <code>,</code> for CSV files)</li>
 <li><code>culture</code> - Specify the <code>CultureInfo</code> object used for formatting numerical data</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -703,7 +790,7 @@ TSV files and <code>,</code> for CSV files)</li>
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L649-649" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L658-658" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -722,6 +809,8 @@ TSV files and <code>,</code> for CSV files)</li>
 <li><code>culture</code> - Specify the <code>CultureInfo</code> object used for formatting numerical data</li>
 </ul>
 
+
+
         </td>
       </tr>
       <tr>
@@ -735,7 +824,7 @@ TSV files and <code>,</code> for CSV files)</li>
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L664-664" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L673-673" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -751,6 +840,8 @@ as a sequence to support hierarchical keys, but typically you can write just
 <li><code>rowKeyNames</code> - Specifies the names of the row key components (or just a single
 row key name if the row index is not hierarchical).</li>
 </ul>
+
+
 
         </td>
       </tr>

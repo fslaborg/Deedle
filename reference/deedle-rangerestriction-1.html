@@ -47,6 +47,8 @@
 range via known addresses is typically sufficient, but for virtual Big Deedle
 sources, <code>Start</code> and <code>End</code> let us avoid fully evaluating addresses.
 <code>Custom</code> range can be used for optimizations.</p>
+
+
 </div>
   <h3>Union Cases</h3>
   <table class="table table-bordered member-list">
@@ -57,10 +59,10 @@ sources, <code>Start</code> and <code>End</code> let us avoid fully evaluating a
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '694', 694)" onmouseover="showTip(event, '694', 694)">
+          <code onmouseout="hideTip(event, '698', 698)" onmouseover="showTip(event, '698', 698)">
             Custom(IRangeRestriction&lt;&#39;TAddress&gt;)
           </code>
-          <div class="tip" id="694">
+          <div class="tip" id="698">
             <strong>Signature:</strong> IRangeRestriction&lt;&#39;TAddress&gt;<br />
                       </div>
         </td>
@@ -71,15 +73,17 @@ sources, <code>Start</code> and <code>End</code> let us avoid fully evaluating a
             </a>
           <p>Custom range, which is a sequence of indices, or other representation of it</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '695', 695)" onmouseover="showTip(event, '695', 695)">
+          <code onmouseout="hideTip(event, '699', 699)" onmouseover="showTip(event, '699', 699)">
             End(int64)
           </code>
-          <div class="tip" id="695">
+          <div class="tip" id="699">
             <strong>Signature:</strong> int64<br />
                       </div>
         </td>
@@ -90,15 +94,17 @@ sources, <code>Start</code> and <code>End</code> let us avoid fully evaluating a
             </a>
           <p>Range referring to the specified number of elements from the end</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '696', 696)" onmouseover="showTip(event, '696', 696)">
+          <code onmouseout="hideTip(event, '700', 700)" onmouseover="showTip(event, '700', 700)">
             Fixed(&#39;TAddress,&#39;TAddress)
           </code>
-          <div class="tip" id="696">
+          <div class="tip" id="700">
             <strong>Signature:</strong> &#39;TAddress * &#39;TAddress<br />
                       </div>
         </td>
@@ -109,15 +115,17 @@ sources, <code>Start</code> and <code>End</code> let us avoid fully evaluating a
             </a>
           <p>Range specified as a pair of (inclusive) lower and upper addresses</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '697', 697)" onmouseover="showTip(event, '697', 697)">
+          <code onmouseout="hideTip(event, '701', 701)" onmouseover="showTip(event, '701', 701)">
             Start(int64)
           </code>
-          <div class="tip" id="697">
+          <div class="tip" id="701">
             <strong>Signature:</strong> int64<br />
                       </div>
         </td>
@@ -128,6 +136,34 @@ sources, <code>Start</code> and <code>End</code> let us avoid fully evaluating a
             </a>
           <p>Range referring to the specified number of elements from the start</p>
 
+
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>Instance members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Instance member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '702', 702)" onmouseover="showTip(event, '702', 702)">
+            Select(f)
+          </code>
+          <div class="tip" id="702">
+            <strong>Signature:</strong> f:Func&lt;&#39;TAddress,&#39;?492028&gt; -&gt; RangeRestriction&lt;&#39;?492028&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Address.fs#L100-100" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
     </tbody>
