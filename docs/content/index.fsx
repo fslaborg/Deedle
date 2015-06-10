@@ -29,7 +29,7 @@ classes of tickets:
 <div id="hp-snippeta">
 *)
 (*** define-output: sample ***)
-// Read Titanic data & group rows by 'Sex'
+// Read Titanic data & group rows by 'Pclass'
 let titanic = Frame.ReadCsv(root + "titanic.csv").GroupRowsBy<int>("Pclass")
 
 // Get 'Survived' column and count survival count per clsas
