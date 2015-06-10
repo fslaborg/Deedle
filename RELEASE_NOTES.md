@@ -104,5 +104,7 @@
  * Support more operations on virtualized sources
  * Fix handling of missing values in virtual Series.map
 
-### 1.1.5-beta
+### 1.1.5
+ * Aggregate bug fixes from previous beta releases
+ * Provide virtual index and virtual vector (aka BigDeedle)
  * Compare indices using lazy sequences (to support BigDeedle)
