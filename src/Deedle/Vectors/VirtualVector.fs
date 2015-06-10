@@ -14,12 +14,27 @@ open Deedle.VectorHelpers
 open Deedle.Internal
 open System.Runtime.CompilerServices
 
+/// Various BigDeedle implementations can use different schemes for working with addresses 
+/// (for example, address can be just a global offset, or it can be pair of `int32` values
+/// that store partition and offset in a partition). This interface represents a specific
+/// address range and abstracts operations that BigDeedle needs to perform on addresses
+/// (within the specified range)
 type IAddressOperations =
+  /// Returns the first address of the range
   abstract FirstElement : Address
+  /// Returns the last address of the range
   abstract LastElement : Address
+  /// Returns a sequence that iterates over `FirstElement .. LastElement`
   abstract Range : seq<Address>
+  /// Given an address, return the absolute offset of the address in the range
+  /// This might be tricky for partitioned ranges. For example if you have two 
+  /// partitions with 10 values addressed by (0,0)..(0,9); (1,0)..(1,9), the the
+  /// offset of address (1, 5) is 15.
   abstract OffsetOf : Address -> int64
+  /// Return the address of a value at the specified absolute offset.
+  /// (See the comment for `OffsetOf` for more info about partitioning)
   abstract AddressOf : int64 -> Address
+
 
 type IVirtualVectorSourceOperation<'R> =
   abstract Invoke<'T> : IVirtualVectorSource<'T> -> 'R
