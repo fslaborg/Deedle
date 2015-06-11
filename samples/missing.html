@@ -40,8 +40,7 @@
           
 <h1><a name="Missing-data-and-exceptions" class="anchor" href="#Missing-data-and-exceptions">Missing data and exceptions</a></h1>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l"> 1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
 <span class="l"> 4: </span>
@@ -67,10 +66,8 @@
 <span class="l">24: </span>
 <span class="l">25: </span>
 <span class="l">26: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">msftCsv</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="t">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 7)" onmouseover="showTip(event, 'fs7', 7)" class="f">ReadCsv</span>(<span class="k">__SOURCE_DIRECTORY__</span> <span class="o">+</span> <span class="s">&quot;/../data/MSFT.csv&quot;</span>)
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">msftCsv</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="t">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 7)" onmouseover="showTip(event, 'fs7', 7)" class="f">ReadCsv</span>(<span class="k">__SOURCE_DIRECTORY__</span> <span class="o">+</span> <span class="s">&quot;/../data/MSFT.csv&quot;</span>)
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs8', 8)" onmouseover="showTip(event, 'fs8', 8)" class="i">fbCsv</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs6', 9)" onmouseover="showTip(event, 'fs6', 9)" class="t">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 10)" onmouseover="showTip(event, 'fs7', 10)" class="f">ReadCsv</span>(<span class="k">__SOURCE_DIRECTORY__</span> <span class="o">+</span> <span class="s">&quot;/../data/FB.csv&quot;</span>)
 
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs9', 11)" onmouseover="showTip(event, 'fs9', 11)" class="i">msftOrd</span> <span class="o">=</span> 
@@ -96,15 +93,13 @@
 
 <span class="c">// Outer join (align &amp; fill with missing values)</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs18', 40)" onmouseover="showTip(event, 'fs18', 40)" class="i">joinedOut</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs15', 41)" onmouseover="showTip(event, 'fs15', 41)" class="i">msftRen</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 42)" onmouseover="showTip(event, 'fs19', 42)" class="f">Join</span>(<span onmouseout="hideTip(event, 'fs17', 43)" onmouseover="showTip(event, 'fs17', 43)" class="i">fbRen</span>, <span class="i">kind</span><span class="o">=</span><span onmouseout="hideTip(event, 'fs20', 44)" onmouseover="showTip(event, 'fs20', 44)" class="t">JoinKind</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 45)" onmouseover="showTip(event, 'fs21', 45)" class="i">Outer</span>)
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
 <h2><a name="Handling-errors" class="anchor" href="#Handling-errors">Handling errors</a></h2>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l"> 1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
 <span class="l"> 4: </span>
@@ -127,10 +122,8 @@
 <span class="l">21: </span>
 <span class="l">22: </span>
 <span class="l">23: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs22', 46)" onmouseover="showTip(event, 'fs22', 46)" class="i">errors1</span> <span class="o">=</span> 
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs22', 46)" onmouseover="showTip(event, 'fs22', 46)" class="i">errors1</span> <span class="o">=</span> 
   <span onmouseout="hideTip(event, 'fs18', 47)" onmouseover="showTip(event, 'fs18', 47)" class="i">joinedOut</span><span class="o">?</span><span class="i">MsftOpen</span> 
   <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs23', 48)" onmouseover="showTip(event, 'fs23', 48)" class="t">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs24', 49)" onmouseover="showTip(event, 'fs24', 49)" class="f">tryMap</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs25', 50)" onmouseover="showTip(event, 'fs25', 50)" class="i">k</span> <span onmouseout="hideTip(event, 'fs26', 51)" onmouseover="showTip(event, 'fs26', 51)" class="i">v</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs27', 52)" onmouseover="showTip(event, 'fs27', 52)" class="f">int</span> <span onmouseout="hideTip(event, 'fs26', 53)" onmouseover="showTip(event, 'fs26', 53)" class="i">v</span> <span class="o">/</span> (<span onmouseout="hideTip(event, 'fs25', 54)" onmouseover="showTip(event, 'fs25', 54)" class="i">k</span><span class="o">.</span><span class="i">Day</span> <span class="o">%</span> <span class="n">5</span>))
 
@@ -153,21 +146,16 @@
 
 <span class="c">// </span>
 <span onmouseout="hideTip(event, 'fs34', 88)" onmouseover="showTip(event, 'fs34', 88)" class="i">errorDf</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs6', 89)" onmouseover="showTip(event, 'fs6', 89)" class="t">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs36', 90)" onmouseover="showTip(event, 'fs36', 90)" class="f">fillErrorsWith</span> <span class="o">-</span><span class="n">1</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs6', 91)" onmouseover="showTip(event, 'fs6', 91)" class="t">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs36', 92)" onmouseover="showTip(event, 'fs36', 92)" class="f">fillErrorsWith</span> (<span class="k">null</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs29', 93)" onmouseover="showTip(event, 'fs29', 93)" class="t">string</span>)
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
 <h2><a name="Other-TODO-things" class="anchor" href="#Other-TODO-things">Other TODO things</a></h2>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span onmouseout="hideTip(event, 'fs37', 94)" onmouseover="showTip(event, 'fs37', 94)" class="f">log</span> (<span onmouseout="hideTip(event, 'fs15', 95)" onmouseover="showTip(event, 'fs15', 95)" class="i">msftRen</span> <span class="o">**</span> <span class="n">2.0</span>)
-</pre>
-</td>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs37', 94)" onmouseover="showTip(event, 'fs37', 94)" class="f">log</span> (<span onmouseout="hideTip(event, 'fs15', 95)" onmouseover="showTip(event, 'fs15', 95)" class="i">msftRen</span> <span class="o">**</span> <span class="n">2.0</span>)
+</code></pre></td>
 </tr>
 </table>
 

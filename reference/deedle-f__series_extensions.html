@@ -41,6 +41,9 @@
 
 
 <h1>F# Series extensions</h1>
+<p>
+  <span>Namespace: Deedle</span><br />
+</p>
 <div class="xmldoc">
 <p>Contains extensions for creating values of type <code>Series&lt;'K, 'V&gt;</code> including
 a type with functions such as <code>Series.ofValues</code> and the <code>series</code> function.
@@ -81,8 +84,8 @@ The module is automatically opened for all F# code that references <code>Deedle<
             series observations
           </code>
           <div class="tip" id="36">
-            <strong>Signature:</strong> observations:seq&lt;&#39;?496045 * &#39;?496046&gt; -&gt; Series&lt;&#39;?496045,&#39;?496046&gt;<br />
-                          <strong>Type parameters:</strong> '?496045, '?496046          </div>
+            <strong>Signature:</strong> observations:seq&lt;&#39;?496423 * &#39;?496424&gt; -&gt; Series&lt;&#39;?496423,&#39;?496424&gt;<br />
+                          <strong>Type parameters:</strong> '?496423, '?496424          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L66-66" class="github-link">
@@ -95,16 +98,12 @@ with the <code>=&gt;</code> operator to create key-value pairs.</p>
 
 <h2>Example</h2>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="c">// Creates a series with squares of numbers</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="c">// Creates a series with squares of numbers</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">sqs</span> <span class="o">=</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">1.0</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="n">4.0</span>; <span class="n">3</span> <span class="o">=&gt;</span> <span class="n">9.0</span> ]
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 

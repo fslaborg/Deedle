@@ -234,20 +234,16 @@ functions work well with the pipelining operator (<code>|&gt;</code>). For examp
 a frame with two columns representing prices, we can use <code>Frame.diff</code> and 
 numerical operators to calculate daily returns like this:</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">df</span> <span class="o">=</span> <span class="i">frame</span> [ <span class="s">&quot;MSFT&quot;</span> <span class="o">=&gt;</span> <span class="i">prices1</span>; <span class="s">&quot;AAPL&quot;</span> <span class="o">=&gt;</span> <span class="i">prices2</span> ]
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">df</span> <span class="o">=</span> <span class="i">frame</span> [ <span class="s">&quot;MSFT&quot;</span> <span class="o">=&gt;</span> <span class="i">prices1</span>; <span class="s">&quot;AAPL&quot;</span> <span class="o">=&gt;</span> <span class="i">prices2</span> ]
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">past</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs1', 3)" onmouseover="showTip(event, 'fs1', 3)" class="i">df</span> <span class="o">|&gt;</span> <span class="i">Frame</span><span class="o">.</span><span class="i">diff</span> <span class="n">1</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="i">rets</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs2', 5)" onmouseover="showTip(event, 'fs2', 5)" class="i">past</span> <span class="o">/</span> <span onmouseout="hideTip(event, 'fs1', 6)" onmouseover="showTip(event, 'fs1', 6)" class="i">df</span> <span class="o">*</span> <span class="n">100.0</span>
 <span onmouseout="hideTip(event, 'fs3', 7)" onmouseover="showTip(event, 'fs3', 7)" class="i">rets</span> <span class="o">|&gt;</span> <span class="i">Stats</span><span class="o">.</span><span class="i">mean</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -286,18 +282,14 @@ well with the pipelining (<code>|&gt;</code>) operator. For example, given a ser
 we can use <code>Series.filterValues</code> to filter outliers and then <code>Stats.mean</code> to calculate
 the mean:</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="i">ages</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="i">ages</span>
 <span class="o">|&gt;</span> <span class="i">Series</span><span class="o">.</span><span class="i">filterValues</span> (<span class="k">fun</span> <span class="i">v</span> <span class="k">-&gt;</span> <span class="i">v</span> <span class="o">&gt;</span> <span class="n">0.0</span> <span class="o">&amp;&amp;</span> <span class="i">v</span> <span class="o">&lt;</span> <span class="n">120.0</span>)
 <span class="o">|&gt;</span> <span class="i">Stats</span><span class="o">.</span><span class="i">mean</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -305,16 +297,14 @@ the mean:</p>
 API is also exposed using C#-friendly extension methods. In C#, the above snippet could
 be written as:</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip" lang="csharp">ages
+</pre></td>
+<td class="snippet"><pre class="fssnip"><code lang="csharp">ages
   .Where(kvp <span class="o">=</span><span class="o">&gt;</span> kvp.Value <span class="o">&gt;</span> 0.0 <span class="o">&amp;</span><span class="o">&amp;</span> kvp.Value <span class="o">&lt;</span> 120.0)
   .Mean()
-</pre></td></tr></table>
+</code></pre></td></tr></table>
 
 <p>For more information about similar frame-manipulation functions, see the <code>Frame</code> module.
 For more information about C#-friendly extensions, see <code>SeriesExtensions</code>. The functions 

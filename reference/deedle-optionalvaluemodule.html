@@ -41,6 +41,9 @@
 
 
 <h1>OptionalValue</h1>
+<p>
+  <span>Namespace: Deedle</span><br />
+</p>
 <div class="xmldoc">
 <p>Provides various helper functions for using the <code>OptionalValue&lt;T&gt;</code> type from F#
 (The functions are similar to those in the standard <code>Option</code> module).</p>
@@ -250,14 +253,10 @@ values and return <code>OptionalValue&lt;R&gt;</code> with the result. Otherwise
           <p>Creates <code>OptionalValue&lt;T&gt;</code> from a tuple of type <code>bool * 'T</code>. This function
 can be used with .NET methods that use <code>out</code> arguments. For example:</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="i">Int32</span><span class="o">.</span><span class="i">TryParse</span>(<span class="s">&quot;42&quot;</span>) <span class="o">|&gt;</span> <span class="i">OptionalValue</span><span class="o">.</span><span class="i">ofTuple</span>
-</pre>
-</td>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="i">Int32</span><span class="o">.</span><span class="i">TryParse</span>(<span class="s">&quot;42&quot;</span>) <span class="o">|&gt;</span> <span class="i">OptionalValue</span><span class="o">.</span><span class="i">ofTuple</span>
+</code></pre></td>
 </tr>
 </table>
 
@@ -291,20 +290,16 @@ can be used with .NET methods that use <code>out</code> arguments. For example:<
           <p>Complete active pattern that can be used to pattern match on <code>OptionalValue&lt;T&gt;</code>.
 For example:</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">optVal</span> <span class="o">=</span> <span class="i">OptionalValue</span>(<span class="n">42</span>)
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">optVal</span> <span class="o">=</span> <span class="i">OptionalValue</span>(<span class="n">42</span>)
 <span class="k">match</span> <span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="i">optVal</span> <span class="k">with</span>
 | <span class="i">OptionalValue</span><span class="o">.</span><span class="i">Missing</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs2', 3)" onmouseover="showTip(event, 'fs2', 3)" class="i">printfn</span> <span class="s">&quot;Empty&quot;</span>
 | <span class="i">OptionalValue</span><span class="o">.</span><span class="i">Present</span>(<span class="i">v</span>) <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs2', 4)" onmouseover="showTip(event, 'fs2', 4)" class="i">printfn</span> <span class="s">&quot;Contains %d&quot;</span> <span class="i">v</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 

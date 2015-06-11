@@ -40,20 +40,16 @@
           
 <h1><a name="Numerics-and-statistics" class="anchor" href="#Numerics-and-statistics">Numerics and statistics</a></h1>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs8', 10)" onmouseover="showTip(event, 'fs8', 10)" class="i">s1</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 11)" onmouseover="showTip(event, 'fs9', 11)" class="f">series</span> [ <span class="k">for</span> <span onmouseout="hideTip(event, 'fs10', 12)" onmouseover="showTip(event, 'fs10', 12)" class="i">i</span> <span class="k">in</span> <span class="n">1</span> <span class="o">..</span> <span class="n">100</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs10', 13)" onmouseover="showTip(event, 'fs10', 13)" class="i">i</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs11', 14)" onmouseover="showTip(event, 'fs11', 14)" class="f">float</span> (<span onmouseout="hideTip(event, 'fs10', 15)" onmouseover="showTip(event, 'fs10', 15)" class="i">i</span> <span class="o">*</span> <span onmouseout="hideTip(event, 'fs10', 16)" onmouseover="showTip(event, 'fs10', 16)" class="i">i</span>) ]
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs8', 10)" onmouseover="showTip(event, 'fs8', 10)" class="i">s1</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 11)" onmouseover="showTip(event, 'fs9', 11)" class="f">series</span> [ <span class="k">for</span> <span onmouseout="hideTip(event, 'fs10', 12)" onmouseover="showTip(event, 'fs10', 12)" class="i">i</span> <span class="k">in</span> <span class="n">1</span> <span class="o">..</span> <span class="n">100</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs10', 13)" onmouseover="showTip(event, 'fs10', 13)" class="i">i</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs11', 14)" onmouseover="showTip(event, 'fs11', 14)" class="f">float</span> (<span onmouseout="hideTip(event, 'fs10', 15)" onmouseover="showTip(event, 'fs10', 15)" class="i">i</span> <span class="o">*</span> <span onmouseout="hideTip(event, 'fs10', 16)" onmouseover="showTip(event, 'fs10', 16)" class="i">i</span>) ]
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs12', 17)" onmouseover="showTip(event, 'fs12', 17)" class="i">s2</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 18)" onmouseover="showTip(event, 'fs9', 18)" class="f">series</span> [ <span class="k">for</span> <span onmouseout="hideTip(event, 'fs10', 19)" onmouseover="showTip(event, 'fs10', 19)" class="i">i</span> <span class="k">in</span> <span class="n">1</span> <span class="o">..</span> <span class="n">100</span> <span class="k">-&gt;</span> (<span onmouseout="hideTip(event, 'fs10', 20)" onmouseover="showTip(event, 'fs10', 20)" class="i">i</span> <span class="o">+</span> <span class="n">2</span>) <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs11', 21)" onmouseover="showTip(event, 'fs11', 21)" class="f">float</span> (<span onmouseout="hideTip(event, 'fs10', 22)" onmouseover="showTip(event, 'fs10', 22)" class="i">i</span> <span class="o">*</span> <span onmouseout="hideTip(event, 'fs10', 23)" onmouseover="showTip(event, 'fs10', 23)" class="i">i</span>) ]
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs13', 24)" onmouseover="showTip(event, 'fs13', 24)" class="i">s1&#39;</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs8', 25)" onmouseover="showTip(event, 'fs8', 25)" class="i">s1</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs14', 26)" onmouseover="showTip(event, 'fs14', 26)" class="t">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs15', 27)" onmouseover="showTip(event, 'fs15', 27)" class="f">mapAll</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs16', 28)" onmouseover="showTip(event, 'fs16', 28)" class="i">k</span> <span onmouseout="hideTip(event, 'fs17', 29)" onmouseover="showTip(event, 'fs17', 29)" class="i">v</span> <span class="k">-&gt;</span> <span class="k">if</span> <span onmouseout="hideTip(event, 'fs16', 30)" onmouseover="showTip(event, 'fs16', 30)" class="i">k</span><span class="o">%</span><span class="n">3</span><span class="o">=</span><span class="n">0</span> <span class="k">then</span> <span onmouseout="hideTip(event, 'fs18', 31)" onmouseover="showTip(event, 'fs18', 31)" class="p">None</span> <span class="k">else</span> <span onmouseout="hideTip(event, 'fs17', 32)" onmouseover="showTip(event, 'fs17', 32)" class="i">v</span>)
 <span onmouseout="hideTip(event, 'fs19', 33)" onmouseover="showTip(event, 'fs19', 33)" class="f">frame</span> [ <span class="k">for</span> <span onmouseout="hideTip(event, 'fs10', 34)" onmouseover="showTip(event, 'fs10', 34)" class="i">i</span> <span class="k">in</span> <span class="n">1</span> <span class="o">..</span> <span class="n">10</span> <span class="k">do</span> <span class="k">yield</span> <span class="s">&quot;First &quot;</span><span class="o">+</span>(<span onmouseout="hideTip(event, 'fs20', 35)" onmouseover="showTip(event, 'fs20', 35)" class="f">string</span> <span onmouseout="hideTip(event, 'fs10', 36)" onmouseover="showTip(event, 'fs10', 36)" class="i">i</span>) <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs8', 37)" onmouseover="showTip(event, 'fs8', 37)" class="i">s1</span>; <span class="k">yield</span> <span class="s">&quot;Another &quot;</span><span class="o">+</span>(<span onmouseout="hideTip(event, 'fs20', 38)" onmouseover="showTip(event, 'fs20', 38)" class="f">string</span> <span onmouseout="hideTip(event, 'fs10', 39)" onmouseover="showTip(event, 'fs10', 39)" class="i">i</span>) <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs12', 40)" onmouseover="showTip(event, 'fs12', 40)" class="i">s2</span> ]
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -253,27 +249,19 @@
 </div>
 
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span onmouseout="hideTip(event, 'fs21', 41)" onmouseover="showTip(event, 'fs21', 41)" class="t">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 42)" onmouseover="showTip(event, 'fs22', 42)" class="f">Line</span> [ <span class="k">for</span> <span onmouseout="hideTip(event, 'fs23', 43)" onmouseover="showTip(event, 'fs23', 43)" class="i">x</span> <span class="k">in</span> <span class="n">0.0</span> <span class="o">..</span> <span class="n">0.001</span> <span class="o">..</span> <span class="n">2.0</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs23', 44)" onmouseover="showTip(event, 'fs23', 44)" class="i">x</span>, <span onmouseout="hideTip(event, 'fs24', 45)" onmouseover="showTip(event, 'fs24', 45)" class="f">sin</span> <span onmouseout="hideTip(event, 'fs23', 46)" onmouseover="showTip(event, 'fs23', 46)" class="i">x</span> ]
-</pre>
-</td>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs21', 41)" onmouseover="showTip(event, 'fs21', 41)" class="t">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 42)" onmouseover="showTip(event, 'fs22', 42)" class="f">Line</span> [ <span class="k">for</span> <span onmouseout="hideTip(event, 'fs23', 43)" onmouseover="showTip(event, 'fs23', 43)" class="i">x</span> <span class="k">in</span> <span class="n">0.0</span> <span class="o">..</span> <span class="n">0.001</span> <span class="o">..</span> <span class="n">2.0</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs23', 44)" onmouseover="showTip(event, 'fs23', 44)" class="i">x</span>, <span onmouseout="hideTip(event, 'fs24', 45)" onmouseover="showTip(event, 'fs24', 45)" class="f">sin</span> <span onmouseout="hideTip(event, 'fs23', 46)" onmouseover="showTip(event, 'fs23', 46)" class="i">x</span> ]
+</code></pre></td>
 </tr>
 </table>
 
 <p><img src="http://bluemountaincapital.github.io/Deedle/images/chart6.png" alt="" /></p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span onmouseout="hideTip(event, 'fs21', 47)" onmouseover="showTip(event, 'fs21', 47)" class="t">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs25', 48)" onmouseover="showTip(event, 'fs25', 48)" class="f">Pie</span> [ <span class="s">&quot;Good&quot;</span>, <span class="n">20</span>; <span class="s">&quot;Bad&quot;</span>, <span class="n">10</span>; <span class="s">&quot;Unsure&quot;</span>, <span class="n">5</span> ]
-</pre>
-</td>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs21', 47)" onmouseover="showTip(event, 'fs21', 47)" class="t">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs25', 48)" onmouseover="showTip(event, 'fs25', 48)" class="f">Pie</span> [ <span class="s">&quot;Good&quot;</span>, <span class="n">20</span>; <span class="s">&quot;Bad&quot;</span>, <span class="n">10</span>; <span class="s">&quot;Unsure&quot;</span>, <span class="n">5</span> ]
+</code></pre></td>
 </tr>
 </table>
 
@@ -281,8 +269,7 @@
 
 <p>helper to capture the last image</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l"> 1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
 <span class="l"> 4: </span>
@@ -299,10 +286,8 @@
 <span class="l">15: </span>
 <span class="l">16: </span>
 <span class="l">17: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="prep">#load</span> <span class="s">&quot;../../../packages/RProvider.1.0.17/RProvider.fsx&quot;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="prep">#load</span> <span class="s">&quot;../../../packages/RProvider.1.0.17/RProvider.fsx&quot;</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs26', 49)" onmouseover="showTip(event, 'fs26', 49)" class="i">RProvider</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs26', 50)" onmouseover="showTip(event, 'fs26', 50)" class="i">RProvider</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 51)" onmouseover="showTip(event, 'fs27', 51)" class="i">datasets</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs26', 52)" onmouseover="showTip(event, 'fs26', 52)" class="i">RProvider</span><span class="o">.</span><span class="i">``base``</span>
@@ -319,34 +304,25 @@
   <span class="c">//file</span>
   
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs48', 86)" onmouseover="showTip(event, 'fs48', 86)" class="f">lastPlot2</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs30', 87)" onmouseover="showTip(event, 'fs30', 87)" class="f">lastPlot</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
 <p>Rko</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span onmouseout="hideTip(event, 'fs49', 88)" onmouseover="showTip(event, 'fs49', 88)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs50', 89)" onmouseover="showTip(event, 'fs50', 89)" class="f">plot</span> [ <span class="k">for</span> <span onmouseout="hideTip(event, 'fs51', 90)" onmouseover="showTip(event, 'fs51', 90)" class="i">i</span> <span class="k">in</span> <span class="n">1.0</span> <span class="o">..</span> <span class="n">0.01</span> <span class="o">..</span> <span class="n">3.0</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs24', 91)" onmouseover="showTip(event, 'fs24', 91)" class="f">sin</span> <span onmouseout="hideTip(event, 'fs51', 92)" onmouseover="showTip(event, 'fs51', 92)" class="i">i</span> ]
-</pre>
-</td>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs49', 88)" onmouseover="showTip(event, 'fs49', 88)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs50', 89)" onmouseover="showTip(event, 'fs50', 89)" class="f">plot</span> [ <span class="k">for</span> <span onmouseout="hideTip(event, 'fs51', 90)" onmouseover="showTip(event, 'fs51', 90)" class="i">i</span> <span class="k">in</span> <span class="n">1.0</span> <span class="o">..</span> <span class="n">0.01</span> <span class="o">..</span> <span class="n">3.0</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs24', 91)" onmouseover="showTip(event, 'fs24', 91)" class="f">sin</span> <span onmouseout="hideTip(event, 'fs51', 92)" onmouseover="showTip(event, 'fs51', 92)" class="i">i</span> ]
+</code></pre></td>
 </tr>
 </table>
 
 <p><img src="http://bluemountaincapital.github.io/Deedle/images/chart8.png" alt="" /></p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span onmouseout="hideTip(event, 'fs49', 93)" onmouseover="showTip(event, 'fs49', 93)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs50', 94)" onmouseover="showTip(event, 'fs50', 94)" class="f">plot</span> [ <span class="k">for</span> <span onmouseout="hideTip(event, 'fs51', 95)" onmouseover="showTip(event, 'fs51', 95)" class="i">i</span> <span class="k">in</span> <span class="n">1.0</span> <span class="o">..</span> <span class="n">0.01</span> <span class="o">..</span> <span class="n">3.0</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs52', 96)" onmouseover="showTip(event, 'fs52', 96)" class="f">cos</span> <span onmouseout="hideTip(event, 'fs51', 97)" onmouseover="showTip(event, 'fs51', 97)" class="i">i</span> ]
-</pre>
-</td>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs49', 93)" onmouseover="showTip(event, 'fs49', 93)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs50', 94)" onmouseover="showTip(event, 'fs50', 94)" class="f">plot</span> [ <span class="k">for</span> <span onmouseout="hideTip(event, 'fs51', 95)" onmouseover="showTip(event, 'fs51', 95)" class="i">i</span> <span class="k">in</span> <span class="n">1.0</span> <span class="o">..</span> <span class="n">0.01</span> <span class="o">..</span> <span class="n">3.0</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs52', 96)" onmouseover="showTip(event, 'fs52', 96)" class="f">cos</span> <span onmouseout="hideTip(event, 'fs51', 97)" onmouseover="showTip(event, 'fs51', 97)" class="i">i</span> ]
+</code></pre></td>
 </tr>
 </table>
 

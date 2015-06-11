@@ -60,8 +60,7 @@ classes of tickets:</p>
 
 <div id="hp-snippeta">
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l"> 1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
 <span class="l"> 4: </span>
@@ -81,10 +80,8 @@ classes of tickets:</p>
 <span class="l">18: </span>
 <span class="l">19: </span>
 <span class="l">20: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="c">// Read Titanic data &amp; group rows by &#39;Pclass&#39;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="c">// Read Titanic data &amp; group rows by &#39;Pclass&#39;</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="i">titanic</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="t">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="f">ReadCsv</span>(<span onmouseout="hideTip(event, 'fs3', 7)" onmouseover="showTip(event, 'fs3', 7)" class="i">root</span> <span class="o">+</span> <span class="s">&quot;titanic.csv&quot;</span>)<span class="o">.</span><span class="f">GroupRowsBy</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="t">int</span><span class="o">&gt;</span>(<span class="s">&quot;Pclass&quot;</span>)
 
 <span class="c">// Get &#39;Survived&#39; column and count survival count per clsas</span>
@@ -104,8 +101,7 @@ classes of tickets:</p>
 <span class="c">// Build a data frame with nice summary of rates in percents</span>
 <span onmouseout="hideTip(event, 'fs23', 32)" onmouseover="showTip(event, 'fs23', 32)" class="f">frame</span> [ <span class="s">&quot;Died (%)&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs24', 33)" onmouseover="showTip(event, 'fs24', 33)" class="f">round</span> (<span onmouseout="hideTip(event, 'fs8', 34)" onmouseover="showTip(event, 'fs8', 34)" class="i">byClass</span><span class="o">?</span><span class="i">Died</span> <span class="o">/</span> <span onmouseout="hideTip(event, 'fs8', 35)" onmouseover="showTip(event, 'fs8', 35)" class="i">byClass</span><span class="o">?</span><span class="i">Total</span> <span class="o">*</span> <span class="n">100.0</span>)
         <span class="s">&quot;Survived (%)&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs24', 36)" onmouseover="showTip(event, 'fs24', 36)" class="f">round</span> (<span onmouseout="hideTip(event, 'fs8', 37)" onmouseover="showTip(event, 'fs8', 37)" class="i">byClass</span><span class="o">?</span><span class="i">Survived</span> <span class="o">/</span> <span onmouseout="hideTip(event, 'fs8', 38)" onmouseover="showTip(event, 'fs8', 38)" class="i">byClass</span><span class="o">?</span><span class="i">Total</span> <span class="o">*</span> <span class="n">100.0</span>) ]
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 

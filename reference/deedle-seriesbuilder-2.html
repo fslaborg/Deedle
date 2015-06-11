@@ -41,6 +41,9 @@
 
 
 <h1>SeriesBuilder<'K, 'V></h1>
+<p>
+  <span>Namespace: Deedle</span><br />
+</p>
 <div class="xmldoc">
 <p>The type can be used for creating series using mutation. You can add 
 items using <code>Add</code> and get the resulting series using the <code>Series</code> property.</p>
@@ -49,33 +52,25 @@ items using <code>Add</code> and get the resulting series using the <code>Series
         <h2>Using from C#</h2>
 <p>The type supports the C# collection builder pattern:</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="i">var</span> <span class="i">s</span> <span class="o">=</span> <span class="k">new</span> <span class="i">SeriesBuilder</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">string</span>, <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">double</span><span class="o">&gt;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="i">var</span> <span class="i">s</span> <span class="o">=</span> <span class="k">new</span> <span class="i">SeriesBuilder</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">string</span>, <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">double</span><span class="o">&gt;</span>
   { { <span class="s">&quot;A&quot;</span>, <span class="n">1.0</span> }, { <span class="s">&quot;B&quot;</span>, <span class="n">2.0</span> }, { <span class="s">&quot;C&quot;</span>, <span class="n">3.0</span> } }<span class="o">.</span><span class="i">Series</span>;
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
 <p>The type also supports the <code>dynamic</code> operator:</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="i">dynamic</span> <span class="i">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="i">SeriesBuilder</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs1', 3)" onmouseover="showTip(event, 'fs1', 3)" class="i">string</span>, <span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="i">obj</span><span class="o">&gt;</span>();
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="i">dynamic</span> <span class="i">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="i">SeriesBuilder</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs1', 3)" onmouseover="showTip(event, 'fs1', 3)" class="i">string</span>, <span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="i">obj</span><span class="o">&gt;</span>();
 <span class="i">sb</span><span class="o">.</span><span class="i">ID</span> <span class="o">=</span> <span class="n">1</span>;
 <span class="i">sb</span><span class="o">.</span><span class="i">Value</span> <span class="o">=</span> <span class="n">3.4</span>;
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 

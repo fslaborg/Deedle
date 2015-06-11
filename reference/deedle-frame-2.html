@@ -41,6 +41,9 @@
 
 
 <h1>Frame<'TRowKey, 'TColumnKey></h1>
+<p>
+  <span>Namespace: Deedle</span><br />
+</p>
 <div class="xmldoc">
 <p>A frame is the key Deedle data structure (together with series). It represents a 
 data table (think spreadsheet or CSV file) with multiple rows and columns. The frame 
@@ -3007,7 +3010,7 @@ nearest available value with the smaller/greater key).</li>
             ( ? )(frame, column)
           </code>
           <div class="tip" id="540">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;T,&#39;?490819&gt; * column:&#39;?490819) -&gt; Series&lt;&#39;T,float&gt;<br />
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;T,&#39;?491197&gt; * column:&#39;?491197) -&gt; Series&lt;&#39;T,float&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
@@ -3026,7 +3029,7 @@ nearest available value with the smaller/greater key).</li>
             ( ?&lt;- )(frame, column, data)
           </code>
           <div class="tip" id="541">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;?490812,&#39;?490813&gt; * column:&#39;?490813 * data:seq&lt;&#39;V&gt;) -&gt; unit<br />
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;?491190,&#39;?491191&gt; * column:&#39;?491191 * data:seq&lt;&#39;V&gt;) -&gt; unit<br />
                           <strong>Type parameters:</strong> 'V          </div>
         </td>
         <td class="xmldoc">
@@ -3045,7 +3048,7 @@ nearest available value with the smaller/greater key).</li>
             ( ?&lt;- )(frame, column, series)
           </code>
           <div class="tip" id="542">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;T,&#39;?490807&gt; * column:&#39;?490807 * series:Series&lt;&#39;T,&#39;V&gt;) -&gt; unit<br />
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;T,&#39;?491185&gt; * column:&#39;?491185 * series:Series&lt;&#39;T,&#39;V&gt;) -&gt; unit<br />
                           <strong>Type parameters:</strong> 'V          </div>
         </td>
         <td class="xmldoc">
@@ -3073,7 +3076,7 @@ nearest available value with the smaller/greater key).</li>
             AggregateRowsBy(groupBy, aggBy, aggFunc)
           </code>
           <div class="tip" id="543">
-            <strong>Signature:</strong> (groupBy:seq&lt;&#39;TColumnKey&gt; * aggBy:seq&lt;&#39;TColumnKey&gt; * aggFunc:Func&lt;Series&lt;&#39;TRowKey,&#39;?491128&gt;,&#39;?491129&gt;) -&gt; Frame&lt;int,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (groupBy:seq&lt;&#39;TColumnKey&gt; * aggBy:seq&lt;&#39;TColumnKey&gt; * aggFunc:Func&lt;Series&lt;&#39;TRowKey,&#39;?491506&gt;,&#39;?491507&gt;) -&gt; Frame&lt;int,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
@@ -3285,7 +3288,7 @@ in <code>aggBy</code> are aggregated according to <code>aggFunc</code>.</p>
             GroupRowsByIndex(keySelector)
           </code>
           <div class="tip" id="553">
-            <strong>Signature:</strong> keySelector:Func&lt;&#39;TRowKey,&#39;?491120&gt; -&gt; Frame&lt;(&#39;?491120 * &#39;TRowKey),&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> keySelector:Func&lt;&#39;TRowKey,&#39;?491498&gt; -&gt; Frame&lt;(&#39;?491498 * &#39;TRowKey),&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
@@ -3365,7 +3368,7 @@ in <code>aggBy</code> are aggregated according to <code>aggFunc</code>.</p>
             ( $ )(f, frame)
           </code>
           <div class="tip" id="557">
-            <strong>Signature:</strong> (f:(&#39;?490764 -&gt; &#39;?490765) * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (f:(&#39;?491142 -&gt; &#39;?491143) * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
