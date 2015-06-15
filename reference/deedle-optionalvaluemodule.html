@@ -254,8 +254,8 @@ values and return <code>OptionalValue&lt;R&gt;</code> with the result. Otherwise
 can be used with .NET methods that use <code>out</code> arguments. For example:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="i">Int32</span><span class="o">.</span><span class="i">TryParse</span>(<span class="s">&quot;42&quot;</span>) <span class="o">|&gt;</span> <span class="i">OptionalValue</span><span class="o">.</span><span class="i">ofTuple</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">Int32</span><span class="o">.</span><span class="i">TryParse</span>(<span class="s">&quot;42&quot;</span>) <span class="o">|&gt;</span> <span class="i">OptionalValue</span><span class="o">.</span><span class="i">ofTuple</span>
 </code></pre></td>
 </tr>
 </table>
@@ -294,8 +294,8 @@ For example:</p>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">optVal</span> <span class="o">=</span> <span class="i">OptionalValue</span>(<span class="n">42</span>)
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">optVal</span> <span class="o">=</span> <span class="i">OptionalValue</span>(<span class="n">42</span>)
 <span class="k">match</span> <span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="i">optVal</span> <span class="k">with</span>
 | <span class="i">OptionalValue</span><span class="o">.</span><span class="i">Missing</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs2', 3)" onmouseover="showTip(event, 'fs2', 3)" class="i">printfn</span> <span class="s">&quot;Empty&quot;</span>
 | <span class="i">OptionalValue</span><span class="o">.</span><span class="i">Present</span>(<span class="i">v</span>) <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs2', 4)" onmouseover="showTip(event, 'fs2', 4)" class="i">printfn</span> <span class="s">&quot;Contains %d&quot;</span> <span class="i">v</span>

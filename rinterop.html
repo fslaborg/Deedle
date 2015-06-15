@@ -76,8 +76,8 @@ directory. To use R provider and Deedle, you need to write something like this:<
 <span class="l">4: </span>
 <span class="l">5: </span>
 <span class="l">6: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="prep">#load</span> <span class="s">&quot;RProvider.fsx&quot;</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="prep">#load</span> <span class="s">&quot;RProvider.fsx&quot;</span>
 <span class="prep">#load</span> <span class="s">&quot;Deedle.fsx&quot;</span>
 
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">RProvider</span>
@@ -111,8 +111,8 @@ the code, you'll get automatic completion when you type <code>R</code> followed 
 <span class="l">5: </span>
 <span class="l">6: </span>
 <span class="l">7: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs3', 6)" onmouseover="showTip(event, 'fs3', 6)" class="i">RProvider</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="i">datasets</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs3', 6)" onmouseover="showTip(event, 'fs3', 6)" class="i">RProvider</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="i">datasets</span>
 
 <span class="c">// Get mtcars as an untyped object</span>
 <span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 9)" onmouseover="showTip(event, 'fs8', 9)" class="i">mtcars</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 10)" onmouseover="showTip(event, 'fs9', 10)" class="i">Value</span>
@@ -295,8 +295,8 @@ the data, we use the <a href="https://github.com/fsharp/FSharp.Charting">F# Char
 <span class="l">6: </span>
 <span class="l">7: </span>
 <span class="l">8: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="prep">#load</span> <span class="s">&quot;FSharp.Charting.fsx&quot;</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="prep">#load</span> <span class="s">&quot;FSharp.Charting.fsx&quot;</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs14', 18)" onmouseover="showTip(event, 'fs14', 18)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs15', 19)" onmouseover="showTip(event, 'fs15', 19)" class="i">Charting</span>
 
 <span onmouseout="hideTip(event, 'fs10', 20)" onmouseover="showTip(event, 'fs10', 20)" class="i">mtcars</span>
@@ -318,8 +318,8 @@ from a CSV file (file name is in the <code>airQuality</code> variable). We can t
 data frame as argument to standard R functions that expect data frame.</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs25', 32)" onmouseover="showTip(event, 'fs25', 32)" class="i">air</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs11', 33)" onmouseover="showTip(event, 'fs11', 33)" class="t">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs26', 34)" onmouseover="showTip(event, 'fs26', 34)" class="f">ReadCsv</span>(<span onmouseout="hideTip(event, 'fs2', 35)" onmouseover="showTip(event, 'fs2', 35)" class="i">airQuality</span>, <span class="i">separators</span><span class="o">=</span><span class="s">&quot;;&quot;</span>)
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs25', 32)" onmouseover="showTip(event, 'fs25', 32)" class="i">air</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs11', 33)" onmouseover="showTip(event, 'fs11', 33)" class="t">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs26', 34)" onmouseover="showTip(event, 'fs26', 34)" class="f">ReadCsv</span>(<span onmouseout="hideTip(event, 'fs2', 35)" onmouseover="showTip(event, 'fs2', 35)" class="i">airQuality</span>, <span class="i">separators</span><span class="o">=</span><span class="s">&quot;;&quot;</span>)
 </code></pre></td>
 </tr>
 </table>
@@ -479,8 +479,8 @@ for each column (to do this, we need to open the <code>base</code> package):</p>
 <span class="l"> 8: </span>
 <span class="l"> 9: </span>
 <span class="l">10: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs3', 36)" onmouseover="showTip(event, 'fs3', 36)" class="i">RProvider</span><span class="o">.</span><span class="i">``base``</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs3', 36)" onmouseover="showTip(event, 'fs3', 36)" class="i">RProvider</span><span class="o">.</span><span class="i">``base``</span>
 
 <span class="c">// Pass air data to R and print the R output</span>
 <span onmouseout="hideTip(event, 'fs27', 37)" onmouseover="showTip(event, 'fs27', 37)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs28', 38)" onmouseover="showTip(event, 'fs28', 38)" class="f">as_data_frame</span>(<span onmouseout="hideTip(event, 'fs25', 39)" onmouseover="showTip(event, 'fs25', 39)" class="i">air</span>)
@@ -504,8 +504,8 @@ following simple frame, the <code>Floats</code> column has missing value for key
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="c">// Create sample data frame with missing values</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Create sample data frame with missing values</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs30', 43)" onmouseover="showTip(event, 'fs30', 43)" class="i">df</span> <span class="o">=</span> 
   [ <span class="s">&quot;Floats&quot;</span> <span class="o">=?&gt;</span> <span onmouseout="hideTip(event, 'fs31', 44)" onmouseover="showTip(event, 'fs31', 44)" class="f">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">10.0</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs32', 45)" onmouseover="showTip(event, 'fs32', 45)" class="i">nan</span>; <span class="n">4</span> <span class="o">=&gt;</span> <span class="n">15.0</span>]
     <span class="s">&quot;Names&quot;</span>  <span class="o">=?&gt;</span> <span onmouseout="hideTip(event, 'fs31', 46)" onmouseover="showTip(event, 'fs31', 46)" class="f">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="s">&quot;one&quot;</span>; <span class="n">3</span> <span class="o">=&gt;</span> <span class="s">&quot;three&quot;</span>; <span class="n">4</span> <span class="o">=&gt;</span> <span class="s">&quot;four&quot;</span> ] ] 
@@ -525,8 +525,8 @@ stores the data frame in a varaible available in the current R environment:</p>
 <span class="l">5: </span>
 <span class="l">6: </span>
 <span class="l">7: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs27', 48)" onmouseover="showTip(event, 'fs27', 48)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs34', 49)" onmouseover="showTip(event, 'fs34', 49)" class="f">assign</span>(<span class="s">&quot;x&quot;</span>,  <span onmouseout="hideTip(event, 'fs30', 50)" onmouseover="showTip(event, 'fs30', 50)" class="i">df</span>)
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs27', 48)" onmouseover="showTip(event, 'fs27', 48)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs34', 49)" onmouseover="showTip(event, 'fs34', 49)" class="f">assign</span>(<span class="s">&quot;x&quot;</span>,  <span onmouseout="hideTip(event, 'fs30', 50)" onmouseover="showTip(event, 'fs30', 50)" class="i">df</span>)
 <span class="fsi">val it : SymbolicExpression = </span>
 <span class="fsi">     Floats   Names </span>
 <span class="fsi"> 1       10     one </span>
@@ -562,8 +562,8 @@ quarterly time series of the number of australian residents:</p>
 <span class="l">7: </span>
 <span class="l">8: </span>
 <span class="l">9: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs7', 51)" onmouseover="showTip(event, 'fs7', 51)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs35', 52)" onmouseover="showTip(event, 'fs35', 52)" class="i">austres</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 53)" onmouseover="showTip(event, 'fs9', 53)" class="i">Value</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs7', 51)" onmouseover="showTip(event, 'fs7', 51)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs35', 52)" onmouseover="showTip(event, 'fs35', 52)" class="i">austres</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 53)" onmouseover="showTip(event, 'fs9', 53)" class="i">Value</span>
 <span class="fsi">val it : obj =</span>
 <span class="fsi">    1971.25 -&gt; 13067.3 </span>
 <span class="fsi">    1971.5  -&gt; 13130.5 </span>
@@ -591,8 +591,8 @@ compiler that we expect a series where both keys and values are of type <code>fl
 <span class="l"> 9: </span>
 <span class="l">10: </span>
 <span class="l">11: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="c">// Get series with numbers of australian residents</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Get series with numbers of australian residents</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs36', 54)" onmouseover="showTip(event, 'fs36', 54)" class="i">austres</span> <span class="o">:</span> <span onmouseout="hideTip(event, 'fs21', 55)" onmouseover="showTip(event, 'fs21', 55)" class="t">Series</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs37', 56)" onmouseover="showTip(event, 'fs37', 56)" class="t">float</span>, <span onmouseout="hideTip(event, 'fs37', 57)" onmouseover="showTip(event, 'fs37', 57)" class="t">float</span><span class="o">&gt;</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs7', 58)" onmouseover="showTip(event, 'fs7', 58)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs35', 59)" onmouseover="showTip(event, 'fs35', 59)" class="i">austres</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs13', 60)" onmouseover="showTip(event, 'fs13', 60)" class="f">GetValue</span>()
 
 <span class="c">// Get TimeSpan representing (roughly..) two years</span>
@@ -614,8 +614,8 @@ series from <code>EuStockMarkets</code>:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs48', 80)" onmouseover="showTip(event, 'fs48', 80)" class="i">ftseStr</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs27', 81)" onmouseover="showTip(event, 'fs27', 81)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs49', 82)" onmouseover="showTip(event, 'fs49', 82)" class="f">parse</span>(<span class="i">text</span><span class="o">=</span><span class="s">&quot;&quot;&quot;EuStockMarkets[,&quot;FTSE&quot;]&quot;&quot;&quot;</span>)
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs48', 80)" onmouseover="showTip(event, 'fs48', 80)" class="i">ftseStr</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs27', 81)" onmouseover="showTip(event, 'fs27', 81)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs49', 82)" onmouseover="showTip(event, 'fs49', 82)" class="f">parse</span>(<span class="i">text</span><span class="o">=</span><span class="s">&quot;&quot;&quot;EuStockMarkets[,&quot;FTSE&quot;]&quot;&quot;&quot;</span>)
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs50', 83)" onmouseover="showTip(event, 'fs50', 83)" class="i">ftse</span> <span class="o">:</span> <span onmouseout="hideTip(event, 'fs21', 84)" onmouseover="showTip(event, 'fs21', 84)" class="t">Series</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs37', 85)" onmouseover="showTip(event, 'fs37', 85)" class="t">float</span>, <span onmouseout="hideTip(event, 'fs37', 86)" onmouseover="showTip(event, 'fs37', 86)" class="t">float</span><span class="o">&gt;</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs27', 87)" onmouseover="showTip(event, 'fs27', 87)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs51', 88)" onmouseover="showTip(event, 'fs51', 88)" class="f">eval</span>(<span onmouseout="hideTip(event, 'fs48', 89)" onmouseover="showTip(event, 'fs48', 89)" class="i">ftseStr</span>)<span class="o">.</span><span class="f">GetValue</span>()
 </code></pre></td>
 </tr>
@@ -631,8 +631,8 @@ time series with 3 days of randomly generated values starting today:</p>
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs52', 90)" onmouseover="showTip(event, 'fs52', 90)" class="i">rnd</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs53', 91)" onmouseover="showTip(event, 'fs53', 91)" class="t">Random</span>()
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs52', 90)" onmouseover="showTip(event, 'fs52', 90)" class="i">rnd</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs53', 91)" onmouseover="showTip(event, 'fs53', 91)" class="t">Random</span>()
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs54', 92)" onmouseover="showTip(event, 'fs54', 92)" class="i">ts</span> <span class="o">=</span> 
   [ <span class="k">for</span> <span onmouseout="hideTip(event, 'fs55', 93)" onmouseover="showTip(event, 'fs55', 93)" class="i">i</span> <span class="k">in</span> <span class="n">0.0</span> <span class="o">..</span> <span class="n">100.0</span> <span class="k">-&gt;</span> 
       <span onmouseout="hideTip(event, 'fs43', 94)" onmouseover="showTip(event, 'fs43', 94)" class="t">DateTime</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs56', 95)" onmouseover="showTip(event, 'fs56', 95)" class="i">Today</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs57', 96)" onmouseover="showTip(event, 'fs57', 96)" class="f">AddHours</span>(<span onmouseout="hideTip(event, 'fs55', 97)" onmouseover="showTip(event, 'fs55', 97)" class="i">i</span>), <span onmouseout="hideTip(event, 'fs52', 98)" onmouseover="showTip(event, 'fs52', 98)" class="i">rnd</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs58', 99)" onmouseover="showTip(event, 'fs58', 99)" class="f">NextDouble</span>() ] 
@@ -654,8 +654,8 @@ shows the output that R prints for the value:</p>
 <span class="l">7: </span>
 <span class="l">8: </span>
 <span class="l">9: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs3', 101)" onmouseover="showTip(event, 'fs3', 101)" class="i">RProvider</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs59', 102)" onmouseover="showTip(event, 'fs59', 102)" class="i">zoo</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs3', 101)" onmouseover="showTip(event, 'fs3', 101)" class="i">RProvider</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs59', 102)" onmouseover="showTip(event, 'fs59', 102)" class="i">zoo</span>
 
 <span class="c">// Just convert time series to R</span>
 <span onmouseout="hideTip(event, 'fs60', 103)" onmouseover="showTip(event, 'fs60', 103)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 104)" onmouseover="showTip(event, 'fs61', 104)" class="f">as_zoo</span>(<span onmouseout="hideTip(event, 'fs54', 105)" onmouseover="showTip(event, 'fs54', 105)" class="i">ts</span>)
@@ -675,8 +675,8 @@ time series.</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="c">// Rolling mean with window size 20</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Rolling mean with window size 20</span>
 <span onmouseout="hideTip(event, 'fs60', 109)" onmouseover="showTip(event, 'fs60', 109)" class="t">R</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs62', 110)" onmouseover="showTip(event, 'fs62', 110)" class="f">rollmean</span>(<span onmouseout="hideTip(event, 'fs54', 111)" onmouseover="showTip(event, 'fs54', 111)" class="i">ts</span>, <span class="n">20</span>)
 </code></pre></td>
 </tr>
@@ -701,8 +701,8 @@ and then draws a chart showing the results:</p>
 <span class="l">11: </span>
 <span class="l">12: </span>
 <span class="l">13: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="c">// Use &#39;rollmean&#39; to calculate mean and &#39;GetValue&#39; to </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Use &#39;rollmean&#39; to calculate mean and &#39;GetValue&#39; to </span>
 <span class="c">// turn the result into a Deedle time series</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs63', 112)" onmouseover="showTip(event, 'fs63', 112)" class="i">tf</span> <span class="o">=</span> 
   [ <span class="s">&quot;Input&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs54', 113)" onmouseover="showTip(event, 'fs54', 113)" class="i">ts</span> 
@@ -729,7 +729,7 @@ and then draws a chart showing the results:</p>
 <div class="tip" id="fs4">namespace RDotNet</div>
 <div class="tip" id="fs5">namespace Deedle</div>
 <div class="tip" id="fs6">namespace RProvider.datasets</div>
-<div class="tip" id="fs7">type R =<br />&#160;&#160;static member AirPassengers : SymbolicExpression<br />&#160;&#160;static member BJsales : SymbolicExpression<br />&#160;&#160;static member BJsales_lead : SymbolicExpression<br />&#160;&#160;static member BOD : SymbolicExpression<br />&#160;&#160;static member CO2 : SymbolicExpression<br />&#160;&#160;static member ChickWeight : SymbolicExpression<br />&#160;&#160;static member DNase : SymbolicExpression<br />&#160;&#160;static member EuStockMarkets : SymbolicExpression<br />&#160;&#160;static member Formaldehyde : SymbolicExpression<br />&#160;&#160;static member HairEyeColor : SymbolicExpression<br />&#160;&#160;...<br /><br />Full name: RProvider.datasets.R<br /><em><br /><br />Base R datasets</em></div>
+<div class="tip" id="fs7">type R =<br />&#160;&#160;static member AirPassengers : SymbolicExpression<br />&#160;&#160;static member BJsales : SymbolicExpression<br />&#160;&#160;static member BJsales_lead : SymbolicExpression<br />&#160;&#160;static member BOD : SymbolicExpression<br />&#160;&#160;static member CO2 : SymbolicExpression<br />&#160;&#160;static member ChickWeight : SymbolicExpression<br />&#160;&#160;static member DNase : SymbolicExpression<br />&#160;&#160;static member EuStockMarkets : SymbolicExpression<br />&#160;&#160;static member Formaldehyde : SymbolicExpression<br />&#160;&#160;static member HairEyeColor : SymbolicExpression<br />&#160;&#160;...<br /><br />Full name: RProvider.datasets.R<br /><em><br /><br />Base R datasets.</em></div>
 <div class="tip" id="fs8">property R.mtcars: SymbolicExpression</div>
 <div class="tip" id="fs9">property SymbolicExpression.Value: obj</div>
 <div class="tip" id="fs10">val mtcars : Frame&lt;string,string&gt;<br /><br />Full name: Rinterop.mtcars</div>
@@ -749,7 +749,7 @@ and then draws a chart showing the results:</p>
 <div class="tip" id="fs24">static member Chart.Column : data:seq&lt;#value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Drawing.Color * ?XTitle:string * ?YTitle:string -&gt; ChartTypes.GenericChart<br />static member Chart.Column : data:seq&lt;#key * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Drawing.Color * ?XTitle:string * ?YTitle:string -&gt; ChartTypes.GenericChart</div>
 <div class="tip" id="fs25">val air : Frame&lt;int,string&gt;<br /><br />Full name: Rinterop.air</div>
 <div class="tip" id="fs26">static member Frame.ReadCsv : path:string * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int * ?missingValues:string [] -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : stream:IO.Stream * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int * ?missingValues:string [] -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : reader:IO.TextReader * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int * ?missingValues:string [] -&gt; Frame&lt;int,string&gt;<br />static member Frame.ReadCsv : path:string * indexCol:string * ?hasHeaders:bool * ?inferTypes:bool * ?inferRows:int * ?schema:string * ?separators:string * ?culture:string * ?maxRows:int * ?missingValues:string [] -&gt; Frame&lt;&#39;R,string&gt; (requires equality)</div>
-<div class="tip" id="fs27">type R =<br />&#160;&#160;static member ! : ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member != : ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member !_hexmode : ?a: obj -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member !_octmode : ?a: obj -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member $ : ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member $&lt;- : ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member $&lt;-_data_frame : ?x: obj * ?name: obj * ?value: obj -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member $_DLLInfo : ?x: obj * ?name: obj -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member $_package__version : ?x: obj * ?name: obj -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member %% : ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;...<br /><br />Full name: RProvider.base.R<br /><em><br /><br />Base R functions</em></div>
+<div class="tip" id="fs27">type R =<br />&#160;&#160;static member ! : ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member != : ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member !_hexmode : ?a: obj -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member !_octmode : ?a: obj -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member $ : ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member $&lt;- : ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member $&lt;-_data_frame : ?x: obj * ?name: obj * ?value: obj -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member $_DLLInfo : ?x: obj * ?name: obj -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member $_data_frame : ?x: obj * ?name: obj -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member $_package__version : ?x: obj * ?name: obj -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;...<br /><br />Full name: RProvider.base.R<br /><em><br /><br />Base R functions.</em></div>
 <div class="tip" id="fs28">Multiple items<br />R.as_data_frame(paramsByName: Collections.Generic.IDictionary&lt;string,obj&gt;) : SymbolicExpression<br />R.as_data_frame(?x: obj, ?row_names: obj, ?optional: obj, ?___: obj, ?paramArray: obj []) : SymbolicExpression<br /><em><br /><br />Coerce to a Data Frame</em><br /><br />--------------------<br />R.as_data_frame(paramsByName: Collections.Generic.IDictionary&lt;string,obj&gt;) : SymbolicExpression<br />R.as_data_frame(?x: obj, ?row_names: obj, ?optional: obj, ?___: obj, ?paramArray: obj []) : SymbolicExpression<br /><em><br /><br />Coerce to a Data Frame</em></div>
 <div class="tip" id="fs29">Multiple items<br />R.colMeans(paramsByName: Collections.Generic.IDictionary&lt;string,obj&gt;) : SymbolicExpression<br />R.colMeans(?x: obj, ?na_rm: obj, ?dims: obj) : SymbolicExpression<br /><em><br /><br />No documentation available</em><br /><br />--------------------<br />R.colMeans(paramsByName: Collections.Generic.IDictionary&lt;string,obj&gt;) : SymbolicExpression<br />R.colMeans(?x: obj, ?na_rm: obj, ?dims: obj) : SymbolicExpression<br /><em><br /><br />No documentation available</em></div>
 <div class="tip" id="fs30">val df : Frame&lt;int,string&gt;<br /><br />Full name: Rinterop.df</div>
@@ -771,7 +771,7 @@ and then draws a chart showing the results:</p>
 <div class="tip" id="fs46">val windowDistInto : distance:&#39;a -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;b) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;b&gt; (requires comparison and equality and member ( - ))<br /><br />Full name: Deedle.Series.windowDistInto</div>
 <div class="tip" id="fs47">static member Stats.mean : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt; (requires equality and equality)<br />static member Stats.mean : series:Series&lt;&#39;K,float&gt; -&gt; float (requires equality)</div>
 <div class="tip" id="fs48">val ftseStr : SymbolicExpression<br /><br />Full name: Rinterop.ftseStr</div>
-<div class="tip" id="fs49">Multiple items<br />R.parse(paramsByName: Collections.Generic.IDictionary&lt;string,obj&gt;) : SymbolicExpression<br />R.parse(?file: obj, ?n: obj, ?text: obj, ?prompt: obj, ?srcfile: obj, ?encoding: obj) : SymbolicExpression<br /><em><br /><br />Parse Expressions</em><br /><br />--------------------<br />R.parse(paramsByName: Collections.Generic.IDictionary&lt;string,obj&gt;) : SymbolicExpression<br />R.parse(?file: obj, ?n: obj, ?text: obj, ?prompt: obj, ?srcfile: obj, ?encoding: obj) : SymbolicExpression<br /><em><br /><br />Parse Expressions</em></div>
+<div class="tip" id="fs49">Multiple items<br />R.parse(paramsByName: Collections.Generic.IDictionary&lt;string,obj&gt;) : SymbolicExpression<br />R.parse(?file: obj, ?n: obj, ?text: obj, ?prompt: obj, ?keep_source: obj, ?srcfile: obj, ?encoding: obj) : SymbolicExpression<br /><em><br /><br />Parse Expressions</em><br /><br />--------------------<br />R.parse(paramsByName: Collections.Generic.IDictionary&lt;string,obj&gt;) : SymbolicExpression<br />R.parse(?file: obj, ?n: obj, ?text: obj, ?prompt: obj, ?keep_source: obj, ?srcfile: obj, ?encoding: obj) : SymbolicExpression<br /><em><br /><br />Parse Expressions</em></div>
 <div class="tip" id="fs50">val ftse : Series&lt;float,float&gt;<br /><br />Full name: Rinterop.ftse</div>
 <div class="tip" id="fs51">Multiple items<br />R.eval(paramsByName: Collections.Generic.IDictionary&lt;string,obj&gt;) : SymbolicExpression<br />R.eval(?expr: obj, ?envir: obj, ?enclos: obj) : SymbolicExpression<br /><em><br /><br />Evaluate an (Unevaluated) Expression</em><br /><br />--------------------<br />R.eval(paramsByName: Collections.Generic.IDictionary&lt;string,obj&gt;) : SymbolicExpression<br />R.eval(?expr: obj, ?envir: obj, ?enclos: obj) : SymbolicExpression<br /><em><br /><br />Evaluate an (Unevaluated) Expression</em></div>
 <div class="tip" id="fs52">val rnd : Random<br /><br />Full name: Rinterop.rnd</div>
@@ -782,9 +782,9 @@ and then draws a chart showing the results:</p>
 <div class="tip" id="fs57">DateTime.AddHours(value: float) : DateTime</div>
 <div class="tip" id="fs58">Random.NextDouble() : float</div>
 <div class="tip" id="fs59">namespace RProvider.zoo</div>
-<div class="tip" id="fs60">type R =<br />&#160;&#160;static member MATCH : ?x: obj * ?table: obj * ?nomatch: obj * ?___: obj * ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member MATCH_default : ?x: obj * ?table: obj * ?nomatch: obj * ?___: obj * ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member MATCH_times : ?x: obj * ?table: obj * ?nomatch: obj * ?units: obj * ?eps: obj * ?___: obj * ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member ORDER : ?x: obj * ?___: obj * ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member ORDER_default : ?x: obj * ?___: obj * ?na_last: obj * ?decreasing: obj * ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member Sys_yearmon : ?NULL: obj -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member Sys_yearqtr : ?NULL: obj -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member as_Date : ?x: obj * ?___: obj * ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member as_Date_numeric : ?x: obj * ?origin: obj * ?___: obj * ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member as_Date_ts : ?x: obj * ?offset: obj * ?___: obj * ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;...<br /><br />Full name: RProvider.zoo.R<br /><em><br /><br />An S3 class with methods for totally ordered indexed<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;observations. It is particularly aimed at irregular time series<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;of numeric vectors/matrices and factors. zoo&#39;s key design goals<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;are independence of a particular index/date/time class and<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;consistency with ts and base R by providing methods to extend<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;standard generics.</em></div>
+<div class="tip" id="fs60">type R =<br />&#160;&#160;static member MATCH : ?x: obj * ?table: obj * ?nomatch: obj * ?___: obj * ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member MATCH_default : ?x: obj * ?table: obj * ?nomatch: obj * ?___: obj * ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member MATCH_times : ?x: obj * ?table: obj * ?nomatch: obj * ?units: obj * ?eps: obj * ?___: obj * ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member ORDER : ?x: obj * ?___: obj * ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member ORDER_default : ?x: obj * ?___: obj * ?na_last: obj * ?decreasing: obj * ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member Sys_yearmon : ?NULL: obj -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member Sys_yearqtr : ?NULL: obj -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member as_Date : ?x: obj * ?___: obj * ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member as_Date_numeric : ?x: obj * ?origin: obj * ?___: obj * ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;static member as_Date_ts : ?x: obj * ?offset: obj * ?___: obj * ?paramArray: obj [] -&gt; SymbolicExpression + 1 overload<br />&#160;&#160;...<br /><br />Full name: RProvider.zoo.R<br /><em><br /><br />An S3 class with methods for totally ordered indexed<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;observations. It is particularly aimed at irregular time series<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;of numeric vectors/matrices and factors. zoo&#39;s key design goals<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;are independence of a particular index/date/time class and<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;consistency with ts and base R by providing methods to extend<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;standard generics.</em></div>
 <div class="tip" id="fs61">R.as_zoo(paramsByName: Collections.Generic.IDictionary&lt;string,obj&gt;) : SymbolicExpression<br />R.as_zoo(?x: obj, ?___: obj, ?paramArray: obj []) : SymbolicExpression<br /><em><br /><br />Coercion from and to zoo</em></div>
-<div class="tip" id="fs62">R.rollmean(paramsByName: Collections.Generic.IDictionary&lt;string,obj&gt;) : SymbolicExpression<br />R.rollmean(?x: obj, ?k: obj, ?fill: obj, ?na_pad: obj, ?align: obj, ?___: obj, ?paramArray: obj []) : SymbolicExpression<br /><em><br /><br />Rolling Means/Maximums/Medians</em></div>
+<div class="tip" id="fs62">R.rollmean(paramsByName: Collections.Generic.IDictionary&lt;string,obj&gt;) : SymbolicExpression<br />R.rollmean(?x: obj, ?k: obj, ?fill: obj, ?na_pad: obj, ?align: obj, ?___: obj, ?paramArray: obj []) : SymbolicExpression<br /><em><br /><br />Rolling Means/Maximums/Medians/Sums</em></div>
 <div class="tip" id="fs63">val tf : Frame&lt;DateTime,string&gt;<br /><br />Full name: Rinterop.tf</div>
 <div class="tip" id="fs64">static member Chart.Combine : charts:seq&lt;ChartTypes.GenericChart&gt; -&gt; ChartTypes.GenericChart</div>
 <div class="tip" id="fs65">static member Chart.Line : data:seq&lt;#value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Drawing.Color * ?XTitle:string * ?YTitle:string -&gt; ChartTypes.GenericChart<br />static member Chart.Line : data:seq&lt;#key * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Drawing.Color * ?XTitle:string * ?YTitle:string -&gt; ChartTypes.GenericChart</div>

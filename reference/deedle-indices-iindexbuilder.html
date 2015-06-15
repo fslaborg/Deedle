@@ -61,8 +61,8 @@ as an input, apply necessary transformations to it and return a new <code>Vector
 <span class="l">4: </span>
 <span class="l">5: </span>
 <span class="l">6: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="c">// Create an index that excludes the value 42</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Create an index that excludes the value 42</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">newIndex</span>, <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">vectorCmd</span> <span class="o">=</span> <span class="i">indexBuilder</span><span class="o">.</span><span class="i">DropItem</span>(<span class="i">index</span>, <span class="n">42</span>, <span class="i">VectorConstruction</span><span class="o">.</span><span class="i">Return</span>(<span class="n">0</span>))
 
 <span class="c">// Now we can transform multiple vectors (e.g. all frame columns) using &#39;vectorCmd&#39;</span>
@@ -507,8 +507,8 @@ value should be dropped. For example:</p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp">(<span class="i">original</span>)  (<span class="i">shift</span> <span class="n">1</span>) (<span class="i">shift</span> <span class="o">-</span><span class="n">1</span>)
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp">(<span class="i">original</span>)  (<span class="i">shift</span> <span class="n">1</span>) (<span class="i">shift</span> <span class="o">-</span><span class="n">1</span>)
 <span class="i">a</span> <span class="i">b</span> <span class="i">c</span>       _ <span class="i">b</span> <span class="i">c</span>     <span class="i">a</span> <span class="i">b</span> _
 <span class="n">1</span> <span class="n">2</span> <span class="n">3</span>         <span class="n">1</span> <span class="n">2</span>     <span class="n">1</span> <span class="n">2</span>
 </code></pre></td>

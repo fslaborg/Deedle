@@ -65,8 +65,8 @@ following function which loads data for a given day range:</p>
 <span class="l"> 8: </span>
 <span class="l"> 9: </span>
 <span class="l">10: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Deedle</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Deedle</span>
 
 <span class="c">/// Given a time range, generates random values for dates (at 12:00 AM)</span>
 <span class="c">/// starting with the day of the first date time and ending with the </span>
@@ -96,8 +96,8 @@ specify the minimal and maximal value of the series and use <code>DelayedSeries.
 <span class="l">7: </span>
 <span class="l">8: </span>
 <span class="l">9: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs2', 28)" onmouseover="showTip(event, 'fs2', 28)" class="i">Deedle</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 29)" onmouseover="showTip(event, 'fs19', 29)" class="i">Indices</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs2', 28)" onmouseover="showTip(event, 'fs2', 28)" class="i">Deedle</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 29)" onmouseover="showTip(event, 'fs19', 29)" class="i">Indices</span>
 
 <span class="c">// Minimal and maximal values that can be loaded from the series</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs20', 30)" onmouseover="showTip(event, 'fs20', 30)" class="i">min</span>, <span onmouseout="hideTip(event, 'fs21', 31)" onmouseover="showTip(event, 'fs21', 31)" class="i">max</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs5', 32)" onmouseover="showTip(event, 'fs5', 32)" class="t">DateTime</span>(<span class="n">2010</span>, <span class="n">1</span>, <span class="n">1</span>), <span onmouseout="hideTip(event, 'fs5', 33)" onmouseover="showTip(event, 'fs5', 33)" class="t">DateTime</span>(<span class="n">2013</span>, <span class="n">1</span>, <span class="n">1</span>)
@@ -148,8 +148,8 @@ or lookup for a specific key) will force the evaluation of the series.</p>
 <span class="l">11: </span>
 <span class="l">12: </span>
 <span class="l">13: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="c">// Get series representing January 2012</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Get series representing January 2012</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs31', 52)" onmouseover="showTip(event, 'fs31', 52)" class="i">jan12</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs22', 53)" onmouseover="showTip(event, 'fs22', 53)" class="i">ls</span><span class="o">.</span>[<span onmouseout="hideTip(event, 'fs5', 54)" onmouseover="showTip(event, 'fs5', 54)" class="t">DateTime</span>(<span class="n">2012</span>, <span class="n">1</span>, <span class="n">1</span>) <span class="o">..</span> <span onmouseout="hideTip(event, 'fs5', 55)" onmouseover="showTip(event, 'fs5', 55)" class="t">DateTime</span>(<span class="n">2012</span>, <span class="n">2</span>, <span class="n">1</span>)]
 
 <span class="c">// Further restriction - only first half of the month</span>
@@ -183,8 +183,8 @@ to a data frame with some existing key range:</p>
 <span class="l">4: </span>
 <span class="l">5: </span>
 <span class="l">6: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="c">// Create empty data frame for days of December 2011</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Create empty data frame for days of December 2011</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs33', 63)" onmouseover="showTip(event, 'fs33', 63)" class="i">dec11</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs34', 64)" onmouseover="showTip(event, 'fs34', 64)" class="t">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs35', 65)" onmouseover="showTip(event, 'fs35', 65)" class="f">ofRowKeys</span> [ <span class="k">for</span> <span onmouseout="hideTip(event, 'fs13', 66)" onmouseover="showTip(event, 'fs13', 66)" class="i">d</span> <span class="k">in</span> <span class="n">1</span> <span class="o">..</span> <span class="n">31</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs5', 67)" onmouseover="showTip(event, 'fs5', 67)" class="t">DateTime</span>(<span class="n">2011</span>, <span class="n">12</span>, <span onmouseout="hideTip(event, 'fs13', 68)" onmouseover="showTip(event, 'fs13', 68)" class="i">d</span>) ]
 
 <span class="c">// Add series as the &#39;Values&#39; column to the data frame</span>

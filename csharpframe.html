@@ -91,7 +91,7 @@ to convert it to data frame. Any collection of .NET objects can be turned to dat
 <span class="l">7: </span>
 <span class="l">8: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip"><code lang="csharp"><span class="c">// Create a collection of anonymous types</span>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Create a collection of anonymous types</span>
 <span class="k">var</span> rnd <span class="o">=</span> <span class="k">new</span> Random();
 <span class="k">var</span> objects <span class="o">=</span> Enumerable.Range(0, 10).Select(i <span class="o">=</span><span class="o">&gt;</span>
   <span class="k">new</span> { Key <span class="o">=</span> <span class="s">"ID_"</span> <span class="o">+</span> i.ToString(), Number <span class="o">=</span> rnd.Next() });
@@ -136,7 +136,7 @@ to create series imperatively by adding columns:</p>
 <span class="l">12: </span>
 <span class="l">13: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip"><code lang="csharp"><span class="c">// Generate collection of rows</span>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Generate collection of rows</span>
 <span class="k">var</span> rows <span class="o">=</span> Enumerable.Range(0, 100).Select(i <span class="o">=</span><span class="o">&gt;</span> {
   <span class="c">// Build each row using series builder &amp; return </span>
   <span class="c">// KeyValue representing row key with row data</span>
@@ -156,7 +156,7 @@ to create series imperatively by adding columns:</p>
 <span class="l">2: </span>
 <span class="l">3: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip"><code lang="csharp"><span class="c">// Read MSFT &amp; FB stock prices from a CSV file</span>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Read MSFT &amp; FB stock prices from a CSV file</span>
 <span class="k">var</span> msftRaw <span class="o">=</span> Frame.ReadCsv(Path.Combine(root, <span class="s">"../data/stocks/msft.csv"</span>));
 <span class="k">var</span> fbRaw <span class="o">=</span> Frame.ReadCsv(Path.Combine(root, <span class="s">"../data/stocks/fb.csv"</span>));</code></pre></td></tr></table>
 
@@ -203,7 +203,7 @@ the next step is only allowed on ordered frames and series):</p>
 <span class="l">6: </span>
 <span class="l">7: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip"><code lang="csharp"><span class="c">// Get MSFT &amp; FB stock prices indexed by data</span>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Get MSFT &amp; FB stock prices indexed by data</span>
 <span class="k">var</span> msft <span class="o">=</span> msftRaw.IndexRows&lt;DateTime&gt;(<span class="s">"Date"</span>).SortRowsByKey();
 <span class="k">var</span> fb <span class="o">=</span> fbRaw.IndexRows&lt;DateTime&gt;(<span class="s">"Date"</span>).SortRowsByKey();
 
@@ -230,7 +230,7 @@ the source file has ordered rows, but has poor header names, so we reanme the co
 <span class="l">5: </span>
 <span class="l">6: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip"><code lang="csharp"><span class="c">// Read US debt data from a CSV file</span>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Read US debt data from a CSV file</span>
 <span class="k">var</span> debt <span class="o">=</span> Frame.ReadCsv(Path.Combine(root, <span class="s">"../data/us-debt.csv"</span>));
 <span class="c">// Index by Year column and</span>
 <span class="k">var</span> debtByYear <span class="o">=</span> debt
@@ -274,7 +274,7 @@ are different, because we have more historical data for Microsoft. We can perfor
 <span class="l">3: </span>
 <span class="l">4: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip"><code lang="csharp"><span class="c">// Inner join (take intersection of dates)</span>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Inner join (take intersection of dates)</span>
 <span class="k">var</span> joinIn <span class="o">=</span> msft.Join(fb, JoinKind.Inner);
 <span class="c">// Outer join (take union &amp; fill with missing)</span>
 <span class="k">var</span> joinOut <span class="o">=</span> msft.Join(fb, JoinKind.Outer);</code></pre></td></tr></table>
@@ -299,7 +299,7 @@ by 1 hour (the keys are always at 12:00am, representing just time)</p>
 <span class="l"> 9: </span>
 <span class="l">10: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip"><code lang="csharp"><span class="c">// Shift MSFT observations by +1 hour for testing</span>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Shift MSFT observations by +1 hour for testing</span>
 <span class="k">var</span> msftShift <span class="o">=</span> msft.SelectRowKeys(k <span class="o">=</span><span class="o">&gt;</span> k.Key.AddHours(1.0));
 
 <span class="c">// MSFT data are missing because keys do not match</span>
@@ -335,7 +335,7 @@ in the series. When getting a series, you need to specify the required type of v
 <span class="l">3: </span>
 <span class="l">4: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip"><code lang="csharp"><span class="c">// Get MSFT and FB opening prices and calculate the difference</span>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Get MSFT and FB opening prices and calculate the difference</span>
 <span class="k">var</span> msOpen <span class="o">=</span> joinIn.GetColumn&lt;<span class="k">double</span>&gt;(<span class="s">"MsftOpen"</span>);
 <span class="k">var</span> msClose <span class="o">=</span> joinIn.GetColumn&lt;<span class="k">double</span>&gt;(<span class="s">"MsftClose"</span>);
 <span class="k">var</span> msDiff <span class="o">=</span> msClose <span class="o">-</span> msOpen;</code></pre></td></tr></table>
@@ -356,7 +356,7 @@ add the difference as a new series (using <code>AddSeries</code>):</p>
 <span class="l">6: </span>
 <span class="l">7: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip"><code lang="csharp"><span class="c">// Drop series from a data frame</span>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Drop series from a data frame</span>
 joinIn.DropColumn(<span class="s">"MsftAdj Close"</span>);
 joinIn.DropColumn(<span class="s">"FbAdj Close"</span>);
 
@@ -384,7 +384,7 @@ properties.</p>
 <span class="l">11: </span>
 <span class="l">12: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip"><code lang="csharp"><span class="c">// Get row and then look at row properties</span>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Get row and then look at row properties</span>
 <span class="k">var</span> row <span class="o">=</span> joinIn.Rows[<span class="k">new</span> DateTime(2013, 1, 4)];
 <span class="k">var</span> msLo <span class="o">=</span> row.GetAs&lt;<span class="k">double</span>&gt;(<span class="s">"MsftLow"</span>);
 <span class="k">var</span> msHi <span class="o">=</span> row.GetAs&lt;<span class="k">double</span>&gt;(<span class="s">"MsftHigh"</span>);
@@ -426,7 +426,7 @@ of Microsoft and Facebook stock prices, you can write:</p>
 <span class="l">3: </span>
 <span class="l">4: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip"><code lang="csharp"><span class="c">// Project rows into a new series using the Select method</span>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Project rows into a new series using the Select method</span>
 <span class="k">var</span> diffs <span class="o">=</span> joinIn.Rows.Select(kvp <span class="o">=</span><span class="o">&gt;</span>
   kvp.Value.GetAs&lt;<span class="k">double</span>&gt;(<span class="s">"MsftOpen"</span>) <span class="o">-</span> 
     kvp.Value.GetAs&lt;<span class="k">double</span>&gt;(<span class="s">"FbOpen"</span>));</code></pre></td></tr></table>
@@ -451,7 +451,7 @@ method, called <code>Where</code>:</p>
 <span class="l">6: </span>
 <span class="l">7: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip"><code lang="csharp"><span class="c">// Filter rows using a specified condition </span>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Filter rows using a specified condition </span>
 <span class="k">var</span> msftGreaterRows <span class="o">=</span> joinIn.Rows.Where(kvp <span class="o">=</span><span class="o">&gt;</span>
   kvp.Value.GetAs&lt;<span class="k">double</span>&gt;(<span class="s">"MsftOpen"</span>) <span class="o">&gt;</span> 
     kvp.Value.GetAs&lt;<span class="k">double</span>&gt;(<span class="s">"FbOpen"</span>));
@@ -480,7 +480,7 @@ rounding to all values in the resulting data frame.</p>
 <span class="l">7: </span>
 <span class="l">8: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip"><code lang="csharp"><span class="c">// Calculate daily returns in percents</span>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Calculate daily returns in percents</span>
 <span class="k">var</span> returns <span class="o">=</span> msft.Diff(1) <span class="o">/</span> msft <span class="o">*</span> 100.0;
 
 <span class="c">// Transform all numerical series</span>

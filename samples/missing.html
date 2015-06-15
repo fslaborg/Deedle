@@ -66,8 +66,8 @@
 <span class="l">24: </span>
 <span class="l">25: </span>
 <span class="l">26: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">msftCsv</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="t">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 7)" onmouseover="showTip(event, 'fs7', 7)" class="f">ReadCsv</span>(<span class="k">__SOURCE_DIRECTORY__</span> <span class="o">+</span> <span class="s">&quot;/../data/MSFT.csv&quot;</span>)
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">msftCsv</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="t">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 7)" onmouseover="showTip(event, 'fs7', 7)" class="f">ReadCsv</span>(<span class="k">__SOURCE_DIRECTORY__</span> <span class="o">+</span> <span class="s">&quot;/../data/MSFT.csv&quot;</span>)
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs8', 8)" onmouseover="showTip(event, 'fs8', 8)" class="i">fbCsv</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs6', 9)" onmouseover="showTip(event, 'fs6', 9)" class="t">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 10)" onmouseover="showTip(event, 'fs7', 10)" class="f">ReadCsv</span>(<span class="k">__SOURCE_DIRECTORY__</span> <span class="o">+</span> <span class="s">&quot;/../data/FB.csv&quot;</span>)
 
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs9', 11)" onmouseover="showTip(event, 'fs9', 11)" class="i">msftOrd</span> <span class="o">=</span> 
@@ -122,8 +122,8 @@
 <span class="l">21: </span>
 <span class="l">22: </span>
 <span class="l">23: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs22', 46)" onmouseover="showTip(event, 'fs22', 46)" class="i">errors1</span> <span class="o">=</span> 
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs22', 46)" onmouseover="showTip(event, 'fs22', 46)" class="i">errors1</span> <span class="o">=</span> 
   <span onmouseout="hideTip(event, 'fs18', 47)" onmouseover="showTip(event, 'fs18', 47)" class="i">joinedOut</span><span class="o">?</span><span class="i">MsftOpen</span> 
   <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs23', 48)" onmouseover="showTip(event, 'fs23', 48)" class="t">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs24', 49)" onmouseover="showTip(event, 'fs24', 49)" class="f">tryMap</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs25', 50)" onmouseover="showTip(event, 'fs25', 50)" class="i">k</span> <span onmouseout="hideTip(event, 'fs26', 51)" onmouseover="showTip(event, 'fs26', 51)" class="i">v</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs27', 52)" onmouseover="showTip(event, 'fs27', 52)" class="f">int</span> <span onmouseout="hideTip(event, 'fs26', 53)" onmouseover="showTip(event, 'fs26', 53)" class="i">v</span> <span class="o">/</span> (<span onmouseout="hideTip(event, 'fs25', 54)" onmouseover="showTip(event, 'fs25', 54)" class="i">k</span><span class="o">.</span><span class="i">Day</span> <span class="o">%</span> <span class="n">5</span>))
 
@@ -153,8 +153,8 @@
 <h2><a name="Other-TODO-things" class="anchor" href="#Other-TODO-things">Other TODO things</a></h2>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs37', 94)" onmouseover="showTip(event, 'fs37', 94)" class="f">log</span> (<span onmouseout="hideTip(event, 'fs15', 95)" onmouseover="showTip(event, 'fs15', 95)" class="i">msftRen</span> <span class="o">**</span> <span class="n">2.0</span>)
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs37', 94)" onmouseover="showTip(event, 'fs37', 94)" class="f">log</span> (<span onmouseout="hideTip(event, 'fs15', 95)" onmouseover="showTip(event, 'fs15', 95)" class="i">msftRen</span> <span class="o">**</span> <span class="n">2.0</span>)
 </code></pre></td>
 </tr>
 </table>

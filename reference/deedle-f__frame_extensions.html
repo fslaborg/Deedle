@@ -70,8 +70,8 @@ a frame from a number of sample values, you can use <code>frame</code> and the <
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="i">frame</span> [ <span class="s">&quot;Column 1&quot;</span> <span class="o">=&gt;</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">1.0</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="n">2.0</span> ]
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">frame</span> [ <span class="s">&quot;Column 1&quot;</span> <span class="o">=&gt;</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">1.0</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="n">2.0</span> ]
         <span class="s">&quot;Column 2&quot;</span> <span class="o">=&gt;</span> <span class="i">series</span> [ <span class="n">3</span> <span class="o">=&gt;</span> <span class="n">3.0</span> ] ]
 </code></pre></td>
 </tr>
@@ -98,8 +98,8 @@ Reflection and <code>Frame.ofRowKeys</code> creates an empty frame with the spec
             ( =?&gt; ) a b
           </code>
           <div class="tip" id="13">
-            <strong>Signature:</strong> a:&#39;?496460 -&gt; b:ISeries&lt;&#39;?496461&gt; -&gt; &#39;?496460 * ISeries&lt;&#39;?496461&gt;<br />
-                          <strong>Type parameters:</strong> '?496460, '?496461          </div>
+            <strong>Signature:</strong> a:&#39;?496298 -&gt; b:ISeries&lt;&#39;?496299&gt; -&gt; &#39;?496298 * ISeries&lt;&#39;?496299&gt;<br />
+                          <strong>Type parameters:</strong> '?496298, '?496299          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L354-354" class="github-link">
@@ -111,8 +111,8 @@ of series. The operator simply returns a tuple, but it upcasts the series
 argument so you don't have to do manual casting. For example:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="i">frame</span> [ <span class="s">&quot;k1&quot;</span> <span class="o">=?&gt;</span> <span class="i">series</span> [<span class="n">0</span> <span class="o">=&gt;</span> <span class="s">&quot;a&quot;</span>]; <span class="s">&quot;k2&quot;</span> <span class="o">=?&gt;</span> <span class="i">series</span> [<span class="s">&quot;x&quot;</span> <span class="o">=&gt;</span> <span class="s">&quot;y&quot;</span>] ]
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">frame</span> [ <span class="s">&quot;k1&quot;</span> <span class="o">=?&gt;</span> <span class="i">series</span> [<span class="n">0</span> <span class="o">=&gt;</span> <span class="s">&quot;a&quot;</span>]; <span class="s">&quot;k2&quot;</span> <span class="o">=?&gt;</span> <span class="i">series</span> [<span class="s">&quot;x&quot;</span> <span class="o">=&gt;</span> <span class="s">&quot;y&quot;</span>] ]
 </code></pre></td>
 </tr>
 </table>
@@ -128,8 +128,8 @@ argument so you don't have to do manual casting. For example:</p>
             ( =&gt; ) a b
           </code>
           <div class="tip" id="14">
-            <strong>Signature:</strong> a:&#39;?496457 -&gt; b:&#39;?496458 -&gt; &#39;?496457 * &#39;?496458<br />
-                          <strong>Type parameters:</strong> '?496457, '?496458          </div>
+            <strong>Signature:</strong> a:&#39;?496295 -&gt; b:&#39;?496296 -&gt; &#39;?496295 * &#39;?496296<br />
+                          <strong>Type parameters:</strong> '?496295, '?496296          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L345-345" class="github-link">
@@ -141,8 +141,8 @@ or frames from key-row or key-column pairs. The operator simply returns a
 tuple, but it provides a more convenient syntax. For example:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="i">series</span> [ <span class="s">&quot;k1&quot;</span> <span class="o">=&gt;</span> <span class="n">1</span>; <span class="s">&quot;k2&quot;</span> <span class="o">=&gt;</span> <span class="n">15</span> ]
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">series</span> [ <span class="s">&quot;k1&quot;</span> <span class="o">=&gt;</span> <span class="n">1</span>; <span class="s">&quot;k2&quot;</span> <span class="o">=&gt;</span> <span class="n">15</span> ]
 </code></pre></td>
 </tr>
 </table>
@@ -158,8 +158,8 @@ tuple, but it provides a more convenient syntax. For example:</p>
             frame columns
           </code>
           <div class="tip" id="15">
-            <strong>Signature:</strong> columns:seq&lt;&#39;?496463 * &#39;?496464&gt; -&gt; Frame&lt;&#39;?496465,&#39;?496463&gt;<br />
-                          <strong>Type parameters:</strong> '?496463, '?496464, '?496465          </div>
+            <strong>Signature:</strong> columns:seq&lt;&#39;?496301 * &#39;?496302&gt; -&gt; Frame&lt;&#39;?496303,&#39;?496301&gt;<br />
+                          <strong>Type parameters:</strong> '?496301, '?496302, '?496303          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L366-366" class="github-link">
@@ -175,8 +175,8 @@ This provides a nicer syntactic sugar for <code>Frame.ofColumns</code>.</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="i">frame</span> [ <span class="s">&quot;A&quot;</span> <span class="o">=&gt;</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">30.0</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="n">35.0</span> ]
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">frame</span> [ <span class="s">&quot;A&quot;</span> <span class="o">=&gt;</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">30.0</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="n">35.0</span> ]
         <span class="s">&quot;B&quot;</span> <span class="o">=&gt;</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">30.0</span>; <span class="n">3</span> <span class="o">=&gt;</span> <span class="n">40.0</span> ] ]
 </code></pre></td>
 </tr>
@@ -230,8 +230,8 @@ of the returned frame are indexed with the element's offset in the array.</p>
             ofColumns(cols)
           </code>
           <div class="tip" id="17">
-            <strong>Signature:</strong> cols:Series&lt;&#39;C,&#39;?496487&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'C, '?496487, 'R          </div>
+            <strong>Signature:</strong> cols:Series&lt;&#39;C,&#39;?496325&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, '?496325, 'R          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L544-544" class="github-link">
@@ -252,8 +252,8 @@ containing values for each column.</p>
             ofColumns(cols)
           </code>
           <div class="tip" id="18">
-            <strong>Signature:</strong> (cols:seq&lt;&#39;C * &#39;?496491&gt;) -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'C, '?496491, 'R          </div>
+            <strong>Signature:</strong> (cols:seq&lt;&#39;C * &#39;?496329&gt;) -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, '?496329, 'R          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L552-552" class="github-link">
@@ -364,8 +364,8 @@ later added data to a sequence of row keys known in advance.</p>
             ofRows(rows)
           </code>
           <div class="tip" id="23">
-            <strong>Signature:</strong> (rows:seq&lt;&#39;R * &#39;?496477&gt;) -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'R, '?496477, 'C          </div>
+            <strong>Signature:</strong> (rows:seq&lt;&#39;R * &#39;?496315&gt;) -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, '?496315, 'C          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L521-521" class="github-link">
@@ -387,8 +387,8 @@ for all the series - if you have heterogenously typed series, use <code>=?&gt;</
             ofRows(rows)
           </code>
           <div class="tip" id="24">
-            <strong>Signature:</strong> rows:Series&lt;&#39;R,&#39;?496481&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'R, '?496481, 'C          </div>
+            <strong>Signature:</strong> rows:Series&lt;&#39;R,&#39;?496319&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, '?496319, 'C          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L529-529" class="github-link">
@@ -409,8 +409,8 @@ containing values for each row.</p>
             ofRowsOrdinal(rows)
           </code>
           <div class="tip" id="25">
-            <strong>Signature:</strong> rows:seq&lt;&#39;?496472&gt; -&gt; Frame&lt;int,&#39;K&gt;<br />
-                          <strong>Type parameters:</strong> '?496472, 'K, 'V          </div>
+            <strong>Signature:</strong> rows:seq&lt;&#39;?496310&gt; -&gt; Frame&lt;int,&#39;K&gt;<br />
+                          <strong>Type parameters:</strong> '?496310, 'K, 'V          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L513-513" class="github-link">

@@ -475,7 +475,7 @@ specified, the keys have to exactly match the keys in the current series
             ( ? )(series, name)
           </code>
           <div class="tip" id="728">
-            <strong>Signature:</strong> (series:Series&lt;string,&#39;?491950&gt; * name:string) -&gt; &#39;?491950<br />
+            <strong>Signature:</strong> (series:Series&lt;string,&#39;?491788&gt; * name:string) -&gt; &#39;?491788<br />
                       </div>
         </td>
         <td class="xmldoc">
@@ -1902,7 +1902,7 @@ non-deterministic way, if the current index is not ordered.</p>
             WithMissingFrom(otherSeries)
           </code>
           <div class="tip" id="801">
-            <strong>Signature:</strong> otherSeries:Series&lt;&#39;K,&#39;?492002&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
+            <strong>Signature:</strong> otherSeries:Series&lt;&#39;K,&#39;?491840&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
@@ -1972,7 +1972,7 @@ used as the greatest keys in a chunk.</li>
             Resample(keys, direction, valueSelector)
           </code>
           <div class="tip" id="803">
-            <strong>Signature:</strong> (keys:seq&lt;&#39;K&gt; * direction:Direction * valueSelector:Func&lt;&#39;K,Series&lt;&#39;K,&#39;V&gt;,&#39;?492043&gt;) -&gt; Series&lt;&#39;K,&#39;?492043&gt;<br />
+            <strong>Signature:</strong> (keys:seq&lt;&#39;K&gt; * direction:Direction * valueSelector:Func&lt;&#39;K,Series&lt;&#39;K,&#39;V&gt;,&#39;?491881&gt;) -&gt; Series&lt;&#39;K,&#39;?491881&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
@@ -2486,8 +2486,8 @@ value for the first key).</p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">input</span> <span class="o">=</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="s">&#39;a&#39;</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="s">&#39;b&#39;</span>; <span class="n">3</span> <span class="o">=&gt;</span> <span class="s">&#39;c&#39;</span>]
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">input</span> <span class="o">=</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="s">&#39;a&#39;</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="s">&#39;b&#39;</span>; <span class="n">3</span> <span class="o">=&gt;</span> <span class="s">&#39;c&#39;</span>]
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">res</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs1', 3)" onmouseover="showTip(event, 'fs1', 3)" class="i">input</span><span class="o">.</span><span class="i">Pairwise</span>()
 <span onmouseout="hideTip(event, 'fs2', 4)" onmouseover="showTip(event, 'fs2', 4)" class="i">res</span> <span class="o">=</span> <span class="i">series</span> [<span class="n">2</span> <span class="o">=&gt;</span> (<span class="s">&#39;a&#39;</span>, <span class="s">&#39;b&#39;</span>); <span class="n">3</span> <span class="o">=&gt;</span> (<span class="s">&#39;b&#39;</span>, <span class="s">&#39;c&#39;</span>) ]
 </code></pre></td>
@@ -2536,8 +2536,8 @@ predecessor.</li>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">input</span> <span class="o">=</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="s">&#39;a&#39;</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="s">&#39;b&#39;</span>; <span class="n">3</span> <span class="o">=&gt;</span> <span class="s">&#39;c&#39;</span>]
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">input</span> <span class="o">=</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="s">&#39;a&#39;</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="s">&#39;b&#39;</span>; <span class="n">3</span> <span class="o">=&gt;</span> <span class="s">&#39;c&#39;</span>]
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">res</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs1', 3)" onmouseover="showTip(event, 'fs1', 3)" class="i">input</span><span class="o">.</span><span class="i">Pairwise</span>()
 <span onmouseout="hideTip(event, 'fs2', 4)" onmouseover="showTip(event, 'fs2', 4)" class="i">res</span> <span class="o">=</span> <span class="i">series</span> [<span class="n">2</span> <span class="o">=&gt;</span> (<span class="s">&#39;a&#39;</span>, <span class="s">&#39;b&#39;</span>); <span class="n">3</span> <span class="o">=&gt;</span> (<span class="s">&#39;b&#39;</span>, <span class="s">&#39;c&#39;</span>) ]
 </code></pre></td>
@@ -2899,7 +2899,7 @@ shows a limited number of values from the series.</p>
             ( $ )(f, series)
           </code>
           <div class="tip" id="839">
-            <strong>Signature:</strong> (f:(&#39;V -&gt; &#39;?491987) * series:Series&lt;&#39;K,&#39;V&gt;) -&gt; Series&lt;&#39;K,&#39;?491987&gt;<br />
+            <strong>Signature:</strong> (f:(&#39;V -&gt; &#39;?491825) * series:Series&lt;&#39;K,&#39;V&gt;) -&gt; Series&lt;&#39;K,&#39;?491825&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
@@ -2917,8 +2917,8 @@ function. For example:</p>
 <span class="l">4: </span>
 <span class="l">5: </span>
 <span class="l">6: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="c">// Given a float series and a function on floats</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Given a float series and a function on floats</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">s1</span> <span class="o">=</span> <span class="i">Series</span><span class="o">.</span><span class="i">ofValues</span> [ <span class="n">1.0</span> <span class="o">..</span> <span class="n">10.0</span> ]
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="f">adjust</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">v</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="f">max</span> <span class="n">10.0</span> <span onmouseout="hideTip(event, 'fs3', 5)" onmouseover="showTip(event, 'fs3', 5)" class="i">v</span>
 

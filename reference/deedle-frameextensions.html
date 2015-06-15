@@ -101,8 +101,8 @@ tuple members and get a frame with columns <code>S.Item1</code> and <code>S.Item
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">df</span> <span class="o">=</span> <span class="i">frame</span> [ <span class="s">&quot;S&quot;</span> <span class="o">=&gt;</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> (<span class="n">1</span>, <span class="s">&quot;One&quot;</span>); <span class="n">2</span> <span class="o">=&gt;</span> (<span class="n">2</span>, <span class="s">&quot;Two&quot;</span>) ] ]  
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">df</span> <span class="o">=</span> <span class="i">frame</span> [ <span class="s">&quot;S&quot;</span> <span class="o">=&gt;</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> (<span class="n">1</span>, <span class="s">&quot;One&quot;</span>); <span class="n">2</span> <span class="o">=&gt;</span> (<span class="n">2</span>, <span class="s">&quot;Two&quot;</span>) ] ]  
 <span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="i">df</span><span class="o">.</span><span class="i">ExpandColumns</span> [<span class="s">&quot;S&quot;</span>]
 </code></pre></td>
 </tr>
@@ -1018,8 +1018,8 @@ frame where previous column values is subtracted from the current ones. In pseud
 function behaves as follows:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="i">result</span>[<span class="i">k</span>] <span class="o">=</span> <span class="i">series</span>[<span class="i">k</span>] <span class="o">-</span> <span class="i">series</span>[<span class="i">k</span> <span class="o">-</span> <span class="i">offset</span>]
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">result</span>[<span class="i">k</span>] <span class="o">=</span> <span class="i">series</span>[<span class="i">k</span>] <span class="o">-</span> <span class="i">series</span>[<span class="i">k</span> <span class="o">-</span> <span class="i">offset</span>]
 </code></pre></td>
 </tr>
 </table>
@@ -1297,8 +1297,8 @@ when negative, subtracts the future values from the current values.</li>
             Select(frame, projection)
           </code>
           <div class="tip" id="628">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;&gt;,int,&#39;?490680&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;?490681&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?490680, '?490681          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;&gt;,int,&#39;?490518&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;?490519&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?490518, '?490519          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1103-1103" class="github-link">
@@ -1315,8 +1315,8 @@ when negative, subtracts the future values from the current values.</li>
             Select(frame, projection)
           </code>
           <div class="tip" id="629">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;&gt;,&#39;?490675&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;?490676&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?490675, '?490676          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;&gt;,&#39;?490513&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;?490514&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?490513, '?490514          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1099-1099" class="github-link">
@@ -1333,8 +1333,8 @@ when negative, subtracts the future values from the current values.</li>
             SelectColumnKeys(frame, projection)
           </code>
           <div class="tip" id="630">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TColumnKey,OptionalValue&lt;ObjectSeries&lt;&#39;TRowKey&gt;&gt;&gt;,&#39;?490689&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;?490689&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?490689          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TColumnKey,OptionalValue&lt;ObjectSeries&lt;&#39;TRowKey&gt;&gt;&gt;,&#39;?490527&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;?490527&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?490527          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1111-1111" class="github-link">
@@ -1351,8 +1351,8 @@ when negative, subtracts the future values from the current values.</li>
             SelectRowKeys(frame, projection)
           </code>
           <div class="tip" id="631">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TRowKey,OptionalValue&lt;ObjectSeries&lt;&#39;TColumnKey&gt;&gt;&gt;,&#39;?490685&gt;) -&gt; Frame&lt;&#39;?490685,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?490685          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TRowKey,OptionalValue&lt;ObjectSeries&lt;&#39;TColumnKey&gt;&gt;&gt;,&#39;?490523&gt;) -&gt; Frame&lt;&#39;?490523,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?490523          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1107-1107" class="github-link">
@@ -1383,8 +1383,8 @@ offset is negative, the values are shifted backwards and the last <code>offset</
 Expressed in pseudo-code:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="i">result</span>[<span class="i">k</span>] <span class="o">=</span> <span class="i">series</span>[<span class="i">k</span> <span class="o">-</span> <span class="i">offset</span>]
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">result</span>[<span class="i">k</span>] <span class="o">=</span> <span class="i">series</span>[<span class="i">k</span> <span class="o">-</span> <span class="i">offset</span>]
 </code></pre></td>
 </tr>
 </table>
@@ -1492,8 +1492,8 @@ gives access to the row series.</p>
             Window(frame, size, aggregate)
           </code>
           <div class="tip" id="636">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * size:int * aggregate:Func&lt;Frame&lt;&#39;R,&#39;C&gt;,&#39;?490659&gt;) -&gt; Series&lt;&#39;R,&#39;?490659&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?490659          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * size:int * aggregate:Func&lt;Frame&lt;&#39;R,&#39;C&gt;,&#39;?490497&gt;) -&gt; Series&lt;&#39;R,&#39;?490497&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?490497          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1057-1057" class="github-link">

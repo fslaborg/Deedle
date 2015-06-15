@@ -54,8 +54,8 @@ the mean:</p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="i">ages</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">ages</span>
 <span class="o">|&gt;</span> <span class="i">Series</span><span class="o">.</span><span class="i">filterValues</span> (<span class="k">fun</span> <span class="i">v</span> <span class="k">-&gt;</span> <span class="i">v</span> <span class="o">&gt;</span> <span class="n">0.0</span> <span class="o">&amp;&amp;</span> <span class="i">v</span> <span class="o">&lt;</span> <span class="n">120.0</span>)
 <span class="o">|&gt;</span> <span class="i">Stats</span><span class="o">.</span><span class="i">mean</span>
 </code></pre></td>
@@ -70,7 +70,7 @@ be written as:</p>
 <span class="l">2: </span>
 <span class="l">3: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip"><code lang="csharp">ages
+<td class="snippet"><pre class="fssnip highlighted"><code lang="csharp">ages
   .Where(kvp <span class="o">=</span><span class="o">&gt;</span> kvp.Value <span class="o">&gt;</span> 0.0 <span class="o">&amp;</span><span class="o">&amp;</span> kvp.Value <span class="o">&lt;</span> 120.0)
   .Mean()
 </code></pre></td></tr></table>
@@ -1087,8 +1087,8 @@ to determine when a window should end.</li>
             chunkWhileInto cond f series
           </code>
           <div class="tip" id="211">
-            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?493795) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?493795&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'T, '?493795          </div>
+            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?493633) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?493633&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T, '?493633          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1026-1026" class="github-link">
@@ -1206,8 +1206,8 @@ value for the first key).</p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">input</span> <span class="o">=</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="s">&#39;a&#39;</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="s">&#39;b&#39;</span>; <span class="n">3</span> <span class="o">=&gt;</span> <span class="s">&#39;c&#39;</span>]
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">input</span> <span class="o">=</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="s">&#39;a&#39;</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="s">&#39;b&#39;</span>; <span class="n">3</span> <span class="o">=&gt;</span> <span class="s">&#39;c&#39;</span>]
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">res</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs1', 3)" onmouseover="showTip(event, 'fs1', 3)" class="i">input</span> <span class="o">|&gt;</span> <span class="i">Series</span><span class="o">.</span><span class="i">pairwise</span>
 <span onmouseout="hideTip(event, 'fs2', 4)" onmouseover="showTip(event, 'fs2', 4)" class="i">res</span> <span class="o">=</span> <span class="i">series</span> [<span class="n">2</span> <span class="o">=&gt;</span> (<span class="s">&#39;a&#39;</span>, <span class="s">&#39;b&#39;</span>); <span class="n">3</span> <span class="o">=&gt;</span> (<span class="s">&#39;b&#39;</span>, <span class="s">&#39;c&#39;</span>) ]
 </code></pre></td>
@@ -1227,8 +1227,8 @@ value for the first key).</p>
             pairwiseWith f series
           </code>
           <div class="tip" id="215">
-            <strong>Signature:</strong> f:(&#39;K -&gt; &#39;T * &#39;T -&gt; &#39;?493819) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?493819&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'T, '?493819          </div>
+            <strong>Signature:</strong> f:(&#39;K -&gt; &#39;T * &#39;T -&gt; &#39;?493657) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?493657&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T, '?493657          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1130-1130" class="github-link">
@@ -1320,8 +1320,8 @@ keys of the series.</li>
             windowDistInto distance f series
           </code>
           <div class="tip" id="218">
-            <strong>Signature:</strong> distance:^?493761 -&gt; f:(Series&lt;^K,&#39;T&gt; -&gt; &#39;?493764) -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,&#39;?493764&gt;<br />
-                          <strong>Type parameters:</strong> ^?493761, ^K, 'T, '?493764          </div>
+            <strong>Signature:</strong> distance:^?493599 -&gt; f:(Series&lt;^K,&#39;T&gt; -&gt; &#39;?493602) -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,&#39;?493602&gt;<br />
+                          <strong>Type parameters:</strong> ^?493599, ^K, 'T, '?493602          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L886-886" class="github-link">
@@ -1485,8 +1485,8 @@ to determine when a window should end.</li>
             windowWhileInto cond f series
           </code>
           <div class="tip" id="223">
-            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?493772) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?493772&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'T, '?493772          </div>
+            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?493610) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?493610&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T, '?493610          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L922-922" class="github-link">
@@ -1525,8 +1525,8 @@ two-element tuple, you can calculate mean for different first-level values as
 follows:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="i">input</span> <span class="o">|&gt;</span> <span class="i">applyLevel</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">fst</span> <span class="i">Stats</span><span class="o">.</span><span class="i">mean</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">input</span> <span class="o">|&gt;</span> <span class="i">applyLevel</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">fst</span> <span class="i">Stats</span><span class="o">.</span><span class="i">mean</span>
 </code></pre></td>
 </tr>
 </table>
@@ -1959,8 +1959,8 @@ only those keys for which there is a value available in the original one.</p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">s</span> <span class="o">=</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">1.0</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="i">Double</span><span class="o">.</span><span class="i">NaN</span> ]
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">s</span> <span class="o">=</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">1.0</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="i">Double</span><span class="o">.</span><span class="i">NaN</span> ]
 <span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="i">s</span> <span class="o">|&gt;</span> <span class="i">Series</span><span class="o">.</span><span class="i">dropMissing</span> 
 [<span class="i">fsi</span><span class="o">:</span><span class="k">val</span> <span class="i">it</span> <span class="o">:</span> <span class="i">Series</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs2', 3)" onmouseover="showTip(event, 'fs2', 3)" class="i">int</span>,<span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="i">float</span><span class="o">&gt;</span> <span class="o">=</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">1</span>]
 </code></pre></td>
@@ -2013,8 +2013,8 @@ for the nearest greater key.</li>
 <span class="l">5: </span>
 <span class="l">6: </span>
 <span class="l">7: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">sample</span> <span class="o">=</span> <span class="i">Series</span><span class="o">.</span><span class="i">ofValues</span> [ <span class="i">Double</span><span class="o">.</span><span class="i">NaN</span>; <span class="n">1.0</span>; <span class="i">Double</span><span class="o">.</span><span class="i">NaN</span>; <span class="n">3.0</span> ]
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">sample</span> <span class="o">=</span> <span class="i">Series</span><span class="o">.</span><span class="i">ofValues</span> [ <span class="i">Double</span><span class="o">.</span><span class="i">NaN</span>; <span class="n">1.0</span>; <span class="i">Double</span><span class="o">.</span><span class="i">NaN</span>; <span class="n">3.0</span> ]
 
 <span class="c">// Returns a series consisting of [1; 1; 3; 3]</span>
 <span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="i">sample</span> <span class="o">|&gt;</span> <span class="i">Series</span><span class="o">.</span><span class="i">fillMissing</span> <span class="i">Direction</span><span class="o">.</span><span class="i">Backward</span>
@@ -2128,8 +2128,8 @@ For example see <a href="../frame.html#missing">handling missing values in the t
             fillMissingWith value series
           </code>
           <div class="tip" id="240">
-            <strong>Signature:</strong> value:&#39;?493840 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
-                          <strong>Type parameters:</strong> '?493840, 'K, 'T          </div>
+            <strong>Signature:</strong> value:&#39;?493678 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
+                          <strong>Type parameters:</strong> '?493678, 'K, 'T          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1222-1222" class="github-link">
@@ -2181,8 +2181,8 @@ They use the type <code>tryval&lt;'T&gt;</code> which is defined as a discrimina
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="t">tryval</span><span class="o">&lt;</span><span class="o">&#39;</span><span class="i">T</span><span class="o">&gt;</span> <span class="o">=</span> 
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="t">tryval</span><span class="o">&lt;</span><span class="o">&#39;</span><span class="i">T</span><span class="o">&gt;</span> <span class="o">=</span> 
   | <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="p">Success</span> <span class="k">of</span> <span class="o">&#39;</span><span class="i">T</span>
   | <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="p">Error</span> <span class="k">of</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="t">exn</span>
 </code></pre></td>
@@ -2570,8 +2570,8 @@ series, similar functionality can be implemented using <code>Series.groupBy</cod
             resampleInto keys dir f series
           </code>
           <div class="tip" id="252">
-            <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; dir:Direction -&gt; f:(&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;?493888) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;?493888&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V, '?493888          </div>
+            <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; dir:Direction -&gt; f:(&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;?493726) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;?493726&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V, '?493726          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1431-1431" class="github-link">
@@ -2658,8 +2658,8 @@ space (which is then used for grouping based on equivalence)</li>
             resampleUniformInto (...)
           </code>
           <div class="tip" id="254">
-            <strong>Signature:</strong> fillMode:Lookup -&gt; keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; nextKey:(&#39;K2 -&gt; &#39;K2) -&gt; f:(Series&lt;&#39;K1,&#39;V&gt; -&gt; &#39;?493905) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;?493905&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2, 'V, '?493905          </div>
+            <strong>Signature:</strong> fillMode:Lookup -&gt; keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; nextKey:(&#39;K2 -&gt; &#39;K2) -&gt; f:(Series&lt;&#39;K1,&#39;V&gt; -&gt; &#39;?493743) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;?493743&gt;<br />
+                          <strong>Type parameters:</strong> 'K1, 'K2, 'V, '?493743          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1532-1532" class="github-link">
@@ -2708,8 +2708,8 @@ single value. The function may be called on empty series when <code>fillMode</co
             sampleTime interval dir series
           </code>
           <div class="tip" id="255">
-            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?493919,^?493920&gt; -&gt; Series&lt;^?493919,Series&lt;^?493919,^?493920&gt;&gt;<br />
-                          <strong>Type parameters:</strong> ^?493919, ^?493920          </div>
+            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?493757,^?493758&gt; -&gt; Series&lt;^?493757,Series&lt;^?493757,^?493758&gt;&gt;<br />
+                          <strong>Type parameters:</strong> ^?493757, ^?493758          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1680-1680" class="github-link">
@@ -2747,8 +2747,8 @@ used as the greatest keys in a chunk.</li>
             sampleTimeAt start interval dir series
           </code>
           <div class="tip" id="256">
-            <strong>Signature:</strong> start:^?493922 -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?493922,^?493923&gt; -&gt; Series&lt;^?493922,Series&lt;^?493922,^?493923&gt;&gt;<br />
-                          <strong>Type parameters:</strong> ^?493922, ^?493923          </div>
+            <strong>Signature:</strong> start:^?493760 -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?493760,^?493761&gt; -&gt; Series&lt;^?493760,Series&lt;^?493760,^?493761&gt;&gt;<br />
+                          <strong>Type parameters:</strong> ^?493760, ^?493761          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1700-1700" class="github-link">
@@ -2787,8 +2787,8 @@ used as the greatest keys in a chunk.</li>
             sampleTimeAtInto (...)
           </code>
           <div class="tip" id="257">
-            <strong>Signature:</strong> start:^K -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?493917) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?493917&gt;<br />
-                          <strong>Type parameters:</strong> ^K, ^V, '?493917          </div>
+            <strong>Signature:</strong> start:^K -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?493755) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?493755&gt;<br />
+                          <strong>Type parameters:</strong> ^K, ^V, '?493755          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1659-1659" class="github-link">
@@ -2828,8 +2828,8 @@ used as the greatest keys in a chunk.</li>
             sampleTimeInto interval dir f series
           </code>
           <div class="tip" id="258">
-            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?493913) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?493913&gt;<br />
-                          <strong>Type parameters:</strong> ^K, ^V, '?493913          </div>
+            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?493751) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?493751&gt;<br />
+                          <strong>Type parameters:</strong> ^K, ^V, '?493751          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1636-1636" class="github-link">
@@ -2919,8 +2919,8 @@ series where previous value is subtracted from the current one. In pseudo-code, 
 function behaves as follows:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="i">result</span>[<span class="i">k</span>] <span class="o">=</span> <span class="i">series</span>[<span class="i">k</span>] <span class="o">-</span> <span class="i">series</span>[<span class="i">k</span> <span class="o">-</span> <span class="i">offset</span>]
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">result</span>[<span class="i">k</span>] <span class="o">=</span> <span class="i">series</span>[<span class="i">k</span>] <span class="o">-</span> <span class="i">series</span>[<span class="i">k</span> <span class="o">-</span> <span class="i">offset</span>]
 </code></pre></td>
 </tr>
 </table>
@@ -3035,8 +3035,8 @@ become ordinary values in the resulting series.</p>
             foldValues op init series
           </code>
           <div class="tip" id="264">
-            <strong>Signature:</strong> op:(&#39;?493705 -&gt; &#39;T -&gt; &#39;?493705) -&gt; init:&#39;?493705 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?493705<br />
-                          <strong>Type parameters:</strong> '?493705, 'T, 'K          </div>
+            <strong>Signature:</strong> op:(&#39;?493543 -&gt; &#39;T -&gt; &#39;?493543) -&gt; init:&#39;?493543 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?493543<br />
+                          <strong>Type parameters:</strong> '?493543, 'T, 'K          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L633-633" class="github-link">
@@ -3286,8 +3286,8 @@ offset is negative, the values are shifted backwards and the last <code>offset</
 Expressed in pseudo-code:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="i">result</span>[<span class="i">k</span>] <span class="o">=</span> <span class="i">series</span>[<span class="i">k</span> <span class="o">-</span> <span class="i">offset</span>]
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">result</span>[<span class="i">k</span>] <span class="o">=</span> <span class="i">series</span>[<span class="i">k</span> <span class="o">-</span> <span class="i">offset</span>]
 </code></pre></td>
 </tr>
 </table>

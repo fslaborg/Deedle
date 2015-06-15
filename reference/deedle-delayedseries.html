@@ -60,8 +60,8 @@ see the <a href="../lazysource.html">lazy data loading tutorial</a>.</p>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">ls</span> <span class="o">=</span> <span class="i">DelayedSeries</span><span class="o">.</span><span class="i">Create</span>(<span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">min</span>, <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">max</span>, <span class="k">fun</span> (<span class="i">lo</span>, <span class="i">lob</span>) (<span class="i">hi</span>, <span class="i">hib</span>) <span class="k">-&gt;</span> 
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">ls</span> <span class="o">=</span> <span class="i">DelayedSeries</span><span class="o">.</span><span class="i">Create</span>(<span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">min</span>, <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">max</span>, <span class="k">fun</span> (<span class="i">lo</span>, <span class="i">lob</span>) (<span class="i">hi</span>, <span class="i">hib</span>) <span class="k">-&gt;</span> 
   <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="i">async</span> { 
     <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">printfn</span> <span class="s">&quot;Query: %A - %A&quot;</span> (<span class="i">lo</span>, <span class="i">lob</span>) (<span class="i">hi</span>, <span class="i">hib</span>)
     <span class="k">return</span> <span class="i">generate</span> <span class="i">lo</span> <span class="i">hi</span> })
@@ -93,8 +93,8 @@ function passed to <code>Create</code> is called with minimal and maximal requir
             Create(min, max, loader)
           </code>
           <div class="tip" id="403">
-            <strong>Signature:</strong> (min:&#39;?490460 * max:&#39;?490460 * loader:Func&lt;&#39;?490460,BoundaryBehavior,&#39;?490460,BoundaryBehavior,Task&lt;seq&lt;KeyValuePair&lt;&#39;?490460,&#39;?490461&gt;&gt;&gt;&gt;) -&gt; Series&lt;&#39;?490460,&#39;?490461&gt;<br />
-                          <strong>Type parameters:</strong> '?490460, '?490461          </div>
+            <strong>Signature:</strong> (min:&#39;?490298 * max:&#39;?490298 * loader:Func&lt;&#39;?490298,BoundaryBehavior,&#39;?490298,BoundaryBehavior,Task&lt;seq&lt;KeyValuePair&lt;&#39;?490298,&#39;?490299&gt;&gt;&gt;&gt;) -&gt; Series&lt;&#39;?490298,&#39;?490299&gt;<br />
+                          <strong>Type parameters:</strong> '?490298, '?490299          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/DelayedSeries.fs#L445-445" class="github-link">
@@ -111,8 +111,8 @@ function passed to <code>Create</code> is called with minimal and maximal requir
             Create(min, max, loader)
           </code>
           <div class="tip" id="404">
-            <strong>Signature:</strong> (min:&#39;?490457 * max:&#39;?490457 * loader:(&#39;?490457 * BoundaryBehavior -&gt; &#39;?490457 * BoundaryBehavior -&gt; Async&lt;seq&lt;KeyValuePair&lt;&#39;?490457,&#39;?490458&gt;&gt;&gt;)) -&gt; Series&lt;&#39;?490457,&#39;?490458&gt;<br />
-                          <strong>Type parameters:</strong> '?490457, '?490458          </div>
+            <strong>Signature:</strong> (min:&#39;?490295 * max:&#39;?490295 * loader:(&#39;?490295 * BoundaryBehavior -&gt; &#39;?490295 * BoundaryBehavior -&gt; Async&lt;seq&lt;KeyValuePair&lt;&#39;?490295,&#39;?490296&gt;&gt;&gt;)) -&gt; Series&lt;&#39;?490295,&#39;?490296&gt;<br />
+                          <strong>Type parameters:</strong> '?490295, '?490296          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/DelayedSeries.fs#L443-443" class="github-link">

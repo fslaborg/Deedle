@@ -55,8 +55,8 @@ numerical operators to calculate daily returns like this:</p>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">df</span> <span class="o">=</span> <span class="i">frame</span> [ <span class="s">&quot;MSFT&quot;</span> <span class="o">=&gt;</span> <span class="i">prices1</span>; <span class="s">&quot;AAPL&quot;</span> <span class="o">=&gt;</span> <span class="i">prices2</span> ]
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">df</span> <span class="o">=</span> <span class="i">frame</span> [ <span class="s">&quot;MSFT&quot;</span> <span class="o">=&gt;</span> <span class="i">prices1</span>; <span class="s">&quot;AAPL&quot;</span> <span class="o">=&gt;</span> <span class="i">prices2</span> ]
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">past</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs1', 3)" onmouseover="showTip(event, 'fs1', 3)" class="i">df</span> <span class="o">|&gt;</span> <span class="i">Frame</span><span class="o">.</span><span class="i">diff</span> <span class="n">1</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="i">rets</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs2', 5)" onmouseover="showTip(event, 'fs2', 5)" class="i">past</span> <span class="o">/</span> <span onmouseout="hideTip(event, 'fs1', 6)" onmouseover="showTip(event, 'fs1', 6)" class="i">df</span> <span class="o">*</span> <span class="n">100.0</span>
 <span onmouseout="hideTip(event, 'fs3', 7)" onmouseover="showTip(event, 'fs3', 7)" class="i">rets</span> <span class="o">|&gt;</span> <span class="i">Stats</span><span class="o">.</span><span class="i">mean</span>
@@ -324,8 +324,8 @@ instead. Note that this function typically requires a type annotation. This can
 be specified in various ways, for example by annotating the result value:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> (<span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">res</span><span class="o">:</span><span class="i">Series</span><span class="o">&lt;</span>_, <span class="i">Series</span><span class="o">&lt;</span>_, <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">string</span><span class="o">&gt;</span><span class="o">&gt;</span>) <span class="o">=</span> <span class="i">frame</span> <span class="o">|&gt;</span> <span class="i">getCols</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> (<span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">res</span><span class="o">:</span><span class="i">Series</span><span class="o">&lt;</span>_, <span class="i">Series</span><span class="o">&lt;</span>_, <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">string</span><span class="o">&gt;</span><span class="o">&gt;</span>) <span class="o">=</span> <span class="i">frame</span> <span class="o">|&gt;</span> <span class="i">getCols</span>
 </code></pre></td>
 </tr>
 </table>
@@ -369,8 +369,8 @@ missing values where the conversion fails.</p>
             getRow row frame
           </code>
           <div class="tip" id="49">
-            <strong>Signature:</strong> row:&#39;R -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?495823&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?495823          </div>
+            <strong>Signature:</strong> row:&#39;R -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?495661&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?495661          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameModule.fs#L310-310" class="github-link">
@@ -438,8 +438,8 @@ with nearest greater/smaller key. For exact semantics, you can use <code>getCol<
             lookupRow row lookup frame
           </code>
           <div class="tip" id="52">
-            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?495843&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?495843          </div>
+            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?495681&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?495681          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameModule.fs#L355-355" class="github-link">
@@ -603,8 +603,8 @@ column doesn't exist.</p>
             tryLookupColObservation (...)
           </code>
           <div class="tip" id="59">
-            <strong>Signature:</strong> column:&#39;C -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; (&#39;C * Series&lt;&#39;R,&#39;?495839&gt;) option<br />
-                          <strong>Type parameters:</strong> 'C, 'R, '?495839          </div>
+            <strong>Signature:</strong> column:&#39;C -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; (&#39;C * Series&lt;&#39;R,&#39;?495677&gt;) option<br />
+                          <strong>Type parameters:</strong> 'C, 'R, '?495677          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameModule.fs#L344-344" class="github-link">
@@ -625,8 +625,8 @@ doesn't exist.</p>
             tryLookupRow row lookup frame
           </code>
           <div class="tip" id="60">
-            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?495847&gt; option<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?495847          </div>
+            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?495685&gt; option<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?495685          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameModule.fs#L362-362" class="github-link">
@@ -647,8 +647,8 @@ row doesn't exit.</p>
             tryLookupRowObservation row lookup frame
           </code>
           <div class="tip" id="61">
-            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; (&#39;R * Series&lt;&#39;C,&#39;?495851&gt;) option<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?495851          </div>
+            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; (&#39;R * Series&lt;&#39;C,&#39;?495689&gt;) option<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?495689          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameModule.fs#L370-370" class="github-link">
@@ -720,8 +720,8 @@ frame where previous column values is subtracted from the current ones. In pseud
 function behaves as follows:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="i">result</span>[<span class="i">k</span>] <span class="o">=</span> <span class="i">series</span>[<span class="i">k</span>] <span class="o">-</span> <span class="i">series</span>[<span class="i">k</span> <span class="o">-</span> <span class="i">offset</span>]
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">result</span>[<span class="i">k</span>] <span class="o">=</span> <span class="i">series</span>[<span class="i">k</span>] <span class="o">-</span> <span class="i">series</span>[<span class="i">k</span> <span class="o">-</span> <span class="i">offset</span>]
 </code></pre></td>
 </tr>
 </table>
@@ -902,8 +902,8 @@ if you need to access the row key).</p>
             map f frame
           </code>
           <div class="tip" id="68">
-            <strong>Signature:</strong> f:(&#39;R -&gt; &#39;C -&gt; &#39;?496047 -&gt; &#39;?496048) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?496047, '?496048          </div>
+            <strong>Signature:</strong> f:(&#39;R -&gt; &#39;C -&gt; &#39;?495885 -&gt; &#39;?495886) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?495885, '?495886          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameModule.fs#L1122-1122" class="github-link">
@@ -932,8 +932,8 @@ to the appropriate type for input to the mapping function.</p>
             mapColKeys f frame
           </code>
           <div class="tip" id="69">
-            <strong>Signature:</strong> f:(&#39;C -&gt; &#39;?496037) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;?496037&gt;<br />
-                          <strong>Type parameters:</strong> 'C, '?496037, 'R          </div>
+            <strong>Signature:</strong> f:(&#39;C -&gt; &#39;?495875) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;?495875&gt;<br />
+                          <strong>Type parameters:</strong> 'C, '?495875, 'R          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameModule.fs#L1096-1096" class="github-link">
@@ -961,8 +961,8 @@ specified function on the column keys of the original data frame.</p>
             mapCols f frame
           </code>
           <div class="tip" id="70">
-            <strong>Signature:</strong> f:(&#39;C -&gt; ObjectSeries&lt;&#39;R&gt; -&gt; &#39;?496028) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?496029,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'C, 'R, '?496028, '?496029          </div>
+            <strong>Signature:</strong> f:(&#39;C -&gt; ObjectSeries&lt;&#39;R&gt; -&gt; &#39;?495866) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?495867,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R, '?495866, '?495867          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameModule.fs#L1070-1070" class="github-link">
@@ -991,8 +991,8 @@ with the column key and object series that represents the column data.</p>
             mapColValues f frame
           </code>
           <div class="tip" id="71">
-            <strong>Signature:</strong> f:(ObjectSeries&lt;&#39;R&gt; -&gt; &#39;?496032) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?496033,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'R, '?496032, '?496033, 'C          </div>
+            <strong>Signature:</strong> f:(ObjectSeries&lt;&#39;R&gt; -&gt; &#39;?495870) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?495871,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, '?495870, '?495871, 'C          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameModule.fs#L1084-1084" class="github-link">
@@ -1112,8 +1112,8 @@ if you need to access the row key).</p>
             mapValues f frame
           </code>
           <div class="tip" id="75">
-            <strong>Signature:</strong> f:(&#39;?496040 -&gt; &#39;?496041) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> '?496040, '?496041, 'R, 'C          </div>
+            <strong>Signature:</strong> f:(&#39;?495878 -&gt; &#39;?495879) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> '?495878, '?495879, 'R, 'C          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameModule.fs#L1111-1111" class="github-link">
@@ -1209,8 +1209,8 @@ in each column using <code>Series.reduceValues</code>.</p>
 <code>float</code> and returns the result as a new series:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="i">df</span> <span class="o">|&gt;</span> <span class="i">Frame</span><span class="o">.</span><span class="i">reduceValues</span> (<span class="k">fun</span> (<span class="i">a</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">float</span>) <span class="i">b</span> <span class="k">-&gt;</span> <span class="i">a</span> <span class="o">+</span> <span class="i">b</span>)
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">df</span> <span class="o">|&gt;</span> <span class="i">Frame</span><span class="o">.</span><span class="i">reduceValues</span> (<span class="k">fun</span> (<span class="i">a</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">float</span>) <span class="i">b</span> <span class="k">-&gt;</span> <span class="i">a</span> <span class="o">+</span> <span class="i">b</span>)
 </code></pre></td>
 </tr>
 </table>
@@ -1241,8 +1241,8 @@ offset is negative, the values are shifted backwards and the last <code>offset</
 Expressed in pseudo-code:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="i">result</span>[<span class="i">k</span>] <span class="o">=</span> <span class="i">series</span>[<span class="i">k</span> <span class="o">-</span> <span class="i">offset</span>]
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">result</span>[<span class="i">k</span>] <span class="o">=</span> <span class="i">series</span>[<span class="i">k</span> <span class="o">-</span> <span class="i">offset</span>]
 </code></pre></td>
 </tr>
 </table>
@@ -1697,8 +1697,8 @@ This function skips incomplete chunks.</p>
             windowInto size f frame
           </code>
           <div class="tip" id="96">
-            <strong>Signature:</strong> size:int -&gt; f:(Frame&lt;&#39;R,&#39;C&gt; -&gt; &#39;?495912) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;R,&#39;?495912&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?495912          </div>
+            <strong>Signature:</strong> size:int -&gt; f:(Frame&lt;&#39;R,&#39;C&gt; -&gt; &#39;?495750) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;R,&#39;?495750&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?495750          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameModule.fs#L562-562" class="github-link">
@@ -1774,8 +1774,8 @@ type required by <code>op</code> are skipped.</p>
 component of a two level row key <code>'K1 * 'K2</code>, you can use the following:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="i">df</span> <span class="o">|&gt;</span> <span class="i">Frame</span><span class="o">.</span><span class="i">applyLevel</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">fst</span> <span class="i">Stats</span><span class="o">.</span><span class="i">stdDev</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">df</span> <span class="o">|&gt;</span> <span class="i">Frame</span><span class="o">.</span><span class="i">applyLevel</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">fst</span> <span class="i">Stats</span><span class="o">.</span><span class="i">stdDev</span>
 </code></pre></td>
 </tr>
 </table>
@@ -1864,8 +1864,8 @@ converted to a type required by <code>op</code> are skipped.</p>
 row key <code>'K1 * 'K2</code>, you can use the following:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="i">df</span> <span class="o">|&gt;</span> <span class="i">Frame</span><span class="o">.</span><span class="i">reduceLevel</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">fst</span> (<span class="k">fun</span> (<span class="i">a</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">float</span>) <span class="i">b</span> <span class="k">-&gt;</span> <span class="i">a</span> <span class="o">+</span> <span class="i">b</span>)
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">df</span> <span class="o">|&gt;</span> <span class="i">Frame</span><span class="o">.</span><span class="i">reduceLevel</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">fst</span> (<span class="k">fun</span> (<span class="i">a</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">float</span>) <span class="i">b</span> <span class="k">-&gt;</span> <span class="i">a</span> <span class="o">+</span> <span class="i">b</span>)
 </code></pre></td>
 </tr>
 </table>
@@ -2385,8 +2385,8 @@ They use the type <code>tryval&lt;'T&gt;</code> which is defined as a discrimina
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="t">tryval</span><span class="o">&lt;</span><span class="o">&#39;</span><span class="i">T</span><span class="o">&gt;</span> <span class="o">=</span> 
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="t">tryval</span><span class="o">&lt;</span><span class="o">&#39;</span><span class="i">T</span><span class="o">&gt;</span> <span class="o">=</span> 
   | <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="p">Success</span> <span class="k">of</span> <span class="o">&#39;</span><span class="i">T</span>
   | <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="p">Error</span> <span class="k">of</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="t">exn</span>
 </code></pre></td>
@@ -2597,8 +2597,8 @@ tuple members and get a frame with columns <code>S.Item1</code> and <code>S.Item
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">df</span> <span class="o">=</span> <span class="i">frame</span> [ <span class="s">&quot;S&quot;</span> <span class="o">=&gt;</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> (<span class="n">1</span>, <span class="s">&quot;One&quot;</span>); <span class="n">2</span> <span class="o">=&gt;</span> (<span class="n">2</span>, <span class="s">&quot;Two&quot;</span>) ] ]  
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">df</span> <span class="o">=</span> <span class="i">frame</span> [ <span class="s">&quot;S&quot;</span> <span class="o">=&gt;</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> (<span class="n">1</span>, <span class="s">&quot;One&quot;</span>); <span class="n">2</span> <span class="o">=&gt;</span> (<span class="n">2</span>, <span class="s">&quot;Two&quot;</span>) ] ]  
 <span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="i">df</span> <span class="o">|&gt;</span> <span class="i">Frame</span><span class="o">.</span><span class="i">expandCols</span> [<span class="s">&quot;S&quot;</span>]
 </code></pre></td>
 </tr>
@@ -3047,8 +3047,8 @@ only available on indexed series such as alignment and inexact lookup.</p>
             sortRowsWith colKey compareFunc frame
           </code>
           <div class="tip" id="135">
-            <strong>Signature:</strong> colKey:&#39;C -&gt; compareFunc:(&#39;?495968 -&gt; &#39;?495968 -&gt; int) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'C, '?495968, 'R          </div>
+            <strong>Signature:</strong> colKey:&#39;C -&gt; compareFunc:(&#39;?495806 -&gt; &#39;?495806 -&gt; int) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, '?495806, 'R          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameModule.fs#L815-815" class="github-link">

@@ -41,8 +41,8 @@
 <h1><a name="Analyzing-Titanic-data-set" class="anchor" href="#Analyzing-Titanic-data-set">Analyzing Titanic data set</a></h1>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="i">titanic</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs8', 9)" onmouseover="showTip(event, 'fs8', 9)" class="t">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 10)" onmouseover="showTip(event, 'fs9', 10)" class="f">ReadCsv</span>(<span onmouseout="hideTip(event, 'fs6', 11)" onmouseover="showTip(event, 'fs6', 11)" class="i">root</span> <span class="o">+</span> <span class="s">&quot;Titanic.csv&quot;</span>)
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="i">titanic</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs8', 9)" onmouseover="showTip(event, 'fs8', 9)" class="t">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 10)" onmouseover="showTip(event, 'fs9', 10)" class="f">ReadCsv</span>(<span onmouseout="hideTip(event, 'fs6', 11)" onmouseover="showTip(event, 'fs6', 11)" class="i">root</span> <span class="o">+</span> <span class="s">&quot;Titanic.csv&quot;</span>)
 </code></pre></td>
 </tr>
 </table>
@@ -56,8 +56,8 @@
 <span class="l">5: </span>
 <span class="l">6: </span>
 <span class="l">7: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs7', 12)" onmouseover="showTip(event, 'fs7', 12)" class="i">titanic</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs7', 12)" onmouseover="showTip(event, 'fs7', 12)" class="i">titanic</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs8', 13)" onmouseover="showTip(event, 'fs8', 13)" class="t">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs10', 14)" onmouseover="showTip(event, 'fs10', 14)" class="f">groupRowsByBool</span> <span class="s">&quot;Survived&quot;</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs8', 15)" onmouseover="showTip(event, 'fs8', 15)" class="i">Frame</span><span class="o">.</span><span class="i">countLevel</span> <span onmouseout="hideTip(event, 'fs11', 16)" onmouseover="showTip(event, 'fs11', 16)" class="i">fst</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs8', 17)" onmouseover="showTip(event, 'fs8', 17)" class="i">Frame</span><span class="o">.</span><span class="i">getColumn</span> <span class="s">&quot;PassengerId&quot;</span>
@@ -78,8 +78,8 @@
 <span class="l">6: </span>
 <span class="l">7: </span>
 <span class="l">8: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs17', 24)" onmouseover="showTip(event, 'fs17', 24)" class="i">byClassAndPort1</span> <span class="o">=</span> 
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs17', 24)" onmouseover="showTip(event, 'fs17', 24)" class="i">byClassAndPort1</span> <span class="o">=</span> 
   <span onmouseout="hideTip(event, 'fs7', 25)" onmouseover="showTip(event, 'fs7', 25)" class="i">titanic</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs18', 26)" onmouseover="showTip(event, 'fs18', 26)" class="f">GroupRowsBy</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs19', 27)" onmouseover="showTip(event, 'fs19', 27)" class="t">int</span><span class="o">&gt;</span>(<span class="s">&quot;Pclass&quot;</span>)<span class="o">.</span><span class="f">GroupRowsBy</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs20', 28)" onmouseover="showTip(event, 'fs20', 28)" class="t">string</span><span class="o">&gt;</span>(<span class="s">&quot;Embarked&quot;</span>) 
 
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs21', 29)" onmouseover="showTip(event, 'fs21', 29)" class="i">byClassAndPort</span> <span class="o">=</span> 
@@ -98,8 +98,8 @@
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs27', 39)" onmouseover="showTip(event, 'fs27', 39)" class="i">ageByClassAndPort</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs21', 40)" onmouseover="showTip(event, 'fs21', 40)" class="i">byClassAndPort</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs28', 41)" onmouseover="showTip(event, 'fs28', 41)" class="i">Columns</span><span class="o">.</span>[<span class="s">&quot;Age&quot;</span>]<span class="o">.</span><span class="f">As</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs29', 42)" onmouseover="showTip(event, 'fs29', 42)" class="t">float</span><span class="o">&gt;</span>()
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs27', 39)" onmouseover="showTip(event, 'fs27', 39)" class="i">ageByClassAndPort</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs21', 40)" onmouseover="showTip(event, 'fs21', 40)" class="i">byClassAndPort</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs28', 41)" onmouseover="showTip(event, 'fs28', 41)" class="i">Columns</span><span class="o">.</span>[<span class="s">&quot;Age&quot;</span>]<span class="o">.</span><span class="f">As</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs29', 42)" onmouseover="showTip(event, 'fs29', 42)" class="t">float</span><span class="o">&gt;</span>()
 
 <span onmouseout="hideTip(event, 'fs8', 43)" onmouseover="showTip(event, 'fs8', 43)" class="t">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs30', 44)" onmouseover="showTip(event, 'fs30', 44)" class="f">ofColumns</span>
   [ <span class="s">&quot;AgeMeans&quot;</span>, <span onmouseout="hideTip(event, 'fs27', 45)" onmouseover="showTip(event, 'fs27', 45)" class="i">ageByClassAndPort</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs12', 46)" onmouseover="showTip(event, 'fs12', 46)" class="i">Series</span><span class="o">.</span><span class="i">meanLevel</span> <span onmouseout="hideTip(event, 'fs25', 47)" onmouseover="showTip(event, 'fs25', 47)" class="i">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs31', 48)" onmouseover="showTip(event, 'fs31', 48)" class="i">get1And2Of3</span>
@@ -112,8 +112,8 @@
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs21', 54)" onmouseover="showTip(event, 'fs21', 54)" class="i">byClassAndPort</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs21', 54)" onmouseover="showTip(event, 'fs21', 54)" class="i">byClassAndPort</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs8', 55)" onmouseover="showTip(event, 'fs8', 55)" class="i">Frame</span><span class="o">.</span><span class="i">meanLevel</span> <span onmouseout="hideTip(event, 'fs25', 56)" onmouseover="showTip(event, 'fs25', 56)" class="i">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs31', 57)" onmouseover="showTip(event, 'fs31', 57)" class="i">get1And2Of3</span>
 </code></pre></td>
 </tr>
@@ -122,8 +122,8 @@
 <p>Look at survived column as booleans</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs32', 58)" onmouseover="showTip(event, 'fs32', 58)" class="i">survivedByClassAndPort</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs21', 59)" onmouseover="showTip(event, 'fs21', 59)" class="i">byClassAndPort</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs28', 60)" onmouseover="showTip(event, 'fs28', 60)" class="i">Columns</span><span class="o">.</span>[<span class="s">&quot;Survived&quot;</span>]<span class="o">.</span><span class="f">As</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs33', 61)" onmouseover="showTip(event, 'fs33', 61)" class="t">bool</span><span class="o">&gt;</span>()
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs32', 58)" onmouseover="showTip(event, 'fs32', 58)" class="i">survivedByClassAndPort</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs21', 59)" onmouseover="showTip(event, 'fs21', 59)" class="i">byClassAndPort</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs28', 60)" onmouseover="showTip(event, 'fs28', 60)" class="i">Columns</span><span class="o">.</span>[<span class="s">&quot;Survived&quot;</span>]<span class="o">.</span><span class="f">As</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs33', 61)" onmouseover="showTip(event, 'fs33', 61)" class="t">bool</span><span class="o">&gt;</span>()
 </code></pre></td>
 </tr>
 </table>
@@ -136,8 +136,8 @@
 <span class="l">4: </span>
 <span class="l">5: </span>
 <span class="l">6: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs34', 62)" onmouseover="showTip(event, 'fs34', 62)" class="i">survivals</span> <span class="o">=</span> 
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs34', 62)" onmouseover="showTip(event, 'fs34', 62)" class="i">survivals</span> <span class="o">=</span> 
   <span onmouseout="hideTip(event, 'fs32', 63)" onmouseover="showTip(event, 'fs32', 63)" class="i">survivedByClassAndPort</span> 
   <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs12', 64)" onmouseover="showTip(event, 'fs12', 64)" class="t">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs35', 65)" onmouseover="showTip(event, 'fs35', 65)" class="f">applyLevel</span> <span onmouseout="hideTip(event, 'fs25', 66)" onmouseover="showTip(event, 'fs25', 66)" class="t">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs31', 67)" onmouseover="showTip(event, 'fs31', 67)" class="f">get1And2Of3</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs36', 68)" onmouseover="showTip(event, 'fs36', 68)" class="i">sr</span> <span class="k">-&gt;</span> 
       <span onmouseout="hideTip(event, 'fs36', 69)" onmouseover="showTip(event, 'fs36', 69)" class="i">sr</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs37', 70)" onmouseover="showTip(event, 'fs37', 70)" class="i">Values</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs38', 71)" onmouseover="showTip(event, 'fs38', 71)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs39', 72)" onmouseover="showTip(event, 'fs39', 72)" class="f">countBy</span> <span onmouseout="hideTip(event, 'fs40', 73)" onmouseover="showTip(event, 'fs40', 73)" class="f">id</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs41', 74)" onmouseover="showTip(event, 'fs41', 74)" class="f">series</span>)
@@ -164,8 +164,8 @@
 <span class="l">13: </span>
 <span class="l">14: </span>
 <span class="l">15: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs34', 79)" onmouseover="showTip(event, 'fs34', 79)" class="i">survivals</span><span class="o">?</span><span class="i">Total</span> <span class="o">&lt;-</span> 
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs34', 79)" onmouseover="showTip(event, 'fs34', 79)" class="i">survivals</span><span class="o">?</span><span class="i">Total</span> <span class="o">&lt;-</span> 
   <span onmouseout="hideTip(event, 'fs21', 80)" onmouseover="showTip(event, 'fs21', 80)" class="i">byClassAndPort</span>
   <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs8', 81)" onmouseover="showTip(event, 'fs8', 81)" class="t">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs44', 82)" onmouseover="showTip(event, 'fs44', 82)" class="f">applyLevel</span> <span onmouseout="hideTip(event, 'fs25', 83)" onmouseover="showTip(event, 'fs25', 83)" class="t">Pair</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs31', 84)" onmouseover="showTip(event, 'fs31', 84)" class="f">get1And2Of3</span> <span onmouseout="hideTip(event, 'fs12', 85)" onmouseover="showTip(event, 'fs12', 85)" class="t">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs45', 86)" onmouseover="showTip(event, 'fs45', 86)" class="f">countKeys</span>
 

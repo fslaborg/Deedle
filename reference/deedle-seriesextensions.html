@@ -110,8 +110,8 @@ from the <code>Series</code> module.</p>
             ResampleEquivalence(...)
           </code>
           <div class="tip" id="846">
-            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * keyProj:Func&lt;&#39;K,&#39;?491787&gt; * aggregate:Func&lt;Series&lt;&#39;K,&#39;V&gt;,&#39;?491788&gt;) -&gt; Series&lt;&#39;?491787,&#39;?491788&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V, '?491787, '?491788          </div>
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * keyProj:Func&lt;&#39;K,&#39;?491625&gt; * aggregate:Func&lt;Series&lt;&#39;K,&#39;V&gt;,&#39;?491626&gt;) -&gt; Series&lt;&#39;?491625,&#39;?491626&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V, '?491625, '?491626          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L525-525" class="github-link">
@@ -150,8 +150,8 @@ series, similar functionality can be implemented using <code>GroupBy</code>.</p>
             ResampleEquivalence(series, keyProj)
           </code>
           <div class="tip" id="847">
-            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * keyProj:Func&lt;&#39;K,&#39;?491783&gt;) -&gt; Series&lt;&#39;?491783,Series&lt;&#39;K,&#39;V&gt;&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V, '?491783          </div>
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * keyProj:Func&lt;&#39;K,&#39;?491621&gt;) -&gt; Series&lt;&#39;?491621,Series&lt;&#39;K,&#39;V&gt;&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V, '?491621          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L503-503" class="github-link">
@@ -233,8 +233,8 @@ space (which is then used for grouping based on equivalence)</li>
             ResampleUniform(...)
           </code>
           <div class="tip" id="849">
-            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * keyProj:Func&lt;&#39;K,&#39;?491792&gt; * nextKey:Func&lt;&#39;?491792,&#39;?491792&gt;) -&gt; Series&lt;&#39;?491792,&#39;V&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V, '?491792          </div>
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,&#39;V&gt; * keyProj:Func&lt;&#39;K,&#39;?491630&gt; * nextKey:Func&lt;&#39;?491630,&#39;?491630&gt;) -&gt; Series&lt;&#39;?491630,&#39;V&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V, '?491630          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L550-550" class="github-link">
@@ -652,8 +652,8 @@ only those keys for which there is a value available in the original one.</p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">s</span> <span class="o">=</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">1.0</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="i">Double</span><span class="o">.</span><span class="i">NaN</span> ]
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">s</span> <span class="o">=</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">1.0</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="i">Double</span><span class="o">.</span><span class="i">NaN</span> ]
 <span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="i">s</span><span class="o">.</span><span class="i">DropMissing</span>()
 [<span class="i">fsi</span><span class="o">:</span><span class="k">val</span> <span class="i">it</span> <span class="o">:</span> <span class="i">Series</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs2', 3)" onmouseover="showTip(event, 'fs2', 3)" class="i">int</span>,<span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="i">float</span><span class="o">&gt;</span> <span class="o">=</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">1</span>]
 </code></pre></td>
@@ -733,8 +733,8 @@ function. This operation can only be used on ordered series.</p>
 <span class="l">5: </span>
 <span class="l">6: </span>
 <span class="l">7: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">sample</span> <span class="o">=</span> <span class="i">Series</span><span class="o">.</span><span class="i">ofValues</span> [ <span class="i">Double</span><span class="o">.</span><span class="i">NaN</span>; <span class="n">1.0</span>; <span class="i">Double</span><span class="o">.</span><span class="i">NaN</span>; <span class="n">3.0</span> ]
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">sample</span> <span class="o">=</span> <span class="i">Series</span><span class="o">.</span><span class="i">ofValues</span> [ <span class="i">Double</span><span class="o">.</span><span class="i">NaN</span>; <span class="n">1.0</span>; <span class="i">Double</span><span class="o">.</span><span class="i">NaN</span>; <span class="n">3.0</span> ]
 
 <span class="c">// Returns a series consisting of [1; 1; 3; 3]</span>
 <span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="i">sample</span><span class="o">.</span><span class="i">FillMissing</span>(<span class="i">Direction</span><span class="o">.</span><span class="i">Backward</span>)
@@ -1301,8 +1301,8 @@ offset is negative, the values are shifted backwards and the last <code>offset</
 Expressed in pseudo-code:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="i">result</span>[<span class="i">k</span>] <span class="o">=</span> <span class="i">series</span>[<span class="i">k</span> <span class="o">-</span> <span class="i">offset</span>]
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">result</span>[<span class="i">k</span>] <span class="o">=</span> <span class="i">series</span>[<span class="i">k</span> <span class="o">-</span> <span class="i">offset</span>]
 </code></pre></td>
 </tr>
 </table>

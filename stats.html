@@ -58,8 +58,8 @@ snippet loads <code>AirQuality.csv</code> and shows the values in the <code>Ozon
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs9', 12)" onmouseover="showTip(event, 'fs9', 12)" class="i">air</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs10', 13)" onmouseover="showTip(event, 'fs10', 13)" class="t">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs11', 14)" onmouseover="showTip(event, 'fs11', 14)" class="f">ReadCsv</span>(<span onmouseout="hideTip(event, 'fs8', 15)" onmouseover="showTip(event, 'fs8', 15)" class="i">root</span> <span class="o">+</span> <span class="s">&quot;AirQuality.csv&quot;</span>, <span class="i">separators</span><span class="o">=</span><span class="s">&quot;;&quot;</span>)
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs9', 12)" onmouseover="showTip(event, 'fs9', 12)" class="i">air</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs10', 13)" onmouseover="showTip(event, 'fs10', 13)" class="t">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs11', 14)" onmouseover="showTip(event, 'fs11', 14)" class="f">ReadCsv</span>(<span onmouseout="hideTip(event, 'fs8', 15)" onmouseover="showTip(event, 'fs8', 15)" class="i">root</span> <span class="o">+</span> <span class="s">&quot;AirQuality.csv&quot;</span>, <span class="i">separators</span><span class="o">=</span><span class="s">&quot;;&quot;</span>)
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs12', 16)" onmouseover="showTip(event, 'fs12', 16)" class="i">ozone</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 17)" onmouseover="showTip(event, 'fs9', 17)" class="i">air</span><span class="o">?</span><span class="i">Ozone</span>
 </code></pre></td>
 </tr>
@@ -114,8 +114,8 @@ stores mean extremes and median of the input series:</p>
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs13', 18)" onmouseover="showTip(event, 'fs13', 18)" class="f">series</span> [
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs13', 18)" onmouseover="showTip(event, 'fs13', 18)" class="f">series</span> [
   <span class="s">&quot;Mean&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs14', 19)" onmouseover="showTip(event, 'fs14', 19)" class="f">round</span> (<span onmouseout="hideTip(event, 'fs15', 20)" onmouseover="showTip(event, 'fs15', 20)" class="t">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 21)" onmouseover="showTip(event, 'fs16', 21)" class="f">mean</span> <span onmouseout="hideTip(event, 'fs12', 22)" onmouseover="showTip(event, 'fs12', 22)" class="i">ozone</span>)
   <span class="s">&quot;Max&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs17', 23)" onmouseover="showTip(event, 'fs17', 23)" class="t">Option</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs18', 24)" onmouseover="showTip(event, 'fs18', 24)" class="f">get</span> (<span onmouseout="hideTip(event, 'fs15', 25)" onmouseover="showTip(event, 'fs15', 25)" class="t">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 26)" onmouseover="showTip(event, 'fs19', 26)" class="f">max</span> <span onmouseout="hideTip(event, 'fs12', 27)" onmouseover="showTip(event, 'fs12', 27)" class="i">ozone</span>)
   <span class="s">&quot;Min&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs17', 28)" onmouseover="showTip(event, 'fs17', 28)" class="t">Option</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs18', 29)" onmouseover="showTip(event, 'fs18', 29)" class="f">get</span> (<span onmouseout="hideTip(event, 'fs15', 30)" onmouseover="showTip(event, 'fs15', 30)" class="t">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs20', 31)" onmouseover="showTip(event, 'fs20', 31)" class="f">min</span> <span onmouseout="hideTip(event, 'fs12', 32)" onmouseover="showTip(event, 'fs12', 32)" class="i">ozone</span>)
@@ -177,8 +177,8 @@ the <code>air</code> data set and build a frame that shows the values (series) i
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs22', 36)" onmouseover="showTip(event, 'fs22', 36)" class="i">info</span> <span class="o">=</span> 
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs22', 36)" onmouseover="showTip(event, 'fs22', 36)" class="i">info</span> <span class="o">=</span> 
   [ <span class="s">&quot;Min&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs15', 37)" onmouseover="showTip(event, 'fs15', 37)" class="t">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs20', 38)" onmouseover="showTip(event, 'fs20', 38)" class="f">min</span> <span onmouseout="hideTip(event, 'fs9', 39)" onmouseover="showTip(event, 'fs9', 39)" class="i">air</span>
     <span class="s">&quot;Max&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs15', 40)" onmouseover="showTip(event, 'fs15', 40)" class="t">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 41)" onmouseover="showTip(event, 'fs19', 41)" class="f">max</span> <span onmouseout="hideTip(event, 'fs9', 42)" onmouseover="showTip(event, 'fs9', 42)" class="i">air</span>
     <span class="s">&quot;Mean&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs15', 43)" onmouseover="showTip(event, 'fs15', 43)" class="t">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 44)" onmouseover="showTip(event, 'fs16', 44)" class="f">mean</span> <span onmouseout="hideTip(event, 'fs9', 45)" onmouseover="showTip(event, 'fs9', 45)" class="i">air</span>
@@ -275,8 +275,8 @@ moving window of length 3:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs12', 50)" onmouseover="showTip(event, 'fs12', 50)" class="i">ozone</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs12', 50)" onmouseover="showTip(event, 'fs12', 50)" class="i">ozone</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs15', 51)" onmouseover="showTip(event, 'fs15', 51)" class="t">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs25', 52)" onmouseover="showTip(event, 'fs25', 52)" class="f">movingMean</span> <span class="n">3</span>
 </code></pre></td>
 </tr>
@@ -333,8 +333,8 @@ value over a smaller window:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs12', 53)" onmouseover="showTip(event, 'fs12', 53)" class="i">ozone</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs12', 53)" onmouseover="showTip(event, 'fs12', 53)" class="i">ozone</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs15', 54)" onmouseover="showTip(event, 'fs15', 54)" class="t">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs26', 55)" onmouseover="showTip(event, 'fs26', 55)" class="f">movingMin</span> <span class="n">3</span>
 </code></pre></td>
 </tr>
@@ -411,8 +411,8 @@ Here, we align the two series using a frame, so that we can easily see the resul
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs27', 56)" onmouseover="showTip(event, 'fs27', 56)" class="i">exp</span> <span class="o">=</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs27', 56)" onmouseover="showTip(event, 'fs27', 56)" class="i">exp</span> <span class="o">=</span>
   [ <span class="s">&quot;Ozone&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs12', 57)" onmouseover="showTip(event, 'fs12', 57)" class="i">ozone</span> 
     <span class="s">&quot;Mean&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs15', 58)" onmouseover="showTip(event, 'fs15', 58)" class="t">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs28', 59)" onmouseover="showTip(event, 'fs28', 59)" class="f">expandingMean</span>(<span onmouseout="hideTip(event, 'fs12', 60)" onmouseover="showTip(event, 'fs12', 60)" class="i">ozone</span>)
     <span class="s">&quot;+/-&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs15', 61)" onmouseover="showTip(event, 'fs15', 61)" class="t">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs29', 62)" onmouseover="showTip(event, 'fs29', 62)" class="f">expandingStdDev</span>(<span onmouseout="hideTip(event, 'fs12', 63)" onmouseover="showTip(event, 'fs12', 63)" class="i">ozone</span>) ] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs24', 64)" onmouseover="showTip(event, 'fs24', 64)" class="f">frame</span>
@@ -543,8 +543,8 @@ day between May and September. We can create a frame with two-level row key usin
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs30', 65)" onmouseover="showTip(event, 'fs30', 65)" class="i">dateFormat</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs31', 66)" onmouseover="showTip(event, 'fs31', 66)" class="t">CultureInfo</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs32', 67)" onmouseover="showTip(event, 'fs32', 67)" class="i">CurrentCulture</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs33', 68)" onmouseover="showTip(event, 'fs33', 68)" class="i">DateTimeFormat</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs30', 65)" onmouseover="showTip(event, 'fs30', 65)" class="i">dateFormat</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs31', 66)" onmouseover="showTip(event, 'fs31', 66)" class="t">CultureInfo</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs32', 67)" onmouseover="showTip(event, 'fs32', 67)" class="i">CurrentCulture</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs33', 68)" onmouseover="showTip(event, 'fs33', 68)" class="i">DateTimeFormat</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs34', 69)" onmouseover="showTip(event, 'fs34', 69)" class="i">byMonth</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 70)" onmouseover="showTip(event, 'fs9', 70)" class="i">air</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs10', 71)" onmouseover="showTip(event, 'fs10', 71)" class="t">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs35', 72)" onmouseover="showTip(event, 'fs35', 72)" class="f">indexRowsUsing</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs36', 73)" onmouseover="showTip(event, 'fs36', 73)" class="i">r</span> <span class="k">-&gt;</span>
     <span onmouseout="hideTip(event, 'fs30', 74)" onmouseover="showTip(event, 'fs30', 74)" class="i">dateFormat</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs37', 75)" onmouseover="showTip(event, 'fs37', 75)" class="f">GetMonthName</span>(<span onmouseout="hideTip(event, 'fs36', 76)" onmouseover="showTip(event, 'fs36', 76)" class="i">r</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 77)" onmouseover="showTip(event, 'fs38', 77)" class="f">GetAs</span>(<span class="s">&quot;Month&quot;</span>)), <span onmouseout="hideTip(event, 'fs36', 78)" onmouseover="showTip(event, 'fs36', 78)" class="i">r</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 79)" onmouseover="showTip(event, 'fs38', 79)" class="f">GetAs</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs39', 80)" onmouseover="showTip(event, 'fs39', 80)" class="t">int</span><span class="o">&gt;</span>(<span class="s">&quot;Day&quot;</span>))
 </code></pre></td>
@@ -560,8 +560,8 @@ first level (individual months) using functions prefixed with <code>level</code>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs34', 81)" onmouseover="showTip(event, 'fs34', 81)" class="i">byMonth</span><span class="o">?</span><span class="i">Ozone</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs34', 81)" onmouseover="showTip(event, 'fs34', 81)" class="i">byMonth</span><span class="o">?</span><span class="i">Ozone</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs15', 82)" onmouseover="showTip(event, 'fs15', 82)" class="t">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs40', 83)" onmouseover="showTip(event, 'fs40', 83)" class="f">levelMean</span> <span onmouseout="hideTip(event, 'fs41', 84)" onmouseover="showTip(event, 'fs41', 84)" class="f">fst</span>
 </code></pre></td>
 </tr>
@@ -606,8 +606,8 @@ statistical functions on entire data frames, but this can easily be implemented 
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs34', 85)" onmouseover="showTip(event, 'fs34', 85)" class="i">byMonth</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs34', 85)" onmouseover="showTip(event, 'fs34', 85)" class="i">byMonth</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs10', 86)" onmouseover="showTip(event, 'fs10', 86)" class="t">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs42', 87)" onmouseover="showTip(event, 'fs42', 87)" class="f">sliceCols</span> [<span class="s">&quot;Ozone&quot;</span>;<span class="s">&quot;Solar.R&quot;</span>;<span class="s">&quot;Wind&quot;</span>;<span class="s">&quot;Temp&quot;</span>]
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs10', 88)" onmouseover="showTip(event, 'fs10', 88)" class="t">Frame</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs43', 89)" onmouseover="showTip(event, 'fs43', 89)" class="f">getNumericCols</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs44', 90)" onmouseover="showTip(event, 'fs44', 90)" class="t">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs45', 91)" onmouseover="showTip(event, 'fs45', 91)" class="f">mapValues</span> (<span onmouseout="hideTip(event, 'fs15', 92)" onmouseover="showTip(event, 'fs15', 92)" class="t">Stats</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs40', 93)" onmouseover="showTip(event, 'fs40', 93)" class="f">levelMean</span> <span onmouseout="hideTip(event, 'fs41', 94)" onmouseover="showTip(event, 'fs41', 94)" class="f">fst</span>)
