@@ -98,7 +98,7 @@
 ### 1.1.3-beta
  * Introduce generic `Ranges<T>` type to simplify working with ranges
    (mainly useful for custom BigDeedle implementations)
-  
+
 ### 1.1.4-beta
  * Allow creation of empty ranges
  * Support more operations on virtualized sources
@@ -108,3 +108,6 @@
  * Aggregate bug fixes from previous beta releases
  * Provide virtual index and virtual vector (aka BigDeedle)
  * Compare indices using lazy sequences (to support BigDeedle)
+
+### 1.2.0
+ * Update version number for a BigDeedle release
