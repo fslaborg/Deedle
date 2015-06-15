@@ -275,7 +275,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
     member builder.Aggregate<'K, 'TNewKey, 'R when 'K : equality and 'TNewKey : equality>
         (index:IIndex<'K>, aggregation, vector, selector:_ * _ -> 'TNewKey * OptionalValue<'R>) =
       if not index.IsOrdered then 
-        invalidOp "Floating window aggregation and chunking is only supported on ordered indices."
+        invalidOp "Floating window aggregation and chunking is only supported on ordered indices. Consider sorting the series before calling the operation."
       let builder = (builder :> IIndexBuilder)
       
       // Calculate locatons (addresses) of the chunks or windows
