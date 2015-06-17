@@ -34,6 +34,18 @@ namespace Deedle.CSharp.Tests
   /* ----------------------------------------------------------------------------------
    * Creating frames and getting frame data
    * --------------------------------------------------------------------------------*/
+
+  public class PublicFields
+  {
+    public readonly int A;
+    public readonly string B;
+    public PublicFields(int a, string b)
+    {
+      this.A = a; 
+      this.B = b;
+    }
+  }
+
   public class FrameCreateAccessTests
   {
     [Test]
@@ -42,6 +54,18 @@ namespace Deedle.CSharp.Tests
       var df = Frame.FromRecords(new[] {
         new { A = 1, B = "Test" },
         new { A = 2, B = "Another"}
+      });
+      var firstRow = df.Rows[0].Values.ToArray();
+      Assert.AreEqual(new object[] { 1, "Test" }, firstRow);
+      Assert.AreEqual(new[] { "A", "B" }, df.ColumnKeys.ToArray());
+    }
+
+    [Test]
+    public static void CanCreateFrameFromFields()
+    {
+      var df = Frame.FromRecords(new[] {
+        new PublicFields(1, "Test"),
+        new PublicFields(2, "Another")
       });
       var firstRow = df.Rows[0].Values.ToArray();
       Assert.AreEqual(new object[] { 1, "Test" }, firstRow);

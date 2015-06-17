@@ -111,3 +111,6 @@
 
 ### 1.2.0
  * Update version number for a BigDeedle release
+
+### 1.2.1
+ * Support public fields in Frame.ofRecords

@@ -82,16 +82,27 @@ module internal Reflection =
     ty.GetProperties(BindingFlags.Instance ||| BindingFlags.Public) 
     |> Seq.filter (fun p -> p.CanRead && p.GetIndexParameters().Length = 0) 
 
+  let getExpandableFields (ty:Type) =
+    ty.GetFields(BindingFlags.Instance ||| BindingFlags.Public) 
+    
   /// Given System.Type for some .NET object, get a sequence of projections
   /// that return the values of all readonly properties (together with their name & type)
   let getMemberProjections (recdTy:System.Type) =
-    [| let fields = getExpandableProperties recdTy
-       for f in fields ->
-         let fldTy = f.PropertyType
+    [| let props = getExpandableProperties recdTy
+       for p in props do
+         let propTy = p.PropertyType
+         // Build: fun recd -> recd.get_<Prop>
+         let recd = Expression.Parameter(recdTy)
+         let call = Expression.Call(recd, p.GetGetMethod())
+         yield p.Name, propTy, Expression.Lambda(call, [recd])
+       
+       let flds = getExpandableFields recdTy
+       for f in flds do
+         let fldTy = f.FieldType
          // Build: fun recd -> recd.<Field>
          let recd = Expression.Parameter(recdTy)
-         let call = Expression.Call(recd, f.GetGetMethod())
-         f.Name, fldTy, Expression.Lambda(call, [recd]) |]
+         let call = Expression.Field(recd, f)
+         yield f.Name, fldTy, Expression.Lambda(call, [recd]) |]
 
   /// Given value, return names, types and values of all its IDictionary contents (or None)
   let expandDictionary (value:obj) =
