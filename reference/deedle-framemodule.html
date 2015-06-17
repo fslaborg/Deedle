@@ -369,8 +369,8 @@ missing values where the conversion fails.</p>
             getRow row frame
           </code>
           <div class="tip" id="49">
-            <strong>Signature:</strong> row:&#39;R -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?495661&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?495661          </div>
+            <strong>Signature:</strong> row:&#39;R -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?495675&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?495675          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameModule.fs#L310-310" class="github-link">
@@ -438,8 +438,8 @@ with nearest greater/smaller key. For exact semantics, you can use <code>getCol<
             lookupRow row lookup frame
           </code>
           <div class="tip" id="52">
-            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?495681&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?495681          </div>
+            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?495695&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?495695          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameModule.fs#L355-355" class="github-link">
@@ -603,8 +603,8 @@ column doesn't exist.</p>
             tryLookupColObservation (...)
           </code>
           <div class="tip" id="59">
-            <strong>Signature:</strong> column:&#39;C -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; (&#39;C * Series&lt;&#39;R,&#39;?495677&gt;) option<br />
-                          <strong>Type parameters:</strong> 'C, 'R, '?495677          </div>
+            <strong>Signature:</strong> column:&#39;C -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; (&#39;C * Series&lt;&#39;R,&#39;?495691&gt;) option<br />
+                          <strong>Type parameters:</strong> 'C, 'R, '?495691          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameModule.fs#L344-344" class="github-link">
@@ -625,8 +625,8 @@ doesn't exist.</p>
             tryLookupRow row lookup frame
           </code>
           <div class="tip" id="60">
-            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?495685&gt; option<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?495685          </div>
+            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?495699&gt; option<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?495699          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameModule.fs#L362-362" class="github-link">
@@ -647,8 +647,8 @@ row doesn't exit.</p>
             tryLookupRowObservation row lookup frame
           </code>
           <div class="tip" id="61">
-            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; (&#39;R * Series&lt;&#39;C,&#39;?495689&gt;) option<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?495689          </div>
+            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; (&#39;R * Series&lt;&#39;C,&#39;?495703&gt;) option<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?495703          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameModule.fs#L370-370" class="github-link">
@@ -902,8 +902,8 @@ if you need to access the row key).</p>
             map f frame
           </code>
           <div class="tip" id="68">
-            <strong>Signature:</strong> f:(&#39;R -&gt; &#39;C -&gt; &#39;?495885 -&gt; &#39;?495886) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?495885, '?495886          </div>
+            <strong>Signature:</strong> f:(&#39;R -&gt; &#39;C -&gt; &#39;?495899 -&gt; &#39;?495900) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?495899, '?495900          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameModule.fs#L1122-1122" class="github-link">
@@ -932,8 +932,8 @@ to the appropriate type for input to the mapping function.</p>
             mapColKeys f frame
           </code>
           <div class="tip" id="69">
-            <strong>Signature:</strong> f:(&#39;C -&gt; &#39;?495875) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;?495875&gt;<br />
-                          <strong>Type parameters:</strong> 'C, '?495875, 'R          </div>
+            <strong>Signature:</strong> f:(&#39;C -&gt; &#39;?495889) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;?495889&gt;<br />
+                          <strong>Type parameters:</strong> 'C, '?495889, 'R          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameModule.fs#L1096-1096" class="github-link">
@@ -961,8 +961,8 @@ specified function on the column keys of the original data frame.</p>
             mapCols f frame
           </code>
           <div class="tip" id="70">
-            <strong>Signature:</strong> f:(&#39;C -&gt; ObjectSeries&lt;&#39;R&gt; -&gt; &#39;?495866) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?495867,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'C, 'R, '?495866, '?495867          </div>
+            <strong>Signature:</strong> f:(&#39;C -&gt; ObjectSeries&lt;&#39;R&gt; -&gt; &#39;?495880) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?495881,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R, '?495880, '?495881          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameModule.fs#L1070-1070" class="github-link">
@@ -991,8 +991,8 @@ with the column key and object series that represents the column data.</p>
             mapColValues f frame
           </code>
           <div class="tip" id="71">
-            <strong>Signature:</strong> f:(ObjectSeries&lt;&#39;R&gt; -&gt; &#39;?495870) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?495871,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'R, '?495870, '?495871, 'C          </div>
+            <strong>Signature:</strong> f:(ObjectSeries&lt;&#39;R&gt; -&gt; &#39;?495884) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?495885,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, '?495884, '?495885, 'C          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameModule.fs#L1084-1084" class="github-link">
@@ -1112,8 +1112,8 @@ if you need to access the row key).</p>
             mapValues f frame
           </code>
           <div class="tip" id="75">
-            <strong>Signature:</strong> f:(&#39;?495878 -&gt; &#39;?495879) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> '?495878, '?495879, 'R, 'C          </div>
+            <strong>Signature:</strong> f:(&#39;?495892 -&gt; &#39;?495893) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> '?495892, '?495893, 'R, 'C          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameModule.fs#L1111-1111" class="github-link">
@@ -1697,8 +1697,8 @@ This function skips incomplete chunks.</p>
             windowInto size f frame
           </code>
           <div class="tip" id="96">
-            <strong>Signature:</strong> size:int -&gt; f:(Frame&lt;&#39;R,&#39;C&gt; -&gt; &#39;?495750) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;R,&#39;?495750&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?495750          </div>
+            <strong>Signature:</strong> size:int -&gt; f:(Frame&lt;&#39;R,&#39;C&gt; -&gt; &#39;?495764) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;R,&#39;?495764&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?495764          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameModule.fs#L562-562" class="github-link">
@@ -3047,8 +3047,8 @@ only available on indexed series such as alignment and inexact lookup.</p>
             sortRowsWith colKey compareFunc frame
           </code>
           <div class="tip" id="135">
-            <strong>Signature:</strong> colKey:&#39;C -&gt; compareFunc:(&#39;?495806 -&gt; &#39;?495806 -&gt; int) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'C, '?495806, 'R          </div>
+            <strong>Signature:</strong> colKey:&#39;C -&gt; compareFunc:(&#39;?495820 -&gt; &#39;?495820 -&gt; int) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, '?495820, 'R          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameModule.fs#L815-815" class="github-link">

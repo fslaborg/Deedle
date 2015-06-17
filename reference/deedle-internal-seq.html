@@ -66,8 +66,8 @@
             alignAllOrdered collections comparer
           </code>
           <div class="tip" id="307">
-            <strong>Signature:</strong> collections:ReadOnlyCollection&lt;&#39;?494418&gt; [] -&gt; comparer:IComparer&lt;&#39;?494418&gt; -&gt; &#39;?494418 [] * (int64 * int64) [] list<br />
-                          <strong>Type parameters:</strong> '?494418          </div>
+            <strong>Signature:</strong> collections:ReadOnlyCollection&lt;&#39;?494432&gt; [] -&gt; comparer:IComparer&lt;&#39;?494432&gt; -&gt; &#39;?494432 [] * (int64 * int64) [] list<br />
+                          <strong>Type parameters:</strong> '?494432          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L1222-1222" class="github-link">
@@ -184,8 +184,8 @@ for keys that appear in both sequences (otherwise, it performs union)</p>
             alignUnordered s1 s2 intersectionOnly
           </code>
           <div class="tip" id="312">
-            <strong>Signature:</strong> s1:ReadOnlyCollection&lt;&#39;?494424&gt; -&gt; s2:ReadOnlyCollection&lt;&#39;?494424&gt; -&gt; intersectionOnly:bool -&gt; &#39;?494424 [] * (int64 * int64) [] list<br />
-                          <strong>Type parameters:</strong> '?494424          </div>
+            <strong>Signature:</strong> s1:ReadOnlyCollection&lt;&#39;?494438&gt; -&gt; s2:ReadOnlyCollection&lt;&#39;?494438&gt; -&gt; intersectionOnly:bool -&gt; &#39;?494438 [] * (int64 * int64) [] list<br />
+                          <strong>Type parameters:</strong> '?494438          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L1289-1289" class="github-link">
@@ -251,8 +251,8 @@ The resulting relocations are returned as two-element list for symmetry with oth
             choosel f input
           </code>
           <div class="tip" id="315">
-            <strong>Signature:</strong> f:(int64 -&gt; &#39;?494370 -&gt; &#39;?494371 option) -&gt; input:seq&lt;&#39;?494370&gt; -&gt; seq&lt;&#39;?494371&gt;<br />
-                          <strong>Type parameters:</strong> '?494370, '?494371          </div>
+            <strong>Signature:</strong> f:(int64 -&gt; &#39;?494384 -&gt; &#39;?494385 option) -&gt; input:seq&lt;&#39;?494384&gt; -&gt; seq&lt;&#39;?494385&gt;<br />
+                          <strong>Type parameters:</strong> '?494384, '?494385          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L654-654" class="github-link">
@@ -272,8 +272,8 @@ The resulting relocations are returned as two-element list for symmetry with oth
             chunkedWhile f input
           </code>
           <div class="tip" id="316">
-            <strong>Signature:</strong> f:(&#39;?494396 -&gt; &#39;?494396 -&gt; bool) -&gt; input:seq&lt;&#39;?494396&gt; -&gt; seq&lt;&#39;?494396 []&gt;<br />
-                          <strong>Type parameters:</strong> '?494396          </div>
+            <strong>Signature:</strong> f:(&#39;?494410 -&gt; &#39;?494410 -&gt; bool) -&gt; input:seq&lt;&#39;?494410&gt; -&gt; seq&lt;&#39;?494410 []&gt;<br />
+                          <strong>Type parameters:</strong> '?494410          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L816-816" class="github-link">
@@ -297,8 +297,8 @@ ends when <code>f</code> returns <code>false</code>.</p>
             chunkedWithBounds size boundary input
           </code>
           <div class="tip" id="317">
-            <strong>Signature:</strong> size:int -&gt; boundary:Boundary -&gt; input:seq&lt;&#39;?494400&gt; -&gt; seq&lt;DataSegment&lt;&#39;?494400 []&gt;&gt;<br />
-                          <strong>Type parameters:</strong> '?494400          </div>
+            <strong>Signature:</strong> size:int -&gt; boundary:Boundary -&gt; input:seq&lt;&#39;?494414&gt; -&gt; seq&lt;DataSegment&lt;&#39;?494414 []&gt;&gt;<br />
+                          <strong>Type parameters:</strong> '?494414          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L864-864" class="github-link">
@@ -320,8 +320,8 @@ The function may iterate over the sequence repeatedly.</p>
             chunkRangesWhile f input
           </code>
           <div class="tip" id="318">
-            <strong>Signature:</strong> f:(&#39;?494406 -&gt; &#39;?494406 -&gt; bool) -&gt; input:seq&lt;&#39;?494406&gt; -&gt; seq&lt;int64 * int64&gt;<br />
-                          <strong>Type parameters:</strong> '?494406          </div>
+            <strong>Signature:</strong> f:(&#39;?494420 -&gt; &#39;?494420 -&gt; bool) -&gt; input:seq&lt;&#39;?494420&gt; -&gt; seq&lt;int64 * int64&gt;<br />
+                          <strong>Type parameters:</strong> '?494420          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L1001-1001" class="github-link">
@@ -388,8 +388,8 @@ the second example above is returned as a pair (0, 0).</p>
             getEnumerator s
           </code>
           <div class="tip" id="320">
-            <strong>Signature:</strong> s:seq&lt;&#39;?494390&gt; -&gt; IEnumerator&lt;&#39;?494390&gt;<br />
-                          <strong>Type parameters:</strong> '?494390          </div>
+            <strong>Signature:</strong> s:seq&lt;&#39;?494404&gt; -&gt; IEnumerator&lt;&#39;?494404&gt;<br />
+                          <strong>Type parameters:</strong> '?494404          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L744-744" class="github-link">
@@ -409,8 +409,8 @@ the second example above is returned as a pair (0, 0).</p>
             headOrNone input
           </code>
           <div class="tip" id="321">
-            <strong>Signature:</strong> input:seq&lt;&#39;?494386&gt; -&gt; &#39;?494386 option<br />
-                          <strong>Type parameters:</strong> '?494386          </div>
+            <strong>Signature:</strong> input:seq&lt;&#39;?494400&gt; -&gt; &#39;?494400 option<br />
+                          <strong>Type parameters:</strong> '?494400          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L721-721" class="github-link">
@@ -452,8 +452,8 @@ the first value. Otherwise, returns <code>None</code>.</p>
             lastAndLength input
           </code>
           <div class="tip" id="323">
-            <strong>Signature:</strong> input:seq&lt;&#39;?494366&gt; -&gt; &#39;?494366 * int<br />
-                          <strong>Type parameters:</strong> '?494366          </div>
+            <strong>Signature:</strong> input:seq&lt;&#39;?494380&gt; -&gt; &#39;?494380 * int<br />
+                          <strong>Type parameters:</strong> '?494380          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L636-636" class="github-link">
@@ -474,8 +474,8 @@ the first value. Otherwise, returns <code>None</code>.</p>
             lastFew count input
           </code>
           <div class="tip" id="324">
-            <strong>Signature:</strong> count:int -&gt; input:seq&lt;&#39;?494388&gt; -&gt; seq&lt;&#39;?494388&gt;<br />
-                          <strong>Type parameters:</strong> '?494388          </div>
+            <strong>Signature:</strong> count:int -&gt; input:seq&lt;&#39;?494402&gt; -&gt; seq&lt;&#39;?494402&gt;<br />
+                          <strong>Type parameters:</strong> '?494402          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L727-727" class="github-link">
@@ -497,8 +497,8 @@ and it needs to iterate over the entire sequence.</p>
             mapl f input
           </code>
           <div class="tip" id="325">
-            <strong>Signature:</strong> f:(int64 -&gt; &#39;?494373 -&gt; &#39;?494374) -&gt; input:seq&lt;&#39;?494373&gt; -&gt; seq&lt;&#39;?494374&gt;<br />
-                          <strong>Type parameters:</strong> '?494373, '?494374          </div>
+            <strong>Signature:</strong> f:(int64 -&gt; &#39;?494387 -&gt; &#39;?494388) -&gt; input:seq&lt;&#39;?494387&gt; -&gt; seq&lt;&#39;?494388&gt;<br />
+                          <strong>Type parameters:</strong> '?494387, '?494388          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L663-663" class="github-link">
@@ -562,8 +562,8 @@ int or int64 values. This is notably faster than using <code>lo .. step .. hi</c
             skipAtMost count input
           </code>
           <div class="tip" id="328">
-            <strong>Signature:</strong> count:int -&gt; input:seq&lt;&#39;?494376&gt; -&gt; seq&lt;&#39;?494376&gt;<br />
-                          <strong>Type parameters:</strong> '?494376          </div>
+            <strong>Signature:</strong> count:int -&gt; input:seq&lt;&#39;?494390&gt; -&gt; seq&lt;&#39;?494390&gt;<br />
+                          <strong>Type parameters:</strong> '?494390          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L671-671" class="github-link">
@@ -584,8 +584,8 @@ int or int64 values. This is notably faster than using <code>lo .. step .. hi</c
             startAndEnd startCount endCount input
           </code>
           <div class="tip" id="329">
-            <strong>Signature:</strong> startCount:int -&gt; endCount:int -&gt; input:seq&lt;&#39;?494392&gt; -&gt; seq&lt;Choice&lt;&#39;?494392,unit,&#39;?494392&gt;&gt;<br />
-                          <strong>Type parameters:</strong> '?494392          </div>
+            <strong>Signature:</strong> startCount:int -&gt; endCount:int -&gt; input:seq&lt;&#39;?494406&gt; -&gt; seq&lt;Choice&lt;&#39;?494406,unit,&#39;?494406&gt;&gt;<br />
+                          <strong>Type parameters:</strong> '?494406          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L751-751" class="github-link">
@@ -652,8 +652,8 @@ when all their elements are equal and they have the same size.</p>
             tryFirstAndLast input
           </code>
           <div class="tip" id="332">
-            <strong>Signature:</strong> input:seq&lt;&#39;?494410&gt; -&gt; (&#39;?494410 * &#39;?494410) option<br />
-                          <strong>Type parameters:</strong> '?494410          </div>
+            <strong>Signature:</strong> input:seq&lt;&#39;?494424&gt; -&gt; (&#39;?494424 * &#39;?494424) option<br />
+                          <strong>Type parameters:</strong> '?494424          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L1030-1030" class="github-link">
@@ -673,8 +673,8 @@ when all their elements are equal and they have the same size.</p>
             unreduce f start
           </code>
           <div class="tip" id="333">
-            <strong>Signature:</strong> f:(&#39;?494368 -&gt; &#39;?494368) -&gt; start:&#39;?494368 -&gt; seq&lt;&#39;?494368&gt;<br />
-                          <strong>Type parameters:</strong> '?494368          </div>
+            <strong>Signature:</strong> f:(&#39;?494382 -&gt; &#39;?494382) -&gt; start:&#39;?494382 -&gt; seq&lt;&#39;?494382&gt;<br />
+                          <strong>Type parameters:</strong> '?494382          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L647-647" class="github-link">
