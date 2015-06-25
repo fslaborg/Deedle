@@ -957,8 +957,8 @@ module Series =
     series.Aggregate(ChunkSize(bounds), (fun d -> d.Data.Keys |> if (snd bounds).HasFlag(Boundary.AtBeginning) then Seq.last else Seq.head), fun ds -> OptionalValue(f ds))
 
   /// Aggregates the input into a series of adacent chunks using the specified size and boundary behavior and returns
-  /// the produced chunks as a nested series. The key is the last key of the chunk, unless
-  /// boundary behavior is `Boundary.AtEnding` (in which case it is the first key).
+  /// the produced chunks as a nested series. The key is the first key of the chunk, unless
+  /// boundary behavior has `Boundary.AtBeginning` flag (in which case it is the last key).
   ///
   /// ## Parameters
   ///  - `bounds` - Specifies the chunk size and bounary behavior. The boundary behavior
