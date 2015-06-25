@@ -159,7 +159,7 @@ let ``Series.chunkInto works correctly on sample input`` () =
 [<Test>]
 let ``Series.chunkSizeInto with AtBeginning boundary works correctly on sample input`` () =
   let actual = letters 10 |> Series.chunkSizeInto (4, Boundary.AtBeginning) (fun s -> new String(Array.ofSeq s.Data.Values))
-  let expected = series [0 => "AB"; 2 => "CDEF"; 6 => "GHIJ" ]
+  let expected = series [1 => "AB"; 5 => "CDEF"; 9 => "GHIJ" ]
   actual |> shouldEqual expected
 
 [<Test>]
@@ -171,7 +171,7 @@ let ``Series.chunkSizeInto with AtEnding boundary works correctly on sample inpu
 [<Test>]
 let ``Series.chunkSizeInto with AtBeginning boundary works correctly when boundary is empty`` () =
   let actual = letters 8 |> Series.chunkSizeInto (4, Boundary.AtBeginning) (fun s -> new String(Array.ofSeq s.Data.Values))
-  let expected = series [0 => "ABCD"; 4 => "EFGH" ]
+  let expected = series [3 => "ABCD"; 7 => "EFGH" ]
   actual |> shouldEqual expected
 
 [<Test>]
@@ -183,7 +183,7 @@ let ``Series.chunkSizeInto with AtEnding boundary works correctly when boundary 
 [<Test>]
 let ``Series.chunkSizeInto with AtBeginning & Skip boundary works correctly on sample input`` () =
   let actual = letters 10 |> Series.chunkSizeInto (4, Boundary.AtBeginning ||| Boundary.Skip) (fun s -> new String(Array.ofSeq s.Data.Values))
-  let expected = series [2 => "CDEF"; 6 => "GHIJ" ]
+  let expected = series [5 => "CDEF"; 9 => "GHIJ" ]
   actual |> shouldEqual expected
 
 [<Test>]
@@ -655,10 +655,25 @@ let b =
   [ DateTime(2013,9,8) => 8.0; // no matching point in a
     DateTime(2013,9,11) => 11.0 ] |> series
 
+let dense =
+  [ 1 => 1.0; 
+    2 => 2.0; 
+    3 => 3.0;
+    4 => 4.0;
+    5 => 5.0; ]
+    |> series
+
+let sparse = 
+  [ 2 => 20.0;
+    4 => 40.0 ] |> series
+
 let lift2 f a b = 
     match a, b with
     | Some x, Some y -> Some(f x y)
-    | _              -> None
+    | None, Some y              -> None
+    | Some x, None              -> None
+    | None, None                -> None
+    | _                 -> failwith "expecting an option"
 
 [<Test>]
 let ``ZipInto correctly zips series with missing values and custom operation``() =
@@ -674,6 +689,11 @@ let ``ZipAlignInto correctly left-aligns and zips series with nearest smaller op
   res.GetAt(2) |> shouldEqual 99.0
   res.GetAt(3) |> shouldEqual (16.0 * 11.0)
 
+  let res = (dense, sparse) ||> Series.zipAlignInto JoinKind.Left Lookup.ExactOrSmaller (lift2 (fun l r -> (l**2.0) * r))
+  res.TryGetAt(0) |> shouldEqual OptionalValue.Missing
+  res.GetAt(1) |> shouldEqual ((2.0**2.0)*20.0)
+  res.GetAt(2) |> shouldEqual ((3.0**2.0)*20.0)
+  res.GetAt(3) |> shouldEqual ((4.0**2.0)*40.0)
 
 [<Test>]
 let ``ZipAlignInto correctly left-aligns and zips series with nearest greater option``() =
