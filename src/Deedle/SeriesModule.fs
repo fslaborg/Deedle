@@ -953,7 +953,7 @@ module Series =
   /// [category:Grouping, windowing and chunking]
   [<CompiledName("ChunkSizeInto")>]
   let inline chunkSizeInto bounds f (series:Series<'K, 'T>) : Series<'K, 'R> =
-    series.Aggregate(ChunkSize(bounds), (fun d -> d.Data.Keys |> Seq.head), fun ds -> OptionalValue(f ds))
+    series.Aggregate(ChunkSize(bounds), (fun d -> d.Data.Keys |> if snd bounds = Boundary.AtEnding then Seq.head else Seq.last), fun ds -> OptionalValue(f ds))
 
   /// Aggregates the input into a series of adacent chunks using the specified size and boundary behavior and returns
   /// the produced chunks as a nested series. The key is the last key of the chunk, unless
