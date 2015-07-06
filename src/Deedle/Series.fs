@@ -507,7 +507,7 @@ and
       | UnionBehavior.PreferRight -> BinaryTransform.RightIfAvailable
       | UnionBehavior.Exclusive -> BinaryTransform.AtMostOne
       | _ -> BinaryTransform.LeftIfAvailable
-    let vecCmd = Vectors.Combine(newIndex.KeyCount, [vec1; vec2], transform)
+    let vecCmd = Vectors.Combine(lazy newIndex.KeyCount, [vec1; vec2], transform)
     let newVec = vectorBuilder.Build(vecCmd, [| series.Vector; another.Vector |])
     Series(newIndex, newVec, vectorBuilder, indexBuilder)
 
@@ -540,7 +540,7 @@ and
     let newIndex, lVec, rVec = series.ZipHelper(otherSeries, JoinKind.Inner, Lookup.Exact)
     
     let vecRes = 
-      Vectors.Combine(newIndex.KeyCount, [Vectors.Return 0; Vectors.Return 1], 
+      Vectors.Combine(lazy newIndex.KeyCount, [Vectors.Return 0; Vectors.Return 1], 
         BinaryTransform.CreateLifted<Choice<'V, 'V2, 'V * 'V2>>(fun l r ->
           match l, r with
           | Choice1Of3 l, Choice2Of3 r -> Choice3Of3(l, r)
@@ -755,11 +755,7 @@ and
   /// [category:Windowing, chunking and grouping]
   member x.GroupBy(keySelector:Func<_, _>) =
     let index = x.Index
-    let map key v = 
-        let kvp = KeyValuePair(key, v)
-        let res = keySelector.Invoke(kvp) 
-        res
-    let ks key =  x.TryGet(key) |> OptionalValue.map (map key)
+    let ks key =  x.TryGet(key) |> OptionalValue.map (fun v -> keySelector.Invoke(KeyValuePair(key, v)))
     let cmd = indexBuilder.GroupBy(index, ks, VectorConstruction.Return 0) 
     let newIndex  = Index.ofKeys (cmd |> ReadOnlyCollection.map fst)
     let newGroups = cmd |> Seq.map snd |> Seq.map (fun sc -> 
@@ -1004,6 +1000,8 @@ and
     member x.VectorBuilder = vectorBuilder
 
   member private series.GetPrintedObservations(startCount, endCount) = 
+    // NOTE: Do not check the length, because that would evaluate the whole 
+    // series. Instead, we just check if it has more than startCount+endCount
     let smaller = series.Index.Mappings |> Seq.skipAtMost (startCount+endCount) |> Seq.isEmpty
     if smaller then
       seq { for obs in series.ObservationsAll -> Choice1Of3(obs.Key, obs.Value) } 

@@ -654,7 +654,7 @@ module Series =
     let vectorBuilder = VectorBuilder.Instance
     let newIndex, vectorR = series.Index.Builder.Shift((series.Index, Vectors.Return 0), offset)
     let _, vectorL = series.Index.Builder.Shift((series.Index, Vectors.Return 0), -offset)
-    let cmd = Vectors.Combine(newIndex.KeyCount, [vectorL; vectorR], BinaryTransform.Create< ^T >(OptionalValue.map2 (-)))
+    let cmd = Vectors.Combine(lazy newIndex.KeyCount, [vectorL; vectorR], BinaryTransform.Create< ^T >(OptionalValue.map2 (-)))
     let newVector = vectorBuilder.Build(cmd, [| series.Vector |])
     Series(newIndex, newVector, vectorBuilder, series.Index.Builder)
 

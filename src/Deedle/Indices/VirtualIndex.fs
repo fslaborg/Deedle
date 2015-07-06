@@ -48,7 +48,7 @@ type VirtualOrderedIndex<'K when 'K : equality>(source:IVirtualVectorSource<'K>)
     member x.KeyAt(addr) = keyAtAddr (Location.delayed(addr, source.AddressOperations))
     member x.AddressAt(offs) = source.AddressOperations.AddressOf offs
     member x.KeyCount = source.Length
-    member x.IsEmpty = source.Length = 0L
+    member x.IsEmpty = source.AddressOperations.Range |> Seq.isEmpty 
     member x.Builder = VirtualIndexBuilder.Instance :> _
     member x.KeyRange = 
       keyAtAddr (Location.known(source.AddressOperations.FirstElement, 0L)),

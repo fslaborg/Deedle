@@ -1200,7 +1200,7 @@ module Frame =
     let vectorBuilder = VectorBuilder.Instance
     let newRowIndex, vectorR = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), offset)
     let _, vectorL = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), -offset)
-    let cmd = Vectors.Combine(newRowIndex.KeyCount, [vectorL; vectorR], BinaryTransform.Create<float>(OptionalValue.map2 (-)))
+    let cmd = Vectors.Combine(lazy newRowIndex.KeyCount, [vectorL; vectorR], BinaryTransform.Create<float>(OptionalValue.map2 (-)))
     let newData = frame.Data.Select(function
         | AsFloatVector vf -> VectorBuilder.Instance.Build(cmd, [| vf |]) :> IVector
         | vector -> vector)
@@ -1321,7 +1321,7 @@ module Frame =
     let hasSomeFlagVector = 
       frame.Data 
       |> createRowVector 
-          frame.VectorBuilder frame.RowIndex.KeyCount frame.ColumnIndex.KeyCount frame.ColumnIndex.AddressAt
+          frame.VectorBuilder (lazy frame.RowIndex.KeyCount) frame.ColumnIndex.KeyCount frame.ColumnIndex.AddressAt
           (fun rowReader -> rowReader.DataSequence |> Seq.exists (fun opt -> opt.HasValue))
     // Collect all rows that have at least some values
     let newRowIndex, cmd = 

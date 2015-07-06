@@ -22,22 +22,30 @@ open System.Runtime.CompilerServices
 type IAddressOperations =
   /// Returns the first address of the range
   abstract FirstElement : Address
+
   /// Returns the last address of the range
   abstract LastElement : Address
+
   /// Returns a sequence that iterates over `FirstElement .. LastElement`
   abstract Range : seq<Address>
+
   /// Given an address, return the absolute offset of the address in the range
   /// This might be tricky for partitioned ranges. For example if you have two 
   /// partitions with 10 values addressed by (0,0)..(0,9); (1,0)..(1,9), the the
   /// offset of address (1, 5) is 15.
   abstract OffsetOf : Address -> int64
+
   /// Return the address of a value at the specified absolute offset.
   /// (See the comment for `OffsetOf` for more info about partitioning)
   abstract AddressOf : int64 -> Address
 
 
+/// A helper type used by non-generic `IVirtualVectorSource` to invoke generic 
+/// operations that require generic `IVirtualVectorSource<'T>` as an argument.
 type IVirtualVectorSourceOperation<'R> =
+  /// Generic method that is invoked by the non-generic interface with the correct `'T`
   abstract Invoke<'T> : IVirtualVectorSource<'T> -> 'R
+
 
 /// Non-generic part of the `IVirtualVectorSource<'V>` interface, which 
 /// provides some basic information about the virtualized data source
@@ -49,8 +57,11 @@ and IVirtualVectorSource =
   /// needs to know the length of the source (e.g. for binary search)
   abstract Length : int64
 
+  /// Returns the addressing implementation associated with this vector source
   abstract AddressOperations : IAddressOperations
   
+  /// Invoke a generic operation (wrapped in an interface) 
+  /// that takes a generic version of this type
   abstract Invoke<'R> : IVirtualVectorSourceOperation<'R> -> 'R
 
 /// Represents a data source for Big Deedle. The interface is used both as a representation
@@ -84,8 +95,14 @@ and IVirtualVectorSource<'V> =
   /// (used by functions such as `Frame.merge` and `Frame.mergeAll`)
   abstract MergeWith : seq<IVirtualVectorSource<'V>> -> IVirtualVectorSource<'V>
 
+// ------------------------------------------------------------------------------------------------
+// Common utilities
+// ------------------------------------------------------------------------------------------------
+
 open Deedle.Ranges
 
+/// In BigDeedle, we often use `Ranges<'T>` to represent the address range obtained as a result
+/// of slicing and merging frames & series. This implements `IAddressOperations` for `Ranges<'T>`.
 type RangesAddressOperations<'TKey when 'TKey : equality>
       ( ranges:Ranges<'TKey>, 
         asAddress:System.Func<'TKey, Address>,

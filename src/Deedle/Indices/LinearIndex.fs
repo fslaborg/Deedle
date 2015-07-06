@@ -17,7 +17,7 @@ open Deedle.VectorHelpers
 open System.Diagnostics
 open System.Collections.ObjectModel
 
-/// 
+/// LinearIndex + ArrayVector use linear addressing (address is just an offset)
 module Address = LinearAddress
 
 /// An index that maps keys `K` to offsets `Address`. The keys cannot be duplicated.
@@ -85,10 +85,6 @@ type LinearIndex<'K when 'K : equality>
   /// Implement structural hashing against another index
   override index.GetHashCode() =
     keys |> Seq.structuralHash
-
-  // will inline op_Explicit(value: int64) : Address from the Address type
-  member inline private x.AddressAt(offset) = Address.ofInt64 offset
-  member inline private x.OffsetAt(address) = Address.asInt64 address
 
   interface IIndex<'K> with
     member x.Keys = ensureLookup (); keys
@@ -228,12 +224,15 @@ type LinearRangeIndex<'K when 'K : equality>
 /// provides operations for manipulating linear indices (and the associated vectors).
 type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
+  /// Add the <address> unit annotation to a relocations array, without doing any hard work
+  let unsafeRelocsToAddr (relocs:(int64 * int64)[]) : ((int64<address> * int64<address>)[]) = unbox relocs
+
   /// Given the result of one of the 'Seq.align[All][Un]Ordered' functions,
   /// build new index and 'Vectors.Relocate' commands for each vector
   let makeSeriesConstructions (keys:'K[], relocations:list<(int64 * int64)[]>) vectors ordered : (IIndex<_> * list<_>) = 
     let newIndex = LinearIndex<_>(ReadOnlyCollection.ofArray keys, LinearIndexBuilder.Instance, ?ordered=ordered)
     let newVectors = (vectors, relocations) ||> List.mapi2 (fun i vec reloc ->
-      Vectors.Relocate(vec, int64 keys.Length, reloc |> Array.map (fun (f,s) -> (Address.ofInt64(f), Address.ofInt64(s) ))) )
+      Vectors.Relocate(vec, int64 keys.Length, unsafeRelocsToAddr reloc))
     ( upcast newIndex, newVectors )
 
   /// Calls 'makeSeriesConstructions' on two vectors 
@@ -282,7 +281,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       // For ChunkSize and WindowSize, this can be done faster, because we can just calculate
       // the locations of chunks/windows based on the number of the keys. For chunking/windowing
       // based on conditions, we actually need to iterate over all the keys...
-      let locations = //: seq<DataSegmentKind * Address * Address>= 
+      let locations = 
         match aggregation with 
         | ChunkSize(size, boundary) -> Seq.chunkRangesWithBounds (int64 size) boundary index.KeyCount
         | WindowSize(size, boundary) -> Seq.windowRangesWithBounds (int64 size) boundary index.KeyCount
@@ -468,7 +467,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
         else mergeUnordered()
       let vectors = constructions |> List.map snd
       let newIndex, vectors = makeSeriesConstructions keysAndRelocs vectors ordered
-      newIndex, Vectors.Combine(newIndex.KeyCount, vectors, transform)
+      newIndex, Vectors.Combine(lazy newIndex.KeyCount, vectors, transform)
 
 
     /// Build a new index by getting a key for each old key using the specified function
@@ -514,7 +513,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           newIndices.Add(int64 i)
         
       let newIndex = LinearIndex<'TNewKey>(newKeys |> ReadOnlyCollection.ofSeq, builder)
-      let range = newIndices |> Seq.map Address.ofInt64 |> AddressRange.ofSeq (int64 newIndices.Count)
+      let range = newIndices |> Seq.map Address.ofInt64 |> RangeRestriction.ofSeq (int64 newIndices.Count)
       upcast newIndex, Vectors.GetRange(vector, range)
 
 
@@ -554,9 +553,12 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           let newKeys = index.Keys.[Address.asInt lo .. Address.asInt hi]
           let newIndex = builder.Create(newKeys, if index.IsOrdered then Some true else None)
           newIndex, newVector
-      | Choice2Of2 _ ->
-          // NOTE: This is never currently needed in Deedle 
-          failwith "LinearIndex.GetAddressRange does not support Custom ranges at he moment"
+      | Choice2Of2(indices) ->
+          let newKeys = seq { for a in indices -> index.Keys.[Address.asInt a] }
+          let newIndex = builder.Create(newKeys, None)
+          let relocations = Seq.zip (Seq.map Address.ofInt64 (Seq.range 0L (newIndex.KeyCount-1L))) indices
+          let newVector = Vectors.Relocate(vector, newIndex.KeyCount, relocations)
+          newIndex, newVector
 
     /// Get a new index representing a sub-index of the current one
     /// (together with a transformation that should be applied to a vector)

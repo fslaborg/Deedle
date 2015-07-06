@@ -46,6 +46,9 @@ type IRangeKeyOperations<'TKey> =
   /// when not all `'TKey` values can appear as keys of the series. If lookup is
   /// `Exact`, it should just check validity; for other lookups, this should either
   /// find first smaller or first larger valid key (but not skip any keys).
+  ///
+  /// This is only called with `lookup = Lookup.Exact`, unless you are also using
+  /// `Ranges.lookup` function inside `IVirtualVectorSource<'T>.LookupValue`.
   abstract ValidateKey : 'TKey * Lookup -> OptionalValue<'TKey>
 
 

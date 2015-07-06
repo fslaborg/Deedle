@@ -103,9 +103,9 @@ type Virtual() =
     createFrame (VirtualOrdinalIndex(Ranges.inlineCreate (+) [0L, count-1L], source)) (Index.ofKeys (ReadOnlyCollection.ofSeq keys)) sources
 
   static member CreateFrame(indexSource:IVirtualVectorSource<_>, keys, sources:seq<IVirtualVectorSource>) = 
-    for sc in sources do 
-      if sc.Length <> indexSource.Length then
-        invalidArg "sources" "Sources should have the same length as index!"
+    //for sc in sources do 
+    //  if sc.Length <> indexSource.Length then
+    //    invalidArg "sources" "Sources should have the same length as index!"
     createFrame (VirtualOrderedIndex indexSource) (Index.ofKeys (ReadOnlyCollection.ofSeq keys)) sources
     
 

@@ -818,6 +818,22 @@ let ``Can skip N elements from front and back`` () =
   Series.skipLast 100 s |> shouldEqual <| series []
   Series.skipLast 0 s |> shouldEqual <| s
 
+[<Test>]
+let ``Can restrict series range using a custom range restriction`` () =
+  let s = series [ for i in 1 .. 100 -> i => float i]
+  let indices = [ 0L<Addressing.address> .. 3L<Addressing.address> .. 99L<Addressing.address> ]
+  let rangeRestr =
+    { new IRangeRestriction<Addressing.Address> with
+        member x.Count = int64 (Seq.length indices)
+      interface seq<Addressing.Address> with 
+        member x.GetEnumerator() = (indices :> seq<_>).GetEnumerator() 
+      interface System.Collections.IEnumerable with
+        member x.GetEnumerator() = (indices :> seq<_>).GetEnumerator() :> _ } 
+
+  let rs = s.GetAddressRange(RangeRestriction.Custom(rangeRestr))
+  rs.KeyCount |> shouldEqual 34
+  rs.Keys |> List.ofSeq |> shouldEqual [ 1 .. 3 .. 100 ]
+
 // ------------------------------------------------------------------------------------------------
 // Misc
 // ------------------------------------------------------------------------------------------------

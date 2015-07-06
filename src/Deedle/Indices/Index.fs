@@ -108,8 +108,10 @@ type BoundaryBehavior = Inclusive | Exclusive
 /// extending the DataFrame library and adding a new way of storing or loading data.
 /// Values of this type are constructed using the associated `IIndexBuilder` type.
 type IIndex<'K when 'K : equality> = 
-  /// Returns a sequence of all keys in the index.
+  /// Returns a (fully evaluated) collection with all keys in the index
   abstract Keys : ReadOnlyCollection<'K>
+  
+  /// Returns a lazy sequence that iterates over all keys in the index
   abstract KeySequence : seq<'K>
 
   /// Performs reverse lookup - and returns key for a specified address
@@ -117,9 +119,6 @@ type IIndex<'K when 'K : equality> =
 
   /// Return an address that represents the specified offset
   abstract AddressAt : int64 -> Address
-
-  /// Return an offset at a specified address
-  //abstract OffsetAt : Address -> int64
 
   /// Returns the number of keys in the index
   abstract KeyCount : int64

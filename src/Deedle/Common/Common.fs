@@ -674,9 +674,9 @@ module Seq =
           while en.MoveNext() do
             yield en.Current }
 
-  /// A helper function that generates a sequence for the specified range of
-  /// int or int64 values. This is notably faster than using `lo .. step .. hi`.
-  let inline rangeStep (lo:^T) (hi:^T) (step:^T) = 
+  /// A helper function that generates a sequence for the specified range.
+  /// (This takes the step and also an operator to use for checking at the end)
+  let inline private rangeStepImpl (lo:^T) (hi:^T) (step:^T) geq = 
     { new IEnumerable< ^T > with
         member x.GetEnumerator() =
           let current = ref (lo - step)
@@ -685,7 +685,7 @@ module Seq =
             interface System.Collections.IEnumerator with
               member x.Current = box current.Value
               member x.MoveNext() = 
-                if current.Value = hi then false
+                if geq current.Value hi then false
                 else current.Value <- current.Value + step; true
               member x.Reset() = current.Value <- lo - step
             interface System.IDisposable with
@@ -694,9 +694,16 @@ module Seq =
         member x.GetEnumerator() = (x :?> IEnumerable< ^T >).GetEnumerator() :> _ }
 
   /// A helper function that generates a sequence for the specified range of
+  /// int or int64 values. This is notably faster than using `lo .. step .. hi`.
+  let inline rangeStep (lo:^T) (step:^T) (hi:^T) = 
+    if lo <= hi then rangeStepImpl lo hi step (>=)
+    else rangeStepImpl lo hi step (<=)
+
+  /// A helper function that generates a sequence for the specified range of
   /// int or int64 values. This is notably faster than using `lo .. hi`.
   let inline range (lo:^T) (hi:^T) = 
-    rangeStep lo hi LanguagePrimitives.GenericOne
+    if lo <= hi then rangeStepImpl lo hi LanguagePrimitives.GenericOne (>=)
+    else rangeStepImpl lo hi LanguagePrimitives.GenericOne (<=)
 
   /// Comapre two sequences using the `Equals` method. Returns true
   /// when all their elements are equal and they have the same size.

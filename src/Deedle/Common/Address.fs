@@ -36,11 +36,11 @@ module Addressing =
     /// Represents an invalid address (which is returned from 
     /// optimized lookup functions when they fail)
     let invalid = -1L<address>
-
+   
   /// Address operations that are used by the standard in-memory Deedle structures
-  /// (LinearIndex and ArrayVector). Here, address is 
+  /// (LinearIndex and ArrayVector). Here, address is a positive array offset.
   module LinearAddress =
-    let invalid = -1L<address>
+    let invalid = Address.invalid
     let inline asInt64 (x:Address) : int64 = int64 x
     let inline asInt (x:Address) : int = int x
     let inline ofInt64 (x:int64) : Address = LanguagePrimitives.Int64WithMeasure x
@@ -54,10 +54,14 @@ module Addressing =
 
 open Addressing 
 
-/// A sequence of indicies together with the total number. Use `AddressRange.ofSeq` to
+/// A sequence of indicies together with the total number. Use `RangeRestriction.ofSeq` to
 /// create one from a sequence. This can be implemented by concrete vector/index 
 /// builders to allow further optimizations (e.g. when the underlying source directly
-/// supports range operations)
+/// supports range operations). 
+///
+/// For example, if your source has an optimised way for getting every 10th address, you 
+/// can create your own `IRangeRestriction` and then check for it in `LookupRange` and 
+/// use optimised implementation rather than actually iterating over the sequence of indices.
 type IRangeRestriction<'TAddress> = 
   inherit seq<'TAddress>
   abstract Count : int64
@@ -96,6 +100,9 @@ module RangeRestriction =
             member x.GetEnumerator() = (Seq.map f c).GetEnumerator() }
         |> RangeRestriction.Custom
 
+/// Transforms all absolute addresses in the specified range restriction
+/// using the provided function (this is useful for mapping between different
+/// address spaces).
 type RangeRestriction<'TAddress> with
   member x.Select(f:Func<_, _>) = RangeRestriction.map f.Invoke x
 

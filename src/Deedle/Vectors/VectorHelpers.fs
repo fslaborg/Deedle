@@ -34,7 +34,7 @@ let prettyPrintVector (vector:IVector<'T>) =
   | VectorData.SparseList list -> printSequence "sparse" (Seq.map (fun v -> v.ToString()) list) 
   | VectorData.Sequence list -> printSequence "seq" (Seq.map (fun v -> v.ToString()) list) 
 
-module AddressRange =
+module RangeRestriction =
   /// Creates a `Custom` range from a sequence of indices
   let ofSeq count (indices : seq<_>) =
     { new IRangeRestriction<Address> with

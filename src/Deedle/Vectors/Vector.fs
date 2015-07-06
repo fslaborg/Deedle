@@ -63,6 +63,12 @@ type IVector =
 and VectorCallSite<'R> =
   abstract Invoke<'T> : IVector<'T> -> 'R
 
+/// Represents a location in a vector. In general, we always know the address, but 
+/// sometimes (BigDeedle) it is hard to get the offset (requires some data lookups),
+/// so we use this interface to delay the calculation of the Offset (which is mainly
+/// needed in one of the `series.Select` overloads)
+///
+/// [category:Vectors and indices]
 and IVectorLocation =  
   abstract Address : Address
   abstract Offset : int64
@@ -108,8 +114,11 @@ and IVector<'T> =
 /// [category:Vectors and indices]
 [<AutoOpen>]
 module ``F# Vector extensions (core)`` = 
-  type IVector<'TValue> with
-    member x.Select(f) = x.Select(fun _ -> OptionalValue.map f)
+  type IVector<'T> with
+    /// Apply the specified function to all values stored in the vector and return
+    /// a new vector (not necessarily of the same representation) with the results.
+    /// The function skips missing values.
+    member x.Select(f:'T -> 'R) = x.Select(fun _ -> OptionalValue.map f)
 
     /// Returns the data of the vector as a lazy sequence. (This preserves the 
     /// order of elements in the vector and so it also returns missing values.)
@@ -128,8 +137,10 @@ open Deedle
 open Deedle.Internal
 open Deedle.Addressing
 
-
+/// Helper functions for working with `IVectorLocation`
 module Location =
+  /// Create an `IVectorLocation` from a known address and offset
+  /// (typically used in LinearIndex/ArrayVector where both are the same)
   let known(addr, offset) = 
     { new IVectorLocation with
         member x.Address = addr
@@ -221,7 +232,7 @@ type VectorConstruction =
   /// Combine N aligned vectors. The `IVectorValueListTransform` object
   /// specifies how to merge values (in case there is a value at a given address
   /// in more than one of the vectors).
-  | Combine of int64 * VectorConstruction list * VectorListTransform
+  | Combine of Lazy<int64> * VectorConstruction list * VectorListTransform
 
   /// Create a vector that has missing values filled using the specified direction
   /// (forward means that n-th value will contain (n-i)-th value where (n-i) is the

@@ -11,7 +11,7 @@ open Deedle.Internal
 open Deedle.Vectors
 open Deedle.VectorHelpers
 
-/// 
+/// LinearIndex + ArrayVector use linear addressing (address is just an offset)
 module Address = LinearAddress
 
 /// Internal representation of the ArrayVector. To make this more 
@@ -208,7 +208,7 @@ type ArrayVectorBuilder() =
           let data = relocs |> List.map (fun (v, _, r) -> 
             (|AsVectorOptional|) (builder.buildArrayVector v arguments), r)
           let merge = op.GetFunction<'T>()
-          let filled : OptionalValue<_>[] = Array.create (int count) OptionalValue.Missing
+          let filled : OptionalValue<_>[] = Array.create (int count.Value) OptionalValue.Missing
 
           if op.IsMissingUnit then
               // If the Missing value is unit of the operation, we can start with 
@@ -234,7 +234,7 @@ type ArrayVectorBuilder() =
               // values that have not been accessed (typically when the vector is smaller)
               // and merge the existing value with missing - this is important e.g. 
               // because 1 + N/A = N/A
-              let accessed = Array.create (int count) false 
+              let accessed = Array.create (int count.Value) false 
               for vdata, vreloc in rest do
                 for newIndex, oldIndex in vreloc do
                   let newIndex, oldIndex = Address.asInt newIndex, Address.asInt oldIndex
@@ -268,7 +268,7 @@ type ArrayVectorBuilder() =
           // Because Build is `IVector<'T>[] -> IVector<'T>`, there is some nasty boxing.
           // This case is only called with `'T = obj` and so we create `IVector<obj>` containing 
           // `obj = IVector<obj>` as the row readers (the caller in Rows then unbox this)
-          let rowCount = int length
+          let rowCount = int length.Value
           let rows = Array.init rowCount (fun a -> box (getRow (Address.ofInt a)))
           VectorNonOptional(rows) |> av |> unbox
 
@@ -281,7 +281,7 @@ type ArrayVectorBuilder() =
           let data = vectors |> List.map (fun v -> 
             asVectorOptional (builder.buildArrayVector v arguments))
           let filled = 
-            Array.init (int length) (fun idx ->
+            Array.init (int length.Value) (fun idx ->
               data 
               |> List.map (fun v -> if idx > v.Length then OptionalValue.Missing else v.[idx]) 
               |> merge)  
@@ -302,10 +302,6 @@ type ArrayVectorBuilder() =
 /// `ArrayVectorData<'T>` type (discriminated union)
 and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) = 
   member internal vector.Representation = representation
-
-  // will inline op_Explicit(value: int64) : Address from the Address type
-  member inline private vector.GetAddress(offset) = Address.ofInt64 offset
-  member inline private vector.GetOffset(address : Address) = Address.asInt64 address
 
   // To string formatting & equality support
   override vector.ToString() = prettyPrintVector vector
