@@ -69,8 +69,10 @@ and VectorCallSite<'R> =
 /// needed in one of the `series.Select` overloads)
 ///
 /// [category:Vectors and indices]
-and IVectorLocation =  
+and IVectorLocation = 
+  /// Returns the address of the location (this should be immediate) 
   abstract Address : Address
+  /// Returns the offset of the location (this may involve some calculation)
   abstract Offset : int64
 
 /// A generic, typed vector. Represents mapping from addresses to values of type `T`. 
@@ -208,6 +210,10 @@ type VectorConstruction =
   /// When constructing vectors, we get an array of vectors to be used as "variables"
   /// - this element represent getting one of the variables.
   | Return of VectorHole
+
+  /// If the source vector is of some other kind, materialize it and 
+  /// return materialized `ArrayVector<'T>` as the result
+  | Materialize of VectorConstruction
 
   /// Creates an empty vector of the requested type and size
   /// The returned vector is filled with missing values.

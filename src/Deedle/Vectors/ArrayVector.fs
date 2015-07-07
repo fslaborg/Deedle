@@ -63,6 +63,7 @@ type ArrayVectorBuilder() =
   static member Instance = vectorBuilder
 
   interface IVectorBuilder with
+
     member builder.Create(values) =
       // Check that there are no NaN values and create appropriate representation
       let hasNAs = MissingValues.containsNA values
@@ -93,6 +94,7 @@ type ArrayVectorBuilder() =
       | Return vectorVar -> arguments.[vectorVar]
       | Empty 0L -> vectorBuilder.Create [||]
       | Empty size -> vectorBuilder.CreateMissing (Array.create (int size) OptionalValue.Missing)
+
       | FillMissing(source, dir) ->
           // The nice thing is that this is no-op on dense vectors!
           // On sparse vectors, we have some work to do...
@@ -162,6 +164,7 @@ type ArrayVectorBuilder() =
               // (DropRange is only used when dropping a single item at the moment)
               failwith "DropRange does not support Custom ranges at he moment"
 
+      | GetRange(Materialize(source), range)
       | GetRange(source, range) ->
           let built = builder.buildArrayVector source arguments
           match range.AsAbsolute(int64 built.Length) with
@@ -186,6 +189,7 @@ type ArrayVectorBuilder() =
                   [| for address in indices -> data.[Address.asInt address] |] |> VectorNonOptional |> av
 
 
+      | Append(Materialize(first), second) 
       | Append(first, second) ->
           // Convert both vectors to ArrayVectors and append them (this preserves
           // the kind of representation - Optional will stay Optional etc.)
@@ -287,6 +291,8 @@ type ArrayVectorBuilder() =
               |> merge)  
           vectorBuilder.CreateMissing(filled)
 
+      | Materialize(source) ->
+          builder.buildArrayVector source arguments |> av
 
       | CustomCommand(vectors, f) ->
           let vectors = List.map (fun v -> vectorBuilder.Build(v, arguments) :> IVector) vectors

@@ -19,7 +19,8 @@ the basic objects) that can be used to provide a wide range of useful functions 
 available as extension members and in F# modules). We are generally quite happy to include
 more extension members and functions for commonly used operations, so feel free to contribute!
 
-## Library principles
+Library principles
+------------------
 
  * **F# and C# friendly** - We want to make sure that the library works from both F# and C#.
    For this reason, most functionality is exposed as extension members (using the C# `Extension`
@@ -60,7 +61,17 @@ more extension members and functions for commonly used operations, so feel free 
    This seems to be useful because it works nicely with the `?<-` operator and you do not have 
    to re-bind when you're writing some research script.
 
-## Library internals
+Library internals
+-----------------
+
+The Deedle implementation uses two layers. In the public API, you work with series and frames.
+Under the cover, all of the operations are provided by indices (providng lookup and alignment)
+and vectors (providing data storage). These are implemented in multiple different ways - most
+notably, Deedle supports in-memory version and [BigDeedle provides virtualised 
+implementation](bigdeedle.html) that can be used for big time series without fully loading it
+into memory.
+
+### Vectors and indices
 
 The following types are (mostly) not directly visible to the user, but they represent the
 "minimal" core that changes infrequently. You could use them when extending the library: 
@@ -93,7 +104,9 @@ The following types are (mostly) not directly visible to the user, but they repr
    `int` addresses via an identity function (not implemented yet!) - if you have
    series or data frame that is simply a list of recrods.
 
-Now, the following types are directly used:
+### Series and frames
+
+The following types are the public API, wrapping the vectors and indices:
 
  * `Series<'TKey, 'TValue>` represents a series of values `'TValue` indexed by an
    index `'TKey`. A series uses an abstract vector, index and vector builder, so it 
@@ -112,7 +125,53 @@ Now, the following types are directly used:
    etc. You can also get all rows as a series of (column) series and all columns as a 
    series of (row) series - they are available as extension methods and in the `Frame` module.
 
-## Discussion and open questions
+### Vector builders and index builders
+
+The indices and vectors are constructed using `IIndexBuilder` and `IVectorBuilder`. Typically,
+index builder creates a new index and returns a `VectorConstruction` that can then be passed
+to `IVectorBuilder.Build` to perform the corresponding transformation on all vectors 
+(for example, transform all vectors of a data frame according to an operation applied to the
+index).
+
+Indices and vectors are connected via an address. Addresses are represented by the `Address` 
+type and they are used to map keys (of the index) to values (in the vector). Here is a brief 
+summary of what we assume (and don't assume) about addresses:
+
+ - Address is `int64` (although we might need to generalize this in the future)
+ - Different data sources can use different addressing schemes
+   (as long as both index and vector use the same scheme)
+ - Addresses don't have to be continuous (e.g. if the source is partitioned, it
+   can use 32bit partition index + 32bit offset in the partition)
+ - In the in-memory representation, address is just index into an array
+ - In the BigDeedle representation, address is abstracted and comes with
+   `AddressOperations` that specifies how to use it (tests use linear
+   offset and partitioned representation)
+
+Whenever we have index and vector, we need to make sure that they share the same addressing
+scheme. 
+
+ - Series and frames keep an `IIndexBuilder` and a `IVectorBuilder` to be used for
+   performing operations with the internal structures. These should always match, i.e. 
+   they should produce indices/vectors with the same addressing scheme.
+
+ - `IIndexBuilder` may not be able to perform all operations without fully materializing
+   the index (e.g. BigDeedle can only do some operations). If this happens, it can use
+   `VectorConstruction.Materialize` to create a command that forces the `IVectorBuilder` to
+   also materialize the vector - this may change the addressing scheme used, but it will
+   always do the same thing on both index and vector.
+
+ - `IVector` can also materialize vectors (when using `Select` or `Convert` methods). When
+   those are called, the caller should apply `IIndexBuilder.Project` on the index, which 
+   performs the corresponding materialization on the index.
+
+ - When the calling code creates a new index or vector directly (typically in-memory 
+   index/vector calculated from keys or values), it needs to make sure that the other structure
+   matches too; `IIndexBuilder.Create` returns a `VectorTransformation` that can be used to
+   materialize vector (if needed), when a new vector is created using `IVectorBuilder.Create`, 
+   the index needs to be transformed using `IIndexBuilder.Recreate`.
+
+Discussion and open questions
+-----------------------------
 
 We're hoping that the design of the internals is now reasonable, but the end user API may
 still be missing some useful functionality (let us know if you need some!) Here are a few

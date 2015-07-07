@@ -134,16 +134,16 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
             Array.sortInPlaceWith (fun a b -> comparer.Compare(a, b)) rowKeys
             Some true
           else None
-        let rowIndex = nested.IndexBuilder.Create(rowKeys, sorted)
+        let rowIndex, rowVectorOp = nested.IndexBuilder.Create(rowKeys, sorted)
 
         // Create column index by taking all column keys
         let colKeys = nested |> Series.observationsAll |> Seq.map fst |> Array.ofSeq
-        let colIndex = nested.IndexBuilder.Create(colKeys, None)
+        let colIndex, _ = nested.IndexBuilder.Create(colKeys, None)
         // Build the data 
         let data = 
           nested |> Series.observationsAll |> Seq.map (fun (_, s) ->
             let series = match s with Some s -> seriesConv s | _ -> Series([], []) :> ISeries<_>
-            let cmd = nested.IndexBuilder.Reindex(series.Index, rowIndex, Lookup.Exact, Vectors.Return 0, fun _ -> true)
+            let cmd = nested.IndexBuilder.Reindex(series.Index, rowIndex, Lookup.Exact, rowVectorOp, fun _ -> true)
             // When the nested series data is in 'IBoxedVector', get the unboxed representation
             VectorHelpers.transformColumn nested.VectorBuilder cmd (unboxVector series.Vector) )
           |> Vector.ofValues
@@ -199,9 +199,10 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     // Create transformations to join the rows (using the same logic as Join)
     // and make functions that transform vectors (when they are only available in first/second frame)
     let rowIndex, f1cmd, f2cmd = 
-      createJoinTransformation indexBuilder rowKind lookup rowIndex otherFrame.RowIndex (Vectors.Return 0) (Vectors.Return 1)
+      createJoinTransformation indexBuilder otherFrame.IndexBuilder rowKind lookup rowIndex 
+        otherFrame.RowIndex (Vectors.Return 0) (Vectors.Return 1)
     let f1trans = VectorHelpers.transformColumn vectorBuilder f1cmd
-    let f2trans = VectorHelpers.transformColumn vectorBuilder (VectorHelpers.substitute (1, 0) f2cmd)
+    let f2trans = VectorHelpers.transformColumn vectorBuilder (VectorHelpers.substitute (1, Vectors.Return 0) f2cmd)
 
     // To join columns using 'Series.join', we create series containing raw "IVector" data 
     // (so that we do not convert each series to objects series)
@@ -269,7 +270,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member frame.Join(otherFrame:Frame<'TRowKey, 'TColumnKey>, kind, lookup) =    
     // Union/intersect/align row indices and get transformations to apply to left/right vectors
     let newRowIndex, thisRowCmd, otherRowCmd = 
-      createJoinTransformation indexBuilder kind lookup rowIndex otherFrame.RowIndex (Vectors.Return 0) (Vectors.Return 0)
+      createJoinTransformation indexBuilder otherFrame.IndexBuilder kind lookup rowIndex 
+        otherFrame.RowIndex (Vectors.Return 0) (Vectors.Return 0)
     // Append the column indices and get transformation to combine them
     // (LeftOrRight - specifies that when column exist in both data frames then fail)
     let newColumnIndex, colCmd = 
@@ -962,7 +964,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     // Join the row index of the frame & the index of the series
     // (so that we can apply the transformation repeatedly on columns)
     let newIndex, frameCmd, seriesCmd = 
-      createJoinTransformation frame.IndexBuilder JoinKind.Outer Lookup.Exact frame.RowIndex series.Index (Vectors.Return 0) (Vectors.Return 1)
+      createJoinTransformation frame.IndexBuilder series.IndexBuilder JoinKind.Outer Lookup.Exact frame.RowIndex 
+        series.Index (Vectors.Return 0) (Vectors.Return 1)
     let opCmd = Vectors.Combine(lazy newIndex.KeyCount, [frameCmd; seriesCmd], BinaryTransform.CreateLifted(op))
 
     // Apply the transformation on all columns that can be converted to 'T

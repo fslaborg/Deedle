@@ -151,7 +151,7 @@ type internal DelayedSource<'K, 'V when 'K : equality>
 
       // Append all the indices & vectors that we got for segments
       match constrs.Count with
-      | 0 -> return indexBuilder.Create([], None), vectorBuilder.Create([||])
+      | 0 -> return fst (indexBuilder.Create([], None)), vectorBuilder.Create([||])
       | 1 -> return fst constrs.[0], vectors.[0]
       | _ -> 
           let newIndex, cmd = indexBuilder.Merge( List.ofSeq constrs, BinaryTransform.AtMostOne )
@@ -238,6 +238,7 @@ and internal DelayedIndexBuilder() =
   interface IIndexBuilder with
     member x.Create(keys:seq<_>, ordered) = builder.Create(keys, ordered)
     member x.Create(keys:ReadOnlyCollection<_>, ordered) = builder.Create(keys, ordered)
+    member x.Recreate(index) = builder.Recreate(index)
     member x.Aggregate(index, aggregation, vector, selector) = builder.Aggregate(index, aggregation, vector, selector)
     member x.GroupBy(index, keySel, vector) = builder.GroupBy(index, keySel, vector)
     member x.OrderIndex(sc) = builder.OrderIndex(sc)
@@ -411,7 +412,7 @@ type DelayedSeries =
              (k < hi || (k <= hi && hib = Inclusive)) then 
              keys.Add(k)
              values.Add(v)
-        let index = indexBuilder.Create(ReadOnlyCollection.ofSeq keys, Some true)
+        let index, _ = indexBuilder.Create(ReadOnlyCollection.ofSeq keys, Some true)
         let vector = vectorBuilder.Create(values.ToArray())
         return index, vector
       }))

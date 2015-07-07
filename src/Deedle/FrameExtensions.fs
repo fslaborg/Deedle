@@ -278,8 +278,8 @@ type Frame =
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member FromArray2D(array:'T[,]) =
     // Generate row index (int offsets) and column index (int offsets)
-    let rowIndex = IndexBuilder.Instance.Create(Array.init (array.GetLength(0)) id, Some true)
-    let colIndex = IndexBuilder.Instance.Create(Array.init (array.GetLength(1)) id, Some true)
+    let rowIndex, _ = IndexBuilder.Instance.Create(Array.init (array.GetLength(0)) id, Some true)
+    let colIndex, _ = IndexBuilder.Instance.Create(Array.init (array.GetLength(1)) id, Some true)
     // Generate vectors with column-based data
     let vectors = Array.zeroCreate (array.GetLength(1))
     for c = 0 to vectors.Length - 1 do
@@ -298,8 +298,8 @@ type Frame =
 
   [<CompilerMessage("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member FromRowKeys<'K when 'K : equality>(keys:seq<'K>) =
-    let rowIndex = FrameUtils.indexBuilder.Create(keys, None)
-    let colIndex = FrameUtils.indexBuilder.Create([], None)
+    let rowIndex, _ = FrameUtils.indexBuilder.Create(keys, None)
+    let colIndex, _ = FrameUtils.indexBuilder.Create([], None)
     Frame<_, string>(rowIndex, colIndex, FrameUtils.vectorBuilder.Create [||], IndexBuilder.Instance, VectorBuilder.Instance)
 
 

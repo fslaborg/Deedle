@@ -48,7 +48,6 @@ type AddressOperations(ranges:(int64*int64) list, length) =
     member x.AddressOf(idx) = Address.ofInt64 idx
     
 type TrackingSource<'T>(ranges:(int64*int64) list, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?search) = 
-  let ranges = ranges //|> Seq.map (fun (f,s) -> Address(f),Address(s))
   member val AccessListCell : int64 list ref = ref [] with get, set
   member val LookupListCell = ref [] with get, set
   member val IsTracking = true with get, set
@@ -119,8 +118,6 @@ type TrackingSource<'T>(ranges:(int64*int64) list, valueAt:int64 -> 'T, ?asLong:
     member x.GetSubVector(range) = 
       match range.AsAbsolute(x.Length) with
       | Choice1Of2(nlo, nhi) ->
-//          let nlo = Address.asInt64 nlo
-//          let nhi = Address.asInt64 nhi
           if nhi < nlo then invalidOp "hi < lo"
           elif nlo < x.AddressAt(0L) then invalidOp "lo < 0"
           elif nhi > x.AddressAt(x.Length-1L) then invalidOp "hi > max" // TODO -1

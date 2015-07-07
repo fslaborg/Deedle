@@ -90,7 +90,7 @@ module Ranges =
           member x.Compare(a, b) = compare a b 
           member x.IncrementBy(a, i) = succ a i
           member x.Distance(l, h) = int64 (h - l)
-          member x.Range(a, b) = if a <= b then Seq.range a b else Seq.rangeStep a b (-one) 
+          member x.Range(a, b) = if a <= b then Seq.range a b else Seq.rangeStep a (-one) b 
           member x.ValidateKey(k, _) = OptionalValue(k) }
     Ranges(ranges, ops)
 

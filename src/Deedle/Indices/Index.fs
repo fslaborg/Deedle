@@ -188,19 +188,24 @@ and IIndexBuilder =
   /// Create a new index using the specified keys. Optionally, the caller can specify
   /// if the index keys are ordered or not. When the value is not set, the construction
   /// should check and infer this from the data.
-  abstract Create : seq<'K> * Option<bool> -> IIndex<'K>
+  abstract Create : seq<'K> * Option<bool> -> SeriesConstruction<'K>
   
   /// Create a new index using the specified keys. This overload takes data as ReadOnlyCollection
   /// and so it is more efficient if the caller already has the keys in an allocated collection.
   /// Optionally, the caller can specify if the index keys are ordered or not. When the value 
   /// is not set, the construction should check and infer this from the data.
-  abstract Create : ReadOnlyCollection<'K> * Option<bool> -> IIndex<'K>
+  abstract Create : ReadOnlyCollection<'K> * Option<bool> -> SeriesConstruction<'K>
 
-  /// When we perform some projection on the vector (e.g. `Series.map`), then we may also
-  /// need to perform some transformation on the index (because it will typically turn delayed
-  /// index into an evaluated index). This operation represents that - it should return 
-  /// (evaluated) index with the same keys.
+  /// When we perform some projection on the vector (`Select` or `Convert`), then we may also
+  /// need to perform some transformation on the index (because it may turn delayed index 
+  /// into an evaluated index). If the vector operation does that, then `Project` should do the 
+  /// same (e.g. evaluate) on the index.
   abstract Project : IIndex<'K> -> IIndex<'K>
+
+  /// When we create a new vector (`IVectorBuilder.Create`), then we may get a materialized
+  /// vector and we may need to perform the same transformation on the index. This is similar
+  /// to `Project`, but used in different scenarios.
+  abstract Recreate : IIndex<'K> -> IIndex<'K>
 
   /// Create a new index that represents sub-range of an existing index.
   /// The range is specified as a pair of addresses, which means that it can be 

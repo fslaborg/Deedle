@@ -307,10 +307,10 @@ let tryConvertType<'R> conversionKind (vector:IVector) : OptionalValue<IVector<'
       |> vector.Invoke
 
 /// A "generic function" that drops a specified range from any vector
-let getVectorRange (builder:IVectorBuilder) range (vector:IVector) = 
+let getVectorRange (builder:IVectorBuilder) vectorCmd range (vector:IVector) = 
   { new VectorCallSite<IVector> with
       override x.Invoke<'T>(col:IVector<'T>) = 
-        let cmd = VectorConstruction.GetRange(VectorConstruction.Return 0, range)
+        let cmd = VectorConstruction.GetRange(vectorCmd, range)
         builder.Build(cmd, [| col |]) :> IVector }
   |> vector.Invoke
 
@@ -712,10 +712,11 @@ let createTypedRowReader<'TRow>
 // --------------------------------------------------------------------------------------
 
 /// Substitute variable hole for another in a vector construction
-let rec substitute ((oldVar, newVar) as subst) = function
-  | Return v when v = oldVar -> Return newVar
+let rec substitute ((oldVar, newVect) as subst) = function
+  | Return v when v = oldVar -> newVect
   | Return v -> Return v
   | Empty size -> Empty size
+  | Materialize(vc) -> Materialize(substitute subst vc)
   | FillMissing(vc, d) -> FillMissing(substitute subst vc, d)
   | Relocate(vc, r, l) -> Relocate(substitute subst vc, r, l)
   | DropRange(vc, r) -> DropRange(substitute subst vc, r)

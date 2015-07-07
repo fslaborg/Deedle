@@ -372,7 +372,10 @@ type VirtualVectorBuilder() =
             member x.Length = (hi-lo+1L) }
       VirtualVector(createSource 0L (size-1L)) :> _
 *)
-    member builder.AsyncBuild<'T>(cmd, args) = baseBuilder.AsyncBuild<'T>(cmd, args)
+    member builder.AsyncBuild(cmd, args) = 
+      failwith "VirtualVectorBuilder.AsyncBuild: Avoid implicit materialization"
+      //baseBuilder.AsyncBuild<'T>(cmd, args)
+    
     member builder.Build<'T>(cmd, args) = 
       match cmd with 
       | Return vectorVar -> 
@@ -387,8 +390,9 @@ type VirtualVectorBuilder() =
                 let subSource = source.Source.GetSubVector(range)
                 VirtualVector<'T2>(subSource) :> IVector<'T2>
             | source -> 
-                let cmd = GetRange(Return 0, range)
-                baseBuilder.Build(cmd, [| source |])
+                //let cmd = GetRange(Return 0, range)
+                //baseBuilder.Build(cmd, [| source |])
+                failwith "VirtualVectorBuilder.Build: Avoid implicit materialization (GetRange)"
 
           match build source args with
           | :? IBoxedVector as boxed -> // 'T = obj
@@ -464,8 +468,9 @@ type VirtualVectorBuilder() =
             // `obj = IVector<obj>` as the row readers (the caller in Rows then unbox this)
             VirtualVector(VirtualVectorSource.map None (fun _ -> OptionalValue.map box) newSource) |> unbox<IVector<'T>>
           else
-            let cmd = Combine(count, [ for i in 0 .. builtSources.Length-1 -> Return i ], transform)
-            baseBuilder.Build(cmd, builtSources)
+            //let cmd = Combine(count, [ for i in 0 .. builtSources.Length-1 -> Return i ], transform)
+            //baseBuilder.Build(cmd, builtSources)
+            failwith "VirtualVectorBuilder.Build: Avoid implicit materialization (Combine - row reader)"
 
       | Combine(length, sources, transform) ->
           let builtSources = sources |> List.map (fun source -> VirtualVectorHelpers.unboxVector (build source args)) |> Array.ofSeq
@@ -476,8 +481,9 @@ type VirtualVectorBuilder() =
             let newSource = VirtualVectorSource.combine func sources
             VirtualVector(newSource) :> _
           else
-            let cmd = Combine(length, [ for i in 0 .. builtSources.Length-1 -> Return i ], transform)
-            baseBuilder.Build(cmd, builtSources)
+            failwith "VirtualVectorBuilder.Build: Avoid implicit materialization (Combine)"
+            //let cmd = Combine(length, [ for i in 0 .. builtSources.Length-1 -> Return i ], transform)
+            //baseBuilder.Build(cmd, builtSources)
 
       | Append(first, second) ->
           match build first args, build second args with
@@ -487,7 +493,7 @@ type VirtualVectorBuilder() =
           | _ ->
               failwith "Append would materialize vectors"
 
-      | Relocate(source, length, relocations) ->
+      | Materialize(Relocate(source, length, relocations)) ->
           let source = VirtualVectorHelpers.unboxVector (build source args)
           let newData = Array.zeroCreate (int length)
           for newIndex, oldAddress in relocations do
@@ -495,18 +501,32 @@ type VirtualVectorBuilder() =
             newData.[newIndex] <- source.GetValue(oldAddress)
           baseBuilder.CreateMissing(newData)
 
+      | Relocate _ ->
+          failwith "VirtualVectorBuilder.Build: Avoid implicit materialization (Relocate)"
+
       | DropRange(source, range) -> 
           match build source args with
           | :? VirtualVector<'T> as source -> 
               failwith "VectorBuilder.Build - DropRange not implemented"
-          | _ -> baseBuilder.Build<'T>(cmd, args)
+          | _ -> //baseBuilder.Build<'T>(cmd, args)
+              failwith "VirtualVectorBuilder.Build: Avoid implicit materialization (DropRange)"
 
       | FillMissing _ -> 
           failwith "VectorBuilder.Build - FillMissing not implemented"
 
-      | Empty _ 
-      | CustomCommand _      
-      | AsyncCustomCommand _ ->
-      //| _ ->    
-          //failwith "VectorBuilder.Build - this would be slow"
-          baseBuilder.Build<'T>(cmd, args)
+      | Materialize(source) ->
+          match baseBuilder.Build<'T>(source, args) with
+          | :? Vectors.ArrayVector.ArrayVector<'T> as av -> upcast av
+          | otherVector -> Vectors.ArrayVector.ArrayVectorBuilder.Instance.CreateMissing(Array.ofSeq otherVector.DataSequence)
+
+      | Empty _ ->
+          failwith "VectorBuilder.Build - Empty not implemented"
+
+      // Hopefully the caller knows what they're doing    
+      | CustomCommand(vectors, f) ->
+          let vectors = List.map (fun v -> (builder :> IVectorBuilder).Build(v, args) :> IVector) vectors
+          f vectors :?> IVector<_>
+
+      | AsyncCustomCommand(vectors, f) ->
+          let vectors = List.map (fun v -> (builder :> IVectorBuilder).Build(v, args) :> IVector) vectors
+          Async.RunSynchronously(f vectors) :?> IVector<_>

@@ -1310,7 +1310,7 @@ module Series =
     let newIndex = Index.ofKeys newKeys
     let len = int64 newKeys.Length
     let reordering = Seq.zip (Seq.range 0L (len-1L) |> Seq.map newIndex.AddressAt) newLocs
-    newIndex, VectorConstruction.Relocate(VectorConstruction.Return 0, len, reordering)
+    newIndex, VectorConstruction.Materialize(VectorConstruction.Relocate(VectorConstruction.Return 0, len, reordering))
 
   /// [omit]
   let internal sortByCommand (f:'T -> 'V) (series:Series<'K, 'T>) =

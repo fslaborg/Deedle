@@ -748,11 +748,10 @@ module Frame =
   /// [category:Sorting and index manipulation]
   [<CompiledName("IndexRowsWith")>]
   let indexRowsWith (keys:seq<'R2>) (frame:Frame<'R1, 'C>) = 
-    let newRowIndex = frame.IndexBuilder.Create(keys, None)
-    let getRange = 
-      RangeRestriction.Fixed(frame.RowIndex.AddressAt(0L), frame.RowIndex.AddressAt(frame.RowIndex.KeyCount-1L))
-      |> VectorHelpers.getVectorRange frame.VectorBuilder
-    let newData = frame.Data.Select(getRange)
+    let newRowIndex, vectorCmd = frame.IndexBuilder.Create(keys, None)
+    let range = RangeRestriction.Fixed(frame.RowIndex.AddressAt(0L), frame.RowIndex.AddressAt(frame.RowIndex.KeyCount-1L))
+    let cmd = VectorHelpers.substitute (0, VectorConstruction.GetRange(Vectors.Return 0, range)) vectorCmd
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder cmd)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Replace the row index of the frame with ordinarilly generated integers starting from zero.
@@ -891,11 +890,10 @@ module Frame =
     else
       let cmd = GetRange(Return 0, RangeRestriction.Fixed(lo, hi))
       let newData = frame.Data.Select(transformColumn frame.VectorBuilder cmd)
-      let newKeys, _ = 
+      let newIndex, _ = 
         frame.RowIndex.Builder.GetAddressRange
           ( (frame.RowIndex, Vectors.Return 0), RangeRestriction.Fixed(lo,hi) )
-      let idx = frame.IndexBuilder.Create(newKeys.Keys, if frame.RowIndex.IsOrdered then Some true else None)
-      Frame(idx, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder) 
+      Frame(newIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder) 
 
   /// Returns a frame that contains the specified `count` of rows from the 
   /// original frame; `count` must be smaller or equal to the original number of rows.
@@ -1026,9 +1024,9 @@ module Frame =
   /// [category:Frame transformations]
   [<CompiledName("SelectRowKeys")>]
   let mapRowKeys (f:'R1 -> 'R2) (frame:Frame<_, 'C>) = 
-    let newRowIndex = frame.IndexBuilder.Create(frame.RowIndex.Keys |> Seq.map f, None)
-    Frame(newRowIndex, frame.ColumnIndex, frame.Data, frame.IndexBuilder, frame.VectorBuilder)
-
+    let newRowIndex, rowCmd = frame.IndexBuilder.Create(frame.RowIndex.Keys |> Seq.map f, None)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
+    Frame(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Returns a new data frame containing only the columns of the input frame
   /// for which the specified predicate returns `true`. The predicate is called
@@ -1094,8 +1092,9 @@ module Frame =
   /// [category:Frame transformations]
   [<CompiledName("SelectColumnKeys")>]
   let mapColKeys f (frame:Frame<'R, 'C>) = 
-    let newColIndex = frame.IndexBuilder.Create(frame.ColumnIndex.Keys |> Seq.map f, None)
-    Frame(frame.RowIndex, newColIndex, frame.Data, frame.IndexBuilder, frame.VectorBuilder)
+    let newColIndex, colCmd = frame.IndexBuilder.Create(frame.ColumnIndex.Keys |> Seq.map f, None)
+    let newData = frame.VectorBuilder.Build(colCmd, [| frame.Data |])
+    Frame(frame.RowIndex, newColIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Builds a new data frame whose values are the results of applying the specified
   /// function on these values, but only for those columns which can be converted 
@@ -1343,7 +1342,7 @@ module Frame =
             | OptionalValue.Present(vec) when vec.ObjectSequence |> Seq.exists (fun o -> o.HasValue) ->
                 yield colKey, vec
             | _ -> () |] |> Array.unzip
-    let colIndex = frame.IndexBuilder.Create(ReadOnlyCollection.ofArray newColKeys, None)
+    let colIndex, _ = frame.IndexBuilder.Create(ReadOnlyCollection.ofArray newColKeys, None)
     Frame(frame.RowIndex, colIndex, frame.VectorBuilder.Create(newData), frame.IndexBuilder, frame.VectorBuilder )
 
   /// Returns the columns of the data frame that do not have any missing values.

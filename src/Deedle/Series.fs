@@ -231,8 +231,9 @@ and
   ///
   /// [category:Accessors and slicing]
   member series.GetItems(keys, lookup) =    
-    let newIndex = indexBuilder.Create<_>((keys:seq<_>), None)
-    let newVector = vectorBuilder.Build(indexBuilder.Reindex(index, newIndex, lookup, Vectors.Return 0, fun addr -> series.Vector.GetValue(addr).HasValue), [| vector |])
+    let newIndex, cmd = indexBuilder.Create<_>((keys:seq<_>), None)
+    let cmd = indexBuilder.Reindex(index, newIndex, lookup, Vectors.Return 0, fun addr -> series.Vector.GetValue(addr).HasValue)
+    let newVector = vectorBuilder.Build(cmd, [| vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
   ///
@@ -347,9 +348,9 @@ and
           if opt.HasValue && f.Invoke (KeyValuePair(key, opt.Value), i)
             then Some(key, opt) else None)
       |> Array.unzip
-    Series<_, _>
-      ( indexBuilder.Create<_>(keys, None), vectorBuilder.CreateMissing(optValues),
-        vectorBuilder, indexBuilder )
+    let newIndex, _ = indexBuilder.Create<_>(keys, None)
+    let newVector = vectorBuilder.CreateMissing(optValues)
+    Series(newIndex, newVector, vectorBuilder, indexBuilder )
 
   /// [category:Projection and filtering]
   member x.Where(f:System.Func<KeyValuePair<'K, 'V>, bool>) = 
@@ -362,9 +363,9 @@ and
           let opt = vector.GetValue(addr)
           if f.Invoke (KeyValuePair(key, opt)) then yield key, opt |]
       |> Array.unzip
-    Series<_, _>
-      ( indexBuilder.Create<_>(keys, None), vectorBuilder.CreateMissing(optValues),
-        vectorBuilder, indexBuilder )
+    let newIndex, _ = indexBuilder.Create<_>(keys, None)
+    let newVector = vectorBuilder.CreateMissing(optValues)
+    Series(newIndex, newVector, vectorBuilder, indexBuilder )
 
   /// [category:Projection and filtering]
   member x.Select<'R>(f:System.Func<KeyValuePair<'K, 'V>, int, 'R>) = 
@@ -399,15 +400,16 @@ and
     let newKeys =
       [| for KeyValue(key, addr) in index.Mappings -> 
            f.Invoke(KeyValuePair(key, vector.GetValue(addr))) |]
-    let newIndex = indexBuilder.Create(newKeys, None)
-    Series<'R, _>(newIndex, vector, vectorBuilder, indexBuilder )
+    let newIndex, cmd = indexBuilder.Create(newKeys, None)
+    let newVector = vectorBuilder.Build(cmd, [| vector |])
+    Series<'R, _>(newIndex, newVector, vectorBuilder, indexBuilder )
 
   /// [category:Projection and filtering]
   member x.SelectOptional<'R>(f:System.Func<KeyValuePair<'K, OptionalValue<'V>>, OptionalValue<'R>>) = 
     let newVector =
       index.Mappings |> Array.ofSeq |> Array.map (fun (KeyValue(key, addr)) ->
            f.Invoke(KeyValuePair(key, vector.GetValue(addr))))
-    let newIndex = indexBuilder.Project(index)
+    let newIndex = indexBuilder.Recreate(index)
     Series<'K, 'R>(newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
 
   /// [category:Projection and filtering]
@@ -417,7 +419,7 @@ and
         match vector.GetValue(addr) |> OptionalValue.asOption with 
         | Some v -> OptionalValue(f.Invoke(v))
         | None   -> OptionalValue.Missing)
-    let newIndex = indexBuilder.Project(index)
+    let newIndex = indexBuilder.Recreate(index)
     Series<'K, 'T>(newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
   
   /// Custom operator that can be used for applying a function to all elements of 
@@ -522,11 +524,11 @@ and
   member private series.ZipHelper(otherSeries:Series<'K, 'V2>, kind, lookup) =
     // Union row indices and get transformations to apply to left/right vectors
     let newIndex, thisRowCmd, otherRowCmd = 
-      createJoinTransformation indexBuilder kind lookup index otherSeries.Index (Vectors.Return 0) (Vectors.Return 0)
+      createJoinTransformation indexBuilder otherSeries.IndexBuilder 
+        kind lookup index otherSeries.Index (Vectors.Return 0) (Vectors.Return 0)
 
     let lVec = vectorBuilder.Build(thisRowCmd, [| series.Vector |])
     let rVec = vectorBuilder.Build(otherRowCmd, [| otherSeries.Vector |])
-
     newIndex, lVec, rVec
 
   /// [category:Merging, joining and zipping]
@@ -805,12 +807,13 @@ and
   ///
   /// [category:Indexing]
   member x.IndexOrdinally() = 
-    let newIndex = indexBuilder.Create(x.Index.Keys |> Seq.mapi (fun i _ -> i), Some true)
-    Series<int, _>(newIndex, vector, vectorBuilder, indexBuilder)
+    let newIndex, cmd = indexBuilder.Create(x.Index.Keys |> Seq.mapi (fun i _ -> i), Some true)
+    let newVector = vectorBuilder.Build(cmd, [| vector |])
+    Series<int, _>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   /// [category:Indexing]
   member x.IndexWith(keys:seq<_>) = 
-    let newIndex = indexBuilder.Create(keys, None)
+    let newIndex, createCmd = indexBuilder.Create(keys, None)
     let vectorCmd = 
       if newIndex.KeyCount = int64 x.KeyCount then
         // Just return the vector, because it has the same length
@@ -822,7 +825,7 @@ and
         // Get sub-range of the source vector
         Vectors.GetRange(Vectors.Return 0, RangeRestriction.Fixed(x.Index.AddressAt(0L), x.Index.AddressAt(newIndex.KeyCount - 1L)))
 
-    let newVector = vectorBuilder.Build(vectorCmd, [| vector |])
+    let newVector = vectorBuilder.Build(VectorHelpers.substitute (0, vectorCmd) createCmd, [| vector |])
     Series<'TNewKey, _>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   // ----------------------------------------------------------------------------------------------

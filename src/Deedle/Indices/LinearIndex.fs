@@ -183,7 +183,7 @@ type LinearRangeIndex<'K when 'K : equality>
     let actualKeys = Array.init (int (endAddress - startAddress + 1L)) (fun i -> 
         index.Keys.[int startAddress + i]) |> ReadOnlyCollection.ofArray
     index.Builder.Create
-      ( actualKeys, if index.IsOrdered then Some(true) else None) )
+      ( actualKeys, if index.IsOrdered then Some(true) else None) |> fst )
   
   // Equality and hashing delegates to the actual index
   override index.Equals(another) = actualIndex.Value.Equals(another) 
@@ -259,16 +259,24 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
   interface IIndexBuilder with
     /// Linear index is always fully evaluated - just return it
     member builder.Project(index) = index
+
+    /// Create an index from another index - if the other index is not LinearIndex, 
+    /// it is fully evaluated and we re-create a LinearIndex from its keys.
+    member builder.Recreate(index:IIndex<'K>) = 
+      match index with 
+      | :? LinearIndex<'K> -> index
+      | otherIndex -> fst (LinearIndexBuilder.Instance.Create(otherIndex.Keys, Some otherIndex.IsOrdered))
+
     /// Linear index is always fully evaluated - just return it asynchronously
     member builder.AsyncMaterialize( (index, vector) ) = async.Return(index), vector
+    
+    /// Create an index from the specified data
+    member builder.Create<'K when 'K : equality>(keys:seq<_>, ordered) = 
+      LinearIndex<'K>(ReadOnlyCollection.ofSeq keys, builder, ?ordered=ordered) :> IIndex<_>, Vectors.Return 0
 
     /// Create an index from the specified data
-    member builder.Create<'K when 'K : equality>(keys:seq<_>, ordered) : IIndex<'K> = 
-      upcast LinearIndex<'K>(ReadOnlyCollection.ofSeq keys, builder, ?ordered=ordered)
-
-    /// Create an index from the specified data
-    member builder.Create<'K when 'K : equality>(keys:ReadOnlyCollection<_>, ordered) : IIndex<'K> = 
-      upcast LinearIndex<'K>(keys, builder, ?ordered=ordered)
+    member builder.Create<'K when 'K : equality>(keys:ReadOnlyCollection<_>, ordered) = 
+      LinearIndex<'K>(keys, builder, ?ordered=ordered) :> IIndex<_>, Vectors.Return 0
 
     /// Aggregate ordered index
     member builder.Aggregate<'K, 'TNewKey, 'R when 'K : equality and 'TNewKey : equality>
@@ -298,7 +306,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       // Run the specified selector function
       let keyValuePairs = vectorConstructions |> Seq.map selector |> Array.ofSeq
       // Build & return the resulting series
-      let newIndex = builder.Create(ReadOnlyCollection.ofArray (Array.map fst keyValuePairs), None)
+      let newIndex, _ = builder.Create(ReadOnlyCollection.ofArray (Array.map fst keyValuePairs), None)
       let vect = vectorBuilder.CreateMissing(Array.map snd keyValuePairs)
       newIndex, vect
 
@@ -315,7 +323,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
         let relocations = 
             seq { for k, newAddr in Seq.zip win (Seq.range 0L (len-1L) ) -> 
                   Address.ofInt64 newAddr, index.Locate(k) }
-        let newIndex = builder.Create(win, None)
+        let newIndex, vectorCmd = builder.Create(win, None)
         key, (newIndex, Vectors.Relocate(vector, len, relocations)))
       |> ReadOnlyCollection.ofSeq
 
@@ -377,7 +385,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       // Run the specified selector function
       let keyValuePairs = vectorConstructions |> Array.map selector
       // Build & return the resulting series
-      let newIndex = builder.Create(Seq.map fst keyValuePairs, None)
+      let newIndex, _ = builder.Create(Seq.map fst keyValuePairs, None)
       let vect = vectorBuilder.CreateMissing(Array.map snd keyValuePairs)
       newIndex, vect
       
@@ -551,11 +559,11 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
       | Choice1Of2(lo, hi) ->
           let newVector = Vectors.GetRange(vector, RangeRestriction.Fixed(lo, hi))
           let newKeys = index.Keys.[Address.asInt lo .. Address.asInt hi]
-          let newIndex = builder.Create(newKeys, if index.IsOrdered then Some true else None)
+          let newIndex, _ = builder.Create(newKeys, if index.IsOrdered then Some true else None)
           newIndex, newVector
       | Choice2Of2(indices) ->
           let newKeys = seq { for a in indices -> index.Keys.[Address.asInt a] }
-          let newIndex = builder.Create(newKeys, None)
+          let newIndex, _ = builder.Create(newKeys, None)
           let relocations = Seq.zip (Seq.map Address.ofInt64 (Seq.range 0L (newIndex.KeyCount-1L))) indices
           let newVector = Vectors.Relocate(vector, newIndex.KeyCount, relocations)
           newIndex, newVector
@@ -627,12 +635,12 @@ module ``F# Index extensions`` =
   type Index = 
     /// Create an index from a sequence of keys and check if they are sorted or not
     static member ofKeys<'T when 'T : equality>(keys:ReadOnlyCollection<'T>) =
-      LinearIndexBuilder.Instance.Create<'T>(keys, None)
+      LinearIndexBuilder.Instance.Create<'T>(keys, None) |> fst
 
     /// Create an index from a sequence of keys and assume they are not sorted
     /// (the resulting index is also not sorted).
     static member ofUnorderedKeys<'T when 'T : equality>(keys:ReadOnlyCollection<'T>) = 
-      LinearIndexBuilder.Instance.Create<'T>(keys, Some false)        
+      LinearIndexBuilder.Instance.Create<'T>(keys, Some false) |> fst       
 
     /// Create an index from a sequence of keys and check if they are sorted or not
     static member ofKeys<'T when 'T : equality>(keys:'T[]) =

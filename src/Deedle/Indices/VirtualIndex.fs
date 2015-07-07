@@ -108,38 +108,38 @@ and VirtualIndexBuilder() =
   let baseBuilder = IndexBuilder.Instance
 
   let materializeIndex (index:IIndex<'T>) =
-    Linear.LinearIndexBuilder.Instance.Create(index.Keys, Some index.IsOrdered)
-
-  let materializeVector vector =
-    Vectors.CustomCommand([vector], fun vectors ->
-      { new VectorCallSite<_> with
-          member x.Invoke(vector) =
-            vector.DataSequence
-            |> Array.ofSeq
-            |> ArrayVector.ArrayVectorBuilder.Instance.CreateMissing :> IVector }
-      |> (List.head vectors).Invoke)
+    fst (Linear.LinearIndexBuilder.Instance.Create(index.Keys, Some index.IsOrdered))
 
   static let indexBuilder = VirtualIndexBuilder()
   static member Instance = indexBuilder
 
   interface IIndexBuilder with
-    member x.Create<'K when 'K : equality>(keys:seq<'K>, ordered:option<bool>) : IIndex<'K> = 
-      // trace - materializing
-      baseBuilder.Create(keys, ordered)
-    
-    member x.Create<'K when 'K : equality>(keys:ReadOnlyCollection<'K>, ordered:option<bool>) : IIndex<'K> = 
-      // trace - materializing
-      baseBuilder.Create(keys, ordered)
+    member x.Create<'K when 'K : equality>(keys:seq<'K>, ordered:option<bool>) = 
+      let index, cmd = baseBuilder.Create(keys, ordered)
+      index, Vectors.Materialize(cmd)
 
-    member x.Aggregate(index, aggregation, vector, selector) = failwith "Aggregate"
-    member x.GroupBy(index, keySel, vector) = failwith "GroupBy"
+    member x.Recreate(index:IIndex<'K>) : IIndex<'K> = 
+      baseBuilder.Recreate(index)
+
+    member x.Create<'K when 'K : equality>(keys:ReadOnlyCollection<'K>, ordered:option<bool>) = 
+      let index, cmd = baseBuilder.Create(keys, ordered)
+      index, Vectors.Materialize(cmd)
+
+    member x.Aggregate(index, aggregation, vector, selector) = 
+      failwith "Aggregate"
+    member x.GroupBy(index, keySel, vector) = 
+      failwith "GroupBy"
     member x.OrderIndex( (index, vector) ) = 
       if index.IsOrdered then index, vector
       else failwith "OrderIndex"
 
-    member x.Shift(sc, offset) = failwith "Shift"
-    member x.Union(sc1, sc2) = failwith "Union"
-    member x.Intersect(sc1, sc2) = failwith "Intersect"
+    member x.Shift(sc, offset) = 
+      failwith "Shift"
+    member x.Union(sc1, sc2) = 
+      failwith "Union"
+    member x.Intersect(sc1, sc2) = 
+      failwith "Intersect"
+    
     member x.Merge(scs:list<SeriesConstruction<'K>>, transform) = 
 
       let (|OrderedSources|_|) : list<SeriesConstruction<_>> -> _ = 
@@ -174,10 +174,10 @@ and VirtualIndexBuilder() =
             [ for index, vector in scs ->
                 match index with
                 | :? VirtualOrderedIndex<'K>
-                | :? VirtualOrdinalIndex -> materializeIndex index, materializeVector vector
+                | :? VirtualOrdinalIndex -> materializeIndex index, vector
                 | _ -> index, vector ]
-          baseBuilder.Merge(scs, transform)
-
+          let index, cmd = baseBuilder.Merge(scs, transform)
+          index, Vectors.Materialize(cmd)
 
     member x.Search((index:IIndex<'K>, vector), searchVector:IVector<'V>, searchValue) = 
       let searchVector = 
@@ -206,7 +206,8 @@ and VirtualIndexBuilder() =
       | _ ->
           failwith "TODO: Search - search would cause materialization"
 
-    member x.LookupLevel(sc, key) = failwith "LookupLevel"
+    member x.LookupLevel(sc, key) = 
+      failwith "LookupLevel"
 
     member x.WithIndex(index1:IIndex<'K>, indexVector:IVector<'TNewKey>, vector) =
       match indexVector with
@@ -220,20 +221,12 @@ and VirtualIndexBuilder() =
 
     member x.Reindex(index1:IIndex<'K>, index2:IIndex<'K>, semantics, vector, cond) = 
       match index1, index2 with
-      | (:? VirtualOrdinalIndex as index1), (:? VirtualOrdinalIndex as index2) when index1.Ranges = index2.Ranges -> 
-          vector           
-      | :? VirtualOrderedIndex<'K>, _ 
-      | _, :? VirtualOrderedIndex<'K>
-      | :? VirtualOrdinalIndex, _ 
-      | _, :? VirtualOrdinalIndex ->
-          failwith "TODO: Reindex - ordered/ordinal index - avoid materialization!"
-      | _ -> baseBuilder.Reindex(index1, index2, semantics, vector, cond)
+      | (:? VirtualOrdinalIndex as index1), (:? VirtualOrdinalIndex as index2) when index1.Ranges = index2.Ranges -> vector           
+      | _ -> Vectors.Materialize(baseBuilder.Reindex(index1, index2, semantics, vector, cond))
 
     member x.DropItem((index:IIndex<'K>, vector), key) = 
-      match index with
-      | :? VirtualOrderedIndex<'K>
-      | :? VirtualOrdinalIndex -> failwith "TODO: DropItem - ordered/ordinal index - avoid materialization!"
-      | _ -> baseBuilder.DropItem((index, vector), key)
+      let index, cmd = baseBuilder.DropItem((index, vector), key)
+      index, Vectors.Materialize(cmd)
 
     member x.Resample(index, keys, close, vect, selector) = failwith "Resample"
 
@@ -258,16 +251,20 @@ and VirtualIndexBuilder() =
           let newVector = Vectors.GetRange(vector, range)
           unbox<IIndex<'K>> newIndex, newVector
       | _ -> 
-          baseBuilder.GetAddressRange((index, vector), range)
+          let index, cmd = baseBuilder.GetAddressRange((index, vector), range)
+          index, Vectors.Materialize(cmd)
 
-    member x.Project(index:IIndex<'K>) = index
+    member x.Project(index:IIndex<'K>) = 
+      index
 
     member x.AsyncMaterialize( (index:IIndex<'K>, vector) ) = 
       match index with
       | :? VirtualOrdinalIndex 
       | :? VirtualOrderedIndex<'K> ->
-          async.Return(materializeIndex index), materializeVector vector
-      | _ -> async.Return(index), vector
+          async.Return(materializeIndex index), Vectors.Materialize(vector)
+      | _ -> 
+          let index, cmd = baseBuilder.AsyncMaterialize((index, vector))
+          index, Vectors.Materialize(cmd)
 
     member x.GetRange<'K when 'K : equality>( (index, vector), (optLo:option<'K * _>, optHi:option<'K * _>)) = 
       match index with
@@ -288,8 +285,7 @@ and VirtualIndexBuilder() =
               let newIndex = VirtualOrderedIndex(index.Source.GetSubVector(RangeRestriction.Fixed(loIdx, hiIdx)))
               newIndex :> IIndex<'K>, newVector
           | _ ->
-              Index.ofKeys [] :> _, VectorConstruction.Empty(0L)       
-              
+              Index.ofKeys [] :> _, Vectors.Materialize(VectorConstruction.Empty(0L))              
 
       | :? VirtualOrdinalIndex as ordIndex & (:? IIndex<int64> as index) -> 
           let getRangeKey proj next = function
@@ -315,4 +311,5 @@ and VirtualIndexBuilder() =
           unbox<IIndex<'K>> newIndex, newVector
           
       | _ -> 
-          baseBuilder.GetRange((index, vector), (optLo, optHi))
+          let index, cmd = baseBuilder.GetRange((index, vector), (optLo, optHi))
+          index, Vectors.Materialize(cmd)
