@@ -1607,7 +1607,8 @@ module Series =
     /// range of the series (and one additional, if `dir = Backward`) and then performs
     /// sampling using `resampleInto`.
     let sampleTimeIntoInternal add startOpt (interval:'T) dir f (series:Series<'K , 'V>) =
-      resampleInto (generateKeys add startOpt interval dir series) dir f series
+      if series.IsEmpty then Series []
+      else resampleInto (generateKeys add startOpt interval dir series) dir f series
 
     /// Given a specified starting time and time span, generates all keys that fit in the
     /// range of the series (and one additional, if `dir = Backward`) and then performs lookup

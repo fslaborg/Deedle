@@ -120,29 +120,26 @@ and VirtualIndexBuilder() =
   static member Instance = indexBuilder
 
   interface IIndexBuilder with
-    member x.Create<'K when 'K : equality>(keys:seq<'K>, ordered:option<bool>) = 
-      baseBuilder.Create(keys, ordered)
-      
-    member x.Recreate(index:IIndex<'K>) : IIndex<'K> = 
-      baseBuilder.Recreate(index)
+    member x.Create(keys:seq<_>, ordered) = baseBuilder.Create(keys, ordered)      
+    member x.Create(keys, ordered) = baseBuilder.Create(keys, ordered)
+    member x.Recreate(index) = baseBuilder.Recreate(index)
 
-    member x.Create<'K when 'K : equality>(keys:ReadOnlyCollection<'K>, ordered:option<bool>) = 
-      baseBuilder.Create(keys, ordered)
-      
+    member x.GroupBy(index, keySel, vector) = baseBuilder.GroupBy(index, keySel, vector)
+    member x.Shift(sc, offset) = baseBuilder.Shift(sc, offset)
+    member x.Union(sc1, sc2) = baseBuilder.Union(sc1, sc2)
+    member x.Intersect(sc1, sc2) = baseBuilder.Intersect(sc1, sc2)
+    member x.LookupLevel(sc, key) = baseBuilder.LookupLevel(sc, key)
+    member x.DropItem((index:IIndex<'K>, vector), key) = 
+      baseBuilder.DropItem((index, vector), key)
     member x.Aggregate(index, aggregation, vector, selector) = 
-      failwith "Aggregate"
-    member x.GroupBy(index, keySel, vector) = 
-      failwith "GroupBy"
+      baseBuilder.Aggregate(index, aggregation, vector, selector)
+    member x.Resample(chunkBuilder, index, keys, close, vect, selector) = 
+      baseBuilder.Resample(chunkBuilder, index, keys, close, vect, selector)
+
+      
     member x.OrderIndex( (index, vector) ) = 
       if index.IsOrdered then index, vector
-      else failwith "OrderIndex"
-
-    member x.Shift(sc, offset) = 
-      failwith "Shift"
-    member x.Union(sc1, sc2) = 
-      failwith "Union"
-    member x.Intersect(sc1, sc2) = 
-      failwith "Intersect"
+      else baseBuilder.OrderIndex( (index, vector) )
     
     member x.Merge(scs:list<SeriesConstruction<'K>>, transform) = 
 
@@ -209,9 +206,6 @@ and VirtualIndexBuilder() =
       | _ ->
           failwith "TODO: Search - search would cause materialization"
 
-    member x.LookupLevel(sc, key) = 
-      failwith "LookupLevel"
-
     member x.WithIndex(index1:IIndex<'K>, indexVector:IVector<'TNewKey>, vector) =
       match indexVector with
       | :? VirtualVector<'TNewKey> as indexVector ->
@@ -220,18 +214,12 @@ and VirtualIndexBuilder() =
           // TODO: Assert that indexVector.Source has no duplicate keys and no NANs.... (which is impossible to do)
           upcast newIndex, vector
       | _ -> 
-        failwith "TODO: WithIndex - not supported vector"
+        baseBuilder.WithIndex(index1, indexVector, vector)
 
     member x.Reindex(index1:IIndex<'K>, index2:IIndex<'K>, semantics, vector, cond) = 
       match index1, index2 with
       | (:? VirtualOrdinalIndex as index1), (:? VirtualOrdinalIndex as index2) when index1.Ranges = index2.Ranges -> vector           
       | _ -> baseBuilder.Reindex(index1, index2, semantics, vector, cond)
-
-    member x.DropItem((index:IIndex<'K>, vector), key) = 
-      baseBuilder.DropItem((index, vector), key)
-
-    member x.Resample(index, keys, close, vect, selector) = 
-      baseBuilder.Resample(index, keys, close, vect, selector)
 
     member x.GetAddressRange<'K when 'K : equality>((index, vector), range) = 
       match index with

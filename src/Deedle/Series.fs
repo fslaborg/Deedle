@@ -591,7 +591,7 @@ and
   member x.Resample<'TNewKey, 'R when 'TNewKey : equality>(keys, direction, valueSelector:Func<_, _, _>, keySelector:Func<_, _, _>) =
     let newIndex, newVector = 
       indexBuilder.Resample
-        ( x.Index, keys, direction, Vectors.Return 0, 
+        ( indexBuilder, x.Index, keys, direction, Vectors.Return 0, 
           (fun (key, (index, cmd)) -> 
               let vector = vectorBuilder.Build(index.AddressingScheme, cmd, [| vector |])
               let window = Series<_, _>(index, vector, vectorBuilder, indexBuilder)

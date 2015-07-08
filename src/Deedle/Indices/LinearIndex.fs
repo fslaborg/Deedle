@@ -216,7 +216,7 @@ type LinearRangeIndex<'K when 'K : equality>
   interface IIndex<'K> with
     // Operations that can be implemented without evaluating the index
     member x.AddressingScheme = LinearAddressingScheme.Instance
-    member x.AddressOperations = LinearAddressOperations(startAddress, endAddress) :> _
+    member x.AddressOperations = LinearAddressOperations(0L, endAddress - startAddress) :> _
     member x.AddressAt(idx) = Address.ofInt64 idx
     member x.KeyCount = endAddress - startAddress + 1L
     member x.KeyAt(address) = index.KeyAt(Address.ofInt64 (startAddress + (Address.asInt64 address)))
@@ -351,7 +351,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
 
     /// Create chunks based on the specified key sequence
     member builder.Resample<'K, 'TNewKey, 'R when 'K : equality and 'TNewKey : equality> 
-        (index:IIndex<'K>, keys:seq<'K>, dir:Direction, vector, selector:_ * _ -> 'TNewKey * OptionalValue<'R>) =
+        (chunkBuilder, index:IIndex<'K>, keys:seq<'K>, dir:Direction, vector, selector:_ * _ -> 'TNewKey * OptionalValue<'R>) =
 
       if not index.IsOrdered then 
         invalidOp "Resampling is only supported on ordered indices"
@@ -406,8 +406,7 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           if lo = Address.invalid || hi = Address.invalid then 
             k, (LinearIndexBuilder.Instance.Create([], None) :> IIndex<_>, Vectors.Empty(0L))
           else 
-            let cmd = Vectors.GetRange(vector, RangeRestriction.Fixed(lo, hi)) 
-            let index = LinearRangeIndex(index, Address.asInt64 lo, Address.asInt64 hi)
+            let index, cmd = chunkBuilder.GetAddressRange( (index, Vectors.Return 0), RangeRestriction.Fixed(lo, hi))
             k, (index :> IIndex<_>, cmd) )
 
       // Run the specified selector function
@@ -448,7 +447,10 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
         newIndex, Vectors.Empty(0L)
       else
         let orderedOpt = if index.IsOrdered then Some(true) else None
-        let newIndex = LinearRangeIndex(index, indexLo, indexHi) :> IIndex<_>
+        let newIndex = 
+          if index.AddressingScheme = LinearAddressingScheme.Instance 
+          then LinearRangeIndex(index, indexLo, indexHi) :> IIndex<_>
+          else LinearIndex(index.Keys.[int indexLo .. int indexHi], LinearIndexBuilder.Instance, index.IsOrdered) :> _
         newIndex, Vectors.GetRange(vector, vectorRange)
 
     /// Union the index with another. For sorted indices, this needs to align the keys;
@@ -586,9 +588,8 @@ type LinearIndexBuilder(vectorBuilder:Vectors.IVectorBuilder) =
           upcast newIndex, Vectors.Empty(0L)
       | Choice1Of2(lo, hi) ->
           let newVector = Vectors.GetRange(vector, RangeRestriction.Fixed(lo, hi))
-          let newKeys = index.Keys.[Address.asInt lo .. Address.asInt hi]
-          let newIndex = builder.Create(newKeys, if index.IsOrdered then Some true else None)
-          newIndex, newVector
+          let newIndex = LinearRangeIndex(index, Address.asInt64 lo, Address.asInt64 hi)
+          upcast newIndex, newVector
       | Choice2Of2(indices) ->
           let newKeys = seq { for a in indices -> index.Keys.[Address.asInt a] }
           let newIndex = builder.Create(newKeys, None)

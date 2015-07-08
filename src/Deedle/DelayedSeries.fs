@@ -255,7 +255,7 @@ and internal DelayedIndexBuilder() =
     member x.WithIndex(index1, f, vector) = builder.WithIndex(index1, f, vector)
     member x.Reindex(index1, index2, semantics, vector, cond) = builder.Reindex(index1, index2, semantics, vector, cond)
     member x.DropItem(sc, key) = builder.DropItem(sc, key)
-    member x.Resample(index, keys, close, vect, selector) = builder.Resample(index, keys, close, vect, selector)
+    member x.Resample(chunkBuilder, index, keys, close, vect, selector) = builder.Resample(chunkBuilder, index, keys, close, vect, selector)
     member this.GetAddressRange( (index:IIndex<'K>, vector), range) = builder.GetAddressRange( (index, vector), range) 
     
     member x.Project(index:IIndex<'K>) = 

@@ -317,7 +317,7 @@ and IIndexBuilder =
   /// `Direction.Forward` than the key is the first element of a chunk; for 
   /// `Direction.Backward`, the key is the last element (note that this does not 
   /// hold at the boundaries where values before/after the key may also be included)
-  abstract Resample : IIndex<'K> * seq<'K> * Direction * source:VectorConstruction *
+  abstract Resample : IIndexBuilder * IIndex<'K> * seq<'K> * Direction * source:VectorConstruction *
     selector:('K * SeriesConstruction<'K> -> 'TNewKey * OptionalValue<'R>) 
       -> IIndex<'TNewKey> * IVector<'R>
 

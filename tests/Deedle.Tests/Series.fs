@@ -475,6 +475,12 @@ let ``Sample by time span - get the last available previous value for every hour
   actual |> shouldEqual expected        
 
 [<Test>]
+let ``Sample by time span does not crash on empty series`` () =
+  let input = generate (DateTime(2012, 2, 12)) (TimeSpan.FromMinutes(5.37)) 0
+  let actual = input |> Series.sampleTimeInto (TimeSpan(1,0,0)) Direction.Backward Series.lastValue
+  actual |> shouldEqual <| series []
+
+[<Test>]
 let ``Sample by keys - get the nearest previous key or <missing> (TestExplicitTimeSamples)`` () =
   let input = (generate (DateTime(2012, 01, 01)) (TimeSpan.FromDays(3.0)) 15) + 1
   let dateSampels = 
