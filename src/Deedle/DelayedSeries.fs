@@ -184,7 +184,7 @@ type internal DelayedVector<'K, 'V when 'K : equality> internal (source:DelayedS
   // Boilerplate - all operations on the vector just force the retrieval 
   // of the data and then delegate the request to the actual vector
   interface IVector with
-    member x.AddressingScheme = Addressing.LinearAddressingScheme.Instance
+    member x.AddressingScheme = source.AddressingScheme
     member val ElementType = typeof<'V>
     member x.Length = source.Values.Length
     member x.SuppressPrinting = true

@@ -39,7 +39,7 @@
       <HintPath>..\..\bin\Deedle.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Core">
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Deedle.PerfTest.Core">
       <HintPath>..\PerformanceTools\bin\Deedle.PerfTest.Core.dll</HintPath>
