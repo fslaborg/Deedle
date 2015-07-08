@@ -51,7 +51,7 @@ type ArrayVectorBuilder() =
   /// returned vector is ArrayVector (if no, it converts it) and then
   /// returns the internal representation of the vector
   member private builder.buildArrayVector<'T> (commands:VectorConstruction) (arguments:IVector<'T>[]) : ArrayVectorData<'T> = 
-    let got = vectorBuilder.Build(commands, arguments)
+    let got = vectorBuilder.Build(Addressing.LinearAddressingScheme.Instance, commands, arguments)
     match got with
     | :? ArrayVector<'T> as av -> av.Representation
     | otherVector -> 
@@ -77,21 +77,33 @@ type ArrayVectorBuilder() =
       else av <| VectorNonOptional(optValues |> Array.map (fun v -> v.Value))
 
     /// Asynchronous version - limited implementation for AsyncMaterialize
-    member builder.AsyncBuild<'T>(command:VectorConstruction, arguments:IVector<'T>[]) = async {
+    member builder.AsyncBuild<'T>(scheme, command:VectorConstruction, arguments:IVector<'T>[]) = async {
+
+      if scheme <> Addressing.LinearAddressingScheme.Instance then
+        failwith "ArrayVector.AsyncBuild: Can only build vectors with linear addressing scheme!"
+
       match command with
       | AsyncCustomCommand(vectors, f) ->
-          let vectors = List.map (fun v -> vectorBuilder.Build(v, arguments) :> IVector) vectors
+          let vectors = List.map (fun v -> vectorBuilder.Build(scheme, v, arguments) :> IVector) vectors
           let! res = f vectors
           return res :?> IVector<_>
       | cmd ->  
           // Fall back to the synchronous mode for anything more complicated
-          return (builder :> IVectorBuilder).Build<'T>(cmd, arguments) }
+          return (builder :> IVectorBuilder).Build<'T>(scheme, cmd, arguments) }
 
     /// Given a vector construction command(s) produces a new IVector
     /// (the result is typically ArrayVector, but this is not guaranteed)
-    member builder.Build<'T>(command:VectorConstruction, arguments:IVector<'T>[]) = 
+    member builder.Build<'T>(scheme, command:VectorConstruction, arguments:IVector<'T>[]) = 
+
+      if scheme <> Addressing.LinearAddressingScheme.Instance then
+        failwith "ArrayVector.Build: Can only build vectors with linear addressing scheme!"
+
       match command with
-      | Return vectorVar -> arguments.[vectorVar]
+      | Return vectorVar -> 
+          match arguments.[vectorVar] with
+          | linear when linear.AddressingScheme = scheme -> linear
+          | otherVector -> vectorBuilder.CreateMissing(Array.ofSeq otherVector.DataSequence)
+
       | Empty 0L -> vectorBuilder.Create [||]
       | Empty size -> vectorBuilder.CreateMissing (Array.create (int size) OptionalValue.Missing)
 
@@ -164,7 +176,6 @@ type ArrayVectorBuilder() =
               // (DropRange is only used when dropping a single item at the moment)
               failwith "DropRange does not support Custom ranges at he moment"
 
-      | GetRange(Materialize(source), range)
       | GetRange(source, range) ->
           let built = builder.buildArrayVector source arguments
           match range.AsAbsolute(int64 built.Length) with
@@ -189,7 +200,6 @@ type ArrayVectorBuilder() =
                   [| for address in indices -> data.[Address.asInt address] |] |> VectorNonOptional |> av
 
 
-      | Append(Materialize(first), second) 
       | Append(first, second) ->
           // Convert both vectors to ArrayVectors and append them (this preserves
           // the kind of representation - Optional will stay Optional etc.)
@@ -262,7 +272,7 @@ type ArrayVectorBuilder() =
           // vectors) and we create a vector of virtualized "row readers".
           let data = 
             vectors 
-            |> List.map (fun v -> vectorBuilder.Build(v, arguments) :> IVector)
+            |> List.map (fun v -> vectorBuilder.Build(scheme, v, arguments) :> IVector)
             |> Array.ofSeq
 
           // Using `createObjRowReader` to get a row reader for a specified address
@@ -291,15 +301,12 @@ type ArrayVectorBuilder() =
               |> merge)  
           vectorBuilder.CreateMissing(filled)
 
-      | Materialize(source) ->
-          builder.buildArrayVector source arguments |> av
-
       | CustomCommand(vectors, f) ->
-          let vectors = List.map (fun v -> vectorBuilder.Build(v, arguments) :> IVector) vectors
+          let vectors = List.map (fun v -> vectorBuilder.Build(scheme, v, arguments) :> IVector) vectors
           f vectors :?> IVector<_>
 
       | AsyncCustomCommand(vectors, f) ->
-          let vectors = List.map (fun v -> vectorBuilder.Build(v, arguments) :> IVector) vectors
+          let vectors = List.map (fun v -> vectorBuilder.Build(scheme, v, arguments) :> IVector) vectors
           Async.RunSynchronously(f vectors) :?> IVector<_>
 
 /// --------------------------------------------------------------------------------------
@@ -321,6 +328,7 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
 
   // Implement the untyped vector interface
   interface IVector with
+    member x.AddressingScheme = Addressing.LinearAddressingScheme.Instance
     member x.Length = 
       match representation with
       | VectorOptional opts -> int64 opts.Length

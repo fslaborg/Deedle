@@ -126,7 +126,7 @@ type internal DelayedSourceData<'K, 'V when 'K : equality> = Async<IIndex<'K> * 
 /// The function `loader` is called outside of the `async` (on the calling thread)
 /// but the returned async computations are invoked on background thread.
 type internal DelayedSource<'K, 'V when 'K : equality>
-    ( rangeMin:'K, rangeMax:'K, ranges:Ranges<'K>, 
+    ( scheme:IAddressingScheme, rangeMin:'K, rangeMax:'K, ranges:Ranges<'K>, 
       indexBuilder:IIndexBuilder, vectorBuilder: IVectorBuilder,
       loader:DelayedSourceRanges<'K> -> DelayedSourceData<'K, 'V>) =
 
@@ -151,11 +151,11 @@ type internal DelayedSource<'K, 'V when 'K : equality>
 
       // Append all the indices & vectors that we got for segments
       match constrs.Count with
-      | 0 -> return fst (indexBuilder.Create([], None)), vectorBuilder.Create([||])
+      | 0 -> return indexBuilder.Create([], None), vectorBuilder.Create([||])
       | 1 -> return fst constrs.[0], vectors.[0]
       | _ -> 
           let newIndex, cmd = indexBuilder.Merge( List.ofSeq constrs, BinaryTransform.AtMostOne )
-          let newVector = vectorBuilder.Build(cmd, vectors.ToArray())
+          let newVector = vectorBuilder.Build(newIndex.AddressingScheme, cmd, vectors.ToArray())
           return newIndex, newVector } |> Async.StartAsTask)
 
   member x.Ranges = ranges
@@ -166,10 +166,11 @@ type internal DelayedSource<'K, 'V when 'K : equality>
   member x.AsyncData = asyncData.Value
   member x.Index = fst asyncData.Value.Result
   member x.Values = snd asyncData.Value.Result
+  member x.AddressingScheme = scheme
 
   member x.With(?loader, ?ranges) =  
     DelayedSource<'K, 'V>
-      ( rangeMin, rangeMax, defaultArg ranges x.Ranges, indexBuilder, 
+      ( scheme, rangeMin, rangeMax, defaultArg ranges x.Ranges, indexBuilder, 
         vectorBuilder, defaultArg loader x.Loader ) 
 
 // --------------------------------------------------------------------------------------
@@ -183,6 +184,7 @@ type internal DelayedVector<'K, 'V when 'K : equality> internal (source:DelayedS
   // Boilerplate - all operations on the vector just force the retrieval 
   // of the data and then delegate the request to the actual vector
   interface IVector with
+    member x.AddressingScheme = Addressing.LinearAddressingScheme.Instance
     member val ElementType = typeof<'V>
     member x.Length = source.Values.Length
     member x.SuppressPrinting = true
@@ -202,6 +204,8 @@ type internal DelayedVector<'K, 'V when 'K : equality> internal (source:DelayedS
 type internal DelayedIndex<'K, 'V when 'K : equality> internal (source:DelayedSource<'K, 'V>) = 
   member x.Source = source
   interface IIndex<'K> with
+    member x.AddressingScheme = source.AddressingScheme
+    member x.AddressOperations = source.Index.AddressOperations
     member x.KeyAt index = source.Index.KeyAt index 
     member x.KeyCount = source.Index.KeyCount
     member x.IsEmpty = false
@@ -402,7 +406,8 @@ type DelayedSeries =
     let vectorBuilder = VectorBuilder.Instance
     let indexBuilder = IndexBuilder.Instance
     let initRange = Ranges.Range((min, BoundaryBehavior.Inclusive), (max, BoundaryBehavior.Inclusive))
-    let source = DelayedSource<'K, 'V>(min, max, initRange, indexBuilder, vectorBuilder, fun ranges -> 
+    let scheme = Addressing.LinearAddressingScheme.Instance
+    let source = DelayedSource<'K, 'V>(scheme, min, max, initRange, indexBuilder, vectorBuilder, fun ranges -> 
       ranges |> Array.map (fun ((lo, lob), (hi, hib)) -> async {
         let! pairs = loader (lo, lob) (hi, hib)
         let keys = ResizeArray<_>()
@@ -412,7 +417,7 @@ type DelayedSeries =
              (k < hi || (k <= hi && hib = Inclusive)) then 
              keys.Add(k)
              values.Add(v)
-        let index, _ = indexBuilder.Create(ReadOnlyCollection.ofSeq keys, Some true)
+        let index = indexBuilder.Create(ReadOnlyCollection.ofSeq keys, Some true)
         let vector = vectorBuilder.Create(values.ToArray())
         return index, vector
       }))
@@ -422,15 +427,15 @@ type DelayedSeries =
     Series<'K, 'V>(index, vector, vectorBuilder, DelayedIndexBuilder())
 
   static member FromIndexVectorLoader
-      (vectorBuilder, indexBuilder, min, max, loader:Func<_, _, _, _, Task<_>>) : Series<'K, 'V> =
+      (scheme, vectorBuilder, indexBuilder, min, max, loader:Func<_, _, _, _, Task<_>>) : Series<'K, 'V> =
     DelayedSeries.FromIndexVectorLoader
-      ( vectorBuilder, indexBuilder, min, max, 
+      ( scheme, vectorBuilder, indexBuilder, min, max, 
         fun (l, lb) (h, hb)-> Async.AwaitTask (loader.Invoke(l,lb,h,hb)) )
 
   static member FromIndexVectorLoader
-      (vectorBuilder, indexBuilder, min, max, loader:_ -> _ -> Async<_>) : Series<'K, 'V> =
+      (scheme, vectorBuilder, indexBuilder, min, max, loader:_ -> _ -> Async<_>) : Series<'K, 'V> =
     let initRange = Ranges.Range((min, BoundaryBehavior.Inclusive), (max, BoundaryBehavior.Inclusive))
-    let source = DelayedSource<'K, 'V>(min, max, initRange, indexBuilder, vectorBuilder, fun ranges -> 
+    let source = DelayedSource<'K, 'V>(scheme, min, max, initRange, indexBuilder, vectorBuilder, fun ranges -> 
       ranges |> Array.map (fun (l, h) -> loader l h))
     let index = DelayedIndex(source)
     let vector = DelayedVector(source)

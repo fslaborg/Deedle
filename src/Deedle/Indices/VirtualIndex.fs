@@ -31,6 +31,11 @@ type VirtualOrderedIndex<'K when 'K : equality>(source:IVirtualVectorSource<'K>)
   // TODO: Assert that the source is ordered
   // TODO: Another assumption here is that the source contains no NA values
   let keyAtAddr i = source.ValueAt(i).Value
+  let keys = Lazy.Create(fun () ->
+    source.AddressOperations.Range
+    |> Seq.mapl (fun idx addr -> keyAtAddr (Location.known(addr, idx)))
+    |> ReadOnlyCollection.ofSeq )
+
   member x.Source = source
 
   /// Implements structural equality check against another index
@@ -45,6 +50,8 @@ type VirtualOrderedIndex<'K when 'K : equality>(source:IVirtualVectorSource<'K>)
     (index :> IIndex<_>).Keys |> Seq.structuralHash
 
   interface IIndex<'K> with
+    member x.AddressingScheme = VirtualAddressingScheme() :> _
+    member x.AddressOperations = source.AddressOperations
     member x.KeyAt(addr) = keyAtAddr (Location.delayed(addr, source.AddressOperations))
     member x.AddressAt(offs) = source.AddressOperations.AddressOf offs
     member x.KeyCount = source.Length
@@ -54,13 +61,10 @@ type VirtualOrderedIndex<'K when 'K : equality>(source:IVirtualVectorSource<'K>)
       keyAtAddr (Location.known(source.AddressOperations.FirstElement, 0L)),
       keyAtAddr (Location.delayed(source.AddressOperations.LastElement, source.AddressOperations))
     
+    member x.Keys = keys.Value 
     member x.KeySequence : seq<'K> = 
       source.AddressOperations.Range
       |> Seq.mapl (fun idx addr -> keyAtAddr (Location.known(addr, idx)))
-    member x.Keys : ReadOnlyCollection<'K> = 
-      source.AddressOperations.Range
-      |> Seq.mapl (fun idx addr -> keyAtAddr (Location.known(addr, idx)))
-      |> ReadOnlyCollection.ofSeq
     member x.Mappings = 
       source.AddressOperations.Range
       |> Seq.mapl (fun idx addr -> KeyValuePair(keyAtAddr (Location.known(addr, idx)), addr))
@@ -82,6 +86,8 @@ and VirtualOrdinalIndex(ranges:Ranges<int64>, source:IVirtualVectorSource) =
   member x.Ranges = ranges
   member x.Source = source
   interface IIndex<int64> with
+    member x.AddressingScheme = VirtualAddressingScheme() :> _
+    member x.AddressOperations = source.AddressOperations
     member x.KeyAt(addr) = ranges |> Ranges.offsetOfKey (source.AddressOperations.OffsetOf(addr))
     member x.AddressAt(offs) = ranges |> Ranges.keyAtOffset offs |> source.AddressOperations.AddressOf
     member x.KeyCount = source.Length
@@ -108,23 +114,21 @@ and VirtualIndexBuilder() =
   let baseBuilder = IndexBuilder.Instance
 
   let materializeIndex (index:IIndex<'T>) =
-    fst (Linear.LinearIndexBuilder.Instance.Create(index.Keys, Some index.IsOrdered))
+    Linear.LinearIndexBuilder.Instance.Create(index.Keys, Some index.IsOrdered)
 
   static let indexBuilder = VirtualIndexBuilder()
   static member Instance = indexBuilder
 
   interface IIndexBuilder with
     member x.Create<'K when 'K : equality>(keys:seq<'K>, ordered:option<bool>) = 
-      let index, cmd = baseBuilder.Create(keys, ordered)
-      index, Vectors.Materialize(cmd)
-
+      baseBuilder.Create(keys, ordered)
+      
     member x.Recreate(index:IIndex<'K>) : IIndex<'K> = 
       baseBuilder.Recreate(index)
 
     member x.Create<'K when 'K : equality>(keys:ReadOnlyCollection<'K>, ordered:option<bool>) = 
-      let index, cmd = baseBuilder.Create(keys, ordered)
-      index, Vectors.Materialize(cmd)
-
+      baseBuilder.Create(keys, ordered)
+      
     member x.Aggregate(index, aggregation, vector, selector) = 
       failwith "Aggregate"
     member x.GroupBy(index, keySel, vector) = 
@@ -176,9 +180,8 @@ and VirtualIndexBuilder() =
                 | :? VirtualOrderedIndex<'K>
                 | :? VirtualOrdinalIndex -> materializeIndex index, vector
                 | _ -> index, vector ]
-          let index, cmd = baseBuilder.Merge(scs, transform)
-          index, Vectors.Materialize(cmd)
-
+          baseBuilder.Merge(scs, transform)
+          
     member x.Search((index:IIndex<'K>, vector), searchVector:IVector<'V>, searchValue) = 
       let searchVector = 
         match searchVector with
@@ -222,13 +225,13 @@ and VirtualIndexBuilder() =
     member x.Reindex(index1:IIndex<'K>, index2:IIndex<'K>, semantics, vector, cond) = 
       match index1, index2 with
       | (:? VirtualOrdinalIndex as index1), (:? VirtualOrdinalIndex as index2) when index1.Ranges = index2.Ranges -> vector           
-      | _ -> Vectors.Materialize(baseBuilder.Reindex(index1, index2, semantics, vector, cond))
+      | _ -> baseBuilder.Reindex(index1, index2, semantics, vector, cond)
 
     member x.DropItem((index:IIndex<'K>, vector), key) = 
-      let index, cmd = baseBuilder.DropItem((index, vector), key)
-      index, Vectors.Materialize(cmd)
+      baseBuilder.DropItem((index, vector), key)
 
-    member x.Resample(index, keys, close, vect, selector) = failwith "Resample"
+    member x.Resample(index, keys, close, vect, selector) = 
+      baseBuilder.Resample(index, keys, close, vect, selector)
 
     member x.GetAddressRange<'K when 'K : equality>((index, vector), range) = 
       match index with
@@ -251,9 +254,8 @@ and VirtualIndexBuilder() =
           let newVector = Vectors.GetRange(vector, range)
           unbox<IIndex<'K>> newIndex, newVector
       | _ -> 
-          let index, cmd = baseBuilder.GetAddressRange((index, vector), range)
-          index, Vectors.Materialize(cmd)
-
+          baseBuilder.GetAddressRange((index, vector), range)
+          
     member x.Project(index:IIndex<'K>) = 
       index
 
@@ -261,11 +263,10 @@ and VirtualIndexBuilder() =
       match index with
       | :? VirtualOrdinalIndex 
       | :? VirtualOrderedIndex<'K> ->
-          async.Return(materializeIndex index), Vectors.Materialize(vector)
+          async.Return(materializeIndex index), vector
       | _ -> 
-          let index, cmd = baseBuilder.AsyncMaterialize((index, vector))
-          index, Vectors.Materialize(cmd)
-
+          baseBuilder.AsyncMaterialize((index, vector))
+          
     member x.GetRange<'K when 'K : equality>( (index, vector), (optLo:option<'K * _>, optHi:option<'K * _>)) = 
       match index with
       | :? VirtualOrderedIndex<'K> as index ->
@@ -285,7 +286,7 @@ and VirtualIndexBuilder() =
               let newIndex = VirtualOrderedIndex(index.Source.GetSubVector(RangeRestriction.Fixed(loIdx, hiIdx)))
               newIndex :> IIndex<'K>, newVector
           | _ ->
-              Index.ofKeys [] :> _, Vectors.Materialize(VectorConstruction.Empty(0L))              
+              Index.ofKeys [] :> _, VectorConstruction.Empty(0L)
 
       | :? VirtualOrdinalIndex as ordIndex & (:? IIndex<int64> as index) -> 
           let getRangeKey proj next = function
@@ -311,5 +312,4 @@ and VirtualIndexBuilder() =
           unbox<IIndex<'K>> newIndex, newVector
           
       | _ -> 
-          let index, cmd = baseBuilder.GetRange((index, vector), (optLo, optHi))
-          index, Vectors.Materialize(cmd)
+          baseBuilder.GetRange((index, vector), (optLo, optHi))

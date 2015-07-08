@@ -264,13 +264,6 @@ let createTimeSeries partNum partSize =
   let sv = Virtual.CreateSeries(idxSrc, valSrc)
   idxSrc, valSrc, sv
 
-let createSmallFrame partNum partSize =
-  let accessMeta, ranges = createRanges partNum partSize
-  let idxSrc = TrackingSource<DateTimeOffset>((ref [], accessMeta), idxValues, ranges)
-  let valSrc1 = TrackingSource<float>((ref [], accessMeta), valValues (fun part idx -> part * 1000000.0 + idx), ranges)
-  let valSrc2 = TrackingSource<float>((ref [], accessMeta), valValues (fun part idx -> part * 1000000.0 + idx + 1.0), ranges)
-  Virtual.CreateFrame(idxSrc, ["A";"B"], [ valSrc1 :> IVirtualVectorSource; valSrc2 :> IVirtualVectorSource])
-
 // ------------------------------------------------------------------------------------------------
 // Printing and accessing meta-data about series
 // ------------------------------------------------------------------------------------------------
@@ -436,6 +429,14 @@ let ``Can project using Series.map without evaluating the series`` () =
   valSrc.AccessedData |> shouldEqual [999,4999; 0,0]
 
 [<Test>]
+let ``Can subtract series from another (calculated from itself)`` () =
+  let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
+  let res = (sin ts) / (cos ts) - (tan ts) |> Series.mapValues (fun v -> Math.Round(v, 10))
+  res |> Series.take 10 |> Series.values |> List.ofSeq |> shouldEqual [ for i in 0 .. 9 -> 0.0 ]
+  res |> Series.takeLast 10 |> Series.values |> List.ofSeq |> shouldEqual [ for i in 0 .. 9 -> 0.0 ]
+  valSrc.AccessedData |> Seq.distinct |> Seq.length |> shouldEqual 20
+
+[<Test>]
 let ``Returning `nan` from Series.map produces missing value`` () =
   let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
   let missings = ts |> Series.mapValues (fun v -> if (int v) % 4 = 0 then nan else v)
@@ -550,6 +551,25 @@ let ``Indexing small series with list of keys returns correct result`` () =
   |> List.ofSeq |> shouldEqual [2000000.0 .. 2000050.0]
 
 [<Test>]
+let ``Can sample large time series using explicitly specified list of dates`` () =
+  let _, _, s = createTimeSeries 1000 (fun n -> 5000)
+  s |> Series.sample [ for y in 0 .. 999 -> date y 0] |> Series.values 
+  |> List.ofSeq |> shouldEqual [ 0.0 .. 1000000.0 .. 999000000.0 ]
+
+  //s |> Series.sampleTimeInto (TimeSpan.FromDays 10000.0) Direction.Forward id
+
+// ------------------------------------------------------------------------------------------------
+// Creating frames with vitual series
+// ------------------------------------------------------------------------------------------------
+
+let createSmallFrame partNum partSize =
+  let accessMeta, ranges = createRanges partNum partSize
+  let idxSrc = TrackingSource<DateTimeOffset>((ref [], accessMeta), idxValues, ranges)
+  let valSrc1 = TrackingSource<float>((ref [], accessMeta), valValues (fun part idx -> part * 1000000.0 + idx), ranges)
+  let valSrc2 = TrackingSource<float>((ref [], accessMeta), valValues (fun part idx -> part * 1000000.0 + idx + 1.0), ranges)
+  Virtual.CreateFrame(idxSrc, ["A";"B"], [ valSrc1 :> IVirtualVectorSource; valSrc2 :> IVirtualVectorSource])
+
+[<Test>]
 let ``Indexing small frame ordinally returns correct result`` () = 
   let df = createSmallFrame 1000 (fun n -> 5000)
   df.Rows.[date 2 0 .. date 2 100]
@@ -566,10 +586,6 @@ let ``Transforming row keys of a small frame returns correct result`` () =
   |> Frame.getCol "B"
   |> Series.values
   |> List.ofSeq |> shouldEqual [2000001.0 .. 2000101.0]
-
-// ------------------------------------------------------------------------------------------------
-// Creating frames with vitual series
-// ------------------------------------------------------------------------------------------------
 
 [<Test>]
 let ``Can create frame with two virtual series`` () =

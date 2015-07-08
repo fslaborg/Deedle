@@ -655,7 +655,7 @@ module Series =
     let newIndex, vectorR = series.Index.Builder.Shift((series.Index, Vectors.Return 0), offset)
     let _, vectorL = series.Index.Builder.Shift((series.Index, Vectors.Return 0), -offset)
     let cmd = Vectors.Combine(lazy newIndex.KeyCount, [vectorL; vectorR], BinaryTransform.Create< ^T >(OptionalValue.map2 (-)))
-    let newVector = vectorBuilder.Build(cmd, [| series.Vector |])
+    let newVector = vectorBuilder.Build(newIndex.AddressingScheme, cmd, [| series.Vector |])
     Series(newIndex, newVector, vectorBuilder, series.Index.Builder)
 
   /// Returns a series with values shifted by the specified offset. When the offset is 
@@ -677,7 +677,7 @@ module Series =
   [<CompiledName("Shift")>]
   let shift offset (series:Series<'K, 'T>) = 
     let newIndex, vector = series.IndexBuilder.Shift((series.Index, Vectors.Return 0), offset)
-    let newVector = series.VectorBuilder.Build(vector, [| series.Vector |])
+    let newVector = series.VectorBuilder.Build(newIndex.AddressingScheme, vector, [| series.Vector |])
     Series(newIndex, newVector, series.VectorBuilder, series.IndexBuilder)
 
   // ----------------------------------------------------------------------------------------------
@@ -1221,7 +1221,7 @@ module Series =
   [<CompiledName("FillMissingWith")>]
   let fillMissingWith value (series:Series<'K, 'T>) = 
     let fillCmd = Vectors.FillMissing(Vectors.Return 0, VectorFillMissing.Constant value)
-    let newVector = series.VectorBuilder.Build(fillCmd, [|series.Vector|])
+    let newVector = series.VectorBuilder.Build(series.Index.AddressingScheme, fillCmd, [|series.Vector|])
     Series<_, _>(series.Index, newVector, series.VectorBuilder, series.IndexBuilder)
 
   /// Fill missing values in the series with the nearest available value
@@ -1250,7 +1250,7 @@ module Series =
   [<CompiledName("FillMissing")>]
   let fillMissing direction (series:Series<'K, 'T>) = 
     let fillCmd = Vectors.FillMissing(Vectors.Return 0, VectorFillMissing.Direction direction)
-    let newVector = series.VectorBuilder.Build(fillCmd, [|series.Vector|])
+    let newVector = series.VectorBuilder.Build(series.Index.AddressingScheme, fillCmd, [|series.Vector|])
     Series<_, _>(series.Index, newVector, series.VectorBuilder, series.IndexBuilder)
 
   /// Fill missing values only between `startKey` and `endKey`, inclusive.
@@ -1310,7 +1310,7 @@ module Series =
     let newIndex = Index.ofKeys newKeys
     let len = int64 newKeys.Length
     let reordering = Seq.zip (Seq.range 0L (len-1L) |> Seq.map newIndex.AddressAt) newLocs
-    newIndex, VectorConstruction.Materialize(VectorConstruction.Relocate(VectorConstruction.Return 0, len, reordering))
+    newIndex, VectorConstruction.Relocate(VectorConstruction.Return 0, len, reordering)
 
   /// [omit]
   let internal sortByCommand (f:'T -> 'V) (series:Series<'K, 'T>) =
@@ -1332,8 +1332,8 @@ module Series =
   [<CompiledName("SortWith")>]
   let sortWith comparer (series:Series<'K, 'V>) =
     let newIndex, cmd = sortWithCommand comparer series
-    let vector = series.Vector
-    Series(newIndex, series.VectorBuilder.Build(cmd, [| vector |]), series.VectorBuilder, series.IndexBuilder)
+    let newVector = series.VectorBuilder.Build(newIndex.AddressingScheme, cmd, [| series.Vector |])
+    Series(newIndex, newVector, series.VectorBuilder, series.IndexBuilder)
 
   /// Returns a new series, containing the observations of the original series sorted by 
   /// values returned by the specified projection function.
@@ -1347,8 +1347,8 @@ module Series =
   [<CompiledName("SortBy")>]
   let sortBy (proj:'T -> 'V) (series:Series<'K, 'T>) =
     let newIndex, cmd = series |> sortByCommand proj
-    let vector = series.Vector
-    Series<'K,'T>(newIndex, series.VectorBuilder.Build(cmd, [| vector |]), series.VectorBuilder, series.IndexBuilder)
+    let newVector = series.VectorBuilder.Build(newIndex.AddressingScheme, cmd, [| series.Vector |])
+    Series<'K,'T>(newIndex, newVector, series.VectorBuilder, series.IndexBuilder)
 
   /// Returns a new series whose observations are sorted according to keys of the index.
   ///
@@ -1359,7 +1359,7 @@ module Series =
   [<CompiledName("SortByKey")>]
   let sortByKey (series:Series<'K, 'T>) =
     let newRowIndex, rowCmd = series.IndexBuilder.OrderIndex(series.Index, Vectors.Return 0)
-    let newData = series.VectorBuilder.Build(rowCmd, [| series.Vector |])
+    let newData = series.VectorBuilder.Build(newRowIndex.AddressingScheme, rowCmd, [| series.Vector |])
     Series(newRowIndex, newData, series.VectorBuilder, series.IndexBuilder)
 
   /// Returns a new series, containing the observations of the original series sorted based

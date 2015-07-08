@@ -79,6 +79,7 @@ let createBoxedVector (vector:IVector<'TValue>) =
       member x.Select(f) = vector.Select(fun loc v -> f loc (OptionalValue.map box v))
       member x.Convert(f, g) = vector.Convert(box >> f, g >> unbox)
     interface IVector with
+      member x.AddressingScheme = vector.AddressingScheme
       member x.Length = vector.Length
       member x.ObjectSequence = vector.ObjectSequence
       member x.SuppressPrinting = vector.SuppressPrinting
@@ -123,6 +124,7 @@ let lazyMapVector (f:'TValue -> 'TResult) (vector:IVector<'TValue>) : IVector<'T
     interface IWrappedVector<'TResult> with
       member x.UnwrapVector() = unwrapVector.Value
     interface IVector with
+      member x.AddressingScheme = vector.AddressingScheme
       member x.Length = vector.Length
       member x.ObjectSequence = vector.ObjectSequence
       member x.SuppressPrinting = vector.SuppressPrinting
@@ -255,10 +257,10 @@ let inline unboxVector (v:IVector) =
   | vec -> vec 
 
 // A "generic function" that transforms a generic vector using specified transformation
-let transformColumn (vectorBuilder:IVectorBuilder) rowCmd (vector:IVector) = 
+let transformColumn (vectorBuilder:IVectorBuilder) scheme rowCmd (vector:IVector) = 
   { new VectorCallSite<IVector> with
       override x.Invoke<'T>(col:IVector<'T>) = 
-        vectorBuilder.Build<'T>(rowCmd, [| col |]) :> IVector }
+        vectorBuilder.Build<'T>(scheme, rowCmd, [| col |]) :> IVector }
   |> vector.Invoke
 
 // A generic vector operation that converts the elements of the 
@@ -306,13 +308,6 @@ let tryConvertType<'R> conversionKind (vector:IVector) : OptionalValue<IVector<'
               with :? InvalidCastException | :? FormatException -> OptionalValue.Missing }
       |> vector.Invoke
 
-/// A "generic function" that drops a specified range from any vector
-let getVectorRange (builder:IVectorBuilder) vectorCmd range (vector:IVector) = 
-  { new VectorCallSite<IVector> with
-      override x.Invoke<'T>(col:IVector<'T>) = 
-        let cmd = VectorConstruction.GetRange(vectorCmd, range)
-        builder.Build(cmd, [| col |]) :> IVector }
-  |> vector.Invoke
 
 /// Active pattern that calls the `tryChangeType<float>` function
 let (|AsFloatVector|_|) v : option<IVector<float>> = 
@@ -366,6 +361,9 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddre
       
   // Non-generic interface is fully implemented as "virtual"   
   interface IVector with
+    member x.AddressingScheme = 
+      data.DataSequence |> Seq.choose OptionalValue.asOption |> Seq.map (fun v -> v.AddressingScheme) |> Seq.reduce (fun a b ->
+        if a <> b then failwith "mapFrameRowVector: Addressing scheme mismatch" else a )
     member x.Length = data.Length
     member x.ObjectSequence = x.DataArray |> Seq.map (OptionalValue.map box)
     member x.SuppressPrinting = false
@@ -512,6 +510,9 @@ let mapFrameRowVector
       member x.Select(g) =  failwith "mapFrameRowVector: Select not supported"
       member x.Convert(h, g) = failwith "mapFrameRowVector: Convert not supported"
     interface IVector with
+      member x.AddressingScheme = 
+        data |> Seq.map (fun v -> v.AddressingScheme) |> Seq.reduce (fun a b ->
+          if a <> b then failwith "mapFrameRowVector: Addressing scheme mismatch" else a )
       member x.Length = length
       member x.ObjectSequence = seq { for i in Seq.range 0L (length-1L) -> x.GetObject(addressAt i) }
       member x.SuppressPrinting = false
@@ -716,15 +717,14 @@ let rec substitute ((oldVar, newVect) as subst) = function
   | Return v when v = oldVar -> newVect
   | Return v -> Return v
   | Empty size -> Empty size
-  | Materialize(vc) -> Materialize(substitute subst vc)
   | FillMissing(vc, d) -> FillMissing(substitute subst vc, d)
   | Relocate(vc, r, l) -> Relocate(substitute subst vc, r, l)
   | DropRange(vc, r) -> DropRange(substitute subst vc, r)
   | GetRange(vc, r) -> GetRange(substitute subst vc, r)
   | Append(l, r) -> Append(substitute subst l, substitute subst r)
   | Combine(l, lst, c) -> Combine(l, List.map (substitute subst) lst, c)
-  | CustomCommand(vcs, f) -> CustomCommand(List.map (substitute subst) vcs, f)
-  | AsyncCustomCommand(vcs, f) -> AsyncCustomCommand(List.map (substitute subst) vcs, f)
+  | CustomCommand(lst, f) -> CustomCommand(List.map (substitute subst) lst, f)
+  | AsyncCustomCommand(lst, f) -> AsyncCustomCommand(List.map (substitute subst) lst, f)
 
 /// Matches when the vector command represents a combination
 /// of N relocated vectors (that is Combine [Relocate ..; Relocate ..; ...])

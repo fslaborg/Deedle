@@ -171,13 +171,13 @@ and
   /// Internal helper used by `skip`, `take`, etc.
   member x.GetAddressRange(range) = 
     let newIndex, cmd = indexBuilder.GetAddressRange((index, Vectors.Return 0), range)
-    let vec = vectorBuilder.Build(cmd, [| vector |])
+    let vec = vectorBuilder.Build(newIndex.AddressingScheme, cmd, [| vector |])
     Series(newIndex, vec, vectorBuilder, indexBuilder)
 
   /// [category:Accessors and slicing]
   member x.GetSubrange(lo, hi) =
     let newIndex, newVector = indexBuilder.GetRange((index, Vectors.Return 0), (lo, hi))
-    let newVector = vectorBuilder.Build(newVector, [| vector |])
+    let newVector = vectorBuilder.Build(newIndex.AddressingScheme, newVector, [| vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
   /// [category:Accessors and slicing]
@@ -231,9 +231,9 @@ and
   ///
   /// [category:Accessors and slicing]
   member series.GetItems(keys, lookup) =    
-    let newIndex, cmd = indexBuilder.Create<_>((keys:seq<_>), None)
+    let newIndex = indexBuilder.Create<_>((keys:seq<_>), None)
     let cmd = indexBuilder.Reindex(index, newIndex, lookup, Vectors.Return 0, fun addr -> series.Vector.GetValue(addr).HasValue)
-    let newVector = vectorBuilder.Build(cmd, [| vector |])
+    let newVector = vectorBuilder.Build(newIndex.AddressingScheme, cmd, [| vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
   ///
@@ -267,7 +267,7 @@ and
   /// [category:Accessors and slicing]
   member x.GetByLevel(key:ICustomLookup<'K>) =
     let newIndex, levelCmd = indexBuilder.LookupLevel((index, Vectors.Return 0), key)
-    let newVector = vectorBuilder.Build(levelCmd, [| vector |])
+    let newVector = vectorBuilder.Build(newIndex.AddressingScheme, levelCmd, [| vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
     
 
@@ -348,7 +348,7 @@ and
           if opt.HasValue && f.Invoke (KeyValuePair(key, opt.Value), i)
             then Some(key, opt) else None)
       |> Array.unzip
-    let newIndex, _ = indexBuilder.Create<_>(keys, None)
+    let newIndex = indexBuilder.Create<_>(keys, None)
     let newVector = vectorBuilder.CreateMissing(optValues)
     Series(newIndex, newVector, vectorBuilder, indexBuilder )
 
@@ -363,7 +363,7 @@ and
           let opt = vector.GetValue(addr)
           if f.Invoke (KeyValuePair(key, opt)) then yield key, opt |]
       |> Array.unzip
-    let newIndex, _ = indexBuilder.Create<_>(keys, None)
+    let newIndex = indexBuilder.Create<_>(keys, None)
     let newVector = vectorBuilder.CreateMissing(optValues)
     Series(newIndex, newVector, vectorBuilder, indexBuilder )
 
@@ -400,8 +400,8 @@ and
     let newKeys =
       [| for KeyValue(key, addr) in index.Mappings -> 
            f.Invoke(KeyValuePair(key, vector.GetValue(addr))) |]
-    let newIndex, cmd = indexBuilder.Create(newKeys, None)
-    let newVector = vectorBuilder.Build(cmd, [| vector |])
+    let newIndex = indexBuilder.Create(newKeys, None)
+    let newVector = vectorBuilder.Build(newIndex.AddressingScheme, Vectors.Return 0, [| vector |])
     Series<'R, _>(newIndex, newVector, vectorBuilder, indexBuilder )
 
   /// [category:Projection and filtering]
@@ -482,7 +482,7 @@ and
     let newIndex, cmd = 
       indexBuilder.Merge( [(index, Vectors.Return 0); (otherSeries.Index, Vectors.Return 1)], 
                            BinaryTransform.AtMostOne )
-    let newVector = vectorBuilder.Build(cmd, [| series.Vector; otherSeries.Vector |])
+    let newVector = vectorBuilder.Build(newIndex.AddressingScheme, cmd, [| series.Vector; otherSeries.Vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
   /// [category:Merging, joining and zipping]
@@ -498,7 +498,7 @@ and
 
     let newIndex, cmd = 
       indexBuilder.Merge( (index, Vectors.Return 0)::constrs, BinaryTransform.AtMostOne )
-    let newVector = vectorBuilder.Build(cmd, [| yield series.Vector; yield! vectors |])
+    let newVector = vectorBuilder.Build(newIndex.AddressingScheme, cmd, [| yield series.Vector; yield! vectors |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
   /// [category:Merging, joining and zipping]
@@ -510,7 +510,7 @@ and
       | UnionBehavior.Exclusive -> BinaryTransform.AtMostOne
       | _ -> BinaryTransform.LeftIfAvailable
     let vecCmd = Vectors.Combine(lazy newIndex.KeyCount, [vec1; vec2], transform)
-    let newVec = vectorBuilder.Build(vecCmd, [| series.Vector; another.Vector |])
+    let newVec = vectorBuilder.Build(newIndex.AddressingScheme, vecCmd, [| series.Vector; another.Vector |])
     Series(newIndex, newVec, vectorBuilder, indexBuilder)
 
   /// [category:Merging, joining and zipping]
@@ -527,15 +527,22 @@ and
       createJoinTransformation indexBuilder otherSeries.IndexBuilder 
         kind lookup index otherSeries.Index (Vectors.Return 0) (Vectors.Return 0)
 
-    let lVec = vectorBuilder.Build(thisRowCmd, [| series.Vector |])
-    let rVec = vectorBuilder.Build(otherRowCmd, [| otherSeries.Vector |])
+    let lVec = vectorBuilder.Build(newIndex.AddressingScheme, thisRowCmd, [| series.Vector |])
+    let rVec = vectorBuilder.Build(newIndex.AddressingScheme, otherRowCmd, [| otherSeries.Vector |])
     newIndex, lVec, rVec
 
   /// [category:Merging, joining and zipping]
   member series.Zip<'V2>(otherSeries:Series<'K, 'V2>, kind, lookup) : Series<'K, 'V opt * 'V2 opt> =
     let newIndex, lVec, rVec = series.ZipHelper(otherSeries, kind, lookup)
-    let zipv = rVec.DataSequence |> Seq.zip lVec.DataSequence |> Vector.ofValues
-    Series(newIndex, zipv, vectorBuilder, indexBuilder)
+    let vecRes = 
+      Vectors.Combine(lazy newIndex.KeyCount, [Vectors.Return 0; Vectors.Return 1], 
+        BinaryTransform.CreateLifted<'V opt * 'V2 opt>(fun (l, _) (_, r) -> l, r))
+
+    let args =
+      [| lVec.Select(fun _ v -> OptionalValue((v, OptionalValue.Missing)))
+         rVec.Select(fun _ v -> OptionalValue((OptionalValue.Missing, v))) |]
+    let zipV = vectorBuilder.Build<'V opt * 'V2 opt>(newIndex.AddressingScheme, vecRes, args)
+    Series(newIndex, zipV, vectorBuilder, indexBuilder)
 
   /// [category:Merging, joining and zipping]
   member series.ZipInner<'V2>(otherSeries:Series<'K, 'V2>) : Series<'K, 'V * 'V2> =
@@ -548,7 +555,9 @@ and
           | Choice1Of3 l, Choice2Of3 r -> Choice3Of3(l, r)
           | _ -> failwith "logic error"))
 
-    let zipV = vectorBuilder.Build<Choice<'V, 'V2, 'V * 'V2>>(vecRes, [| lVec.Select(Choice1Of3); rVec.Select(Choice2Of3) |])
+    let zipV = 
+      vectorBuilder.Build<Choice<'V, 'V2, 'V * 'V2>>
+        (newIndex.AddressingScheme, vecRes, [| lVec.Select(Choice1Of3); rVec.Select(Choice2Of3) |])
     let zipV = zipV.Select(function Choice3Of3 v -> v | _ -> failwith "logic error")
     Series(newIndex, zipV, vectorBuilder, indexBuilder)
 
@@ -584,7 +593,8 @@ and
       indexBuilder.Resample
         ( x.Index, keys, direction, Vectors.Return 0, 
           (fun (key, (index, cmd)) -> 
-              let window = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
+              let vector = vectorBuilder.Build(index.AddressingScheme, cmd, [| vector |])
+              let window = Series<_, _>(index, vector, vectorBuilder, indexBuilder)
               let newKey = keySelector.Invoke(key, window)
               newKey, OptionalValue(valueSelector.Invoke(newKey, window))) )
     Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
@@ -669,7 +679,7 @@ and
                 else index.Keys |> Seq.head
               // Calculate value for the chunk
               let newValue = 
-                let actualVector = vectorBuilder.Build(cmd, [| vector |])
+                let actualVector = vectorBuilder.Build(index.AddressingScheme, cmd, [| vector |])
                 let obs = [ for KeyValue(k, addr) in index.Mappings -> actualVector.GetValue(addr) ]
                 match obs with
                 | [ OptionalValue.Present v1; OptionalValue.Present v2 ] -> 
@@ -716,7 +726,7 @@ and
         ( x.Index, aggregation, Vectors.Return 0, 
           (fun (kind, (index, cmd)) -> 
               // Create series for the chunk/window
-              let series = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
+              let series = Series<_, _>(index, vectorBuilder.Build(index.AddressingScheme, cmd, [| vector |]), vectorBuilder, indexBuilder)
               let segment = DataSegment(kind, series)
               // Call key & value selectors to produce the result
               let newKey = keySelector.Invoke segment
@@ -741,7 +751,7 @@ and
         ( x.Index, aggregation, Vectors.Return 0, 
           (fun (kind, (index, cmd)) -> 
               // Create series for the chunk/window
-              let series = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
+              let series = Series<_, _>(index, vectorBuilder.Build(index.AddressingScheme, cmd, [| vector |]), vectorBuilder, indexBuilder)
               let segment = DataSegment(kind, series)
               // Call key & value selectors to produce the result
               let (KeyValue(newKey, newValue)) = observationSelector.Invoke(segment)
@@ -761,7 +771,7 @@ and
     let cmd = indexBuilder.GroupBy(index, ks, VectorConstruction.Return 0) 
     let newIndex  = Index.ofKeys (cmd |> ReadOnlyCollection.map fst)
     let newGroups = cmd |> Seq.map snd |> Seq.map (fun sc -> 
-        Series(fst sc, vectorBuilder.Build(snd sc, [| x.Vector |]), vectorBuilder, indexBuilder))
+        Series(fst sc, vectorBuilder.Build(newIndex.AddressingScheme, snd sc, [| x.Vector |]), vectorBuilder, indexBuilder))
     Series<'TNewKey, _>(newIndex, Vector.ofValues newGroups, vectorBuilder, indexBuilder)
 
   /// Interpolates an ordered series given a new sequence of keys. The function iterates through
@@ -807,13 +817,13 @@ and
   ///
   /// [category:Indexing]
   member x.IndexOrdinally() = 
-    let newIndex, cmd = indexBuilder.Create(x.Index.Keys |> Seq.mapi (fun i _ -> i), Some true)
-    let newVector = vectorBuilder.Build(cmd, [| vector |])
+    let newIndex = indexBuilder.Create(x.Index.Keys |> Seq.mapi (fun i _ -> i), Some true)
+    let newVector = vectorBuilder.Build(newIndex.AddressingScheme, Vectors.Return 0, [| vector |])
     Series<int, _>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   /// [category:Indexing]
   member x.IndexWith(keys:seq<_>) = 
-    let newIndex, createCmd = indexBuilder.Create(keys, None)
+    let newIndex = indexBuilder.Create(keys, None)
     let vectorCmd = 
       if newIndex.KeyCount = int64 x.KeyCount then
         // Just return the vector, because it has the same length
@@ -825,7 +835,7 @@ and
         // Get sub-range of the source vector
         Vectors.GetRange(Vectors.Return 0, RangeRestriction.Fixed(x.Index.AddressAt(0L), x.Index.AddressAt(newIndex.KeyCount - 1L)))
 
-    let newVector = vectorBuilder.Build(VectorHelpers.substitute (0, vectorCmd) createCmd, [| vector |])
+    let newVector = vectorBuilder.Build(newIndex.AddressingScheme, vectorCmd, [| vector |])
     Series<'TNewKey, _>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   // ----------------------------------------------------------------------------------------------
@@ -835,7 +845,7 @@ and
   member x.AsyncMaterialize() = async {
     let newIndexAsync, cmd = indexBuilder.AsyncMaterialize(index, Vectors.Return 0)
     let! newIndex = newIndexAsync
-    let! newVector = vectorBuilder.AsyncBuild(cmd, [| vector |])
+    let! newVector = vectorBuilder.AsyncBuild(newIndex.AddressingScheme, cmd, [| vector |])
     return Series<_, _>(newIndex, newVector, vectorBuilder, indexBuilder) }
 
   member x.MaterializeAsync() = 
@@ -844,7 +854,7 @@ and
   member x.Materialize() = 
     let newIndex, cmd = indexBuilder.AsyncMaterialize(index, Vectors.Return 0)
     let newIndex = newIndex |> Async.RunSynchronously
-    let newVector = vectorBuilder.Build(cmd, [| vector |])
+    let newVector = vectorBuilder.Build(newIndex.AddressingScheme, cmd, [| vector |])
     Series<_, _>(newIndex, newVector, vectorBuilder, newIndex.Builder)
     
   // ----------------------------------------------------------------------------------------------
@@ -861,15 +871,11 @@ and
     series.Select(fun (KeyValue(k, v)) -> op scalar v)
 
   static member inline internal VectorOperation<'T>(series1:Series<'K,'T>, series2:Series<'K,'T>, op): Series<_, 'T> =
-    let newIndex, lVec, rVec = series1.ZipHelper(series2, JoinKind.Outer, Lookup.Exact)
-    
-    let vector = 
-      Seq.zip lVec.DataSequence rVec.DataSequence 
-      |> Seq.map (function 
-        | OptionalValue.Present a, OptionalValue.Present b -> OptionalValue(op a b)
-        | _ -> OptionalValue.Missing)
-      |> Vector.ofOptionalValues
-
+    let newIndex, lcmd, rcmd = 
+      createJoinTransformation series1.IndexBuilder series2.IndexBuilder 
+        JoinKind.Outer Lookup.Exact series1.Index series2.Index (Vectors.Return 0) (Vectors.Return 1)
+    let vecRes = Vectors.Combine(lazy newIndex.KeyCount, [lcmd; rcmd], BinaryTransform.CreateLifted<'T>(op))
+    let vector = series1.VectorBuilder.Build<'T>(newIndex.AddressingScheme, vecRes, [| series1.Vector; series2.Vector |])
     Series(newIndex, vector, series1.VectorBuilder, series1.IndexBuilder)
 
   /// [category:Operators]

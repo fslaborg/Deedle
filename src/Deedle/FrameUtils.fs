@@ -203,7 +203,7 @@ module internal Reflection =
   /// get the columns based on information available using reflection
   let convertRecordSequence<'T>(data:seq<'T>) =
     let convertors = getRecordConvertorExprs (typeof<'T>)
-    let colIndex, _ = indexBuilder.Create<string>(Seq.map fst convertors, Some false)
+    let colIndex = indexBuilder.Create<string>(Seq.map fst convertors, Some false)
     let convertors = 
       [| for _, (input, body) in convertors -> 
            let cast = Expression.Convert(body, typeof<IVector>)

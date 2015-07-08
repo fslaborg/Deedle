@@ -14,31 +14,6 @@ open Deedle.VectorHelpers
 open Deedle.Internal
 open System.Runtime.CompilerServices
 
-/// Various BigDeedle implementations can use different schemes for working with addresses 
-/// (for example, address can be just a global offset, or it can be pair of `int32` values
-/// that store partition and offset in a partition). This interface represents a specific
-/// address range and abstracts operations that BigDeedle needs to perform on addresses
-/// (within the specified range)
-type IAddressOperations =
-  /// Returns the first address of the range
-  abstract FirstElement : Address
-
-  /// Returns the last address of the range
-  abstract LastElement : Address
-
-  /// Returns a sequence that iterates over `FirstElement .. LastElement`
-  abstract Range : seq<Address>
-
-  /// Given an address, return the absolute offset of the address in the range
-  /// This might be tricky for partitioned ranges. For example if you have two 
-  /// partitions with 10 values addressed by (0,0)..(0,9); (1,0)..(1,9), the the
-  /// offset of address (1, 5) is 15.
-  abstract OffsetOf : Address -> int64
-
-  /// Return the address of a value at the specified absolute offset.
-  /// (See the comment for `OffsetOf` for more info about partitioning)
-  abstract AddressOf : int64 -> Address
-
 
 /// A helper type used by non-generic `IVirtualVectorSource` to invoke generic 
 /// operations that require generic `IVirtualVectorSource<'T>` as an argument.
@@ -50,6 +25,7 @@ type IVirtualVectorSourceOperation<'R> =
 /// Non-generic part of the `IVirtualVectorSource<'V>` interface, which 
 /// provides some basic information about the virtualized data source
 and IVirtualVectorSource =
+  
   /// Returns the type of elements - essentially typeof<'V> for IVirtualVectorSource<'V>
   abstract ElementType : System.Type
 
@@ -95,6 +71,12 @@ and IVirtualVectorSource<'V> =
   /// (used by functions such as `Frame.merge` and `Frame.mergeAll`)
   abstract MergeWith : seq<IVirtualVectorSource<'V>> -> IVirtualVectorSource<'V>
 
+
+type VirtualAddressingScheme = 
+  | VirtualAddressingScheme of unit // TODO: This could contain some more info identifying the source
+  interface IAddressingScheme
+
+
 // ------------------------------------------------------------------------------------------------
 // Common utilities
 // ------------------------------------------------------------------------------------------------
@@ -121,6 +103,7 @@ type RangesAddressOperations<'TKey when 'TKey : equality>
     | _ -> false
 
   interface IAddressOperations with
+    member x.AdjustBy(addr, offset) = asAddress.Invoke (ranges.Operations.IncrementBy(ofAddress.Invoke addr, offset))
     member x.AddressOf(offset) = asAddress.Invoke(ranges.KeyAtOffset(offset))
     member x.OffsetOf(addr) = ranges.OffsetOfKey(ofAddress.Invoke(addr))
     member x.FirstElement = asAddress.Invoke(ranges.FirstKey)
@@ -206,7 +189,7 @@ module VirtualVectorSource =
           sources 
           |> Seq.map (fun s -> s.AddressOperations)
           |> Seq.reduce (fun a b ->  
-              if a <> b then failwith "Address mismatch" else a)
+              if a <> b then failwith "Address operations mismatch" else a)
         member x.ElementType = typeof<'R>
         member x.Length = sources |> Seq.map (fun s -> s.Length) |> Seq.reduce (fun a b -> if a <> b then failwith "Length mismatch" else a) 
         member x.Invoke(op) = op.Invoke(x :?> IVirtualVectorSource<'R>)
@@ -287,6 +270,7 @@ type VirtualVector<'V>(source:IVirtualVectorSource<'V>) =
 
   interface IVector with
     member val ElementType = typeof<'V>
+    member vector.AddressingScheme = VirtualAddressingScheme() :> _
     member vector.Length = source.Length
     member vector.SuppressPrinting = false
     member vector.GetObject(addr) = source.ValueAt(Location.delayed(addr, source.AddressOperations)) |> OptionalValue.map box
@@ -325,7 +309,6 @@ type VirtualVectorBuilder() =
   let baseBuilder = VectorBuilder.Instance
   static let instance = VirtualVectorBuilder()
   
-  let build cmd args = (instance :> IVectorBuilder).Build(cmd, args)
   static member Instance = instance
 
   interface IVectorBuilder with
@@ -372,161 +355,156 @@ type VirtualVectorBuilder() =
             member x.Length = (hi-lo+1L) }
       VirtualVector(createSource 0L (size-1L)) :> _
 *)
-    member builder.AsyncBuild(cmd, args) = 
+    member builder.AsyncBuild(scheme, cmd, args) = 
       failwith "VirtualVectorBuilder.AsyncBuild: Avoid implicit materialization"
       //baseBuilder.AsyncBuild<'T>(cmd, args)
     
-    member builder.Build<'T>(cmd, args) = 
-      match cmd with 
-      | Return vectorVar -> 
-          match args.[vectorVar] with
-          | :? IWrappedVector<'T> as w -> w.UnwrapVector()
-          | v -> v
+    member builder.Build<'T>(topLevelScheme, cmd, args) = 
+      let (|LinearScheme|VirtualScheme|Unknown|) scheme = 
+        if scheme = LinearAddressingScheme.Instance then LinearScheme() 
+        elif scheme :? VirtualAddressingScheme then 
+          let (VirtualAddressingScheme source) = (scheme :?> VirtualAddressingScheme)
+          VirtualScheme(source)
+        else Unknown()
 
-      | GetRange(source, range) ->
-          let restrictRange (vector:IVector<'T2>) =
-            match vector with
-            | :? VirtualVector<'T2> as source ->
-                let subSource = source.Source.GetSubVector(range)
-                VirtualVector<'T2>(subSource) :> IVector<'T2>
-            | source -> 
-                //let cmd = GetRange(Return 0, range)
-                //baseBuilder.Build(cmd, [| source |])
-                failwith "VirtualVectorBuilder.Build: Avoid implicit materialization (GetRange)"
+      let rec build schemeOpt cmd (args:IVector<_>[]) = 
+        match schemeOpt, cmd with 
+        | ( None | Some LinearScheme ), Relocate(source, length, relocations) ->
+            let source = VirtualVectorHelpers.unboxVector (build None source args)
+            let newData = Array.zeroCreate (int length)
+            for newIndex, oldAddress in relocations do
+              let newIndex = LinearAddress.asInt newIndex
+              newData.[newIndex] <- source.GetValue(oldAddress)
+            baseBuilder.CreateMissing(newData)
 
-          match build source args with
-          | :? IBoxedVector as boxed -> // 'T = obj
-              { new VectorCallSite<IVector<'T>> with
-                  member x.Invoke(underlying:IVector<'U>) = 
-                    boxVector (restrictRange underlying) |> unbox<IVector<'T>> }
-               |> boxed.UnboxedVector.Invoke
-          | :? IWrappedVector<'T> as vector -> restrictRange (vector.UnwrapVector())
-          | vector -> restrictRange vector 
+        | schemeOpt, Return vectorVar -> 
+            let vector = 
+              match args.[vectorVar] with :? IWrappedVector<'T> as w -> w.UnwrapVector() | v -> v
+            if schemeOpt = None || schemeOpt = Some(vector.AddressingScheme) then vector
+            elif schemeOpt = Some(LinearAddressingScheme.Instance) then baseBuilder.CreateMissing(Array.ofSeq vector.DataSequence)
+            else failwith "VirtualVectorBuilder.Build: Can only create linearly addressed vectors"
 
-      | Combine(count, vectors, ((VectorListTransform.Nary (:? IRowReaderTransform as irt)) as transform)) ->
-          // OPTIMIZATION: The `IRowReaderTransform` interface is a marker telling us that 
-          // we are creating `IVector<obj`> where `obj` is a boxed `IVector<obj>` 
-          // representing the row formed by all of the specified vectors combined.
-          //
-          // We short-circuit the default implementation (which actually allocates the 
-          // vectors) and we create a vector of virtualized "row readers".
-          let builtSources = vectors |> List.map (fun source -> VirtualVectorHelpers.unboxVector (build source args)) |> Array.ofSeq
-          let allVirtual = builtSources |> Array.forall (fun vec -> vec :? VirtualVector<'T>)
-          if allVirtual then
-            let sources = builtSources |> Array.map (function :? VirtualVector<'T> as v -> v.Source | _ -> failwith "assertion failed") |> List.ofSeq
+        | ( None | Some(VirtualScheme _)), GetRange(source, range) ->
+            let restrictRange (vector:IVector<'T2>) =
+              match vector with
+              | :? VirtualVector<'T2> as source when schemeOpt = None || Some(vector.AddressingScheme) = schemeOpt ->
+                  let subSource = source.Source.GetSubVector(range)
+                  VirtualVector<'T2>(subSource) :> IVector<'T2>
+              | _ -> 
+                  failwith "VirtualVectorBuilder.Build: GetRange - vector does not use virtual addressing"
 
-            let rec createRowReader (vectors:IVector<IVector>) (sources:IVirtualVectorSource<'T> list) : IVirtualVectorSource<IVector<obj>> = 
-              { new IVirtualVectorSource<IVector<obj>> with
-                  member x.ValueAt(loc) = 
-                    OptionalValue(RowReaderVector<_>(vectors, builder, loc.Address, irt.ColumnAddressAt) :> IVector<_>)
-                  member x.LookupRange(search) = failwith "Search not implemented on combined vector"
-                  member x.LookupValue(v, l, c) = failwith "Lookup not implemented on combined vector" 
-                  member x.GetSubVector(range) = 
-                    let subSources = [ for s in sources -> s.GetSubVector(range) ]
-                    let subVectors = Vector.ofValues [ for s in subSources -> VirtualVector(s) :> IVector ]
-                    createRowReader subVectors subSources
-                  member x.MergeWith(sources) = 
-                    // For every source, we get a list of sources that were used to produce it
-                    let sources = 
-                      Seq.append [x] sources |> List.ofSeq |> List.tryChooseBy (function
-                      | :? VirtualVectorSource.ICombinedVectorSource<'T> as src -> Some(src.Sources |> Array.ofSeq)
-                      | _ -> None)
-                    match sources with 
-                    | None -> failwith "Cannot merge frames or series not created by combine"
-                    | Some sources ->
-                        // Make sure that all sources are combinations of the same number of vectors 
-                        let length = sources |> Seq.map Array.length |> Seq.reduce (fun a b -> if a <> b then failwith "Length mismatch" else a)
-                        let toCombine =
-                          [ for i in 0 .. length - 1 ->
-                              let sh,st = match [ for s in sources -> s.[i] ] with sh::st -> sh, st | _ -> failwith "Merge requires one or more sources"  // ....
-                              sh.MergeWith(st) ]
-                        let data = Vector.ofValues [ for s in toCombine -> VirtualVector(s) :> IVector ]
-                        createRowReader data toCombine
+            match build schemeOpt source args with
+            | :? IBoxedVector as boxed -> // 'T = obj
+                { new VectorCallSite<IVector<'T>> with
+                    member x.Invoke(underlying:IVector<'U>) = 
+                      boxVector (restrictRange underlying) |> unbox<IVector<'T>> }
+                 |> boxed.UnboxedVector.Invoke
+            | :? IWrappedVector<'T> as vector -> restrictRange (vector.UnwrapVector())
+            | vector -> restrictRange vector 
 
-                interface VirtualVectorSource.ICombinedVectorSource<'T> with
-                  member x.Sources = sources
-                  member x.Function = () 
-                interface IVirtualVectorSource with
-                  member x.Invoke(op) = op.Invoke(x :?> IVirtualVectorSource<obj>)
-                  member x.ElementType = typeof<IVector<obj>>
-                  member x.Length = 
-                    sources 
-                    |> Seq.map (fun s -> s.Length) 
-                    |> Seq.reduce (fun a b -> if a <> b then failwith "Length mismatch" else a) 
+        | (None | Some(VirtualScheme _)), Combine(count, vectors, ((VectorListTransform.Nary (:? IRowReaderTransform as irt)) as transform)) ->
+            // OPTIMIZATION: The `IRowReaderTransform` interface is a marker telling us that 
+            // we are creating `IVector<obj`> where `obj` is a boxed `IVector<obj>` 
+            // representing the row formed by all of the specified vectors combined.
+            //
+            // We short-circuit the default implementation (which actually allocates the 
+            // vectors) and we create a vector of virtualized "row readers".
+            let builtSources = vectors |> List.map (fun source -> VirtualVectorHelpers.unboxVector (build schemeOpt source args)) |> Array.ofSeq
+            let allVirtual = builtSources |> Array.forall (fun vec -> vec :? VirtualVector<'T>)
+            if allVirtual then
+              let sources = builtSources |> Array.map (function :? VirtualVector<'T> as v -> v.Source | _ -> failwith "assertion failed") |> List.ofSeq
 
-                  member x.AddressOperations = 
-                    sources 
-                    |> Seq.map (fun s -> s.AddressOperations)
-                    |> Seq.reduce (fun a b ->  
-                        if a <> b then failwith "Address mismatch" else a) }
+              let rec createRowReader (vectors:IVector<IVector>) (sources:IVirtualVectorSource<'T> list) : IVirtualVectorSource<IVector<obj>> = 
+                { new IVirtualVectorSource<IVector<obj>> with
+                    member x.ValueAt(loc) = 
+                      OptionalValue(RowReaderVector<_>(vectors, builder, loc.Address, irt.ColumnAddressAt) :> IVector<_>)
+                    member x.LookupRange(search) = failwith "Search not implemented on combined vector"
+                    member x.LookupValue(v, l, c) = failwith "Lookup not implemented on combined vector" 
+                    member x.GetSubVector(range) = 
+                      let subSources = [ for s in sources -> s.GetSubVector(range) ]
+                      let subVectors = Vector.ofValues [ for s in subSources -> VirtualVector(s) :> IVector ]
+                      createRowReader subVectors subSources
+                    member x.MergeWith(sources) = 
+                      // For every source, we get a list of sources that were used to produce it
+                      let sources = 
+                        Seq.append [x] sources |> List.ofSeq |> List.tryChooseBy (function
+                        | :? VirtualVectorSource.ICombinedVectorSource<'T> as src -> Some(src.Sources |> Array.ofSeq)
+                        | _ -> None)
+                      match sources with 
+                      | None -> failwith "Cannot merge frames or series not created by combine"
+                      | Some sources ->
+                          // Make sure that all sources are combinations of the same number of vectors 
+                          let length = sources |> Seq.map Array.length |> Seq.reduce (fun a b -> if a <> b then failwith "Length mismatch" else a)
+                          let toCombine =
+                            [ for i in 0 .. length - 1 ->
+                                let sh,st = match [ for s in sources -> s.[i] ] with sh::st -> sh, st | _ -> failwith "Merge requires one or more sources"  // ....
+                                sh.MergeWith(st) ]
+                          let data = Vector.ofValues [ for s in toCombine -> VirtualVector(s) :> IVector ]
+                          createRowReader data toCombine
 
-            let data = Vector.ofValues [ for v in builtSources -> v :> IVector ]
-            let newSource = createRowReader data sources
+                  interface VirtualVectorSource.ICombinedVectorSource<'T> with
+                    member x.Sources = sources
+                    member x.Function = () 
+                  interface IVirtualVectorSource with
+                    member x.Invoke(op) = op.Invoke(x :?> IVirtualVectorSource<obj>)
+                    member x.ElementType = typeof<IVector<obj>>
+                    member x.Length = 
+                      sources 
+                      |> Seq.map (fun s -> s.Length) 
+                      |> Seq.reduce (fun a b -> if a <> b then failwith "Length mismatch" else a) 
+
+                    member x.AddressOperations = 
+                      sources 
+                      |> Seq.map (fun s -> s.AddressOperations)
+                      |> Seq.reduce (fun a b ->  
+                          if a <> b then failwith "Address operations mismatch" else a) }
+
+              let data = Vector.ofValues [ for v in builtSources -> v :> IVector ]
+              let newSource = createRowReader data sources
             
-            // Because Build is `IVector<'T>[] -> IVector<'T>`, there is some nasty boxing.
-            // This case is only called with `'T = obj` and so we create `IVector<obj>` containing 
-            // `obj = IVector<obj>` as the row readers (the caller in Rows then unbox this)
-            VirtualVector(VirtualVectorSource.map None (fun _ -> OptionalValue.map box) newSource) |> unbox<IVector<'T>>
-          else
-            //let cmd = Combine(count, [ for i in 0 .. builtSources.Length-1 -> Return i ], transform)
-            //baseBuilder.Build(cmd, builtSources)
-            failwith "VirtualVectorBuilder.Build: Avoid implicit materialization (Combine - row reader)"
+              // Because Build is `IVector<'T>[] -> IVector<'T>`, there is some nasty boxing.
+              // This case is only called with `'T = obj` and so we create `IVector<obj>` containing 
+              // `obj = IVector<obj>` as the row readers (the caller in Rows then unbox this)
+              VirtualVector(VirtualVectorSource.map None (fun _ -> OptionalValue.map box) newSource) |> unbox<IVector<'T>>
+            else
+              //let cmd = Combine(count, [ for i in 0 .. builtSources.Length-1 -> Return i ], transform)
+              //baseBuilder.Build(cmd, builtSources)
+              failwith "VirtualVectorBuilder.Build: Avoid implicit materialization (Combine - row reader)"
 
-      | Combine(length, sources, transform) ->
-          let builtSources = sources |> List.map (fun source -> VirtualVectorHelpers.unboxVector (build source args)) |> Array.ofSeq
-          let allVirtual = builtSources |> Array.forall (fun vec -> vec :? VirtualVector<'T>)
-          if allVirtual then
-            let sources = builtSources |> Array.map (function :? VirtualVector<'T> as v -> v.Source | _ -> failwith "assertion failed") |> List.ofSeq
-            let func = transform.GetFunction<'T>()
-            let newSource = VirtualVectorSource.combine func sources
-            VirtualVector(newSource) :> _
-          else
-            failwith "VirtualVectorBuilder.Build: Avoid implicit materialization (Combine)"
-            //let cmd = Combine(length, [ for i in 0 .. builtSources.Length-1 -> Return i ], transform)
-            //baseBuilder.Build(cmd, builtSources)
-
-      | Append(first, second) ->
-          match build first args, build second args with
-          | (:? VirtualVector<'T> as first), (:? VirtualVector<'T> as second) ->
-              let newSource = first.Source.MergeWith([second.Source])
+        | (None | Some(VirtualScheme _)), Combine(length, sources, transform) ->
+            let builtSources = sources |> List.map (fun source -> VirtualVectorHelpers.unboxVector (build schemeOpt source args)) |> Array.ofSeq
+            let allVirtual = builtSources |> Array.forall (fun vec -> vec :? VirtualVector<'T>)
+            if allVirtual then
+              let sources = builtSources |> Array.map (function :? VirtualVector<'T> as v -> v.Source | _ -> failwith "assertion failed") |> List.ofSeq
+              let func = transform.GetFunction<'T>()
+              let newSource = VirtualVectorSource.combine func sources
               VirtualVector(newSource) :> _
-          | _ ->
-              failwith "Append would materialize vectors"
+            else
+              failwith "VirtualVectorBuilder.Build: Avoid implicit materialization (Combine)"
+              //let cmd = Combine(length, [ for i in 0 .. builtSources.Length-1 -> Return i ], transform)
+              //baseBuilder.Build(cmd, builtSources)
 
-      | Materialize(Relocate(source, length, relocations)) ->
-          let source = VirtualVectorHelpers.unboxVector (build source args)
-          let newData = Array.zeroCreate (int length)
-          for newIndex, oldAddress in relocations do
-            let newIndex = LinearAddress.asInt newIndex
-            newData.[newIndex] <- source.GetValue(oldAddress)
-          baseBuilder.CreateMissing(newData)
+        | (None | Some(VirtualScheme _)), Append(first, second) ->
+            match build schemeOpt first args, build schemeOpt second args with
+            | (:? VirtualVector<'T> as first), (:? VirtualVector<'T> as second) ->
+                let newSource = first.Source.MergeWith([second.Source])
+                VirtualVector(newSource) :> _
+            | _ ->
+                failwith "Append would materialize vectors"
 
-      | Relocate _ ->
-          failwith "VirtualVectorBuilder.Build: Avoid implicit materialization (Relocate)"
+        | _, CustomCommand(vectors, f) ->
+            let vectors = List.map (fun v -> (builder :> IVectorBuilder).Build(defaultArg schemeOpt LinearAddressingScheme.Instance, v, args) :> IVector) vectors
+            f vectors :?> IVector<_> // TODO: Check schema
 
-      | DropRange(source, range) -> 
-          match build source args with
-          | :? VirtualVector<'T> as source -> 
-              failwith "VectorBuilder.Build - DropRange not implemented"
-          | _ -> //baseBuilder.Build<'T>(cmd, args)
-              failwith "VirtualVectorBuilder.Build: Avoid implicit materialization (DropRange)"
+        | _, AsyncCustomCommand(vectors, f) ->
+            let vectors = List.map (fun v -> (builder :> IVectorBuilder).Build(defaultArg schemeOpt LinearAddressingScheme.Instance, v, args) :> IVector) vectors
+            Async.RunSynchronously(f vectors) :?> IVector<_> // TODO: Check schema
 
-      | FillMissing _ -> 
-          failwith "VectorBuilder.Build - FillMissing not implemented"
+        | (None | Some LinearScheme), command ->
+            baseBuilder.Build(LinearAddressingScheme.Instance, command, args)
 
-      | Materialize(source) ->
-          match baseBuilder.Build<'T>(source, args) with
-          | :? Vectors.ArrayVector.ArrayVector<'T> as av -> upcast av
-          | otherVector -> Vectors.ArrayVector.ArrayVectorBuilder.Instance.CreateMissing(Array.ofSeq otherVector.DataSequence)
+        | _ ->
+            failwith "VirtualVectorBuilder.Build: Unexpected situation"
 
-      | Empty _ ->
-          failwith "VectorBuilder.Build - Empty not implemented"
-
-      // Hopefully the caller knows what they're doing    
-      | CustomCommand(vectors, f) ->
-          let vectors = List.map (fun v -> (builder :> IVectorBuilder).Build(v, args) :> IVector) vectors
-          f vectors :?> IVector<_>
-
-      | AsyncCustomCommand(vectors, f) ->
-          let vectors = List.map (fun v -> (builder :> IVectorBuilder).Build(v, args) :> IVector) vectors
-          Async.RunSynchronously(f vectors) :?> IVector<_>
+      
+      build (Some topLevelScheme) cmd args

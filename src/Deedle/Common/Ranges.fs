@@ -186,7 +186,9 @@ module Ranges =
           [| for lo, hi in ranges.Ranges do
                if lo >=. loRestr && hi <=. hiRestr then yield lo, hi       
                elif hi <. loRestr || lo >. hiRestr then ()
-               else yield max lo loRestr, min hi hiRestr |]
+               else 
+                 let newLo, newHi = max lo loRestr, min hi hiRestr 
+                 if newLo <=. newHi then yield newLo, newHi |]
         Ranges(newRanges, ranges.Operations)
     
     | Let (true, +1) ((isStart, step), RangeRestriction.Start(desiredCount)) 

@@ -108,6 +108,12 @@ type BoundaryBehavior = Inclusive | Exclusive
 /// extending the DataFrame library and adding a new way of storing or loading data.
 /// Values of this type are constructed using the associated `IIndexBuilder` type.
 type IIndex<'K when 'K : equality> = 
+
+  abstract AddressingScheme : IAddressingScheme
+
+  /// Returns the address operations associated with this index
+  abstract AddressOperations : IAddressOperations
+
   /// Returns a (fully evaluated) collection with all keys in the index
   abstract Keys : ReadOnlyCollection<'K>
   
@@ -188,13 +194,13 @@ and IIndexBuilder =
   /// Create a new index using the specified keys. Optionally, the caller can specify
   /// if the index keys are ordered or not. When the value is not set, the construction
   /// should check and infer this from the data.
-  abstract Create : seq<'K> * Option<bool> -> SeriesConstruction<'K>
+  abstract Create : seq<'K> * Option<bool> -> IIndex<'K>
   
   /// Create a new index using the specified keys. This overload takes data as ReadOnlyCollection
   /// and so it is more efficient if the caller already has the keys in an allocated collection.
   /// Optionally, the caller can specify if the index keys are ordered or not. When the value 
   /// is not set, the construction should check and infer this from the data.
-  abstract Create : ReadOnlyCollection<'K> * Option<bool> -> SeriesConstruction<'K>
+  abstract Create : ReadOnlyCollection<'K> * Option<bool> -> IIndex<'K>
 
   /// When we perform some projection on the vector (`Select` or `Convert`), then we may also
   /// need to perform some transformation on the index (because it may turn delayed index 

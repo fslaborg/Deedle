@@ -33,20 +33,6 @@ type LinearSubRange =
 
 module Address = LinearAddress
 
-type AddressOperations(ranges:(int64*int64) list, length) = 
-  member x.Ranges = ranges
-  override x.Equals(o) = 
-    match o with
-    | :? AddressOperations as y -> x.Ranges = y.Ranges
-    | _ -> false
-  override x.GetHashCode() = ranges.GetHashCode()
-  interface IAddressOperations with
-    member x.FirstElement = Address.ofInt64 0L
-    member x.LastElement = Address.ofInt64 (length - 1L)
-    member x.Range = Deedle.Internal.Seq.range 0L (length - 1L) |> Seq.map Address.ofInt64
-    member x.OffsetOf(addr) = Address.asInt64 addr
-    member x.AddressOf(idx) = Address.ofInt64 idx
-    
 type TrackingSource<'T>(ranges:(int64*int64) list, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?search) = 
   member val AccessListCell : int64 list ref = ref [] with get, set
   member val LookupListCell = ref [] with get, set
@@ -66,7 +52,7 @@ type TrackingSource<'T>(ranges:(int64*int64) list, valueAt:int64 -> 'T, ?asLong:
   interface IVirtualVectorSource with
     member x.Length = x.Length
     member x.ElementType = typeof<'T>
-    member x.AddressOperations = AddressOperations(ranges, int64 x.Length) :> _
+    member x.AddressOperations = Indices.Linear.LinearAddressOperations(0L, int64 x.Length-1L) :> _
     member x.Invoke(op) = op.Invoke(x)
 
   interface IVirtualVectorSource<'T> with
@@ -362,7 +348,7 @@ let ``Accessing row evaluates only the required values`` () =
   frame.["S2", 5000000L] |> shouldEqual <| box "lorem"
   s1.AccessList |> shouldEqual [5000000L]
   s2.AccessList |> shouldEqual [5000000L]
-
+ 
 [<Test>]
 let ``Accessing series of rows accesses only required values`` () =
   let s1, s2, frame = createSimpleFrame()
@@ -622,7 +608,8 @@ let ``Can materialize a delayed series into a virtual series`` () =
   let r = Recorder()
   let delayed = 
     DelayedSeries.FromIndexVectorLoader
-      ( VirtualVectorBuilder.Instance, VirtualIndexBuilder.Instance, 
+      ( VirtualAddressingScheme(),
+        VirtualVectorBuilder.Instance, VirtualIndexBuilder.Instance, 
         date 2000 1 1, date 2100 1 1, dataLoader (spy1 r ignore) )
 
   // Materialize as virtual series for 5 years          

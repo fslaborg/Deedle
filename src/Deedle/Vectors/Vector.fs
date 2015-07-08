@@ -56,6 +56,8 @@ type IVector =
   /// Returns the number of elements in the vector
   abstract Length : int64
 
+  abstract AddressingScheme : IAddressingScheme
+
 /// Represents a generic function `\forall.'T.(IVector<'T> -> 'R)`. The function can be 
 /// generically invoked on an argument of type `IVector` using `IVector.Invoke`
 ///
@@ -211,10 +213,6 @@ type VectorConstruction =
   /// - this element represent getting one of the variables.
   | Return of VectorHole
 
-  /// If the source vector is of some other kind, materialize it and 
-  /// return materialized `ArrayVector<'T>` as the result
-  | Materialize of VectorConstruction
-
   /// Creates an empty vector of the requested type and size
   /// The returned vector is filled with missing values.
   | Empty of int64 
@@ -274,8 +272,8 @@ type IVectorBuilder =
   /// Apply a vector construction to a given vector. The second parameter
   /// is an array of arguments ("variables") that may be referenced from the
   /// `VectorConstruction` using the `Return 0` construct.
-  abstract Build<'T> : VectorConstruction * IVector<'T>[] -> IVector<'T>
+  abstract Build<'T> : IAddressingScheme * VectorConstruction * IVector<'T>[] -> IVector<'T>
 
   /// Asynchronous version of `Build` operation. This is mainly used for 
   /// `AsyncMaterialize` and it does not handle fully general vector constructions (yet)
-  abstract AsyncBuild<'T> : VectorConstruction * IVector<'T>[] -> Async<IVector<'T>>
+  abstract AsyncBuild<'T> : IAddressingScheme * VectorConstruction * IVector<'T>[] -> Async<IVector<'T>>
