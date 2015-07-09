@@ -51,6 +51,7 @@ type TrackingSource<'T>(ranges:(int64*int64) list, valueAt:int64 -> 'T, ?asLong:
 
   interface IVirtualVectorSource with
     member x.Length = x.Length
+    member x.AddressingSchemeID = "it"
     member x.ElementType = typeof<'T>
     member x.AddressOperations = Indices.Linear.LinearAddressOperations(0L, int64 x.Length-1L) :> _
     member x.Invoke(op) = op.Invoke(x)
