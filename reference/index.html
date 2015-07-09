@@ -745,6 +745,18 @@ To allow invocation via Reflection, the vector exposes type of elements as <code
         </tr>
         <tr>
           <td class="type-name">
+            <a href="deedle-ivectorlocation.html">IVectorLocation</a>
+          </td>
+          <td class="xmldoc"><p>Represents a location in a vector. In general, we always know the address, but 
+sometimes (BigDeedle) it is hard to get the offset (requires some data lookups),
+so we use this interface to delay the calculation of the Offset (which is mainly
+needed in one of the <code>series.Select</code> overloads)</p>
+
+
+</td>
+        </tr>
+        <tr>
+          <td class="type-name">
             <a href="deedle-index.html">Index</a>
           </td>
           <td class="xmldoc"><p>Type that provides access to creating indices (represented as <code>LinearIndex</code> values)</p>
@@ -859,19 +871,17 @@ to the "least common denominator" data structure - <code>IEnumerable&lt;T&gt;</c
           <td class="type-name">
             <a href="deedle-irangerestriction-1.html">IRangeRestriction<'TAddress></a>
           </td>
-          <td class="xmldoc"><p>A sequence of indicies together with the total number. Use <code>AddressRange.ofSeq</code> to
+          <td class="xmldoc"><p>A sequence of indicies together with the total number. Use <code>RangeRestriction.ofSeq</code> to
 create one from a sequence. This can be implemented by concrete vector/index 
 builders to allow further optimizations (e.g. when the underlying source directly
-supports range operations)</p>
+supports range operations).</p>
+
+<p>For example, if your source has an optimised way for getting every 10th address, you 
+can create your own <code>IRangeRestriction</code> and then check for it in <code>LookupRange</code> and 
+use optimised implementation rather than actually iterating over the sequence of indices.</p>
 
 
 </td>
-        </tr>
-        <tr>
-          <td class="type-name">
-            <a href="deedle-ivectorlocation.html">IVectorLocation</a>
-          </td>
-          <td class="xmldoc"></td>
         </tr>
         <tr>
           <td class="type-name">
@@ -984,6 +994,15 @@ makes this more obvious)</p>
     <tbody>
         <tr>
           <td class="type-name">
+            <a href="deedle-indices-linear-linearaddressoperations.html">LinearAddressOperations</a>
+          </td>
+          <td class="xmldoc"><p>Implements address operations for linear addressing</p>
+
+
+</td>
+        </tr>
+        <tr>
+          <td class="type-name">
             <a href="deedle-indices-linear-linearindex-1.html">LinearIndex<'K></a>
           </td>
           <td class="xmldoc"><p>An index that maps keys <code>K</code> to offsets <code>Address</code>. The keys cannot be duplicated.
@@ -1031,19 +1050,39 @@ complex index manipulations (including lookup), an actual index is constructed l
           <td class="type-name">
             <a href="deedle-indices-virtual-virtualindexbuilder.html">VirtualIndexBuilder</a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>Implements <code>IIndexBuilder</code> interface for BigDeedle. This directly implements operations that can 
+be implemented on virtual vectors (mostly merging, slicing) and for other operations, it calls
+ordinary <code>LinearIndexBuilder</code>. The resulting <code>VectorConstruction</code> corresponds to the addressing
+scheme of the returned index (i.e. if we return virtual, we expect to build virtual vector; if
+we materialize, the vector builder also has to materialize).</p>
+
+
+</td>
         </tr>
         <tr>
           <td class="type-name">
             <a href="deedle-indices-virtual-virtualorderedindex-1.html">VirtualOrderedIndex<'K></a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>Represents an ordered index based on data provided by a virtual source.
+The index can be used by BigDeedle virtual frames and series, without accessing
+all data from the data source.</p>
+
+<p>The index only evaluates the full key collection when needed. Most of the actual
+work is delegated to the <code>IVirtualVectorSource&lt;'K&gt;</code> value passed in the constructor.</p>
+
+
+</td>
         </tr>
         <tr>
           <td class="type-name">
             <a href="deedle-indices-virtual-virtualordinalindex.html">VirtualOrdinalIndex</a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>Represents an ordinal index based on addressing provided by a virtual source.
+The index can be used by BigDeedle virtual frames and series, without accessing
+all data from the data source.</p>
+
+
+</td>
         </tr>
     </tbody>
   </table>
@@ -1280,6 +1319,16 @@ the "mini-DSL" representation <code>VectorConstruction</code>.</p>
         </tr>
         <tr>
           <td class="type-name">
+            <a href="deedle-vectors-knownlocation.html">KnownLocation</a>
+          </td>
+          <td class="xmldoc"><p>An <code>IVectorLocation</code> created from a known address and offset
+(typically used in LinearIndex/ArrayVector where both are the same)</p>
+
+
+</td>
+        </tr>
+        <tr>
+          <td class="type-name">
             <a href="deedle-vectors-vector.html">Vector</a>
           </td>
           <td class="xmldoc"><p>Type that provides access to creating vectors (represented as arrays)</p>
@@ -1353,19 +1402,6 @@ can be applied to N elements using <code>List.reduce</code>, but allows optimiza
         </tr>
     </tbody>
   </table>
-  <table class="table table-bordered module-list">
-    <thead>
-      <tr><td>Module</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td class="module-name">
-            <a href="deedle-vectors-location.html">Location</a>
-          </td>
-          <td class="xmldoc"></td>
-        </tr>
-    </tbody>
-  </table>
 
     </div>
   <h2>Deedle.Vectors.ArrayVector Namespace</h2>
@@ -1415,13 +1451,11 @@ uses <code>ArrayVectorData.VectorOptional</code>, otherwise it uses
     <tbody>
         <tr>
           <td class="type-name">
-            <a href="deedle-vectors-virtual-iaddressoperations.html">IAddressOperations</a>
+            <a href="deedle-vectors-virtual-delayedlocation.html">DelayedLocation</a>
           </td>
-          <td class="xmldoc"><p>Various BigDeedle implementations can use different schemes for working with addresses 
-(for example, address can be just a global offset, or it can be pair of <code>int32</code> values
-that store partition and offset in a partition). This interface represents a specific
-address range and abstracts operations that BigDeedle needs to perform on addresses
-(within the specified range)</p>
+          <td class="xmldoc"><p>Represents a vector location that calculates the offset using
+address operations as needed (typically, we want to avoid this
+because it might be slow)</p>
 
 
 </td>
@@ -1452,25 +1486,54 @@ vector simply provides an access to values using <code>ValueAt</code>.</p>
           <td class="type-name">
             <a href="deedle-vectors-virtual-ivirtualvectorsourceoperation-1.html">IVirtualVectorSourceOperation<'R></a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>A helper type used by non-generic <code>IVirtualVectorSource</code> to invoke generic 
+operations that require generic <code>IVirtualVectorSource&lt;'T&gt;</code> as an argument.</p>
+
+
+</td>
         </tr>
         <tr>
           <td class="type-name">
             <a href="deedle-vectors-virtual-rangesaddressoperations-1.html">RangesAddressOperations<'TKey></a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>In BigDeedle, we often use <code>Ranges&lt;'T&gt;</code> to represent the address range obtained as a result
+of slicing and merging frames &amp; series. This implements <code>IAddressOperations</code> for <code>Ranges&lt;'T&gt;</code>.</p>
+
+
+</td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-vectors-virtual-virtualaddressingscheme.html">VirtualAddressingScheme</a>
+          </td>
+          <td class="xmldoc"><p>Represents an addressing scheme associated to virtual vectors. The addresses
+may be partitioned differently (for different data sources), so this carries
+an "id" of the data source (to make sure we don't try to mix mismatching data
+sources)</p>
+
+
+</td>
         </tr>
         <tr>
           <td class="type-name">
             <a href="deedle-vectors-virtual-virtualvector-1.html">VirtualVector<'V></a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>Creates an <code>IVector&lt;'T&gt;</code> implementation that provides operations for accessing
+data in <code>IVirtualVectorSource</code>. This mostly just calls <code>ValueAt</code> to read data.</p>
+
+
+</td>
         </tr>
         <tr>
           <td class="type-name">
             <a href="deedle-vectors-virtual-virtualvectorbuilder.html">VirtualVectorBuilder</a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>Implements a builder object (<code>IVectorBuilder</code>) for creating vectors of type <code>VirtualVector&lt;'T&gt;</code>.
+This can do a few things without evaluating vectors (merging, slicing). For other operations
+the builder needs to materialize the vector and call <code>ArrayVectorBuilder</code>.</p>
+
+
+</td>
         </tr>
     </tbody>
   </table>
@@ -1481,21 +1544,12 @@ vector simply provides an access to values using <code>ValueAt</code>.</p>
     <tbody>
         <tr>
           <td class="module-name">
-            <a href="deedle-vectors-virtual-location.html">Location</a>
-          </td>
-          <td class="xmldoc"></td>
-        </tr>
-        <tr>
-          <td class="module-name">
-            <a href="deedle-vectors-virtual-virtualvectorhelpers.html">VirtualVectorHelpers</a>
-          </td>
-          <td class="xmldoc"></td>
-        </tr>
-        <tr>
-          <td class="module-name">
             <a href="deedle-vectors-virtual-virtualvectorsource.html">VirtualVectorSource</a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>Module that implements various helper operations over <code>IVirtualVectorSource</code> type</p>
+
+
+</td>
         </tr>
     </tbody>
   </table>
@@ -1512,19 +1566,20 @@ vector simply provides an access to values using <code>ValueAt</code>.</p>
           <td class="type-name">
             <a href="deedle-virtual-indexutils.html">IndexUtils</a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>Helpers that can be used when implementing Lookup</p>
+
+
+</td>
         </tr>
         <tr>
           <td class="type-name">
             <a href="deedle-virtual-virtual.html">Virtual</a>
           </td>
-          <td class="xmldoc"></td>
-        </tr>
-        <tr>
-          <td class="type-name">
-            <a href="deedle-virtual-virtualvectorhelper.html">VirtualVectorHelper</a>
-          </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>Provides static methods for creating virtual series and virtual frames.
+Those provide necessary wrapping around <code>IVirtualVectorSource</code> values</p>
+
+
+</td>
         </tr>
     </tbody>
   </table>

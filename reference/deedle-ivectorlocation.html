@@ -45,6 +45,12 @@
   <span>Namespace: Deedle</span><br />
 </p>
 <div class="xmldoc">
+<p>Represents a location in a vector. In general, we always know the address, but 
+sometimes (BigDeedle) it is hard to get the offset (requires some data lookups),
+so we use this interface to delay the calculation of the Offset (which is mainly
+needed in one of the <code>series.Select</code> overloads)</p>
+
+
 </div>
   <h3>Instance members</h3>
   <table class="table table-bordered member-list">
@@ -55,39 +61,45 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '657', 657)" onmouseover="showTip(event, '657', 657)">
+          <code onmouseout="hideTip(event, '664', 664)" onmouseover="showTip(event, '664', 664)">
             Address
           </code>
-          <div class="tip" id="657">
+          <div class="tip" id="664">
             <strong>Signature:</strong> Address<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L67-67" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L78-78" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Returns the address of the location (this should be immediate)</p>
+
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '658', 658)" onmouseover="showTip(event, '658', 658)">
+          <code onmouseout="hideTip(event, '665', 665)" onmouseover="showTip(event, '665', 665)">
             Offset
           </code>
-          <div class="tip" id="658">
+          <div class="tip" id="665">
             <strong>Signature:</strong> int64<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L68-68" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L80-80" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Returns the offset of the location (this may involve some calculation)</p>
+
+
+
         </td>
       </tr>
     </tbody>

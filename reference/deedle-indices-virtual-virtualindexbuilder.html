@@ -45,6 +45,13 @@
   <span>Namespace: Deedle.Indices.Virtual</span><br />
 </p>
 <div class="xmldoc">
+<p>Implements <code>IIndexBuilder</code> interface for BigDeedle. This directly implements operations that can 
+be implemented on virtual vectors (mostly merging, slicing) and for other operations, it calls
+ordinary <code>LinearIndexBuilder</code>. The resulting <code>VectorConstruction</code> corresponds to the addressing
+scheme of the returned index (i.e. if we return virtual, we expect to build virtual vector; if
+we materialize, the vector builder also has to materialize).</p>
+
+
 </div>
   <h3>Constructors</h3>
   <table class="table table-bordered member-list">
@@ -55,15 +62,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1015', 1015)" onmouseover="showTip(event, '1015', 1015)">
+          <code onmouseout="hideTip(event, '1026', 1026)" onmouseover="showTip(event, '1026', 1026)">
             new()
           </code>
-          <div class="tip" id="1015">
+          <div class="tip" id="1026">
             <strong>Signature:</strong> unit -&gt; VirtualIndexBuilder<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/VirtualIndex.fs#L107-107" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/VirtualIndex.fs#L131-131" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -81,19 +88,22 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1016', 1016)" onmouseover="showTip(event, '1016', 1016)">
+          <code onmouseout="hideTip(event, '1027', 1027)" onmouseover="showTip(event, '1027', 1027)">
             Instance
           </code>
-          <div class="tip" id="1016">
+          <div class="tip" id="1027">
             <strong>Signature:</strong> VirtualIndexBuilder<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/VirtualIndex.fs#L123-123" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/VirtualIndex.fs#L141-141" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Returns an instance of the virtual index builder</p>
+
+
+
         </td>
       </tr>
     </tbody>

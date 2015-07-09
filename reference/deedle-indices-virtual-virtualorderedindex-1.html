@@ -45,6 +45,14 @@
   <span>Namespace: Deedle.Indices.Virtual</span><br />
 </p>
 <div class="xmldoc">
+<p>Represents an ordered index based on data provided by a virtual source.
+The index can be used by BigDeedle virtual frames and series, without accessing
+all data from the data source.</p>
+
+<p>The index only evaluates the full key collection when needed. Most of the actual
+work is delegated to the <code>IVirtualVectorSource&lt;'K&gt;</code> value passed in the constructor.</p>
+
+
 </div>
   <h3>Constructors</h3>
   <table class="table table-bordered member-list">
@@ -55,15 +63,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1017', 1017)" onmouseover="showTip(event, '1017', 1017)">
+          <code onmouseout="hideTip(event, '1028', 1028)" onmouseover="showTip(event, '1028', 1028)">
             new(source)
           </code>
-          <div class="tip" id="1017">
+          <div class="tip" id="1028">
             <strong>Signature:</strong> source:IVirtualVectorSource&lt;&#39;K&gt; -&gt; VirtualOrderedIndex&lt;&#39;K&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/VirtualIndex.fs#L30-30" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/VirtualIndex.fs#L36-36" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -81,19 +89,22 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1018', 1018)" onmouseover="showTip(event, '1018', 1018)">
+          <code onmouseout="hideTip(event, '1029', 1029)" onmouseover="showTip(event, '1029', 1029)">
             Source
           </code>
-          <div class="tip" id="1018">
+          <div class="tip" id="1029">
             <strong>Signature:</strong> IVirtualVectorSource&lt;&#39;K&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/VirtualIndex.fs#L34-34" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/VirtualIndex.fs#L44-44" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Returns the underlying source associated with the index</p>
+
+
+
         </td>
       </tr>
     </tbody>

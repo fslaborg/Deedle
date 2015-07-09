@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>SeriesBuilder<'K, 'V> - Deedle</title>
+    <title>DelayedLocation - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="BlueMountain Capital">
@@ -40,43 +40,15 @@
 
 
 
-<h1>SeriesBuilder<'K, 'V></h1>
+<h1>DelayedLocation</h1>
 <p>
-  <span>Namespace: Deedle</span><br />
+  <span>Namespace: Deedle.Vectors.Virtual</span><br />
 </p>
 <div class="xmldoc">
-<p>The type can be used for creating series using mutation. You can add 
-items using <code>Add</code> and get the resulting series using the <code>Series</code> property.</p>
+<p>Represents a vector location that calculates the offset using
+address operations as needed (typically, we want to avoid this
+because it might be slow)</p>
 
-
-        <h2>Using from C#</h2>
-<p>The type supports the C# collection builder pattern:</p>
-
-<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-<span class="l">2: </span>
-</pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">var</span> <span class="i">s</span> <span class="o">=</span> <span class="k">new</span> <span class="i">SeriesBuilder</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">string</span>, <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">double</span><span class="o">&gt;</span>
-  { { <span class="s">&quot;A&quot;</span>, <span class="n">1.0</span> }, { <span class="s">&quot;B&quot;</span>, <span class="n">2.0</span> }, { <span class="s">&quot;C&quot;</span>, <span class="n">3.0</span> } }<span class="o">.</span><span class="i">Series</span>;
-</code></pre></td>
-</tr>
-</table>
-
-<p>The type also supports the <code>dynamic</code> operator:</p>
-
-<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-<span class="l">2: </span>
-<span class="l">3: </span>
-</pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">dynamic</span> <span class="i">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="i">SeriesBuilder</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs1', 3)" onmouseover="showTip(event, 'fs1', 3)" class="i">string</span>, <span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="i">obj</span><span class="o">&gt;</span>();
-<span class="i">sb</span><span class="o">.</span><span class="i">ID</span> <span class="o">=</span> <span class="n">1</span>;
-<span class="i">sb</span><span class="o">.</span><span class="i">Value</span> <span class="o">=</span> <span class="n">3.4</span>;
-</code></pre></td>
-</tr>
-</table>
-
-<div class="tip" id="fs1">Multiple items<br />val string : value:&#39;T -&gt; string<br /><br />Full name: Microsoft.FSharp.Core.Operators.string<br /><br />--------------------<br />type string = System.String<br /><br />Full name: Microsoft.FSharp.Core.string</div>
-<div class="tip" id="fs2">Multiple items<br />val double : value:&#39;T -&gt; float (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.double<br /><br />--------------------<br />type double = System.Double<br /><br />Full name: Microsoft.FSharp.Core.double</div>
-<div class="tip" id="fs3">type obj = System.Object<br /><br />Full name: Microsoft.FSharp.Core.obj</div>
 
 </div>
   <h3>Constructors</h3>
@@ -88,93 +60,15 @@ items using <code>Add</code> and get the resulting series using the <code>Series
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '847', 847)" onmouseover="showTip(event, '847', 847)">
-            new()
+          <code onmouseout="hideTip(event, '1092', 1092)" onmouseover="showTip(event, '1092', 1092)">
+            new(addr, addrOps)
           </code>
-          <div class="tip" id="847">
-            <strong>Signature:</strong> unit -&gt; SeriesBuilder&lt;&#39;K,&#39;V&gt;<br />
+          <div class="tip" id="1092">
+            <strong>Signature:</strong> (addr:Address * addrOps:IAddressOperations) -&gt; DelayedLocation<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L117-117" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <h3>Instance members</h3>
-  <table class="table table-bordered member-list">
-    <thead>
-      <tr><td>Instance member</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '848', 848)" onmouseover="showTip(event, '848', 848)">
-            Add(key, value)
-          </code>
-          <div class="tip" id="848">
-            <strong>Signature:</strong> (key:&#39;K * value:&#39;V) -&gt; unit<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L122-122" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Add specified key and value to the series being build</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '849', 849)" onmouseover="showTip(event, '849', 849)">
-            Series
-          </code>
-          <div class="tip" id="849">
-            <strong>Signature:</strong> Series&lt;&#39;K,&#39;V&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L129-129" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns the constructed series. The series is an immutable
-copy of the current values and so further additions will not
-change the returned series.</p>
-
-
-
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <h3>Static members</h3>
-  <table class="table table-bordered member-list">
-    <thead>
-      <tr><td>Static member</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '850', 850)" onmouseover="showTip(event, '850', 850)">
-            ( ?&lt;- )(builder, name, value)
-          </code>
-          <div class="tip" id="850">
-            <strong>Signature:</strong> (builder:SeriesBuilder&lt;string,&#39;V&gt; * name:string * value:&#39;V) -&gt; unit<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesExtensions.fs#L134-134" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L137-137" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>

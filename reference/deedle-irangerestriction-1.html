@@ -45,10 +45,14 @@
   <span>Namespace: Deedle</span><br />
 </p>
 <div class="xmldoc">
-<p>A sequence of indicies together with the total number. Use <code>AddressRange.ofSeq</code> to
+<p>A sequence of indicies together with the total number. Use <code>RangeRestriction.ofSeq</code> to
 create one from a sequence. This can be implemented by concrete vector/index 
 builders to allow further optimizations (e.g. when the underlying source directly
-supports range operations)</p>
+supports range operations).</p>
+
+<p>For example, if your source has an optimised way for getting every 10th address, you 
+can create your own <code>IRangeRestriction</code> and then check for it in <code>LookupRange</code> and 
+use optimised implementation rather than actually iterating over the sequence of indices.</p>
 
 
 </div>
@@ -61,16 +65,16 @@ supports range operations)</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '641', 641)" onmouseover="showTip(event, '641', 641)">
+          <code onmouseout="hideTip(event, '647', 647)" onmouseover="showTip(event, '647', 647)">
             Count
           </code>
-          <div class="tip" id="641">
+          <div class="tip" id="647">
             <strong>Signature:</strong> int64<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Address.fs#L63-63" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Address.fs#L108-108" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>

@@ -45,33 +45,11 @@
   <span>Namespace: Deedle.Virtual</span><br />
 </p>
 <div class="xmldoc">
-</div>
-  <h3>Constructors</h3>
-  <table class="table table-bordered member-list">
-    <thead>
-      <tr><td>Constructor</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="member-name">
+<p>Provides static methods for creating virtual series and virtual frames.
+Those provide necessary wrapping around <code>IVirtualVectorSource</code> values</p>
 
-          <code onmouseout="hideTip(event, '1103', 1103)" onmouseover="showTip(event, '1103', 1103)">
-            new()
-          </code>
-          <div class="tip" id="1103">
-            <strong>Signature:</strong> unit -&gt; Virtual<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/VirtualFrame.fs#L69-69" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-    </tbody>
-  </table>
+
+</div>
   <h3>Static members</h3>
   <table class="table table-bordered member-list">
     <thead>
@@ -81,73 +59,91 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1104', 1104)" onmouseover="showTip(event, '1104', 1104)">
+          <code onmouseout="hideTip(event, '1112', 1112)" onmouseover="showTip(event, '1112', 1112)">
             CreateFrame(indexSource, keys, sources)
           </code>
-          <div class="tip" id="1104">
-            <strong>Signature:</strong> (indexSource:IVirtualVectorSource&lt;&#39;?492357&gt; * keys:seq&lt;&#39;?492358&gt; * sources:seq&lt;IVirtualVectorSource&gt;) -&gt; Frame&lt;&#39;?492357,&#39;?492358&gt;<br />
-                          <strong>Type parameters:</strong> '?492357, '?492358          </div>
+          <div class="tip" id="1112">
+            <strong>Signature:</strong> (indexSource:IVirtualVectorSource&lt;&#39;?493337&gt; * keys:seq&lt;&#39;?493338&gt; * sources:seq&lt;IVirtualVectorSource&gt;) -&gt; Frame&lt;&#39;?493337,&#39;?493338&gt;<br />
+                          <strong>Type parameters:</strong> '?493337, '?493338          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/VirtualFrame.fs#L105-105" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/VirtualFrame.fs#L126-126" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Create a frame with ordinal index, containing the specified sources as columns.
+The index source should support lookup (which is used for series lookup, slicing etc.)
+The value source does not need to implement lookup - mainly <code>ValueAt</code>, merging and getting sub-source</p>
+
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1105', 1105)" onmouseover="showTip(event, '1105', 1105)">
+          <code onmouseout="hideTip(event, '1113', 1113)" onmouseover="showTip(event, '1113', 1113)">
             CreateOrdinalFrame(keys, sources)
           </code>
-          <div class="tip" id="1105">
-            <strong>Signature:</strong> (keys:seq&lt;&#39;?492355&gt; * sources:seq&lt;IVirtualVectorSource&gt;) -&gt; Frame&lt;int64,&#39;?492355&gt;<br />
-                          <strong>Type parameters:</strong> '?492355          </div>
+          <div class="tip" id="1113">
+            <strong>Signature:</strong> (keys:seq&lt;&#39;?493335&gt; * sources:seq&lt;IVirtualVectorSource&gt;) -&gt; Frame&lt;int64,&#39;?493335&gt;<br />
+                          <strong>Type parameters:</strong> '?493335          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/VirtualFrame.fs#L94-94" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/VirtualFrame.fs#L112-112" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Create a frame with ordinal index, containing the specified sources as columns.</p>
+
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1106', 1106)" onmouseover="showTip(event, '1106', 1106)">
+          <code onmouseout="hideTip(event, '1114', 1114)" onmouseover="showTip(event, '1114', 1114)">
             CreateOrdinalSeries(source)
           </code>
-          <div class="tip" id="1106">
-            <strong>Signature:</strong> source:IVirtualVectorSource&lt;&#39;?492350&gt; -&gt; Series&lt;int64,&#39;?492350&gt;<br />
-                          <strong>Type parameters:</strong> '?492350          </div>
+          <div class="tip" id="1114">
+            <strong>Signature:</strong> source:IVirtualVectorSource&lt;&#39;?493330&gt; -&gt; Series&lt;int64,&#39;?493330&gt;<br />
+                          <strong>Type parameters:</strong> '?493330          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/VirtualFrame.fs#L80-80" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/VirtualFrame.fs#L97-97" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Creates a virtual series with ordinal index. The parameter is <code>IVirtualVectorSource</code>
+that specifies how to access values in the series (and is also used to determine the size
+of the series index)</p>
+
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1107', 1107)" onmouseover="showTip(event, '1107', 1107)">
+          <code onmouseout="hideTip(event, '1115', 1115)" onmouseover="showTip(event, '1115', 1115)">
             CreateSeries(indexSource, valueSource)
           </code>
-          <div class="tip" id="1107">
-            <strong>Signature:</strong> (indexSource:IVirtualVectorSource&lt;&#39;?492352&gt; * valueSource:IVirtualVectorSource&lt;&#39;?492353&gt;) -&gt; Series&lt;&#39;?492352,&#39;?492353&gt;<br />
-                          <strong>Type parameters:</strong> '?492352, '?492353          </div>
+          <div class="tip" id="1115">
+            <strong>Signature:</strong> (indexSource:IVirtualVectorSource&lt;&#39;?493332&gt; * valueSource:IVirtualVectorSource&lt;&#39;?493333&gt;) -&gt; Series&lt;&#39;?493332,&#39;?493333&gt;<br />
+                          <strong>Type parameters:</strong> '?493332, '?493333          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/VirtualFrame.fs#L85-85" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/VirtualFrame.fs#L106-106" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Create a virtual series with an index and values specified by two <code>IVirtualVectorSource</code> values.
+The index source should support lookup (which is used for series lookup, slicing etc.)
+The value source does not need to implement lookup - mainly <code>ValueAt</code>, merging and getting sub-source</p>
+
+
+
         </td>
       </tr>
     </tbody>

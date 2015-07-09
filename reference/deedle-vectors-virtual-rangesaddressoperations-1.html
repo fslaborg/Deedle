@@ -45,6 +45,18 @@
   <span>Namespace: Deedle.Vectors.Virtual</span><br />
 </p>
 <div class="xmldoc">
+<p>In BigDeedle, we often use <code>Ranges&lt;'T&gt;</code> to represent the address range obtained as a result
+of slicing and merging frames &amp; series. This implements <code>IAddressOperations</code> for <code>Ranges&lt;'T&gt;</code>.</p>
+
+
+        <h2>Parameters</h2>
+<ul>
+<li><code>ranges</code> - ranges containing any key that we are wrapping</li>
+<li><code>asAddress</code> - converts the key to an address</li>
+<li><code>ofAddress</code> - converts address to a key</li>
+</ul>
+
+
 </div>
   <h3>Constructors</h3>
   <table class="table table-bordered member-list">
@@ -55,15 +67,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1096', 1096)" onmouseover="showTip(event, '1096', 1096)">
+          <code onmouseout="hideTip(event, '1104', 1104)" onmouseover="showTip(event, '1104', 1104)">
             new(ranges, asAddress, ofAddress)
           </code>
-          <div class="tip" id="1096">
+          <div class="tip" id="1104">
             <strong>Signature:</strong> (ranges:Ranges&lt;&#39;TKey&gt; * asAddress:Func&lt;&#39;TKey,Address&gt; * ofAddress:Func&lt;Address,&#39;TKey&gt;) -&gt; RangesAddressOperations&lt;&#39;TKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L89-89" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L102-102" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -81,19 +93,22 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1097', 1097)" onmouseover="showTip(event, '1097', 1097)">
+          <code onmouseout="hideTip(event, '1105', 1105)" onmouseover="showTip(event, '1105', 1105)">
             Ranges
           </code>
-          <div class="tip" id="1097">
+          <div class="tip" id="1105">
             <strong>Signature:</strong> Ranges&lt;&#39;TKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L94-94" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L108-108" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Provides access to the underlying ranges</p>
+
+
+
         </td>
       </tr>
     </tbody>

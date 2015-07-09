@@ -45,6 +45,11 @@
   <span>Namespace: Deedle.Vectors.Virtual</span><br />
 </p>
 <div class="xmldoc">
+<p>Implements a builder object (<code>IVectorBuilder</code>) for creating vectors of type <code>VirtualVector&lt;'T&gt;</code>.
+This can do a few things without evaluating vectors (merging, slicing). For other operations
+the builder needs to materialize the vector and call <code>ArrayVectorBuilder</code>.</p>
+
+
 </div>
   <h3>Constructors</h3>
   <table class="table table-bordered member-list">
@@ -55,15 +60,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1100', 1100)" onmouseover="showTip(event, '1100', 1100)">
+          <code onmouseout="hideTip(event, '1109', 1109)" onmouseover="showTip(event, '1109', 1109)">
             new()
           </code>
-          <div class="tip" id="1100">
+          <div class="tip" id="1109">
             <strong>Signature:</strong> unit -&gt; VirtualVectorBuilder<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L307-307" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L397-397" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -81,19 +86,22 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1101', 1101)" onmouseover="showTip(event, '1101', 1101)">
+          <code onmouseout="hideTip(event, '1110', 1110)" onmouseover="showTip(event, '1110', 1110)">
             Instance
           </code>
-          <div class="tip" id="1101">
+          <div class="tip" id="1110">
             <strong>Signature:</strong> VirtualVectorBuilder<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L312-312" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L425-425" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Returns an instance of VirtualVectorBuilder</p>
+
+
+
         </td>
       </tr>
     </tbody>

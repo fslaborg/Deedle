@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>IVectorBuilder - Deedle</title>
+    <title>IAddressingScheme - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="BlueMountain Capital">
@@ -40,120 +40,19 @@
 
 
 
-<h1>IVectorBuilder</h1>
+<h1>IAddressingScheme</h1>
 <p>
-  <span>Namespace: Deedle.Vectors</span><br />
+  <span>Namespace: Deedle</span><br />
+  <span>Parent Module: <a href="deedle-addressing.html">Addressing</a></span>
 </p>
 <div class="xmldoc">
-<p>Represents an object that can construct vector values by processing 
-the "mini-DSL" representation <code>VectorConstruction</code>.</p>
+<p>An empty interface that is used as an marker for "addressing schemes". As discussed
+above, Deedle can use different addressing schemes. We need to make sure that the index
+and vector share the scheme - this is done by attaching <code>IAddressingScheme</code> to each
+index or vector and checking that they match. Implementations must support equality!</p>
 
 
 </div>
-  <h3>Instance members</h3>
-  <table class="table table-bordered member-list">
-    <thead>
-      <tr><td>Instance member</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1060', 1060)" onmouseover="showTip(event, '1060', 1060)">
-            AsyncBuild(arg1, arg2, arg3)
-          </code>
-          <div class="tip" id="1060">
-            <strong>Signature:</strong> (IAddressingScheme * VectorConstruction * IVector&lt;&#39;T&gt; []) -&gt; Async&lt;IVector&lt;&#39;T&gt;&gt;<br />
-              <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'T          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L279-279" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Asynchronous version of <code>Build</code> operation. This is mainly used for 
-<code>AsyncMaterialize</code> and it does not handle fully general vector constructions (yet)</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1061', 1061)" onmouseover="showTip(event, '1061', 1061)">
-            Build(arg1, arg2, arg3)
-          </code>
-          <div class="tip" id="1061">
-            <strong>Signature:</strong> (IAddressingScheme * VectorConstruction * IVector&lt;&#39;T&gt; []) -&gt; IVector&lt;&#39;T&gt;<br />
-              <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'T          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L275-275" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Apply a vector construction to a given vector. The second parameter
-is an array of arguments ("variables") that may be referenced from the
-<code>VectorConstruction</code> using the <code>Return 0</code> construct.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1062', 1062)" onmouseover="showTip(event, '1062', 1062)">
-            Create(arg1)
-          </code>
-          <div class="tip" id="1062">
-            <strong>Signature:</strong> (&#39;T []) -&gt; IVector&lt;&#39;T&gt;<br />
-              <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'T          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L265-265" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Create a vector from an array containing values. The values may 
-still represent missing values and the vector should handle this.
-For example <code>Double.NaN</code> or <code>null</code> should be turned into a missing
-value in the returned vector.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1063', 1063)" onmouseover="showTip(event, '1063', 1063)">
-            CreateMissing(arg1)
-          </code>
-          <div class="tip" id="1063">
-            <strong>Signature:</strong> (OptionalValue&lt;&#39;T&gt; []) -&gt; IVector&lt;&#39;T&gt;<br />
-              <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'T          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L270-270" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Create a vector from an array containing values that may be missing. 
-Even if a value is passed, it may be a missing value such as <code>Double.NaN</code>
-or <code>null</code>. The vector builder should hanlde this.</p>
-
-
-
-        </td>
-      </tr>
-    </tbody>
-  </table>
 
         </div>
         <div class="span3">

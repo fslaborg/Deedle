@@ -45,6 +45,9 @@
   <span>Namespace: Deedle.Vectors.Virtual</span><br />
 </p>
 <div class="xmldoc">
+<p>Module that implements various helper operations over <code>IVirtualVectorSource</code> type</p>
+
+
 </div>
 
 <!-- Render nested types and modules, if there are any -->
@@ -59,19 +62,28 @@
           <td class="type-name">
             <a href="deedle-vectors-virtual-virtualvectorsource-iboxedvectorsource-1.html">IBoxedVectorSource<'T></a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>Marks IVirtualVectorSource that has been created by boxing another source</p>
+
+
+</td>
         </tr>
         <tr>
           <td class="type-name">
             <a href="deedle-vectors-virtual-virtualvectorsource-icombinedvectorsource-1.html">ICombinedVectorSource<'T></a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>Marks IVirtualVectorSource that has been created by combining another sources</p>
+
+
+</td>
         </tr>
         <tr>
           <td class="type-name">
             <a href="deedle-vectors-virtual-virtualvectorsource-imappedvectorsource-2.html">IMappedVectorSource<'T, 'R></a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>Marks IVirtualVectorSource that has been created by mapping from source</p>
+
+
+</td>
         </tr>
     </tbody>
   </table>
@@ -87,55 +99,91 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '352', 352)" onmouseover="showTip(event, '352', 352)">
+          <code onmouseout="hideTip(event, '350', 350)" onmouseover="showTip(event, '350', 350)">
             boxSource source
           </code>
-          <div class="tip" id="352">
+          <div class="tip" id="350">
             <strong>Signature:</strong> source:IVirtualVectorSource&lt;&#39;T&gt; -&gt; IVirtualVectorSource&lt;obj&gt;<br />
                           <strong>Type parameters:</strong> 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L138-138" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L165-165" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Creates a new vector source that boxes all values
+The result also implements IBoxedVectorSource</p>
+
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '351', 351)" onmouseover="showTip(event, '351', 351)">
+            combine f sources
+          </code>
+          <div class="tip" id="351">
+            <strong>Signature:</strong> f:(OptionalValue&lt;&#39;T&gt; list -&gt; OptionalValue&lt;&#39;R&gt;) -&gt; sources:IVirtualVectorSource&lt;&#39;T&gt; list -&gt; IVirtualVectorSource&lt;&#39;R&gt;<br />
+                          <strong>Type parameters:</strong> 'T, 'R          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L192-192" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Creates a new vector that combines (zips) vectors using a given function
+The result also implements ICombinedVectorSource</p>
+
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '352', 352)" onmouseover="showTip(event, '352', 352)">
+            createRowReader (...)
+          </code>
+          <div class="tip" id="352">
+            <strong>Signature:</strong> vectorCtor:(IVirtualVectorSource&lt;&#39;T&gt; -&gt; IVector) -&gt; builder:IVectorBuilder -&gt; irt:IRowReaderTransform -&gt; vectors:IVector&lt;IVector&gt; -&gt; sources:IVirtualVectorSource&lt;&#39;T&gt; list -&gt; IVirtualVectorSource&lt;IVector&lt;obj&gt;&gt;<br />
+                          <strong>Type parameters:</strong> 'T          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L298-298" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Creates a "row reader vector" - that is a vector that provides source for the series
+returned by frame.Rows. This is combined from a number of sources, but we do not
+fully materialize anything to create the vector. The first parameter is a ctor
+for <code>VirtualVector</code> which is defined below in the file.</p>
+
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '353', 353)" onmouseover="showTip(event, '353', 353)">
-            combine f sources
-          </code>
-          <div class="tip" id="353">
-            <strong>Signature:</strong> f:(OptionalValue&lt;&#39;T&gt; list -&gt; OptionalValue&lt;&#39;R&gt;) -&gt; sources:IVirtualVectorSource&lt;&#39;T&gt; list -&gt; IVirtualVectorSource&lt;&#39;R&gt;<br />
-                          <strong>Type parameters:</strong> 'T, 'R          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L162-162" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '354', 354)" onmouseover="showTip(event, '354', 354)">
             map rev f source
           </code>
-          <div class="tip" id="354">
+          <div class="tip" id="353">
             <strong>Signature:</strong> rev:(&#39;TNew -&gt; &#39;V) option -&gt; f:(IVectorLocation -&gt; OptionalValue&lt;&#39;V&gt; -&gt; OptionalValue&lt;&#39;TNew&gt;) -&gt; source:IVirtualVectorSource&lt;&#39;V&gt; -&gt; IVirtualVectorSource&lt;&#39;TNew&gt;<br />
                           <strong>Type parameters:</strong> 'TNew, 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L198-198" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L228-228" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Creates a new vector that transforms source values using a given function
+The result also implements IMappedVectorSource</p>
+
+
+
         </td>
       </tr>
     </tbody>

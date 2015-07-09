@@ -61,16 +61,16 @@ vector simply provides an access to values using <code>ValueAt</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1090', 1090)" onmouseover="showTip(event, '1090', 1090)">
+          <code onmouseout="hideTip(event, '1098', 1098)" onmouseover="showTip(event, '1098', 1098)">
             GetSubVector(arg1)
           </code>
-          <div class="tip" id="1090">
+          <div class="tip" id="1098">
             <strong>Signature:</strong> RangeRestriction&lt;Address&gt; -&gt; IVirtualVectorSource&lt;&#39;V&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L81-81" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L73-73" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -84,16 +84,16 @@ frame/series, both using address or using keys - which are obtained using Lookup
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1091', 1091)" onmouseover="showTip(event, '1091', 1091)">
+          <code onmouseout="hideTip(event, '1099', 1099)" onmouseover="showTip(event, '1099', 1099)">
             LookupRange(arg1)
           </code>
-          <div class="tip" id="1091">
+          <div class="tip" id="1099">
             <strong>Signature:</strong> &#39;V -&gt; RangeRestriction&lt;Address&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L73-73" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L65-65" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -111,16 +111,16 @@ value (say column "PClass" has a value "1").</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1092', 1092)" onmouseover="showTip(event, '1092', 1092)">
+          <code onmouseout="hideTip(event, '1100', 1100)" onmouseover="showTip(event, '1100', 1100)">
             LookupValue(arg1, arg2, arg3)
           </code>
-          <div class="tip" id="1092">
+          <div class="tip" id="1100">
             <strong>Signature:</strong> (&#39;V * Lookup * Func&lt;Address,bool&gt;) -&gt; OptionalValue&lt;&#39;V * Address&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L77-77" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L69-69" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -134,16 +134,16 @@ index and it has the same signature as <code>IIndex&lt;'K&gt;.Lookup</code> (see
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1093', 1093)" onmouseover="showTip(event, '1093', 1093)">
+          <code onmouseout="hideTip(event, '1101', 1101)" onmouseover="showTip(event, '1101', 1101)">
             MergeWith(arg1)
           </code>
-          <div class="tip" id="1093">
+          <div class="tip" id="1101">
             <strong>Signature:</strong> seq&lt;IVirtualVectorSource&lt;&#39;V&gt;&gt; -&gt; IVirtualVectorSource&lt;&#39;V&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L85-85" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L77-77" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -157,16 +157,16 @@ index and it has the same signature as <code>IIndex&lt;'K&gt;.Lookup</code> (see
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1094', 1094)" onmouseover="showTip(event, '1094', 1094)">
+          <code onmouseout="hideTip(event, '1102', 1102)" onmouseover="showTip(event, '1102', 1102)">
             ValueAt(arg1)
           </code>
-          <div class="tip" id="1094">
+          <div class="tip" id="1102">
             <strong>Signature:</strong> IVectorLocation -&gt; OptionalValue&lt;&#39;V&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L65-65" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L57-57" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>

@@ -85,6 +85,40 @@ to make sure that correct conversion functions are used.</p>
         </tr>
         <tr>
           <td class="type-name">
+            <a href="deedle-addressing-iaddressoperations.html">IAddressOperations</a>
+          </td>
+          <td class="xmldoc"><p>Various implementations can use different schemes for working with addresses 
+(for example, address can be just a global offset, or it can be pair of <code>int32</code> values
+that store partition and offset in a partition). This interface represents a specific
+address range and abstracts operations that BigDeedle needs to perform on addresses
+(within the specified range)</p>
+
+
+</td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-addressing-iaddressingscheme.html">IAddressingScheme</a>
+          </td>
+          <td class="xmldoc"><p>An empty interface that is used as an marker for "addressing schemes". As discussed
+above, Deedle can use different addressing schemes. We need to make sure that the index
+and vector share the scheme - this is done by attaching <code>IAddressingScheme</code> to each
+index or vector and checking that they match. Implementations must support equality!</p>
+
+
+</td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-addressing-linearaddressingscheme.html">LinearAddressingScheme</a>
+          </td>
+          <td class="xmldoc"><p>Represents a linear addressing scheme where the addresses are <code>0 .. &lt;size&gt;-1</code>.</p>
+
+
+</td>
+        </tr>
+        <tr>
+          <td class="type-name">
             <a href="deedle-addressing-address-0.html">address</a>
           </td>
           <td class="xmldoc"></td>
@@ -107,7 +141,7 @@ to make sure that correct conversion functions are used.</p>
             <a href="deedle-addressing-linearaddress.html">LinearAddress</a>
           </td>
           <td class="xmldoc"><p>Address operations that are used by the standard in-memory Deedle structures
-(LinearIndex and ArrayVector). Here, address is</p>
+(LinearIndex and ArrayVector). Here, address is a positive array offset.</p>
 
 
 </td>

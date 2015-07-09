@@ -45,6 +45,11 @@
   <span>Namespace: Deedle.Indices.Virtual</span><br />
 </p>
 <div class="xmldoc">
+<p>Represents an ordinal index based on addressing provided by a virtual source.
+The index can be used by BigDeedle virtual frames and series, without accessing
+all data from the data source.</p>
+
+
 </div>
   <h3>Constructors</h3>
   <table class="table table-bordered member-list">
@@ -55,15 +60,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1019', 1019)" onmouseover="showTip(event, '1019', 1019)">
+          <code onmouseout="hideTip(event, '1030', 1030)" onmouseover="showTip(event, '1030', 1030)">
             new(ranges, source)
           </code>
-          <div class="tip" id="1019">
+          <div class="tip" id="1030">
             <strong>Signature:</strong> (ranges:Ranges&lt;int64&gt; * source:IVirtualVectorSource) -&gt; VirtualOrdinalIndex<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/VirtualIndex.fs#L81-81" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/VirtualIndex.fs#L96-96" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -81,37 +86,43 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1020', 1020)" onmouseover="showTip(event, '1020', 1020)">
+          <code onmouseout="hideTip(event, '1031', 1031)" onmouseover="showTip(event, '1031', 1031)">
             Ranges
           </code>
-          <div class="tip" id="1020">
+          <div class="tip" id="1031">
             <strong>Signature:</strong> Ranges&lt;int64&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/VirtualIndex.fs#L82-82" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/VirtualIndex.fs#L99-99" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Returns the ranges of data mapped in this index</p>
+
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1021', 1021)" onmouseover="showTip(event, '1021', 1021)">
+          <code onmouseout="hideTip(event, '1032', 1032)" onmouseover="showTip(event, '1032', 1032)">
             Source
           </code>
-          <div class="tip" id="1021">
+          <div class="tip" id="1032">
             <strong>Signature:</strong> IVirtualVectorSource<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/VirtualIndex.fs#L83-83" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/VirtualIndex.fs#L101-101" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Returns the source that is used to identify the index.</p>
+
+
+
         </td>
       </tr>
     </tbody>

@@ -71,7 +71,7 @@ to the "least common denominator" data structure - <code>IEnumerable&lt;T&gt;</c
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L116-116" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L131-131" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -94,7 +94,7 @@ order of elements in the vector and so it also returns missing values.)</p>
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L116-116" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L131-131" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -112,15 +112,20 @@ order of elements in the vector and so it also returns missing values.)</p>
             Select(f)
           </code>
           <div class="tip" id="39">
-            <strong>Signature:</strong> (f:(&#39;T -&gt; &#39;?496246)) -&gt; IVector&lt;&#39;?496246&gt;<br />
-                          <strong>Type parameters:</strong> '?496246          </div>
+            <strong>Signature:</strong> (f:(&#39;T -&gt; &#39;R)) -&gt; IVector&lt;&#39;R&gt;<br />
+                          <strong>Type parameters:</strong> 'R          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L112-112" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/Vector.fs#L127-127" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Apply the specified function to all values stored in the vector and return
+a new vector (not necessarily of the same representation) with the results.
+The function skips missing values.</p>
+
+
+
         </td>
       </tr>
     </tbody>

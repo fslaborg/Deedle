@@ -45,6 +45,10 @@
   <span>Namespace: Deedle.Vectors.Virtual</span><br />
 </p>
 <div class="xmldoc">
+<p>A helper type used by non-generic <code>IVirtualVectorSource</code> to invoke generic 
+operations that require generic <code>IVirtualVectorSource&lt;'T&gt;</code> as an argument.</p>
+
+
 </div>
   <h3>Instance members</h3>
   <table class="table table-bordered member-list">
@@ -55,20 +59,23 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1095', 1095)" onmouseover="showTip(event, '1095', 1095)">
+          <code onmouseout="hideTip(event, '1103', 1103)" onmouseover="showTip(event, '1103', 1103)">
             Invoke(arg1)
           </code>
-          <div class="tip" id="1095">
+          <div class="tip" id="1103">
             <strong>Signature:</strong> IVirtualVectorSource&lt;&#39;T&gt; -&gt; &#39;R<br />
               <strong>Modifiers:</strong> abstract<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L40-40" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Vectors/VirtualVector.fs#L23-23" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Generic method that is invoked by the non-generic interface with the correct <code>'T</code></p>
+
+
+
         </td>
       </tr>
     </tbody>
