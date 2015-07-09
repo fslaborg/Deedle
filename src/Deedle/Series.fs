@@ -389,16 +389,11 @@ and
 
   /// [category:Projection and filtering]
   member x.Select<'R>(f:System.Func<KeyValuePair<'K, 'V>, 'R>) = 
-    // NOTE: Do not simply call the other 'Select' overload here, because that
-    // would force evaluation of 'loc.Offset' (which may be slow in BigDeedle)
-    let newVector = vector.Select(fun loc value ->
-      value |> OptionalValue.bind (fun v -> 
-        let key = index.KeyAt(loc.Address)
-        try OptionalValue(f.Invoke(KeyValuePair(key, v)))
+    x.SelectOptional(fun kvp ->
+      kvp.Value |> OptionalValue.bind (fun v -> 
+        try OptionalValue(f.Invoke(KeyValuePair(kvp.Key, v)))
         with :? MissingValueException -> OptionalValue.Missing ))  
-    let newIndex = indexBuilder.Project(index)
-    Series<'K, 'R>(newIndex, newVector, vectorBuilder, indexBuilder )
-
+    
   /// [category:Projection and filtering]
   member x.SelectKeys<'R when 'R : equality>(f:System.Func<KeyValuePair<'K, OptionalValue<'V>>, 'R>) = 
     let newKeys =
@@ -410,21 +405,15 @@ and
 
   /// [category:Projection and filtering]
   member x.SelectOptional<'R>(f:System.Func<KeyValuePair<'K, OptionalValue<'V>>, OptionalValue<'R>>) = 
-    let newVector =
-      index.Mappings |> Array.ofSeq |> Array.map (fun (KeyValue(key, addr)) ->
-           f.Invoke(KeyValuePair(key, vector.GetValue(addr))))
-    let newIndex = indexBuilder.Recreate(index)
-    Series<'K, 'R>(newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
+    let newVector = vector.Select(fun loc value ->
+      let key = index.KeyAt(loc.Address)
+      f.Invoke(KeyValuePair(key, value)))
+    let newIndex = indexBuilder.Project(index)
+    Series<'K, 'R>(newIndex, newVector, vectorBuilder, indexBuilder )
 
   /// [category:Projection and filtering]
   member x.SelectValues<'T>(f:System.Func<'V, 'T>) = 
-    let newVector =
-      index.Mappings |> Array.ofSeq |> Array.map (fun (KeyValue(key, addr)) -> 
-        match vector.GetValue(addr) |> OptionalValue.asOption with 
-        | Some v -> OptionalValue(f.Invoke(v))
-        | None   -> OptionalValue.Missing)
-    let newIndex = indexBuilder.Recreate(index)
-    Series<'K, 'T>(newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
+    x.Select(fun kvp -> f.Invoke kvp.Value)
   
   /// Custom operator that can be used for applying a function to all elements of 
   /// a series. This provides a nicer syntactic sugar for the `Series.mapValues` 

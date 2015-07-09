@@ -461,6 +461,22 @@ let ``Can project using Series.map without evaluating the series`` () =
   valSrc.AccessedData |> shouldEqual [999,4999; 0,0]
 
 [<Test>]
+let ``Can project using Select method without evaluating the series`` () =
+  let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
+  let projected = ts.SelectValues(fun v -> int v % 10)
+  projected.GetAt(0) |> shouldEqual 0
+  projected.GetAt(projected.KeyCount-1) |> shouldEqual 9
+  valSrc.AccessedData |> shouldEqual [999,4999; 0,0]
+
+[<Test>]
+let ``Can project using SelectOptional method without evaluating the series`` () =
+  let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
+  let projected = ts.SelectOptional(fun kvp -> OptionalValue(int kvp.Value.Value % 10))
+  projected.GetAt(0) |> shouldEqual 0
+  projected.GetAt(projected.KeyCount-1) |> shouldEqual 9
+  valSrc.AccessedData |> shouldEqual [999,4999; 0,0]
+
+[<Test>]
 let ``Can subtract series from another (calculated from itself)`` () =
   let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
   let res = (sin ts) / (cos ts) - (tan ts) |> Series.mapValues (fun v -> Math.Round(v, 10))
