@@ -361,9 +361,7 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddre
       
   // Non-generic interface is fully implemented as "virtual"   
   interface IVector with
-    member x.AddressingScheme = 
-      data.DataSequence |> Seq.choose OptionalValue.asOption |> Seq.map (fun v -> v.AddressingScheme) |> Seq.reduce (fun a b ->
-        if a <> b then failwith "mapFrameRowVector: Addressing scheme mismatch" else a )
+    member x.AddressingScheme = data.AddressingScheme
     member x.Length = data.Length
     member x.ObjectSequence = x.DataArray |> Seq.map (OptionalValue.map box)
     member x.SuppressPrinting = false
