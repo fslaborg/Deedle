@@ -354,7 +354,7 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddre
         if value.HasValue && isNA value.Value then OptionalValue.Missing else value
       let data = 
         vector.DataArray 
-        |> Array.mapi (fun idx v -> f (Location.known(colAddressAt (int64 idx), int64 idx)) v |> flattenNA)
+        |> Array.mapi (fun idx v -> f (KnownLocation(colAddressAt (int64 idx), int64 idx)) v |> flattenNA)
       builder.CreateMissing(data)
 
     member vector.Convert(f, _) = (vector :> IVector<_>).Select(f)

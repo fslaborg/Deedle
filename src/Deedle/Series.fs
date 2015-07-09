@@ -99,7 +99,7 @@ and
   member x.Values = 
     index.Mappings
     |> Seq.choosel (fun idx kvp ->
-        vector.GetValueAtLocation(Location.known(kvp.Value, idx)) 
+        vector.GetValueAtLocation(KnownLocation(kvp.Value, idx)) 
         |> OptionalValue.asOption )
 
   /// Returns a collection of values, including possibly missing values. Note that 
@@ -109,7 +109,7 @@ and
   member x.ValuesAll = 
     index.Mappings
     |> Seq.mapl (fun idx kvp ->
-        vector.GetValueAtLocation(Location.known(kvp.Value, idx)).Value)
+        vector.GetValueAtLocation(KnownLocation(kvp.Value, idx)).Value)
 
   /// Returns a collection of observations that form this series. Note that this property
   /// skips over all missing (or NaN) values. Observations are returned as `KeyValuePair<K, V>` 
@@ -119,7 +119,7 @@ and
   member x.Observations = 
     index.Mappings
     |> Seq.choosel (fun idx kvp ->
-        vector.GetValueAtLocation(Location.known(kvp.Value, idx)) 
+        vector.GetValueAtLocation(KnownLocation(kvp.Value, idx)) 
         |> OptionalValue.map (fun v -> KeyValuePair(kvp.Key, v))
         |> OptionalValue.asOption )
 
@@ -132,7 +132,7 @@ and
   member x.ObservationsAll =
     index.Mappings
     |> Seq.mapl (fun idx kvp ->
-        let v = vector.GetValueAtLocation(Location.known(kvp.Value, idx)) 
+        let v = vector.GetValueAtLocation(KnownLocation(kvp.Value, idx)) 
         KeyValuePair(kvp.Key, v))
 
   /// 

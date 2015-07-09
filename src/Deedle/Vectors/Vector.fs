@@ -143,14 +143,12 @@ open Deedle
 open Deedle.Internal
 open Deedle.Addressing
 
-/// Helper functions for working with `IVectorLocation`
-module Location =
-  /// Create an `IVectorLocation` from a known address and offset
-  /// (typically used in LinearIndex/ArrayVector where both are the same)
-  let known(addr, offset) = 
-    { new IVectorLocation with
-        member x.Address = addr
-        member x.Offset = offset }
+/// An `IVectorLocation` created from a known address and offset
+/// (typically used in LinearIndex/ArrayVector where both are the same)
+type KnownLocation(addr, offset) = 
+  interface IVectorLocation with
+    member x.Address = addr
+    member x.Offset = offset 
 
 /// Representes a "variable" in the mini-DSL below
 type VectorHole = int

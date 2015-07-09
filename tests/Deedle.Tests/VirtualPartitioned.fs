@@ -648,6 +648,15 @@ let ``Indexing small frame ordinally returns correct result`` () =
   |> List.ofSeq |> shouldEqual [2000001.0 .. 2000101.0]
 
 [<Test>]
+let ``Can merge boxed column series`` () = 
+  let df = createSmallFrame 1000 (fun n -> 5000)
+  let rows1 = df.Rows.[date 3 0 .. date 3 10].Columns.["A"]
+  let rows2 = df.Rows.[date 2 0 .. date 2 10].Columns.["A"]
+  let sum1 = rows1.As<float>().Sum() + rows2.As<float>().Sum()
+  let merged = Series.mergeAll [rows1; rows2]
+  ObjectSeries(merged).As<float>().Sum() |> shouldEqual sum1
+
+[<Test>]
 let ``Transforming row keys of a small frame returns correct result`` () = 
   let df = createSmallFrame 1000 (fun n -> 5000)
   df.Rows.[date 2 0 .. date 2 100]

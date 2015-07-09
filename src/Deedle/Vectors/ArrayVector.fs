@@ -370,9 +370,9 @@ and ArrayVector<'T> internal (representation:ArrayVectorData<'T>) =
       let data = 
         match representation with
         | VectorNonOptional data ->
-            data |> Array.mapi (fun i v -> f (Location.known(Address.ofInt i, int64 i)) (OptionalValue v) |> flattenNA)
+            data |> Array.mapi (fun i v -> f (KnownLocation(Address.ofInt i, int64 i)) (OptionalValue v) |> flattenNA)
         | VectorOptional data ->
-            data |> Array.mapi (fun i v -> f (Location.known(Address.ofInt i, int64 i)) v |> flattenNA)
+            data |> Array.mapi (fun i v -> f (KnownLocation(Address.ofInt i, int64 i)) v |> flattenNA)
       ArrayVectorBuilder.Instance.CreateMissing(data)
 
     // Conversion on array vectors does not deleay

@@ -217,7 +217,7 @@ module Series =
   let observations (series:Series<'K, 'T>) = 
     series.Index.Mappings
     |> Seq.choosel (fun idx kvp ->
-        series.Vector.GetValueAtLocation(Location.known(kvp.Value, idx)) 
+        series.Vector.GetValueAtLocation(KnownLocation(kvp.Value, idx)) 
         |> OptionalValue.map (fun v -> kvp.Key, v)
         |> OptionalValue.asOption )
   
@@ -227,7 +227,7 @@ module Series =
   [<CompiledName("GetAllObservations")>]
   let observationsAll (series:Series<'K, 'T>) = 
     series.Index.Mappings |> Seq.mapl (fun idx kvp ->
-      kvp.Key, OptionalValue.asOption (series.Vector.GetValueAtLocation(Location.known(kvp.Value, idx))))
+      kvp.Key, OptionalValue.asOption (series.Vector.GetValueAtLocation(KnownLocation(kvp.Value, idx))))
 
   /// Create a new series that contains values for all provided keys.
   /// Use the specified lookup semantics - for exact matching, use `getAll`

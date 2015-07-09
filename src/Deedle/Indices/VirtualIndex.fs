@@ -37,7 +37,7 @@ type VirtualOrderedIndex<'K when 'K : equality>(source:IVirtualVectorSource<'K>)
   let keyAtAddr i = source.ValueAt(i).Value
   let keys = Lazy.Create(fun () ->
     source.AddressOperations.Range
-    |> Seq.mapl (fun idx addr -> keyAtAddr (Location.known(addr, idx)))
+    |> Seq.mapl (fun idx addr -> keyAtAddr (KnownLocation(addr, idx)))
     |> ReadOnlyCollection.ofSeq )
 
   /// Returns the underlying source associated with the index
@@ -58,7 +58,7 @@ type VirtualOrderedIndex<'K when 'K : equality>(source:IVirtualVectorSource<'K>)
   interface IIndex<'K> with
     member x.AddressingScheme = VirtualAddressingScheme(source.AddressingSchemeID) :> _
     member x.AddressOperations = source.AddressOperations
-    member x.KeyAt(addr) = keyAtAddr (Location.delayed(addr, source.AddressOperations))
+    member x.KeyAt(addr) = keyAtAddr (DelayedLocation(addr, source.AddressOperations))
     member x.AddressAt(offs) = source.AddressOperations.AddressOf offs
     member x.KeyCount = source.Length
     member x.IsEmpty = source.AddressOperations.Range |> Seq.isEmpty 
@@ -68,16 +68,16 @@ type VirtualOrderedIndex<'K when 'K : equality>(source:IVirtualVectorSource<'K>)
     member x.Comparer = Comparer<'K>.Default
     
     member x.KeyRange = 
-      keyAtAddr (Location.known(source.AddressOperations.FirstElement, 0L)),
-      keyAtAddr (Location.delayed(source.AddressOperations.LastElement, source.AddressOperations))
+      keyAtAddr (KnownLocation(source.AddressOperations.FirstElement, 0L)),
+      keyAtAddr (DelayedLocation(source.AddressOperations.LastElement, source.AddressOperations))
     
     member x.KeySequence : seq<'K> = 
       source.AddressOperations.Range
-      |> Seq.mapl (fun idx addr -> keyAtAddr (Location.known(addr, idx)))
+      |> Seq.mapl (fun idx addr -> keyAtAddr (KnownLocation(addr, idx)))
     
     member x.Mappings = 
       source.AddressOperations.Range
-      |> Seq.mapl (fun idx addr -> KeyValuePair(keyAtAddr (Location.known(addr, idx)), addr))
+      |> Seq.mapl (fun idx addr -> KeyValuePair(keyAtAddr (KnownLocation(addr, idx)), addr))
 
     member x.Locate(key) = 
       let loc = source.LookupValue(key, Lookup.Exact, fun _ -> true)
