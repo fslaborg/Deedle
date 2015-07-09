@@ -172,9 +172,9 @@ let ``Lookup and ValueAt works on merged tracking sources`` () =
   let source1 = TrackingSource.CreateTimes(0L, 10L) :> IVirtualVectorSource<_>
   let source2 = TrackingSource.CreateTimes(10000000L, 10000010L) :> IVirtualVectorSource<_>
   let sources = source1.MergeWith [source2]
-  source1.ValueAt(Location.known(Address.ofInt64 0L, 0L)).Value |> shouldEqual (ith 0L)
-  source2.ValueAt(Location.known(Address.ofInt64 0L, 0L)).Value |> shouldEqual (ith 10000000L)
-  sources.ValueAt(Location.known(Address.ofInt64 11L, 11L)).Value |> shouldEqual (ith 10000000L)
+  source1.ValueAt(KnownLocation(Address.ofInt64 0L, 0L)).Value |> shouldEqual (ith 0L)
+  source2.ValueAt(KnownLocation(Address.ofInt64 0L, 0L)).Value |> shouldEqual (ith 10000000L)
+  sources.ValueAt(KnownLocation(Address.ofInt64 11L, 11L)).Value |> shouldEqual (ith 10000000L)
   sources.LookupValue(ith 0L, Lookup.Exact, fun _ -> true).Value |> fst |> shouldEqual (ith 0L)
   sources.LookupValue(ith 10L, Lookup.Exact, fun _ -> true).Value |> fst |> shouldEqual (ith 10L)
   sources.LookupValue(ith 100L, Lookup.Exact, fun _ -> true).HasValue |> shouldEqual false
