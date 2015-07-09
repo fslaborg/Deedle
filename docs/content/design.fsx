@@ -176,6 +176,36 @@ addressing scheme. There is a number of things that ensure this:
    matches too. When a new vector is created using `IVectorBuilder.Create`,
    the index needs to be transformed using `IIndexBuilder.Recreate`.
 
+
+BigDeedle and virtual series and frames
+---------------------------------------
+
+The "BigDeedle" project implements virtualized data sources that can perform many operations
+of Deedle without actually evaluating the data. This consists of `VirtualVector<'T>` and
+`VirtualOrderedIndex<'T>` and `VirtualOrdinalIndex<'T>` (there are two indices - one for
+ordinal keys and one for user-specified keys) together with their builders.
+
+BigDeedle is extensible and you only need to provide fairly small number of operations to 
+use it. The interfaces to look at are: 
+
+ - `IVirtualVectorSource<'T>` where `'T` is the type of values of the source. This interface
+   is used as a source for both virtual vectors (data access) and virtual indices (keys).
+   Once you have a value of this, you can use `Virtual.CreateSeries` and similar methods
+   to build a series or a frame.
+
+The most tricky thing of the implementation is often `IAddressOperations`:
+
+ - If you already have some underlying infrastructure that handles merging and slicing of
+   virtual sources, then you can implement the interface directly on top of this (and
+   use the infrastructure in merging and slicing operations of `IVirtualVectorSource`).
+
+ - More frequently, you'll want to use the `Ranges<'K>` type provided by Deedle. This
+   represents a mapping from some keys `'K` to offsets and it supports merging and slicing
+   (so you do not have to write your own code to merge slices of virtual soruces).
+   To use this, you can use `RangesAddressOperations(...)` which gives you an implementation
+   of `IAddressOperations`. For a reasonably simple example, see the code in 
+   [tests using partitioned addressing scheme](https://github.com/tpetricek/Deedle/blob/big-deedle-addr/tests/Deedle.Tests/VirtualPartitioned.fs).
+
 Discussion and open questions
 -----------------------------
 

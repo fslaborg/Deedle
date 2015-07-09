@@ -291,7 +291,10 @@ module VirtualVectorSource =
         member x.Length = source.Length
         member x.Invoke(op) = op.Invoke(x :?> IVirtualVectorSource<'TNew>) }
 
-
+  /// Creates a "row reader vector" - that is a vector that provides source for the series
+  /// returned by frame.Rows. This is combined from a number of sources, but we do not
+  /// fully materialize anything to create the vector. The first parameter is a ctor
+  /// for `VirtualVector` which is defined below in the file.
   let rec createRowReader 
       (vectorCtor:_ -> IVector) (builder:IVectorBuilder) (irt:IRowReaderTransform) 
       (vectors:IVector<IVector>) (sources:IVirtualVectorSource<'T> list) : IVirtualVectorSource<IVector<obj>> = 
@@ -314,10 +317,12 @@ module VirtualVectorSource =
           | None -> failwith "Cannot merge frames or series not created by combine"
           | Some sources ->
               // Make sure that all sources are combinations of the same number of vectors 
-              let length = sources |> Seq.map Array.length |> Seq.reduce (fun a b -> if a <> b then failwith "Length mismatch" else a)
+              let length = sources |> Seq.uniqueBy Array.length
               let toCombine =
                 [ for i in 0 .. length - 1 ->
-                    let sh,st = match [ for s in sources -> s.[i] ] with sh::st -> sh, st | _ -> failwith "Merge requires one or more sources"  // ....
+                    let sh,st = 
+                      match [ for s in sources -> s.[i] ] with 
+                      | sh::st -> sh, st | _ -> failwith "Merge requires one or more sources"
                     sh.MergeWith(st) ]
               let data = Vector.ofValues [ for s in toCombine -> vectorCtor s ]
               createRowReader vectorCtor builder irt data toCombine
@@ -494,20 +499,21 @@ type VirtualVectorBuilder() =
             //
             // We short-circuit the default implementation (which actually allocates the 
             // vectors) and we create a vector of virtualized "row readers".
-            let builtSources = vectors |> List.map (build schemeOpt) |> Array.ofSeq
-            let allVirtual = builtSources |> Array.forall (fun vec -> vec :? VirtualVector<'T>)
-            if allVirtual then
-              let sources = builtSources |> Array.map (function :? VirtualVector<'T> as v -> v.Source | _ -> failwith "assertion failed") |> List.ofSeq
-
-
-              let data = Vector.ofValues [ for v in builtSources -> v :> IVector ]
-              let newSource = VirtualVectorSource.createRowReader (fun s -> VirtualVector s :> _) builder irt data sources
+            let built = vectors |> List.map (build schemeOpt)
+            let virtualSources = built |> List.tryChooseBy (fun vec ->
+              match vec with :? VirtualVector<'T> as v -> Some v.Source | _ -> None)
+            match virtualSources with
+            | Some sources ->
+                let data = Vector.ofValues [ for v in built -> v :> IVector ]
+                let newSource = 
+                    VirtualVectorSource.createRowReader 
+                      (fun s -> VirtualVector s :> _) builder irt data sources
             
-              // Because Build is `IVector<'T>[] -> IVector<'T>`, there is some nasty boxing.
-              // This case is only called with `'T = obj` and so we create `IVector<obj>` containing 
-              // `obj = IVector<obj>` as the row readers (the caller in Rows then unbox this)
-              VirtualVector(VirtualVectorSource.map None (fun _ -> OptionalValue.map box) newSource) |> unbox<IVector<'T>>
-            else
+                // Because Build is `IVector<'T>[] -> IVector<'T>`, there is some nasty boxing.
+                // This case is only called with `'T = obj` and so we create `IVector<obj>` containing 
+                // `obj = IVector<obj>` as the row readers (the caller in Rows then unbox this)
+                VirtualVector(VirtualVectorSource.map None (fun _ -> OptionalValue.map box) newSource) |> unbox<IVector<'T>>
+            | _ ->
               failwith "VirtualVectorBuilder.Build: Cannot return virtual vector from Combine"
 
 

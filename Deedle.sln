@@ -12,7 +12,6 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle", "src\Deedle\Deedle
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{245F1283-32FA-4B38-AC76-448B8AE5F7AC}"
 	ProjectSection(SolutionItems) = preProject
-		docs\content\bigdeedle.fsx = docs\content\bigdeedle.fsx
 		docs\content\csharpframe.md = docs\content\csharpframe.md
 		docs\content\csharpintro.md = docs\content\csharpintro.md
 		docs\content\csharpseries.md = docs\content\csharpseries.md
