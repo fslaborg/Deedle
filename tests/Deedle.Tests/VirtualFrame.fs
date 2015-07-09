@@ -608,7 +608,7 @@ let ``Can materialize a delayed series into a virtual series`` () =
   let r = Recorder()
   let delayed = 
     DelayedSeries.FromIndexVectorLoader
-      ( VirtualAddressingScheme(),
+      ( VirtualAddressingScheme("it"),
         VirtualVectorBuilder.Instance, VirtualIndexBuilder.Instance, 
         date 2000 1 1, date 2100 1 1, dataLoader (spy1 r ignore) )
 
