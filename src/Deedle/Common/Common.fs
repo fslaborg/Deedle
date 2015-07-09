@@ -631,6 +631,13 @@ module List =
 /// `Deedle.Internals` is opened, it extends the standard `Seq` module.
 module Seq = 
 
+  /// If the projection returns the same value for all elements, then it
+  /// returns the value. Otherwise it throws an exception.
+  let uniqueBy f input =
+    input |> Seq.map f |> Seq.reduce (fun a b ->  
+      if a <> b then failwith "uniqueBy: Elements are not the same" else a)
+
+
   /// Returns the last element and the length of a sequence
   /// (using just a single iteration over the sequence)
   let inline lastAndLength (input:seq<_>) = 

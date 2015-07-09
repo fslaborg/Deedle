@@ -25,7 +25,10 @@ type IVirtualVectorSourceOperation<'R> =
 /// Non-generic part of the `IVirtualVectorSource<'V>` interface, which 
 /// provides some basic information about the virtualized data source
 and IVirtualVectorSource =
-  
+  /// Identifies the addressing scheme associated with this source. This should be shared
+  /// by all sources for which the same addresses are valid (e.g. all columns in the same table)
+  abstract AddressingSchemeID : string
+
   /// Returns the type of elements - essentially typeof<'V> for IVirtualVectorSource<'V>
   abstract ElementType : System.Type
 
@@ -72,8 +75,12 @@ and IVirtualVectorSource<'V> =
   abstract MergeWith : seq<IVirtualVectorSource<'V>> -> IVirtualVectorSource<'V>
 
 
+/// Represents an addressing scheme associated to virtual vectors. The addresses
+/// may be partitioned differently (for different data sources), so this carries
+/// an "id" of the data source (to make sure we don't try to mix mismatching data
+/// sources)
 type VirtualAddressingScheme = 
-  | VirtualAddressingScheme of unit // TODO: This could contain some more info identifying the source
+  | VirtualAddressingScheme of string
   interface IAddressingScheme
 
 
@@ -154,6 +161,7 @@ module VirtualVectorSource =
       interface IBoxedVectorSource<'T> with
         member x.Source = source
       interface IVirtualVectorSource with
+        member x.AddressingSchemeID = source.AddressingSchemeID
         member x.ElementType = typeof<obj>
         member x.Length = source.Length
         member x.AddressOperations = source.AddressOperations 
@@ -185,11 +193,8 @@ module VirtualVectorSource =
         member x.Sources = sources
         member x.Function = () 
       interface IVirtualVectorSource with
-        member x.AddressOperations = 
-          sources 
-          |> Seq.map (fun s -> s.AddressOperations)
-          |> Seq.reduce (fun a b ->  
-              if a <> b then failwith "Address operations mismatch" else a)
+        member x.AddressingSchemeID = sources |> Seq.uniqueBy (fun s -> s.AddressingSchemeID)
+        member x.AddressOperations = sources |> Seq.uniqueBy (fun s -> s.AddressOperations)
         member x.ElementType = typeof<'R>
         member x.Length = sources |> Seq.map (fun s -> s.Length) |> Seq.reduce (fun a b -> if a <> b then failwith "Length mismatch" else a) 
         member x.Invoke(op) = op.Invoke(x :?> IVirtualVectorSource<'R>)
@@ -251,6 +256,7 @@ module VirtualVectorSource =
         member x.Source = source
         member x.Function = ()
       interface IVirtualVectorSource with
+        member x.AddressingSchemeID = source.AddressingSchemeID
         member x.AddressOperations = source.AddressOperations
         member x.ElementType = typeof<'TNew>
         member x.Length = source.Length
@@ -270,7 +276,7 @@ type VirtualVector<'V>(source:IVirtualVectorSource<'V>) =
 
   interface IVector with
     member val ElementType = typeof<'V>
-    member vector.AddressingScheme = VirtualAddressingScheme() :> _
+    member vector.AddressingScheme = VirtualAddressingScheme(source.AddressingSchemeID) :> _
     member vector.Length = source.Length
     member vector.SuppressPrinting = false
     member vector.GetObject(addr) = source.ValueAt(Location.delayed(addr, source.AddressOperations)) |> OptionalValue.map box
@@ -448,16 +454,9 @@ type VirtualVectorBuilder() =
                   interface IVirtualVectorSource with
                     member x.Invoke(op) = op.Invoke(x :?> IVirtualVectorSource<obj>)
                     member x.ElementType = typeof<IVector<obj>>
-                    member x.Length = 
-                      sources 
-                      |> Seq.map (fun s -> s.Length) 
-                      |> Seq.reduce (fun a b -> if a <> b then failwith "Length mismatch" else a) 
-
-                    member x.AddressOperations = 
-                      sources 
-                      |> Seq.map (fun s -> s.AddressOperations)
-                      |> Seq.reduce (fun a b ->  
-                          if a <> b then failwith "Address operations mismatch" else a) }
+                    member x.Length = sources |> Seq.uniqueBy (fun s -> s.Length)
+                    member x.AddressOperations = sources |> Seq.uniqueBy (fun s -> s.AddressOperations)
+                    member x.AddressingSchemeID = sources |> Seq.uniqueBy (fun s -> s.AddressingSchemeID) }
 
               let data = Vector.ofValues [ for v in builtSources -> v :> IVector ]
               let newSource = createRowReader data sources

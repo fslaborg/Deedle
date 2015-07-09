@@ -193,6 +193,7 @@ type TrackingSource<'T>
   // Implements non-generic source (boilerplate)
 
   interface IVirtualVectorSource with
+    member x.AddressingSchemeID = "it"
     member x.Length = ranges.Length
     member x.ElementType = typeof<'T>
     member x.AddressOperations = addressing
@@ -268,6 +269,12 @@ let createTimeSeries partNum partSize =
   let valSrc = TrackingSource<float>((ref [], accessMeta), valValues (fun part idx -> part * 1000000.0 + idx), ranges)
   let sv = Virtual.CreateSeries(idxSrc, valSrc)
   idxSrc, valSrc, sv
+
+let createOrdinalSeries partNum partSize =
+  let accessMeta, ranges = createRanges partNum partSize
+  let valSrc = TrackingSource<float>((ref [], accessMeta), valValues (fun part idx -> part * 1000000.0 + idx), ranges)
+  let sv = Virtual.CreateOrdinalSeries(valSrc)
+  valSrc, sv
 
 // ------------------------------------------------------------------------------------------------
 // Printing and accessing meta-data about series
@@ -420,6 +427,26 @@ let ``Slicing with out of range keys or reversed order produces empty series`` (
   ts.[date 999 4999 .. dateOffs 3000 1 1].KeyCount |> shouldEqual 1
   ts.[dateOffs 1990 1 1 .. date 0 0].KeyCount |> shouldEqual 1
   
+// ------------------------------------------------------------------------------------------------
+// Operations over ordinal series
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Cen perform slicing on an ordinally indexed series`` () =
+  let valSrc, ts = createOrdinalSeries 1000 (fun n -> 10)
+  let ss = ts.[1005L .. 1014L]
+
+  ss.GetKeyAt(0) |> shouldEqual 1005L
+  ss.GetKeyAt(int ss.KeyCount-1) |> shouldEqual 1014L  
+  for k in 1005L .. 1014L do
+    ss.[k] |> shouldEqual ts.[k]
+
+[<Test>]
+let ``Cen perform slicing and merging on an ordinally indexed series`` () =
+  let valSrc, ts = createOrdinalSeries 1000 (fun n -> 10)
+  let ss = Series.mergeAll [ ts.[1005L .. 1014L]; ts.[2005L .. 2014L] ]
+  for k in ss.Keys do
+    ss.[k] |> shouldEqual ts.[k]
 
 // ------------------------------------------------------------------------------------------------
 // Projection, joins and other operations

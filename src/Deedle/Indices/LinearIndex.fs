@@ -209,10 +209,6 @@ type LinearRangeIndex<'K when 'K : equality>
   override index.Equals(another) = getActualIndex().Equals(another) 
   override index.GetHashCode() = getActualIndex().GetHashCode()
 
-  // will inline op_Explicit(value: int64) : Address from the Address type
-  member inline private x.AddressAt(offset) = Address.ofInt64 offset
-  member inline private x.OffsetAt(address) = Address.asInt64 address
-
   interface IIndex<'K> with
     // Operations that can be implemented without evaluating the index
     member x.AddressingScheme = LinearAddressingScheme.Instance

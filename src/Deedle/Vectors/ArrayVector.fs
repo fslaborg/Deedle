@@ -78,10 +78,9 @@ type ArrayVectorBuilder() =
 
     /// Asynchronous version - limited implementation for AsyncMaterialize
     member builder.AsyncBuild<'T>(scheme, command:VectorConstruction, arguments:IVector<'T>[]) = async {
-
+      // Check that the expected scheme matches what we can build
       if scheme <> Addressing.LinearAddressingScheme.Instance then
         failwith "ArrayVector.AsyncBuild: Can only build vectors with linear addressing scheme!"
-
       match command with
       | AsyncCustomCommand(vectors, f) ->
           let vectors = List.map (fun v -> vectorBuilder.Build(scheme, v, arguments) :> IVector) vectors
@@ -94,12 +93,12 @@ type ArrayVectorBuilder() =
     /// Given a vector construction command(s) produces a new IVector
     /// (the result is typically ArrayVector, but this is not guaranteed)
     member builder.Build<'T>(scheme, command:VectorConstruction, arguments:IVector<'T>[]) = 
-
+      // Check that the expected scheme matches what we can build
       if scheme <> Addressing.LinearAddressingScheme.Instance then
         failwith "ArrayVector.Build: Can only build vectors with linear addressing scheme!"
-
       match command with
       | Return vectorVar -> 
+          // Ensure that the result has the right addressing scheme!
           match arguments.[vectorVar] with
           | linear when linear.AddressingScheme = scheme -> linear
           | otherVector -> vectorBuilder.CreateMissing(Array.ofSeq otherVector.DataSequence)

@@ -53,6 +53,10 @@ and
     ( index:IIndex<'K>, vector:IVector<'V>,
       vectorBuilder : IVectorBuilder, indexBuilder : IIndexBuilder ) =
   
+  // Check that the addressing schemes match
+  do if index.AddressingScheme <> vector.AddressingScheme then
+       invalidOp "Index and vector of a series should share addressing scheme!"
+
   /// Value to hold the number of elements (so that we do not recalculate this all the time)
   /// (This is calculated on first access; we do not use Lazy<T> to avoid allocations)
   let mutable valueCount = -1 

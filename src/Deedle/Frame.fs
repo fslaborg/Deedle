@@ -82,6 +82,13 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   // Internals (rowIndex, columnIndex, data and various helpers)
   // ----------------------------------------------------------------------------------------------
 
+  // Check that the addressing schemes match
+  do for v in data.DataSequence do
+       if rowIndex.AddressingScheme <> v.Value.AddressingScheme then
+         invalidOp "Row index and vectors of a frame should share addressing scheme!"
+     if columnIndex.AddressingScheme <> data.AddressingScheme then
+       invalidOp "Column index and data vector of a frame should share addressing scheme!"
+
   let mutable isEmpty = rowIndex.IsEmpty && columnIndex.IsEmpty
 
   // TODO: Perhaps assert that the 'data' vector has all things required by column index
@@ -1564,8 +1571,10 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let groups = relocs |> Seq.map (fun (g, idx) ->
       let newIndex = Index.ofKeys(idx |> Seq.map fst |> ReadOnlyCollection.ofSeq)    // index of rowkeys
       let newLocs  = idx |> Seq.map snd                                              // seq of offsets
-      let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 newIndex.KeyCount, 
-                                      newLocs |> Seq.mapi (fun a b -> (newIndex.AddressAt(int64 a), newIndex.AddressAt(int64 b))))
+      let cmd = 
+        VectorConstruction.Relocate
+          ( VectorConstruction.Return 0, int64 newIndex.KeyCount, 
+            newLocs |> Seq.mapi (fun a b -> (newIndex.AddressAt(int64 a), newIndex.AddressAt(int64 b))))
       let newData  = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newIndex.AddressingScheme cmd)
       Frame<_, _>(newIndex, frame.ColumnIndex, newData, indexBuilder, vectorBuilder) )
  

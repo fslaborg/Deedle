@@ -48,11 +48,16 @@ module Addressing =
     let inline increment (x:Address) = x + 1L<address>
     let inline decrement (x:Address) = x - 1L<address>
 
-
+  /// An empty interface that is used as an marker for "addressing schemes". As discussed
+  /// above, Deedle can use different addressing schemes. We need to make sure that the index
+  /// and vector share the scheme - this is done by attaching `IAddressingScheme` to each
+  /// index or vector and checking that they match. Implementations must support equality!
   type IAddressingScheme = interface end
 
+  /// Represents a linear addressing scheme where the addresses are `0 .. <size>-1`.
   type LinearAddressingScheme private() = 
     static let instance = LinearAddressingScheme() :> IAddressingScheme
+    /// Returns a single instance of the object (to enable reference equality)
     static member Instance = instance 
     interface IAddressingScheme
 

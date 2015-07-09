@@ -109,9 +109,13 @@ type BoundaryBehavior = Inclusive | Exclusive
 /// Values of this type are constructed using the associated `IIndexBuilder` type.
 type IIndex<'K when 'K : equality> = 
 
+  /// Returns the addressing scheme of the index. When creating a series or a frame
+  /// this is compared for equality with the addressing scheme of the vector(s).
   abstract AddressingScheme : IAddressingScheme
 
-  /// Returns the address operations associated with this index
+  /// Returns the address operations associated with this index. The addresses of the
+  /// index are not necesarilly continuous integers from 0. This provides some operations
+  /// that can be used for implementing generic operations over any kind of indices.
   abstract AddressOperations : IAddressOperations
 
   /// Returns a (fully evaluated) collection with all keys in the index

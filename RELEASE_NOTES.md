@@ -111,3 +111,10 @@
 
 ### 1.2.0
  * Update version number for a BigDeedle release
+
+### 1.2.2
+ * BigDeedle: Materialize series on grouping and other operations
+ * BigDeedle: Support resampling without materializing series
+ * Better handling of materialization via addressing schemes
+ * Refactoring and cleanup of BigDeedle code
+ * Fix bugs in ordinal virtual index

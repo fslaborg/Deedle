@@ -56,6 +56,8 @@ type IVector =
   /// Returns the number of elements in the vector
   abstract Length : int64
 
+  /// Returns the addressing scheme of the index. When creating a series or a frame
+  /// this is compared for equality with the addressing scheme of the vector(s).
   abstract AddressingScheme : IAddressingScheme
 
 /// Represents a generic function `\forall.'T.(IVector<'T> -> 'R)`. The function can be 
