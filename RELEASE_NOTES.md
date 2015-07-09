@@ -118,3 +118,4 @@
  * Better handling of materialization via addressing schemes
  * Refactoring and cleanup of BigDeedle code
  * Fix bugs in ordinal virtual index
+ * SelectOptional and SelectValues can be performed lazilly
