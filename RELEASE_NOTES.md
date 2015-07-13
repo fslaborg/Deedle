@@ -114,3 +114,11 @@
 
 ### 1.2.1
  * Support public fields in Frame.ofRecords
+
+### 1.2.2
+ * BigDeedle: Materialize series on grouping and other operations
+ * BigDeedle: Support resampling without materializing series
+ * Better handling of materialization via addressing schemes
+ * Refactoring and cleanup of BigDeedle code
+ * Fix bugs in ordinal virtual index
+ * SelectOptional and SelectValues can be performed lazilly

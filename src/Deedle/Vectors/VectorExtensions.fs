@@ -87,7 +87,7 @@ module internal VectorHelperExtensions =
       RowReaderTransform(colAddressAt) :> INaryTransform
       |> VectorListTransform.Nary
 
-  let createRowVector (vectorBuilder:IVectorBuilder) rowKeyCount colKeyCount colAddressAt f (data:IVector<IVector>) =
+  let createRowVector (vectorBuilder:IVectorBuilder) scheme rowKeyCount colKeyCount colAddressAt f (data:IVector<IVector>) =
     /// Create vector of row reader objects. This method creates 
     /// `IVector<obj>` where each `obj` is actually a boxed `IVector<obj>`
     /// that provides access to data of individual rows of the frame.
@@ -95,7 +95,7 @@ module internal VectorHelperExtensions =
       let vectors = [ for n in Seq.range 0L (colKeyCount-1L) -> Vectors.Return(int n) ]
       let cmd = Vectors.Combine(rowKeyCount, vectors, NaryTransform.RowReader(colAddressAt))
       let boxedData = [| for v in data.DataSequence -> boxVector v.Value |]
-      vectorBuilder.Build(cmd, boxedData)
+      vectorBuilder.Build(scheme, cmd, boxedData)
 
     // We get a vector containing boxed `IVector<obj>` - we turn it into a
     // vector containing what the caller specified, but lazily to avoid allocations

@@ -36,11 +36,11 @@ module Addressing =
     /// Represents an invalid address (which is returned from 
     /// optimized lookup functions when they fail)
     let invalid = -1L<address>
-
+   
   /// Address operations that are used by the standard in-memory Deedle structures
-  /// (LinearIndex and ArrayVector). Here, address is 
+  /// (LinearIndex and ArrayVector). Here, address is a positive array offset.
   module LinearAddress =
-    let invalid = -1L<address>
+    let invalid = Address.invalid
     let inline asInt64 (x:Address) : int64 = int64 x
     let inline asInt (x:Address) : int = int x
     let inline ofInt64 (x:int64) : Address = LanguagePrimitives.Int64WithMeasure x
@@ -48,16 +48,61 @@ module Addressing =
     let inline increment (x:Address) = x + 1L<address>
     let inline decrement (x:Address) = x - 1L<address>
 
+  /// An empty interface that is used as an marker for "addressing schemes". As discussed
+  /// above, Deedle can use different addressing schemes. We need to make sure that the index
+  /// and vector share the scheme - this is done by attaching `IAddressingScheme` to each
+  /// index or vector and checking that they match. Implementations must support equality!
+  type IAddressingScheme = interface end
+
+  /// Represents a linear addressing scheme where the addresses are `0 .. <size>-1`.
+  type LinearAddressingScheme private() = 
+    static let instance = LinearAddressingScheme() :> IAddressingScheme
+    /// Returns a single instance of the object (to enable reference equality)
+    static member Instance = instance 
+    interface IAddressingScheme
+
+  /// Various implementations can use different schemes for working with addresses 
+  /// (for example, address can be just a global offset, or it can be pair of `int32` values
+  /// that store partition and offset in a partition). This interface represents a specific
+  /// address range and abstracts operations that BigDeedle needs to perform on addresses
+  /// (within the specified range)
+  type IAddressOperations =
+    /// Returns the first address of the range
+    abstract FirstElement : Address
+
+    /// Returns the last address of the range
+    abstract LastElement : Address
+
+    /// Returns a sequence that iterates over `FirstElement .. LastElement`
+    abstract Range : seq<Address>
+
+    /// Given an address, return the absolute offset of the address in the range
+    /// This might be tricky for partitioned ranges. For example if you have two 
+    /// partitions with 10 values addressed by (0,0)..(0,9); (1,0)..(1,9), the the
+    /// offset of address (1, 5) is 15.
+    abstract OffsetOf : Address -> int64
+
+    /// Return the address of a value at the specified absolute offset.
+    /// (See the comment for `OffsetOf` for more info about partitioning)
+    abstract AddressOf : int64 -> Address
+
+    /// Increment or decrement the specified address by a given number
+    abstract AdjustBy : Address * int64 -> Address
+
 // --------------------------------------------------------------------------------------
 // Address-related things like ranges
 // --------------------------------------------------------------------------------------
 
 open Addressing 
 
-/// A sequence of indicies together with the total number. Use `AddressRange.ofSeq` to
+/// A sequence of indicies together with the total number. Use `RangeRestriction.ofSeq` to
 /// create one from a sequence. This can be implemented by concrete vector/index 
 /// builders to allow further optimizations (e.g. when the underlying source directly
-/// supports range operations)
+/// supports range operations). 
+///
+/// For example, if your source has an optimised way for getting every 10th address, you 
+/// can create your own `IRangeRestriction` and then check for it in `LookupRange` and 
+/// use optimised implementation rather than actually iterating over the sequence of indices.
 type IRangeRestriction<'TAddress> = 
   inherit seq<'TAddress>
   abstract Count : int64
@@ -96,6 +141,9 @@ module RangeRestriction =
             member x.GetEnumerator() = (Seq.map f c).GetEnumerator() }
         |> RangeRestriction.Custom
 
+/// Transforms all absolute addresses in the specified range restriction
+/// using the provided function (this is useful for mapping between different
+/// address spaces).
 type RangeRestriction<'TAddress> with
   member x.Select(f:Func<_, _>) = RangeRestriction.map f.Invoke x
 

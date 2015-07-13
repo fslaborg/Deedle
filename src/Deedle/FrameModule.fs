@@ -637,7 +637,7 @@ module Frame =
     // form realignment on index, then apply column-wise
     let newIdx = Index.ofKeys (ReadOnlyCollection.ofSeq keys)
     let relocs = frame.IndexBuilder.Reindex(frame.RowIndex, newIdx, Lookup.Exact, VectorConstruction.Return 0, fun _ -> true)
-    let cmd v =  VectorHelpers.transformColumn frame.VectorBuilder relocs v
+    let cmd v =  VectorHelpers.transformColumn frame.VectorBuilder newIdx.AddressingScheme relocs v
     Frame<_, _>(newIdx, frame.ColumnIndex, frame.Data.Select(cmd), frame.IndexBuilder, frame.VectorBuilder)
 
   /// Returns a data frame whose rows are indexed based on the specified column of the original
@@ -749,10 +749,9 @@ module Frame =
   [<CompiledName("IndexRowsWith")>]
   let indexRowsWith (keys:seq<'R2>) (frame:Frame<'R1, 'C>) = 
     let newRowIndex = frame.IndexBuilder.Create(keys, None)
-    let getRange = 
-      RangeRestriction.Fixed(frame.RowIndex.AddressAt(0L), frame.RowIndex.AddressAt(frame.RowIndex.KeyCount-1L))
-      |> VectorHelpers.getVectorRange frame.VectorBuilder
-    let newData = frame.Data.Select(getRange)
+    let range = RangeRestriction.Fixed(frame.RowIndex.AddressAt(0L), frame.RowIndex.AddressAt(frame.RowIndex.KeyCount-1L))
+    let cmd = VectorConstruction.GetRange(Vectors.Return 0, range)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newRowIndex.AddressingScheme cmd)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Replace the row index of the frame with ordinarilly generated integers starting from zero.
@@ -794,7 +793,7 @@ module Frame =
   [<CompiledName("SortRowsByKey")>]
   let sortRowsByKey (frame:Frame<'R, 'C>) = 
     let newRowIndex, rowCmd = frame.IndexBuilder.OrderIndex(frame.RowIndex, Vectors.Return 0)
-    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newRowIndex.AddressingScheme rowCmd)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Returns a data frame that contains the same data as the input, 
@@ -804,7 +803,7 @@ module Frame =
   [<CompiledName("SortRows")>]
   let sortRows colKey (frame:Frame<'R,'C>) =
     let newRowIndex, rowCmd = frame.GetColumn(colKey) |> Series.sortWithCommand compare
-    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newRowIndex.AddressingScheme rowCmd)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Returns a data frame that contains the same data as the input, 
@@ -814,7 +813,7 @@ module Frame =
   [<CompiledName("SortRowsWith")>]
   let sortRowsWith colKey compareFunc (frame:Frame<'R,'C>) =
     let newRowIndex, rowCmd = frame.GetColumn(colKey) |> Series.sortWithCommand compareFunc
-    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newRowIndex.AddressingScheme rowCmd)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Returns a data frame that contains the same data as the input, 
@@ -824,7 +823,7 @@ module Frame =
   [<CompiledName("SortRowBy")>]
   let sortRowsBy colKey (f:'T -> 'V) (frame:Frame<'R,'C>) =
     let newRowIndex, rowCmd = frame.GetColumn(colKey) |> Series.sortByCommand f
-    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newRowIndex.AddressingScheme rowCmd)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Returns a data frame that contains the same data as the input, 
@@ -834,8 +833,8 @@ module Frame =
   /// [category:Sorting and index manipulation]
   [<CompiledName("SortColumnsByKey")>]
   let sortColsByKey (frame:Frame<'R, 'C>) = 
-    let newColIndex, rowCmd = frame.IndexBuilder.OrderIndex(frame.ColumnIndex, Vectors.Return 0)
-    let newData = frame.VectorBuilder.Build(rowCmd, [| frame.Data |])
+    let newColIndex, colCmd = frame.IndexBuilder.OrderIndex(frame.ColumnIndex, Vectors.Return 0)
+    let newData = frame.VectorBuilder.Build(newColIndex.AddressingScheme, colCmd, [| frame.Data |])
     Frame<_, _>(frame.RowIndex, newColIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Creates a new data frame where all columns are expanded based on runtime
@@ -890,12 +889,11 @@ module Frame =
       Frame(Index.ofKeys [], frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder) 
     else
       let cmd = GetRange(Return 0, RangeRestriction.Fixed(lo, hi))
-      let newData = frame.Data.Select(transformColumn frame.VectorBuilder cmd)
-      let newKeys, _ = 
+      let newIndex, _ = 
         frame.RowIndex.Builder.GetAddressRange
           ( (frame.RowIndex, Vectors.Return 0), RangeRestriction.Fixed(lo,hi) )
-      let idx = frame.IndexBuilder.Create(newKeys.Keys, if frame.RowIndex.IsOrdered then Some true else None)
-      Frame(idx, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder) 
+      let newData = frame.Data.Select(transformColumn frame.VectorBuilder newIndex.AddressingScheme cmd)
+      Frame(newIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder) 
 
   /// Returns a frame that contains the specified `count` of rows from the 
   /// original frame; `count` must be smaller or equal to the original number of rows.
@@ -985,7 +983,7 @@ module Frame =
     let column = frame.GetColumn<'V>(column)
     let newRowIndex, cmd = 
       frame.IndexBuilder.Search( (frame.RowIndex, Vectors.Return 0), column.Vector, value)
-    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder cmd)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newRowIndex.AddressingScheme cmd)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
 
@@ -1027,8 +1025,8 @@ module Frame =
   [<CompiledName("SelectRowKeys")>]
   let mapRowKeys (f:'R1 -> 'R2) (frame:Frame<_, 'C>) = 
     let newRowIndex = frame.IndexBuilder.Create(frame.RowIndex.Keys |> Seq.map f, None)
-    Frame(newRowIndex, frame.ColumnIndex, frame.Data, frame.IndexBuilder, frame.VectorBuilder)
-
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newRowIndex.AddressingScheme (Vectors.Return 0))
+    Frame(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Returns a new data frame containing only the columns of the input frame
   /// for which the specified predicate returns `true`. The predicate is called
@@ -1095,7 +1093,8 @@ module Frame =
   [<CompiledName("SelectColumnKeys")>]
   let mapColKeys f (frame:Frame<'R, 'C>) = 
     let newColIndex = frame.IndexBuilder.Create(frame.ColumnIndex.Keys |> Seq.map f, None)
-    Frame(frame.RowIndex, newColIndex, frame.Data, frame.IndexBuilder, frame.VectorBuilder)
+    let newData = frame.VectorBuilder.Build(newColIndex.AddressingScheme, Vectors.Return 0, [| frame.Data |])
+    Frame(frame.RowIndex, newColIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Builds a new data frame whose values are the results of applying the specified
   /// function on these values, but only for those columns which can be converted 
@@ -1177,7 +1176,7 @@ module Frame =
   let shift offset (frame:Frame<'R, 'C>) = 
     let newRowIndex, cmd = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), offset)
     let vectorBuilder = VectorBuilder.Instance
-    let newData = frame.Data.Select(VectorHelpers.transformColumn vectorBuilder cmd)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn vectorBuilder newRowIndex.AddressingScheme cmd)
     Frame(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Returns a frame with columns containing difference between an original value and
@@ -1200,9 +1199,9 @@ module Frame =
     let vectorBuilder = VectorBuilder.Instance
     let newRowIndex, vectorR = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), offset)
     let _, vectorL = frame.RowIndex.Builder.Shift((frame.RowIndex, Vectors.Return 0), -offset)
-    let cmd = Vectors.Combine(newRowIndex.KeyCount, [vectorL; vectorR], BinaryTransform.Create<float>(OptionalValue.map2 (-)))
+    let cmd = Vectors.Combine(lazy newRowIndex.KeyCount, [vectorL; vectorR], BinaryTransform.Create<float>(OptionalValue.map2 (-)))
     let newData = frame.Data.Select(function
-        | AsFloatVector vf -> VectorBuilder.Instance.Build(cmd, [| vf |]) :> IVector
+        | AsFloatVector vf -> VectorBuilder.Instance.Build(newRowIndex.AddressingScheme, cmd, [| vf |]) :> IVector
         | vector -> vector)
     Frame(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
@@ -1286,7 +1285,7 @@ module Frame =
   [<CompiledName("FillMissing")>]
   let fillMissing direction (frame:Frame<'R, 'C>) =
     let fillCmd = Vectors.FillMissing(Vectors.Return 0, VectorFillMissing.Direction direction)
-    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder fillCmd)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder frame.RowIndex.AddressingScheme fillCmd)
     Frame<_, _>(frame.RowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Fill missing values in the frame using the specified function. The specified
@@ -1321,12 +1320,13 @@ module Frame =
     let hasSomeFlagVector = 
       frame.Data 
       |> createRowVector 
-          frame.VectorBuilder frame.RowIndex.KeyCount frame.ColumnIndex.KeyCount frame.ColumnIndex.AddressAt
+          frame.VectorBuilder frame.RowIndex.AddressingScheme (lazy frame.RowIndex.KeyCount) 
+          frame.ColumnIndex.KeyCount frame.ColumnIndex.AddressAt
           (fun rowReader -> rowReader.DataSequence |> Seq.exists (fun opt -> opt.HasValue))
     // Collect all rows that have at least some values
     let newRowIndex, cmd = 
       frame.IndexBuilder.Search( (frame.RowIndex, Vectors.Return 0), hasSomeFlagVector, true)
-    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder cmd)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newRowIndex.AddressingScheme cmd)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Creates a new data frame that contains only those columns of the original 

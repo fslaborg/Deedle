@@ -64,8 +64,8 @@ module internal JoinHelpers =
 
   /// Create transformation on indices/vectors representing the join operation
   let createJoinTransformation 
-        (indexBuilder:IIndexBuilder) kind lookup (thisIndex:IIndex<_>) 
-        (otherIndex:IIndex<_>) thisVector otherVector =
+        (indexBuilder:IIndexBuilder) (otherIndexBuilder:IIndexBuilder) kind lookup 
+        (thisIndex:IIndex<_>) (otherIndex:IIndex<_>) thisVector otherVector =
     // Inner/outer join only makes sense with exact lookup
     if lookup <> Lookup.Exact && kind = JoinKind.Inner then
       invalidOp "Join/Zip - Inner join can only be used with Lookup.Exact."
@@ -93,7 +93,7 @@ module internal JoinHelpers =
           else
              // If they are not the same, we actually need to reindex
             let otherVector = fillMissing otherVector lookup
-            let otherRowCmd = indexBuilder.Reindex(otherRowIndex, thisIndex, lookup, otherVector, fun _ -> true)
+            let otherRowCmd = otherIndexBuilder.Reindex(otherRowIndex, thisIndex, lookup, otherVector, fun _ -> true)
             returnOp thisIndex thisVector otherRowCmd
 
 

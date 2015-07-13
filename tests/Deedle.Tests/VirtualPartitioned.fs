@@ -115,18 +115,23 @@ type PartitionRangeOperations(shape:PartitionShape, rangeListRef:ref<_>) =
           for h in first .. step .. last do yield dt.AddHours(float h) }
 
     member x.IncrementBy(dt, offset) =
-      if offset < 0L then failwith "IncrementBy: Assume offset >= 0"
       let rec loop y offset = 
         // Increment the starting position of 'dt' by the specified 'offset' by
         // iterating over partitions and adding their sizes, until we have enough
         // (or until we run out of partitions)
-        if y - 2000 = shape.Length then raise (new IndexOutOfRangeException())
+        if y - 2000 < 0 || y - 2000 = shape.Length then raise (new IndexOutOfRangeException())
         rangeListRef := y - 2000 :: !rangeListRef
         let count = shape.[y - 2000]
-        let start = if y = dt.Year then hours dt else 0
-        if offset < int64 (count - start) then
-          DateTimeOffset(y, 1, 1, 0, 0, 0, tzOffset).AddHours(float start + float offset)
-        else loop (y + 1) (offset - int64 (count - start))        
+        if offset >= 0L  then
+          let start = if y = dt.Year then hours dt else 0
+          if offset < int64 (count - start) then
+            DateTimeOffset(y, 1, 1, 0, 0, 0, tzOffset).AddHours(float start + float offset)
+          else loop (y + 1) (offset - int64 (count - start))        
+        else
+          let last = if y = dt.Year then hours dt else count-1
+          if -offset <= int64 last then
+            DateTimeOffset(y, 1, 1, 0, 0, 0, tzOffset).AddHours(float last - float offset)
+          else loop (y - 1) (offset - int64 (last + 1))        
       loop dt.Year offset        
 
     member x.ValidateKey(dt, lookup) =
@@ -188,6 +193,7 @@ type TrackingSource<'T>
   // Implements non-generic source (boilerplate)
 
   interface IVirtualVectorSource with
+    member x.AddressingSchemeID = "it"
     member x.Length = ranges.Length
     member x.ElementType = typeof<'T>
     member x.AddressOperations = addressing
@@ -237,34 +243,45 @@ let accessedDataParts (src:TrackingSource<_>) =
 // Create time series using the partitoned virtual data source
 // ------------------------------------------------------------------------------------------------
 
-let createTimeSeries partNum partSize =
+let idxValues =
+  { new TrackingSourceValue<DateTimeOffset> with
+      member x.CanLookup = true
+      member x.AsDate(d) = d
+      member x.OfDate(d) = d
+      member x.ValueAt(addr) = let part, idx = Address.asIntPair addr in date part idx }
+
+let valValues f =
+  { new TrackingSourceValue<float> with
+      member x.CanLookup = false
+      member x.AsDate(d) = failwith "AsDate not supported"
+      member x.OfDate(d) = failwith "OfDate not supported"
+      member x.ValueAt(addr) = let part, idx = Address.asIntPair addr in f (float part) (float idx) }
+
+let createRanges partNum partSize =
   let shape  = [| for i in 1 .. partNum -> partSize i |]
   let range  = [date 0 0, date (shape.Length-1) (shape.[shape.Length-1]-1)]
   let accessMeta = ref []
-  let ranges = Ranges.create (PartitionRangeOperations(shape, accessMeta)) range
-  let idxValues =
-    { new TrackingSourceValue<DateTimeOffset> with
-        member x.CanLookup = true
-        member x.AsDate(d) = d
-        member x.OfDate(d) = d
-        member x.ValueAt(addr) = let part, idx = Address.asIntPair addr in date part idx }
-  let valValues =
-    { new TrackingSourceValue<float> with
-        member x.CanLookup = false
-        member x.AsDate(d) = failwith "AsDate not supported"
-        member x.OfDate(d) = failwith "OfDate not supported"
-        member x.ValueAt(addr) = let part, idx = Address.asIntPair addr in (float part) * 1000000.0 + (float idx) }
+  accessMeta, Ranges.create (PartitionRangeOperations(shape, accessMeta)) range
+
+let createTimeSeries partNum partSize =
+  let accessMeta, ranges = createRanges partNum partSize
   let idxSrc = TrackingSource<DateTimeOffset>((ref [], accessMeta), idxValues, ranges)
-  let valSrc = TrackingSource<float>((ref [], accessMeta), valValues, ranges)
+  let valSrc = TrackingSource<float>((ref [], accessMeta), valValues (fun part idx -> part * 1000000.0 + idx), ranges)
   let sv = Virtual.CreateSeries(idxSrc, valSrc)
   idxSrc, valSrc, sv
+
+let createOrdinalSeries partNum partSize =
+  let accessMeta, ranges = createRanges partNum partSize
+  let valSrc = TrackingSource<float>((ref [], accessMeta), valValues (fun part idx -> part * 1000000.0 + idx), ranges)
+  let sv = Virtual.CreateOrdinalSeries(valSrc)
+  valSrc, sv
 
 // ------------------------------------------------------------------------------------------------
 // Printing and accessing meta-data about series
 // ------------------------------------------------------------------------------------------------
 
 [<Test>]
-let ``Counting keys (with small partitions) accesses meta, but no data`` () =
+let ``Counting keys (with small partitions) accesses meta but no data`` () =
   let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 10)
   ts.KeyCount |> shouldEqual 10000
   accessedDataParts idxSrc |> shouldEqual <| []
@@ -403,13 +420,33 @@ let ``Merging series sub-ranges works as expected`` () =
 
 
 [<Test>]
-let ``Slicing with out of range keys, or reversed order produces empty series`` () =
+let ``Slicing with out of range keys or reversed order produces empty series`` () =
   let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
   ts.[dateOffs 1990 1 1 .. dateOffs 1991 1 1].KeyCount |> shouldEqual 0
   ts.[dateOffs 2500 1 1 .. dateOffs 2400 1 1].KeyCount |> shouldEqual 0
   ts.[date 999 4999 .. dateOffs 3000 1 1].KeyCount |> shouldEqual 1
   ts.[dateOffs 1990 1 1 .. date 0 0].KeyCount |> shouldEqual 1
   
+// ------------------------------------------------------------------------------------------------
+// Operations over ordinal series
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Cen perform slicing on an ordinally indexed series`` () =
+  let valSrc, ts = createOrdinalSeries 1000 (fun n -> 10)
+  let ss = ts.[1005L .. 1014L]
+
+  ss.GetKeyAt(0) |> shouldEqual 1005L
+  ss.GetKeyAt(int ss.KeyCount-1) |> shouldEqual 1014L  
+  for k in 1005L .. 1014L do
+    ss.[k] |> shouldEqual ts.[k]
+
+[<Test>]
+let ``Cen perform slicing and merging on an ordinally indexed series`` () =
+  let valSrc, ts = createOrdinalSeries 1000 (fun n -> 10)
+  let ss = Series.mergeAll [ ts.[1005L .. 1014L]; ts.[2005L .. 2014L] ]
+  for k in ss.Keys do
+    ss.[k] |> shouldEqual ts.[k]
 
 // ------------------------------------------------------------------------------------------------
 // Projection, joins and other operations
@@ -424,23 +461,36 @@ let ``Can project using Series.map without evaluating the series`` () =
   valSrc.AccessedData |> shouldEqual [999,4999; 0,0]
 
 [<Test>]
+let ``Can project using Select method without evaluating the series`` () =
+  let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
+  let projected = ts.SelectValues(fun v -> int v % 10)
+  projected.GetAt(0) |> shouldEqual 0
+  projected.GetAt(projected.KeyCount-1) |> shouldEqual 9
+  valSrc.AccessedData |> shouldEqual [999,4999; 0,0]
+
+[<Test>]
+let ``Can project using SelectOptional method without evaluating the series`` () =
+  let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
+  let projected = ts.SelectOptional(fun kvp -> OptionalValue(int kvp.Value.Value % 10))
+  projected.GetAt(0) |> shouldEqual 0
+  projected.GetAt(projected.KeyCount-1) |> shouldEqual 9
+  valSrc.AccessedData |> shouldEqual [999,4999; 0,0]
+
+[<Test>]
+let ``Can subtract series from another (calculated from itself)`` () =
+  let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
+  let res = (sin ts) / (cos ts) - (tan ts) |> Series.mapValues (fun v -> Math.Round(v, 10))
+  res |> Series.take 10 |> Series.values |> List.ofSeq |> shouldEqual [ for i in 0 .. 9 -> 0.0 ]
+  res |> Series.takeLast 10 |> Series.values |> List.ofSeq |> shouldEqual [ for i in 0 .. 9 -> 0.0 ]
+  valSrc.AccessedData |> Seq.distinct |> Seq.length |> shouldEqual 20
+
+[<Test>]
 let ``Returning `nan` from Series.map produces missing value`` () =
   let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
   let missings = ts |> Series.mapValues (fun v -> if (int v) % 4 = 0 then nan else v)
   let last5 = missings |> Series.takeLast 5 
   last5.KeyCount |> shouldEqual 5
-  last5.ValueCount |> shouldEqual 4
-
-[<Test>]
-let ``Can merge non-virtual series with small virtual series`` () =
-  let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
-  let ts1 = ts.[date 10 4900 .. date 11 100 ]
-  let ts2 = series [ for k, v in ts1 |> Series.observations -> k + mins 30 => v + 0.5 ]
-  let merged = ts1.Merge(ts2)
-
-  merged |> Series.diff 1 |> Series.values |> Seq.distinct |> List.ofSeq
-  |> shouldEqual [0.5; 995000.5]
-  
+  last5.ValueCount |> shouldEqual 4  
 
 [<Test>]
 let ``Adding column using exact match does not fully evaluate series`` () =
@@ -454,6 +504,57 @@ let ``Adding column using exact match does not fully evaluate series`` () =
     ts.[k] |> shouldEqual v
   accessedDataParts idxSrc |> shouldEqual <| [ 100 ]
 
+[<Test>]
+let ``Equality returns false and works on very large series`` () =
+  let _, _, ts1 = createTimeSeries 5000 (fun n -> 7500)
+  let ts2 = series [date 1 1 => 0.0]
+  ts1 = ts2 |> shouldEqual false
+  ts2 = ts1 |> shouldEqual false
+
+[<Test>]
+let ``Equality test returns true on small virutal series`` () =
+  let _, _, ts1 = createTimeSeries 1000 (fun n -> 5000)
+  let ts1sm = ts1 |> Series.take 10
+  let ts2sm = series [ for i in 0 .. 9 -> date 0 i => float i ]
+  ts1sm = ts2sm |> shouldEqual true
+  ts2sm = ts1sm |> shouldEqual true
+ 
+[<Test>]
+let ``Can access elements of a large series using GetItems`` () =
+  let _, _, s = createTimeSeries 1000 (fun n -> 5000)
+  s.GetItems [for i in 0 .. 10 -> date 2 i]
+  |> Series.values
+  |> List.ofSeq |> shouldEqual [2000000.0 .. 2000010.0]
+ 
+[<Test>]
+let ``Can sample large time series using explicitly specified list of dates`` () =
+  let _, _, s = createTimeSeries 1000 (fun n -> 5000)
+  s |> Series.sample [ for y in 0 .. 999 -> date y 0] |> Series.values 
+  |> List.ofSeq |> shouldEqual [ 0.0 .. 1000000.0 .. 999000000.0 ]
+
+[<Test>]
+let ``Can sample large time series by time without evauating it`` () =
+  let _, valSrc, s = createTimeSeries 1000 (fun n -> 5000)
+  let sampled = s |> Series.sampleTimeInto (TimeSpan.FromDays 10000.0) Direction.Forward id
+  valSrc.AccessedData |> shouldEqual []
+
+  let values = sampled |> Series.mapValues (Series.firstValue) 
+  values |> Stats.sum |> ignore
+  valSrc.AccessedData |> Seq.length |> shouldEqual values.KeyCount
+
+// ------------------------------------------------------------------------------------------------
+// Operations that materialize the series
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can merge non-virtual series with small virtual series`` () =
+  let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
+  let ts1 = ts.[date 10 4900 .. date 11 100 ]
+  let ts2 = series [ for k, v in ts1 |> Series.observations -> k + mins 30 => v + 0.5 ]
+  let merged = ts1.Merge(ts2)
+
+  merged |> Series.diff 1 |> Series.values |> Seq.distinct |> List.ofSeq
+  |> shouldEqual [0.5; 995000.5]
 
 [<Test>]
 let ``Can sort small sub-series of a virtual series`` () =
@@ -486,23 +587,83 @@ let ``Can drop missing values from a small sub-series of a virtual series``() =
   dropped.ValueCount |> shouldEqual 1500
 
 [<Test>]
-let ``Equality returns false and works on very large series`` () =
-  let _, _, ts1 = createTimeSeries 5000 (fun n -> 7500)
-  let ts2 = series [date 1 1 => 0.0]
-  ts1 = ts2 |> shouldEqual false
-  ts2 = ts1 |> shouldEqual false
+let ``Calling SelectValues on a small series returns correct result``() =
+  let _, _, s = createTimeSeries 1000 (fun n -> 5000)
+  s.[date 2 0 .. date 2 100].SelectValues(fun f -> int f).Values
+  |> List.ofSeq |> shouldEqual [2000000 .. 2000100]
 
 [<Test>]
-let ``Equality test returns true on small virutal series`` () =
-  let _, _, ts1 = createTimeSeries 1000 (fun n -> 5000)
-  let ts1sm = ts1 |> Series.take 10
-  let ts2sm = series [ for i in 0 .. 9 -> date 0 i => float i ]
-  ts1sm = ts2sm |> shouldEqual true
-  ts2sm = ts1sm |> shouldEqual true
+let ``Calling SelectOptional on a small series returns correct result``() =
+  let _, _, s = createTimeSeries 1000 (fun n -> 5000)
+  s.[date 2 0 .. date 2 100].SelectOptional(fun kvp -> OptionalValue.map int kvp.Value).Values
+  |> List.ofSeq |> shouldEqual [2000000 .. 2000100]
+
+[<Test>]
+let ``Indexing small series ordinally returns correct result`` () =
+  let _, _, s = createTimeSeries 1000 (fun n -> 5000)
+  s.[date 2 0 .. date 2 100]
+  |> Series.indexOrdinally |> Series.values
+  |> List.ofSeq |> shouldEqual [2000000.0 .. 2000100.0]
+
+[<Test>]
+let ``Indexing small series with list of keys returns correct result`` () =
+  let _, _, s = createTimeSeries 1000 (fun n -> 5000)
+  s.[date 2 0 .. date 2 100]
+  |> Series.indexWith [ 0 .. 100 ] |> Series.values
+  |> List.ofSeq |> shouldEqual [2000000.0 .. 2000100.0]
+
+  s.[date 2 0 .. date 2 100]
+  |> Series.indexWith [ 0 .. 50 ] |> Series.values
+  |> List.ofSeq |> shouldEqual [2000000.0 .. 2000050.0]
+
+[<Test>]
+let ``Can diff small virtual series`` () = 
+  let _, _, s = createTimeSeries 1000 (fun n -> 5000)
+  s.[date 2 0 .. date 2 100] |> Series.diff 1 |> Stats.sum |> shouldEqual 100.0
+
+[<Test>]
+let ``Can perform grouping on a small virtual series`` () = 
+  let _, _, s = createTimeSeries 1000 (fun n -> 5000)
+  s.[date 2 0 .. date 2 100] |> Series.groupInto (fun k _ -> k.Day) (fun _ s -> Stats.mean s)
+  |> shouldEqual <| series [1 => 2000011.5; 2 => 2000035.5; 3 => 2000059.5; 4 => 2000083.5; 5 => 2000098. ]
 
 // ------------------------------------------------------------------------------------------------
 // Creating frames with vitual series
 // ------------------------------------------------------------------------------------------------
+
+let createSmallFrame partNum partSize =
+  let accessMeta, ranges = createRanges partNum partSize
+  let idxSrc = TrackingSource<DateTimeOffset>((ref [], accessMeta), idxValues, ranges)
+  let valSrc1 = TrackingSource<float>((ref [], accessMeta), valValues (fun part idx -> part * 1000000.0 + idx), ranges)
+  let valSrc2 = TrackingSource<float>((ref [], accessMeta), valValues (fun part idx -> part * 1000000.0 + idx + 1.0), ranges)
+  Virtual.CreateFrame(idxSrc, ["A";"B"], [ valSrc1 :> IVirtualVectorSource; valSrc2 :> IVirtualVectorSource])
+
+[<Test>]
+let ``Indexing small frame ordinally returns correct result`` () = 
+  let df = createSmallFrame 1000 (fun n -> 5000)
+  df.Rows.[date 2 0 .. date 2 100]
+  |> Frame.indexRowsOrdinally
+  |> Frame.getCol "B"
+  |> Series.values
+  |> List.ofSeq |> shouldEqual [2000001.0 .. 2000101.0]
+
+[<Test>]
+let ``Can merge boxed column series`` () = 
+  let df = createSmallFrame 1000 (fun n -> 5000)
+  let rows1 = df.Rows.[date 3 0 .. date 3 10].Columns.["A"]
+  let rows2 = df.Rows.[date 2 0 .. date 2 10].Columns.["A"]
+  let sum1 = rows1.As<float>().Sum() + rows2.As<float>().Sum()
+  let merged = Series.mergeAll [rows1; rows2]
+  ObjectSeries(merged).As<float>().Sum() |> shouldEqual sum1
+
+[<Test>]
+let ``Transforming row keys of a small frame returns correct result`` () = 
+  let df = createSmallFrame 1000 (fun n -> 5000)
+  df.Rows.[date 2 0 .. date 2 100]
+  |> Frame.mapRowKeys (fun dt -> dt.Ticks)
+  |> Frame.getCol "B"
+  |> Series.values
+  |> List.ofSeq |> shouldEqual [2000001.0 .. 2000101.0]
 
 [<Test>]
 let ``Can create frame with two virtual series`` () =

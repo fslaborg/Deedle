@@ -46,6 +46,9 @@ type IRangeKeyOperations<'TKey> =
   /// when not all `'TKey` values can appear as keys of the series. If lookup is
   /// `Exact`, it should just check validity; for other lookups, this should either
   /// find first smaller or first larger valid key (but not skip any keys).
+  ///
+  /// This is only called with `lookup = Lookup.Exact`, unless you are also using
+  /// `Ranges.lookup` function inside `IVirtualVectorSource<'T>.LookupValue`.
   abstract ValidateKey : 'TKey * Lookup -> OptionalValue<'TKey>
 
 
@@ -87,7 +90,7 @@ module Ranges =
           member x.Compare(a, b) = compare a b 
           member x.IncrementBy(a, i) = succ a i
           member x.Distance(l, h) = int64 (h - l)
-          member x.Range(a, b) = if a <= b then Seq.range a b else Seq.rangeStep a b (-one) 
+          member x.Range(a, b) = if a <= b then Seq.range a b else Seq.rangeStep a (-one) b 
           member x.ValidateKey(k, _) = OptionalValue(k) }
     Ranges(ranges, ops)
 
@@ -183,7 +186,9 @@ module Ranges =
           [| for lo, hi in ranges.Ranges do
                if lo >=. loRestr && hi <=. hiRestr then yield lo, hi       
                elif hi <. loRestr || lo >. hiRestr then ()
-               else yield max lo loRestr, min hi hiRestr |]
+               else 
+                 let newLo, newHi = max lo loRestr, min hi hiRestr 
+                 if newLo <=. newHi then yield newLo, newHi |]
         Ranges(newRanges, ranges.Operations)
     
     | Let (true, +1) ((isStart, step), RangeRestriction.Start(desiredCount)) 

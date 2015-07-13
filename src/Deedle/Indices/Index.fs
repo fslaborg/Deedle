@@ -108,8 +108,20 @@ type BoundaryBehavior = Inclusive | Exclusive
 /// extending the DataFrame library and adding a new way of storing or loading data.
 /// Values of this type are constructed using the associated `IIndexBuilder` type.
 type IIndex<'K when 'K : equality> = 
-  /// Returns a sequence of all keys in the index.
+
+  /// Returns the addressing scheme of the index. When creating a series or a frame
+  /// this is compared for equality with the addressing scheme of the vector(s).
+  abstract AddressingScheme : IAddressingScheme
+
+  /// Returns the address operations associated with this index. The addresses of the
+  /// index are not necesarilly continuous integers from 0. This provides some operations
+  /// that can be used for implementing generic operations over any kind of indices.
+  abstract AddressOperations : IAddressOperations
+
+  /// Returns a (fully evaluated) collection with all keys in the index
   abstract Keys : ReadOnlyCollection<'K>
+  
+  /// Returns a lazy sequence that iterates over all keys in the index
   abstract KeySequence : seq<'K>
 
   /// Performs reverse lookup - and returns key for a specified address
@@ -117,9 +129,6 @@ type IIndex<'K when 'K : equality> =
 
   /// Return an address that represents the specified offset
   abstract AddressAt : int64 -> Address
-
-  /// Return an offset at a specified address
-  //abstract OffsetAt : Address -> int64
 
   /// Returns the number of keys in the index
   abstract KeyCount : int64
@@ -197,11 +206,16 @@ and IIndexBuilder =
   /// is not set, the construction should check and infer this from the data.
   abstract Create : ReadOnlyCollection<'K> * Option<bool> -> IIndex<'K>
 
-  /// When we perform some projection on the vector (e.g. `Series.map`), then we may also
-  /// need to perform some transformation on the index (because it will typically turn delayed
-  /// index into an evaluated index). This operation represents that - it should return 
-  /// (evaluated) index with the same keys.
+  /// When we perform some projection on the vector (`Select` or `Convert`), then we may also
+  /// need to perform some transformation on the index (because it may turn delayed index 
+  /// into an evaluated index). If the vector operation does that, then `Project` should do the 
+  /// same (e.g. evaluate) on the index.
   abstract Project : IIndex<'K> -> IIndex<'K>
+
+  /// When we create a new vector (`IVectorBuilder.Create`), then we may get a materialized
+  /// vector and we may need to perform the same transformation on the index. This is similar
+  /// to `Project`, but used in different scenarios.
+  abstract Recreate : IIndex<'K> -> IIndex<'K>
 
   /// Create a new index that represents sub-range of an existing index.
   /// The range is specified as a pair of addresses, which means that it can be 
@@ -307,7 +321,7 @@ and IIndexBuilder =
   /// `Direction.Forward` than the key is the first element of a chunk; for 
   /// `Direction.Backward`, the key is the last element (note that this does not 
   /// hold at the boundaries where values before/after the key may also be included)
-  abstract Resample : IIndex<'K> * seq<'K> * Direction * source:VectorConstruction *
+  abstract Resample : IIndexBuilder * IIndex<'K> * seq<'K> * Direction * source:VectorConstruction *
     selector:('K * SeriesConstruction<'K> -> 'TNewKey * OptionalValue<'R>) 
       -> IIndex<'TNewKey> * IVector<'R>
 

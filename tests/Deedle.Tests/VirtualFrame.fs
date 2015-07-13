@@ -33,22 +33,7 @@ type LinearSubRange =
 
 module Address = LinearAddress
 
-type AddressOperations(ranges:(int64*int64) list, length) = 
-  member x.Ranges = ranges
-  override x.Equals(o) = 
-    match o with
-    | :? AddressOperations as y -> x.Ranges = y.Ranges
-    | _ -> false
-  override x.GetHashCode() = ranges.GetHashCode()
-  interface IAddressOperations with
-    member x.FirstElement = Address.ofInt64 0L
-    member x.LastElement = Address.ofInt64 (length - 1L)
-    member x.Range = Deedle.Internal.Seq.range 0L (length - 1L) |> Seq.map Address.ofInt64
-    member x.OffsetOf(addr) = Address.asInt64 addr
-    member x.AddressOf(idx) = Address.ofInt64 idx
-    
 type TrackingSource<'T>(ranges:(int64*int64) list, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?search) = 
-  let ranges = ranges //|> Seq.map (fun (f,s) -> Address(f),Address(s))
   member val AccessListCell : int64 list ref = ref [] with get, set
   member val LookupListCell = ref [] with get, set
   member val IsTracking = true with get, set
@@ -66,8 +51,9 @@ type TrackingSource<'T>(ranges:(int64*int64) list, valueAt:int64 -> 'T, ?asLong:
 
   interface IVirtualVectorSource with
     member x.Length = x.Length
+    member x.AddressingSchemeID = "it"
     member x.ElementType = typeof<'T>
-    member x.AddressOperations = AddressOperations(ranges, int64 x.Length) :> _
+    member x.AddressOperations = Indices.Linear.LinearAddressOperations(0L, int64 x.Length-1L) :> _
     member x.Invoke(op) = op.Invoke(x)
 
   interface IVirtualVectorSource<'T> with
@@ -119,8 +105,6 @@ type TrackingSource<'T>(ranges:(int64*int64) list, valueAt:int64 -> 'T, ?asLong:
     member x.GetSubVector(range) = 
       match range.AsAbsolute(x.Length) with
       | Choice1Of2(nlo, nhi) ->
-//          let nlo = Address.asInt64 nlo
-//          let nhi = Address.asInt64 nhi
           if nhi < nlo then invalidOp "hi < lo"
           elif nlo < x.AddressAt(0L) then invalidOp "lo < 0"
           elif nhi > x.AddressAt(x.Length-1L) then invalidOp "hi > max" // TODO -1
@@ -188,9 +172,9 @@ let ``Lookup and ValueAt works on merged tracking sources`` () =
   let source1 = TrackingSource.CreateTimes(0L, 10L) :> IVirtualVectorSource<_>
   let source2 = TrackingSource.CreateTimes(10000000L, 10000010L) :> IVirtualVectorSource<_>
   let sources = source1.MergeWith [source2]
-  source1.ValueAt(Location.known(Address.ofInt64 0L, 0L)).Value |> shouldEqual (ith 0L)
-  source2.ValueAt(Location.known(Address.ofInt64 0L, 0L)).Value |> shouldEqual (ith 10000000L)
-  sources.ValueAt(Location.known(Address.ofInt64 11L, 11L)).Value |> shouldEqual (ith 10000000L)
+  source1.ValueAt(KnownLocation(Address.ofInt64 0L, 0L)).Value |> shouldEqual (ith 0L)
+  source2.ValueAt(KnownLocation(Address.ofInt64 0L, 0L)).Value |> shouldEqual (ith 10000000L)
+  sources.ValueAt(KnownLocation(Address.ofInt64 11L, 11L)).Value |> shouldEqual (ith 10000000L)
   sources.LookupValue(ith 0L, Lookup.Exact, fun _ -> true).Value |> fst |> shouldEqual (ith 0L)
   sources.LookupValue(ith 10L, Lookup.Exact, fun _ -> true).Value |> fst |> shouldEqual (ith 10L)
   sources.LookupValue(ith 100L, Lookup.Exact, fun _ -> true).HasValue |> shouldEqual false
@@ -365,7 +349,7 @@ let ``Accessing row evaluates only the required values`` () =
   frame.["S2", 5000000L] |> shouldEqual <| box "lorem"
   s1.AccessList |> shouldEqual [5000000L]
   s2.AccessList |> shouldEqual [5000000L]
-
+ 
 [<Test>]
 let ``Accessing series of rows accesses only required values`` () =
   let s1, s2, frame = createSimpleFrame()
@@ -625,7 +609,8 @@ let ``Can materialize a delayed series into a virtual series`` () =
   let r = Recorder()
   let delayed = 
     DelayedSeries.FromIndexVectorLoader
-      ( VirtualVectorBuilder.Instance, VirtualIndexBuilder.Instance, 
+      ( VirtualAddressingScheme("it"),
+        VirtualVectorBuilder.Instance, VirtualIndexBuilder.Instance, 
         date 2000 1 1, date 2100 1 1, dataLoader (spy1 r ignore) )
 
   // Materialize as virtual series for 5 years          
