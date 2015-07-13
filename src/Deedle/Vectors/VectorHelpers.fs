@@ -34,22 +34,16 @@ let prettyPrintVector (vector:IVector<'T>) =
   | VectorData.SparseList list -> printSequence "sparse" (Seq.map (fun v -> v.ToString()) list) 
   | VectorData.Sequence list -> printSequence "seq" (Seq.map (fun v -> v.ToString()) list) 
 
-type VectorRange with
-  /// Returns the number of elements in the range
-  member x.Count = 
-    match x with
-    | Custom c -> c.Count
-    | Range (lo, hi) -> hi - lo + 1L
-
+module RangeRestriction =
   /// Creates a `Custom` range from a sequence of indices
-  static member ofSeq(indices, count) =
-    { new IVectorRange with
+  let ofSeq count (indices : seq<_>) =
+    { new IRangeRestriction<Address> with
         member x.Count = count
-      interface seq<int64> with 
+      interface seq<Address> with 
         member x.GetEnumerator() = (indices :> seq<_>).GetEnumerator() 
       interface System.Collections.IEnumerable with
         member x.GetEnumerator() = indices.GetEnumerator() :> _ } 
-    |> VectorRange.Custom
+    |> RangeRestriction.Custom
 
 // --------------------------------------------------------------------------------------
 // Derived/wrapped implementations of the IVector<'T> interface
@@ -73,6 +67,7 @@ let createBoxedVector (vector:IVector<'TValue>) =
       member x.UnboxedVector = vector :> IVector
     interface IVector<obj> with
       member x.GetValue(a) = vector.GetObject(a)
+      member x.GetValueAtLocation(l) = vector.GetValueAtLocation(l) |> OptionalValue.map box
       member x.Data = 
         match vector.Data with
         | VectorData.DenseList list -> 
@@ -81,10 +76,10 @@ let createBoxedVector (vector:IVector<'TValue>) =
             VectorData.SparseList(ReadOnlyCollection.map (OptionalValue.map box) list)
         | VectorData.Sequence list ->
             VectorData.Sequence(Seq.map (OptionalValue.map box) list)
-      member x.Select(f) = vector.Select(f)
-      member x.SelectMissing(f) = vector.SelectMissing(fun addr v -> f addr (OptionalValue.map box v))
+      member x.Select(f) = vector.Select(fun loc v -> f loc (OptionalValue.map box v))
       member x.Convert(f, g) = vector.Convert(box >> f, g >> unbox)
     interface IVector with
+      member x.AddressingScheme = vector.AddressingScheme
       member x.Length = vector.Length
       member x.ObjectSequence = vector.ObjectSequence
       member x.SuppressPrinting = vector.SuppressPrinting
@@ -108,13 +103,14 @@ type IWrappedVector<'T> =
 /// the values of the source `vector`. In general, Deedle does not secretly delay
 /// computations, so this should be used with care. Currently, we only use this
 /// to avoid allocations in `df.Rows`.
-let lazyMapVector f (vector:IVector<'TValue>) : IVector<'TResult> = 
+let lazyMapVector (f:'TValue -> 'TResult) (vector:IVector<'TValue>) : IVector<'TResult> = 
   let unwrapVector = lazy vector.Select(f)
   { new System.Object() with
       member x.Equals(another) = vector.Equals(another)
       member x.GetHashCode() = vector.GetHashCode()
     interface IVector<'TResult> with
       member x.GetValue(a) = vector.GetValue(a) |> OptionalValue.map f
+      member x.GetValueAtLocation(l) = vector.GetValueAtLocation(l) |> OptionalValue.map f
       member x.Data = 
         match vector.Data with
         | VectorData.DenseList list -> 
@@ -123,12 +119,12 @@ let lazyMapVector f (vector:IVector<'TValue>) : IVector<'TResult> =
             VectorData.SparseList(ReadOnlyCollection.map (OptionalValue.map f) list)
         | VectorData.Sequence list ->
             VectorData.Sequence(Seq.map (OptionalValue.map f) list)
-      member x.Select(g) = vector.Select(f >> g)
-      member x.SelectMissing(g) = vector.SelectMissing(fun addr v -> g addr (OptionalValue.map f v))
+      member x.Select(g) = vector.Select(fun loc v -> g loc (OptionalValue.map f v))
       member x.Convert(h, g) = invalidOp "lazyMapVector: Conversion is not supported"
     interface IWrappedVector<'TResult> with
       member x.UnwrapVector() = unwrapVector.Value
     interface IVector with
+      member x.AddressingScheme = vector.AddressingScheme
       member x.Length = vector.Length
       member x.ObjectSequence = vector.ObjectSequence
       member x.SuppressPrinting = vector.SuppressPrinting
@@ -261,10 +257,10 @@ let inline unboxVector (v:IVector) =
   | vec -> vec 
 
 // A "generic function" that transforms a generic vector using specified transformation
-let transformColumn (vectorBuilder:IVectorBuilder) rowCmd (vector:IVector) = 
+let transformColumn (vectorBuilder:IVectorBuilder) scheme rowCmd (vector:IVector) = 
   { new VectorCallSite<IVector> with
       override x.Invoke<'T>(col:IVector<'T>) = 
-        vectorBuilder.Build<'T>(rowCmd, [| col |]) :> IVector }
+        vectorBuilder.Build<'T>(scheme, rowCmd, [| col |]) :> IVector }
   |> vector.Invoke
 
 // A generic vector operation that converts the elements of the 
@@ -312,13 +308,6 @@ let tryConvertType<'R> conversionKind (vector:IVector) : OptionalValue<IVector<'
               with :? InvalidCastException | :? FormatException -> OptionalValue.Missing }
       |> vector.Invoke
 
-/// A "generic function" that drops a specified range from any vector
-let getVectorRange (builder:IVectorBuilder) range (vector:IVector) = 
-  { new VectorCallSite<IVector> with
-      override x.Invoke<'T>(col:IVector<'T>) = 
-        let cmd = VectorConstruction.GetRange(VectorConstruction.Return 0, range)
-        builder.Build(cmd, [| col |]) :> IVector }
-  |> vector.Invoke
 
 /// Active pattern that calls the `tryChangeType<float>` function
 let (|AsFloatVector|_|) v : option<IVector<float>> = 
@@ -329,7 +318,7 @@ let (|AsFloatVector|_|) v : option<IVector<float>> =
 /// internal representation of the frame (specified by `data` and `columnCount`).
 /// The type is generic and automatically converts the values from the underlying
 /// (untyped) vector to the specified type.
-type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddress) =
+type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddress:Address, colAddressAt) =
   
   // Comparison and get hash code follows the ArrayVector implementation
   override vector.Equals(another) = 
@@ -341,7 +330,9 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddre
   override vector.GetHashCode() = vector.DataSequence |> Seq.structuralHash
 
   member private vector.DataArray =
-    Array.init (int data.Length) (fun addr -> (vector :> IVector<_>).GetValue(Address.ofInt addr))
+    Array.init (int data.Length) (fun index -> 
+      let v = (vector :> IVector<_>)
+      v.GetValue(colAddressAt (int64 index)))
       
   // In the generic vector implementation, we
   // read data as objects and perform conversion
@@ -350,24 +341,27 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddre
       let vector = data.GetValue(columnAddress)
       if not vector.HasValue then OptionalValue.Missing
       else vector.Value.GetObject(rowAddress) |> OptionalValue.map (Convert.convertType<'T> ConversionKind.Flexible)
+    
+    member x.GetValueAtLocation(loc) = 
+      (x :> IVector<_>).GetValue(loc.Address)
 
     member vector.Data = 
       vector.DataArray |> ReadOnlyCollection.ofArray |> VectorData.SparseList 
 
-    member vector.SelectMissing(f) = 
+    member vector.Select(f) =
       let isNA = MissingValues.isNA<'TNewValue>() 
       let flattenNA (value:OptionalValue<_>) = 
         if value.HasValue && isNA value.Value then OptionalValue.Missing else value
-      let data = vector.DataArray |> Array.mapi (fun i v -> f (Address.ofInt i) v |> flattenNA)
+      let data = 
+        vector.DataArray 
+        |> Array.mapi (fun idx v -> f (KnownLocation(colAddressAt (int64 idx), int64 idx)) v |> flattenNA)
       builder.CreateMissing(data)
-
-    member vector.Select(f) = 
-      (vector :> IVector<_>).SelectMissing(fun _ -> OptionalValue.map f)
 
     member vector.Convert(f, _) = (vector :> IVector<_>).Select(f)
       
   // Non-generic interface is fully implemented as "virtual"   
   interface IVector with
+    member x.AddressingScheme = data.AddressingScheme
     member x.Length = data.Length
     member x.ObjectSequence = x.DataArray |> Seq.map (OptionalValue.map box)
     member x.SuppressPrinting = false
@@ -378,12 +372,12 @@ type RowReaderVector<'T>(data:IVector<IVector>, builder:IVectorBuilder, rowAddre
 
 /// Creates a virtual vector for reading "row" of a data frame. 
 // For more information, see the `RowReaderVector<'T>` type.
-let inline createRowReader (data:IVector<IVector>) (builder:IVectorBuilder) rowAddress =
-  RowReaderVector<'T>(data, builder, rowAddress) :> IVector<'T>
+let inline createRowReader (data:IVector<IVector>) (builder:IVectorBuilder) rowAddress colAddressAt =
+  RowReaderVector<'T>(data, builder, rowAddress, colAddressAt) :> IVector<'T>
  
 /// The same as `createRowReader`, but returns `obj` vector as the result
-let inline createObjRowReader data builder addr : IVector<obj> = 
-  createRowReader data builder addr
+let inline createObjRowReader data builder addr colAddressAt : IVector<obj> = 
+  createRowReader data builder addr colAddressAt
 
 /// Helper type that is used via reflection
 type TryValuesHelper =
@@ -392,7 +386,7 @@ type TryValuesHelper =
   static member TryValues<'T>(vector:IVector<'T tryval>) = 
     let exceptions = vector.DataSequence |> Seq.choose OptionalValue.asOption |> Seq.choose (fun tv -> 
       if tv.HasValue then None else Some tv.Exception) |> List.ofSeq
-    if List.isEmpty exceptions then TryValue.Success (vector.Select(fun v -> v.Value) :> IVector)
+    if List.isEmpty exceptions then TryValue.Success (vector.Select(fun (v:tryval<_>) -> v.Value) :> IVector)
     else TryValue.Error (new AggregateException(exceptions))
 
 /// Given an IVector, check if the vector contains `'T tryval` values and if it does,
@@ -503,18 +497,22 @@ open System.Reflection.Emit
 /// (the `ctor` function takes data and address of the row to be wrapped)
 let mapFrameRowVector 
     (ctor:System.Func<IVector[], Addressing.Address, 'TRow>) 
-    length (data:IVector[])  =
+    length (addressAt:int64 -> Address) 
+    (data:IVector[])  =
   { new IVector<'TRow> with
       member x.GetValue(a) = OptionalValue(ctor.Invoke(data, a))
+      member x.GetValueAtLocation(l) = OptionalValue(ctor.Invoke(data, l.Address))
       member x.Data = 
-        seq { for i in Seq.range 0L (length-1L) -> (x :> IVector<_>).GetValue(i) }
+        seq { for i in Seq.range 0L (length-1L) -> (x :> IVector<_>).GetValue(addressAt i) }
         |> VectorData.Sequence
       member x.Select(g) =  failwith "mapFrameRowVector: Select not supported"
-      member x.SelectMissing(g) = failwith "mapFrameRowVector: SelectMissing not supported"
       member x.Convert(h, g) = failwith "mapFrameRowVector: Convert not supported"
     interface IVector with
+      member x.AddressingScheme = 
+        data |> Seq.map (fun v -> v.AddressingScheme) |> Seq.reduce (fun a b ->
+          if a <> b then failwith "mapFrameRowVector: Addressing scheme mismatch" else a )
       member x.Length = length
-      member x.ObjectSequence = seq { for i in Seq.range 0L (length-1L) -> x.GetObject(i) }
+      member x.ObjectSequence = seq { for i in Seq.range 0L (length-1L) -> x.GetObject(addressAt i) }
       member x.SuppressPrinting = false
       member x.ElementType = typeof<'TRow>
       member x.GetObject(i) = (x :?> IVector<'TRow>).GetValue(i) |> OptionalValue.map box
@@ -697,22 +695,24 @@ let createTypedRowCreator<'TRow> columnKeys =
 
 /// Creates a typed vector of `IVector<'TRow>` for a given interface `'TRow`
 /// (which is expected to have only read-only properties). 
-let createTypedRowReader<'TRow> columnKeys (columnIndex:string -> Address) size (data:IVector<IVector>) = 
+let createTypedRowReader<'TRow> 
+    columnKeys (columnIndex:string -> Address) size 
+    addressAt (data:IVector<IVector>) = 
   let ctor, meta = createTypedRowCreator<'TRow> columnKeys
   let subData = 
     [| for name, typ in meta ->
          let colVector = data.GetValue(columnIndex name)
          if colVector.Value.ElementType = typ then colVector.Value
          else convertTypeDynamic typ ConversionKind.Flexible colVector.Value |]
-  mapFrameRowVector ctor size subData
+  mapFrameRowVector ctor size addressAt subData
 
 // --------------------------------------------------------------------------------------
 // Vector constructions
 // --------------------------------------------------------------------------------------
 
 /// Substitute variable hole for another in a vector construction
-let rec substitute ((oldVar, newVar) as subst) = function
-  | Return v when v = oldVar -> Return newVar
+let rec substitute ((oldVar, newVect) as subst) = function
+  | Return v when v = oldVar -> newVect
   | Return v -> Return v
   | Empty size -> Empty size
   | FillMissing(vc, d) -> FillMissing(substitute subst vc, d)
@@ -721,8 +721,8 @@ let rec substitute ((oldVar, newVar) as subst) = function
   | GetRange(vc, r) -> GetRange(substitute subst vc, r)
   | Append(l, r) -> Append(substitute subst l, substitute subst r)
   | Combine(l, lst, c) -> Combine(l, List.map (substitute subst) lst, c)
-  | CustomCommand(vcs, f) -> CustomCommand(List.map (substitute subst) vcs, f)
-  | AsyncCustomCommand(vcs, f) -> AsyncCustomCommand(List.map (substitute subst) vcs, f)
+  | CustomCommand(lst, f) -> CustomCommand(List.map (substitute subst) lst, f)
+  | AsyncCustomCommand(lst, f) -> AsyncCustomCommand(List.map (substitute subst) lst, f)
 
 /// Matches when the vector command represents a combination
 /// of N relocated vectors (that is Combine [Relocate ..; Relocate ..; ...])

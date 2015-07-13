@@ -431,6 +431,14 @@ module internal ExceptionHelpers =
   let inline keyNotFound key = 
     raise (new KeyNotFoundException(sprintf "The key %O is not present in the index" key))
 
+/// Pattern matching helpers
+/// [omit]
+[<AutoOpen>]
+module internal MatchingHelpers =
+  /// Helper that lets us define parameters in pattern matching; for example 
+  /// "Let 42 (answer, input)" binds "answer=42" and propagates input
+  let (|Let|) arg input = (arg, input)
+
 /// Utility functions for identifying missing values. The `isNA` function 
 /// can be used to test whether a value represents a missing value - this includes
 /// the `null` value, `Nullable<T>` value with `HasValue = false` and 
@@ -622,26 +630,87 @@ module List =
 /// This module contains additional functions for working with sequences. 
 /// `Deedle.Internals` is opened, it extends the standard `Seq` module.
 module Seq = 
-  
-  /// A helper function that generates a sequence for the specified range of
-  /// int or int64 values. This is notably faster than using `lo .. hi`.
-  let inline range (lo:^T) (hi:^T) = 
-    let one = LanguagePrimitives.GenericOne
+
+  /// If the projection returns the same value for all elements, then it
+  /// returns the value. Otherwise it throws an exception.
+  let uniqueBy f input =
+    input |> Seq.map f |> Seq.reduce (fun a b ->  
+      if a <> b then failwith "uniqueBy: Elements are not the same" else a)
+
+
+  /// Returns the last element and the length of a sequence
+  /// (using just a single iteration over the sequence)
+  let inline lastAndLength (input:seq<_>) = 
+    let mutable last = Unchecked.defaultof<_>
+    let mutable count = 0
+    use en = input.GetEnumerator()
+    while en.MoveNext() do
+      last <- en.Current; count <- count + 1
+    if count = 0 then invalidOp "Insufficient number of elements"
+    last, count
+
+  /// Generate infinite sequence using the specified function.
+  /// The initial state is returned as the first element.
+  let inline unreduce f start = seq {
+    let state = ref start
+    while true do
+      yield state.Value
+      state := f state.Value }
+
+  /// Same as `Seq.choose` but passes 64 bit index (l stands for long) to the function
+  let inline choosel f (input:seq<_>) = seq {
+    let i = ref 0L
+    for v in input do
+      match f i.Value v with
+      | Some res -> yield res 
+      | _ -> ()
+      i := !i + 1L }
+
+  /// Same as `Seq.map` but passes 64 bit index (l stands for long) to the function
+  let inline mapl f (input:seq<_>) = seq {
+    let i = ref 0L
+    for v in input do 
+      yield f i.Value v 
+      i := !i + 1L }
+
+  /// Skip at most the specified number of elements. This is like
+  /// `Seq.skip`, but it does not throw when the sequence is shorter.
+  let skipAtMost count (input:seq<_>) = 
+    seq { use en = input.GetEnumerator()
+          for n in 0 .. count-1 do en.MoveNext() |> ignore
+          while en.MoveNext() do
+            yield en.Current }
+
+  /// A helper function that generates a sequence for the specified range.
+  /// (This takes the step and also an operator to use for checking at the end)
+  let inline private rangeStepImpl (lo:^T) (hi:^T) (step:^T) geq = 
     { new IEnumerable< ^T > with
         member x.GetEnumerator() =
-          let current = ref (lo - one)
+          let current = ref (lo - step)
           { new IEnumerator< ^T > with
               member x.Current = current.Value
             interface System.Collections.IEnumerator with
               member x.Current = box current.Value
               member x.MoveNext() = 
-                if current.Value >= hi then false
-                else current.Value <- current.Value + one; true
-              member x.Reset() = current.Value <- lo - one
+                if geq current.Value hi then false
+                else current.Value <- current.Value + step; true
+              member x.Reset() = current.Value <- lo - step
             interface System.IDisposable with
               member x.Dispose() = ()  }
       interface System.Collections.IEnumerable with
         member x.GetEnumerator() = (x :?> IEnumerable< ^T >).GetEnumerator() :> _ }
+
+  /// A helper function that generates a sequence for the specified range of
+  /// int or int64 values. This is notably faster than using `lo .. step .. hi`.
+  let inline rangeStep (lo:^T) (step:^T) (hi:^T) = 
+    if lo <= hi then rangeStepImpl lo hi step (>=)
+    else rangeStepImpl lo hi step (<=)
+
+  /// A helper function that generates a sequence for the specified range of
+  /// int or int64 values. This is notably faster than using `lo .. hi`.
+  let inline range (lo:^T) (hi:^T) = 
+    if lo <= hi then rangeStepImpl lo hi LanguagePrimitives.GenericOne (>=)
+    else rangeStepImpl lo hi LanguagePrimitives.GenericOne (<=)
 
   /// Comapre two sequences using the `Equals` method. Returns true
   /// when all their elements are equal and they have the same size.

@@ -12,6 +12,9 @@ open System
 open FsUnit
 open NUnit.Framework
 open Deedle
+open Deedle.Internal
+open Deedle.Addressing
+open Deedle.Vectors
 open Deedle.Virtual
 open Deedle.Vectors.Virtual
 
@@ -21,25 +24,37 @@ open Deedle.Vectors.Virtual
 
 type LinearSubRange =
   { Offset : int; Step : int }
-  interface Vectors.IVectorRange with
+  interface IRangeRestriction<Address> with
     member x.Count = failwith "Count not supported"
-  interface seq<int64> with
-    member x.GetEnumerator() : System.Collections.Generic.IEnumerator<int64> = failwith "hard!"
+  interface seq<Address> with
+    member x.GetEnumerator() : System.Collections.Generic.IEnumerator<Address> = failwith "hard!"
   interface System.Collections.IEnumerable with
     member x.GetEnumerator() : System.Collections.IEnumerator = failwith "hard!"
 
-type TrackingSource<'T>(ranges, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?search) = 
-  member val AccessListCell = ref [] with get, set
+module Address = LinearAddress
+
+type TrackingSource<'T>(ranges:(int64*int64) list, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?search) = 
+  member val AccessListCell : int64 list ref = ref [] with get, set
   member val LookupListCell = ref [] with get, set
   member val IsTracking = true with get, set
   member val HasMissing = true with get, set
   member x.AccessList = List.rev x.AccessListCell.Value
   member x.LookupList = List.rev x.LookupListCell.Value
-  member x.Ranges = ranges
+  member x.Ranges = ranges 
+  member x.Length = ranges |> Seq.sumBy (fun (lo, hi) -> hi - lo + 1L)
+  member x.AddressAt(index) = 
+    let res = Address.ofInt64 index
+    res
+  member x.IndexAt(address) = 
+    let res = Address.asInt64 address
+    res
 
   interface IVirtualVectorSource with
-    member x.Length = ranges |> Seq.sumBy (fun (lo, hi) -> hi - lo + 1L)
+    member x.Length = x.Length
+    member x.AddressingSchemeID = "it"
     member x.ElementType = typeof<'T>
+    member x.AddressOperations = Indices.Linear.LinearAddressOperations(0L, int64 x.Length-1L) :> _
+    member x.Invoke(op) = op.Invoke(x)
 
   interface IVirtualVectorSource<'T> with
     member x.MergeWith(sources) = 
@@ -50,10 +65,11 @@ type TrackingSource<'T>(ranges, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?searc
 
     member x.LookupRange(v) = 
       match search with
-      | Some f -> let o, s = f v in Vectors.Custom { Offset = o; Step = s }
+      | Some f -> let o, s = f v in RangeRestriction.Custom { Offset = o; Step = s }
       | None -> failwith "Search not supported"
 
     member x.LookupValue(k, l, c) = 
+      let c = Func<int64,bool>(fun i -> c.Invoke(Address.ofInt64 i))
       if x.IsTracking then x.LookupListCell := (k, l) :: !x.LookupListCell
       let asLong = match asLong with None -> failwith "Lookup not supported" | Some g -> g
       let found = ranges |> Seq.fold (fun state (lo, hi) ->
@@ -66,16 +82,17 @@ type TrackingSource<'T>(ranges, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?searc
               else Choice1Of2(offset + hi - lo + 1L)
           | res -> res ) (Choice1Of2 0L)
       match found with 
-      | Choice2Of2 r -> r
+      | Choice2Of2 r -> OptionalValue((fst r.Value, Address.ofInt64(snd r.Value)))
       | _ -> OptionalValue.Missing
 
-    member x.ValueAt addr = 
+    member x.ValueAt loc = 
+      let r = ranges
       let res = 
-        ranges |> List.fold (fun state (lo, hi) ->
+        r |> List.fold (fun (state:Choice<int64,int64>) (lo, hi) ->
           match state with
           | Choice1Of2 offset ->
-              if addr >= offset && addr <= offset+hi-lo then
-                Choice2Of2((addr - offset) + lo)
+              if (Address.asInt64 loc.Address) >= offset && (Address.asInt64 loc.Address) <= offset+hi-lo then
+                Choice2Of2(((int64 loc.Address) - offset) + lo)
               else Choice1Of2(offset + hi - lo + 1L)
           | res -> res) (Choice1Of2 0L)
       match res with
@@ -83,14 +100,14 @@ type TrackingSource<'T>(ranges, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?searc
           if x.IsTracking then x.AccessListCell := absAddr  :: !x.AccessListCell
           if x.HasMissing && (absAddr % 3L = 0L) then OptionalValue.Missing
           else OptionalValue(valueAt absAddr )
-      | _ -> failwith "ValueAt: out of range"
+      | Choice1Of2 oor -> failwith <| "ValueAt: out of range: " + oor.ToString()
 
     member x.GetSubVector(range) = 
-      match range with
-      | Vectors.Range(nlo, nhi) ->
+      match range.AsAbsolute(x.Length) with
+      | Choice1Of2(nlo, nhi) ->
           if nhi < nlo then invalidOp "hi < lo"
-          elif nlo < 0L then invalidOp "lo < 0"
-          elif nhi > (x:>IVirtualVectorSource).Length then invalidOp "hi > max"
+          elif nlo < x.AddressAt(0L) then invalidOp "lo < 0"
+          elif nhi > x.AddressAt(x.Length-1L) then invalidOp "hi > max" // TODO -1
 
           // This is not entirely correct, but it works well enough for tests..
           let _, ranges = 
@@ -101,8 +118,8 @@ type TrackingSource<'T>(ranges, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?searc
 
           let subRange = 
             ranges |> List.tryPick (fun ((lo, hi), (absLo, absHi)) ->
-              if nlo >= lo && nhi <= hi then
-                Some(absLo + (nlo - lo), absHi + (nhi - hi))
+              if nlo >= x.AddressAt lo && nhi <= x.AddressAt hi then
+                Some(absLo + (x.IndexAt(nlo) - lo), absHi + (x.IndexAt(nhi) - hi))
               else None)
           
           let absLo, absHi = 
@@ -112,7 +129,7 @@ type TrackingSource<'T>(ranges, valueAt:int64 -> 'T, ?asLong:'T -> int64, ?searc
             ( [absLo, absHi], valueAt, ?asLong=asLong, HasMissing = x.HasMissing, IsTracking = x.IsTracking, 
 
               LookupListCell = x.LookupListCell, AccessListCell = x.AccessListCell ) :> _
-      | Vectors.Custom (:? LinearSubRange as lr) ->
+      | Choice2Of2(:? LinearSubRange as lr) ->
           let lo, hi = 
             match ranges with
             | [lo, hi] -> lo, hi
@@ -155,9 +172,9 @@ let ``Lookup and ValueAt works on merged tracking sources`` () =
   let source1 = TrackingSource.CreateTimes(0L, 10L) :> IVirtualVectorSource<_>
   let source2 = TrackingSource.CreateTimes(10000000L, 10000010L) :> IVirtualVectorSource<_>
   let sources = source1.MergeWith [source2]
-  source1.ValueAt(0L).Value |> shouldEqual (ith 0L)
-  source2.ValueAt(0L).Value |> shouldEqual (ith 10000000L)
-  sources.ValueAt(11L).Value |> shouldEqual (ith 10000000L)
+  source1.ValueAt(KnownLocation(Address.ofInt64 0L, 0L)).Value |> shouldEqual (ith 0L)
+  source2.ValueAt(KnownLocation(Address.ofInt64 0L, 0L)).Value |> shouldEqual (ith 10000000L)
+  sources.ValueAt(KnownLocation(Address.ofInt64 11L, 11L)).Value |> shouldEqual (ith 10000000L)
   sources.LookupValue(ith 0L, Lookup.Exact, fun _ -> true).Value |> fst |> shouldEqual (ith 0L)
   sources.LookupValue(ith 10L, Lookup.Exact, fun _ -> true).Value |> fst |> shouldEqual (ith 10L)
   sources.LookupValue(ith 100L, Lookup.Exact, fun _ -> true).HasValue |> shouldEqual false
@@ -183,13 +200,13 @@ let ``Counting keys does not evaluate the series`` () =
   src.AccessList |> shouldEqual []
 
 [<Test>]
-let ``Counting values does not evaluate the series`` () =
+let ``Counting values does not run out of memory`` () =
   let src = TrackingSource.CreateLongs(0L, 10000000L, IsTracking=false)
   let series = Virtual.CreateOrdinalSeries(src)
   series.ValueCount |> shouldEqual 6666667
 
 [<Test>]
-let ``Can take, skip etc. without evaluating the series`` () =
+let ``Can take skip etc. without evaluating the series`` () =
   let src = TrackingSource.CreateFloats(0L, 10000000L)
   let s1 = Virtual.CreateOrdinalSeries(src)
   s1 |> Series.take 10 |> Stats.sum |> shouldEqual 27.0
@@ -332,7 +349,7 @@ let ``Accessing row evaluates only the required values`` () =
   frame.["S2", 5000000L] |> shouldEqual <| box "lorem"
   s1.AccessList |> shouldEqual [5000000L]
   s2.AccessList |> shouldEqual [5000000L]
-
+ 
 [<Test>]
 let ``Accessing series of rows accesses only required values`` () =
   let s1, s2, frame = createSimpleFrame()
@@ -466,7 +483,7 @@ let ``Merging overlapping ordinally-indexed virtual frames fails`` () =
 
 [<Test>]
 let ``Can filter virtual frame by a value in a non-index column`` () = 
-  let idx, s1, s2, f = createSimpleTimeFrame()
+  let idx, s1, s2, f = createSimpleTimeFrame() 
   let partsLength =
     "lorem ipsum dolor sit amet consectetur adipiscing elit".Split(' ')
     |> Seq.map (fun s -> f |> Frame.filterRowsBy "S2" s)
@@ -592,7 +609,8 @@ let ``Can materialize a delayed series into a virtual series`` () =
   let r = Recorder()
   let delayed = 
     DelayedSeries.FromIndexVectorLoader
-      ( VirtualVectorBuilder.Instance, VirtualIndexBuilder.Instance, 
+      ( VirtualAddressingScheme("it"),
+        VirtualVectorBuilder.Instance, VirtualIndexBuilder.Instance, 
         date 2000 1 1, date 2100 1 1, dataLoader (spy1 r ignore) )
 
   // Materialize as virtual series for 5 years          
@@ -606,6 +624,6 @@ let ``Can materialize a delayed series into a virtual series`` () =
   let idxSource, valSource = r.Values.Head
   let idxAccess = idxSource.AccessList |> Seq.distinct |> List.ofSeq |> List.sort
   let valAccess = valSource.AccessList |> Seq.distinct |> List.ofSeq |> List.sort
-
-  idxAccess |> shouldEqual <| [ 33235401L .. 33235415L ] @ [ 46014466L .. 46014480L ]
-  valAccess |> shouldEqual <| [ 33235401L .. 33235415L ] @ [ 46014466L .. 46014480L ]
+  // In 'idxAccesses', printing checks if skipping 30 elements gives an empty series
+  idxAccess |> shouldEqual <| [ 33235401L .. 33235401L+30L ] @ [ 46014466L .. 46014480L ]
+  valAccess |> shouldEqual <| [ 33235401L .. 33235401L+15L-1L ] @ [ 46014466L .. 46014480L ]

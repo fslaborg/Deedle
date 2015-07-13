@@ -74,32 +74,33 @@ module internal VectorHelperExtensions =
 
   /// Transformation that creates a row reader. This also implements the
   /// `IRowReaderTransform` so that it can be replaced by a more optimial implementation
-  type RowReaderTransform() =
-    interface IRowReaderTransform
+  type RowReaderTransform(colAddressAt) =
+    interface IRowReaderTransform with
+      member irt.ColumnAddressAt(idx) = colAddressAt idx
     interface INaryTransform with
       member vt.GetFunction<'R>() = 
         unbox<OptionalValue<'R> list -> OptionalValue<'R>> rowReaderFunc
 
   type NaryTransform with
     /// Returns the well-known `IRowReaderTransform` transformation
-    static member RowReader = 
-      RowReaderTransform() :> INaryTransform
+    static member RowReader(colAddressAt) = 
+      RowReaderTransform(colAddressAt) :> INaryTransform
       |> VectorListTransform.Nary
 
-  let createRowVector (vectorBuilder:IVectorBuilder) rowKeyCount colKeyCount f (data:IVector<IVector>) =
+  let createRowVector (vectorBuilder:IVectorBuilder) scheme rowKeyCount colKeyCount colAddressAt f (data:IVector<IVector>) =
     /// Create vector of row reader objects. This method creates 
     /// `IVector<obj>` where each `obj` is actually a boxed `IVector<obj>`
     /// that provides access to data of individual rows of the frame.
     let combinedRowVector =
       let vectors = [ for n in Seq.range 0L (colKeyCount-1L) -> Vectors.Return(int n) ]
-      let cmd = Vectors.Combine(rowKeyCount, vectors, NaryTransform.RowReader)
+      let cmd = Vectors.Combine(rowKeyCount, vectors, NaryTransform.RowReader(colAddressAt))
       let boxedData = [| for v in data.DataSequence -> boxVector v.Value |]
-      vectorBuilder.Build(cmd, boxedData)
+      vectorBuilder.Build(scheme, cmd, boxedData)
 
     // We get a vector containing boxed `IVector<obj>` - we turn it into a
     // vector containing what the caller specified, but lazily to avoid allocations
     combinedRowVector |> lazyMapVector (unbox<IVector<obj>> >> f)
-
+    
 // ------------------------------------------------------------------------------------------------
 // C# frienly operations for creating vectors
 // ------------------------------------------------------------------------------------------------

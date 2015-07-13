@@ -475,6 +475,12 @@ let ``Sample by time span - get the last available previous value for every hour
   actual |> shouldEqual expected        
 
 [<Test>]
+let ``Sample by time span does not crash on empty series`` () =
+  let input = generate (DateTime(2012, 2, 12)) (TimeSpan.FromMinutes(5.37)) 0
+  let actual = input |> Series.sampleTimeInto (TimeSpan(1,0,0)) Direction.Backward Series.lastValue
+  actual |> shouldEqual <| series []
+
+[<Test>]
 let ``Sample by keys - get the nearest previous key or <missing> (TestExplicitTimeSamples)`` () =
   let input = (generate (DateTime(2012, 01, 01)) (TimeSpan.FromDays(3.0)) 15) + 1
   let dateSampels = 
@@ -817,6 +823,22 @@ let ``Can skip N elements from front and back`` () =
   Series.skipLast 98 s |> shouldEqual <| series [1 => 1.0; 2 => 2.0]
   Series.skipLast 100 s |> shouldEqual <| series []
   Series.skipLast 0 s |> shouldEqual <| s
+
+[<Test>]
+let ``Can restrict series range using a custom range restriction`` () =
+  let s = series [ for i in 1 .. 100 -> i => float i]
+  let indices = [ 0L<Addressing.address> .. 3L<Addressing.address> .. 99L<Addressing.address> ]
+  let rangeRestr =
+    { new IRangeRestriction<Addressing.Address> with
+        member x.Count = int64 (Seq.length indices)
+      interface seq<Addressing.Address> with 
+        member x.GetEnumerator() = (indices :> seq<_>).GetEnumerator() 
+      interface System.Collections.IEnumerable with
+        member x.GetEnumerator() = (indices :> seq<_>).GetEnumerator() :> _ } 
+
+  let rs = s.GetAddressRange(RangeRestriction.Custom(rangeRestr))
+  rs.KeyCount |> shouldEqual 34
+  rs.Keys |> List.ofSeq |> shouldEqual [ 1 .. 3 .. 100 ]
 
 // ------------------------------------------------------------------------------------------------
 // Misc

@@ -82,6 +82,13 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   // Internals (rowIndex, columnIndex, data and various helpers)
   // ----------------------------------------------------------------------------------------------
 
+  // Check that the addressing schemes match
+  do for v in data.DataSequence do
+       if rowIndex.AddressingScheme <> v.Value.AddressingScheme then
+         invalidOp "Row index and vectors of a frame should share addressing scheme!"
+     if columnIndex.AddressingScheme <> data.AddressingScheme then
+       invalidOp "Column index and data vector of a frame should share addressing scheme!"
+
   let mutable isEmpty = rowIndex.IsEmpty && columnIndex.IsEmpty
 
   // TODO: Perhaps assert that the 'data' vector has all things required by column index
@@ -145,7 +152,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
             let series = match s with Some s -> seriesConv s | _ -> Series([], []) :> ISeries<_>
             let cmd = nested.IndexBuilder.Reindex(series.Index, rowIndex, Lookup.Exact, Vectors.Return 0, fun _ -> true)
             // When the nested series data is in 'IBoxedVector', get the unboxed representation
-            VectorHelpers.transformColumn nested.VectorBuilder cmd (unboxVector series.Vector) )
+            VectorHelpers.transformColumn nested.VectorBuilder 
+              rowIndex.AddressingScheme cmd (unboxVector series.Vector) )
           |> Vector.ofValues
         Frame<_, _>(rowIndex, colIndex, data, indexBuilder, vectorBuilder)
 
@@ -199,9 +207,10 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     // Create transformations to join the rows (using the same logic as Join)
     // and make functions that transform vectors (when they are only available in first/second frame)
     let rowIndex, f1cmd, f2cmd = 
-      createJoinTransformation indexBuilder rowKind lookup rowIndex otherFrame.RowIndex (Vectors.Return 0) (Vectors.Return 1)
-    let f1trans = VectorHelpers.transformColumn vectorBuilder f1cmd
-    let f2trans = VectorHelpers.transformColumn vectorBuilder (VectorHelpers.substitute (1, 0) f2cmd)
+      createJoinTransformation indexBuilder otherFrame.IndexBuilder rowKind lookup rowIndex 
+        otherFrame.RowIndex (Vectors.Return 0) (Vectors.Return 1)
+    let f1trans = VectorHelpers.transformColumn vectorBuilder rowIndex.AddressingScheme f1cmd
+    let f2trans = VectorHelpers.transformColumn vectorBuilder rowIndex.AddressingScheme (VectorHelpers.substitute (1, Vectors.Return 0) f2cmd)
 
     // To join columns using 'Series.join', we create series containing raw "IVector" data 
     // (so that we do not convert each series to objects series)
@@ -219,11 +228,11 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
         | OptionalValue.Present (TryConvert asV1 lv), OptionalValue.Present (TryConvert asV2 rv) ->
             let lvVect : IVector<Choice<'V1, 'V2, 'V3>> = lv.Select(Choice1Of3)
             let lrVect : IVector<Choice<'V1, 'V2, 'V3>> = rv.Select(Choice2Of3)
-            let res = Vectors.Combine(rowIndex.KeyCount, [f1cmd; f2cmd], BinaryTransform.CreateLifted (fun l r ->
+            let res = Vectors.Combine(lazy rowIndex.KeyCount, [f1cmd; f2cmd], BinaryTransform.CreateLifted (fun l r ->
               match l, r with
               | Choice1Of3 l, Choice2Of3 r -> op.Invoke(l, r) |> Choice3Of3
               | _ -> failwith "Zip: Got invalid vector while zipping" ))
-            frame1.VectorBuilder.Build(res, [| lvVect; lrVect |]).
+            frame1.VectorBuilder.Build(rowIndex.AddressingScheme, res, [| lvVect; lrVect |]).
               Select(function Choice3Of3 v -> v | _ -> failwith "Zip: Produced invalid vector") :> IVector
         | OptionalValue.Present v, _ -> f1trans v
         | _, OptionalValue.Present v -> f2trans v
@@ -269,16 +278,17 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member frame.Join(otherFrame:Frame<'TRowKey, 'TColumnKey>, kind, lookup) =    
     // Union/intersect/align row indices and get transformations to apply to left/right vectors
     let newRowIndex, thisRowCmd, otherRowCmd = 
-      createJoinTransformation indexBuilder kind lookup rowIndex otherFrame.RowIndex (Vectors.Return 0) (Vectors.Return 0)
+      createJoinTransformation indexBuilder otherFrame.IndexBuilder kind lookup rowIndex 
+        otherFrame.RowIndex (Vectors.Return 0) (Vectors.Return 0)
     // Append the column indices and get transformation to combine them
     // (LeftOrRight - specifies that when column exist in both data frames then fail)
     let newColumnIndex, colCmd = 
       indexBuilder.Merge( [(columnIndex, Vectors.Return 0); (otherFrame.ColumnIndex, Vectors.Return 1) ], BinaryTransform.AtMostOne)
     // Apply transformation to both data vectors
-    let newThisData = data.Select(transformColumn vectorBuilder thisRowCmd)
-    let newOtherData = otherFrame.Data.Select(transformColumn vectorBuilder otherRowCmd)
+    let newThisData = data.Select(transformColumn vectorBuilder newRowIndex.AddressingScheme thisRowCmd)
+    let newOtherData = otherFrame.Data.Select(transformColumn otherFrame.VectorBuilder newRowIndex.AddressingScheme otherRowCmd)
     // Combine column vectors a single vector & return results
-    let newData = vectorBuilder.Build(colCmd, [| newThisData; newOtherData |])
+    let newData = vectorBuilder.Build(newColumnIndex.AddressingScheme, colCmd, [| newThisData; newOtherData |])
     Frame(newRowIndex, newColumnIndex, newData, indexBuilder, vectorBuilder)
 
   /// Join two data frames. The columns of the joined frames must not overlap and their
@@ -424,7 +434,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       { new VectorCallSite<IVector> with
           override x.Invoke<'T>(_:IVector<'T>) =
             let typed = vectors |> Seq.map (VectorHelpers.convertType<'T> ConversionKind.Flexible) |> Array.ofSeq
-            vectorBuilder.Build(rowCmd, typed) :> IVector }
+            vectorBuilder.Build(newRowIndex.AddressingScheme, rowCmd, typed) :> IVector }
       |> witnessVec.Invoke
 
     // define the transformation itself, piecing components together
@@ -442,7 +452,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let newColIndex, frameCmd = indexBuilder.Merge(colConstrs, append)
 
     let frameData = frames |> Array.map (fun f -> f.Data)
-    let newData = vectorBuilder.Build(frameCmd, frameData)
+    let newData = vectorBuilder.Build(newColIndex.AddressingScheme, frameCmd, frameData)
     Frame(newRowIndex, newColIndex, newData, indexBuilder, vectorBuilder)
 
   // ----------------------------------------------------------------------------------------------
@@ -469,7 +479,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Accessors and slicing]
   member frame.ColumnsDense = 
-    let newData = data.SelectMissing(fun _ vect -> 
+    let newData = data.Select(fun _ vect -> 
       // Assuming that the data has all values - which should be an invariant...
       let all = rowIndex.Mappings |> Seq.forall (fun (KeyValue(key, addr)) -> vect.Value.GetObject(addr).HasValue)
       if all then OptionalValue(ObjectSeries(rowIndex, boxVector vect.Value, vectorBuilder, indexBuilder))
@@ -484,7 +494,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let emptySeries = Series<_, _>(rowIndex, Vector.ofValues [], vectorBuilder, indexBuilder)
     let res = emptySeries.SelectOptional (fun row ->
       let rowAddress = rowIndex.Locate(row.Key)
-      let rowVec = createObjRowReader data vectorBuilder rowAddress
+      let rowVec = createObjRowReader data vectorBuilder rowAddress columnIndex.AddressAt
       let all = columnIndex.Mappings |> Seq.forall (fun (KeyValue(key, addr)) -> rowVec.GetValue(addr).HasValue)
       if all then OptionalValue(ObjectSeries(columnIndex, rowVec, vectorBuilder, indexBuilder))
       else OptionalValue.Missing )
@@ -501,8 +511,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     // rather than actually creating the vectors, it returns a lazy vector of
     // `IVector<obj>` values created using `createRowReader`.
     let vector =
-      data |> createRowVector vectorBuilder rowIndex.KeyCount columnIndex.KeyCount (fun rowReader ->
-        ObjectSeries(columnIndex, rowReader, vectorBuilder, indexBuilder) )
+      data |> createRowVector vectorBuilder rowIndex.AddressingScheme (lazy rowIndex.KeyCount) 
+        columnIndex.KeyCount columnIndex.AddressAt (fun rowReader ->
+          ObjectSeries(columnIndex, rowReader, vectorBuilder, indexBuilder) )
 
     // The following delegates slicing to the frame by calling 
     // `frame.GetSubrange` which is more efficient than re-creating from rows
@@ -523,11 +534,11 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let keys = columnIndex.Keys |> Seq.map unbox<string> |> List.ofSeq 
     let rowBuilder = VectorHelpers.createTypedRowReader<'TRow> keys (fun column ->
       let address = columnIndex.Locate(unbox<'TColumnKey> column)
-      if address = Address.Invalid then
+      if address = Address.invalid then
         failwithf "The interface member '%s' does not exist in the column index." column
       address )
 
-    let vector = rowBuilder rowIndex.KeyCount data
+    let vector = rowBuilder rowIndex.KeyCount rowIndex.AddressAt data
     Series<'TRowKey, 'TRow>(rowIndex, vector, vectorBuilder, indexBuilder)
 
   /// [category:Accessors and slicing]
@@ -547,7 +558,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   ///
   /// [category:Accessors and slicing]
   member frame.GetRowKeyAt(index) = 
-    frame.RowIndex.KeyAt(Address.ofInt index)
+    frame.RowIndex.KeyAt(frame.RowIndex.AddressAt index)
 
   /// Returns a row of the data frame that is located at the specified int offset.
   /// This does not use the row key and directly accesses the frame data. This method
@@ -563,8 +574,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   member frame.GetRowAt<'T>(index) : Series<_, 'T> = 
     if index < 0 || int64 index >= rowIndex.KeyCount then
       raise (new ArgumentOutOfRangeException("index", "Index must be positive and smaller than the number of rows."))
-    let rowAddress = Address.ofInt index
-    let vector = createRowReader data vectorBuilder rowAddress
+    let rowAddress = rowIndex.AddressAt <| int64 index
+    let vector = createRowReader data vectorBuilder rowAddress columnIndex.AddressAt
     Series(columnIndex, vector, vectorBuilder, indexBuilder)
 
   /// Returns a row with the specieifed key wrapped in `OptionalValue`. When the specified key 
@@ -578,9 +589,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// [category:Accessors and slicing]
   member frame.TryGetRow<'T>(rowKey) : OptionalValue<Series<_, 'T>> =
     let rowAddress = rowIndex.Locate(rowKey)
-    if rowAddress = Address.Invalid then OptionalValue.Missing
+    if rowAddress = Address.invalid then OptionalValue.Missing
     else 
-      let vector = createRowReader data vectorBuilder rowAddress
+      let vector = createRowReader data vectorBuilder rowAddress columnIndex.AddressAt
       OptionalValue(Series(columnIndex, vector, vectorBuilder, indexBuilder))
 
   /// Returns a row with the specieifed key wrapped in `OptionalValue`. When the specified key 
@@ -598,7 +609,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let rowAddress = rowIndex.Lookup(rowKey, lookup, fun _ -> true)
     if not rowAddress.HasValue then OptionalValue.Missing
     else 
-      let vector = createRowReader data vectorBuilder (snd rowAddress.Value)
+      let vector = createRowReader data vectorBuilder (snd rowAddress.Value) columnIndex.AddressAt
       OptionalValue(Series(columnIndex, vector, vectorBuilder, indexBuilder))
 
   /// Returns a row with the specieifed key. This method is generic and returns the result 
@@ -637,7 +648,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let rowAddress = rowIndex.Lookup(rowKey, lookup, fun _ -> true)
     if not rowAddress.HasValue then OptionalValue.Missing
     else 
-      let vector = createRowReader data vectorBuilder (snd rowAddress.Value)
+      let vector = createRowReader data vectorBuilder (snd rowAddress.Value) columnIndex.AddressAt
       let row = Series(columnIndex, vector, vectorBuilder, indexBuilder)
       OptionalValue(KeyValuePair(fst rowAddress.Value, row))
   
@@ -772,7 +783,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       data <- Vector.ofValues [series.Vector]
       frame.setColumnIndex (Index.ofKeys [| column |])
     else
-      let other = Frame(series.Index, Index.ofUnorderedKeys [| column |], Vector.ofValues [series.Vector], indexBuilder, vectorBuilder)
+      let other = 
+        Frame( series.Index, Index.ofUnorderedKeys [| column |], 
+               Vector.ofValues [series.Vector], series.Index.Builder, series.VectorBuilder )
       let joined = frame.Join(other, JoinKind.Left, lookup)
       data <- joined.Data
       frame.setColumnIndex joined.ColumnIndex
@@ -787,7 +800,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// [category:Series operations]
   member frame.DropColumn(column:'TColumnKey) = 
     let newColumnIndex, colCmd = indexBuilder.DropItem( (columnIndex, Vectors.Return 0), column)
-    data <- vectorBuilder.Build(colCmd, [| data |])
+    data <- vectorBuilder.Build(newColumnIndex.AddressingScheme, colCmd, [| data |])
     frame.setColumnIndex newColumnIndex
 
   /// Mutates the data frame by replacing the specified series with
@@ -960,18 +973,19 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     // Join the row index of the frame & the index of the series
     // (so that we can apply the transformation repeatedly on columns)
     let newIndex, frameCmd, seriesCmd = 
-      createJoinTransformation frame.IndexBuilder JoinKind.Outer Lookup.Exact frame.RowIndex series.Index (Vectors.Return 0) (Vectors.Return 1)
-    let opCmd = Vectors.Combine(newIndex.KeyCount, [frameCmd; seriesCmd], BinaryTransform.CreateLifted(op))
+      createJoinTransformation frame.IndexBuilder series.IndexBuilder JoinKind.Outer Lookup.Exact frame.RowIndex 
+        series.Index (Vectors.Return 0) (Vectors.Return 1)
+    let opCmd = Vectors.Combine(lazy newIndex.KeyCount, [frameCmd; seriesCmd], BinaryTransform.CreateLifted(op))
 
     // Apply the transformation on all columns that can be converted to 'T
     let newData = frame.Data.Select(fun vector ->
       match VectorHelpers.tryConvertType ConversionKind.Safe vector with
       | OptionalValue.Present(tyvec) ->
-          frame.VectorBuilder.Build(opCmd, [| tyvec; series.Vector |]) :> IVector
+          frame.VectorBuilder.Build(newIndex.AddressingScheme, opCmd, [| tyvec; series.Vector |]) :> IVector
       | _ -> 
           { new VectorCallSite<_> with
               member x.Invoke(tyvec) =
-                frame.VectorBuilder.Build(frameCmd, [| tyvec |]) :> IVector }
+                frame.VectorBuilder.Build(newIndex.AddressingScheme, frameCmd, [| tyvec |]) :> IVector }
           |> vector.Invoke ) 
     Frame(newIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
@@ -1233,21 +1247,22 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// [category:Accessors and slicing]
   member x.GetSubrange(lo, hi) =
     let newRowIndex, cmd = indexBuilder.GetRange((rowIndex, Vectors.Return 0), (lo, hi))
-    let newData = data.Select(VectorHelpers.transformColumn vectorBuilder cmd)
+    let newData = data.Select(VectorHelpers.transformColumn vectorBuilder newRowIndex.AddressingScheme cmd)
     Frame<_, _>(newRowIndex, columnIndex, newData, indexBuilder, vectorBuilder)
 
   /// Internal helper used by `skip`, `take`, etc.
-  member frame.GetAddressRange(lo, hi) = 
-    let newRowIndex, cmd = indexBuilder.GetAddressRange((frame.RowIndex, Vectors.Return 0), (lo, hi))
-    let newData = frame.Data.Select(VectorHelpers.transformColumn vectorBuilder cmd)
+  member frame.GetAddressRange(range) = 
+    let newRowIndex, cmd = indexBuilder.GetAddressRange((frame.RowIndex, Vectors.Return 0), range)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn vectorBuilder newRowIndex.AddressingScheme cmd)
     Frame<_, _>(newRowIndex, columnIndex, newData, indexBuilder, vectorBuilder)
 
   member private frame.GetPrintedRowObservations(startCount:int, endCount:int) = 
-    if frame.RowIndex.KeyCount <= int64 (startCount + endCount) then
+    let smaller = frame.RowIndex.Mappings |> Seq.skipAtMost (startCount+endCount) |> Seq.isEmpty
+    if smaller then
       seq { for obs in frame.Rows.Observations -> Choice1Of3(obs.Key, obs.Value) } 
     else
-      let starts = frame.GetAddressRange(0L, int64 (startCount - 1))
-      let ends = frame.GetAddressRange(frame.RowIndex.KeyCount - int64 endCount, frame.RowIndex.KeyCount - 1L)
+      let starts = frame.GetAddressRange(RangeRestriction.Start(int64 startCount))
+      let ends = frame.GetAddressRange(RangeRestriction.End(int64 endCount))
       seq { for obs in starts.Rows.Observations do yield Choice1Of3(obs.Key, obs.Value)
             yield Choice2Of3()
             for obs in ends.Rows.Observations do yield Choice1Of3(obs.Key, obs.Value) }
@@ -1304,11 +1319,11 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     try
       // Get the number of levels in column/row index
       let colLevels = 
-        if frame.ColumnIndex.KeyCount = 0L then 1 
-        else CustomKey.Get(frame.ColumnIndex.KeyAt(0L)).Levels
+        if frame.ColumnIndex.IsEmpty then 1 
+        else CustomKey.Get(frame.ColumnIndex.KeyAt(frame.ColumnIndex.AddressAt(0L))).Levels
       let rowLevels = 
-        if frame.RowIndex.KeyCount = 0L then 1 
-        else CustomKey.Get(frame.RowIndex.KeyAt(0L)).Levels
+        if frame.RowIndex.IsEmpty then 1 
+        else CustomKey.Get(frame.RowIndex.KeyAt(frame.RowIndex.AddressAt(0L))).Levels
 
       /// Format type with a few special cases for common types
       let formatType (typ:System.Type) =
@@ -1527,14 +1542,14 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
          (grp, rowkey), (dst, src))                     // seq of (label, rowkey), (dstloc, srcloc)
       |> ReadOnlyCollection.ofSeq
 
-    let addressify (a, b) = (Address.ofInt a, Address.ofInt b)
+    let addressify (a, b) = (frame.RowIndex.AddressAt <| int64 a, frame.RowIndex.AddressAt <| int64 b)
 
     let keys = ReadOnlyCollection.map fst relocs 
     let locs = ReadOnlyCollection.map (snd >> addressify) relocs
 
     let newIndex = Index.ofKeys keys
     let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 n, locs)
-    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder cmd)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newIndex.AddressingScheme cmd)
     Frame<_, _>(newIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   member internal frame.NestRowsBy<'TGroup when 'TGroup : equality>(labels:seq<'TGroup>) =
@@ -1556,8 +1571,11 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let groups = relocs |> Seq.map (fun (g, idx) ->
       let newIndex = Index.ofKeys(idx |> Seq.map fst |> ReadOnlyCollection.ofSeq)    // index of rowkeys
       let newLocs  = idx |> Seq.map snd                                              // seq of offsets
-      let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 newIndex.KeyCount, newLocs |> Seq.mapi (fun a b -> (int64 a, int64 b)))
-      let newData  = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder cmd)
+      let cmd = 
+        VectorConstruction.Relocate
+          ( VectorConstruction.Return 0, int64 newIndex.KeyCount, 
+            newLocs |> Seq.mapi (fun a b -> (newIndex.AddressAt(int64 a), newIndex.AddressAt(int64 b))))
+      let newData  = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newIndex.AddressingScheme cmd)
       Frame<_, _>(newIndex, frame.ColumnIndex, newData, indexBuilder, vectorBuilder) )
  
     Series<_, _>(newIndex, Vector.ofValues groups, vectorBuilder, indexBuilder)
@@ -1617,8 +1635,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     // Drop the specified column & transform the remaining columns
     let newData = 
       frame.VectorBuilder
-        .Build(colCmd, [| frame.Data |])
-        .Select(VectorHelpers.transformColumn frame.VectorBuilder rowCmd)
+        .Build(newColumnIndex.AddressingScheme, colCmd, [| frame.Data |])
+        .Select(VectorHelpers.transformColumn frame.VectorBuilder newRowIndex.AddressingScheme rowCmd)
     Frame<'TNewRowIndex, 'TColumnKey>(newRowIndex, newColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Returns a data frame whose rows are indexed based on the specified column of the original

@@ -41,7 +41,8 @@ type ISeries<'K when 'K : equality> =
   abstract Index : IIndex<'K>
   /// Attempts to get the value at a specified key and return it as `obj`
   abstract TryGetObject : 'K -> OptionalValue<obj>
-
+  /// Returns the vector builder associated with this series
+  abstract VectorBuilder : IVectorBuilder
 
 /// The type `Series<K, V>` represents a data series consisting of values `V` indexed by
 /// keys `K`. The keys of a series may or may not be ordered 
@@ -52,6 +53,10 @@ and
     ( index:IIndex<'K>, vector:IVector<'V>,
       vectorBuilder : IVectorBuilder, indexBuilder : IIndexBuilder ) =
   
+  // Check that the addressing schemes match
+  do if index.AddressingScheme <> vector.AddressingScheme then
+       invalidOp "Index and vector of a series should share addressing scheme!"
+
   /// Value to hold the number of elements (so that we do not recalculate this all the time)
   /// (This is calculated on first access; we do not use Lazy<T> to avoid allocations)
   let mutable valueCount = -1 
@@ -91,29 +96,32 @@ and
   /// property or `Series.observation`.
   ///
   /// [category:Series data]
-  member x.Values = seq { 
-    for kvp in index.Mappings do 
-      let v = vector.GetValue(kvp.Value) 
-      if v.HasValue then yield v.Value }
+  member x.Values = 
+    index.Mappings
+    |> Seq.choosel (fun idx kvp ->
+        vector.GetValueAtLocation(KnownLocation(kvp.Value, idx)) 
+        |> OptionalValue.asOption )
 
   /// Returns a collection of values, including possibly missing values. Note that 
   /// the length of this sequence matches the `Keys` sequence.
   ///
   /// [category:Series data]
-  member x.ValuesAll = seq { 
-    for kvp in index.Mappings do 
-      let v = vector.GetValue(kvp.Value) 
-      yield v.Value }
+  member x.ValuesAll = 
+    index.Mappings
+    |> Seq.mapl (fun idx kvp ->
+        vector.GetValueAtLocation(KnownLocation(kvp.Value, idx)).Value)
 
   /// Returns a collection of observations that form this series. Note that this property
   /// skips over all missing (or NaN) values. Observations are returned as `KeyValuePair<K, V>` 
   /// objects. For an F# alternative that uses tuples, see `Series.observations`.
   ///
   /// [category:Series data]
-  member x.Observations = seq {
-    for KeyValue(k, a) in index.Mappings do
-      let v = vector.GetValue(a)
-      if v.HasValue then yield KeyValuePair(k, v.Value) }
+  member x.Observations = 
+    index.Mappings
+    |> Seq.choosel (fun idx kvp ->
+        vector.GetValueAtLocation(KnownLocation(kvp.Value, idx)) 
+        |> OptionalValue.map (fun v -> KeyValuePair(kvp.Key, v))
+        |> OptionalValue.asOption )
 
   /// Returns a collection of observations that form this series. Note that this property
   /// includes all missing (or NaN) values. Observations are returned as 
@@ -121,10 +129,11 @@ and
   /// see `Series.observationsAll`.
   ///
   /// [category:Series data]
-  member x.ObservationsAll = seq {
-    for KeyValue(k, a) in index.Mappings do
-      let v = vector.GetValue(a)
-      yield KeyValuePair(k, v) }
+  member x.ObservationsAll =
+    index.Mappings
+    |> Seq.mapl (fun idx kvp ->
+        let v = vector.GetValueAtLocation(KnownLocation(kvp.Value, idx)) 
+        KeyValuePair(kvp.Key, v))
 
   /// 
   ///
@@ -164,15 +173,15 @@ and
   // ----------------------------------------------------------------------------------------------
 
   /// Internal helper used by `skip`, `take`, etc.
-  member x.GetAddressRange(lo, hi) = 
-    let newIndex, cmd = indexBuilder.GetAddressRange((index, Vectors.Return 0), (int64 lo, int64 hi))
-    let vec = vectorBuilder.Build(cmd, [| vector |])
+  member x.GetAddressRange(range) = 
+    let newIndex, cmd = indexBuilder.GetAddressRange((index, Vectors.Return 0), range)
+    let vec = vectorBuilder.Build(newIndex.AddressingScheme, cmd, [| vector |])
     Series(newIndex, vec, vectorBuilder, indexBuilder)
 
   /// [category:Accessors and slicing]
   member x.GetSubrange(lo, hi) =
     let newIndex, newVector = indexBuilder.GetRange((index, Vectors.Return 0), (lo, hi))
-    let newVector = vectorBuilder.Build(newVector, [| vector |])
+    let newVector = vectorBuilder.Build(newIndex.AddressingScheme, newVector, [| vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
   /// [category:Accessors and slicing]
@@ -227,7 +236,8 @@ and
   /// [category:Accessors and slicing]
   member series.GetItems(keys, lookup) =    
     let newIndex = indexBuilder.Create<_>((keys:seq<_>), None)
-    let newVector = vectorBuilder.Build(indexBuilder.Reindex(index, newIndex, lookup, Vectors.Return 0, fun addr -> series.Vector.GetValue(addr).HasValue), [| vector |])
+    let cmd = indexBuilder.Reindex(index, newIndex, lookup, Vectors.Return 0, fun addr -> series.Vector.GetValue(addr).HasValue)
+    let newVector = vectorBuilder.Build(newIndex.AddressingScheme, cmd, [| vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
   ///
@@ -261,7 +271,7 @@ and
   /// [category:Accessors and slicing]
   member x.GetByLevel(key:ICustomLookup<'K>) =
     let newIndex, levelCmd = indexBuilder.LookupLevel((index, Vectors.Return 0), key)
-    let newVector = vectorBuilder.Build(levelCmd, [| vector |])
+    let newVector = vectorBuilder.Build(newIndex.AddressingScheme, levelCmd, [| vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
     
 
@@ -270,7 +280,7 @@ and
   /// [category:Accessors and slicing]
   member x.TryGetObservation(key) = 
     let addr = index.Locate(key) 
-    if addr = Address.Invalid then OptionalValue.Missing 
+    if addr = Address.invalid then OptionalValue.Missing 
     else
       let value = vector.GetValue(addr) 
       OptionalValue(KeyValuePair(key, value))
@@ -279,7 +289,7 @@ and
   /// [category:Accessors and slicing]
   member x.GetObservation(key) = 
     let addr = index.Locate(key) 
-    if addr = Address.Invalid then keyNotFound key
+    if addr = Address.invalid then keyNotFound key
     let value = vector.GetValue(addr) 
     if not value.HasValue then missingVal key
     KeyValuePair(key, value.Value)
@@ -288,14 +298,14 @@ and
   /// [category:Accessors and slicing]
   member x.TryGet(key) = 
     let addr = x.Index.Locate(key) 
-    if addr = Address.Invalid then OptionalValue.Missing 
+    if addr = Address.invalid then OptionalValue.Missing 
     else x.Vector.GetValue(addr)
 
   ///
   /// [category:Accessors and slicing]
   member x.Get(key) = 
     let addr = x.Index.Locate(key) 
-    if addr = Address.Invalid then keyNotFound key
+    if addr = Address.invalid then keyNotFound key
     else 
       match x.Vector.GetValue(addr) with
       | OptionalValue.Missing   -> missingVal key
@@ -303,13 +313,15 @@ and
 
   ///
   /// [category:Accessors and slicing]
-  member x.TryGetAt(index) = 
-    x.Vector.GetValue(Address.ofInt index)
+  member x.TryGetAt(index : int) = 
+    x.Vector.GetValue(x.Index.AddressAt(int64 index))
+
   /// [category:Accessors and slicing]
-  member x.GetKeyAt(index) = 
-    x.Index.KeyAt(Address.ofInt index)
+  member x.GetKeyAt(index : int) = 
+    x.Index.KeyAt(x.Index.AddressAt(int64 index))
+
   /// [category:Accessors and slicing]
-  member x.GetAt(index) = 
+  member x.GetAt(index : int) = 
     x.TryGetAt(index).Value
 
   ///
@@ -340,9 +352,9 @@ and
           if opt.HasValue && f.Invoke (KeyValuePair(key, opt.Value), i)
             then Some(key, opt) else None)
       |> Array.unzip
-    Series<_, _>
-      ( indexBuilder.Create<_>(keys, None), vectorBuilder.CreateMissing(optValues),
-        vectorBuilder, indexBuilder )
+    let newIndex = indexBuilder.Create<_>(keys, None)
+    let newVector = vectorBuilder.CreateMissing(optValues)
+    Series(newIndex, newVector, vectorBuilder, indexBuilder )
 
   /// [category:Projection and filtering]
   member x.Where(f:System.Func<KeyValuePair<'K, 'V>, bool>) = 
@@ -355,18 +367,17 @@ and
           let opt = vector.GetValue(addr)
           if f.Invoke (KeyValuePair(key, opt)) then yield key, opt |]
       |> Array.unzip
-    Series<_, _>
-      ( indexBuilder.Create<_>(keys, None), vectorBuilder.CreateMissing(optValues),
-        vectorBuilder, indexBuilder )
+    let newIndex = indexBuilder.Create<_>(keys, None)
+    let newVector = vectorBuilder.CreateMissing(optValues)
+    Series(newIndex, newVector, vectorBuilder, indexBuilder )
 
   /// [category:Projection and filtering]
   member x.Select<'R>(f:System.Func<KeyValuePair<'K, 'V>, int, 'R>) = 
-    let newVector = vector.SelectMissing(fun addr value ->
+    let newVector = vector.Select(fun loc value ->
       value |> OptionalValue.bind (fun v -> 
-        let key = index.KeyAt(addr)
-        try OptionalValue(f.Invoke(KeyValuePair(key, v), Address.asInt addr))
+        let key = index.KeyAt(loc.Address)
+        try OptionalValue(f.Invoke(KeyValuePair(key, v), int loc.Offset))
         with :? MissingValueException -> OptionalValue.Missing ))  
-
     let newIndex = indexBuilder.Project(index)
     Series<'K, 'R>(newIndex, newVector, vectorBuilder, indexBuilder )
 
@@ -378,33 +389,31 @@ and
 
   /// [category:Projection and filtering]
   member x.Select<'R>(f:System.Func<KeyValuePair<'K, 'V>, 'R>) = 
-    x.Select(fun kvp _ -> f.Invoke kvp)
-
+    x.SelectOptional(fun kvp ->
+      kvp.Value |> OptionalValue.bind (fun v -> 
+        try OptionalValue(f.Invoke(KeyValuePair(kvp.Key, v)))
+        with :? MissingValueException -> OptionalValue.Missing ))  
+    
   /// [category:Projection and filtering]
   member x.SelectKeys<'R when 'R : equality>(f:System.Func<KeyValuePair<'K, OptionalValue<'V>>, 'R>) = 
     let newKeys =
       [| for KeyValue(key, addr) in index.Mappings -> 
            f.Invoke(KeyValuePair(key, vector.GetValue(addr))) |]
     let newIndex = indexBuilder.Create(newKeys, None)
-    Series<'R, _>(newIndex, vector, vectorBuilder, indexBuilder )
+    let newVector = vectorBuilder.Build(newIndex.AddressingScheme, Vectors.Return 0, [| vector |])
+    Series<'R, _>(newIndex, newVector, vectorBuilder, indexBuilder )
 
   /// [category:Projection and filtering]
   member x.SelectOptional<'R>(f:System.Func<KeyValuePair<'K, OptionalValue<'V>>, OptionalValue<'R>>) = 
-    let newVector =
-      index.Mappings |> Array.ofSeq |> Array.map (fun (KeyValue(key, addr)) ->
-           f.Invoke(KeyValuePair(key, vector.GetValue(addr))))
+    let newVector = vector.Select(fun loc value ->
+      let key = index.KeyAt(loc.Address)
+      f.Invoke(KeyValuePair(key, value)))
     let newIndex = indexBuilder.Project(index)
-    Series<'K, 'R>(newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
+    Series<'K, 'R>(newIndex, newVector, vectorBuilder, indexBuilder )
 
   /// [category:Projection and filtering]
   member x.SelectValues<'T>(f:System.Func<'V, 'T>) = 
-    let newVector =
-      index.Mappings |> Array.ofSeq |> Array.map (fun (KeyValue(key, addr)) -> 
-        match vector.GetValue(addr) |> OptionalValue.asOption with 
-        | Some v -> OptionalValue(f.Invoke(v))
-        | None   -> OptionalValue.Missing)
-    let newIndex = indexBuilder.Project(index)
-    Series<'K, 'T>(newIndex, vectorBuilder.CreateMissing(newVector), vectorBuilder, indexBuilder)
+    x.Select(fun kvp -> f.Invoke kvp.Value)
   
   /// Custom operator that can be used for applying a function to all elements of 
   /// a series. This provides a nicer syntactic sugar for the `Series.mapValues` 
@@ -466,7 +475,7 @@ and
     let newIndex, cmd = 
       indexBuilder.Merge( [(index, Vectors.Return 0); (otherSeries.Index, Vectors.Return 1)], 
                            BinaryTransform.AtMostOne )
-    let newVector = vectorBuilder.Build(cmd, [| series.Vector; otherSeries.Vector |])
+    let newVector = vectorBuilder.Build(newIndex.AddressingScheme, cmd, [| series.Vector; otherSeries.Vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
   /// [category:Merging, joining and zipping]
@@ -482,7 +491,7 @@ and
 
     let newIndex, cmd = 
       indexBuilder.Merge( (index, Vectors.Return 0)::constrs, BinaryTransform.AtMostOne )
-    let newVector = vectorBuilder.Build(cmd, [| yield series.Vector; yield! vectors |])
+    let newVector = vectorBuilder.Build(newIndex.AddressingScheme, cmd, [| yield series.Vector; yield! vectors |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
   /// [category:Merging, joining and zipping]
@@ -493,8 +502,8 @@ and
       | UnionBehavior.PreferRight -> BinaryTransform.RightIfAvailable
       | UnionBehavior.Exclusive -> BinaryTransform.AtMostOne
       | _ -> BinaryTransform.LeftIfAvailable
-    let vecCmd = Vectors.Combine(newIndex.KeyCount, [vec1; vec2], transform)
-    let newVec = vectorBuilder.Build(vecCmd, [| series.Vector; another.Vector |])
+    let vecCmd = Vectors.Combine(lazy newIndex.KeyCount, [vec1; vec2], transform)
+    let newVec = vectorBuilder.Build(newIndex.AddressingScheme, vecCmd, [| series.Vector; another.Vector |])
     Series(newIndex, newVec, vectorBuilder, indexBuilder)
 
   /// [category:Merging, joining and zipping]
@@ -508,31 +517,40 @@ and
   member private series.ZipHelper(otherSeries:Series<'K, 'V2>, kind, lookup) =
     // Union row indices and get transformations to apply to left/right vectors
     let newIndex, thisRowCmd, otherRowCmd = 
-      createJoinTransformation indexBuilder kind lookup index otherSeries.Index (Vectors.Return 0) (Vectors.Return 0)
+      createJoinTransformation indexBuilder otherSeries.IndexBuilder 
+        kind lookup index otherSeries.Index (Vectors.Return 0) (Vectors.Return 0)
 
-    let lVec = vectorBuilder.Build(thisRowCmd, [| series.Vector |])
-    let rVec = vectorBuilder.Build(otherRowCmd, [| otherSeries.Vector |])
-
+    let lVec = vectorBuilder.Build(newIndex.AddressingScheme, thisRowCmd, [| series.Vector |])
+    let rVec = vectorBuilder.Build(newIndex.AddressingScheme, otherRowCmd, [| otherSeries.Vector |])
     newIndex, lVec, rVec
 
   /// [category:Merging, joining and zipping]
   member series.Zip<'V2>(otherSeries:Series<'K, 'V2>, kind, lookup) : Series<'K, 'V opt * 'V2 opt> =
     let newIndex, lVec, rVec = series.ZipHelper(otherSeries, kind, lookup)
-    let zipv = rVec.DataSequence |> Seq.zip lVec.DataSequence |> Vector.ofValues
-    Series(newIndex, zipv, vectorBuilder, indexBuilder)
+    let vecRes = 
+      Vectors.Combine(lazy newIndex.KeyCount, [Vectors.Return 0; Vectors.Return 1], 
+        BinaryTransform.CreateLifted<'V opt * 'V2 opt>(fun (l, _) (_, r) -> l, r))
+
+    let args =
+      [| lVec.Select(fun _ v -> OptionalValue((v, OptionalValue.Missing)))
+         rVec.Select(fun _ v -> OptionalValue((OptionalValue.Missing, v))) |]
+    let zipV = vectorBuilder.Build<'V opt * 'V2 opt>(newIndex.AddressingScheme, vecRes, args)
+    Series(newIndex, zipV, vectorBuilder, indexBuilder)
 
   /// [category:Merging, joining and zipping]
   member series.ZipInner<'V2>(otherSeries:Series<'K, 'V2>) : Series<'K, 'V * 'V2> =
     let newIndex, lVec, rVec = series.ZipHelper(otherSeries, JoinKind.Inner, Lookup.Exact)
     
     let vecRes = 
-      Vectors.Combine(newIndex.KeyCount, [Vectors.Return 0; Vectors.Return 1], 
+      Vectors.Combine(lazy newIndex.KeyCount, [Vectors.Return 0; Vectors.Return 1], 
         BinaryTransform.CreateLifted<Choice<'V, 'V2, 'V * 'V2>>(fun l r ->
           match l, r with
           | Choice1Of3 l, Choice2Of3 r -> Choice3Of3(l, r)
           | _ -> failwith "logic error"))
 
-    let zipV = vectorBuilder.Build<Choice<'V, 'V2, 'V * 'V2>>(vecRes, [| lVec.Select(Choice1Of3); rVec.Select(Choice2Of3) |])
+    let zipV = 
+      vectorBuilder.Build<Choice<'V, 'V2, 'V * 'V2>>
+        (newIndex.AddressingScheme, vecRes, [| lVec.Select(Choice1Of3); rVec.Select(Choice2Of3) |])
     let zipV = zipV.Select(function Choice3Of3 v -> v | _ -> failwith "logic error")
     Series(newIndex, zipV, vectorBuilder, indexBuilder)
 
@@ -566,9 +584,10 @@ and
   member x.Resample<'TNewKey, 'R when 'TNewKey : equality>(keys, direction, valueSelector:Func<_, _, _>, keySelector:Func<_, _, _>) =
     let newIndex, newVector = 
       indexBuilder.Resample
-        ( x.Index, keys, direction, Vectors.Return 0, 
+        ( indexBuilder, x.Index, keys, direction, Vectors.Return 0, 
           (fun (key, (index, cmd)) -> 
-              let window = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
+              let vector = vectorBuilder.Build(index.AddressingScheme, cmd, [| vector |])
+              let window = Series<_, _>(index, vector, vectorBuilder, indexBuilder)
               let newKey = keySelector.Invoke(key, window)
               newKey, OptionalValue(valueSelector.Invoke(newKey, window))) )
     Series<'TNewKey, 'R>(newIndex, newVector, vectorBuilder, indexBuilder)
@@ -653,7 +672,7 @@ and
                 else index.Keys |> Seq.head
               // Calculate value for the chunk
               let newValue = 
-                let actualVector = vectorBuilder.Build(cmd, [| vector |])
+                let actualVector = vectorBuilder.Build(index.AddressingScheme, cmd, [| vector |])
                 let obs = [ for KeyValue(k, addr) in index.Mappings -> actualVector.GetValue(addr) ]
                 match obs with
                 | [ OptionalValue.Present v1; OptionalValue.Present v2 ] -> 
@@ -700,7 +719,7 @@ and
         ( x.Index, aggregation, Vectors.Return 0, 
           (fun (kind, (index, cmd)) -> 
               // Create series for the chunk/window
-              let series = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
+              let series = Series<_, _>(index, vectorBuilder.Build(index.AddressingScheme, cmd, [| vector |]), vectorBuilder, indexBuilder)
               let segment = DataSegment(kind, series)
               // Call key & value selectors to produce the result
               let newKey = keySelector.Invoke segment
@@ -725,7 +744,7 @@ and
         ( x.Index, aggregation, Vectors.Return 0, 
           (fun (kind, (index, cmd)) -> 
               // Create series for the chunk/window
-              let series = Series<_, _>(index, vectorBuilder.Build(cmd, [| vector |]), vectorBuilder, indexBuilder)
+              let series = Series<_, _>(index, vectorBuilder.Build(index.AddressingScheme, cmd, [| vector |]), vectorBuilder, indexBuilder)
               let segment = DataSegment(kind, series)
               // Call key & value selectors to produce the result
               let (KeyValue(newKey, newValue)) = observationSelector.Invoke(segment)
@@ -740,18 +759,12 @@ and
   ///
   /// [category:Windowing, chunking and grouping]
   member x.GroupBy(keySelector:Func<_, _>) =
-    let cmd = 
-      indexBuilder.GroupBy(
-        x.Index,
-        (fun key -> 
-          x.TryGet(key) 
-          |> OptionalValue.map (fun v -> 
-              let kvp = KeyValuePair(key, v)
-              keySelector.Invoke(kvp))), 
-        VectorConstruction.Return 0) 
+    let index = x.Index
+    let ks key =  x.TryGet(key) |> OptionalValue.map (fun v -> keySelector.Invoke(KeyValuePair(key, v)))
+    let cmd = indexBuilder.GroupBy(index, ks, VectorConstruction.Return 0) 
     let newIndex  = Index.ofKeys (cmd |> ReadOnlyCollection.map fst)
     let newGroups = cmd |> Seq.map snd |> Seq.map (fun sc -> 
-        Series(fst sc, vectorBuilder.Build(snd sc, [| x.Vector |]), vectorBuilder, indexBuilder))
+        Series(fst sc, vectorBuilder.Build(newIndex.AddressingScheme, snd sc, [| x.Vector |]), vectorBuilder, indexBuilder))
     Series<'TNewKey, _>(newIndex, Vector.ofValues newGroups, vectorBuilder, indexBuilder)
 
   /// Interpolates an ordered series given a new sequence of keys. The function iterates through
@@ -784,9 +797,9 @@ and
   member x.Realign(newKeys) = 
     let findAll getter = seq {
       for k in newKeys -> 
-        match index.Locate(k) with
-        | addr when addr >= 0L -> getter addr
-        | _                    -> OptionalValue.Missing }
+        let addr = index.Locate(k) 
+        if addr = Address.invalid then OptionalValue.Missing
+        else getter addr }
     let newIndex = Index.ofKeys (ReadOnlyCollection.ofSeq newKeys)
     let newVector = findAll x.Vector.GetValue |> Vector.ofOptionalValues
     Series<_,_>(newIndex, newVector, vectorBuilder, indexBuilder)
@@ -798,7 +811,8 @@ and
   /// [category:Indexing]
   member x.IndexOrdinally() = 
     let newIndex = indexBuilder.Create(x.Index.Keys |> Seq.mapi (fun i _ -> i), Some true)
-    Series<int, _>(newIndex, vector, vectorBuilder, indexBuilder)
+    let newVector = vectorBuilder.Build(newIndex.AddressingScheme, Vectors.Return 0, [| vector |])
+    Series<int, _>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   /// [category:Indexing]
   member x.IndexWith(keys:seq<_>) = 
@@ -812,9 +826,9 @@ and
         Vectors.Append(Vectors.Return 0, Vectors.Empty(newIndex.KeyCount - int64 x.KeyCount))
       else 
         // Get sub-range of the source vector
-        Vectors.GetRange(Vectors.Return 0, Vectors.Range(Address.zero, newIndex.KeyCount - 1L))
+        Vectors.GetRange(Vectors.Return 0, RangeRestriction.Fixed(x.Index.AddressAt(0L), x.Index.AddressAt(newIndex.KeyCount - 1L)))
 
-    let newVector = vectorBuilder.Build(vectorCmd, [| vector |])
+    let newVector = vectorBuilder.Build(newIndex.AddressingScheme, vectorCmd, [| vector |])
     Series<'TNewKey, _>(newIndex, newVector, vectorBuilder, indexBuilder)
 
   // ----------------------------------------------------------------------------------------------
@@ -824,7 +838,7 @@ and
   member x.AsyncMaterialize() = async {
     let newIndexAsync, cmd = indexBuilder.AsyncMaterialize(index, Vectors.Return 0)
     let! newIndex = newIndexAsync
-    let! newVector = vectorBuilder.AsyncBuild(cmd, [| vector |])
+    let! newVector = vectorBuilder.AsyncBuild(newIndex.AddressingScheme, cmd, [| vector |])
     return Series<_, _>(newIndex, newVector, vectorBuilder, indexBuilder) }
 
   member x.MaterializeAsync() = 
@@ -833,7 +847,7 @@ and
   member x.Materialize() = 
     let newIndex, cmd = indexBuilder.AsyncMaterialize(index, Vectors.Return 0)
     let newIndex = newIndex |> Async.RunSynchronously
-    let newVector = vectorBuilder.Build(cmd, [| vector |])
+    let newVector = vectorBuilder.Build(newIndex.AddressingScheme, cmd, [| vector |])
     Series<_, _>(newIndex, newVector, vectorBuilder, newIndex.Builder)
     
   // ----------------------------------------------------------------------------------------------
@@ -850,15 +864,11 @@ and
     series.Select(fun (KeyValue(k, v)) -> op scalar v)
 
   static member inline internal VectorOperation<'T>(series1:Series<'K,'T>, series2:Series<'K,'T>, op): Series<_, 'T> =
-    let newIndex, lVec, rVec = series1.ZipHelper(series2, JoinKind.Outer, Lookup.Exact)
-    
-    let vector = 
-      Seq.zip lVec.DataSequence rVec.DataSequence 
-      |> Seq.map (function 
-        | OptionalValue.Present a, OptionalValue.Present b -> OptionalValue(op a b)
-        | _ -> OptionalValue.Missing)
-      |> Vector.ofOptionalValues
-
+    let newIndex, lcmd, rcmd = 
+      createJoinTransformation series1.IndexBuilder series2.IndexBuilder 
+        JoinKind.Outer Lookup.Exact series1.Index series2.Index (Vectors.Return 0) (Vectors.Return 1)
+    let vecRes = Vectors.Combine(lazy newIndex.KeyCount, [lcmd; rcmd], BinaryTransform.CreateLifted<'T>(op))
+    let vector = series1.VectorBuilder.Build<'T>(newIndex.AddressingScheme, vecRes, [| series1.Vector; series2.Vector |])
     Series(newIndex, vector, series1.VectorBuilder, series1.IndexBuilder)
 
   /// [category:Operators]
@@ -989,13 +999,17 @@ and
     member x.TryGetObject(k) = x.TryGet(k) |> OptionalValue.map box
     member x.Vector = vector :> IVector
     member x.Index = index
+    member x.VectorBuilder = vectorBuilder
 
   member private series.GetPrintedObservations(startCount, endCount) = 
-    if series.KeyCount <= startCount + endCount then
+    // NOTE: Do not check the length, because that would evaluate the whole 
+    // series. Instead, we just check if it has more than startCount+endCount
+    let smaller = series.Index.Mappings |> Seq.skipAtMost (startCount+endCount) |> Seq.isEmpty
+    if smaller then
       seq { for obs in series.ObservationsAll -> Choice1Of3(obs.Key, obs.Value) } 
     else
-      let starts = series.GetAddressRange(0, startCount - 1)
-      let ends = series.GetAddressRange(series.KeyCount - endCount, series.KeyCount - 1)
+      let starts = series.GetAddressRange(RangeRestriction.Start(int64 startCount))
+      let ends = series.GetAddressRange(RangeRestriction.End(int64 endCount))
       seq { for obs in starts.ObservationsAll do yield Choice1Of3(obs.Key, obs.Value)
             yield Choice2Of3()
             for obs in ends.ObservationsAll do yield Choice1Of3(obs.Key, obs.Value) }
@@ -1039,7 +1053,7 @@ and
       else previous := Some levelKey; reset(); levelKey.ToString()
 
     if vector.SuppressPrinting then "(Suppressed)" else
-      if series.KeyCount = 0 then 
+      if series.IsEmpty then 
         "(Empty)"
       else
         let firstKey = series.GetKeyAt(0)

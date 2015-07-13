@@ -88,6 +88,7 @@
     <Compile Include="Common\Common.fs" />
     <Compile Include="Common\Address.fs" />
     <Compile Include="Common\Deque.fs" />
+    <Compile Include="Common\Ranges.fs" />
     <Compile Include="Vectors\Vector.fs" />
     <Compile Include="Vectors\VectorHelpers.fs" />
     <Compile Include="Vectors\ArrayVector.fs" />

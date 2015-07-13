@@ -1,10 +1,14 @@
 ﻿namespace Deedle.Virtual
 
+// ------------------------------------------------------------------------------------------------
+// Helpers that can be used when implementing Lookup in your own Deedle sources
+// ------------------------------------------------------------------------------------------------
+
 module IndexUtilsModule = 
   open Deedle
   open System
 
-  /// Binary seachr in range [ 0L .. count ]. The function is generic in ^T and 
+  /// Binary search in range [ 0L .. count ]. The function is generic in ^T and 
   /// is 'inline' so that the comparison on ^T is optimized.
   ///
   ///  - `count` specifies the upper bound for the binary search
@@ -50,22 +54,33 @@ module IndexUtilsModule =
           scan ((-) 1L) (if valueAt.Invoke found >= value then found - 1L else found)
       | _ -> invalidArg "lookup" "Unexpected Lookup behaviour"
 
+/// Helpers that can be used when implementing Lookup
 type IndexUtils =
-  ///
+  /// See the comment for `IndexUtilsModule.binarySearch`
   static member BinarySearch(count, valueAt, (value:int64), lookup, check) = 
     IndexUtilsModule.binarySearch count valueAt value lookup check
 
+
 // ------------------------------------------------------------------------------------------------
+// Public API for creating virtual frames and series
+// ------------------------------------------------------------------------------------------------
+
 open Deedle
+open Deedle.Ranges
 open Deedle.Internal
 open Deedle.Vectors.Virtual
 open Deedle.Indices.Virtual
 
+/// [omit]
+///
+/// Helper that is invoked via Reflection to create generic virtual vectors.
 type VirtualVectorHelper =
   static member Create<'T>(source:IVirtualVectorSource<'T>) = 
     VirtualVector<'T>(source)
 
-type Virtual() =
+/// Provides static methods for creating virtual series and virtual frames.
+/// Those provide necessary wrapping around `IVirtualVectorSource` values
+type Virtual private () =
   static let createMi = typeof<VirtualVectorHelper>.GetMethod("Create")
 
   static let createFrame rowIndex columnIndex (sources:seq<IVirtualVectorSource>) = 
@@ -76,19 +91,24 @@ type Virtual() =
       |> Vector.ofValues
     Frame<_, _>(rowIndex, columnIndex, data, VirtualIndexBuilder.Instance, VirtualVectorBuilder.Instance)
 
+  /// Creates a virtual series with ordinal index. The parameter is `IVirtualVectorSource`
+  /// that specifies how to access values in the series (and is also used to determine the size
+  /// of the series index)
   static member CreateOrdinalSeries(source) =
     let vector = VirtualVector(source)
-    let index = VirtualOrdinalIndex(Ranges.Create [ 0L, source.Length-1L ])
+    let index = VirtualOrdinalIndex(Ranges.inlineCreate (+) [ 0L, source.Length-1L ], source)
     Series(index, vector, VirtualVectorBuilder.Instance, VirtualIndexBuilder.Instance)
 
-  static member CreateSeries(indexSource:IVirtualVectorSource<_>, valueSource:IVirtualVectorSource<_>) =
-    if valueSource.Length <> indexSource.Length then
-      invalidOp "CreateSeries: Index and value source should have the same length"
 
+  /// Create a virtual series with an index and values specified by two `IVirtualVectorSource` values.
+  /// The index source should support lookup (which is used for series lookup, slicing etc.)
+  /// The value source does not need to implement lookup - mainly `ValueAt`, merging and getting sub-source
+  static member CreateSeries(indexSource:IVirtualVectorSource<_>, valueSource:IVirtualVectorSource<_>) =
     let vector = VirtualVector(valueSource)
     let index = VirtualOrderedIndex(indexSource)
     Series(index, vector, VirtualVectorBuilder.Instance, VirtualIndexBuilder.Instance)
 
+  /// Create a frame with ordinal index, containing the specified sources as columns.
   static member CreateOrdinalFrame(keys:seq<_>, sources:seq<IVirtualVectorSource>) = 
     let count = sources |> Seq.fold (fun st src ->
       match st with 
@@ -97,17 +117,11 @@ type Virtual() =
       | _ -> invalidArg "sources" "Sources should have the same length!" ) None
     if count = None then invalidArg "sources" "At least one column is required"
     let count = count.Value
-    createFrame (VirtualOrdinalIndex(Ranges.Create [0L, count-1L])) (Index.ofKeys (ReadOnlyCollection.ofSeq keys)) sources
+    let source = sources |> Seq.head
+    createFrame (VirtualOrdinalIndex(Ranges.inlineCreate (+) [0L, count-1L], source)) (Index.ofKeys (ReadOnlyCollection.ofSeq keys)) sources
 
+  /// Create a frame with ordinal index, containing the specified sources as columns.
+  /// The index source should support lookup (which is used for series lookup, slicing etc.)
+  /// The value source does not need to implement lookup - mainly `ValueAt`, merging and getting sub-source
   static member CreateFrame(indexSource:IVirtualVectorSource<_>, keys, sources:seq<IVirtualVectorSource>) = 
-    for sc in sources do 
-      if sc.Length <> indexSource.Length then
-        invalidArg "sources" "Sources should have the same length as index!"
     createFrame (VirtualOrderedIndex indexSource) (Index.ofKeys (ReadOnlyCollection.ofSeq keys)) sources
-    
-
-
-  // TODO: Multiple values
-  // TODO: Assumptions - GetRange only works on sorted
-  // TODO: Filter (Column = <value>)
-  // TODO: Filter (arbitrary condition -> collection of ranges)

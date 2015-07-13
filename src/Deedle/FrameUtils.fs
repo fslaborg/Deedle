@@ -171,7 +171,7 @@ module internal Reflection =
 
     // Iterate over all the fields and turn them into vectors
     [ for (KeyValue(fieldName, fieldTyp)) in fields ->
-        let it = expanded.SelectMissing(fun _ -> OptionalValue.bind (fun lookup -> 
+        let it = expanded.Select(fun _ -> OptionalValue.bind (fun (lookup:IDictionary<_, _>) -> 
           match lookup.TryGetValue(fieldName) with
           | true, (_, v) -> OptionalValue(v)
           | _ -> OptionalValue.Missing)).DataSequence

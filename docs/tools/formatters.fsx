@@ -156,7 +156,7 @@ let captureDevice f =
   let res = f()
   let img = 
     if isRavailable then
-      R.dev_off() |> ignore
+      try R.dev_off() |> ignore with _ -> ()
       try
         let bmp = Image.FromStream(new MemoryStream(File.ReadAllBytes file)) :?> Bitmap
         File.Delete(file)
@@ -284,7 +284,7 @@ let createFsiEvaluator root output (floatFormat:string) =
     | _ -> None 
     
   // Create FSI evaluator, register transformations & return
-  let fsiEvaluator = FsiEvaluator() 
+  let fsiEvaluator = FsiEvaluator(fsiObj = FsiEvaluatorConfig.CreateNoOpFsiObject()) 
   fsiEvaluator.RegisterTransformation(transformation)
   let fsiEvaluator = fsiEvaluator :> IFsiEvaluator
   { new IFsiEvaluator with

@@ -214,18 +214,20 @@ module Series =
   ///
   /// [category:Accessing series data and lookup]
   [<CompiledName("GetObservations")>]
-  let observations (series:Series<'K, 'T>) = seq { 
-    for KeyValue(key, address) in series.Index.Mappings do
-      let v = series.Vector.GetValue(address)
-      if v.HasValue then yield key, v.Value }
+  let observations (series:Series<'K, 'T>) = 
+    series.Index.Mappings
+    |> Seq.choosel (fun idx kvp ->
+        series.Vector.GetValueAtLocation(KnownLocation(kvp.Value, idx)) 
+        |> OptionalValue.map (fun v -> kvp.Key, v)
+        |> OptionalValue.asOption )
   
   /// Returns all keys from the sequence, together with the associated (optional) values. 
   ///
   /// [category:Accessing series data and lookup]
   [<CompiledName("GetAllObservations")>]
-  let observationsAll (series:Series<'K, 'T>) = seq { 
-    for KeyValue(key, address) in series.Index.Mappings ->
-      key, OptionalValue.asOption (series.Vector.GetValue(address)) }
+  let observationsAll (series:Series<'K, 'T>) = 
+    series.Index.Mappings |> Seq.mapl (fun idx kvp ->
+      kvp.Key, OptionalValue.asOption (series.Vector.GetValueAtLocation(KnownLocation(kvp.Value, idx))))
 
   /// Create a new series that contains values for all provided keys.
   /// Use the specified lookup semantics - for exact matching, use `getAll`
@@ -369,12 +371,12 @@ module Series =
   /// Returns the last key of the series, or throws exception if one doesn't exist
   /// [category:Accessing series data and lookup]
   [<CompiledName("GetLastKey")>]
-  let lastKey (series:Series< 'K , 'V >) = series.Index.KeyAt (series.KeyCount - 1 |> int64)
+  let lastKey (series:Series< 'K , 'V >) = series.Index.KeyAt (series.Index.AddressAt (series.KeyCount - 1 |> int64))
 
   /// Returns the first key of the series, or throws exception if one doesn't exist
   /// [category:Accessing series data and lookup]
   [<CompiledName("GetFirstKey")>]
-  let firstKey (series:Series< 'K , 'V >) = series.Index.KeyAt 0L
+  let firstKey (series:Series< 'K , 'V >) = series.Index.KeyAt <| series.Index.AddressAt(0L)
 
   /// Returns the last value of the series. This fails if the last value is missing.
   /// [category:Accessing series data and lookup]
@@ -518,7 +520,7 @@ module Series =
   let take count (series:Series<'K, 'T>) =
     if count > series.KeyCount || count < 0 then 
       invalidArg "count" "Must be greater than zero and less than the number of keys."
-    series.GetAddressRange(0, count - 1)
+    series.GetAddressRange(RangeRestriction.Start(int64 count))
 
   /// Returns a series that contains the specified number of keys from the 
   /// original series. The keys are taken from the end of the series. 
@@ -532,7 +534,7 @@ module Series =
   let takeLast count (series:Series<'K, 'T>) =
     if count > series.KeyCount || count < 0 then 
       invalidArg "count" "Must be greater than zero and less than the number of keys."
-    series.GetAddressRange(series.KeyCount-count, series.KeyCount-1)
+    series.GetAddressRange(RangeRestriction.End(int64 count))
 
   /// Returns a series that contains the data from the original series,
   /// except for the first `count` keys.
@@ -546,7 +548,7 @@ module Series =
   let skip count (series:Series<'K, 'T>) =
     if count > series.KeyCount || count < 0 then 
       invalidArg "count" "Must be greater than zero and less than the number of keys."
-    series.GetAddressRange(count, series.KeyCount-1)
+    series.GetAddressRange(RangeRestriction.Fixed(series.Index.AddressAt(count |> int64), series.Index.AddressAt (series.KeyCount - 1 |> int64)))
 
   /// Returns a series that contains the data from the original series,
   /// except for the last `count` keys.
@@ -560,7 +562,7 @@ module Series =
   let skipLast count (series:Series<'K, 'T>) =
     if count > series.KeyCount || count < 0 then 
       invalidArg "count" "Must be greater than zero and less than the number of keys."
-    series.GetAddressRange(0, series.KeyCount-1-count)
+    series.GetAddressRange(RangeRestriction.Fixed(series.Index.AddressAt(0L), series.Index.AddressAt (series.KeyCount - 1 - count |> int64)))
 
   /// Returns a new fully evaluated series. If the source series contains a lazy index or
   /// lazy vectors, these are forced to evaluate and the resulting series is fully loaded in memory.
@@ -652,8 +654,8 @@ module Series =
     let vectorBuilder = VectorBuilder.Instance
     let newIndex, vectorR = series.Index.Builder.Shift((series.Index, Vectors.Return 0), offset)
     let _, vectorL = series.Index.Builder.Shift((series.Index, Vectors.Return 0), -offset)
-    let cmd = Vectors.Combine(newIndex.KeyCount, [vectorL; vectorR], BinaryTransform.Create< ^T >(OptionalValue.map2 (-)))
-    let newVector = vectorBuilder.Build(cmd, [| series.Vector |])
+    let cmd = Vectors.Combine(lazy newIndex.KeyCount, [vectorL; vectorR], BinaryTransform.Create< ^T >(OptionalValue.map2 (-)))
+    let newVector = vectorBuilder.Build(newIndex.AddressingScheme, cmd, [| series.Vector |])
     Series(newIndex, newVector, vectorBuilder, series.Index.Builder)
 
   /// Returns a series with values shifted by the specified offset. When the offset is 
@@ -675,7 +677,7 @@ module Series =
   [<CompiledName("Shift")>]
   let shift offset (series:Series<'K, 'T>) = 
     let newIndex, vector = series.IndexBuilder.Shift((series.Index, Vectors.Return 0), offset)
-    let newVector = series.VectorBuilder.Build(vector, [| series.Vector |])
+    let newVector = series.VectorBuilder.Build(newIndex.AddressingScheme, vector, [| series.Vector |])
     Series(newIndex, newVector, series.VectorBuilder, series.IndexBuilder)
 
   // ----------------------------------------------------------------------------------------------
@@ -1219,7 +1221,7 @@ module Series =
   [<CompiledName("FillMissingWith")>]
   let fillMissingWith value (series:Series<'K, 'T>) = 
     let fillCmd = Vectors.FillMissing(Vectors.Return 0, VectorFillMissing.Constant value)
-    let newVector = series.VectorBuilder.Build(fillCmd, [|series.Vector|])
+    let newVector = series.VectorBuilder.Build(series.Index.AddressingScheme, fillCmd, [|series.Vector|])
     Series<_, _>(series.Index, newVector, series.VectorBuilder, series.IndexBuilder)
 
   /// Fill missing values in the series with the nearest available value
@@ -1248,7 +1250,7 @@ module Series =
   [<CompiledName("FillMissing")>]
   let fillMissing direction (series:Series<'K, 'T>) = 
     let fillCmd = Vectors.FillMissing(Vectors.Return 0, VectorFillMissing.Direction direction)
-    let newVector = series.VectorBuilder.Build(fillCmd, [|series.Vector|])
+    let newVector = series.VectorBuilder.Build(series.Index.AddressingScheme, fillCmd, [|series.Vector|])
     Series<_, _>(series.Index, newVector, series.VectorBuilder, series.IndexBuilder)
 
   /// Fill missing values only between `startKey` and `endKey`, inclusive.
@@ -1307,14 +1309,14 @@ module Series =
 
     let newIndex = Index.ofKeys newKeys
     let len = int64 newKeys.Length
-    let reordering = Seq.zip (Addressing.Address.generateRange(0L, len-1L)) newLocs
+    let reordering = Seq.zip (Seq.range 0L (len-1L) |> Seq.map newIndex.AddressAt) newLocs
     newIndex, VectorConstruction.Relocate(VectorConstruction.Return 0, len, reordering)
 
   /// [omit]
   let internal sortByCommand (f:'T -> 'V) (series:Series<'K, 'T>) =
     let index = series.Index
     let vector = series.Vector
-    let fseries = Series(index, vector.SelectMissing(fun _ -> OptionalValue.map f), series.VectorBuilder, series.IndexBuilder)
+    let fseries = Series(index, vector.Select(fun _ -> OptionalValue.map f), series.VectorBuilder, series.IndexBuilder)
     fseries |> sortWithCommand compare
 
   /// Returns a new series, containing the observations of the original series sorted using
@@ -1330,8 +1332,8 @@ module Series =
   [<CompiledName("SortWith")>]
   let sortWith comparer (series:Series<'K, 'V>) =
     let newIndex, cmd = sortWithCommand comparer series
-    let vector = series.Vector
-    Series(newIndex, series.VectorBuilder.Build(cmd, [| vector |]), series.VectorBuilder, series.IndexBuilder)
+    let newVector = series.VectorBuilder.Build(newIndex.AddressingScheme, cmd, [| series.Vector |])
+    Series(newIndex, newVector, series.VectorBuilder, series.IndexBuilder)
 
   /// Returns a new series, containing the observations of the original series sorted by 
   /// values returned by the specified projection function.
@@ -1345,8 +1347,8 @@ module Series =
   [<CompiledName("SortBy")>]
   let sortBy (proj:'T -> 'V) (series:Series<'K, 'T>) =
     let newIndex, cmd = series |> sortByCommand proj
-    let vector = series.Vector
-    Series<'K,'T>(newIndex, series.VectorBuilder.Build(cmd, [| vector |]), series.VectorBuilder, series.IndexBuilder)
+    let newVector = series.VectorBuilder.Build(newIndex.AddressingScheme, cmd, [| series.Vector |])
+    Series<'K,'T>(newIndex, newVector, series.VectorBuilder, series.IndexBuilder)
 
   /// Returns a new series whose observations are sorted according to keys of the index.
   ///
@@ -1357,7 +1359,7 @@ module Series =
   [<CompiledName("SortByKey")>]
   let sortByKey (series:Series<'K, 'T>) =
     let newRowIndex, rowCmd = series.IndexBuilder.OrderIndex(series.Index, Vectors.Return 0)
-    let newData = series.VectorBuilder.Build(rowCmd, [| series.Vector |])
+    let newData = series.VectorBuilder.Build(newRowIndex.AddressingScheme, rowCmd, [| series.Vector |])
     Series(newRowIndex, newData, series.VectorBuilder, series.IndexBuilder)
 
   /// Returns a new series, containing the observations of the original series sorted based
@@ -1605,7 +1607,8 @@ module Series =
     /// range of the series (and one additional, if `dir = Backward`) and then performs
     /// sampling using `resampleInto`.
     let sampleTimeIntoInternal add startOpt (interval:'T) dir f (series:Series<'K , 'V>) =
-      resampleInto (generateKeys add startOpt interval dir series) dir f series
+      if series.IsEmpty then Series []
+      else resampleInto (generateKeys add startOpt interval dir series) dir f series
 
     /// Given a specified starting time and time span, generates all keys that fit in the
     /// range of the series (and one additional, if `dir = Backward`) and then performs lookup

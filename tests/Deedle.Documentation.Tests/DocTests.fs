@@ -54,7 +54,7 @@ let processFile file =
 
   // Process the file and capture evaluation errors
   let evaluationErrors = ResizeArray()
-  let fsiEvaluator = FsiEvaluator()
+  let fsiEvaluator = FsiEvaluator(fsiObj = FsiEvaluatorConfig.CreateNoOpFsiObject())
   fsiEvaluator.EvaluationFailed |> Event.add evaluationErrors.Add
   let literateDoc = Literate.ParseScriptFile(Path.Combine(sources, file), fsiEvaluator = fsiEvaluator)
 

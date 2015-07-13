@@ -64,6 +64,8 @@ module TopLevelOperators =
 
     let startWith (s:string) = StartsWithConstraint s
 
+    let containStr (s:string) = SubstringConstraint s
+
     let ofExactType<'a> = ExactTypeConstraint(typeof<'a>)
 
     let instanceOfType<'a> = InstanceOfTypeConstraint(typeof<'a>)

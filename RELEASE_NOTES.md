@@ -90,3 +90,32 @@
  * Dropping sparse rows/columns should preserve frame structure (#277)
  * Change Stats.sum to return NaN for empty series (#259)
  * Change C#-version of ReadCsv to accept inferTypes param (#270)
+
+### 1.1.2-beta
+ * Abstract handling of addresses (mainly for BigDeedle)
+ * Avoid accessing series Length in series and frame printing
+
+### 1.1.3-beta
+ * Introduce generic `Ranges<T>` type to simplify working with ranges
+   (mainly useful for custom BigDeedle implementations)
+
+### 1.1.4-beta
+ * Allow creation of empty ranges
+ * Support more operations on virtualized sources
+ * Fix handling of missing values in virtual Series.map
+
+### 1.1.5
+ * Aggregate bug fixes from previous beta releases
+ * Provide virtual index and virtual vector (aka BigDeedle)
+ * Compare indices using lazy sequences (to support BigDeedle)
+
+### 1.2.0
+ * Update version number for a BigDeedle release
+
+### 1.2.2
+ * BigDeedle: Materialize series on grouping and other operations
+ * BigDeedle: Support resampling without materializing series
+ * Better handling of materialization via addressing schemes
+ * Refactoring and cleanup of BigDeedle code
+ * Fix bugs in ordinal virtual index
+ * SelectOptional and SelectValues can be performed lazilly

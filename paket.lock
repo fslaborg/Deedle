@@ -1,37 +1,40 @@
 NUGET
   remote: https://nuget.org/api/v2
   specs:
-    FAKE (3.14.9)
+    DynamicInterop (0.7.4)
+    FAKE (3.35.1)
     FsCheck (0.9.1.0)
-    FSharp.Charting (0.90.9)
-    FSharp.Compiler.Service (0.0.82)
-    FSharp.Data (2.1.1)
-      Zlib.Portable (>= 1.10.0)
-    FSharp.Formatting (2.7.4)
-      FSharp.Compiler.Service (>= 0.0.82)
-      FSharpVSPowerTools.Core (>= 1.7.0)
-    FSharpVSPowerTools.Core (1.7.0)
-      FSharp.Compiler.Service (>= 0.0.81)
-    MathNet.Numerics (3.5.0)
-      TaskParallelLibrary (>= 1.0.2856) - >= net35 < net40
-    NuGet.CommandLine (2.8.3)
+    FSharp.Charting (0.90.10)
+    FSharp.Compiler.Service (0.0.90)
+    FSharp.Data (2.2.3)
+      Zlib.Portable (>= 1.10.0) - framework: portable-net40+sl50+wp80+win80
+    FSharp.Formatting (2.9.8)
+      FSharp.Compiler.Service (>= 0.0.87)
+      FSharpVSPowerTools.Core (1.8.0)
+    FSharpVSPowerTools.Core (1.8.0)
+      FSharp.Compiler.Service (>= 0.0.87)
+    MathNet.Numerics (3.7.0)
+      TaskParallelLibrary (>= 1.0.2856) - framework: >= net35 < net40
+    NuGet.CommandLine (2.8.5)
     NUnit (2.6.4)
     NUnit.Runners (2.6.4)
-    R.NET.Community (1.5.16)
-    R.NET.Community.FSharp (0.1.9)
-      R.NET.Community (>= 1.5.16)
-    RProvider (1.1.8)
-      R.NET.Community (1.5.16)
-      R.NET.Community.FSharp (0.1.9)
-    TaskParallelLibrary (1.0.2856.0) - >= net35 < net40
-    Zlib.Portable (1.10.0)
+    R.NET.Community (1.6.4)
+      DynamicInterop (0.7.4)
+    R.NET.Community.FSharp (1.6.4)
+      R.NET.Community (>= 1.6.4)
+    RProvider (1.1.12)
+      DynamicInterop (0.7.4)
+      R.NET.Community (1.6.4)
+      R.NET.Community.FSharp (1.6.4)
+    TaskParallelLibrary (1.0.2856.0) - framework: >= net35 < net40
+    Zlib.Portable (1.10.0) - framework: portable-net40+sl50+wp80+win80
 GITHUB
   remote: fsharp/FSharp.Data
   specs:
-    src/CommonRuntime/StructuralInference.fs (bd7e090ded6a4a7e74a466eda02bb102ccd7df77)
-    src/CommonRuntime/StructuralTypes.fs (bd7e090ded6a4a7e74a466eda02bb102ccd7df77)
-    src/CommonRuntime/TextConversions.fs (bd7e090ded6a4a7e74a466eda02bb102ccd7df77)
-    src/CommonRuntime/TextRuntime.fs (bd7e090ded6a4a7e74a466eda02bb102ccd7df77)
-    src/Csv/CsvFile.fs (bd7e090ded6a4a7e74a466eda02bb102ccd7df77)
-    src/Csv/CsvInference.fs (bd7e090ded6a4a7e74a466eda02bb102ccd7df77)
-    src/Csv/CsvRuntime.fs (bd7e090ded6a4a7e74a466eda02bb102ccd7df77)
+    src/CommonRuntime/StructuralInference.fs (67194a62fe34e271b0568a0e5cafab7cbf3f0522)
+    src/CommonRuntime/StructuralTypes.fs (67194a62fe34e271b0568a0e5cafab7cbf3f0522)
+    src/CommonRuntime/TextConversions.fs (67194a62fe34e271b0568a0e5cafab7cbf3f0522)
+    src/CommonRuntime/TextRuntime.fs (67194a62fe34e271b0568a0e5cafab7cbf3f0522)
+    src/Csv/CsvFile.fs (67194a62fe34e271b0568a0e5cafab7cbf3f0522)
+    src/Csv/CsvInference.fs (67194a62fe34e271b0568a0e5cafab7cbf3f0522)
+    src/Csv/CsvRuntime.fs (67194a62fe34e271b0568a0e5cafab7cbf3f0522)

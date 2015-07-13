@@ -38,10 +38,7 @@ type JoinKind =
 /// [omit]
 /// Implements various helpers that are used by Join operations
 module internal JoinHelpers = 
-
-  /// Helper that lets us define parameters in pattern matching; for example 
-  /// "Let 42 (answer, input)" binds "answer=42" and propagates input
-  let (|Let|) arg input = (arg, input)
+  open Deedle.Internal
 
   /// When doing exact join on ordered indices, restrict the new index
   /// so that we do not have to load all data for lazy indices
@@ -67,8 +64,8 @@ module internal JoinHelpers =
 
   /// Create transformation on indices/vectors representing the join operation
   let createJoinTransformation 
-        (indexBuilder:IIndexBuilder) kind lookup (thisIndex:IIndex<_>) 
-        (otherIndex:IIndex<_>) thisVector otherVector =
+        (indexBuilder:IIndexBuilder) (otherIndexBuilder:IIndexBuilder) kind lookup 
+        (thisIndex:IIndex<_>) (otherIndex:IIndex<_>) thisVector otherVector =
     // Inner/outer join only makes sense with exact lookup
     if lookup <> Lookup.Exact && kind = JoinKind.Inner then
       invalidOp "Join/Zip - Inner join can only be used with Lookup.Exact."
@@ -96,7 +93,7 @@ module internal JoinHelpers =
           else
              // If they are not the same, we actually need to reindex
             let otherVector = fillMissing otherVector lookup
-            let otherRowCmd = indexBuilder.Reindex(otherRowIndex, thisIndex, lookup, otherVector, fun _ -> true)
+            let otherRowCmd = otherIndexBuilder.Reindex(otherRowIndex, thisIndex, lookup, otherVector, fun _ -> true)
             returnOp thisIndex thisVector otherRowCmd
 
 
