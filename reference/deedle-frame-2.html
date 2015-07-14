@@ -3010,7 +3010,7 @@ nearest available value with the smaller/greater key).</li>
             ( ? )(frame, column)
           </code>
           <div class="tip" id="546">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;T,&#39;?492027&gt; * column:&#39;?492027) -&gt; Series&lt;&#39;T,float&gt;<br />
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;T,&#39;?492076&gt; * column:&#39;?492076) -&gt; Series&lt;&#39;T,float&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
@@ -3029,7 +3029,7 @@ nearest available value with the smaller/greater key).</li>
             ( ?&lt;- )(frame, column, data)
           </code>
           <div class="tip" id="547">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;?492020,&#39;?492021&gt; * column:&#39;?492021 * data:seq&lt;&#39;V&gt;) -&gt; unit<br />
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;?492069,&#39;?492070&gt; * column:&#39;?492070 * data:seq&lt;&#39;V&gt;) -&gt; unit<br />
                           <strong>Type parameters:</strong> 'V          </div>
         </td>
         <td class="xmldoc">
@@ -3048,7 +3048,7 @@ nearest available value with the smaller/greater key).</li>
             ( ?&lt;- )(frame, column, series)
           </code>
           <div class="tip" id="548">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;T,&#39;?492015&gt; * column:&#39;?492015 * series:Series&lt;&#39;T,&#39;V&gt;) -&gt; unit<br />
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;T,&#39;?492064&gt; * column:&#39;?492064 * series:Series&lt;&#39;T,&#39;V&gt;) -&gt; unit<br />
                           <strong>Type parameters:</strong> 'V          </div>
         </td>
         <td class="xmldoc">
@@ -3076,7 +3076,7 @@ nearest available value with the smaller/greater key).</li>
             AggregateRowsBy(groupBy, aggBy, aggFunc)
           </code>
           <div class="tip" id="549">
-            <strong>Signature:</strong> (groupBy:seq&lt;&#39;TColumnKey&gt; * aggBy:seq&lt;&#39;TColumnKey&gt; * aggFunc:Func&lt;Series&lt;&#39;TRowKey,&#39;?492336&gt;,&#39;?492337&gt;) -&gt; Frame&lt;int,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (groupBy:seq&lt;&#39;TColumnKey&gt; * aggBy:seq&lt;&#39;TColumnKey&gt; * aggFunc:Func&lt;Series&lt;&#39;TRowKey,&#39;?492385&gt;,&#39;?492386&gt;) -&gt; Frame&lt;int,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
@@ -3288,7 +3288,7 @@ in <code>aggBy</code> are aggregated according to <code>aggFunc</code>.</p>
             GroupRowsByIndex(keySelector)
           </code>
           <div class="tip" id="559">
-            <strong>Signature:</strong> keySelector:Func&lt;&#39;TRowKey,&#39;?492328&gt; -&gt; Frame&lt;(&#39;?492328 * &#39;TRowKey),&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> keySelector:Func&lt;&#39;TRowKey,&#39;?492377&gt; -&gt; Frame&lt;(&#39;?492377 * &#39;TRowKey),&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
@@ -3368,7 +3368,7 @@ in <code>aggBy</code> are aggregated according to <code>aggFunc</code>.</p>
             ( $ )(f, frame)
           </code>
           <div class="tip" id="563">
-            <strong>Signature:</strong> (f:(&#39;?491972 -&gt; &#39;?491973) * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+            <strong>Signature:</strong> (f:(&#39;?492021 -&gt; &#39;?492022) * frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">

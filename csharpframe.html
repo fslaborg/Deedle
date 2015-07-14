@@ -111,9 +111,9 @@ so the result of the <code>Print</code> method looks as follows:</p>
 <span class="l">5: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip"><code lang="text">-    Key   Number
-0 -> ID_0  997104221
-1 -> ID_1  50365464
-2 -> ID_2  1777994880
+0 -&gt; ID_0  997104221
+1 -&gt; ID_1  50365464
+2 -&gt; ID_2  1777994880
 (...)
 </code></pre></td></tr></table>
 
@@ -174,12 +174,12 @@ as follows:</p>
 <span class="l">7: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip"><code lang="text">-       Date       Open  High  Low   Close Volume     Adj Close
-0    -> 2013-11-07 37.96 38.01 37.43 37.50 60437400   37.50
-1    -> 2013-11-06 37.24 38.22 37.06 38.18 88615100   38.18
+0    -&gt; 2013-11-07 37.96 38.01 37.43 37.50 60437400   37.50
+1    -&gt; 2013-11-06 37.24 38.22 37.06 38.18 88615100   38.18
 :       ...        ...   ...   ...   ...   ...        ...
-6972 -> 1986-03-17 29.00 29.75 29.00 29.50 133171200  0.08
-6973 -> 1986-03-14 28.00 29.50 28.00 29.00 308160000  0.07
-6974 -> 1986-03-13 25.50 29.25 25.50 28.00 1031788800 0.07
+6972 -&gt; 1986-03-17 29.00 29.75 29.00 29.50 133171200  0.08
+6973 -&gt; 1986-03-14 28.00 29.50 28.00 29.00 308160000  0.07
+6974 -&gt; 1986-03-13 25.50 29.25 25.50 28.00 1031788800 0.07
 </code></pre></td></tr></table>
 
 <a name="indices"></a>
@@ -249,11 +249,11 @@ other types as column indices. The resulting data set looks as follows:</p>
 <span class="l">6: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip"><code lang="text">-       Year GDP     Population Debt   ?
-1900 -> 1900 20.567  76.212     19.60  i
-1901 -> 1901 22.269  77.680     18.60  i
+1900 -&gt; 1900 20.567  76.212     19.60  i
+1901 -&gt; 1901 22.269  77.680     18.60  i
 :       ...  ...     ...        ...    ...
-2013 -> 2013 16202.7 316.847    124.84 g
-2014 -> 2014 17011.4 319.594    125.16 g
+2013 -&gt; 2013 16202.7 316.847    124.84 g
+2014 -&gt; 2014 17011.4 319.594    125.16 g
 </code></pre></td></tr></table>
 
 <a name="joining"></a>
@@ -512,12 +512,12 @@ to round the value to two fractional digits.</p>
 <span class="l">7: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip"><code lang="text">-            MsftDate    MsftOpen   MsftClose  
-3/13/1986 -> 1986-03-13  <missing>  <missing>  
-3/14/1986 -> 1986-03-14  8.93       3.45       
-3/17/1986 -> 1986-03-17  3.45       1.69       
+3/13/1986 -&gt; 1986-03-13  &lt;missing&gt;  &lt;missing&gt;  
+3/14/1986 -&gt; 1986-03-14  8.93       3.45       
+3/17/1986 -&gt; 1986-03-17  3.45       1.69       
 :            ...         ...        ...        
-11/6/2013 -> 2013-11-06  3.89       4.03       
-11/7/2013 -> 2013-11-07  1.9        -1.81      
+11/6/2013 -&gt; 2013-11-06  3.89       4.03       
+11/7/2013 -&gt; 2013-11-07  1.9        -1.81      
 </code></pre></td></tr></table>
 
 <p>It is worth noting that the <code>SeriesApply</code> function is applied on all numerical columns, but
