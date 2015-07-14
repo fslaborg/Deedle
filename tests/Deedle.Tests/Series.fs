@@ -655,31 +655,16 @@ let b =
   [ DateTime(2013,9,8) => 8.0; // no matching point in a
     DateTime(2013,9,11) => 11.0 ] |> series
 
-let dense =
-  [ 1 => 1.0; 
-    2 => 2.0; 
-    3 => 3.0;
-    4 => 4.0;
-    5 => 5.0; ]
-    |> series
-
-let sparse = 
-  [ 2 => 20.0;
-    4 => 40.0 ] |> series
 
 let lift2 f a b = 
     match a, b with
     | Some x, Some y -> Some(f x y)
-    | None, Some y              -> None
-    | Some x, None              -> None
-    | None, None                -> None
-    | _                 -> failwith "expecting an option"
+    | _              -> None
 
 [<Test>]
 let ``ZipInto correctly zips series with missing values and custom operation``() =
   let res = (a, b) ||> Series.zipInto (fun l r -> (l**2.0) * r)
   res.GetAt(0) |> shouldEqual (99.0)
-
 
 [<Test>]
 let ``ZipAlignInto correctly left-aligns and zips series with nearest smaller option``() =
@@ -688,12 +673,6 @@ let ``ZipAlignInto correctly left-aligns and zips series with nearest smaller op
   res.GetAt(1) |> shouldEqual 32.0
   res.GetAt(2) |> shouldEqual 99.0
   res.GetAt(3) |> shouldEqual (16.0 * 11.0)
-
-  let res = (dense, sparse) ||> Series.zipAlignInto JoinKind.Left Lookup.ExactOrSmaller (lift2 (fun l r -> (l**2.0) * r))
-  res.TryGetAt(0) |> shouldEqual OptionalValue.Missing
-  res.GetAt(1) |> shouldEqual ((2.0**2.0)*20.0)
-  res.GetAt(2) |> shouldEqual ((3.0**2.0)*20.0)
-  res.GetAt(3) |> shouldEqual ((4.0**2.0)*40.0)
 
 [<Test>]
 let ``ZipAlignInto correctly left-aligns and zips series with nearest greater option``() =
