@@ -1346,6 +1346,15 @@ let ``Can map over frame keys and values``() =
 // ------------------------------------------------------------------------------------------------
 
 [<Test>]
+let ``Getting dense rows works on sample frame``() = 
+  let df = 
+    frame [ for k in ["A"; "B"; "C"] ->
+              k => Series.ofValues [ for i in 0 .. 9 -> if i%3=0 && k = "A" then nan else float i ] ]
+  let actual = df |> Frame.denseRows |> Frame.ofRows
+  let expected = df.Rows.[[1;2;4;5;7;8]]
+  actual |> shouldEqual <| expected
+
+[<Test>]
 let ``Dropping sparse rows preserves columns (#277)``() = 
   let emptyFrame = 
     frame [ for k in ["A"; "B"; "C"] ->
