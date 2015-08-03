@@ -1317,15 +1317,15 @@ module Frame =
   [<CompiledName("DropSparseRows")>]
   let dropSparseRows (frame:Frame<'R, 'C>) = 
     // Create a combined vector that has 'true' for rows which have some values
-    let hasSomeFlagVector = 
+    let hasAllFlagVector = 
       frame.Data 
       |> createRowVector 
           frame.VectorBuilder frame.RowIndex.AddressingScheme (lazy frame.RowIndex.KeyCount) 
           frame.ColumnIndex.KeyCount frame.ColumnIndex.AddressAt
-          (fun rowReader -> rowReader.DataSequence |> Seq.exists (fun opt -> opt.HasValue))
+          (fun rowReader -> rowReader.DataSequence |> Seq.forall (fun opt -> opt.HasValue))
     // Collect all rows that have at least some values
     let newRowIndex, cmd = 
-      frame.IndexBuilder.Search( (frame.RowIndex, Vectors.Return 0), hasSomeFlagVector, true)
+      frame.IndexBuilder.Search( (frame.RowIndex, Vectors.Return 0), hasAllFlagVector, true)
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newRowIndex.AddressingScheme cmd)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
@@ -1340,7 +1340,7 @@ module Frame =
     let newColKeys, newData =
       [| for KeyValue(colKey, addr) in frame.ColumnIndex.Mappings do
             match frame.Data.GetValue(addr) with
-            | OptionalValue.Present(vec) when vec.ObjectSequence |> Seq.exists (fun o -> o.HasValue) ->
+            | OptionalValue.Present(vec) when vec.ObjectSequence |> Seq.forall (fun o -> o.HasValue) ->
                 yield colKey, vec
             | _ -> () |] |> Array.unzip
     let colIndex = frame.IndexBuilder.Create(ReadOnlyCollection.ofArray newColKeys, None)

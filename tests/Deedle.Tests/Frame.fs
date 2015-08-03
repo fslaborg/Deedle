@@ -1376,6 +1376,18 @@ let ``Dropping sparse rows works on sample frame``() =
   actual |> shouldEqual expected
 
 [<Test>]
+let ``Dropping sparse rows works on frame with missing in one column``() = 
+  let sparseFrame = 
+    frame [ for k in ["A"; "B"; "C"] ->
+              k => Series.ofValues [ for i in 0 .. 5 -> if i%2=0 || k<>"B" then float i else nan ] ]
+  let actual = sparseFrame |> Frame.dropSparseRows
+  let expected = 
+    frame [ "A" => series [0 => 0.0; 2 => 2.0; 4 => 4.0 ]
+            "B" => series [0 => 0.0; 2 => 2.0; 4 => 4.0 ]
+            "C" => series [0 => 0.0; 2 => 2.0; 4 => 4.0 ] ]
+  actual |> shouldEqual expected
+
+[<Test>]
 let ``Dropping sparse columns preserves columns``() = 
   let emptyFrame = 
     frame [ for k in ["A"; "B"; "C"] ->
