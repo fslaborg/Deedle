@@ -1400,10 +1400,10 @@ let ``Dropping sparse columns preserves columns``() =
 let ``Dropping sparse columns works on sample frame``() = 
   let sparseFrame = 
     frame [ for k in ["A"; "B"; "C"] ->
-              k => Series.ofValues [ for i in 0 .. 5 -> if i%2=0&&k="B" then float i else nan ] ]
+              k => Series.ofValues [ for i in 0 .. 5 -> if i%2=0||k="B" then float i else nan ] ]
   let actual = sparseFrame |> Frame.dropSparseCols
   let expected = 
-    frame [ "B" => series [0 => 0.0; 1 => nan; 2 => 2.0; 3 => nan; 4 => 4.0; 5 => nan ] ]
+    frame [ "B" => series [0 => 0.0; 1 => 1.0; 2 => 2.0; 3 => 3.0; 4 => 4.0; 5 => 5.0 ] ]
   actual |> shouldEqual expected
 
 // ----------------------------------------------------------------------------------------------
