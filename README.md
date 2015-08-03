@@ -1,5 +1,5 @@
 Deedle [![Build Status](https://travis-ci.org/BlueMountainCapital/Deedle.png?branch=mainline)](https://travis-ci.org/BlueMountainCapital/Deedle)
-======
+=======
 
 ![BlueMountain Capita](https://www.bluemountaincapital.com/media/logo.gif)
 
