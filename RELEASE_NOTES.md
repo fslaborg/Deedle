@@ -119,3 +119,8 @@
  * Refactoring and cleanup of BigDeedle code
  * Fix bugs in ordinal virtual index
  * SelectOptional and SelectValues can be performed lazilly
+
+### 1.2.3
+ * Finish cleanup of BigDeedle code with partitioning support
+ * Add BigDeedle partitioning comment to design notes
+ * Update documentation tools dependencies
