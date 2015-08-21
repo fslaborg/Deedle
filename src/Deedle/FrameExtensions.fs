@@ -703,7 +703,7 @@ module FrameBuilder =
       member x.GetEnumerator() = (x :> seq<_>).GetEnumerator() :> Collections.IEnumerator
     interface seq<KeyValuePair<'C, ISeries<'R>>> with
       member x.GetEnumerator() = 
-        (series |> List.rev |> Seq.map (fun (k, v) -> KeyValuePair(k, v))).GetEnumerator()
+        (series |> Seq.map (fun (k, v) -> KeyValuePair(k, v))).GetEnumerator()
 
   type Rows<'R, 'C when 'C : equality and 'R : equality>() = 
     let mutable series = []
@@ -714,7 +714,7 @@ module FrameBuilder =
       member x.GetEnumerator() = (x :> seq<_>).GetEnumerator() :> Collections.IEnumerator
     interface seq<KeyValuePair<'R, ISeries<'C>>> with
       member x.GetEnumerator() = 
-        (series |> List.rev |> Seq.map (fun (k, v) -> KeyValuePair(k, v))).GetEnumerator()
+        (series |> Seq.map (fun (k, v) -> KeyValuePair(k, v))).GetEnumerator()
 
 /// A type with extension method for `KeyValuePair<'K, 'V>` that makes
 /// it possible to create values using just `KeyValue.Create`.
