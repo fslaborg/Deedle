@@ -112,6 +112,9 @@
 ### 1.2.0
  * Update version number for a BigDeedle release
 
+### 1.2.1
+ * Support public fields in Frame.ofRecords
+
 ### 1.2.2
  * BigDeedle: Materialize series on grouping and other operations
  * BigDeedle: Support resampling without materializing series
