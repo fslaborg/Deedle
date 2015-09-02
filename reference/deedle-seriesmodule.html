@@ -863,7 +863,7 @@ a discriminated union listing various chunking and windowing conditions.</li>
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1097-1097" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1098-1098" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -893,7 +893,7 @@ skips incomplete chunks - you can use <code>Series.chunkSize</code> for more opt
                           <strong>Type parameters:</strong> ^D, ^K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1008-1008" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1009-1009" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -926,7 +926,7 @@ keys of the series.</li>
                           <strong>Type parameters:</strong> ^D, ^K, 'T, 'R          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L992-992" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L993-993" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -960,7 +960,7 @@ keys of the series.</li>
                           <strong>Type parameters:</strong> 'K, 'T, 'R          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1084-1084" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1085-1085" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -991,13 +991,13 @@ skips incomplete chunks - you can use <code>Series.chunkSizeInto</code> for more
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L973-973" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L974-974" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Aggregates the input into a series of adacent chunks using the specified size and boundary behavior and returns
-the produced chunks as a nested series. The key is the last key of the chunk, unless
-boundary behavior is <code>Boundary.AtEnding</code> (in which case it is the first key).</p>
+the produced chunks as a nested series. The key is the first key of the chunk, unless
+boundary behavior has <code>Boundary.AtBeginning</code> flag (in which case it is the last key).</p>
 
 <h2>Parameters</h2>
 
@@ -1030,8 +1030,8 @@ or <code>Boundary.AtEnding</code> (to produce incomplete chunks at the end of se
             </a>
           <p>Aggregates the input into a series of adacent chunks using the specified size and boundary behavior and then
 applies the provided value selector <code>f</code> on each chunk to produce the result
-which is returned as a new series. The key is the last key of the chunk, unless
-boundary behavior is <code>Boundary.AtEnding</code> (in which case it is the first key).</p>
+which is returned as a new series. The key is the first key of the chunk, unless
+boundary behavior has <code>Boundary.AtBeginning</code> flag (in which case it is the last key).</p>
 
 <h2>Parameters</h2>
 
@@ -1059,7 +1059,7 @@ or <code>Boundary.AtEnding</code> (to produce incomplete chunks at the end of se
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1041-1041" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1042-1042" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1087,11 +1087,11 @@ to determine when a window should end.</li>
             chunkWhileInto cond f series
           </code>
           <div class="tip" id="211">
-            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?494683) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?494683&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'T, '?494683          </div>
+            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?553429) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?553429&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T, '?553429          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1026-1026" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1027-1027" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1124,7 +1124,7 @@ to determine when a window should end.</li>
                           <strong>Type parameters:</strong> 'K, 'T, 'TNewKey          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1159-1159" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1160-1160" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1155,7 +1155,7 @@ key and value. The new key must support equality testing.</li>
                           <strong>Type parameters:</strong> 'K, 'T, 'TNewKey, 'TNewValue          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1146-1146" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1147-1147" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1187,7 +1187,7 @@ key and value. The new key must support equality testing.</li>
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1117-1117" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1118-1118" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1227,11 +1227,11 @@ value for the first key).</p>
             pairwiseWith f series
           </code>
           <div class="tip" id="215">
-            <strong>Signature:</strong> f:(&#39;K -&gt; &#39;T * &#39;T -&gt; &#39;?494707) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?494707&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'T, '?494707          </div>
+            <strong>Signature:</strong> f:(&#39;K -&gt; &#39;T * &#39;T -&gt; &#39;?553453) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?553453&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T, '?553453          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1130-1130" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1131-1131" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1261,7 +1261,7 @@ The returned series is one key shorter (it does not contain a  value for the fir
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1070-1070" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1071-1071" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1320,8 +1320,8 @@ keys of the series.</li>
             windowDistInto distance f series
           </code>
           <div class="tip" id="218">
-            <strong>Signature:</strong> distance:^?494649 -&gt; f:(Series&lt;^K,&#39;T&gt; -&gt; &#39;?494652) -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,&#39;?494652&gt;<br />
-                          <strong>Type parameters:</strong> ^?494649, ^K, 'T, '?494652          </div>
+            <strong>Signature:</strong> distance:^?553395 -&gt; f:(Series&lt;^K,&#39;T&gt; -&gt; &#39;?553398) -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,&#39;?553398&gt;<br />
+                          <strong>Type parameters:</strong> ^?553395, ^K, 'T, '?553398          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L886-886" class="github-link">
@@ -1358,7 +1358,7 @@ keys of the series.</li>
                           <strong>Type parameters:</strong> 'K, 'T, 'R          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1057-1057" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1058-1058" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1485,8 +1485,8 @@ to determine when a window should end.</li>
             windowWhileInto cond f series
           </code>
           <div class="tip" id="223">
-            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?494660) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?494660&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'T, '?494660          </div>
+            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?553406) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?553406&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T, '?553406          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L922-922" class="github-link">
@@ -1688,7 +1688,7 @@ series of tuples).</p>
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1767-1767" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1768-1768" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1711,7 +1711,7 @@ specifying merging behavior.</p>
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1792-1792" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1793-1793" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1734,7 +1734,7 @@ of series to be merged is large.</p>
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1783-1783" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1784-1784" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1767,7 +1767,7 @@ from the first or the second series, respectively.</li>
                           <strong>Type parameters:</strong> 'K, 'V1, 'V2          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1805-1805" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1806-1806" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1790,7 +1790,7 @@ to use join on frames instead.</p>
                           <strong>Type parameters:</strong> 'K, 'V1, 'V2          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1824-1824" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1825-1825" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1826,7 +1826,7 @@ Supported values are <code>Lookup.Exact</code>, <code>Lookup.ExactOrSmaller</cod
                           <strong>Type parameters:</strong> 'V1, 'V2, 'R, 'K          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1853-1853" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1854-1854" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1864,7 +1864,7 @@ or outer join, some of the values may be missing. The function can also return
                           <strong>Type parameters:</strong> 'K, 'V1, 'V2          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1832-1832" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1833-1833" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1886,7 +1886,7 @@ a series of tuples with values from the two series.</p>
                           <strong>Type parameters:</strong> 'V1, 'V2, 'R, 'K          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1871-1871" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1872-1872" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1941,7 +1941,7 @@ The remaining functions provide different mechanism for filling the missing valu
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1190-1190" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1191-1191" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1985,7 +1985,7 @@ only those keys for which there is a value available in the original one.</p>
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1251-1251" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1252-1252" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2041,7 +2041,7 @@ for the nearest greater key.</li>
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1269-1269" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1270-1270" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2074,7 +2074,7 @@ for the nearest greater key.</li>
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1281-1281" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1282-1282" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2095,7 +2095,7 @@ for the nearest greater key.</li>
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1209-1209" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1210-1210" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2128,11 +2128,11 @@ For example see <a href="../frame.html#missing">handling missing values in the t
             fillMissingWith value series
           </code>
           <div class="tip" id="240">
-            <strong>Signature:</strong> value:&#39;?494728 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
-                          <strong>Type parameters:</strong> '?494728, 'K, 'T          </div>
+            <strong>Signature:</strong> value:&#39;?553474 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
+                          <strong>Type parameters:</strong> '?553474, 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1222-1222" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1223-1223" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2160,7 +2160,7 @@ For example see <a href="../frame.html#missing">handling missing values in the t
                           <strong>Type parameters:</strong> 'K, 'S, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1172-1172" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1173-1173" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2361,7 +2361,7 @@ observations in the input sequence.</p></li>
                           <strong>Type parameters:</strong> ^K, ^V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1725-1725" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1726-1726" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2405,7 +2405,7 @@ values at exact keys will be returned; <code>NearestGreater</code> returns the n
                           <strong>Type parameters:</strong> ^K, ^V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1752-1752" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1753-1753" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2450,7 +2450,7 @@ values at exact keys will be returned; <code>NearestGreater</code> returns the n
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1452-1452" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1453-1453" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2490,7 +2490,7 @@ used as the greatest keys in a chunk.</li>
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V1          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1501-1501" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1502-1502" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2531,7 +2531,7 @@ series, similar functionality can be implemented using <code>Series.groupBy</cod
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V1, 'V2          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1476-1476" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1477-1477" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2570,11 +2570,11 @@ series, similar functionality can be implemented using <code>Series.groupBy</cod
             resampleInto keys dir f series
           </code>
           <div class="tip" id="252">
-            <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; dir:Direction -&gt; f:(&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;?494776) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;?494776&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V, '?494776          </div>
+            <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; dir:Direction -&gt; f:(&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;?553522) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;?553522&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V, '?553522          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1431-1431" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1432-1432" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2616,7 +2616,7 @@ single value. Note that this function may be called with empty series.</li>
                           <strong>Type parameters:</strong> 'K1, 'K2, 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1586-1586" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1587-1587" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2658,11 +2658,11 @@ space (which is then used for grouping based on equivalence)</li>
             resampleUniformInto (...)
           </code>
           <div class="tip" id="254">
-            <strong>Signature:</strong> fillMode:Lookup -&gt; keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; nextKey:(&#39;K2 -&gt; &#39;K2) -&gt; f:(Series&lt;&#39;K1,&#39;V&gt; -&gt; &#39;?494793) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;?494793&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2, 'V, '?494793          </div>
+            <strong>Signature:</strong> fillMode:Lookup -&gt; keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; nextKey:(&#39;K2 -&gt; &#39;K2) -&gt; f:(Series&lt;&#39;K1,&#39;V&gt; -&gt; &#39;?553539) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;?553539&gt;<br />
+                          <strong>Type parameters:</strong> 'K1, 'K2, 'V, '?553539          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1532-1532" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1533-1533" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2708,11 +2708,11 @@ single value. The function may be called on empty series when <code>fillMode</co
             sampleTime interval dir series
           </code>
           <div class="tip" id="255">
-            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?494807,^?494808&gt; -&gt; Series&lt;^?494807,Series&lt;^?494807,^?494808&gt;&gt;<br />
-                          <strong>Type parameters:</strong> ^?494807, ^?494808          </div>
+            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?553553,^?553554&gt; -&gt; Series&lt;^?553553,Series&lt;^?553553,^?553554&gt;&gt;<br />
+                          <strong>Type parameters:</strong> ^?553553, ^?553554          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1681-1681" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1682-1682" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2747,11 +2747,11 @@ used as the greatest keys in a chunk.</li>
             sampleTimeAt start interval dir series
           </code>
           <div class="tip" id="256">
-            <strong>Signature:</strong> start:^?494810 -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?494810,^?494811&gt; -&gt; Series&lt;^?494810,Series&lt;^?494810,^?494811&gt;&gt;<br />
-                          <strong>Type parameters:</strong> ^?494810, ^?494811          </div>
+            <strong>Signature:</strong> start:^?553556 -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?553556,^?553557&gt; -&gt; Series&lt;^?553556,Series&lt;^?553556,^?553557&gt;&gt;<br />
+                          <strong>Type parameters:</strong> ^?553556, ^?553557          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1701-1701" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1702-1702" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2787,11 +2787,11 @@ used as the greatest keys in a chunk.</li>
             sampleTimeAtInto (...)
           </code>
           <div class="tip" id="257">
-            <strong>Signature:</strong> start:^K -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?494805) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?494805&gt;<br />
-                          <strong>Type parameters:</strong> ^K, ^V, '?494805          </div>
+            <strong>Signature:</strong> start:^K -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?553551) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?553551&gt;<br />
+                          <strong>Type parameters:</strong> ^K, ^V, '?553551          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1660-1660" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1661-1661" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2828,11 +2828,11 @@ used as the greatest keys in a chunk.</li>
             sampleTimeInto interval dir f series
           </code>
           <div class="tip" id="258">
-            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?494801) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?494801&gt;<br />
-                          <strong>Type parameters:</strong> ^K, ^V, '?494801          </div>
+            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?553547) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?553547&gt;<br />
+                          <strong>Type parameters:</strong> ^K, ^V, '?553547          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1637-1637" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1638-1638" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3035,8 +3035,8 @@ become ordinary values in the resulting series.</p>
             foldValues op init series
           </code>
           <div class="tip" id="264">
-            <strong>Signature:</strong> op:(&#39;?494593 -&gt; &#39;T -&gt; &#39;?494593) -&gt; init:&#39;?494593 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?494593<br />
-                          <strong>Type parameters:</strong> '?494593, 'T, 'K          </div>
+            <strong>Signature:</strong> op:(&#39;?553339 -&gt; &#39;T -&gt; &#39;?553339) -&gt; init:&#39;?553339 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?553339<br />
+                          <strong>Type parameters:</strong> '?553339, 'T, 'K          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L633-633" class="github-link">
@@ -3460,7 +3460,7 @@ a list of keys use <code>realign</code>.</p>
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1395-1395" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1396-1396" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3482,7 +3482,7 @@ ordinal index formed by <code>int</code> values starting from 0.</p>
                           <strong>Type parameters:</strong> 'K2, 'K1, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1404-1404" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1405-1405" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3505,7 +3505,7 @@ contains <em>more</em> keys, the values for additional keys are missing.</p>
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1387-1387" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1388-1388" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3529,7 +3529,7 @@ input sequence, the returned series will contain a missing value.</p>
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1377-1377" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1378-1378" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3550,7 +3550,7 @@ input sequence, the returned series will contain a missing value.</p>
                           <strong>Type parameters:</strong> 'K, 'V          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1370-1370" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1371-1371" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3572,7 +3572,7 @@ on the default ordering defined on the values of the series.</p>
                           <strong>Type parameters:</strong> 'T, 'V, 'K          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1348-1348" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1349-1349" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3602,7 +3602,7 @@ value contained in the original input series.</li>
                           <strong>Type parameters:</strong> 'K, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1360-1360" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1361-1361" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3629,7 +3629,7 @@ value contained in the original input series.</li>
                           <strong>Type parameters:</strong> 'V, 'K          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1333-1333" class="github-link">
+            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1334-1334" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
