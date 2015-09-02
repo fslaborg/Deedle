@@ -106,6 +106,22 @@ namespace Deedle.CSharp.Tests
       var bools = data.OfType<bool>().ToArray();
       Assert.AreEqual(new[] { true, true, true, true }, bools);
     }
+
+    [Test]
+    public static void FramesOrderedAfterBuild()
+    {
+      var builder = new FrameBuilder.Columns<int, string>();
+      builder.Add("column1", new[] { 1, 2, 3, 4 }.ToOrdinalSeries());
+      builder.Add("column2", new[] { 1, 2, 3, 4 }.ToOrdinalSeries());
+      builder.Add("column3", new[] { 1, 2, 3, 4 }.ToOrdinalSeries());
+      builder.Add("column4", new[] { 1, 2, 3, 4 }.ToOrdinalSeries());
+      var frame = builder.Frame;
+
+      Assert.AreEqual(
+        new[] { "column1", "column2", "column3", "column4" },
+        frame.ColumnKeys.ToArray()
+        );
+    }
   }
 
 	/* ----------------------------------------------------------------------------------
