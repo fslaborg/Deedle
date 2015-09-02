@@ -1346,6 +1346,15 @@ let ``Can map over frame keys and values``() =
 // ------------------------------------------------------------------------------------------------
 
 [<Test>]
+let ``Getting dense rows works on sample frame``() = 
+  let df = 
+    frame [ for k in ["A"; "B"; "C"] ->
+              k => Series.ofValues [ for i in 0 .. 9 -> if i%3=0 && k = "A" then nan else float i ] ]
+  let actual = df |> Frame.denseRows |> Frame.ofRows
+  let expected = df.Rows.[[1;2;4;5;7;8]]
+  actual |> shouldEqual <| expected
+
+[<Test>]
 let ``Dropping sparse rows preserves columns (#277)``() = 
   let emptyFrame = 
     frame [ for k in ["A"; "B"; "C"] ->
@@ -1367,6 +1376,18 @@ let ``Dropping sparse rows works on sample frame``() =
   actual |> shouldEqual expected
 
 [<Test>]
+let ``Dropping sparse rows works on frame with missing in one column``() = 
+  let sparseFrame = 
+    frame [ for k in ["A"; "B"; "C"] ->
+              k => Series.ofValues [ for i in 0 .. 5 -> if i%2=0 || k<>"B" then float i else nan ] ]
+  let actual = sparseFrame |> Frame.dropSparseRows
+  let expected = 
+    frame [ "A" => series [0 => 0.0; 2 => 2.0; 4 => 4.0 ]
+            "B" => series [0 => 0.0; 2 => 2.0; 4 => 4.0 ]
+            "C" => series [0 => 0.0; 2 => 2.0; 4 => 4.0 ] ]
+  actual |> shouldEqual expected
+
+[<Test>]
 let ``Dropping sparse columns preserves columns``() = 
   let emptyFrame = 
     frame [ for k in ["A"; "B"; "C"] ->
@@ -1379,10 +1400,10 @@ let ``Dropping sparse columns preserves columns``() =
 let ``Dropping sparse columns works on sample frame``() = 
   let sparseFrame = 
     frame [ for k in ["A"; "B"; "C"] ->
-              k => Series.ofValues [ for i in 0 .. 5 -> if i%2=0&&k="B" then float i else nan ] ]
+              k => Series.ofValues [ for i in 0 .. 5 -> if i%2=0||k="B" then float i else nan ] ]
   let actual = sparseFrame |> Frame.dropSparseCols
   let expected = 
-    frame [ "B" => series [0 => 0.0; 1 => nan; 2 => 2.0; 3 => nan; 4 => 4.0; 5 => nan ] ]
+    frame [ "B" => series [0 => 0.0; 1 => 1.0; 2 => 2.0; 3 => 3.0; 4 => 4.0; 5 => 5.0 ] ]
   actual |> shouldEqual expected
 
 // ----------------------------------------------------------------------------------------------

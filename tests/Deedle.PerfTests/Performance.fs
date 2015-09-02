@@ -394,7 +394,7 @@ let bigRowSparseFrame =
             k => Series.ofValues [ for i in 0 .. 10000 -> if i%2=0 then float i else nan ] ]
 let smallColSparseFrame = 
   frame [ for k in ["A"; "B"; "C"] ->
-            k => Series.ofValues [ for i in 0 .. 9 -> if i%2=0&&k<>"B" then float i else nan ] ]
+            k => Series.ofValues [ for i in 0 .. 9 -> if i%2=0||k<>"B" then float i else nan ] ]
 let bigColSparseFrame = 
   frame [ for k in ['A' .. 'Z'] ->
             k => Series.ofValues [ for i in 0 .. 10000 -> if (int k)%3<>1 then float i else nan ] ]

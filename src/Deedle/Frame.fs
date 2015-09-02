@@ -488,15 +488,9 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Accessors and slicing]
   member frame.RowsDense : RowSeries<'TRowKey, 'TColumnKey> = 
-    // Create an in-memory series that contains `ObjectSeries` for each
-    // row that has a value for each column. This returns an in-memory
-    // series because we do not know how many rows we'll need to return.
-    let emptySeries = Series<_, _>(rowIndex, Vector.ofValues [], vectorBuilder, indexBuilder)
-    let res = emptySeries.SelectOptional (fun row ->
-      let rowAddress = rowIndex.Locate(row.Key)
-      let rowVec = createObjRowReader data vectorBuilder rowAddress columnIndex.AddressAt
-      let all = columnIndex.Mappings |> Seq.forall (fun (KeyValue(key, addr)) -> rowVec.GetValue(addr).HasValue)
-      if all then OptionalValue(ObjectSeries(columnIndex, rowVec, vectorBuilder, indexBuilder))
+    let res = frame.Rows.SelectOptional (fun row ->
+      let all = row.Value.HasValue && row.Value.Value.ObservationsAll |> Seq.forall (fun v -> v.Value.HasValue)
+      if all then OptionalValue(ObjectSeries(columnIndex, row.Value.Value.Vector, vectorBuilder, indexBuilder))
       else OptionalValue.Missing )
 
     // Create a row series from the filtered series
