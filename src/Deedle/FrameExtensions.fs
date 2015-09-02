@@ -698,7 +698,7 @@ module FrameBuilder =
     let mutable series = []
     member x.Add(key:'C, value:ISeries<'R>) =
       series <- (key, value)::series
-    member x.Frame = Frame.ofColumns series
+    member x.Frame = series |> List.rev |> Frame.ofColumns 
     interface System.Collections.IEnumerable with
       member x.GetEnumerator() = (x :> seq<_>).GetEnumerator() :> Collections.IEnumerator
     interface seq<KeyValuePair<'C, ISeries<'R>>> with
@@ -709,7 +709,7 @@ module FrameBuilder =
     let mutable series = []
     member x.Add(key:'R, value:ISeries<'C>) =
       series <- (key, value)::series
-    member x.Frame = Frame.ofRows series
+    member x.Frame = series |> List.rev |> Frame.ofRows 
     interface System.Collections.IEnumerable with
       member x.GetEnumerator() = (x :> seq<_>).GetEnumerator() :> Collections.IEnumerator
     interface seq<KeyValuePair<'R, ISeries<'C>>> with
