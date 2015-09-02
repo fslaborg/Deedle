@@ -1,5 +1,5 @@
 Deedle [![Build Status](https://travis-ci.org/BlueMountainCapital/Deedle.png?branch=mainline)](https://travis-ci.org/BlueMountainCapital/Deedle)
-======
+=======
 
 <img align="right" src="https://github.com/BlueMountainCapital/Deedle/raw/master/docs/files/images/bmc.png" alt="BlueMountain Capital logo" />
 
