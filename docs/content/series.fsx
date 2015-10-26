@@ -91,19 +91,19 @@ To demonstrate this feature, we generate random prices in 60 minute, 30 minute a
 65 minute intervals:
 *)
 
-let s1 = series <| stock1 (TimeSpan(1, 0, 0)) 6
+let s1 = stock1 (TimeSpan(1, 0, 0)) 6 |> series
 // [fsi:val s1 : Series<DateTimeOffset,float> =]
 // [fsi:  series [ 12:00:00 AM => 20.76; 1:00:00 AM => 21.11; 2:00:00 AM => 22.51 ]
 // [fsi:            3:00:00 AM => 23.88; 4:00:00 AM => 23.23; 5:00:00 AM => 22.68 ] ]
 
-let s2 = series <| stock2 (TimeSpan(0, 30, 0)) 12
+let s2 =stock2 (TimeSpan(0, 30, 0)) 12 |> series
 // [fsi:val s2 : Series<DateTimeOffset,float> =]
 // [fsi:  series [ 12:00:00 AM => 21.61; 12:30:00 AM => 21.64; 1:00:00 AM => 21.86 ]
 // [fsi:            1:30:00 AM => 22.22;  2:00:00 AM => 22.35; 2:30:00 AM => 22.76 ]
 // [fsi:            3:00:00 AM => 22.68;  3:30:00 AM => 22.64; 4:00:00 AM => 22.90 ]
 // [fsi:            4:30:00 AM => 23.40;  5:00:00 AM => 23.33; 5:30:00 AM => 23.43] ]
 
-let s3 = series <| stock1 (TimeSpan(1, 5, 0)) 6
+let s3 = stock1 (TimeSpan(1, 5, 0)) 6 |> series
 // [fsi:val s3 : Series<DateTimeOffset,float> =]
 // [fsi:  series [ 12:00:00 AM => 21.37; 1:05:00 AM => 22.73; 2:10:00 AM => 22.08 ]
 // [fsi:            3:15:00 AM => 23.92; 4:20:00 AM => 22.72; 5:25:00 AM => 22.79 ]
@@ -248,7 +248,7 @@ key thing is that a single element will typically appear in multiple windows.
 *)
 
 // Create input series with 6 observations
-let lf = series <| stock1 (TimeSpan(0, 1, 0)) 6
+let lf = stock1 (TimeSpan(0, 1, 0)) 6 |> series
 
 // Create series of series representing individual windows
 lf |> Series.window 4
@@ -348,7 +348,7 @@ with versions suffixed with `Into` that call a provided function to aggregate
 each window):
 *)
 // Generate prices for each hour over 30 days
-let hourly = series <| stock1 (TimeSpan(1, 0, 0)) (30*24)
+let hourly = stock1 (TimeSpan(1, 0, 0)) (30*24) |> series
 
 // Generate windows of size 1 day (if the source was
 // irregular, windows would have varying size)
@@ -368,7 +368,7 @@ and condition):
 *)
 
 // Generate per-second observations over 10 minutes
-let hf = series <| stock1 (TimeSpan(0, 0, 1)) 600
+let hf = stock1 (TimeSpan(0, 0, 1)) 600 |> series
 
 // Create 10 second chunks with (possible) incomplete
 // chunk of smaller size at the end.
@@ -466,7 +466,7 @@ Using the function syntax, you can use `Series.getAll` for exact key
 lookup and `Series.lookupAll` when you want more flexible lookup:
 *)
 // Generate a bit less than 24 hours of data with 13.7sec offsets
-let mf = series <| stock1 (TimeSpan.FromSeconds(13.7)) 6300
+let mf = stock1 (TimeSpan.FromSeconds(13.7)) 6300 |> series
 // Generate keys for all minutes in 24 hours
 let keys = [ for m in 0.0 .. 24.0*60.0-1.0 -> today.AddMinutes(m) ]
 
@@ -527,7 +527,7 @@ The typical scenario is when you have time series with date time information
 *)
 
 // Generate 2.5 months of data in 1.7 hour offsets
-let ds = series <| stock1 (TimeSpan.FromHours(1.7)) 1000
+let ds = stock1 (TimeSpan.FromHours(1.7)) 1000 |> series
 
 // Sample by day (of type 'DateTime')
 ds |> Series.resampleEquiv (fun d -> d.Date)
@@ -617,7 +617,7 @@ the library provides helper functions exactly for this purpose:
 
 *)
 // Generate 1k observations with 1.7 hour offsets
-let pr = series <| stock1 (TimeSpan.FromHours(1.7)) 1000
+let pr = stock1 (TimeSpan.FromHours(1.7)) 1000 |> series
 
 // Sample at 2 hour intervals; 'Backward' specifies that
 // we collect all previous values into a chunk.
@@ -652,7 +652,7 @@ The two useful functions here are:
 The following snippet illustrates how both functions work:
 *)
 // Generate sample data with 1.7 hour offsets
-let sample = series <| stock1 (TimeSpan.FromHours(1.7)) 6
+let sample = stock1 (TimeSpan.FromHours(1.7)) 6 |> series
 
 // Calculates: new[i] = s[i] - s[i-1]
 let diff1 = sample |> Series.diff 1
