@@ -253,7 +253,7 @@ type SeriesExtensions =
 
   [<Extension>]
   static member ContainsKey(series:Series<'K, 'T>, key:'K) = 
-    series.Keys.Contains(key)
+    series.TryGet(key).HasValue
 
   /// Collapses a series of OptionalValue<'T> values to just 'T values
   [<Extension>]
