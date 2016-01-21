@@ -396,6 +396,26 @@ module internal FrameUtils =
     Frame<int, string>(rowIndex, colIndex, frameData, IndexBuilder.Instance, VectorBuilder.Instance)
 
 
+  /// Helper type for the `readCsv` function - represents a vector that is constructed gradually
+  /// by adding reading strings - and you get an `IVector` with the data at the end 
+  type IResizeVector =
+    abstract Add : string -> unit
+    abstract ToVector : unit -> IVector
+    
+  /// Creates `IResizeVector` implementation that uses `ResizeArray<'T>` internally
+  let makeResizeVector (parser:string -> option<'T>) =
+    let isNa = Deedle.Internal.MissingValues.isNA<'T> () 
+    let data = ResizeArray<OptionalValue<'T>>(500)
+    { new IResizeVector with
+        member x.Add(value:string) = 
+          let value =
+            match parser value with
+            | None -> OptionalValue.Missing
+            | Some v when isNa v -> OptionalValue.Missing
+            | Some v -> OptionalValue(v)
+          data.Add(value)
+        member x.ToVector() = Vector.ofOptionalValues (data.ToArray()) :> IVector }
+
   /// Load data from a CSV file using F# Data API
   let readCsv (reader:TextReader) hasHeaders inferTypes inferRows schema (missingValues:string[] option) separators culture maxRows =
     // When called from F#, the optional arguments will be `None`, but when called 
@@ -413,15 +433,6 @@ module internal FrameUtils =
     let safeMode = false 
     let preferOptionals = true
 
-    let createVector typ (data:string[]) = 
-      let missingValuesStr = String.Join(",", missingValues)
-      if typ = typeof<bool> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertBoolean(Some(s))) data) :> IVector
-      elif typ = typeof<decimal> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertDecimal(culture, Some(s))) data) :> IVector
-      elif typ = typeof<float> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertFloat(culture, missingValuesStr, Some(s))) data) :> IVector
-      elif typ = typeof<int> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertInteger(culture, Some(s))) data) :> IVector
-      elif typ = typeof<int64> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertInteger64(culture, Some(s))) data) :> IVector
-      else Vector.ofValues data :> IVector
-
     // If the stream does not support seeking, we read the entire dataset into memory 
     // because we need to iterate over the stream twice; once for inferring the schema 
     // and the second for actually pushing it into a frame.    
@@ -434,31 +445,47 @@ module internal FrameUtils =
     // to load information about types in the CSV file. By default, use the first
     // 100 rows (but inferRows can be set to another value). Otherwise we just
     // "infer" all columns as string.
-    let data = CsvFile.Load(stream, ?separators=separators, ?hasHeaders=hasHeaders)
     let inferredProperties =
-        match inferTypes with
-        | Some true | None ->
-            data.InferColumnTypes(inferRows, missingValues, cultureInfo, schema, safeMode, preferOptionals)
-        | Some false ->
-            let headers = 
-                match data.Headers with 
-                | None -> [| for i in 1 .. data.NumberOfColumns -> sprintf "Column%d" i |]
-                | Some headers -> headers
-            [ for c in headers -> PrimitiveInferedProperty.Create(c, typeof<string>, true, None) ]
+      let data = CsvFile.Load(stream, ?separators=separators, ?hasHeaders=hasHeaders)
+      match inferTypes with
+      | Some true | None ->
+          data.InferColumnTypes(inferRows, missingValues, cultureInfo, schema, safeMode, preferOptionals)
+          |> Array.ofSeq
+      | Some false ->
+          let headers = 
+            match data.Headers with 
+            | None -> [| for i in 1 .. data.NumberOfColumns -> sprintf "Column%d" i |]
+            | Some headers -> headers
+          headers |> Array.map (fun c -> PrimitiveInferedProperty.Create(c, typeof<string>, true, None))
 
-    // Load the data and convert the values to the appropriate type
-    let data = 
-      match maxRows with 
-      | Some(nrows) -> data.Truncate(nrows).Cache() 
-      | None -> data.Cache()
+    // We create `IResizeVector` instance for each of the columns (with appropriate parsing function)
+    let missingValuesStr = String.Join(",", missingValues)
+    let createVector typ = 
+      if typ = typeof<bool> then makeResizeVector (fun s -> TextRuntime.ConvertBoolean(Some(s)))
+      elif typ = typeof<decimal> then makeResizeVector (fun s -> TextRuntime.ConvertDecimal(culture, Some(s)))
+      elif typ = typeof<float> then makeResizeVector (fun s -> TextRuntime.ConvertFloat(culture, missingValuesStr, Some(s)))
+      elif typ = typeof<int> then makeResizeVector (fun s -> TextRuntime.ConvertInteger(culture, Some(s)))
+      elif typ = typeof<int64> then makeResizeVector (fun s -> TextRuntime.ConvertInteger64(culture, Some(s)))
+      else makeResizeVector Some
 
-    // Generate columns using the inferred properties 
+    // Go to the beginning of the stream, read it using `readCsvFile` and skip/truncate rows as needed
+    stream.Seek(0L, SeekOrigin.Begin) |> ignore
+    use reader = new StreamReader(stream)
+    let rows = 
+      CsvReader.readCsvFile reader (defaultArg separators ",") '"'
+      |> (if defaultArg hasHeaders true then Seq.skip 1 else id)
+      |> (match maxRows with Some n -> Seq.truncate n | _ -> id)
+
+    // Create vectors & iterate over the rows and parse the data
     let columnIndex = Index.ofKeys [ for p in inferredProperties -> p.Name ]
-    let columns = 
-      inferredProperties |> Seq.mapi (fun i prop ->
-        [| for row in data.Rows -> row.Columns.[i] |]
-        |> createVector prop.RuntimeType )
-    let rowIndex = Index.ofKeys [ 0 .. (Seq.length data.Rows) - 1 ]
+    let columns = inferredProperties |> Array.map (fun prop -> createVector prop.RuntimeType)
+    for row, _ in rows do
+      for i in 0 .. columns.Length-1 do
+        columns.[i].Add(row.[i])
+    let columns = columns |> Array.map (fun v -> v.ToVector())
+
+    let length = int columns.[0].Length
+    let rowIndex = Index.ofKeys (Array.init length id)
     Frame(rowIndex, columnIndex, Vector.ofValues columns, IndexBuilder.Instance, VectorBuilder.Instance)
 
 
