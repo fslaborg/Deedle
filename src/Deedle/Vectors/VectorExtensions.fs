@@ -51,6 +51,11 @@ module ``F# Vector extensions`` =
     static member inline ofOptionalValues<'T>(data:seq<OptionalValue<'T>>) = 
       VectorBuilder.Instance.CreateMissing(data |> Array.ofSeq)
 
+    /// Missing values can be specified explicitly as `OptionalValue.Missing`, but 
+    /// other values such as `null` and `Double.NaN` are turned into missing values too.
+    static member inline ofOptionalValues<'T>(data:OptionalValue<'T>[]) = 
+      VectorBuilder.Instance.CreateMissing(data)
+
 // ------------------------------------------------------------------------------------------------
 
 namespace Deedle.Vectors

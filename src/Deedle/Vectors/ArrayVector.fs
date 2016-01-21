@@ -72,8 +72,9 @@ type ArrayVectorBuilder() =
 
     member builder.CreateMissing(optValues) =
       // Check for both OptionalValue.Missing and OptionalValue.Value = NaN
-      let hasNAs = MissingValues.containsMissingOrNA optValues
-      if hasNAs then av <| VectorOptional(MissingValues.createMissingOrNAArray optValues)
+      let hasMissing, hasNAs = MissingValues.containsMissingOrNA optValues
+      if hasMissing && not hasNAs then av <| VectorOptional(optValues)
+      elif hasMissing || hasNAs then av <| VectorOptional(MissingValues.createMissingOrNAArray optValues)
       else av <| VectorNonOptional(optValues |> Array.map (fun v -> v.Value))
 
     /// Asynchronous version - limited implementation for AsyncMaterialize
