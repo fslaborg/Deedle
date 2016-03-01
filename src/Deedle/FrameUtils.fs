@@ -68,15 +68,17 @@ module internal Reflection =
   /// Helper function used when building frames from data tables
   let createTypedVector : _ -> seq<OptionalValue<obj>> -> _ =
     let cache = Dictionary<_, _>()
+    let monitor = Object()
     (fun typ -> 
-      match cache.TryGetValue(typ) with
-      | true, res -> res 
-      | false, _ -> 
-          let par = Expression.Parameter(typeof<seq<OptionalValue<obj>>>)
-          let body = Expression.Call(createTypedVectorMi.MakeGenericMethod([| typ |]), par)
-          let f = Expression.Lambda<Func<seq<OptionalValue<obj>>, IVector>>(body, par).Compile()
-          cache.Add(typ, f.Invoke)
-          f.Invoke )
+      lock monitor (fun () ->
+          match cache.TryGetValue(typ) with
+          | true, res -> res 
+          | false, _ -> 
+              let par = Expression.Parameter(typeof<seq<OptionalValue<obj>>>)
+              let body = Expression.Call(createTypedVectorMi.MakeGenericMethod([| typ |]), par)
+              let f = Expression.Lambda<Func<seq<OptionalValue<obj>>, IVector>>(body, par).Compile()
+              cache.Add(typ, f.Invoke)
+              f.Invoke ))
 
   let getExpandableProperties (ty:Type) =
     ty.GetProperties(BindingFlags.Instance ||| BindingFlags.Public) 
@@ -129,14 +131,16 @@ module internal Reflection =
   /// and cache the results with Type as the key, so that we don't have to recompile 
   let getCachedCompileProjection = 
     let cache = Dictionary<_, _>()
+    let monitor = Object()
     (fun typ ->
-      match cache.TryGetValue(typ) with
-      | true, res -> res
-      | _ ->
-          let res = [| for name, fldTy, proj in getMemberProjections typ -> 
-                         name, fldTy, proj.Compile() |]
-          cache.Add(typ, res)
-          res )
+      lock monitor (fun () ->
+          match cache.TryGetValue(typ) with
+          | true, res -> res
+          | _ ->
+              let res = [| for name, fldTy, proj in getMemberProjections typ -> 
+                             name, fldTy, proj.Compile() |]
+              cache.Add(typ, res)
+              res ))
 
   /// Given a single vector, expand its values into multiple vectors. This may be:
   /// - `IDictionary` is expanded based on keys/values
