@@ -150,8 +150,7 @@ let ``Can save MSFT data as CSV file and read it afterwards (with custom format)
   expected.SaveCsv(file, keyNames=["Date"], separator=';', culture=cz)
   let actual = 
     Frame.ReadCsv(file, separators=";", culture="cs-CZ")
-    |> Frame.indexRowsString "Date" 
-    |> Frame.mapRowKeys (fun s -> DateTime.Parse(s, cz) )
+    |> Frame.indexRowsDate "Date" 
   actual |> shouldEqual expected
 
 [<Test>]
