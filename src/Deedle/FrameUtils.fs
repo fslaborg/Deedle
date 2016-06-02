@@ -420,6 +420,8 @@ module internal FrameUtils =
       elif typ = typeof<float> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertFloat(culture, missingValuesStr, Some(s))) data) :> IVector
       elif typ = typeof<int> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertInteger(culture, Some(s))) data) :> IVector
       elif typ = typeof<int64> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertInteger64(culture, Some(s))) data) :> IVector
+      elif typ = typeof<DateTime> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertDateTime(culture, Some(s))) data) :> IVector
+      elif typ = typeof<Guid> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertGuid(Some(s))) data) :> IVector
       else Vector.ofValues data :> IVector
 
     // If the stream does not support seeking, we read the entire dataset into memory 
