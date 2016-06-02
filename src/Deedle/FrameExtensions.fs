@@ -1069,7 +1069,7 @@ type FrameExtensions =
   [<Extension; Obsolete("Use df.ColumnCount")>]
   static member CountColumns(frame:Frame<'R, 'C>) = frame.ColumnIndex.Mappings |> Seq.length
 
-  /// Filters frame rows using the specified condtion. Returns a new data frame
+  /// Filters frame rows using the specified condition. Returns a new data frame
   /// that contains rows for which the provided function returned false. The function
   /// is called with `KeyValuePair` containing the row key as the `Key` and `Value`
   /// gives access to the row series.
@@ -1080,7 +1080,7 @@ type FrameExtensions =
   ///  * `condition` - A delegate that specifies the filtering condition.
   [<Extension>]
   static member Where(frame:Frame<'TRowKey, 'TColumnKey>, condition:Func<_, _>) = 
-    frame.Rows.Where(condition) |> FrameUtils.fromRows frame.IndexBuilder frame.VectorBuilder
+    frame.Rows.Where(condition) |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnIndex.Keys
 
   /// Filters frame rows using the specified condtion. Returns a new data frame
   /// that contains rows for which the provided function returned false. The function
@@ -1093,7 +1093,7 @@ type FrameExtensions =
   ///  * `condition` - A delegate that specifies the filtering condition.
   [<Extension>]
   static member Where(frame:Frame<'TRowKey, 'TColumnKey>, condition:Func<_, _, _>) = 
-    frame.Rows.Where(condition) |> FrameUtils.fromRows frame.IndexBuilder frame.VectorBuilder
+    frame.Rows.Where(condition) |> FrameUtils.fromRowsAndColumnKeys frame.IndexBuilder frame.VectorBuilder frame.ColumnIndex.Keys
 
   [<Extension>]
   static member Select(frame:Frame<'TRowKey, 'TColumnKey>, projection:Func<_, _>) = 
