@@ -87,13 +87,13 @@ let ss2 = series <| Array.init 100 (fun i -> i*2+1 => rnd.NextDouble())
 *)
 let testOne() =      
   let file = "c:/temp/test.csv"
-  System.IO.File.WriteAllLines(file, Array.create 1000000 "20160114,ABC,acc12345,entity llc,Joe Doe,default,port1,FWD,ABC.TO,CAD")
-  timed 10 (fun () ->
+  //System.IO.File.WriteAllLines(file, Array.create 1000000 "20160114,ABC,acc12345,entity llc,Joe Doe,default,port1,FWD,ABC.TO,CAD")
+  timed 1 (fun () ->
     let df = 
       Frame.ReadCsv(file, hasHeaders = false, schema = "report_date,source_system,account,legal_entity,trader,strategy,portfolio,security_type,security,currency")
     ()  
   )
-  Console.ReadLine() |> ignore
+  //Console.ReadLine() |> ignore
 (*
   // 970 ~~> 457
   printfn "Creating lots of small series"

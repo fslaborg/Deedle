@@ -127,3 +127,9 @@
  * Finish cleanup of BigDeedle code with partitioning support
  * Add BigDeedle partitioning comment to design notes
  * Update documentation tools dependencies
+
+### 1.2.4
+ * Fix RowsDense broken by BigDeedle changes (#319)
+ * Make ChunkSizeInto behave according to documentation (#314)
+ * Expand public fields (#313)
+ * Keep order of columns/rows in FrameBuilder (#322)
