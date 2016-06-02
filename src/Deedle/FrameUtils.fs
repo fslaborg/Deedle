@@ -466,8 +466,8 @@ module internal FrameUtils =
       elif typ = typeof<float> then makeResizeVector (fun s -> TextRuntime.ConvertFloat(culture, missingValuesStr, Some(s)))
       elif typ = typeof<int> then makeResizeVector (fun s -> TextRuntime.ConvertInteger(culture, Some(s)))
       elif typ = typeof<int64> then makeResizeVector (fun s -> TextRuntime.ConvertInteger64(culture, Some(s)))
-      elif typ = typeof<DateTime> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertDateTime(culture, Some(s))) data) :> IVector
-      elif typ = typeof<Guid> then Vector.ofOptionalValues (Array.map (fun s -> TextRuntime.ConvertGuid(Some(s))) data) :> IVector
+      elif typ = typeof<DateTime> then makeResizeVector (fun s -> TextRuntime.ConvertDateTime(culture, Some(s)))
+      elif typ = typeof<Guid> then makeResizeVector (fun s -> TextRuntime.ConvertGuid(Some(s)))
       else makeResizeVector Some
 
     // Go to the beginning of the stream, read it using `readCsvFile` and skip/truncate rows as needed
