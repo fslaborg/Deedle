@@ -86,6 +86,15 @@ let ss1 = series <| Array.init 100 (fun i -> i*2 => rnd.NextDouble())
 let ss2 = series <| Array.init 100 (fun i -> i*2+1 => rnd.NextDouble())
 *)
 let testOne() =      
+  let file = "c:/temp/test.csv"
+  //System.IO.File.WriteAllLines(file, Array.create 1000000 "20160114,ABC,acc12345,entity llc,Joe Doe,default,port1,FWD,ABC.TO,CAD")
+  timed 1 (fun () ->
+    let df = 
+      Frame.ReadCsv(file, hasHeaders = false, schema = "report_date,source_system,account,legal_entity,trader,strategy,portfolio,security_type,security,currency")
+    ()  
+  )
+  //Console.ReadLine() |> ignore
+(*
   // 970 ~~> 457
   printfn "Creating lots of small series"
   timed 10 (fun () ->
@@ -98,7 +107,7 @@ let testOne() =
     let vs = [ for i in 0 .. 10000 -> i => float i ]
     Array.init 100 (fun _ -> series vs) |> ignore
   )
-
+*)
 (*
   timed 5 (fun () ->
     s1.ZipInner(s1)

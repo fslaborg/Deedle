@@ -470,7 +470,8 @@ module MissingValues =
 
   let inline containsMissingOrNA (data:OptionalValue<'T>[]) = 
     let isNA = isNA<'T>() 
-    data |> Array.exists (fun v -> not v.HasValue || isNA v.Value)
+    data |> Array.exists (fun v -> not v.HasValue),
+    data |> Array.exists (fun v -> v.HasValue && isNA v.Value)
 
   let inline createNAArray (data:'T[]) =   
     let isNA = isNA<'T>() 

@@ -135,14 +135,14 @@ from [F# Data library](https://github.com/fsharp/FSharp.Data).
 // Connect to the World Bank
 let wb = WorldBankData.GetDataContext()
 
-/// Given a region, load GDP in current US$ and return data as 
+/// Given a region, load GDP in current LCU and return data as 
 /// a frame with two-level column key (region and country name)
 let loadRegion (region:WorldBankData.ServiceTypes.Region) =
   [ for country in region.Countries -> 
       // Create two-level column key using tuple
       (region.Name, country.Name) => 
         // Create series from tuples returned by WorldBank
-        Series.ofObservations country.Indicators.``GDP (current US$)`` ]
+        Series.ofObservations country.Indicators.``GDP (current LCU)`` ]
   |> frame
 
 (**
@@ -155,7 +155,7 @@ Euro area:
 let eu = loadRegion wb.Regions.``Euro area``
 let oecd = loadRegion wb.Regions.``OECD members``
 
-// Join and convert to in billions of USD
+// Join and convert to billions 
 let world = eu.Join(oecd) / 1e9
 
 (*** include-value:(round (world*100.0))/100.0 ***)

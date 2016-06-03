@@ -122,6 +122,19 @@ namespace Deedle.CSharp.Tests
         frame.ColumnKeys.ToArray()
         );
     }
+
+    [Test]
+    public static void DropSparseRowsFromRecords()
+    {
+      var f = Deedle.Frame.FromRecords(new[] {
+          new { a = "x", b = 1.0 },
+          new { a = "y", b = Double.NaN },
+          new { a = "z", b = 3.0 }
+      });
+      var b = Deedle.FrameModule.DropSparseRows(f).GetColumn<float>("b").GetAllValues().ToArray();
+      Assert.AreEqual(1.0, b[0].Value);
+      Assert.AreEqual(3.0, b[1].Value);
+    }
   }
 
 	/* ----------------------------------------------------------------------------------
