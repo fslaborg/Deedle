@@ -133,3 +133,7 @@
  * Make ChunkSizeInto behave according to documentation (#314)
  * Expand public fields (#313)
  * Keep order of columns/rows in FrameBuilder (#322)
+ 
+### 1.2.5
+ * Reading CSV (#332) and DropSparseRows (#333)
+ * Fix where filter in C# (#338)
