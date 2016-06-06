@@ -1087,8 +1087,8 @@ to determine when a window should end.</li>
             chunkWhileInto cond f series
           </code>
           <div class="tip" id="211">
-            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?553429) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?553429&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'T, '?553429          </div>
+            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?553499) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?553499&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T, '?553499          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1027-1027" class="github-link">
@@ -1227,8 +1227,8 @@ value for the first key).</p>
             pairwiseWith f series
           </code>
           <div class="tip" id="215">
-            <strong>Signature:</strong> f:(&#39;K -&gt; &#39;T * &#39;T -&gt; &#39;?553453) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?553453&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'T, '?553453          </div>
+            <strong>Signature:</strong> f:(&#39;K -&gt; &#39;T * &#39;T -&gt; &#39;?553523) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?553523&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T, '?553523          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1131-1131" class="github-link">
@@ -1320,8 +1320,8 @@ keys of the series.</li>
             windowDistInto distance f series
           </code>
           <div class="tip" id="218">
-            <strong>Signature:</strong> distance:^?553395 -&gt; f:(Series&lt;^K,&#39;T&gt; -&gt; &#39;?553398) -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,&#39;?553398&gt;<br />
-                          <strong>Type parameters:</strong> ^?553395, ^K, 'T, '?553398          </div>
+            <strong>Signature:</strong> distance:^?553465 -&gt; f:(Series&lt;^K,&#39;T&gt; -&gt; &#39;?553468) -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,&#39;?553468&gt;<br />
+                          <strong>Type parameters:</strong> ^?553465, ^K, 'T, '?553468          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L886-886" class="github-link">
@@ -1485,8 +1485,8 @@ to determine when a window should end.</li>
             windowWhileInto cond f series
           </code>
           <div class="tip" id="223">
-            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?553406) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?553406&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'T, '?553406          </div>
+            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?553476) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?553476&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T, '?553476          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L922-922" class="github-link">
@@ -2128,8 +2128,8 @@ For example see <a href="../frame.html#missing">handling missing values in the t
             fillMissingWith value series
           </code>
           <div class="tip" id="240">
-            <strong>Signature:</strong> value:&#39;?553474 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
-                          <strong>Type parameters:</strong> '?553474, 'K, 'T          </div>
+            <strong>Signature:</strong> value:&#39;a -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
+                          <strong>Type parameters:</strong> 'a, 'K, 'T          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1223-1223" class="github-link">
@@ -2570,8 +2570,8 @@ series, similar functionality can be implemented using <code>Series.groupBy</cod
             resampleInto keys dir f series
           </code>
           <div class="tip" id="252">
-            <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; dir:Direction -&gt; f:(&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;?553522) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;?553522&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V, '?553522          </div>
+            <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; dir:Direction -&gt; f:(&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;?553592) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;?553592&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V, '?553592          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1432-1432" class="github-link">
@@ -2658,8 +2658,8 @@ space (which is then used for grouping based on equivalence)</li>
             resampleUniformInto (...)
           </code>
           <div class="tip" id="254">
-            <strong>Signature:</strong> fillMode:Lookup -&gt; keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; nextKey:(&#39;K2 -&gt; &#39;K2) -&gt; f:(Series&lt;&#39;K1,&#39;V&gt; -&gt; &#39;?553539) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;?553539&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2, 'V, '?553539          </div>
+            <strong>Signature:</strong> fillMode:Lookup -&gt; keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; nextKey:(&#39;K2 -&gt; &#39;K2) -&gt; f:(Series&lt;&#39;K1,&#39;V&gt; -&gt; &#39;b) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;b&gt;<br />
+                          <strong>Type parameters:</strong> 'K1, 'K2, 'V, 'b          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1533-1533" class="github-link">
@@ -2708,8 +2708,8 @@ single value. The function may be called on empty series when <code>fillMode</co
             sampleTime interval dir series
           </code>
           <div class="tip" id="255">
-            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?553553,^?553554&gt; -&gt; Series&lt;^?553553,Series&lt;^?553553,^?553554&gt;&gt;<br />
-                          <strong>Type parameters:</strong> ^?553553, ^?553554          </div>
+            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?553623,^?553624&gt; -&gt; Series&lt;^?553623,Series&lt;^?553623,^?553624&gt;&gt;<br />
+                          <strong>Type parameters:</strong> ^?553623, ^?553624          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1682-1682" class="github-link">
@@ -2747,8 +2747,8 @@ used as the greatest keys in a chunk.</li>
             sampleTimeAt start interval dir series
           </code>
           <div class="tip" id="256">
-            <strong>Signature:</strong> start:^?553556 -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?553556,^?553557&gt; -&gt; Series&lt;^?553556,Series&lt;^?553556,^?553557&gt;&gt;<br />
-                          <strong>Type parameters:</strong> ^?553556, ^?553557          </div>
+            <strong>Signature:</strong> start:^?553626 -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?553626,^?553627&gt; -&gt; Series&lt;^?553626,Series&lt;^?553626,^?553627&gt;&gt;<br />
+                          <strong>Type parameters:</strong> ^?553626, ^?553627          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1702-1702" class="github-link">
@@ -2787,8 +2787,8 @@ used as the greatest keys in a chunk.</li>
             sampleTimeAtInto (...)
           </code>
           <div class="tip" id="257">
-            <strong>Signature:</strong> start:^K -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?553551) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?553551&gt;<br />
-                          <strong>Type parameters:</strong> ^K, ^V, '?553551          </div>
+            <strong>Signature:</strong> start:^K -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?553621) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?553621&gt;<br />
+                          <strong>Type parameters:</strong> ^K, ^V, '?553621          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1661-1661" class="github-link">
@@ -2828,8 +2828,8 @@ used as the greatest keys in a chunk.</li>
             sampleTimeInto interval dir f series
           </code>
           <div class="tip" id="258">
-            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?553547) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?553547&gt;<br />
-                          <strong>Type parameters:</strong> ^K, ^V, '?553547          </div>
+            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?553617) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?553617&gt;<br />
+                          <strong>Type parameters:</strong> ^K, ^V, '?553617          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1638-1638" class="github-link">
@@ -3035,8 +3035,8 @@ become ordinary values in the resulting series.</p>
             foldValues op init series
           </code>
           <div class="tip" id="264">
-            <strong>Signature:</strong> op:(&#39;?553339 -&gt; &#39;T -&gt; &#39;?553339) -&gt; init:&#39;?553339 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?553339<br />
-                          <strong>Type parameters:</strong> '?553339, 'T, 'K          </div>
+            <strong>Signature:</strong> op:(&#39;?553409 -&gt; &#39;T -&gt; &#39;?553409) -&gt; init:&#39;?553409 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?553409<br />
+                          <strong>Type parameters:</strong> '?553409, 'T, 'K          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/SeriesModule.fs#L633-633" class="github-link">

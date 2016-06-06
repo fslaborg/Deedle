@@ -230,14 +230,14 @@ from <a href="https://github.com/fsharp/FSharp.Data">F# Data library</a>.</p>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Connect to the World Bank</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs35', 66)" onmouseover="showTip(event, 'fs35', 66)" class="i">wb</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 67)" onmouseover="showTip(event, 'fs4', 67)" class="t">WorldBankData</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs36', 68)" onmouseover="showTip(event, 'fs36', 68)" class="f">GetDataContext</span>()
 
-<span class="c">/// Given a region, load GDP in current US$ and return data as </span>
+<span class="c">/// Given a region, load GDP in current LCU and return data as </span>
 <span class="c">/// a frame with two-level column key (region and country name)</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs37', 69)" onmouseover="showTip(event, 'fs37', 69)" class="f">loadRegion</span> (<span onmouseout="hideTip(event, 'fs38', 70)" onmouseover="showTip(event, 'fs38', 70)" class="i">region</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs4', 71)" onmouseover="showTip(event, 'fs4', 71)" class="i">WorldBankData</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs39', 72)" onmouseover="showTip(event, 'fs39', 72)" class="i">ServiceTypes</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs40', 73)" onmouseover="showTip(event, 'fs40', 73)" class="t">Region</span>) <span class="o">=</span>
   [ <span class="k">for</span> <span onmouseout="hideTip(event, 'fs41', 74)" onmouseover="showTip(event, 'fs41', 74)" class="i">country</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs38', 75)" onmouseover="showTip(event, 'fs38', 75)" class="i">region</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs42', 76)" onmouseover="showTip(event, 'fs42', 76)" class="i">Countries</span> <span class="k">-&gt;</span> 
       <span class="c">// Create two-level column key using tuple</span>
       (<span onmouseout="hideTip(event, 'fs38', 77)" onmouseover="showTip(event, 'fs38', 77)" class="i">region</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs43', 78)" onmouseover="showTip(event, 'fs43', 78)" class="i">Name</span>, <span onmouseout="hideTip(event, 'fs41', 79)" onmouseover="showTip(event, 'fs41', 79)" class="i">country</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs44', 80)" onmouseover="showTip(event, 'fs44', 80)" class="i">Name</span>) <span class="o">=&gt;</span> 
         <span class="c">// Create series from tuples returned by WorldBank</span>
-        <span onmouseout="hideTip(event, 'fs45', 81)" onmouseover="showTip(event, 'fs45', 81)" class="t">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 82)" onmouseover="showTip(event, 'fs46', 82)" class="f">ofObservations</span> <span onmouseout="hideTip(event, 'fs41', 83)" onmouseover="showTip(event, 'fs41', 83)" class="i">country</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs47', 84)" onmouseover="showTip(event, 'fs47', 84)" class="i">Indicators</span><span class="o">.</span><span class="i">``GDP (current US$)``</span> ]
+        <span onmouseout="hideTip(event, 'fs45', 81)" onmouseover="showTip(event, 'fs45', 81)" class="t">Series</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 82)" onmouseover="showTip(event, 'fs46', 82)" class="f">ofObservations</span> <span onmouseout="hideTip(event, 'fs41', 83)" onmouseover="showTip(event, 'fs41', 83)" class="i">country</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs47', 84)" onmouseover="showTip(event, 'fs47', 84)" class="i">Indicators</span><span class="o">.</span><span class="i">``GDP (current LCU)``</span> ]
   <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs48', 85)" onmouseover="showTip(event, 'fs48', 85)" class="f">frame</span>
 </code></pre></td>
 </tr>
@@ -259,7 +259,7 @@ Euro area:</p>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs49', 86)" onmouseover="showTip(event, 'fs49', 86)" class="i">eu</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs37', 87)" onmouseover="showTip(event, 'fs37', 87)" class="f">loadRegion</span> <span onmouseout="hideTip(event, 'fs35', 88)" onmouseover="showTip(event, 'fs35', 88)" class="i">wb</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs50', 89)" onmouseover="showTip(event, 'fs50', 89)" class="i">Regions</span><span class="o">.</span><span class="i">``Euro area``</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs51', 90)" onmouseover="showTip(event, 'fs51', 90)" class="i">oecd</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs37', 91)" onmouseover="showTip(event, 'fs37', 91)" class="f">loadRegion</span> <span onmouseout="hideTip(event, 'fs35', 92)" onmouseover="showTip(event, 'fs35', 92)" class="i">wb</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs50', 93)" onmouseover="showTip(event, 'fs50', 93)" class="i">Regions</span><span class="o">.</span><span class="i">``OECD members``</span>
 
-<span class="c">// Join and convert to in billions of USD</span>
+<span class="c">// Join and convert to billions </span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs52', 94)" onmouseover="showTip(event, 'fs52', 94)" class="i">world</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs49', 95)" onmouseover="showTip(event, 'fs49', 95)" class="i">eu</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs53', 96)" onmouseover="showTip(event, 'fs53', 96)" class="f">Join</span>(<span onmouseout="hideTip(event, 'fs51', 97)" onmouseover="showTip(event, 'fs51', 97)" class="i">oecd</span>) <span class="o">/</span> <span class="n">1e9</span>
 </code></pre></td>
 </tr>
@@ -284,82 +284,82 @@ Euro area:</p>
 <tbody>
 <tr class="odd">
 <td><p>1960</p></td>
-<td><p>6.59</p></td>
-<td><p>11.66</p></td>
+<td><p>12.46</p></td>
+<td><p>14.45</p></td>
 <td><p>N/A</p></td>
 <td><p> ... </p></td>
-<td><p>14.84</p></td>
-<td><p>13.98</p></td>
+<td><p>76.79</p></td>
+<td><p></p></td>
 <td><p>543.3</p></td>
 </tr>
 <tr class="even">
 <td><p>1961</p></td>
-<td><p>7.31</p></td>
-<td><p>12.4</p></td>
+<td><p>13.82</p></td>
+<td><p>15.37</p></td>
 <td><p>N/A</p></td>
 <td><p> ... </p></td>
-<td><p>16.15</p></td>
-<td><p>8.02</p></td>
+<td><p>83.53</p></td>
+<td><p></p></td>
 <td><p>563.3</p></td>
 </tr>
 <tr class="odd">
 <td><p>1962</p></td>
-<td><p>7.76</p></td>
-<td><p>13.26</p></td>
+<td><p>14.66</p></td>
+<td><p>16.44</p></td>
 <td><p>N/A</p></td>
 <td><p> ... </p></td>
-<td><p>17.51</p></td>
-<td><p>8.92</p></td>
+<td><p>90.59</p></td>
+<td><p></p></td>
 <td><p>605.1</p></td>
 </tr>
 <tr class="even">
 <td><p>1963</p></td>
-<td><p>8.37</p></td>
-<td><p>14.26</p></td>
+<td><p>15.82</p></td>
+<td><p>17.67</p></td>
 <td><p>N/A</p></td>
 <td><p> ... </p></td>
-<td><p>18.95</p></td>
-<td><p>10.36</p></td>
+<td><p>98.05</p></td>
+<td><p></p></td>
 <td><p>638.6</p></td>
 </tr>
 <tr class="odd">
 <td><p>1964</p></td>
-<td><p>9.17</p></td>
-<td><p>15.96</p></td>
+<td><p>17.33</p></td>
+<td><p>19.78</p></td>
 <td><p>N/A</p></td>
 <td><p> ... </p></td>
-<td><p>21.14</p></td>
-<td><p>11.18</p></td>
+<td><p>109.35</p></td>
+<td><p></p></td>
 <td><p>685.8</p></td>
 </tr>
 <tr class="even">
 <td><p>1965</p></td>
-<td><p>9.99</p></td>
-<td><p>17.37</p></td>
+<td><p>18.88</p></td>
+<td><p>21.53</p></td>
 <td><p>N/A</p></td>
 <td><p> ... </p></td>
-<td><p>23.26</p></td>
-<td><p>11.94</p></td>
+<td><p>120.33</p></td>
+<td><p></p></td>
 <td><p>743.7</p></td>
 </tr>
 <tr class="odd">
 <td><p>1966</p></td>
-<td><p>10.89</p></td>
-<td><p>18.65</p></td>
+<td><p>20.57</p></td>
+<td><p>23.12</p></td>
 <td><p>N/A</p></td>
 <td><p> ... </p></td>
-<td><p>25.3</p></td>
-<td><p>14.12</p></td>
+<td><p>130.89</p></td>
+<td><p></p></td>
 <td><p>815</p></td>
 </tr>
 <tr class="even">
 <td><p>1967</p></td>
-<td><p>11.58</p></td>
-<td><p>19.99</p></td>
+<td><p>21.88</p></td>
+<td><p>24.78</p></td>
 <td><p>N/A</p></td>
 <td><p> ... </p></td>
-<td><p>27.46</p></td>
-<td><p>15.67</p></td>
+<td><p>142.07</p></td>
+<td><p></p></td>
 <td><p>861.7</p></td>
 </tr>
 <tr class="odd">
@@ -374,42 +374,42 @@ Euro area:</p>
 </tr>
 <tr class="even">
 <td><p>2011</p></td>
-<td><p>429.07</p></td>
-<td><p>528.1</p></td>
-<td><p>27.09</p></td>
+<td><p>308.63</p></td>
+<td><p>379.11</p></td>
+<td><p>19.49</p></td>
 <td><p> ... </p></td>
-<td><p>563.11</p></td>
-<td><p>774.75</p></td>
+<td><p>3656.58</p></td>
+<td><p>1297.71</p></td>
 <td><p>15517.93</p></td>
 </tr>
 <tr class="odd">
 <td><p>2012</p></td>
-<td><p>407.58</p></td>
-<td><p>498.75</p></td>
-<td><p>24.94</p></td>
+<td><p>317.06</p></td>
+<td><p>387.42</p></td>
+<td><p>19.41</p></td>
 <td><p> ... </p></td>
-<td><p>543.88</p></td>
-<td><p>788.86</p></td>
+<td><p>3684.8</p></td>
+<td><p>1416.8</p></td>
 <td><p>16163.16</p></td>
 </tr>
 <tr class="even">
 <td><p>2013</p></td>
-<td><p>428.32</p></td>
-<td><p>524.78</p></td>
-<td><p>24.06</p></td>
+<td><p>322.88</p></td>
+<td><p>392.7</p></td>
+<td><p>18.12</p></td>
 <td><p> ... </p></td>
-<td><p>579.53</p></td>
-<td><p>823.24</p></td>
+<td><p>3769.91</p></td>
+<td><p>1567.29</p></td>
 <td><p>16768.05</p></td>
 </tr>
 <tr class="odd">
 <td><p>2014</p></td>
-<td><p>436.34</p></td>
-<td><p>533.38</p></td>
-<td><p>23.23</p></td>
+<td><p>329.3</p></td>
+<td><p>400.64</p></td>
+<td><p>17.51</p></td>
 <td><p> ... </p></td>
-<td><p>570.59</p></td>
-<td><p>799.53</p></td>
+<td><p>3918.13</p></td>
+<td><p>1747.36</p></td>
 <td><p>17419</p></td>
 </tr>
 </tbody>
@@ -1942,7 +1942,7 @@ at all):</p>
 <div class="tip" id="fs34">member Frame.GetColumn : column:&#39;TColumnKey -&gt; Series&lt;&#39;TRowKey,&#39;R&gt;<br />member Frame.GetColumn : column:&#39;TColumnKey * lookup:Lookup -&gt; Series&lt;&#39;TRowKey,&#39;R&gt;</div>
 <div class="tip" id="fs35">val wb : WorldBankData.ServiceTypes.WorldBankDataService<br /><br />Full name: Frame.wb</div>
 <div class="tip" id="fs36">WorldBankData.GetDataContext() : WorldBankData.ServiceTypes.WorldBankDataService</div>
-<div class="tip" id="fs37">val loadRegion : region:WorldBankData.ServiceTypes.Region -&gt; Frame&lt;int,(string * string)&gt;<br /><br />Full name: Frame.loadRegion<br /><em><br /><br />&#160;Given a region, load GDP in current US$ and return data as <br />&#160;a frame with two-level column key (region and country name)</em></div>
+<div class="tip" id="fs37">val loadRegion : region:WorldBankData.ServiceTypes.Region -&gt; Frame&lt;int,(string * string)&gt;<br /><br />Full name: Frame.loadRegion<br /><em><br /><br />&#160;Given a region, load GDP in current LCU and return data as <br />&#160;a frame with two-level column key (region and country name)</em></div>
 <div class="tip" id="fs38">val region : WorldBankData.ServiceTypes.Region</div>
 <div class="tip" id="fs39">type ServiceTypes =<br />&#160;&#160;nested type Countries<br />&#160;&#160;nested type Country<br />&#160;&#160;nested type Indicators<br />&#160;&#160;nested type IndicatorsDescriptions<br />&#160;&#160;nested type Region<br />&#160;&#160;nested type Regions<br />&#160;&#160;nested type Topic<br />&#160;&#160;nested type Topics<br />&#160;&#160;nested type WorldBankDataService<br /><br />Full name: FSharp.Data.WorldBankData.ServiceTypes<br /><em><br /><br />&lt;summary&gt;Contains the types that describe the data service&lt;/summary&gt;</em></div>
 <div class="tip" id="fs40">type Region =<br />&#160;&#160;inherit Region<br />&#160;&#160;member Countries : Countries<br />&#160;&#160;member Indicators : Indicators<br />&#160;&#160;member Name : string<br />&#160;&#160;member RegionCode : string<br /><br />Full name: FSharp.Data.WorldBankData.ServiceTypes.Region</div>
@@ -1950,8 +1950,8 @@ at all):</p>
 <div class="tip" id="fs42">property WorldBankData.ServiceTypes.Region.Countries: WorldBankData.ServiceTypes.Countries<br /><em><br /><br />&lt;summary&gt;The indicators for the region&lt;/summary&gt;</em></div>
 <div class="tip" id="fs43">property Runtime.WorldBank.Region.Name: string</div>
 <div class="tip" id="fs44">property Runtime.WorldBank.Country.Name: string</div>
-<div class="tip" id="fs45">Multiple items<br />module Series<br /><br />from Deedle<br /><br />--------------------<br />type Series =<br />&#160;&#160;static member ofNullables : values:seq&lt;Nullable&lt;&#39;a0&gt;&gt; -&gt; Series&lt;int,&#39;a0&gt; (requires default constructor and value type and &#39;a0 :&gt; ValueType)<br />&#160;&#160;static member ofObservations : observations:seq&lt;&#39;a0 * &#39;a1&gt; -&gt; Series&lt;&#39;a0,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofOptionalObservations : observations:seq&lt;&#39;K * &#39;a1 option&gt; -&gt; Series&lt;&#39;K,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofValues : values:seq&lt;&#39;a0&gt; -&gt; Series&lt;int,&#39;a0&gt;<br /><br />Full name: Deedle.F# Series extensions.Series<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface ISeries&lt;&#39;K&gt;<br />&#160;&#160;new : pairs:seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : keys:&#39;K [] * values:&#39;V [] -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : index:IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member After : lowerExclusive:&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * observationSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,KeyValuePair&lt;&#39;TNewKey,OptionalValue&lt;&#39;R&gt;&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * keySelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,OptionalValue&lt;&#39;R&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member AsyncMaterialize : unit -&gt; Async&lt;Series&lt;&#39;K,&#39;V&gt;&gt;<br />&#160;&#160;...<br /><br />Full name: Deedle.Series&lt;_,_&gt;<br /><br />--------------------<br />new : pairs:seq&lt;Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : keys:&#39;K [] * values:&#39;V [] -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : index:Indices.IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:Vectors.IVectorBuilder * indexBuilder:Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
-<div class="tip" id="fs46">static member Series.ofObservations : observations:seq&lt;&#39;a0 * &#39;a1&gt; -&gt; Series&lt;&#39;a0,&#39;a1&gt; (requires equality)</div>
+<div class="tip" id="fs45">Multiple items<br />module Series<br /><br />from Deedle<br /><br />--------------------<br />type Series =<br />&#160;&#160;static member ofNullables : values:seq&lt;Nullable&lt;&#39;a0&gt;&gt; -&gt; Series&lt;int,&#39;a0&gt; (requires default constructor and value type and &#39;a0 :&gt; ValueType)<br />&#160;&#160;static member ofObservations : observations:seq&lt;&#39;c * &#39;d&gt; -&gt; Series&lt;&#39;c,&#39;d&gt; (requires equality)<br />&#160;&#160;static member ofOptionalObservations : observations:seq&lt;&#39;K * &#39;a1 option&gt; -&gt; Series&lt;&#39;K,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofValues : values:seq&lt;&#39;a&gt; -&gt; Series&lt;int,&#39;a&gt;<br /><br />Full name: Deedle.F# Series extensions.Series<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface ISeries&lt;&#39;K&gt;<br />&#160;&#160;new : pairs:seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : keys:&#39;K [] * values:&#39;V [] -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : index:IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member After : lowerExclusive:&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * observationSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,KeyValuePair&lt;&#39;TNewKey,OptionalValue&lt;&#39;R&gt;&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * keySelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,OptionalValue&lt;&#39;R&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member AsyncMaterialize : unit -&gt; Async&lt;Series&lt;&#39;K,&#39;V&gt;&gt;<br />&#160;&#160;...<br /><br />Full name: Deedle.Series&lt;_,_&gt;<br /><br />--------------------<br />new : pairs:seq&lt;Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : keys:&#39;K [] * values:&#39;V [] -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : index:Indices.IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:Vectors.IVectorBuilder * indexBuilder:Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
+<div class="tip" id="fs46">static member Series.ofObservations : observations:seq&lt;&#39;c * &#39;d&gt; -&gt; Series&lt;&#39;c,&#39;d&gt; (requires equality)</div>
 <div class="tip" id="fs47">property WorldBankData.ServiceTypes.Country.Indicators: WorldBankData.ServiceTypes.Indicators<br /><em><br /><br />&lt;summary&gt;The indicators for the country&lt;/summary&gt;</em></div>
 <div class="tip" id="fs48">val frame : columns:seq&lt;&#39;a * #ISeries&lt;&#39;c&gt;&gt; -&gt; Frame&lt;&#39;c,&#39;a&gt; (requires equality and equality)<br /><br />Full name: Deedle.F# Frame extensions.frame</div>
 <div class="tip" id="fs49">val eu : Frame&lt;int,(string * string)&gt;<br /><br />Full name: Frame.eu</div>
@@ -1960,7 +1960,7 @@ at all):</p>
 <div class="tip" id="fs52">val world : Frame&lt;int,(string * string)&gt;<br /><br />Full name: Frame.world</div>
 <div class="tip" id="fs53">member Frame.Join : otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />member Frame.Join : colKey:&#39;TColumnKey * series:Series&lt;&#39;TRowKey,&#39;V&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />member Frame.Join : otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * kind:JoinKind -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />member Frame.Join : colKey:&#39;TColumnKey * series:Series&lt;&#39;TRowKey,&#39;V&gt; * kind:JoinKind -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />member Frame.Join : otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * kind:JoinKind * lookup:Lookup -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />member Frame.Join : colKey:&#39;TColumnKey * series:Series&lt;&#39;TRowKey,&#39;V&gt; * kind:JoinKind * lookup:Lookup -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
 <div class="tip" id="fs54">val peopleNested : Frame&lt;int,string&gt;<br /><br />Full name: Frame.peopleNested</div>
-<div class="tip" id="fs55">static member Series.ofValues : values:seq&lt;&#39;a0&gt; -&gt; Series&lt;int,&#39;a0&gt;</div>
+<div class="tip" id="fs55">static member Series.ofValues : values:seq&lt;&#39;a&gt; -&gt; Series&lt;int,&#39;a&gt;</div>
 <div class="tip" id="fs56">val expandCols : names:seq&lt;string&gt; -&gt; frame:Frame&lt;&#39;R,string&gt; -&gt; Frame&lt;&#39;R,string&gt; (requires equality)<br /><br />Full name: Deedle.Frame.expandCols</div>
 <div class="tip" id="fs57">val tuples : Series&lt;int,Collections.Generic.IDictionary&lt;string,obj&gt;&gt;<br /><br />Full name: Frame.tuples</div>
 <div class="tip" id="fs58">val dict : keyValuePairs:seq&lt;&#39;Key * &#39;Value&gt; -&gt; Collections.Generic.IDictionary&lt;&#39;Key,&#39;Value&gt; (requires equality)<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.dict</div>
@@ -1983,7 +1983,7 @@ at all):</p>
 <div class="tip" id="fs75">member Frame.GetRowsAs : unit -&gt; Series&lt;&#39;TRowKey,&#39;TRow&gt;</div>
 <div class="tip" id="fs76">type IPersonOpt =<br />&#160;&#160;interface<br />&#160;&#160;&#160;&#160;abstract member Age : OptionalValue&lt;int&gt;<br />&#160;&#160;&#160;&#160;abstract member Countries : string list<br />&#160;&#160;end<br /><br />Full name: Frame.IPersonOpt<br /><em><br /><br />&#160;Alternative that lets us handle missing &#39;Age&#39; values</em></div>
 <div class="tip" id="fs77">abstract member IPersonOpt.Age : OptionalValue&lt;int&gt;<br /><br />Full name: Frame.IPersonOpt.Age</div>
-<div class="tip" id="fs78">Multiple items<br />module OptionalValue<br /><br />from Deedle<br /><br />--------------------<br />type OptionalValue =<br />&#160;&#160;static member Create : v:&#39;a0 -&gt; OptionalValue&lt;&#39;a0&gt;<br />&#160;&#160;static member Empty : unit -&gt; OptionalValue&lt;&#39;T&gt;<br />&#160;&#160;static member OfNullable : v:Nullable&lt;&#39;T&gt; -&gt; OptionalValue&lt;&#39;T&gt; (requires default constructor and value type and &#39;T :&gt; ValueType)<br /><br />Full name: Deedle.OptionalValue<br /><br />--------------------<br />type OptionalValue&lt;&#39;T&gt; =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;new : value:&#39;T -&gt; OptionalValue&lt;&#39;T&gt;<br />&#160;&#160;&#160;&#160;private new : hasValue:bool * value:&#39;T -&gt; OptionalValue&lt;&#39;T&gt;<br />&#160;&#160;&#160;&#160;override Equals : y:obj -&gt; bool<br />&#160;&#160;&#160;&#160;override GetHashCode : unit -&gt; int<br />&#160;&#160;&#160;&#160;override ToString : unit -&gt; string<br />&#160;&#160;&#160;&#160;member HasValue : bool<br />&#160;&#160;&#160;&#160;member Value : &#39;T<br />&#160;&#160;&#160;&#160;member ValueOrDefault : &#39;T<br />&#160;&#160;&#160;&#160;static member Missing : OptionalValue&lt;&#39;T&gt;<br />&#160;&#160;end<br /><br />Full name: Deedle.OptionalValue&lt;_&gt;<br /><br />--------------------<br />OptionalValue()<br />new : value:&#39;T -&gt; OptionalValue&lt;&#39;T&gt;</div>
+<div class="tip" id="fs78">Multiple items<br />module OptionalValue<br /><br />from Deedle<br /><br />--------------------<br />type OptionalValue =<br />&#160;&#160;static member Create : v:&#39;a -&gt; OptionalValue&lt;&#39;a&gt;<br />&#160;&#160;static member Empty : unit -&gt; OptionalValue&lt;&#39;T&gt;<br />&#160;&#160;static member OfNullable : v:Nullable&lt;&#39;T&gt; -&gt; OptionalValue&lt;&#39;T&gt; (requires default constructor and value type and &#39;T :&gt; ValueType)<br /><br />Full name: Deedle.OptionalValue<br /><br />--------------------<br />type OptionalValue&lt;&#39;T&gt; =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;new : value:&#39;T -&gt; OptionalValue&lt;&#39;T&gt;<br />&#160;&#160;&#160;&#160;private new : hasValue:bool * value:&#39;T -&gt; OptionalValue&lt;&#39;T&gt;<br />&#160;&#160;&#160;&#160;override Equals : y:obj -&gt; bool<br />&#160;&#160;&#160;&#160;override GetHashCode : unit -&gt; int<br />&#160;&#160;&#160;&#160;override ToString : unit -&gt; string<br />&#160;&#160;&#160;&#160;member HasValue : bool<br />&#160;&#160;&#160;&#160;member Value : &#39;T<br />&#160;&#160;&#160;&#160;member ValueOrDefault : &#39;T<br />&#160;&#160;&#160;&#160;static member Missing : OptionalValue&lt;&#39;T&gt;<br />&#160;&#160;end<br /><br />Full name: Deedle.OptionalValue&lt;_&gt;<br /><br />--------------------<br />OptionalValue()<br />new : value:&#39;T -&gt; OptionalValue&lt;&#39;T&gt;</div>
 <div class="tip" id="fs79">abstract member IPersonOpt.Countries : string list<br /><br />Full name: Frame.IPersonOpt.Countries</div>
 <div class="tip" id="fs80">val more : Series&lt;string,float&gt;<br /><br />Full name: Frame.more</div>
 <div class="tip" id="fs81">val series : observations:seq&lt;&#39;a * &#39;b&gt; -&gt; Series&lt;&#39;a,&#39;b&gt; (requires equality)<br /><br />Full name: Deedle.F# Series extensions.series</div>
