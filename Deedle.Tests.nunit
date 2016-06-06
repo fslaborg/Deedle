@@ -1,8 +1,0 @@
-﻿<NUnitProject>
-  <Settings activeconfig="Default" />
-  <Config name="Default" binpathtype="Auto">
-    <assembly path="tests\Deedle.Tests\bin\Debug\Deedle.Tests.dll" />
-    <assembly path="tests\Deedle.CSharp.Tests\bin\Debug\Deedle.CSharp.Tests.dll" />
-    <assembly path="tests\Deedle.RPlugin.Tests\bin\Debug\Deedle.RPlugin.Tests.dll" />
-  </Config>
-</NUnitProject>
