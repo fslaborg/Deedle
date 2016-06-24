@@ -934,6 +934,15 @@ and
   /// [category:Operators]
   static member Pow(s1, s2) = Series<'K, _>.VectorOperation<float>(s1, s2, ( ** ))
 
+  /// [category:Operators]
+  static member (+) (s1, s2) = Series<'K, _>.VectorOperation<decimal>(s1, s2, (+))
+  /// [category:Operators]
+  static member (-) (s1, s2) = Series<'K, _>.VectorOperation<decimal>(s1, s2, (-))
+  /// [category:Operators]
+  static member (*) (s1, s2) = Series<'K, _>.VectorOperation<decimal>(s1, s2, (*))
+  /// [category:Operators]
+  static member (/) (s1, s2) = Series<'K, _>.VectorOperation<decimal>(s1, s2, (/))
+
   // Trigonometric
   
   /// [category:Operators]
