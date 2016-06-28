@@ -917,6 +917,23 @@ and
   static member Pow (series, scalar) = Series<'K, _>.ScalarOperationL<float>(series, scalar, ( ** ))
 
   /// [category:Operators]
+  static member (+) (scalar, series) = Series<'K, _>.ScalarOperationR<decimal>(scalar, series, (+))
+  /// [category:Operators]
+  static member (+) (series, scalar) = Series<'K, _>.ScalarOperationL<decimal>(series, scalar, (+))
+  /// [category:Operators]
+  static member (-) (scalar, series) = Series<'K, _>.ScalarOperationR<decimal>(scalar, series, (-))
+  /// [category:Operators]
+  static member (-) (series, scalar) = Series<'K, _>.ScalarOperationL<decimal>(series, scalar, (-))
+  /// [category:Operators]
+  static member (*) (scalar, series) = Series<'K, _>.ScalarOperationR<decimal>(scalar, series, (*))
+  /// [category:Operators]
+  static member (*) (series, scalar) = Series<'K, _>.ScalarOperationL<decimal>(series, scalar, (*))
+  /// [category:Operators]
+  static member (/) (scalar, series) = Series<'K, _>.ScalarOperationR<decimal>(scalar, series, (/))
+  /// [category:Operators]
+  static member (/) (series, scalar) = Series<'K, _>.ScalarOperationL<decimal>(series, scalar, (/))
+
+  /// [category:Operators]
   static member (+) (s1, s2) = Series<'K, _>.VectorOperation<int>(s1, s2, (+))
   /// [category:Operators]
   static member (-) (s1, s2) = Series<'K, _>.VectorOperation<int>(s1, s2, (-))
