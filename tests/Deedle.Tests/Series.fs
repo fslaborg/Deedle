@@ -221,6 +221,16 @@ let ``Can perform numerical operations on series of floats`` () =
   (sf / sf).[3] |> shouldEqual 1.0
 
 [<Test>]
+let ``Can perform numerical operations on series of decimals`` () =
+  let sf = series [ 1 => 1.0M; 2 => 0M; 3 => 3.0M ]
+  (-sf).[3] |> shouldEqual -3.0M
+  (sf * sf).[3] |> shouldEqual 9.0M
+  (sf * sf).[3] |> shouldEqual 9.0M
+  (sf + sf).[3] |> shouldEqual 6.0M
+  (sf - sf).[3] |> shouldEqual 0.0M
+  (sf / sf).[3] |> shouldEqual 1.0M
+
+[<Test>]
 let ``Can perform numerical operations on series of integers`` () =
   let sn = series [ 1 => 1; 2 => 2; 3 => 3 ]
   (-sn).[3] |> shouldEqual -3

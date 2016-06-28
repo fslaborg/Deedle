@@ -874,6 +874,8 @@ and
   /// [category:Operators]
   static member (~-)(series) = Series<'K, _>.UnaryOperation<float>(series, (~-))
   /// [category:Operators]
+  static member (~-)(series) = Series<'K, _>.UnaryOperation<decimal>(series, (~-))
+  /// [category:Operators]
   static member (~-)(series) = Series<'K, _>.UnaryOperation<int>(series, (~-))
 
   /// [category:Operators]
