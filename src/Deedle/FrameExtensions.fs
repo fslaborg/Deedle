@@ -511,8 +511,7 @@ module ``F# Frame extensions`` =
     ///
     /// [category:Frame construction]
     static member ofRowsOrdinal(rows:seq<#Series<'K, 'V>>) = 
-      let cached = Array.ofSeq rows // caches rows since it's going to be iterated twice
-      FrameUtils.fromRows IndexBuilder.Instance VectorBuilder.Instance (Series(cached |> Seq.mapi (fun i _ -> i), cached))
+      FrameUtils.fromRows IndexBuilder.Instance VectorBuilder.Instance (rows |> Seq.mapi (fun i row -> (i, row)) |> series)
 
     /// Creates a frame from a sequence of row keys and row series pairs. 
     /// The row series can contain values of any type, but it has to be the same 
