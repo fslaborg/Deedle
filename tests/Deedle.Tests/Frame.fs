@@ -569,6 +569,33 @@ let ``Frame.diff and Frame.shift correctly return empty frames`` () =
   single |> Frame.diff -1 |> shouldEqual <| empty
 
 // ------------------------------------------------------------------------------------------------
+// tryVal related
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can use tryval and get inner exceptions when there are any`` () =
+  let s = series [ DateTime(2013,1,1) => 10.0; DateTime(2013,1,2) => 20.0 ]
+  let f = frame [ "A" => s ]
+  let serr = f |> Frame.tryMapRows (fun _ row -> if row?A > 15.0 then failwith "oops" else 1.0)
+  let ferr = frame [ "B" => serr ]
+  let errCount = 
+    try 
+      ignore (ferr |> Frame.tryValues)
+      0
+    with :? System.AggregateException as e -> 
+      e.InnerExceptions.Count
+  errCount |> shouldEqual 1
+
+[<Test>]
+let ``Can use tryval and extract data if there are no exceptions`` () =
+  let s = series [ DateTime(2013,1,1) => 10.0; DateTime(2013,1,2) => 20.0 ]
+  let f = frame [ "A" => s ]
+  let serr = f |> Frame.tryMapRows (fun _ row ->row?A)
+  let ferr = frame [ "B" => serr ]
+  let data = ferr |> Frame.tryValues |> Frame.getCol "B"
+  data |> shouldEqual s
+
+// ------------------------------------------------------------------------------------------------
 // Stack & unstack
 // ------------------------------------------------------------------------------------------------
 
