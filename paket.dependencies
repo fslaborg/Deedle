@@ -1,6 +1,6 @@
 source https://nuget.org/api/v2
 
-nuget FsCheck 0.9.1.0
+nuget FsCheck
 nuget FSharp.Charting
 nuget FSharp.Data
 nuget FSharp.Formatting

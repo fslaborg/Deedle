@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{B003806F-9C76-4BE6-B3EB-54102529E4FC}"
 	ProjectSection(SolutionItems) = preProject
@@ -68,10 +68,6 @@ Global
 		{22729065-4C30-4E43-A63F-4F3338A03878}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22729065-4C30-4E43-A63F-4F3338A03878}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22729065-4C30-4E43-A63F-4F3338A03878}.Release|Any CPU.Build.0 = Release|Any CPU
-		{57951E3F-AC36-4AE5-A5F5-D1B86ACA4854}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{57951E3F-AC36-4AE5-A5F5-D1B86ACA4854}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{57951E3F-AC36-4AE5-A5F5-D1B86ACA4854}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{57951E3F-AC36-4AE5-A5F5-D1B86ACA4854}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1700F933-C7B2-48E6-80F3-E1C1B677BA6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1700F933-C7B2-48E6-80F3-E1C1B677BA6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1700F933-C7B2-48E6-80F3-E1C1B677BA6D}.Release|Any CPU.ActiveCfg = Release|Any CPU

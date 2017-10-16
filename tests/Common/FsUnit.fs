@@ -15,7 +15,7 @@ module TopLevelOperators =
 
     let EmptyString = EmptyStringConstraint()
 
-    let NullOrEmptyString = NullOrEmptyStringConstraint()
+    let NullOrEmptyString = OrConstraint(NullConstraint(), EmptyConstraint())
 
     let True = TrueConstraint()
 
