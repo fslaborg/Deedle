@@ -1523,28 +1523,31 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   
   member internal frame.GroupByLabels labels n =
     let offsets = [0 .. n-1]
+    // check if column with the labels has missing values
+    if n <> (labels |> List.ofSeq).Length then
+        failwith "GroupByLabels: wrong number of labels"
+    else
+        let relocs = 
+          labels 
+          |> Seq.zip offsets                                // seq of (srcloc, label)
+          |> Seq.zip frame.RowKeys                          // seq of (rowkey, (srcloc, label))
+          |> Seq.groupBy (fun (rk, (i, l)) -> l)            // seq of (label, seq of (rowkey, (srcloc, label)))
+          |> Seq.map (fun (k, s) -> s)                      // seq of (seq of (rowkey, (srcloc, label)))
+          |> Seq.concat                                     // seq of (rowkey, (srcloc, label))
+          |> Seq.zip offsets                                // seq of (dstloc, (rowkey, (srcloc, label)))
+          |> Seq.map (fun (dst, (rowkey, (src, grp))) -> 
+             (grp, rowkey), (dst, src))                     // seq of (label, rowkey), (dstloc, srcloc)
+          |> ReadOnlyCollection.ofSeq
 
-    let relocs = 
-      labels 
-      |> Seq.zip offsets                                // seq of (srcloc, label)
-      |> Seq.zip frame.RowKeys                          // seq of (rowkey, (srcloc, label))
-      |> Seq.groupBy (fun (rk, (i, l)) -> l)            // seq of (label, seq of (rowkey, (srcloc, label)))
-      |> Seq.map (fun (k, s) -> s)                      // seq of (seq of (rowkey, (srcloc, label)))
-      |> Seq.concat                                     // seq of (rowkey, (srcloc, label))
-      |> Seq.zip offsets                                // seq of (dstloc, (rowkey, (srcloc, label)))
-      |> Seq.map (fun (dst, (rowkey, (src, grp))) -> 
-         (grp, rowkey), (dst, src))                     // seq of (label, rowkey), (dstloc, srcloc)
-      |> ReadOnlyCollection.ofSeq
+        let addressify (a, b) = (frame.RowIndex.AddressAt <| int64 a, frame.RowIndex.AddressAt <| int64 b)
 
-    let addressify (a, b) = (frame.RowIndex.AddressAt <| int64 a, frame.RowIndex.AddressAt <| int64 b)
+        let keys = ReadOnlyCollection.map fst relocs 
+        let locs = ReadOnlyCollection.map (snd >> addressify) relocs
 
-    let keys = ReadOnlyCollection.map fst relocs 
-    let locs = ReadOnlyCollection.map (snd >> addressify) relocs
-
-    let newIndex = Index.ofKeys keys
-    let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 n, locs)
-    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newIndex.AddressingScheme cmd)
-    Frame<_, _>(newIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
+        let newIndex = Index.ofKeys keys
+        let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 n, locs)
+        let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newIndex.AddressingScheme cmd)
+        Frame<_, _>(newIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   member internal frame.NestRowsBy<'TGroup when 'TGroup : equality>(labels:seq<'TGroup>) =
     let indexBuilder = frame.IndexBuilder
