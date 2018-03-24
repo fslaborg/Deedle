@@ -1,9 +1,9 @@
 (*** hide ***)
-#I "../../packages/FSharp.Data/lib/net40"
+#I "../../packages/FSharp.Data/lib/net45"
 #r "FSharp.Data.dll"
 ignore <| FSharp.Data.WorldBankData.GetDataContext() // Force fsi to load F# Data (required on Mono)
 
-#load "../../bin/Deedle.fsx"
+#load "../../bin/net45/Deedle.fsx"
 open System
 open System.IO
 open FSharp.Data

@@ -243,7 +243,7 @@ let accessedDataParts (src:TrackingSource<_>) =
 // Create time series using the partitoned virtual data source
 // ------------------------------------------------------------------------------------------------
 
-let idxValues =
+let idxValues() =
   { new TrackingSourceValue<DateTimeOffset> with
       member x.CanLookup = true
       member x.AsDate(d) = d
@@ -265,7 +265,7 @@ let createRanges partNum partSize =
 
 let createTimeSeries partNum partSize =
   let accessMeta, ranges = createRanges partNum partSize
-  let idxSrc = TrackingSource<DateTimeOffset>((ref [], accessMeta), idxValues, ranges)
+  let idxSrc = TrackingSource<DateTimeOffset>((ref [], accessMeta), idxValues(), ranges)
   let valSrc = TrackingSource<float>((ref [], accessMeta), valValues (fun part idx -> part * 1000000.0 + idx), ranges)
   let sv = Virtual.CreateSeries(idxSrc, valSrc)
   idxSrc, valSrc, sv
@@ -633,7 +633,7 @@ let ``Can perform grouping on a small virtual series`` () =
 
 let createSmallFrame partNum partSize =
   let accessMeta, ranges = createRanges partNum partSize
-  let idxSrc = TrackingSource<DateTimeOffset>((ref [], accessMeta), idxValues, ranges)
+  let idxSrc = TrackingSource<DateTimeOffset>((ref [], accessMeta), idxValues(), ranges)
   let valSrc1 = TrackingSource<float>((ref [], accessMeta), valValues (fun part idx -> part * 1000000.0 + idx), ranges)
   let valSrc2 = TrackingSource<float>((ref [], accessMeta), valValues (fun part idx -> part * 1000000.0 + idx + 1.0), ranges)
   Virtual.CreateFrame(idxSrc, ["A";"B"], [ valSrc1 :> IVirtualVectorSource; valSrc2 :> IVirtualVectorSource])

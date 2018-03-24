@@ -37,3 +37,4 @@ tests/PerformanceTools/Deedle.PerfTest.Runner/bin
 tests/PerformanceTools/Deedle.PerfTest/obj
 tests/PerformanceTools/Deedle.PerfTest/bin
 .paket/paket.exe
+.fake

@@ -1,7 +1,7 @@
 (*** hide ***)
 #nowarn "211"
-#I "../../packages/FSharp.Charting"
-#I "../../bin"
+#I "../../packages/FSharp.Charting/lib/net45"
+#I "../../bin/net45"
 open System
 let airQuality = __SOURCE_DIRECTORY__ + "/data/AirQuality.csv"
 

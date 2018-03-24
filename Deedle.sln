@@ -38,7 +38,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{8BD8
 	ProjectSection(SolutionItems) = preProject
 		docs\content\samples\historyvol.fsx = docs\content\samples\historyvol.fsx
 		docs\content\samples\missing.fsx = docs\content\samples\missing.fsx
-		docs\content\samples\presidents.fsx = docs\content\samples\presidents.fsx
 		docs\content\samples\timestats.fsx = docs\content\samples\timestats.fsx
 		docs\content\samples\titanic.fsx = docs\content\samples\titanic.fsx
 	EndProjectSection

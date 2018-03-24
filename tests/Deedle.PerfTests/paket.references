@@ -2,3 +2,6 @@ FsCheck
 MathNet.Numerics
 NUnit
 NUnit.Runners
+Microsoft.NET.Test.Sdk
+NUnit3TestAdapter
+FSharp.Core

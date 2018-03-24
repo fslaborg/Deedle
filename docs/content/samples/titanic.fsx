@@ -1,12 +1,18 @@
 (*** hide ***)
-#load "../../../packages/FSharp.Charting/FSharp.Charting.fsx"
-#r "../../../packages/FSharp.Data/lib/net40/FSharp.Data.dll"
-#load "../../../bin/Deedle.fsx"
+#load "../../../packages/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
+#r "../../../packages/FSharp.Data/lib/net45/FSharp.Data.dll"
+#load "../../../bin/net45/Deedle.fsx"
 open System
 open FSharp.Data
 open Deedle
 open FSharp.Charting
 let root = __SOURCE_DIRECTORY__ + "/../data/"
+
+
+let levelMean (level) (frame:Frame<_,_>)= frame.GetColumns<float>()
+                                                    |> Series.map (fun _ -> Stats.levelMean level)
+                                                    |> Frame.ofColumns
+
 
 (**
 Analyzing Titanic data set
@@ -23,8 +29,8 @@ Draw a pie chart displaying the survival rate
 
 titanic
 |> Frame.groupRowsByBool "Survived"
-|> Frame.countLevel fst
-|> Frame.getColumn "PassengerId"
+|> Frame.getCol "PassengerId"
+|> Stats.levelCount fst
 |> Series.indexWith ["Died"; "Survived"]
 |> Series.observations
 |> Chart.Pie
@@ -53,8 +59,8 @@ Get the age column
 let ageByClassAndPort = byClassAndPort.Columns.["Age"].As<float>()
 
 Frame.ofColumns
-  [ "AgeMeans", ageByClassAndPort |> Series.meanLevel Pair.get1And2Of3
-    "AgeCounts", float $ (ageByClassAndPort |> Series.countLevel Pair.get1And2Of3) ]
+  [ "AgeMeans", ageByClassAndPort |> Stats.levelMean Pair.get1And2Of3
+    "AgeCounts", float $ (ageByClassAndPort |> Stats.levelCount Pair.get1And2Of3) ]
 
 (**
 
@@ -62,8 +68,8 @@ Mean & sum everything by class and port
 
 *)
 
-byClassAndPort
-|> Frame.meanLevel Pair.get1And2Of3
+byClassAndPort |> levelMean Pair.get1And2Of3
+
 
 (**
 
@@ -91,9 +97,7 @@ Count total number of passangers in each group
 
 *)
 
-survivals?Total <- 
-  byClassAndPort
-  |> Frame.applyLevel Pair.get1And2Of3 Series.countKeys
+survivals?Total <- survivals?Survived + survivals?Died
 
 survivals
 
@@ -103,6 +107,6 @@ let summary =
 
 round summary
 
-summary |> Frame.meanLevel fst
-summary |> Frame.meanLevel snd
+summary |> levelMean fst
+summary |> levelMean snd
   
