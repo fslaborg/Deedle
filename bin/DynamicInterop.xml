@@ -1,0 +1,253 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DynamicInterop</name>
+    </assembly>
+    <members>
+        <member name="T:DynamicInterop.IDynamicLibraryLoader">
+            <summary>
+            An interface definition to hide the platform specific aspects of library loading
+            </summary>
+            <remarks>There are probably projects 'out there' doing this already, but nothing 
+            is obvious from a quick search. Re-consider again if you need more features.</remarks>
+        </member>
+        <member name="M:DynamicInterop.IDynamicLibraryLoader.LoadLibrary(System.String)">
+            <summary>
+            Load a native library (DLL on windows, shared libraries on Linux and MacOS)
+            </summary>
+            <param name="filename">The file name (short file name) of the library to load, e.g. R.dll on Windows</param>
+            <returns></returns>
+        </member>
+        <member name="M:DynamicInterop.IDynamicLibraryLoader.GetLastError">
+            <summary>
+            Gets the last error message from the native API used to load the library.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:DynamicInterop.IDynamicLibraryLoader.FreeLibrary(System.IntPtr)">
+            <summary>
+            Unloads a library
+            </summary>
+            <param name="handle">The pointer to the entry point of the library</param>
+            <returns></returns>
+        </member>
+        <member name="M:DynamicInterop.IDynamicLibraryLoader.GetFunctionAddress(System.IntPtr,System.String)">
+            <summary>
+            Gets a pointer to the address of a native function in the specified loaded library
+            </summary>
+            <param name="hModule">Handle of the module(library)</param>
+            <param name="lpProcName">The name of the function sought</param>
+            <returns>Handle to the native function</returns>
+        </member>
+        <member name="T:DynamicInterop.PlatformUtility">
+            <summary>
+            Helper class with functions whose behavior may be depending on the platform 
+            </summary>
+        </member>
+        <member name="M:DynamicInterop.PlatformUtility.GetPlatform">
+            <summary>
+            Gets the platform on which the current process runs.
+            </summary>
+            <remarks>
+            <see cref="P:System.Environment.OSVersion"/>'s platform is not <see cref="F:System.PlatformID.MacOSX"/> even on Mac OS X.
+            This method returns <see cref="F:System.PlatformID.MacOSX"/> when the current process runs on Mac OS X.
+            This method uses UNIX's uname command to check the operating system,
+            so this method cannot check the OS correctly if the PATH environment variable is changed (will returns <see cref="F:System.PlatformID.Unix"/>).
+            </remarks>
+            <returns>The current platform.</returns>
+        </member>
+        <member name="M:DynamicInterop.PlatformUtility.ExecCommand(System.String,System.String)">
+            <summary>
+            Execute a command in a new process
+            </summary>
+            <param name="processName">Process name e.g. "uname"</param>
+            <param name="arguments">Arguments e.g. "-s"</param>
+            <returns>The output of the command to the standard output stream</returns>
+        </member>
+        <member name="M:DynamicInterop.PlatformUtility.GetPlatformNotSupportedMsg">
+            <summary>
+            Gets a message saying the current platform is not supported
+            </summary>
+            <returns>The platform not supported message.</returns>
+        </member>
+        <member name="M:DynamicInterop.PlatformUtility.FindFullPathEnvVar(System.String,System.String)">
+            <summary>
+            Given a DLL short file name, find all the matching occurences in directories as stored in an environment variable such as the PATH.
+            </summary>
+            <returns>One or more full file names found to exist</returns>
+            <param name="dllName">short file name.</param>
+            <param name="envVarName">Environment variable name - default PATH</param>
+        </member>
+        <member name="M:DynamicInterop.PlatformUtility.FindFullPath(System.String,System.String[])">
+            <summary>
+            Given a DLL short file name, find all the matching occurences in directories.
+            </summary>
+            <returns>One or more full file names found to exist</returns>
+            <param name="dllName">short file name.</param>
+            <param name="directories">Directories in which to search for matching file names</param>
+        </member>
+        <member name="P:DynamicInterop.PlatformUtility.IsUnix">
+            <summary>
+            Is the platform unix-like (Unix or MacOX)
+            </summary>
+        </member>
+        <member name="M:DynamicInterop.SafeHandleUnmanagedDll.ReleaseHandle">
+            <summary>
+            Frees the native library this objects represents
+            </summary>
+            <returns>The result of the call to FreeLibrary</returns>
+        </member>
+        <member name="M:DynamicInterop.SafeHandleUnmanagedDll.Dispose(System.Boolean)">
+            <summary>
+            Frees the native library this objects represents
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:DynamicInterop.UnixLibraryLoader.GetLastError">
+            <summary>
+            Gets the last error. NOTE: according to http://tldp.org/HOWTO/Program-Library-HOWTO/dl-libraries.html, returns NULL if called more than once after dlopen.
+            </summary>
+            <returns>The last error.</returns>
+        </member>
+        <member name="M:DynamicInterop.UnixLibraryLoader.FreeLibrary(System.IntPtr)">
+            <summary>
+            Unloads a library
+            </summary>
+            <param name="handle">The pointer resulting from loading the library</param>
+            <returns>True if the function dlclose returned 0</returns>
+        </member>
+        <member name="T:DynamicInterop.UnmanagedDll">
+            <summary>
+            A proxy for unmanaged dynamic link library (DLL).
+            </summary>
+        </member>
+        <member name="M:DynamicInterop.UnmanagedDll.#ctor(System.String)">
+            <summary>
+            Creates a proxy for the specified dll.
+            </summary>
+            <param name="dllName">The DLL's name.</param>
+        </member>
+        <member name="M:DynamicInterop.UnmanagedDll.GetFunction``1">
+            <summary>
+            Creates the delegate function for the specified function defined in the DLL.
+            </summary>
+            <typeparam name="TDelegate">The type of delegate. The name of the native function is assumed to be the same as the delegate type name.</typeparam>
+            <returns>The delegate.</returns>
+        </member>
+        <member name="M:DynamicInterop.UnmanagedDll.GetFunction``1(System.String)">
+            <summary>
+            Creates the delegate function for the specified function defined in the DLL.
+            </summary>
+            <typeparam name="TDelegate">The type of delegate.</typeparam>
+            <param name="entryPoint">The name of the function exported by the DLL</param>
+            <returns>The delegate.</returns>
+        </member>
+        <member name="M:DynamicInterop.UnmanagedDll.GetFunctionAddress(System.String)">
+            <summary>
+            Gets the address of a native function entry point.
+            </summary>
+            <returns>The function address.</returns>
+            <param name="lpProcName">name of the function in the native library</param>
+        </member>
+        <member name="M:DynamicInterop.UnmanagedDll.DangerousGetHandle(System.String)">
+            <summary>
+            Gets the handle of the specified entry.
+            </summary>
+            <param name="entryPoint">The name of function.</param>
+            <returns>The handle.</returns>
+        </member>
+        <member name="M:DynamicInterop.UnmanagedDll.Dispose(System.Boolean)">
+            <summary>
+            Frees the native library this objects represents
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:DynamicInterop.UnmanagedDll.Dispose">
+            <summary>
+            Dispose of this library.
+            </summary>
+            <remarks>Call <see cref="M:DynamicInterop.UnmanagedDll.Dispose"/> when you are finished using the <see cref="T:DynamicInterop.UnmanagedDll"/>. The
+            <see cref="M:DynamicInterop.UnmanagedDll.Dispose"/> method leaves the <see cref="T:DynamicInterop.UnmanagedDll"/> in an unusable state.
+            After calling <see cref="M:DynamicInterop.UnmanagedDll.Dispose"/>, you must release all references to the
+            <see cref="T:DynamicInterop.UnmanagedDll"/> so the garbage collector can reclaim the memory that the
+            <see cref="T:DynamicInterop.UnmanagedDll"/> was occupying.</remarks>
+        </member>
+        <member name="M:DynamicInterop.UnmanagedDll.WriteInt32(System.String,System.Int32)">
+            <summary>
+            Writes an int32 value to the address of a symbol in the library. 
+            </summary>
+            <param name="symbolName">Symbol name.</param>
+            <param name="value">Value.</param>
+            <remarks>Throws an <exception cref="T:System.ArgumentException">ArgumentException</exception> if the symbol is not exported by the library</remarks>
+        </member>
+        <member name="M:DynamicInterop.UnmanagedDll.GetInt32(System.String)">
+            <summary>
+            Reads an int32 value from the address of a symbol in the library. 
+            </summary>
+            <returns>The value for this symbol, read as an int32</returns>
+            <param name="symbolName">Symbol name.</param>
+            <remarks>Throws an <exception cref="T:System.ArgumentException">ArgumentException</exception> if the symbol is not exported by the library</remarks>
+        </member>
+        <member name="M:DynamicInterop.UnmanagedDll.WriteInt64(System.String,System.Int64)">
+            <summary>
+            Writes an int64 value to the address of a symbol in the library. 
+            </summary>
+            <param name="symbolName">Symbol name.</param>
+            <param name="value">Value.</param>
+            <remarks>Throws an <exception cref="T:System.ArgumentException">ArgumentException</exception> if the symbol is not exported by the library</remarks>
+        </member>
+        <member name="M:DynamicInterop.UnmanagedDll.GetInt64(System.String)">
+            <summary>
+            Reads an int64 value from the address of a symbol in the library. 
+            </summary>
+            <returns>The value for this symbol, read as an int64</returns>
+            <param name="symbolName">Symbol name.</param>
+            <remarks>Throws an <exception cref="T:System.ArgumentException">ArgumentException</exception> if the symbol is not exported by the library</remarks>
+        </member>
+        <member name="M:DynamicInterop.UnmanagedDll.WriteIntPtr(System.String,System.IntPtr)">
+            <summary>
+            Writes an IntPtr value to the address of a symbol in the library. 
+            </summary>
+            <param name="symbolName">Symbol name.</param>
+            <param name="value">Value.</param>
+            <remarks>Throws an <exception cref="T:System.ArgumentException">ArgumentException</exception> if the symbol is not exported by the library</remarks>
+        </member>
+        <member name="M:DynamicInterop.UnmanagedDll.GetIntPtr(System.String)">
+            <summary>
+            Reads an IntPtr value from the address of a symbol in the library. 
+            </summary>
+            <returns>The value for this symbol, read as an IntPtr</returns>
+            <param name="symbolName">Symbol name.</param>
+            <remarks>Throws an <exception cref="T:System.ArgumentException">ArgumentException</exception> if the symbol is not exported by the library</remarks>
+        </member>
+        <member name="M:DynamicInterop.UnmanagedDll.WriteByte(System.String,System.Byte)">
+            <summary>
+            Writes a Byte value to the address of a symbol in the library. 
+            </summary>
+            <param name="symbolName">Symbol name.</param>
+            <param name="value">Value.</param>
+            <remarks>Throws an <exception cref="T:System.ArgumentException">ArgumentException</exception> if the symbol is not exported by the library</remarks>
+        </member>
+        <member name="M:DynamicInterop.UnmanagedDll.GetByte(System.String)">
+            <summary>
+            Reads a byte value from the address of a symbol in the library. 
+            </summary>
+            <returns>The value for this symbol, read as a byte</returns>
+            <param name="symbolName">Symbol name.</param>
+            <remarks>Throws an <exception cref="T:System.ArgumentException">ArgumentException</exception> if the symbol is not exported by the library</remarks>
+        </member>
+        <member name="M:DynamicInterop.UnmanagedDll.GetAnsiString(System.String)">
+            <summary>
+            Reads a string value from the address of a symbol in the library. 
+            </summary>
+            <returns>The value for this symbol, read as an ANSI string</returns>
+            <param name="symbolName">Symbol name.</param>
+            <remarks>Throws an <exception cref="T:System.ArgumentException">ArgumentException</exception> if the symbol is not exported by the library</remarks>
+        </member>
+        <member name="P:DynamicInterop.UnmanagedDll.Filename">
+            <summary>
+            Gets the Dll file name used for this native Dll wrapper.
+            </summary>
+        </member>
+    </members>
+</doc>

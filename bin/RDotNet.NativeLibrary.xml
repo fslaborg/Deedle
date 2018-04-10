@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>RDotNet.NativeLibrary</name>
+    </assembly>
+    <members>
+        <member name="T:RDotNet.NativeLibrary.NativeUtility">
+            <summary>
+            Collection of utility methods for operating systems.
+            </summary>
+        </member>
+        <member name="M:RDotNet.NativeLibrary.NativeUtility.GetPlatform">
+            <summary>
+            Gets the platform on which the current process runs.
+            </summary>
+            <remarks>
+            <see cref="P:System.Environment.OSVersion"/>'s platform is not <see cref="F:System.PlatformID.MacOSX"/> even on Mac OS X.
+            This method returns <see cref="F:System.PlatformID.MacOSX"/> when the current process runs on Mac OS X.
+            This method uses UNIX's uname command to check the operating system,
+            so this method cannot check the OS correctly if the PATH environment variable is changed (will returns <see cref="F:System.PlatformID.Unix"/>).
+            </remarks>
+            <returns>The current platform.</returns>
+        </member>
+        <member name="M:RDotNet.NativeLibrary.NativeUtility.ExecCommand(System.String,System.String)">
+            <summary>
+            Execute a command in a new process
+            </summary>
+            <param name="processName">Process name e.g. "uname"</param>
+            <param name="arguments">Arguments e.g. "-s"</param>
+            <returns>The output of the command to the standard output stream</returns>
+        </member>
+        <member name="M:RDotNet.NativeLibrary.NativeUtility.SetEnvironmentVariables(System.String,System.String)">
+            <summary>
+            Sets the PATH to the R binaries and R_HOME environment variables if needed.
+            </summary>
+            <param name="rPath">The path of the directory containing the R native library.
+            If null (default), this function tries to locate the path via the Windows registry, or commonly used locations on MacOS and Linux</param>
+            <param name="rHome">The path for R_HOME. If null (default), the function checks the R_HOME environment variable. If none is set,
+            the function uses platform specific sensible default behaviors.</param>
+            <remarks>
+            This function has been designed to limit the tedium for users, while allowing custom settings for unusual installations.
+            </remarks>
+        </member>
+        <member name="M:RDotNet.NativeLibrary.NativeUtility.GetRHomeEnvironmentVariable">
+            <summary>
+            Gets the value, if any, of the R_HOME environment variable of the current process
+            </summary>
+            <returns>The value, or null if not set</returns>
+        </member>
+        <member name="M:RDotNet.NativeLibrary.NativeUtility.FindRHome(System.String)">
+            <summary>
+            Try to locate the directory path to use for the R_HOME environment variable. This is used by R.NET by default; users may want to use it to diagnose problematic behaviors.
+            </summary>
+            <param name="rPath">Optional path to the directory containing the R shared library. This is ignored unless on a Unix platform (i.e. ignored on Windows and MacOS)</param>
+            <returns>The path that R.NET found suitable as a candidate for the R_HOME environment</returns>
+        </member>
+        <member name="M:RDotNet.NativeLibrary.NativeUtility.GetRVersionFromRegistry">
+            <summary>
+            Gets the R version from the Windows R Registry (if available)
+            </summary>
+            <returns>a System.Version object</returns>
+        </member>
+        <member name="M:RDotNet.NativeLibrary.NativeUtility.FindRPath(System.String)">
+            <summary>
+            Attempt to find a suitable path to the R shared library. This is used by R.NET by default; users may want to use it to diagnose problematic behaviors.
+            </summary>
+            <returns>The path to the directory where the R shared library is expected to be</returns>
+        </member>
+        <member name="M:RDotNet.NativeLibrary.NativeUtility.FindRPathFromRegistry">
+            <summary>
+            Windows-only function; finds in the Windows registry the path to the most recently installed R binaries.
+            </summary>
+            <returns>The path, such as</returns>
+        </member>
+        <member name="M:RDotNet.NativeLibrary.NativeUtility.GetRLibraryFileName">
+            <summary>
+            Gets the default file name of the R library on the supported platforms.
+            </summary>
+            <returns>R dll file name</returns>
+        </member>
+        <member name="P:RDotNet.NativeLibrary.NativeUtility.SetEnvironmentVariablesLog">
+            <summary>
+            Gets a log of the changes made to environment variables via the NativeUtility
+            </summary>
+        </member>
+        <member name="P:RDotNet.NativeLibrary.NativeUtility.IsUnix">
+            <summary>
+            Is the platform a unix like (Unix or MacOX)
+            </summary>
+        </member>
+    </members>
+</doc>
