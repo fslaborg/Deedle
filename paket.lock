@@ -4,7 +4,7 @@ NUGET
     DynamicInterop (0.7.4)
     FAKE (3.36.0)
     FsCheck (0.9.1.0)
-    FSharp.Core (3.1.2.5)    
+    FSharp.Core (4.3.4)    
     FSharp.Charting (0.90.12)
     FSharp.Compiler.Service (1.4.2.3)
     FSharp.Data (2.2.5)

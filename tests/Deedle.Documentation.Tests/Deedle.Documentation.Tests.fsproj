@@ -14,7 +14,7 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
-    <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
+    <TargetFSharpCoreVersion>4.4.3.0</TargetFSharpCoreVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -50,7 +50,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.Core">
-      <HintPath>..\..\packages\FSharp.Core\lib\net40\FSharp.Core.dll</HintPath>
+      <HintPath>..\..\packages\FSharp.Core\lib\net45\FSharp.Core.dll</HintPath>
       <Paket>True</Paket>
     </Reference> 
     <Reference Include="mscorlib" />
@@ -88,9 +88,9 @@
   </Target>
   -->
   <Target Name="BeforeBuild">
-    <Copy SourceFiles="..\..\packages\FSharp.Core\lib\net40\FSharp.Core.dll" DestinationFolder="$(ProjectDir)\bin\Release" />
-    <Copy SourceFiles="..\..\packages\FSharp.Core\lib\net40\FSharp.Core.sigdata" DestinationFolder="$(ProjectDir)\bin\Release" />
-    <Copy SourceFiles="..\..\packages\FSharp.Core\lib\net40\FSharp.Core.optdata" DestinationFolder="$(ProjectDir)\bin\Release" />
+    <Copy SourceFiles="..\..\packages\FSharp.Core\lib\net45\FSharp.Core.dll" DestinationFolder="$(ProjectDir)\bin\Release" />
+    <Copy SourceFiles="..\..\packages\FSharp.Core\lib\net45\FSharp.Core.sigdata" DestinationFolder="$(ProjectDir)\bin\Release" />
+    <Copy SourceFiles="..\..\packages\FSharp.Core\lib\net45\FSharp.Core.optdata" DestinationFolder="$(ProjectDir)\bin\Release" />
   </Target>  
   <Import Project="..\..\.paket\paket.targets" />
   <Choose>

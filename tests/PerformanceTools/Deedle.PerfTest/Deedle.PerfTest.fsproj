@@ -11,7 +11,7 @@
     <AssemblyName>Deedle.PerfTest</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
+    <TargetFSharpCoreVersion>4.4.3.0</TargetFSharpCoreVersion>
     <Name>Deedle.PerfTest</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -46,7 +46,7 @@
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core">
-      <HintPath>..\..\..\packages\FSharp.Core\lib\net40\FSharp.Core.dll</HintPath>
+      <HintPath>..\..\..\packages\FSharp.Core\lib\net45\FSharp.Core.dll</HintPath>
       <Paket>True</Paket>
     </Reference>  
     <Reference Include="System" />
@@ -95,9 +95,9 @@
   </Target>
   -->
   <Target Name="BeforeBuild">
-    <Copy SourceFiles="..\..\..\packages\FSharp.Core\lib\net40\FSharp.Core.dll" DestinationFolder="$(ProjectDir)..\bin" />
-    <Copy SourceFiles="..\..\..\packages\FSharp.Core\lib\net40\FSharp.Core.sigdata" DestinationFolder="$(ProjectDir)..\bin" />
-    <Copy SourceFiles="..\..\..\packages\FSharp.Core\lib\net40\FSharp.Core.optdata" DestinationFolder="$(ProjectDir)..\bin" />
+    <Copy SourceFiles="..\..\..\packages\FSharp.Core\lib\net45\FSharp.Core.dll" DestinationFolder="$(ProjectDir)..\bin" />
+    <Copy SourceFiles="..\..\..\packages\FSharp.Core\lib\net45\FSharp.Core.sigdata" DestinationFolder="$(ProjectDir)..\bin" />
+    <Copy SourceFiles="..\..\..\packages\FSharp.Core\lib\net45\FSharp.Core.optdata" DestinationFolder="$(ProjectDir)..\bin" />
   </Target>
  
   <Import Project="..\..\..\.paket\paket.targets" />

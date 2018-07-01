@@ -40,7 +40,7 @@
       <HintPath>..\..\bin\Deedle.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Core">
-      <HintPath>..\..\packages\FSharp.Core\lib\net40\FSharp.Core.dll</HintPath>
+      <HintPath>..\..\packages\FSharp.Core\lib\net45\FSharp.Core.dll</HintPath>
       <Paket>True</Paket>
     </Reference>     
     <Reference Include="System" />
