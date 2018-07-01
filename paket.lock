@@ -7,8 +7,7 @@ NUGET
     FSharp.Core (4.3.4)    
     FSharp.Charting (0.90.12)
     FSharp.Compiler.Service (1.4.2.3)
-    FSharp.Data (2.2.5)
-      Zlib.Portable (>= 1.10.0) - framework: portable-net40+sl50+wp80+win80
+    FSharp.Data (2.4.6)
     FSharp.Formatting (2.14.4)
       FSharp.Compiler.Service (>= 0.0.87)
       FSharpVSPowerTools.Core (>= 2.3.0)
@@ -25,7 +24,6 @@ NUGET
       DynamicInterop (0.7.4)
       R.NET.Community (1.6.5)
       R.NET.Community.FSharp (1.6.5)
-    Zlib.Portable (1.11.0) - framework: portable-net40+sl50+wp80+win80
 GITHUB
   remote: fsharp/FSharp.Data
   specs:
