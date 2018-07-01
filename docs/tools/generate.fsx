@@ -68,8 +68,8 @@ let references =
     // We replace the list and add required items manually as mcs doesn't like duplicates...
     let getItem name = loadedList |> Seq.find (fun l -> l.Contains name)
     [ 
-      // (getItem "FSharp.Core").Replace("4.3.0.0", "4.3.1.0")
-      (getItem "FSharp.Core")
+      (getItem "FSharp.Core").Replace("4.3.0.0", "4.3.1.0")
+      // (getItem "FSharp.Core")
       Path.GetFullPath(formatting @@ "../FSharp.Compiler.Service/lib/net40/FSharp.Compiler.Service.dll")
       Path.GetFullPath(formatting @@ "lib/net40/System.Web.Razor.dll")
       Path.GetFullPath(formatting @@ "lib/net40/RazorEngine.dll")

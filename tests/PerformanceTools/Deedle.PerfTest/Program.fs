@@ -49,7 +49,7 @@ module internal Compiler =
 
       yield "--nowarn:52"
       yield "--noframework"
-      yield! [ "-r"; microsoft @@ "FSharp" @@ ".NETFramework" @@ "v4.5" @@ "4.3.0.0" @@ "../../../packages/FSharp.Core/lib/net40/FSharp.Core.dll"]
+      yield! [ "-r"; microsoft @@ "FSharp" @@ ".NETFramework" @@ "v4.5" @@ "4.3.1.0" @@ "../../../packages/FSharp.Core/lib/net40/FSharp.Core.dll"]
       yield! [ "-r"; microsoft @@"Framework" @@ ".NETFramework" @@ "v4.5" @@ "mscorlib.dll" ]
       yield! [ "-r"; microsoft @@"Framework" @@ ".NETFramework" @@ "v4.5" @@ "System.dll" ]
       yield! [ "-r"; microsoft @@"Framework" @@ ".NETFramework" @@ "v4.5" @@ "System.Core.dll" ]

@@ -10,7 +10,7 @@
     <RootNamespace>Deedle.RPlugin.Tests</RootNamespace>
     <AssemblyName>Deedle.RPlugin.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
+    <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
     <Name>Deedle.RPlugin.Tests</Name>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
   </PropertyGroup>
@@ -61,6 +61,7 @@
     </Compile>
     <Compile Include="RPlugin.fs" />
     <None Include="paket.references" />
+    <Content Include="App.config" />    
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Deedle">
