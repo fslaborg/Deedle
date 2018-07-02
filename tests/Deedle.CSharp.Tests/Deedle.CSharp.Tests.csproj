@@ -39,6 +39,10 @@
     <Reference Include="Deedle">
       <HintPath>..\..\bin\Deedle.dll</HintPath>
     </Reference>
+    <Reference Include="FSharp.Core">
+      <HintPath>..\..\packages\FSharp.Core\lib\net45\FSharp.Core.dll</HintPath>
+      <Paket>True</Paket>
+    </Reference>     
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />

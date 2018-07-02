@@ -1,5 +1,5 @@
 (*** hide ***)
-#I "../../packages/FSharp.Data/lib/net40"
+#I "../../packages/FSharp.Data/lib/net45"
 #r "FSharp.Data.dll"
 ignore <| FSharp.Data.WorldBankData.GetDataContext() // Force fsi to load F# Data (required on Mono)
 
