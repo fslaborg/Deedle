@@ -40,3 +40,4 @@ tests/PerformanceTools/Deedle.PerfTest/bin
 /.paket/Paket.Restore.targets
 /.vs/Deedle/DesignTimeBuild
 /.vs/Deedle/v15/Server/sqlite3
+/.fake
