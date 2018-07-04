@@ -13,7 +13,7 @@ Analyzing Titanic data set
 ==========================
 *)
 
-let titanic = Frame.ReadCsv(root + "Titanic.csv")
+let titanic = Frame.ReadCsv(root + "titanic.csv")
 
 (**
 

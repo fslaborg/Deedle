@@ -1221,7 +1221,7 @@ let ``Transposed frame created from columns equals frame created from rows (and 
 // ------------------------------------------------------------------------------------------------
 
 let titanic() = 
-  Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/../../docs/content/data/Titanic.csv", inferRows=10) 
+  Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/../../docs/content/data/titanic.csv", inferRows=10) 
 
 [<Test>]
 let ``Can group titanic data by boolean column "Survived"``() =

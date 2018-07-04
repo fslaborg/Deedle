@@ -34,7 +34,7 @@ function exposes this functionality:
 *)
 
 // Assuming 'root' is a directory containing the file
-let titanic = Frame.ReadCsv(root + "Titanic.csv")
+let titanic = Frame.ReadCsv(root + "titanic.csv")
 
 // Read data and set the index column & order rows
 let msft = 
@@ -43,7 +43,7 @@ let msft =
   |> Frame.sortRowsByKey
 
 // Specify column separator
-let air = Frame.ReadCsv(root + "AirQuality.csv", separators=";")
+let air = Frame.ReadCsv(root + "airquality.csv", separators=";")
 (**
 In the second example, we call `indexRowsDate` to use the "Date" column as a row index
 of the resulting data frame. This is a very common scenario and so Deedle provides an
