@@ -1,0 +1,1199 @@
+<h1>Working with series and time series data in F#</h1>
+<p>In this section, we look at F# data frame library features that are useful when working
+with time series data or, more generally, any ordered series. Although we mainly look at
+operations on the <code>Series</code> type, many of the operations can be applied to data frame <code>Frame</code>
+containing multiple series. Furthermore, data frame provides an elegant way for aligning and
+joining series.</p>
+<p>You can also get this page as an <a href="https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/series.fsx">F# script file</a>
+from GitHub and run the samples interactively.</p>
+<h2>Generating input data</h2>
+<p>For the purpose of this tutorial, we'll need some input data. For simplicitly, we use the
+following function which generates random prices using the geometric Brownian motion.
+The code is adapted from the <a href="http://www.tryfsharp.org/Learn/financial-computing#simulating-and-analyzing">financial tutorial on Try F#</a>.</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+<span class="l">16: </span>
+<span class="l">17: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Use Math.NET for probability distributions</span>
+<span class="pp">#r</span> <span class="s">&quot;MathNet.Numerics.dll&quot;</span>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="id">MathNet</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs8', 9)" onmouseover="showTip(event, 'fs8', 9)" class="id">Numerics</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs9', 10)" onmouseover="showTip(event, 'fs9', 10)" class="id">Distributions</span>
+
+<span class="c">/// Generates price using geometric Brownian motion</span>
+<span class="c">///  - &#39;seed&#39; specifies the seed for random number generator</span>
+<span class="c">///  - &#39;drift&#39; and &#39;volatility&#39; set properties of the price movement</span>
+<span class="c">///  - &#39;initial&#39; and &#39;start&#39; specify the initial price and date</span>
+<span class="c">///  - &#39;span&#39; specifies time span between individual observations</span>
+<span class="c">///  - &#39;count&#39; is the number of required values to generate</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs10', 11)" onmouseover="showTip(event, 'fs10', 11)" class="fn">randomPrice</span> <span onmouseout="hideTip(event, 'fs11', 12)" onmouseover="showTip(event, 'fs11', 12)" class="id">seed</span> <span onmouseout="hideTip(event, 'fs12', 13)" onmouseover="showTip(event, 'fs12', 13)" class="id">drift</span> <span onmouseout="hideTip(event, 'fs13', 14)" onmouseover="showTip(event, 'fs13', 14)" class="id">volatility</span> <span onmouseout="hideTip(event, 'fs14', 15)" onmouseover="showTip(event, 'fs14', 15)" class="id">initial</span> <span onmouseout="hideTip(event, 'fs15', 16)" onmouseover="showTip(event, 'fs15', 16)" class="id">start</span> <span onmouseout="hideTip(event, 'fs16', 17)" onmouseover="showTip(event, 'fs16', 17)" class="id">span</span> <span onmouseout="hideTip(event, 'fs17', 18)" onmouseover="showTip(event, 'fs17', 18)" class="id">count</span> <span class="o">=</span> 
+  <span id="fst18" onmouseout="hideTip(event, 'fs18', 19)" onmouseover="showTip(event, 'fs18', 19, document.getElementById('fst18'))" class="omitted">(Implementation omitted)</span>
+
+<span class="c">// 12:00 AM today, in current time zone</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs19', 20)" onmouseover="showTip(event, 'fs19', 20)" class="id">today</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs20', 21)" onmouseover="showTip(event, 'fs20', 21)" class="vt">DateTimeOffset</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs21', 22)" onmouseover="showTip(event, 'fs21', 22)" class="vt">DateTime</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs22', 23)" onmouseover="showTip(event, 'fs22', 23)" class="id">Today</span><span class="pn">)</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs23', 24)" onmouseover="showTip(event, 'fs23', 24)" class="fn">stock1</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs10', 25)" onmouseover="showTip(event, 'fs10', 25)" class="fn">randomPrice</span> <span class="n">1</span> <span class="n">0.1</span> <span class="n">3.0</span> <span class="n">20.0</span> <span onmouseout="hideTip(event, 'fs19', 26)" onmouseover="showTip(event, 'fs19', 26)" class="id">today</span> 
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs24', 27)" onmouseover="showTip(event, 'fs24', 27)" class="fn">stock2</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs10', 28)" onmouseover="showTip(event, 'fs10', 28)" class="fn">randomPrice</span> <span class="n">2</span> <span class="n">0.2</span> <span class="n">1.5</span> <span class="n">22.0</span> <span onmouseout="hideTip(event, 'fs19', 29)" onmouseover="showTip(event, 'fs19', 29)" class="id">today</span>
+</code></pre></td>
+</tr>
+</table>
+<p>The implementation of the function is not particularly important for the purpose of this
+page, but you can find it in the <a href="https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/series.fsx">script file with full source</a>.
+Once we have the function, we define a date <code>today</code> (representing today's midnight) and
+two helper functions that set basic properties for the <code>randomPrice</code> function.</p>
+<p>To get random prices, we now only need to call <code>stock1</code> or <code>stock2</code> with <code>TimeSpan</code> and
+the required number of prices:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs25', 30)" onmouseover="showTip(event, 'fs25', 30)" class="rt">Chart</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs26', 31)" onmouseover="showTip(event, 'fs26', 31)" class="id">Combine</span>
+  <span class="pn">[</span> <span onmouseout="hideTip(event, 'fs23', 32)" onmouseover="showTip(event, 'fs23', 32)" class="fn">stock1</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs27', 33)" onmouseover="showTip(event, 'fs27', 33)" class="vt">TimeSpan</span><span class="pn">(</span><span class="n">0</span><span class="pn">,</span> <span class="n">1</span><span class="pn">,</span> <span class="n">0</span><span class="pn">)</span><span class="pn">)</span> <span class="n">1000</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs25', 34)" onmouseover="showTip(event, 'fs25', 34)" class="rt">Chart</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs28', 35)" onmouseover="showTip(event, 'fs28', 35)" class="id">FastLine</span>
+    <span onmouseout="hideTip(event, 'fs24', 36)" onmouseover="showTip(event, 'fs24', 36)" class="fn">stock2</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs27', 37)" onmouseover="showTip(event, 'fs27', 37)" class="vt">TimeSpan</span><span class="pn">(</span><span class="n">0</span><span class="pn">,</span> <span class="n">1</span><span class="pn">,</span> <span class="n">0</span><span class="pn">)</span><span class="pn">)</span> <span class="n">1000</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs25', 38)" onmouseover="showTip(event, 'fs25', 38)" class="rt">Chart</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs28', 39)" onmouseover="showTip(event, 'fs28', 39)" class="id">FastLine</span> <span class="pn">]</span>
+</code></pre></td>
+</tr>
+</table>
+<p>The above snippet generates 1k of prices in one minute intervals and plots them using the
+<a href="https://github.com/fsharp/FSharp.Charting">F# Charting library</a>. When you run the code
+and tweak the chart look, you should see something like this:</p>
+<table class="pre"><tr><td><pre><code>FSharp.Charting.ChartTypes+CombinedChart</code></pre></td></tr></table>
+<a name="alignment"></a>
+<h2>Data alignment and zipping</h2>
+<p>One of the key features of the data frame library for working with time series data is
+<em>automatic alignment</em> based on the keys. When we have multiple time series with date
+as the key (here, we use <code>DateTimeOffset</code>, but any type of date will do), we can combine
+multiple series and align them automatically to specified date keys.</p>
+<p>To demonstrate this feature, we generate random prices in 60 minute, 30 minute and
+65 minute intervals:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+<span class="l">16: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs29', 40)" onmouseover="showTip(event, 'fs29', 40)" class="id">s1</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs23', 41)" onmouseover="showTip(event, 'fs23', 41)" class="fn">stock1</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs27', 42)" onmouseover="showTip(event, 'fs27', 42)" class="vt">TimeSpan</span><span class="pn">(</span><span class="n">1</span><span class="pn">,</span> <span class="n">0</span><span class="pn">,</span> <span class="n">0</span><span class="pn">)</span><span class="pn">)</span> <span class="n">6</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs30', 43)" onmouseover="showTip(event, 'fs30', 43)" class="fn">series</span>
+<span class="fsi">val s1 : Series&lt;DateTimeOffset,float&gt; =</span>
+<span class="fsi">  series [ 12:00:00 AM =&gt; 20.76; 1:00:00 AM =&gt; 21.11; 2:00:00 AM =&gt; 22.51 </span>
+<span class="fsi">            3:00:00 AM =&gt; 23.88; 4:00:00 AM =&gt; 23.23; 5:00:00 AM =&gt; 22.68 ] </span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs31', 44)" onmouseover="showTip(event, 'fs31', 44)" class="id">s2</span> <span class="o">=</span><span onmouseout="hideTip(event, 'fs24', 45)" onmouseover="showTip(event, 'fs24', 45)" class="fn">stock2</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs27', 46)" onmouseover="showTip(event, 'fs27', 46)" class="vt">TimeSpan</span><span class="pn">(</span><span class="n">0</span><span class="pn">,</span> <span class="n">30</span><span class="pn">,</span> <span class="n">0</span><span class="pn">)</span><span class="pn">)</span> <span class="n">12</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs30', 47)" onmouseover="showTip(event, 'fs30', 47)" class="fn">series</span>
+<span class="fsi">val s2 : Series&lt;DateTimeOffset,float&gt; =</span>
+<span class="fsi">  series [ 12:00:00 AM =&gt; 21.61; 12:30:00 AM =&gt; 21.64; 1:00:00 AM =&gt; 21.86 </span>
+<span class="fsi">            1:30:00 AM =&gt; 22.22;  2:00:00 AM =&gt; 22.35; 2:30:00 AM =&gt; 22.76 </span>
+<span class="fsi">            3:00:00 AM =&gt; 22.68;  3:30:00 AM =&gt; 22.64; 4:00:00 AM =&gt; 22.90 </span>
+<span class="fsi">            4:30:00 AM =&gt; 23.40;  5:00:00 AM =&gt; 23.33; 5:30:00 AM =&gt; 23.43] </span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs32', 48)" onmouseover="showTip(event, 'fs32', 48)" class="id">s3</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs23', 49)" onmouseover="showTip(event, 'fs23', 49)" class="fn">stock1</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs27', 50)" onmouseover="showTip(event, 'fs27', 50)" class="vt">TimeSpan</span><span class="pn">(</span><span class="n">1</span><span class="pn">,</span> <span class="n">5</span><span class="pn">,</span> <span class="n">0</span><span class="pn">)</span><span class="pn">)</span> <span class="n">6</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs30', 51)" onmouseover="showTip(event, 'fs30', 51)" class="fn">series</span>
+<span class="fsi">val s3 : Series&lt;DateTimeOffset,float&gt; =</span>
+<span class="fsi">  series [ 12:00:00 AM =&gt; 21.37; 1:05:00 AM =&gt; 22.73; 2:10:00 AM =&gt; 22.08 </span>
+<span class="fsi">            3:15:00 AM =&gt; 23.92; 4:20:00 AM =&gt; 22.72; 5:25:00 AM =&gt; 22.79 </span>
+</code></pre></td>
+</tr>
+</table>
+<h3>Zipping time series</h3>
+<p>Let's first look at operations that are available on the <code>Series&lt;K, V&gt;</code> type. A series
+exposes <code>Zip</code> operation that can combine multiple series into a single series of pairs.
+This is not as convenient as working with data frames (which we'll see later), but it
+is useful if you only need to work with one or two columns without missing values:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+<span class="l">16: </span>
+<span class="l">17: </span>
+<span class="l">18: </span>
+<span class="l">19: </span>
+<span class="l">20: </span>
+<span class="l">21: </span>
+<span class="l">22: </span>
+<span class="l">23: </span>
+<span class="l">24: </span>
+<span class="l">25: </span>
+<span class="l">26: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Match values from right series to keys of the left one</span>
+<span class="c">// (this creates series with no missing values)</span>
+<span onmouseout="hideTip(event, 'fs29', 52)" onmouseover="showTip(event, 'fs29', 52)" class="fn">s1</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs33', 53)" onmouseover="showTip(event, 'fs33', 53)" class="id">Zip</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs31', 54)" onmouseover="showTip(event, 'fs31', 54)" class="id">s2</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs34', 55)" onmouseover="showTip(event, 'fs34', 55)" class="vt">JoinKind</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs35', 56)" onmouseover="showTip(event, 'fs35', 56)" class="id">Left</span><span class="pn">)</span>
+<span class="fsi">val it : Series&lt;DateTimeOffset,float opt * float opt&gt;</span>
+<span class="fsi">  12:00:00 AM -&gt; (21.32, 21.61) </span>
+<span class="fsi">   1:00:00 AM -&gt; (22.62, 21.86) </span>
+<span class="fsi">   2:00:00 AM -&gt; (22.00, 22.35)  </span>
+<span class="fsi">  (...)</span>
+
+<span class="c">// Match values from the left series to keys of the right one</span>
+<span class="c">// (right has higher resolution, so half of left values are missing)</span>
+<span onmouseout="hideTip(event, 'fs29', 57)" onmouseover="showTip(event, 'fs29', 57)" class="fn">s1</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs33', 58)" onmouseover="showTip(event, 'fs33', 58)" class="id">Zip</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs31', 59)" onmouseover="showTip(event, 'fs31', 59)" class="id">s2</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs34', 60)" onmouseover="showTip(event, 'fs34', 60)" class="vt">JoinKind</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs36', 61)" onmouseover="showTip(event, 'fs36', 61)" class="id">Right</span><span class="pn">)</span>
+<span class="fsi">val it : Series&lt;DateTimeOffset,float opt * float opt&gt;</span>
+<span class="fsi">  12:00:00 AM -&gt; (21.32,     21.61) </span>
+<span class="fsi">  12:30:00 AM -&gt; (&lt;missing&gt;, 21.64)  </span>
+<span class="fsi">   1:00:00 AM -&gt; (22.62,     21.86) </span>
+<span class="fsi">  (...)</span>
+
+<span class="c">// Use left series key and find the nearest previous</span>
+<span class="c">// (smaller) value from the right series</span>
+<span onmouseout="hideTip(event, 'fs29', 62)" onmouseover="showTip(event, 'fs29', 62)" class="fn">s1</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs33', 63)" onmouseover="showTip(event, 'fs33', 63)" class="id">Zip</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs31', 64)" onmouseover="showTip(event, 'fs31', 64)" class="id">s2</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs34', 65)" onmouseover="showTip(event, 'fs34', 65)" class="vt">JoinKind</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs35', 66)" onmouseover="showTip(event, 'fs35', 66)" class="id">Left</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs37', 67)" onmouseover="showTip(event, 'fs37', 67)" class="vt">Lookup</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs38', 68)" onmouseover="showTip(event, 'fs38', 68)" class="id">ExactOrSmaller</span><span class="pn">)</span>
+<span class="fsi">val it : Series&lt;DateTimeOffset,float opt * float opt&gt;</span>
+<span class="fsi">  12:00:00 AM -04:00 -&gt; (21.32, 21.61) </span>
+<span class="fsi">   1:00:00 AM -04:00 -&gt; (22.62, 21.86) </span>
+<span class="fsi">   2:00:00 AM -04:00 -&gt; (22.00, 22.35)  </span>
+<span class="fsi">  (...)</span>
+</code></pre></td>
+</tr>
+</table>
+<p>Using <code>Zip</code> on series is somewhat complicated. The result is a series of tuples, but each
+component of the tuple may be missing. To represent this, the library uses the <code>T opt</code> type
+(a type alias for <code>OptionalValue&lt;T&gt;</code>). This is not necessary when we use data frame to
+work with multiple columns.</p>
+<h3>Joining data frames</h3>
+<p>When we store data in data frames, we do not need to use tuples to represent combined values.
+Instead, we can simply use data frame with multiple columns. To see how this works, let's first
+create three data frames containing the three series from the previous section:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Contains value for each hour</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs39', 69)" onmouseover="showTip(event, 'fs39', 69)" class="id">f1</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs40', 70)" onmouseover="showTip(event, 'fs40', 70)" class="m">Frame</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs41', 71)" onmouseover="showTip(event, 'fs41', 71)" class="id">ofColumns</span> <span class="pn">[</span><span class="s">&quot;S1&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs29', 72)" onmouseover="showTip(event, 'fs29', 72)" class="id">s1</span><span class="pn">]</span>
+<span class="c">// Contains value every 30 minutes</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs42', 73)" onmouseover="showTip(event, 'fs42', 73)" class="id">f2</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs40', 74)" onmouseover="showTip(event, 'fs40', 74)" class="m">Frame</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs41', 75)" onmouseover="showTip(event, 'fs41', 75)" class="id">ofColumns</span> <span class="pn">[</span><span class="s">&quot;S2&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs31', 76)" onmouseover="showTip(event, 'fs31', 76)" class="id">s2</span><span class="pn">]</span>
+<span class="c">// Contains values with 65 minute offsets</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs43', 77)" onmouseover="showTip(event, 'fs43', 77)" class="id">f3</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs40', 78)" onmouseover="showTip(event, 'fs40', 78)" class="m">Frame</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs41', 79)" onmouseover="showTip(event, 'fs41', 79)" class="id">ofColumns</span> <span class="pn">[</span><span class="s">&quot;S3&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs32', 80)" onmouseover="showTip(event, 'fs32', 80)" class="id">s3</span><span class="pn">]</span>
+</code></pre></td>
+</tr>
+</table>
+<p>Similarly to <code>Series&lt;K, V&gt;</code>, the type <code>Frame&lt;R, C&gt;</code> has an instance method <code>Join</code> that can be
+used for joining (for unordered) or aligning (for ordered) data. The same operation is also
+exposed as <code>Frame.join</code> and <code>Frame.joinAlign</code> functions, but it is usually more convenient to use
+the member syntax in this case:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+<span class="l">16: </span>
+<span class="l">17: </span>
+<span class="l">18: </span>
+<span class="l">19: </span>
+<span class="l">20: </span>
+<span class="l">21: </span>
+<span class="l">22: </span>
+<span class="l">23: </span>
+<span class="l">24: </span>
+<span class="l">25: </span>
+<span class="l">26: </span>
+<span class="l">27: </span>
+<span class="l">28: </span>
+<span class="l">29: </span>
+<span class="l">30: </span>
+<span class="l">31: </span>
+<span class="l">32: </span>
+<span class="l">33: </span>
+<span class="l">34: </span>
+<span class="l">35: </span>
+<span class="l">36: </span>
+<span class="l">37: </span>
+<span class="l">38: </span>
+<span class="l">39: </span>
+<span class="l">40: </span>
+<span class="l">41: </span>
+<span class="l">42: </span>
+<span class="l">43: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Union keys from both frames and align corresponding values</span>
+<span onmouseout="hideTip(event, 'fs39', 81)" onmouseover="showTip(event, 'fs39', 81)" class="fn">f1</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs44', 82)" onmouseover="showTip(event, 'fs44', 82)" class="id">Join</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs42', 83)" onmouseover="showTip(event, 'fs42', 83)" class="id">f2</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs34', 84)" onmouseover="showTip(event, 'fs34', 84)" class="vt">JoinKind</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs45', 85)" onmouseover="showTip(event, 'fs45', 85)" class="id">Outer</span><span class="pn">)</span>
+<span class="fsi">val it : Frame&lt;DateTimeOffset,string&gt; =</span>
+<span class="fsi">                 S1        S2               </span>
+<span class="fsi">  12:00:00 AM -&gt; 21.32     21.61 </span>
+<span class="fsi">  12:30:00 AM -&gt; &lt;missing&gt; 21.64 </span>
+<span class="fsi">   1:00:00 AM -&gt; 22.62     21.86 </span>
+<span class="fsi">  (...)</span>
+
+<span class="c">// Take only keys where both frames contain all values</span>
+<span class="c">// (We get only a single row, because &#39;f3&#39; is off by 5 minutes)</span>
+<span onmouseout="hideTip(event, 'fs42', 86)" onmouseover="showTip(event, 'fs42', 86)" class="fn">f2</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs44', 87)" onmouseover="showTip(event, 'fs44', 87)" class="id">Join</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs43', 88)" onmouseover="showTip(event, 'fs43', 88)" class="id">f3</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs34', 89)" onmouseover="showTip(event, 'fs34', 89)" class="vt">JoinKind</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs46', 90)" onmouseover="showTip(event, 'fs46', 90)" class="id">Inner</span><span class="pn">)</span>
+<span class="fsi">val it : Frame&lt;DateTimeOffset,string&gt; =</span>
+<span class="fsi">                 S2      S3               </span>
+<span class="fsi">  12:00:00 AM -&gt; 21.61   21.37 </span>
+
+<span class="c">// Take keys from the left frame and find corresponding values</span>
+<span class="c">// from the right frame, or value for a nearest smaller date</span>
+<span class="c">// ($21.37 is repeated for all values between 12:00 and 1:05)</span>
+<span onmouseout="hideTip(event, 'fs42', 91)" onmouseover="showTip(event, 'fs42', 91)" class="fn">f2</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs44', 92)" onmouseover="showTip(event, 'fs44', 92)" class="id">Join</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs43', 93)" onmouseover="showTip(event, 'fs43', 93)" class="id">f3</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs34', 94)" onmouseover="showTip(event, 'fs34', 94)" class="vt">JoinKind</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs35', 95)" onmouseover="showTip(event, 'fs35', 95)" class="id">Left</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs37', 96)" onmouseover="showTip(event, 'fs37', 96)" class="vt">Lookup</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs38', 97)" onmouseover="showTip(event, 'fs38', 97)" class="id">ExactOrSmaller</span><span class="pn">)</span>
+<span class="fsi">val it : Frame&lt;DateTimeOffset,string&gt; =</span>
+<span class="fsi">                 S2      S3               </span>
+<span class="fsi">  12:00:00 AM -&gt; 21.61   21.37 </span>
+<span class="fsi">  12:30:00 AM -&gt; 21.64   21.37 </span>
+<span class="fsi">   1:00:00 AM -&gt; 21.86   21.37 </span>
+<span class="fsi">   1:30:00 AM -&gt; 22.22   22.73 </span>
+<span class="fsi">  (...)</span>
+
+<span class="c">// If we perform left join as previously, but specify exact </span>
+<span class="c">// matching, then most of the values are missing</span>
+<span onmouseout="hideTip(event, 'fs42', 98)" onmouseover="showTip(event, 'fs42', 98)" class="fn">f2</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs44', 99)" onmouseover="showTip(event, 'fs44', 99)" class="id">Join</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs43', 100)" onmouseover="showTip(event, 'fs43', 100)" class="id">f3</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs34', 101)" onmouseover="showTip(event, 'fs34', 101)" class="vt">JoinKind</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs35', 102)" onmouseover="showTip(event, 'fs35', 102)" class="id">Left</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs37', 103)" onmouseover="showTip(event, 'fs37', 103)" class="vt">Lookup</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs47', 104)" onmouseover="showTip(event, 'fs47', 104)" class="id">Exact</span><span class="pn">)</span>
+<span class="fsi">val it : Frame&lt;DateTimeOffset,string&gt; =</span>
+<span class="fsi">                 S2      S3               </span>
+<span class="fsi">  12:00:00 AM -&gt; 21.61   21.37</span>
+<span class="fsi">  12:30:00 AM -&gt; 21.64   &lt;missing&gt;        </span>
+<span class="fsi">   1:00:00 AM -&gt; 21.86   &lt;missing&gt;        </span>
+<span class="fsi">  (...)</span>
+
+<span class="c">// Equivalent to line 2, using function syntax </span>
+<span onmouseout="hideTip(event, 'fs40', 105)" onmouseover="showTip(event, 'fs40', 105)" class="m">Frame</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs48', 106)" onmouseover="showTip(event, 'fs48', 106)" class="id">join</span> <span onmouseout="hideTip(event, 'fs34', 107)" onmouseover="showTip(event, 'fs34', 107)" class="vt">JoinKind</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs45', 108)" onmouseover="showTip(event, 'fs45', 108)" class="id">Outer</span> <span onmouseout="hideTip(event, 'fs39', 109)" onmouseover="showTip(event, 'fs39', 109)" class="id">f1</span> <span onmouseout="hideTip(event, 'fs42', 110)" onmouseover="showTip(event, 'fs42', 110)" class="id">f2</span>
+
+<span class="c">// Equivalent to line 20, using function syntax</span>
+<span onmouseout="hideTip(event, 'fs40', 111)" onmouseover="showTip(event, 'fs40', 111)" class="m">Frame</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs49', 112)" onmouseover="showTip(event, 'fs49', 112)" class="id">joinAlign</span> <span onmouseout="hideTip(event, 'fs34', 113)" onmouseover="showTip(event, 'fs34', 113)" class="vt">JoinKind</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs35', 114)" onmouseover="showTip(event, 'fs35', 114)" class="id">Left</span> <span onmouseout="hideTip(event, 'fs37', 115)" onmouseover="showTip(event, 'fs37', 115)" class="vt">Lookup</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs38', 116)" onmouseover="showTip(event, 'fs38', 116)" class="id">ExactOrSmaller</span> <span onmouseout="hideTip(event, 'fs39', 117)" onmouseover="showTip(event, 'fs39', 117)" class="id">f1</span> <span onmouseout="hideTip(event, 'fs42', 118)" onmouseover="showTip(event, 'fs42', 118)" class="id">f2</span>
+</code></pre></td>
+</tr>
+</table>
+<p>The automatic alignment is extremely useful when you have multiple data series with different
+offsets between individual observations. You can choose your set of keys (dates) and then easily
+align other data to match the keys. Another alternative to using <code>Join</code> explicitly is to create
+a new frame with just keys that you are interested in (using <code>Frame.ofRowKeys</code>) and then use
+the <code>AddSeries</code> member (or the <code>df?New &lt;- s</code> syntax) to add series. This will automatically left
+join the new series to match the current row keys.</p>
+<p>When aligning data, you may or may not want to create data frame with missing values. If your
+observations do not happen at exact time, then using <code>Lookup.ExactOrSmaller</code> or <code>Lookup.ExactOrGreater</code>
+is a great way to avoid mismatch.</p>
+<p>If you have observations that happen e.g. at two times faster rate (one series is hourly and
+another is half-hourly), then you can create data frame with missing values using <code>Lookup.Exact</code>
+(the default value) and then handle missing values explicitly (as <a href="frame.html#missing">discussed here</a>).</p>
+<a name="windowing"></a>
+<h2>Windowing, chunking and pairwise</h2>
+<p>Windowing and chunking are two operations on ordered series that allow aggregating
+the values of series into groups. Both of these operations work on consecutive elements,
+which contrast with <a href="tutorial.html#grouping">grouping</a> that does not use order.</p>
+<h3>Sliding windows</h3>
+<p>Sliding window creates windows of certain size (or certain condition). The window
+"slides" over the input series and provides a view on a part of the series. The
+key thing is that a single element will typically appear in multiple windows.</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+<span class="l">8: </span>
+<span class="l">9: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Create input series with 6 observations</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs50', 119)" onmouseover="showTip(event, 'fs50', 119)" class="id">lf</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs23', 120)" onmouseover="showTip(event, 'fs23', 120)" class="fn">stock1</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs27', 121)" onmouseover="showTip(event, 'fs27', 121)" class="vt">TimeSpan</span><span class="pn">(</span><span class="n">0</span><span class="pn">,</span> <span class="n">1</span><span class="pn">,</span> <span class="n">0</span><span class="pn">)</span><span class="pn">)</span> <span class="n">6</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs30', 122)" onmouseover="showTip(event, 'fs30', 122)" class="fn">series</span>
+
+<span class="c">// Create series of series representing individual windows</span>
+<span onmouseout="hideTip(event, 'fs50', 123)" onmouseover="showTip(event, 'fs50', 123)" class="id">lf</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 124)" onmouseover="showTip(event, 'fs51', 124)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs52', 125)" onmouseover="showTip(event, 'fs52', 125)" class="id">window</span> <span class="n">4</span>
+<span class="c">// Aggregate each window using &#39;Stats.mean&#39;</span>
+<span onmouseout="hideTip(event, 'fs50', 126)" onmouseover="showTip(event, 'fs50', 126)" class="id">lf</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 127)" onmouseover="showTip(event, 'fs51', 127)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs53', 128)" onmouseover="showTip(event, 'fs53', 128)" class="id">windowInto</span> <span class="n">4</span> <span onmouseout="hideTip(event, 'fs54', 129)" onmouseover="showTip(event, 'fs54', 129)" class="rt">Stats</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs55', 130)" onmouseover="showTip(event, 'fs55', 130)" class="id">mean</span>
+<span class="c">// Get first value in each window</span>
+<span onmouseout="hideTip(event, 'fs50', 131)" onmouseover="showTip(event, 'fs50', 131)" class="id">lf</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 132)" onmouseover="showTip(event, 'fs51', 132)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs53', 133)" onmouseover="showTip(event, 'fs53', 133)" class="id">windowInto</span> <span class="n">4</span> <span onmouseout="hideTip(event, 'fs51', 134)" onmouseover="showTip(event, 'fs51', 134)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs56', 135)" onmouseover="showTip(event, 'fs56', 135)" class="id">firstValue</span>
+</code></pre></td>
+</tr>
+</table>
+<p>The functions used above create window of size 4 that moves from the left to right.
+Given input <code>[1,2,3,4,5,6]</code> the this produces the following three windows:
+<code>[1,2,3,4]</code>, <code>[2,3,4,5]</code> and <code>[3,4,5,6]</code>. By default, the <code>Series.window</code> function
+automatically chooses the key of the last element of the window as the key for
+the whole window (we'll see how to change this soon):</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Calculate means for sliding windows</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs57', 136)" onmouseover="showTip(event, 'fs57', 136)" class="id">lfm1</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs50', 137)" onmouseover="showTip(event, 'fs50', 137)" class="id">lf</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 138)" onmouseover="showTip(event, 'fs51', 138)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs53', 139)" onmouseover="showTip(event, 'fs53', 139)" class="id">windowInto</span> <span class="n">4</span> <span onmouseout="hideTip(event, 'fs54', 140)" onmouseover="showTip(event, 'fs54', 140)" class="rt">Stats</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs55', 141)" onmouseover="showTip(event, 'fs55', 141)" class="id">mean</span>
+<span class="c">// Construct dataframe to show aligned results</span>
+<span onmouseout="hideTip(event, 'fs40', 142)" onmouseover="showTip(event, 'fs40', 142)" class="m">Frame</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs41', 143)" onmouseover="showTip(event, 'fs41', 143)" class="id">ofColumns</span> <span class="pn">[</span> <span class="s">&quot;Orig&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs50', 144)" onmouseover="showTip(event, 'fs50', 144)" class="id">lf</span><span class="pn">;</span> <span class="s">&quot;Means&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs57', 145)" onmouseover="showTip(event, 'fs57', 145)" class="id">lfm1</span> <span class="pn">]</span>
+<span class="fsi">val it : Frame&lt;DateTimeOffset,string&gt; =</span>
+<span class="fsi">                 Means      Orig        </span>
+<span class="fsi">  12:00:00 AM -&gt; &lt;missing&gt;  20.16</span>
+<span class="fsi">  12:01:00 AM -&gt; &lt;missing&gt;  20.32</span>
+<span class="fsi">  12:02:00 AM -&gt; &lt;missing&gt;  20.25</span>
+<span class="fsi">  12:03:00 AM -&gt; 20.30      20.45</span>
+<span class="fsi">  12:04:00 AM -&gt; 20.34      20.32</span>
+<span class="fsi">  12:05:00 AM -&gt; 20.34      20.33</span>
+</code></pre></td>
+</tr>
+</table>
+<p>What if we want to avoid creating <code>&lt;missing&gt;</code> values? One approach is to
+specify that we want to generate windows of smaller sizes at the beginning
+or at the end of the beginning. This way, we get <em>incomplete</em> windows that look as
+<code>[1]</code>, <code>[1,2]</code>, <code>[1,2,3]</code> followed by the three <em>complete</em> windows shown above:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs58', 146)" onmouseover="showTip(event, 'fs58', 146)" class="id">lfm2</span> <span class="o">=</span> 
+  <span class="c">// Create sliding windows with incomplete windows at the beginning</span>
+  <span onmouseout="hideTip(event, 'fs50', 147)" onmouseover="showTip(event, 'fs50', 147)" class="id">lf</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 148)" onmouseover="showTip(event, 'fs51', 148)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs59', 149)" onmouseover="showTip(event, 'fs59', 149)" class="id">windowSizeInto</span> <span class="pn">(</span><span class="n">4</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs60', 150)" onmouseover="showTip(event, 'fs60', 150)" class="vt">Boundary</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs61', 151)" onmouseover="showTip(event, 'fs61', 151)" class="id">AtBeginning</span><span class="pn">)</span> <span class="pn">(</span><span class="k">fun</span> <span onmouseout="hideTip(event, 'fs62', 152)" onmouseover="showTip(event, 'fs62', 152)" class="id">ds</span> <span class="k">-&gt;</span>
+    <span onmouseout="hideTip(event, 'fs54', 153)" onmouseover="showTip(event, 'fs54', 153)" class="rt">Stats</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs55', 154)" onmouseover="showTip(event, 'fs55', 154)" class="id">mean</span> <span onmouseout="hideTip(event, 'fs62', 155)" onmouseover="showTip(event, 'fs62', 155)" class="id">ds</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs63', 156)" onmouseover="showTip(event, 'fs63', 156)" class="id">Data</span><span class="pn">)</span>
+
+<span onmouseout="hideTip(event, 'fs40', 157)" onmouseover="showTip(event, 'fs40', 157)" class="m">Frame</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs41', 158)" onmouseover="showTip(event, 'fs41', 158)" class="id">ofColumns</span> <span class="pn">[</span> <span class="s">&quot;Orig&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs50', 159)" onmouseover="showTip(event, 'fs50', 159)" class="id">lf</span><span class="pn">;</span> <span class="s">&quot;Means&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs58', 160)" onmouseover="showTip(event, 'fs58', 160)" class="id">lfm2</span> <span class="pn">]</span>
+<span class="fsi">val it : Frame&lt;DateTimeOffset,string&gt; =</span>
+<span class="fsi">                 Means  Orig        </span>
+<span class="fsi">  12:00:00 AM -&gt; 20.16  20.16</span>
+<span class="fsi">  12:01:00 AM -&gt; 20.24  20.32</span>
+<span class="fsi">  12:02:00 AM -&gt; 20.24  20.25</span>
+<span class="fsi">  12:03:00 AM -&gt; 20.30  20.45</span>
+<span class="fsi">  12:04:00 AM -&gt; 20.34  20.32</span>
+<span class="fsi">  12:05:00 AM -&gt; 20.34  20.33</span>
+</code></pre></td>
+</tr>
+</table>
+<p>As you can see, the values in the first column are equal, because the first
+<code>Mean</code> value is just the average of singleton series.</p>
+<p>When you specify <code>Boundary.AtBeginning</code> (this example) or <code>Boundary.Skip</code>
+(default value used in the previous example), the function uses the last key
+of the window as the key of the aggregated value. When you specify
+<code>Boundary.AtEnding</code>, the last key is used, so the values can be nicely
+aligned with original values. When you want to specify custom key selector,
+you can use a more general function <code>Series.aggregate</code>.</p>
+<p>In the previous sample, the code that performs aggregation is no longer
+just a simple function like <code>Stats.mean</code>, but a lambda that takes <code>ds</code>,
+which is of type <code>DataSegment&lt;T&gt;</code>. This type informs us whether the window
+is complete or not. For example:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Simple series with characters</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs64', 161)" onmouseover="showTip(event, 'fs64', 161)" class="id">st</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs51', 162)" onmouseover="showTip(event, 'fs51', 162)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs65', 163)" onmouseover="showTip(event, 'fs65', 163)" class="id">ofValues</span> <span class="pn">[</span> <span class="s">&#39;a&#39;</span> <span class="o">..</span> <span class="s">&#39;e&#39;</span> <span class="pn">]</span>
+<span onmouseout="hideTip(event, 'fs64', 164)" onmouseover="showTip(event, 'fs64', 164)" class="id">st</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 165)" onmouseover="showTip(event, 'fs51', 165)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs59', 166)" onmouseover="showTip(event, 'fs59', 166)" class="id">windowSizeInto</span> <span class="pn">(</span><span class="n">3</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs60', 167)" onmouseover="showTip(event, 'fs60', 167)" class="vt">Boundary</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs66', 168)" onmouseover="showTip(event, 'fs66', 168)" class="id">AtEnding</span><span class="pn">)</span> <span class="pn">(</span><span class="k">function</span>
+  <span class="pn">|</span> <span onmouseout="hideTip(event, 'fs67', 169)" onmouseover="showTip(event, 'fs67', 169)" class="m">DataSegment</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs68', 170)" onmouseover="showTip(event, 'fs68', 170)" class="id">Complete</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs69', 171)" onmouseover="showTip(event, 'fs69', 171)" class="id">ser</span><span class="pn">)</span> <span class="k">-&gt;</span> 
+      <span class="c">// Return complete windows as uppercase strings</span>
+      <span onmouseout="hideTip(event, 'fs70', 172)" onmouseover="showTip(event, 'fs70', 172)" class="rt">String</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs69', 173)" onmouseover="showTip(event, 'fs69', 173)" class="id">ser</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 174)" onmouseover="showTip(event, 'fs51', 174)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs71', 175)" onmouseover="showTip(event, 'fs71', 175)" class="id">values</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs72', 176)" onmouseover="showTip(event, 'fs72', 176)" class="m">Array</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs73', 177)" onmouseover="showTip(event, 'fs73', 177)" class="id">ofSeq</span><span class="pn">)</span><span class="pn">.</span><span class="id">ToUpper</span><span class="pn">(</span><span class="pn">)</span>
+  <span class="pn">|</span> <span onmouseout="hideTip(event, 'fs67', 178)" onmouseover="showTip(event, 'fs67', 178)" class="m">DataSegment</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs74', 179)" onmouseover="showTip(event, 'fs74', 179)" class="id">Incomplete</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs69', 180)" onmouseover="showTip(event, 'fs69', 180)" class="id">ser</span><span class="pn">)</span> <span class="k">-&gt;</span> 
+      <span class="c">// Return incomplete windows as padded lowercase strings</span>
+      <span onmouseout="hideTip(event, 'fs70', 181)" onmouseover="showTip(event, 'fs70', 181)" class="rt">String</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs69', 182)" onmouseover="showTip(event, 'fs69', 182)" class="id">ser</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 183)" onmouseover="showTip(event, 'fs51', 183)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs71', 184)" onmouseover="showTip(event, 'fs71', 184)" class="id">values</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs72', 185)" onmouseover="showTip(event, 'fs72', 185)" class="m">Array</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs73', 186)" onmouseover="showTip(event, 'fs73', 186)" class="id">ofSeq</span><span class="pn">)</span><span class="pn">.</span><span class="id">PadRight</span><span class="pn">(</span><span class="n">3</span><span class="pn">,</span> <span class="s">&#39;-&#39;</span><span class="pn">)</span> <span class="pn">)</span>  
+<span class="fsi">val it : Series&lt;int,string&gt; =</span>
+<span class="fsi">  0 -&gt; ABC </span>
+<span class="fsi">  1 -&gt; BCD </span>
+<span class="fsi">  2 -&gt; CDE </span>
+<span class="fsi">  3 -&gt; de- </span>
+<span class="fsi">  4 -&gt; e-- </span>
+</code></pre></td>
+</tr>
+</table>
+<h3>Window size conditions</h3>
+<p>The previous examples generated windows of fixed size. However, there are two other
+options for specifying when a window ends.</p>
+<ul>
+<li>
+The first option is to specify the maximal
+<em>distance</em> between the first and the last key
+</li>
+<li>
+The second option is to specify a function that is called with the first
+and the last key; a window ends when the function returns false.
+</li>
+</ul>
+<p>The two functions are <code>Series.windowDist</code> and <code>Series.windowWhile</code> (together
+with versions suffixed with <code>Into</code> that call a provided function to aggregate
+each window):</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Generate prices for each hour over 30 days</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs75', 187)" onmouseover="showTip(event, 'fs75', 187)" class="id">hourly</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs23', 188)" onmouseover="showTip(event, 'fs23', 188)" class="fn">stock1</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs27', 189)" onmouseover="showTip(event, 'fs27', 189)" class="vt">TimeSpan</span><span class="pn">(</span><span class="n">1</span><span class="pn">,</span> <span class="n">0</span><span class="pn">,</span> <span class="n">0</span><span class="pn">)</span><span class="pn">)</span> <span class="pn">(</span><span class="n">30</span><span class="o">*</span><span class="n">24</span><span class="pn">)</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs30', 190)" onmouseover="showTip(event, 'fs30', 190)" class="fn">series</span>
+
+<span class="c">// Generate windows of size 1 day (if the source was</span>
+<span class="c">// irregular, windows would have varying size)</span>
+<span onmouseout="hideTip(event, 'fs75', 191)" onmouseover="showTip(event, 'fs75', 191)" class="id">hourly</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 192)" onmouseover="showTip(event, 'fs51', 192)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs76', 193)" onmouseover="showTip(event, 'fs76', 193)" class="id">windowDist</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs27', 194)" onmouseover="showTip(event, 'fs27', 194)" class="vt">TimeSpan</span><span class="pn">(</span><span class="n">24</span><span class="pn">,</span> <span class="n">0</span><span class="pn">,</span> <span class="n">0</span><span class="pn">)</span><span class="pn">)</span>
+
+<span class="c">// Generate windows such that date in each window is the same</span>
+<span class="c">// (windows start every hour and end at the end of the day)</span>
+<span onmouseout="hideTip(event, 'fs75', 195)" onmouseover="showTip(event, 'fs75', 195)" class="id">hourly</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 196)" onmouseover="showTip(event, 'fs51', 196)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs77', 197)" onmouseover="showTip(event, 'fs77', 197)" class="id">windowWhile</span> <span class="pn">(</span><span class="k">fun</span> <span onmouseout="hideTip(event, 'fs78', 198)" onmouseover="showTip(event, 'fs78', 198)" class="id">d1</span> <span onmouseout="hideTip(event, 'fs79', 199)" onmouseover="showTip(event, 'fs79', 199)" class="id">d2</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs78', 200)" onmouseover="showTip(event, 'fs78', 200)" class="id">d1</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs80', 201)" onmouseover="showTip(event, 'fs80', 201)" class="id">Date</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs79', 202)" onmouseover="showTip(event, 'fs79', 202)" class="id">d2</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs80', 203)" onmouseover="showTip(event, 'fs80', 203)" class="id">Date</span><span class="pn">)</span>
+</code></pre></td>
+</tr>
+</table>
+<h3>Chunking series</h3>
+<p>Chunking is similar to windowing, but it creates non-overlapping chunks,
+rather than (overlapping) sliding windows. The size of chunk can be specified
+in the same three ways as for sliding windows (fixed size, distance on keys
+and condition):</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Generate per-second observations over 10 minutes</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs81', 204)" onmouseover="showTip(event, 'fs81', 204)" class="id">hf</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs23', 205)" onmouseover="showTip(event, 'fs23', 205)" class="fn">stock1</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs27', 206)" onmouseover="showTip(event, 'fs27', 206)" class="vt">TimeSpan</span><span class="pn">(</span><span class="n">0</span><span class="pn">,</span> <span class="n">0</span><span class="pn">,</span> <span class="n">1</span><span class="pn">)</span><span class="pn">)</span> <span class="n">600</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs30', 207)" onmouseover="showTip(event, 'fs30', 207)" class="fn">series</span>
+
+<span class="c">// Create 10 second chunks with (possible) incomplete</span>
+<span class="c">// chunk of smaller size at the end.</span>
+<span onmouseout="hideTip(event, 'fs81', 208)" onmouseover="showTip(event, 'fs81', 208)" class="id">hf</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 209)" onmouseover="showTip(event, 'fs51', 209)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs82', 210)" onmouseover="showTip(event, 'fs82', 210)" class="id">chunkSize</span> <span class="pn">(</span><span class="n">10</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs60', 211)" onmouseover="showTip(event, 'fs60', 211)" class="vt">Boundary</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs66', 212)" onmouseover="showTip(event, 'fs66', 212)" class="id">AtEnding</span><span class="pn">)</span> 
+
+<span class="c">// Create 10 second chunks using time span and get</span>
+<span class="c">// the first observation for each chunk (downsample)</span>
+<span onmouseout="hideTip(event, 'fs81', 213)" onmouseover="showTip(event, 'fs81', 213)" class="id">hf</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 214)" onmouseover="showTip(event, 'fs51', 214)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs83', 215)" onmouseover="showTip(event, 'fs83', 215)" class="id">chunkDistInto</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs27', 216)" onmouseover="showTip(event, 'fs27', 216)" class="vt">TimeSpan</span><span class="pn">(</span><span class="n">0</span><span class="pn">,</span> <span class="n">0</span><span class="pn">,</span> <span class="n">10</span><span class="pn">)</span><span class="pn">)</span> <span onmouseout="hideTip(event, 'fs51', 217)" onmouseover="showTip(event, 'fs51', 217)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs56', 218)" onmouseover="showTip(event, 'fs56', 218)" class="id">firstValue</span>
+
+<span class="c">// Create chunks where hh:mm component is the same</span>
+<span class="c">// (containing observations for all seconds in the minute)</span>
+<span onmouseout="hideTip(event, 'fs81', 219)" onmouseover="showTip(event, 'fs81', 219)" class="id">hf</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 220)" onmouseover="showTip(event, 'fs51', 220)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs84', 221)" onmouseover="showTip(event, 'fs84', 221)" class="id">chunkWhile</span> <span class="pn">(</span><span class="k">fun</span> <span onmouseout="hideTip(event, 'fs85', 222)" onmouseover="showTip(event, 'fs85', 222)" class="id">k1</span> <span onmouseout="hideTip(event, 'fs86', 223)" onmouseover="showTip(event, 'fs86', 223)" class="id">k2</span> <span class="k">-&gt;</span> 
+  <span class="pn">(</span><span onmouseout="hideTip(event, 'fs85', 224)" onmouseover="showTip(event, 'fs85', 224)" class="id">k1</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs87', 225)" onmouseover="showTip(event, 'fs87', 225)" class="id">Hour</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs85', 226)" onmouseover="showTip(event, 'fs85', 226)" class="id">k1</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs88', 227)" onmouseover="showTip(event, 'fs88', 227)" class="id">Minute</span><span class="pn">)</span> <span class="o">=</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs86', 228)" onmouseover="showTip(event, 'fs86', 228)" class="id">k2</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs87', 229)" onmouseover="showTip(event, 'fs87', 229)" class="id">Hour</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs86', 230)" onmouseover="showTip(event, 'fs86', 230)" class="id">k2</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs88', 231)" onmouseover="showTip(event, 'fs88', 231)" class="id">Minute</span><span class="pn">)</span><span class="pn">)</span>
+</code></pre></td>
+</tr>
+</table>
+<p>The above examples use various chunking functions in a very similar way, mainly
+because the randomly generated input is very uniform. However, they all behave
+differently for inputs with non-uniform keys.</p>
+<p>Using <code>chunkSize</code> means that the chunks have the same size, but may correspond
+to time series of different time spans. Using <code>chunkDist</code> guarantees that there
+is a maximal time span over each chunk, but it does not guarantee when a chunk
+starts. That is something which can be achieved using <code>chunkWhile</code>.</p>
+<p>Finally, all of the aggregations discussed so far are just special cases of
+<code>Series.aggregate</code> which takes a discriminated union that specifies the kind
+of aggregation (<a href="reference/fsharp-dataframe-aggregation-1.html">see API reference</a>).
+However, in practice it is more convenient to use the helpers presented here -
+in some rare cases, you might need to use <code>Series.aggregate</code> as it provides
+a few other options.</p>
+<h3>Pairwise</h3>
+<p>A special form of windowing is building a series of pairs containing a current
+and previous value from the input series (in other words, the key for each pair
+is the key of the later element). For example:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Create a series of pairs from earlier &#39;hf&#39; input</span>
+<span onmouseout="hideTip(event, 'fs81', 232)" onmouseover="showTip(event, 'fs81', 232)" class="id">hf</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 233)" onmouseover="showTip(event, 'fs51', 233)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs89', 234)" onmouseover="showTip(event, 'fs89', 234)" class="id">pairwise</span> 
+
+<span class="c">// Calculate differences between the current and previous values</span>
+<span onmouseout="hideTip(event, 'fs81', 235)" onmouseover="showTip(event, 'fs81', 235)" class="id">hf</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 236)" onmouseover="showTip(event, 'fs51', 236)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs90', 237)" onmouseover="showTip(event, 'fs90', 237)" class="id">pairwiseWith</span> <span class="pn">(</span><span class="k">fun</span> <span onmouseout="hideTip(event, 'fs91', 238)" onmouseover="showTip(event, 'fs91', 238)" class="id">k</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs92', 239)" onmouseover="showTip(event, 'fs92', 239)" class="id">v1</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs93', 240)" onmouseover="showTip(event, 'fs93', 240)" class="id">v2</span><span class="pn">)</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs93', 241)" onmouseover="showTip(event, 'fs93', 241)" class="id">v2</span> <span class="o">-</span> <span onmouseout="hideTip(event, 'fs92', 242)" onmouseover="showTip(event, 'fs92', 242)" class="id">v1</span><span class="pn">)</span>
+</code></pre></td>
+</tr>
+</table>
+<p>The <code>pairwise</code> operation always returns a series that has no value for
+the first key in the input series. If you want more complex behavior, you
+will usually need to replace <code>pairwise</code> with <code>window</code>. For example, you might
+want to get a series that contains the first value as the first element,
+followed by differences. This has the nice property that summing rows,
+starting from the first one gives you the current price:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Sliding window with incomplete segment at the beginning </span>
+<span onmouseout="hideTip(event, 'fs81', 243)" onmouseover="showTip(event, 'fs81', 243)" class="id">hf</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 244)" onmouseover="showTip(event, 'fs51', 244)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs59', 245)" onmouseover="showTip(event, 'fs59', 245)" class="id">windowSizeInto</span> <span class="pn">(</span><span class="n">2</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs60', 246)" onmouseover="showTip(event, 'fs60', 246)" class="vt">Boundary</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs61', 247)" onmouseover="showTip(event, 'fs61', 247)" class="id">AtBeginning</span><span class="pn">)</span> <span class="pn">(</span><span class="k">function</span>
+  <span class="c">// Return the first value for the first segment</span>
+  <span class="pn">|</span> <span onmouseout="hideTip(event, 'fs67', 248)" onmouseover="showTip(event, 'fs67', 248)" class="m">DataSegment</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs74', 249)" onmouseover="showTip(event, 'fs74', 249)" class="id">Incomplete</span> <span onmouseout="hideTip(event, 'fs94', 250)" onmouseover="showTip(event, 'fs94', 250)" class="id">s</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs94', 251)" onmouseover="showTip(event, 'fs94', 251)" class="fn">s</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs95', 252)" onmouseover="showTip(event, 'fs95', 252)" class="id">GetAt</span><span class="pn">(</span><span class="n">0</span><span class="pn">)</span>
+  <span class="c">// Calculate difference for all later segments</span>
+  <span class="pn">|</span> <span onmouseout="hideTip(event, 'fs67', 253)" onmouseover="showTip(event, 'fs67', 253)" class="m">DataSegment</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs68', 254)" onmouseover="showTip(event, 'fs68', 254)" class="id">Complete</span> <span onmouseout="hideTip(event, 'fs94', 255)" onmouseover="showTip(event, 'fs94', 255)" class="id">s</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs94', 256)" onmouseover="showTip(event, 'fs94', 256)" class="fn">s</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs95', 257)" onmouseover="showTip(event, 'fs95', 257)" class="id">GetAt</span><span class="pn">(</span><span class="n">1</span><span class="pn">)</span> <span class="o">-</span> <span onmouseout="hideTip(event, 'fs94', 258)" onmouseover="showTip(event, 'fs94', 258)" class="fn">s</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs95', 259)" onmouseover="showTip(event, 'fs95', 259)" class="id">GetAt</span><span class="pn">(</span><span class="n">0</span><span class="pn">)</span><span class="pn">)</span>
+</code></pre></td>
+</tr>
+</table>
+<a name="sampling"></a>
+<h2>Sampling and resampling time series</h2>
+<p>Given a time series with high-frequency prices, sampling or resampling makes
+it possible to get time series with representative values at lower frequency.
+The library uses the following terminology:</p>
+<ul>
+<li>
+<p><strong>Lookup</strong> means that we find values at specified key; if a key is not
+available, we can look for value associated with the nearest smaller or
+the nearest greater key.</p>
+</li>
+<li>
+<p><strong>Resampling</strong> means that we aggregate values values into chunks based
+on a specified collection of keys (e.g. explicitly provided times), or
+based on some relation between keys (e.g. date times having the same date).</p>
+</li>
+<li>
+<p><strong>Uniform resampling</strong> is similar to resampling, but we specify keys by
+providing functions that generate a uniform sequence of keys (e.g. days),
+the operation also fills value for days that have no corresponding
+observations in the input sequence.</p>
+</li>
+</ul>
+<p>Finally, the library also provides a few helper functions that are specifically
+desinged for series with keys of types <code>DateTime</code> and <code>DateTimeOffset</code>.</p>
+<h3>Lookup</h3>
+<p>Given a series <code>hf</code>, you can get a value at a specified key using <code>hf.Get(key)</code>
+or using <code>hf |&gt; Series.get key</code>. However, it is also possible to find values
+for larger number of keys at once. The instance member for doing this
+is <code>hf.GetItems(..)</code>. Moreover, both <code>Get</code> and <code>GetItems</code> take an optional
+parameter that specifies the behavior when the exact key is not found.</p>
+<p>Using the function syntax, you can use <code>Series.getAll</code> for exact key
+lookup and <code>Series.lookupAll</code> when you want more flexible lookup:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+<span class="l">16: </span>
+<span class="l">17: </span>
+<span class="l">18: </span>
+<span class="l">19: </span>
+<span class="l">20: </span>
+<span class="l">21: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Generate a bit less than 24 hours of data with 13.7sec offsets</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs96', 260)" onmouseover="showTip(event, 'fs96', 260)" class="id">mf</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs23', 261)" onmouseover="showTip(event, 'fs23', 261)" class="fn">stock1</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs27', 262)" onmouseover="showTip(event, 'fs27', 262)" class="vt">TimeSpan</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs97', 263)" onmouseover="showTip(event, 'fs97', 263)" class="id">FromSeconds</span><span class="pn">(</span><span class="n">13.7</span><span class="pn">)</span><span class="pn">)</span> <span class="n">6300</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs30', 264)" onmouseover="showTip(event, 'fs30', 264)" class="fn">series</span>
+<span class="c">// Generate keys for all minutes in 24 hours</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs98', 265)" onmouseover="showTip(event, 'fs98', 265)" class="id">keys</span> <span class="o">=</span> <span class="pn">[</span> <span class="k">for</span> <span onmouseout="hideTip(event, 'fs99', 266)" onmouseover="showTip(event, 'fs99', 266)" class="id">m</span> <span class="k">in</span> <span class="n">0.0</span> <span class="o">..</span> <span class="n">24.0</span><span class="o">*</span><span class="n">60.0</span><span class="o">-</span><span class="n">1.0</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs19', 267)" onmouseover="showTip(event, 'fs19', 267)" class="fn">today</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs100', 268)" onmouseover="showTip(event, 'fs100', 268)" class="id">AddMinutes</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs99', 269)" onmouseover="showTip(event, 'fs99', 269)" class="id">m</span><span class="pn">)</span> <span class="pn">]</span>
+
+<span class="c">// Find value for a given key, or nearest greater key with value</span>
+<span onmouseout="hideTip(event, 'fs96', 270)" onmouseover="showTip(event, 'fs96', 270)" class="id">mf</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 271)" onmouseover="showTip(event, 'fs51', 271)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs101', 272)" onmouseover="showTip(event, 'fs101', 272)" class="id">lookupAll</span> <span onmouseout="hideTip(event, 'fs98', 273)" onmouseover="showTip(event, 'fs98', 273)" class="id">keys</span> <span onmouseout="hideTip(event, 'fs37', 274)" onmouseover="showTip(event, 'fs37', 274)" class="vt">Lookup</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs102', 275)" onmouseover="showTip(event, 'fs102', 275)" class="id">ExactOrGreater</span>
+<span class="fsi">val it : Series&lt;DateTimeOffset,float&gt; =</span>
+<span class="fsi">  12:00:00 AM -&gt; 20.07 </span>
+<span class="fsi">  12:01:00 AM -&gt; 19.98 </span>
+<span class="fsi">  ...         -&gt; ...   </span>
+<span class="fsi">  11:58:00 PM -&gt; 19.03 </span>
+<span class="fsi">  11:59:00 PM -&gt; &lt;missing&gt;        </span>
+
+<span class="c">// Find value for nearest smaller key</span>
+<span class="c">// (This returns value for 11:59:00 PM as well)</span>
+<span onmouseout="hideTip(event, 'fs96', 276)" onmouseover="showTip(event, 'fs96', 276)" class="id">mf</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 277)" onmouseover="showTip(event, 'fs51', 277)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs101', 278)" onmouseover="showTip(event, 'fs101', 278)" class="id">lookupAll</span> <span onmouseout="hideTip(event, 'fs98', 279)" onmouseover="showTip(event, 'fs98', 279)" class="id">keys</span> <span onmouseout="hideTip(event, 'fs37', 280)" onmouseover="showTip(event, 'fs37', 280)" class="vt">Lookup</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs38', 281)" onmouseover="showTip(event, 'fs38', 281)" class="id">ExactOrSmaller</span>
+
+<span class="c">// Find values for exact key </span>
+<span class="c">// (This only works for the first key)</span>
+<span onmouseout="hideTip(event, 'fs96', 282)" onmouseover="showTip(event, 'fs96', 282)" class="id">mf</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 283)" onmouseover="showTip(event, 'fs51', 283)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs101', 284)" onmouseover="showTip(event, 'fs101', 284)" class="id">lookupAll</span> <span onmouseout="hideTip(event, 'fs98', 285)" onmouseover="showTip(event, 'fs98', 285)" class="id">keys</span> <span onmouseout="hideTip(event, 'fs37', 286)" onmouseover="showTip(event, 'fs37', 286)" class="vt">Lookup</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs47', 287)" onmouseover="showTip(event, 'fs47', 287)" class="id">Exact</span>
+</code></pre></td>
+</tr>
+</table>
+<p>Lookup operations only return one value for each key, so they are useful for
+quick sampling of large (or high-frequency) data. When we want to calculate
+a new value based on multiple values, we need to use resampling.</p>
+<h3>Resampling</h3>
+<p>Series supports two kinds of resamplings. The first kind is similar to lookup
+in that we have to explicitly specify keys. The difference is that resampling
+does not find just the nearest key, but all smaller or greater keys. For example:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// For each key, collect values for greater keys until the </span>
+<span class="c">// next one (chunk for 11:59:00 PM is empty)</span>
+<span onmouseout="hideTip(event, 'fs96', 288)" onmouseover="showTip(event, 'fs96', 288)" class="id">mf</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 289)" onmouseover="showTip(event, 'fs51', 289)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs103', 290)" onmouseover="showTip(event, 'fs103', 290)" class="id">resample</span> <span onmouseout="hideTip(event, 'fs98', 291)" onmouseover="showTip(event, 'fs98', 291)" class="id">keys</span> <span onmouseout="hideTip(event, 'fs104', 292)" onmouseover="showTip(event, 'fs104', 292)" class="vt">Direction</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs105', 293)" onmouseover="showTip(event, 'fs105', 293)" class="id">Forward</span>
+
+<span class="c">// For each key, collect values for smaller keys until the </span>
+<span class="c">// previous one (the first chunk will be singleton series)</span>
+<span onmouseout="hideTip(event, 'fs96', 294)" onmouseover="showTip(event, 'fs96', 294)" class="id">mf</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 295)" onmouseover="showTip(event, 'fs51', 295)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs103', 296)" onmouseover="showTip(event, 'fs103', 296)" class="id">resample</span> <span onmouseout="hideTip(event, 'fs98', 297)" onmouseover="showTip(event, 'fs98', 297)" class="id">keys</span> <span onmouseout="hideTip(event, 'fs104', 298)" onmouseover="showTip(event, 'fs104', 298)" class="vt">Direction</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs106', 299)" onmouseover="showTip(event, 'fs106', 299)" class="id">Backward</span>
+
+<span class="c">// Aggregate each chunk of preceding values using mean</span>
+<span onmouseout="hideTip(event, 'fs96', 300)" onmouseover="showTip(event, 'fs96', 300)" class="id">mf</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 301)" onmouseover="showTip(event, 'fs51', 301)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs107', 302)" onmouseover="showTip(event, 'fs107', 302)" class="id">resampleInto</span> <span onmouseout="hideTip(event, 'fs98', 303)" onmouseover="showTip(event, 'fs98', 303)" class="id">keys</span> <span onmouseout="hideTip(event, 'fs104', 304)" onmouseover="showTip(event, 'fs104', 304)" class="vt">Direction</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs106', 305)" onmouseover="showTip(event, 'fs106', 305)" class="id">Backward</span> 
+  <span class="pn">(</span><span class="k">fun</span> <span onmouseout="hideTip(event, 'fs91', 306)" onmouseover="showTip(event, 'fs91', 306)" class="id">k</span> <span onmouseout="hideTip(event, 'fs94', 307)" onmouseover="showTip(event, 'fs94', 307)" class="id">s</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs54', 308)" onmouseover="showTip(event, 'fs54', 308)" class="rt">Stats</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs55', 309)" onmouseover="showTip(event, 'fs55', 309)" class="id">mean</span> <span onmouseout="hideTip(event, 'fs94', 310)" onmouseover="showTip(event, 'fs94', 310)" class="id">s</span><span class="pn">)</span>
+
+<span class="c">// Resampling is also available via the member syntax</span>
+<span onmouseout="hideTip(event, 'fs96', 311)" onmouseover="showTip(event, 'fs96', 311)" class="fn">mf</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs108', 312)" onmouseover="showTip(event, 'fs108', 312)" class="id">Resample</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs98', 313)" onmouseover="showTip(event, 'fs98', 313)" class="id">keys</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs104', 314)" onmouseover="showTip(event, 'fs104', 314)" class="vt">Direction</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs105', 315)" onmouseover="showTip(event, 'fs105', 315)" class="id">Forward</span><span class="pn">)</span>
+</code></pre></td>
+</tr>
+</table>
+<p>The second kind of resampling is based on a projection from existing keys in
+the series. The operation then collects chunks such that the projection returns
+equal keys. This is very similar to <code>Series.groupBy</code>, but resampling assumes
+that the projection preserves the ordering of the keys, and so it only aggregates
+consequent keys.</p>
+<p>The typical scenario is when you have time series with date time information
+(here <code>DateTimeOffset</code>) and want to get information for each day (we use
+<code>DateTime</code> with empty time to represent dates):</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+<span class="l">8: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Generate 2.5 months of data in 1.7 hour offsets</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs109', 316)" onmouseover="showTip(event, 'fs109', 316)" class="id">ds</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs23', 317)" onmouseover="showTip(event, 'fs23', 317)" class="fn">stock1</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs27', 318)" onmouseover="showTip(event, 'fs27', 318)" class="vt">TimeSpan</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs110', 319)" onmouseover="showTip(event, 'fs110', 319)" class="id">FromHours</span><span class="pn">(</span><span class="n">1.7</span><span class="pn">)</span><span class="pn">)</span> <span class="n">1000</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs30', 320)" onmouseover="showTip(event, 'fs30', 320)" class="fn">series</span>
+
+<span class="c">// Sample by day (of type &#39;DateTime&#39;)</span>
+<span onmouseout="hideTip(event, 'fs109', 321)" onmouseover="showTip(event, 'fs109', 321)" class="id">ds</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 322)" onmouseover="showTip(event, 'fs51', 322)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs111', 323)" onmouseover="showTip(event, 'fs111', 323)" class="id">resampleEquiv</span> <span class="pn">(</span><span class="k">fun</span> <span onmouseout="hideTip(event, 'fs112', 324)" onmouseover="showTip(event, 'fs112', 324)" class="id">d</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs112', 325)" onmouseover="showTip(event, 'fs112', 325)" class="id">d</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs80', 326)" onmouseover="showTip(event, 'fs80', 326)" class="id">Date</span><span class="pn">)</span>
+
+<span class="c">// Sample by day (of type &#39;DateTime&#39;)</span>
+<span onmouseout="hideTip(event, 'fs109', 327)" onmouseover="showTip(event, 'fs109', 327)" class="fn">ds</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs113', 328)" onmouseover="showTip(event, 'fs113', 328)" class="id">ResampleEquivalence</span><span class="pn">(</span><span class="k">fun</span> <span onmouseout="hideTip(event, 'fs112', 329)" onmouseover="showTip(event, 'fs112', 329)" class="id">d</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs112', 330)" onmouseover="showTip(event, 'fs112', 330)" class="id">d</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs80', 331)" onmouseover="showTip(event, 'fs80', 331)" class="id">Date</span><span class="pn">)</span>
+</code></pre></td>
+</tr>
+</table>
+<p>The same operation can be easily implemented using <code>Series.chunkWhile</code>, but as
+it is often used in the context of sampling, it is included in the library as a
+primitive. Moreover, we'll see that it is closely related to uniform resampling.</p>
+<p>Note that the resulting series has different type of keys than the source. The
+source has keys <code>DateTimeOffset</code> (representing date with time) while the resulting
+keys are of the type returned by the projection (here, <code>DateTime</code> representing just
+dates).</p>
+<h3>Uniform resampling</h3>
+<p>In the previous section, we looked at <code>resampleEquiv</code>, which is useful if you want
+to sample time series by keys with "lower resolution" - for example, sample date time
+observations by date. However, the function discussed in the previous section only
+generates values for which there are keys in the input sequence - if there is no
+observation for an entire day, then the day will not be included in the result.</p>
+<p>If you want to create sampling that assigns value to each key in the range specified
+by the input sequence, then you can use <em>uniform resampling</em>.</p>
+<p>The idea is that uniform resampling applies the key projection to the smallest and
+greatest key of the input (e.g. gets date of the first and last observation) and then
+it generates all keys in the projected space (e.g. all dates). Then it picks the
+best value for each of the generated key.</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+<span class="l">16: </span>
+<span class="l">17: </span>
+<span class="l">18: </span>
+<span class="l">19: </span>
+<span class="l">20: </span>
+<span class="l">21: </span>
+<span class="l">22: </span>
+<span class="l">23: </span>
+<span class="l">24: </span>
+<span class="l">25: </span>
+<span class="l">26: </span>
+<span class="l">27: </span>
+<span class="l">28: </span>
+<span class="l">29: </span>
+<span class="l">30: </span>
+<span class="l">31: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Create input data with non-uniformly distributed keys</span>
+<span class="c">// (1 value for 10/3, three for 10/4 and two for 10/6)</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs114', 332)" onmouseover="showTip(event, 'fs114', 332)" class="id">days</span> <span class="o">=</span>
+  <span class="pn">[</span> <span class="s">&quot;10/3/2013 12:00:00&quot;</span><span class="pn">;</span> <span class="s">&quot;10/4/2013 15:00:00&quot;</span> 
+    <span class="s">&quot;10/4/2013 18:00:00&quot;</span><span class="pn">;</span> <span class="s">&quot;10/4/2013 19:00:00&quot;</span>
+    <span class="s">&quot;10/6/2013 15:00:00&quot;</span><span class="pn">;</span> <span class="s">&quot;10/6/2013 21:00:00&quot;</span> <span class="pn">]</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs115', 333)" onmouseover="showTip(event, 'fs115', 333)" class="id">nu</span> <span class="o">=</span> 
+  <span onmouseout="hideTip(event, 'fs23', 334)" onmouseover="showTip(event, 'fs23', 334)" class="fn">stock1</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs27', 335)" onmouseover="showTip(event, 'fs27', 335)" class="vt">TimeSpan</span><span class="pn">(</span><span class="n">24</span><span class="pn">,</span><span class="n">0</span><span class="pn">,</span><span class="n">0</span><span class="pn">)</span><span class="pn">)</span> <span class="n">10</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs30', 336)" onmouseover="showTip(event, 'fs30', 336)" class="fn">series</span>
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 337)" onmouseover="showTip(event, 'fs51', 337)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs116', 338)" onmouseover="showTip(event, 'fs116', 338)" class="id">indexWith</span> <span onmouseout="hideTip(event, 'fs114', 339)" onmouseover="showTip(event, 'fs114', 339)" class="id">days</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 340)" onmouseover="showTip(event, 'fs51', 340)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs117', 341)" onmouseover="showTip(event, 'fs117', 341)" class="id">mapKeys</span> <span onmouseout="hideTip(event, 'fs20', 342)" onmouseover="showTip(event, 'fs20', 342)" class="vt">DateTimeOffset</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs118', 343)" onmouseover="showTip(event, 'fs118', 343)" class="id">Parse</span>
+
+<span class="c">// Generate uniform resampling based on dates. Fill</span>
+<span class="c">// missing chunks with nearest smaller observations.</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs119', 344)" onmouseover="showTip(event, 'fs119', 344)" class="id">sampled</span> <span class="o">=</span>
+  <span onmouseout="hideTip(event, 'fs115', 345)" onmouseover="showTip(event, 'fs115', 345)" class="id">nu</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 346)" onmouseover="showTip(event, 'fs51', 346)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs120', 347)" onmouseover="showTip(event, 'fs120', 347)" class="id">resampleUniform</span> <span onmouseout="hideTip(event, 'fs37', 348)" onmouseover="showTip(event, 'fs37', 348)" class="vt">Lookup</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs38', 349)" onmouseover="showTip(event, 'fs38', 349)" class="id">ExactOrSmaller</span> 
+    <span class="pn">(</span><span class="k">fun</span> <span onmouseout="hideTip(event, 'fs121', 350)" onmouseover="showTip(event, 'fs121', 350)" class="id">dt</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs121', 351)" onmouseover="showTip(event, 'fs121', 351)" class="id">dt</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs80', 352)" onmouseover="showTip(event, 'fs80', 352)" class="id">Date</span><span class="pn">)</span> <span class="pn">(</span><span class="k">fun</span> <span onmouseout="hideTip(event, 'fs122', 353)" onmouseover="showTip(event, 'fs122', 353)" class="id">dt</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs122', 354)" onmouseover="showTip(event, 'fs122', 354)" class="fn">dt</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs123', 355)" onmouseover="showTip(event, 'fs123', 355)" class="id">AddDays</span><span class="pn">(</span><span class="n">1.0</span><span class="pn">)</span><span class="pn">)</span>
+
+<span class="c">// Same thing using the C#-friendly member syntax</span>
+<span class="c">// (Lookup.ExactOrSmaller is the default value)</span>
+<span onmouseout="hideTip(event, 'fs115', 356)" onmouseover="showTip(event, 'fs115', 356)" class="fn">nu</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs124', 357)" onmouseover="showTip(event, 'fs124', 357)" class="id">ResampleUniform</span><span class="pn">(</span><span class="pn">(</span><span class="k">fun</span> <span onmouseout="hideTip(event, 'fs121', 358)" onmouseover="showTip(event, 'fs121', 358)" class="id">dt</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs121', 359)" onmouseover="showTip(event, 'fs121', 359)" class="id">dt</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs80', 360)" onmouseover="showTip(event, 'fs80', 360)" class="id">Date</span><span class="pn">)</span><span class="pn">,</span> <span class="pn">(</span><span class="k">fun</span> <span onmouseout="hideTip(event, 'fs122', 361)" onmouseover="showTip(event, 'fs122', 361)" class="id">dt</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs122', 362)" onmouseover="showTip(event, 'fs122', 362)" class="fn">dt</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs123', 363)" onmouseover="showTip(event, 'fs123', 363)" class="id">AddDays</span><span class="pn">(</span><span class="n">1.0</span><span class="pn">)</span><span class="pn">)</span><span class="pn">)</span>
+
+<span class="c">// Turn into frame with multiple columns for each day</span>
+<span class="c">// (to format the result in a readable way)</span>
+<span onmouseout="hideTip(event, 'fs119', 364)" onmouseover="showTip(event, 'fs119', 364)" class="id">sampled</span> 
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 365)" onmouseover="showTip(event, 'fs51', 365)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs125', 366)" onmouseover="showTip(event, 'fs125', 366)" class="id">mapValues</span> <span onmouseout="hideTip(event, 'fs51', 367)" onmouseover="showTip(event, 'fs51', 367)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs126', 368)" onmouseover="showTip(event, 'fs126', 368)" class="id">indexOrdinally</span>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs40', 369)" onmouseover="showTip(event, 'fs40', 369)" class="m">Frame</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs127', 370)" onmouseover="showTip(event, 'fs127', 370)" class="id">ofRows</span>
+<span class="fsi">val it : Frame&lt;DateTime,int&gt; =</span>
+<span class="fsi">             0      1          2                </span>
+<span class="fsi">10/3/2013 -&gt; 21.45  &lt;missing&gt;  &lt;missing&gt;        </span>
+<span class="fsi">10/4/2013 -&gt; 21.63  19.83      17.51</span>
+<span class="fsi">10/5/2013 -&gt; 17.51  &lt;missing&gt;  &lt;missing&gt;        </span>
+<span class="fsi">10/6/2013 -&gt; 18.80  20.93      &lt;missing&gt;        </span>
+</code></pre></td>
+</tr>
+</table>
+<p>To perform the uniform resampling, we need to specify how to project (resampled) keys
+from original keys (we return the <code>Date</code>), how to calculate the next key (add 1 day)
+and how to fill missing values.</p>
+<p>After performing the resampling, we turn the data into a data frame, so that we can
+nicely see the results. The individual chunks have the actual observation times as keys,
+so we replace those with just integers (using <code>Series.indexOrdinal</code>). The result contains
+a simple ordered row of observations for each day.</p>
+<p>The important thing is that there is an observation for each day - even for for 10/5/2013
+which does not have any corresponding observations in the input. We call the resampling
+function with <code>Lookup.ExactOrSmaller</code>, so the value 17.51 is picked from the last observation
+of the previous day (<code>Lookup.ExactOrGreater</code> would pick 18.80 and <code>Lookup.Exact</code> would give
+us an empty series for that date).</p>
+<h3>Sampling time series</h3>
+<p>Perhaps the most common sampling operation that you might want to do is to sample time series
+by a specified <code>TimeSpan</code>. Although this can be easily done by using some of the functions above,
+the library provides helper functions exactly for this purpose:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Generate 1k observations with 1.7 hour offsets</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs128', 371)" onmouseover="showTip(event, 'fs128', 371)" class="id">pr</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs23', 372)" onmouseover="showTip(event, 'fs23', 372)" class="fn">stock1</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs27', 373)" onmouseover="showTip(event, 'fs27', 373)" class="vt">TimeSpan</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs110', 374)" onmouseover="showTip(event, 'fs110', 374)" class="id">FromHours</span><span class="pn">(</span><span class="n">1.7</span><span class="pn">)</span><span class="pn">)</span> <span class="n">1000</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs30', 375)" onmouseover="showTip(event, 'fs30', 375)" class="fn">series</span>
+
+<span class="c">// Sample at 2 hour intervals; &#39;Backward&#39; specifies that</span>
+<span class="c">// we collect all previous values into a chunk.</span>
+<span onmouseout="hideTip(event, 'fs128', 376)" onmouseover="showTip(event, 'fs128', 376)" class="id">pr</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 377)" onmouseover="showTip(event, 'fs51', 377)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs129', 378)" onmouseover="showTip(event, 'fs129', 378)" class="id">sampleTime</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs27', 379)" onmouseover="showTip(event, 'fs27', 379)" class="vt">TimeSpan</span><span class="pn">(</span><span class="n">2</span><span class="pn">,</span> <span class="n">0</span><span class="pn">,</span> <span class="n">0</span><span class="pn">)</span><span class="pn">)</span> <span onmouseout="hideTip(event, 'fs104', 380)" onmouseover="showTip(event, 'fs104', 380)" class="vt">Direction</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs106', 381)" onmouseover="showTip(event, 'fs106', 381)" class="id">Backward</span>
+
+<span class="c">// Same thing using member syntax - &#39;Backward&#39; is the dafult</span>
+<span onmouseout="hideTip(event, 'fs128', 382)" onmouseover="showTip(event, 'fs128', 382)" class="fn">pr</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs130', 383)" onmouseover="showTip(event, 'fs130', 383)" class="id">Sample</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs27', 384)" onmouseover="showTip(event, 'fs27', 384)" class="vt">TimeSpan</span><span class="pn">(</span><span class="n">2</span><span class="pn">,</span> <span class="n">0</span><span class="pn">,</span> <span class="n">0</span><span class="pn">)</span><span class="pn">)</span>
+
+<span class="c">// Get the most recent value, sampled at 2 hour intervals</span>
+<span onmouseout="hideTip(event, 'fs128', 385)" onmouseover="showTip(event, 'fs128', 385)" class="id">pr</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 386)" onmouseover="showTip(event, 'fs51', 386)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs131', 387)" onmouseover="showTip(event, 'fs131', 387)" class="id">sampleTimeInto</span>
+  <span class="pn">(</span><span onmouseout="hideTip(event, 'fs27', 388)" onmouseover="showTip(event, 'fs27', 388)" class="vt">TimeSpan</span><span class="pn">(</span><span class="n">2</span><span class="pn">,</span> <span class="n">0</span><span class="pn">,</span> <span class="n">0</span><span class="pn">)</span><span class="pn">)</span> <span onmouseout="hideTip(event, 'fs104', 389)" onmouseover="showTip(event, 'fs104', 389)" class="vt">Direction</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs106', 390)" onmouseover="showTip(event, 'fs106', 390)" class="id">Backward</span> <span onmouseout="hideTip(event, 'fs51', 391)" onmouseover="showTip(event, 'fs51', 391)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs132', 392)" onmouseover="showTip(event, 'fs132', 392)" class="id">lastValue</span>
+</code></pre></td>
+</tr>
+</table>
+<a name="stats"></a>
+<h2>Calculations and statistics</h2>
+<p>In the final section of this tutorial, we look at writing some calculations over time series. Many of the
+functions demonstrated here can be also used on unordered data frames and series.</p>
+<h3>Shifting and differences</h3>
+<p>First of all, let's look at functions that we need when we need to compare subsequent values in
+the series. We already demonstrated how to do this using <code>Series.pairwise</code>. In many cases,
+the same thing can be done using an operation that operates over the entire series.</p>
+<p>The two useful functions here are:</p>
+<ul>
+<li><code>Series.diff</code> calcualtes the difference between current and n-<em>th</em>  previous element</li>
+<li><code>Series.shift</code> shifts the values of a series by a specified offset</li>
+</ul>
+<p>The following snippet illustrates how both functions work:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+<span class="l">16: </span>
+<span class="l">17: </span>
+<span class="l">18: </span>
+<span class="l">19: </span>
+<span class="l">20: </span>
+<span class="l">21: </span>
+<span class="l">22: </span>
+<span class="l">23: </span>
+<span class="l">24: </span>
+<span class="l">25: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Generate sample data with 1.7 hour offsets</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs133', 393)" onmouseover="showTip(event, 'fs133', 393)" class="id">sample</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs23', 394)" onmouseover="showTip(event, 'fs23', 394)" class="fn">stock1</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs27', 395)" onmouseover="showTip(event, 'fs27', 395)" class="vt">TimeSpan</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs110', 396)" onmouseover="showTip(event, 'fs110', 396)" class="id">FromHours</span><span class="pn">(</span><span class="n">1.7</span><span class="pn">)</span><span class="pn">)</span> <span class="n">6</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs30', 397)" onmouseover="showTip(event, 'fs30', 397)" class="fn">series</span>
+
+<span class="c">// Calculates: new[i] = s[i] - s[i-1]</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs134', 398)" onmouseover="showTip(event, 'fs134', 398)" class="id">diff1</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs133', 399)" onmouseover="showTip(event, 'fs133', 399)" class="id">sample</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 400)" onmouseover="showTip(event, 'fs51', 400)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs135', 401)" onmouseover="showTip(event, 'fs135', 401)" class="id">diff</span> <span class="n">1</span>
+<span class="c">// Diff in the opposite direction</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs136', 402)" onmouseover="showTip(event, 'fs136', 402)" class="id">diffM1</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs133', 403)" onmouseover="showTip(event, 'fs133', 403)" class="id">sample</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 404)" onmouseover="showTip(event, 'fs51', 404)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs135', 405)" onmouseover="showTip(event, 'fs135', 405)" class="id">diff</span> <span class="o">-</span><span class="n">1</span>
+
+<span class="c">// Shift series values by 1</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs137', 406)" onmouseover="showTip(event, 'fs137', 406)" class="id">shift1</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs133', 407)" onmouseover="showTip(event, 'fs133', 407)" class="id">sample</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 408)" onmouseover="showTip(event, 'fs51', 408)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs138', 409)" onmouseover="showTip(event, 'fs138', 409)" class="id">shift</span> <span class="n">1</span>
+
+<span class="c">// Align all results in a frame to see the results</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs139', 410)" onmouseover="showTip(event, 'fs139', 410)" class="id">df</span> <span class="o">=</span> 
+  <span class="pn">[</span> <span class="s">&quot;Shift +1&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs137', 411)" onmouseover="showTip(event, 'fs137', 411)" class="id">shift1</span> 
+    <span class="s">&quot;Diff +1&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs134', 412)" onmouseover="showTip(event, 'fs134', 412)" class="id">diff1</span> 
+    <span class="s">&quot;Diff&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs133', 413)" onmouseover="showTip(event, 'fs133', 413)" class="id">sample</span> <span class="o">-</span> <span onmouseout="hideTip(event, 'fs137', 414)" onmouseover="showTip(event, 'fs137', 414)" class="id">shift1</span> 
+    <span class="s">&quot;Orig&quot;</span> <span class="o">=&gt;</span> <span onmouseout="hideTip(event, 'fs133', 415)" onmouseover="showTip(event, 'fs133', 415)" class="id">sample</span> <span class="pn">]</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs40', 416)" onmouseover="showTip(event, 'fs40', 416)" class="m">Frame</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs41', 417)" onmouseover="showTip(event, 'fs41', 417)" class="id">ofColumns</span> 
+<span class="fsi">val it : Frame&lt;DateTimeOffset,string&gt; =</span>
+<span class="fsi">                 Diff       Diff +1    Orig   Shift +1         </span>
+<span class="fsi">  12:00:00 AM -&gt; &lt;missing&gt;  &lt;missing&gt;  21.73  &lt;missing&gt;        </span>
+<span class="fsi">   1:42:00 AM -&gt;  1.73       1.73      23.47  21.73 </span>
+<span class="fsi">   3:24:00 AM -&gt; -0.83      -0.83      22.63  23.47 </span>
+<span class="fsi">   5:06:00 AM -&gt;  2.37       2.37      25.01  22.63 </span>
+<span class="fsi">   6:48:00 AM -&gt; -1.57      -1.57      23.43  25.01 </span>
+<span class="fsi">   8:30:00 AM -&gt;  0.09       0.09      23.52  23.43 </span>
+</code></pre></td>
+</tr>
+</table>
+<p>In the above snippet, we first calcluate difference using the <code>Series.diff</code> function.
+Then we also show how to do that using <code>Series.shift</code> and binary operator applied
+to two series (<code>sample - shift</code>). The following section provides more details.
+So far, we also used the functional notation (e.g. <code>sample |&gt; Series.diff 1</code>), but
+all operations can be called using the member syntax - very often, this gives you
+a shorter syntax. This is also shown in the next few snippets.</p>
+<h3>Operators and functions</h3>
+<p>Time series also supports a large number of standard F# functions such as <code>log</code> and <code>abs</code>.
+You can also use standard numerical operators to apply some operation to all elements
+of the series.</p>
+<p>Because series are indexed, we can also apply binary operators to two series. This
+automatically aligns the series and then applies the operation on corresponding elements.</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+<span class="l">16: </span>
+<span class="l">17: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Subtract previous value from the current value</span>
+<span onmouseout="hideTip(event, 'fs133', 418)" onmouseover="showTip(event, 'fs133', 418)" class="id">sample</span> <span class="o">-</span> <span onmouseout="hideTip(event, 'fs133', 419)" onmouseover="showTip(event, 'fs133', 419)" class="fn">sample</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs140', 420)" onmouseover="showTip(event, 'fs140', 420)" class="id">Shift</span><span class="pn">(</span><span class="n">1</span><span class="pn">)</span>
+
+<span class="c">// Calculate logarithm of such differences</span>
+<span onmouseout="hideTip(event, 'fs141', 421)" onmouseover="showTip(event, 'fs141', 421)" class="fn">log</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs133', 422)" onmouseover="showTip(event, 'fs133', 422)" class="id">sample</span> <span class="o">-</span> <span onmouseout="hideTip(event, 'fs133', 423)" onmouseover="showTip(event, 'fs133', 423)" class="fn">sample</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs140', 424)" onmouseover="showTip(event, 'fs140', 424)" class="id">Shift</span><span class="pn">(</span><span class="n">1</span><span class="pn">)</span><span class="pn">)</span>
+
+<span class="c">// Calculate square of differences</span>
+<span onmouseout="hideTip(event, 'fs133', 425)" onmouseover="showTip(event, 'fs133', 425)" class="fn">sample</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs142', 426)" onmouseover="showTip(event, 'fs142', 426)" class="id">Diff</span><span class="pn">(</span><span class="n">1</span><span class="pn">)</span> <span class="o">**</span> <span class="n">2.0</span>
+
+<span class="c">// Calculate average of value and two immediate neighbors</span>
+<span class="pn">(</span><span onmouseout="hideTip(event, 'fs133', 427)" onmouseover="showTip(event, 'fs133', 427)" class="fn">sample</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs140', 428)" onmouseover="showTip(event, 'fs140', 428)" class="id">Shift</span><span class="pn">(</span><span class="o">-</span><span class="n">1</span><span class="pn">)</span> <span class="o">+</span> <span onmouseout="hideTip(event, 'fs133', 429)" onmouseover="showTip(event, 'fs133', 429)" class="id">sample</span> <span class="o">+</span> <span onmouseout="hideTip(event, 'fs133', 430)" onmouseover="showTip(event, 'fs133', 430)" class="fn">sample</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs140', 431)" onmouseover="showTip(event, 'fs140', 431)" class="id">Shift</span><span class="pn">(</span><span class="n">2</span><span class="pn">)</span><span class="pn">)</span> <span class="o">/</span> <span class="n">3.0</span>
+
+<span class="c">// Get absolute value of differences</span>
+<span onmouseout="hideTip(event, 'fs143', 432)" onmouseover="showTip(event, 'fs143', 432)" class="fn">abs</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs133', 433)" onmouseover="showTip(event, 'fs133', 433)" class="id">sample</span> <span class="o">-</span> <span onmouseout="hideTip(event, 'fs133', 434)" onmouseover="showTip(event, 'fs133', 434)" class="fn">sample</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs140', 435)" onmouseover="showTip(event, 'fs140', 435)" class="id">Shift</span><span class="pn">(</span><span class="n">1</span><span class="pn">)</span><span class="pn">)</span>
+
+<span class="c">// Get absolute value of distance from the mean</span>
+<span onmouseout="hideTip(event, 'fs143', 436)" onmouseover="showTip(event, 'fs143', 436)" class="fn">abs</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs133', 437)" onmouseover="showTip(event, 'fs133', 437)" class="id">sample</span> <span class="o">-</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs54', 438)" onmouseover="showTip(event, 'fs54', 438)" class="rt">Stats</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs55', 439)" onmouseover="showTip(event, 'fs55', 439)" class="id">mean</span> <span onmouseout="hideTip(event, 'fs133', 440)" onmouseover="showTip(event, 'fs133', 440)" class="id">sample</span><span class="pn">)</span><span class="pn">)</span>
+</code></pre></td>
+</tr>
+</table>
+<p>The time series library provides a large number of functions that can be applied in this
+way. These include trigonometric functions (<code>sin</code>, <code>cos</code>, ...), rounding functions
+(<code>round</code>, <code>floor</code>, <code>ceil</code>), exponentials and logarithms (<code>exp</code>, <code>log</code>, <code>log10</code>) and more.
+In general, whenever there is a built-in numerical F# function that can be used on
+standard types, the time series library should support it too.</p>
+<p>However, what can you do when you write a custom function to do some calculation and
+want to apply it to all series elements? Let's have a look:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+<span class="l">8: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Truncate value to interval [-1.0, +1.0]</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs144', 441)" onmouseover="showTip(event, 'fs144', 441)" class="fn">adjust</span> <span onmouseout="hideTip(event, 'fs145', 442)" onmouseover="showTip(event, 'fs145', 442)" class="id">v</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs146', 443)" onmouseover="showTip(event, 'fs146', 443)" class="fn">min</span> <span class="n">1.0</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs147', 444)" onmouseover="showTip(event, 'fs147', 444)" class="fn">max</span> <span class="o">-</span><span class="n">1.0</span> <span onmouseout="hideTip(event, 'fs145', 445)" onmouseover="showTip(event, 'fs145', 445)" class="id">v</span><span class="pn">)</span>
+
+<span class="c">// Apply adjustment to all function</span>
+<span onmouseout="hideTip(event, 'fs144', 446)" onmouseover="showTip(event, 'fs144', 446)" class="fn">adjust</span> <span class="o">$</span> <span onmouseout="hideTip(event, 'fs133', 447)" onmouseover="showTip(event, 'fs133', 447)" class="fn">sample</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs142', 448)" onmouseover="showTip(event, 'fs142', 448)" class="id">Diff</span><span class="pn">(</span><span class="n">1</span><span class="pn">)</span>
+
+<span class="c">// The $ operator is a shorthand for</span>
+<span onmouseout="hideTip(event, 'fs133', 449)" onmouseover="showTip(event, 'fs133', 449)" class="fn">sample</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs142', 450)" onmouseover="showTip(event, 'fs142', 450)" class="id">Diff</span><span class="pn">(</span><span class="n">1</span><span class="pn">)</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 451)" onmouseover="showTip(event, 'fs51', 451)" class="m">Series</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs125', 452)" onmouseover="showTip(event, 'fs125', 452)" class="id">mapValues</span> <span onmouseout="hideTip(event, 'fs144', 453)" onmouseover="showTip(event, 'fs144', 453)" class="fn">adjust</span>
+</code></pre></td>
+</tr>
+</table>
+<p>In general, the best way to apply custom functions to all values in a series is to
+align the series (using either <code>Series.join</code> or <code>Series.joinAlign</code>) into a single series
+containing tuples and then apply <code>Series.mapValues</code>. The library also provides the <code>$</code> operator
+that simplifies the last step - <code>f $ s</code> applies the function <code>f</code> to all values of the series <code>s</code>.</p>
+<h3>Data frame operations</h3>
+<p>Finally, many of the time series operations demonstrated above can be applied to entire
+data frames as well. This is particularly useful if you have data frame that contains multiple
+aligned time series of similar structure (for example, if you have multiple stock prices or
+open-high-low-close values for a given stock).</p>
+<p>The following snippet is a quick overview of what you can do:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">/// Multiply all numeric columns by a given constant</span>
+<span onmouseout="hideTip(event, 'fs139', 454)" onmouseover="showTip(event, 'fs139', 454)" class="id">df</span> <span class="o">*</span> <span class="n">0.65</span>
+
+<span class="c">// Apply function to all columns in all series</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs148', 455)" onmouseover="showTip(event, 'fs148', 455)" class="fn">conv</span> <span onmouseout="hideTip(event, 'fs149', 456)" onmouseover="showTip(event, 'fs149', 456)" class="id">x</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs146', 457)" onmouseover="showTip(event, 'fs146', 457)" class="fn">min</span> <span onmouseout="hideTip(event, 'fs149', 458)" onmouseover="showTip(event, 'fs149', 458)" class="id">x</span> <span class="n">20.0</span>
+<span onmouseout="hideTip(event, 'fs139', 459)" onmouseover="showTip(event, 'fs139', 459)" class="id">df</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs40', 460)" onmouseover="showTip(event, 'fs40', 460)" class="m">Frame</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs150', 461)" onmouseover="showTip(event, 'fs150', 461)" class="id">mapRowValues</span> <span class="pn">(</span><span class="k">fun</span> <span onmouseout="hideTip(event, 'fs151', 462)" onmouseover="showTip(event, 'fs151', 462)" class="id">os</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs148', 463)" onmouseover="showTip(event, 'fs148', 463)" class="fn">conv</span> <span class="o">$</span> <span onmouseout="hideTip(event, 'fs151', 464)" onmouseover="showTip(event, 'fs151', 464)" class="fn">os</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs152', 465)" onmouseover="showTip(event, 'fs152', 465)" class="id">As</span><span class="pn">&lt;</span><span onmouseout="hideTip(event, 'fs153', 466)" onmouseover="showTip(event, 'fs153', 466)" class="vt">float</span><span class="pn">&gt;</span><span class="pn">(</span><span class="pn">)</span><span class="pn">)</span>
+   <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs40', 467)" onmouseover="showTip(event, 'fs40', 467)" class="m">Frame</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs127', 468)" onmouseover="showTip(event, 'fs127', 468)" class="id">ofRows</span>
+
+<span class="c">// Sum each column and divide results by a constant</span>
+<span onmouseout="hideTip(event, 'fs54', 469)" onmouseover="showTip(event, 'fs54', 469)" class="rt">Stats</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs154', 470)" onmouseover="showTip(event, 'fs154', 470)" class="id">sum</span> <span onmouseout="hideTip(event, 'fs139', 471)" onmouseover="showTip(event, 'fs139', 471)" class="id">df</span> <span class="o">/</span> <span class="n">6.0</span>
+<span class="c">// Divide sum by mean of each frame column</span>
+<span onmouseout="hideTip(event, 'fs54', 472)" onmouseover="showTip(event, 'fs54', 472)" class="rt">Stats</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs154', 473)" onmouseover="showTip(event, 'fs154', 473)" class="id">sum</span> <span onmouseout="hideTip(event, 'fs139', 474)" onmouseover="showTip(event, 'fs139', 474)" class="id">df</span> <span class="o">/</span> <span onmouseout="hideTip(event, 'fs54', 475)" onmouseover="showTip(event, 'fs54', 475)" class="rt">Stats</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs55', 476)" onmouseover="showTip(event, 'fs55', 476)" class="id">mean</span> <span onmouseout="hideTip(event, 'fs139', 477)" onmouseover="showTip(event, 'fs139', 477)" class="id">df</span>
+</code></pre></td>
+</tr>
+</table>
+
+
+<div class="tip" id="fs1">namespace System</div>
+<div class="tip" id="fs2">Multiple items<br />namespace FSharp<br /><br />--------------------<br />namespace Microsoft.FSharp</div>
+<div class="tip" id="fs3">Multiple items<br />namespace FSharp.Data<br /><br />--------------------<br />namespace Microsoft.FSharp.Data</div>
+<div class="tip" id="fs4">namespace Deedle</div>
+<div class="tip" id="fs5">namespace FSharp.Charting</div>
+<div class="tip" id="fs6">val root : string</div>
+<div class="tip" id="fs7">namespace MathNet</div>
+<div class="tip" id="fs8">namespace MathNet.Numerics</div>
+<div class="tip" id="fs9">namespace MathNet.Numerics.Distributions</div>
+<div class="tip" id="fs10">val randomPrice : seed:int -&gt; drift:float -&gt; volatility:float -&gt; initial:float -&gt; start:DateTimeOffset -&gt; span:TimeSpan -&gt; count:int -&gt; seq&lt;DateTimeOffset * float&gt;<br /><em><br /><br />&#160;Generates price using geometric Brownian motion<br />&#160;&#160;- &#39;seed&#39; specifies the seed for random number generator<br />&#160;&#160;- &#39;drift&#39; and &#39;volatility&#39; set properties of the price movement<br />&#160;&#160;- &#39;initial&#39; and &#39;start&#39; specify the initial price and date<br />&#160;&#160;- &#39;span&#39; specifies time span between individual observations<br />&#160;&#160;- &#39;count&#39; is the number of required values to generate</em></div>
+<div class="tip" id="fs11">val seed : int</div>
+<div class="tip" id="fs12">val drift : float</div>
+<div class="tip" id="fs13">val volatility : float</div>
+<div class="tip" id="fs14">val initial : float</div>
+<div class="tip" id="fs15">val start : DateTimeOffset</div>
+<div class="tip" id="fs16">val span : TimeSpan</div>
+<div class="tip" id="fs17">val count : int</div>
+<div class="tip" id="fs18">let dist = Normal(0.0, 1.0, RandomSource=Random(seed))  <br />&#160;&#160;let dt = (span:TimeSpan).TotalDays / 250.0<br />&#160;&#160;let driftExp = (drift - 0.5 * pown volatility 2) * dt<br />&#160;&#160;let randExp = volatility * (sqrt dt)<br />&#160;&#160;((start:DateTimeOffset), initial) |&gt; Seq.unfold (fun (dt, price) -&gt;<br />&#160;&#160;&#160;&#160;let price = price * exp (driftExp + randExp * dist.Sample()) <br />&#160;&#160;&#160;&#160;Some((dt, price), (dt + span, price))) |&gt; Seq.take count</div>
+<div class="tip" id="fs19">val today : DateTimeOffset</div>
+<div class="tip" id="fs20">Multiple items<br />type DateTimeOffset =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;new : dateTime:DateTime -&gt; DateTimeOffset + 5 overloads<br />&#160;&#160;&#160;&#160;member Add : timeSpan:TimeSpan -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;member AddDays : days:float -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;member AddHours : hours:float -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;member AddMilliseconds : milliseconds:float -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;member AddMinutes : minutes:float -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;member AddMonths : months:int -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;member AddSeconds : seconds:float -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;member AddTicks : ticks:int64 -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;member AddYears : years:int -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;...<br />&#160;&#160;end<br /><br />--------------------<br />DateTimeOffset ()<br />DateTimeOffset(dateTime: DateTime) : DateTimeOffset<br />DateTimeOffset(ticks: int64, offset: TimeSpan) : DateTimeOffset<br />DateTimeOffset(dateTime: DateTime, offset: TimeSpan) : DateTimeOffset<br />DateTimeOffset(year: int, month: int, day: int, hour: int, minute: int, second: int, offset: TimeSpan) : DateTimeOffset<br />DateTimeOffset(year: int, month: int, day: int, hour: int, minute: int, second: int, millisecond: int, offset: TimeSpan) : DateTimeOffset<br />DateTimeOffset(year: int, month: int, day: int, hour: int, minute: int, second: int, millisecond: int, calendar: Globalization.Calendar, offset: TimeSpan) : DateTimeOffset</div>
+<div class="tip" id="fs21">Multiple items<br />type DateTime =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;new : ticks:int64 -&gt; DateTime + 10 overloads<br />&#160;&#160;&#160;&#160;member Add : value:TimeSpan -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddDays : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddHours : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddMilliseconds : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddMinutes : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddMonths : months:int -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddSeconds : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddTicks : value:int64 -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddYears : value:int -&gt; DateTime<br />&#160;&#160;&#160;&#160;...<br />&#160;&#160;end<br /><br />--------------------<br />DateTime ()<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(ticks: int64) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(ticks: int64, kind: DateTimeKind) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, calendar: Globalization.Calendar) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, kind: DateTimeKind) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, calendar: Globalization.Calendar) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, millisecond: int) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, millisecond: int, kind: DateTimeKind) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em></div>
+<div class="tip" id="fs22">property DateTime.Today: DateTime</div>
+<div class="tip" id="fs23">val stock1 : (TimeSpan -&gt; int -&gt; seq&lt;DateTimeOffset * float&gt;)</div>
+<div class="tip" id="fs24">val stock2 : (TimeSpan -&gt; int -&gt; seq&lt;DateTimeOffset * float&gt;)</div>
+<div class="tip" id="fs25">type Chart =<br />&#160;&#160;static member Area : data:seq&lt;#value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string -&gt; GenericChart<br />&#160;&#160;static member Area : data:seq&lt;#key * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string -&gt; GenericChart<br />&#160;&#160;static member Bar : data:seq&lt;#value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string -&gt; GenericChart<br />&#160;&#160;static member Bar : data:seq&lt;#key * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string -&gt; GenericChart<br />&#160;&#160;static member BoxPlotFromData : data:seq&lt;#key * #seq&lt;&#39;a2&gt;&gt; * ?Name:string * ?Title:string * ?Color:Color * ?XTitle:string * ?YTitle:string * ?Percentile:int * ?ShowAverage:bool * ?ShowMedian:bool * ?ShowUnusualValues:bool * ?WhiskerPercentile:int -&gt; GenericChart (requires &#39;a2 :&gt; value)<br />&#160;&#160;static member BoxPlotFromStatistics : data:seq&lt;#key * #value * #value * #value * #value * #value * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string * ?Percentile:int * ?ShowAverage:bool * ?ShowMedian:bool * ?ShowUnusualValues:bool * ?WhiskerPercentile:int -&gt; GenericChart<br />&#160;&#160;static member Bubble : data:seq&lt;#value * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string * ?BubbleMaxSize:int * ?BubbleMinSize:int * ?BubbleScaleMax:float * ?BubbleScaleMin:float * ?UseSizeForLabel:bool -&gt; GenericChart<br />&#160;&#160;static member Bubble : data:seq&lt;#key * #value * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string * ?BubbleMaxSize:int * ?BubbleMinSize:int * ?BubbleScaleMax:float * ?BubbleScaleMin:float * ?UseSizeForLabel:bool -&gt; GenericChart<br />&#160;&#160;static member Candlestick : data:seq&lt;#value * #value * #value * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string -&gt; CandlestickChart<br />&#160;&#160;static member Candlestick : data:seq&lt;#key * #value * #value * #value * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string -&gt; CandlestickChart<br />&#160;&#160;...</div>
+<div class="tip" id="fs26">static member Chart.Combine : charts:seq&lt;ChartTypes.GenericChart&gt; -&gt; ChartTypes.GenericChart</div>
+<div class="tip" id="fs27">Multiple items<br />type TimeSpan =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;new : ticks:int64 -&gt; TimeSpan + 3 overloads<br />&#160;&#160;&#160;&#160;member Add : ts:TimeSpan -&gt; TimeSpan<br />&#160;&#160;&#160;&#160;member CompareTo : value:obj -&gt; int + 1 overload<br />&#160;&#160;&#160;&#160;member Days : int<br />&#160;&#160;&#160;&#160;member Duration : unit -&gt; TimeSpan<br />&#160;&#160;&#160;&#160;member Equals : value:obj -&gt; bool + 1 overload<br />&#160;&#160;&#160;&#160;member GetHashCode : unit -&gt; int<br />&#160;&#160;&#160;&#160;member Hours : int<br />&#160;&#160;&#160;&#160;member Milliseconds : int<br />&#160;&#160;&#160;&#160;member Minutes : int<br />&#160;&#160;&#160;&#160;...<br />&#160;&#160;end<br /><br />--------------------<br />TimeSpan ()<br />TimeSpan(ticks: int64) : TimeSpan<br />TimeSpan(hours: int, minutes: int, seconds: int) : TimeSpan<br />TimeSpan(days: int, hours: int, minutes: int, seconds: int) : TimeSpan<br />TimeSpan(days: int, hours: int, minutes: int, seconds: int, milliseconds: int) : TimeSpan</div>
+<div class="tip" id="fs28">static member Chart.FastLine : data:seq&lt;#value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Drawing.Color * ?XTitle:string * ?YTitle:string -&gt; ChartTypes.GenericChart<br />static member Chart.FastLine : data:seq&lt;#key * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Drawing.Color * ?XTitle:string * ?YTitle:string -&gt; ChartTypes.GenericChart</div>
+<div class="tip" id="fs29">val s1 : Series&lt;DateTimeOffset,float&gt;</div>
+<div class="tip" id="fs30">val series : observations:seq&lt;&#39;a * &#39;b&gt; -&gt; Series&lt;&#39;a,&#39;b&gt; (requires equality)</div>
+<div class="tip" id="fs31">val s2 : Series&lt;DateTimeOffset,float&gt;</div>
+<div class="tip" id="fs32">val s3 : Series&lt;DateTimeOffset,float&gt;</div>
+<div class="tip" id="fs33">member Series.Zip : otherSeries:Series&lt;&#39;K,&#39;V2&gt; -&gt; Series&lt;&#39;K,(&#39;V opt * &#39;V2 opt)&gt;<br />member Series.Zip : otherSeries:Series&lt;&#39;K,&#39;V2&gt; * kind:JoinKind -&gt; Series&lt;&#39;K,(&#39;V opt * &#39;V2 opt)&gt;<br />member Series.Zip : otherSeries:Series&lt;&#39;K,&#39;V2&gt; * kind:JoinKind * lookup:Lookup -&gt; Series&lt;&#39;K,(&#39;V opt * &#39;V2 opt)&gt;</div>
+<div class="tip" id="fs34">type JoinKind =<br />&#160;&#160;| Outer = 0<br />&#160;&#160;| Inner = 1<br />&#160;&#160;| Left = 2<br />&#160;&#160;| Right = 3</div>
+<div class="tip" id="fs35">JoinKind.Left: JoinKind = 2</div>
+<div class="tip" id="fs36">JoinKind.Right: JoinKind = 3</div>
+<div class="tip" id="fs37">type Lookup =<br />&#160;&#160;| Exact = 1<br />&#160;&#160;| ExactOrGreater = 3<br />&#160;&#160;| ExactOrSmaller = 5<br />&#160;&#160;| Greater = 2<br />&#160;&#160;| Smaller = 4</div>
+<div class="tip" id="fs38">Lookup.ExactOrSmaller: Lookup = 5</div>
+<div class="tip" id="fs39">val f1 : Frame&lt;DateTimeOffset,string&gt;</div>
+<div class="tip" id="fs40">Multiple items<br />module Frame<br /><br />from Deedle<br /><br />--------------------<br />type Frame =<br />&#160;&#160;static member ReadReader : reader:IDataReader -&gt; Frame&lt;int,string&gt;<br />&#160;&#160;static member CustomExpanders : Dictionary&lt;Type,Func&lt;obj,seq&lt;string * Type * obj&gt;&gt;&gt;<br />&#160;&#160;static member NonExpandableInterfaces : ResizeArray&lt;Type&gt;<br />&#160;&#160;static member NonExpandableTypes : HashSet&lt;Type&gt;<br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =<br />&#160;&#160;interface IDynamicMetaObjectProvider<br />&#160;&#160;interface INotifyCollectionChanged<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface IFrame<br />&#160;&#160;new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;new : rowIndex:IIndex&lt;&#39;TRowKey&gt; * columnIndex:IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; * indexBuilder:IIndexBuilder * vectorBuilder:IVectorBuilder -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; -&gt; unit<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; -&gt; unit<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;...<br /><br />--------------------<br />new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />new : rowIndex:Indices.IIndex&lt;&#39;TRowKey&gt; * columnIndex:Indices.IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; * indexBuilder:Indices.IIndexBuilder * vectorBuilder:Vectors.IVectorBuilder -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
+<div class="tip" id="fs41">static member Frame.ofColumns : cols:Series&lt;&#39;C,#ISeries&lt;&#39;R&gt;&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br />static member Frame.ofColumns : cols:seq&lt;&#39;C * #ISeries&lt;&#39;R&gt;&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)</div>
+<div class="tip" id="fs42">val f2 : Frame&lt;DateTimeOffset,string&gt;</div>
+<div class="tip" id="fs43">val f3 : Frame&lt;DateTimeOffset,string&gt;</div>
+<div class="tip" id="fs44">member Frame.Join : otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />member Frame.Join : colKey:&#39;TColumnKey * series:Series&lt;&#39;TRowKey,&#39;V&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />member Frame.Join : otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * kind:JoinKind -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />member Frame.Join : colKey:&#39;TColumnKey * series:Series&lt;&#39;TRowKey,&#39;V&gt; * kind:JoinKind -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />member Frame.Join : otherFrame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * kind:JoinKind * lookup:Lookup -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />member Frame.Join : colKey:&#39;TColumnKey * series:Series&lt;&#39;TRowKey,&#39;V&gt; * kind:JoinKind * lookup:Lookup -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
+<div class="tip" id="fs45">JoinKind.Outer: JoinKind = 0</div>
+<div class="tip" id="fs46">JoinKind.Inner: JoinKind = 1</div>
+<div class="tip" id="fs47">Lookup.Exact: Lookup = 1</div>
+<div class="tip" id="fs48">val join : kind:JoinKind -&gt; frame1:Frame&lt;&#39;R,&#39;C&gt; -&gt; frame2:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)</div>
+<div class="tip" id="fs49">val joinAlign : kind:JoinKind -&gt; lookup:Lookup -&gt; frame1:Frame&lt;&#39;R,&#39;C&gt; -&gt; frame2:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)</div>
+<div class="tip" id="fs50">val lf : Series&lt;DateTimeOffset,float&gt;</div>
+<div class="tip" id="fs51">Multiple items<br />module Series<br /><br />from Deedle<br /><br />--------------------<br />module Series<br /><br />--------------------<br />type Series =<br />&#160;&#160;static member ofNullables : values:seq&lt;Nullable&lt;&#39;a0&gt;&gt; -&gt; Series&lt;int,&#39;a0&gt; (requires default constructor and value type and &#39;a0 :&gt; ValueType)<br />&#160;&#160;static member ofObservations : observations:seq&lt;&#39;c * &#39;d&gt; -&gt; Series&lt;&#39;c,&#39;d&gt; (requires equality)<br />&#160;&#160;static member ofOptionalObservations : observations:seq&lt;&#39;K * &#39;a1 option&gt; -&gt; Series&lt;&#39;K,&#39;a1&gt; (requires equality)<br />&#160;&#160;static member ofValues : values:seq&lt;&#39;a&gt; -&gt; Series&lt;int,&#39;a&gt;<br /><br />--------------------<br />type Series&lt;&#39;K,&#39;V (requires equality)&gt; =<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface ISeries&lt;&#39;K&gt;<br />&#160;&#160;new : pairs:seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : keys:&#39;K [] * values:&#39;V [] -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;new : index:IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member After : lowerExclusive:&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt;<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * observationSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,KeyValuePair&lt;&#39;TNewKey,OptionalValue&lt;&#39;R&gt;&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member Aggregate : aggregation:Aggregation&lt;&#39;K&gt; * keySelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,&#39;TNewKey&gt; * valueSelector:Func&lt;DataSegment&lt;Series&lt;&#39;K,&#39;V&gt;&gt;,OptionalValue&lt;&#39;R&gt;&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)<br />&#160;&#160;member AsyncMaterialize : unit -&gt; Async&lt;Series&lt;&#39;K,&#39;V&gt;&gt;<br />&#160;&#160;...<br /><br />--------------------<br />new : pairs:seq&lt;Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : keys:seq&lt;&#39;K&gt; * values:seq&lt;&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : keys:&#39;K [] * values:&#39;V [] -&gt; Series&lt;&#39;K,&#39;V&gt;<br />new : index:Indices.IIndex&lt;&#39;K&gt; * vector:IVector&lt;&#39;V&gt; * vectorBuilder:Vectors.IVectorBuilder * indexBuilder:Indices.IIndexBuilder -&gt; Series&lt;&#39;K,&#39;V&gt;</div>
+<div class="tip" id="fs52">val window : size:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt; (requires equality)</div>
+<div class="tip" id="fs53">val windowInto : size:int -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt; (requires equality)</div>
+<div class="tip" id="fs54">type Stats =<br />&#160;&#160;static member count : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,int&gt; (requires equality and equality)<br />&#160;&#160;static member count : series:Series&lt;&#39;K,&#39;V&gt; -&gt; int (requires equality)<br />&#160;&#160;static member expandingCount : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingKurt : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingMax : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingMean : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingMin : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingSkew : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingStdDev : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;static member expandingSum : series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt; (requires equality)<br />&#160;&#160;...</div>
+<div class="tip" id="fs55">static member Stats.mean : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt; (requires equality and equality)<br />static member Stats.mean : series:Series&lt;&#39;K,float&gt; -&gt; float (requires equality)</div>
+<div class="tip" id="fs56">val firstValue : series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V (requires equality)</div>
+<div class="tip" id="fs57">val lfm1 : Series&lt;DateTimeOffset,float&gt;</div>
+<div class="tip" id="fs58">val lfm2 : Series&lt;DateTimeOffset,float&gt;</div>
+<div class="tip" id="fs59">val windowSizeInto : int * Boundary -&gt; f:(DataSegment&lt;Series&lt;&#39;K,&#39;T&gt;&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt; (requires equality)</div>
+<div class="tip" id="fs60">type Boundary =<br />&#160;&#160;| AtBeginning = 1<br />&#160;&#160;| AtEnding = 2<br />&#160;&#160;| Skip = 4</div>
+<div class="tip" id="fs61">Boundary.AtBeginning: Boundary = 1</div>
+<div class="tip" id="fs62">val ds : DataSegment&lt;Series&lt;DateTimeOffset,float&gt;&gt;</div>
+<div class="tip" id="fs63">property DataSegment.Data: Series&lt;DateTimeOffset,float&gt;</div>
+<div class="tip" id="fs64">val st : Series&lt;int,char&gt;</div>
+<div class="tip" id="fs65">static member Series.ofValues : values:seq&lt;&#39;a&gt; -&gt; Series&lt;int,&#39;a&gt;</div>
+<div class="tip" id="fs66">Boundary.AtEnding: Boundary = 2</div>
+<div class="tip" id="fs67">Multiple items<br />union case DataSegment.DataSegment: DataSegmentKind * &#39;T -&gt; DataSegment&lt;&#39;T&gt;<br /><br />--------------------<br />module DataSegment<br /><br />from Deedle<br /><br />--------------------<br />type DataSegment&lt;&#39;T&gt; =<br />&#160;&#160;| DataSegment of DataSegmentKind * &#39;T<br />&#160;&#160;&#160;&#160;override ToString : unit -&gt; string<br />&#160;&#160;&#160;&#160;member Data : &#39;T<br />&#160;&#160;&#160;&#160;member Kind : DataSegmentKind</div>
+<div class="tip" id="fs68">active recognizer Complete: DataSegment&lt;&#39;a&gt; -&gt; Choice&lt;&#39;a,&#39;a&gt;</div>
+<div class="tip" id="fs69">val ser : Series&lt;int,char&gt;</div>
+<div class="tip" id="fs70">Multiple items<br />type String =<br />&#160;&#160;new : value:char -&gt; string + 7 overloads<br />&#160;&#160;member Chars : int -&gt; char<br />&#160;&#160;member Clone : unit -&gt; obj<br />&#160;&#160;member CompareTo : value:obj -&gt; int + 1 overload<br />&#160;&#160;member Contains : value:string -&gt; bool<br />&#160;&#160;member CopyTo : sourceIndex:int * destination:char[] * destinationIndex:int * count:int -&gt; unit<br />&#160;&#160;member EndsWith : value:string -&gt; bool + 2 overloads<br />&#160;&#160;member Equals : obj:obj -&gt; bool + 2 overloads<br />&#160;&#160;member GetEnumerator : unit -&gt; CharEnumerator<br />&#160;&#160;member GetHashCode : unit -&gt; int<br />&#160;&#160;...<br /><br />--------------------<br />String(value: nativeptr&lt;char&gt;) : String<br />String(value: nativeptr&lt;sbyte&gt;) : String<br />String(value: char []) : String<br />String(c: char, count: int) : String<br />String(value: nativeptr&lt;char&gt;, startIndex: int, length: int) : String<br />String(value: nativeptr&lt;sbyte&gt;, startIndex: int, length: int) : String<br />String(value: char [], startIndex: int, length: int) : String<br />String(value: nativeptr&lt;sbyte&gt;, startIndex: int, length: int, enc: Text.Encoding) : String</div>
+<div class="tip" id="fs71">val values : series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;&#39;T&gt; (requires equality)</div>
+<div class="tip" id="fs72">type Array =<br />&#160;&#160;member Clone : unit -&gt; obj<br />&#160;&#160;member CopyTo : array:Array * index:int -&gt; unit + 1 overload<br />&#160;&#160;member GetEnumerator : unit -&gt; IEnumerator<br />&#160;&#160;member GetLength : dimension:int -&gt; int<br />&#160;&#160;member GetLongLength : dimension:int -&gt; int64<br />&#160;&#160;member GetLowerBound : dimension:int -&gt; int<br />&#160;&#160;member GetUpperBound : dimension:int -&gt; int<br />&#160;&#160;member GetValue : [&lt;ParamArray&gt;] indices:int[] -&gt; obj + 7 overloads<br />&#160;&#160;member Initialize : unit -&gt; unit<br />&#160;&#160;member IsFixedSize : bool<br />&#160;&#160;...</div>
+<div class="tip" id="fs73">val ofSeq : source:seq&lt;&#39;T&gt; -&gt; &#39;T []</div>
+<div class="tip" id="fs74">active recognizer Incomplete: DataSegment&lt;&#39;a&gt; -&gt; Choice&lt;&#39;a,&#39;a&gt;</div>
+<div class="tip" id="fs75">val hourly : Series&lt;DateTimeOffset,float&gt;</div>
+<div class="tip" id="fs76">val windowDist : distance:&#39;D -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt; (requires comparison and equality and member ( - ))</div>
+<div class="tip" id="fs77">val windowWhile : cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt; (requires equality)</div>
+<div class="tip" id="fs78">val d1 : DateTimeOffset</div>
+<div class="tip" id="fs79">val d2 : DateTimeOffset</div>
+<div class="tip" id="fs80">property DateTimeOffset.Date: DateTime</div>
+<div class="tip" id="fs81">val hf : Series&lt;DateTimeOffset,float&gt;</div>
+<div class="tip" id="fs82">val chunkSize : int * Boundary -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt; (requires equality)</div>
+<div class="tip" id="fs83">val chunkDistInto : distance:&#39;D -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt; (requires comparison and equality and member ( - ))</div>
+<div class="tip" id="fs84">val chunkWhile : cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt; (requires equality)</div>
+<div class="tip" id="fs85">val k1 : DateTimeOffset</div>
+<div class="tip" id="fs86">val k2 : DateTimeOffset</div>
+<div class="tip" id="fs87">property DateTimeOffset.Hour: int</div>
+<div class="tip" id="fs88">property DateTimeOffset.Minute: int</div>
+<div class="tip" id="fs89">val pairwise : series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,(&#39;T * &#39;T)&gt; (requires equality)</div>
+<div class="tip" id="fs90">val pairwiseWith : f:(&#39;K -&gt; &#39;T * &#39;T -&gt; &#39;a) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;a&gt; (requires equality)</div>
+<div class="tip" id="fs91">val k : DateTimeOffset</div>
+<div class="tip" id="fs92">val v1 : float</div>
+<div class="tip" id="fs93">val v2 : float</div>
+<div class="tip" id="fs94">val s : Series&lt;DateTimeOffset,float&gt;</div>
+<div class="tip" id="fs95">member Series.GetAt : index:int -&gt; &#39;V</div>
+<div class="tip" id="fs96">val mf : Series&lt;DateTimeOffset,float&gt;</div>
+<div class="tip" id="fs97">TimeSpan.FromSeconds(value: float) : TimeSpan</div>
+<div class="tip" id="fs98">val keys : DateTimeOffset list</div>
+<div class="tip" id="fs99">val m : float</div>
+<div class="tip" id="fs100">DateTimeOffset.AddMinutes(minutes: float) : DateTimeOffset</div>
+<div class="tip" id="fs101">val lookupAll : keys:seq&lt;&#39;K&gt; -&gt; lookup:Lookup -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)</div>
+<div class="tip" id="fs102">Lookup.ExactOrGreater: Lookup = 3</div>
+<div class="tip" id="fs103">val resample : keys:seq&lt;&#39;K&gt; -&gt; dir:Direction -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;V&gt;&gt; (requires equality)</div>
+<div class="tip" id="fs104">type Direction =<br />&#160;&#160;| Backward = 0<br />&#160;&#160;| Forward = 1</div>
+<div class="tip" id="fs105">Direction.Forward: Direction = 1</div>
+<div class="tip" id="fs106">Direction.Backward: Direction = 0</div>
+<div class="tip" id="fs107">val resampleInto : keys:seq&lt;&#39;K&gt; -&gt; dir:Direction -&gt; f:(&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;a) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;a&gt; (requires equality)</div>
+<div class="tip" id="fs108">member Series.Resample : keys:seq&lt;&#39;K&gt; * direction:Direction -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;V&gt;&gt;<br />member Series.Resample : keys:seq&lt;&#39;K&gt; * direction:Direction * valueSelector:Func&lt;&#39;K,Series&lt;&#39;K,&#39;V&gt;,&#39;c&gt; -&gt; Series&lt;&#39;K,&#39;c&gt;<br />member Series.Resample : keys:seq&lt;&#39;K&gt; * direction:Direction * valueSelector:Func&lt;&#39;TNewKey,Series&lt;&#39;K,&#39;V&gt;,&#39;R&gt; * keySelector:Func&lt;&#39;K,Series&lt;&#39;K,&#39;V&gt;,&#39;TNewKey&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt; (requires equality)</div>
+<div class="tip" id="fs109">val ds : Series&lt;DateTimeOffset,float&gt;</div>
+<div class="tip" id="fs110">TimeSpan.FromHours(value: float) : TimeSpan</div>
+<div class="tip" id="fs111">val resampleEquiv : keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; series:Series&lt;&#39;K1,&#39;V1&gt; -&gt; Series&lt;&#39;K2,Series&lt;&#39;K1,&#39;V1&gt;&gt; (requires equality and equality)</div>
+<div class="tip" id="fs112">val d : DateTimeOffset</div>
+<div class="tip" id="fs113">static member SeriesExtensions.ResampleEquivalence : series:Series&lt;&#39;K,&#39;V&gt; * keyProj:Func&lt;&#39;K,&#39;a&gt; -&gt; Series&lt;&#39;a,Series&lt;&#39;K,&#39;V&gt;&gt; (requires equality and equality)<br />static member SeriesExtensions.ResampleEquivalence : series:Series&lt;&#39;K,&#39;V&gt; * keyProj:Func&lt;&#39;K,&#39;a2&gt; * aggregate:Func&lt;Series&lt;&#39;K,&#39;V&gt;,&#39;a3&gt; -&gt; Series&lt;&#39;a2,&#39;a3&gt; (requires equality and equality)</div>
+<div class="tip" id="fs114">val days : string list</div>
+<div class="tip" id="fs115">val nu : Series&lt;DateTimeOffset,float&gt;</div>
+<div class="tip" id="fs116">val indexWith : keys:seq&lt;&#39;K2&gt; -&gt; series:Series&lt;&#39;K1,&#39;T&gt; -&gt; Series&lt;&#39;K2,&#39;T&gt; (requires equality and equality)</div>
+<div class="tip" id="fs117">val mapKeys : f:(&#39;K -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;R,&#39;T&gt; (requires equality and equality)</div>
+<div class="tip" id="fs118">DateTimeOffset.Parse(input: string) : DateTimeOffset<br />DateTimeOffset.Parse(input: string, formatProvider: IFormatProvider) : DateTimeOffset<br />DateTimeOffset.Parse(input: string, formatProvider: IFormatProvider, styles: Globalization.DateTimeStyles) : DateTimeOffset</div>
+<div class="tip" id="fs119">val sampled : Series&lt;DateTime,Series&lt;DateTimeOffset,float&gt;&gt;</div>
+<div class="tip" id="fs120">val resampleUniform : fillMode:Lookup -&gt; keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; nextKey:(&#39;K2 -&gt; &#39;K2) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,Series&lt;&#39;K1,&#39;V&gt;&gt; (requires equality and comparison)</div>
+<div class="tip" id="fs121">val dt : DateTimeOffset</div>
+<div class="tip" id="fs122">val dt : DateTime</div>
+<div class="tip" id="fs123">DateTime.AddDays(value: float) : DateTime</div>
+<div class="tip" id="fs124">static member SeriesExtensions.ResampleUniform : series:Series&lt;&#39;K,&#39;V&gt; * keyProj:Func&lt;&#39;K,&#39;a&gt; * nextKey:Func&lt;&#39;a,&#39;a&gt; -&gt; Series&lt;&#39;a,&#39;V&gt; (requires equality and comparison)<br />static member SeriesExtensions.ResampleUniform : series:Series&lt;&#39;K1,&#39;V&gt; * keyProj:Func&lt;&#39;K1,&#39;K2&gt; * nextKey:Func&lt;&#39;K2,&#39;K2&gt; * fillMode:Lookup -&gt; Series&lt;&#39;K2,&#39;V&gt; (requires equality and comparison)</div>
+<div class="tip" id="fs125">val mapValues : f:(&#39;T -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt; (requires equality)</div>
+<div class="tip" id="fs126">val indexOrdinally : series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;int,&#39;T&gt; (requires equality)</div>
+<div class="tip" id="fs127">static member Frame.ofRows : rows:seq&lt;&#39;R * #ISeries&lt;&#39;C&gt;&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)<br />static member Frame.ofRows : rows:Series&lt;&#39;R,#ISeries&lt;&#39;C&gt;&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt; (requires equality and equality)</div>
+<div class="tip" id="fs128">val pr : Series&lt;DateTimeOffset,float&gt;</div>
+<div class="tip" id="fs129">val sampleTime : interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;&#39;a,&#39;b&gt; -&gt; Series&lt;&#39;a,Series&lt;&#39;a,&#39;b&gt;&gt; (requires equality and member ( + ))</div>
+<div class="tip" id="fs130">static member SeriesExtensions.Sample : series:Series&lt;&#39;K,&#39;V&gt; * keys:seq&lt;&#39;K&gt; -&gt; Series&lt;&#39;K,&#39;V&gt; (requires equality)<br />static member SeriesExtensions.Sample : series:Series&lt;DateTimeOffset,&#39;V&gt; * interval:TimeSpan -&gt; Series&lt;DateTimeOffset,&#39;V&gt;<br />static member SeriesExtensions.Sample : series:Series&lt;DateTimeOffset,&#39;V&gt; * interval:TimeSpan * dir:Direction -&gt; Series&lt;DateTimeOffset,&#39;V&gt;<br />static member SeriesExtensions.Sample : series:Series&lt;DateTimeOffset,&#39;V&gt; * start:DateTimeOffset * interval:TimeSpan * dir:Direction -&gt; Series&lt;DateTimeOffset,&#39;V&gt;</div>
+<div class="tip" id="fs131">val sampleTimeInto : interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;a) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;a&gt; (requires equality and member ( + ))</div>
+<div class="tip" id="fs132">val lastValue : series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V (requires equality)</div>
+<div class="tip" id="fs133">val sample : Series&lt;DateTimeOffset,float&gt;</div>
+<div class="tip" id="fs134">val diff1 : Series&lt;DateTimeOffset,float&gt;</div>
+<div class="tip" id="fs135">val diff : offset:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality and member ( - ))</div>
+<div class="tip" id="fs136">val diffM1 : Series&lt;DateTimeOffset,float&gt;</div>
+<div class="tip" id="fs137">val shift1 : Series&lt;DateTimeOffset,float&gt;</div>
+<div class="tip" id="fs138">val shift : offset:int -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt; (requires equality)</div>
+<div class="tip" id="fs139">val df : Frame&lt;DateTimeOffset,string&gt;</div>
+<div class="tip" id="fs140">static member SeriesExtensions.Shift : series:Series&lt;&#39;K,&#39;V&gt; * offset:int -&gt; Series&lt;&#39;K,&#39;V&gt; (requires equality)</div>
+<div class="tip" id="fs141">val log : value:&#39;T -&gt; &#39;T (requires member Log)</div>
+<div class="tip" id="fs142">static member SeriesExtensions.Diff : series:Series&lt;&#39;K,float&gt; * offset:int -&gt; Series&lt;&#39;K,float&gt; (requires equality)</div>
+<div class="tip" id="fs143">val abs : value:&#39;T -&gt; &#39;T (requires member Abs)</div>
+<div class="tip" id="fs144">val adjust : v:float -&gt; float</div>
+<div class="tip" id="fs145">val v : float</div>
+<div class="tip" id="fs146">val min : e1:&#39;T -&gt; e2:&#39;T -&gt; &#39;T (requires comparison)</div>
+<div class="tip" id="fs147">val max : e1:&#39;T -&gt; e2:&#39;T -&gt; &#39;T (requires comparison)</div>
+<div class="tip" id="fs148">val conv : x:float -&gt; float<br /><em><br /><br />&#160;Multiply all numeric columns by a given constant</em></div>
+<div class="tip" id="fs149">val x : float</div>
+<div class="tip" id="fs150">val mapRowValues : f:(ObjectSeries&lt;&#39;C&gt; -&gt; &#39;V) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;R,&#39;V&gt; (requires equality and equality)</div>
+<div class="tip" id="fs151">val os : ObjectSeries&lt;string&gt;</div>
+<div class="tip" id="fs152">member ObjectSeries.As : unit -&gt; Series&lt;&#39;K,&#39;R&gt;</div>
+<div class="tip" id="fs153">Multiple items<br />val float : value:&#39;T -&gt; float (requires member op_Explicit)<br /><br />--------------------<br />type float = Double<br /><br />--------------------<br />type float&lt;&#39;Measure&gt; = float</div>
+<div class="tip" id="fs154">static member Stats.sum : frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt; (requires equality and equality)<br />static member Stats.sum : series:Series&lt;&#39;K,float&gt; -&gt; float (requires equality)</div>

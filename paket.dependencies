@@ -3,13 +3,15 @@ source https://nuget.org/api/v2
 nuget FsCheck 0.9.1.0
 nuget FSharp.Charting
 nuget FSharp.Data
-nuget FSharp.Formatting
 nuget MathNet.Numerics
 nuget NUnit
 nuget NUnit.Runners
 nuget RProvider
 nuget Nuget.CommandLine
 nuget FAKE
+
+source https://ci.appveyor.com/nuget/fsharp-formatting
+nuget FSharp.Formatting prerelease
 
 github fsharp/FSharp.Data src/CommonRuntime/TextConversions.fs
 github fsharp/FSharp.Data src/CommonRuntime/TextRuntime.fs

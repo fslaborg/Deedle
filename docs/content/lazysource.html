@@ -1,0 +1,181 @@
+<h1>Creating lazily loaded series</h1>
+<p>When loading data from an external data source (such as a database), you might
+want to create a <em>virtual</em> time series that represents the data source, but
+does not actually load the data until needed. If you apply some range restriction
+(like slicing) to the data series before using the values, then it is not
+necessary to load the entire data set into memory.</p>
+<p>Deedle supports lazy loading through the <code>DelayedSeries.FromValueLoader</code>
+method. It returns an ordinary data series of type <code>Series&lt;K, V&gt;</code> which has a
+delayed internal representation.</p>
+<h2>Creating lazy series</h2>
+<p>We will not use a real database in this tutorial, but let's say that you have the
+following function which loads data for a given day range:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="id">Deedle</span>
+
+<span class="c">/// Given a time range, generates random values for dates (at 12:00 AM)</span>
+<span class="c">/// starting with the day of the first date time and ending with the </span>
+<span class="c">/// day after the second date time (to make sure they are in range)</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="fn">generate</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="id">low</span><span class="pn">:</span><span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="vt">DateTime</span><span class="pn">)</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="id">high</span><span class="pn">:</span><span onmouseout="hideTip(event, 'fs5', 7)" onmouseover="showTip(event, 'fs5', 7)" class="vt">DateTime</span><span class="pn">)</span> <span class="o">=</span>
+  <span class="k">let</span> <span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="id">rnd</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs8', 9)" onmouseover="showTip(event, 'fs8', 9)" class="rt">Random</span><span class="pn">(</span><span class="pn">)</span>
+  <span class="k">let</span> <span onmouseout="hideTip(event, 'fs9', 10)" onmouseover="showTip(event, 'fs9', 10)" class="id">days</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs10', 11)" onmouseover="showTip(event, 'fs10', 11)" class="fn">int</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs6', 12)" onmouseover="showTip(event, 'fs6', 12)" class="id">high</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs11', 13)" onmouseover="showTip(event, 'fs11', 13)" class="id">Date</span> <span class="o">-</span> <span onmouseout="hideTip(event, 'fs4', 14)" onmouseover="showTip(event, 'fs4', 14)" class="id">low</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs11', 15)" onmouseover="showTip(event, 'fs11', 15)" class="id">Date</span><span class="pn">)</span><span class="pn">.</span><span class="id">TotalDays</span> <span class="o">+</span> <span class="n">1</span>
+  <span onmouseout="hideTip(event, 'fs12', 16)" onmouseover="showTip(event, 'fs12', 16)" class="k">seq</span> <span class="pn">{</span> <span class="k">for</span> <span onmouseout="hideTip(event, 'fs13', 17)" onmouseover="showTip(event, 'fs13', 17)" class="id">d</span> <span class="k">in</span> <span class="n">0</span> <span class="o">..</span> <span onmouseout="hideTip(event, 'fs9', 18)" onmouseover="showTip(event, 'fs9', 18)" class="id">days</span> <span class="k">-&gt;</span> 
+          <span onmouseout="hideTip(event, 'fs14', 19)" onmouseover="showTip(event, 'fs14', 19)" class="rt">KeyValue</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs15', 20)" onmouseover="showTip(event, 'fs15', 20)" class="id">Create</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs4', 21)" onmouseover="showTip(event, 'fs4', 21)" class="fn">low</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs11', 22)" onmouseover="showTip(event, 'fs11', 22)" class="id">Date</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs16', 23)" onmouseover="showTip(event, 'fs16', 23)" class="id">AddDays</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs17', 24)" onmouseover="showTip(event, 'fs17', 24)" class="fn">float</span> <span onmouseout="hideTip(event, 'fs13', 25)" onmouseover="showTip(event, 'fs13', 25)" class="id">d</span><span class="pn">)</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs7', 26)" onmouseover="showTip(event, 'fs7', 26)" class="fn">rnd</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs18', 27)" onmouseover="showTip(event, 'fs18', 27)" class="id">Next</span><span class="pn">(</span><span class="pn">)</span><span class="pn">)</span> <span class="pn">}</span>
+</code></pre></td>
+</tr>
+</table>
+<p>Using random numbers as the source in this example is not entirely correct, because
+it means that we will get different values each time a new sub-range of the series
+is required - but it will suffice for the demonstration.</p>
+<p>Now, to create a lazily loaded series, we need to open the <code>Indices</code> namespace,
+specify the minimal and maximal value of the series and use <code>DelayedSeries.FromValueLoader</code>:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+<span class="l">8: </span>
+<span class="l">9: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs2', 28)" onmouseover="showTip(event, 'fs2', 28)" class="id">Deedle</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs19', 29)" onmouseover="showTip(event, 'fs19', 29)" class="id">Indices</span>
+
+<span class="c">// Minimal and maximal values that can be loaded from the series</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs20', 30)" onmouseover="showTip(event, 'fs20', 30)" class="id">min</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs21', 31)" onmouseover="showTip(event, 'fs21', 31)" class="id">max</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs5', 32)" onmouseover="showTip(event, 'fs5', 32)" class="vt">DateTime</span><span class="pn">(</span><span class="n">2010</span><span class="pn">,</span> <span class="n">1</span><span class="pn">,</span> <span class="n">1</span><span class="pn">)</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs5', 33)" onmouseover="showTip(event, 'fs5', 33)" class="vt">DateTime</span><span class="pn">(</span><span class="n">2013</span><span class="pn">,</span> <span class="n">1</span><span class="pn">,</span> <span class="n">1</span><span class="pn">)</span>
+
+<span class="c">// Create a lazy series for the given range</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs22', 34)" onmouseover="showTip(event, 'fs22', 34)" class="id">ls</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs23', 35)" onmouseover="showTip(event, 'fs23', 35)" class="rt">DelayedSeries</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs24', 36)" onmouseover="showTip(event, 'fs24', 36)" class="id">FromValueLoader</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs20', 37)" onmouseover="showTip(event, 'fs20', 37)" class="id">min</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs21', 38)" onmouseover="showTip(event, 'fs21', 38)" class="id">max</span><span class="pn">,</span> <span class="k">fun</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs25', 39)" onmouseover="showTip(event, 'fs25', 39)" class="id">lo</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs26', 40)" onmouseover="showTip(event, 'fs26', 40)" class="id">lob</span><span class="pn">)</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs27', 41)" onmouseover="showTip(event, 'fs27', 41)" class="id">hi</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs28', 42)" onmouseover="showTip(event, 'fs28', 42)" class="id">hib</span><span class="pn">)</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs29', 43)" onmouseover="showTip(event, 'fs29', 43)" class="k">async</span> <span class="pn">{</span> 
+    <span onmouseout="hideTip(event, 'fs30', 44)" onmouseover="showTip(event, 'fs30', 44)" class="fn">printfn</span> <span class="s">&quot;Query: </span><span class="pf">%A</span><span class="s"> - </span><span class="pf">%A</span><span class="s">&quot;</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs25', 45)" onmouseover="showTip(event, 'fs25', 45)" class="id">lo</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs26', 46)" onmouseover="showTip(event, 'fs26', 46)" class="id">lob</span><span class="pn">)</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs27', 47)" onmouseover="showTip(event, 'fs27', 47)" class="id">hi</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs28', 48)" onmouseover="showTip(event, 'fs28', 48)" class="id">hib</span><span class="pn">)</span>
+    <span class="k">return</span> <span onmouseout="hideTip(event, 'fs3', 49)" onmouseover="showTip(event, 'fs3', 49)" class="fn">generate</span> <span onmouseout="hideTip(event, 'fs25', 50)" onmouseover="showTip(event, 'fs25', 50)" class="id">lo</span> <span onmouseout="hideTip(event, 'fs27', 51)" onmouseover="showTip(event, 'fs27', 51)" class="id">hi</span> <span class="pn">}</span><span class="pn">)</span>
+</code></pre></td>
+</tr>
+</table>
+<p>To make the diagnostics easier, we print the required range whenever a request
+is made. After running this code, you should not see any output yet.
+The parameter to <code>DelayedSeries.FromValueLoader</code> is a function that takes 4 arguments:</p>
+<ul>
+<li>
+<code>lo</code> and <code>hi</code> specify the low and high boundaries of the range. Their
+type is the type of the key (e.g. <code>DateTime</code> in our example)
+</li>
+<li>
+<code>lob</code> and <code>hib</code> are values of type <code>BoundaryBehavior</code> and can be either
+<code>Inclusive</code> or <code>Exclusive</code>. They specify whether the boundary value should
+be included or not.
+</li>
+</ul>
+<p>Our sample function does not handle boundaries correctly - it always includes the
+boundary (and possibly more values). This is not a problem, because the lazy loader
+automatically skips over such values. But if you want, you can use <code>lob</code> and <code>hib</code>
+parameters to build a more optimal SQL query.</p>
+<h2>Using un-evaluated series</h2>
+<p>Let's now have a look at the operations that we can perform on un-evaluated series.
+Any operation that actually accesses values or keys of the series (such as <code>Series.observations</code>
+or lookup for a specific key) will force the evaluation of the series.</p>
+<p>However, we can use range restrictions before accessing the data:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Get series representing January 2012</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs31', 52)" onmouseover="showTip(event, 'fs31', 52)" class="id">jan12</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs22', 53)" onmouseover="showTip(event, 'fs22', 53)" class="fn">ls</span><span class="pn">.</span><span class="pn">[</span><span onmouseout="hideTip(event, 'fs5', 54)" onmouseover="showTip(event, 'fs5', 54)" class="vt">DateTime</span><span class="pn">(</span><span class="n">2012</span><span class="pn">,</span> <span class="n">1</span><span class="pn">,</span> <span class="n">1</span><span class="pn">)</span> <span class="o">..</span> <span onmouseout="hideTip(event, 'fs5', 55)" onmouseover="showTip(event, 'fs5', 55)" class="vt">DateTime</span><span class="pn">(</span><span class="n">2012</span><span class="pn">,</span> <span class="n">2</span><span class="pn">,</span> <span class="n">1</span><span class="pn">)</span><span class="pn">]</span>
+
+<span class="c">// Further restriction - only first half of the month</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs32', 56)" onmouseover="showTip(event, 'fs32', 56)" class="id">janHalf</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs31', 57)" onmouseover="showTip(event, 'fs31', 57)" class="fn">jan12</span><span class="pn">.</span><span class="pn">[</span><span class="o">..</span> <span onmouseout="hideTip(event, 'fs5', 58)" onmouseover="showTip(event, 'fs5', 58)" class="vt">DateTime</span><span class="pn">(</span><span class="n">2012</span><span class="pn">,</span> <span class="n">1</span><span class="pn">,</span> <span class="n">15</span><span class="pn">)</span><span class="pn">]</span>
+
+<span class="c">// Get value for a specific date</span>
+<span onmouseout="hideTip(event, 'fs32', 59)" onmouseover="showTip(event, 'fs32', 59)" class="id">janHalf</span><span class="pn">.</span><span class="pn">[</span><span onmouseout="hideTip(event, 'fs5', 60)" onmouseover="showTip(event, 'fs5', 60)" class="vt">DateTime</span><span class="pn">(</span><span class="n">2012</span><span class="pn">,</span> <span class="n">1</span><span class="pn">,</span> <span class="n">1</span><span class="pn">)</span><span class="pn">]</span>
+<span class="fsi"> Query: (1/1/2012, Inclusive) - (1/15/2012, Inclusive)</span>
+<span class="fsi"> val it : int = 1127670994</span>
+
+<span onmouseout="hideTip(event, 'fs32', 61)" onmouseover="showTip(event, 'fs32', 61)" class="id">janHalf</span><span class="pn">.</span><span class="pn">[</span><span onmouseout="hideTip(event, 'fs5', 62)" onmouseover="showTip(event, 'fs5', 62)" class="vt">DateTime</span><span class="pn">(</span><span class="n">2012</span><span class="pn">,</span> <span class="n">1</span><span class="pn">,</span> <span class="n">2</span><span class="pn">)</span><span class="pn">]</span>
+<span class="fsi"> val it : int = 560920727</span>
+</code></pre></td>
+</tr>
+</table>
+<p>As you can see from the output on line 9, the series obtained data for the
+15 day range that we created by restricting the original series. When we requested
+another value within the specified range, it was already available and it was
+returned immediately. Note that <code>janHalf</code> is restricted to the specified 15 day
+range, so we cannot access values outside of the range. Also, when you access a single
+value, entire series is loaded. The motivation is that you probably need to access
+multiple values, so it is likely cheaper to load the whole series.</p>
+<p>Another operation that can be performed on an unevaluated series is to add it
+to a data frame with some existing key range:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Create empty data frame for days of December 2011</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs33', 63)" onmouseover="showTip(event, 'fs33', 63)" class="id">dec11</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs34', 64)" onmouseover="showTip(event, 'fs34', 64)" class="m">Frame</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs35', 65)" onmouseover="showTip(event, 'fs35', 65)" class="id">ofRowKeys</span> <span class="pn">[</span> <span class="k">for</span> <span onmouseout="hideTip(event, 'fs13', 66)" onmouseover="showTip(event, 'fs13', 66)" class="id">d</span> <span class="k">in</span> <span class="n">1</span> <span class="o">..</span> <span class="n">31</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs5', 67)" onmouseover="showTip(event, 'fs5', 67)" class="vt">DateTime</span><span class="pn">(</span><span class="n">2011</span><span class="pn">,</span> <span class="n">12</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs13', 68)" onmouseover="showTip(event, 'fs13', 68)" class="id">d</span><span class="pn">)</span> <span class="pn">]</span>
+
+<span class="c">// Add series as the &#39;Values&#39; column to the data frame</span>
+<span onmouseout="hideTip(event, 'fs33', 69)" onmouseover="showTip(event, 'fs33', 69)" class="id">dec11</span><span class="o">?</span><span class="id">Values</span> <span class="k">&lt;-</span> <span onmouseout="hideTip(event, 'fs22', 70)" onmouseover="showTip(event, 'fs22', 70)" class="id">ls</span>
+<span class="fsi"> Query: (12/1/2011, Inclusive) - (12/31/2011, Inclusive)</span>
+</code></pre></td>
+</tr>
+</table>
+<p>When adding lazy series to a data frame, the series has to be evaluated (so that
+the values can be properly aligned) but it is first restricted to the range of the
+data frame. In the above example, only one month of data is loaded.</p>
+
+
+<div class="tip" id="fs1">namespace System</div>
+<div class="tip" id="fs2">namespace Deedle</div>
+<div class="tip" id="fs3">val generate : low:DateTime -&gt; high:DateTime -&gt; seq&lt;Collections.Generic.KeyValuePair&lt;DateTime,int&gt;&gt;<br /><em><br /><br />&#160;Given a time range, generates random values for dates (at 12:00 AM)<br />&#160;starting with the day of the first date time and ending with the <br />&#160;day after the second date time (to make sure they are in range)</em></div>
+<div class="tip" id="fs4">val low : DateTime</div>
+<div class="tip" id="fs5">Multiple items<br />type DateTime =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;new : ticks:int64 -&gt; DateTime + 10 overloads<br />&#160;&#160;&#160;&#160;member Add : value:TimeSpan -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddDays : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddHours : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddMilliseconds : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddMinutes : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddMonths : months:int -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddSeconds : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddTicks : value:int64 -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddYears : value:int -&gt; DateTime<br />&#160;&#160;&#160;&#160;...<br />&#160;&#160;end<br /><br />--------------------<br />DateTime ()<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(ticks: int64) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(ticks: int64, kind: DateTimeKind) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, calendar: Globalization.Calendar) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, kind: DateTimeKind) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, calendar: Globalization.Calendar) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, millisecond: int) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, millisecond: int, kind: DateTimeKind) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em></div>
+<div class="tip" id="fs6">val high : DateTime</div>
+<div class="tip" id="fs7">val rnd : Random</div>
+<div class="tip" id="fs8">Multiple items<br />type Random =<br />&#160;&#160;new : unit -&gt; Random + 1 overload<br />&#160;&#160;member Next : unit -&gt; int + 2 overloads<br />&#160;&#160;member NextBytes : buffer:byte[] -&gt; unit<br />&#160;&#160;member NextDouble : unit -&gt; float<br /><br />--------------------<br />Random() : Random<br />Random(Seed: int) : Random</div>
+<div class="tip" id="fs9">val days : int</div>
+<div class="tip" id="fs10">Multiple items<br />val int : value:&#39;T -&gt; int (requires member op_Explicit)<br /><br />--------------------<br />type int = int32<br /><br />--------------------<br />type int&lt;&#39;Measure&gt; = int</div>
+<div class="tip" id="fs11">property DateTime.Date: DateTime</div>
+<div class="tip" id="fs12">Multiple items<br />val seq : sequence:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;T&gt;<br /><br />--------------------<br />type seq&lt;&#39;T&gt; = Collections.Generic.IEnumerable&lt;&#39;T&gt;</div>
+<div class="tip" id="fs13">val d : int</div>
+<div class="tip" id="fs14">Multiple items<br />active recognizer KeyValue: Collections.Generic.KeyValuePair&lt;&#39;Key,&#39;Value&gt; -&gt; &#39;Key * &#39;Value<br /><br />--------------------<br />type KeyValue =<br />&#160;&#160;static member Create : key:&#39;K * value:&#39;V -&gt; KeyValuePair&lt;&#39;K,&#39;V&gt;</div>
+<div class="tip" id="fs15">static member KeyValue.Create : key:&#39;K * value:&#39;V -&gt; Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt;</div>
+<div class="tip" id="fs16">DateTime.AddDays(value: float) : DateTime</div>
+<div class="tip" id="fs17">Multiple items<br />val float : value:&#39;T -&gt; float (requires member op_Explicit)<br /><br />--------------------<br />type float = Double<br /><br />--------------------<br />type float&lt;&#39;Measure&gt; = float</div>
+<div class="tip" id="fs18">Random.Next() : int<br />Random.Next(maxValue: int) : int<br />Random.Next(minValue: int, maxValue: int) : int</div>
+<div class="tip" id="fs19">namespace Deedle.Indices</div>
+<div class="tip" id="fs20">val min : DateTime</div>
+<div class="tip" id="fs21">val max : DateTime</div>
+<div class="tip" id="fs22">val ls : Series&lt;DateTime,int&gt;</div>
+<div class="tip" id="fs23">type DelayedSeries =<br />&#160;&#160;static member FromIndexVectorLoader : scheme:IAddressingScheme * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder * min:&#39;K * max:&#39;K * loader:(&#39;K * BoundaryBehavior -&gt; &#39;K * BoundaryBehavior -&gt; Async&lt;IIndex&lt;&#39;K&gt; * IVector&lt;&#39;V&gt;&gt;) -&gt; Series&lt;&#39;K,&#39;V&gt; (requires equality)<br />&#160;&#160;static member FromIndexVectorLoader : scheme:IAddressingScheme * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder * min:&#39;K * max:&#39;K * loader:Func&lt;&#39;K,BoundaryBehavior,&#39;K,BoundaryBehavior,Task&lt;IIndex&lt;&#39;K&gt; * IVector&lt;&#39;V&gt;&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt; (requires equality)<br />&#160;&#160;static member FromValueLoader : min:&#39;K * max:&#39;K * loader:(&#39;K * BoundaryBehavior -&gt; &#39;K * BoundaryBehavior -&gt; Async&lt;seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt;&gt;) -&gt; Series&lt;&#39;K,&#39;V&gt; (requires comparison)<br />&#160;&#160;static member FromValueLoader : min:&#39;K * max:&#39;K * loader:Func&lt;&#39;K,BoundaryBehavior,&#39;K,BoundaryBehavior,Task&lt;seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt;&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt; (requires comparison)</div>
+<div class="tip" id="fs24">static member DelayedSeries.FromValueLoader : min:&#39;K * max:&#39;K * loader:(&#39;K * BoundaryBehavior -&gt; &#39;K * BoundaryBehavior -&gt; Async&lt;seq&lt;Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt;&gt;&gt;) -&gt; Series&lt;&#39;K,&#39;V&gt; (requires comparison)<br />static member DelayedSeries.FromValueLoader : min:&#39;K * max:&#39;K * loader:Func&lt;&#39;K,BoundaryBehavior,&#39;K,BoundaryBehavior,Threading.Tasks.Task&lt;seq&lt;Collections.Generic.KeyValuePair&lt;&#39;K,&#39;V&gt;&gt;&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt; (requires comparison)</div>
+<div class="tip" id="fs25">val lo : DateTime</div>
+<div class="tip" id="fs26">val lob : BoundaryBehavior</div>
+<div class="tip" id="fs27">val hi : DateTime</div>
+<div class="tip" id="fs28">val hib : BoundaryBehavior</div>
+<div class="tip" id="fs29">val async : AsyncBuilder</div>
+<div class="tip" id="fs30">val printfn : format:Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T</div>
+<div class="tip" id="fs31">val jan12 : Series&lt;DateTime,int&gt;</div>
+<div class="tip" id="fs32">val janHalf : Series&lt;DateTime,int&gt;</div>
+<div class="tip" id="fs33">val dec11 : Frame&lt;DateTime,string&gt;</div>
+<div class="tip" id="fs34">Multiple items<br />module Frame<br /><br />from Deedle<br /><br />--------------------<br />type Frame =<br />&#160;&#160;static member ReadReader : reader:IDataReader -&gt; Frame&lt;int,string&gt;<br />&#160;&#160;static member CustomExpanders : Dictionary&lt;Type,Func&lt;obj,seq&lt;string * Type * obj&gt;&gt;&gt;<br />&#160;&#160;static member NonExpandableInterfaces : ResizeArray&lt;Type&gt;<br />&#160;&#160;static member NonExpandableTypes : HashSet&lt;Type&gt;<br /><br />--------------------<br />type Frame&lt;&#39;TRowKey,&#39;TColumnKey (requires equality and equality)&gt; =<br />&#160;&#160;interface IDynamicMetaObjectProvider<br />&#160;&#160;interface INotifyCollectionChanged<br />&#160;&#160;interface IFsiFormattable<br />&#160;&#160;interface IFrame<br />&#160;&#160;new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;new : rowIndex:IIndex&lt;&#39;TRowKey&gt; * columnIndex:IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; * indexBuilder:IIndexBuilder * vectorBuilder:IVectorBuilder -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; -&gt; unit<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; -&gt; unit<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:ISeries&lt;&#39;TRowKey&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;member AddColumn : column:&#39;TColumnKey * series:seq&lt;&#39;V&gt; * lookup:Lookup -&gt; unit<br />&#160;&#160;...<br /><br />--------------------<br />new : names:seq&lt;&#39;TColumnKey&gt; * columns:seq&lt;ISeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />new : rowIndex:IIndex&lt;&#39;TRowKey&gt; * columnIndex:IIndex&lt;&#39;TColumnKey&gt; * data:IVector&lt;IVector&gt; * indexBuilder:IIndexBuilder * vectorBuilder:Vectors.IVectorBuilder -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;</div>
+<div class="tip" id="fs35">static member Frame.ofRowKeys : keys:seq&lt;&#39;R&gt; -&gt; Frame&lt;&#39;R,string&gt; (requires equality)</div>

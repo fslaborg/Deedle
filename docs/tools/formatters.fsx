@@ -1,7 +1,9 @@
 module Formatters
-#I "../../packages/FSharp.Formatting/lib/net40"
-#r "FSharp.Markdown.dll"
-#r "FSharp.Literate.dll"
+#I "../../packages/FSharp.Formatting"
+#load "FSharp.Formatting.fsx"
+//#I "../../packages/FSharp.Formatting/lib/net40"
+//#r "FSharp.Markdown.dll"
+//#r "FSharp.Literate.dll"
 #r "../../packages/FAKE/tools/FakeLib.dll"
 #r "../../bin/Deedle.dll"
 #r "../../bin/RDotNet.dll"
@@ -24,6 +26,7 @@ open Deedle.Internal
 open FSharp.Literate
 open FSharp.Markdown
 open FSharp.Charting
+
 
 // --------------------------------------------------------------------------------------
 // Implements Markdown formatters for common FsLab things - including Deedle series
@@ -79,13 +82,13 @@ let inline (|NaN|_|) (v: ^T) =
 
 /// Format value as a single-literal paragraph
 let formatValue (floatFormat:string) def = function
-  | Some(Float v) -> [ Paragraph [Literal (v.ToString(floatFormat)) ]] 
-  | Some(Float32 v) -> [ Paragraph [Literal (v.ToString(floatFormat)) ]] 
-  | Some v -> [ Paragraph [Literal (v.ToString()) ]] 
-  | _ -> [ Paragraph [Literal def] ]
+  | Some(Float v) -> [Paragraph([Literal (v.ToString(floatFormat), None)], None) ]
+  | Some(Float32 v) -> [Paragraph([Literal(v.ToString(floatFormat), None)], None) ]
+  | Some v -> [Paragraph([Literal(v.ToString(), None)], None) ]
+  | _ -> [Paragraph([Literal(def,None)],None)]
 
 /// Format body of a single table cell
-let td v = [ Paragraph [Literal v] ]
+let td v = [Paragraph([Literal(v,None)],None)]
 
 /// Use 'f' to transform all values, then call 'g' with Some for 
 /// values to show and None for "..." in the middle
@@ -209,10 +212,10 @@ let InlineMultiformatBlock(html, latex) =
   let block =
     { new MarkdownEmbedParagraphs with
         member x.Render() =
-          if currentOutputKind = OutputKind.Html then [ InlineBlock html ] else [ InlineBlock latex ] }
-  EmbedParagraphs(block)
+          if currentOutputKind = OutputKind.Html then [ InlineBlock(html, None) ] else [ InlineBlock(latex, None) ] }
+  EmbedParagraphs(block, None)
 
-let MathDisplay(latex) = Span [ LatexDisplayMath latex ]
+let MathDisplay(latex) = Span([ LatexDisplayMath latex ], None)
 
 /// Builds FSI evaluator that can render System.Image, F# Charts, series & frames
 let createFsiEvaluator root output (floatFormat:string) =
@@ -231,7 +234,7 @@ let createFsiEvaluator root output (floatFormat:string) =
         let file = "chart" + id + ".png"
         ensureDirectory (output @@ "images")
         img.Save(output @@ "images" @@ file, System.Drawing.Imaging.ImageFormat.Png) 
-        Some [ Paragraph [DirectImage ("", (root + "/images/" + file, None))]  ]
+        Some [ Paragraph ([DirectImage ("", root + "/images/" + file, None, None)], None)  ]
 
     | :? ChartTypes.GenericChart as ch ->
         // Pretty print F# Chart - save the chart to the "images" directory 
@@ -243,7 +246,7 @@ let createFsiEvaluator root output (floatFormat:string) =
         // We need to reate host control, but it does not have to be visible
         ( use ctl = new ChartControl(chartStyle ch, Dock = DockStyle.Fill, Width=500, Height=300)
           ch.CopyAsBitmap().Save(output @@ "images" @@ file, System.Drawing.Imaging.ImageFormat.Png) )
-        Some [ Paragraph [DirectImage ("", (root + "/images/" + file, None))]  ]
+        Some [ Paragraph ([DirectImage ("", root + "/images/" + file, None, None)], None)  ]
 
     | SeriesValues s ->
         // Pretty print series!
@@ -251,7 +254,7 @@ let createFsiEvaluator root output (floatFormat:string) =
         let row    = s |> mapSteps sitms snd (function Some v -> formatValue floatFormat "N/A" (OptionalValue.asOption v) | _ -> td " ... ")
         let aligns = s |> mapSteps sitms id (fun _ -> AlignDefault)
         [ InlineMultiformatBlock("<div class=\"deedleseries\">", "\\vspace{1em}")
-          TableBlock(Some ((td "Keys")::heads), AlignDefault::aligns, [ (td "Values")::row ]) 
+          TableBlock(Some ((td "Keys")::heads), AlignDefault::aligns, [ (td "Values")::row ], None) 
           InlineMultiformatBlock("</div>","\\vspace{1em}") ] |> Some
 
     | :? IFrame as f ->
@@ -271,15 +274,15 @@ let createFsiEvaluator root output (floatFormat:string) =
               (td k)::row )
           Some [ 
             InlineMultiformatBlock("<div class=\"deedleframe\">","\\vspace{1em}")
-            TableBlock(Some ([]::heads), AlignDefault::aligns, rows) 
+            TableBlock(Some ([]::heads), AlignDefault::aligns, rows, None) 
             InlineMultiformatBlock("</div>","\\vspace{1em}")
           ] }
       |> f.Apply
 
-    | :? Matrix<float> as m -> Some [ MathDisplay (m |> formatMatrix (formatMathValue floatFormat)) ]
-    | :? Matrix<float32> as m -> Some [ MathDisplay (m |> formatMatrix (formatMathValue floatFormat)) ]
-    | :? Vector<float> as v -> Some [ MathDisplay (v |> formatVector (formatMathValue floatFormat)) ]
-    | :? Vector<float32> as v -> Some [ MathDisplay (v |> formatVector (formatMathValue floatFormat)) ]
+    | :? Matrix<float> as m -> Some [ MathDisplay (m |> formatMatrix (formatMathValue floatFormat), None) ]
+    | :? Matrix<float32> as m -> Some [ MathDisplay (m |> formatMatrix (formatMathValue floatFormat), None) ]
+    | :? Vector<float> as v -> Some [ MathDisplay (v |> formatVector (formatMathValue floatFormat), None) ]
+    | :? Vector<float32> as v -> Some [ MathDisplay (v |> formatVector (formatMathValue floatFormat), None) ]
 
     | _ -> None 
     
