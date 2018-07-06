@@ -26,11 +26,11 @@ open Utils
 
 module internal Compiler = 
   open FSharp.Data
-  open Microsoft.FSharp.Compiler.SimpleSourceCodeServices
+  open Microsoft.FSharp.Compiler.SourceCodeServices
 
   type PerfConfig = XmlProvider<"perf.config">
 
-  let scs = SimpleSourceCodeServices()
+  let checker = FSharpChecker.Create()
   let programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
   let microsoft =  programFiles @@ "Reference Assemblies" @@ "Microsoft"
 
@@ -49,7 +49,7 @@ module internal Compiler =
 
       yield "--nowarn:52"
       yield "--noframework"
-      yield! [ "-r"; microsoft @@ "FSharp" @@ ".NETFramework" @@ "v4.0" @@ "4.3.0.0" @@ "FSharp.Core.dll"]
+      yield! [ "-r"; microsoft @@ "FSharp" @@ ".NETFramework" @@ "v4.5" @@ "4.4.1.0" @@ "../../../packages/FSharp.Core/lib/net45/FSharp.Core.dll"]
       yield! [ "-r"; microsoft @@"Framework" @@ ".NETFramework" @@ "v4.5" @@ "mscorlib.dll" ]
       yield! [ "-r"; microsoft @@"Framework" @@ ".NETFramework" @@ "v4.5" @@ "System.dll" ]
       yield! [ "-r"; microsoft @@"Framework" @@ ".NETFramework" @@ "v4.5" @@ "System.Core.dll" ]
@@ -75,7 +75,7 @@ module internal Compiler =
       printfn "\nCompiling: %s" (Path.GetFileName(refpath)) )
     printfn "%s" (String.concat " " commandLine)
 
-    let errors1, exitCode1 = scs.Compile(Array.ofSeq commandLine)
+    let errors1, exitCode1 = checker.Compile(Array.ofSeq commandLine) |> Async.RunSynchronously
     if exitCode1 > 0 then
       use c = colored ConsoleColor.Red
       errors1 |> Seq.iter (printfn "%A\n") 

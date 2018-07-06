@@ -29,6 +29,7 @@ open System.IO
 open Fake.FileHelper
 open FSharp.Literate
 open FSharp.MetadataFormat
+open FSharp.Formatting.Razor
 
 // When called from 'build.fsx', use the public project URL as <root>
 // otherwise, use the current 'output' directory.
@@ -67,12 +68,17 @@ let references =
     let loadedList = d.GetReferences () |> Seq.map (fun r -> r.GetFile()) |> Seq.cache
     // We replace the list and add required items manually as mcs doesn't like duplicates...
     let getItem name = loadedList |> Seq.find (fun l -> l.Contains name)
-    [ (getItem "FSharp.Core").Replace("4.3.0.0", "4.3.1.0")
-      Path.GetFullPath(formatting @@ "../FSharp.Compiler.Service/lib/net40/FSharp.Compiler.Service.dll")
+    [ 
+      (getItem "FSharp.Core").Replace("4.3.0.0", "4.4.1.0")
+      // (getItem "FSharp.Core")
+      Path.GetFullPath(formatting @@ "../FSharp.Compiler.Service/lib/net45/FSharp.Compiler.Service.dll")
       Path.GetFullPath(formatting @@ "lib/net40/System.Web.Razor.dll")
       Path.GetFullPath(formatting @@ "lib/net40/RazorEngine.dll")
       Path.GetFullPath(formatting @@ "lib/net40/FSharp.Literate.dll")
       Path.GetFullPath(formatting @@ "lib/net40/FSharp.CodeFormat.dll")
+      Path.GetFullPath(formatting @@ "lib/net40/FSharp.Markdown.dll")      
+      Path.GetFullPath(formatting @@ "lib/net40/FSharp.Formatting.Common.dll")
+      Path.GetFullPath(formatting @@ "lib/net40/FSharp.Formatting.Razor.dll")
       Path.GetFullPath(formatting @@ "lib/net40/FSharp.MetadataFormat.dll") ]
     |> Some
   else None
@@ -81,7 +87,7 @@ let references =
 let buildReference () =
   CleanDir (output @@ "reference")
   for lib in referenceBinaries do
-    MetadataFormat.Generate
+    RazorMetadataFormat.Generate
       ( bin @@ lib, output @@ "reference", layoutRoots, 
         parameters = ("root", root)::info,
         sourceRepo = "https://github.com/BlueMountainCapital/Deedle/tree/master/",
@@ -94,7 +100,7 @@ let buildDocumentation () =
   let subdirs = Directory.EnumerateDirectories(content, "*", SearchOption.AllDirectories)
   for dir in Seq.append [content] subdirs do
     let sub = if dir.Length > content.Length then dir.Substring(content.Length + 1) else "."
-    Literate.ProcessDirectory
+    RazorLiterate.ProcessDirectory
       ( dir, docTemplate, output @@ sub, replacements = ("root", root)::info,
         layoutRoots = layoutRoots, fsiEvaluator = fsiEvaluator, generateAnchors = true,
         ?assemblyReferences = references )

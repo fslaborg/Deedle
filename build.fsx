@@ -9,6 +9,7 @@ open Fake
 open Fake.Git
 open Fake.ReleaseNotesHelper
 open Fake.AssemblyInfoFile
+open Fake.Testing
 
 // --------------------------------------------------------------------------------------
 // Information about the project to be used at NuGet and in AssemblyInfo files
@@ -34,6 +35,8 @@ let rpluginTags = "R RProvider"
 
 let gitHome = "https://github.com/BlueMountainCapital"
 let gitName = "Deedle"
+
+let nunitRunnerPath = "packages/NUnit.ConsoleRunner/tools/nunit3-console.exe"
 
 // --------------------------------------------------------------------------------------
 // The rest of the code is standard F# build script 
@@ -100,12 +103,12 @@ Target "RunTests" (fun _ ->
     ActivateFinalTarget "CloseTestRunner"
 
     !! "tests/Deedle.*Tests/bin/Release/Deedle*Tests*.dll"
-    |> NUnit (fun p ->
+    |> NUnit3 (fun p ->
         { p with
-            DisableShadowCopy = true
-            TimeOut = TimeSpan.FromMinutes 20.
-            OutputFile = "TestResults.xml" })
-)
+            ToolPath = nunitRunnerPath
+            ShadowCopy = false
+            TimeOut = TimeSpan.FromMinutes 20.})
+    )
 
 FinalTarget "CloseTestRunner" (fun _ ->  
     ProcessHelper.killProcess "nunit-agent.exe"
