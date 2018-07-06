@@ -396,7 +396,9 @@ let tryValues (vect:IVector) =
   // Does the specified vector represent 'tryval' column?
   if elty.IsGenericType && elty.GetGenericTypeDefinition() = typedefof<_ tryval> then
     let tyarg = elty.GetGenericArguments().[0]
-    let mi = typeof<TryValuesHelper>.GetMethod("TryValues").MakeGenericMethod [|tyarg|]        
+    let mi = 
+      typeof<TryValuesHelper>.GetMethod("TryValues", BindingFlags.NonPublic ||| BindingFlags.Static)
+        .MakeGenericMethod [|tyarg|]        
     mi.Invoke(null, [| vect |]) :?> TryValue<IVector>
   else TryValue.Success vect
 

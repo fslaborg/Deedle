@@ -108,7 +108,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
       invalidArg "column" (sprintf "Column with a key '%O' does not exist in the data frame" column)
     let columnVector = data.GetValue (snd columnIndex.Value)
     if not columnVector.HasValue then
-      invalidOp "column" (sprintf "Column with a key '%O' is present, but does not contain a value" column)
+      invalidArg "column" (sprintf "Column with a key '%O' is present, but does not contain a value" column)
     columnVector.Value
 
   let tryGetColVector column = 
