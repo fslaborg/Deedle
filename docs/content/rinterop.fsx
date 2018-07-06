@@ -3,7 +3,7 @@
 #I "../../packages/FSharp.Charting"
 #I "../../bin"
 open System
-let airQuality = __SOURCE_DIRECTORY__ + "/data/AirQuality.csv"
+let airQuality = __SOURCE_DIRECTORY__ + "/data/airquality.csv"
 
 (**
 

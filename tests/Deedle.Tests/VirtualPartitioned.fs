@@ -479,7 +479,7 @@ let ``Can project using SelectOptional method without evaluating the series`` ()
 [<Test>]
 let ``Can subtract series from another (calculated from itself)`` () =
   let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
-  let res = (sin ts) / (cos ts) - (tan ts) |> Series.mapValues (fun v -> Math.Round(v, 10))
+  let res = (sin ts) / (cos ts) - (tan ts) |> Series.mapValues (fun v -> Math.Round(v, 8))
   res |> Series.take 10 |> Series.values |> List.ofSeq |> shouldEqual [ for i in 0 .. 9 -> 0.0 ]
   res |> Series.takeLast 10 |> Series.values |> List.ofSeq |> shouldEqual [ for i in 0 .. 9 -> 0.0 ]
   valSrc.AccessedData |> Seq.distinct |> Seq.length |> shouldEqual 20

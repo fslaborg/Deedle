@@ -1,6 +1,6 @@
 (*** hide ***)
 #load "../../../packages/FSharp.Charting/FSharp.Charting.fsx"
-#r "../../../packages/FSharp.Data/lib/net40/FSharp.Data.dll"
+#r "../../../packages/FSharp.Data/lib/net45/FSharp.Data.dll"
 #load "../../../bin/Deedle.fsx"
 open System
 open FSharp.Data
@@ -13,7 +13,7 @@ Analyzing Titanic data set
 ==========================
 *)
 
-let titanic = Frame.ReadCsv(root + "Titanic.csv")
+let titanic = Frame.ReadCsv(root + "titanic.csv")
 
 (**
 

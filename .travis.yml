@@ -2,8 +2,23 @@ language: csharp
 
 sudo: false  # use the new container-based Travis infrastructure 
 
+os:
+  - linux
+
+mono: latest
+
+install:
+
+  # workaround for missing .net 4.5 targing pack
+  - export FrameworkPathOverride=$(dirname $(which mono))/../lib/mono/4.5/
+
 before_install:
   - chmod +x build.sh
  
 script: 
   - ./build.sh AllCore
+  
+branches:
+  except:
+    - gh-pages
+    - release

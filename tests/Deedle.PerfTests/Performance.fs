@@ -3,7 +3,7 @@
 #load "Deedle.fsx"
 #r "../../packages/NUnit/lib/nunit.framework.dll"
 #r "../../packages/FsCheck/lib/net40-Client/FsCheck.dll"
-#r "../../packages/FSharp.Data/lib/net40/FSharp.Data.dll"
+#r "../../packages/FSharp.Data/lib/net45/FSharp.Data.dll"
 #r "../PerformanceTools/bin/Deedle.PerfTest.Core.dll"
 #load "../Common/FsUnit.fs"
 #else
@@ -50,7 +50,7 @@ let frameTwoCol1M =
   |> Frame.indexColsWith ["Key"; "Value"]
 
 // Load sample data sets
-let titanic = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/../Performance/data/Titanic.csv")
+let titanic = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/../Performance/data/titanic.csv")
 
 // ------------------------------------------------------------------------------------------------
 // Compatibility

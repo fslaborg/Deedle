@@ -103,7 +103,7 @@ reference is automatically generated from Markdown comments in the library imple
 
  * The Deedle library can be used from both F# and C#. We aim to provide idiomatic API for
    both of the languages. Read the [using Deedle from C#](csharpintro.html) page for more 
-   information about the C#-friednly API.
+   information about the C#-friendly API.
 
 Automatically generated documentation for all types, modules and functions in the library 
 is available in the [API Reference](reference/index.html). The three most important modules
