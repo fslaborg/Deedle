@@ -33,7 +33,7 @@ let rpluginDescription = """
   which makes it possible to pass data frames and time series between R and Deedle"""
 let rpluginTags = "R RProvider"
 
-let gitHome = "https://github.com/BlueMountainCapital"
+let gitHome = "https://github.com/fslaborg"
 let gitName = "Deedle"
 
 let nunitRunnerPath = "packages/NUnit.ConsoleRunner/tools/nunit3-console.exe"
@@ -201,7 +201,7 @@ Target "TagRelease" (fun _ ->
 
     // Find the main remote (BlueMountain GitHub)
     let _, remotes, _ = CommandHelper.runGitCommand "." "remote -v"
-    let main = remotes |> Seq.find (fun s -> s.Contains("(push)") && s.Contains("BlueMountainCapital/Deedle"))
+    let main = remotes |> Seq.find (fun s -> s.Contains("(push)") && s.Contains("fslaborg/Deedle"))
     let remoteName = main.Split('\t').[0]
     Fake.Git.Branches.pushTag "." remoteName tagName
 )
