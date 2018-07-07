@@ -2,20 +2,15 @@ NUGET
   remote: https://nuget.org/api/v2
   specs:
     DynamicInterop (0.7.4)
-    FAKE (4.64.13)
+    FAKE (4.64.13))
     FsCheck (0.9.1.0)
-    FSharp.Core (4.3.4)    
-    FSharp.Charting (0.90.12)
-    FSharp.Compiler.Service (2.0.0.6)
-    FSharp.Data (2.4.6)
-    FSharp.Formatting (2.14.4)
-      FSharp.Compiler.Service (>= 0.0.87)
-      FSharpVSPowerTools.Core (>= 2.3.0)
-    FSharpVSPowerTools.Core (2.3.0)
+    FSharp.Core (4.2.3)    
+    FSharp.Charting (0.90.12)    
+    FSharp.Data (2.4.6) 
     MathNet.Numerics (4.5.1)
     NuGet.CommandLine (2.8.5)
-    NUnit (2.6.6)
-    NUnit.Runners (2.6.6)
+    NUnit (3.8.0)
+    NUnit.ConsoleRunner (3.8.0)
     R.NET.Community (1.6.5)
       DynamicInterop (0.7.4)
     R.NET.Community.FSharp (1.6.5)
@@ -24,6 +19,13 @@ NUGET
       DynamicInterop (0.7.4)
       R.NET.Community (1.6.5)
       R.NET.Community.FSharp (1.6.5)
+    FSharp.Compiler.Service (22.0.3)
+    Microsoft.AspNet.Razor (3.2.4)
+  remote: https://ci.appveyor.com/nuget/fsharp-formatting
+    FSharp.Formatting (3.0.0-beta11)
+      FSharp.Compiler.Service (22.0.3)
+      Microsoft.AspNet.Razor (3.2.4)
+      System.ValueTuple (4.4.0)
 GITHUB
   remote: fsharp/FSharp.Data
   specs:

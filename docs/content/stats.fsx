@@ -27,9 +27,9 @@ Series and frame statistics
 In this section, we look at calculating simple statistics over data frame and
 series. An important aspect is handling of missing values, so we demonstrate that
 using a data set about air quality that contains missing values. The following
-snippet loads `AirQuality.csv` and shows the values in the `Ozone` column:
+snippet loads `airquality.csv` and shows the values in the `Ozone` column:
 *)
-let air = Frame.ReadCsv(root + "AirQuality.csv", separators=";")
+let air = Frame.ReadCsv(root + "airquality.csv", separators=";")
 let ozone = air?Ozone
 (*** include-value: ozone ***)
 
