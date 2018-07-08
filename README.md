@@ -1,7 +1,7 @@
 Deedle [![Build Status](https://travis-ci.org/fslaborg/Deedle.png?branch=mainline)](https://travis-ci.org/fslaborg/Deedle)
 ======
 
-<img align="right" src="https://github.com/BlueMountainCapital/Deedle/raw/master/docs/files/images/bmc.png" alt="BlueMountain Capital logo" />
+<img align="right" src="https://github.com/fslaborg/Deedle/raw/master/docs/files/images/logo.png" alt="Deedle" />
 
 Deedle is an easy to use library for data and time series manipulation and for scientific programming. It supports working with structured data frames, ordered and unordered data, as well as time series. Deedle is designed to work well for exploratory programming using F# and C# interactive console, but can be also used in efficient compiled .NET code.
 

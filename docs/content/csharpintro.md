@@ -46,6 +46,6 @@ Documentation
    frame, how to align data and time series using dates, how to work with rows and columns of a
    data frame and how to perform calculations over entire data frames.
 
- * [**Design notes document**](http://bluemountaincapital.github.io/Deedle/design.html) is worth checking
+ * [**Design notes document**](http://fslab.org/Deedle/design.html) is worth checking
    out if you want to get better understanding of the library principles - how it has been designed and
    how the implementation works.

@@ -16,7 +16,7 @@ open Fake.Testing
 // --------------------------------------------------------------------------------------
 
 let project = "Deedle"
-let authors = ["BlueMountain Capital"]
+let authors = ["BlueMountain Capital";"FsLab"]
 let summary = "Easy to use .NET library for data manipulation and scientific programming"
 let description = """
   Deedle implements an efficient and robust frame and series data structures for 
@@ -169,7 +169,8 @@ Target "ReleaseDocs" (fun _ ->
     Branches.checkoutBranch "temp/gh-pages" "gh-pages"
     CopyRecursive "docs/output" "temp/gh-pages" true |> printfn "%A"
     CommandHelper.runSimpleGitCommand "temp/gh-pages" "add ." |> printfn "%s"
-    let cmd = sprintf """commit -a -m "Update generated documentation for version %s""" release.NugetVersion
+    // let cmd = sprintf """commit -a -m "Update generated documentation for version %s""" release.NugetVersion
+    let cmd = sprintf """commit -a -m "Fix http url to https for web page rendering"""  
     CommandHelper.runSimpleGitCommand "temp/gh-pages" cmd |> printfn "%s"
     Branches.push "temp/gh-pages"
 )
@@ -199,7 +200,7 @@ Target "TagRelease" (fun _ ->
     let cmd = sprintf """tag -a %s -m "%s" """ tagName notes
     CommandHelper.runSimpleGitCommand "." cmd |> printfn "%s"
 
-    // Find the main remote (BlueMountain GitHub)
+    // Find the main remote (fslaborg GitHub)
     let _, remotes, _ = CommandHelper.runGitCommand "." "remote -v"
     let main = remotes |> Seq.find (fun s -> s.Contains("(push)") && s.Contains("fslaborg/Deedle"))
     let remoteName = main.Split('\t').[0]

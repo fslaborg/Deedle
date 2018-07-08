@@ -210,7 +210,7 @@ let ``Realign 1M series according to a key array`` () =
 
 [<Test; PerfTest(Iterations=10)>]
 let ``Group by column and subtract group averages`` () =
-  // https://github.com/BlueMountainCapital/Deedle/issues/142#issuecomment-33587885
+  // https://github.com/fslaborg/Deedle/issues/142#issuecomment-33587885
   let grouped = frameTwoCol1M |> Frame.groupRowsByString "Key"
   let diffs = 
     #if BELOW_0_9_13
