@@ -19,7 +19,7 @@ In this section, we look at various features of the F# data frame library (using
 `Series` and `Frame` types and modules). Feel free to jump to the section you are interested
 in, but note that some sections refer back to values built in "Creating & loading".
 
-You can also get this page as an [F# script file](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/frame.fsx)
+You can also get this page as an [F# script file](https://github.com/fslaborg/Deedle/blob/master/docs/content/frame.fsx)
 from GitHub and run the samples interactively.
 
 <a name="creating"></a>
