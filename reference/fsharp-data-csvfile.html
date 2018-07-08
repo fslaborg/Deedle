@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>CsvFile - Deedle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="BlueMountain Capital, FsLab.Org">
+
+    <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/deedle.css" />
+    <script type="text/javascript" src="http://fslab.org/Deedle/content/tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://fslab.org/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
+          <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
+        </ul>
+        <h3 class="muted"><a href="http://fslab.org/Deedle/index.html">Deedle</a></h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+
+
+
+<h1>CsvFile</h1>
+<p>
+
+    <span>Namespace: FSharp.Data</span><br />
+    </p>
+<div class="xmldoc">
+<p>Represents a CSV file. The lines are read on demand from <code>reader</code>.
+Columns are delimited by one of the chars passed by <code>separators</code> (defaults to just <code>,</code>), and
+to escape the separator chars, the <code>quote</code> character will be used (defaults to <code>"</code>).
+If <code>hasHeaders</code> is true (the default), the first line read by <code>reader</code> will not be considered part of data.
+If <code>ignoreErrors</code> is true (the default is false), rows with a different number of columns from the header row
+(or the first row if headers are not present) will be ignored.
+The first <code>skipRows</code> lines will be skipped.</p>
+
+</div>
+  <h3>Instance members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Instance member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1145', 1145)" onmouseover="showTip(event, '1145', 1145)">
+            Append(rows)
+          </code>
+          <div class="tip" id="1145">
+            <strong>Signature:</strong> rows:seq&lt;&#39;RowType&gt; -&gt; CsvFile&lt;&#39;RowType&gt;<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L405-405" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a csv with the same rows as the original plus the provided rows appended</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1146', 1146)" onmouseover="showTip(event, '1146', 1146)">
+            Cache()
+          </code>
+          <div class="tip" id="1146">
+            <strong>Signature:</strong> unit -&gt; CsvFile&lt;&#39;RowType&gt;<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L371-371" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a new csv with the same rows as the original but which guarantees
+that each row will be only be read and parsed from the input at most once.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1147', 1147)" onmouseover="showTip(event, '1147', 1147)">
+            Filter(predicate)
+          </code>
+          <div class="tip" id="1147">
+            <strong>Signature:</strong> predicate:Func&lt;&#39;RowType,bool&gt; -&gt; CsvFile&lt;&#39;RowType&gt;<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L379-379" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a new csv containing only the rows for which the given predicate returns "true".</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1148', 1148)" onmouseover="showTip(event, '1148', 1148)">
+            Headers
+          </code>
+          <div class="tip" id="1148">
+            <strong>Signature:</strong> string [] option<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L214-214" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>The names of the columns</p>
+
+
+              <p>CompiledName: <code>get_Headers</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1149', 1149)" onmouseover="showTip(event, '1149', 1149)">
+            Map(mapping)
+          </code>
+          <div class="tip" id="1149">
+            <strong>Signature:</strong> mapping:Func&lt;&#39;RowType,&#39;RowType&gt; -&gt; CsvFile&lt;&#39;RowType&gt;<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L375-375" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a new csv where every row has been transformed by the provided mapping function.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1150', 1150)" onmouseover="showTip(event, '1150', 1150)">
+            NumberOfColumns
+          </code>
+          <div class="tip" id="1150">
+            <strong>Signature:</strong> int<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L216-216" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>The number of columns</p>
+
+
+              <p>CompiledName: <code>get_NumberOfColumns</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1151', 1151)" onmouseover="showTip(event, '1151', 1151)">
+            Quote
+          </code>
+          <div class="tip" id="1151">
+            <strong>Signature:</strong> char<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L220-220" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>The quotation mark use for surrounding values containing separator chars</p>
+
+
+              <p>CompiledName: <code>get_Quote</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1152', 1152)" onmouseover="showTip(event, '1152', 1152)">
+            Rows
+          </code>
+          <div class="tip" id="1152">
+            <strong>Signature:</strong> seq&lt;&#39;RowType&gt;<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L212-212" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>The rows with data</p>
+
+
+              <p>CompiledName: <code>get_Rows</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1153', 1153)" onmouseover="showTip(event, '1153', 1153)">
+            Save(path, separator, quote)
+          </code>
+          <div class="tip" id="1153">
+            <strong>Signature:</strong> (path:string * separator:char option * quote:char option) -&gt; unit<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L353-353" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Saves CSV to the specified file</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1154', 1154)" onmouseover="showTip(event, '1154', 1154)">
+            Save(stream, separator, quote)
+          </code>
+          <div class="tip" id="1154">
+            <strong>Signature:</strong> (stream:Stream * separator:char option * quote:char option) -&gt; unit<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L346-346" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Saves CSV to the specified stream</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1155', 1155)" onmouseover="showTip(event, '1155', 1155)">
+            Save(writer, separator, quote)
+          </code>
+          <div class="tip" id="1155">
+            <strong>Signature:</strong> (writer:TextWriter * separator:char option * quote:char option) -&gt; unit<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L317-317" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Saves CSV to the specified writer</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1156', 1156)" onmouseover="showTip(event, '1156', 1156)">
+            SaveToString(separator, quote)
+          </code>
+          <div class="tip" id="1156">
+            <strong>Signature:</strong> (separator:char option * quote:char option) -&gt; string<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L359-359" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Saves CSV to a string</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1157', 1157)" onmouseover="showTip(event, '1157', 1157)">
+            Separators
+          </code>
+          <div class="tip" id="1157">
+            <strong>Signature:</strong> string<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L218-218" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>The character(s) used as column separator(s)</p>
+
+
+              <p>CompiledName: <code>get_Separators</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1158', 1158)" onmouseover="showTip(event, '1158', 1158)">
+            Skip(count)
+          </code>
+          <div class="tip" id="1158">
+            <strong>Signature:</strong> count:int -&gt; CsvFile&lt;&#39;RowType&gt;<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L392-392" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a csv that skips N rows and then yields the remaining rows.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1159', 1159)" onmouseover="showTip(event, '1159', 1159)">
+            SkipWhile(predicate)
+          </code>
+          <div class="tip" id="1159">
+            <strong>Signature:</strong> predicate:Func&lt;&#39;RowType,bool&gt; -&gt; CsvFile&lt;&#39;RowType&gt;<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L397-397" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a csv that, when iterated, skips rows while the given predicate returns
+<c>true</c>, and then yields the remaining rows.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1160', 1160)" onmouseover="showTip(event, '1160', 1160)">
+            Take(count)
+          </code>
+          <div class="tip" id="1160">
+            <strong>Signature:</strong> count:int -&gt; CsvFile&lt;&#39;RowType&gt;<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L383-383" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a new csv with only the first N rows of the underlying csv.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1161', 1161)" onmouseover="showTip(event, '1161', 1161)">
+            TakeWhile(predicate)
+          </code>
+          <div class="tip" id="1161">
+            <strong>Signature:</strong> predicate:Func&lt;&#39;RowType,bool&gt; -&gt; CsvFile&lt;&#39;RowType&gt;<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L388-388" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a csv that, when iterated, yields rowswhile the given predicate
+returns <c>true</c>, and then returns no further rows.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1162', 1162)" onmouseover="showTip(event, '1162', 1162)">
+            Truncate(count)
+          </code>
+          <div class="tip" id="1162">
+            <strong>Signature:</strong> count:int -&gt; CsvFile&lt;&#39;RowType&gt;<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L401-401" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a csv that when enumerated returns at most N rows.</p>
+
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>Static members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Static member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1163', 1163)" onmouseover="showTip(event, '1163', 1163)">
+            AsyncLoad(...)
+          </code>
+          <div class="tip" id="1163">
+            <strong>Signature:</strong> (uri:string * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option * skipRows:int option) -&gt; Async&lt;CsvFile&gt;<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvFile.fs#L96-96" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Loads CSV from the specified uri asynchronously</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1164', 1164)" onmouseover="showTip(event, '1164', 1164)">
+            Load(...)
+          </code>
+          <div class="tip" id="1164">
+            <strong>Signature:</strong> (uri:string * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option * skipRows:int option) -&gt; CsvFile<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvFile.fs#L87-87" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Loads CSV from the specified uri</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1165', 1165)" onmouseover="showTip(event, '1165', 1165)">
+            Load(...)
+          </code>
+          <div class="tip" id="1165">
+            <strong>Signature:</strong> (reader:TextReader * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option * skipRows:int option) -&gt; CsvFile<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvFile.fs#L74-74" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Loads CSV from the specified reader</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1166', 1166)" onmouseover="showTip(event, '1166', 1166)">
+            Load(...)
+          </code>
+          <div class="tip" id="1166">
+            <strong>Signature:</strong> (stream:Stream * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option * skipRows:int option) -&gt; CsvFile<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvFile.fs#L65-65" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Loads CSV from the specified stream</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1167', 1167)" onmouseover="showTip(event, '1167', 1167)">
+            Parse(...)
+          </code>
+          <div class="tip" id="1167">
+            <strong>Signature:</strong> (text:string * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option * skipRows:int option) -&gt; CsvFile<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvFile.fs#L60-60" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Parses the specified CSV content</p>
+
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+        </div>
+        <div class="span3">
+          <a href="http://fslab.org/Deedle/index.html">
+            <img src="http://fslab.org/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          </a>
+
+          <ul class="nav nav-list" id="menu">
+            <li class="nav-header">Deedle</li>
+            <li><a href="http://fslab.org/Deedle/index.html">Home page</a></li>
+            <li class="divider"></li>
+            <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
+            <li><a href="http://fslab.org/Deedle/design.html">Design notes</a></li>
+            <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
+            
+            <li class="nav-header">Using from F#</li>
+            <li>
+              <a href="http://fslab.org/Deedle/tutorial.html">Quick start tutorial</a>
+            </li>
+            <li>
+              <a href="http://fslab.org/Deedle/series.html">Working with time series</a>
+            </li>
+            <li>
+              <a href="http://fslab.org/Deedle/frame.html">Working with data frames</a>
+            </li>
+            <li>
+              <a href="http://fslab.org/Deedle/stats.html">Statistics &amp; calculations</a>
+            </li>
+            <li>
+              <a href="http://fslab.org/Deedle/rinterop.html">Using Deedle with R</a>
+            </li>
+
+            <li class="nav-header">Using from C#</li>
+            <li><a href="http://fslab.org/Deedle/csharpintro.html">Getting started</a></li>
+            <li>
+              <a href="http://fslab.org/Deedle/csharpseries.html">Working with data series</a>
+            </li>
+            <li>
+              <a href="http://fslab.org/Deedle/csharpframe.html">Working with data frames</a>
+            </li>
+
+            <li class="nav-header">Documentation</li>
+            <li><a href="http://fslab.org/Deedle/reference/index.html">API Reference</a></li>
+            <li class="divider"></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-stats.html">Stats module</a></li>
+
+            <li class="nav-header">Samples</li>
+            <li><a href="http://fslab.org/Deedle/lazysource.html">Lazy data loading</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/fslaborg/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <script>
+      (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+          (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+      })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+      ga('create', 'UA-45379232-1', 'bluemountaincapital.github.io');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>

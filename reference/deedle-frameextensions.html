@@ -5,7 +5,7 @@
     <title>FrameExtensions - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
-    <meta name="author" content="BlueMountain Capital">
+    <meta name="author" content="BlueMountain Capital, FsLab.Org">
 
     <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
     <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
@@ -13,9 +13,9 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
-    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/style.css" />
-    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/deedle.css" />
-    <script type="text/javascript" src="http://bluemountaincapital.github.io/Deedle/content/tips.js"></script>
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/deedle.css" />
+    <script type="text/javascript" src="http://fslab.org/Deedle/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -26,12 +26,12 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fslab.org/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
           <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
-        <h3 class="muted"><a href="http://bluemountaincapital.github.io/Deedle/index.html">Deedle</a></h3>
+        <h3 class="muted"><a href="http://fslab.org/Deedle/index.html">Deedle</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -42,32 +42,36 @@
 
 <h1>FrameExtensions</h1>
 <p>
-  <span>Namespace: Deedle</span><br />
+
+    <span>Namespace: Deedle</span><br />
+            <span>
+            Attributes: <br />
+[&lt;Extension&gt;]<br />
+            
+        </span>
 </p>
 <div class="xmldoc">
-<p>Contains C# and F# extension methods for the <code>Frame&lt;'R, 'C&gt;</code> type. The members are 
-automatically available when you import the <code>Deedle</code> namespace. The type contains 
-object-oriented counterparts to most of the functionality from the <code>Frame</code> module.</p>
-
+<p>Contains C# and F# extension methods for the <code>Frame&lt;'R, 'C&gt;</code> type. The members are
+automatically available when you import the <code>Deedle</code> namespace. The type contains
+object-oriented counterparts to most of the functionality from the <a href="deedle-frame.html" title="Frame"><code>Frame</code></a> module.</p>
 
 </div>
-  <!-- If there is more than 1 category in the type, generate TOC -->
-  <h2>Table of contents</h2>
-  <ul>
-      <li><a href="#section0">Data structure manipulation</a></li>
-      <li><a href="#section1">Fancy accessors</a></li>
-      <li><a href="#section2">Frame operations</a></li>
-      <li><a href="#section3">Input and output</a></li>
-      <li><a href="#section4">Missing values</a></li>
-      <li><a href="#section5">Other type members</a></li>
-  </ul>
-    <h2>Data structure manipulation<a name="section0">&#160;</a></h2>
-      <div class="xmldoc">
-        <p>Summary 1</p>
+    <!-- If there is more than 1 category in the type, generate TOC -->
+    <h2>Table of contents</h2>
+    <ul>
+            <li><a href="#section0">Data structure manipulation</a></li>
+            <li><a href="#section1">Fancy accessors</a></li>
+            <li><a href="#section2">Frame operations</a></li>
+            <li><a href="#section3">Input and output</a></li>
+            <li><a href="#section4">Missing values</a></li>
+            <li><a href="#section5">Other type members</a></li>
+    </ul>
+        <h2>Data structure manipulation<a name="section0">&#160;</a></h2>
+            <div class="xmldoc">
+                <p>Summary 1</p>
 
 
-
-      </div>
+            </div>
   <h3>Static members</h3>
   <table class="table table-bordered member-list">
     <thead>
@@ -77,357 +81,43 @@ object-oriented counterparts to most of the functionality from the <code>Frame</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '591', 591)" onmouseover="showTip(event, '591', 591)">
+          <code onmouseout="hideTip(event, '602', 602)" onmouseover="showTip(event, '602', 602)">
             ExpandColumns(frame, names)
           </code>
-          <div class="tip" id="591">
+          <div class="tip" id="602">
             <strong>Signature:</strong> (frame:Frame&lt;&#39;R,string&gt; * names:seq&lt;string&gt;) -&gt; Frame&lt;&#39;R,string&gt;<br />
-                          <strong>Type parameters:</strong> 'R          </div>
+                          <strong>Type parameters:</strong> 'R                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L911-911" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L911-911" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Creates a new data frame where the specified columns are expanded based on runtime
-structure of the objects they store. A column can be expanded if it is 
+structure of the objects they store. A column can be expanded if it is
 <code>Series&lt;string, T&gt;</code> or <code>IDictionary&lt;K, V&gt;</code> or if it is any .NET object with readable
 properties.</p>
-
 <h2>Example</h2>
-
 <p>Given a data frame with a series that contains tuples, you can expand the
 tuple members and get a frame with columns <code>S.Item1</code> and <code>S.Item2</code>:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">df</span> <span class="o">=</span> <span class="i">frame</span> [ <span class="s">&quot;S&quot;</span> <span class="o">=&gt;</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> (<span class="n">1</span>, <span class="s">&quot;One&quot;</span>); <span class="n">2</span> <span class="o">=&gt;</span> (<span class="n">2</span>, <span class="s">&quot;Two&quot;</span>) ] ]  
-<span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="i">df</span><span class="o">.</span><span class="i">ExpandColumns</span> [<span class="s">&quot;S&quot;</span>]
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="id">df</span> <span class="o">=</span> <span class="id">frame</span> <span class="pn">[</span> <span class="s">&quot;S&quot;</span> <span class="o">=&gt;</span> <span class="id">series</span> <span class="pn">[</span> <span class="n">1</span> <span class="o">=&gt;</span> <span class="pn">(</span><span class="n">1</span><span class="pn">,</span> <span class="s">&quot;One&quot;</span><span class="pn">)</span><span class="pn">;</span> <span class="n">2</span> <span class="o">=&gt;</span> <span class="pn">(</span><span class="n">2</span><span class="pn">,</span> <span class="s">&quot;Two&quot;</span><span class="pn">)</span> <span class="pn">]</span> <span class="pn">]</span>  
+<span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="id">df</span><span class="pn">.</span><span class="id">ExpandColumns</span> <span class="pn">[</span><span class="s">&quot;S&quot;</span><span class="pn">]</span>
 </code></pre></td>
 </tr>
 </table>
-
 <h2>Parameters</h2>
-
 <ul>
 <li><code>names</code> - Names of columns in the original data frame to be expanded</li>
 <li><code>frame</code> - Input data frame whose columns will be expanded</li>
 </ul>
-
-<div class="tip" id="fs1">val df : obj<br /><br />Full name: docs.df</div>
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '592', 592)" onmouseover="showTip(event, '592', 592)">
-            ExpandColumns(frame, nesting, dynamic)
-          </code>
-          <div class="tip" id="592">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,string&gt; * nesting:int * dynamic:bool) -&gt; Frame&lt;&#39;R,string&gt;<br />
-                          <strong>Type parameters:</strong> 'R          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L890-890" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Creates a new data frame where all columns are expanded based on runtime
-structure of the objects they store. The expansion is performed recrusively
-to the specified depth. A column can be expanded if it is <code>Series&lt;string, T&gt;</code> 
-or <code>IDictionary&lt;K, V&gt;</code> or if it is any .NET object with readable
-properties.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>nesting</code> - The nesting level for expansion. When set to 0, nothing is done.</li>
-</ul>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '593', 593)" onmouseover="showTip(event, '593', 593)">
-            IndexColumnsWith(frame, keys)
-          </code>
-          <div class="tip" id="593">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * keys:seq&lt;&#39;TNewRowIndex&gt;) -&gt; Frame&lt;&#39;R,&#39;TNewRowIndex&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, 'TNewRowIndex          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L808-808" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Replace the column index of the frame with the provided sequence of column keys.
-The columns of the frame are assigned keys according to the current order, or in a
-non-deterministic way, if the current column index is not ordered.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>frame</code> - Source data frame whose column index are to be replaced.</li>
-<li><code>keys</code> - A collection of new column keys.</li>
-</ul>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '594', 594)" onmouseover="showTip(event, '594', 594)">
-            IndexRowsOrdinally(frame)
-          </code>
-          <div class="tip" id="594">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;int,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L770-770" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Replace the row index of the frame with ordinarilly generated integers starting from zero.
-The rows of the frame are assigned index according to the current order, or in a
-non-deterministic way, if the current row index is not ordered.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>frame</code> - Source data frame whose row index are to be replaced.</li>
-</ul>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '595', 595)" onmouseover="showTip(event, '595', 595)">
-            IndexRowsUsing(frame, f)
-          </code>
-          <div class="tip" id="595">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * f:Func&lt;ObjectSeries&lt;&#39;C&gt;,&#39;R2&gt;) -&gt; Frame&lt;&#39;R2,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, 'R2          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L795-795" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Replace the row index of the frame with a sequence of row keys generated using
-a function invoked on each row.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>frame</code> - Source data frame whose row index are to be replaced.</li>
-<li><code>f</code> - A function from row (as object series) to new row key value</li>
-</ul>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '596', 596)" onmouseover="showTip(event, '596', 596)">
-            IndexRowsWith(frame, keys)
-          </code>
-          <div class="tip" id="596">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * keys:seq&lt;&#39;TNewRowIndex&gt;) -&gt; Frame&lt;&#39;TNewRowIndex,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, 'TNewRowIndex          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L783-783" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Replace the row index of the frame with the provided sequence of row keys.
-The rows of the frame are assigned keys according to the current order, or in a
-non-deterministic way, if the current row index is not ordered.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>frame</code> - Source data frame whose row index are to be replaced.</li>
-<li><code>keys</code> - A collection of new row keys.</li>
-</ul>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '597', 597)" onmouseover="showTip(event, '597', 597)">
-            Nest(frame)
-          </code>
-          <div class="tip" id="597">
-            <strong>Signature:</strong> frame:Frame&lt;Tuple&lt;&#39;TRowKey1,&#39;TRowKey2&gt;,&#39;TColumnKey&gt; -&gt; Series&lt;&#39;TRowKey1,Frame&lt;&#39;TRowKey2,&#39;TColumnKey&gt;&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey1, 'TRowKey2, 'TColumnKey          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L920-920" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Given a data frame whose row index has two levels, create a series
-whose keys are the unique first level keys, and whose values are 
-those corresponding frames selected from the original data.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '598', 598)" onmouseover="showTip(event, '598', 598)">
-            NestBy(frame, keyselector)
-          </code>
-          <div class="tip" id="598">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey1,&#39;TColumnKey&gt; * keyselector:Func&lt;&#39;TRowKey1,&#39;TRowKey2&gt;) -&gt; Series&lt;&#39;TRowKey2,Frame&lt;&#39;TRowKey1,&#39;TColumnKey&gt;&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey1, 'TColumnKey, 'TRowKey2          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L930-930" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Given a data frame whose row index has two levels, create a series
-whose keys are the unique results of the keyselector projection, and 
-whose values are those corresponding frames selected from the original 
-data.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '599', 599)" onmouseover="showTip(event, '599', 599)">
-            RealignRows(frame, keys)
-          </code>
-          <div class="tip" id="599">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * keys:seq&lt;&#39;R&gt;) -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L758-758" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Align the existing data to a specified collection of row keys. Values in the data frame
-that do not match any new key are dropped, new keys (that were not in the original data 
-frame) are assigned missing values.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>frame</code> - Source data frame that is to be realigned.</li>
-<li><code>keys</code> - A sequence of new row keys. The keys must have the same type as the original
-frame keys (because the rows are realigned).</li>
-</ul>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '600', 600)" onmouseover="showTip(event, '600', 600)">
-            SortColumnsByKey(frame)
-          </code>
-          <div class="tip" id="600">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L831-831" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns a data frame that contains the same data as the input, 
-but whose columns are an ordered series. This allows using operations that are
-only available on indexed series such as alignment and inexact lookup.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>frame</code> - Source data frame to be ordered.</li>
-</ul>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '601', 601)" onmouseover="showTip(event, '601', 601)">
-            SortRows(frame, key)
-          </code>
-          <div class="tip" id="601">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * key:&#39;TColumnKey) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L841-841" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns a data frame that contains the same data as the input, 
-but whose rows are sorted by some column.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>frame</code> - Source data frame to be ordered.</li>
-</ul>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '602', 602)" onmouseover="showTip(event, '602', 602)">
-            SortRowsBy(frame, key, f)
-          </code>
-          <div class="tip" id="602">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * key:&#39;TColumnKey * f:Func&lt;&#39;V,&#39;V2&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, 'V, 'V2          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L863-863" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns a data frame that contains the same data as the input, 
-but whose rows are sorted by some column.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>frame</code> - Source data frame to be ordered.</li>
-</ul>
-
+<div class="tip" id="fs1">val df : obj</div>
 
 
         </td>
@@ -436,27 +126,30 @@ but whose rows are sorted by some column.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '603', 603)" onmouseover="showTip(event, '603', 603)">
-            SortRowsByKey(frame)
+            ExpandColumns(frame, nesting, dynamic)
           </code>
           <div class="tip" id="603">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,string&gt; * nesting:int * dynamic:bool) -&gt; Frame&lt;&#39;R,string&gt;<br />
+                          <strong>Type parameters:</strong> 'R                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L820-820" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L890-890" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns a data frame that contains the same data as the input, 
-but whose rows are an ordered series. This allows using operations that are
-only available on indexed series such as alignment and inexact lookup.</p>
-
+          <p>Creates a new data frame where all columns are expanded based on runtime
+structure of the objects they store. The expansion is performed recrusively
+to the specified depth. A column can be expanded if it is <code>Series&lt;string, T&gt;</code>
+or <code>IDictionary&lt;K, V&gt;</code> or if it is any .NET object with readable
+properties.</p>
 <h2>Parameters</h2>
-
 <ul>
-<li><code>frame</code> - Source data frame to be ordered.</li>
+<li><code>nesting</code> - The nesting level for expansion. When set to 0, nothing is done.</li>
 </ul>
-
 
 
         </td>
@@ -465,26 +158,29 @@ only available on indexed series such as alignment and inexact lookup.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '604', 604)" onmouseover="showTip(event, '604', 604)">
-            SortRowsWith(frame, key, cmp)
+            IndexColumnsWith(frame, keys)
           </code>
           <div class="tip" id="604">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * key:&#39;TColumnKey * cmp:Comparer&lt;&#39;V&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, 'V          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * keys:seq&lt;&#39;TNewRowIndex&gt;) -&gt; Frame&lt;&#39;R,&#39;TNewRowIndex&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, 'TNewRowIndex                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L852-852" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L808-808" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns a data frame that contains the same data as the input, 
-but whose rows are sorted by some column.</p>
-
+          <p>Replace the column index of the frame with the provided sequence of column keys.
+The columns of the frame are assigned keys according to the current order, or in a
+non-deterministic way, if the current column index is not ordered.</p>
 <h2>Parameters</h2>
-
 <ul>
-<li><code>frame</code> - Source data frame to be ordered.</li>
+<li><code>frame</code> - Source data frame whose column index are to be replaced.</li>
+<li><code>keys</code> - A collection of new column keys.</li>
 </ul>
-
 
 
         </td>
@@ -493,28 +189,28 @@ but whose rows are sorted by some column.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '605', 605)" onmouseover="showTip(event, '605', 605)">
-            Transpose(frame)
+            IndexRowsOrdinally(frame)
           </code>
           <div class="tip" id="605">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TColumnKey,&#39;TRowKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
+            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;int,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L876-876" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L770-770" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns a transposed data frame. The rows of the original data frame are used as the
-columns of the new one (and vice versa). Use this operation if you have a data frame
-and you mostly need to access its rows as a series (because accessing columns as a 
-series is more efficient).</p>
-
+          <p>Replace the row index of the frame with ordinarilly generated integers starting from zero.
+The rows of the frame are assigned index according to the current order, or in a
+non-deterministic way, if the current row index is not ordered.</p>
 <h2>Parameters</h2>
-
 <ul>
-<li><code>frame</code> - Source data frame to be transposed.</li>
+<li><code>frame</code> - Source data frame whose row index are to be replaced.</li>
 </ul>
-
 
 
         </td>
@@ -523,140 +219,112 @@ series is more efficient).</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '606', 606)" onmouseover="showTip(event, '606', 606)">
-            Unnest(series)
+            IndexRowsUsing(frame, f)
           </code>
           <div class="tip" id="606">
-            <strong>Signature:</strong> series:Series&lt;&#39;TRowKey1,Frame&lt;&#39;TRowKey2,&#39;TColumnKey&gt;&gt; -&gt; Frame&lt;Tuple&lt;&#39;TRowKey1,&#39;TRowKey2&gt;,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey1, 'TRowKey2, 'TColumnKey          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * f:Func&lt;ObjectSeries&lt;&#39;C&gt;,&#39;R2&gt;) -&gt; Frame&lt;&#39;R2,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, 'R2                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L939-939" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L795-795" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Given a series whose values are frames, create a frame resulting
-from the concatenation of all the frames' rows, with the resulting 
-keys having two levels. This is the inverse operation to nest.</p>
-
+          <p>Replace the row index of the frame with a sequence of row keys generated using
+a function invoked on each row.</p>
+<h2>Parameters</h2>
+<ul>
+<li><code>frame</code> - Source data frame whose row index are to be replaced.</li>
+<li><code>f</code> - A function from row (as object series) to new row key value</li>
+</ul>
 
 
         </td>
       </tr>
-    </tbody>
-  </table>
-    <h2>Fancy accessors<a name="section1">&#160;</a></h2>
-  <h3>Static members</h3>
-  <table class="table table-bordered member-list">
-    <thead>
-      <tr><td>Static member</td><td>Description</td></tr>
-    </thead>
-    <tbody>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '607', 607)" onmouseover="showTip(event, '607', 607)">
-            GetRows(frame, rowKeys)
+            IndexRowsWith(frame, keys)
           </code>
           <div class="tip" id="607">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * rowKeys:&#39;TRowKey []) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * keys:seq&lt;&#39;TNewRowIndex&gt;) -&gt; Frame&lt;&#39;TNewRowIndex,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, 'TNewRowIndex                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1160-1160" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L783-783" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Replace the row index of the frame with the provided sequence of row keys.
+The rows of the frame are assigned keys according to the current order, or in a
+non-deterministic way, if the current row index is not ordered.</p>
+<h2>Parameters</h2>
+<ul>
+<li><code>frame</code> - Source data frame whose row index are to be replaced.</li>
+<li><code>keys</code> - A collection of new row keys.</li>
+</ul>
+
 
         </td>
       </tr>
-    </tbody>
-  </table>
-    <h2>Frame operations<a name="section2">&#160;</a></h2>
-  <h3>Static members</h3>
-  <table class="table table-bordered member-list">
-    <thead>
-      <tr><td>Static member</td><td>Description</td></tr>
-    </thead>
-    <tbody>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '608', 608)" onmouseover="showTip(event, '608', 608)">
-            PivotTable(frame, r, c, op)
+            Nest(frame)
           </code>
           <div class="tip" id="608">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * r:&#39;C * c:&#39;C * op:Func&lt;Frame&lt;&#39;R,&#39;C&gt;,&#39;T&gt;) -&gt; Frame&lt;&#39;RNew,&#39;CNew&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, 'RNew, 'CNew, 'T          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColumnKey&gt;) -&gt; Series&lt;&#39;TRowKey1,Frame&lt;&#39;TRowKey2,&#39;TColumnKey&gt;&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey1, 'TRowKey2, 'TColumnKey                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1037-1037" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L920-920" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Creates a new data frame resulting from a 'pivot' operation. Consider a denormalized data 
-frame representing a table: column labels are field names &amp; table values are observations
-of those fields. pivotTable buckets the rows along two axes, according to the values of 
-the columns <code>r</code> and <code>c</code>; and then computes a value for the frame of rows that land in each 
-bucket.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>r</code> - A column key to group on for the resulting row index</li>
-<li><code>c</code> - A column key to group on for the resulting col index</li>
-<li><code>op</code> - A function computing a value from the corresponding bucket frame</li>
-</ul>
-
+          <p>Given a data frame whose row index has two levels, create a series
+whose keys are the unique first level keys, and whose values are
+those corresponding frames selected from the original data.</p>
 
 
         </td>
       </tr>
-    </tbody>
-  </table>
-    <h2>Input and output<a name="section3">&#160;</a></h2>
-      <div class="xmldoc">
-        <p>Summary 2</p>
-
-
-
-      </div>
-  <h3>Static members</h3>
-  <table class="table table-bordered member-list">
-    <thead>
-      <tr><td>Static member</td><td>Description</td></tr>
-    </thead>
-    <tbody>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '609', 609)" onmouseover="showTip(event, '609', 609)">
-            SaveCsv(...)
+            NestBy(frame, keyselector)
           </code>
           <div class="tip" id="609">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * path:string * keyNames:seq&lt;string&gt; * separator:char * culture:CultureInfo) -&gt; unit<br />
-                          <strong>Type parameters:</strong> 'R, 'C          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey1,&#39;TColumnKey&gt; * keyselector:Func&lt;&#39;TRowKey1,&#39;TRowKey2&gt;) -&gt; Series&lt;&#39;TRowKey2,Frame&lt;&#39;TRowKey1,&#39;TColumnKey&gt;&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey1, 'TColumnKey, 'TRowKey2                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1003-1003" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L930-930" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Save data frame to a CSV file or to a <code>Stream</code>. When calling the operation,
-you can specify whether you want to save the row keys or not (and headers for the keys)
-and you can also specify the separator (use <code>\t</code> for writing TSV files). When specifying
-file name ending with <code>.tsv</code>, the <code>\t</code> separator is used automatically.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>path</code> - Specifies the output file name where the CSV data should be written</li>
-<li><code>keyNames</code> - Specifies the CSV headers for row key (or keys, for multi-level index)</li>
-<li><code>separator</code> - Specify the column separator in the file (the default is <code>\t</code> for 
-TSV files and <code>,</code> for CSV files)</li>
-<li><code>culture</code> - Specify the <code>CultureInfo</code> object used for formatting numerical data</li>
-</ul>
-
+          <p>Given a data frame whose row index has two levels, create a series
+whose keys are the unique results of the keyselector projection, and
+whose values are those corresponding frames selected from the original
+data.</p>
 
 
         </td>
@@ -665,33 +333,32 @@ TSV files and <code>,</code> for CSV files)</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '610', 610)" onmouseover="showTip(event, '610', 610)">
-            SaveCsv(...)
+            RealignRows(frame, keys)
           </code>
           <div class="tip" id="610">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * path:string * includeRowKeys:bool * keyNames:seq&lt;string&gt; * separator:char * culture:CultureInfo) -&gt; unit<br />
-                          <strong>Type parameters:</strong> 'R, 'C          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * keys:seq&lt;&#39;R&gt;) -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L982-982" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L758-758" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Save data frame to a CSV file or to a <code>Stream</code>. When calling the operation,
-you can specify whether you want to save the row keys or not (and headers for the keys)
-and you can also specify the separator (use <code>\t</code> for writing TSV files). When specifying
-file name ending with <code>.tsv</code>, the <code>\t</code> separator is used automatically.</p>
-
+          <p>Align the existing data to a specified collection of row keys. Values in the data frame
+that do not match any new key are dropped, new keys (that were not in the original data
+frame) are assigned missing values.</p>
 <h2>Parameters</h2>
-
 <ul>
-<li><code>path</code> - Specifies the output file name where the CSV data should be written</li>
-<li><code>includeRowKeys</code> - When set to <code>true</code>, the row key is also written to the output file</li>
-<li><code>keyNames</code> - Can be used to specify the CSV headers for row key (or keys, for multi-level index)</li>
-<li><code>separator</code> - Specify the column separator in the file (the default is <code>\t</code> for 
-TSV files and <code>,</code> for CSV files)</li>
-<li><code>culture</code> - Specify the <code>CultureInfo</code> object used for formatting numerical data</li>
+<li><code>frame</code> - Source data frame that is to be realigned.</li>
+<li>
+<code>keys</code> - A sequence of new row keys. The keys must have the same type as the original
+frame keys (because the rows are realigned).
+</li>
 </ul>
-
 
 
         </td>
@@ -700,33 +367,28 @@ TSV files and <code>,</code> for CSV files)</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '611', 611)" onmouseover="showTip(event, '611', 611)">
-            SaveCsv(...)
+            SortColumnsByKey(frame)
           </code>
           <div class="tip" id="611">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * writer:TextWriter * includeRowKeys:bool * keyNames:seq&lt;string&gt; * separator:char * culture:CultureInfo) -&gt; unit<br />
-                          <strong>Type parameters:</strong> 'R, 'C          </div>
+            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L961-961" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L831-831" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Save data frame to a CSV file or to a <code>Stream</code>. When calling the operation,
-you can specify whether you want to save the row keys or not (and headers for the keys)
-and you can also specify the separator (use <code>\t</code> for writing TSV files). When specifying
-file name ending with <code>.tsv</code>, the <code>\t</code> separator is used automatically.</p>
-
+          <p>Returns a data frame that contains the same data as the input,
+but whose columns are an ordered series. This allows using operations that are
+only available on indexed series such as alignment and inexact lookup.</p>
 <h2>Parameters</h2>
-
 <ul>
-<li><code>writer</code> - Specifies the text writer to which the CSV data should be written</li>
-<li><code>includeRowKeys</code> - When set to <code>true</code>, the row key is also written to the output file</li>
-<li><code>keyNames</code> - Can be used to specify the CSV headers for row key (or keys, for multi-level index)</li>
-<li><code>separator</code> - Specify the column separator in the file (the default is <code>\t</code> for 
-TSV files and <code>,</code> for CSV files)</li>
-<li><code>culture</code> - Specify the <code>CultureInfo</code> object used for formatting numerical data</li>
+<li><code>frame</code> - Source data frame to be ordered.</li>
 </ul>
-
 
 
         </td>
@@ -735,75 +397,56 @@ TSV files and <code>,</code> for CSV files)</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '612', 612)" onmouseover="showTip(event, '612', 612)">
-            ToDataTable(frame, rowKeyNames)
+            SortRows(frame, key)
           </code>
           <div class="tip" id="612">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * rowKeyNames:seq&lt;string&gt;) -&gt; DataTable<br />
-                          <strong>Type parameters:</strong> 'R, 'C          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * key:&#39;TColumnKey) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1021-1021" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L841-841" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns the data of the frame as a .NET <code>DataTable</code> object. The column keys are
-automatically converted to strings that are used as column names. The row index is
-turned into an additional column with the specified name (the function takes the name
-as a sequence to support hierarchical keys, but typically you can write just
-<code>frame.ToDataTable(["KeyName"])</code>.</p>
-
+          <p>Returns a data frame that contains the same data as the input,
+but whose rows are sorted by some column.</p>
 <h2>Parameters</h2>
-
 <ul>
-<li><code>rowKeyNames</code> - Specifies the names of the row key components (or just a single
-row key name if the row index is not hierarchical).</li>
+<li><code>frame</code> - Source data frame to be ordered.</li>
 </ul>
-
 
 
         </td>
       </tr>
-    </tbody>
-  </table>
-    <h2>Missing values<a name="section4">&#160;</a></h2>
-      <div class="xmldoc">
-        <p>Summary 3</p>
-
-
-
-      </div>
-  <h3>Static members</h3>
-  <table class="table table-bordered member-list">
-    <thead>
-      <tr><td>Static member</td><td>Description</td></tr>
-    </thead>
-    <tbody>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '613', 613)" onmouseover="showTip(event, '613', 613)">
-            DropSparseColumns(frame)
+            SortRowsBy(frame, key, f)
           </code>
           <div class="tip" id="613">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * key:&#39;TColumnKey * f:Func&lt;&#39;V,&#39;V2&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, 'V, 'V2                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1297-1297" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L863-863" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Creates a new data frame that contains only those columns of the original 
-data frame that are <em>dense</em>, meaning that they have a value for each row.
-The resulting data frame has the same number of rows, but may have 
-fewer columns (or no columns at all).</p>
-
+          <p>Returns a data frame that contains the same data as the input,
+but whose rows are sorted by some column.</p>
 <h2>Parameters</h2>
-
 <ul>
-<li><code>frame</code> - An input data frame that is to be filtered</li>
+<li><code>frame</code> - Source data frame to be ordered.</li>
 </ul>
-
 
 
         </td>
@@ -812,28 +455,28 @@ fewer columns (or no columns at all).</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '614', 614)" onmouseover="showTip(event, '614', 614)">
-            DropSparseRows(frame)
+            SortRowsByKey(frame)
           </code>
           <div class="tip" id="614">
             <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1285-1285" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L820-820" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Creates a new data frame that contains only those rows of the original 
-data frame that are <em>dense</em>, meaning that they have a value for each column.
-The resulting data frame has the same number of columns, but may have 
-fewer rows (or no rows at all).</p>
-
+          <p>Returns a data frame that contains the same data as the input,
+but whose rows are an ordered series. This allows using operations that are
+only available on indexed series such as alignment and inexact lookup.</p>
 <h2>Parameters</h2>
-
 <ul>
-<li><code>frame</code> - An input data frame that is to be filtered</li>
+<li><code>frame</code> - Source data frame to be ordered.</li>
 </ul>
-
 
 
         </td>
@@ -842,35 +485,27 @@ fewer rows (or no rows at all).</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '615', 615)" onmouseover="showTip(event, '615', 615)">
-            FillMissing(frame, f)
+            SortRowsWith(frame, key, cmp)
           </code>
           <div class="tip" id="615">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * f:Func&lt;Series&lt;&#39;TRowKey,&#39;T&gt;,&#39;TRowKey,&#39;T&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, 'T          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * key:&#39;TColumnKey * cmp:Comparer&lt;&#39;V&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, 'V                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1272-1272" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L852-852" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Fill missing values in the frame using the specified function. The specified
-function is called with all series and keys for which the frame does not 
-contain value and the result of the call is used in place of the missing value.</p>
-
-<p>The operation is only applied to columns (series) that contain values of the
-same type as the return type of the provided filling function. The operation 
-does not attempt to convert between numeric values (so a series containing 
-<code>float</code> will not be converted to a series of <code>int</code>).</p>
-
+          <p>Returns a data frame that contains the same data as the input,
+but whose rows are sorted by some column.</p>
 <h2>Parameters</h2>
-
 <ul>
-<li><code>frame</code> - An input data frame that is to be filled</li>
-<li><code>f</code> - A function that takes a series <code>Series&lt;R, T&gt;</code> together with a key <code>K</code> 
-in the series and generates a value to be used in a place where the original
-series contains a missing value.</li>
+<li><code>frame</code> - Source data frame to be ordered.</li>
 </ul>
-
 
 
         </td>
@@ -879,33 +514,29 @@ series contains a missing value.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '616', 616)" onmouseover="showTip(event, '616', 616)">
-            FillMissing(frame, direction)
+            Transpose(frame)
           </code>
           <div class="tip" id="616">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * direction:Direction) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
+            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TColumnKey,&#39;TRowKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1252-1252" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L876-876" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Fill missing values in the data frame with the nearest available value
-(using the specified direction). Note that the frame may still contain
-missing values after call to this function (e.g. if the first value is not available
-and we attempt to fill series with previous values). This operation can only be
-used on ordered frames.</p>
-
+          <p>Returns a transposed data frame. The rows of the original data frame are used as the
+columns of the new one (and vice versa). Use this operation if you have a data frame
+and you mostly need to access its rows as a series (because accessing columns as a
+series is more efficient).</p>
 <h2>Parameters</h2>
-
 <ul>
-<li><code>frame</code> - An input data frame that is to be filled</li>
-<li><code>direction</code> - Specifies the direction used when searching for 
-the nearest available value. <code>Backward</code> means that we want to
-look for the first value with a smaller key while <code>Forward</code> searches
-for the nearest greater key.</li>
+<li><code>frame</code> - Source data frame to be transposed.</li>
 </ul>
-
 
 
         </td>
@@ -914,37 +545,31 @@ for the nearest greater key.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '617', 617)" onmouseover="showTip(event, '617', 617)">
-            FillMissing(frame, value)
+            Unnest(series)
           </code>
           <div class="tip" id="617">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * value:&#39;T) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, 'T          </div>
+            <strong>Signature:</strong> series:Series&lt;&#39;TRowKey1,Frame&lt;&#39;TRowKey2,&#39;TColumnKey&gt;&gt; -&gt; Frame&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey1, 'TRowKey2, 'TColumnKey                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1234-1234" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L939-939" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Fill missing values of a given type in the frame with a constant value.
-The operation is only applied to columns (series) that contain values of the
-same type as the provided filling value. The operation does not attempt to 
-convert between numeric values (so a series containing <code>float</code> will not be
-converted to a series of <code>int</code>).</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>frame</code> - An input data frame that is to be filled</li>
-<li><code>value</code> - A constant value that is used to fill all missing values</li>
-</ul>
-
+          <p>Given a series whose values are frames, create a frame resulting
+from the concatenation of all the frames' rows, with the resulting
+keys having two levels. This is the inverse operation to nest.</p>
 
 
         </td>
       </tr>
     </tbody>
   </table>
-    <h2>Other type members<a name="section5">&#160;</a></h2>
+        <h2>Fancy accessors<a name="section1">&#160;</a></h2>
   <h3>Static members</h3>
   <table class="table table-bordered member-list">
     <thead>
@@ -955,85 +580,115 @@ converted to a series of <code>int</code>).</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '618', 618)" onmouseover="showTip(event, '618', 618)">
-            CountColumns(frame)
+            GetRows(frame, rowKeys)
           </code>
           <div class="tip" id="618">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; int<br />
-                          <strong>Type parameters:</strong> 'R, 'C          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * rowKeys:&#39;TRowKey []) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1070-1070" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1160-1160" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns the total number of row keys in the specified frame. This returns
-the total length of the row series, including keys for which there is no 
-value available.</p>
-
-
+          
 
         </td>
       </tr>
+    </tbody>
+  </table>
+        <h2>Frame operations<a name="section2">&#160;</a></h2>
+  <h3>Static members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Static member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '619', 619)" onmouseover="showTip(event, '619', 619)">
-            CountRows(frame)
+            PivotTable(frame, r, c, op)
           </code>
           <div class="tip" id="619">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; int<br />
-                          <strong>Type parameters:</strong> 'R, 'C          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * r:&#39;C * c:&#39;C * op:Func&lt;Frame&lt;&#39;R,&#39;C&gt;,&#39;T&gt;) -&gt; Frame&lt;&#39;RNew,&#39;CNew&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, 'RNew, 'CNew, 'T                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1064-1064" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1037-1037" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns the total number of row keys in the specified frame. This returns
-the total length of the row series, including keys for which there is no 
-value available.</p>
-
+          <p>Creates a new data frame resulting from a 'pivot' operation. Consider a denormalized data
+frame representing a table: column labels are field names &amp; table values are observations
+of those fields. pivotTable buckets the rows along two axes, according to the values of
+the columns <code>r</code> and <code>c</code>; and then computes a value for the frame of rows that land in each
+bucket.</p>
+<h2>Parameters</h2>
+<ul>
+<li><code>r</code> - A column key to group on for the resulting row index</li>
+<li><code>c</code> - A column key to group on for the resulting col index</li>
+<li><code>op</code> - A function computing a value from the corresponding bucket frame</li>
+</ul>
 
 
         </td>
       </tr>
+    </tbody>
+  </table>
+        <h2>Input and output<a name="section3">&#160;</a></h2>
+            <div class="xmldoc">
+                <p>Summary 2</p>
+
+
+            </div>
+  <h3>Static members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Static member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '620', 620)" onmouseover="showTip(event, '620', 620)">
-            Diff(frame, offset)
+            SaveCsv(...)
           </code>
           <div class="tip" id="620">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * offset:int) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * path:string * keyNames:seq&lt;string&gt; * separator:char * culture:CultureInfo) -&gt; unit<br />
+                          <strong>Type parameters:</strong> 'R, 'C                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1151-1151" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1003-1003" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns a frame with columns containing difference between an original value and
-a value at the specified offset. For example, calling <code>Frame.diff 1 s</code> returns a 
-frame where previous column values is subtracted from the current ones. In pseudo-code, the
-function behaves as follows:</p>
-
-<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">result</span>[<span class="i">k</span>] <span class="o">=</span> <span class="i">series</span>[<span class="i">k</span>] <span class="o">-</span> <span class="i">series</span>[<span class="i">k</span> <span class="o">-</span> <span class="i">offset</span>]
-</code></pre></td>
-</tr>
-</table>
-
-<p>Columns that cannot be converted to <code>float</code> are left without a change.</p>
-
+          <p>Save data frame to a CSV file or to a <code>Stream</code>. When calling the operation,
+you can specify whether you want to save the row keys or not (and headers for the keys)
+and you can also specify the separator (use <code>\t</code> for writing TSV files). When specifying
+file name ending with <code>.tsv</code>, the <code>\t</code> separator is used automatically.</p>
 <h2>Parameters</h2>
-
 <ul>
-<li><code>offset</code> - When positive, subtracts the past values from the current values;
-when negative, subtracts the future values from the current values.</li>
-<li><code>frame</code> - The input frame containing at least some <code>float</code> columns.</li>
+<li><code>path</code> - Specifies the output file name where the CSV data should be written</li>
+<li><code>keyNames</code> - Specifies the CSV headers for row key (or keys, for multi-level index)</li>
+<li>
+<code>separator</code> - Specify the column separator in the file (the default is <code>\t</code> for 
+TSV files and <code>,</code> for CSV files)
+</li>
+<li><code>culture</code> - Specify the <code>CultureInfo</code> object used for formatting numerical data</li>
 </ul>
-
 
 
         </td>
@@ -1042,212 +697,428 @@ when negative, subtracts the future values from the current values.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '621', 621)" onmouseover="showTip(event, '621', 621)">
-            FilterRowsBy(frame, column, value)
+            SaveCsv(...)
           </code>
           <div class="tip" id="621">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * column:&#39;TColumnKey * value:obj) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, 'V          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * path:string * includeRowKeys:bool * keyNames:seq&lt;string&gt; * separator:char * culture:CultureInfo) -&gt; unit<br />
+                          <strong>Type parameters:</strong> 'R, 'C                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1164-1164" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L982-982" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Save data frame to a CSV file or to a <code>Stream</code>. When calling the operation,
+you can specify whether you want to save the row keys or not (and headers for the keys)
+and you can also specify the separator (use <code>\t</code> for writing TSV files). When specifying
+file name ending with <code>.tsv</code>, the <code>\t</code> separator is used automatically.</p>
+<h2>Parameters</h2>
+<ul>
+<li><code>path</code> - Specifies the output file name where the CSV data should be written</li>
+<li><code>includeRowKeys</code> - When set to <code>true</code>, the row key is also written to the output file</li>
+<li><code>keyNames</code> - Can be used to specify the CSV headers for row key (or keys, for multi-level index)</li>
+<li>
+<code>separator</code> - Specify the column separator in the file (the default is <code>\t</code> for 
+TSV files and <code>,</code> for CSV files)
+</li>
+<li><code>culture</code> - Specify the <code>CultureInfo</code> object used for formatting numerical data</li>
+</ul>
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '622', 622)" onmouseover="showTip(event, '622', 622)">
-            GetRowsAt(frame, indices)
+            SaveCsv(...)
           </code>
           <div class="tip" id="622">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * indices:int []) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * writer:TextWriter * includeRowKeys:bool * keyNames:seq&lt;string&gt; * separator:char * culture:CultureInfo) -&gt; unit<br />
+                          <strong>Type parameters:</strong> 'R, 'C                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1169-1169" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L961-961" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Save data frame to a CSV file or to a <code>Stream</code>. When calling the operation,
+you can specify whether you want to save the row keys or not (and headers for the keys)
+and you can also specify the separator (use <code>\t</code> for writing TSV files). When specifying
+file name ending with <code>.tsv</code>, the <code>\t</code> separator is used automatically.</p>
+<h2>Parameters</h2>
+<ul>
+<li><code>writer</code> - Specifies the text writer to which the CSV data should be written</li>
+<li><code>includeRowKeys</code> - When set to <code>true</code>, the row key is also written to the output file</li>
+<li><code>keyNames</code> - Can be used to specify the CSV headers for row key (or keys, for multi-level index)</li>
+<li>
+<code>separator</code> - Specify the column separator in the file (the default is <code>\t</code> for 
+TSV files and <code>,</code> for CSV files)
+</li>
+<li><code>culture</code> - Specify the <code>CultureInfo</code> object used for formatting numerical data</li>
+</ul>
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '623', 623)" onmouseover="showTip(event, '623', 623)">
-            GetSlice(series, lo1, hi1, lo2, hi2)
+            ToDataTable(frame, rowKeyNames)
           </code>
           <div class="tip" id="623">
-            <strong>Signature:</strong> (series:RowSeries&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt; * lo1:&#39;K1 option * hi1:&#39;K1 option * lo2:&#39;K2 option * hi2:&#39;K2 option) -&gt; Frame&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey1, 'TRowKey2, 'TColKey, 'K1, 'K2          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * rowKeyNames:seq&lt;string&gt;) -&gt; DataTable<br />
+                          <strong>Type parameters:</strong> 'R, 'C                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1213-1213" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1021-1021" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Returns the data of the frame as a .NET <code>DataTable</code> object. The column keys are
+automatically converted to strings that are used as column names. The row index is
+turned into an additional column with the specified name (the function takes the name
+as a sequence to support hierarchical keys, but typically you can write just
+<code>frame.ToDataTable(["KeyName"])</code>.</p>
+<h2>Parameters</h2>
+<ul>
+<li>
+<code>rowKeyNames</code> - Specifies the names of the row key components (or just a single
+row key name if the row index is not hierarchical).
+</li>
+</ul>
+
+
         </td>
       </tr>
+    </tbody>
+  </table>
+        <h2>Missing values<a name="section4">&#160;</a></h2>
+            <div class="xmldoc">
+                <p>Summary 3</p>
+
+
+            </div>
+  <h3>Static members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Static member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '624', 624)" onmouseover="showTip(event, '624', 624)">
-            GetSlice(series, k1, lo2, hi2)
+            DropSparseColumns(frame)
           </code>
           <div class="tip" id="624">
-            <strong>Signature:</strong> (series:RowSeries&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt; * k1:&#39;TRowKey1 * lo2:&#39;TRowKey2 option * hi2:&#39;TRowKey2 option) -&gt; Frame&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey1, 'TRowKey2, 'TColKey          </div>
+            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1208-1208" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1297-1297" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Creates a new data frame that contains only those columns of the original
+data frame that are <em>dense</em>, meaning that they have a value for each row.
+The resulting data frame has the same number of rows, but may have
+fewer columns (or no columns at all).</p>
+<h2>Parameters</h2>
+<ul>
+<li><code>frame</code> - An input data frame that is to be filtered</li>
+</ul>
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '625', 625)" onmouseover="showTip(event, '625', 625)">
-            GetSlice(series, lo1, hi1, k2)
+            DropSparseRows(frame)
           </code>
           <div class="tip" id="625">
-            <strong>Signature:</strong> (series:RowSeries&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt; * lo1:&#39;TRowKey1 option * hi1:&#39;TRowKey1 option * k2:&#39;TRowKey2) -&gt; Frame&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey1, 'TRowKey2, 'TColKey          </div>
+            <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1203-1203" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1285-1285" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Creates a new data frame that contains only those rows of the original
+data frame that are <em>dense</em>, meaning that they have a value for each column.
+The resulting data frame has the same number of columns, but may have
+fewer rows (or no rows at all).</p>
+<h2>Parameters</h2>
+<ul>
+<li><code>frame</code> - An input data frame that is to be filtered</li>
+</ul>
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '626', 626)" onmouseover="showTip(event, '626', 626)">
-            GetSlice(series, lo1, hi1, lo2, hi2)
+            FillMissing(frame, f)
           </code>
           <div class="tip" id="626">
-            <strong>Signature:</strong> (series:RowSeries&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt; * lo1:&#39;TRowKey1 option * hi1:&#39;TRowKey1 option * lo2:&#39;TRowKey2 option * hi2:&#39;TRowKey2 option) -&gt; Frame&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey1, 'TRowKey2, 'TColKey          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * f:Func&lt;Series&lt;&#39;TRowKey,&#39;T&gt;,&#39;TRowKey,&#39;T&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, 'T                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1197-1197" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1272-1272" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Fill missing values in the frame using the specified function. The specified
+function is called with all series and keys for which the frame does not
+contain value and the result of the call is used in place of the missing value.</p>
+<p>The operation is only applied to columns (series) that contain values of the
+same type as the return type of the provided filling function. The operation
+does not attempt to convert between numeric values (so a series containing
+<code>float</code> will not be converted to a series of <code>int</code>).</p>
+<h2>Parameters</h2>
+<ul>
+<li><code>frame</code> - An input data frame that is to be filled</li>
+<li>
+<code>f</code> - A function that takes a series <code>Series&lt;R, T&gt;</code> together with a key <code>K</code> 
+in the series and generates a value to be used in a place where the original
+series contains a missing value.
+</li>
+</ul>
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '627', 627)" onmouseover="showTip(event, '627', 627)">
-            GetSlice(series, lo1, hi1, lo2, hi2)
+            FillMissing(frame, direction)
           </code>
           <div class="tip" id="627">
-            <strong>Signature:</strong> (series:ColumnSeries&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt; * lo1:&#39;K1 option * hi1:&#39;K1 option * lo2:&#39;K2 option * hi2:&#39;K2 option) -&gt; Frame&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColKey1, 'TColKey2, 'K1, 'K2          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * direction:Direction) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1191-1191" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1252-1252" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Fill missing values in the data frame with the nearest available value
+(using the specified direction). Note that the frame may still contain
+missing values after call to this function (e.g. if the first value is not available
+and we attempt to fill series with previous values). This operation can only be
+used on ordered frames.</p>
+<h2>Parameters</h2>
+<ul>
+<li><code>frame</code> - An input data frame that is to be filled</li>
+<li>
+<code>direction</code> - Specifies the direction used when searching for 
+the nearest available value. <code>Backward</code> means that we want to
+look for the first value with a smaller key while <code>Forward</code> searches
+for the nearest greater key.
+</li>
+</ul>
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '628', 628)" onmouseover="showTip(event, '628', 628)">
-            GetSlice(series, k1, lo2, hi2)
+            FillMissing(frame, value)
           </code>
           <div class="tip" id="628">
-            <strong>Signature:</strong> (series:ColumnSeries&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt; * k1:&#39;TColKey1 * lo2:&#39;TColKey2 option * hi2:&#39;TColKey2 option) -&gt; Frame&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColKey1, 'TColKey2          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * value:&#39;T) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, 'T                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1186-1186" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1234-1234" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Fill missing values of a given type in the frame with a constant value.
+The operation is only applied to columns (series) that contain values of the
+same type as the provided filling value. The operation does not attempt to
+convert between numeric values (so a series containing <code>float</code> will not be
+converted to a series of <code>int</code>).</p>
+<h2>Parameters</h2>
+<ul>
+<li><code>frame</code> - An input data frame that is to be filled</li>
+<li><code>value</code> - A constant value that is used to fill all missing values</li>
+</ul>
+
+
         </td>
       </tr>
+    </tbody>
+  </table>
+        <h2>Other type members<a name="section5">&#160;</a></h2>
+  <h3>Static members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Static member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '629', 629)" onmouseover="showTip(event, '629', 629)">
-            GetSlice(series, lo1, hi1, k2)
+            CountColumns(frame)
           </code>
           <div class="tip" id="629">
-            <strong>Signature:</strong> (series:ColumnSeries&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt; * lo1:&#39;TColKey1 option * hi1:&#39;TColKey1 option * k2:&#39;TColKey2) -&gt; Frame&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColKey1, 'TColKey2          </div>
+            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; int<br />
+                          <strong>Type parameters:</strong> 'R, 'C                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+[&lt;Obsolete(&quot;Use df.ColumnCount&quot;)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1181-1181" class="github-link">
+              <div class="alert alert-warning">
+              <strong>WARNING: </strong> This API is obsolete
+              <p>Use df.ColumnCount</p>
+              </div> 
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1070-1070" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Returns the total number of row keys in the specified frame. This returns
+the total length of the row series, including keys for which there is no
+value available.</p>
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '630', 630)" onmouseover="showTip(event, '630', 630)">
-            GetSlice(series, lo1, hi1, lo2, hi2)
+            CountRows(frame)
           </code>
           <div class="tip" id="630">
-            <strong>Signature:</strong> (series:ColumnSeries&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt; * lo1:&#39;TColKey1 option * hi1:&#39;TColKey1 option * lo2:&#39;TColKey2 option * hi2:&#39;TColKey2 option) -&gt; Frame&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColKey1, 'TColKey2          </div>
+            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; int<br />
+                          <strong>Type parameters:</strong> 'R, 'C                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+[&lt;Obsolete(&quot;Use df.RowCount&quot;)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1175-1175" class="github-link">
+              <div class="alert alert-warning">
+              <strong>WARNING: </strong> This API is obsolete
+              <p>Use df.RowCount</p>
+              </div> 
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1064-1064" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Returns the total number of row keys in the specified frame. This returns
+the total length of the row series, including keys for which there is no
+value available.</p>
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '631', 631)" onmouseover="showTip(event, '631', 631)">
-            Merge(frame, rowKey, row)
+            Diff(frame, offset)
           </code>
           <div class="tip" id="631">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * rowKey:&#39;TRowKey * row:ISeries&lt;&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * offset:int) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1115-1115" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1151-1151" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Returns a frame with columns containing difference between an original value and
+a value at the specified offset. For example, calling <code>Frame.diff 1 s</code> returns a
+frame where previous column values is subtracted from the current ones. In pseudo-code, the
+function behaves as follows:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="id">result</span><span class="pn">[</span><span class="id">k</span><span class="pn">]</span> <span class="o">=</span> <span class="id">series</span><span class="pn">[</span><span class="id">k</span><span class="pn">]</span> <span class="o">-</span> <span class="id">series</span><span class="pn">[</span><span class="id">k</span> <span class="o">-</span> <span class="id">offset</span><span class="pn">]</span>
+</code></pre></td>
+</tr>
+</table>
+<p>Columns that cannot be converted to <code>float</code> are left without a change.</p>
+<h2>Parameters</h2>
+<ul>
+<li>
+<code>offset</code> - When positive, subtracts the past values from the current values;
+when negative, subtracts the future values from the current values.
+</li>
+<li><code>frame</code> - The input frame containing at least some <code>float</code> columns.</li>
+</ul>
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '632', 632)" onmouseover="showTip(event, '632', 632)">
-            Print(frame, printTypes)
+            FilterRowsBy(frame, column, value)
           </code>
           <div class="tip" id="632">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;K,&#39;V&gt; * printTypes:bool) -&gt; unit<br />
-                          <strong>Type parameters:</strong> 'K, 'V          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * column:&#39;TColumnKey * value:obj) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, 'V                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1048-1048" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1164-1164" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1258,14 +1129,18 @@ when negative, subtracts the future values from the current values.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '633', 633)" onmouseover="showTip(event, '633', 633)">
-            Print(frame)
+            GetRowsAt(frame, indices)
           </code>
           <div class="tip" id="633">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;K,&#39;V&gt; -&gt; unit<br />
-                          <strong>Type parameters:</strong> 'K, 'V          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * indices:int []) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1045-1045" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1169-1169" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1276,14 +1151,19 @@ when negative, subtracts the future values from the current values.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '634', 634)" onmouseover="showTip(event, '634', 634)">
-            Reduce(frame, aggregation)
+            GetSlice(series, lo1, hi1, lo2, hi2)
           </code>
           <div class="tip" id="634">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * aggregation:Func&lt;&#39;T,&#39;T,&#39;T&gt;) -&gt; Series&lt;&#39;TColumnKey,&#39;T&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, 'T          </div>
+            <strong>Signature:</strong> (series:RowSeries&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt; * lo1:&#39;K1 option * hi1:&#39;K1 option * lo2:&#39;K2 option * hi2:&#39;K2 option) -&gt; Frame&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey1, 'TRowKey2, 'TColKey, 'K1, 'K2                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+[&lt;EditorBrowsable(1)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1155-1155" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1213-1213" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1294,14 +1174,19 @@ when negative, subtracts the future values from the current values.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '635', 635)" onmouseover="showTip(event, '635', 635)">
-            Select(frame, projection)
+            GetSlice(series, k1, lo2, hi2)
           </code>
           <div class="tip" id="635">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;&gt;,int,&#39;?550375&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;?550376&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?550375, '?550376          </div>
+            <strong>Signature:</strong> (series:RowSeries&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt; * k1:&#39;TRowKey1 * lo2:&#39;TRowKey2 option * hi2:&#39;TRowKey2 option) -&gt; Frame&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey1, 'TRowKey2, 'TColKey                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+[&lt;EditorBrowsable(1)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1103-1103" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1208-1208" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1312,14 +1197,19 @@ when negative, subtracts the future values from the current values.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '636', 636)" onmouseover="showTip(event, '636', 636)">
-            Select(frame, projection)
+            GetSlice(series, lo1, hi1, k2)
           </code>
           <div class="tip" id="636">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;&gt;,&#39;?550370&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;?550371&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?550370, '?550371          </div>
+            <strong>Signature:</strong> (series:RowSeries&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt; * lo1:&#39;TRowKey1 option * hi1:&#39;TRowKey1 option * k2:&#39;TRowKey2) -&gt; Frame&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey1, 'TRowKey2, 'TColKey                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+[&lt;EditorBrowsable(1)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1099-1099" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1203-1203" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1330,14 +1220,19 @@ when negative, subtracts the future values from the current values.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '637', 637)" onmouseover="showTip(event, '637', 637)">
-            SelectColumnKeys(frame, projection)
+            GetSlice(series, lo1, hi1, lo2, hi2)
           </code>
           <div class="tip" id="637">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TColumnKey,OptionalValue&lt;ObjectSeries&lt;&#39;TRowKey&gt;&gt;&gt;,&#39;?550384&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;?550384&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?550384          </div>
+            <strong>Signature:</strong> (series:RowSeries&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt; * lo1:&#39;TRowKey1 option * hi1:&#39;TRowKey1 option * lo2:&#39;TRowKey2 option * hi2:&#39;TRowKey2 option) -&gt; Frame&lt;(&#39;TRowKey1 * &#39;TRowKey2),&#39;TColKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey1, 'TRowKey2, 'TColKey                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+[&lt;EditorBrowsable(1)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1111-1111" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1197-1197" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1348,14 +1243,19 @@ when negative, subtracts the future values from the current values.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '638', 638)" onmouseover="showTip(event, '638', 638)">
-            SelectRowKeys(frame, projection)
+            GetSlice(series, lo1, hi1, lo2, hi2)
           </code>
           <div class="tip" id="638">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TRowKey,OptionalValue&lt;ObjectSeries&lt;&#39;TColumnKey&gt;&gt;&gt;,&#39;?550380&gt;) -&gt; Frame&lt;&#39;?550380,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?550380          </div>
+            <strong>Signature:</strong> (series:ColumnSeries&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt; * lo1:&#39;K1 option * hi1:&#39;K1 option * lo2:&#39;K2 option * hi2:&#39;K2 option) -&gt; Frame&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColKey1, 'TColKey2, 'K1, 'K2                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+[&lt;EditorBrowsable(1)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1107-1107" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1191-1191" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1366,57 +1266,42 @@ when negative, subtracts the future values from the current values.</li>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '639', 639)" onmouseover="showTip(event, '639', 639)">
-            Shift(frame, offset)
+            GetSlice(series, k1, lo2, hi2)
           </code>
           <div class="tip" id="639">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * offset:int) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
+            <strong>Signature:</strong> (series:ColumnSeries&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt; * k1:&#39;TColKey1 * lo2:&#39;TColKey2 option * hi2:&#39;TColKey2 option) -&gt; Frame&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColKey1, 'TColKey2                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+[&lt;EditorBrowsable(1)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1133-1133" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1186-1186" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns a frame with columns shifted by the specified offset. When the offset is 
-positive, the values are shifted forward and first <code>offset</code> keys are dropped. When the
-offset is negative, the values are shifted backwards and the last <code>offset</code> keys are dropped.
-Expressed in pseudo-code:</p>
-
-<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">result</span>[<span class="i">k</span>] <span class="o">=</span> <span class="i">series</span>[<span class="i">k</span> <span class="o">-</span> <span class="i">offset</span>]
-</code></pre></td>
-</tr>
-</table>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>offset</code> - Can be both positive and negative number.</li>
-<li><code>frame</code> - The input frame whose columns are to be shifted.</li>
-</ul>
-
-<h2>Remarks</h2>
-
-<p>If you want to calculate the difference, e.g. <code>df - (Frame.shift 1 df)</code>, you can
-use <code>Frame.diff</code> which will be a little bit faster.</p>
-
-
-
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '640', 640)" onmouseover="showTip(event, '640', 640)">
-            Sum(frame)
+            GetSlice(series, lo1, hi1, k2)
           </code>
           <div class="tip" id="640">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C          </div>
+            <strong>Signature:</strong> (series:ColumnSeries&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt; * lo1:&#39;TColKey1 option * hi1:&#39;TColKey1 option * k2:&#39;TColKey2) -&gt; Frame&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColKey1, 'TColKey2                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+[&lt;EditorBrowsable(1)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1051-1051" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1181-1181" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1427,76 +1312,63 @@ use <code>Frame.diff</code> which will be a little bit faster.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '641', 641)" onmouseover="showTip(event, '641', 641)">
-            Where(frame, condition)
+            GetSlice(series, lo1, hi1, lo2, hi2)
           </code>
           <div class="tip" id="641">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * condition:Func&lt;KeyValuePair&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;&gt;,int,bool&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
+            <strong>Signature:</strong> (series:ColumnSeries&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt; * lo1:&#39;TColKey1 option * hi1:&#39;TColKey1 option * lo2:&#39;TColKey2 option * hi2:&#39;TColKey2 option) -&gt; Frame&lt;&#39;TRowKey,(&#39;TColKey1 * &#39;TColKey2)&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColKey1, 'TColKey2                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+[&lt;EditorBrowsable(1)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1095-1095" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1175-1175" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Filters frame rows using the specified condtion. Returns a new data frame
-that contains rows for which the provided function returned false. The function
-is called with <code>KeyValuePair</code> containing the row key as the <code>Key</code> and <code>Value</code>
-gives access to the row series and a row index.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>frame</code> - A data frame to invoke the filtering function on.</li>
-<li><code>condition</code> - A delegate that specifies the filtering condition.</li>
-</ul>
-
-
-
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '642', 642)" onmouseover="showTip(event, '642', 642)">
-            Where(frame, condition)
+            Merge(frame, rowKey, row)
           </code>
           <div class="tip" id="642">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * condition:Func&lt;KeyValuePair&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;&gt;,bool&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * rowKey:&#39;TRowKey * row:ISeries&lt;&#39;TColumnKey&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1082-1082" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1115-1115" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Filters frame rows using the specified condition. Returns a new data frame
-that contains rows for which the provided function returned false. The function
-is called with <code>KeyValuePair</code> containing the row key as the <code>Key</code> and <code>Value</code>
-gives access to the row series.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>frame</code> - A data frame to invoke the filtering function on.</li>
-<li><code>condition</code> - A delegate that specifies the filtering condition.</li>
-</ul>
-
-
-
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '643', 643)" onmouseover="showTip(event, '643', 643)">
-            Window(frame, size, aggregate)
+            Print(frame, printTypes)
           </code>
           <div class="tip" id="643">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * size:int * aggregate:Func&lt;Frame&lt;&#39;R,&#39;C&gt;,&#39;?550354&gt;) -&gt; Series&lt;&#39;R,&#39;?550354&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?550354          </div>
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;K,&#39;V&gt; * printTypes:bool) -&gt; unit<br />
+                          <strong>Type parameters:</strong> 'K, 'V                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1057-1057" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1048-1048" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1507,14 +1379,299 @@ gives access to the row series.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '644', 644)" onmouseover="showTip(event, '644', 644)">
-            Window(frame, size)
+            Print(frame)
           </code>
           <div class="tip" id="644">
-            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * size:int) -&gt; Series&lt;&#39;R,Frame&lt;&#39;R,&#39;C&gt;&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C          </div>
+            <strong>Signature:</strong> frame:Frame&lt;&#39;K,&#39;V&gt; -&gt; unit<br />
+                          <strong>Type parameters:</strong> 'K, 'V                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1054-1054" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1045-1045" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '645', 645)" onmouseover="showTip(event, '645', 645)">
+            Reduce(frame, aggregation)
+          </code>
+          <div class="tip" id="645">
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * aggregation:Func&lt;&#39;T,&#39;T,&#39;T&gt;) -&gt; Series&lt;&#39;TColumnKey,&#39;T&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, 'T                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1155-1155" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '646', 646)" onmouseover="showTip(event, '646', 646)">
+            Select(frame, projection)
+          </code>
+          <div class="tip" id="646">
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;&gt;,int,&#39;?632697&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;?632698&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?632697, '?632698                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1103-1103" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '647', 647)" onmouseover="showTip(event, '647', 647)">
+            Select(frame, projection)
+          </code>
+          <div class="tip" id="647">
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;&gt;,&#39;?632692&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;?632693&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?632692, '?632693                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1099-1099" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '648', 648)" onmouseover="showTip(event, '648', 648)">
+            SelectColumnKeys(frame, projection)
+          </code>
+          <div class="tip" id="648">
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TColumnKey,OptionalValue&lt;ObjectSeries&lt;&#39;TRowKey&gt;&gt;&gt;,&#39;?632706&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;?632706&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?632706                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1111-1111" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '649', 649)" onmouseover="showTip(event, '649', 649)">
+            SelectRowKeys(frame, projection)
+          </code>
+          <div class="tip" id="649">
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * projection:Func&lt;KeyValuePair&lt;&#39;TRowKey,OptionalValue&lt;ObjectSeries&lt;&#39;TColumnKey&gt;&gt;&gt;,&#39;?632702&gt;) -&gt; Frame&lt;&#39;?632702,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey, '?632702                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1107-1107" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '650', 650)" onmouseover="showTip(event, '650', 650)">
+            Shift(frame, offset)
+          </code>
+          <div class="tip" id="650">
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * offset:int) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1133-1133" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a frame with columns shifted by the specified offset. When the offset is
+positive, the values are shifted forward and first <code>offset</code> keys are dropped. When the
+offset is negative, the values are shifted backwards and the last <code>offset</code> keys are dropped.
+Expressed in pseudo-code:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="id">result</span><span class="pn">[</span><span class="id">k</span><span class="pn">]</span> <span class="o">=</span> <span class="id">series</span><span class="pn">[</span><span class="id">k</span> <span class="o">-</span> <span class="id">offset</span><span class="pn">]</span>
+</code></pre></td>
+</tr>
+</table>
+<h2>Parameters</h2>
+<ul>
+<li><code>offset</code> - Can be both positive and negative number.</li>
+<li><code>frame</code> - The input frame whose columns are to be shifted.</li>
+</ul>
+<h2>Remarks</h2>
+<p>If you want to calculate the difference, e.g. <code>df - (Frame.shift 1 df)</code>, you can
+use <code>Frame.diff</code> which will be a little bit faster.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '651', 651)" onmouseover="showTip(event, '651', 651)">
+            Sum(frame)
+          </code>
+          <div class="tip" id="651">
+            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1051-1051" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '652', 652)" onmouseover="showTip(event, '652', 652)">
+            Where(frame, condition)
+          </code>
+          <div class="tip" id="652">
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * condition:Func&lt;KeyValuePair&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;&gt;,int,bool&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1095-1095" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Filters frame rows using the specified condtion. Returns a new data frame
+that contains rows for which the provided function returned false. The function
+is called with <code>KeyValuePair</code> containing the row key as the <code>Key</code> and <code>Value</code>
+gives access to the row series and a row index.</p>
+<h2>Parameters</h2>
+<ul>
+<li><code>frame</code> - A data frame to invoke the filtering function on.</li>
+<li><code>condition</code> - A delegate that specifies the filtering condition.</li>
+</ul>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '653', 653)" onmouseover="showTip(event, '653', 653)">
+            Where(frame, condition)
+          </code>
+          <div class="tip" id="653">
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; * condition:Func&lt;KeyValuePair&lt;&#39;TRowKey,ObjectSeries&lt;&#39;TColumnKey&gt;&gt;,bool&gt;) -&gt; Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt;<br />
+                          <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1082-1082" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Filters frame rows using the specified condition. Returns a new data frame
+that contains rows for which the provided function returned false. The function
+is called with <code>KeyValuePair</code> containing the row key as the <code>Key</code> and <code>Value</code>
+gives access to the row series.</p>
+<h2>Parameters</h2>
+<ul>
+<li><code>frame</code> - A data frame to invoke the filtering function on.</li>
+<li><code>condition</code> - A delegate that specifies the filtering condition.</li>
+</ul>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '654', 654)" onmouseover="showTip(event, '654', 654)">
+            Window(frame, size, aggregate)
+          </code>
+          <div class="tip" id="654">
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * size:int * aggregate:Func&lt;Frame&lt;&#39;R,&#39;C&gt;,&#39;?632676&gt;) -&gt; Series&lt;&#39;R,&#39;?632676&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?632676                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1057-1057" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '655', 655)" onmouseover="showTip(event, '655', 655)">
+            Window(frame, size)
+          </code>
+          <div class="tip" id="655">
+            <strong>Signature:</strong> (frame:Frame&lt;&#39;R,&#39;C&gt; * size:int) -&gt; Series&lt;&#39;R,Frame&lt;&#39;R,&#39;C&gt;&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Extension&gt;]<br />
+          </span>
+          </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L1054-1054" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1526,61 +1683,61 @@ gives access to the row series.</p>
 
         </div>
         <div class="span3">
-          <a href="http://bluemountaincapital.github.io/Deedle/index.html">
-            <img src="http://bluemountaincapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          <a href="http://fslab.org/Deedle/index.html">
+            <img src="http://fslab.org/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
           <ul class="nav nav-list" id="menu">
             <li class="nav-header">Deedle</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/index.html">Home page</a></li>
+            <li><a href="http://fslab.org/Deedle/index.html">Home page</a></li>
             <li class="divider"></li>
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/design.html">Design notes</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
+            <li><a href="http://fslab.org/Deedle/design.html">Design notes</a></li>
             <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
             
             <li class="nav-header">Using from F#</li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
+              <a href="http://fslab.org/Deedle/tutorial.html">Quick start tutorial</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/series.html">Working with time series</a>
+              <a href="http://fslab.org/Deedle/series.html">Working with time series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/frame.html">Working with data frames</a>
+              <a href="http://fslab.org/Deedle/frame.html">Working with data frames</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/stats.html">Statistics &amp; calculations</a>
+              <a href="http://fslab.org/Deedle/stats.html">Statistics &amp; calculations</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using Deedle with R</a>
+              <a href="http://fslab.org/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/csharpintro.html">Getting started</a></li>
+            <li><a href="http://fslab.org/Deedle/csharpintro.html">Getting started</a></li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html">Working with data series</a>
+              <a href="http://fslab.org/Deedle/csharpseries.html">Working with data series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html">Working with data frames</a>
+              <a href="http://fslab.org/Deedle/csharpframe.html">Working with data frames</a>
             </li>
 
             <li class="nav-header">Documentation</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/index.html">API Reference</a></li>
             <li class="divider"></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-stats.html">Stats module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-stats.html">Stats module</a></li>
 
             <li class="nav-header">Samples</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="http://fslab.org/Deedle/lazysource.html">Lazy data loading</a></li>
           </ul>
         </div>
       </div>
     </div>
-    <a href="http://github.com/BlueMountainCapital/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <a href="http://github.com/fslaborg/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
     <script>
       (function (i, s, o, g, r, a, m) {
         i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {

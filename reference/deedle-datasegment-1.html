@@ -5,7 +5,7 @@
     <title>DataSegment<'T> - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
-    <meta name="author" content="BlueMountain Capital">
+    <meta name="author" content="BlueMountain Capital, FsLab.Org">
 
     <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
     <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
@@ -13,9 +13,9 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
-    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/style.css" />
-    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/deedle.css" />
-    <script type="text/javascript" src="http://bluemountaincapital.github.io/Deedle/content/tips.js"></script>
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/deedle.css" />
+    <script type="text/javascript" src="http://fslab.org/Deedle/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -26,12 +26,12 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fslab.org/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
           <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
-        <h3 class="muted"><a href="http://bluemountaincapital.github.io/Deedle/index.html">Deedle</a></h3>
+        <h3 class="muted"><a href="http://fslab.org/Deedle/index.html">Deedle</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -42,19 +42,18 @@
 
 <h1>DataSegment<'T></h1>
 <p>
-  <span>Namespace: Deedle</span><br />
-</p>
+
+    <span>Namespace: Deedle</span><br />
+    </p>
 <div class="xmldoc">
-<p>Represents a segment of a series or sequence. The value is returned from 
-various functions that aggregate data into chunks or floating windows. The 
+<p>Represents a segment of a series or sequence. The value is returned from
+various functions that aggregate data into chunks or floating windows. The
 <code>Complete</code> case represents complete segment (e.g. of the specified size) and
-<code>Boundary</code> represents segment at the boundary (e.g. smaller than the required
+<a href="deedle-boundary.html" title="Boundary"><code>Boundary</code></a> represents segment at the boundary (e.g. smaller than the required
 size).</p>
 
-
-        <h2>Example</h2>
+                <h2>Example</h2>
 <p>For example (using internal <code>windowed</code> function):</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -63,24 +62,23 @@ size).</p>
 <span class="l">6: </span>
 <span class="l">7: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">Deedle</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Internal</span>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="id">Deedle</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="id">Internal</span>
 
-<span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="f">windowedWithBounds</span> <span class="n">3</span> <span class="i">Boundary</span><span class="o">.</span><span class="i">AtBeginning</span> [ <span class="n">1</span>; <span class="n">2</span>; <span class="n">3</span>; <span class="n">4</span> ]
-[<span class="i">fsi</span><span class="o">:</span>  [| <span class="i">DataSegment</span>(<span class="i">Incomplete</span>, [| <span class="n">1</span> |])         ]
-[<span class="i">fsi</span><span class="o">:</span>       <span class="i">DataSegment</span>(<span class="i">Incomplete</span>, [| <span class="n">1</span>; <span class="n">2</span> |])    ]
-[<span class="i">fsi</span><span class="o">:</span>       <span class="i">DataSegment</span>(<span class="i">Complete</span> [| <span class="n">1</span>; <span class="n">2</span>; <span class="n">3</span> |])    ]
-[<span class="i">fsi</span><span class="o">:</span>       <span class="i">DataSegment</span>(<span class="i">Complete</span> [| <span class="n">2</span>; <span class="n">3</span>; <span class="n">4</span> |]) |] ]
+<span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="id">windowedWithBounds</span> <span class="n">3</span> <span class="id">Boundary</span><span class="pn">.</span><span class="id">AtBeginning</span> <span class="pn">[</span> <span class="n">1</span><span class="pn">;</span> <span class="n">2</span><span class="pn">;</span> <span class="n">3</span><span class="pn">;</span> <span class="n">4</span> <span class="pn">]</span>
+<span class="pn">[</span><span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="id">fsi</span><span class="pn">:</span>  <span class="pn">[|</span> <span class="id">DataSegment</span><span class="pn">(</span><span class="id">Incomplete</span><span class="pn">,</span> <span class="pn">[|</span> <span class="n">1</span> <span class="pn">|]</span><span class="pn">)</span>         <span class="pn">]</span>
+<span class="pn">[</span><span onmouseout="hideTip(event, 'fs5', 6)" onmouseover="showTip(event, 'fs5', 6)" class="id">fsi</span><span class="pn">:</span>       <span class="id">DataSegment</span><span class="pn">(</span><span class="id">Incomplete</span><span class="pn">,</span> <span class="pn">[|</span> <span class="n">1</span><span class="pn">;</span> <span class="n">2</span> <span class="pn">|]</span><span class="pn">)</span>    <span class="pn">]</span>
+<span class="pn">[</span><span onmouseout="hideTip(event, 'fs5', 7)" onmouseover="showTip(event, 'fs5', 7)" class="id">fsi</span><span class="pn">:</span>       <span class="id">DataSegment</span><span class="pn">(</span><span class="id">Complete</span> <span class="pn">[|</span> <span class="n">1</span><span class="pn">;</span> <span class="n">2</span><span class="pn">;</span> <span class="n">3</span> <span class="pn">|]</span><span class="pn">)</span>    <span class="pn">]</span>
+<span class="pn">[</span><span onmouseout="hideTip(event, 'fs5', 8)" onmouseover="showTip(event, 'fs5', 8)" class="id">fsi</span><span class="pn">:</span>       <span class="id">DataSegment</span><span class="pn">(</span><span class="id">Complete</span> <span class="pn">[|</span> <span class="n">2</span><span class="pn">;</span> <span class="n">3</span><span class="pn">;</span> <span class="n">4</span> <span class="pn">|]</span><span class="pn">)</span> <span class="pn">|]</span> <span class="pn">]</span>
 </code></pre></td>
 </tr>
 </table>
-
 <p>If you do not need to distinguish the two cases, you can use the <code>Data</code> property
 to get the array representing the segment data.</p>
-
 <div class="tip" id="fs1">namespace Deedle</div>
 <div class="tip" id="fs2">namespace Deedle.Internal</div>
 <div class="tip" id="fs3">Multiple items<br />module Seq<br /><br />from Deedle.Internal<br /><br />--------------------<br />module Seq<br /><br />from Microsoft.FSharp.Collections</div>
-<div class="tip" id="fs4">val windowedWithBounds : size:int -&gt; boundary:Deedle.Boundary -&gt; input:seq&lt;&#39;T&gt; -&gt; seq&lt;Deedle.DataSegment&lt;&#39;T []&gt;&gt;<br /><br />Full name: Deedle.Internal.Seq.windowedWithBounds</div>
+<div class="tip" id="fs4">val windowedWithBounds : size:int -&gt; boundary:Deedle.Boundary -&gt; input:seq&lt;&#39;T&gt; -&gt; seq&lt;Deedle.DataSegment&lt;&#39;T []&gt;&gt;</div>
+<div class="tip" id="fs5">val fsi : Compiler.Interactive.InteractiveSession</div>
 
 </div>
   <h3>Union Cases</h3>
@@ -92,15 +90,15 @@ to get the array representing the segment data.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '405', 405)" onmouseover="showTip(event, '405', 405)">
+          <code onmouseout="hideTip(event, '416', 416)" onmouseover="showTip(event, '416', 416)">
             DataSegment(DataSegmentKind,&#39;T)
           </code>
-          <div class="tip" id="405">
+          <div class="tip" id="416">
             <strong>Signature:</strong> DataSegmentKind * &#39;T<br />
-                      </div>
+                                  </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L254-254" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Common.fs#L254-254" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -118,15 +116,15 @@ to get the array representing the segment data.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '406', 406)" onmouseover="showTip(event, '406', 406)">
+          <code onmouseout="hideTip(event, '417', 417)" onmouseover="showTip(event, '417', 417)">
             Data
           </code>
-          <div class="tip" id="406">
+          <div class="tip" id="417">
             <strong>Signature:</strong> &#39;T<br />
-                      </div>
+                                  </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L257-257" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Common.fs#L257-257" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -134,28 +132,28 @@ to get the array representing the segment data.</p>
 (for boundary segment, this may be smaller than the required window size)</p>
 
 
-
+              <p>CompiledName: <code>get_Data</code></p>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '407', 407)" onmouseover="showTip(event, '407', 407)">
+          <code onmouseout="hideTip(event, '418', 418)" onmouseover="showTip(event, '418', 418)">
             Kind
           </code>
-          <div class="tip" id="407">
+          <div class="tip" id="418">
             <strong>Signature:</strong> DataSegmentKind<br />
-                      </div>
+                                  </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Common.fs#L259-259" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Common.fs#L259-259" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Return the kind of this segment</p>
 
 
-
+              <p>CompiledName: <code>get_Kind</code></p>
         </td>
       </tr>
     </tbody>
@@ -163,61 +161,61 @@ to get the array representing the segment data.</p>
 
         </div>
         <div class="span3">
-          <a href="http://bluemountaincapital.github.io/Deedle/index.html">
-            <img src="http://bluemountaincapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          <a href="http://fslab.org/Deedle/index.html">
+            <img src="http://fslab.org/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
           <ul class="nav nav-list" id="menu">
             <li class="nav-header">Deedle</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/index.html">Home page</a></li>
+            <li><a href="http://fslab.org/Deedle/index.html">Home page</a></li>
             <li class="divider"></li>
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/design.html">Design notes</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
+            <li><a href="http://fslab.org/Deedle/design.html">Design notes</a></li>
             <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
             
             <li class="nav-header">Using from F#</li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
+              <a href="http://fslab.org/Deedle/tutorial.html">Quick start tutorial</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/series.html">Working with time series</a>
+              <a href="http://fslab.org/Deedle/series.html">Working with time series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/frame.html">Working with data frames</a>
+              <a href="http://fslab.org/Deedle/frame.html">Working with data frames</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/stats.html">Statistics &amp; calculations</a>
+              <a href="http://fslab.org/Deedle/stats.html">Statistics &amp; calculations</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using Deedle with R</a>
+              <a href="http://fslab.org/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/csharpintro.html">Getting started</a></li>
+            <li><a href="http://fslab.org/Deedle/csharpintro.html">Getting started</a></li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html">Working with data series</a>
+              <a href="http://fslab.org/Deedle/csharpseries.html">Working with data series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html">Working with data frames</a>
+              <a href="http://fslab.org/Deedle/csharpframe.html">Working with data frames</a>
             </li>
 
             <li class="nav-header">Documentation</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/index.html">API Reference</a></li>
             <li class="divider"></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-stats.html">Stats module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-stats.html">Stats module</a></li>
 
             <li class="nav-header">Samples</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="http://fslab.org/Deedle/lazysource.html">Lazy data loading</a></li>
           </ul>
         </div>
       </div>
     </div>
-    <a href="http://github.com/BlueMountainCapital/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <a href="http://github.com/fslaborg/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
     <script>
       (function (i, s, o, g, r, a, m) {
         i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {

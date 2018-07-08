@@ -5,7 +5,7 @@
     <title>F# Frame extensions - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
-    <meta name="author" content="BlueMountain Capital">
+    <meta name="author" content="BlueMountain Capital, FsLab.Org">
 
     <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
     <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
@@ -13,9 +13,9 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
-    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/style.css" />
-    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/deedle.css" />
-    <script type="text/javascript" src="http://bluemountaincapital.github.io/Deedle/content/tips.js"></script>
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/deedle.css" />
+    <script type="text/javascript" src="http://fslab.org/Deedle/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -26,12 +26,12 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fslab.org/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
           <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
-        <h3 class="muted"><a href="http://bluemountaincapital.github.io/Deedle/index.html">Deedle</a></h3>
+        <h3 class="muted"><a href="http://fslab.org/Deedle/index.html">Deedle</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -43,13 +43,17 @@
 <h1>F# Frame extensions</h1>
 <p>
   <span>Namespace: Deedle</span><br />
+        <span>
+          Attributes:<br />
+[&lt;AutoOpen&gt;]<br />
+          
+      </span>
 </p>
 <div class="xmldoc">
 <p>This module contains F# functions and extensions for working with frames. This
 includes operations for creating frames such as the <code>frame</code> function, <code>=&gt;</code> operator
 and <code>Frame.ofRows</code>, <code>Frame.ofColumns</code> and <code>Frame.ofRowKeys</code> functions. The module
 also provides additional F# extension methods including <code>ReadCsv</code>, <code>SaveCsv</code> and <code>PivotTable</code>.</p>
-
 
 </div>
   <!-- If there is more than 1 category in the type, generate TOC -->
@@ -67,21 +71,18 @@ also provides additional F# extension methods including <code>ReadCsv</code>, <c
         <p>The functions and methods in this group can be used to create frames. If you are creating
 a frame from a number of sample values, you can use <code>frame</code> and the <code>=&gt;</code> operator (or the
 <code>=?&gt;</code> opreator which is useful if you have multiple series of distinct types):</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">frame</span> [ <span class="s">&quot;Column 1&quot;</span> <span class="o">=&gt;</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">1.0</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="n">2.0</span> ]
-        <span class="s">&quot;Column 2&quot;</span> <span class="o">=&gt;</span> <span class="i">series</span> [ <span class="n">3</span> <span class="o">=&gt;</span> <span class="n">3.0</span> ] ]
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="id">frame</span> <span class="pn">[</span> <span class="s">&quot;Column 1&quot;</span> <span class="o">=&gt;</span> <span class="id">series</span> <span class="pn">[</span> <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">1.0</span><span class="pn">;</span> <span class="n">2</span> <span class="o">=&gt;</span> <span class="n">2.0</span> <span class="pn">]</span>
+        <span class="s">&quot;Column 2&quot;</span> <span class="o">=&gt;</span> <span class="id">series</span> <span class="pn">[</span> <span class="n">3</span> <span class="o">=&gt;</span> <span class="n">3.0</span> <span class="pn">]</span> <span class="pn">]</span>
 </code></pre></td>
 </tr>
 </table>
-
 <p>Aside from this, the various type extensions let you write <code>Frame.ofXyz</code> to construct frames
 from data in various formats - <code>Frame.ofRows</code> and <code>Frame.ofColumns</code> create frame from a series
 or a sequence of rows or columns; <code>Frame.ofRecords</code> creates a frame from .NET objects using
 Reflection and <code>Frame.ofRowKeys</code> creates an empty frame with the specified keys.</p>
-
 
 
       </div>
@@ -98,27 +99,26 @@ Reflection and <code>Frame.ofRowKeys</code> creates an empty frame with the spec
             ( =?&gt; ) a b
           </code>
           <div class="tip" id="13">
-            <strong>Signature:</strong> a:&#39;?556227 -&gt; b:ISeries&lt;&#39;?556228&gt; -&gt; &#39;?556227 * ISeries&lt;&#39;?556228&gt;<br />
-                          <strong>Type parameters:</strong> '?556227, '?556228          </div>
+            <strong>Signature:</strong> a:&#39;?635017 -&gt; b:ISeries&lt;&#39;?635018&gt; -&gt; &#39;?635017 * ISeries&lt;&#39;?635018&gt;<br />
+                          <strong>Type parameters:</strong> '?635017, '?635018                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L354-354" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L354-354" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Custom operator that can be used when constructing a frame from observations
-of series. The operator simply returns a tuple, but it upcasts the series 
+of series. The operator simply returns a tuple, but it upcasts the series
 argument so you don't have to do manual casting. For example:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">frame</span> [ <span class="s">&quot;k1&quot;</span> <span class="o">=?&gt;</span> <span class="i">series</span> [<span class="n">0</span> <span class="o">=&gt;</span> <span class="s">&quot;a&quot;</span>]; <span class="s">&quot;k2&quot;</span> <span class="o">=?&gt;</span> <span class="i">series</span> [<span class="s">&quot;x&quot;</span> <span class="o">=&gt;</span> <span class="s">&quot;y&quot;</span>] ]
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="id">frame</span> <span class="pn">[</span> <span class="s">&quot;k1&quot;</span> <span class="o">=?&gt;</span> <span class="id">series</span> <span class="pn">[</span><span class="n">0</span> <span class="o">=&gt;</span> <span class="s">&quot;a&quot;</span><span class="pn">]</span><span class="pn">;</span> <span class="s">&quot;k2&quot;</span> <span class="o">=?&gt;</span> <span class="id">series</span> <span class="pn">[</span><span class="s">&quot;x&quot;</span> <span class="o">=&gt;</span> <span class="s">&quot;y&quot;</span><span class="pn">]</span> <span class="pn">]</span>
 </code></pre></td>
 </tr>
 </table>
 
 
-
+              <p>CompiledName: <code>op_EqualsQmarkGreater</code></p>
         </td>
       </tr>
       <tr>
@@ -128,27 +128,26 @@ argument so you don't have to do manual casting. For example:</p>
             ( =&gt; ) a b
           </code>
           <div class="tip" id="14">
-            <strong>Signature:</strong> a:&#39;?556224 -&gt; b:&#39;?556225 -&gt; &#39;?556224 * &#39;?556225<br />
-                          <strong>Type parameters:</strong> '?556224, '?556225          </div>
+            <strong>Signature:</strong> a:&#39;?635014 -&gt; b:&#39;?635015 -&gt; &#39;?635014 * &#39;?635015<br />
+                          <strong>Type parameters:</strong> '?635014, '?635015                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L345-345" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L345-345" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Custom operator that can be used when constructing series from observations
-or frames from key-row or key-column pairs. The operator simply returns a 
+or frames from key-row or key-column pairs. The operator simply returns a
 tuple, but it provides a more convenient syntax. For example:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">series</span> [ <span class="s">&quot;k1&quot;</span> <span class="o">=&gt;</span> <span class="n">1</span>; <span class="s">&quot;k2&quot;</span> <span class="o">=&gt;</span> <span class="n">15</span> ]
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="id">series</span> <span class="pn">[</span> <span class="s">&quot;k1&quot;</span> <span class="o">=&gt;</span> <span class="n">1</span><span class="pn">;</span> <span class="s">&quot;k2&quot;</span> <span class="o">=&gt;</span> <span class="n">15</span> <span class="pn">]</span>
 </code></pre></td>
 </tr>
 </table>
 
 
-
+              <p>CompiledName: <code>op_EqualsGreater</code></p>
         </td>
       </tr>
       <tr>
@@ -158,30 +157,26 @@ tuple, but it provides a more convenient syntax. For example:</p>
             frame columns
           </code>
           <div class="tip" id="15">
-            <strong>Signature:</strong> columns:seq&lt;&#39;?556230 * &#39;?556231&gt; -&gt; Frame&lt;&#39;?556232,&#39;?556230&gt;<br />
-                          <strong>Type parameters:</strong> '?556230, '?556231, '?556232          </div>
+            <strong>Signature:</strong> columns:seq&lt;&#39;?635020 * &#39;?635021&gt; -&gt; Frame&lt;&#39;?635022,&#39;?635020&gt;<br />
+                          <strong>Type parameters:</strong> '?635020, '?635021, '?635022                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L366-366" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L366-366" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>A function for constructing data frame from a sequence of name - column pairs.
 This provides a nicer syntactic sugar for <code>Frame.ofColumns</code>.</p>
-
 <h2>Example</h2>
-
 <p>To create a simple frame with two columns, you can write:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">frame</span> [ <span class="s">&quot;A&quot;</span> <span class="o">=&gt;</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">30.0</span>; <span class="n">2</span> <span class="o">=&gt;</span> <span class="n">35.0</span> ]
-        <span class="s">&quot;B&quot;</span> <span class="o">=&gt;</span> <span class="i">series</span> [ <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">30.0</span>; <span class="n">3</span> <span class="o">=&gt;</span> <span class="n">40.0</span> ] ]
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="id">frame</span> <span class="pn">[</span> <span class="s">&quot;A&quot;</span> <span class="o">=&gt;</span> <span class="id">series</span> <span class="pn">[</span> <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">30.0</span><span class="pn">;</span> <span class="n">2</span> <span class="o">=&gt;</span> <span class="n">35.0</span> <span class="pn">]</span>
+        <span class="s">&quot;B&quot;</span> <span class="o">=&gt;</span> <span class="id">series</span> <span class="pn">[</span> <span class="n">1</span> <span class="o">=&gt;</span> <span class="n">30.0</span><span class="pn">;</span> <span class="n">3</span> <span class="o">=&gt;</span> <span class="n">40.0</span> <span class="pn">]</span> <span class="pn">]</span>
 </code></pre></td>
 </tr>
 </table>
-
 
 
         </td>
@@ -202,25 +197,23 @@ This provides a nicer syntactic sugar for <code>Frame.ofColumns</code>.</p>
           </code>
           <div class="tip" id="16">
             <strong>Signature:</strong> (array:&#39;T [,]) -&gt; Frame&lt;int,int&gt;<br />
-                          <strong>Type parameters:</strong> 'T          </div>
+                          <strong>Type parameters:</strong> 'T                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L591-591" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L591-591" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Create data frame from a 2D array of values. The first dimension of the array
 is used as rows and the second dimension is treated as columns. Rows and columns
 of the returned frame are indexed with the element's offset in the array.</p>
-
 <h2>Parameters</h2>
-
 <ul>
 <li><code>array</code> - A two-dimensional array to be converted into a data frame</li>
 </ul>
 
 
-
+              <p>CompiledName: <code>Frame.ofArray2D.Static</code></p>
         </td>
       </tr>
       <tr>
@@ -230,19 +223,19 @@ of the returned frame are indexed with the element's offset in the array.</p>
             ofColumns(cols)
           </code>
           <div class="tip" id="17">
-            <strong>Signature:</strong> cols:Series&lt;&#39;C,&#39;?556254&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'C, '?556254, 'R          </div>
+            <strong>Signature:</strong> cols:Series&lt;&#39;C,&#39;?635044&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, '?635044, 'R                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L544-544" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L544-544" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Creates a frame from a series that maps column keys to a nested series 
+          <p>Creates a frame from a series that maps column keys to a nested series
 containing values for each column.</p>
 
 
-
+              <p>CompiledName: <code>Frame.ofColumns.Static</code></p>
         </td>
       </tr>
       <tr>
@@ -252,20 +245,20 @@ containing values for each column.</p>
             ofColumns(cols)
           </code>
           <div class="tip" id="18">
-            <strong>Signature:</strong> (cols:seq&lt;&#39;C * &#39;?556258&gt;) -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'C, '?556258, 'R          </div>
+            <strong>Signature:</strong> (cols:seq&lt;&#39;C * &#39;?635048&gt;) -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, '?635048, 'R                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L552-552" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L552-552" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Creates a frame from a sequence of column keys and column series pairs. 
-The column series can contain values of any type, but it has to be the same 
+          <p>Creates a frame from a sequence of column keys and column series pairs.
+The column series can contain values of any type, but it has to be the same
 for all the series - if you have heterogenously typed series, use <code>=?&gt;</code>.</p>
 
 
-
+              <p>CompiledName: <code>Frame.ofColumns.Static</code></p>
         </td>
       </tr>
       <tr>
@@ -276,10 +269,10 @@ for all the series - if you have heterogenously typed series, use <code>=?&gt;</
           </code>
           <div class="tip" id="19">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;R&gt; -&gt; Frame&lt;&#39;K,string&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'R          </div>
+                          <strong>Type parameters:</strong> 'K, 'R                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L566-566" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L566-566" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -287,7 +280,7 @@ for all the series - if you have heterogenously typed series, use <code>=?&gt;</
 over the specified type parameter <code>'T</code> and turns its properties to columns.</p>
 
 
-
+              <p>CompiledName: <code>Frame.ofRecords.Static</code></p>
         </td>
       </tr>
       <tr>
@@ -298,10 +291,10 @@ over the specified type parameter <code>'T</code> and turns its properties to co
           </code>
           <div class="tip" id="20">
             <strong>Signature:</strong> values:seq&lt;&#39;T&gt; -&gt; Frame&lt;int,string&gt;<br />
-                          <strong>Type parameters:</strong> 'T          </div>
+                          <strong>Type parameters:</strong> 'T                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L573-573" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L573-573" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -309,7 +302,7 @@ over the specified type parameter <code>'T</code> and turns its properties to co
 over the specified type parameter <code>'T</code> and turns its properties to columns.</p>
 
 
-
+              <p>CompiledName: <code>Frame.ofRecords.Static</code></p>
         </td>
       </tr>
       <tr>
@@ -320,10 +313,10 @@ over the specified type parameter <code>'T</code> and turns its properties to co
           </code>
           <div class="tip" id="21">
             <strong>Signature:</strong> (values:IEnumerable * indexCol:string) -&gt; Frame&lt;&#39;R,string&gt;<br />
-                          <strong>Type parameters:</strong> 'R          </div>
+                          <strong>Type parameters:</strong> 'R                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L580-580" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L580-580" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -331,7 +324,7 @@ over the specified type parameter <code>'T</code> and turns its properties to co
 over the specified type parameter <code>'T</code> and turns its properties to columns.</p>
 
 
-
+              <p>CompiledName: <code>Frame.ofRecords.Static</code></p>
         </td>
       </tr>
       <tr>
@@ -342,10 +335,10 @@ over the specified type parameter <code>'T</code> and turns its properties to co
           </code>
           <div class="tip" id="22">
             <strong>Signature:</strong> keys:seq&lt;&#39;R&gt; -&gt; Frame&lt;&#39;R,string&gt;<br />
-                          <strong>Type parameters:</strong> 'R          </div>
+                          <strong>Type parameters:</strong> 'R                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L537-537" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L537-537" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -354,7 +347,7 @@ This is useful if you want to build a frame gradually and restrict all the
 later added data to a sequence of row keys known in advance.</p>
 
 
-
+              <p>CompiledName: <code>Frame.ofRowKeys.Static</code></p>
         </td>
       </tr>
       <tr>
@@ -364,20 +357,20 @@ later added data to a sequence of row keys known in advance.</p>
             ofRows(rows)
           </code>
           <div class="tip" id="23">
-            <strong>Signature:</strong> (rows:seq&lt;&#39;R * &#39;?556244&gt;) -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'R, '?556244, 'C          </div>
+            <strong>Signature:</strong> (rows:seq&lt;&#39;R * &#39;?635034&gt;) -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, '?635034, 'C                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L521-521" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L521-521" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Creates a frame from a sequence of row keys and row series pairs. 
-The row series can contain values of any type, but it has to be the same 
+          <p>Creates a frame from a sequence of row keys and row series pairs.
+The row series can contain values of any type, but it has to be the same
 for all the series - if you have heterogenously typed series, use <code>=?&gt;</code>.</p>
 
 
-
+              <p>CompiledName: <code>Frame.ofRows.Static</code></p>
         </td>
       </tr>
       <tr>
@@ -387,19 +380,19 @@ for all the series - if you have heterogenously typed series, use <code>=?&gt;</
             ofRows(rows)
           </code>
           <div class="tip" id="24">
-            <strong>Signature:</strong> rows:Series&lt;&#39;R,&#39;?556248&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'R, '?556248, 'C          </div>
+            <strong>Signature:</strong> rows:Series&lt;&#39;R,&#39;?635038&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, '?635038, 'C                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L529-529" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L529-529" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Creates a frame from a series that maps row keys to a nested series 
+          <p>Creates a frame from a series that maps row keys to a nested series
 containing values for each row.</p>
 
 
-
+              <p>CompiledName: <code>Frame.ofRows.Static</code></p>
         </td>
       </tr>
       <tr>
@@ -409,11 +402,11 @@ containing values for each row.</p>
             ofRowsOrdinal(rows)
           </code>
           <div class="tip" id="25">
-            <strong>Signature:</strong> rows:seq&lt;&#39;?556239&gt; -&gt; Frame&lt;int,&#39;K&gt;<br />
-                          <strong>Type parameters:</strong> '?556239, 'K, 'V          </div>
+            <strong>Signature:</strong> rows:seq&lt;&#39;?635029&gt; -&gt; Frame&lt;int,&#39;K&gt;<br />
+                          <strong>Type parameters:</strong> '?635029, 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L513-513" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L513-513" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -422,7 +415,7 @@ The column indices of individual rows are unioned, so if a row has fewer
 columns, it will be successfully added, but there will be missing values.</p>
 
 
-
+              <p>CompiledName: <code>Frame.ofRowsOrdinal.Static</code></p>
         </td>
       </tr>
       <tr>
@@ -433,17 +426,17 @@ columns, it will be successfully added, but there will be missing values.</p>
           </code>
           <div class="tip" id="26">
             <strong>Signature:</strong> (values:seq&lt;&#39;R * &#39;C * &#39;V&gt;) -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, 'V          </div>
+                          <strong>Type parameters:</strong> 'R, 'C, 'V                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L559-559" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L559-559" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Create a data frame from a sequence of tuples containing row key, column key and a value.</p>
 
 
-
+              <p>CompiledName: <code>Frame.ofValues.Static</code></p>
         </td>
       </tr>
     </tbody>
@@ -451,7 +444,6 @@ columns, it will be successfully added, but there will be missing values.</p>
     <h2>Frame operations<a name="section1">&#160;</a></h2>    
       <div class="xmldoc">
         <p>The group contains two overloads of the F#-friendly version of the <code>PivotTable</code> method.</p>
-
 
 
       </div>
@@ -469,21 +461,19 @@ columns, it will be successfully added, but there will be missing values.</p>
           </code>
           <div class="tip" id="27">
             <strong>Signature:</strong> (r:&#39;TColumnKey * c:&#39;TColumnKey * op:(Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; &#39;T)) -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, 'T          </div>
+                          <strong>Type parameters:</strong> 'R, 'C, 'T                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L607-607" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L607-607" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Creates a new data frame resulting from a 'pivot' operation. Consider a denormalized data 
+          <p>Creates a new data frame resulting from a 'pivot' operation. Consider a denormalized data
 frame representing a table: column labels are field names &amp; table values are observations
-of those fields. pivotTable buckets the rows along two axes, according to the values of 
-the columns <code>r</code> and <code>c</code>; and then computes a value for the frame of rows that land in each 
+of those fields. pivotTable buckets the rows along two axes, according to the values of
+the columns <code>r</code> and <code>c</code>; and then computes a value for the frame of rows that land in each
 bucket.</p>
-
 <h2>Parameters</h2>
-
 <ul>
 <li><code>r</code> - A column key to group on for the resulting row index</li>
 <li><code>c</code> - A column key to group on for the resulting col index</li>
@@ -491,19 +481,18 @@ bucket.</p>
 </ul>
 
 
-
+              <p>CompiledName: <code>Frame`2.PivotTable</code></p>
         </td>
       </tr>
     </tbody>
   </table>
     <h2>Input and output<a name="section2">&#160;</a></h2>    
       <div class="xmldoc">
-        <p>This group of extensions includes a number of overloads for the <code>ReadCsv</code> and <code>SaveCsv</code> 
+        <p>This group of extensions includes a number of overloads for the <code>ReadCsv</code> and <code>SaveCsv</code>
 methods. The methods here are designed to be used from F# and so they are F#-style extensions
 and they use F#-style optional arguments. In general, the overlads take either a path or
 <code>TextReader</code>/<code>TextWriter</code>. Also note that <code>ReadCsv&lt;'R&gt;(path, indexCol, ...)</code> lets you specify
 the column to be used as the index.</p>
-
 
 
       </div>
@@ -521,44 +510,56 @@ the column to be used as the index.</p>
           </code>
           <div class="tip" id="28">
             <strong>Signature:</strong> (path:string * indexCol:string * hasHeaders:bool option * inferTypes:bool option * inferRows:int option * schema:string option * separators:string option * culture:string option * maxRows:int option * missingValues:string [] option) -&gt; Frame&lt;&#39;R,string&gt;<br />
-                          <strong>Type parameters:</strong> 'R          </div>
+                          <strong>Type parameters:</strong> 'R                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L410-410" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L410-410" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Load data frame from a CSV file. The operation automatically reads column names from the 
+          <p>Load data frame from a CSV file. The operation automatically reads column names from the
 CSV file (if they are present) and infers the type of values for each column. Columns
 of primitive types (<code>int</code>, <code>float</code>, etc.) are converted to the right type. Columns of other
 types (such as dates) are not converted automatically.</p>
-
 <h2>Parameters</h2>
-
 <ul>
 <li><code>path</code> - Specifies a file name or an web location of the resource.</li>
-<li><code>indexCol</code> - Specifies the column that should be used as an index in the 
+<li>
+<code>indexCol</code> - Specifies the column that should be used as an index in the 
 resulting frame. The type is specified via a type parameter, e.g. use
-<code>Frame.ReadCsv&lt;int&gt;("file.csv", indexCol="Day")</code>.</li>
+<code>Frame.ReadCsv&lt;int&gt;("file.csv", indexCol="Day")</code>.
+</li>
 <li><code>hasHeaders</code> - Specifies whether the input CSV file has header row</li>
-<li><code>inferTypes</code> - Specifies whether the method should attempt to infer types
-of columns automatically (set this to <code>false</code> if you want to specify schema)</li>
-<li><code>inferRows</code> - If <code>inferTypes=true</code>, this parameter specifies the number of
-rows to use for type inference. The default value is 0, meaninig all rows.</li>
-<li><code>schema</code> - A string that specifies CSV schema. See the documentation for 
-information about the schema format.</li>
-<li><code>separators</code> - A string that specifies one or more (single character) separators
+<li>
+<code>inferTypes</code> - Specifies whether the method should attempt to infer types
+of columns automatically (set this to <code>false</code> if you want to specify schema)
+</li>
+<li>
+<code>inferRows</code> - If <code>inferTypes=true</code>, this parameter specifies the number of
+rows to use for type inference. The default value is 0, meaninig all rows.
+</li>
+<li>
+<code>schema</code> - A string that specifies CSV schema. See the documentation for 
+information about the schema format.
+</li>
+<li>
+<code>separators</code> - A string that specifies one or more (single character) separators
 that are used to separate columns in the CSV file. Use for example <code>";"</code> to
-parse semicolon separated files.</li>
-<li><code>culture</code> - Specifies the name of the culture that is used when parsing 
-values in the CSV file (such as <code>"en-US"</code>). The default is invariant culture.</li>
+parse semicolon separated files.
+</li>
+<li>
+<code>culture</code> - Specifies the name of the culture that is used when parsing 
+values in the CSV file (such as <code>"en-US"</code>). The default is invariant culture.
+</li>
 <li><code>maxRows</code> - The maximal number of rows that should be read from the CSV file.</li>
-<li><code>missingValues</code> - An array of strings that contains values which should be treated
-as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".</li>
+<li>
+<code>missingValues</code> - An array of strings that contains values which should be treated
+as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".
+</li>
 </ul>
 
 
-
+              <p>CompiledName: <code>Frame.ReadCsv.Static</code></p>
         </td>
       </tr>
       <tr>
@@ -569,41 +570,51 @@ as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"
           </code>
           <div class="tip" id="29">
             <strong>Signature:</strong> (path:string * hasHeaders:bool option * inferTypes:bool option * inferRows:int option * schema:string option * separators:string option * culture:string option * maxRows:int option * missingValues:string [] option) -&gt; Frame&lt;int,string&gt;<br />
-                      </div>
+                                  </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L442-442" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L442-442" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Load data frame from a CSV file. The operation automatically reads column names from the 
+          <p>Load data frame from a CSV file. The operation automatically reads column names from the
 CSV file (if they are present) and infers the type of values for each column. Columns
 of primitive types (<code>int</code>, <code>float</code>, etc.) are converted to the right type. Columns of other
 types (such as dates) are not converted automatically.</p>
-
 <h2>Parameters</h2>
-
 <ul>
 <li><code>path</code> - Specifies a file name or an web location of the resource.</li>
 <li><code>hasHeaders</code> - Specifies whether the input CSV file has header row</li>
-<li><code>inferTypes</code> - Specifies whether the method should attempt to infer types
-of columns automatically (set this to <code>false</code> if you want to specify schema)</li>
-<li><code>inferRows</code> - If <code>inferTypes=true</code>, this parameter specifies the number of
-rows to use for type inference. The default value is 100.</li>
-<li><code>schema</code> - A string that specifies CSV schema. See the documentation for 
-information about the schema format.</li>
-<li><code>separators</code> - A string that specifies one or more (single character) separators
+<li>
+<code>inferTypes</code> - Specifies whether the method should attempt to infer types
+of columns automatically (set this to <code>false</code> if you want to specify schema)
+</li>
+<li>
+<code>inferRows</code> - If <code>inferTypes=true</code>, this parameter specifies the number of
+rows to use for type inference. The default value is 100.
+</li>
+<li>
+<code>schema</code> - A string that specifies CSV schema. See the documentation for 
+information about the schema format.
+</li>
+<li>
+<code>separators</code> - A string that specifies one or more (single character) separators
 that are used to separate columns in the CSV file. Use for example <code>";"</code> to
-parse semicolon separated files.</li>
-<li><code>culture</code> - Specifies the name of the culture that is used when parsing 
-values in the CSV file (such as <code>"en-US"</code>). The default is invariant culture.</li>
+parse semicolon separated files.
+</li>
+<li>
+<code>culture</code> - Specifies the name of the culture that is used when parsing 
+values in the CSV file (such as <code>"en-US"</code>). The default is invariant culture.
+</li>
 <li><code>maxRows</code> - The maximal number of rows that should be read from the CSV file.</li>
-<li><code>missingValues</code> - An array of strings that contains values which should be treated
-as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".</li>
+<li>
+<code>missingValues</code> - An array of strings that contains values which should be treated
+as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".
+</li>
 </ul>
 
 
-
+              <p>CompiledName: <code>Frame.ReadCsv.Static</code></p>
         </td>
       </tr>
       <tr>
@@ -614,41 +625,51 @@ as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"
           </code>
           <div class="tip" id="30">
             <strong>Signature:</strong> (stream:Stream * hasHeaders:bool option * inferTypes:bool option * inferRows:int option * schema:string option * separators:string option * culture:string option * maxRows:int option * missingValues:string [] option) -&gt; Frame&lt;int,string&gt;<br />
-                      </div>
+                                  </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L473-473" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L473-473" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Load data frame from a CSV file. The operation automatically reads column names from the 
+          <p>Load data frame from a CSV file. The operation automatically reads column names from the
 CSV file (if they are present) and infers the type of values for each column. Columns
 of primitive types (<code>int</code>, <code>float</code>, etc.) are converted to the right type. Columns of other
 types (such as dates) are not converted automatically.</p>
-
 <h2>Parameters</h2>
-
 <ul>
 <li><code>stream</code> - Specifies the input stream, opened at the beginning of CSV data</li>
 <li><code>hasHeaders</code> - Specifies whether the input CSV file has header row</li>
-<li><code>inferTypes</code> - Specifies whether the method should attempt to infer types
-of columns automatically (set this to <code>false</code> if you want to specify schema)</li>
-<li><code>inferRows</code> - If <code>inferTypes=true</code>, this parameter specifies the number of
-rows to use for type inference. The default value is 100.</li>
-<li><code>schema</code> - A string that specifies CSV schema. See the documentation for 
-information about the schema format.</li>
-<li><code>separators</code> - A string that specifies one or more (single character) separators
+<li>
+<code>inferTypes</code> - Specifies whether the method should attempt to infer types
+of columns automatically (set this to <code>false</code> if you want to specify schema)
+</li>
+<li>
+<code>inferRows</code> - If <code>inferTypes=true</code>, this parameter specifies the number of
+rows to use for type inference. The default value is 100.
+</li>
+<li>
+<code>schema</code> - A string that specifies CSV schema. See the documentation for 
+information about the schema format.
+</li>
+<li>
+<code>separators</code> - A string that specifies one or more (single character) separators
 that are used to separate columns in the CSV file. Use for example <code>";"</code> to
-parse semicolon separated files.</li>
-<li><code>culture</code> - Specifies the name of the culture that is used when parsing 
-values in the CSV file (such as <code>"en-US"</code>). The default is invariant culture.</li>
+parse semicolon separated files.
+</li>
+<li>
+<code>culture</code> - Specifies the name of the culture that is used when parsing 
+values in the CSV file (such as <code>"en-US"</code>). The default is invariant culture.
+</li>
 <li><code>maxRows</code> - The maximal number of rows that should be read from the CSV file.</li>
-<li><code>missingValues</code> - An array of strings that contains values which should be treated
-as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".</li>
+<li>
+<code>missingValues</code> - An array of strings that contains values which should be treated
+as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".
+</li>
 </ul>
 
 
-
+              <p>CompiledName: <code>Frame.ReadCsv.Static</code></p>
         </td>
       </tr>
       <tr>
@@ -659,41 +680,51 @@ as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"
           </code>
           <div class="tip" id="31">
             <strong>Signature:</strong> (reader:TextReader * hasHeaders:bool option * inferTypes:bool option * inferRows:int option * schema:string option * separators:string option * culture:string option * maxRows:int option * missingValues:string [] option) -&gt; Frame&lt;int,string&gt;<br />
-                      </div>
+                                  </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L503-503" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L503-503" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Load data frame from a CSV file. The operation automatically reads column names from the 
+          <p>Load data frame from a CSV file. The operation automatically reads column names from the
 CSV file (if they are present) and infers the type of values for each column. Columns
 of primitive types (<code>int</code>, <code>float</code>, etc.) are converted to the right type. Columns of other
 types (such as dates) are not converted automatically.</p>
-
 <h2>Parameters</h2>
-
 <ul>
 <li><code>reader</code> - Specifies the <code>TextReader</code>, positioned at the beginning of CSV data</li>
 <li><code>hasHeaders</code> - Specifies whether the input CSV file has header row</li>
-<li><code>inferTypes</code> - Specifies whether the method should attempt to infer types
-of columns automatically (set this to <code>false</code> if you want to specify schema)</li>
-<li><code>inferRows</code> - If <code>inferTypes=true</code>, this parameter specifies the number of
-rows to use for type inference. The default value is 100.</li>
-<li><code>schema</code> - A string that specifies CSV schema. See the documentation for 
-information about the schema format.</li>
-<li><code>separators</code> - A string that specifies one or more (single character) separators
+<li>
+<code>inferTypes</code> - Specifies whether the method should attempt to infer types
+of columns automatically (set this to <code>false</code> if you want to specify schema)
+</li>
+<li>
+<code>inferRows</code> - If <code>inferTypes=true</code>, this parameter specifies the number of
+rows to use for type inference. The default value is 100.
+</li>
+<li>
+<code>schema</code> - A string that specifies CSV schema. See the documentation for 
+information about the schema format.
+</li>
+<li>
+<code>separators</code> - A string that specifies one or more (single character) separators
 that are used to separate columns in the CSV file. Use for example <code>";"</code> to
-parse semicolon separated files.</li>
-<li><code>culture</code> - Specifies the name of the culture that is used when parsing 
-values in the CSV file (such as <code>"en-US"</code>). The default is invariant culture.</li>
+parse semicolon separated files.
+</li>
+<li>
+<code>culture</code> - Specifies the name of the culture that is used when parsing 
+values in the CSV file (such as <code>"en-US"</code>). The default is invariant culture.
+</li>
 <li><code>maxRows</code> - The maximal number of rows that should be read from the CSV file.</li>
-<li><code>missingValues</code> - An array of strings that contains values which should be treated
-as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".</li>
+<li>
+<code>missingValues</code> - An array of strings that contains values which should be treated
+as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".
+</li>
 </ul>
 
 
-
+              <p>CompiledName: <code>Frame.ReadCsv.Static</code></p>
         </td>
       </tr>
       <tr>
@@ -704,10 +735,10 @@ as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"
           </code>
           <div class="tip" id="32">
             <strong>Signature:</strong> (writer:TextWriter * includeRowKeys:bool option * keyNames:seq&lt;string&gt; option * separator:char option * culture:CultureInfo option) -&gt; unit<br />
-                      </div>
+                                  </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L624-624" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L624-624" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -715,20 +746,20 @@ as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"
 you can specify whether you want to save the row keys or not (and headers for the keys)
 and you can also specify the separator (use <code>\t</code> for writing TSV files). When specifying
 file name ending with <code>.tsv</code>, the <code>\t</code> separator is used automatically.</p>
-
 <h2>Parameters</h2>
-
 <ul>
 <li><code>writer</code> - Specifies the TextWriter to which the CSV data should be written</li>
 <li><code>includeRowKeys</code> - When set to <code>true</code>, the row key is also written to the output file</li>
 <li><code>keyNames</code> - Can be used to specify the CSV headers for row key (or keys, for multi-level index)</li>
-<li><code>separator</code> - Specify the column separator in the file (the default is <code>\t</code> for 
-TSV files and <code>,</code> for CSV files)</li>
+<li>
+<code>separator</code> - Specify the column separator in the file (the default is <code>\t</code> for 
+TSV files and <code>,</code> for CSV files)
+</li>
 <li><code>culture</code> - Specify the <code>CultureInfo</code> object used for formatting numerical data</li>
 </ul>
 
 
-
+              <p>CompiledName: <code>Frame`2.SaveCsv</code></p>
         </td>
       </tr>
       <tr>
@@ -739,10 +770,10 @@ TSV files and <code>,</code> for CSV files)</li>
           </code>
           <div class="tip" id="33">
             <strong>Signature:</strong> (path:string * includeRowKeys:bool option * keyNames:seq&lt;string&gt; option * separator:char option * culture:CultureInfo option) -&gt; unit<br />
-                      </div>
+                                  </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L641-641" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L641-641" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -750,20 +781,20 @@ TSV files and <code>,</code> for CSV files)</li>
 you can specify whether you want to save the row keys or not (and headers for the keys)
 and you can also specify the separator (use <code>\t</code> for writing TSV files). When specifying
 file name ending with <code>.tsv</code>, the <code>\t</code> separator is used automatically.</p>
-
 <h2>Parameters</h2>
-
 <ul>
 <li><code>path</code> - Specifies the output file name where the CSV data should be written</li>
 <li><code>includeRowKeys</code> - When set to <code>true</code>, the row key is also written to the output file</li>
 <li><code>keyNames</code> - Can be used to specify the CSV headers for row key (or keys, for multi-level index)</li>
-<li><code>separator</code> - Specify the column separator in the file (the default is <code>\t</code> for 
-TSV files and <code>,</code> for CSV files)</li>
+<li>
+<code>separator</code> - Specify the column separator in the file (the default is <code>\t</code> for 
+TSV files and <code>,</code> for CSV files)
+</li>
 <li><code>culture</code> - Specify the <code>CultureInfo</code> object used for formatting numerical data</li>
 </ul>
 
 
-
+              <p>CompiledName: <code>Frame`2.SaveCsv</code></p>
         </td>
       </tr>
       <tr>
@@ -774,10 +805,10 @@ TSV files and <code>,</code> for CSV files)</li>
           </code>
           <div class="tip" id="34">
             <strong>Signature:</strong> (path:string * keyNames:seq&lt;string&gt;) -&gt; unit<br />
-                      </div>
+                                  </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L658-658" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L658-658" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -785,19 +816,19 @@ TSV files and <code>,</code> for CSV files)</li>
 you can specify whether you want to save the row keys or not (and headers for the keys)
 and you can also specify the separator (use <code>\t</code> for writing TSV files). When specifying
 file name ending with <code>.tsv</code>, the <code>\t</code> separator is used automatically.</p>
-
 <h2>Parameters</h2>
-
 <ul>
 <li><code>path</code> - Specifies the output file name where the CSV data should be written</li>
 <li><code>keyNames</code> - Specifies the CSV headers for row key (or keys, for multi-level index)</li>
-<li><code>separator</code> - Specify the column separator in the file (the default is <code>\t</code> for 
-TSV files and <code>,</code> for CSV files)</li>
+<li>
+<code>separator</code> - Specify the column separator in the file (the default is <code>\t</code> for 
+TSV files and <code>,</code> for CSV files)
+</li>
 <li><code>culture</code> - Specify the <code>CultureInfo</code> object used for formatting numerical data</li>
 </ul>
 
 
-
+              <p>CompiledName: <code>Frame`2.SaveCsv</code></p>
         </td>
       </tr>
       <tr>
@@ -808,10 +839,10 @@ TSV files and <code>,</code> for CSV files)</li>
           </code>
           <div class="tip" id="35">
             <strong>Signature:</strong> rowKeyNames:seq&lt;string&gt; -&gt; DataTable<br />
-                      </div>
+                                  </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L673-673" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L673-673" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -820,16 +851,16 @@ automatically converted to strings that are used as column names. The row index 
 turned into an additional column with the specified name (the function takes the name
 as a sequence to support hierarchical keys, but typically you can write just
 <code>frame.ToDataTable(["KeyName"])</code>.</p>
-
 <h2>Parameters</h2>
-
 <ul>
-<li><code>rowKeyNames</code> - Specifies the names of the row key components (or just a single
-row key name if the row index is not hierarchical).</li>
+<li>
+<code>rowKeyNames</code> - Specifies the names of the row key components (or just a single
+row key name if the row index is not hierarchical).
+</li>
 </ul>
 
 
-
+              <p>CompiledName: <code>Frame`2.ToDataTable</code></p>
         </td>
       </tr>
     </tbody>
@@ -837,61 +868,61 @@ row key name if the row index is not hierarchical).</li>
 
         </div>
         <div class="span3">
-          <a href="http://bluemountaincapital.github.io/Deedle/index.html">
-            <img src="http://bluemountaincapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          <a href="http://fslab.org/Deedle/index.html">
+            <img src="http://fslab.org/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
           <ul class="nav nav-list" id="menu">
             <li class="nav-header">Deedle</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/index.html">Home page</a></li>
+            <li><a href="http://fslab.org/Deedle/index.html">Home page</a></li>
             <li class="divider"></li>
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/design.html">Design notes</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
+            <li><a href="http://fslab.org/Deedle/design.html">Design notes</a></li>
             <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
             
             <li class="nav-header">Using from F#</li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
+              <a href="http://fslab.org/Deedle/tutorial.html">Quick start tutorial</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/series.html">Working with time series</a>
+              <a href="http://fslab.org/Deedle/series.html">Working with time series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/frame.html">Working with data frames</a>
+              <a href="http://fslab.org/Deedle/frame.html">Working with data frames</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/stats.html">Statistics &amp; calculations</a>
+              <a href="http://fslab.org/Deedle/stats.html">Statistics &amp; calculations</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using Deedle with R</a>
+              <a href="http://fslab.org/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/csharpintro.html">Getting started</a></li>
+            <li><a href="http://fslab.org/Deedle/csharpintro.html">Getting started</a></li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html">Working with data series</a>
+              <a href="http://fslab.org/Deedle/csharpseries.html">Working with data series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html">Working with data frames</a>
+              <a href="http://fslab.org/Deedle/csharpframe.html">Working with data frames</a>
             </li>
 
             <li class="nav-header">Documentation</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/index.html">API Reference</a></li>
             <li class="divider"></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-stats.html">Stats module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-stats.html">Stats module</a></li>
 
             <li class="nav-header">Samples</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="http://fslab.org/Deedle/lazysource.html">Lazy data loading</a></li>
           </ul>
         </div>
       </div>
     </div>
-    <a href="http://github.com/BlueMountainCapital/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <a href="http://github.com/fslaborg/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
     <script>
       (function (i, s, o, g, r, a, m) {
         i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {

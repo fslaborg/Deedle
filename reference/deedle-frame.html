@@ -5,7 +5,7 @@
     <title>Frame - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
-    <meta name="author" content="BlueMountain Capital">
+    <meta name="author" content="BlueMountain Capital, FsLab.Org">
 
     <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
     <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
@@ -13,9 +13,9 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
-    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/style.css" />
-    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/deedle.css" />
-    <script type="text/javascript" src="http://bluemountaincapital.github.io/Deedle/content/tips.js"></script>
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/deedle.css" />
+    <script type="text/javascript" src="http://fslab.org/Deedle/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -26,12 +26,12 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fslab.org/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
           <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
-        <h3 class="muted"><a href="http://bluemountaincapital.github.io/Deedle/index.html">Deedle</a></h3>
+        <h3 class="muted"><a href="http://fslab.org/Deedle/index.html">Deedle</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -42,23 +42,23 @@
 
 <h1>Frame</h1>
 <p>
-  <span>Namespace: Deedle</span><br />
-</p>
+
+    <span>Namespace: Deedle</span><br />
+    </p>
 <div class="xmldoc">
 <p>Provides static methods for creating frames, reading frame data
 from CSV files and database (via IDataReader). The type also provides
 global configuration for reflection-based expansion.</p>
 
-
 </div>
-  <!-- If there is more than 1 category in the type, generate TOC -->
-  <h2>Table of contents</h2>
-  <ul>
-      <li><a href="#section0">Configuration</a></li>
-      <li><a href="#section1">Input and output</a></li>
-      <li><a href="#section2">Other type members</a></li>
-  </ul>
-    <h2>Configuration<a name="section0">&#160;</a></h2>
+    <!-- If there is more than 1 category in the type, generate TOC -->
+    <h2>Table of contents</h2>
+    <ul>
+            <li><a href="#section0">Configuration</a></li>
+            <li><a href="#section1">Input and output</a></li>
+            <li><a href="#section2">Other type members</a></li>
+    </ul>
+        <h2>Configuration<a name="section0">&#160;</a></h2>
   <h3>Static members</h3>
   <table class="table table-bordered member-list">
     <thead>
@@ -68,15 +68,15 @@ global configuration for reflection-based expansion.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '565', 565)" onmouseover="showTip(event, '565', 565)">
+          <code onmouseout="hideTip(event, '432', 432)" onmouseover="showTip(event, '432', 432)">
             CustomExpanders
           </code>
-          <div class="tip" id="565">
+          <div class="tip" id="432">
             <strong>Signature:</strong> Dictionary&lt;Type,Func&lt;obj,seq&lt;string * Type * obj&gt;&gt;&gt;<br />
-                      </div>
+                                  </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L61-61" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L61-61" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -84,47 +84,44 @@ global configuration for reflection-based expansion.</p>
 This (mutable, non-thread-safe) collection lets you specify custom expansion behavior
 for any type. This is a dictionary with types as keys and functions that implement the
 expansion as values.</p>
-
 <h2>Example</h2>
-
 <p>For example, say you have a type <code>MyPair</code> with propreties <code>Item1</code> of type <code>int</code> and
 <code>Item2</code> of type <code>string</code> (and perhaps other properties which makes the default behavior
 inappropriate). You can register custom expander as:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">Frame</span><span class="o">.</span><span class="i">CustomExpanders</span><span class="o">.</span><span class="i">Add</span>(<span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">typeof</span><span class="o">&lt;</span><span class="i">MyPair</span><span class="o">&gt;</span>, <span class="k">fun</span> <span class="i">v</span> <span class="k">-&gt;</span> 
-  <span class="k">let</span> <span class="i">a</span> <span class="o">=</span> <span class="i">v</span> <span class="o">:?&gt;</span> <span class="i">MyPair</span>
-  [ <span class="s">&quot;First&quot;</span>, <span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="i">typeof</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs2', 3)" onmouseover="showTip(event, 'fs2', 3)" class="i">int</span><span class="o">&gt;</span>, <span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="i">box</span> <span class="i">a</span><span class="o">.</span><span class="i">Item1</span>; 
-    <span class="s">&quot;Second&quot;</span>, <span onmouseout="hideTip(event, 'fs1', 5)" onmouseover="showTip(event, 'fs1', 5)" class="i">typeof</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs4', 6)" onmouseover="showTip(event, 'fs4', 6)" class="i">string</span><span class="o">&gt;</span>, <span onmouseout="hideTip(event, 'fs3', 7)" onmouseover="showTip(event, 'fs3', 7)" class="i">box</span> <span class="i">a</span><span class="o">.</span><span class="i">Item2</span> ] <span class="o">:&gt;</span> <span onmouseout="hideTip(event, 'fs5', 8)" onmouseover="showTip(event, 'fs5', 8)" class="i">seq</span><span class="o">&lt;</span>_<span class="o">&gt;</span> )
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="id">Frame</span><span class="pn">.</span><span class="id">CustomExpanders</span><span class="pn">.</span><span class="id">Add</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="id">typeof</span><span class="pn">&lt;</span><span class="id">MyPair</span><span class="pn">&gt;</span><span class="pn">,</span> <span class="k">fun</span> <span class="id">v</span> <span class="k">-&gt;</span> 
+  <span class="k">let</span> <span class="id">a</span> <span class="o">=</span> <span class="id">v</span> <span class="o">:?&gt;</span> <span class="id">MyPair</span>
+  <span class="pn">[</span> <span class="s">&quot;First&quot;</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="id">typeof</span><span class="pn">&lt;</span><span onmouseout="hideTip(event, 'fs2', 3)" onmouseover="showTip(event, 'fs2', 3)" class="id">int</span><span class="pn">&gt;</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="id">box</span> <span class="id">a</span><span class="pn">.</span><span class="id">Item1</span><span class="pn">;</span> 
+    <span class="s">&quot;Second&quot;</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs1', 5)" onmouseover="showTip(event, 'fs1', 5)" class="id">typeof</span><span class="pn">&lt;</span><span onmouseout="hideTip(event, 'fs4', 6)" onmouseover="showTip(event, 'fs4', 6)" class="id">string</span><span class="pn">&gt;</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs3', 7)" onmouseover="showTip(event, 'fs3', 7)" class="id">box</span> <span class="id">a</span><span class="pn">.</span><span class="id">Item2</span> <span class="pn">]</span> <span class="o">:&gt;</span> <span onmouseout="hideTip(event, 'fs5', 8)" onmouseover="showTip(event, 'fs5', 8)" class="id">seq</span><span class="pn">&lt;</span><span class="id">_</span><span class="pn">&gt;</span> <span class="pn">)</span>
 </code></pre></td>
 </tr>
 </table>
+<div class="tip" id="fs1">val typeof&lt;&#39;T&gt; : System.Type</div>
+<div class="tip" id="fs2">Multiple items<br />val int : value:&#39;T -&gt; int (requires member op_Explicit)<br /><br />--------------------<br />type int = int32<br /><br />--------------------<br />type int&lt;&#39;Measure&gt; = int</div>
+<div class="tip" id="fs3">val box : value:&#39;T -&gt; obj</div>
+<div class="tip" id="fs4">Multiple items<br />val string : value:&#39;T -&gt; string<br /><br />--------------------<br />type string = System.String</div>
+<div class="tip" id="fs5">Multiple items<br />val seq : sequence:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;T&gt;<br /><br />--------------------<br />type seq&lt;&#39;T&gt; = System.Collections.Generic.IEnumerable&lt;&#39;T&gt;</div>
 
-<div class="tip" id="fs1">val typeof&lt;&#39;T&gt; : System.Type<br /><br />Full name: Microsoft.FSharp.Core.Operators.typeof</div>
-<div class="tip" id="fs2">Multiple items<br />val int : value:&#39;T -&gt; int (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.int<br /><br />--------------------<br />type int = int32<br /><br />Full name: Microsoft.FSharp.Core.int<br /><br />--------------------<br />type int&lt;&#39;Measure&gt; = int<br /><br />Full name: Microsoft.FSharp.Core.int&lt;_&gt;</div>
-<div class="tip" id="fs3">val box : value:&#39;T -&gt; obj<br /><br />Full name: Microsoft.FSharp.Core.Operators.box</div>
-<div class="tip" id="fs4">Multiple items<br />val string : value:&#39;T -&gt; string<br /><br />Full name: Microsoft.FSharp.Core.Operators.string<br /><br />--------------------<br />type string = System.String<br /><br />Full name: Microsoft.FSharp.Core.string</div>
-<div class="tip" id="fs5">Multiple items<br />val seq : sequence:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Core.Operators.seq<br /><br />--------------------<br />type seq&lt;&#39;T&gt; = System.Collections.Generic.IEnumerable&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Collections.seq&lt;_&gt;</div>
 
-
+              <p>CompiledName: <code>get_CustomExpanders</code></p>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '566', 566)" onmouseover="showTip(event, '566', 566)">
+          <code onmouseout="hideTip(event, '433', 433)" onmouseover="showTip(event, '433', 433)">
             NonExpandableInterfaces
           </code>
-          <div class="tip" id="566">
-            <strong>Signature:</strong> List&lt;Type&gt;<br />
-                      </div>
+          <div class="tip" id="433">
+            <strong>Signature:</strong> ResizeArray&lt;Type&gt;<br />
+                                  </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L43-43" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L43-43" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -133,21 +130,21 @@ This (mutable, non-thread-safe) collection specifies interfaces whose implementa
 should not be expanded. By default, this includes collections such as IList.</p>
 
 
-
+              <p>CompiledName: <code>get_NonExpandableInterfaces</code></p>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '567', 567)" onmouseover="showTip(event, '567', 567)">
+          <code onmouseout="hideTip(event, '434', 434)" onmouseover="showTip(event, '434', 434)">
             NonExpandableTypes
           </code>
-          <div class="tip" id="567">
+          <div class="tip" id="434">
             <strong>Signature:</strong> HashSet&lt;Type&gt;<br />
-                      </div>
+                                  </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L36-36" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L36-36" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -156,12 +153,12 @@ This (mutable, non-thread-safe) collection specifies additional primitive (but r
 types that should not be expaneded. By default, this includes DateTime, string, etc.</p>
 
 
-
+              <p>CompiledName: <code>get_NonExpandableTypes</code></p>
         </td>
       </tr>
     </tbody>
   </table>
-    <h2>Input and output<a name="section1">&#160;</a></h2>
+        <h2>Input and output<a name="section1">&#160;</a></h2>
   <h3>Static members</h3>
   <table class="table table-bordered member-list">
     <thead>
@@ -171,45 +168,60 @@ types that should not be expaneded. By default, this includes DateTime, string, 
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '568', 568)" onmouseover="showTip(event, '568', 568)">
+          <code onmouseout="hideTip(event, '435', 435)" onmouseover="showTip(event, '435', 435)">
             ReadCsv(...)
           </code>
-          <div class="tip" id="568">
+          <div class="tip" id="435">
             <strong>Signature:</strong> (stream:Stream * hasHeaders:Nullable&lt;bool&gt; * inferTypes:Nullable&lt;bool&gt; * inferRows:Nullable&lt;int&gt; * schema:string * separators:string * culture:string * maxRows:Nullable&lt;int&gt; * missingValues:string []) -&gt; Frame&lt;int,string&gt;<br />
-                      </div>
+                                    <span>
+            <strong>Attributes:</strong><br />
+[&lt;CompilerMessage(&quot;This method is not intended for use from F#.&quot;, 10001, IsHidden = true, IsError = false)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L134-134" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L134-134" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Load data frame from a CSV file. The operation automatically reads column names from the 
+          <p>Load data frame from a CSV file. The operation automatically reads column names from the
 CSV file (if they are present) and infers the type of values for each column. Columns
 of primitive types (<code>int</code>, <code>float</code>, etc.) are converted to the right type. Columns of other
 types (such as dates) are not converted automatically.</p>
-
 <h2>Parameters</h2>
-
 <ul>
 <li><code>stream</code> - Specifies the input stream, opened at the beginning of CSV data</li>
-<li><code>hasHeaders</code> - Specifies whether the input CSV file has header row
-(when not set, the default value is <code>true</code>)</li>
-<li><code>inferTypes</code> - Specifies whether the method should attempt to infer types
-of columns automatically (set this to <code>false</code> if you want to specify schema)</li>
-<li><code>inferRows</code> - If <code>inferTypes=true</code>, this parameter specifies the number of
-rows to use for type inference. The default value is 100.</li>
-<li><code>schema</code> - A string that specifies CSV schema. See the documentation for 
-information about the schema format.</li>
-<li><code>separators</code> - A string that specifies one or more (single character) separators
+<li>
+<code>hasHeaders</code> - Specifies whether the input CSV file has header row
+(when not set, the default value is <code>true</code>)
+</li>
+<li>
+<code>inferTypes</code> - Specifies whether the method should attempt to infer types
+of columns automatically (set this to <code>false</code> if you want to specify schema)
+</li>
+<li>
+<code>inferRows</code> - If <code>inferTypes=true</code>, this parameter specifies the number of
+rows to use for type inference. The default value is 100.
+</li>
+<li>
+<code>schema</code> - A string that specifies CSV schema. See the documentation for 
+information about the schema format.
+</li>
+<li>
+<code>separators</code> - A string that specifies one or more (single character) separators
 that are used to separate columns in the CSV file. Use for example <code>";"</code> to
-parse semicolon separated files.</li>
-<li><code>culture</code> - Specifies the name of the culture that is used when parsing 
-values in the CSV file (such as <code>"en-US"</code>). The default is invariant culture.</li>
+parse semicolon separated files.
+</li>
+<li>
+<code>culture</code> - Specifies the name of the culture that is used when parsing 
+values in the CSV file (such as <code>"en-US"</code>). The default is invariant culture.
+</li>
 <li><code>maxRows</code> - The maximal number of rows that should be read from the CSV file.</li>
-<li><code>missingValues</code> - An array of strings that contains values which should be treated
-as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".</li>
+<li>
+<code>missingValues</code> - An array of strings that contains values which should be treated
+as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD".
+</li>
 </ul>
-
 
 
         </td>
@@ -217,59 +229,72 @@ as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '569', 569)" onmouseover="showTip(event, '569', 569)">
+          <code onmouseout="hideTip(event, '436', 436)" onmouseover="showTip(event, '436', 436)">
             ReadCsv(...)
           </code>
-          <div class="tip" id="569">
+          <div class="tip" id="436">
             <strong>Signature:</strong> (location:string * hasHeaders:Nullable&lt;bool&gt; * inferTypes:Nullable&lt;bool&gt; * inferRows:Nullable&lt;int&gt; * schema:string * separators:string * culture:string * maxRows:Nullable&lt;int&gt; * missingValues:string []) -&gt; Frame&lt;int,string&gt;<br />
-                      </div>
+                                    <span>
+            <strong>Attributes:</strong><br />
+[&lt;CompilerMessage(&quot;This method is not intended for use from F#.&quot;, 10001, IsHidden = true, IsError = false)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L92-92" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L92-92" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Load data frame from a CSV file. The operation automatically reads column names from the 
+          <p>Load data frame from a CSV file. The operation automatically reads column names from the
 CSV file (if they are present) and infers the type of values for each column. Columns
 of primitive types (<code>int</code>, <code>float</code>, etc.) are converted to the right type. Columns of other
 types (such as dates) are not converted automatically.</p>
-
 <h2>Parameters</h2>
-
 <ul>
 <li><code>location</code> - Specifies a file name or an web location of the resource.</li>
-<li><code>hasHeaders</code> - Specifies whether the input CSV file has header row
-(when not set, the default value is <code>true</code>)</li>
-<li><code>inferTypes</code> - Specifies whether the method should attempt to infer types
-of columns automatically (set this to <code>false</code> if you want to specify schema)</li>
-<li><code>inferRows</code> - If <code>inferTypes=true</code>, this parameter specifies the number of
-rows to use for type inference. The default value is 100.</li>
-<li><code>schema</code> - A string that specifies CSV schema. See the documentation for 
-information about the schema format.</li>
-<li><code>separators</code> - A string that specifies one or more (single character) separators
+<li>
+<code>hasHeaders</code> - Specifies whether the input CSV file has header row
+(when not set, the default value is <code>true</code>)
+</li>
+<li>
+<code>inferTypes</code> - Specifies whether the method should attempt to infer types
+of columns automatically (set this to <code>false</code> if you want to specify schema)
+</li>
+<li>
+<code>inferRows</code> - If <code>inferTypes=true</code>, this parameter specifies the number of
+rows to use for type inference. The default value is 100.
+</li>
+<li>
+<code>schema</code> - A string that specifies CSV schema. See the documentation for 
+information about the schema format.
+</li>
+<li>
+<code>separators</code> - A string that specifies one or more (single character) separators
 that are used to separate columns in the CSV file. Use for example <code>";"</code> to
-parse semicolon separated files.</li>
-<li><code>culture</code> - Specifies the name of the culture that is used when parsing 
-values in the CSV file (such as <code>"en-US"</code>). The default is invariant culture.</li>
+parse semicolon separated files.
+</li>
+<li>
+<code>culture</code> - Specifies the name of the culture that is used when parsing 
+values in the CSV file (such as <code>"en-US"</code>). The default is invariant culture.
+</li>
 <li><code>maxRows</code> - Specifies the maximum number of rows that will be read from the CSV file</li>
 </ul>
 
 
-
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '570', 570)" onmouseover="showTip(event, '570', 570)">
+          <code onmouseout="hideTip(event, '437', 437)" onmouseover="showTip(event, '437', 437)">
             ReadReader(reader)
           </code>
-          <div class="tip" id="570">
+          <div class="tip" id="437">
             <strong>Signature:</strong> reader:IDataReader -&gt; Frame&lt;int,string&gt;<br />
-                      </div>
+                                  </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L155-155" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L155-155" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -279,12 +304,11 @@ as missing. The types of created vectors are determined by the field types repor
 by the data reader.</p>
 
 
-
         </td>
       </tr>
     </tbody>
   </table>
-    <h2>Other type members<a name="section2">&#160;</a></h2>
+        <h2>Other type members<a name="section2">&#160;</a></h2>
   <h3>Static members</h3>
   <table class="table table-bordered member-list">
     <thead>
@@ -294,15 +318,19 @@ by the data reader.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '571', 571)" onmouseover="showTip(event, '571', 571)">
+          <code onmouseout="hideTip(event, '438', 438)" onmouseover="showTip(event, '438', 438)">
             CreateEmpty()
           </code>
-          <div class="tip" id="571">
+          <div class="tip" id="438">
             <strong>Signature:</strong> unit -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C          </div>
+                          <strong>Type parameters:</strong> 'R, 'C                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;CompilerMessage(&quot;This method is not intended for use from F#.&quot;, 10001, IsHidden = true, IsError = false)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L296-296" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L296-296" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -312,44 +340,49 @@ by the data reader.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '572', 572)" onmouseover="showTip(event, '572', 572)">
+          <code onmouseout="hideTip(event, '439', 439)" onmouseover="showTip(event, '439', 439)">
             FromArray2D(array)
           </code>
-          <div class="tip" id="572">
+          <div class="tip" id="439">
             <strong>Signature:</strong> (array:&#39;T [,]) -&gt; Frame&lt;int,int&gt;<br />
-                          <strong>Type parameters:</strong> 'T          </div>
+                          <strong>Type parameters:</strong> 'T                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;CompilerMessage(&quot;This method is not intended for use from F#.&quot;, 10001, IsHidden = true, IsError = false)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L279-279" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L279-279" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Create data frame from a 2D array of values. The first dimension of the array
 is used as rows and the second dimension is treated as columns. Rows and columns
 of the returned frame are indexed with the element's offset in the array.</p>
-
 <h2>Parameters</h2>
-
 <ul>
 <li><code>array</code> - A two-dimensional array to be converted into a data frame</li>
 </ul>
 
 
-
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '573', 573)" onmouseover="showTip(event, '573', 573)">
+          <code onmouseout="hideTip(event, '440', 440)" onmouseover="showTip(event, '440', 440)">
             FromColumns(cols)
           </code>
-          <div class="tip" id="573">
+          <div class="tip" id="440">
             <strong>Signature:</strong> cols:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TColKey, 'TRowKey, 'V          </div>
+                          <strong>Type parameters:</strong> 'TColKey, 'TRowKey, 'V                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;CompilerMessage(&quot;This method is not intended for use from F#.&quot;, 10001, IsHidden = true, IsError = false)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L191-191" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L191-191" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -359,15 +392,19 @@ of the returned frame are indexed with the element's offset in the array.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '574', 574)" onmouseover="showTip(event, '574', 574)">
+          <code onmouseout="hideTip(event, '441', 441)" onmouseover="showTip(event, '441', 441)">
             FromColumns(cols)
           </code>
-          <div class="tip" id="574">
+          <div class="tip" id="441">
             <strong>Signature:</strong> cols:Series&lt;&#39;TColKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TColKey, 'TRowKey          </div>
+                          <strong>Type parameters:</strong> 'TColKey, 'TRowKey                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;CompilerMessage(&quot;This method is not intended for use from F#.&quot;, 10001, IsHidden = true, IsError = false)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L187-187" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L187-187" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -377,15 +414,19 @@ of the returned frame are indexed with the element's offset in the array.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '575', 575)" onmouseover="showTip(event, '575', 575)">
+          <code onmouseout="hideTip(event, '442', 442)" onmouseover="showTip(event, '442', 442)">
             FromColumns(columns)
           </code>
-          <div class="tip" id="575">
+          <div class="tip" id="442">
             <strong>Signature:</strong> columns:seq&lt;KeyValuePair&lt;&#39;ColKey,ObjectSeries&lt;&#39;RowKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt;<br />
-                          <strong>Type parameters:</strong> 'ColKey, 'RowKey          </div>
+                          <strong>Type parameters:</strong> 'ColKey, 'RowKey                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;CompilerMessage(&quot;This method is not intended for use from F#.&quot;, 10001, IsHidden = true, IsError = false)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L179-179" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L179-179" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -395,15 +436,19 @@ of the returned frame are indexed with the element's offset in the array.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '576', 576)" onmouseover="showTip(event, '576', 576)">
+          <code onmouseout="hideTip(event, '443', 443)" onmouseover="showTip(event, '443', 443)">
             FromColumns(columns)
           </code>
-          <div class="tip" id="576">
+          <div class="tip" id="443">
             <strong>Signature:</strong> columns:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt;<br />
-                          <strong>Type parameters:</strong> 'ColKey, 'RowKey, 'V          </div>
+                          <strong>Type parameters:</strong> 'ColKey, 'RowKey, 'V                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;CompilerMessage(&quot;This method is not intended for use from F#.&quot;, 10001, IsHidden = true, IsError = false)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L173-173" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L173-173" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -413,15 +458,19 @@ of the returned frame are indexed with the element's offset in the array.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '577', 577)" onmouseover="showTip(event, '577', 577)">
+          <code onmouseout="hideTip(event, '444', 444)" onmouseover="showTip(event, '444', 444)">
             FromColumns(cols)
           </code>
-          <div class="tip" id="577">
+          <div class="tip" id="444">
             <strong>Signature:</strong> cols:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;ColKey,int&gt;<br />
-                          <strong>Type parameters:</strong> 'ColKey, 'V          </div>
+                          <strong>Type parameters:</strong> 'ColKey, 'V                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;CompilerMessage(&quot;This method is not intended for use from F#.&quot;, 10001, IsHidden = true, IsError = false)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L169-169" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L169-169" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -431,33 +480,33 @@ of the returned frame are indexed with the element's offset in the array.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '578', 578)" onmouseover="showTip(event, '578', 578)">
+          <code onmouseout="hideTip(event, '445', 445)" onmouseover="showTip(event, '445', 445)">
             FromRecords(values)
           </code>
-          <div class="tip" id="578">
+          <div class="tip" id="445">
             <strong>Signature:</strong> values:seq&lt;&#39;T&gt; -&gt; Frame&lt;int,string&gt;<br />
-                          <strong>Type parameters:</strong> 'T          </div>
+                          <strong>Type parameters:</strong> 'T                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;CompilerMessage(&quot;This method is not intended for use from F#.&quot;, 10001, IsHidden = true, IsError = false)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L269-269" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L269-269" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Creates a data frame from a sequence of any .NET objects. The method uses reflection
 over the specified type parameter <code>'T</code> and turns its properties to columns. The
 rows of the resulting frame are automatically indexed by <code>int</code>.</p>
-
 <h2>Example</h2>
-
 <p>The method can be nicely used to create a data frame using C# anonymous types
 (the result is a data frame with columns "A" and "B" containing two rows).</p>
-
 <p>[lang=csharp]
-   var df = Frame.FromRecords(new[] {
-     new { A = 1, B = "Test" },
-      new { A = 2, B = "Another"}
-   });</p>
-
+var df = Frame.FromRecords(new[] {
+new { A = 1, B = "Test" },
+new { A = 2, B = "Another"}
+});</p>
 
 
         </td>
@@ -465,15 +514,19 @@ rows of the resulting frame are automatically indexed by <code>int</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '579', 579)" onmouseover="showTip(event, '579', 579)">
+          <code onmouseout="hideTip(event, '446', 446)" onmouseover="showTip(event, '446', 446)">
             FromRecords(series)
           </code>
-          <div class="tip" id="579">
+          <div class="tip" id="446">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;R&gt; -&gt; Frame&lt;&#39;K,string&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'R          </div>
+                          <strong>Type parameters:</strong> 'K, 'R                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;CompilerMessage(&quot;This method is not intended for use from F#.&quot;, 10001, IsHidden = true, IsError = false)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L247-247" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L247-247" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -481,21 +534,24 @@ rows of the resulting frame are automatically indexed by <code>int</code>.</p>
 over the specified type parameter <code>'T</code> and turns its properties to columns.</p>
 
 
-
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '580', 580)" onmouseover="showTip(event, '580', 580)">
+          <code onmouseout="hideTip(event, '447', 447)" onmouseover="showTip(event, '447', 447)">
             FromRowKeys(keys)
           </code>
-          <div class="tip" id="580">
+          <div class="tip" id="447">
             <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; Frame&lt;&#39;K,string&gt;<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+                          <strong>Type parameters:</strong> 'K                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;CompilerMessage(&quot;This method is not intended for use from F#.&quot;, 10001, IsHidden = true, IsError = false)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L300-300" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L300-300" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -505,15 +561,19 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '581', 581)" onmouseover="showTip(event, '581', 581)">
+          <code onmouseout="hideTip(event, '448', 448)" onmouseover="showTip(event, '448', 448)">
             FromRows(rows)
           </code>
-          <div class="tip" id="581">
+          <div class="tip" id="448">
             <strong>Signature:</strong> rows:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TColKey,&#39;TRowKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TColKey, 'TRowKey, 'V          </div>
+                          <strong>Type parameters:</strong> 'TColKey, 'TRowKey, 'V                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;CompilerMessage(&quot;This method is not intended for use from F#.&quot;, 10001, IsHidden = true, IsError = false)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L219-219" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L219-219" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -523,15 +583,19 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '582', 582)" onmouseover="showTip(event, '582', 582)">
+          <code onmouseout="hideTip(event, '449', 449)" onmouseover="showTip(event, '449', 449)">
             FromRows(rows)
           </code>
-          <div class="tip" id="582">
+          <div class="tip" id="449">
             <strong>Signature:</strong> rows:Series&lt;&#39;TColKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TColKey,&#39;TRowKey&gt;<br />
-                          <strong>Type parameters:</strong> 'TColKey, 'TRowKey          </div>
+                          <strong>Type parameters:</strong> 'TColKey, 'TRowKey                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;CompilerMessage(&quot;This method is not intended for use from F#.&quot;, 10001, IsHidden = true, IsError = false)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L215-215" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L215-215" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -541,15 +605,19 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '583', 583)" onmouseover="showTip(event, '583', 583)">
+          <code onmouseout="hideTip(event, '450', 450)" onmouseover="showTip(event, '450', 450)">
             FromRows(rows)
           </code>
-          <div class="tip" id="583">
+          <div class="tip" id="450">
             <strong>Signature:</strong> rows:seq&lt;KeyValuePair&lt;&#39;RowKey,ObjectSeries&lt;&#39;ColKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt;<br />
-                          <strong>Type parameters:</strong> 'RowKey, 'ColKey          </div>
+                          <strong>Type parameters:</strong> 'RowKey, 'ColKey                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;CompilerMessage(&quot;This method is not intended for use from F#.&quot;, 10001, IsHidden = true, IsError = false)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L207-207" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L207-207" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -559,15 +627,19 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '584', 584)" onmouseover="showTip(event, '584', 584)">
+          <code onmouseout="hideTip(event, '451', 451)" onmouseover="showTip(event, '451', 451)">
             FromRows(rows)
           </code>
-          <div class="tip" id="584">
+          <div class="tip" id="451">
             <strong>Signature:</strong> rows:seq&lt;KeyValuePair&lt;&#39;RowKey,Series&lt;&#39;ColKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt;<br />
-                          <strong>Type parameters:</strong> 'RowKey, 'ColKey, 'V          </div>
+                          <strong>Type parameters:</strong> 'RowKey, 'ColKey, 'V                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;CompilerMessage(&quot;This method is not intended for use from F#.&quot;, 10001, IsHidden = true, IsError = false)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L201-201" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L201-201" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -577,15 +649,19 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '585', 585)" onmouseover="showTip(event, '585', 585)">
+          <code onmouseout="hideTip(event, '452', 452)" onmouseover="showTip(event, '452', 452)">
             FromRows(rows)
           </code>
-          <div class="tip" id="585">
+          <div class="tip" id="452">
             <strong>Signature:</strong> rows:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;int,&#39;ColKey&gt;<br />
-                          <strong>Type parameters:</strong> 'ColKey, 'V          </div>
+                          <strong>Type parameters:</strong> 'ColKey, 'V                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;CompilerMessage(&quot;This method is not intended for use from F#.&quot;, 10001, IsHidden = true, IsError = false)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L197-197" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L197-197" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -595,51 +671,55 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '586', 586)" onmouseover="showTip(event, '586', 586)">
+          <code onmouseout="hideTip(event, '453', 453)" onmouseover="showTip(event, '453', 453)">
             FromValues(values)
           </code>
-          <div class="tip" id="586">
-            <strong>Signature:</strong> (values:seq&lt;&#39;?550248 * &#39;?550249 * &#39;?550250&gt;) -&gt; Frame&lt;&#39;?550248,&#39;?550249&gt;<br />
-                          <strong>Type parameters:</strong> '?550248, '?550249, '?550250          </div>
+          <div class="tip" id="453">
+            <strong>Signature:</strong> (values:seq&lt;&#39;?632570 * &#39;?632571 * &#39;?632572&gt;) -&gt; Frame&lt;&#39;?632570,&#39;?632571&gt;<br />
+                          <strong>Type parameters:</strong> '?632570, '?632571, '?632572                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;CompilerMessage(&quot;This method is not intended for use from F#.&quot;, 10001, IsHidden = true, IsError = false)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L241-241" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L241-241" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Create a data frame from a sequence of tuples containing row key, column key and a value</p>
 
 
-
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '587', 587)" onmouseover="showTip(event, '587', 587)">
+          <code onmouseout="hideTip(event, '454', 454)" onmouseover="showTip(event, '454', 454)">
             FromValues(...)
           </code>
-          <div class="tip" id="587">
+          <div class="tip" id="454">
             <strong>Signature:</strong> (values:seq&lt;&#39;T&gt; * colSel:Func&lt;&#39;T,&#39;C&gt; * rowSel:Func&lt;&#39;T,&#39;R&gt; * valSel:Func&lt;&#39;T,&#39;V&gt;) -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'T, 'C, 'R, 'V          </div>
+                          <strong>Type parameters:</strong> 'T, 'C, 'R, 'V                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;CompilerMessage(&quot;This method is not intended for use from F#.&quot;, 10001, IsHidden = true, IsError = false)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L236-236" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L236-236" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Create a data frame from a sequence of objects and functions that return
 row key, column key and value for each object in the input sequence.</p>
-
 <h2>Parameters</h2>
-
 <ul>
 <li><code>values</code> - Input sequence of objects</li>
 <li><code>colSel</code> - A function that returns the column key of an object</li>
 <li><code>rowSel</code> - A function that returns the row key of an object</li>
 <li><code>valSel</code> - A function that returns the value of an object</li>
 </ul>
-
 
 
         </td>
@@ -649,61 +729,61 @@ row key, column key and value for each object in the input sequence.</p>
 
         </div>
         <div class="span3">
-          <a href="http://bluemountaincapital.github.io/Deedle/index.html">
-            <img src="http://bluemountaincapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          <a href="http://fslab.org/Deedle/index.html">
+            <img src="http://fslab.org/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
           <ul class="nav nav-list" id="menu">
             <li class="nav-header">Deedle</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/index.html">Home page</a></li>
+            <li><a href="http://fslab.org/Deedle/index.html">Home page</a></li>
             <li class="divider"></li>
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/design.html">Design notes</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
+            <li><a href="http://fslab.org/Deedle/design.html">Design notes</a></li>
             <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
             
             <li class="nav-header">Using from F#</li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
+              <a href="http://fslab.org/Deedle/tutorial.html">Quick start tutorial</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/series.html">Working with time series</a>
+              <a href="http://fslab.org/Deedle/series.html">Working with time series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/frame.html">Working with data frames</a>
+              <a href="http://fslab.org/Deedle/frame.html">Working with data frames</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/stats.html">Statistics &amp; calculations</a>
+              <a href="http://fslab.org/Deedle/stats.html">Statistics &amp; calculations</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using Deedle with R</a>
+              <a href="http://fslab.org/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/csharpintro.html">Getting started</a></li>
+            <li><a href="http://fslab.org/Deedle/csharpintro.html">Getting started</a></li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html">Working with data series</a>
+              <a href="http://fslab.org/Deedle/csharpseries.html">Working with data series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html">Working with data frames</a>
+              <a href="http://fslab.org/Deedle/csharpframe.html">Working with data frames</a>
             </li>
 
             <li class="nav-header">Documentation</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/index.html">API Reference</a></li>
             <li class="divider"></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-stats.html">Stats module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-stats.html">Stats module</a></li>
 
             <li class="nav-header">Samples</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="http://fslab.org/Deedle/lazysource.html">Lazy data loading</a></li>
           </ul>
         </div>
       </div>
     </div>
-    <a href="http://github.com/BlueMountainCapital/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <a href="http://github.com/fslaborg/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
     <script>
       (function (i, s, o, g, r, a, m) {
         i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {

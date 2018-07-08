@@ -5,7 +5,7 @@
     <title>MultiKeyExtensions - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
-    <meta name="author" content="BlueMountain Capital">
+    <meta name="author" content="BlueMountain Capital, FsLab.Org">
 
     <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
     <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
@@ -13,9 +13,9 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
-    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/style.css" />
-    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/deedle.css" />
-    <script type="text/javascript" src="http://bluemountaincapital.github.io/Deedle/content/tips.js"></script>
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/deedle.css" />
+    <script type="text/javascript" src="http://fslab.org/Deedle/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -26,12 +26,12 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fslab.org/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
           <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
-        <h3 class="muted"><a href="http://bluemountaincapital.github.io/Deedle/index.html">Deedle</a></h3>
+        <h3 class="muted"><a href="http://fslab.org/Deedle/index.html">Deedle</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -43,10 +43,14 @@
 <h1>MultiKeyExtensions</h1>
 <p>
   <span>Namespace: Deedle</span><br />
+        <span>
+          Attributes:<br />
+[&lt;AutoOpen&gt;]<br />
+          
+      </span>
 </p>
 <div class="xmldoc">
 <p>F#-friendly functions for creating multi-level keys and lookups</p>
-
 
 </div>
 
@@ -65,17 +69,16 @@
             Lookup1Of2 k
           </code>
           <div class="tip" id="137">
-            <strong>Signature:</strong> k:&#39;?554082 -&gt; ICustomLookup&lt;&#39;?554083&gt;<br />
-                          <strong>Type parameters:</strong> '?554082, '?554083          </div>
+            <strong>Signature:</strong> k:&#39;?637907 -&gt; ICustomLookup&lt;&#39;?637908&gt;<br />
+                          <strong>Type parameters:</strong> '?637907, '?637908                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L122-122" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L122-122" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Creates a hierarchical key lookup that allows matching on the 
+          <p>Creates a hierarchical key lookup that allows matching on the
 first element of a two-level hierarchical key.</p>
-
 
 
         </td>
@@ -87,17 +90,16 @@ first element of a two-level hierarchical key.</p>
             Lookup1Of3 k
           </code>
           <div class="tip" id="138">
-            <strong>Signature:</strong> k:&#39;?554092 -&gt; ICustomLookup&lt;&#39;?554093&gt;<br />
-                          <strong>Type parameters:</strong> '?554092, '?554093          </div>
+            <strong>Signature:</strong> k:&#39;?637917 -&gt; ICustomLookup&lt;&#39;?637918&gt;<br />
+                          <strong>Type parameters:</strong> '?637917, '?637918                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L134-134" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L134-134" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Creates a hierarchical key lookup that allows matching on the 
+          <p>Creates a hierarchical key lookup that allows matching on the
 first element of a three-level hierarchical key.</p>
-
 
 
         </td>
@@ -109,17 +111,16 @@ first element of a three-level hierarchical key.</p>
             Lookup1Of4 k
           </code>
           <div class="tip" id="139">
-            <strong>Signature:</strong> k:&#39;?554106 -&gt; ICustomLookup&lt;&#39;?554107&gt;<br />
-                          <strong>Type parameters:</strong> '?554106, '?554107          </div>
+            <strong>Signature:</strong> k:&#39;?637931 -&gt; ICustomLookup&lt;&#39;?637932&gt;<br />
+                          <strong>Type parameters:</strong> '?637931, '?637932                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L149-149" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L149-149" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Creates a hierarchical key lookup that allows matching on the 
+          <p>Creates a hierarchical key lookup that allows matching on the
 first element of a four-level hierarchical key.</p>
-
 
 
         </td>
@@ -131,17 +132,16 @@ first element of a four-level hierarchical key.</p>
             Lookup2Of2 k
           </code>
           <div class="tip" id="140">
-            <strong>Signature:</strong> k:&#39;?554085 -&gt; ICustomLookup&lt;&#39;?554086&gt;<br />
-                          <strong>Type parameters:</strong> '?554085, '?554086          </div>
+            <strong>Signature:</strong> k:&#39;?637910 -&gt; ICustomLookup&lt;&#39;?637911&gt;<br />
+                          <strong>Type parameters:</strong> '?637910, '?637911                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L125-125" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L125-125" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Creates a hierarchical key lookup that allows matching on the 
+          <p>Creates a hierarchical key lookup that allows matching on the
 second element of a two-level hierarchical key.</p>
-
 
 
         </td>
@@ -153,17 +153,16 @@ second element of a two-level hierarchical key.</p>
             Lookup2Of3 k
           </code>
           <div class="tip" id="141">
-            <strong>Signature:</strong> k:&#39;?554095 -&gt; ICustomLookup&lt;&#39;?554096&gt;<br />
-                          <strong>Type parameters:</strong> '?554095, '?554096          </div>
+            <strong>Signature:</strong> k:&#39;?637920 -&gt; ICustomLookup&lt;&#39;?637921&gt;<br />
+                          <strong>Type parameters:</strong> '?637920, '?637921                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L137-137" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L137-137" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Creates a hierarchical key lookup that allows matching on the 
+          <p>Creates a hierarchical key lookup that allows matching on the
 second element of a three-level hierarchical key.</p>
-
 
 
         </td>
@@ -175,17 +174,16 @@ second element of a three-level hierarchical key.</p>
             Lookup2Of4 k
           </code>
           <div class="tip" id="142">
-            <strong>Signature:</strong> k:&#39;?554109 -&gt; ICustomLookup&lt;&#39;?554110&gt;<br />
-                          <strong>Type parameters:</strong> '?554109, '?554110          </div>
+            <strong>Signature:</strong> k:&#39;?637934 -&gt; ICustomLookup&lt;&#39;?637935&gt;<br />
+                          <strong>Type parameters:</strong> '?637934, '?637935                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L152-152" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L152-152" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Creates a hierarchical key lookup that allows matching on the 
+          <p>Creates a hierarchical key lookup that allows matching on the
 second element of a four-level hierarchical key.</p>
-
 
 
         </td>
@@ -197,17 +195,16 @@ second element of a four-level hierarchical key.</p>
             Lookup3Of3 k
           </code>
           <div class="tip" id="143">
-            <strong>Signature:</strong> k:&#39;?554098 -&gt; ICustomLookup&lt;&#39;?554099&gt;<br />
-                          <strong>Type parameters:</strong> '?554098, '?554099          </div>
+            <strong>Signature:</strong> k:&#39;?637923 -&gt; ICustomLookup&lt;&#39;?637924&gt;<br />
+                          <strong>Type parameters:</strong> '?637923, '?637924                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L140-140" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L140-140" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Creates a hierarchical key lookup that allows matching on the 
+          <p>Creates a hierarchical key lookup that allows matching on the
 third element of a three-level hierarchical key.</p>
-
 
 
         </td>
@@ -219,17 +216,16 @@ third element of a three-level hierarchical key.</p>
             Lookup3Of4 k
           </code>
           <div class="tip" id="144">
-            <strong>Signature:</strong> k:&#39;?554112 -&gt; ICustomLookup&lt;&#39;?554113&gt;<br />
-                          <strong>Type parameters:</strong> '?554112, '?554113          </div>
+            <strong>Signature:</strong> k:&#39;?637937 -&gt; ICustomLookup&lt;&#39;?637938&gt;<br />
+                          <strong>Type parameters:</strong> '?637937, '?637938                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L155-155" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L155-155" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Creates a hierarchical key lookup that allows matching on the 
+          <p>Creates a hierarchical key lookup that allows matching on the
 third element of a four-level hierarchical key.</p>
-
 
 
         </td>
@@ -241,17 +237,16 @@ third element of a four-level hierarchical key.</p>
             Lookup4Of4 k
           </code>
           <div class="tip" id="145">
-            <strong>Signature:</strong> k:&#39;?554115 -&gt; ICustomLookup&lt;&#39;?554116&gt;<br />
-                          <strong>Type parameters:</strong> '?554115, '?554116          </div>
+            <strong>Signature:</strong> k:&#39;?637940 -&gt; ICustomLookup&lt;&#39;?637941&gt;<br />
+                          <strong>Type parameters:</strong> '?637940, '?637941                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L158-158" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L158-158" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Creates a hierarchical key lookup that allows matching on the 
+          <p>Creates a hierarchical key lookup that allows matching on the
 fourth element of a four-level hierarchical key.</p>
-
 
 
         </td>
@@ -263,18 +258,17 @@ fourth element of a four-level hierarchical key.</p>
             LookupAnyOf2 k1 k2
           </code>
           <div class="tip" id="146">
-            <strong>Signature:</strong> k1:&#39;?554088 option -&gt; k2:&#39;?554089 option -&gt; ICustomLookup&lt;&#39;?554090&gt;<br />
-                          <strong>Type parameters:</strong> '?554088, '?554089, '?554090          </div>
+            <strong>Signature:</strong> k1:&#39;?637913 option -&gt; k2:&#39;?637914 option -&gt; ICustomLookup&lt;&#39;?637915&gt;<br />
+                          <strong>Type parameters:</strong> '?637913, '?637914, '?637915                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L129-129" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L129-129" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Creates an arbitrary lookup key that allows matching on elements
 of a two-level hierarchical index. Specify <code>None</code> to ignore a level
 or <code>Some k</code> to require match on a given level.</p>
-
 
 
         </td>
@@ -286,18 +280,17 @@ or <code>Some k</code> to require match on a given level.</p>
             LookupAnyOf3 k1 k2 k3
           </code>
           <div class="tip" id="147">
-            <strong>Signature:</strong> k1:&#39;?554101 option -&gt; k2:&#39;?554102 option -&gt; k3:&#39;?554103 option -&gt; ICustomLookup&lt;&#39;?554104&gt;<br />
-                          <strong>Type parameters:</strong> '?554101, '?554102, '?554103, '?554104          </div>
+            <strong>Signature:</strong> k1:&#39;?637926 option -&gt; k2:&#39;?637927 option -&gt; k3:&#39;?637928 option -&gt; ICustomLookup&lt;&#39;?637929&gt;<br />
+                          <strong>Type parameters:</strong> '?637926, '?637927, '?637928, '?637929                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L144-144" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L144-144" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Creates an arbitrary lookup key that allows matching on elements
 of a three-level hierarchical index. Specify <code>None</code> to ignore a level
 or <code>Some k</code> to require match on a given level.</p>
-
 
 
         </td>
@@ -309,18 +302,17 @@ or <code>Some k</code> to require match on a given level.</p>
             LookupAnyOf4 k1 k2 k3 k4
           </code>
           <div class="tip" id="148">
-            <strong>Signature:</strong> k1:&#39;?554118 option -&gt; k2:&#39;?554119 option -&gt; k3:&#39;?554120 option -&gt; k4:&#39;?554121 option -&gt; ICustomLookup&lt;&#39;?554122&gt;<br />
-                          <strong>Type parameters:</strong> '?554118, '?554119, '?554120, '?554121, '?554122          </div>
+            <strong>Signature:</strong> k1:&#39;?637943 option -&gt; k2:&#39;?637944 option -&gt; k3:&#39;?637945 option -&gt; k4:&#39;?637946 option -&gt; ICustomLookup&lt;&#39;?637947&gt;<br />
+                          <strong>Type parameters:</strong> '?637943, '?637944, '?637945, '?637946, '?637947                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L162-162" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/MultiKey.fs#L162-162" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Creates an arbitrary lookup key that allows matching on elements
 of a four-level hierarchical index. Specify <code>None</code> to ignore a level
 or <code>Some k</code> to require match on a given level.</p>
-
 
 
         </td>
@@ -330,61 +322,61 @@ or <code>Some k</code> to require match on a given level.</p>
 
         </div>
         <div class="span3">
-          <a href="http://bluemountaincapital.github.io/Deedle/index.html">
-            <img src="http://bluemountaincapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          <a href="http://fslab.org/Deedle/index.html">
+            <img src="http://fslab.org/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
           <ul class="nav nav-list" id="menu">
             <li class="nav-header">Deedle</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/index.html">Home page</a></li>
+            <li><a href="http://fslab.org/Deedle/index.html">Home page</a></li>
             <li class="divider"></li>
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/design.html">Design notes</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
+            <li><a href="http://fslab.org/Deedle/design.html">Design notes</a></li>
             <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
             
             <li class="nav-header">Using from F#</li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
+              <a href="http://fslab.org/Deedle/tutorial.html">Quick start tutorial</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/series.html">Working with time series</a>
+              <a href="http://fslab.org/Deedle/series.html">Working with time series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/frame.html">Working with data frames</a>
+              <a href="http://fslab.org/Deedle/frame.html">Working with data frames</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/stats.html">Statistics &amp; calculations</a>
+              <a href="http://fslab.org/Deedle/stats.html">Statistics &amp; calculations</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using Deedle with R</a>
+              <a href="http://fslab.org/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/csharpintro.html">Getting started</a></li>
+            <li><a href="http://fslab.org/Deedle/csharpintro.html">Getting started</a></li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html">Working with data series</a>
+              <a href="http://fslab.org/Deedle/csharpseries.html">Working with data series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html">Working with data frames</a>
+              <a href="http://fslab.org/Deedle/csharpframe.html">Working with data frames</a>
             </li>
 
             <li class="nav-header">Documentation</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/index.html">API Reference</a></li>
             <li class="divider"></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-stats.html">Stats module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-stats.html">Stats module</a></li>
 
             <li class="nav-header">Samples</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="http://fslab.org/Deedle/lazysource.html">Lazy data loading</a></li>
           </ul>
         </div>
       </div>
     </div>
-    <a href="http://github.com/BlueMountainCapital/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <a href="http://github.com/fslaborg/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
     <script>
       (function (i, s, o, g, r, a, m) {
         i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {

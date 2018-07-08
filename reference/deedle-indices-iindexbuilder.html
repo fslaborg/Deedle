@@ -5,7 +5,7 @@
     <title>IIndexBuilder - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
-    <meta name="author" content="BlueMountain Capital">
+    <meta name="author" content="BlueMountain Capital, FsLab.Org">
 
     <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
     <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
@@ -13,9 +13,9 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
-    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/style.css" />
-    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/deedle.css" />
-    <script type="text/javascript" src="http://bluemountaincapital.github.io/Deedle/content/tips.js"></script>
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/deedle.css" />
+    <script type="text/javascript" src="http://fslab.org/Deedle/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -26,12 +26,12 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fslab.org/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
           <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
-        <h3 class="muted"><a href="http://bluemountaincapital.github.io/Deedle/index.html">Deedle</a></h3>
+        <h3 class="muted"><a href="http://fslab.org/Deedle/index.html">Deedle</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -42,19 +42,18 @@
 
 <h1>IIndexBuilder</h1>
 <p>
-  <span>Namespace: Deedle.Indices</span><br />
-</p>
+
+    <span>Namespace: Deedle.Indices</span><br />
+    </p>
 <div class="xmldoc">
 <p>A builder represents various ways of constructing index, either from keys or from
-other indices. The operations that build a new index from an existing index also 
-build <code>VectorConstruction</code> which specifies how to transform vectors aligned with the
-previous index to match the new index. The methods generally take <code>VectorConstruction</code>
-as an input, apply necessary transformations to it and return a new <code>VectorConstruction</code>.</p>
+other indices. The operations that build a new index from an existing index also
+build <a href="deedle-vectors-vectorconstruction.html" title="VectorConstruction"><code>VectorConstruction</code></a> which specifies how to transform vectors aligned with the
+previous index to match the new index. The methods generally take <a href="deedle-vectors-vectorconstruction.html" title="VectorConstruction"><code>VectorConstruction</code></a>
+as an input, apply necessary transformations to it and return a new <a href="deedle-vectors-vectorconstruction.html" title="VectorConstruction"><code>VectorConstruction</code></a>.</p>
 
-
-        <h2>Example</h2>
+                <h2>Example</h2>
 <p>For example, given <code>index</code>, we can say:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -63,18 +62,17 @@ as an input, apply necessary transformations to it and return a new <code>Vector
 <span class="l">6: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Create an index that excludes the value 42</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">newIndex</span>, <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">vectorCmd</span> <span class="o">=</span> <span class="i">indexBuilder</span><span class="o">.</span><span class="i">DropItem</span>(<span class="i">index</span>, <span class="n">42</span>, <span class="i">VectorConstruction</span><span class="o">.</span><span class="i">Return</span>(<span class="n">0</span>))
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="id">newIndex</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="id">vectorCmd</span> <span class="o">=</span> <span class="id">indexBuilder</span><span class="pn">.</span><span class="id">DropItem</span><span class="pn">(</span><span class="id">index</span><span class="pn">,</span> <span class="n">42</span><span class="pn">,</span> <span class="id">VectorConstruction</span><span class="pn">.</span><span class="id">Return</span><span class="pn">(</span><span class="n">0</span><span class="pn">)</span><span class="pn">)</span>
 
 <span class="c">// Now we can transform multiple vectors (e.g. all frame columns) using &#39;vectorCmd&#39;</span>
 <span class="c">// (the integer &#39;0&#39; in `Return` is an offset in the array of vector arguments)</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">newVector</span> <span class="o">=</span> <span class="i">vectorBuilder</span><span class="o">.</span><span class="i">Build</span>(<span onmouseout="hideTip(event, 'fs2', 4)" onmouseover="showTip(event, 'fs2', 4)" class="i">vectorCmd</span>, [| <span class="i">vectorToTransform</span> |])
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="id">newVector</span> <span class="o">=</span> <span class="id">vectorBuilder</span><span class="pn">.</span><span class="id">Build</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs2', 4)" onmouseover="showTip(event, 'fs2', 4)" class="id">vectorCmd</span><span class="pn">,</span> <span class="pn">[|</span> <span class="id">vectorToTransform</span> <span class="pn">|]</span><span class="pn">)</span>
 </code></pre></td>
 </tr>
 </table>
-
-<div class="tip" id="fs1">val newIndex : obj<br /><br />Full name: docs.newIndex</div>
-<div class="tip" id="fs2">val vectorCmd : obj<br /><br />Full name: docs.vectorCmd</div>
-<div class="tip" id="fs3">val newVector : obj<br /><br />Full name: docs.newVector</div>
+<div class="tip" id="fs1">val newIndex : obj</div>
+<div class="tip" id="fs2">val vectorCmd : obj</div>
+<div class="tip" id="fs3">val newVector : obj</div>
 
 </div>
   <h3>Instance members</h3>
@@ -86,33 +84,34 @@ as an input, apply necessary transformations to it and return a new <code>Vector
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1004', 1004)" onmouseover="showTip(event, '1004', 1004)">
+          <code onmouseout="hideTip(event, '1030', 1030)" onmouseover="showTip(event, '1030', 1030)">
             Aggregate(...)
           </code>
-          <div class="tip" id="1004">
+          <div class="tip" id="1030">
             <strong>Signature:</strong> (index:IIndex&lt;&#39;K&gt; * aggregation:Aggregation&lt;&#39;K&gt; * source:VectorConstruction * selector:(DataSegmentKind * SeriesConstruction&lt;&#39;K&gt; -&gt; &#39;TNewKey * OptionalValue&lt;&#39;R&gt;)) -&gt; IIndex&lt;&#39;TNewKey&gt; * IVector&lt;&#39;R&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'K, 'TNewKey, 'R          </div>
+                          <strong>Type parameters:</strong> 'K, 'TNewKey, 'R                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/Index.fs#L309-309" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/Index.fs#L309-309" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Aggregate an ordered index into floating windows or chunks.</p>
-
 <h2>Parameters</h2>
-
 <ul>
 <li><code>index</code> - Specifies the index to be aggregated</li>
-<li><code>aggregation</code> - Defines the kind of aggregation to apply (the type 
-is a discriminated union with a couple of cases)</li>
+<li>
+<code>aggregation</code> - Defines the kind of aggregation to apply (the type 
+is a discriminated union with a couple of cases)
+</li>
 <li><code>source</code> - Source vector construction to be transformed</li>
-<li><code>selector</code> - Given information about window/chunk (including 
+<li>
+<code>selector</code> - Given information about window/chunk (including 
 vector construction that can be used to build the data chunk), return
-a new key, together with a new value for the returned vector.</li>
+a new key, together with a new value for the returned vector.
+</li>
 </ul>
-
 
 
         </td>
@@ -120,16 +119,16 @@ a new key, together with a new value for the returned vector.</li>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1005', 1005)" onmouseover="showTip(event, '1005', 1005)">
+          <code onmouseout="hideTip(event, '1031', 1031)" onmouseover="showTip(event, '1031', 1031)">
             AsyncMaterialize(arg1)
           </code>
-          <div class="tip" id="1005">
+          <div class="tip" id="1031">
             <strong>Signature:</strong> SeriesConstruction&lt;&#39;K&gt; -&gt; AsyncSeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/Index.fs#L331-331" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/Index.fs#L331-331" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -138,30 +137,28 @@ to allow composing evaluation of lazy series. The command to be applied to
 vectors can be applied asynchronously using <code>vectorBuilder.AsyncBuild</code></p>
 
 
-
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1006', 1006)" onmouseover="showTip(event, '1006', 1006)">
+          <code onmouseout="hideTip(event, '1032', 1032)" onmouseover="showTip(event, '1032', 1032)">
             Create(arg1, arg2)
           </code>
-          <div class="tip" id="1006">
+          <div class="tip" id="1032">
             <strong>Signature:</strong> (ReadOnlyCollection&lt;&#39;K&gt; * Option&lt;bool&gt;) -&gt; IIndex&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/Index.fs#L207-207" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/Index.fs#L207-207" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Create a new index using the specified keys. This overload takes data as ReadOnlyCollection
 and so it is more efficient if the caller already has the keys in an allocated collection.
-Optionally, the caller can specify if the index keys are ordered or not. When the value 
+Optionally, the caller can specify if the index keys are ordered or not. When the value
 is not set, the construction should check and infer this from the data.</p>
-
 
 
         </td>
@@ -169,16 +166,16 @@ is not set, the construction should check and infer this from the data.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1007', 1007)" onmouseover="showTip(event, '1007', 1007)">
+          <code onmouseout="hideTip(event, '1033', 1033)" onmouseover="showTip(event, '1033', 1033)">
             Create(arg1, arg2)
           </code>
-          <div class="tip" id="1007">
+          <div class="tip" id="1033">
             <strong>Signature:</strong> (seq&lt;&#39;K&gt; * Option&lt;bool&gt;) -&gt; IIndex&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/Index.fs#L201-201" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/Index.fs#L201-201" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -187,51 +184,48 @@ if the index keys are ordered or not. When the value is not set, the constructio
 should check and infer this from the data.</p>
 
 
-
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1008', 1008)" onmouseover="showTip(event, '1008', 1008)">
+          <code onmouseout="hideTip(event, '1034', 1034)" onmouseover="showTip(event, '1034', 1034)">
             DropItem(arg1, arg2)
           </code>
-          <div class="tip" id="1008">
+          <div class="tip" id="1034">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; * &#39;K) -&gt; SeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/Index.fs#L272-272" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/Index.fs#L272-272" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Drop an item associated with the specified key from the index.</p>
 
 
-
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1009', 1009)" onmouseover="showTip(event, '1009', 1009)">
+          <code onmouseout="hideTip(event, '1035', 1035)" onmouseover="showTip(event, '1035', 1035)">
             GetAddressRange(arg1, arg2)
           </code>
-          <div class="tip" id="1009">
+          <div class="tip" id="1035">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; * RangeRestriction&lt;Address&gt;) -&gt; SeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/Index.fs#L223-223" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/Index.fs#L223-223" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Create a new index that represents sub-range of an existing index.
-The range is specified as a pair of addresses, which means that it can be 
+The range is specified as a pair of addresses, which means that it can be
 used by operations such as "series.Take(5)" (which do not rely on keys)</p>
-
 
 
         </td>
@@ -239,23 +233,22 @@ used by operations such as "series.Take(5)" (which do not rely on keys)</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1010', 1010)" onmouseover="showTip(event, '1010', 1010)">
+          <code onmouseout="hideTip(event, '1036', 1036)" onmouseover="showTip(event, '1036', 1036)">
             GetRange(arg1, arg2)
           </code>
-          <div class="tip" id="1010">
+          <div class="tip" id="1036">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; * ((&#39;K * BoundaryBehavior) option * (&#39;K * BoundaryBehavior) option)) -&gt; SeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/Index.fs#L228-228" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/Index.fs#L228-228" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Create a new index that represents sub-range of an existing index. The range is specified
-as a pair of options (when <code>None</code>, the original left/right boundary should be used) 
+as a pair of options (when <code>None</code>, the original left/right boundary should be used)
 that contain boundary behavior and the boundary key.</p>
-
 
 
         </td>
@@ -263,23 +256,22 @@ that contain boundary behavior and the boundary key.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1011', 1011)" onmouseover="showTip(event, '1011', 1011)">
+          <code onmouseout="hideTip(event, '1037', 1037)" onmouseover="showTip(event, '1037', 1037)">
             GroupBy(index, keySelector, arg3)
           </code>
-          <div class="tip" id="1011">
+          <div class="tip" id="1037">
             <strong>Signature:</strong> (index:IIndex&lt;&#39;K&gt; * keySelector:(&#39;K -&gt; OptionalValue&lt;&#39;TNewKey&gt;) * VectorConstruction) -&gt; ReadOnlyCollection&lt;&#39;TNewKey * SeriesConstruction&lt;&#39;K&gt;&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'K, 'TNewKey          </div>
+                          <strong>Type parameters:</strong> 'K, 'TNewKey                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/Index.fs#L316-316" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/Index.fs#L316-316" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Group a (possibly unordered) index according to a provided sequence of labels.
-The operation results in a sequence of unique labels along with corresponding 
+The operation results in a sequence of unique labels along with corresponding
 series construction objects which can be applied to arbitrary vectors/columns.</p>
-
 
 
         </td>
@@ -287,16 +279,16 @@ series construction objects which can be applied to arbitrary vectors/columns.</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1012', 1012)" onmouseover="showTip(event, '1012', 1012)">
+          <code onmouseout="hideTip(event, '1038', 1038)" onmouseover="showTip(event, '1038', 1038)">
             Intersect(arg1, arg2)
           </code>
-          <div class="tip" id="1012">
+          <div class="tip" id="1038">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; * SeriesConstruction&lt;&#39;K&gt;) -&gt; IIndex&lt;&#39;K&gt; * VectorConstruction * VectorConstruction<br />
               <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/Index.fs#L240-240" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/Index.fs#L240-240" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -304,29 +296,27 @@ series construction objects which can be applied to arbitrary vectors/columns.</
 for both vectors that match the left and the right index.</p>
 
 
-
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1013', 1013)" onmouseover="showTip(event, '1013', 1013)">
+          <code onmouseout="hideTip(event, '1039', 1039)" onmouseover="showTip(event, '1039', 1039)">
             LookupLevel(arg1, arg2)
           </code>
-          <div class="tip" id="1013">
+          <div class="tip" id="1039">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; * ICustomLookup&lt;&#39;K&gt;) -&gt; SeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/Index.fs#L283-283" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/Index.fs#L283-283" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Get items associated with the specified key from the index. This method takes
-<code>ICustomLookup&lt;K&gt;</code> which provides an implementation of <code>ICustomKey&lt;K&gt;</code>. This 
+<code>ICustomLookup&lt;K&gt;</code> which provides an implementation of <code>ICustomKey&lt;K&gt;</code>. This
 is used for custom equality testing (for example, when getting a level of a hierarchical index)</p>
-
 
 
         </td>
@@ -334,25 +324,24 @@ is used for custom equality testing (for example, when getting a level of a hier
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1014', 1014)" onmouseover="showTip(event, '1014', 1014)">
+          <code onmouseout="hideTip(event, '1040', 1040)" onmouseover="showTip(event, '1040', 1040)">
             Merge(arg1, arg2)
           </code>
-          <div class="tip" id="1014">
+          <div class="tip" id="1040">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; list * VectorListTransform) -&gt; IIndex&lt;&#39;K&gt; * VectorConstruction<br />
               <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/Index.fs#L249-249" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/Index.fs#L249-249" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Append two indices and builds corresponding vector transformations
 for both vectors that match the left and the right index. If the indices
 are ordered, the ordering should be preserved (the keys should be aligned).
-The specified <code>VectorListTransform</code> defines how to deal with the case when
+The specified <a href="deedle-vectors-vectorlisttransform.html" title="VectorListTransform"><code>VectorListTransform</code></a> defines how to deal with the case when
 a key is defined in both indices (i.e. which value should be in the new vector).</p>
-
 
 
         </td>
@@ -360,46 +349,44 @@ a key is defined in both indices (i.e. which value should be in the new vector).
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1015', 1015)" onmouseover="showTip(event, '1015', 1015)">
+          <code onmouseout="hideTip(event, '1041', 1041)" onmouseover="showTip(event, '1041', 1041)">
             OrderIndex(arg1)
           </code>
-          <div class="tip" id="1015">
+          <div class="tip" id="1041">
             <strong>Signature:</strong> SeriesConstruction&lt;&#39;K&gt; -&gt; SeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/Index.fs#L286-286" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/Index.fs#L286-286" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Order (possibly unordered) index and return transformation that reorders vector</p>
 
 
-
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1016', 1016)" onmouseover="showTip(event, '1016', 1016)">
+          <code onmouseout="hideTip(event, '1042', 1042)" onmouseover="showTip(event, '1042', 1042)">
             Project(arg1)
           </code>
-          <div class="tip" id="1016">
+          <div class="tip" id="1042">
             <strong>Signature:</strong> IIndex&lt;&#39;K&gt; -&gt; IIndex&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/Index.fs#L213-213" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/Index.fs#L213-213" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>When we perform some projection on the vector (<code>Select</code> or <code>Convert</code>), then we may also
-need to perform some transformation on the index (because it may turn delayed index 
-into an evaluated index). If the vector operation does that, then <code>Project</code> should do the 
+          <p>When we perform some projection on the vector (<code>Select</code> or <a href="deedle-internal-convert.html" title="Convert"><code>Convert</code></a>), then we may also
+need to perform some transformation on the index (because it may turn delayed index
+into an evaluated index). If the vector operation does that, then <code>Project</code> should do the
 same (e.g. evaluate) on the index.</p>
-
 
 
         </td>
@@ -407,16 +394,16 @@ same (e.g. evaluate) on the index.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1017', 1017)" onmouseover="showTip(event, '1017', 1017)">
+          <code onmouseout="hideTip(event, '1043', 1043)" onmouseover="showTip(event, '1043', 1043)">
             Recreate(arg1)
           </code>
-          <div class="tip" id="1017">
+          <div class="tip" id="1043">
             <strong>Signature:</strong> IIndex&lt;&#39;K&gt; -&gt; IIndex&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/Index.fs#L218-218" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/Index.fs#L218-218" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -425,61 +412,57 @@ vector and we may need to perform the same transformation on the index. This is 
 to <code>Project</code>, but used in different scenarios.</p>
 
 
-
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1018', 1018)" onmouseover="showTip(event, '1018', 1018)">
+          <code onmouseout="hideTip(event, '1044', 1044)" onmouseover="showTip(event, '1044', 1044)">
             Reindex(arg1, arg2, arg3, arg4, arg5)
           </code>
-          <div class="tip" id="1018">
+          <div class="tip" id="1044">
             <strong>Signature:</strong> (IIndex&lt;&#39;K&gt; * IIndex&lt;&#39;K&gt; * Lookup * VectorConstruction * (Address -&gt; bool)) -&gt; VectorConstruction<br />
               <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/Index.fs#L262-262" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/Index.fs#L262-262" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Given an old index and a new index, build a vector transformation that reorders
 elements from a vector associated with the old index so that they match the new
-index. When finding element location in the new index, the provided <code>Lookup</code> strategy
+index. When finding element location in the new index, the provided <a href="deedle-lookup.html" title="Lookup"><code>Lookup</code></a> strategy
 is used. This is used, for example, when doing left/right join (to align the new data
 with another index) or when selecting multiple keys (<code>Series.lookupAll</code>).</p>
-
 <p>The proivded <code>condition</code> is used when searching for a value in the old index
 (when lookup is not exact). It is called to check that the address contains an
 appropriate value (e.g. when we need to skip over missing values).</p>
 
 
-
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1019', 1019)" onmouseover="showTip(event, '1019', 1019)">
+          <code onmouseout="hideTip(event, '1045', 1045)" onmouseover="showTip(event, '1045', 1045)">
             Resample(...)
           </code>
-          <div class="tip" id="1019">
+          <div class="tip" id="1045">
             <strong>Signature:</strong> (IIndexBuilder * IIndex&lt;&#39;K&gt; * seq&lt;&#39;K&gt; * Direction * source:VectorConstruction * selector:(&#39;K * SeriesConstruction&lt;&#39;K&gt; -&gt; &#39;TNewKey * OptionalValue&lt;&#39;R&gt;)) -&gt; IIndex&lt;&#39;TNewKey&gt; * IVector&lt;&#39;R&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'K, 'TNewKey, 'R          </div>
+                          <strong>Type parameters:</strong> 'K, 'TNewKey, 'R                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/Index.fs#L324-324" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/Index.fs#L324-324" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Aggregate data into non-overlapping chunks by aligning them to the
 specified keys. The second parameter specifies the direction. If it is
-<code>Direction.Forward</code> than the key is the first element of a chunk; for 
-<code>Direction.Backward</code>, the key is the last element (note that this does not 
+<code>Direction.Forward</code> than the key is the first element of a chunk; for
+<code>Direction.Backward</code>, the key is the last element (note that this does not
 hold at the boundaries where values before/after the key may also be included)</p>
-
 
 
         </td>
@@ -487,58 +470,55 @@ hold at the boundaries where values before/after the key may also be included)</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1020', 1020)" onmouseover="showTip(event, '1020', 1020)">
+          <code onmouseout="hideTip(event, '1046', 1046)" onmouseover="showTip(event, '1046', 1046)">
             Search(arg1, arg2, arg3)
           </code>
-          <div class="tip" id="1020">
+          <div class="tip" id="1046">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; * IVector&lt;&#39;V&gt; * &#39;V) -&gt; SeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'K, 'V          </div>
+                          <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/Index.fs#L277-277" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/Index.fs#L277-277" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Get a series construction that restricts the range of the input to only 
+          <p>Get a series construction that restricts the range of the input to only
 locations where the specified vector contains the specified value.
 (used to filter frame rows according to a column value)</p>
 
 
-
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1021', 1021)" onmouseover="showTip(event, '1021', 1021)">
+          <code onmouseout="hideTip(event, '1047', 1047)" onmouseover="showTip(event, '1047', 1047)">
             Shift(arg1, arg2)
           </code>
-          <div class="tip" id="1021">
+          <div class="tip" id="1047">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; * int) -&gt; SeriesConstruction&lt;&#39;K&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/Index.fs#L296-296" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/Index.fs#L296-296" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Shift the values in the series by a specified offset, in a specified direction.
 The resulting series should be shorter by abs(offset); key for which there is no
 value should be dropped. For example:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp">(<span class="i">original</span>)  (<span class="i">shift</span> <span class="n">1</span>) (<span class="i">shift</span> <span class="o">-</span><span class="n">1</span>)
-<span class="i">a</span> <span class="i">b</span> <span class="i">c</span>       _ <span class="i">b</span> <span class="i">c</span>     <span class="i">a</span> <span class="i">b</span> _
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="pn">(</span><span class="id">original</span><span class="pn">)</span>  <span class="pn">(</span><span class="id">shift</span> <span class="n">1</span><span class="pn">)</span> <span class="pn">(</span><span class="id">shift</span> <span class="o">-</span><span class="n">1</span><span class="pn">)</span>
+<span class="id">a</span> <span class="id">b</span> <span class="id">c</span>       <span class="id">_</span> <span class="id">b</span> <span class="id">c</span>     <span class="id">a</span> <span class="id">b</span> <span class="id">_</span>
 <span class="n">1</span> <span class="n">2</span> <span class="n">3</span>         <span class="n">1</span> <span class="n">2</span>     <span class="n">1</span> <span class="n">2</span>
 </code></pre></td>
 </tr>
 </table>
-
 
 
         </td>
@@ -546,16 +526,16 @@ value should be dropped. For example:</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1022', 1022)" onmouseover="showTip(event, '1022', 1022)">
+          <code onmouseout="hideTip(event, '1048', 1048)" onmouseover="showTip(event, '1048', 1048)">
             Union(arg1, arg2)
           </code>
-          <div class="tip" id="1022">
+          <div class="tip" id="1048">
             <strong>Signature:</strong> (SeriesConstruction&lt;&#39;K&gt; * SeriesConstruction&lt;&#39;K&gt;) -&gt; IIndex&lt;&#39;K&gt; * VectorConstruction * VectorConstruction<br />
               <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/Index.fs#L234-234" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/Index.fs#L234-234" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -563,28 +543,26 @@ value should be dropped. For example:</p>
 for both vectors that match the left and the right index.</p>
 
 
-
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1023', 1023)" onmouseover="showTip(event, '1023', 1023)">
+          <code onmouseout="hideTip(event, '1049', 1049)" onmouseover="showTip(event, '1049', 1049)">
             WithIndex(arg1, arg2, arg3)
           </code>
-          <div class="tip" id="1023">
+          <div class="tip" id="1049">
             <strong>Signature:</strong> (IIndex&lt;&#39;K&gt; * IVector&lt;&#39;TNewKey&gt; * VectorConstruction) -&gt; SeriesConstruction&lt;&#39;TNewKey&gt;<br />
               <strong>Modifiers:</strong> abstract<br />
-                          <strong>Type parameters:</strong> 'K, 'TNewKey          </div>
+                          <strong>Type parameters:</strong> 'K, 'TNewKey                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Indices/Index.fs#L267-267" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/Index.fs#L267-267" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Create a new index by picking a new key value for each key in the original index
 (used e.g. when we have a frame and want to use specified column as a new index).</p>
-
 
 
         </td>
@@ -594,61 +572,61 @@ for both vectors that match the left and the right index.</p>
 
         </div>
         <div class="span3">
-          <a href="http://bluemountaincapital.github.io/Deedle/index.html">
-            <img src="http://bluemountaincapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          <a href="http://fslab.org/Deedle/index.html">
+            <img src="http://fslab.org/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
           <ul class="nav nav-list" id="menu">
             <li class="nav-header">Deedle</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/index.html">Home page</a></li>
+            <li><a href="http://fslab.org/Deedle/index.html">Home page</a></li>
             <li class="divider"></li>
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/design.html">Design notes</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
+            <li><a href="http://fslab.org/Deedle/design.html">Design notes</a></li>
             <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
             
             <li class="nav-header">Using from F#</li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
+              <a href="http://fslab.org/Deedle/tutorial.html">Quick start tutorial</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/series.html">Working with time series</a>
+              <a href="http://fslab.org/Deedle/series.html">Working with time series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/frame.html">Working with data frames</a>
+              <a href="http://fslab.org/Deedle/frame.html">Working with data frames</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/stats.html">Statistics &amp; calculations</a>
+              <a href="http://fslab.org/Deedle/stats.html">Statistics &amp; calculations</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using Deedle with R</a>
+              <a href="http://fslab.org/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/csharpintro.html">Getting started</a></li>
+            <li><a href="http://fslab.org/Deedle/csharpintro.html">Getting started</a></li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html">Working with data series</a>
+              <a href="http://fslab.org/Deedle/csharpseries.html">Working with data series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html">Working with data frames</a>
+              <a href="http://fslab.org/Deedle/csharpframe.html">Working with data frames</a>
             </li>
 
             <li class="nav-header">Documentation</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/index.html">API Reference</a></li>
             <li class="divider"></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-stats.html">Stats module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-stats.html">Stats module</a></li>
 
             <li class="nav-header">Samples</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="http://fslab.org/Deedle/lazysource.html">Lazy data loading</a></li>
           </ul>
         </div>
       </div>
     </div>
-    <a href="http://github.com/BlueMountainCapital/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <a href="http://github.com/fslaborg/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
     <script>
       (function (i, s, o, g, r, a, m) {
         i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {

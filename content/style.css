@@ -1,7 +1,7 @@
 @import url(https://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans+Mono|Open+Sans:400,600,700);
 
-/*-------------------------------------------------------------------------- 
-  Formatting for F# code snippets 
+/*--------------------------------------------------------------------------
+  Formatting for F# code snippets
 /*--------------------------------------------------------------------------*/
 
 /* strings --- and stlyes for other string related formats */
@@ -12,14 +12,31 @@ span.pf { color:#E0C57F; }
 span.e { color:#EA8675; }
 
 /* identifiers --- and styles for more specific identifier types */
-span.i { color:#d1d1d1; }
-/* type or module */
-span.t { color:#43AEC6; }
+span.id { color:#d1d1d1; }
+/* module */
+span.m { color:#43AEC6; }
+/* reference type */
+span.rt { color:#43AEC6; }
+/* value type */
+span.vt { color:#43AEC6; }
+/* interface */
+span.if{ color:#43AEC6; }
+/* type argument */
+span.ta { color:#43AEC6; }
+/* disposable */
+span.d { color:#43AEC6; }
+/* property */
+span.prop { color:#43AEC6; }
+/* punctuation */
+span.p { color:#43AEC6; }
 /* function */
 span.f { color:#e1e1e1; }
-/* DU case or active pattern */
-span.p { color:#4ec9b0; }
-
+/* active pattern */
+span.pat { color:#4ec9b0; }
+/* union case */
+span.u { color:#4ec9b0; }
+/* enumeration */
+span.e { color:#4ec9b0; }
 /* keywords */
 span.k { color:#FAB11D; }
 /* comment */
@@ -40,7 +57,7 @@ span.prep { color:#af75c1; }
 span.fsi { color:#808080; }
 
 /* omitted */
-span.omitted { 
+span.omitted {
 	background:#3c4e52;
   border-radius:5px;
 	color:#808080;
@@ -54,12 +71,13 @@ div.tip {
 	padding:6px 8px 6px 8px;
 	display:none;
   color:#d1d1d1;
+  pointer-events:none;
 }
 table.pre pre {
   padding:0px;
   margin:0px;
   border:none;
-} 
+}
 table.pre, pre.fssnip, pre {
   line-height:13pt;
   border:1px solid #d8d8d8;
@@ -71,7 +89,8 @@ table.pre, pre.fssnip, pre {
   background-color:#212d30;
   padding:10px;
   border-radius:5px;
-  color:#d1d1d1;  
+  color:#d1d1d1;
+  max-width: none;
 }
 pre.fssnip code {
   font: 9pt 'Droid Sans Mono',consolas,monospace;
@@ -91,7 +110,7 @@ table.pre td.lines {
   width:30px;
 }
 
-/*-------------------------------------------------------------------------- 
+/*--------------------------------------------------------------------------
   Formatting for page & standard document content
 /*--------------------------------------------------------------------------*/
 
@@ -159,7 +178,7 @@ td.title, thead {
 #main li { font-size: 11pt; margin: 5px 0px 5px 0px; }
 #main strong { font-weight:700; }
 
-/*-------------------------------------------------------------------------- 
+/*--------------------------------------------------------------------------
   Formatting for API reference
 /*--------------------------------------------------------------------------*/
 
@@ -191,8 +210,8 @@ td.title, thead {
 .github-link .normal { display: block; }
 .github-link:hover .normal { display: none; }
 
-/*-------------------------------------------------------------------------- 
-  Links 
+/*--------------------------------------------------------------------------
+  Links
 /*--------------------------------------------------------------------------*/
 
 h1 a, h1 a:hover, h1 a:focus,
@@ -202,14 +221,14 @@ h4 a, h4 a:hover, h4 a:focus,
 h5 a, h5 a:hover, h5 a:focus,
 h6 a, h6 a:hover, h6 a:focus { color : inherit; text-decoration : inherit; outline:none }
 
-/*-------------------------------------------------------------------------- 
-  Additional formatting for the homepage 
+/*--------------------------------------------------------------------------
+  Additional formatting for the homepage
 /*--------------------------------------------------------------------------*/
 
-#nuget { 
+#nuget {
   margin-top:20px;
-  font-size: 11pt; 
-  padding:20px; 
+  font-size: 11pt;
+  padding:20px;
 }
 
 #nuget pre {

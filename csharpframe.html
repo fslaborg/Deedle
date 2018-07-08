@@ -6,7 +6,7 @@
 </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Easy to use .NET library for data manipulation and scientific programming">
-    <meta name="author" content="BlueMountain Capital">
+    <meta name="author" content="BlueMountain Capital, FsLab.Org">
 
     <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
     <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
@@ -14,9 +14,9 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
-    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/style.css" />
-    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/deedle.css" />
-    <script type="text/javascript" src="http://bluemountaincapital.github.io/Deedle/content/tips.js"></script>
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/deedle.css" />
+    <script type="text/javascript" src="http://fslab.org/Deedle/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -27,61 +27,60 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fslab.org/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
           <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
-        <h3 class="muted"><a href="http://bluemountaincapital.github.io/Deedle/index.html">Deedle</a></h3>
+        <h3 class="muted"><a href="http://fslab.org/Deedle/index.html">Deedle</a></h3>
       </div>
       <hr />
       <div class="row">
         <div class="span9" id="main">
           
 <h1><a name="Data-frame-manipulation-in-C" class="anchor" href="#Data-frame-manipulation-in-C">Data frame manipulation in C#</a></h1>
-
 <p>In this section, we look at working with Deedle data frame. Data frame lets you manipulate and
 analyze data consisting of multiple features (properties) with multiple observations (records).
 You can think of data frame as a data table or a spreadsheet. When working with data frames, you'll
 often need to work on individual series (either rows or columns) of the frame, so it is recommended
 to look at the <a href="csharpseries.html">page discussing series</a> first.</p>
-
-<p>You can also get the samples on this page as a 
-<a href="https://github.com/BlueMountainCapital/Deedle/blob/master/docs/csharp/Frame.cs">C# source file</a>
+<p>You can also get the samples on this page as a
+<a href="https://github.com/fslaborg/Deedle/blob/master/docs/csharp/Frame.cs">C# source file</a>
 from GitHub and run the samples.</p>
-
 <a name="understanding"></a>
-
 <h2><a name="What-is-a-data-frame" class="anchor" href="#What-is-a-data-frame">What is a data frame</a></h2>
-
 <ul>
-<li><p><strong>Row and column key to values</strong> - data frame is represented using a type <code>Frame&lt;TRowKey, TColKey&gt;</code> and
+<li>
+<p><strong>Row and column key to values</strong> - data frame is represented using a type <code>Frame&lt;TRowKey, TColKey&gt;</code> and
 you can view it as a mapping from row and column keys to values. Note that the values in data frame can
 be heterogeneous and Deedle does not track this information statically - when accessing column/row, you
 need to explicitly specify the type of values you want to get (although Deedle makes this easier when
-you work with numeric data).</p></li>
-<li><p><strong>Typical uses</strong> - although you can use any type for column and row keys, the typical use is having column 
+you work with numeric data).</p>
+</li>
+<li>
+<p><strong>Typical uses</strong> - although you can use any type for column and row keys, the typical use is having column
 keys of type <code>string</code> representing different (named) properties and row keys of type <code>int</code> (unique IDs)
-or <code>DateTimeOffset</code> for time series data.</p></li>
-<li><p><strong>Series collection</strong> - another way to look at data frame is that it is a collection of series with 
+or <code>DateTimeOffset</code> for time series data.</p>
+</li>
+<li>
+<p><strong>Series collection</strong> - another way to look at data frame is that it is a collection of series with
 the same (row) index. This is also how frames are represented internally, so using this intuition will
 probably lead you to faster and more idiomatic code. For example, you can store multiple series with
-different stock prices in a data frame and they will all be aligned to the same (row) index.</p></li>
-<li><p><strong>Limited mutability</strong> - the internal data structures of data frame are immutable (i.e. series and a type
+different stock prices in a data frame and they will all be aligned to the same (row) index.</p>
+</li>
+<li>
+<p><strong>Limited mutability</strong> - the internal data structures of data frame are immutable (i.e. series and a type
 representing indices). However, when working with data frame, you can mutate the frame and add/remove
 columns. When adding column, a new index is created and local field of the frame pointing to the index is
 updated, but no data series or indices (that may be shared by other types) are changed.
-This makes research-style operations more convenient and makes the library more practical.</p></li>
+This makes research-style operations more convenient and makes the library more practical.</p>
+</li>
 </ul>
-
 <a name="creating"></a>
-
 <h2><a name="Creating-and-loading-data-frames" class="anchor" href="#Creating-and-loading-data-frames">Creating and loading data frames</a></h2>
-
 <p>Let's start with a number of examples showing how to create data frames. The most common scenario is that you
-already have some code that reads the data - perhaps from a database or some other source - and you want 
+already have some code that reads the data - perhaps from a database or some other source - and you want
 to convert it to data frame. Any collection of .NET objects can be turned to data frame using <code>Frame.FromRecords</code>:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -93,17 +92,15 @@ to convert it to data frame. Any collection of .NET objects can be turned to dat
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Create a collection of anonymous types</span>
 <span class="k">var</span> rnd <span class="o">=</span> <span class="k">new</span> Random();
-<span class="k">var</span> objects <span class="o">=</span> Enumerable.Range(0, 10).Select(i <span class="o">=</span><span class="o">&gt;</span>
+<span class="k">var</span> objects <span class="o">=</span> Enumerable.Range(<span class="n">0</span>, <span class="n">10</span>).Select(i <span class="o">=</span><span class="o">&gt;</span>
   <span class="k">new</span> { Key <span class="o">=</span> <span class="s">"ID_"</span> <span class="o">+</span> i.ToString(), Number <span class="o">=</span> rnd.Next() });
 
 <span class="c">// Create data frame with properties as column names</span>
 <span class="k">var</span> dfObjects <span class="o">=</span> Frame.FromRecords(objects);
 dfObjects.Print();</code></pre></td></tr></table>
-
 <p>In this sample, we use simple LINQ construction to generate collection with anonymous types containing properties
 <code>Key</code> and <code>Number</code>. The <code>FromRecords</code> method uses reflection to get public readable properties of the type and
 so the result of the <code>Print</code> method looks as follows:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -116,12 +113,10 @@ so the result of the <code>Print</code> method looks as follows:</p>
 2 -&gt; ID_2  1777994880
 (...)
 </code></pre></td></tr></table>
-
-<p>As an alternative, you can also construct data frame by generating a collection of explicitly created rows. 
-A row is just a series of type <code>Series&lt;TColKey, TValue&gt;</code> so you can use any of the techniques described in 
+<p>As an alternative, you can also construct data frame by generating a collection of explicitly created rows.
+A row is just a series of type <code>Series&lt;TColKey, TValue&gt;</code> so you can use any of the techniques described in
 <a href="csharpseries.html#creating">creating series</a>. Here, we use <code>SeriesBuilder&lt;string&gt;</code> which is the easiest way
 to create series imperatively by adding columns:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
@@ -137,21 +132,19 @@ to create series imperatively by adding columns:</p>
 <span class="l">13: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Generate collection of rows</span>
-<span class="k">var</span> rows <span class="o">=</span> Enumerable.Range(0, 100).Select(i <span class="o">=</span><span class="o">&gt;</span> {
+<span class="k">var</span> rows <span class="o">=</span> Enumerable.Range(<span class="n">0</span>, <span class="n">100</span>).Select(i <span class="o">=</span><span class="o">&gt;</span> {
   <span class="c">// Build each row using series builder &amp; return </span>
   <span class="c">// KeyValue representing row key with row data</span>
   <span class="k">var</span> sb <span class="o">=</span> <span class="k">new</span> SeriesBuilder&lt;<span class="k">string</span>&gt;();
   sb.Add(<span class="s">"Index"</span>, i);
-  sb.Add(<span class="s">"Sin"</span>, Math.Sin(i <span class="o">/</span> 100.0));
-  sb.Add(<span class="s">"Cos"</span>, Math.Cos(i <span class="o">/</span> 100.0));
+  sb.Add(<span class="s">"Sin"</span>, Math.Sin(i <span class="o">/</span> <span class="n">100.0</span>));
+  sb.Add(<span class="s">"Cos"</span>, Math.Cos(i <span class="o">/</span> <span class="n">100.0</span>));
   <span class="k">return</span> KeyValue.Create(i, sb.Series); 
 });
 
 <span class="c">// Turn sequence of row information into data frame</span>
 <span class="k">var</span> df <span class="o">=</span> Frame.FromRows(rows);</code></pre></td></tr></table>
-
 <p>Finally, you can also easily load data frames from a CSV file. The <code>Frame.ReadCsv</code> function</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -159,12 +152,10 @@ to create series imperatively by adding columns:</p>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Read MSFT &amp; FB stock prices from a CSV file</span>
 <span class="k">var</span> msftRaw <span class="o">=</span> Frame.ReadCsv(Path.Combine(root, <span class="s">"../data/stocks/msft.csv"</span>));
 <span class="k">var</span> fbRaw <span class="o">=</span> Frame.ReadCsv(Path.Combine(root, <span class="s">"../data/stocks/fb.csv"</span>));</code></pre></td></tr></table>
-
 <p>The function automatically recognizes the names of columns (if the CSV file does not have headers, you can
 specify optional parameter <code>hasHeaders:false</code>). It also infers the type of values, so that you can later work
 with numeric columns in a standard way. Here, we are reading Yahoo stock prices, so the resulting frame looks
 as follows:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -181,20 +172,15 @@ as follows:</p>
 6973 -&gt; 1986-03-14 28.00 29.50 28.00 29.00 308160000  0.07
 6974 -&gt; 1986-03-13 25.50 29.25 25.50 28.00 1031788800 0.07
 </code></pre></td></tr></table>
-
 <a name="indices"></a>
-
 <h2><a name="Working-with-row-and-column-indices" class="anchor" href="#Working-with-row-and-column-indices">Working with row and column indices</a></h2>
-
 <p>Reading data from CSV file or from .NET objects typically gives us data frame <code>Frame&lt;int, string&gt;</code> where the
-rows are indexed by <code>int</code> (representing the number of the row) and columns are names (<code>string</code> values). 
-When we want to combine data from multiple data sources or perform some further processing, this is not 
+rows are indexed by <code>int</code> (representing the number of the row) and columns are names (<code>string</code> values).
+When we want to combine data from multiple data sources or perform some further processing, this is not
 always what we need.</p>
-
-<p>For example, for the MSFT and FB stock prices, we want the row index to be <code>DateTime</code> (so that we can 
+<p>For example, for the MSFT and FB stock prices, we want the row index to be <code>DateTime</code> (so that we can
 align the prices based on dates) and we also need to order the rows (because aligning that we'll do in
 the next step is only allowed on ordered frames and series):</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -210,19 +196,15 @@ the next step is only allowed on ordered frames and series):</p>
 <span class="c">// And rename columns to avoid overlap</span>
 msft.RenameColumns(s <span class="o">=</span><span class="o">&gt;</span> <span class="s">"Msft"</span> <span class="o">+</span> s);
 fb.RenameColumns(s <span class="o">=</span><span class="o">&gt;</span> <span class="s">"Fb"</span> <span class="o">+</span> s);</code></pre></td></tr></table>
-
 <p>The <code>IndexRows&lt;T&gt;(..)</code> method takes the name of the column that we want to use as an index and it also takes
 a type parameter <code>T</code> that specifies the type of the column (because this is not statically known). We use
 <code>DateTime</code> and benefit from the fact that the CSV reader already recognized the column type. Next, we sort
 the entire data frame by the new row index using <code>OrderRows</code>.</p>
-
 <p>The second part of the snippet renames the columns (using a mutating <code>RenameSeries</code> operation) so that the
 column name includes the name of the company. We need this, because we later want to join the two data frames
 and that is only possible when column keys do not overlap.</p>
-
 <p>Before looking at the joining, let's look at one more example of loading data from a CSV file. This time,
 the source file has ordered rows, but has poor header names, so we reanme the column names:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -236,11 +218,9 @@ the source file has ordered rows, but has poor header names, so we reanme the co
 <span class="k">var</span> debtByYear <span class="o">=</span> debt
   .IndexRows&lt;<span class="k">int</span>&gt;(<span class="s">"Year"</span>)
   .IndexColumnsWith(<span class="k">new</span>[] { <span class="s">"Year"</span>, <span class="s">"GDP"</span>, <span class="s">"Population"</span>, <span class="s">"Debt"</span>, <span class="s">"?"</span> });</code></pre></td></tr></table>
-
 <p>The <code>IndexColumnsWith</code> method takes a collection of names - here, we use C# array expression to specify
 the names explicitly. Note that the names do not have to be <code>string</code> values. It is perfectly fine to use
 other types as column indices. The resulting data set looks as follows:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -255,20 +235,15 @@ other types as column indices. The resulting data set looks as follows:</p>
 2013 -&gt; 2013 16202.7 316.847    124.84 g
 2014 -&gt; 2014 17011.4 319.594    125.16 g
 </code></pre></td></tr></table>
-
 <a name="joining"></a>
-
 <h2><a name="Joining-and-aligning-data-frames" class="anchor" href="#Joining-and-aligning-data-frames">Joining and aligning data frames</a></h2>
-
 <p>A common scenario is when you have multiple data sets from different data sources and want to join
 them into a single data frame. For example, we earlier loaded stock prices for Microsoft and Facebook
 into two data frames named <code>msft</code> and <code>fb</code>. To align the data, we can use one of the overloads of the
 <code>Join</code> method.</p>
-
 <p>The two data frames share the same keys (<code>DateTime</code> representing trading days), but their ranges
-are different, because we have more historical data for Microsoft. We can perform <em>inner</em> or 
+are different, because we have more historical data for Microsoft. We can perform <em>inner</em> or
 <em>outer</em> join as follows:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -278,16 +253,13 @@ are different, because we have more historical data for Microsoft. We can perfor
 <span class="k">var</span> joinIn <span class="o">=</span> msft.Join(fb, JoinKind.Inner);
 <span class="c">// Outer join (take union &amp; fill with missing)</span>
 <span class="k">var</span> joinOut <span class="o">=</span> msft.Join(fb, JoinKind.Outer);</code></pre></td></tr></table>
-
 <p>When using inner join, the resulting data frame will contain only keys that are available in both
-of the source frames. On the other hand, outer join takes the union of the keys and marks all 
+of the source frames. On the other hand, outer join takes the union of the keys and marks all
 other values as missing. Note that the column keys of the two joined frames need to be distinct
 - we guaranteed this earlier by calling <code>RenameSeries</code>.</p>
-
 <p>Another option that is available lets you align (and join) two ordered data frames where the keys
 do not exactly match. The following snippet demonstrates this by shifting one of the data frames
 by 1 hour (the keys are always at 12:00am, representing just time)</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
@@ -300,7 +272,7 @@ by 1 hour (the keys are always at 12:00am, representing just time)</p>
 <span class="l">10: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Shift MSFT observations by +1 hour for testing</span>
-<span class="k">var</span> msftShift <span class="o">=</span> msft.SelectRowKeys(k <span class="o">=</span><span class="o">&gt;</span> k.Key.AddHours(1.0));
+<span class="k">var</span> msftShift <span class="o">=</span> msft.SelectRowKeys(k <span class="o">=</span><span class="o">&gt;</span> k.Key.AddHours(<span class="n">1.0</span>));
 
 <span class="c">// MSFT data are missing because keys do not match</span>
 <span class="k">var</span> joinLeftWrong <span class="o">=</span> fb.Join(msftShift, JoinKind.Left);
@@ -309,27 +281,21 @@ by 1 hour (the keys are always at 12:00am, representing just time)</p>
 <span class="c">// (that is, for the nearest earlier time with value)</span>
 <span class="k">var</span> joinLeft <span class="o">=</span> fb.Join(msftShift, JoinKind.Left, Lookup.ExactOrSmaller);
 joinLeft.Print();</code></pre></td></tr></table>
-
 <p>After calculating the <code>msftShift</code> frame, we first try using just an ordinary left join. This should
 align data from the right frame to the keys in the left data frame (<code>fb</code>). However, this produces
 frame where all Microsoft values are missing, because the frame does not contain any data for exactly
 the same keys.</p>
-
 <p>The problem can be easily solved by using overload that takes <code>Lookup</code> - using <code>Lookup.NearestSmaller</code>,
-we specify that, for a given key, the join operation should find the nearest available value with a 
+we specify that, for a given key, the join operation should find the nearest available value with a
 smaller key. So for example, given a key 12:00am at 23 January 2012 (in the <code>fb</code> frame), the operation
 will find values for a key 1:00am at 22 January 2012 (because this is the nearest smaller key with
 a value). You can also use <code>Lookup.NearestGreater</code> to search in the opposite direction.</p>
-
 <a name="data"></a>
-
 <h2><a name="Accessing-data-and-series-operations" class="anchor" href="#Accessing-data-and-series-operations">Accessing data and series operations</a></h2>
-
 <p>Now that we looked at loading (or generating) data and combining data from multiple data sources,
 let's look how we can obtain data from the data frame. First, we look at getting data for a specified
 column - this allows you to get <code>Series&lt;K, V&gt;</code> where <code>K</code> is the row key and <code>V</code> is a type of values
 in the series. When getting a series, you need to specify the required type of values:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -339,15 +305,12 @@ in the series. When getting a series, you need to specify the required type of v
 <span class="k">var</span> msOpen <span class="o">=</span> joinIn.GetColumn&lt;<span class="k">double</span>&gt;(<span class="s">"MsftOpen"</span>);
 <span class="k">var</span> msClose <span class="o">=</span> joinIn.GetColumn&lt;<span class="k">double</span>&gt;(<span class="s">"MsftClose"</span>);
 <span class="k">var</span> msDiff <span class="o">=</span> msClose <span class="o">-</span> msOpen;</code></pre></td></tr></table>
-
 <p>Here, we get values as <code>double</code> (which matches with the internal representation), however data frame
 will attempt to automatically convert the data to the specified type, so we could get the series as
 a series of <code>decimal</code> or <code>single</code> values.</p>
-
 <p>The last line calculates the difference between opening and closing price. We can perform a few more
 mutations on the original data frame and remove two series we do not use (using <code>DropSeries</code>) and
 add the difference as a new series (using <code>AddSeries</code>):</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -363,14 +326,11 @@ joinIn.DropColumn(<span class="s">"FbAdj Close"</span>);
 <span class="c">// Add new series to a frame</span>
 joinIn.AddColumn(<span class="s">"MsftDiff"</span>, msDiff);
 joinIn.Print();</code></pre></td></tr></table>
-
 <p>For more information about working with series, see <a href="csharpseries.html">tutorial on working with series</a>.
 Working with series is very common, so the data frame provides the operations discussed above. However,
 you can also work with columns and rows of the frame (more generally) using the <code>Rows</code> and <code>Columns</code>
 properties.</p>
-
 <p>The following example shows different options for getting row representing a specified date:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
@@ -385,42 +345,35 @@ properties.</p>
 <span class="l">12: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Get row and then look at row properties</span>
-<span class="k">var</span> row <span class="o">=</span> joinIn.Rows[<span class="k">new</span> DateTime(2013, 1, 4)];
+<span class="k">var</span> row <span class="o">=</span> joinIn.Rows[<span class="k">new</span> DateTime(<span class="n">2013</span>, <span class="n">1</span>, <span class="n">4</span>)];
 <span class="k">var</span> msLo <span class="o">=</span> row.GetAs&lt;<span class="k">double</span>&gt;(<span class="s">"MsftLow"</span>);
 <span class="k">var</span> msHi <span class="o">=</span> row.GetAs&lt;<span class="k">double</span>&gt;(<span class="s">"MsftHigh"</span>);
 
 <span class="c">// Get row for the first available value after</span>
 <span class="c">// the specified key (1 January 2013)</span>
-<span class="k">var</span> firstJan <span class="o">=</span> joinIn.Rows.Get(<span class="k">new</span> DateTime(2013, 1, 1), 
+<span class="k">var</span> firstJan <span class="o">=</span> joinIn.Rows.Get(<span class="k">new</span> DateTime(<span class="n">2013</span>, <span class="n">1</span>, <span class="n">1</span>), 
   Lookup.ExactOrGreater);
 
 <span class="c">// Get value for a specified column &amp; row keys</span>
-<span class="k">var</span> diff <span class="o">=</span> joinIn[<span class="s">"MsftDiff"</span>, <span class="k">new</span> DateTime(2013, 1, 4)];</code></pre></td></tr></table>
-
+<span class="k">var</span> diff <span class="o">=</span> joinIn[<span class="s">"MsftDiff"</span>, <span class="k">new</span> DateTime(<span class="n">2013</span>, <span class="n">1</span>, <span class="n">4</span>)];</code></pre></td></tr></table>
 <p>We start by using indexer on <code>joinIn.Rows</code>. This can be used when the exact key (here January 4)
 exists in the data frame. The result is a series containing <code>object</code> values, because the contents
 of a row is often heterogeneous. To get a specified column, you can use <code>GetAs</code>, which casts the
 value to a specified type. You can access columns similarly using <code>joinIn.Columns</code>.</p>
-
 <p>The second part of the snippet shows the <code>Get</code> method, which behaves similarly to the indexer,
 but has an additional parameter that can be used to specify <code>Lookup</code>. Similarly to joining, this
 can be used (on an ordered frame) to find the nearest available value when the exact key is not
 present (or has no value).</p>
-
 <p>Finally, the data frame also supports indexer directly, which can be used to get a numeric value
 for a given pair of row and column keys. This is just a useful shortcut that can be used instead
 of the indexer and <code>GetAs</code> when you need to obtain a numeric value for a fixed pair of keys.</p>
-
 <a name="linq"></a>
-
 <h2><a name="LINQ-to-data-frame" class="anchor" href="#LINQ-to-data-frame">LINQ to data frame</a></h2>
-
 <p>The type representing a collection of rows and columns (obtained using <code>df.Rows</code> and <code>df.Columns</code>)
 implements some of the well-known LINQ operations. These can be used to transform data in the
-frame or filter the contents. The <code>Select</code> operation can be used when you need to perform some 
+frame or filter the contents. The <code>Select</code> operation can be used when you need to perform some
 operation that is not directly available on series. For example, to perform point-wise comparison
 of Microsoft and Facebook stock prices, you can write:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -430,19 +383,15 @@ of Microsoft and Facebook stock prices, you can write:</p>
 <span class="k">var</span> diffs <span class="o">=</span> joinIn.Rows.Select(kvp <span class="o">=</span><span class="o">&gt;</span>
   kvp.Value.GetAs&lt;<span class="k">double</span>&gt;(<span class="s">"MsftOpen"</span>) <span class="o">-</span> 
     kvp.Value.GetAs&lt;<span class="k">double</span>&gt;(<span class="s">"FbOpen"</span>));</code></pre></td></tr></table>
-
 <p>The result is a series of type <code>Series&lt;DateTime, bool&gt;</code> - the return type is inferred to be <code>bool</code>
 (because that's what the lambda function returns) and the <code>Select</code> method typically returns just
 a single value, so the result is a series. However, you could also return a new series and then
 use <code>Frame.FromRows</code> to re-create a frame.</p>
-
 <p>The library also provides <code>SelectKeys</code>, which can be used to transform the row (or column) keys
 and <code>SelectOptional</code> which can be used to explicitly handle missing values in the data frame.</p>
-
 <p>If we wanted to find only the days when Microsoft stock prices were more expensive than Facebook
 stock prices (and create a new frame containing such data), we can use the other familiar LINQ
 method, called <code>Where</code>:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -458,19 +407,15 @@ method, called <code>Where</code>:</p>
 
 <span class="c">// Transform row collection into a new data frame</span>
 <span class="k">var</span> msftGreaterDf <span class="o">=</span> Frame.FromRows(msftGreaterRows);</code></pre></td></tr></table>
-
 <p>The result of the filtering is a series containing individual rows. Such nested series can be turned
 back into data frame using <code>Frame.FromRows</code>. Now you could use the <code>RowCount</code> property to compare
 the number of days when Microsoft was more expensive with the number of days when Facebook price
 was higher.</p>
-
 <h2><a name="Calculating-with-data-frames" class="anchor" href="#Calculating-with-data-frames">Calculating with data frames</a></h2>
-
 <p>Finally, we can also write calculations that work over the entire data frame. The methods are
 similar to the methods for calculating with series <a href="csharpseries.html">discussed in another article</a>.
 We look at a single example that calculates daily returns of Microsoft stock prices and then applies
 rounding to all values in the resulting data frame.</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -481,28 +426,24 @@ rounding to all values in the resulting data frame.</p>
 <span class="l">8: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Calculate daily returns in percents</span>
-<span class="k">var</span> returns <span class="o">=</span> msft.Diff(1) <span class="o">/</span> msft <span class="o">*</span> 100.0;
+<span class="k">var</span> returns <span class="o">=</span> msft.Diff(<span class="n">1</span>) <span class="o">/</span> msft <span class="o">*</span> <span class="n">100.0</span>;
 
 <span class="c">// Transform all numerical series</span>
 <span class="c">// (round the values to 2 fractional digits)</span>
 <span class="k">var</span> round <span class="o">=</span> 
   returns.ColumnApply((Series&lt;DateTime, <span class="k">double</span>&gt; numeric) <span class="o">=</span><span class="o">&gt;</span> 
-    numeric.Select(kvp <span class="o">=</span><span class="o">&gt;</span> Math.Round(kvp.Value, 2)));</code></pre></td></tr></table>
-
+    numeric.Select(kvp <span class="o">=</span><span class="o">&gt;</span> Math.Round(kvp.Value, <span class="n">2</span>)));</code></pre></td></tr></table>
 <p>To calculate daily returns, we need to subtract the price on previous day from the price on the
-current day. This is done by using the <code>Diff</code> extension method (another option is to use <code>Shift</code> 
+current day. This is done by using the <code>Diff</code> extension method (another option is to use <code>Shift</code>
 together with the overloaded subtraction operator). Then we divide the difference by the current
 price and multiply the result by 100.0 to get value in percents.</p>
-
 <p>Implementing the rounding is slightly more complicated - there is no built-in function for doing
 this, so we need to implement it using other operations. The <code>SeriesApply</code> operation is similar
 to <code>Select</code>, but it transforms entire columns at once. The operation is applied to all columns of
 a specified type - in the above example, we specify the type <code>double</code> by using an explicit type
 specification on the lambda function. For each numeric series, we then use the <code>Select</code> method
 to round the value to two fractional digits.</p>
-
 <p>Ignoring a number of columns from the frame, the result looks something like follows:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -519,9 +460,8 @@ to round the value to two fractional digits.</p>
 11/6/2013 -&gt; 2013-11-06  3.89       4.03       
 11/7/2013 -&gt; 2013-11-07  1.9        -1.81      
 </code></pre></td></tr></table>
-
 <p>It is worth noting that the <code>SeriesApply</code> function is applied on all numerical columns, but
-all other columns (such as <code>MsftDate</code>) are left unchanged. You can also see that the first 
+all other columns (such as <code>MsftDate</code>) are left unchanged. You can also see that the first
 row does not contian any value (and is explicitly marked as missing). This is because there is
 no value for the previous day and so daily return is not defined.
 You could fill the missing values using the overloaded <code>FillMissing</code> method or drop the row
@@ -530,69 +470,69 @@ using <code>DropSparseRows</code> method.</p>
 
         </div>
         <div class="span3">
-          <a href="http://bluemountaincapital.github.io/Deedle/index.html">
-            <img src="http://bluemountaincapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          <a href="http://fslab.org/Deedle/index.html">
+            <img src="http://fslab.org/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
           <ul class="nav nav-list" id="menu">
             <li class="nav-header">Deedle</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/index.html">Home page</a></li>
+            <li><a href="http://fslab.org/Deedle/index.html">Home page</a></li>
             <li class="divider"></li>
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/design.html">Design notes</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
+            <li><a href="http://fslab.org/Deedle/design.html">Design notes</a></li>
             <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
             
             <li class="nav-header">Using from F#</li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
+              <a href="http://fslab.org/Deedle/tutorial.html">Quick start tutorial</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/series.html">Working with time series</a>
+              <a href="http://fslab.org/Deedle/series.html">Working with time series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/frame.html">Working with data frames</a>
+              <a href="http://fslab.org/Deedle/frame.html">Working with data frames</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/stats.html">Statistics &amp; calculations</a>
+              <a href="http://fslab.org/Deedle/stats.html">Statistics &amp; calculations</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using Deedle with R</a>
+              <a href="http://fslab.org/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/csharpintro.html">Getting started</a></li>
+            <li><a href="http://fslab.org/Deedle/csharpintro.html">Getting started</a></li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html">Working with data series</a>
+              <a href="http://fslab.org/Deedle/csharpseries.html">Working with data series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html">Working with data frames</a>
+              <a href="http://fslab.org/Deedle/csharpframe.html">Working with data frames</a>
               <ul class="nav nav-list">
-                <li><a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html#understanding">What is a data frame</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html#creating">Creating data frames</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html#indices">Row and column indices</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html#joining">Joining &amp; aligning</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html#data">Series operations</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html#linq">LINQ to Frames</a></li>
+                <li><a href="http://fslab.org/Deedle/csharpframe.html#understanding">What is a data frame</a></li>
+                <li><a href="http://fslab.org/Deedle/csharpframe.html#creating">Creating data frames</a></li>
+                <li><a href="http://fslab.org/Deedle/csharpframe.html#indices">Row and column indices</a></li>
+                <li><a href="http://fslab.org/Deedle/csharpframe.html#joining">Joining &amp; aligning</a></li>
+                <li><a href="http://fslab.org/Deedle/csharpframe.html#data">Series operations</a></li>
+                <li><a href="http://fslab.org/Deedle/csharpframe.html#linq">LINQ to Frames</a></li>
               </ul>
             </li>
 
             <li class="nav-header">Documentation</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/index.html">API Reference</a></li>
             <li class="divider"></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-stats.html">Stats module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-stats.html">Stats module</a></li>
 
             <li class="nav-header">Samples</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="http://fslab.org/Deedle/lazysource.html">Lazy data loading</a></li>
           </ul>
         </div>
       </div>
     </div>
-    <a href="http://github.com/BlueMountainCapital/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <a href="http://github.com/fslaborg/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
     <script>
       (function (i, s, o, g, r, a, m) {
         i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {

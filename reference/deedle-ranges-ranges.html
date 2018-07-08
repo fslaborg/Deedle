@@ -5,7 +5,7 @@
     <title>Ranges - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
-    <meta name="author" content="BlueMountain Capital">
+    <meta name="author" content="BlueMountain Capital, FsLab.Org">
 
     <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
     <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
@@ -13,9 +13,9 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
-    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/style.css" />
-    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/deedle.css" />
-    <script type="text/javascript" src="http://bluemountaincapital.github.io/Deedle/content/tips.js"></script>
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/deedle.css" />
+    <script type="text/javascript" src="http://fslab.org/Deedle/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -26,12 +26,12 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fslab.org/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
           <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
-        <h3 class="muted"><a href="http://bluemountaincapital.github.io/Deedle/index.html">Deedle</a></h3>
+        <h3 class="muted"><a href="http://fslab.org/Deedle/index.html">Deedle</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -43,21 +43,18 @@
 <h1>Ranges</h1>
 <p>
   <span>Namespace: Deedle.Ranges</span><br />
-</p>
+  </p>
 <div class="xmldoc">
-<p>Provides F# functions for working with the <code>Ranges&lt;'T&gt;</code> type. Note that 
+<p>Provides F# functions for working with the <code>Ranges&lt;'T&gt;</code> type. Note that
 most of the functions are also exposed as members. The terminology in the
 functions below is:</p>
-
 <ul>
 <li><strong>offset</strong> refers to an absolute <code>int64</code> offset of a key in the range</li>
 <li><strong>key</strong> refers to a key value of type <code>'T</code></li>
 </ul>
-
 <p>Say, you have daily range <code>[ (2015-01-01, 2015-01-10); (2015-02-01, 2015-02-10) ]</code>.
 Then, the keys are the dates and the offsets are 0 .. 9 for the first part and
 10 .. 19 for the second part.</p>
-
 
 </div>
 
@@ -77,16 +74,15 @@ Then, the keys are the dates and the offsets are 0 .. 9 for the first part and
           </code>
           <div class="tip" id="339">
             <strong>Signature:</strong> ranges:seq&lt;Ranges&lt;&#39;T&gt;&gt; -&gt; Ranges&lt;&#39;T&gt;<br />
-                          <strong>Type parameters:</strong> 'T          </div>
+                          <strong>Type parameters:</strong> 'T                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L104-104" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L104-104" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Combine ranges - the arguments don't have to be sorted, but must not overlap
 (they can be aligned, in which case ranges are merged)</p>
-
 
 
         </td>
@@ -99,16 +95,15 @@ Then, the keys are the dates and the offsets are 0 .. 9 for the first part and
           </code>
           <div class="tip" id="340">
             <strong>Signature:</strong> ops:IRangeKeyOperations&lt;&#39;T&gt; -&gt; ranges:seq&lt;&#39;T * &#39;T&gt; -&gt; Ranges&lt;&#39;T&gt;<br />
-                          <strong>Type parameters:</strong> 'T          </div>
+                          <strong>Type parameters:</strong> 'T                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L99-99" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L99-99" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Create a range from a sequence of low-high pairs
 and an explicitly specified range key operations</p>
-
 
 
         </td>
@@ -121,16 +116,15 @@ and an explicitly specified range key operations</p>
           </code>
           <div class="tip" id="341">
             <strong>Signature:</strong> succ:(^T -&gt; int64 -&gt; ^T) -&gt; ranges:seq&lt;^T * ^T&gt; -&gt; Ranges&lt;^T&gt;<br />
-                          <strong>Type parameters:</strong> ^T          </div>
+                          <strong>Type parameters:</strong> ^T                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L84-84" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L84-84" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Create a range from a sequence of low-high pairs
 (range key operations used standard arithmetic)</p>
-
 
 
         </td>
@@ -143,15 +137,14 @@ and an explicitly specified range key operations</p>
           </code>
           <div class="tip" id="342">
             <strong>Signature:</strong> int64<br />
-                      </div>
+                                  </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L121-121" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L121-121" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Represents invalid offset</p>
-
 
 
         </td>
@@ -164,20 +157,17 @@ and an explicitly specified range key operations</p>
           </code>
           <div class="tip" id="343">
             <strong>Signature:</strong> offs:int64 -&gt; ranges:Ranges&lt;&#39;T&gt; -&gt; &#39;T<br />
-                          <strong>Type parameters:</strong> 'T          </div>
+                          <strong>Type parameters:</strong> 'T                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L129-129" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L129-129" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns the key at a given offset. For example, given
 ranges [10..12; 30..32], the function defines a mapping:</p>
-
 <p>0-&gt;10, 1-&gt;11, 2-&gt;12, 3-&gt;30, 4-&gt;31, 5-&gt;32</p>
-
 <p>When the offset is wrong, throws <code>IndexOutOfRangeException</code></p>
-
 
 
         </td>
@@ -190,15 +180,14 @@ ranges [10..12; 30..32], the function defines a mapping:</p>
           </code>
           <div class="tip" id="344">
             <strong>Signature:</strong> ranges:Ranges&lt;&#39;T&gt; -&gt; &#39;T * &#39;T<br />
-                          <strong>Type parameters:</strong> 'T          </div>
+                          <strong>Type parameters:</strong> 'T                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L212-212" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L212-212" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns the smallest &amp; greatest overall key</p>
-
 
 
         </td>
@@ -211,15 +200,14 @@ ranges [10..12; 30..32], the function defines a mapping:</p>
           </code>
           <div class="tip" id="345">
             <strong>Signature:</strong> ranges:Ranges&lt;&#39;T&gt; -&gt; seq&lt;&#39;T&gt;<br />
-                          <strong>Type parameters:</strong> 'T          </div>
+                          <strong>Type parameters:</strong> 'T                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L216-216" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L216-216" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns a lazy sequence containing all keys</p>
-
 
 
         </td>
@@ -232,15 +220,14 @@ ranges [10..12; 30..32], the function defines a mapping:</p>
           </code>
           <div class="tip" id="346">
             <strong>Signature:</strong> ranges:Ranges&lt;&#39;T&gt; -&gt; int64<br />
-                          <strong>Type parameters:</strong> 'T          </div>
+                          <strong>Type parameters:</strong> 'T                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L220-220" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L220-220" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns the length of the ranges</p>
-
 
 
         </td>
@@ -253,10 +240,10 @@ ranges [10..12; 30..32], the function defines a mapping:</p>
           </code>
           <div class="tip" id="347">
             <strong>Signature:</strong> key:&#39;T -&gt; semantics:Lookup -&gt; check:(&#39;T -&gt; int64 -&gt; bool) -&gt; ranges:Ranges&lt;&#39;T&gt; -&gt; OptionalValue&lt;&#39;T * int64&gt;<br />
-                          <strong>Type parameters:</strong> 'T          </div>
+                          <strong>Type parameters:</strong> 'T                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L230-230" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L230-230" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -264,9 +251,7 @@ ranges [10..12; 30..32], the function defines a mapping:</p>
 For <code>Exact</code> match, this is the same as <code>offsetOfKey</code>. In other cases,
 we first find the place where the key <em>would</em> be and then scan in one
 or the other direction until 'check' returns 'true' or we find the end.</p>
-
 <p>Returns the key together with its offset in the range.</p>
-
 
 
         </td>
@@ -279,20 +264,17 @@ or the other direction until 'check' returns 'true' or we find the end.</p>
           </code>
           <div class="tip" id="348">
             <strong>Signature:</strong> key:&#39;T -&gt; ranges:Ranges&lt;&#39;T&gt; -&gt; int64<br />
-                          <strong>Type parameters:</strong> 'T          </div>
+                          <strong>Type parameters:</strong> 'T                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L158-158" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L158-158" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns the offset of a given key. For example, given
 ranges [10..12; 30..32], the function defines a mapping:</p>
-
 <p>10-&gt;0, 11-&gt;1, 12-&gt;2, 30-&gt;3, 31-&gt;4, 32-&gt;5</p>
-
 <p>When the key is wrong, returns <code>Ranges.invalid</code></p>
-
 
 
         </td>
@@ -305,15 +287,14 @@ ranges [10..12; 30..32], the function defines a mapping:</p>
           </code>
           <div class="tip" id="349">
             <strong>Signature:</strong> restriction:RangeRestriction&lt;&#39;T&gt; -&gt; ranges:Ranges&lt;&#39;T&gt; -&gt; Ranges&lt;&#39;T&gt;<br />
-                          <strong>Type parameters:</strong> 'T          </div>
+                          <strong>Type parameters:</strong> 'T                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L174-174" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Ranges.fs#L174-174" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Restricts the ranges according to the specified range restriction</p>
-
 
 
         </td>
@@ -323,61 +304,61 @@ ranges [10..12; 30..32], the function defines a mapping:</p>
 
         </div>
         <div class="span3">
-          <a href="http://bluemountaincapital.github.io/Deedle/index.html">
-            <img src="http://bluemountaincapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          <a href="http://fslab.org/Deedle/index.html">
+            <img src="http://fslab.org/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
           <ul class="nav nav-list" id="menu">
             <li class="nav-header">Deedle</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/index.html">Home page</a></li>
+            <li><a href="http://fslab.org/Deedle/index.html">Home page</a></li>
             <li class="divider"></li>
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/design.html">Design notes</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
+            <li><a href="http://fslab.org/Deedle/design.html">Design notes</a></li>
             <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
             
             <li class="nav-header">Using from F#</li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
+              <a href="http://fslab.org/Deedle/tutorial.html">Quick start tutorial</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/series.html">Working with time series</a>
+              <a href="http://fslab.org/Deedle/series.html">Working with time series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/frame.html">Working with data frames</a>
+              <a href="http://fslab.org/Deedle/frame.html">Working with data frames</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/stats.html">Statistics &amp; calculations</a>
+              <a href="http://fslab.org/Deedle/stats.html">Statistics &amp; calculations</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using Deedle with R</a>
+              <a href="http://fslab.org/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/csharpintro.html">Getting started</a></li>
+            <li><a href="http://fslab.org/Deedle/csharpintro.html">Getting started</a></li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html">Working with data series</a>
+              <a href="http://fslab.org/Deedle/csharpseries.html">Working with data series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html">Working with data frames</a>
+              <a href="http://fslab.org/Deedle/csharpframe.html">Working with data frames</a>
             </li>
 
             <li class="nav-header">Documentation</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/index.html">API Reference</a></li>
             <li class="divider"></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-stats.html">Stats module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-stats.html">Stats module</a></li>
 
             <li class="nav-header">Samples</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="http://fslab.org/Deedle/lazysource.html">Lazy data loading</a></li>
           </ul>
         </div>
       </div>
     </div>
-    <a href="http://github.com/BlueMountainCapital/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <a href="http://github.com/fslaborg/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
     <script>
       (function (i, s, o, g, r, a, m) {
         i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {

@@ -5,7 +5,7 @@
     <title>DelayedSeries - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
-    <meta name="author" content="BlueMountain Capital">
+    <meta name="author" content="BlueMountain Capital, FsLab.Org">
 
     <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
     <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
@@ -13,9 +13,9 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
-    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/style.css" />
-    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/deedle.css" />
-    <script type="text/javascript" src="http://bluemountaincapital.github.io/Deedle/content/tips.js"></script>
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/deedle.css" />
+    <script type="text/javascript" src="http://fslab.org/Deedle/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -26,12 +26,12 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fslab.org/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
           <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
-        <h3 class="muted"><a href="http://bluemountaincapital.github.io/Deedle/index.html">Deedle</a></h3>
+        <h3 class="muted"><a href="http://fslab.org/Deedle/index.html">Deedle</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -42,8 +42,9 @@
 
 <h1>DelayedSeries</h1>
 <p>
-  <span>Namespace: Deedle</span><br />
-</p>
+
+    <span>Namespace: Deedle</span><br />
+    </p>
 <div class="xmldoc">
 <p>This type exposes a single static method <code>DelayedSeries.Create</code> that can be used for
 constructing data series (of type <code>Series&lt;K, V&gt;</code>) with lazily loaded data. You can
@@ -51,33 +52,29 @@ use this functionality to create series that represents e.g. an entire price his
 in a database, but only loads data that are actually needed. For more information
 see the <a href="../lazysource.html">lazy data loading tutorial</a>.</p>
 
-
-        <h2>Example</h2>
+                <h2>Example</h2>
 <p>Assuming we have a function <code>generate lo hi</code> that generates data in the specified
 <code>DateTime</code> range, we can create lazy series as follows:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">ls</span> <span class="o">=</span> <span class="i">DelayedSeries</span><span class="o">.</span><span class="i">Create</span>(<span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">min</span>, <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">max</span>, <span class="k">fun</span> (<span class="i">lo</span>, <span class="i">lob</span>) (<span class="i">hi</span>, <span class="i">hib</span>) <span class="k">-&gt;</span> 
-  <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="i">async</span> { 
-    <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">printfn</span> <span class="s">&quot;Query: %A - %A&quot;</span> (<span class="i">lo</span>, <span class="i">lob</span>) (<span class="i">hi</span>, <span class="i">hib</span>)
-    <span class="k">return</span> <span class="i">generate</span> <span class="i">lo</span> <span class="i">hi</span> })
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="id">ls</span> <span class="o">=</span> <span class="id">DelayedSeries</span><span class="pn">.</span><span class="id">Create</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="id">min</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="id">max</span><span class="pn">,</span> <span class="k">fun</span> <span class="pn">(</span><span class="id">lo</span><span class="pn">,</span> <span class="id">lob</span><span class="pn">)</span> <span class="pn">(</span><span class="id">hi</span><span class="pn">,</span> <span class="id">hib</span><span class="pn">)</span> <span class="k">-&gt;</span> 
+  <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="id">async</span> <span class="pn">{</span> 
+    <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="id">printfn</span> <span class="s">&quot;Query: %A - %A&quot;</span> <span class="pn">(</span><span class="id">lo</span><span class="pn">,</span> <span class="id">lob</span><span class="pn">)</span> <span class="pn">(</span><span class="id">hi</span><span class="pn">,</span> <span class="id">hib</span><span class="pn">)</span>
+    <span class="k">return</span> <span class="id">generate</span> <span class="id">lo</span> <span class="id">hi</span> <span class="pn">}</span><span class="pn">)</span>
 </code></pre></td>
 </tr>
 </table>
-
-<p>The arguments <code>min</code> and <code>max</code> specfify the complete range of the series. The 
+<p>The arguments <code>min</code> and <code>max</code> specfify the complete range of the series. The
 function passed to <code>Create</code> is called with minimal and maximal required key
 (<code>lo</code> and <code>hi</code>) and with two values that specify boundary behaviour.</p>
-
-<div class="tip" id="fs1">val ls : obj<br /><br />Full name: docs.ls</div>
-<div class="tip" id="fs2">val min : e1:&#39;T -&gt; e2:&#39;T -&gt; &#39;T (requires comparison)<br /><br />Full name: Microsoft.FSharp.Core.Operators.min</div>
-<div class="tip" id="fs3">val max : e1:&#39;T -&gt; e2:&#39;T -&gt; &#39;T (requires comparison)<br /><br />Full name: Microsoft.FSharp.Core.Operators.max</div>
-<div class="tip" id="fs4">val async : AsyncBuilder<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.async</div>
-<div class="tip" id="fs5">val printfn : format:Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.printfn</div>
+<div class="tip" id="fs1">val ls : obj</div>
+<div class="tip" id="fs2">val min : e1:&#39;T -&gt; e2:&#39;T -&gt; &#39;T (requires comparison)</div>
+<div class="tip" id="fs3">val max : e1:&#39;T -&gt; e2:&#39;T -&gt; &#39;T (requires comparison)</div>
+<div class="tip" id="fs4">val async : AsyncBuilder</div>
+<div class="tip" id="fs5">val printfn : format:Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T</div>
 
 </div>
   <h3>Static members</h3>
@@ -89,15 +86,23 @@ function passed to <code>Create</code> is called with minimal and maximal requir
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '410', 410)" onmouseover="showTip(event, '410', 410)">
+          <code onmouseout="hideTip(event, '421', 421)" onmouseover="showTip(event, '421', 421)">
             Create(min, max, loader)
           </code>
-          <div class="tip" id="410">
-            <strong>Signature:</strong> (min:&#39;?550155 * max:&#39;?550155 * loader:Func&lt;&#39;?550155,BoundaryBehavior,&#39;?550155,BoundaryBehavior,Task&lt;seq&lt;KeyValuePair&lt;&#39;?550155,&#39;?550156&gt;&gt;&gt;&gt;) -&gt; Series&lt;&#39;?550155,&#39;?550156&gt;<br />
-                          <strong>Type parameters:</strong> '?550155, '?550156          </div>
+          <div class="tip" id="421">
+            <strong>Signature:</strong> (min:&#39;?632477 * max:&#39;?632477 * loader:Func&lt;&#39;?632477,BoundaryBehavior,&#39;?632477,BoundaryBehavior,Task&lt;seq&lt;KeyValuePair&lt;&#39;?632477,&#39;?632478&gt;&gt;&gt;&gt;) -&gt; Series&lt;&#39;?632477,&#39;?632478&gt;<br />
+                          <strong>Type parameters:</strong> '?632477, '?632478                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Obsolete(&quot;The DelayedSeries.Create method has been renamed to DelayedSeries.FromValueLoader&quot;)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/DelayedSeries.fs#L451-451" class="github-link">
+              <div class="alert alert-warning">
+              <strong>WARNING: </strong> This API is obsolete
+              <p>The DelayedSeries.Create method has been renamed to DelayedSeries.FromValueLoader</p>
+              </div> 
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/DelayedSeries.fs#L451-451" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -107,15 +112,23 @@ function passed to <code>Create</code> is called with minimal and maximal requir
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '411', 411)" onmouseover="showTip(event, '411', 411)">
+          <code onmouseout="hideTip(event, '422', 422)" onmouseover="showTip(event, '422', 422)">
             Create(min, max, loader)
           </code>
-          <div class="tip" id="411">
-            <strong>Signature:</strong> (min:&#39;?550152 * max:&#39;?550152 * loader:(&#39;?550152 * BoundaryBehavior -&gt; &#39;?550152 * BoundaryBehavior -&gt; Async&lt;seq&lt;KeyValuePair&lt;&#39;?550152,&#39;?550153&gt;&gt;&gt;)) -&gt; Series&lt;&#39;?550152,&#39;?550153&gt;<br />
-                          <strong>Type parameters:</strong> '?550152, '?550153          </div>
+          <div class="tip" id="422">
+            <strong>Signature:</strong> (min:&#39;?632474 * max:&#39;?632474 * loader:(&#39;?632474 * BoundaryBehavior -&gt; &#39;?632474 * BoundaryBehavior -&gt; Async&lt;seq&lt;KeyValuePair&lt;&#39;?632474,&#39;?632475&gt;&gt;&gt;)) -&gt; Series&lt;&#39;?632474,&#39;?632475&gt;<br />
+                          <strong>Type parameters:</strong> '?632474, '?632475                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Obsolete(&quot;The DelayedSeries.Create method has been renamed to DelayedSeries.FromValueLoader&quot;)&gt;]<br />
+          </span>
+          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/DelayedSeries.fs#L449-449" class="github-link">
+              <div class="alert alert-warning">
+              <strong>WARNING: </strong> This API is obsolete
+              <p>The DelayedSeries.Create method has been renamed to DelayedSeries.FromValueLoader</p>
+              </div> 
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/DelayedSeries.fs#L449-449" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -125,15 +138,15 @@ function passed to <code>Create</code> is called with minimal and maximal requir
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '412', 412)" onmouseover="showTip(event, '412', 412)">
+          <code onmouseout="hideTip(event, '423', 423)" onmouseover="showTip(event, '423', 423)">
             FromIndexVectorLoader(...)
           </code>
-          <div class="tip" id="412">
+          <div class="tip" id="423">
             <strong>Signature:</strong> (scheme:IAddressingScheme * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder * min:&#39;K * max:&#39;K * loader:(&#39;K * BoundaryBehavior -&gt; &#39;K * BoundaryBehavior -&gt; Async&lt;IIndex&lt;&#39;K&gt; * IVector&lt;&#39;V&gt;&gt;)) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V          </div>
+                          <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/DelayedSeries.fs#L435-435" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/DelayedSeries.fs#L435-435" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -143,15 +156,15 @@ function passed to <code>Create</code> is called with minimal and maximal requir
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '413', 413)" onmouseover="showTip(event, '413', 413)">
+          <code onmouseout="hideTip(event, '424', 424)" onmouseover="showTip(event, '424', 424)">
             FromIndexVectorLoader(...)
           </code>
-          <div class="tip" id="413">
+          <div class="tip" id="424">
             <strong>Signature:</strong> (scheme:IAddressingScheme * vectorBuilder:IVectorBuilder * indexBuilder:IIndexBuilder * min:&#39;K * max:&#39;K * loader:Func&lt;&#39;K,BoundaryBehavior,&#39;K,BoundaryBehavior,Task&lt;IIndex&lt;&#39;K&gt; * IVector&lt;&#39;V&gt;&gt;&gt;) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V          </div>
+                          <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/DelayedSeries.fs#L429-429" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/DelayedSeries.fs#L429-429" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -161,15 +174,15 @@ function passed to <code>Create</code> is called with minimal and maximal requir
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '414', 414)" onmouseover="showTip(event, '414', 414)">
+          <code onmouseout="hideTip(event, '425', 425)" onmouseover="showTip(event, '425', 425)">
             FromValueLoader(min, max, loader)
           </code>
-          <div class="tip" id="414">
+          <div class="tip" id="425">
             <strong>Signature:</strong> (min:&#39;K * max:&#39;K * loader:(&#39;K * BoundaryBehavior -&gt; &#39;K * BoundaryBehavior -&gt; Async&lt;seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt;&gt;)) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V          </div>
+                          <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/DelayedSeries.fs#L405-405" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/DelayedSeries.fs#L405-405" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -177,22 +190,19 @@ function passed to <code>Create</code> is called with minimal and maximal requir
 the overall range of the series (smallest and greatest key) and a function that
 loads the data. The function is called with two tuples that specify lower and upper
 boundary. It returns an asynchronous workflow that produces the data.</p>
-
 <h2>Parameters</h2>
-
 <ul>
 <li><code>min</code> - The smallest key that should be present in the created series.</li>
 <li><code>min</code> - The greatests key that should be present in the created series.</li>
-<li><code>loader</code> - A function which returns an asynchronous workflow that loads the data in a 
+<li>
+<code>loader</code> - A function which returns an asynchronous workflow that loads the data in a 
 specified range. The function is called with two tuples consisting of key and
-<code>BoundaryBehavior</code> values. The keys specify lower and upper boundary and
-<code>BoundaryBehavior</code> values can be either <code>Inclusive</code> or <code>Exclusive</code>.</li>
+<a href="deedle-indices-boundarybehavior.html" title="BoundaryBehavior"><code>BoundaryBehavior</code></a> values. The keys specify lower and upper boundary and
+<a href="deedle-indices-boundarybehavior.html" title="BoundaryBehavior"><code>BoundaryBehavior</code></a> values can be either <code>Inclusive</code> or <code>Exclusive</code>.
+</li>
 </ul>
-
 <h2>Remarks</h2>
-
 <p>For more information see the <a href="../lazysource.html">lazy data loading tutorial</a>.</p>
-
 
 
         </td>
@@ -200,40 +210,37 @@ specified range. The function is called with two tuples consisting of key and
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '415', 415)" onmouseover="showTip(event, '415', 415)">
+          <code onmouseout="hideTip(event, '426', 426)" onmouseover="showTip(event, '426', 426)">
             FromValueLoader(min, max, loader)
           </code>
-          <div class="tip" id="415">
+          <div class="tip" id="426">
             <strong>Signature:</strong> (min:&#39;K * max:&#39;K * loader:Func&lt;&#39;K,BoundaryBehavior,&#39;K,BoundaryBehavior,Task&lt;seq&lt;KeyValuePair&lt;&#39;K,&#39;V&gt;&gt;&gt;&gt;) -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V          </div>
+                          <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/DelayedSeries.fs#L385-385" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/DelayedSeries.fs#L385-385" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>A C#-friendly function that creates lazily loaded series. The method requires
 the overall range of the series (smallest and greatest key) and a function that
-loads the data. In this overload, the function is a <code>Func</code> delegate taking 
+loads the data. In this overload, the function is a <code>Func</code> delegate taking
 information about the requested range and returning <code>Task&lt;T&gt;</code> that produces the data.</p>
-
 <h2>Parameters</h2>
-
 <ul>
 <li><code>min</code> - The smallest key that should be present in the created series.</li>
 <li><code>min</code> - The greatests key that should be present in the created series.</li>
-<li><code>loader</code> - A delegate which returns a task that loads the data in a specified 
+<li>
+<code>loader</code> - A delegate which returns a task that loads the data in a specified 
 range. The delegate is called with four arguments specifying the minimal and
-maximal key and two <code>BoundaryBehavior</code> values specifying whether the low and
-high ranges are inclusive or exclusive.</li>
+maximal key and two <a href="deedle-indices-boundarybehavior.html" title="BoundaryBehavior"><code>BoundaryBehavior</code></a> values specifying whether the low and
+high ranges are inclusive or exclusive.
+</li>
 </ul>
-
 <h2>Remarks</h2>
-
 <p>For more information see the <a href="../lazysource.html">lazy data loading tutorial</a>.
 The operation calls <code>loader</code> (and so creates the tasks) on the thread that is
 requesting the result.</p>
-
 
 
         </td>
@@ -243,61 +250,61 @@ requesting the result.</p>
 
         </div>
         <div class="span3">
-          <a href="http://bluemountaincapital.github.io/Deedle/index.html">
-            <img src="http://bluemountaincapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          <a href="http://fslab.org/Deedle/index.html">
+            <img src="http://fslab.org/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
           <ul class="nav nav-list" id="menu">
             <li class="nav-header">Deedle</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/index.html">Home page</a></li>
+            <li><a href="http://fslab.org/Deedle/index.html">Home page</a></li>
             <li class="divider"></li>
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/design.html">Design notes</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
+            <li><a href="http://fslab.org/Deedle/design.html">Design notes</a></li>
             <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
             
             <li class="nav-header">Using from F#</li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
+              <a href="http://fslab.org/Deedle/tutorial.html">Quick start tutorial</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/series.html">Working with time series</a>
+              <a href="http://fslab.org/Deedle/series.html">Working with time series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/frame.html">Working with data frames</a>
+              <a href="http://fslab.org/Deedle/frame.html">Working with data frames</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/stats.html">Statistics &amp; calculations</a>
+              <a href="http://fslab.org/Deedle/stats.html">Statistics &amp; calculations</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using Deedle with R</a>
+              <a href="http://fslab.org/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/csharpintro.html">Getting started</a></li>
+            <li><a href="http://fslab.org/Deedle/csharpintro.html">Getting started</a></li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html">Working with data series</a>
+              <a href="http://fslab.org/Deedle/csharpseries.html">Working with data series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html">Working with data frames</a>
+              <a href="http://fslab.org/Deedle/csharpframe.html">Working with data frames</a>
             </li>
 
             <li class="nav-header">Documentation</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/index.html">API Reference</a></li>
             <li class="divider"></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-stats.html">Stats module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-stats.html">Stats module</a></li>
 
             <li class="nav-header">Samples</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="http://fslab.org/Deedle/lazysource.html">Lazy data loading</a></li>
           </ul>
         </div>
       </div>
     </div>
-    <a href="http://github.com/BlueMountainCapital/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <a href="http://github.com/fslaborg/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
     <script>
       (function (i, s, o, g, r, a, m) {
         i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {

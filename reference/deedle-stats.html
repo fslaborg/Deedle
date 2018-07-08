@@ -5,7 +5,7 @@
     <title>Stats - Deedle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
-    <meta name="author" content="BlueMountain Capital">
+    <meta name="author" content="BlueMountain Capital, FsLab.Org">
 
     <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
     <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
@@ -13,9 +13,9 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
-    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/style.css" />
-    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/deedle.css" />
-    <script type="text/javascript" src="http://bluemountaincapital.github.io/Deedle/content/tips.js"></script>
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/deedle.css" />
+    <script type="text/javascript" src="http://fslab.org/Deedle/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -26,12 +26,12 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fslab.org/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
           <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
-        <h3 class="muted"><a href="http://bluemountaincapital.github.io/Deedle/index.html">Deedle</a></h3>
+        <h3 class="muted"><a href="http://fslab.org/Deedle/index.html">Deedle</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -42,49 +42,46 @@
 
 <h1>Stats</h1>
 <p>
-  <span>Namespace: Deedle</span><br />
-</p>
-<div class="xmldoc">
-<p>The <code>Stats</code> type contains functions for fast calculation of statistics over
-series and frames as well as over a moving and an expanding window in a series.</p>
 
+    <span>Namespace: Deedle</span><br />
+    </p>
+<div class="xmldoc">
+<p>The <a href="deedle-stats.html" title="Stats"><code>Stats</code></a> type contains functions for fast calculation of statistics over
+series and frames as well as over a moving and an expanding window in a series.</p>
 <p>The resulting series has the same keys as the input series. When there are
 no values, or missing values, different functions behave in different ways.
 Statistics (e.g. mean) return missing value when any value is missing, while min/max
 functions return the minimal/maximal element (skipping over missing values).</p>
 
-
-        <h2>Remarks</h2>
-<p>The windowing functions in the <code>Stats</code> type support calculations over a fixed-size
-windows specified by the size of the window. If you need more complex windowing 
+                <h2>Remarks</h2>
+<p>The windowing functions in the <a href="deedle-stats.html" title="Stats"><code>Stats</code></a> type support calculations over a fixed-size
+windows specified by the size of the window. If you need more complex windowing
 behavior (such as window based on the distance between keys), different handling
 of boundary, or chunking (calculation over adjacent chunks), you can use chunking and
-windowing functions from the <code>Series</code> module such as <code>Series.windowSizeInto</code> or
+windowing functions from the <a href="deedle-f__series_extensions-series.html" title="Series"><code>Series</code></a> module such as <code>Series.windowSizeInto</code> or
 <code>Series.chunkSizeInto</code>.</p>
 
-
 </div>
-  <!-- If there is more than 1 category in the type, generate TOC -->
-  <h2>Table of contents</h2>
-  <ul>
-      <li><a href="#section0">Expanding windows</a></li>
-      <li><a href="#section1">Frame statistics</a></li>
-      <li><a href="#section2">Moving windows</a></li>
-      <li><a href="#section3">Multi-level statistics</a></li>
-      <li><a href="#section4">Series interoploation</a></li>
-      <li><a href="#section5">Series statistics</a></li>
-  </ul>
-    <h2>Expanding windows<a name="section0">&#160;</a></h2>
-      <div class="xmldoc">
-        <p>Expanding window means that the window starts as a single-element sized window
+    <!-- If there is more than 1 category in the type, generate TOC -->
+    <h2>Table of contents</h2>
+    <ul>
+            <li><a href="#section0">Expanding windows</a></li>
+            <li><a href="#section1">Frame statistics</a></li>
+            <li><a href="#section2">Moving windows</a></li>
+            <li><a href="#section3">Multi-level statistics</a></li>
+            <li><a href="#section4">Series interoploation</a></li>
+            <li><a href="#section5">Series statistics</a></li>
+    </ul>
+        <h2>Expanding windows<a name="section0">&#160;</a></h2>
+            <div class="xmldoc">
+                <p>Expanding window means that the window starts as a single-element sized window
 and expands as it moves over the series. In this case, statistics is calculated
 for all values up to the current key. This means that the result is attached
 to the key at the end of the window. The function names are prefixed
 with <code>expanding</code>.</p>
 
 
-
-      </div>
+            </div>
   <h3>Static members</h3>
   <table class="table table-bordered member-list">
     <thead>
@@ -94,604 +91,20 @@ with <code>expanding</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '920', 920)" onmouseover="showTip(event, '920', 920)">
+          <code onmouseout="hideTip(event, '944', 944)" onmouseover="showTip(event, '944', 944)">
             expandingCount(series)
           </code>
-          <div class="tip" id="920">
+          <div class="tip" id="944">
             <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L431-431" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L431-431" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns a series that contains counts over expanding windows (the value for
 a given key is calculated from all elements with smaller keys).</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '921', 921)" onmouseover="showTip(event, '921', 921)">
-            expandingKurt(series)
-          </code>
-          <div class="tip" id="921">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L491-491" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns a series that contains kurtosis over expanding windows (the value for
-a given key is calculated from all elements with smaller keys); If the 
-entire window contains fewer than 4 values, the result is missing.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '922', 922)" onmouseover="showTip(event, '922', 922)">
-            expandingMax(series)
-          </code>
-          <div class="tip" id="922">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L516-516" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns a series that contains maximum over an expanding window. The value
-for a key <em>k</em> in the returned series is the maximum from all elements with
-smaller keys.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '923', 923)" onmouseover="showTip(event, '923', 923)">
-            expandingMean(series)
-          </code>
-          <div class="tip" id="923">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L447-447" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns a series that contains means over expanding windows (the value for
-a given key is calculated from all elements with smaller keys); If the 
-entire window contains no values, the result is missing.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '924', 924)" onmouseover="showTip(event, '924', 924)">
-            expandingMin(series)
-          </code>
-          <div class="tip" id="924">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L504-504" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns a series that contains minimum over an expanding window. The value
-for a key <em>k</em> in the returned series is the minimum from all elements with
-smaller keys.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '925', 925)" onmouseover="showTip(event, '925', 925)">
-            expandingSkew(series)
-          </code>
-          <div class="tip" id="925">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L478-478" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns a series that contains skewness over expanding windows (the value for
-a given key is calculated from all elements with smaller keys); If the 
-entire window contains fewer than 3 values, the result is missing.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '926', 926)" onmouseover="showTip(event, '926', 926)">
-            expandingStdDev(series)
-          </code>
-          <div class="tip" id="926">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L467-467" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns a series that contains standard deviation over expanding windows (the 
-value for a given key is calculated from all elements with smaller keys); If the 
-entire window contains fewer than 2 values, the result is missing.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '927', 927)" onmouseover="showTip(event, '927', 927)">
-            expandingSum(series)
-          </code>
-          <div class="tip" id="927">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L439-439" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns a series that contains sums over expanding windows (the value for
-a given key is calculated from all elements with smaller keys); If the 
-entire window contains no values, the result is 0.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '928', 928)" onmouseover="showTip(event, '928', 928)">
-            expandingVariance(series)
-          </code>
-          <div class="tip" id="928">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L456-456" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns a series that contains variance over expanding windows (the value for
-a given key is calculated from all elements with smaller keys); If the 
-entire window contains fewer than 2 values, the result is missing.</p>
-
-
-
-        </td>
-      </tr>
-    </tbody>
-  </table>
-    <h2>Frame statistics<a name="section1">&#160;</a></h2>
-      <div class="xmldoc">
-        <p>The standard functions are exposed as static members and are 
-overloaded. This means that they can be applied to both <code>Series&lt;'K, float&gt;</code> and 
-to <code>Frame&lt;'R, 'C&gt;</code>. When applied to data frame, the functions apply the 
-statistical calculation to all numerical columns of the frame.</p>
-
-
-
-      </div>
-  <h3>Static members</h3>
-  <table class="table table-bordered member-list">
-    <thead>
-      <tr><td>Static member</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '929', 929)" onmouseover="showTip(event, '929', 929)">
-            count(frame)
-          </code>
-          <div class="tip" id="929">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,int&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L673-673" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>For each column, returns the number of the values in the column. 
-This excludes missing values and values created from <code>Double.NaN</code> etc.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '930', 930)" onmouseover="showTip(event, '930', 930)">
-            kurt(frame)
-          </code>
-          <div class="tip" id="930">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L727-727" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>For each numerical column, returns the kurtosis of the values in a series. 
-The function skips over missing values and <code>NaN</code> values. When there are less than 4 values, 
-the result is NaN.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '931', 931)" onmouseover="showTip(event, '931', 931)">
-            max(frame)
-          </code>
-          <div class="tip" id="931">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L745-745" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>For each numerical column, returns the maximal values as a series.
-The function skips over missing and <code>NaN</code> values. When there are no values,
-the result is <code>NaN</code>.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '932', 932)" onmouseover="showTip(event, '932', 932)">
-            mean(frame)
-          </code>
-          <div class="tip" id="932">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L689-689" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>For each numerical column, returns the mean of the values in the column. 
-The function skips over missing values and <code>NaN</code> values. When there are 
-no available values, the result is NaN.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '933', 933)" onmouseover="showTip(event, '933', 933)">
-            median(frame)
-          </code>
-          <div class="tip" id="933">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L695-695" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>For each numerical column, returns the median of the values in the column.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '934', 934)" onmouseover="showTip(event, '934', 934)">
-            min(frame)
-          </code>
-          <div class="tip" id="934">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L735-735" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>For each numerical column, returns the minimal values as a series.
-The function skips over missing and <code>NaN</code> values. When there are no values,
-the result is <code>NaN</code>.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '935', 935)" onmouseover="showTip(event, '935', 935)">
-            skew(frame)
-          </code>
-          <div class="tip" id="935">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L719-719" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>For each numerical column, returns the skewness of the values in a series. 
-The function skips over missing values and <code>NaN</code> values. When there are less than 3 values, 
-the result is NaN.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '936', 936)" onmouseover="showTip(event, '936', 936)">
-            stdDev(frame)
-          </code>
-          <div class="tip" id="936">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L703-703" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>For each numerical column, returns the standard deviation of the values in the column. 
-The function skips over missing values and <code>NaN</code> values. When there are less than 2 values, 
-the result is NaN.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '937', 937)" onmouseover="showTip(event, '937', 937)">
-            sum(frame)
-          </code>
-          <div class="tip" id="937">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L681-681" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>For each numerical column, returns the sum of the values in the column. 
-The function skips over missing values and <code>NaN</code> values. When there are no</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '938', 938)" onmouseover="showTip(event, '938', 938)">
-            variance(frame)
-          </code>
-          <div class="tip" id="938">
-            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L711-711" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>For each numerical column, returns the variance of the values in the column.
-The function skips over missing values and <code>NaN</code> values. When there are less 
-than 2 values, the result is NaN.</p>
-
-
-
-        </td>
-      </tr>
-    </tbody>
-  </table>
-    <h2>Moving windows<a name="section2">&#160;</a></h2>
-      <div class="xmldoc">
-        <p>Moving window means that the window has a fixed size and moves over the series.
-In this case, the result of the statisitcs is always attached to the last key
-of the window. The function names are prefixed with <code>moving</code>.</p>
-
-
-
-      </div>
-  <h3>Static members</h3>
-  <table class="table table-bordered member-list">
-    <thead>
-      <tr><td>Static member</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '939', 939)" onmouseover="showTip(event, '939', 939)">
-            movingCount(size series)
-          </code>
-          <div class="tip" id="939">
-            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L356-356" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns a series that contains counts over a moving window of the specified size.
-The first <code>size-1</code> elements of the returned series are always missing; if the 
-entire window contains missing values, the result is 0.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '940', 940)" onmouseover="showTip(event, '940', 940)">
-            movingKurt(size series)
-          </code>
-          <div class="tip" id="940">
-            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L404-404" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns a series that contains kurtosis over a moving window of the specified size.
-The first <code>size-1</code> elements of the returned series are always missing; if the 
-entire window contains missing values, the result is also missing.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '941', 941)" onmouseover="showTip(event, '941', 941)">
-            movingMax(size series)
-          </code>
-          <div class="tip" id="941">
-            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L420-420" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns a series that contains maximum over a moving window of the specified size.
-The first <code>size-1</code> elements are calculated using smaller windows spanning over <code>1 .. size-1</code> 
-values. If the entire window contains missing values, the result is missing.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '942', 942)" onmouseover="showTip(event, '942', 942)">
-            movingMean(size series)
-          </code>
-          <div class="tip" id="942">
-            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L372-372" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns a series that contains means over a moving window of the specified size.
-The first <code>size-1</code> elements of the returned series are always missing; if the 
-entire window contains missing values, the result is also missing.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '943', 943)" onmouseover="showTip(event, '943', 943)">
-            movingMin(size series)
-          </code>
-          <div class="tip" id="943">
-            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L412-412" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns a series that contains minimum over a moving window of the specified size.
-The first <code>size-1</code> elements are calculated using smaller windows spanning over <code>1 .. size-1</code> 
-values. If the entire window contains missing values, the result is missing.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '944', 944)" onmouseover="showTip(event, '944', 944)">
-            movingSkew(size series)
-          </code>
-          <div class="tip" id="944">
-            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L396-396" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns a series that contains skewness over a moving window of the specified size.
-The first <code>size-1</code> elements of the returned series are always missing; if the 
-entire window contains missing values, the result is also missing.</p>
-
 
 
         </td>
@@ -700,21 +113,20 @@ entire window contains missing values, the result is also missing.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '945', 945)" onmouseover="showTip(event, '945', 945)">
-            movingStdDev(size series)
+            expandingKurt(series)
           </code>
           <div class="tip" id="945">
-            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L388-388" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L491-491" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns a series that contains standard deviations over a moving window of the specified size.
-The first <code>size-1</code> elements of the returned series are always missing; if the 
-entire window contains missing values, the result is also missing.</p>
-
+          <p>Returns a series that contains kurtosis over expanding windows (the value for
+a given key is calculated from all elements with smaller keys); If the
+entire window contains fewer than 4 values, the result is missing.</p>
 
 
         </td>
@@ -723,21 +135,20 @@ entire window contains missing values, the result is also missing.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '946', 946)" onmouseover="showTip(event, '946', 946)">
-            movingSum(size series)
+            expandingMax(series)
           </code>
           <div class="tip" id="946">
-            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L364-364" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L516-516" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns a series that contains sums over a moving window of the specified size.
-The first <code>size-1</code> elements of the returned series are always missing; if the 
-entire window contains missing values, the result is 0.</p>
-
+          <p>Returns a series that contains maximum over an expanding window. The value
+for a key <em>k</em> in the returned series is the maximum from all elements with
+smaller keys.</p>
 
 
         </td>
@@ -746,62 +157,42 @@ entire window contains missing values, the result is 0.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '947', 947)" onmouseover="showTip(event, '947', 947)">
-            movingVariance(size series)
+            expandingMean(series)
           </code>
           <div class="tip" id="947">
-            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L380-380" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L447-447" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns a series that contains variance over a moving window of the specified size.
-The first <code>size-1</code> elements of the returned series are always missing; if the 
-entire window contains missing values, the result is also missing.</p>
-
+          <p>Returns a series that contains means over expanding windows (the value for
+a given key is calculated from all elements with smaller keys); If the
+entire window contains no values, the result is missing.</p>
 
 
         </td>
       </tr>
-    </tbody>
-  </table>
-    <h2>Multi-level statistics<a name="section3">&#160;</a></h2>
-      <div class="xmldoc">
-        <p>For a series with multi-level (hierarchical) index, the
-functions prefixed with <code>level</code> provide a way to apply statistical operation on 
-a single level of the index. (For example you can sum values along the <code>'K1</code> keys 
-in a series <code>Series&lt;'K1 * 'K2, float&gt;</code> and get <code>Series&lt;'K1, float&gt;</code> as the result.)</p>
-
-
-
-      </div>
-  <h3>Static members</h3>
-  <table class="table table-bordered member-list">
-    <thead>
-      <tr><td>Static member</td><td>Description</td></tr>
-    </thead>
-    <tbody>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '948', 948)" onmouseover="showTip(event, '948', 948)">
-            levelCount(level series)
+            expandingMin(series)
           </code>
           <div class="tip" id="948">
-            <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;L,int&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'L, 'V          </div>
+            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L759-759" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L504-504" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>For each group with equal keys at the level specified by <code>level</code>, 
-returns the number of the values in the group. This excludes missing 
-values and values created from <code>Double.NaN</code> etc.</p>
-
+          <p>Returns a series that contains minimum over an expanding window. The value
+for a key <em>k</em> in the returned series is the minimum from all elements with
+smaller keys.</p>
 
 
         </td>
@@ -810,21 +201,20 @@ values and values created from <code>Double.NaN</code> etc.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '949', 949)" onmouseover="showTip(event, '949', 949)">
-            levelKurt(level series)
+            expandingSkew(series)
           </code>
           <div class="tip" id="949">
-            <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'L          </div>
+            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L814-814" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L478-478" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>For each group with equal keys at the level specified by <code>level</code>, 
-returns the kurtosis of the values in a series. The function skips over missing values 
-and <code>NaN</code> values. When there are less than 4 values, the result is NaN.</p>
-
+          <p>Returns a series that contains skewness over expanding windows (the value for
+a given key is calculated from all elements with smaller keys); If the
+entire window contains fewer than 3 values, the result is missing.</p>
 
 
         </td>
@@ -833,21 +223,20 @@ and <code>NaN</code> values. When there are less than 4 values, the result is Na
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '950', 950)" onmouseover="showTip(event, '950', 950)">
-            levelMean(level series)
+            expandingStdDev(series)
           </code>
           <div class="tip" id="950">
-            <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'L          </div>
+            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L775-775" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L467-467" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>For each group with equal keys at the level specified by <code>level</code>, 
-returns the mean of the values in the group. The function skips over missing 
-values and <code>NaN</code> values. When there are no available values, the result is NaN.</p>
-
+          <p>Returns a series that contains standard deviation over expanding windows (the
+value for a given key is calculated from all elements with smaller keys); If the
+entire window contains fewer than 2 values, the result is missing.</p>
 
 
         </td>
@@ -856,20 +245,20 @@ values and <code>NaN</code> values. When there are no available values, the resu
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '951', 951)" onmouseover="showTip(event, '951', 951)">
-            levelMedian(level series)
+            expandingSum(series)
           </code>
           <div class="tip" id="951">
-            <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'L          </div>
+            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L782-782" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L439-439" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>For each group with equal keys at the level specified by <code>level</code>, 
-returns the median of the values in the group.</p>
-
+          <p>Returns a series that contains sums over expanding windows (the value for
+a given key is calculated from all elements with smaller keys); If the
+entire window contains no values, the result is 0.</p>
 
 
         </td>
@@ -878,44 +267,58 @@ returns the median of the values in the group.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '952', 952)" onmouseover="showTip(event, '952', 952)">
-            levelSkew(level series)
+            expandingVariance(series)
           </code>
           <div class="tip" id="952">
-            <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'L          </div>
+            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L806-806" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L456-456" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>For each group with equal keys at the level specified by <code>level</code>, 
-returns the skewness of the values in a series. The function skips over missing 
-values and <code>NaN</code> values. When there are less than 3 values, the result is NaN.</p>
-
+          <p>Returns a series that contains variance over expanding windows (the value for
+a given key is calculated from all elements with smaller keys); If the
+entire window contains fewer than 2 values, the result is missing.</p>
 
 
         </td>
       </tr>
+    </tbody>
+  </table>
+        <h2>Frame statistics<a name="section1">&#160;</a></h2>
+            <div class="xmldoc">
+                <p>The standard functions are exposed as static members and are
+overloaded. This means that they can be applied to both <code>Series&lt;'K, float&gt;</code> and
+to <code>Frame&lt;'R, 'C&gt;</code>. When applied to data frame, the functions apply the
+statistical calculation to all numerical columns of the frame.</p>
+
+
+            </div>
+  <h3>Static members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Static member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '953', 953)" onmouseover="showTip(event, '953', 953)">
-            levelStdDev(level series)
+            count(frame)
           </code>
           <div class="tip" id="953">
-            <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'L          </div>
+            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,int&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L790-790" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L673-673" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>For each group with equal keys at the level specified by <code>level</code>, 
-returns the standard deviation of the values in the group. The function skips over 
-missing values and <code>NaN</code> values. When there are less than 2 values, the result is NaN.</p>
-
+          <p>For each column, returns the number of the values in the column.
+This excludes missing values and values created from <code>Double.NaN</code> etc.</p>
 
 
         </td>
@@ -924,21 +327,20 @@ missing values and <code>NaN</code> values. When there are less than 2 values, t
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '954', 954)" onmouseover="showTip(event, '954', 954)">
-            levelSum(level series)
+            kurt(frame)
           </code>
           <div class="tip" id="954">
-            <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'L          </div>
+            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L767-767" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L727-727" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>For each group with equal keys at the level specified by <code>level</code>, 
-returns the sum of the values in the group. The function skips over missing values 
-and <code>NaN</code> values. When there are no available values, the result is 0.</p>
-
+          <p>For each numerical column, returns the kurtosis of the values in a series.
+The function skips over missing values and <code>NaN</code> values. When there are less than 4 values,
+the result is NaN.</p>
 
 
         </td>
@@ -947,60 +349,42 @@ and <code>NaN</code> values. When there are no available values, the result is 0
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '955', 955)" onmouseover="showTip(event, '955', 955)">
-            levelVariance(level series)
+            max(frame)
           </code>
           <div class="tip" id="955">
-            <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'L          </div>
+            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L798-798" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L745-745" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>For each group with equal keys at the level specified by <code>level</code>, 
-returns the variance of the values in the group. The function skips over missing 
-values and <code>NaN</code> values. When there are less than 2 values, the result is NaN.</p>
-
+          <p>For each numerical column, returns the maximal values as a series.
+The function skips over missing and <code>NaN</code> values. When there are no values,
+the result is <code>NaN</code>.</p>
 
 
         </td>
       </tr>
-    </tbody>
-  </table>
-    <h2>Series interoploation<a name="section4">&#160;</a></h2>
-  <h3>Static members</h3>
-  <table class="table table-bordered member-list">
-    <thead>
-      <tr><td>Static member</td><td>Description</td></tr>
-    </thead>
-    <tbody>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '956', 956)" onmouseover="showTip(event, '956', 956)">
-            interpolate(keys f series)
+            mean(frame)
           </code>
           <div class="tip" id="956">
-            <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; (f:(&#39;K -&gt; (&#39;K * &#39;T) option -&gt; (&#39;K * &#39;T) option -&gt; &#39;T)) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'T          </div>
+            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L639-639" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L689-689" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Interpolates an ordered series given a new sequence of keys. The function iterates through
-each new key, and invokes a function on the current key, the nearest smaller and larger valid 
-observations from the series argument. The function must return a new valid float.</p>
-
-<h2>Parameters</h2>
-
-<ul>
-<li><code>keys</code> - Sequence of new keys that forms the index of interpolated results</li>
-<li><code>f</code> - Function to do the interpolating</li>
-</ul>
-
+          <p>For each numerical column, returns the mean of the values in the column.
+The function skips over missing values and <code>NaN</code> values. When there are
+no available values, the result is NaN.</p>
 
 
         </td>
@@ -1009,42 +393,139 @@ observations from the series argument. The function must return a new valid floa
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '957', 957)" onmouseover="showTip(event, '957', 957)">
-            interpolateLinear(keys keyDiff series)
+            median(frame)
           </code>
           <div class="tip" id="957">
-            <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; (keyDiff:(&#39;K -&gt; &#39;K -&gt; float)) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L654-654" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L695-695" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Linearly interpolates an ordered series given a new sequence of keys.</p>
+          <p>For each numerical column, returns the median of the values in the column.</p>
 
-<h2>Parameters</h2>
 
-<ul>
-<li><code>keys</code> - Sequence of new keys that forms the index of interpolated results</li>
-<li><code>keyDiff</code> - A function representing "subtraction" between two keys</li>
-</ul>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
 
+          <code onmouseout="hideTip(event, '958', 958)" onmouseover="showTip(event, '958', 958)">
+            min(frame)
+          </code>
+          <div class="tip" id="958">
+            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L735-735" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>For each numerical column, returns the minimal values as a series.
+The function skips over missing and <code>NaN</code> values. When there are no values,
+the result is <code>NaN</code>.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '959', 959)" onmouseover="showTip(event, '959', 959)">
+            skew(frame)
+          </code>
+          <div class="tip" id="959">
+            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L719-719" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>For each numerical column, returns the skewness of the values in a series.
+The function skips over missing values and <code>NaN</code> values. When there are less than 3 values,
+the result is NaN.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '960', 960)" onmouseover="showTip(event, '960', 960)">
+            stdDev(frame)
+          </code>
+          <div class="tip" id="960">
+            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L703-703" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>For each numerical column, returns the standard deviation of the values in the column.
+The function skips over missing values and <code>NaN</code> values. When there are less than 2 values,
+the result is NaN.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '961', 961)" onmouseover="showTip(event, '961', 961)">
+            sum(frame)
+          </code>
+          <div class="tip" id="961">
+            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L681-681" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '962', 962)" onmouseover="showTip(event, '962', 962)">
+            variance(frame)
+          </code>
+          <div class="tip" id="962">
+            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,float&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L711-711" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>For each numerical column, returns the variance of the values in the column.
+The function skips over missing values and <code>NaN</code> values. When there are less
+than 2 values, the result is NaN.</p>
 
 
         </td>
       </tr>
     </tbody>
   </table>
-    <h2>Series statistics<a name="section5">&#160;</a></h2>
-      <div class="xmldoc">
-        <p>Functions such as <code>count</code>, <code>mean</code>, <code>kurt</code> etc. return the
-statistics calculated over all values of a series. The calculation skips
-over missing values (or <code>nan</code> values), so for example <code>mean</code> returns the
-average of all <em>present</em> values.</p>
+        <h2>Moving windows<a name="section2">&#160;</a></h2>
+            <div class="xmldoc">
+                <p>Moving window means that the window has a fixed size and moves over the series.
+In this case, the result of the statisitcs is always attached to the last key
+of the window. The function names are prefixed with <code>moving</code>.</p>
 
 
-
-      </div>
+            </div>
   <h3>Static members</h3>
   <table class="table table-bordered member-list">
     <thead>
@@ -1054,130 +535,21 @@ average of all <em>present</em> values.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '958', 958)" onmouseover="showTip(event, '958', 958)">
-            count(series)
-          </code>
-          <div class="tip" id="958">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; int<br />
-                          <strong>Type parameters:</strong> 'K, 'V          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L532-532" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns the number of the values in a series. This excludes missing values
-and values created from <code>Double.NaN</code> etc.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '959', 959)" onmouseover="showTip(event, '959', 959)">
-            kurt(series)
-          </code>
-          <div class="tip" id="959">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L582-582" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns the kurtosis of the values in a series. The function skips over missing 
-values and <code>NaN</code> values. When there are less than 4 values, the result is NaN.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '960', 960)" onmouseover="showTip(event, '960', 960)">
-            max(series)
-          </code>
-          <div class="tip" id="960">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V option<br />
-                          <strong>Type parameters:</strong> 'K, 'V          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L595-595" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns the maximum of the values in a series. The result is an option value.
-When the series contains no values, the result is <code>None</code>.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '961', 961)" onmouseover="showTip(event, '961', 961)">
-            maxBy(f series)
-          </code>
-          <div class="tip" id="961">
-            <strong>Signature:</strong> (f:(&#39;T -&gt; &#39;a)) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; (&#39;K * &#39;T) option<br />
-                          <strong>Type parameters:</strong> 'T, 'a, 'K          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L601-601" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns the key and value of the greatest element in the series. The result
-is an optional value. When the series contains no values, the result is <code>None</code>.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '962', 962)" onmouseover="showTip(event, '962', 962)">
-            mean(series)
-          </code>
-          <div class="tip" id="962">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
-                          <strong>Type parameters:</strong> 'K          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L553-553" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns the mean of the values in a series. The function skips over missing values
-and <code>NaN</code> values. When there are no available values, the result is NaN.</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
           <code onmouseout="hideTip(event, '963', 963)" onmouseover="showTip(event, '963', 963)">
-            median(series)
+            movingCount(size series)
           </code>
           <div class="tip" id="963">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L616-616" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L356-356" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns the median of the elements of the series.</p>
-
+          <p>Returns a series that contains counts over a moving window of the specified size.
+The first <code>size-1</code> elements of the returned series are always missing; if the
+entire window contains missing values, the result is 0.</p>
 
 
         </td>
@@ -1186,20 +558,20 @@ and <code>NaN</code> values. When there are no available values, the result is N
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '964', 964)" onmouseover="showTip(event, '964', 964)">
-            min(series)
+            movingKurt(size series)
           </code>
           <div class="tip" id="964">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V option<br />
-                          <strong>Type parameters:</strong> 'K, 'V          </div>
+            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L589-589" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L404-404" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns the minimum of the values in a series. The result is an option value.
-When the series contains no values, the result is <code>None</code>.</p>
-
+          <p>Returns a series that contains kurtosis over a moving window of the specified size.
+The first <code>size-1</code> elements of the returned series are always missing; if the
+entire window contains missing values, the result is also missing.</p>
 
 
         </td>
@@ -1208,20 +580,20 @@ When the series contains no values, the result is <code>None</code>.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '965', 965)" onmouseover="showTip(event, '965', 965)">
-            minBy(f series)
+            movingMax(size series)
           </code>
           <div class="tip" id="965">
-            <strong>Signature:</strong> (f:(&#39;T -&gt; &#39;a)) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; (&#39;K * &#39;T) option<br />
-                          <strong>Type parameters:</strong> 'T, 'a, 'K          </div>
+            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L609-609" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L420-420" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns the key and value of the least element in the series. The result
-is an optional value. When the series contains no values, the result is <code>None</code>.</p>
-
+          <p>Returns a series that contains maximum over a moving window of the specified size.
+The first <code>size-1</code> elements are calculated using smaller windows spanning over <code>1 .. size-1</code>
+values. If the entire window contains missing values, the result is missing.</p>
 
 
         </td>
@@ -1230,20 +602,20 @@ is an optional value. When the series contains no values, the result is <code>No
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '966', 966)" onmouseover="showTip(event, '966', 966)">
-            numSum(series)
+            movingMean(size series)
           </code>
           <div class="tip" id="966">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,^V&gt; -&gt; ^V<br />
-                          <strong>Type parameters:</strong> 'K, ^V          </div>
+            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L546-546" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L372-372" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Sum that operates only any appropriate numeric type. When there are no available 
-values, the result is zero of the approriate numeric type.</p>
-
+          <p>Returns a series that contains means over a moving window of the specified size.
+The first <code>size-1</code> elements of the returned series are always missing; if the
+entire window contains missing values, the result is also missing.</p>
 
 
         </td>
@@ -1252,20 +624,20 @@ values, the result is zero of the approriate numeric type.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '967', 967)" onmouseover="showTip(event, '967', 967)">
-            skew(series)
+            movingMin(size series)
           </code>
           <div class="tip" id="967">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L575-575" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L412-412" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns the skewness of the values in a series. The function skips over missing 
-values and <code>NaN</code> values. When there are less than 3 values, the result is NaN.</p>
-
+          <p>Returns a series that contains minimum over a moving window of the specified size.
+The first <code>size-1</code> elements are calculated using smaller windows spanning over <code>1 .. size-1</code>
+values. If the entire window contains missing values, the result is missing.</p>
 
 
         </td>
@@ -1274,20 +646,20 @@ values and <code>NaN</code> values. When there are less than 3 values, the resul
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '968', 968)" onmouseover="showTip(event, '968', 968)">
-            stdDev(series)
+            movingSkew(size series)
           </code>
           <div class="tip" id="968">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L568-568" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L396-396" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns the standard deviation of the values in a series. The function skips over 
-missing values and <code>NaN</code> values. When there are less than 2 values, the result is NaN.</p>
-
+          <p>Returns a series that contains skewness over a moving window of the specified size.
+The first <code>size-1</code> elements of the returned series are always missing; if the
+entire window contains missing values, the result is also missing.</p>
 
 
         </td>
@@ -1296,20 +668,20 @@ missing values and <code>NaN</code> values. When there are less than 2 values, t
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '969', 969)" onmouseover="showTip(event, '969', 969)">
-            sum(series)
+            movingStdDev(size series)
           </code>
           <div class="tip" id="969">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L538-538" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L388-388" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Returns the sum of the values in a series. The function skips over missing values
-and <code>NaN</code> values. When there are no available values, the result is NaN.</p>
-
+          <p>Returns a series that contains standard deviations over a moving window of the specified size.
+The first <code>size-1</code> elements of the returned series are always missing; if the
+entire window contains missing values, the result is also missing.</p>
 
 
         </td>
@@ -1318,20 +690,584 @@ and <code>NaN</code> values. When there are no available values, the result is N
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '970', 970)" onmouseover="showTip(event, '970', 970)">
-            variance(series)
+            movingSum(size series)
           </code>
           <div class="tip" id="970">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
-                          <strong>Type parameters:</strong> 'K          </div>
+            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/BlueMountainCapital/Deedle/tree/master/src/Deedle/Stats.fs#L561-561" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L364-364" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a series that contains sums over a moving window of the specified size.
+The first <code>size-1</code> elements of the returned series are always missing; if the
+entire window contains missing values, the result is 0.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '971', 971)" onmouseover="showTip(event, '971', 971)">
+            movingVariance(size series)
+          </code>
+          <div class="tip" id="971">
+            <strong>Signature:</strong> size:int -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L380-380" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a series that contains variance over a moving window of the specified size.
+The first <code>size-1</code> elements of the returned series are always missing; if the
+entire window contains missing values, the result is also missing.</p>
+
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+        <h2>Multi-level statistics<a name="section3">&#160;</a></h2>
+            <div class="xmldoc">
+                <p>For a series with multi-level (hierarchical) index, the
+functions prefixed with <code>level</code> provide a way to apply statistical operation on
+a single level of the index. (For example you can sum values along the <code>'K1</code> keys
+in a series <code>Series&lt;'K1 * 'K2, float&gt;</code> and get <code>Series&lt;'K1, float&gt;</code> as the result.)</p>
+
+
+            </div>
+  <h3>Static members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Static member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '972', 972)" onmouseover="showTip(event, '972', 972)">
+            levelCount(level series)
+          </code>
+          <div class="tip" id="972">
+            <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;L,int&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'L, 'V                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L759-759" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>For each group with equal keys at the level specified by <code>level</code>,
+returns the number of the values in the group. This excludes missing
+values and values created from <code>Double.NaN</code> etc.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '973', 973)" onmouseover="showTip(event, '973', 973)">
+            levelKurt(level series)
+          </code>
+          <div class="tip" id="973">
+            <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'L                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L814-814" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>For each group with equal keys at the level specified by <code>level</code>,
+returns the kurtosis of the values in a series. The function skips over missing values
+and <code>NaN</code> values. When there are less than 4 values, the result is NaN.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '974', 974)" onmouseover="showTip(event, '974', 974)">
+            levelMean(level series)
+          </code>
+          <div class="tip" id="974">
+            <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'L                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L775-775" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>For each group with equal keys at the level specified by <code>level</code>,
+returns the mean of the values in the group. The function skips over missing
+values and <code>NaN</code> values. When there are no available values, the result is NaN.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '975', 975)" onmouseover="showTip(event, '975', 975)">
+            levelMedian(level series)
+          </code>
+          <div class="tip" id="975">
+            <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'L                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L782-782" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>For each group with equal keys at the level specified by <code>level</code>,
+returns the median of the values in the group.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '976', 976)" onmouseover="showTip(event, '976', 976)">
+            levelSkew(level series)
+          </code>
+          <div class="tip" id="976">
+            <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'L                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L806-806" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>For each group with equal keys at the level specified by <code>level</code>,
+returns the skewness of the values in a series. The function skips over missing
+values and <code>NaN</code> values. When there are less than 3 values, the result is NaN.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '977', 977)" onmouseover="showTip(event, '977', 977)">
+            levelStdDev(level series)
+          </code>
+          <div class="tip" id="977">
+            <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'L                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L790-790" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>For each group with equal keys at the level specified by <code>level</code>,
+returns the standard deviation of the values in the group. The function skips over
+missing values and <code>NaN</code> values. When there are less than 2 values, the result is NaN.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '978', 978)" onmouseover="showTip(event, '978', 978)">
+            levelSum(level series)
+          </code>
+          <div class="tip" id="978">
+            <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'L                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L767-767" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>For each group with equal keys at the level specified by <code>level</code>,
+returns the sum of the values in the group. The function skips over missing values
+and <code>NaN</code> values. When there are no available values, the result is 0.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '979', 979)" onmouseover="showTip(event, '979', 979)">
+            levelVariance(level series)
+          </code>
+          <div class="tip" id="979">
+            <strong>Signature:</strong> (level:(&#39;K -&gt; &#39;L)) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;L,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'L                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L798-798" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>For each group with equal keys at the level specified by <code>level</code>,
+returns the variance of the values in the group. The function skips over missing
+values and <code>NaN</code> values. When there are less than 2 values, the result is NaN.</p>
+
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+        <h2>Series interoploation<a name="section4">&#160;</a></h2>
+  <h3>Static members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Static member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '980', 980)" onmouseover="showTip(event, '980', 980)">
+            interpolate(keys f series)
+          </code>
+          <div class="tip" id="980">
+            <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; (f:(&#39;K -&gt; (&#39;K * &#39;T) option -&gt; (&#39;K * &#39;T) option -&gt; &#39;T)) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L639-639" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Interpolates an ordered series given a new sequence of keys. The function iterates through
+each new key, and invokes a function on the current key, the nearest smaller and larger valid
+observations from the series argument. The function must return a new valid float.</p>
+<h2>Parameters</h2>
+<ul>
+<li><code>keys</code> - Sequence of new keys that forms the index of interpolated results</li>
+<li><code>f</code> - Function to do the interpolating</li>
+</ul>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '981', 981)" onmouseover="showTip(event, '981', 981)">
+            interpolateLinear(keys keyDiff series)
+          </code>
+          <div class="tip" id="981">
+            <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; (keyDiff:(&#39;K -&gt; &#39;K -&gt; float)) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L654-654" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Linearly interpolates an ordered series given a new sequence of keys.</p>
+<h2>Parameters</h2>
+<ul>
+<li><code>keys</code> - Sequence of new keys that forms the index of interpolated results</li>
+<li><code>keyDiff</code> - A function representing "subtraction" between two keys</li>
+</ul>
+
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+        <h2>Series statistics<a name="section5">&#160;</a></h2>
+            <div class="xmldoc">
+                <p>Functions such as <code>count</code>, <code>mean</code>, <code>kurt</code> etc. return the
+statistics calculated over all values of a series. The calculation skips
+over missing values (or <code>nan</code> values), so for example <code>mean</code> returns the
+average of all <em>present</em> values.</p>
+
+
+            </div>
+  <h3>Static members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Static member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '982', 982)" onmouseover="showTip(event, '982', 982)">
+            count(series)
+          </code>
+          <div class="tip" id="982">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; int<br />
+                          <strong>Type parameters:</strong> 'K, 'V                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L532-532" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the number of the values in a series. This excludes missing values
+and values created from <code>Double.NaN</code> etc.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '983', 983)" onmouseover="showTip(event, '983', 983)">
+            kurt(series)
+          </code>
+          <div class="tip" id="983">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L582-582" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the kurtosis of the values in a series. The function skips over missing
+values and <code>NaN</code> values. When there are less than 4 values, the result is NaN.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '984', 984)" onmouseover="showTip(event, '984', 984)">
+            max(series)
+          </code>
+          <div class="tip" id="984">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V option<br />
+                          <strong>Type parameters:</strong> 'K, 'V                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L595-595" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the maximum of the values in a series. The result is an option value.
+When the series contains no values, the result is <code>None</code>.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '985', 985)" onmouseover="showTip(event, '985', 985)">
+            maxBy(f series)
+          </code>
+          <div class="tip" id="985">
+            <strong>Signature:</strong> (f:(&#39;T -&gt; &#39;a)) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; (&#39;K * &#39;T) option<br />
+                          <strong>Type parameters:</strong> 'T, 'a, 'K                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L601-601" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the key and value of the greatest element in the series. The result
+is an optional value. When the series contains no values, the result is <code>None</code>.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '986', 986)" onmouseover="showTip(event, '986', 986)">
+            mean(series)
+          </code>
+          <div class="tip" id="986">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L553-553" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the mean of the values in a series. The function skips over missing values
+and <code>NaN</code> values. When there are no available values, the result is NaN.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '987', 987)" onmouseover="showTip(event, '987', 987)">
+            median(series)
+          </code>
+          <div class="tip" id="987">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L616-616" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the median of the elements of the series.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '988', 988)" onmouseover="showTip(event, '988', 988)">
+            min(series)
+          </code>
+          <div class="tip" id="988">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V option<br />
+                          <strong>Type parameters:</strong> 'K, 'V                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L589-589" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the minimum of the values in a series. The result is an option value.
+When the series contains no values, the result is <code>None</code>.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '989', 989)" onmouseover="showTip(event, '989', 989)">
+            minBy(f series)
+          </code>
+          <div class="tip" id="989">
+            <strong>Signature:</strong> (f:(&#39;T -&gt; &#39;a)) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; (&#39;K * &#39;T) option<br />
+                          <strong>Type parameters:</strong> 'T, 'a, 'K                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L609-609" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the key and value of the least element in the series. The result
+is an optional value. When the series contains no values, the result is <code>None</code>.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '990', 990)" onmouseover="showTip(event, '990', 990)">
+            numSum(series)
+          </code>
+          <div class="tip" id="990">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,^V&gt; -&gt; ^V<br />
+                          <strong>Type parameters:</strong> 'K, ^V                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L546-546" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Sum that operates only any appropriate numeric type. When there are no available
+values, the result is zero of the approriate numeric type.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '991', 991)" onmouseover="showTip(event, '991', 991)">
+            skew(series)
+          </code>
+          <div class="tip" id="991">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L575-575" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the skewness of the values in a series. The function skips over missing
+values and <code>NaN</code> values. When there are less than 3 values, the result is NaN.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '992', 992)" onmouseover="showTip(event, '992', 992)">
+            stdDev(series)
+          </code>
+          <div class="tip" id="992">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L568-568" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the standard deviation of the values in a series. The function skips over
+missing values and <code>NaN</code> values. When there are less than 2 values, the result is NaN.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '993', 993)" onmouseover="showTip(event, '993', 993)">
+            sum(series)
+          </code>
+          <div class="tip" id="993">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L538-538" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the sum of the values in a series. The function skips over missing values
+and <code>NaN</code> values. When there are no available values, the result is NaN.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '994', 994)" onmouseover="showTip(event, '994', 994)">
+            variance(series)
+          </code>
+          <div class="tip" id="994">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L561-561" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns the variance of the values in a series. The function skips over missing values
 and <code>NaN</code> values. When there are less than 2 values, the result is NaN.</p>
-
 
 
         </td>
@@ -1341,61 +1277,61 @@ and <code>NaN</code> values. When there are less than 2 values, the result is Na
 
         </div>
         <div class="span3">
-          <a href="http://bluemountaincapital.github.io/Deedle/index.html">
-            <img src="http://bluemountaincapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          <a href="http://fslab.org/Deedle/index.html">
+            <img src="http://fslab.org/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
           <ul class="nav nav-list" id="menu">
             <li class="nav-header">Deedle</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/index.html">Home page</a></li>
+            <li><a href="http://fslab.org/Deedle/index.html">Home page</a></li>
             <li class="divider"></li>
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/design.html">Design notes</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
+            <li><a href="http://fslab.org/Deedle/design.html">Design notes</a></li>
             <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
             
             <li class="nav-header">Using from F#</li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
+              <a href="http://fslab.org/Deedle/tutorial.html">Quick start tutorial</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/series.html">Working with time series</a>
+              <a href="http://fslab.org/Deedle/series.html">Working with time series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/frame.html">Working with data frames</a>
+              <a href="http://fslab.org/Deedle/frame.html">Working with data frames</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/stats.html">Statistics &amp; calculations</a>
+              <a href="http://fslab.org/Deedle/stats.html">Statistics &amp; calculations</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using Deedle with R</a>
+              <a href="http://fslab.org/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/csharpintro.html">Getting started</a></li>
+            <li><a href="http://fslab.org/Deedle/csharpintro.html">Getting started</a></li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html">Working with data series</a>
+              <a href="http://fslab.org/Deedle/csharpseries.html">Working with data series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html">Working with data frames</a>
+              <a href="http://fslab.org/Deedle/csharpframe.html">Working with data frames</a>
             </li>
 
             <li class="nav-header">Documentation</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/index.html">API Reference</a></li>
             <li class="divider"></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-stats.html">Stats module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-stats.html">Stats module</a></li>
 
             <li class="nav-header">Samples</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="http://fslab.org/Deedle/lazysource.html">Lazy data loading</a></li>
           </ul>
         </div>
       </div>
     </div>
-    <a href="http://github.com/BlueMountainCapital/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <a href="http://github.com/fslaborg/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
     <script>
       (function (i, s, o, g, r, a, m) {
         i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {

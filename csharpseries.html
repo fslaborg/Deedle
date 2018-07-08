@@ -6,7 +6,7 @@
 </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Easy to use .NET library for data manipulation and scientific programming">
-    <meta name="author" content="BlueMountain Capital">
+    <meta name="author" content="BlueMountain Capital, FsLab.Org">
 
     <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
     <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
@@ -14,9 +14,9 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
-    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/style.css" />
-    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/deedle.css" />
-    <script type="text/javascript" src="http://bluemountaincapital.github.io/Deedle/content/tips.js"></script>
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/deedle.css" />
+    <script type="text/javascript" src="http://fslab.org/Deedle/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -27,82 +27,77 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fslab.org/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
           <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
-        <h3 class="muted"><a href="http://bluemountaincapital.github.io/Deedle/index.html">Deedle</a></h3>
+        <h3 class="muted"><a href="http://fslab.org/Deedle/index.html">Deedle</a></h3>
       </div>
       <hr />
       <div class="row">
         <div class="span9" id="main">
           
 <h1><a name="Time-series-manipulation-in-C" class="anchor" href="#Time-series-manipulation-in-C">Time series manipulation in C#</a></h1>
-
-<p>In this section, we look at Deedle features that are useful when working with series data 
+<p>In this section, we look at Deedle features that are useful when working with series data
 in C#. A series can be either ordered (e.g. time series) or unordered. Although we mainly
-look at operations on the <code>Series</code> type here, many of the operations can be applied to 
-data frame <code>Frame</code> containing multiple series. Furthermore, data frame provides an elegant 
+look at operations on the <code>Series</code> type here, many of the operations can be applied to
+data frame <code>Frame</code> containing multiple series. Furthermore, data frame provides an elegant
 way for aligning and joining series.</p>
-
-<p>You can also get the samples on this page as a 
-<a href="https://github.com/BlueMountainCapital/Deedle/blob/master/docs/csharp/Series.cs">C# source file</a>
+<p>You can also get the samples on this page as a
+<a href="https://github.com/fslaborg/Deedle/blob/master/docs/csharp/Series.cs">C# source file</a>
 from GitHub and run the samples.</p>
-
 <a name="understanding"></a>
-
 <h2><a name="What-is-a-series" class="anchor" href="#What-is-a-series">What is a series</a></h2>
-
 <ul>
-<li><p><strong>Key value mapping</strong> - a series is represented by a type <code>Series&lt;K, V&gt;</code> from the <code>Deedle</code> namespace. The type
+<li>
+<p><strong>Key value mapping</strong> - a series is represented by a type <code>Series&lt;K, V&gt;</code> from the <code>Deedle</code> namespace. The type
 represents a data series mapping keys of type <code>K</code> to values of type <code>V</code>. There are no
 restriction on the types of keys and values, but some operations are only available for
-keys that can be ordered (implement the <code>IComparable&lt;K&gt;</code> interface).</p></li>
-<li><p><strong>Typical uses</strong> - typical keys include <code>int</code> for <em>ordinally</em> indexed keys and <code>DateTimeOffset</code> when working 
+keys that can be ordered (implement the <code>IComparable&lt;K&gt;</code> interface).</p>
+</li>
+<li>
+<p><strong>Typical uses</strong> - typical keys include <code>int</code> for <em>ordinally</em> indexed keys and <code>DateTimeOffset</code> when working
 with time series. The most common types of values are <code>double</code> or <code>decimal</code> for numeric
 data. Another common use of series is with keys of type <code>string</code> and values of type <code>object</code>
 to represent heterogeneous data set - typically a column in a data frame that stores
-multiple named properties of different types.</p></li>
-<li><p><strong>Immutable</strong> - the type <code>Series&lt;K, V&gt;</code> is <em>immutable</em>. Once you create a series object, it cannot be 
+multiple named properties of different types.</p>
+</li>
+<li>
+<p><strong>Immutable</strong> - the type <code>Series&lt;K, V&gt;</code> is <em>immutable</em>. Once you create a series object, it cannot be
 changed. All operations that operate on series return a copy (and typically also copy
 the data of the series, although this is an internal aspect of the implementation). So,
 working with series is similar to workinig with .NET <code>string</code> type or with the
-<code>IEnumerable&lt;T&gt;</code> type using LINQ.</p></li>
-<li><p><strong>Missing values</strong> - series is desinged to automatically support and handle missing
+<code>IEnumerable&lt;T&gt;</code> type using LINQ.</p>
+</li>
+<li>
+<p><strong>Missing values</strong> - series is desinged to automatically support and handle missing
 data. This means that you can create a series where values are missing for some keys
 (e.g. when data is not available) and then handle missing values (provide defaults or
 fill with previous values). All series operations automatically propagate or handle
-missing data.</p></li>
+missing data.</p>
+</li>
 </ul>
-
 <a name="creating"></a>
-
 <h2><a name="Creating-and-loading-series" class="anchor" href="#Creating-and-loading-series">Creating and loading series</a></h2>
-
 <p>Once you referenced the <a href="http://nuget.org/packages/Deedle">Deedle NuGet package</a> and opened
 the <code>Deedle</code> namespace, you can create series in a number of ways. The Deedle library implements
 the builder object pattern, so if you want to create a series explicitly, you can use
 the generic <code>SeriesBuilder</code> type.</p>
-
 <h3><a name="Using-series-builder" class="anchor" href="#Using-series-builder">Using series builder</a></h3>
-
-<p>If you want to create a series with explicitly given list of key-value pairs, you can use the C# 
+<p>If you want to create a series with explicitly given list of key-value pairs, you can use the C#
 collection initializer syntax and <code>SeriesBuilder&lt;K, V&gt;</code>. The series builder exposes a property
 <code>Series</code> that returns (a cloned) series containing the values added so far:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">var</span> numNames <span class="o">=</span> <span class="k">new</span> SeriesBuilder&lt;<span class="k">int</span>, <span class="k">string</span>&gt;() {
-  { 1, <span class="s">"one"</span> }, { 2, <span class="s">"two"</span> }, { 3, <span class="s">"three"</span> } }.Series;
+  { <span class="n">1</span>, <span class="s">"one"</span> }, { <span class="n">2</span>, <span class="s">"two"</span> }, { <span class="n">3</span>, <span class="s">"three"</span> } }.Series;
 numNames.Print();</code></pre></td></tr></table>
-
-<p>The <code>SeriesBuilder&lt;K, V&gt;</code> type implements the <code>Add</code> method, so you can also easily use it 
+<p>The <code>SeriesBuilder&lt;K, V&gt;</code> type implements the <code>Add</code> method, so you can also easily use it
 if you want to add elements one by one in a loop. The above snippet uses extension method
 <code>Print</code> to output the series to a console. In this case, the output will look as follows:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -111,11 +106,9 @@ if you want to add elements one by one in a loop. The above snippet uses extensi
 2 -&gt; two
 3 -&gt; three
 </code></pre></td></tr></table>
-
-<p>Another feature supported by the series builder is the C# <code>dynamic</code> keyword. If you want to 
+<p>Another feature supported by the series builder is the C# <code>dynamic</code> keyword. If you want to
 create a series that maps <code>string</code> keys to values (e.g. when building a row that you want
 to append to a data frame), you can do so as follows:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
@@ -130,42 +123,35 @@ to append to a data frame), you can do so as follows:</p>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Create series builder and use it via 'dynamic'</span>
 <span class="k">var</span> nameNumsBuild <span class="o">=</span> <span class="k">new</span> SeriesBuilder&lt;<span class="k">string</span>, <span class="k">int</span>&gt;();
 <span class="k">dynamic</span> nameNumsDyn <span class="o">=</span> nameNumsBuild;
-nameNumsDyn.One <span class="o">=</span> 1;
-nameNumsDyn.Two <span class="o">=</span> 2;
-nameNumsDyn.Three <span class="o">=</span> 3;
+nameNumsDyn.One <span class="o">=</span> <span class="n">1</span>;
+nameNumsDyn.Two <span class="o">=</span> <span class="n">2</span>;
+nameNumsDyn.Three <span class="o">=</span> <span class="n">3</span>;
 
 <span class="c">// Build series and print it</span>
 <span class="k">var</span> nameNums <span class="o">=</span> nameNumsBuild.Series;
 nameNums.Print();</code></pre></td></tr></table>
-
 <p>Here, we assing <code>SeriesBuilder&lt;K, V&gt;</code> to a variable <code>nameNumsDyn</code> of type <code>dynamic</code> and
 use property setter syntax to add values for strng keys <code>One</code>, <code>Two</code> and <code>Three</code>. Then we
 convert the original series builder to a series and print it.</p>
-
 <h3><a name="Converting-collections-to-series" class="anchor" href="#Converting-collections-to-series">Converting collections to series</a></h3>
-
 <p>Using the series builder is useful if you want to create series with some data explicitly from
 code. However, more commonly, you already have the data you want to use in some collection.
 In that case, you can use one of the extension methods exposed by Deedle.</p>
-
 <p>If you only care about the values, you can use <code>ToSeriesOrdinal</code> which s defined for any
 <code>IEnumerable&lt;V&gt;</code> and automatically generates keys of type <code>int</code>. For example, here we create
 a series containing random <code>double</code> values:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">var</span> rnd <span class="o">=</span> <span class="k">new</span> Random();
-<span class="k">var</span> randNums <span class="o">=</span> Enumerable.Range(0, 100)
+<span class="k">var</span> randNums <span class="o">=</span> Enumerable.Range(<span class="n">0</span>, <span class="n">100</span>)
   .Select(_ <span class="o">=</span><span class="o">&gt;</span> rnd.NextDouble()).ToOrdinalSeries();
 randNums.Print();</code></pre></td></tr></table>
-
 <p>If you want to create a series with specified keys and values, you can use extension method
 <code>ToSeries</code> on <code>IEnumerable&lt;KeyValuePair&lt;K, V&gt;&gt;</code>. The following snippet uses a helper method
 <code>KeyValue.Create</code> that is exposed by Deedle and makes it easier to create key value pairs:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -173,16 +159,14 @@ randNums.Print();</code></pre></td></tr></table>
 <span class="l">5: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">var</span> sin <span class="o">=</span> 
-  ( <span class="k">from</span> i <span class="k">in</span> Enumerable.Range(0, 1000)
-    <span class="k">let</span> x <span class="o">=</span> i <span class="o">/</span> 100.0
+  ( <span class="k">from</span> i <span class="k">in</span> Enumerable.Range(<span class="n">0</span>, <span class="n">1000</span>)
+    <span class="k">let</span> x <span class="o">=</span> i <span class="o">/</span> <span class="n">100.0</span>
     <span class="k">select</span> KeyValue.Create(x, Math.Sin(x)) ).ToSeries();
 sin.Print();</code></pre></td></tr></table>
-
 <p>To create a series where values are missing for some keys, you need to
-use the type <code>OptionalValue&lt;K&gt;</code>. You can use two C#-friendly methods - to create an empty 
+use the type <code>OptionalValue&lt;K&gt;</code>. You can use two C#-friendly methods - to create an empty
 value, you can use <code>OptionalValue.Empty&lt;T&gt;()</code> and to convert a value <code>value</code> to optional,
 use <code>OptionalValue.Create(value)</code>. Alternatively, you can also use <code>OptionalValue.OfNullable</code>:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -190,21 +174,18 @@ use <code>OptionalValue.Create(value)</code>. Alternatively, you can also use <c
 <span class="l">5: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">var</span> opts <span class="o">=</span>
-  (<span class="k">from</span> i <span class="k">in</span> Enumerable.Range(0, 10)
+  (<span class="k">from</span> i <span class="k">in</span> Enumerable.Range(<span class="n">0</span>, <span class="n">10</span>)
    <span class="k">let</span> v <span class="o">=</span> OptionalValue.OfNullable(LookupEven(i))
    <span class="k">select</span> KeyValue.Create(i, v)).ToSparseSeries();
 opts.Print();</code></pre></td></tr></table>
-
 <p>Note that the sample uses extension method <code>ToSparseSeries</code> to indicate that we are creating
-series from a collection of key value pairs where the values may be missing. The resulting 
+series from a collection of key value pairs where the values may be missing. The resulting
 series has a type <code>Series&lt;int, int&gt;</code> (the fact that there are missing values has no effect
 on the type).</p>
-
-<p>Finally, our last example uses the <code>Frame</code> type (you can find more about it in a <a href="csharpframe.html">separate data 
+<p>Finally, our last example uses the <code>Frame</code> type (you can find more about it in a <a href="csharpframe.html">separate data
 frame tutorial</a>. We load data frame from a given CSV file, specify that we
-want to use the "Date" column as the index of type <code>DateTime</code>, order the rows and then get a 
+want to use the "Date" column as the index of type <code>DateTime</code>, order the rows and then get a
 time series representing the "Open" column:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -214,24 +195,17 @@ time series representing the "Open" column:</p>
 <span class="k">var</span> frameDate <span class="o">=</span> frame.IndexRows&lt;DateTime&gt;(<span class="s">"Date"</span>).SortRowsByKey();
 <span class="k">var</span> msftOpen <span class="o">=</span> frameDate.GetColumn&lt;<span class="k">double</span>&gt;(<span class="s">"Open"</span>);
 msftOpen.Print();</code></pre></td></tr></table>
-
 <p>The result is an ordered time series of type <code>Series&lt;DateTime, float&gt;</code> that we'll use in some
 of the later examples in this tutorial.</p>
-
 <a name="lookup"></a>
-
 <h2><a name="Lookup-and-slicing" class="anchor" href="#Lookup-and-slicing">Lookup and slicing</a></h2>
-
 <p>Given a series, the first thing that we might want to do is to access the data in the series.
 In this section, we look at <em>lookup</em> operations that can be used to retrieve values from
 series and <em>slicing</em> operations that give us a sub-series.</p>
-
 <h3><a name="Lookup-by-key-and-index" class="anchor" href="#Lookup-by-key-and-index">Lookup by key and index</a></h3>
-
 <p>A series supports C# indexer that takes the series <em>key</em> as an argument. Given a series
 <code>Series&lt;K, V&gt;</code> and a key of type <code>K</code>, you can access the associated value using indexer.
 Series also supports random access using index, which can be done using the <code>GetAt</code> method:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -241,19 +215,17 @@ Series also supports random access using index, which can be done using the <cod
 <span class="l">7: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Get value for a specified int and string key</span>
-<span class="k">var</span> tenth <span class="o">=</span> randNums[10];
+<span class="k">var</span> tenth <span class="o">=</span> randNums[<span class="n">10</span>];
 <span class="k">var</span> one <span class="o">=</span> nameNums[<span class="s">"One"</span>];
 
 <span class="c">// Get first and last value using index</span>
-<span class="k">var</span> fst <span class="o">=</span> nameNums.GetAt(0);
-<span class="k">var</span> lst <span class="o">=</span> nameNums.GetAt(nameNums.KeyCount <span class="o">-</span> 1);</code></pre></td></tr></table>
-
+<span class="k">var</span> fst <span class="o">=</span> nameNums.GetAt(<span class="n">0</span>);
+<span class="k">var</span> lst <span class="o">=</span> nameNums.GetAt(nameNums.KeyCount <span class="o">-</span> <span class="n">1</span>);</code></pre></td></tr></table>
 <p>Accessing an element may fail for two reasons. When the key is not present in the series,
 you get <code>KeyNotFoundException</code>. When the key is present, but the series does not contain
-any value for the key, the access operations throw <code>MissingValueException</code> (defined in 
-<code>Deedle</code> namespace). To avoid handling exceptions, you can use <code>TryGet</code> and <code>TryGetAt</code> 
+any value for the key, the access operations throw <code>MissingValueException</code> (defined in
+<code>Deedle</code> namespace). To avoid handling exceptions, you can use <code>TryGet</code> and <code>TryGetAt</code>
 methods that return the result as <code>OptionalValue&lt;T&gt;</code>:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -263,27 +235,22 @@ methods that return the result as <code>OptionalValue&lt;T&gt;</code>:</p>
 <span class="l">7: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Get value as OptionalValue&lt;T&gt; and use it</span>
-<span class="k">var</span> opt <span class="o">=</span> opts.TryGet(5);
+<span class="k">var</span> opt <span class="o">=</span> opts.TryGet(<span class="n">5</span>);
 <span class="k">if</span> (opt.HasValue) Console.Write(opt.Value);
 
 <span class="c">// For value types, we can convert to nullable type</span>
-<span class="k">int</span>? value1 <span class="o">=</span> opts.TryGet(5).AsNullable();
-<span class="k">int</span>? value2 <span class="o">=</span> opts.TryGetAt(0).AsNullable();</code></pre></td></tr></table>
-
+<span class="k">int</span>? value<span class="n">1</span> <span class="o">=</span> opts.TryGet(<span class="n">5</span>).AsNullable();
+<span class="k">int</span>? value<span class="n">2</span> <span class="o">=</span> opts.TryGetAt(<span class="n">0</span>).AsNullable();</code></pre></td></tr></table>
 <p>As the snippet shows, <code>OptionalValue&lt;T&gt;</code> can be processed easily using <code>HasValue</code> and <code>Value</code>
 properties. If the value contained in a series is a value type, then you can also turn the
 result into a more convenient nullable type using <code>AsNullable</code> extension method.</p>
-
 <h3><a name="Lookup-and-slicing-for-ordered-series" class="anchor" href="#Lookup-and-slicing-for-ordered-series">Lookup and slicing for ordered series</a></h3>
-
-<p>The operations discussed so far work on any series. However, more is available if the series 
-is ordered (e.g. time series representing MSFT stock prices that we loaded in the previous 
+<p>The operations discussed so far work on any series. However, more is available if the series
+is ordered (e.g. time series representing MSFT stock prices that we loaded in the previous
 section).</p>
-
 <p>First of all, if the value is not available for a specified key (say January 1, 2012) then
 we can ask the series to give us the value for nearest greater or smaller key that has a value.
 This is done using the <code>Get</code> method (which behaves as the indexer in the simple case):</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
@@ -297,25 +264,22 @@ This is done using the <code>Get</code> method (which behaves as the indexer in 
 <span class="l">11: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Get value exactly at the specified key</span>
-<span class="k">var</span> jan3 <span class="o">=</span> msftOpen
-  .Get(<span class="k">new</span> DateTime(2012, 1, 3));
+<span class="k">var</span> jan<span class="n">3</span> <span class="o">=</span> msftOpen
+  .Get(<span class="k">new</span> DateTime(<span class="n">2012</span>, <span class="n">1</span>, <span class="n">3</span>));
 
 <span class="c">// Get value at a key or for the nearest previous date</span>
-<span class="k">var</span> beforeJan1 <span class="o">=</span> msftOpen
-  .Get(<span class="k">new</span> DateTime(2012, 1, 1), Lookup.ExactOrSmaller);
+<span class="k">var</span> beforeJan<span class="n">1</span> <span class="o">=</span> msftOpen
+  .Get(<span class="k">new</span> DateTime(<span class="n">2012</span>, <span class="n">1</span>, <span class="n">1</span>), Lookup.ExactOrSmaller);
 
 <span class="c">// Get value at a key or for the nearest later date</span>
-<span class="k">var</span> afterJan1 <span class="o">=</span> msftOpen
-  .Get(<span class="k">new</span> DateTime(2012, 1, 1), Lookup.ExactOrGreater);</code></pre></td></tr></table>
-
+<span class="k">var</span> afterJan<span class="n">1</span> <span class="o">=</span> msftOpen
+  .Get(<span class="k">new</span> DateTime(<span class="n">2012</span>, <span class="n">1</span>, <span class="n">1</span>), Lookup.ExactOrGreater);</code></pre></td></tr></table>
 <p>Even though no value is available for January 1, 2012 (because it was not a business day),
 the last two operations succeed and return a value.</p>
-
 <p>The next set of operations that are available on ordered series perform <em>slicing</em>. Given a
 series representing the entire history of Microsoft stock prices (from 1975 to the present
 date), we can easily get a sub-series that represents values only for some sub-range of the
 original dates:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
@@ -332,38 +296,32 @@ original dates:</p>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Get a series starting/ending at </span>
 <span class="c">// the specified date (inclusive)</span>
-<span class="k">var</span> msftStartIncl <span class="o">=</span> msftOpen.StartAt(<span class="k">new</span> DateTime(2012, 1, 1));
-<span class="k">var</span> msftEndIncl <span class="o">=</span> msftOpen.EndAt(<span class="k">new</span> DateTime(2012, 12, 31));
+<span class="k">var</span> msftStartIncl <span class="o">=</span> msftOpen.StartAt(<span class="k">new</span> DateTime(<span class="n">2012</span>, <span class="n">1</span>, <span class="n">1</span>));
+<span class="k">var</span> msftEndIncl <span class="o">=</span> msftOpen.EndAt(<span class="k">new</span> DateTime(<span class="n">2012</span>, <span class="n">12</span>, <span class="n">31</span>));
 
 <span class="c">// Get a series starting/ending after/before </span>
 <span class="c">// the specified date (exclusive)</span>
-<span class="k">var</span> msftStartExcl <span class="o">=</span> msftOpen.After(<span class="k">new</span> DateTime(2012, 1, 1));
-<span class="k">var</span> msftEndExcl <span class="o">=</span> msftOpen.Before(<span class="k">new</span> DateTime(2012, 12, 31));
+<span class="k">var</span> msftStartExcl <span class="o">=</span> msftOpen.After(<span class="k">new</span> DateTime(<span class="n">2012</span>, <span class="n">1</span>, <span class="n">1</span>));
+<span class="k">var</span> msftEndExcl <span class="o">=</span> msftOpen.Before(<span class="k">new</span> DateTime(<span class="n">2012</span>, <span class="n">12</span>, <span class="n">31</span>));
 
 <span class="c">// Get prices for 2012 (both keys are inclusive)</span>
-<span class="k">var</span> msft2012 <span class="o">=</span> msftOpen.Between
-  (<span class="k">new</span> DateTime(2012, 1, 1), <span class="k">new</span> DateTime(2012, 12, 31));</code></pre></td></tr></table>
-
+<span class="k">var</span> msft<span class="n">2012</span> <span class="o">=</span> msftOpen.Between
+  (<span class="k">new</span> DateTime(<span class="n">2012</span>, <span class="n">1</span>, <span class="n">1</span>), <span class="k">new</span> DateTime(<span class="n">2012</span>, <span class="n">12</span>, <span class="n">31</span>));</code></pre></td></tr></table>
 <p>An important aspect of the slicing operations is that they can operate on <em>lazily loaded</em>
 series without evaluating it. For example, you can create a series that represents data from
 a database and then perform slicing without fetching the data. The fetching will only happen
 when other operations are performed and it will only fetch the data needed. For more information,
 see <a href="lazysource.html">lazy data loading tutorial</a>.</p>
-
 <a name="calc"></a>
-
 <h2><a name="Statistics-and-calculations" class="anchor" href="#Statistics-and-calculations">Statistics and calculations</a></h2>
-
 <p>If a series contains numeric values (typically <code>double</code>) then we can perform various statistical
-operations and calculations with the series. The Deedle library supports standard numeric 
+operations and calculations with the series. The Deedle library supports standard numeric
 operators for series, basic statistical calculations (as extension methods) and it also gives
 you access to the underlying observations, in case you need to implement some calculation
 that is not directly supported.</p>
-
 <p>The following example demonstrates the basic functionality by calculating the mean price of
 Microsoft stock prices over 2012 and then calculating the sum of squared differenc from the
 mean:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -373,35 +331,30 @@ mean:</p>
 <span class="l">7: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Calculate median &amp; mean price</span>
-<span class="k">var</span> msftMed <span class="o">=</span> msft2012.Median();
-<span class="k">var</span> msftAvg <span class="o">=</span> msft2012.Mean();
+<span class="k">var</span> msftMed <span class="o">=</span> msft<span class="n">2012</span>.Median();
+<span class="k">var</span> msftAvg <span class="o">=</span> msft<span class="n">2012</span>.Mean();
 
 <span class="c">// Calculate sum of square differences</span>
-<span class="k">var</span> msftDiff <span class="o">=</span> msft2012 <span class="o">-</span> msftAvg;
+<span class="k">var</span> msftDiff <span class="o">=</span> msft<span class="n">2012</span> <span class="o">-</span> msftAvg;
 <span class="k">var</span> msftSq <span class="o">=</span> (msftDiff <span class="o">*</span> msftDiff).Sum();</code></pre></td></tr></table>
-
 <p>The snippet first uses extension method <code>Mean</code> (and also <code>Median</code>). Then it subtracts scalar
-value (number <code>msftAvg</code>) from a series (<code>msft2012</code>) to get a new series where each value is 
+value (number <code>msftAvg</code>) from a series (<code>msft2012</code>) to get a new series where each value is
 the result of subtracting the scalar from an original value.</p>
-
 <p>The next line applies point-wise multiplication on two series - the result is a series where
 a value at each key is the multiplication of values at the same key in the two multiplied
 series. Finally, we use <code>Sum</code> to add all the differences.</p>
-
 <blockquote>
-  <p><strong>Missing values.</strong> Note that all numerical operations on the <code>Series&lt;K, V&gt;</code> type 
+<p><strong>Missing values.</strong> Note that all numerical operations on the <code>Series&lt;K, V&gt;</code> type
 carefuly handle missing data. If you have a series where value is not available for
 some dates, then the value is skipped when calculating statistics such as mean or
 sum. Point-wise and scalar operators automatically propagate missing data. When
 calculating <code>s1 + s2</code> and one of the series does not contain data for a key <code>k</code>, then
-the resulting series will not contain data for <code>k</code>. For more about missing data, 
+the resulting series will not contain data for <code>k</code>. For more about missing data,
 see the <a href="#missing">next section</a>.</p>
 </blockquote>
-
 <p>When calculating with time series, it is also useful to transform keys. For example, here
-is one possible approach to writing a calculation that calculates how the price changes 
+is one possible approach to writing a calculation that calculates how the price changes
 between two days:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -413,36 +366,31 @@ between two days:</p>
 <span class="l">9: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="csharp">   <span class="c">// Subtract previous day value from current day</span>
-   <span class="k">var</span> msftChange <span class="o">=</span> msft2012 <span class="o">-</span> msft2012.Shift(1);
+   <span class="k">var</span> msftChange <span class="o">=</span> msft<span class="n">2012</span> <span class="o">-</span> msft<span class="n">2012</span>.Shift(<span class="n">1</span>);
 
 <span class="c">// Use built-in Diff method to do the same</span>
-<span class="k">var</span> msftChangeAlt <span class="o">=</span> msft2012.Diff(1);
+<span class="k">var</span> msftChangeAlt <span class="o">=</span> msft<span class="n">2012</span>.Diff(<span class="n">1</span>);
 
    <span class="c">// Get biggest loss and biggest gain</span>
    <span class="k">var</span> minMsChange <span class="o">=</span> msftChange.Min();
    <span class="k">var</span> maxMsChange <span class="o">=</span> msftChange.Max();</code></pre></td></tr></table>
-
 <p>The <code>Shift</code> operation creates a new series where the index is shifted by the specified
 offset. Using <code>ser.Shift(1)</code> creates a new series where element at index <em>i</em> is the element
-from index <em>i - 1</em> in <code>ser</code>. In the above example, this means that the value in 
-<code>msft2012.Shift(1)</code> for a certain day is the value for the previous day in <code>msft2012</code>. 
+from index <em>i - 1</em> in <code>ser</code>. In the above example, this means that the value in
+<code>msft2012.Shift(1)</code> for a certain day is the value for the previous day in <code>msft2012</code>.
 This means that the code takes prices at a specified day and subtracts yesterday's prices
 from them.</p>
-
 <p>The operations available for series cover most of the standard operations, but if you
 need a more advanced functionality, you can always access the underlying data. For example,
 the <code>Observations</code> property gives you access to all key-value pairs of the series. The
-following calculates the price, divided by the number of days since the first day 
+following calculates the price, divided by the number of days since the first day
 for which we have a value (this is just an example of an unusual calculation):</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">var</span> wackyStat <span class="o">=</span> msft2012.Observations.Select(kvp <span class="o">=</span><span class="o">&gt;</span>
-  kvp.Value <span class="o">/</span> (kvp.Key <span class="o">-</span> msft2012.FirstKey()).TotalDays).Sum();</code></pre></td></tr></table>
-
+<td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">var</span> wackyStat <span class="o">=</span> msft<span class="n">2012</span>.Observations.Select(kvp <span class="o">=</span><span class="o">&gt;</span>
+  kvp.Value <span class="o">/</span> (kvp.Key <span class="o">-</span> msft<span class="n">2012</span>.FirstKey()).TotalDays).Sum();</code></pre></td></tr></table>
 <p>The following properties and methods are useful when writing custom calculations:</p>
-
 <ul>
 <li><code>Values</code> - returns all values (skipping over missing data) in the series</li>
 <li><code>Observations</code> - returns all observations (key-value pairs), skipping over missing data</li>
@@ -450,26 +398,22 @@ for which we have a value (this is just an example of an unusual calculation):</
 <li><code>FirstKey()</code> - returns the first key (works only for ordered series)</li>
 <li><code>LastKey()</code> - returns the last key (works only for ordered series)</li>
 <li><code>KeyCount</code> - returns the number of keys in the series</li>
-<li><code>ValueCount</code> - returns the number of values (may be smaller than <code>KeyCount</code> when
-the series contains missing values)</li>
+<li>
+<code>ValueCount</code> - returns the number of values (may be smaller than <code>KeyCount</code> when
+the series contains missing values)
+</li>
 </ul>
-
 <a name="missing"></a>
-
 <h2><a name="Handling-missing-values" class="anchor" href="#Handling-missing-values">Handling missing values</a></h2>
-
 <p>When discussing <a href="#understanding">what is a series</a>, we noted that series can contains
 missing values. This can happen when creating series from <code>OptionalValue&lt;T&gt;</code> values or,
-more frequently, when aligning data using <a href="csharpframe.html">data frames</a> and then 
+more frequently, when aligning data using <a href="csharpframe.html">data frames</a> and then
 obtaining a series from a frame.</p>
-
 <p>In this sample, we'll use an ordered series <code>opts</code> from <a href="#creating">earlier sample</a> that
 contains keys from 0 to 9 and values only for even elements of the series - this means, the
 values are <code>[0; NA; 2; NA; 4; NA; 6; NA; 8; NA]</code>.</p>
-
 <p>For any series (oredered or unordered) we can drop the missing values or replace them with
 a constant:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -479,20 +423,17 @@ a constant:</p>
 <span class="l">7: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Fill missing data with constant</span>
-<span class="k">var</span> fillConst <span class="o">=</span> opts.FillMissing(-1);
+<span class="k">var</span> fillConst <span class="o">=</span> opts.FillMissing(<span class="n">-1</span>);
 fillConst.Print();
 
 <span class="c">// Drop keys with no value from the series</span>
 <span class="k">var</span> drop <span class="o">=</span> opts.DropMissing();
 drop.Print();</code></pre></td></tr></table>
-
 <p>The first operation returns a series with values <code>[0; -1; 2; -1; 4; -1; 6; -1; 8; -1]</code>
 and the second operation returns a series with keys <code>[0; 2; 4; 6; 8]</code>.</p>
-
 <p>If the series is ordered, we have one more option. We can fill missing values with the
 first previous available value, or with the first subsequent available value. This is
 done using an overlaod that takes <code>Direction</code>:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -508,79 +449,62 @@ fillFwd.Print();
 <span class="c">// Fill with the next available value</span>
 <span class="k">var</span> fillBwd <span class="o">=</span> opts.FillMissing(Direction.Backward);
 fillBwd.Print();</code></pre></td></tr></table>
-
 <p>It is worth noting that this does not always fill <em>all</em> missing values in the series.
-If you use <code>Direction.Forward</code> and the input series contains <code>[NA; 0; NA; 1]</code> then 
+If you use <code>Direction.Forward</code> and the input series contains <code>[NA; 0; NA; 1]</code> then
 the result  is <code>[NA; 0; 0; 1]</code> - the first value is still missing, because there is no
 preceeding available value. However, you can be sure that the only missing values are
 at the beginning (or the end) of the series.</p>
-
 <a name="linq"></a>
-
 <h2><a name="LINQ-to-series" class="anchor" href="#LINQ-to-series">LINQ to series</a></h2>
-
 <p>The <code>Series&lt;K, V&gt;</code> type implements some of the methods supported by the C# LINQ pattern,
-which means that you can process series in a familiar way and, to some extent, you can 
+which means that you can process series in a familiar way and, to some extent, you can
 also use the C# query syntax.</p>
-
 <p>The following example shows how to count the number of days when the Microsoft stock price
 was below the average (which we calculated earlier, using the <code>msft2012.Mean()</code> extension
 method). First, let's look at using the LINQ methods directly:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">var</span> overMean <span class="o">=</span> msft2012
+<td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">var</span> overMean <span class="o">=</span> msft<span class="n">2012</span>
   .Select(kvp <span class="o">=</span><span class="o">&gt;</span> kvp.Value <span class="o">-</span> msftAvg)
-  .Where(kvp <span class="o">=</span><span class="o">&gt;</span> kvp.Value <span class="o">&gt;</span> 0.0).KeyCount;</code></pre></td></tr></table>
-
+  .Where(kvp <span class="o">=</span><span class="o">&gt;</span> kvp.Value <span class="o">&gt;</span> <span class="n">0.0</span>).KeyCount;</code></pre></td></tr></table>
 <p>Both of the methods are defined on the <code>Series&lt;K, V&gt;</code> type - this means that the result is
 also a series and we can get the number of keys on the resulting series using the <code>KeyCount</code>
 property (the <code>Where</code> method drops the keys for which the condition does not hold).</p>
-
 <blockquote>
-  <p><strong>Efficiency.</strong> Note that both <code>Select</code> and <code>Where</code> copy the series and so long method 
-chaining will be less efficient. In that case, it is more desirable to use 
+<p><strong>Efficiency.</strong> Note that both <code>Select</code> and <code>Where</code> copy the series and so long method
+chaining will be less efficient. In that case, it is more desirable to use
 <code>series.Values</code> and operate on <code>IEnumerable&lt;T&gt;</code> before converting the result back to a series.</p>
 </blockquote>
-
 <p>The same code can be also written using the C# query syntax as follows (this time, we get
 the number of days when the price was <em>below</em> the average):</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="k">var</span> underMean <span class="o">=</span> 
-  ( <span class="k">from</span> kvp <span class="k">in</span> msft2012
-    <span class="k">where</span> kvp.Value <span class="o">-</span> msftAvg <span class="o">&lt;</span> 0.0
+  ( <span class="k">from</span> kvp <span class="k">in</span> msft<span class="n">2012</span>
+    <span class="k">where</span> kvp.Value <span class="o">-</span> msftAvg <span class="o">&lt;</span> <span class="n">0.0</span>
     <span class="k">select</span> kvp ).KeyCount;</code></pre></td></tr></table>
-
 <p>The <code>Series&lt;K, V&gt;</code> type does not support all query operations, but you can certainly use
 <code>from</code>, <code>where</code> and <code>select</code> to transform and filter series. One tricky aspect is that the
 variable bound in the <code>from</code> clause is key value pair containing the key (index) and value
 (the value in the series) to allow projection/filtering based on both the key and the value.</p>
-
 <a name="aggregation"></a>
-
 <h2><a name="Grouping-windowing-and-chunking" class="anchor" href="#Grouping-windowing-and-chunking">Grouping, windowing and chunking</a></h2>
-
 <p>Deedle supports a number of operations that can be used to group or aggregate data. There
-are two operations - for any (possibly unordered) series, <em>grouping</em> works by obtaining a new 
+are two operations - for any (possibly unordered) series, <em>grouping</em> works by obtaining a new
 key for each observation and then grouping the input by such keys; <em>aggregation</em> works only
 on ordered series. It aggregates consecutive elements (possibly with overlap) of the series -
 a typical use of aggregation is getting floating windows of certain length.</p>
-
 <h3><a name="Grouping-series" class="anchor" href="#Grouping-series">Grouping series</a></h3>
-
 <p>The grouping operation is similar to <code>GroupBy</code> from LINQ. It takes a <em>key selector</em> that produces
 a new key and a <em>value selector</em> that produces new value for a group of values with the same key.
 The following example uses <code>randNums</code> which is a series of 100 randomly generated values between
-0 and 1. We group them by the first digit and count number of elements in each group to get the 
+0 and 1. We group them by the first digit and count number of elements in each group to get the
 distribution of the random number generator:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -589,21 +513,17 @@ distribution of the random number generator:</p>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Group random numbers by the first digit &amp; get distribution</span>
 <span class="k">var</span> buckets <span class="o">=</span> randNums
-             .GroupBy(kvp <span class="o">=</span><span class="o">&gt;</span> (<span class="k">int</span>)(kvp.Value <span class="o">*</span> 10))
+             .GroupBy(kvp <span class="o">=</span><span class="o">&gt;</span> (<span class="k">int</span>)(kvp.Value <span class="o">*</span> <span class="n">10</span>))
              .Select(kvp <span class="o">=</span><span class="o">&gt;</span> OptionalValue.Create(kvp.Value.KeyCount));
 buckets.Print();</code></pre></td></tr></table>
-
 <p>Note that the aggregation function needs to return <code>OptionalValue&lt;T&gt;</code>. This makes it possible to
-write aggregation that returns series with missing values for some key (e.g. when the group 
+write aggregation that returns series with missing values for some key (e.g. when the group
 does not contain any valid value).</p>
-
 <h3><a name="Floating-windows-and-chunking" class="anchor" href="#Floating-windows-and-chunking">Floating windows and chunking</a></h3>
-
-<p>When working with time series (e.g. stock prices), floating windows can be used to take the 
-average value over certain number of previous values. The following example takes 5 last 
-values for each day and averages them (skipping over the first 4 items in the series where 
+<p>When working with time series (e.g. stock prices), floating windows can be used to take the
+average value over certain number of previous values. The following example takes 5 last
+values for each day and averages them (skipping over the first 4 items in the series where
 there is not enough past values available):</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -613,18 +533,16 @@ there is not enough past values available):</p>
 <span class="l">7: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Average over 25 element floating window</span>
-<span class="k">var</span> monthlyWinMean <span class="o">=</span> msft2012.WindowInto(25, win <span class="o">=</span><span class="o">&gt;</span> win.Mean());
+<span class="k">var</span> monthlyWinMean <span class="o">=</span> msft<span class="n">2012</span>.WindowInto(<span class="n">25</span>, win <span class="o">=</span><span class="o">&gt;</span> win.Mean());
 
 <span class="c">// Get floating window over 5 elements as series of series</span>
 <span class="c">// and then apply average on each series individually</span>
-<span class="k">var</span> weeklyWinMean <span class="o">=</span> msft2012.Window(5).Select(kvp <span class="o">=</span><span class="o">&gt;</span>
+<span class="k">var</span> weeklyWinMean <span class="o">=</span> msft<span class="n">2012</span>.Window(<span class="n">5</span>).Select(kvp <span class="o">=</span><span class="o">&gt;</span>
   kvp.Value.Mean());</code></pre></td></tr></table>
-
 <p>The chunking operation is similar to windowing, but it builds chunks that do not overlap. For
 example, given <code>[1; 2; 3; 4]</code> a floating window of size two returns <code>[[1; 2]; [2; 3]; [3; 4]]</code>
 while chunks of size two return <code>[[1; 2]; [3; 4]]</code>. The chunking operations look very similar
 to windowing operations:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -633,37 +551,31 @@ to windowing operations:</p>
 <span class="l">6: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Get chunks of size 25 and mean each (disjoint) chunk</span>
-<span class="k">var</span> monthlyChunkMean <span class="o">=</span> msft2012.ChunkInto(25, win <span class="o">=</span><span class="o">&gt;</span> win.Mean());
+<span class="k">var</span> monthlyChunkMean <span class="o">=</span> msft<span class="n">2012</span>.ChunkInto(<span class="n">25</span>, win <span class="o">=</span><span class="o">&gt;</span> win.Mean());
 
 <span class="c">// Get series containing individual chunks (as series)</span>
-<span class="k">var</span> weeklyChunkMean <span class="o">=</span> msft2012.Chunk(5).Select(kvp <span class="o">=</span><span class="o">&gt;</span>
+<span class="k">var</span> weeklyChunkMean <span class="o">=</span> msft<span class="n">2012</span>.Chunk(<span class="n">5</span>).Select(kvp <span class="o">=</span><span class="o">&gt;</span>
   kvp.Value.Mean());</code></pre></td></tr></table>
-
 <p>Finally, it is very common to use windows of size two, which gives us the current value together
 with the previous value. In Deedle, this is available via the <code>Pairwise</code> operation which turns
 a series of values into a series of tuples (type <code>Tuple&lt;V, V&gt;</code>). Here we take the average of the
 current and previous value:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// For each key, get the previous value and average them</span>
-<span class="k">var</span> twoDayAvgs <span class="o">=</span> msft2012.Pairwise().Select(kvp <span class="o">=</span><span class="o">&gt;</span> 
-  (kvp.Value.Item1 <span class="o">+</span> kvp.Value.Item2) <span class="o">/</span> 2.0);</code></pre></td></tr></table>
-
+<span class="k">var</span> twoDayAvgs <span class="o">=</span> msft<span class="n">2012</span>.Pairwise().Select(kvp <span class="o">=</span><span class="o">&gt;</span> 
+  (kvp.Value.Item<span class="n">1</span> <span class="o">+</span> kvp.Value.Item<span class="n">2</span>) <span class="o">/</span> <span class="n">2.0</span>);</code></pre></td></tr></table>
 <h3><a name="General-ordered-aggregation" class="anchor" href="#General-ordered-aggregation">General (ordered) aggregation</a></h3>
-
 <p>For chunking and windowing, previous examples always used a fixed number of elements to specify
 when a window/chunk ends. However, you might want to use more advanced conditions. This can be
-done using the fully general <code>Aggregate</code> operation. The <code>Aggregation</code> type in the following 
+done using the fully general <code>Aggregate</code> operation. The <code>Aggregation</code> type in the following
 example provides methods for specifying additional conditions.</p>
-
 <p>The options include windowing and chunking of fixed size where boundaries are handled differently,
-and windowing/chunking where each window/chunk ends when a certain property holds between the 
+and windowing/chunking where each window/chunk ends when a certain property holds between the
 keys. For example, the following sample creates chunks such that the year and month are equal
 for each chunk:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
@@ -676,41 +588,34 @@ for each chunk:</p>
 <span class="l">10: </span>
 <span class="l">11: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="csharp">msft2012.Aggregate
+<td class="snippet"><pre class="fssnip highlighted"><code lang="csharp">msft<span class="n">2012</span>.Aggregate
   ( <span class="c">// Get chunks while the month &amp; year of the keys are the same</span>
-    Aggregation.ChunkWhile&lt;DateTime&gt;((k1, k2) <span class="o">=</span><span class="o">&gt;</span> 
-      k1.Month <span class="o">=</span><span class="o">=</span> k2.Month <span class="o">&amp;</span><span class="o">&amp;</span> k2.Year <span class="o">=</span><span class="o">=</span> k1.Year ),
+    Aggregation.ChunkWhile&lt;DateTime&gt;((k<span class="n">1</span>, k<span class="n">2</span>) <span class="o">=</span><span class="o">&gt;</span> 
+      k<span class="n">1</span>.Month <span class="o">=</span><span class="o">=</span> k<span class="n">2</span>.Month <span class="o">&amp;</span><span class="o">&amp;</span> k<span class="n">2</span>.Year <span class="o">=</span><span class="o">=</span> k<span class="n">1</span>.Year ),
     <span class="c">// For each chunk, return the first key as the key and</span>
     <span class="c">// either average value or missing value if it was empty</span>
     chunk <span class="o">=</span><span class="o">&gt;</span> KeyValue.Create
      ( chunk.Data.FirstKey(),
-       chunk.Data.ValueCount <span class="o">&gt;</span> 0 <span class="o">?</span>
+       chunk.Data.ValueCount <span class="o">&gt;</span> <span class="n">0</span> <span class="o">?</span>
         OptionalValue.Create(chunk.Data.Mean()) <span class="o">:</span>
         OptionalValue.Empty&lt;<span class="k">double</span>&gt;() ) );</code></pre></td></tr></table>
-
 <p>The result of the operation is a series that has at most one value for each year/month which
 represents the average value in that month. When building the chunks, the aggregation calls
 the provided function (argument of <code>ChunkWhile</code>) on the first and the last key of the chunk
 until the function returns <code>false</code> and then it starts a new chunk.</p>
-
 <a name="sampling"></a>
-
 <h2><a name="Indexing-and-sampling" class="anchor" href="#Indexing-and-sampling">Indexing and sampling</a></h2>
-
-<p>In the last section of the series overview, we look at a number of operations that can be 
+<p>In the last section of the series overview, we look at a number of operations that can be
 performed with the index of the series such as transformations and sampling. Index transformation
-is particularly important when working with multiple series in data frames (you might need 
+is particularly important when working with multiple series in data frames (you might need
 to transform the keys so that you can align multiple series). Sampling is useful when you have
 a series with higher resolution of data than necessary, or when you need to transform data
 to uniform observations.</p>
-
 <h3><a name="Transforming-the-index" class="anchor" href="#Transforming-the-index">Transforming the index</a></h3>
-
 <p>The first operation on the index is similar to <code>Select</code>, but instead of selecting new values,
 we select new keys. For example, given our <code>msft2012</code> series which has <code>DateTime</code> values as
 keys, we might want to transform the keys to <code>DateTimeOffset</code>. Another useful operation
 drops the index and replaces it with ordinal numbers:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -719,22 +624,19 @@ drops the index and replaces it with ordinal numbers:</p>
 <span class="l">6: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Turn DateTime keys into DateTimeOffset keys</span>
-<span class="k">var</span> byOffs <span class="o">=</span> msft2012.SelectKeys(kvp <span class="o">=</span><span class="o">&gt;</span> 
+<span class="k">var</span> byOffs <span class="o">=</span> msft<span class="n">2012</span>.SelectKeys(kvp <span class="o">=</span><span class="o">&gt;</span> 
   <span class="k">new</span> DateTimeOffset(kvp.Key));
 
 <span class="c">// Replace keys with ordinal numbers 0 .. KeyCount-1</span>
-<span class="k">var</span> byInt <span class="o">=</span> msft2012.IndexOrdinally();</code></pre></td></tr></table>
-
+<span class="k">var</span> byInt <span class="o">=</span> msft<span class="n">2012</span>.IndexOrdinally();</code></pre></td></tr></table>
 <p>Both of the operations in the snippet return series of a different type. Here, the type of
-<code>byOffs</code> is <code>Series&lt;DateTimeOffset, double&gt;</code> because the type of keys has changed from 
+<code>byOffs</code> is <code>Series&lt;DateTimeOffset, double&gt;</code> because the type of keys has changed from
 <code>DateTime</code> to <code>DateTimeOffset</code> (this is all inferred by the C# compiler, so we do not need
 to write the type explicitly). In the second example, the resulting type is <code>Series&lt;int, double&gt;</code>,
 because the keys are dropped and replaced with numbers in range <code>0 .. KeyCount-1</code>.</p>
-
 <p>Finally, if we want to replace an existing series of keys with a new series of keys (of the
 same length), we can use the <code>IndexWith</code> method. Here, we replace the index of a series
 <code>numNames</code> which has three observations with three dates:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -744,100 +646,99 @@ same length), we can use the <code>IndexWith</code> method. Here, we replace the
 <td class="snippet"><pre class="fssnip highlighted"><code lang="csharp"><span class="c">// Replace keys with explictly specified new keys</span>
 <span class="k">var</span> byDays <span class="o">=</span> numNames.IndexWith(<span class="k">new</span>[] { 
   DateTime.Today,
-  DateTime.Today.AddDays(1.0),
-  DateTime.Today.AddDays(2.0) });</code></pre></td></tr></table>
-
+  DateTime.Today.AddDays(<span class="n">1.0</span>),
+  DateTime.Today.AddDays(<span class="n">2.0</span>) });</code></pre></td></tr></table>
 <p>Just like the two previous operations, <code>IndexWith</code> also changes the type of the series.
 It can also change whether the series is ordered or not (here, the resulting series has
 <code>DateTime</code> keys and is ordered).</p>
-
 <h3><a name="Time-series-sampling" class="anchor" href="#Time-series-sampling">Time series sampling</a></h3>
-
 <p>When a series is ordered and the keys represent (typically) dates or times, we can use a number
 of sampling operations. There are two kinds of sampling operations:</p>
-
 <ul>
-<li><p><strong>Resampling</strong> means that we aggregate values values into chunks based on a specified collection 
+<li>
+<p><strong>Resampling</strong> means that we aggregate values values into chunks based on a specified collection
 of keys (e.g. explicitly provided times), or based on some relation between keys (e.g. date times
-having the same date).</p></li>
-<li><p><strong>Uniform resampling</strong> is similar to resampling, but we specify keys by providing functions that 
+having the same date).</p>
+</li>
+<li>
+<p><strong>Uniform resampling</strong> is similar to resampling, but we specify keys by providing functions that
 generate a uniform sequence of keys (e.g. days), the operation also fills value for days that
-have no corresponding observations in the input sequence.</p></li>
+have no corresponding observations in the input sequence.</p>
+</li>
 </ul>
-
-<p>Given a series <code>ts</code>, the sampling operations are available via the extension methods <code>ts.Sample(..)</code>, 
-<code>ts.SampleInto(..)</code>, and <code>ts.ResampleUniform(..)</code>. For more information about these methods, 
+<p>Given a series <code>ts</code>, the sampling operations are available via the extension methods <code>ts.Sample(..)</code>,
+<code>ts.SampleInto(..)</code>, and <code>ts.ResampleUniform(..)</code>. For more information about these methods,
 <a href="reference/deedle-seriesextensions.html#section0">see the API reference</a> and also the <a href="series.html#sampling">F# samples</a>
 which are written using corresponding F# functions in the <code>Series</code> module.</p>
 
 
         </div>
         <div class="span3">
-          <a href="http://bluemountaincapital.github.io/Deedle/index.html">
-            <img src="http://bluemountaincapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          <a href="http://fslab.org/Deedle/index.html">
+            <img src="http://fslab.org/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
           <ul class="nav nav-list" id="menu">
             <li class="nav-header">Deedle</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/index.html">Home page</a></li>
+            <li><a href="http://fslab.org/Deedle/index.html">Home page</a></li>
             <li class="divider"></li>
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/design.html">Design notes</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
+            <li><a href="http://fslab.org/Deedle/design.html">Design notes</a></li>
             <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
             
             <li class="nav-header">Using from F#</li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
+              <a href="http://fslab.org/Deedle/tutorial.html">Quick start tutorial</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/series.html">Working with time series</a>
+              <a href="http://fslab.org/Deedle/series.html">Working with time series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/frame.html">Working with data frames</a>
+              <a href="http://fslab.org/Deedle/frame.html">Working with data frames</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/stats.html">Statistics &amp; calculations</a>
+              <a href="http://fslab.org/Deedle/stats.html">Statistics &amp; calculations</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using Deedle with R</a>
+              <a href="http://fslab.org/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/csharpintro.html">Getting started</a></li>
+            <li><a href="http://fslab.org/Deedle/csharpintro.html">Getting started</a></li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html">Working with data series</a>
+              <a href="http://fslab.org/Deedle/csharpseries.html">Working with data series</a>
               <ul class="nav nav-list">
-                <li><a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html#understanding">What is a series</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html#creating">Creating & loading</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html#lookup">Lookup and slicing</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html#calc">Series-wise calculations</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html#missing">Missing values</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html#linq">LINQ to Series</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html#aggregation">Grouping & windowing</a></li>
-                <li><a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html#sampling">Indexing & sampling</a></li>
+                <li><a href="http://fslab.org/Deedle/csharpseries.html#understanding">What is a series</a></li>
+                <li><a href="http://fslab.org/Deedle/csharpseries.html#creating">Creating & loading</a></li>
+                <li><a href="http://fslab.org/Deedle/csharpseries.html#lookup">Lookup and slicing</a></li>
+                <li><a href="http://fslab.org/Deedle/csharpseries.html#calc">Series-wise calculations</a></li>
+                <li><a href="http://fslab.org/Deedle/csharpseries.html#missing">Missing values</a></li>
+                <li><a href="http://fslab.org/Deedle/csharpseries.html#linq">LINQ to Series</a></li>
+                <li><a href="http://fslab.org/Deedle/csharpseries.html#aggregation">Grouping & windowing</a></li>
+                <li><a href="http://fslab.org/Deedle/csharpseries.html#sampling">Indexing & sampling</a></li>
               </ul>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html">Working with data frames</a>
+              <a href="http://fslab.org/Deedle/csharpframe.html">Working with data frames</a>
             </li>
 
             <li class="nav-header">Documentation</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/index.html">API Reference</a></li>
             <li class="divider"></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-stats.html">Stats module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-stats.html">Stats module</a></li>
 
             <li class="nav-header">Samples</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="http://fslab.org/Deedle/lazysource.html">Lazy data loading</a></li>
           </ul>
         </div>
       </div>
     </div>
-    <a href="http://github.com/BlueMountainCapital/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <a href="http://github.com/fslaborg/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
     <script>
       (function (i, s, o, g, r, a, m) {
         i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {

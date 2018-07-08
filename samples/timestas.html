@@ -5,7 +5,7 @@
     <title>timestas</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Easy to use .NET library for data manipulation and scientific programming">
-    <meta name="author" content="BlueMountain Capital">
+    <meta name="author" content="BlueMountain Capital, FsLab.Org">
 
     <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
     <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
@@ -13,9 +13,9 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
-    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/style.css" />
-    <link type="text/css" rel="stylesheet" href="http://bluemountaincapital.github.io/Deedle/content/deedle.css" />
-    <script type="text/javascript" src="http://bluemountaincapital.github.io/Deedle/content/tips.js"></script>
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="http://fslab.org/Deedle/content/deedle.css" />
+    <script type="text/javascript" src="http://fslab.org/Deedle/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -26,12 +26,12 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fslab.org/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
           <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
-        <h3 class="muted"><a href="http://bluemountaincapital.github.io/Deedle/index.html">Deedle</a></h3>
+        <h3 class="muted"><a href="http://fslab.org/Deedle/index.html">Deedle</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -125,15 +125,15 @@
 <span class="c">// Load everything </span>
 <span class="c">// ----------------------------------------------------------------------------</span>
 
-<span class="prep">#I</span> <span class="s">&quot;../../../packages/FSharp.Charting.0.87&quot;</span>
-<span class="prep">#r</span> <span class="s">&quot;../../../bin/MathNet.Numerics.dll&quot;</span>
-<span class="prep">#load</span> <span class="s">&quot;../../bin/Deedle.fsx&quot;</span>
-<span class="prep">#load</span> <span class="s">&quot;FSharp.Charting.fsx&quot;</span>
+<span class="pp">#I</span> <span class="s">&quot;../../../packages/FSharp.Charting.0.87&quot;</span>
+<span class="pp">#r</span> <span class="s">&quot;../../../bin/MathNet.Numerics.dll&quot;</span>
+<span class="pp">#load</span> <span class="s">&quot;../../bin/Deedle.fsx&quot;</span>
+<span class="pp">#load</span> <span class="s">&quot;FSharp.Charting.fsx&quot;</span>
 
-<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">System</span>
-<span class="k">open</span> <span class="i">Deedle</span>
-<span class="k">open</span> <span class="i">FSharp</span><span class="o">.</span><span class="i">Charting</span>
-<span class="k">open</span> <span class="i">MathNet</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Numerics</span><span class="o">.</span><span class="i">Distributions</span>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="id">System</span>
+<span class="k">open</span> <span class="id">Deedle</span>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="id">FSharp</span><span class="pn">.</span><span class="id">Charting</span>
+<span class="k">open</span> <span class="id">MathNet</span><span class="pn">.</span><span class="id">Numerics</span><span class="pn">.</span><span class="id">Distributions</span>
 
 <span class="c">// ----------------------------------------------------------------------------</span>
 <span class="c">// Generate stock prices using geometric Brownian motion</span>
@@ -147,7 +147,7 @@
 <span class="c">///  - &#39;initial&#39; and &#39;start&#39; specify the initial price and date</span>
 <span class="c">///  - &#39;span&#39; specifies time span between individual observations</span>
 <span class="c">///  - &#39;count&#39; is the number of required values to generate</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="f">randomPrice</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="i">seed</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">drift</span> <span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="i">volatility</span> <span onmouseout="hideTip(event, 'fs7', 7)" onmouseover="showTip(event, 'fs7', 7)" class="i">initial</span> <span onmouseout="hideTip(event, 'fs8', 8)" onmouseover="showTip(event, 'fs8', 8)" class="i">start</span> <span onmouseout="hideTip(event, 'fs9', 9)" onmouseover="showTip(event, 'fs9', 9)" class="i">span</span> <span onmouseout="hideTip(event, 'fs10', 10)" onmouseover="showTip(event, 'fs10', 10)" class="i">count</span> <span class="o">=</span> 
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="fn">randomPrice</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="id">seed</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="id">drift</span> <span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="id">volatility</span> <span onmouseout="hideTip(event, 'fs7', 7)" onmouseover="showTip(event, 'fs7', 7)" class="id">initial</span> <span onmouseout="hideTip(event, 'fs8', 8)" onmouseover="showTip(event, 'fs8', 8)" class="id">start</span> <span onmouseout="hideTip(event, 'fs9', 9)" onmouseover="showTip(event, 'fs9', 9)" class="id">span</span> <span onmouseout="hideTip(event, 'fs10', 10)" onmouseover="showTip(event, 'fs10', 10)" class="id">count</span> <span class="o">=</span> 
   <span id="fst11" onmouseout="hideTip(event, 'fs11', 11)" onmouseover="showTip(event, 'fs11', 11, document.getElementById('fst11'))" class="omitted">(Implementation omitted)</span>
 
 
@@ -156,61 +156,61 @@
 <span class="c">// ----------------------------------------------------------------------------</span>
 
 <span class="c">// Two series with 1 sec data for entire day</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs12', 12)" onmouseover="showTip(event, 'fs12', 12)" class="i">today</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs13', 13)" onmouseover="showTip(event, 'fs13', 13)" class="t">DateTimeOffset</span>(<span onmouseout="hideTip(event, 'fs14', 14)" onmouseover="showTip(event, 'fs14', 14)" class="t">DateTime</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs15', 15)" onmouseover="showTip(event, 'fs15', 15)" class="i">Today</span>)
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs16', 16)" onmouseover="showTip(event, 'fs16', 16)" class="i">sec</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs17', 17)" onmouseover="showTip(event, 'fs17', 17)" class="t">TimeSpan</span>(<span class="n">0</span>, <span class="n">0</span>, <span class="n">1</span>)
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs18', 18)" onmouseover="showTip(event, 'fs18', 18)" class="i">hfq1</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 19)" onmouseover="showTip(event, 'fs3', 19)" class="f">randomPrice</span> <span class="n">1</span> <span class="n">0.1</span> <span class="n">3.0</span> <span class="n">20.0</span> <span onmouseout="hideTip(event, 'fs12', 20)" onmouseover="showTip(event, 'fs12', 20)" class="i">today</span> <span onmouseout="hideTip(event, 'fs16', 21)" onmouseover="showTip(event, 'fs16', 21)" class="i">sec</span> (<span class="n">24</span><span class="o">*</span><span class="n">60</span><span class="o">*</span><span class="n">60</span>) <span class="o">|&gt;</span> <span class="i">series</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs19', 22)" onmouseover="showTip(event, 'fs19', 22)" class="i">hfq2</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 23)" onmouseover="showTip(event, 'fs3', 23)" class="f">randomPrice</span> <span class="n">1</span> <span class="n">0.1</span> <span class="n">1.5</span> <span class="n">20.0</span> <span onmouseout="hideTip(event, 'fs12', 24)" onmouseover="showTip(event, 'fs12', 24)" class="i">today</span> <span onmouseout="hideTip(event, 'fs16', 25)" onmouseover="showTip(event, 'fs16', 25)" class="i">sec</span> (<span class="n">24</span><span class="o">*</span><span class="n">60</span><span class="o">*</span><span class="n">60</span>) <span class="o">|&gt;</span> <span class="i">series</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs12', 12)" onmouseover="showTip(event, 'fs12', 12)" class="id">today</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs13', 13)" onmouseover="showTip(event, 'fs13', 13)" class="vt">DateTimeOffset</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs14', 14)" onmouseover="showTip(event, 'fs14', 14)" class="vt">DateTime</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs15', 15)" onmouseover="showTip(event, 'fs15', 15)" class="id">Today</span><span class="pn">)</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs16', 16)" onmouseover="showTip(event, 'fs16', 16)" class="id">sec</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs17', 17)" onmouseover="showTip(event, 'fs17', 17)" class="vt">TimeSpan</span><span class="pn">(</span><span class="n">0</span><span class="pn">,</span> <span class="n">0</span><span class="pn">,</span> <span class="n">1</span><span class="pn">)</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs18', 18)" onmouseover="showTip(event, 'fs18', 18)" class="id">hfq1</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 19)" onmouseover="showTip(event, 'fs3', 19)" class="fn">randomPrice</span> <span class="n">1</span> <span class="n">0.1</span> <span class="n">3.0</span> <span class="n">20.0</span> <span onmouseout="hideTip(event, 'fs12', 20)" onmouseover="showTip(event, 'fs12', 20)" class="id">today</span> <span onmouseout="hideTip(event, 'fs16', 21)" onmouseover="showTip(event, 'fs16', 21)" class="id">sec</span> <span class="pn">(</span><span class="n">24</span><span class="o">*</span><span class="n">60</span><span class="o">*</span><span class="n">60</span><span class="pn">)</span> <span class="o">|&gt;</span> <span class="id">series</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs19', 22)" onmouseover="showTip(event, 'fs19', 22)" class="id">hfq2</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 23)" onmouseover="showTip(event, 'fs3', 23)" class="fn">randomPrice</span> <span class="n">1</span> <span class="n">0.1</span> <span class="n">1.5</span> <span class="n">20.0</span> <span onmouseout="hideTip(event, 'fs12', 24)" onmouseover="showTip(event, 'fs12', 24)" class="id">today</span> <span onmouseout="hideTip(event, 'fs16', 25)" onmouseover="showTip(event, 'fs16', 25)" class="id">sec</span> <span class="pn">(</span><span class="n">24</span><span class="o">*</span><span class="n">60</span><span class="o">*</span><span class="n">60</span><span class="pn">)</span> <span class="o">|&gt;</span> <span class="id">series</span>
 
 <span class="c">// Visualize</span>
-<span class="i">Chart</span><span class="o">.</span><span class="i">Combine</span>
-  [ <span onmouseout="hideTip(event, 'fs18', 26)" onmouseover="showTip(event, 'fs18', 26)" class="i">hfq1</span> <span class="o">|&gt;</span> <span class="i">Series</span><span class="o">.</span><span class="i">observations</span> <span class="o">|&gt;</span> <span class="i">Chart</span><span class="o">.</span><span class="i">FastLine</span>
-    <span onmouseout="hideTip(event, 'fs19', 27)" onmouseover="showTip(event, 'fs19', 27)" class="i">hfq2</span> <span class="o">|&gt;</span> <span class="i">Series</span><span class="o">.</span><span class="i">observations</span> <span class="o">|&gt;</span> <span class="i">Chart</span><span class="o">.</span><span class="i">FastLine</span> ]
+<span class="id">Chart</span><span class="pn">.</span><span class="id">Combine</span>
+  <span class="pn">[</span> <span onmouseout="hideTip(event, 'fs18', 26)" onmouseover="showTip(event, 'fs18', 26)" class="id">hfq1</span> <span class="o">|&gt;</span> <span class="id">Series</span><span class="pn">.</span><span class="id">observations</span> <span class="o">|&gt;</span> <span class="id">Chart</span><span class="pn">.</span><span class="id">FastLine</span>
+    <span onmouseout="hideTip(event, 'fs19', 27)" onmouseover="showTip(event, 'fs19', 27)" class="id">hfq2</span> <span class="o">|&gt;</span> <span class="id">Series</span><span class="pn">.</span><span class="id">observations</span> <span class="o">|&gt;</span> <span class="id">Chart</span><span class="pn">.</span><span class="id">FastLine</span> <span class="pn">]</span>
 
 <span class="c">// ----------------------------------------------------------------------------</span>
 <span class="c">// Sampling and statistics</span>
 <span class="c">// ----------------------------------------------------------------------------</span>
 
 <span class="c">// Calculate the means of the two series (and see that they are the same)</span>
-<span onmouseout="hideTip(event, 'fs18', 28)" onmouseover="showTip(event, 'fs18', 28)" class="i">hfq1</span> <span class="o">|&gt;</span> <span class="i">Series</span><span class="o">.</span><span class="i">mean</span>
-<span onmouseout="hideTip(event, 'fs18', 29)" onmouseover="showTip(event, 'fs18', 29)" class="i">hfq1</span> <span class="o">|&gt;</span> <span class="i">Series</span><span class="o">.</span><span class="i">mean</span>
+<span onmouseout="hideTip(event, 'fs18', 28)" onmouseover="showTip(event, 'fs18', 28)" class="id">hfq1</span> <span class="o">|&gt;</span> <span class="id">Series</span><span class="pn">.</span><span class="id">mean</span>
+<span onmouseout="hideTip(event, 'fs18', 29)" onmouseover="showTip(event, 'fs18', 29)" class="id">hfq1</span> <span class="o">|&gt;</span> <span class="id">Series</span><span class="pn">.</span><span class="id">mean</span>
 
 <span class="c">// Get all day data in 1 minute intervals</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs20', 30)" onmouseover="showTip(event, 'fs20', 30)" class="i">intervals</span> <span class="o">=</span> 
-  [ <span class="k">for</span> <span onmouseout="hideTip(event, 'fs21', 31)" onmouseover="showTip(event, 'fs21', 31)" class="i">i</span> <span class="k">in</span> <span class="n">0.0</span> <span class="o">..</span> <span class="n">24.0</span><span class="o">*</span><span class="n">60.0</span> <span class="o">-</span> <span class="n">1.0</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs12', 32)" onmouseover="showTip(event, 'fs12', 32)" class="i">today</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 33)" onmouseover="showTip(event, 'fs22', 33)" class="f">AddMinutes</span>(<span onmouseout="hideTip(event, 'fs21', 34)" onmouseover="showTip(event, 'fs21', 34)" class="i">i</span>) ]
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs20', 30)" onmouseover="showTip(event, 'fs20', 30)" class="id">intervals</span> <span class="o">=</span> 
+  <span class="pn">[</span> <span class="k">for</span> <span onmouseout="hideTip(event, 'fs21', 31)" onmouseover="showTip(event, 'fs21', 31)" class="id">i</span> <span class="k">in</span> <span class="n">0.0</span> <span class="o">..</span> <span class="n">24.0</span><span class="o">*</span><span class="n">60.0</span> <span class="o">-</span> <span class="n">1.0</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs12', 32)" onmouseover="showTip(event, 'fs12', 32)" class="fn">today</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs22', 33)" onmouseover="showTip(event, 'fs22', 33)" class="id">AddMinutes</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs21', 34)" onmouseover="showTip(event, 'fs21', 34)" class="id">i</span><span class="pn">)</span> <span class="pn">]</span>
 
 <span class="c">// Get values for the specified interval &amp; calculate logs</span>
 <span class="c">// Then take difference between previous and the next log value</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs23', 35)" onmouseover="showTip(event, 'fs23', 35)" class="i">logs1</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs18', 36)" onmouseover="showTip(event, 'fs18', 36)" class="i">hfq1</span> <span class="o">|&gt;</span> <span class="i">Series</span><span class="o">.</span><span class="i">lookupAll</span> <span onmouseout="hideTip(event, 'fs20', 37)" onmouseover="showTip(event, 'fs20', 37)" class="i">intervals</span> <span class="i">Lookup</span><span class="o">.</span><span class="i">Exact</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs24', 38)" onmouseover="showTip(event, 'fs24', 38)" class="f">log</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs25', 39)" onmouseover="showTip(event, 'fs25', 39)" class="i">diffs</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs23', 40)" onmouseover="showTip(event, 'fs23', 40)" class="i">logs1</span> <span class="o">|&gt;</span> <span class="i">Series</span><span class="o">.</span><span class="i">pairwiseWith</span> (<span class="k">fun</span> _ (<span class="i">v1</span>, <span class="i">v2</span>) <span class="k">-&gt;</span> <span class="i">v2</span> <span class="o">-</span> <span class="i">v1</span>)
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs23', 35)" onmouseover="showTip(event, 'fs23', 35)" class="id">logs1</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs18', 36)" onmouseover="showTip(event, 'fs18', 36)" class="id">hfq1</span> <span class="o">|&gt;</span> <span class="id">Series</span><span class="pn">.</span><span class="id">lookupAll</span> <span onmouseout="hideTip(event, 'fs20', 37)" onmouseover="showTip(event, 'fs20', 37)" class="id">intervals</span> <span class="id">Lookup</span><span class="pn">.</span><span class="id">Exact</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs24', 38)" onmouseover="showTip(event, 'fs24', 38)" class="fn">log</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs25', 39)" onmouseover="showTip(event, 'fs25', 39)" class="id">diffs</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs23', 40)" onmouseover="showTip(event, 'fs23', 40)" class="id">logs1</span> <span class="o">|&gt;</span> <span class="id">Series</span><span class="pn">.</span><span class="id">pairwiseWith</span> <span class="pn">(</span><span class="k">fun</span> <span class="id">_</span> <span class="pn">(</span><span class="id">v1</span><span class="pn">,</span> <span class="id">v2</span><span class="pn">)</span> <span class="k">-&gt;</span> <span class="id">v2</span> <span class="o">-</span> <span class="id">v1</span><span class="pn">)</span>
 
 <span class="c">// Show the logs together with the differences in the logs</span>
-<span class="i">Chart</span><span class="o">.</span><span class="i">Rows</span> 
-  [ <span class="i">Chart</span><span class="o">.</span><span class="i">Line</span>(<span onmouseout="hideTip(event, 'fs23', 41)" onmouseover="showTip(event, 'fs23', 41)" class="i">logs1</span> <span class="o">|&gt;</span> <span class="i">Series</span><span class="o">.</span><span class="i">observations</span>);
-    <span class="i">Chart</span><span class="o">.</span><span class="i">Line</span>(<span onmouseout="hideTip(event, 'fs25', 42)" onmouseover="showTip(event, 'fs25', 42)" class="i">diffs</span> <span class="o">|&gt;</span> <span class="i">Series</span><span class="o">.</span><span class="i">observations</span>) ]
+<span class="id">Chart</span><span class="pn">.</span><span class="id">Rows</span> 
+  <span class="pn">[</span> <span class="id">Chart</span><span class="pn">.</span><span class="id">Line</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs23', 41)" onmouseover="showTip(event, 'fs23', 41)" class="id">logs1</span> <span class="o">|&gt;</span> <span class="id">Series</span><span class="pn">.</span><span class="id">observations</span><span class="pn">)</span><span class="pn">;</span>
+    <span class="id">Chart</span><span class="pn">.</span><span class="id">Line</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs25', 42)" onmouseover="showTip(event, 'fs25', 42)" class="id">diffs</span> <span class="o">|&gt;</span> <span class="id">Series</span><span class="pn">.</span><span class="id">observations</span><span class="pn">)</span> <span class="pn">]</span>
 
 <span class="c">// Get 1 hour chunks and build a data frame with one column</span>
 <span class="c">// for each hour (containing 60 rows for 60 minutes in the hour)</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs26', 43)" onmouseover="showTip(event, 'fs26', 43)" class="i">chunkedLogs</span> <span class="o">=</span>
-  <span onmouseout="hideTip(event, 'fs25', 44)" onmouseover="showTip(event, 'fs25', 44)" class="i">diffs</span> 
-  <span class="o">|&gt;</span> <span class="i">Series</span><span class="o">.</span><span class="i">sampleTime</span> (<span onmouseout="hideTip(event, 'fs17', 45)" onmouseover="showTip(event, 'fs17', 45)" class="i">TimeSpan</span>(<span class="n">1</span>, <span class="n">0</span>, <span class="n">0</span>)) <span class="i">Direction</span><span class="o">.</span><span class="i">Forward</span> 
-  <span class="o">|&gt;</span> <span class="i">Series</span><span class="o">.</span><span class="i">mapValues</span> <span class="i">Series</span><span class="o">.</span><span class="i">indexOrdinally</span>
-  <span class="o">|&gt;</span> <span class="i">Frame</span><span class="o">.</span><span class="i">ofColumns</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs26', 43)" onmouseover="showTip(event, 'fs26', 43)" class="id">chunkedLogs</span> <span class="o">=</span>
+  <span onmouseout="hideTip(event, 'fs25', 44)" onmouseover="showTip(event, 'fs25', 44)" class="id">diffs</span> 
+  <span class="o">|&gt;</span> <span class="id">Series</span><span class="pn">.</span><span class="id">sampleTime</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs17', 45)" onmouseover="showTip(event, 'fs17', 45)" class="id">TimeSpan</span><span class="pn">(</span><span class="n">1</span><span class="pn">,</span> <span class="n">0</span><span class="pn">,</span> <span class="n">0</span><span class="pn">)</span><span class="pn">)</span> <span class="id">Direction</span><span class="pn">.</span><span class="id">Forward</span> 
+  <span class="o">|&gt;</span> <span class="id">Series</span><span class="pn">.</span><span class="id">mapValues</span> <span class="id">Series</span><span class="pn">.</span><span class="id">indexOrdinally</span>
+  <span class="o">|&gt;</span> <span class="id">Frame</span><span class="pn">.</span><span class="id">ofColumns</span>
 
 <span class="c">// Means and standard deviations for each hour</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs27', 46)" onmouseover="showTip(event, 'fs27', 46)" class="i">sdvs</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs26', 47)" onmouseover="showTip(event, 'fs26', 47)" class="i">chunkedLogs</span> <span class="o">|&gt;</span> <span class="i">Frame</span><span class="o">.</span><span class="i">sdv</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs28', 48)" onmouseover="showTip(event, 'fs28', 48)" class="i">means</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs26', 49)" onmouseover="showTip(event, 'fs26', 49)" class="i">chunkedLogs</span> <span class="o">|&gt;</span> <span class="i">Frame</span><span class="o">.</span><span class="i">mean</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs27', 46)" onmouseover="showTip(event, 'fs27', 46)" class="id">sdvs</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs26', 47)" onmouseover="showTip(event, 'fs26', 47)" class="id">chunkedLogs</span> <span class="o">|&gt;</span> <span class="id">Frame</span><span class="pn">.</span><span class="id">sdv</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs28', 48)" onmouseover="showTip(event, 'fs28', 48)" class="id">means</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs26', 49)" onmouseover="showTip(event, 'fs26', 49)" class="id">chunkedLogs</span> <span class="o">|&gt;</span> <span class="id">Frame</span><span class="pn">.</span><span class="id">mean</span>
 
 <span class="c">// Display a chart that shows means and sdvs per hour of day</span>
-<span class="i">Chart</span><span class="o">.</span><span class="i">Rows</span>
-  [ <span class="i">Chart</span><span class="o">.</span><span class="i">Column</span>(<span onmouseout="hideTip(event, 'fs27', 50)" onmouseover="showTip(event, 'fs27', 50)" class="i">sdvs</span> <span class="o">|&gt;</span> <span class="i">Series</span><span class="o">.</span><span class="i">observations</span>)
-    <span class="i">Chart</span><span class="o">.</span><span class="i">Column</span>(<span onmouseout="hideTip(event, 'fs28', 51)" onmouseover="showTip(event, 'fs28', 51)" class="i">means</span> <span class="o">|&gt;</span> <span class="i">Series</span><span class="o">.</span><span class="i">observations</span>) ]
+<span class="id">Chart</span><span class="pn">.</span><span class="id">Rows</span>
+  <span class="pn">[</span> <span class="id">Chart</span><span class="pn">.</span><span class="id">Column</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs27', 50)" onmouseover="showTip(event, 'fs27', 50)" class="id">sdvs</span> <span class="o">|&gt;</span> <span class="id">Series</span><span class="pn">.</span><span class="id">observations</span><span class="pn">)</span>
+    <span class="id">Chart</span><span class="pn">.</span><span class="id">Column</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs28', 51)" onmouseover="showTip(event, 'fs28', 51)" class="id">means</span> <span class="o">|&gt;</span> <span class="id">Series</span><span class="pn">.</span><span class="id">observations</span><span class="pn">)</span> <span class="pn">]</span>
 </code></pre></td>
 </tr>
 </table>
 
 <div class="tip" id="fs1">namespace System</div>
-<div class="tip" id="fs2">namespace System.Numerics</div>
-<div class="tip" id="fs3">val randomPrice : seed:&#39;a -&gt; drift:float -&gt; volatility:float -&gt; initial:float -&gt; start:DateTimeOffset -&gt; span:TimeSpan -&gt; count:int -&gt; seq&lt;DateTimeOffset * float&gt;<br /><br />Full name: Timestas.randomPrice<br /><em><br /><br />&#160;Generates price using geometric Brownian motion<br /><br />&#160;## Parameters<br />&#160;&#160;- &#39;seed&#39; specifies the seed for random number generator<br />&#160;&#160;- &#39;drift&#39; and &#39;volatility&#39; set properties of the price movement<br />&#160;&#160;- &#39;initial&#39; and &#39;start&#39; specify the initial price and date<br />&#160;&#160;- &#39;span&#39; specifies time span between individual observations<br />&#160;&#160;- &#39;count&#39; is the number of required values to generate</em></div>
+<div class="tip" id="fs2">namespace Microsoft.FSharp</div>
+<div class="tip" id="fs3">val randomPrice : seed:&#39;a -&gt; drift:float -&gt; volatility:float -&gt; initial:float -&gt; start:DateTimeOffset -&gt; span:TimeSpan -&gt; count:int -&gt; seq&lt;DateTimeOffset * float&gt;<br /><em><br /><br />&#160;Generates price using geometric Brownian motion<br /><br />&#160;## Parameters<br />&#160;&#160;- &#39;seed&#39; specifies the seed for random number generator<br />&#160;&#160;- &#39;drift&#39; and &#39;volatility&#39; set properties of the price movement<br />&#160;&#160;- &#39;initial&#39; and &#39;start&#39; specify the initial price and date<br />&#160;&#160;- &#39;span&#39; specifies time span between individual observations<br />&#160;&#160;- &#39;count&#39; is the number of required values to generate</em></div>
 <div class="tip" id="fs4">val seed : &#39;a</div>
 <div class="tip" id="fs5">val drift : float</div>
 <div class="tip" id="fs6">val volatility : float</div>
@@ -219,81 +219,81 @@
 <div class="tip" id="fs9">val span : TimeSpan</div>
 <div class="tip" id="fs10">val count : int</div>
 <div class="tip" id="fs11">let dist = Normal(0.0, 1.0, RandomSource=Random(seed))  <br />&#160;&#160;let dt = (span:TimeSpan).TotalDays / 250.0<br />&#160;&#160;let driftExp = (drift - 0.5 * pown volatility 2) * dt<br />&#160;&#160;let randExp = volatility * (sqrt dt)<br />&#160;&#160;((start:DateTimeOffset), initial) |&gt; Seq.unfold (fun (dt, price) -&gt;<br />&#160;&#160;&#160;&#160;let price = price * exp (driftExp + randExp * dist.Sample()) <br />&#160;&#160;&#160;&#160;Some((dt, price), (dt + span, price))) |&gt; Seq.take count</div>
-<div class="tip" id="fs12">val today : DateTimeOffset<br /><br />Full name: Timestas.today</div>
-<div class="tip" id="fs13">Multiple items<br />type DateTimeOffset =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;new : dateTime:DateTime -&gt; DateTimeOffset + 5 overloads<br />&#160;&#160;&#160;&#160;member Add : timeSpan:TimeSpan -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;member AddDays : days:float -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;member AddHours : hours:float -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;member AddMilliseconds : milliseconds:float -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;member AddMinutes : minutes:float -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;member AddMonths : months:int -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;member AddSeconds : seconds:float -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;member AddTicks : ticks:int64 -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;member AddYears : years:int -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;...<br />&#160;&#160;end<br /><br />Full name: System.DateTimeOffset<br /><br />--------------------<br />DateTimeOffset()<br />DateTimeOffset(dateTime: DateTime) : unit<br />DateTimeOffset(ticks: int64, offset: TimeSpan) : unit<br />DateTimeOffset(dateTime: DateTime, offset: TimeSpan) : unit<br />DateTimeOffset(year: int, month: int, day: int, hour: int, minute: int, second: int, offset: TimeSpan) : unit<br />DateTimeOffset(year: int, month: int, day: int, hour: int, minute: int, second: int, millisecond: int, offset: TimeSpan) : unit<br />DateTimeOffset(year: int, month: int, day: int, hour: int, minute: int, second: int, millisecond: int, calendar: Globalization.Calendar, offset: TimeSpan) : unit</div>
-<div class="tip" id="fs14">Multiple items<br />type DateTime =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;new : ticks:int64 -&gt; DateTime + 10 overloads<br />&#160;&#160;&#160;&#160;member Add : value:TimeSpan -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddDays : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddHours : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddMilliseconds : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddMinutes : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddMonths : months:int -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddSeconds : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddTicks : value:int64 -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddYears : value:int -&gt; DateTime<br />&#160;&#160;&#160;&#160;...<br />&#160;&#160;end<br /><br />Full name: System.DateTime<br /><br />--------------------<br />DateTime()<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(ticks: int64) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(ticks: int64, kind: DateTimeKind) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, calendar: Globalization.Calendar) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, kind: DateTimeKind) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, calendar: Globalization.Calendar) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, millisecond: int) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, millisecond: int, kind: DateTimeKind) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em></div>
+<div class="tip" id="fs12">val today : DateTimeOffset</div>
+<div class="tip" id="fs13">Multiple items<br />type DateTimeOffset =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;new : dateTime:DateTime -&gt; DateTimeOffset + 5 overloads<br />&#160;&#160;&#160;&#160;member Add : timeSpan:TimeSpan -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;member AddDays : days:float -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;member AddHours : hours:float -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;member AddMilliseconds : milliseconds:float -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;member AddMinutes : minutes:float -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;member AddMonths : months:int -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;member AddSeconds : seconds:float -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;member AddTicks : ticks:int64 -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;member AddYears : years:int -&gt; DateTimeOffset<br />&#160;&#160;&#160;&#160;...<br />&#160;&#160;end<br /><br />--------------------<br />DateTimeOffset ()<br />DateTimeOffset(dateTime: DateTime) : DateTimeOffset<br />DateTimeOffset(ticks: int64, offset: TimeSpan) : DateTimeOffset<br />DateTimeOffset(dateTime: DateTime, offset: TimeSpan) : DateTimeOffset<br />DateTimeOffset(year: int, month: int, day: int, hour: int, minute: int, second: int, offset: TimeSpan) : DateTimeOffset<br />DateTimeOffset(year: int, month: int, day: int, hour: int, minute: int, second: int, millisecond: int, offset: TimeSpan) : DateTimeOffset<br />DateTimeOffset(year: int, month: int, day: int, hour: int, minute: int, second: int, millisecond: int, calendar: Globalization.Calendar, offset: TimeSpan) : DateTimeOffset</div>
+<div class="tip" id="fs14">Multiple items<br />type DateTime =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;new : ticks:int64 -&gt; DateTime + 10 overloads<br />&#160;&#160;&#160;&#160;member Add : value:TimeSpan -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddDays : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddHours : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddMilliseconds : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddMinutes : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddMonths : months:int -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddSeconds : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddTicks : value:int64 -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddYears : value:int -&gt; DateTime<br />&#160;&#160;&#160;&#160;...<br />&#160;&#160;end<br /><br />--------------------<br />DateTime ()<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(ticks: int64) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(ticks: int64, kind: DateTimeKind) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, calendar: Globalization.Calendar) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, kind: DateTimeKind) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, calendar: Globalization.Calendar) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, millisecond: int) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, millisecond: int, kind: DateTimeKind) : DateTime<br />&#160;&#160;&#160;<em>(+0 other overloads)</em></div>
 <div class="tip" id="fs15">property DateTime.Today: DateTime</div>
-<div class="tip" id="fs16">val sec : TimeSpan<br /><br />Full name: Timestas.sec</div>
-<div class="tip" id="fs17">Multiple items<br />type TimeSpan =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;new : ticks:int64 -&gt; TimeSpan + 3 overloads<br />&#160;&#160;&#160;&#160;member Add : ts:TimeSpan -&gt; TimeSpan<br />&#160;&#160;&#160;&#160;member CompareTo : value:obj -&gt; int + 1 overload<br />&#160;&#160;&#160;&#160;member Days : int<br />&#160;&#160;&#160;&#160;member Duration : unit -&gt; TimeSpan<br />&#160;&#160;&#160;&#160;member Equals : value:obj -&gt; bool + 1 overload<br />&#160;&#160;&#160;&#160;member GetHashCode : unit -&gt; int<br />&#160;&#160;&#160;&#160;member Hours : int<br />&#160;&#160;&#160;&#160;member Milliseconds : int<br />&#160;&#160;&#160;&#160;member Minutes : int<br />&#160;&#160;&#160;&#160;...<br />&#160;&#160;end<br /><br />Full name: System.TimeSpan<br /><br />--------------------<br />TimeSpan()<br />TimeSpan(ticks: int64) : unit<br />TimeSpan(hours: int, minutes: int, seconds: int) : unit<br />TimeSpan(days: int, hours: int, minutes: int, seconds: int) : unit<br />TimeSpan(days: int, hours: int, minutes: int, seconds: int, milliseconds: int) : unit</div>
-<div class="tip" id="fs18">val hfq1 : obj<br /><br />Full name: Timestas.hfq1</div>
-<div class="tip" id="fs19">val hfq2 : obj<br /><br />Full name: Timestas.hfq2</div>
-<div class="tip" id="fs20">val intervals : DateTimeOffset list<br /><br />Full name: Timestas.intervals</div>
+<div class="tip" id="fs16">val sec : TimeSpan</div>
+<div class="tip" id="fs17">Multiple items<br />type TimeSpan =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;new : ticks:int64 -&gt; TimeSpan + 3 overloads<br />&#160;&#160;&#160;&#160;member Add : ts:TimeSpan -&gt; TimeSpan<br />&#160;&#160;&#160;&#160;member CompareTo : value:obj -&gt; int + 1 overload<br />&#160;&#160;&#160;&#160;member Days : int<br />&#160;&#160;&#160;&#160;member Duration : unit -&gt; TimeSpan<br />&#160;&#160;&#160;&#160;member Equals : value:obj -&gt; bool + 1 overload<br />&#160;&#160;&#160;&#160;member GetHashCode : unit -&gt; int<br />&#160;&#160;&#160;&#160;member Hours : int<br />&#160;&#160;&#160;&#160;member Milliseconds : int<br />&#160;&#160;&#160;&#160;member Minutes : int<br />&#160;&#160;&#160;&#160;...<br />&#160;&#160;end<br /><br />--------------------<br />TimeSpan ()<br />TimeSpan(ticks: int64) : TimeSpan<br />TimeSpan(hours: int, minutes: int, seconds: int) : TimeSpan<br />TimeSpan(days: int, hours: int, minutes: int, seconds: int) : TimeSpan<br />TimeSpan(days: int, hours: int, minutes: int, seconds: int, milliseconds: int) : TimeSpan</div>
+<div class="tip" id="fs18">val hfq1 : obj</div>
+<div class="tip" id="fs19">val hfq2 : obj</div>
+<div class="tip" id="fs20">val intervals : DateTimeOffset list</div>
 <div class="tip" id="fs21">val i : float</div>
 <div class="tip" id="fs22">DateTimeOffset.AddMinutes(minutes: float) : DateTimeOffset</div>
-<div class="tip" id="fs23">val logs1 : float<br /><br />Full name: Timestas.logs1</div>
-<div class="tip" id="fs24">val log : value:&#39;T -&gt; &#39;T (requires member Log)<br /><br />Full name: Microsoft.FSharp.Core.Operators.log</div>
-<div class="tip" id="fs25">val diffs : obj<br /><br />Full name: Timestas.diffs</div>
-<div class="tip" id="fs26">val chunkedLogs : obj<br /><br />Full name: Timestas.chunkedLogs</div>
-<div class="tip" id="fs27">val sdvs : obj<br /><br />Full name: Timestas.sdvs</div>
-<div class="tip" id="fs28">val means : obj<br /><br />Full name: Timestas.means</div>
+<div class="tip" id="fs23">val logs1 : float</div>
+<div class="tip" id="fs24">val log : value:&#39;T -&gt; &#39;T (requires member Log)</div>
+<div class="tip" id="fs25">val diffs : obj</div>
+<div class="tip" id="fs26">val chunkedLogs : obj</div>
+<div class="tip" id="fs27">val sdvs : obj</div>
+<div class="tip" id="fs28">val means : obj</div>
 
         </div>
         <div class="span3">
-          <a href="http://bluemountaincapital.github.io/Deedle/index.html">
-            <img src="http://bluemountaincapital.github.io/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          <a href="http://fslab.org/Deedle/index.html">
+            <img src="http://fslab.org/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
           <ul class="nav nav-list" id="menu">
             <li class="nav-header">Deedle</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/index.html">Home page</a></li>
+            <li><a href="http://fslab.org/Deedle/index.html">Home page</a></li>
             <li class="divider"></li>
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle">Source Code on GitHub</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="http://github.com/BlueMountainCapital/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/design.html">Design notes</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
+            <li><a href="http://fslab.org/Deedle/design.html">Design notes</a></li>
             <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
             
             <li class="nav-header">Using from F#</li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/tutorial.html">Quick start tutorial</a>
+              <a href="http://fslab.org/Deedle/tutorial.html">Quick start tutorial</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/series.html">Working with time series</a>
+              <a href="http://fslab.org/Deedle/series.html">Working with time series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/frame.html">Working with data frames</a>
+              <a href="http://fslab.org/Deedle/frame.html">Working with data frames</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/stats.html">Statistics &amp; calculations</a>
+              <a href="http://fslab.org/Deedle/stats.html">Statistics &amp; calculations</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/rinterop.html">Using Deedle with R</a>
+              <a href="http://fslab.org/Deedle/rinterop.html">Using Deedle with R</a>
             </li>
 
             <li class="nav-header">Using from C#</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/csharpintro.html">Getting started</a></li>
+            <li><a href="http://fslab.org/Deedle/csharpintro.html">Getting started</a></li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpseries.html">Working with data series</a>
+              <a href="http://fslab.org/Deedle/csharpseries.html">Working with data series</a>
             </li>
             <li>
-              <a href="http://bluemountaincapital.github.io/Deedle/csharpframe.html">Working with data frames</a>
+              <a href="http://fslab.org/Deedle/csharpframe.html">Working with data frames</a>
             </li>
 
             <li class="nav-header">Documentation</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/index.html">API Reference</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/index.html">API Reference</a></li>
             <li class="divider"></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/reference/deedle-stats.html">Stats module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="http://fslab.org/Deedle/reference/deedle-stats.html">Stats module</a></li>
 
             <li class="nav-header">Samples</li>
-            <li><a href="http://bluemountaincapital.github.io/Deedle/lazysource.html">Lazy data loading</a></li>
+            <li><a href="http://fslab.org/Deedle/lazysource.html">Lazy data loading</a></li>
           </ul>
         </div>
       </div>
     </div>
-    <a href="http://github.com/BlueMountainCapital/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <a href="http://github.com/fslaborg/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
     <script>
       (function (i, s, o, g, r, a, m) {
         i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
