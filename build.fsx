@@ -169,8 +169,7 @@ Target "ReleaseDocs" (fun _ ->
     Branches.checkoutBranch "temp/gh-pages" "gh-pages"
     CopyRecursive "docs/output" "temp/gh-pages" true |> printfn "%A"
     CommandHelper.runSimpleGitCommand "temp/gh-pages" "add ." |> printfn "%s"
-    // let cmd = sprintf """commit -a -m "Update generated documentation for version %s""" release.NugetVersion
-    let cmd = sprintf """commit -a -m "Fix http url to https for web page rendering"""  
+    let cmd = sprintf """commit -a -m "Update generated documentation for version %s""" release.NugetVersion
     CommandHelper.runSimpleGitCommand "temp/gh-pages" cmd |> printfn "%s"
     Branches.push "temp/gh-pages"
 )
