@@ -2,6 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net45</TargetFrameworks>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../Common/FsUnit.fs">
@@ -41,7 +42,7 @@
     <Reference Include="RProvider.Runtime">
       <HintPath>..\..\packages\RProvider\lib\net40\RProvider.Runtime.dll</HintPath>
     </Reference>
-  </ItemGroup>  
+  </ItemGroup>
   <Import Project="..\..\fsc.props" />
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
