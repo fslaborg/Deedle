@@ -6,14 +6,14 @@
 // Binaries that have XML documentation (in a corresponding generated XML file)
 let referenceBinaries = [ "Deedle.dll" ]
 // Web site location for the generated documentation
-let website = "http://bluemountaincapital.github.io/Deedle"
+let website = "https://fslab.org/Deedle"
 
 // Specify more information about your project
 let info =
   [ "project-name", "Deedle"
-    "project-author", "BlueMountain Capital"
+    "project-author", "BlueMountain Capital, FsLab.Org"
     "project-summary", "Easy to use .NET library for data manipulation and scientific programming"
-    "project-github", "http://github.com/BlueMountainCapital/Deedle"
+    "project-github", "http://github.com/fslaborg/Deedle"
     "project-nuget", "https://nuget.org/packages/Deedle" ]
 
 // --------------------------------------------------------------------------------------
@@ -90,7 +90,7 @@ let buildReference () =
     RazorMetadataFormat.Generate
       ( bin @@ lib, output @@ "reference", layoutRoots, 
         parameters = ("root", root)::info,
-        sourceRepo = "https://github.com/BlueMountainCapital/Deedle/tree/master/",
+        sourceRepo = "https://github.com/fslaborg/Deedle/tree/master/",
         sourceFolder = __SOURCE_DIRECTORY__.Substring(0, __SOURCE_DIRECTORY__.Length - "\docs\tools".Length),
         ?assemblyReferences = references )
 

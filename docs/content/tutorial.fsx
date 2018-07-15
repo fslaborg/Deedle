@@ -6,7 +6,7 @@ Deedle in 10 minutes using F#
 =============================
 
 This document is a quick overview of the most important features of F# data frame library.
-You can also get this page as an [F# script file](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/tutorial.fsx)
+You can also get this page as an [F# script file](https://github.com/fslaborg/Deedle/blob/master/docs/content/tutorial.fsx)
 from GitHub and run the samples interactively.
 
 The first step is to install `Deedle.dll` [from NuGet](https://www.nuget.org/packages/Deedle).

@@ -72,9 +72,9 @@ Then we add nice namings, sort the frame and build a new data frame with a nice 
 ### How to get Deedle
 
  * The library is available as [Deedle on NuGet](https://www.nuget.org/packages/Deedle). To get the
-   can also [get the code from GitHub](https://github.com/BlueMountainCapital/Deedle/)
-   or download [the source as a ZIP file](https://github.com/BlueMountainCapital/Deedle/zipball/master).
-   Compiled binaries are also available for [download as a ZIP file](https://github.com/BlueMountainCapital/Deedle/zipball/release).
+   can also [get the code from GitHub](https://github.com/fslaborg/Deedle/)
+   or download [the source as a ZIP file](https://github.com/fslaborg/Deedle/zipball/master).
+   Compiled binaries are also available for [download as a ZIP file](https://github.com/fslaborg/Deedle/zipball/release).
 
  * If you want to use Deedle with F# Data, R type provider and other F# components for data science,
    consider using the [FsLab package](https://www.nuget.org/packages/FsLab). When using Visual Studio,
@@ -135,11 +135,11 @@ redistribution for both commercial and non-commercial purposes. For more informa
 [License file][license] in the GitHub repository. 
 
 
-  [docs]: https://github.com/BlueMountainCapital/Deedle/tree/master/docs/content
-  [samples]: https://github.com/BlueMountainCapital/Deedle/tree/master/docs/content/samples
-  [gh]: https://github.com/BlueMountainCapital/Deedle
-  [issues]: https://github.com/BlueMountainCapital/Deedle/issues
-  [readme]: https://github.com/BlueMountainCapital/Deedle/blob/master/README.md
-  [license]: https://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md
+  [docs]: https://github.com/fslaborg/Deedle/tree/master/docs/content
+  [samples]: https://github.com/fslaborg/Deedle/tree/master/docs/content/samples
+  [gh]: https://github.com/fslaborg/Deedle
+  [issues]: https://github.com/fslaborg/Deedle/issues
+  [readme]: https://github.com/fslaborg/Deedle/blob/master/README.md
+  [license]: https://github.com/fslaborg/Deedle/blob/master/LICENSE.md
   [fsharp-dwg]: http://fsharp.org/technical-groups/
 *)

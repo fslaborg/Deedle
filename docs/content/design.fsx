@@ -5,7 +5,7 @@ F# Data Frame design notes
 
 This is the first version of F# Data Frame library and so we are still actively looking
 at how to improve the design. The best place for discussions is either the [issue list
-on GitHub](https://github.com/BlueMountainCapital/Deedle/issues) or the
+on GitHub](https://github.com/fslaborg/Deedle/issues) or the
 mailing list of the [F# for Data and Machine Learning](http://fsharp.org/technical-groups/)
 group (for more broader topics).
 
@@ -243,7 +243,7 @@ things that we discussed earlier and that we may still look into at some point:
    new typed data frame.
 
 If you have any comments regarding the topics above, please [submit an issue
-on GitHub](https://github.com/BlueMountainCapital/Deedle/issues) or, if you
+on GitHub](https://github.com/fslaborg/Deedle/issues) or, if you
 are interested in more actively contributing, join
 the [F# for Data and Machine Learning](http://fsharp.org/technical-groups/) working
 group. *)

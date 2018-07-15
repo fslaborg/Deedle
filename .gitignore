@@ -38,6 +38,5 @@ tests/PerformanceTools/Deedle.PerfTest/obj
 tests/PerformanceTools/Deedle.PerfTest/bin
 .paket/paket.exe
 /.paket/Paket.Restore.targets
-/.vs/Deedle/DesignTimeBuild
-/.vs/Deedle/v15/Server/sqlite3
+/.vs/*
 /.fake
