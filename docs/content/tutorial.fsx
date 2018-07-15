@@ -1,5 +1,5 @@
 (*** hide ***)
-#I "../../bin/"
+#I "../../bin/net45"
 
 (**
 Deedle in 10 minutes using F#
@@ -17,7 +17,7 @@ we also need  [F# Charting](http://fsharp.github.io/FSharp.Charting), which
 works similarly:
 
 *)
-#I "../../packages/FSharp.Charting"
+#I "../../packages/FSharp.Charting/lib/net45"
 #I "../../packages/Deedle"
 #load "FSharp.Charting.fsx"
 #load "Deedle.fsx"
@@ -97,7 +97,7 @@ The type representing a data frame has two generic parameters:
 `Frame<TRowKey, TColumnKey>`. The first parameter is represents the type of
 row keys - this can be `int` if we do not give the keys explicitly or `DateTime`
 like in the example above. The second parameter is the type of column keys.
-This is typically `string`, but sometimes it is useful to can create a 
+This is typically `string`, but sometimes it is useful to create a 
 transposed frame with dates as column keys. Because a data frame can contain
 heterogeneous data, there is no type of values - this needs to be specified
 when getting data from the data frame.

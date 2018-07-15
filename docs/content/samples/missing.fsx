@@ -1,7 +1,7 @@
 (*** hide ***)
-#I "../../../bin/"
-#I "../../../packages/FSharp.Charting"
-#I "../../../packages/Deedle"
+#load "../../../bin/net45/Deedle.fsx"
+#load "../../../packages/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
+#r "../../../packages/FSharp.Data/lib/net45/FSharp.Data.dll"
 #load "FSharp.Charting.fsx"
 #load "Deedle.fsx"
 open System
@@ -13,13 +13,13 @@ Missing data and exceptions
 ==========================
 *)
 
-let msftCsv = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/../data/MSFT.csv")
-let fbCsv = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/../data/FB.csv")
+let msftCsv = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/../data/stocks/MSFT.csv")
+let fbCsv = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/../data/stocks/FB.csv")
 
 let msftOrd = 
   msftCsv
   |> Frame.indexRowsDate "Date"
-  |> Frame.orderRows
+  |> Frame.sortRowsByKey
 
 let msft = msftOrd.Columns.[ ["Open"; "Close"] ]
 
@@ -30,8 +30,8 @@ msft?Difference <- msft?Open - msft?Close
 let fb = 
   fbCsv
   |> Frame.indexRowsDate "Date"
-  |> Frame.orderRows
-  |> Frame.getCols ["Open"; "Close"]
+  |> Frame.sortRowsByKey
+  |> Frame.sliceCols ["Open"; "Close"]
 fb?Difference <- fb?Open - fb?Close
 
 let msftRen = msft |> Frame.indexColsWith ["MsftOpen"; "MsftClose"; "MsftDiff"]

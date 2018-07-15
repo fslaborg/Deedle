@@ -1,5 +1,5 @@
 (*** hide ***)
-#load "../../bin/Deedle.fsx"
+#load "../../bin/net45/Deedle.fsx"
 open System
 open Deedle
 let root = __SOURCE_DIRECTORY__ + "/data/"

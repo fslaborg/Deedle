@@ -147,7 +147,7 @@ module internal Reflection =
     if (not dynamic) && (isSimpleType (typeof<'T>)) then [] else
 
     // Compiled projection for static access
-    let compiled = Lazy.Create(fun () -> getCachedCompileProjection typeof<'T>)
+    let compiled = Lazy<_>.Create(fun () -> getCachedCompileProjection typeof<'T>)
 
     // For each vector element, build a list of all expanded columns
     // The list includes all dictionary values, or all fields

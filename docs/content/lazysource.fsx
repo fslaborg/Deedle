@@ -1,5 +1,5 @@
 ﻿(*** hide ***)
-#load "../../bin/Deedle.fsx"
+#load "../../bin/net45/Deedle.fsx"
 open System
 
 (**
