@@ -9,7 +9,6 @@
     </Compile>
     <Compile Include="RPlugin.fs" />
     <None Include="paket.references" />
-    <Content Include="App.config" />    
   </ItemGroup>
   <ItemGroup>
     <!-- <ProjectReference Include="..\..\src\Deedle.RProvider.Plugin\Deedle.RProvider.Plugin.fsproj"><Name>Deedle.RProvider.Plugin</Name></ProjectReference><ProjectReference Include="..\..\src\Deedle\Deedle.fsproj"><Name>Deedle</Name></ProjectReference> -->
@@ -20,6 +19,29 @@
       <HintPath>..\..\bin\net45\Deedle.RProvider.Plugin.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="DynamicInterop">
+      <HintPath>..\..\packages\DynamicInterop\lib\net40\DynamicInterop.dll</HintPath>
+    </Reference>
+    <Reference Include="RDotNet">
+      <HintPath>..\..\packages\R.NET.Community\lib\net40\RDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="RDotNet.FSharp">
+      <HintPath>..\..\packages\R.NET.Community.FSharp\lib\net40\RDotNet.FSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="RDotNet.NativeLibrary">
+      <HintPath>..\..\packages\R.NET.Community\lib\net40\RDotNet.NativeLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="RProvider">
+      <HintPath>..\..\packages\RProvider\lib\net40\RProvider.dll</HintPath>
+    </Reference>
+    <Reference Include="RProvider.DesignTime">
+      <HintPath>..\..\packages\RProvider\lib\net40\RProvider.DesignTime.dll</HintPath>
+    </Reference>
+    <Reference Include="RProvider.Runtime">
+      <HintPath>..\..\packages\RProvider\lib\net40\RProvider.Runtime.dll</HintPath>
+    </Reference>
+  </ItemGroup>  
   <Import Project="..\..\fsc.props" />
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

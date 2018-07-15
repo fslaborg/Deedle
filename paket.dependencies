@@ -3,7 +3,6 @@ source https://nuget.org/api/v2
 nuget FsCheck 2.10.8
 nuget FSharp.Charting
 nuget FSharp.Data
-nuget FSharp.Formatting
 nuget MathNet.Numerics 4.5.1
 nuget NUnit 3.10.1
 nuget NUnit.Runners

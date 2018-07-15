@@ -5,12 +5,11 @@ module Formatters
 //#r "FSharp.Markdown.dll"
 //#r "FSharp.Literate.dll"
 #r "../../packages/FAKE/tools/FakeLib.dll"
-#r "../../bin/Deedle.dll"
-#r "../../bin/RDotNet.dll"
-#r "../../bin/RProvider.dll"
-#r "../../bin/RProvider.Runtime.dll"
+#r "../../bin/net45/Deedle.dll"
+#load "../../packages/RProvider/RProvider.fsx"
 #r "../../packages/MathNet.Numerics/lib/net40/MathNet.Numerics.dll"
-#load "../../packages/FSharp.Charting/FSharp.Charting.fsx"
+#load "../../packages/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
+#r "../../packages/FSharp.Compiler.Service/lib/net45/FSharp.Compiler.Service.dll"
 
 // --------------------------------------------------------------------------------------
 // NOTE: The rest of the file is copied from the FsLab project:

@@ -115,7 +115,8 @@ let testProjs =
       "tests/Deedle.PerfTests/Deedle.PerfTests.fsproj"  ]
 
 let buildProjs =
-    [ "src/Deedle/Deedle.fsproj"]
+    [ "src/Deedle/Deedle.fsproj"
+      "src/Deedle.RProvider.Plugin/Deedle.RProvider.Plugin.fsproj" ]
 
 Target "Build" <| fun () ->
  if useMsBuildToolchain then

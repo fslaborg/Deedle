@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net45</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <OutputPath>../../bin/</OutputPath>
   </PropertyGroup>
@@ -15,6 +15,30 @@
       <Name>Deedle</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="DynamicInterop">
+      <HintPath>..\..\packages\DynamicInterop\lib\net40\DynamicInterop.dll</HintPath>
+    </Reference>
+    <Reference Include="RDotNet">
+      <HintPath>..\..\packages\R.NET.Community\lib\net40\RDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="RDotNet.FSharp">
+      <HintPath>..\..\packages\R.NET.Community.FSharp\lib\net40\RDotNet.FSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="RDotNet.NativeLibrary">
+      <HintPath>..\..\packages\R.NET.Community\lib\net40\RDotNet.NativeLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="RProvider">
+      <HintPath>..\..\packages\RProvider\lib\net40\RProvider.dll</HintPath>
+    </Reference>
+    <Reference Include="RProvider.DesignTime">
+      <HintPath>..\..\packages\RProvider\lib\net40\RProvider.DesignTime.dll</HintPath>
+    </Reference>
+    <Reference Include="RProvider.Runtime">
+      <HintPath>..\..\packages\RProvider\lib\net40\RProvider.Runtime.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
   <Target Name = "CopyFiles" AfterTargets="build">
     <Copy SourceFiles="..\..\packages\RProvider\RProvider.fsx" DestinationFolder="$(OutputPath)" />
     <Copy SourceFiles="..\..\packages\RProvider\lib\net40\RProvider.Runtime.dll.config" DestinationFolder="$(OutputPath)" />

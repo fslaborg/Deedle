@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net45</TargetFrameworks>
+    <TargetFrameworks>net461</TargetFrameworks>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
@@ -11,11 +11,16 @@
     <Compile Include="DocTests.fs" />
     <None Include="paket.references" />
   </ItemGroup>
-  <ItemGroup>
+  <!-- <ItemGroup>
     <Reference Include="FSharp.Compiler.Interactive.Settings">
       <HintPath>..\..\lib\FSharp.Compiler.Interactive.Settings.dll</HintPath>
       <Private>True</Private>
     </Reference>
-  </ItemGroup>
+  </ItemGroup> -->
+  <Target Name = "CopyFiles" BeforeTargets="build">
+    <Copy SourceFiles="..\..\packages\RProvider\lib\net40\FSharp.Core.dll" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="..\..\packages\RProvider\lib\net40\FSharp.Core.sigdata" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="..\..\packages\RProvider\lib\net40\FSharp.Core.optdata" DestinationFolder="$(OutputPath)" />
+  </Target>  
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
