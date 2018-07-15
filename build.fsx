@@ -108,6 +108,7 @@ let testNames =
       "Deedle.CSharp.Tests" 
       "Deedle.Documentation.Tests"
       "Deedle.PerfTests"   ]
+
 let testProjs = 
     [ "tests/Deedle.Tests/Deedle.Tests.fsproj" 
       "tests/Deedle.CSharp.Tests/Deedle.CSharp.Tests.csproj" 
@@ -117,6 +118,8 @@ let testProjs =
 let buildProjs =
     [ "src/Deedle/Deedle.fsproj"
       "src/Deedle.RProvider.Plugin/Deedle.RProvider.Plugin.fsproj" ]
+let buildCoreProjs =
+    [ "src/Deedle/Deedle.fsproj" ]
 
 Target "Build" <| fun () ->
  if useMsBuildToolchain then
@@ -128,9 +131,21 @@ Target "Build" <| fun () ->
         MSBuildReleaseExt null ["SourceLinkCreate", "true"] "Build" [proj]
         |> Log (sprintf "%s-Output:\t" projName))
  else
-    
     buildProjs |> Seq.iter (fun proj -> 
     DotNetCli.RunCommand (fun p -> { p with ToolPath = getSdkPath() }) (sprintf "build -c Release \"%s\" /p:SourceLinkCreate=true" proj))
+
+Target "BuildCore" <| fun () ->
+ if useMsBuildToolchain then
+    buildCoreProjs |> Seq.iter (fun proj -> 
+        DotNetCli.Restore  (fun p -> { p with Project = proj; ToolPath =  getSdkPath() }))
+
+    buildCoreProjs |> Seq.iter (fun proj ->
+        let projName = System.IO.Path.GetFileNameWithoutExtension proj
+        MSBuildReleaseExt null ["SourceLinkCreate", "true"] "Build" [proj]
+        |> Log (sprintf "%s-Output:\t" projName))
+ else
+    buildCoreProjs |> Seq.iter (fun proj -> 
+    DotNetCli.RunCommand (fun p -> { p with ToolPath = getSdkPath() }) (sprintf "build -c Release \"%s\" /p:SourceLinkCreate=true" proj))    
 
 
 
@@ -256,13 +271,19 @@ Target "Release" DoNothing
 // Run all targets by default. Invoke 'build <Target>' to override
 
 Target "All" DoNothing
+Target "AllCore" DoNothing
 
 "Clean"
   ==> "AssemblyInfo"
   ==> "Build"
   ==> "All" 
 
+"AssemblyInfo"
+  ==> "BuildCore"
+  ==> "AllCore"
+
 "RunTests" ==> "All"
+"RunTests" ==> "AllCore"
 
 "All" ==> "NuGet" ==> "Release"
 "All" 
