@@ -164,19 +164,19 @@ Target "BuildTests" <| fun () ->
 
 Target "RunTests" <| fun () ->
     if useMsBuildToolchain then
+        ActivateFinalTarget "CloseTestRunner"
         (!! "tests/Deedle.*Tests/bin/Release/net45/Deedle*Tests*.dll" ++ "tests/Deedle.*Tests/bin/Release/net461/Deedle*Tests*.dll")
         |> NUnit3 (fun p ->
             { p with
                 ToolPath = nunitRunnerPath
-                ShadowCopy = false
-                TimeOut = TimeSpan.FromMinutes 20.})
-            // { p with
-            //     TimeOut = TimeSpan.FromMinutes 20. 
-            //     TraceLevel = NUnit3TraceLevel.Info})
+                ShadowCopy = false })
     else
         for testProj in testProjs do 
             DotNetCli.Test (fun p -> { p with Configuration = "Release"; Project = testProj; ToolPath = getSdkPath(); AdditionalArgs=["/v:n"] })
 
+FinalTarget "CloseTestRunner" (fun _ ->  
+    ProcessHelper.killProcess "nunit-agent.exe"
+)
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
 
