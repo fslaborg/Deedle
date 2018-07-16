@@ -37,7 +37,6 @@ let rpluginTags = "R RProvider"
 let gitHome = "https://github.com/fslaborg"
 let gitName = "Deedle"
 
-let nunitRunnerPath = "packages/NUnit.ConsoleRunner/tools/nunit3-console.exe"
 
 
 
@@ -164,6 +163,7 @@ Target "BuildTests" <| fun () ->
 
 Target "RunTests" <| fun () ->
     if useMsBuildToolchain then
+        let nunitRunnerPath = "packages/NUnit.ConsoleRunner/tools/nunit3-console.exe"
         ActivateFinalTarget "CloseTestRunner"
         (!! "tests/Deedle.*Tests/bin/Release/net45/Deedle*Tests*.dll" ++ "tests/Deedle.*Tests/bin/Release/net461/Deedle*Tests*.dll")
         |> NUnit3 (fun p ->
@@ -175,6 +175,7 @@ Target "RunTests" <| fun () ->
             DotNetCli.Test (fun p -> { p with Configuration = "Release"; Project = testProj; ToolPath = getSdkPath(); AdditionalArgs=["/v:n"] })
 
 FinalTarget "CloseTestRunner" (fun _ ->  
+    ProcessHelper.killProcess "nunit3-console.exe"
     ProcessHelper.killProcess "nunit-agent.exe"
 )
 // --------------------------------------------------------------------------------------
