@@ -37,6 +37,7 @@ let rpluginTags = "R RProvider"
 let gitHome = "https://github.com/fslaborg"
 let gitName = "Deedle"
 
+let nunitRunnerPath = "packages/NUnit.ConsoleRunner/tools/nunit3-console.exe"
 
 
 
@@ -122,30 +123,30 @@ let buildCoreProjs =
     [ "src/Deedle/Deedle.fsproj" ]
 
 Target "Build" <| fun () ->
- if useMsBuildToolchain then
-    buildProjs |> Seq.iter (fun proj -> 
-        DotNetCli.Restore  (fun p -> { p with Project = proj; ToolPath =  getSdkPath() }))
+    if useMsBuildToolchain then
+        buildProjs |> Seq.iter (fun proj -> 
+            DotNetCli.Restore  (fun p -> { p with Project = proj; ToolPath =  getSdkPath() }))
 
-    buildProjs |> Seq.iter (fun proj ->
-        let projName = System.IO.Path.GetFileNameWithoutExtension proj
-        MSBuildReleaseExt null ["SourceLinkCreate", "true"] "Build" [proj]
-        |> Log (sprintf "%s-Output:\t" projName))
- else
-    buildProjs |> Seq.iter (fun proj -> 
-    DotNetCli.RunCommand (fun p -> { p with ToolPath = getSdkPath() }) (sprintf "build -c Release \"%s\" /p:SourceLinkCreate=true" proj))
+        buildProjs |> Seq.iter (fun proj ->
+            let projName = System.IO.Path.GetFileNameWithoutExtension proj
+            MSBuildReleaseExt null ["SourceLinkCreate", "true"] "Build" [proj]
+            |> Log (sprintf "%s-Output:\t" projName))
+    else
+        buildProjs |> Seq.iter (fun proj -> 
+        DotNetCli.RunCommand (fun p -> { p with ToolPath = getSdkPath() }) (sprintf "build -c Release \"%s\" /p:SourceLinkCreate=true" proj))
 
 Target "BuildCore" <| fun () ->
- if useMsBuildToolchain then
-    buildCoreProjs |> Seq.iter (fun proj -> 
-        DotNetCli.Restore  (fun p -> { p with Project = proj; ToolPath =  getSdkPath() }))
+    if useMsBuildToolchain then
+        buildCoreProjs |> Seq.iter (fun proj -> 
+            DotNetCli.Restore  (fun p -> { p with Project = proj; ToolPath =  getSdkPath() }))
 
-    buildCoreProjs |> Seq.iter (fun proj ->
-        let projName = System.IO.Path.GetFileNameWithoutExtension proj
-        MSBuildReleaseExt null ["SourceLinkCreate", "true"] "Build" [proj]
-        |> Log (sprintf "%s-Output:\t" projName))
- else
-    buildCoreProjs |> Seq.iter (fun proj -> 
-    DotNetCli.RunCommand (fun p -> { p with ToolPath = getSdkPath() }) (sprintf "build -c Release \"%s\" /p:SourceLinkCreate=true" proj))    
+        buildCoreProjs |> Seq.iter (fun proj ->
+            let projName = System.IO.Path.GetFileNameWithoutExtension proj
+            MSBuildReleaseExt null ["SourceLinkCreate", "true"] "Build" [proj]
+            |> Log (sprintf "%s-Output:\t" projName))
+    else
+        buildCoreProjs |> Seq.iter (fun proj -> 
+        DotNetCli.RunCommand (fun p -> { p with ToolPath = getSdkPath() }) (sprintf "build -c Release \"%s\" /p:SourceLinkCreate=true" proj))    
 
 
 
@@ -154,24 +155,27 @@ Target "BuildCore" <| fun () ->
 
 Target "BuildTests" <| fun () ->
     for testProj in testProjs do 
-    if useMsBuildToolchain then
-        DotNetCli.Restore (fun p -> { p with Project = testProj; ToolPath = getSdkPath(); AdditionalArgs=["/v:n"] })
-        MSBuildRelease null "Build" [testProj] |> Log "BuildTests.DesignTime-Output: "
-    else
-        DotNetCli.Build (fun p -> { p with Configuration = "Release"; Project = testProj; ToolPath = getSdkPath(); AdditionalArgs=["/v:n"]; })
+        if useMsBuildToolchain then
+            DotNetCli.Restore (fun p -> { p with Project = testProj; ToolPath = getSdkPath(); AdditionalArgs=["/v:n"] })
+            MSBuildRelease null "Build" [testProj] |> Log "BuildTests.DesignTime-Output: "
+        else
+            DotNetCli.Build (fun p -> { p with Configuration = "Release"; Project = testProj; ToolPath = getSdkPath(); AdditionalArgs=["/v:n"]; })
 
 
 Target "RunTests" <| fun () ->
- if useMsBuildToolchain then
-       for testName in testNames do 
-           !! (sprintf "tests/*/bin/Release/net45/%s.dll" testName)
-           |> NUnit3 (fun p ->
-               { p with
-                   TimeOut = TimeSpan.FromMinutes 20. 
-                   TraceLevel = NUnit3TraceLevel.Info})
- else
-    for testProj in testProjs do 
-    DotNetCli.Test (fun p -> { p with Configuration = "Release"; Project = testProj; ToolPath = getSdkPath(); AdditionalArgs=["/v:n"] })
+    if useMsBuildToolchain then
+        (!! "tests/Deedle.*Tests/bin/Release/net45/Deedle*Tests*.dll" ++ "tests/Deedle.*Tests/bin/Release/net461/Deedle*Tests*.dll")
+        |> NUnit3 (fun p ->
+            { p with
+                ToolPath = nunitRunnerPath
+                ShadowCopy = false
+                TimeOut = TimeSpan.FromMinutes 20.})
+            // { p with
+            //     TimeOut = TimeSpan.FromMinutes 20. 
+            //     TraceLevel = NUnit3TraceLevel.Info})
+    else
+        for testProj in testProjs do 
+            DotNetCli.Test (fun p -> { p with Configuration = "Release"; Project = testProj; ToolPath = getSdkPath(); AdditionalArgs=["/v:n"] })
 
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
@@ -282,7 +286,9 @@ Target "AllCore" DoNothing
   ==> "BuildCore"
   ==> "AllCore"
 
+"BuildTests" ==> "All"
 "RunTests" ==> "All"
+"BuildTests" ==> "AllCore"
 "RunTests" ==> "AllCore"
 
 "All" ==> "NuGet" ==> "Release"

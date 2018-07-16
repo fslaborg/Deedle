@@ -3,3 +3,4 @@ FSharp.Formatting
 Microsoft.NET.Test.Sdk
 NUnit3TestAdapter
 FSharp.Core
+FsUnit

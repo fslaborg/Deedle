@@ -2,6 +2,7 @@
 #nowarn "211"
 #I "../../packages/FSharp.Charting/lib/net45"
 #I "../../bin/net45"
+#I "../../packages/RProvider"
 open System
 let airQuality = __SOURCE_DIRECTORY__ + "/data/airquality.csv"
 
