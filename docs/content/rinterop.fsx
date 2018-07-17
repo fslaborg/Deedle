@@ -1,8 +1,5 @@
 (*** hide ***)
 #nowarn "211"
-#I "../../packages/FSharp.Charting/lib/net45"
-#I "../../bin/net45"
-#I "../../packages/RProvider"
 open System
 let airQuality = __SOURCE_DIRECTORY__ + "/data/airquality.csv"
 
@@ -43,8 +40,8 @@ data access, data science and visualization libraries.
 In a typical project ("F# Tutorial"), the NuGet packages are installed in the `../packages`
 directory. To use R provider and Deedle, you need to write something like this:
 *)
-#load "RProvider.fsx"
-#load "Deedle.fsx"
+#load "../../packages/RProvider/RProvider.fsx"
+#load "../../bin/net45/Deedle.fsx"
 
 open RProvider
 open RDotNet
@@ -91,7 +88,7 @@ the data, we use the [F# Charting library](https://github.com/fsharp/FSharp.Char
 
 *) 
 (*** define-output:mpgch ***)
-#load "FSharp.Charting.fsx"
+#load "../../packages/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
 open FSharp.Charting
 
 mtcars

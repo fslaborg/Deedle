@@ -197,7 +197,7 @@ Target "NuGet" (fun _ ->
             OutputPath = "bin"
             AccessKey = getBuildParamOrDefault "nugetkey" ""
             Publish = hasBuildParam "nugetkey" })
-        ("nuget/" + project + ".nuspec")
+        ("nuget/Deedle.nuspec")
     NuGet (fun p -> 
         { p with   
             Authors = authors
