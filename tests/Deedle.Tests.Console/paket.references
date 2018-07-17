@@ -1,2 +1,3 @@
 NUnit
-NUnit.Runners
+Nunit.Console
+FSharp.Core

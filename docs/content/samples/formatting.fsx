@@ -1,6 +1,6 @@
 (*** hide ***)
-#load "../../../bin/Deedle.fsx"
-#load "../../../packages/FSharp.Charting/FSharp.Charting.fsx"
+#load "../../../bin/net45/Deedle.fsx"
+#load "../../../packages/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
 #r "../../../packages/FSharp.Data/lib/net45/FSharp.Data.dll"
 open System
 open System.IO
@@ -47,7 +47,7 @@ Chart.Pie [ "Good", 20; "Bad", 10; "Unsure", 5 ]
 (**
 helper to capture the last image
 *)
-#load "../../../packages/RProvider.1.0.17/RProvider.fsx"
+#load "../../../packages/RProvider/RProvider.fsx"
 open RProvider
 open RProvider.datasets
 open RProvider.``base``

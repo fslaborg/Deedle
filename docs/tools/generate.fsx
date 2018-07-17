@@ -20,9 +20,6 @@ let info =
 // For typical project, no changes are needed below
 // --------------------------------------------------------------------------------------
 
-#I "../../packages/FAKE/tools"
-#r "../../packages/FAKE/tools/FakeLib.dll"
-#load "../../packages/FSharp.Formatting/FSharp.Formatting.fsx"
 #load "formatters.fsx"
 open Fake
 open System.IO
@@ -70,7 +67,6 @@ let references =
     let getItem name = loadedList |> Seq.find (fun l -> l.Contains name)
     [ 
       (getItem "FSharp.Core").Replace("4.3.0.0", "4.4.1.0")
-      // (getItem "FSharp.Core")
       Path.GetFullPath(formatting @@ "../FSharp.Compiler.Service/lib/net45/FSharp.Compiler.Service.dll")
       Path.GetFullPath(formatting @@ "lib/net40/System.Web.Razor.dll")
       Path.GetFullPath(formatting @@ "lib/net40/RazorEngine.dll")

@@ -275,7 +275,7 @@ let convertType<'R> conversionKind (vector:IVector) =
       |> vector.Invoke
 
 // Store MethodInfo of generic 'convertType' function
-let private convertTypeMethod = Lazy.Create(fun () ->
+let private convertTypeMethod = Lazy<_>.Create(fun () ->
   let typ = typeof<Deedle.OptionalValue<int>>.Assembly.GetType("Deedle.VectorHelpers")
   typ.GetMethod("convertType", BindingFlags.NonPublic ||| BindingFlags.Static) )
 
@@ -520,19 +520,11 @@ let mapFrameRowVector
       member x.GetObject(i) = (x :?> IVector<'TRow>).GetValue(i) |> OptionalValue.map box
       member x.Invoke(site) = failwith "mapFrameRowVector: Invoke not supported" }
 
-#if DEBUG_TYPED_ROWS
-let name = new AssemblyName("TypedRowAssembly")
-let asmBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.RunAndSave)
-let private typedRowModule = Lazy.Create(fun _ ->
-  asmBuilder.DefineDynamicModule(name.Name, name.Name+".dll"))
-#else 
-/// Dynamic assembly & module for storing generated types
-let private typedRowModule = Lazy.Create(fun _ -> 
+// Dynamic assembly & module for storing generated types
+let private typedRowModule = Lazy<_>.Create(fun _ -> 
   let name = new AssemblyName("TypedRowAssembly")
-  let asmBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.RunAndCollect)
-  asmBuilder.DefineDynamicModule(name.Name, name.Name+".dll"))
-#endif
-
+  let asmBuilder = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.RunAndCollect)
+  asmBuilder.DefineDynamicModule(name.Name))
 /// Helper module with various MemberInfo and similar values
 module private Reflection = 
   let objCtor = typeof<obj>.GetConstructor([| |])
@@ -645,7 +637,7 @@ let createTypedRowCreator<'TRow> columnKeys =
         rowImpl.DefineMethodOverride(impl, m)
 
       // Finish building the type
-      let rowImplType = rowImpl.CreateType()
+      let rowImplType = rowImpl.CreateTypeInfo()
       #if DEBUG_TYPED_ROWS
       asmBuilder.Save("TypedRowAssembly.dll")
       #endif
