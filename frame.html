@@ -26,11 +26,11 @@
     <div class="container">
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
-          <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://fslab.org/RProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
-          <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
+          <li><a href="https://fslab.org">fslab.org</a></li>
+          <li><a href="https://fslab.org/RProvider"><img height=" 16" width="16" src="https://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="https://fslab.org/FSharp.Charting/"><img height="16" width="16" src="https://fsharp.org/images/thumbs/FSharp.Charting.png" /> FSharp.Charting</a></li>
+          <li><a href="https://fslab.org/XPlot/"><img height="16" width="16" src="https://fslab.org/XPlot/img/logo.png" /> FSharp.Charting</a></li>
+          <li><a href="https://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="https://fsharp.org/images/thumbs/FSharp.Data.png" /> FSharp.Data</a></li>
         </ul>
         <h3 class="muted"><a href="https://fslab.org/Deedle/index.html">Deedle</a></h3>
       </div>
@@ -39,7 +39,7 @@
         <div class="span9" id="main">
           
 <h1><a name="Working-with-data-frames-in-F" class="anchor" href="#Working-with-data-frames-in-F">Working with data frames in F#</a></h1>
-<p>In this section, we look at various features of the F# data frame library (using both
+<p>In this section, we look at various features of the FSharp.Data frame library (using both
 <code>Series</code> and <code>Frame</code> types and modules). Feel free to jump to the section you are interested
 in, but note that some sections refer back to values built in "Creating &amp; loading".</p>
 <p>You can also get this page as an <a href="https://github.com/fslaborg/Deedle/blob/master/docs/content/frame.fsx">F# script file</a>
@@ -121,7 +121,7 @@ parse semicolon separated files.
 values in the CSV file (such as <code>"en-US"</code>). The default is invariant culture.
 </li>
 </ul>
-<p>The parameters are the same as those used by the <a href="http://fsharp.github.io/FSharp.Data/library/CsvProvider.html">CSV type provider in F# Data</a>,
+<p>The parameters are the same as those used by the <a href="https://fsharp.github.io/FSharp.Data/library/CsvProvider.html">CSV type provider in FSharp.Data</a>,
 so you can find additional documentation there.</p>
 <p>Once you have a data frame, you can also save it to a CSV file using the
 <code>SaveCsv</code> method. For example:</p>
@@ -194,10 +194,10 @@ can be accessed using the <code>?</code> operator. For other types, we need to e
 </tr>
 </table>
 <a name="creating-wb"></a>
-<h3><a name="F-Data-providers" class="anchor" href="#F-Data-providers">F# Data providers</a></h3>
+<h3><a name="FSharp-Data-providers" class="anchor" href="#FSharp-Data-providers">FSharp.Data providers</a></h3>
 <p>In general, you can use any data source that exposes data as series of tuples. This
 means that we can easily load data using, for example, the World Bank type provider
-from <a href="https://github.com/fsharp/FSharp.Data">F# Data library</a>.</p>
+from <a href="https://github.com/fsharp/FSharp.Data">FSharp.Data library</a>.</p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>

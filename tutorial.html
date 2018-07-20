@@ -26,11 +26,11 @@
     <div class="container">
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
-          <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://fslab.org/RProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
-          <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
+          <li><a href="https://fslab.org">fslab.org</a></li>
+          <li><a href="https://fslab.org/RProvider"><img height=" 16" width="16" src="https://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="https://fslab.org/FSharp.Charting/"><img height="16" width="16" src="https://fsharp.org/images/thumbs/FSharp.Charting.png" /> FSharp.Charting</a></li>
+          <li><a href="https://fslab.org/XPlot/"><img height="16" width="16" src="https://fslab.org/XPlot/img/logo.png" /> FSharp.Charting</a></li>
+          <li><a href="https://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="https://fsharp.org/images/thumbs/FSharp.Data.png" /> FSharp.Data</a></li>
         </ul>
         <h3 class="muted"><a href="https://fslab.org/Deedle/index.html">Deedle</a></h3>
       </div>
@@ -39,14 +39,14 @@
         <div class="span9" id="main">
           
 <h1><a name="Deedle-in-10-minutes-using-F" class="anchor" href="#Deedle-in-10-minutes-using-F">Deedle in 10 minutes using F#</a></h1>
-<p>This document is a quick overview of the most important features of F# data frame library.
+<p>This document is a quick overview of the most important features of FSharp.Data frame library.
 You can also get this page as an <a href="https://github.com/fslaborg/Deedle/blob/master/docs/content/tutorial.fsx">F# script file</a>
 from GitHub and run the samples interactively.</p>
 <p>The first step is to install <code>Deedle.dll</code> <a href="https://www.nuget.org/packages/Deedle">from NuGet</a>.
 Next, we need to load the library - in F# Interactive, this is done by loading
 an <code>.fsx</code> file that loads the actual <code>.dll</code> with the library and registers
 pretty printers for types representing data frame and series. In this sample,
-we also need  <a href="http://fsharp.github.io/FSharp.Charting">F# Charting</a>, which
+we also need  <a href="https://fsharp.github.io/FSharp.Charting">FSharp.Charting</a>, which
 works similarly:</p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
@@ -208,15 +208,15 @@ with 10 day value range and random values:</p>
 <tbody>
 <tr class="odd">
 <td><p>Values</p></td>
-<td><p>.94</p></td>
-<td><p>.77</p></td>
-<td><p>.83</p></td>
-<td><p>.33</p></td>
-<td><p>.41</p></td>
-<td><p> ... </p></td>
-<td><p>.01</p></td>
-<td><p>.4</p></td>
+<td><p>.5</p></td>
+<td><p>.32</p></td>
+<td><p>.18</p></td>
 <td><p>.48</p></td>
+<td><p>.62</p></td>
+<td><p> ... </p></td>
+<td><p>.87</p></td>
+<td><p>.51</p></td>
+<td><p>.06</p></td>
 </tr>
 </tbody>
 </table>
@@ -245,52 +245,52 @@ the <code>first</code> series and another representing the <code>second</code> s
 <tr class="odd">
 <td><p>01/01/2013 00:00:00</p></td>
 <td><p>10</p></td>
-<td><p>.9362</p></td>
+<td><p>.5027</p></td>
 </tr>
 <tr class="even">
 <td><p>02/01/2013 00:00:00</p></td>
 <td><p>N/A</p></td>
-<td><p>.7747</p></td>
+<td><p>.32</p></td>
 </tr>
 <tr class="odd">
 <td><p>03/01/2013 00:00:00</p></td>
 <td><p>N/A</p></td>
-<td><p>.8323</p></td>
+<td><p>.1757</p></td>
 </tr>
 <tr class="even">
 <td><p>04/01/2013 00:00:00</p></td>
 <td><p>20</p></td>
-<td><p>.3304</p></td>
+<td><p>.4763</p></td>
 </tr>
 <tr class="odd">
 <td><p>05/01/2013 00:00:00</p></td>
 <td><p>N/A</p></td>
-<td><p>.4103</p></td>
+<td><p>.619</p></td>
 </tr>
 <tr class="even">
 <td><p>06/01/2013 00:00:00</p></td>
 <td><p>N/A</p></td>
-<td><p>.7281</p></td>
+<td><p>.0148</p></td>
 </tr>
 <tr class="odd">
 <td><p>07/01/2013 00:00:00</p></td>
 <td><p>N/A</p></td>
-<td><p>.9262</p></td>
+<td><p>.2555</p></td>
 </tr>
 <tr class="even">
 <td><p>08/01/2013 00:00:00</p></td>
 <td><p>30</p></td>
-<td><p>.0091</p></td>
+<td><p>.8655</p></td>
 </tr>
 <tr class="odd">
 <td><p>09/01/2013 00:00:00</p></td>
 <td><p>N/A</p></td>
-<td><p>.3988</p></td>
+<td><p>.507</p></td>
 </tr>
 <tr class="even">
 <td><p>10/01/2013 00:00:00</p></td>
 <td><p>N/A</p></td>
-<td><p>.4776</p></td>
+<td><p>.0576</p></td>
 </tr>
 </tbody>
 </table>
@@ -911,15 +911,15 @@ can be used to ilustrate the idea):</p>
 <tbody>
 <tr class="odd">
 <td><p>Values</p></td>
-<td><p>.43</p></td>
-<td><p>.37</p></td>
-<td><p>.54</p></td>
-<td><p>.21</p></td>
-<td><p>.29</p></td>
+<td><p>.28</p></td>
+<td><p>.53</p></td>
+<td><p>.52</p></td>
+<td><p>.52</p></td>
+<td><p>.06</p></td>
 <td><p> ... </p></td>
-<td><p>.83</p></td>
-<td><p>.25</p></td>
-<td><p>.03</p></td>
+<td><p>.63</p></td>
+<td><p>.4</p></td>
+<td><p>.81</p></td>
 </tr>
 </tbody>
 </table>
@@ -932,29 +932,29 @@ can be used to ilustrate the idea):</p>
 <thead>
 <tr class="header">
 <th><p>Keys</p></th>
-<th><p>20/07/2018 13:35:11</p></th>
-<th><p>21/07/2018 13:35:11</p></th>
-<th><p>22/07/2018 13:35:11</p></th>
-<th><p>23/07/2018 13:35:11</p></th>
-<th><p>24/07/2018 13:35:11</p></th>
+<th><p>20/07/2018 14:03:44</p></th>
+<th><p>21/07/2018 14:03:44</p></th>
+<th><p>22/07/2018 14:03:44</p></th>
+<th><p>23/07/2018 14:03:44</p></th>
+<th><p>24/07/2018 14:03:44</p></th>
 <th><p> ... </p></th>
-<th><p>27/07/2018 13:35:11</p></th>
-<th><p>28/07/2018 13:35:11</p></th>
-<th><p>29/07/2018 13:35:11</p></th>
+<th><p>27/07/2018 14:03:44</p></th>
+<th><p>28/07/2018 14:03:44</p></th>
+<th><p>29/07/2018 14:03:44</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td><p>Values</p></td>
-<td><p>.43</p></td>
-<td><p>.37</p></td>
-<td><p>.54</p></td>
-<td><p>.21</p></td>
-<td><p>.29</p></td>
+<td><p>.28</p></td>
+<td><p>.53</p></td>
+<td><p>.52</p></td>
+<td><p>.52</p></td>
+<td><p>.06</p></td>
 <td><p> ... </p></td>
-<td><p>.83</p></td>
-<td><p>.25</p></td>
-<td><p>.03</p></td>
+<td><p>.63</p></td>
+<td><p>.4</p></td>
+<td><p>.81</p></td>
 </tr>
 </tbody>
 </table>
