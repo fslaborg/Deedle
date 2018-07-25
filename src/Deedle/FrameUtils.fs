@@ -14,6 +14,7 @@ module internal Reflection =
   open Microsoft.FSharp.Quotations
   open System.Collections
   open System.Collections.Generic
+  open System.Collections.Concurrent
 
   let indexBuilder = IndexBuilder.Instance
   let vectorBuilder = VectorBuilder.Instance
@@ -67,7 +68,7 @@ module internal Reflection =
 
   /// Helper function used when building frames from data tables
   let createTypedVector : _ -> seq<OptionalValue<obj>> -> _ =
-    let cache = Dictionary<_, _>()
+    let cache = ConcurrentDictionary<_, _>()
     (fun typ ->
       match cache.TryGetValue(typ) with
       | true, res -> res
@@ -75,7 +76,9 @@ module internal Reflection =
           let par = Expression.Parameter(typeof<seq<OptionalValue<obj>>>)
           let body = Expression.Call(createTypedVectorMi.MakeGenericMethod([| typ |]), par)
           let f = Expression.Lambda<Func<seq<OptionalValue<obj>>, IVector>>(body, par).Compile()
-          cache.Add(typ, f.Invoke)
+          match cache.TryAdd(typ, f.Invoke) with
+          | true -> ()
+          | false -> ()
           f.Invoke )
 
   let getExpandableProperties (ty:Type) =
