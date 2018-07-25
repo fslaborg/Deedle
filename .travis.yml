@@ -9,7 +9,7 @@ matrix:
       dotnet: 2.1.302
       env: USE_MSBUILD=1
       os: linux
-    - mono: none
+    - mono: latest
       dotnet: 2.1.302
       os: linux
 
