@@ -17,6 +17,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="System.Runtime" />
+  </ItemGroup>  
+  <ItemGroup>      
     <Reference Include="DynamicInterop">
       <HintPath>..\..\packages\DynamicInterop\lib\net40\DynamicInterop.dll</HintPath>
     </Reference>

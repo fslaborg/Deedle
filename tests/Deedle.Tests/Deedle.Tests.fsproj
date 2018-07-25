@@ -9,6 +9,9 @@
     <ProjectReference Include="..\..\src\Deedle\Deedle.fsproj" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="System.Runtime" />
+  </ItemGroup>  
+  <ItemGroup>
     <Compile Include="../Common/FsUnit.fs">
       <Link>FsUnit.fs</Link>
     </Compile>

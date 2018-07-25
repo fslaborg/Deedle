@@ -44,6 +44,9 @@
       <HintPath>..\..\packages\RProvider\lib\net40\RProvider.Runtime.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Runtime" />
+  </ItemGroup>  
   <Import Project="..\..\fsc.props" />
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

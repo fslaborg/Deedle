@@ -6,6 +6,9 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="System.Runtime" />
+  </ItemGroup>  
+  <ItemGroup>
     <Compile Include="Program.fs" />
     <None Include="paket.references" />
   </ItemGroup>

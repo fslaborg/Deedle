@@ -7,6 +7,9 @@
   </PropertyGroup>
   <!-- <ItemGroup><Compile Include="FSharp.Data\TextConversions.fsi" /><Compile Include="FSharp.Data\TextRuntime.fsi" /><Compile Include="FSharp.Data\StructuralTypes.fsi" /><Compile Include="FSharp.Data\StructuralInference.fsi" /><Compile Include="FSharp.Data\CsvRuntime.fsi" /><Compile Include="FSharp.Data\CsvFile.fsi" /><Compile Include="FSharp.Data\CsvInference.fsi" /><Compile Include="FSharp.Data\Stubs.fs" /></ItemGroup> -->
   <ItemGroup>
+    <Reference Include="System.Runtime" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="..\..\paket-files\fsharp\FSharp.Data\src\Net\Http.fs">
       <Paket>True</Paket>
       <Link>FSharp.Data/Http.fs</Link>

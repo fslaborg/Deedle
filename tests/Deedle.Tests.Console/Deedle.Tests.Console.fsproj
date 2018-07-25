@@ -6,6 +6,9 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="System.Runtime" />
+  </ItemGroup>  
+  <ItemGroup>
     <ProjectReference Include="..\..\src\Deedle\Deedle.fsproj" />
   </ItemGroup>
   <ItemGroup>
