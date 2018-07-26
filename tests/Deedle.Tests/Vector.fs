@@ -1,9 +1,11 @@
 ﻿module Deedle.Tests.Vector
 
 #if INTERACTIVE
-#r "../../bin/Deedle.dll"
-#r "../../packages/NUnit/lib/nunit.framework.dll"
-#r "../../packages/FsCheck/lib/net40-Client/FsCheck.dll"
+#I "../../bin/net45"
+#load "Deedle.fsx"
+#r "../../packages/NUnit/lib/net45/nunit.framework.dll"
+#r "../../packages/FsCheck/lib/net452/FsCheck.dll"
+#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
 #load "../Common/FsUnit.fs"
 #endif
 
