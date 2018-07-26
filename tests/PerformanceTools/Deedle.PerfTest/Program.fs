@@ -132,7 +132,7 @@ type private PerfRunner() =
     |> getPerformanceTests
     |> evalPerformance 
 
-  /// Eavluate performance of a single library and return list of tests & times
+  /// Evaluate performance of a single library and return list of tests & times
   static member RunTests refpath library =
     ( use c = colored ConsoleColor.Yellow
       printfn "\nRunning perf tests: %s" (Path.GetFileName(refpath)) )

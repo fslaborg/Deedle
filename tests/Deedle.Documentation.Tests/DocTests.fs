@@ -11,6 +11,7 @@
 #r "FSharp.CodeFormat.dll"
 #r "FSharp.MetadataFormat.dll"
 #r "FSharp.Markdown.dll"
+#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #load "../Common/FsUnit.fs"
 #else
