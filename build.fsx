@@ -42,7 +42,7 @@ let gitName = "Deedle"
 
 Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
 
-let desiredSdkVersion = "2.1.100"
+let desiredSdkVersion = "2.1.302"
 let mutable sdkPath = None
 let getSdkPath() = (defaultArg sdkPath "dotnet")
 
@@ -103,21 +103,23 @@ Target "CleanDocs" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Build library & test project
 
-let testNames = 
-    [ "Deedle.Tests" 
-      "Deedle.CSharp.Tests" 
-      "Deedle.Documentation.Tests"
-      "Deedle.PerfTests"   ]
-
 let testProjs = 
     [ "tests/Deedle.Tests/Deedle.Tests.fsproj" 
       "tests/Deedle.CSharp.Tests/Deedle.CSharp.Tests.csproj" 
       "tests/Deedle.Documentation.Tests/Deedle.Documentation.Tests.fsproj"
-      "tests/Deedle.PerfTests/Deedle.PerfTests.fsproj"  ]
+      "tests/Deedle.PerfTests/Deedle.PerfTests.fsproj"
+      "tests/Deedle.RPlugin.Tests/Deedle.RPlugin.Tests.fsproj"  ]
+
+let testCoreProjs = 
+    [ "tests/Deedle.Tests/Deedle.Tests.fsproj" 
+      "tests/Deedle.CSharp.Tests/Deedle.CSharp.Tests.csproj" 
+      "tests/Deedle.Documentation.Tests/Deedle.Documentation.Tests.fsproj"
+      "tests/Deedle.PerfTests/Deedle.PerfTests.fsproj" ]      
 
 let buildProjs =
     [ "src/Deedle/Deedle.fsproj"
       "src/Deedle.RProvider.Plugin/Deedle.RProvider.Plugin.fsproj" ]
+
 let buildCoreProjs =
     [ "src/Deedle/Deedle.fsproj" ]
 
@@ -160,18 +162,46 @@ Target "BuildTests" <| fun () ->
         else
             DotNetCli.Build (fun p -> { p with Configuration = "Release"; Project = testProj; ToolPath = getSdkPath(); AdditionalArgs=["/v:n"]; })
 
+Target "BuildCoreTests" <| fun () ->
+    for testProj in testCoreProjs do 
+        if useMsBuildToolchain then
+            DotNetCli.Restore (fun p -> { p with Project = testProj; ToolPath = getSdkPath(); AdditionalArgs=["/v:n"] })
+            MSBuildRelease null "Build" [testProj] |> Log "BuildTests.DesignTime-Output: "
+        else
+            DotNetCli.Build (fun p -> { p with Configuration = "Release"; Project = testProj; ToolPath = getSdkPath(); AdditionalArgs=["/v:n"]; })
 
 Target "RunTests" <| fun () ->
+    let nunitRunnerPath = "packages/NUnit.ConsoleRunner/tools/nunit3-console.exe"
     if useMsBuildToolchain then
-        let nunitRunnerPath = "packages/NUnit.ConsoleRunner/tools/nunit3-console.exe"
         ActivateFinalTarget "CloseTestRunner"
-        (!! "tests/Deedle.*Tests/bin/Release/net45/Deedle*Tests*.dll" ++ "tests/Deedle.*Tests/bin/Release/net461/Deedle*Tests*.dll")
+        (!! "tests/Deedle.*Tests/bin/Release/net45/Deedle*Tests*.dll" ++ 
+            "tests/Deedle.*Tests/bin/Release/net461/Deedle*Tests*.dll")
         |> NUnit3 (fun p ->
             { p with
                 ToolPath = nunitRunnerPath
                 ShadowCopy = false })
     else
-        for testProj in testProjs do 
+        for testProj in testCoreProjs do 
+            DotNetCli.Test (fun p -> { p with Configuration = "Release"; Project = testProj; ToolPath = getSdkPath(); AdditionalArgs=["/v:n"] })
+        ActivateFinalTarget "CloseTestRunner"
+        !! "tests/Deedle.RPlugin.Tests/bin/Release/net45/Deedle*Tests*.dll"
+        |> NUnit3 (fun p ->
+            { p with
+                ToolPath = nunitRunnerPath
+                ShadowCopy = false })
+
+Target "RunCoreTests" <| fun () ->
+    let nunitRunnerPath = "packages/NUnit.ConsoleRunner/tools/nunit3-console.exe"
+    if useMsBuildToolchain then    
+        ActivateFinalTarget "CloseTestRunner"
+        (!! "tests/Deedle.*Tests/bin/Release/net45/Deedle*Tests*.dll" ++ 
+            "tests/Deedle.*Tests/bin/Release/net461/Deedle*Tests*.dll")
+        |> NUnit3 (fun p ->
+            { p with
+                ToolPath = nunitRunnerPath
+                ShadowCopy = false })
+    else
+        for testProj in testCoreProjs do 
             DotNetCli.Test (fun p -> { p with Configuration = "Release"; Project = testProj; ToolPath = getSdkPath(); AdditionalArgs=["/v:n"] })
 
 FinalTarget "CloseTestRunner" (fun _ ->  
@@ -289,8 +319,8 @@ Target "AllCore" DoNothing
 
 "BuildTests" ==> "All"
 "RunTests" ==> "All"
-"BuildTests" ==> "AllCore"
-"RunTests" ==> "AllCore"
+"BuildCoreTests" ==> "AllCore"
+"RunCoreTests" ==> "AllCore"
 
 "All" ==> "NuGet" ==> "Release"
 "All" 
@@ -301,4 +331,4 @@ Target "AllCore" DoNothing
   ==> "TagRelease"
   ==> "Release"
 
-RunTargetOrDefault "All"
+RunTargetOrDefault "AllCore"

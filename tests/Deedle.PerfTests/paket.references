@@ -1,7 +1,6 @@
 FsCheck
 MathNet.Numerics
 NUnit
-Nunit.Console
 Microsoft.NET.Test.Sdk
 NETStandard.Library
 NUnit3TestAdapter

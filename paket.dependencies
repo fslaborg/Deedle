@@ -5,7 +5,7 @@ nuget FSharp.Charting
 nuget FSharp.Data
 nuget MathNet.Numerics 4.5.1
 nuget NUnit 3.9.0
-nuget NUnit.Console 3.8.0
+nuget NUnit.ConsoleRunner 3.8.0
 nuget FsUnit 3.0.0
 nuget RProvider
 nuget Nuget.CommandLine

@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\netfx.props" />
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
+    <TargetFrameworks>net45</TargetFrameworks>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <OutputPath>../../bin/</OutputPath>
   </PropertyGroup>
@@ -16,6 +17,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="System.Runtime" />
+  </ItemGroup>  
+  <ItemGroup>      
     <Reference Include="DynamicInterop">
       <HintPath>..\..\packages\DynamicInterop\lib\net40\DynamicInterop.dll</HintPath>
     </Reference>

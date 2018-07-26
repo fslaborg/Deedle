@@ -1,10 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\netfx.props" />
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
     <OutputPath>../../bin/</OutputPath>
   </PropertyGroup>
   <!-- <ItemGroup><Compile Include="FSharp.Data\TextConversions.fsi" /><Compile Include="FSharp.Data\TextRuntime.fsi" /><Compile Include="FSharp.Data\StructuralTypes.fsi" /><Compile Include="FSharp.Data\StructuralInference.fsi" /><Compile Include="FSharp.Data\CsvRuntime.fsi" /><Compile Include="FSharp.Data\CsvFile.fsi" /><Compile Include="FSharp.Data\CsvInference.fsi" /><Compile Include="FSharp.Data\Stubs.fs" /></ItemGroup> -->
+  <ItemGroup>
+    <Reference Include="System.Runtime" />
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\paket-files\fsharp\FSharp.Data\src\Net\Http.fs">
       <Paket>True</Paket>

@@ -1,5 +1,4 @@
 NUnit
-RProvider
 FSharp.Core
 Microsoft.NET.Test.Sdk
 NUnit3TestAdapter
