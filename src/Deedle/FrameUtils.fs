@@ -70,10 +70,13 @@ module internal Reflection =
   let createTypedVector : _ -> seq<OptionalValue<obj>> -> _ =
     let cache = ConcurrentDictionary<_, _>()
     fun typ ->
-      let par = Expression.Parameter(typeof<seq<OptionalValue<obj>>>)
-      let body = Expression.Call(createTypedVectorMi.MakeGenericMethod([| typ |]), par)
-      let f = Expression.Lambda<Func<seq<OptionalValue<obj>>, IVector>>(body, par).Compile()
-      cache.GetOrAdd(typ, f.Invoke)      
+      match cache.TryGetValue(typ) with
+      | true, res -> res
+      | false, _ ->
+          let par = Expression.Parameter(typeof<seq<OptionalValue<obj>>>)
+          let body = Expression.Call(createTypedVectorMi.MakeGenericMethod([| typ |]), par)
+          let f = Expression.Lambda<Func<seq<OptionalValue<obj>>, IVector>>(body, par).Compile()
+          cache.GetOrAdd(typ, f.Invoke)    
 
   let getExpandableProperties (ty:Type) =
     ty.GetProperties(BindingFlags.Instance ||| BindingFlags.Public)
@@ -125,15 +128,15 @@ module internal Reflection =
   /// Compile all projections from the type, so that we can run them fast
   /// and cache the results with Type as the key, so that we don't have to recompile
   let getCachedCompileProjection =
-    let cache = Dictionary<_, _>()
+    let cache = ConcurrentDictionary<_, _>()
     (fun typ ->
       match cache.TryGetValue(typ) with
       | true, res -> res
       | _ ->
           let res = [| for name, fldTy, proj in getMemberProjections typ ->
                          name, fldTy, proj.Compile() |]
-          cache.Add(typ, res)
-          res )
+          cache.GetOrAdd(typ, res)
+          )
 
   /// Given a single vector, expand its values into multiple vectors. This may be:
   /// - `IDictionary` is expanded based on keys/values
