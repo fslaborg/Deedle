@@ -68,15 +68,13 @@ module internal Reflection =
 
   /// Helper function used when building frames from data tables
   let createTypedVector : _ -> seq<OptionalValue<obj>> -> _ =
-    let cache = ConcurrentDictionary<_, _>()
+    let cache = ConcurrentDictionary<_, seq<OptionalValue<obj>> -> _>()
+    let valueFactory typ =
+      let par = Expression.Parameter(typeof<seq<OptionalValue<obj>>>)
+      let body = Expression.Call(createTypedVectorMi.MakeGenericMethod([| typ |]), par)
+      Expression.Lambda<Func<seq<OptionalValue<obj>>, _>>(body, par).Compile().Invoke
     fun typ ->
-      match cache.TryGetValue(typ) with
-      | true, res -> res
-      | false, _ ->
-          let par = Expression.Parameter(typeof<seq<OptionalValue<obj>>>)
-          let body = Expression.Call(createTypedVectorMi.MakeGenericMethod([| typ |]), par)
-          let f = Expression.Lambda<Func<seq<OptionalValue<obj>>, IVector>>(body, par).Compile()
-          cache.GetOrAdd(typ, f.Invoke)    
+      cache.GetOrAdd(typ, Func<_,_> valueFactory)      
 
   let getExpandableProperties (ty:Type) =
     ty.GetProperties(BindingFlags.Instance ||| BindingFlags.Public)
@@ -128,15 +126,12 @@ module internal Reflection =
   /// Compile all projections from the type, so that we can run them fast
   /// and cache the results with Type as the key, so that we don't have to recompile
   let getCachedCompileProjection =
-    let cache = ConcurrentDictionary<_, _>()
-    (fun typ ->
-      match cache.TryGetValue(typ) with
-      | true, res -> res
-      | _ ->
-          let res = [| for name, fldTy, proj in getMemberProjections typ ->
-                         name, fldTy, proj.Compile() |]
-          cache.GetOrAdd(typ, res)
-          )
+    let cache = ConcurrentDictionary<_, (string*Type*Delegate)[]>()
+    let valueFactory typ =
+      [| for name, fldTy, proj in getMemberProjections typ ->
+           name, fldTy, proj.Compile() |]
+    fun typ ->
+      cache.GetOrAdd(typ, valueFactory)
 
   /// Given a single vector, expand its values into multiple vectors. This may be:
   /// - `IDictionary` is expanded based on keys/values
