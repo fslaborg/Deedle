@@ -6,7 +6,7 @@
 #r "../../packages/FSharp.Data/lib/net45/FSharp.Data.dll"
 #r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
 #load "../Common/FsUnit.fs"
-#r "../PerformanceTools/bin/Deedle.PerfTest.Core.dll"
+#r "../PerformanceTools/bin/net45/Deedle.PerfTest.Core.dll"
 #else
 module Deedle.Tests.Performance
 #endif

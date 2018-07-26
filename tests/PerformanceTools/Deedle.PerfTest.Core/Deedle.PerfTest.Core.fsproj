@@ -3,6 +3,7 @@
   <Import Project="..\..\..\netfx.props" />
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.1;net45</TargetFrameworks>
+    <OutputPath>../bin/</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Runtime" />
