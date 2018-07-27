@@ -69,12 +69,13 @@ module internal Reflection =
   /// Helper function used when building frames from data tables
   let createTypedVector : _ -> seq<OptionalValue<obj>> -> _ =
     let cache = ConcurrentDictionary<_, seq<OptionalValue<obj>> -> _>()
-    let valueFactory typ =
-      let par = Expression.Parameter(typeof<seq<OptionalValue<obj>>>)
-      let body = Expression.Call(createTypedVectorMi.MakeGenericMethod([| typ |]), par)
-      Expression.Lambda<Func<seq<OptionalValue<obj>>, _>>(body, par).Compile().Invoke
+    let valueFactory =
+      Func<_,_> (fun typ ->
+        let par = Expression.Parameter(typeof<seq<OptionalValue<obj>>>)
+        let body = Expression.Call(createTypedVectorMi.MakeGenericMethod([| typ |]), par)
+        Expression.Lambda<Func<seq<OptionalValue<obj>>, _>>(body, par).Compile().Invoke)
     fun typ ->
-      cache.GetOrAdd(typ, Func<_,_> valueFactory)      
+      cache.GetOrAdd(typ, valueFactory)      
 
   let getExpandableProperties (ty:Type) =
     ty.GetProperties(BindingFlags.Instance ||| BindingFlags.Public)
@@ -127,9 +128,10 @@ module internal Reflection =
   /// and cache the results with Type as the key, so that we don't have to recompile
   let getCachedCompileProjection =
     let cache = ConcurrentDictionary<_, (string*Type*Delegate)[]>()
-    let valueFactory typ =
-      [| for name, fldTy, proj in getMemberProjections typ ->
-           name, fldTy, proj.Compile() |]
+    let valueFactory =
+      Func<_,_> (fun typ ->
+        [| for name, fldTy, proj in getMemberProjections typ ->
+             name, fldTy, proj.Compile() |] )
     fun typ ->
       cache.GetOrAdd(typ, valueFactory)
 
