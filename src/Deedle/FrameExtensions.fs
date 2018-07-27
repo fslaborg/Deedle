@@ -508,7 +508,10 @@ module ``F# Frame extensions`` =
     ///
     /// [category:Frame construction]
     static member ofRowsOrdinal(rows:seq<#Series<'K, 'V>>) = 
-      FrameUtils.fromRows IndexBuilder.Instance VectorBuilder.Instance (Series(rows |> Seq.mapi (fun i _ -> i), rows))
+      let vector = rows |> Array.ofSeq |> VectorBuilder.Instance.Create 
+      let index = IndexBuilder.Instance.Create(seq { 0L .. vector.Length-1L }, Some true)
+      FrameUtils.fromRows IndexBuilder.Instance VectorBuilder.Instance (Series(index, vector, VectorBuilder.Instance, IndexBuilder.Instance))
+
 
     /// Creates a frame from a sequence of row keys and row series pairs. 
     /// The row series can contain values of any type, but it has to be the same 
