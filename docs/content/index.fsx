@@ -1,5 +1,5 @@
 (*** hide ***)
-#load "../../bin/Deedle.fsx"
+#load "../../bin/net45/Deedle.fsx"
 open System
 open Deedle
 let root = __SOURCE_DIRECTORY__ + "/data/"
@@ -72,9 +72,9 @@ Then we add nice namings, sort the frame and build a new data frame with a nice 
 ### How to get Deedle
 
  * The library is available as [Deedle on NuGet](https://www.nuget.org/packages/Deedle). To get the
-   can also [get the code from GitHub](https://github.com/BlueMountainCapital/Deedle/)
-   or download [the source as a ZIP file](https://github.com/BlueMountainCapital/Deedle/zipball/master).
-   Compiled binaries are also available for [download as a ZIP file](https://github.com/BlueMountainCapital/Deedle/zipball/release).
+   can also [get the code from GitHub](https://github.com/fslaborg/Deedle/)
+   or download [the source as a ZIP file](https://github.com/fslaborg/Deedle/zipball/master).
+   Compiled binaries are also available for [download as a ZIP file](https://github.com/fslaborg/Deedle/zipball/release).
 
  * If you want to use Deedle with F# Data, R type provider and other F# components for data science,
    consider using the [FsLab package](https://www.nuget.org/packages/FsLab). When using Visual Studio,
@@ -103,7 +103,7 @@ reference is automatically generated from Markdown comments in the library imple
 
  * The Deedle library can be used from both F# and C#. We aim to provide idiomatic API for
    both of the languages. Read the [using Deedle from C#](csharpintro.html) page for more 
-   information about the C#-friednly API.
+   information about the C#-friendly API.
 
 Automatically generated documentation for all types, modules and functions in the library 
 is available in the [API Reference](reference/index.html). The three most important modules
@@ -135,11 +135,11 @@ redistribution for both commercial and non-commercial purposes. For more informa
 [License file][license] in the GitHub repository. 
 
 
-  [docs]: https://github.com/BlueMountainCapital/Deedle/tree/master/docs/content
-  [samples]: https://github.com/BlueMountainCapital/Deedle/tree/master/docs/content/samples
-  [gh]: https://github.com/BlueMountainCapital/Deedle
-  [issues]: https://github.com/BlueMountainCapital/Deedle/issues
-  [readme]: https://github.com/BlueMountainCapital/Deedle/blob/master/README.md
-  [license]: https://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md
+  [docs]: https://github.com/fslaborg/Deedle/tree/master/docs/content
+  [samples]: https://github.com/fslaborg/Deedle/tree/master/docs/content/samples
+  [gh]: https://github.com/fslaborg/Deedle
+  [issues]: https://github.com/fslaborg/Deedle/issues
+  [readme]: https://github.com/fslaborg/Deedle/blob/master/README.md
+  [license]: https://github.com/fslaborg/Deedle/blob/master/LICENSE.md
   [fsharp-dwg]: http://fsharp.org/technical-groups/
 *)

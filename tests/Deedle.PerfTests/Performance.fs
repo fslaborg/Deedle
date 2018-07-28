@@ -1,11 +1,12 @@
 ﻿#if INTERACTIVE
-#I "../../bin"
+#I "../../bin/net45"
 #load "Deedle.fsx"
-#r "../../packages/NUnit/lib/nunit.framework.dll"
-#r "../../packages/FsCheck/lib/net40-Client/FsCheck.dll"
-#r "../../packages/FSharp.Data/lib/net40/FSharp.Data.dll"
-#r "../PerformanceTools/bin/Deedle.PerfTest.Core.dll"
+#r "../../packages/NUnit/lib/net45/nunit.framework.dll"
+#r "../../packages/FsCheck/lib/net452/FsCheck.dll"
+#r "../../packages/FSharp.Data/lib/net45/FSharp.Data.dll"
+#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
 #load "../Common/FsUnit.fs"
+#r "../PerformanceTools/bin/net45/Deedle.PerfTest.Core.dll"
 #else
 module Deedle.Tests.Performance
 #endif
@@ -50,7 +51,7 @@ let frameTwoCol1M =
   |> Frame.indexColsWith ["Key"; "Value"]
 
 // Load sample data sets
-let titanic = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/../Performance/data/Titanic.csv")
+let titanic = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/../Performance/data/titanic.csv")
 
 // ------------------------------------------------------------------------------------------------
 // Compatibility
@@ -210,7 +211,7 @@ let ``Realign 1M series according to a key array`` () =
 
 [<Test; PerfTest(Iterations=10)>]
 let ``Group by column and subtract group averages`` () =
-  // https://github.com/BlueMountainCapital/Deedle/issues/142#issuecomment-33587885
+  // https://github.com/fslaborg/Deedle/issues/142#issuecomment-33587885
   let grouped = frameTwoCol1M |> Frame.groupRowsByString "Key"
   let diffs = 
     #if BELOW_0_9_13

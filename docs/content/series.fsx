@@ -1,8 +1,8 @@
 (*** hide ***)
-#I "../../bin"
+#I "../../bin/net45"
 #load "Deedle.fsx"
 #I "../../packages/MathNet.Numerics/lib/net40"
-#load "../../packages/FSharp.Charting/FSharp.Charting.fsx"
+#load "../../packages/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
 open System
 open FSharp.Data
 open Deedle
@@ -20,7 +20,7 @@ operations on the `Series` type, many of the operations can be applied to data f
 containing multiple series. Furthermore, data frame provides an elegant way for aligning and
 joining series. 
 
-You can also get this page as an [F# script file](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/series.fsx)
+You can also get this page as an [F# script file](https://github.com/fslaborg/Deedle/blob/master/docs/content/series.fsx)
 from GitHub and run the samples interactively.
 
 Generating input data
@@ -58,7 +58,7 @@ let stock1 = randomPrice 1 0.1 3.0 20.0 today
 let stock2 = randomPrice 2 0.2 1.5 22.0 today
 (**
 The implementation of the function is not particularly important for the purpose of this
-page, but you can find it in the [script file with full source](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/series.fsx).
+page, but you can find it in the [script file with full source](https://github.com/fslaborg/Deedle/blob/master/docs/content/series.fsx).
 Once we have the function, we define a date `today` (representing today's midnight) and
 two helper functions that set basic properties for the `randomPrice` function. 
 

@@ -1,11 +1,16 @@
 ﻿// ----------------------------------------------------------------------------
 // Load everything 
 // ----------------------------------------------------------------------------
-
-#I "../../../packages/FSharp.Charting.0.87"
-#r "../../../bin/MathNet.Numerics.dll"
-#load "../../bin/Deedle.fsx"
+#load "../../../bin/net45/Deedle.fsx"
+#load "../../../packages/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
+#r "../../../packages/FSharp.Data/lib/net45/FSharp.Data.dll"
+#r "../../../packages/MathNet.Numerics/lib/net40/MathNet.Numerics.dll"
 #load "FSharp.Charting.fsx"
+#load "Deedle.fsx"
+
+
+
+
 
 open System
 open Deedle
@@ -55,8 +60,8 @@ Chart.Combine
 // ----------------------------------------------------------------------------
 
 // Calculate the means of the two series (and see that they are the same)
-hfq1 |> Series.mean
-hfq1 |> Series.mean
+hfq1 |> Stats.mean
+hfq1 |> Stats.mean
 
 // Get all day data in 1 minute intervals
 let intervals = 
@@ -81,8 +86,8 @@ let chunkedLogs =
   |> Frame.ofColumns
 
 // Means and standard deviations for each hour
-let sdvs = chunkedLogs |> Frame.sdv
-let means = chunkedLogs |> Frame.mean
+let sdvs = chunkedLogs |> Stats.stdDev
+let means = chunkedLogs |> Stats.mean
 
 // Display a chart that shows means and sdvs per hour of day
 Chart.Rows

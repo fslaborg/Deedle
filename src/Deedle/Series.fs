@@ -874,6 +874,8 @@ and
   /// [category:Operators]
   static member (~-)(series) = Series<'K, _>.UnaryOperation<float>(series, (~-))
   /// [category:Operators]
+  static member (~-)(series) = Series<'K, _>.UnaryOperation<decimal>(series, (~-))
+  /// [category:Operators]
   static member (~-)(series) = Series<'K, _>.UnaryOperation<int>(series, (~-))
 
   /// [category:Operators]
@@ -915,6 +917,23 @@ and
   static member Pow (series, scalar) = Series<'K, _>.ScalarOperationL<float>(series, scalar, ( ** ))
 
   /// [category:Operators]
+  static member (+) (scalar, series) = Series<'K, _>.ScalarOperationR<decimal>(scalar, series, (+))
+  /// [category:Operators]
+  static member (+) (series, scalar) = Series<'K, _>.ScalarOperationL<decimal>(series, scalar, (+))
+  /// [category:Operators]
+  static member (-) (scalar, series) = Series<'K, _>.ScalarOperationR<decimal>(scalar, series, (-))
+  /// [category:Operators]
+  static member (-) (series, scalar) = Series<'K, _>.ScalarOperationL<decimal>(series, scalar, (-))
+  /// [category:Operators]
+  static member (*) (scalar, series) = Series<'K, _>.ScalarOperationR<decimal>(scalar, series, (*))
+  /// [category:Operators]
+  static member (*) (series, scalar) = Series<'K, _>.ScalarOperationL<decimal>(series, scalar, (*))
+  /// [category:Operators]
+  static member (/) (scalar, series) = Series<'K, _>.ScalarOperationR<decimal>(scalar, series, (/))
+  /// [category:Operators]
+  static member (/) (series, scalar) = Series<'K, _>.ScalarOperationL<decimal>(series, scalar, (/))
+
+  /// [category:Operators]
   static member (+) (s1, s2) = Series<'K, _>.VectorOperation<int>(s1, s2, (+))
   /// [category:Operators]
   static member (-) (s1, s2) = Series<'K, _>.VectorOperation<int>(s1, s2, (-))
@@ -933,6 +952,15 @@ and
   static member (/) (s1, s2) = Series<'K, _>.VectorOperation<float>(s1, s2, (/))
   /// [category:Operators]
   static member Pow(s1, s2) = Series<'K, _>.VectorOperation<float>(s1, s2, ( ** ))
+
+  /// [category:Operators]
+  static member (+) (s1, s2) = Series<'K, _>.VectorOperation<decimal>(s1, s2, (+))
+  /// [category:Operators]
+  static member (-) (s1, s2) = Series<'K, _>.VectorOperation<decimal>(s1, s2, (-))
+  /// [category:Operators]
+  static member (*) (s1, s2) = Series<'K, _>.VectorOperation<decimal>(s1, s2, (*))
+  /// [category:Operators]
+  static member (/) (s1, s2) = Series<'K, _>.VectorOperation<decimal>(s1, s2, (/))
 
   // Trigonometric
   

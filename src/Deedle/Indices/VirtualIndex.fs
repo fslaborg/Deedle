@@ -35,7 +35,7 @@ open System.Collections.ObjectModel
 /// work is delegated to the `IVirtualVectorSource<'K>` value passed in the constructor.
 type VirtualOrderedIndex<'K when 'K : equality>(source:IVirtualVectorSource<'K>) =
   let keyAtAddr i = source.ValueAt(i).Value
-  let keys = Lazy.Create(fun () ->
+  let keys = Lazy<_>.Create(fun () ->
     source.AddressOperations.Range
     |> Seq.mapl (fun idx addr -> keyAtAddr (KnownLocation(addr, idx)))
     |> ReadOnlyCollection.ofSeq )

@@ -1,4 +1,4 @@
-﻿#I "../../bin"
+﻿#I "../../bin/net45"
 #I "../../packages/FAKE/tools"
 #r "Deedle.dll"
 #r "FakeLib.dll"

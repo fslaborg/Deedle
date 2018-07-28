@@ -1,16 +1,14 @@
 (*** hide ***)
 #nowarn "211"
-#I "../../packages/FSharp.Charting"
-#I "../../bin"
 open System
-let airQuality = __SOURCE_DIRECTORY__ + "/data/AirQuality.csv"
+let airQuality = __SOURCE_DIRECTORY__ + "/data/airquality.csv"
 
 (**
 
 Interoperating between R and Deedle
 ===================================
 
-The [R type provider](http://bluemountaincapital.github.io/FSharpRProvider/) enables
+The [R type provider](http://fslab.org/RProvider/) enables
 smooth interoperation between R and F#. The type provider automatically discovers 
 installed packages and makes them accessible via the `RProvider` namespace.
 
@@ -24,7 +22,7 @@ The Deedle library comes with extension that automatically converts between Deed
 observations).
 
 This page is a quick overview showing how to pass data between R and Deedle.
-You can also get this page as an [F# script file](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/rinterop.fsx)
+You can also get this page as an [F# script file](https://github.com/fslaborg/Deedle/blob/master/docs/content/rinterop.fsx)
 from GitHub and run the samples interactively.
 
 <a name="setup"></a>
@@ -42,8 +40,8 @@ data access, data science and visualization libraries.
 In a typical project ("F# Tutorial"), the NuGet packages are installed in the `../packages`
 directory. To use R provider and Deedle, you need to write something like this:
 *)
-#load "RProvider.fsx"
-#load "Deedle.fsx"
+#load "../../packages/RProvider/RProvider.fsx"
+#load "../../bin/net45/Deedle.fsx"
 
 open RProvider
 open RDotNet
@@ -90,7 +88,7 @@ the data, we use the [F# Charting library](https://github.com/fsharp/FSharp.Char
 
 *) 
 (*** define-output:mpgch ***)
-#load "FSharp.Charting.fsx"
+#load "../../packages/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
 open FSharp.Charting
 
 mtcars

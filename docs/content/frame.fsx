@@ -1,9 +1,9 @@
 (*** hide ***)
-#I "../../packages/FSharp.Data/lib/net40"
+#I "../../packages/FSharp.Data/lib/net45"
 #r "FSharp.Data.dll"
 ignore <| FSharp.Data.WorldBankData.GetDataContext() // Force fsi to load F# Data (required on Mono)
 
-#load "../../bin/Deedle.fsx"
+#load "../../bin/net45/Deedle.fsx"
 open System
 open System.IO
 open FSharp.Data
@@ -19,7 +19,7 @@ In this section, we look at various features of the F# data frame library (using
 `Series` and `Frame` types and modules). Feel free to jump to the section you are interested
 in, but note that some sections refer back to values built in "Creating & loading".
 
-You can also get this page as an [F# script file](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/content/frame.fsx)
+You can also get this page as an [F# script file](https://github.com/fslaborg/Deedle/blob/master/docs/content/frame.fsx)
 from GitHub and run the samples interactively.
 
 <a name="creating"></a>
@@ -34,7 +34,7 @@ function exposes this functionality:
 *)
 
 // Assuming 'root' is a directory containing the file
-let titanic = Frame.ReadCsv(root + "Titanic.csv")
+let titanic = Frame.ReadCsv(root + "titanic.csv")
 
 // Read data and set the index column & order rows
 let msft = 
@@ -43,7 +43,7 @@ let msft =
   |> Frame.sortRowsByKey
 
 // Specify column separator
-let air = Frame.ReadCsv(root + "AirQuality.csv", separators=";")
+let air = Frame.ReadCsv(root + "airquality.csv", separators=";")
 (**
 In the second example, we call `indexRowsDate` to use the "Date" column as a row index
 of the resulting data frame. This is a very common scenario and so Deedle provides an

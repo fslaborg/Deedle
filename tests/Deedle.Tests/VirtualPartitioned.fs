@@ -1,8 +1,9 @@
 ﻿#if INTERACTIVE
-#I "../../bin/"
+#I "../../bin/net45"
 #load "Deedle.fsx"
-#r "../../packages/NUnit/lib/nunit.framework.dll"
-#r "../../packages/FsCheck/lib/net40-Client/FsCheck.dll"
+#r "../../packages/NUnit/lib/net45/nunit.framework.dll"
+#r "../../packages/FsCheck/lib/net452/FsCheck.dll"
+#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
 #load "../Common/FsUnit.fs"
 #else
 module Deedle.Tests.VirtualPartitionFrame
@@ -243,7 +244,7 @@ let accessedDataParts (src:TrackingSource<_>) =
 // Create time series using the partitoned virtual data source
 // ------------------------------------------------------------------------------------------------
 
-let idxValues =
+let idxValues() =
   { new TrackingSourceValue<DateTimeOffset> with
       member x.CanLookup = true
       member x.AsDate(d) = d
@@ -265,7 +266,7 @@ let createRanges partNum partSize =
 
 let createTimeSeries partNum partSize =
   let accessMeta, ranges = createRanges partNum partSize
-  let idxSrc = TrackingSource<DateTimeOffset>((ref [], accessMeta), idxValues, ranges)
+  let idxSrc = TrackingSource<DateTimeOffset>((ref [], accessMeta), idxValues(), ranges)
   let valSrc = TrackingSource<float>((ref [], accessMeta), valValues (fun part idx -> part * 1000000.0 + idx), ranges)
   let sv = Virtual.CreateSeries(idxSrc, valSrc)
   idxSrc, valSrc, sv
@@ -290,12 +291,12 @@ let ``Counting keys (with small partitions) accesses meta but no data`` () =
 [<Test>]
 let ``Printing series (with small partitions) accesses border partitions`` () =
   let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 10)
-  ts.Format() |> should containStr "0"
-  ts.Format() |> should containStr "1000000"
-  ts.Format() |> should (containStr >> not') "1000005"
-  ts.Format() |> should containStr "998000005"
-  ts.Format() |> should containStr "999000009"
-  ts.Format() |> should (containStr >> not') "998000004"
+  ts.Format() |> should contain "0"
+  ts.Format() |> should contain "1000000"
+  ts.Format() |> should (contain >> not') "1000005"
+  ts.Format() |> should contain "998000005"
+  ts.Format() |> should contain "999000009"
+  ts.Format() |> should (contain >> not') "998000004"
   accessedDataParts idxSrc |> shouldEqual <| [0; 1; 2; 3; 998; 999]
   accessedMetaParts idxSrc |> shouldEqual <| [0; 1; 2; 3; 998; 999]
 
@@ -310,10 +311,10 @@ let ``Printing series does not require counting items in partitions``() =
 let ``Printing series (with large partitions) accesses border partitions`` () =
   let idxSrc, valSrc, ts = createTimeSeries 100 (fun n -> 5000)
   ts.KeyCount |> shouldEqual 500000
-  ts.Format() |> should containStr "0"
-  ts.Format() |> should containStr "14"
-  ts.Format() |> should containStr "99004985"
-  ts.Format() |> should containStr "99004999"
+  ts.Format() |> should contain "0"
+  ts.Format() |> should contain "14"
+  ts.Format() |> should contain "99004985"
+  ts.Format() |> should contain "99004999"
   accessedDataParts idxSrc |> shouldEqual <| [0; 99]
 
 // ------------------------------------------------------------------------------------------------
@@ -479,7 +480,7 @@ let ``Can project using SelectOptional method without evaluating the series`` ()
 [<Test>]
 let ``Can subtract series from another (calculated from itself)`` () =
   let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
-  let res = (sin ts) / (cos ts) - (tan ts) |> Series.mapValues (fun v -> Math.Round(v, 10))
+  let res = (sin ts) / (cos ts) - (tan ts) |> Series.mapValues (fun v -> Math.Round(v, 8))
   res |> Series.take 10 |> Series.values |> List.ofSeq |> shouldEqual [ for i in 0 .. 9 -> 0.0 ]
   res |> Series.takeLast 10 |> Series.values |> List.ofSeq |> shouldEqual [ for i in 0 .. 9 -> 0.0 ]
   valSrc.AccessedData |> Seq.distinct |> Seq.length |> shouldEqual 20
@@ -633,7 +634,7 @@ let ``Can perform grouping on a small virtual series`` () =
 
 let createSmallFrame partNum partSize =
   let accessMeta, ranges = createRanges partNum partSize
-  let idxSrc = TrackingSource<DateTimeOffset>((ref [], accessMeta), idxValues, ranges)
+  let idxSrc = TrackingSource<DateTimeOffset>((ref [], accessMeta), idxValues(), ranges)
   let valSrc1 = TrackingSource<float>((ref [], accessMeta), valValues (fun part idx -> part * 1000000.0 + idx), ranges)
   let valSrc2 = TrackingSource<float>((ref [], accessMeta), valValues (fun part idx -> part * 1000000.0 + idx + 1.0), ranges)
   Virtual.CreateFrame(idxSrc, ["A";"B"], [ valSrc1 :> IVirtualVectorSource; valSrc2 :> IVirtualVectorSource])

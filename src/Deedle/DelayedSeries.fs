@@ -138,7 +138,7 @@ type internal DelayedSource<'K, 'V when 'K : equality>
 
   // Lazy computation that returns started task whil loads the data 
   // (we use task here so that we can cache the result)
-  let asyncData = Lazy.Create(fun () -> 
+  let asyncData = Lazy<_>.Create(fun () -> 
     let ranges = flattenRanges rangeMin rangeMax comparer ranges |> Array.ofSeq 
     let ops = loader ranges
     async {
