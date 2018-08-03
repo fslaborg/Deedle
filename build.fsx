@@ -262,8 +262,7 @@ Target "NuGet" (fun _ ->
             Version = release.NugetVersion
             ReleaseNotes = String.concat " " release.Notes
             Tags = tags + " " + deedleExcelTags
-            OutputPath = "bin"
-            ToolPath = nugetPath
+            OutputPath = "bin"            
             AccessKey = getBuildParamOrDefault "nugetkey" ""
             Publish = hasBuildParam "nugetkey" })
         ("nuget/Deedle.Excel.nuspec")

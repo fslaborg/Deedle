@@ -79,7 +79,7 @@ let setExcelVisibility visible =
     | _ -> printfn "Unable to set excel visibility. Try calling setExcelVisibility true if Excel doesn't show up"
 
 let openNewExcelApplication () =
-    NetOffice.Factory.Initialize()
+    //NetOffice.Factory.Initialize()
     excelApp <- new Application()
     excelApp.DisplayAlerts <- false
     excelApp.Workbooks.Add(Enums.XlWBATemplate.xlWBATWorksheet) |> ignore
