@@ -125,7 +125,8 @@ let testCoreProjs =
 
 let buildProjs =
     [ "src/Deedle/Deedle.fsproj"
-      "src/Deedle.RProvider.Plugin/Deedle.RProvider.Plugin.fsproj" ]
+      "src/Deedle.RProvider.Plugin/Deedle.RProvider.Plugin.fsproj"
+      "src/Deedle.Excel/Deedle.Excel.fsproj" ]
 
 let buildCoreProjs =
     [ "src/Deedle/Deedle.fsproj" ]

@@ -1,107 +1,30 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\netfx.props" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>8c50057d-29ef-41ad-b91a-84b49cdbd047</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>Deedle.Excel</RootNamespace>
-    <AssemblyName>Deedle.Excel</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
-    <Name>Deedle.Excel</Name>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
+    <TargetFrameworks>net45</TargetFrameworks>
+    <OutputPath>../../bin/</OutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <Tailcalls>false</Tailcalls>
-    <OutputPath>..\..\bin</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Debug\Deedle.Excel.XML</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <Tailcalls>true</Tailcalls>
-    <OutputPath>..\..\bin</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Release\Deedle.Excel.XML</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
-  </PropertyGroup>
-  <Choose>
-    <When Condition="'$(VisualStudioVersion)' == '11.0' Or $(OS) != 'Windows_NT'">
-      <PropertyGroup Condition=" '$(FSharpTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets') ">      
-        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>        
-      </PropertyGroup>
-    </When>
-    <When Condition="'$(VisualStudioVersion)' == '14.0'">         
-      <PropertyGroup Condition=" '$(FSharpTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\10.1\Framework\v4.0\Microsoft.FSharp.Targets') ">        
-        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\10.1\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
-      </PropertyGroup>       
-    </When>        
-    <Otherwise>
-      <PropertyGroup Condition=" '$(FSharpTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets') ">
-        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
-      </PropertyGroup>
-    </Otherwise>
-  </Choose> 
-  <Import Project="$(FSharpTargetsPath)" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
-  <Target Name="AfterBuild">
-    <Copy SourceFiles="..\..\packages\NetOffice.Core.1.7.4.4\lib\net45\NetOffice.dll" DestinationFolder="$(ProjectDir)..\..\bin" />
-    <Copy SourceFiles="..\..\packages\NetOffice.Core.1.7.4.4\lib\net45\OfficeApi.dll" DestinationFolder="$(ProjectDir)..\..\bin" />
-    <Copy SourceFiles="..\..\packages\NetOffice.Core.1.7.4.4\lib\net45\VBIDEApi.dll" DestinationFolder="$(ProjectDir)..\..\bin" />
-    <Copy SourceFiles="..\..\packages\NetOffice.Excel.1.7.4.4\lib\net45\ExcelApi.dll" DestinationFolder="$(ProjectDir)..\..\bin" />
-  </Target>
   <ItemGroup>
-    <Compile Include="Excel.fs" />
+    <Reference Include="System.Runtime" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Deedle\Deedle.fsproj">
+      <Name>Deedle</Name>
+    </ProjectReference>
+  </ItemGroup>  
+  <ItemGroup>    
+    <Compile Include="Excel.fs" />    
+    <None Include="paket.references" />
     <None Include="Excel.fsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="FSharp.Core">
-      <HintPath>..\..\packages\FSharp.Core\lib\net45\FSharp.Core.dll</HintPath>
-      <Paket>True</Paket>
-    </Reference>   
-    <Reference Include="ExcelApi">
-      <HintPath>..\..\packages\NetOffice.Excel.1.7.4.4\lib\net45\ExcelApi.dll</HintPath>
-    </Reference>
-    <Reference Include="mscorlib" />    
-    <Reference Include="NetOffice">
-      <HintPath>..\..\packages\NetOffice.Core.1.7.4.4\lib\net45\NetOffice.dll</HintPath>
-    </Reference>
-    <Reference Include="OfficeApi">
-      <HintPath>..\..\packages\NetOffice.Core.1.7.4.4\lib\net45\OfficeApi.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="VBIDEApi">
-      <HintPath>..\..\packages\NetOffice.Core.1.7.4.4\lib\net45\VBIDEApi.dll</HintPath>
-    </Reference>
-    <ProjectReference Include="..\Deedle\Deedle.fsproj">
-      <Name>Deedle</Name>
-      <Project>{22729065-4c30-4e43-a63f-4f3338a03878}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-  </ItemGroup>
+  <!-- <Target Name = "CopyFiles" AfterTargets="build">
+    <Copy SourceFiles="..\..\packages\NetOffice.Core\lib\net45\NetOffice.dll" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="..\..\packages\NetOffice.Core\lib\net45\OfficeApi.dll" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="..\..\packages\NetOffice.Core\lib\net45\VBIDEApi.dll" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="..\..\packages\NetOffice.Excel\lib\net45\ExcelApi.dll" DestinationFolder="$(OutputPath)" />
+  </Target>   -->
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

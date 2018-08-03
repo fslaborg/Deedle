@@ -3,7 +3,7 @@ This script will create a very simple Deedle frame and push it to
 Excel. It will also update that frame by adding a new column, which
 will be automatically reflected to Excel.
 *)
-#I @"..\..\bin"
+#I @"..\..\bin\net45"
 #r "ExcelApi.dll"
 #r "NetOffice.dll"
 #r "OfficeApi.dll"
