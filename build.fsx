@@ -129,7 +129,8 @@ let buildProjs =
       "src/Deedle.Excel/Deedle.Excel.fsproj" ]
 
 let buildCoreProjs =
-    [ "src/Deedle/Deedle.fsproj" ]
+    [ "src/Deedle/Deedle.fsproj"    
+      "src/Deedle.Excel/Deedle.Excel.fsproj" ]
 
 Target "Build" <| fun () ->
     if useMsBuildToolchain then
