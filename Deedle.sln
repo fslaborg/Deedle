@@ -1,13 +1,8 @@
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{B003806F-9C76-4BE6-B3EB-54102529E4FC}"
-	ProjectSection(SolutionItems) = preProject
-		paket.dependencies = paket.dependencies
-		paket.lock = paket.lock
-	EndProjectSection
-EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle", "src\Deedle\Deedle.fsproj", "{22729065-4C30-4E43-A63F-4F3338A03878}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{245F1283-32FA-4B38-AC76-448B8AE5F7AC}"
@@ -28,6 +23,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{B6AFD701-8A05-4A18-A3F3-EDAF8D7530E8}"
 	ProjectSection(SolutionItems) = preProject
 		build.fsx = build.fsx
+		nuget\Deedle.Excel.nuspec = nuget\Deedle.Excel.nuspec
 		nuget\Deedle.nuspec = nuget\Deedle.nuspec
 		nuget\Deedle.RPlugin.nuspec = nuget\Deedle.RPlugin.nuspec
 		README.md = README.md
@@ -38,6 +34,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{8BD8
 	ProjectSection(SolutionItems) = preProject
 		docs\content\samples\historyvol.fsx = docs\content\samples\historyvol.fsx
 		docs\content\samples\missing.fsx = docs\content\samples\missing.fsx
+		docs\content\samples\presidents.fsx = docs\content\samples\presidents.fsx
 		docs\content\samples\timestats.fsx = docs\content\samples\timestats.fsx
 		docs\content\samples\titanic.fsx = docs\content\samples\titanic.fsx
 	EndProjectSection

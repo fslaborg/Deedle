@@ -34,6 +34,13 @@ let rpluginDescription = """
   which makes it possible to pass data frames and time series between R and Deedle"""
 let rpluginTags = "R RProvider"
 
+let deedleExcelProject = "Deedle.Excel"
+let deedleExcelSummary = "Deedle integration with Excel"
+let deedleExcelDescription = """
+  This package installs the core Deedle package, NetOffice.Excel, and a Deedle extension
+  which makes it possible to send Deedle Frames to Excel."""
+let deedleExcelTags = "Excel"
+
 let gitHome = "https://github.com/fslaborg"
 let gitName = "Deedle"
 
@@ -246,6 +253,20 @@ Target "NuGet" (fun _ ->
             AccessKey = getBuildParamOrDefault "nugetkey" ""
             Publish = hasBuildParam "nugetkey" })
         ("nuget/Deedle.RPlugin.nuspec")
+    NuGet (fun p -> 
+        { p with   
+            Authors = authors
+            Project = deedleExcelProject
+            Summary = deedleExcelSummary
+            Description = description + "\n\n" + deedleExcelDescription
+            Version = release.NugetVersion
+            ReleaseNotes = String.concat " " release.Notes
+            Tags = tags + " " + deedleExcelTags
+            OutputPath = "bin"
+            ToolPath = nugetPath
+            AccessKey = getBuildParamOrDefault "nugetkey" ""
+            Publish = hasBuildParam "nugetkey" })
+        ("nuget/Deedle.Excel.nuspec")
 )
 
 // --------------------------------------------------------------------------------------

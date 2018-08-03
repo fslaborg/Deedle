@@ -8,7 +8,6 @@
 #I "../bin"
 #I "../../bin"
 #I "lib"
-
 // Reference Deedle
 #r "Deedle.dll"
 
