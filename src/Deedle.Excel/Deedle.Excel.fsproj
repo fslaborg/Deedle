@@ -16,7 +16,7 @@
   <ItemGroup>    
     <Compile Include="Excel.fs" />    
     <None Include="paket.references" />
-    <None Include="Excel.fsx">
+    <None Include="Deedle.Excel.Sample.fsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

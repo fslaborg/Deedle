@@ -9,7 +9,7 @@ will be automatically reflected to Excel.
 #r "OfficeApi.dll"
 #r "VBIDEApi.dll"
 #r "Deedle.dll"
-#load "Excel.fs"
+#r "Deedle.Excel.dll"
 
 open System
 open System.Collections.Specialized
