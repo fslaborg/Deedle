@@ -92,6 +92,7 @@ let buildReference () =
 
 // Build documentation from `fsx` and `md` files in `docs/content`
 let buildDocumentation () =
+  CopyFile content (__SOURCE_DIRECTORY__ @@ "../../RELEASE_NOTES.md")
   let fsiEvaluator = Formatters.createFsiEvaluator root output "#.####"
   let subdirs = Directory.EnumerateDirectories(content, "*", SearchOption.AllDirectories)
   for dir in Seq.append [content] subdirs do
