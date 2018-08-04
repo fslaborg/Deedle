@@ -225,6 +225,7 @@ Target "NuGet" (fun _ ->
     // Format the description to fit on a single line (remove \r\n and double-spaces)
     let description = description.Replace("\r", "").Replace("\n", "").Replace("  ", " ")
     let rpluginDescription = rpluginDescription.Replace("\r", "").Replace("\n", "").Replace("  ", " ")
+    let releaseNotes = release.Notes |> String.concat "\n"
     NuGet (fun p -> 
         { p with   
             Authors = authors
@@ -232,7 +233,7 @@ Target "NuGet" (fun _ ->
             Summary = summary
             Description = description
             Version = release.NugetVersion
-            ReleaseNotes = String.concat " " release.Notes
+            ReleaseNotes = releaseNotes
             Tags = tags
             OutputPath = "bin"
             AccessKey = getBuildParamOrDefault "nugetkey" ""
@@ -245,8 +246,8 @@ Target "NuGet" (fun _ ->
             Summary = rpluginSummary
             Description = description + "\n\n" + rpluginDescription
             Version = release.NugetVersion
-            ReleaseNotes = String.concat " " release.Notes
-            Tags = tags
+            ReleaseNotes = releaseNotes
+            Tags = tags + " " + rpluginTags
             OutputPath = "bin"
             Dependencies = 
               [ "Deedle", release.NugetVersion
@@ -263,9 +264,13 @@ Target "NuGet" (fun _ ->
             Summary = deedleExcelSummary
             Description = description + "\n\n" + deedleExcelDescription
             Version = release.NugetVersion
-            ReleaseNotes = String.concat " " release.Notes
+            ReleaseNotes = releaseNotes
             Tags = tags + " " + deedleExcelTags
-            OutputPath = "bin"            
+            OutputPath = "bin"    
+            Dependencies = 
+              [ "Deedle", release.NugetVersion
+                "NetOffice.Core", GetPackageVersion "packages" "NetOffice.Core"
+                "NetOffice.Excel", GetPackageVersion "packages" "NetOffice.Core" ]                    
             AccessKey = getBuildParamOrDefault "nugetkey" ""
             Publish = hasBuildParam "nugetkey" })
         ("nuget/Deedle.Excel.nuspec")

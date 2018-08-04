@@ -17,7 +17,8 @@
     @dependencies@
   </metadata>
   <files>
-    <file src="..\bin\net45\Deedle.RProvider.Plugin.dll" target="lib/net45" />
-    <file src="..\bin\net45\Deedle.RProvider.Plugin.pdb" target="lib/net45" />  
+    <file src="..\bin\net45\Deedle.Excel.dll" target="lib/net45" />
+    <file src="..\bin\net45\Deedle.Excel.pdb" target="lib/net45" /> 
+    <file src="..\bin\net45\Deedle.Excel.Sample.fsx" target="/" /> 
   </files>
 </package>

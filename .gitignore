@@ -31,7 +31,6 @@ TestResult.xml
 *.bak
 *.psess
 *.ide
-nuget/*.nuspec
 tests/PerformanceTools/Deedle.PerfTest.Core/obj
 tests/PerformanceTools/Deedle.PerfTest.Core/bin
 tests/PerformanceTools/Deedle.PerfTest.Runner/obj
@@ -42,4 +41,3 @@ tests/PerformanceTools/Deedle.PerfTest/bin
 .paket/Paket.Restore.targets
 /.vs/*
 /.fake
-docs/content/RELEASE_NOTES.md
