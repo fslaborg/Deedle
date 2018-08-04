@@ -7,7 +7,7 @@
     <owners>@authors@</owners>
     <licenseUrl>https://github.com/fslaborg/Deedle/blob/master/LICENSE.md</licenseUrl>
     <projectUrl>https://fslab.org/Deedle/</projectUrl>
-    <iconUrl>https://github.com/fslaborg/Deedle/blob/master/misc/logo.png</iconUrl>
+    <iconUrl>https://raw.githubusercontent.com/fslaborg/Deedle/master/misc/logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>@summary@</summary>
     <description>@description@</description>
