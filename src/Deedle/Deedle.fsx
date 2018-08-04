@@ -1,7 +1,7 @@
 #nowarn "211"
 // Standard NuGet or Paket location
 #I "."
-#I "lib/net40"
+#I "lib/net45"
 
 // Try various folders that people might like
 #I "bin"

@@ -16,15 +16,9 @@
   <ItemGroup>    
     <Compile Include="Excel.fs" />    
     <None Include="paket.references" />
-    <None Include="Excel.fsx">
+    <None Include="Deedle.Excel.Sample.fsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <!-- <Target Name = "CopyFiles" AfterTargets="build">
-    <Copy SourceFiles="..\..\packages\NetOffice.Core\lib\net45\NetOffice.dll" DestinationFolder="$(OutputPath)" />
-    <Copy SourceFiles="..\..\packages\NetOffice.Core\lib\net45\OfficeApi.dll" DestinationFolder="$(OutputPath)" />
-    <Copy SourceFiles="..\..\packages\NetOffice.Core\lib\net45\VBIDEApi.dll" DestinationFolder="$(OutputPath)" />
-    <Copy SourceFiles="..\..\packages\NetOffice.Excel\lib\net45\ExcelApi.dll" DestinationFolder="$(OutputPath)" />
-  </Target>   -->
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

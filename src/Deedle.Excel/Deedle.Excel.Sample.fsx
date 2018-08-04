@@ -3,13 +3,23 @@ This script will create a very simple Deedle frame and push it to
 Excel. It will also update that frame by adding a new column, which
 will be automatically reflected to Excel.
 *)
-#I @"..\..\bin\net45"
+#nowarn "211"
+#I @"../../bin/net45"
+#I "../../packages/Deedle.2.0.0-beta01/"
+#I "../../packages/Deedle"
+#load "Deedle.fsx"
+
+#I "../../packages/Deedle.Excel.2.0.0-beta01/lib/net45"
+#I "../../packages/NetOffice.Core.1.7.4.4/lib/net45"
+#I "../../packages/NetOffice.Excel.1.7.4.4/lib/net45"
+#I "../../packages/Deedle.Excel/lib/net45"
+#I "../../packages/NetOffice.Core/lib/net45"
+#I "../../packages/NetOffice.Excel/lib/net45"
 #r "ExcelApi.dll"
 #r "NetOffice.dll"
 #r "OfficeApi.dll"
 #r "VBIDEApi.dll"
-#r "Deedle.dll"
-#load "Excel.fs"
+#r "Deedle.Excel.dll"
 
 open System
 open System.Collections.Specialized
@@ -63,3 +73,7 @@ for values in GetFsiSeriesAndFrames(Array.empty).Values do
 let fourth = Series(dateRange (DateTime(2014,1,1)) 10, rand 10)
 // Synchronize all Deedle Series and Frames to Excel
 DeedleToExcel(fsi.AddPrintTransformer)
+
+// Close excel instance
+closeExcel ()
+

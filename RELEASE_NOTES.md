@@ -6,6 +6,7 @@
 * Iterate once in Frame.ofRowsOrdinal [#396](https://github.com/fslaborg/Deedle/pull/396)
 * Fix for some concurrency errors [#394](https://github.com/fslaborg/Deedle/pull/394)
 * Fix bug in Series.hasNot [#361](https://github.com/fslaborg/Deedle/pull/361)
+* Fix bug in Frame.tryValues [#359](https://github.com/fslaborg/Deedle/pull/359)
 * Arithmetic operators for decimal series [#351](https://github.com/fslaborg/Deedle/pull/351)
 
 ## 1.2.5
