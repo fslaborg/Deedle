@@ -34,6 +34,13 @@ let rpluginDescription = """
   which makes it possible to pass data frames and time series between R and Deedle"""
 let rpluginTags = "R RProvider"
 
+let deedleExcelProject = "Deedle.Excel"
+let deedleExcelSummary = "Deedle integration with Excel"
+let deedleExcelDescription = """
+  This package installs the core Deedle package, NetOffice.Excel, and a Deedle extension
+  which makes it possible to send Deedle Frames to Excel."""
+let deedleExcelTags = "Excel"
+
 let gitHome = "https://github.com/fslaborg"
 let gitName = "Deedle"
 
@@ -118,10 +125,12 @@ let testCoreProjs =
 
 let buildProjs =
     [ "src/Deedle/Deedle.fsproj"
-      "src/Deedle.RProvider.Plugin/Deedle.RProvider.Plugin.fsproj" ]
+      "src/Deedle.RProvider.Plugin/Deedle.RProvider.Plugin.fsproj"
+      "src/Deedle.Excel/Deedle.Excel.fsproj" ]
 
 let buildCoreProjs =
-    [ "src/Deedle/Deedle.fsproj" ]
+    [ "src/Deedle/Deedle.fsproj"    
+      "src/Deedle.Excel/Deedle.Excel.fsproj" ]
 
 Target "Build" <| fun () ->
     if useMsBuildToolchain then
@@ -246,6 +255,19 @@ Target "NuGet" (fun _ ->
             AccessKey = getBuildParamOrDefault "nugetkey" ""
             Publish = hasBuildParam "nugetkey" })
         ("nuget/Deedle.RPlugin.nuspec")
+    NuGet (fun p -> 
+        { p with   
+            Authors = authors
+            Project = deedleExcelProject
+            Summary = deedleExcelSummary
+            Description = description + "\n\n" + deedleExcelDescription
+            Version = release.NugetVersion
+            ReleaseNotes = String.concat " " release.Notes
+            Tags = tags + " " + deedleExcelTags
+            OutputPath = "bin"            
+            AccessKey = getBuildParamOrDefault "nugetkey" ""
+            Publish = hasBuildParam "nugetkey" })
+        ("nuget/Deedle.Excel.nuspec")
 )
 
 // --------------------------------------------------------------------------------------
