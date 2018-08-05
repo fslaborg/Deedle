@@ -41,3 +41,4 @@ tests/PerformanceTools/Deedle.PerfTest/bin
 .paket/Paket.Restore.targets
 /.vs/*
 /.fake
+docs/content/RELEASE_NOTES.md

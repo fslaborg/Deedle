@@ -4,7 +4,6 @@ module Formatters
 //#I "../../packages/FSharp.Formatting/lib/net40"
 //#r "FSharp.Markdown.dll"
 //#r "FSharp.Literate.dll"
-#r "../../packages/FAKE/tools/FakeLib.dll"
 #r "../../bin/net45/Deedle.dll"
 #load "../../packages/RProvider/RProvider.fsx"
 #r "../../packages/MathNet.Numerics/lib/net40/MathNet.Numerics.dll"

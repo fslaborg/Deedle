@@ -2,22 +2,23 @@ language: csharp
 
 sudo: required
 dist: trusty
-
+install:
+  - mozroots --import --sync
+  - export FrameworkPathOverride=$(dirname $(which mono))/../lib/mono/4.5/
 matrix:
   include:
     - mono: latest
       dotnet: 2.1.302
-      env: USE_MSBUILD=1
       os: linux
     - mono: latest
       dotnet: 2.1.302
       os: linux
 
 before_install:
-  - chmod +x build.sh
+  - chmod +x fake.sh
  
 script: 
-  - ./build.sh AllCore
+  - ./fake.sh build target AllCore
   
 branches:
   except:
