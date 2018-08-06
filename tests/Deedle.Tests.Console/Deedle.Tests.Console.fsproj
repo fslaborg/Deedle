@@ -1,107 +1,26 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\netfx.props" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>09d8960b-9703-425e-af0b-fa39525f5b9c</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>Deedle.Tests</RootNamespace>
-    <AssemblyName>Deedle.Tests.Console</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <Name>Deedle.Tests</Name>
-    <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <Tailcalls>false</Tailcalls>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <WarningLevel>3</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Debug\Deedle.Tests.XML</DocumentationFile>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <Tailcalls>true</Tailcalls>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <WarningLevel>3</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Release\Deedle.Tests.XML</DocumentationFile>
-    <Prefer32Bit>true</Prefer32Bit>
+    <TargetFrameworks>netcoreapp2.1;net45</TargetFrameworks>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FSharp.Core">
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Deedle">
-      <HintPath>..\..\bin\Deedle.dll</HintPath>
-    </Reference>
-    <Reference Include="mscorlib" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Xml" />
+    <Reference Include="System.Runtime" />
+  </ItemGroup>  
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Deedle\Deedle.fsproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.fs" />
-    <None Include="App.config" />
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Deedle.CSharp.Tests\Deedle.CSharp.Tests.csproj">
-      <Name>Deedle.CSharp.Tests</Name>
-      <Project>{b0584275-6e9d-4db8-a35d-4f37b623f97e}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Deedle.PerfTests\Deedle.PerfTests.fsproj">
-      <Name>Deedle.PerfTests</Name>
-      <Project>{0275c56b-9a00-4578-a826-a6cf1f089086}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Deedle.RPlugin.Tests\Deedle.RPlugin.Tests.fsproj">
-      <Name>Deedle.RPlugin.Tests</Name>
-      <Project>{51d38bde-02e7-45d4-a135-dc478b7c57e9}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Deedle.Tests\Deedle.Tests.fsproj">
-      <Name>Deedle.Tests</Name>
-      <Project>{484a96e6-d217-47ee-974c-5d7b3cfb401e}</Project>
-      <Private>True</Private>
-    </ProjectReference>
+    <ProjectReference Include="..\Deedle.CSharp.Tests\Deedle.CSharp.Tests.csproj"></ProjectReference>
+    <ProjectReference Include="..\Deedle.PerfTests\Deedle.PerfTests.fsproj"></ProjectReference>
+    <ProjectReference Include="..\Deedle.RPlugin.Tests\Deedle.RPlugin.Tests.fsproj"></ProjectReference>
+    <ProjectReference Include="..\Deedle.Tests\Deedle.Tests.fsproj"></ProjectReference>
   </ItemGroup>
-  <PropertyGroup>
-    <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
-  </PropertyGroup>
-  <PropertyGroup>
-    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(VisualStudioVersion)' == '11.0' Or $(OS) != 'Windows_NT'">
-    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
-  </PropertyGroup>
-  <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
-  <Import Project="..\..\.paket\paket.targets" />
-  <ItemGroup>
-    <Reference Include="nunit.framework">
-      <HintPath>..\..\packages\NUnit\lib\nunit.framework.dll</HintPath>
-      <Private>True</Private>
-      <Paket>True</Paket>
-    </Reference>
-  </ItemGroup>
+  <Import Project="..\..\fsc.props" />
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

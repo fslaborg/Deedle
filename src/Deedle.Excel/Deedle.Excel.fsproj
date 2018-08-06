@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\netfx.props" />
+  <PropertyGroup>
+    <TargetFrameworks>net45</TargetFrameworks>
+    <OutputPath>../../bin/</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Runtime" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Deedle\Deedle.fsproj">
+      <Name>Deedle</Name>
+    </ProjectReference>
+  </ItemGroup>  
+  <ItemGroup>    
+    <Compile Include="Excel.fs" />    
+    <None Include="paket.references" />
+    <None Include="Deedle.Excel.Sample.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>

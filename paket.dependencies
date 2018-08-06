@@ -1,15 +1,34 @@
 source https://nuget.org/api/v2
 
-nuget FsCheck 0.9.1.0
+nuget FsCheck 2.10.8
 nuget FSharp.Charting
 nuget FSharp.Data
-nuget FSharp.Formatting
-nuget MathNet.Numerics
-nuget NUnit
-nuget NUnit.Runners
+nuget MathNet.Numerics 4.5.1
+nuget NUnit 3.9.0
+nuget NUnit.ConsoleRunner 3.8.0
+nuget FsUnit 3.0.0
 nuget RProvider
 nuget Nuget.CommandLine
-nuget FAKE
+nuget FAKE 4.64.13
+nuget System.Reflection.Emit
+nuget System.Reflection.Emit.Lightweight
+nuget FSharp.Core 4.2.3
+nuget Microsoft.NET.Test.Sdk 15.8.0
+nuget NUnit3TestAdapter 3.9.0
+nuget Microsoft.CSharp
+nuget R.NET.Community
+nuget R.NET.Community.FSharp
+nuget DynamicInterop
+nuget System.ComponentModel.Composition
+nuget NetOffice.Core
+nuget NetOffice.Excel
+
+github fsharp/FSharp.Data src/Net/Http.fs
+github fsharp/FSharp.Data src/CommonRuntime/IO.fs
+github fsharp/FSharp.Data src/CommonRuntime/Pluralizer.fs
+github fsharp/FSharp.Data src/CommonRuntime/NameUtils.fs
+source https://ci.appveyor.com/nuget/fsharp-formatting
+nuget FSharp.Formatting prerelease
 
 github fsharp/FSharp.Data src/CommonRuntime/TextConversions.fs
 github fsharp/FSharp.Data src/CommonRuntime/TextRuntime.fs

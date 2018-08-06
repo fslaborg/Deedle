@@ -8,6 +8,8 @@ src/Deedle/bin
 src/Deedle/obj
 src/Deedle.RProvider.Plugin/bin
 src/Deedle.RProvider.Plugin/obj
+src/Deedle.Excel/bin
+src/Deedle.Excel/obj
 *.suo
 tests/Deedle.Tests/obj
 tests/Deedle.Tests/bin
@@ -29,7 +31,6 @@ TestResult.xml
 *.bak
 *.psess
 *.ide
-nuget/*.nuspec
 tests/PerformanceTools/Deedle.PerfTest.Core/obj
 tests/PerformanceTools/Deedle.PerfTest.Core/bin
 tests/PerformanceTools/Deedle.PerfTest.Runner/obj
@@ -37,3 +38,6 @@ tests/PerformanceTools/Deedle.PerfTest.Runner/bin
 tests/PerformanceTools/Deedle.PerfTest/obj
 tests/PerformanceTools/Deedle.PerfTest/bin
 .paket/paket.exe
+.paket/Paket.Restore.targets
+/.vs/*
+/.fake

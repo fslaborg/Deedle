@@ -8,7 +8,7 @@ often need to work on individual series (either rows or columns) of the frame, s
 to look at the [page discussing series](csharpseries.html) first.
 
 You can also get the samples on this page as a 
-[C# source file](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/csharp/Frame.cs)
+[C# source file](https://github.com/fslaborg/Deedle/blob/master/docs/csharp/Frame.cs)
 from GitHub and run the samples.
 
 <a name="understanding"></a>

@@ -8,7 +8,7 @@ data frame `Frame` containing multiple series. Furthermore, data frame provides 
 way for aligning and joining series. 
 
 You can also get the samples on this page as a 
-[C# source file](https://github.com/BlueMountainCapital/Deedle/blob/master/docs/csharp/Series.cs)
+[C# source file](https://github.com/fslaborg/Deedle/blob/master/docs/csharp/Series.cs)
 from GitHub and run the samples.
 
 <a name="understanding"></a>

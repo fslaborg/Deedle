@@ -1,7 +1,9 @@
 ﻿#if INTERACTIVE
-#load "../../bin/Deedle.fsx"
-#r "../../packages/NUnit/lib/nunit.framework.dll"
-#r "../../packages/FsCheck/lib/net40-Client/FsCheck.dll"
+#I "../../bin/net45"
+#load "Deedle.fsx"
+#r "../../packages/NUnit/lib/net45/nunit.framework.dll"
+#r "../../packages/FsCheck/lib/net452/FsCheck.dll"
+#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
 #load "../Common/FsUnit.fs"
 #else
 module Deedle.Tests.Series
@@ -219,6 +221,16 @@ let ``Can perform numerical operations on series of floats`` () =
   (sf + sf).[3] |> shouldEqual 6.0
   (sf - sf).[3] |> shouldEqual 0.0
   (sf / sf).[3] |> shouldEqual 1.0
+
+[<Test>]
+let ``Can perform numerical operations on series of decimals`` () =
+  let sf = series [ 1 => 1.0M; 2 => 1.0M; 3 => 3.0M ]
+  (-sf).[3] |> shouldEqual -3.0M
+  (sf * sf).[3] |> shouldEqual 9.0M
+  (sf * sf).[3] |> shouldEqual 9.0M
+  (sf + sf).[3] |> shouldEqual 6.0M
+  (sf - sf).[3] |> shouldEqual 0.0M
+  (sf / sf).[3] |> shouldEqual 1.0M
 
 [<Test>]
 let ``Can perform numerical operations on series of integers`` () =

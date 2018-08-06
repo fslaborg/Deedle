@@ -5,9 +5,9 @@
     <version>@build.number@</version>
     <authors>@authors@</authors>
     <owners>@authors@</owners>
-    <licenseUrl>http://github.com/BlueMountainCapital/Deedle/blob/master/LICENSE.md</licenseUrl>
-    <projectUrl>http://BlueMountainCapital.github.com/Deedle</projectUrl>
-    <iconUrl>https://raw.github.com/BlueMountainCapital/Deedle/master/misc/logo.png</iconUrl>
+    <licenseUrl>https://github.com/fslaborg/Deedle/blob/master/LICENSE.md</licenseUrl>
+    <projectUrl>https://fslab.org/Deedle/</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/fslaborg/Deedle/master/misc/logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>@summary@</summary>
     <description>@description@</description>
@@ -17,9 +17,10 @@
     <dependencies />
   </metadata>
   <files>
-    <file src="..\bin\Deedle.dll" target="lib/net40" />
-    <file src="..\bin\Deedle.pdb" target="lib/net40" />
-    <file src="..\bin\Deedle.xml" target="lib/net40" />
-    <file src="..\bin\Deedle.fsx" target="." />
+    <file src="..\bin\net45\Deedle.dll" target="lib/net45" />
+    <file src="..\bin\net45\Deedle.pdb" target="lib/net45" />
+    <file src="..\bin\net45\Deedle.fsx" target="/" />
+    <file src="..\bin\netstandard2.0\Deedle.dll" target="lib/netstandard2.0" />
+    <file src="..\bin\netstandard2.0\Deedle.pdb" target="lib/netstandard2.0" />
   </files>
 </package>

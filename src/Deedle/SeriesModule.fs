@@ -366,7 +366,7 @@ module Series =
   ///
   /// [category:Accessing series data and lookup]
   [<CompiledName("HasNot")>]
-  let hasNot key (series:Series<'K, 'T>) = series.TryGet(key).HasValue
+  let hasNot key (series:Series<'K, 'T>) = series.TryGet(key).HasValue |> not
 
   /// Returns the last key of the series, or throws exception if one doesn't exist
   /// [category:Accessing series data and lookup]

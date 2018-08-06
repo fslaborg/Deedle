@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <id>@project@</id>
+    <version>@build.number@</version>
+    <authors>@authors@</authors>
+    <owners>@authors@</owners>
+    <licenseUrl>https://github.com/fslaborg/Deedle/blob/master/LICENSE.md</licenseUrl>
+    <projectUrl>https://fslab.org/Deedle/</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/fslaborg/Deedle/master/misc/logo.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>@summary@</summary>
+    <description>@description@</description>
+    <releaseNotes>@releaseNotes@</releaseNotes>
+    <copyright>Copyright 2014</copyright>
+    <tags>@tags@</tags>
+    @dependencies@
+  </metadata>
+  <files>
+    <file src="..\bin\net45\Deedle.Excel.dll" target="lib/net45" />
+    <file src="..\bin\net45\Deedle.Excel.pdb" target="lib/net45" /> 
+    <file src="..\bin\net45\Deedle.Excel.Sample.fsx" target="/" /> 
+  </files>
+</package>

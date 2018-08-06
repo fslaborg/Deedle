@@ -14,6 +14,7 @@ module internal Reflection =
   open Microsoft.FSharp.Quotations
   open System.Collections
   open System.Collections.Generic
+  open System.Collections.Concurrent
 
   let indexBuilder = IndexBuilder.Instance
   let vectorBuilder = VectorBuilder.Instance
@@ -67,16 +68,14 @@ module internal Reflection =
 
   /// Helper function used when building frames from data tables
   let createTypedVector : _ -> seq<OptionalValue<obj>> -> _ =
-    let cache = Dictionary<_, _>()
-    (fun typ ->
-      match cache.TryGetValue(typ) with
-      | true, res -> res
-      | false, _ ->
-          let par = Expression.Parameter(typeof<seq<OptionalValue<obj>>>)
-          let body = Expression.Call(createTypedVectorMi.MakeGenericMethod([| typ |]), par)
-          let f = Expression.Lambda<Func<seq<OptionalValue<obj>>, IVector>>(body, par).Compile()
-          cache.Add(typ, f.Invoke)
-          f.Invoke )
+    let cache = ConcurrentDictionary<_, seq<OptionalValue<obj>> -> _>()
+    let valueFactory =
+      Func<_,_> (fun typ ->
+        let par = Expression.Parameter(typeof<seq<OptionalValue<obj>>>)
+        let body = Expression.Call(createTypedVectorMi.MakeGenericMethod([| typ |]), par)
+        Expression.Lambda<Func<seq<OptionalValue<obj>>, _>>(body, par).Compile().Invoke)
+    fun typ ->
+      cache.GetOrAdd(typ, valueFactory)      
 
   let getExpandableProperties (ty:Type) =
     ty.GetProperties(BindingFlags.Instance ||| BindingFlags.Public)
@@ -128,15 +127,13 @@ module internal Reflection =
   /// Compile all projections from the type, so that we can run them fast
   /// and cache the results with Type as the key, so that we don't have to recompile
   let getCachedCompileProjection =
-    let cache = Dictionary<_, _>()
-    (fun typ ->
-      match cache.TryGetValue(typ) with
-      | true, res -> res
-      | _ ->
-          let res = [| for name, fldTy, proj in getMemberProjections typ ->
-                         name, fldTy, proj.Compile() |]
-          cache.Add(typ, res)
-          res )
+    let cache = ConcurrentDictionary<_, (string*Type*Delegate)[]>()
+    let valueFactory =
+      Func<_,_> (fun typ ->
+        [| for name, fldTy, proj in getMemberProjections typ ->
+             name, fldTy, proj.Compile() |] )
+    fun typ ->
+      cache.GetOrAdd(typ, valueFactory)
 
   /// Given a single vector, expand its values into multiple vectors. This may be:
   /// - `IDictionary` is expanded based on keys/values
@@ -147,7 +144,7 @@ module internal Reflection =
     if (not dynamic) && (isSimpleType (typeof<'T>)) then [] else
 
     // Compiled projection for static access
-    let compiled = Lazy.Create(fun () -> getCachedCompileProjection typeof<'T>)
+    let compiled = Lazy<_>.Create(fun () -> getCachedCompileProjection typeof<'T>)
 
     // For each vector element, build a list of all expanded columns
     // The list includes all dictionary values, or all fields

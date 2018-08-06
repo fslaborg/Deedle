@@ -11,11 +11,8 @@ open System.Collections.Generic
 open System.ComponentModel
 open System.Runtime.InteropServices
 open System.Runtime.CompilerServices
-open System.Collections.Generic
-open FSharp.Data.Runtime
 open Deedle.Keys
-open Deedle.Vectors 
-open FSharp.Data
+
 
 /// Provides static methods for creating frames, reading frame data
 /// from CSV files and database (via IDataReader). The type also provides
@@ -511,7 +508,10 @@ module ``F# Frame extensions`` =
     ///
     /// [category:Frame construction]
     static member ofRowsOrdinal(rows:seq<#Series<'K, 'V>>) = 
-      FrameUtils.fromRows IndexBuilder.Instance VectorBuilder.Instance (Series(rows |> Seq.mapi (fun i _ -> i), rows))
+      let vector = rows |> Array.ofSeq |> VectorBuilder.Instance.Create 
+      let index = IndexBuilder.Instance.Create(seq { 0L .. vector.Length-1L }, Some true)
+      FrameUtils.fromRows IndexBuilder.Instance VectorBuilder.Instance (Series(index, vector, VectorBuilder.Instance, IndexBuilder.Instance))
+
 
     /// Creates a frame from a sequence of row keys and row series pairs. 
     /// The row series can contain values of any type, but it has to be the same 
@@ -918,7 +918,7 @@ type FrameExtensions =
   /// [category:Data structure manipulation]
   [<Extension>]
   static member Nest(frame:Frame<Tuple<'TRowKey1, 'TRowKey2>, 'TColumnKey>) =
-    frame |> Frame.mapRowKeys (fun t -> (t.Item1, t.Item2)) |> Frame.nest
+    frame |> Frame.mapRowKeys (fun t -> t) |> Frame.nest
 
   /// Given a data frame whose row index has two levels, create a series
   /// whose keys are the unique results of the keyselector projection, and 
@@ -937,7 +937,7 @@ type FrameExtensions =
   /// [category:Data structure manipulation]
   [<Extension>]
   static member Unnest(series:Series<'TRowKey1, Frame<'TRowKey2, 'TColumnKey>>) =
-    series |> Frame.unnest |> Frame.mapRowKeys (fun (k1, k2) -> Tuple<'TRowKey1, 'TRowKey2>(k1, k2))
+    series |> Frame.unnest 
 
   // ----------------------------------------------------------------------------------------------
   // Input and output
