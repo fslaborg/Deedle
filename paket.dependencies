@@ -20,7 +20,8 @@ nuget R.NET.Community
 nuget R.NET.Community.FSharp
 nuget DynamicInterop
 nuget System.ComponentModel.Composition
-
+nuget NetOffice.Core
+nuget NetOffice.Excel
 
 github fsharp/FSharp.Data src/Net/Http.fs
 github fsharp/FSharp.Data src/CommonRuntime/IO.fs

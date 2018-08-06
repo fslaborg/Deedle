@@ -1,14 +1,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{B003806F-9C76-4BE6-B3EB-54102529E4FC}"
-	ProjectSection(SolutionItems) = preProject
-		paket.dependencies = paket.dependencies
-		paket.lock = paket.lock
-	EndProjectSection
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle", "src\Deedle\Deedle.fsproj", "{22729065-4C30-4E43-A63F-4F3338A03878}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle", "src\Deedle\Deedle.fsproj", "{22729065-4C30-4E43-A63F-4F3338A03878}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{245F1283-32FA-4B38-AC76-448B8AE5F7AC}"
 	ProjectSection(SolutionItems) = preProject
@@ -28,6 +22,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{B6AFD701-8A05-4A18-A3F3-EDAF8D7530E8}"
 	ProjectSection(SolutionItems) = preProject
 		build.fsx = build.fsx
+		nuget\Deedle.Excel.nuspec = nuget\Deedle.Excel.nuspec
 		nuget\Deedle.nuspec = nuget\Deedle.nuspec
 		nuget\Deedle.RPlugin.nuspec = nuget\Deedle.RPlugin.nuspec
 		README.md = README.md
@@ -38,6 +33,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{8BD8
 	ProjectSection(SolutionItems) = preProject
 		docs\content\samples\historyvol.fsx = docs\content\samples\historyvol.fsx
 		docs\content\samples\missing.fsx = docs\content\samples\missing.fsx
+		docs\content\samples\presidents.fsx = docs\content\samples\presidents.fsx
 		docs\content\samples\timestats.fsx = docs\content\samples\timestats.fsx
 		docs\content\samples\titanic.fsx = docs\content\samples\titanic.fsx
 	EndProjectSection
@@ -53,9 +49,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{
 		docs\tools\templates\template.cshtml = docs\tools\templates\template.cshtml
 	EndProjectSection
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.RProvider.Plugin", "src\Deedle.RProvider.Plugin\Deedle.RProvider.Plugin.fsproj", "{57951E3F-AC36-4AE5-A5F5-D1B86ACA4854}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.RProvider.Plugin", "src\Deedle.RProvider.Plugin\Deedle.RProvider.Plugin.fsproj", "{57951E3F-AC36-4AE5-A5F5-D1B86ACA4854}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharp.DocSnippets", "docs\csharp\CSharp.DocSnippets.csproj", "{1700F933-C7B2-48E6-80F3-E1C1B677BA6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharp.DocSnippets", "docs\csharp\CSharp.DocSnippets.csproj", "{1700F933-C7B2-48E6-80F3-E1C1B677BA6D}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.Excel", "src\Deedle.Excel\Deedle.Excel.fsproj", "{8C50057D-29EF-41AD-B91A-84B49CDBD047}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +73,10 @@ Global
 		{1700F933-C7B2-48E6-80F3-E1C1B677BA6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1700F933-C7B2-48E6-80F3-E1C1B677BA6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1700F933-C7B2-48E6-80F3-E1C1B677BA6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C50057D-29EF-41AD-B91A-84B49CDBD047}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C50057D-29EF-41AD-B91A-84B49CDBD047}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C50057D-29EF-41AD-B91A-84B49CDBD047}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C50057D-29EF-41AD-B91A-84B49CDBD047}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -84,5 +86,8 @@ Global
 		{C45F5ABF-7BCD-4C3A-BD51-81E0769E0F29} = {245F1283-32FA-4B38-AC76-448B8AE5F7AC}
 		{839C977B-55D4-4EFC-8B81-290357C836D3} = {C45F5ABF-7BCD-4C3A-BD51-81E0769E0F29}
 		{1700F933-C7B2-48E6-80F3-E1C1B677BA6D} = {245F1283-32FA-4B38-AC76-448B8AE5F7AC}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8478A9AB-3D08-49DF-BE6D-D01341EB3067}
 	EndGlobalSection
 EndGlobal

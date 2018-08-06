@@ -34,6 +34,13 @@ let rpluginDescription = """
   which makes it possible to pass data frames and time series between R and Deedle"""
 let rpluginTags = "R RProvider"
 
+let deedleExcelProject = "Deedle.Excel"
+let deedleExcelSummary = "Deedle integration with Excel"
+let deedleExcelDescription = """
+  This package installs the core Deedle package, NetOffice.Excel, and a Deedle extension
+  which makes it possible to send Deedle Frames to Excel."""
+let deedleExcelTags = "Excel"
+
 let gitHome = "https://github.com/fslaborg"
 let gitName = "Deedle"
 
@@ -82,7 +89,8 @@ Target "AssemblyInfo" (fun _ ->
         Attribute.Product project
         Attribute.Description summary
         Attribute.Version release.AssemblyVersion
-        Attribute.FileVersion release.AssemblyVersion] 
+        Attribute.InformationalVersion release.NugetVersion
+        Attribute.FileVersion release.NugetVersion] 
 )
 
 // --------------------------------------------------------------------------------------
@@ -118,10 +126,12 @@ let testCoreProjs =
 
 let buildProjs =
     [ "src/Deedle/Deedle.fsproj"
-      "src/Deedle.RProvider.Plugin/Deedle.RProvider.Plugin.fsproj" ]
+      "src/Deedle.RProvider.Plugin/Deedle.RProvider.Plugin.fsproj"
+      "src/Deedle.Excel/Deedle.Excel.fsproj" ]
 
 let buildCoreProjs =
-    [ "src/Deedle/Deedle.fsproj" ]
+    [ "src/Deedle/Deedle.fsproj"    
+      "src/Deedle.Excel/Deedle.Excel.fsproj" ]
 
 Target "Build" <| fun () ->
     if useMsBuildToolchain then
@@ -215,6 +225,7 @@ Target "NuGet" (fun _ ->
     // Format the description to fit on a single line (remove \r\n and double-spaces)
     let description = description.Replace("\r", "").Replace("\n", "").Replace("  ", " ")
     let rpluginDescription = rpluginDescription.Replace("\r", "").Replace("\n", "").Replace("  ", " ")
+    let releaseNotes = release.Notes |> String.concat "\n"
     NuGet (fun p -> 
         { p with   
             Authors = authors
@@ -222,7 +233,7 @@ Target "NuGet" (fun _ ->
             Summary = summary
             Description = description
             Version = release.NugetVersion
-            ReleaseNotes = String.concat " " release.Notes
+            ReleaseNotes = releaseNotes
             Tags = tags
             OutputPath = "bin"
             AccessKey = getBuildParamOrDefault "nugetkey" ""
@@ -235,8 +246,8 @@ Target "NuGet" (fun _ ->
             Summary = rpluginSummary
             Description = description + "\n\n" + rpluginDescription
             Version = release.NugetVersion
-            ReleaseNotes = String.concat " " release.Notes
-            Tags = tags
+            ReleaseNotes = releaseNotes
+            Tags = tags + " " + rpluginTags
             OutputPath = "bin"
             Dependencies = 
               [ "Deedle", release.NugetVersion
@@ -246,6 +257,23 @@ Target "NuGet" (fun _ ->
             AccessKey = getBuildParamOrDefault "nugetkey" ""
             Publish = hasBuildParam "nugetkey" })
         ("nuget/Deedle.RPlugin.nuspec")
+    NuGet (fun p -> 
+        { p with   
+            Authors = authors
+            Project = deedleExcelProject
+            Summary = deedleExcelSummary
+            Description = description + "\n\n" + deedleExcelDescription
+            Version = release.NugetVersion
+            ReleaseNotes = releaseNotes
+            Tags = tags + " " + deedleExcelTags
+            OutputPath = "bin"    
+            Dependencies = 
+              [ "Deedle", release.NugetVersion
+                "NetOffice.Core", GetPackageVersion "packages" "NetOffice.Core"
+                "NetOffice.Excel", GetPackageVersion "packages" "NetOffice.Core" ]                    
+            AccessKey = getBuildParamOrDefault "nugetkey" ""
+            Publish = hasBuildParam "nugetkey" })
+        ("nuget/Deedle.Excel.nuspec")
 )
 
 // --------------------------------------------------------------------------------------
