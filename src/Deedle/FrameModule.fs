@@ -1576,7 +1576,12 @@ module Frame =
   [<CompiledName("NestBy")>]
   let nestBy (keySelector:_ -> 'K1) (frame:Frame<'K2, 'C>) = 
     let labels = (frame.RowKeys |> Seq.map keySelector)
-    frame.GroupByLabels labels frame.RowCount |> nest
+    if frame.RowCount <> (Seq.length labels) then
+        failwith "nestBy: Generated labels contain missing values and \
+            cannot be used for grouping. Make sure the keySelector function does \
+            not return null."
+    else
+        frame.GroupByLabels labels frame.RowCount |> nest
 
   /// Given a series of frames, returns a new data frame with two-level hierarchical
   /// row index, using the series keys as the first component. This function is the
