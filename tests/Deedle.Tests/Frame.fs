@@ -1415,6 +1415,30 @@ let ``Dropping sparse rows works on frame with missing in one column``() =
   actual |> shouldEqual expected
 
 [<Test>]
+let ``Dropping sparse rows by column works on sample frame``() =
+  let frame =
+    Frame.ofValues [ (1,"foo","a"); (1,"bar","b"); (1,"foobar","g");
+                     (2,"foo","c");
+                     (3,"foo","d"); (3,"bar","e");
+                     (4,"bar","f") ]
+  let expectedFoo =
+      Frame.ofValues [ (1,"foo","a"); (1,"bar","b"); (1,"foobar","g");
+                       (2,"foo","c");
+                       (3,"foo","d"); (3,"bar","e");
+                     ]
+  let expectedBar =
+      Frame.ofValues [ (1,"foo","a"); (1,"bar","b"); (1,"foobar","g");
+                       (3,"foo","d"); (3,"bar","e");
+                       (4,"bar","f") ]
+  let expectedFoobar =
+      Frame.ofValues [ (1,"foo","a"); (1,"bar","b"); (1,"foobar","g") ]
+
+  frame |> Frame.dropSparseRowsBy "foo" |> shouldEqual expectedFoo
+  frame |> Frame.dropSparseRowsBy "bar" |> shouldEqual expectedBar
+  frame |> Frame.dropSparseRowsBy "foobar" |> shouldEqual expectedFoobar
+
+
+[<Test>]
 let ``Dropping sparse columns preserves columns``() = 
   let emptyFrame = 
     frame [ for k in ["A"; "B"; "C"] ->
