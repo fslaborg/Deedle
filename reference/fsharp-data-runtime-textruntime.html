@@ -49,6 +49,38 @@
 <p>Static helper methods called from the generated code for working with text</p>
 
 </div>
+  <h3>Record Fields</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Record Field</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1402', 1402)" onmouseover="showTip(event, '1402', 1402)">
+            cultureInfoCache
+          </code>
+          <div class="tip" id="1402">
+            <strong>Signature:</strong> Dictionary&lt;string,CultureInfo&gt;<br />
+              <strong>Modifiers:</strong> mutable static<br />
+                                    <span>
+            <strong>Attributes:</strong><br />
+[&lt;ThreadStatic&gt;]<br />
+[&lt;DefaultValue&gt;]<br />
+          </span>
+          </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L13-13" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
   <h3>Static members</h3>
   <table class="table table-bordered member-list">
     <thead>
@@ -58,15 +90,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1188', 1188)" onmouseover="showTip(event, '1188', 1188)">
-            AsyncMap(valueAsync, mapping)
+          <code onmouseout="hideTip(event, '1403', 1403)" onmouseover="showTip(event, '1403', 1403)">
+            TextRuntime.AsyncMap(...)
           </code>
-          <div class="tip" id="1188">
+          <div class="tip" id="1403">
             <strong>Signature:</strong> (valueAsync:Async&lt;&#39;T&gt; * mapping:Func&lt;&#39;T,&#39;R&gt;) -&gt; Async&lt;&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'T, 'R                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L124-124" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L138-138" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -78,245 +110,11 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1189', 1189)" onmouseover="showTip(event, '1189', 1189)">
-            ConvertBoolean(text)
+          <code onmouseout="hideTip(event, '1404', 1404)" onmouseover="showTip(event, '1404', 1404)">
+            TextRuntime.ConvertBoolean(text)
           </code>
-          <div class="tip" id="1189">
+          <div class="tip" id="1404">
             <strong>Signature:</strong> (text:string option) -&gt; bool option<br />
-                                  </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L42-42" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1190', 1190)" onmouseover="showTip(event, '1190', 1190)">
-            ConvertBooleanBack(value, use0and1)
-          </code>
-          <div class="tip" id="1190">
-            <strong>Signature:</strong> (value:bool option * use0and1:bool) -&gt; string<br />
-                                  </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L83-83" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1191', 1191)" onmouseover="showTip(event, '1191', 1191)">
-            ConvertDateTime(cultureStr, text)
-          </code>
-          <div class="tip" id="1191">
-            <strong>Signature:</strong> (cultureStr:string * text:string option) -&gt; DateTime option<br />
-                                  </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L45-45" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1192', 1192)" onmouseover="showTip(event, '1192', 1192)">
-            ConvertDateTimeBack(cultureStr, value)
-          </code>
-          <div class="tip" id="1192">
-            <strong>Signature:</strong> (cultureStr:string * value:DateTime option) -&gt; string<br />
-                                  </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L89-89" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1193', 1193)" onmouseover="showTip(event, '1193', 1193)">
-            ConvertDecimal(cultureStr, text)
-          </code>
-          <div class="tip" id="1193">
-            <strong>Signature:</strong> (cultureStr:string * text:string option) -&gt; decimal option<br />
-                                  </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L34-34" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1194', 1194)" onmouseover="showTip(event, '1194', 1194)">
-            ConvertDecimalBack(cultureStr, value)
-          </code>
-          <div class="tip" id="1194">
-            <strong>Signature:</strong> (cultureStr:string * value:decimal option) -&gt; string<br />
-                                  </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L66-66" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1195', 1195)" onmouseover="showTip(event, '1195', 1195)">
-            ConvertFloat(...)
-          </code>
-          <div class="tip" id="1195">
-            <strong>Signature:</strong> (cultureStr:string * missingValuesStr:string * text:string option) -&gt; float option<br />
-                                  </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L37-37" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1196', 1196)" onmouseover="showTip(event, '1196', 1196)">
-            ConvertFloatBack(...)
-          </code>
-          <div class="tip" id="1196">
-            <strong>Signature:</strong> (cultureStr:string * missingValuesStr:string * value:float option) -&gt; string<br />
-                                  </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L71-71" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1197', 1197)" onmouseover="showTip(event, '1197', 1197)">
-            ConvertGuid(text)
-          </code>
-          <div class="tip" id="1197">
-            <strong>Signature:</strong> (text:string option) -&gt; Guid option<br />
-                                  </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L48-48" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1198', 1198)" onmouseover="showTip(event, '1198', 1198)">
-            ConvertGuidBack(value)
-          </code>
-          <div class="tip" id="1198">
-            <strong>Signature:</strong> (value:Guid option) -&gt; string<br />
-                                  </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L94-94" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1199', 1199)" onmouseover="showTip(event, '1199', 1199)">
-            ConvertInteger(cultureStr, text)
-          </code>
-          <div class="tip" id="1199">
-            <strong>Signature:</strong> (cultureStr:string * text:string option) -&gt; int option<br />
-                                  </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L28-28" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1200', 1200)" onmouseover="showTip(event, '1200', 1200)">
-            ConvertInteger64(cultureStr, text)
-          </code>
-          <div class="tip" id="1200">
-            <strong>Signature:</strong> (cultureStr:string * text:string option) -&gt; int64 option<br />
-                                  </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L31-31" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1201', 1201)" onmouseover="showTip(event, '1201', 1201)">
-            ConvertInteger64Back(cultureStr, value)
-          </code>
-          <div class="tip" id="1201">
-            <strong>Signature:</strong> (cultureStr:string * value:int64 option) -&gt; string<br />
-                                  </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L61-61" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '1202', 1202)" onmouseover="showTip(event, '1202', 1202)">
-            ConvertIntegerBack(cultureStr, value)
-          </code>
-          <div class="tip" id="1202">
-            <strong>Signature:</strong> (cultureStr:string * value:int option) -&gt; string<br />
                                   </div>
         </td>
         <td class="xmldoc">
@@ -330,15 +128,249 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1203', 1203)" onmouseover="showTip(event, '1203', 1203)">
-            ConvertString(text)
+          <code onmouseout="hideTip(event, '1405', 1405)" onmouseover="showTip(event, '1405', 1405)">
+            TextRuntime.ConvertBooleanBack(...)
           </code>
-          <div class="tip" id="1203">
+          <div class="tip" id="1405">
+            <strong>Signature:</strong> (value:bool option * use0and1:bool) -&gt; string<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L97-97" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1406', 1406)" onmouseover="showTip(event, '1406', 1406)">
+            TextRuntime.ConvertDateTime(...)
+          </code>
+          <div class="tip" id="1406">
+            <strong>Signature:</strong> (cultureStr:string * text:string option) -&gt; DateTime option<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L59-59" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1407', 1407)" onmouseover="showTip(event, '1407', 1407)">
+            TextRuntime.ConvertDateTimeBack(...)
+          </code>
+          <div class="tip" id="1407">
+            <strong>Signature:</strong> (cultureStr:string * value:DateTime option) -&gt; string<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L103-103" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1408', 1408)" onmouseover="showTip(event, '1408', 1408)">
+            TextRuntime.ConvertDecimal(...)
+          </code>
+          <div class="tip" id="1408">
+            <strong>Signature:</strong> (cultureStr:string * text:string option) -&gt; decimal option<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L48-48" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1409', 1409)" onmouseover="showTip(event, '1409', 1409)">
+            TextRuntime.ConvertDecimalBack(...)
+          </code>
+          <div class="tip" id="1409">
+            <strong>Signature:</strong> (cultureStr:string * value:decimal option) -&gt; string<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L80-80" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1410', 1410)" onmouseover="showTip(event, '1410', 1410)">
+            TextRuntime.ConvertFloat(...)
+          </code>
+          <div class="tip" id="1410">
+            <strong>Signature:</strong> (cultureStr:string * missingValuesStr:string * text:string option) -&gt; float option<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L51-51" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1411', 1411)" onmouseover="showTip(event, '1411', 1411)">
+            TextRuntime.ConvertFloatBack(...)
+          </code>
+          <div class="tip" id="1411">
+            <strong>Signature:</strong> (cultureStr:string * missingValuesStr:string * value:float option) -&gt; string<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L85-85" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1412', 1412)" onmouseover="showTip(event, '1412', 1412)">
+            TextRuntime.ConvertGuid(text)
+          </code>
+          <div class="tip" id="1412">
+            <strong>Signature:</strong> (text:string option) -&gt; Guid option<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L62-62" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1413', 1413)" onmouseover="showTip(event, '1413', 1413)">
+            TextRuntime.ConvertGuidBack(value)
+          </code>
+          <div class="tip" id="1413">
+            <strong>Signature:</strong> (value:Guid option) -&gt; string<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L108-108" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1414', 1414)" onmouseover="showTip(event, '1414', 1414)">
+            TextRuntime.ConvertInteger(...)
+          </code>
+          <div class="tip" id="1414">
+            <strong>Signature:</strong> (cultureStr:string * text:string option) -&gt; int option<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L42-42" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1415', 1415)" onmouseover="showTip(event, '1415', 1415)">
+            TextRuntime.ConvertInteger64(...)
+          </code>
+          <div class="tip" id="1415">
+            <strong>Signature:</strong> (cultureStr:string * text:string option) -&gt; int64 option<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L45-45" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1416', 1416)" onmouseover="showTip(event, '1416', 1416)">
+            TextRuntime.ConvertInteger64Back(...)
+          </code>
+          <div class="tip" id="1416">
+            <strong>Signature:</strong> (cultureStr:string * value:int64 option) -&gt; string<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L75-75" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1417', 1417)" onmouseover="showTip(event, '1417', 1417)">
+            TextRuntime.ConvertIntegerBack(...)
+          </code>
+          <div class="tip" id="1417">
+            <strong>Signature:</strong> (cultureStr:string * value:int option) -&gt; string<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L70-70" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1418', 1418)" onmouseover="showTip(event, '1418', 1418)">
+            TextRuntime.ConvertString(text)
+          </code>
+          <div class="tip" id="1418">
             <strong>Signature:</strong> (text:string option) -&gt; string option<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L26-26" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L40-40" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -348,15 +380,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1204', 1204)" onmouseover="showTip(event, '1204', 1204)">
-            ConvertStringBack(value)
+          <code onmouseout="hideTip(event, '1419', 1419)" onmouseover="showTip(event, '1419', 1419)">
+            TextRuntime.ConvertStringBack(value)
           </code>
-          <div class="tip" id="1204">
+          <div class="tip" id="1419">
             <strong>Signature:</strong> (value:string option) -&gt; string<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L54-54" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L68-68" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -366,15 +398,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1205', 1205)" onmouseover="showTip(event, '1205', 1205)">
-            GetCulture(cultureStr)
+          <code onmouseout="hideTip(event, '1420', 1420)" onmouseover="showTip(event, '1420', 1420)">
+            TextRuntime.GetCulture(cultureStr)
           </code>
-          <div class="tip" id="1205">
+          <div class="tip" id="1420">
             <strong>Signature:</strong> cultureStr:string -&gt; CultureInfo<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L13-13" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L17-17" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -387,15 +419,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1206', 1206)" onmouseover="showTip(event, '1206', 1206)">
-            GetMissingValues(missingValuesStr)
+          <code onmouseout="hideTip(event, '1421', 1421)" onmouseover="showTip(event, '1421', 1421)">
+            TextRuntime.GetMissingValues(...)
           </code>
-          <div class="tip" id="1206">
+          <div class="tip" id="1421">
             <strong>Signature:</strong> missingValuesStr:string -&gt; string []<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L18-18" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L32-32" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -405,15 +437,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1207', 1207)" onmouseover="showTip(event, '1207', 1207)">
-            GetNonOptionalValue(...)
+          <code onmouseout="hideTip(event, '1422', 1422)" onmouseover="showTip(event, '1422', 1422)">
+            TextRuntime.GetNonOptionalValue(...)
           </code>
-          <div class="tip" id="1207">
+          <div class="tip" id="1422">
             <strong>Signature:</strong> (name:string * opt:&#39;T option * originalValue:string option) -&gt; &#39;T<br />
                           <strong>Type parameters:</strong> 'T                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L104-104" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L118-118" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -427,15 +459,15 @@ For other types an error is thrown</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1208', 1208)" onmouseover="showTip(event, '1208', 1208)">
-            NullableToOption(nullable)
+          <code onmouseout="hideTip(event, '1423', 1423)" onmouseover="showTip(event, '1423', 1423)">
+            TextRuntime.NullableToOption(nullable)
           </code>
-          <div class="tip" id="1208">
-            <strong>Signature:</strong> nullable:Nullable&lt;&#39;?639232&gt; -&gt; &#39;?639232 option<br />
-                          <strong>Type parameters:</strong> '?639232                      </div>
+          <div class="tip" id="1423">
+            <strong>Signature:</strong> nullable:Nullable&lt;&#39;?637171&gt; -&gt; &#39;?637171 option<br />
+                          <strong>Type parameters:</strong> '?637171                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L120-120" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L134-134" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -447,15 +479,15 @@ For other types an error is thrown</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1209', 1209)" onmouseover="showTip(event, '1209', 1209)">
-            OptionToNullable(opt)
+          <code onmouseout="hideTip(event, '1424', 1424)" onmouseover="showTip(event, '1424', 1424)">
+            TextRuntime.OptionToNullable(opt)
           </code>
-          <div class="tip" id="1209">
-            <strong>Signature:</strong> (opt:&#39;?639230 option) -&gt; Nullable&lt;&#39;?639230&gt;<br />
-                          <strong>Type parameters:</strong> '?639230                      </div>
+          <div class="tip" id="1424">
+            <strong>Signature:</strong> (opt:&#39;?637169 option) -&gt; Nullable&lt;&#39;?637169&gt;<br />
+                          <strong>Type parameters:</strong> '?637169                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L114-114" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/CommonRuntime/TextRuntime.fs#L128-128" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -481,7 +513,7 @@ value type into a .NET type Nullable<'T></p>
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
             <li><a href="http://github.com/fslaborg/Deedle">Source Code on GitHub</a></li>
             <li><a href="http://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="http://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
+            <li><a href="https://fslab.org/Deedle/RELEASE_NOTES.html">Release notes</a></li>
             <li><a href="https://fslab.org/Deedle/design.html">Design notes</a></li>
             <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
             

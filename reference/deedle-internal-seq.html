@@ -130,7 +130,7 @@ Throws ComparisonFailedException when the comparer fails.
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '310', 310)" onmouseover="showTip(event, '310', 310)">
-            alignAllUnordered seqs
+            alignAllUnordered(seqs)
           </code>
           <div class="tip" id="310">
             <strong>Signature:</strong> seqs:ReadOnlyCollection&lt;&#39;T&gt; [] -&gt; &#39;T [] * (int64 * int64) [] list<br />
@@ -150,7 +150,7 @@ Throws ComparisonFailedException when the comparer fails.
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '311', 311)" onmouseover="showTip(event, '311', 311)">
-            alignOrdered (...)
+            alignOrdered(...)
           </code>
           <div class="tip" id="311">
             <strong>Signature:</strong> seq1:ReadOnlyCollection&lt;&#39;T&gt; -&gt; seq2:ReadOnlyCollection&lt;&#39;T&gt; -&gt; comparer:IComparer&lt;&#39;T&gt; -&gt; intersectionOnly:bool -&gt; &#39;T [] * (int64 * int64) [] list<br />
@@ -261,8 +261,8 @@ The resulting relocations are returned as two-element list for symmetry with oth
             chunkedWhile f input
           </code>
           <div class="tip" id="316">
-            <strong>Signature:</strong> f:(&#39;?638873 -&gt; &#39;?638873 -&gt; bool) -&gt; input:seq&lt;&#39;?638873&gt; -&gt; seq&lt;&#39;?638873 []&gt;<br />
-                          <strong>Type parameters:</strong> '?638873                      </div>
+            <strong>Signature:</strong> f:(&#39;?636759 -&gt; &#39;?636759 -&gt; bool) -&gt; input:seq&lt;&#39;?636759&gt; -&gt; seq&lt;&#39;?636759 []&gt;<br />
+                          <strong>Type parameters:</strong> '?636759                      </div>
         </td>
         <td class="xmldoc">
                       <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Common.fs#L831-831" class="github-link">
@@ -285,8 +285,8 @@ ends when <code>f</code> returns <code>false</code>.</p>
             chunkedWithBounds size boundary input
           </code>
           <div class="tip" id="317">
-            <strong>Signature:</strong> size:int -&gt; boundary:Boundary -&gt; input:seq&lt;&#39;?638877&gt; -&gt; seq&lt;DataSegment&lt;&#39;?638877 []&gt;&gt;<br />
-                          <strong>Type parameters:</strong> '?638877                      </div>
+            <strong>Signature:</strong> size:int -&gt; boundary:Boundary -&gt; input:seq&lt;&#39;?636763&gt; -&gt; seq&lt;DataSegment&lt;&#39;?636763 []&gt;&gt;<br />
+                          <strong>Type parameters:</strong> '?636763                      </div>
         </td>
         <td class="xmldoc">
                       <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Common.fs#L879-879" class="github-link">
@@ -329,7 +329,7 @@ The function returns the chunks as pairs of their indices.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '319', 319)" onmouseover="showTip(event, '319', 319)">
-            chunkRangesWithBounds (...)
+            chunkRangesWithBounds(...)
           </code>
           <div class="tip" id="319">
             <strong>Signature:</strong> size:int64 -&gt; boundary:Boundary -&gt; length:int64 -&gt; seq&lt;DataSegmentKind * int64 * int64&gt;<br />
@@ -364,11 +364,11 @@ the second example above is returned as a pair (0, 0).</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '320', 320)" onmouseover="showTip(event, '320', 320)">
-            getEnumerator s
+            getEnumerator(s)
           </code>
           <div class="tip" id="320">
-            <strong>Signature:</strong> s:seq&lt;&#39;?638867&gt; -&gt; IEnumerator&lt;&#39;?638867&gt;<br />
-                          <strong>Type parameters:</strong> '?638867                      </div>
+            <strong>Signature:</strong> s:seq&lt;&#39;?636753&gt; -&gt; IEnumerator&lt;&#39;?636753&gt;<br />
+                          <strong>Type parameters:</strong> '?636753                      </div>
         </td>
         <td class="xmldoc">
                       <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Common.fs#L759-759" class="github-link">
@@ -384,7 +384,7 @@ the second example above is returned as a pair (0, 0).</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '321', 321)" onmouseover="showTip(event, '321', 321)">
-            headOrNone input
+            headOrNone(input)
           </code>
           <div class="tip" id="321">
             <strong>Signature:</strong> input:seq&lt;&#39;a&gt; -&gt; &#39;a option<br />
@@ -425,7 +425,7 @@ the first value. Otherwise, returns <code>None</code>.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '323', 323)" onmouseover="showTip(event, '323', 323)">
-            lastAndLength input
+            lastAndLength(input)
           </code>
           <div class="tip" id="323">
             <strong>Signature:</strong> input:seq&lt;&#39;a&gt; -&gt; &#39;a * int<br />
@@ -449,8 +449,8 @@ the first value. Otherwise, returns <code>None</code>.</p>
             lastFew count input
           </code>
           <div class="tip" id="324">
-            <strong>Signature:</strong> count:int -&gt; input:seq&lt;&#39;?638865&gt; -&gt; seq&lt;&#39;?638865&gt;<br />
-                          <strong>Type parameters:</strong> '?638865                      </div>
+            <strong>Signature:</strong> count:int -&gt; input:seq&lt;&#39;?636751&gt; -&gt; seq&lt;&#39;?636751&gt;<br />
+                          <strong>Type parameters:</strong> '?636751                      </div>
         </td>
         <td class="xmldoc">
                       <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Common/Common.fs#L742-742" class="github-link">
@@ -596,7 +596,7 @@ when all their elements are equal and they have the same size.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '331', 331)" onmouseover="showTip(event, '331', 331)">
-            structuralHash s
+            structuralHash(s)
           </code>
           <div class="tip" id="331">
             <strong>Signature:</strong> s:seq&lt;&#39;T&gt; -&gt; int<br />
@@ -616,7 +616,7 @@ when all their elements are equal and they have the same size.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '332', 332)" onmouseover="showTip(event, '332', 332)">
-            tryFirstAndLast input
+            tryFirstAndLast(input)
           </code>
           <div class="tip" id="332">
             <strong>Signature:</strong> input:seq&lt;&#39;a&gt; -&gt; (&#39;a * &#39;a) option<br />
@@ -756,7 +756,7 @@ The function returns the windows as pairs of their indices.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '338', 338)" onmouseover="showTip(event, '338', 338)">
-            windowRangesWithBounds (...)
+            windowRangesWithBounds(...)
           </code>
           <div class="tip" id="338">
             <strong>Signature:</strong> size:int64 -&gt; boundary:Boundary -&gt; length:int64 -&gt; seq&lt;DataSegmentKind * int64 * int64&gt;<br />
@@ -805,7 +805,7 @@ as a pair (0, 0).</p>
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
             <li><a href="http://github.com/fslaborg/Deedle">Source Code on GitHub</a></li>
             <li><a href="http://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="http://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
+            <li><a href="https://fslab.org/Deedle/RELEASE_NOTES.html">Release notes</a></li>
             <li><a href="https://fslab.org/Deedle/design.html">Design notes</a></li>
             <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
             

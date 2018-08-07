@@ -64,15 +64,15 @@ The first <code>skipRows</code> lines will be skipped.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1145', 1145)" onmouseover="showTip(event, '1145', 1145)">
-            Append(rows)
+          <code onmouseout="hideTip(event, '1334', 1334)" onmouseover="showTip(event, '1334', 1334)">
+            x.Append(rows)
           </code>
-          <div class="tip" id="1145">
+          <div class="tip" id="1334">
             <strong>Signature:</strong> rows:seq&lt;&#39;RowType&gt; -&gt; CsvFile&lt;&#39;RowType&gt;<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L405-405" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L408-408" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -84,15 +84,15 @@ The first <code>skipRows</code> lines will be skipped.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1146', 1146)" onmouseover="showTip(event, '1146', 1146)">
-            Cache()
+          <code onmouseout="hideTip(event, '1335', 1335)" onmouseover="showTip(event, '1335', 1335)">
+            x.Cache()
           </code>
-          <div class="tip" id="1146">
+          <div class="tip" id="1335">
             <strong>Signature:</strong> unit -&gt; CsvFile&lt;&#39;RowType&gt;<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L371-371" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L374-374" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -105,15 +105,15 @@ that each row will be only be read and parsed from the input at most once.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1147', 1147)" onmouseover="showTip(event, '1147', 1147)">
-            Filter(predicate)
+          <code onmouseout="hideTip(event, '1336', 1336)" onmouseover="showTip(event, '1336', 1336)">
+            x.Filter(predicate)
           </code>
-          <div class="tip" id="1147">
+          <div class="tip" id="1336">
             <strong>Signature:</strong> predicate:Func&lt;&#39;RowType,bool&gt; -&gt; CsvFile&lt;&#39;RowType&gt;<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L379-379" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L382-382" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -125,10 +125,30 @@ that each row will be only be read and parsed from the input at most once.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1148', 1148)" onmouseover="showTip(event, '1148', 1148)">
-            Headers
+          <code onmouseout="hideTip(event, '1337', 1337)" onmouseover="showTip(event, '1337', 1337)">
+            x.GetColumnIndex(columnName)
           </code>
-          <div class="tip" id="1148">
+          <div class="tip" id="1337">
+            <strong>Signature:</strong> columnName:string -&gt; int<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvFile.fs#L59-59" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the index of the column with the given name</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1338', 1338)" onmouseover="showTip(event, '1338', 1338)">
+            x.Headers
+          </code>
+          <div class="tip" id="1338">
             <strong>Signature:</strong> string [] option<br />
                                   </div>
         </td>
@@ -146,15 +166,15 @@ that each row will be only be read and parsed from the input at most once.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1149', 1149)" onmouseover="showTip(event, '1149', 1149)">
-            Map(mapping)
+          <code onmouseout="hideTip(event, '1339', 1339)" onmouseover="showTip(event, '1339', 1339)">
+            x.Map(mapping)
           </code>
-          <div class="tip" id="1149">
+          <div class="tip" id="1339">
             <strong>Signature:</strong> mapping:Func&lt;&#39;RowType,&#39;RowType&gt; -&gt; CsvFile&lt;&#39;RowType&gt;<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L375-375" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L378-378" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -166,10 +186,10 @@ that each row will be only be read and parsed from the input at most once.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1150', 1150)" onmouseover="showTip(event, '1150', 1150)">
-            NumberOfColumns
+          <code onmouseout="hideTip(event, '1340', 1340)" onmouseover="showTip(event, '1340', 1340)">
+            x.NumberOfColumns
           </code>
-          <div class="tip" id="1150">
+          <div class="tip" id="1340">
             <strong>Signature:</strong> int<br />
                                   </div>
         </td>
@@ -187,10 +207,10 @@ that each row will be only be read and parsed from the input at most once.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1151', 1151)" onmouseover="showTip(event, '1151', 1151)">
-            Quote
+          <code onmouseout="hideTip(event, '1341', 1341)" onmouseover="showTip(event, '1341', 1341)">
+            x.Quote
           </code>
-          <div class="tip" id="1151">
+          <div class="tip" id="1341">
             <strong>Signature:</strong> char<br />
                                   </div>
         </td>
@@ -208,10 +228,10 @@ that each row will be only be read and parsed from the input at most once.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1152', 1152)" onmouseover="showTip(event, '1152', 1152)">
-            Rows
+          <code onmouseout="hideTip(event, '1342', 1342)" onmouseover="showTip(event, '1342', 1342)">
+            x.Rows
           </code>
-          <div class="tip" id="1152">
+          <div class="tip" id="1342">
             <strong>Signature:</strong> seq&lt;&#39;RowType&gt;<br />
                                   </div>
         </td>
@@ -229,15 +249,15 @@ that each row will be only be read and parsed from the input at most once.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1153', 1153)" onmouseover="showTip(event, '1153', 1153)">
-            Save(path, separator, quote)
+          <code onmouseout="hideTip(event, '1343', 1343)" onmouseover="showTip(event, '1343', 1343)">
+            x.Save(path, separator, quote)
           </code>
-          <div class="tip" id="1153">
+          <div class="tip" id="1343">
             <strong>Signature:</strong> (path:string * separator:char option * quote:char option) -&gt; unit<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L353-353" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L357-357" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -249,15 +269,15 @@ that each row will be only be read and parsed from the input at most once.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1154', 1154)" onmouseover="showTip(event, '1154', 1154)">
-            Save(stream, separator, quote)
+          <code onmouseout="hideTip(event, '1344', 1344)" onmouseover="showTip(event, '1344', 1344)">
+            x.Save(stream, separator, quote)
           </code>
-          <div class="tip" id="1154">
+          <div class="tip" id="1344">
             <strong>Signature:</strong> (stream:Stream * separator:char option * quote:char option) -&gt; unit<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L346-346" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L352-352" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -269,10 +289,10 @@ that each row will be only be read and parsed from the input at most once.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1155', 1155)" onmouseover="showTip(event, '1155', 1155)">
-            Save(writer, separator, quote)
+          <code onmouseout="hideTip(event, '1345', 1345)" onmouseover="showTip(event, '1345', 1345)">
+            x.Save(writer, separator, quote)
           </code>
-          <div class="tip" id="1155">
+          <div class="tip" id="1345">
             <strong>Signature:</strong> (writer:TextWriter * separator:char option * quote:char option) -&gt; unit<br />
                                   </div>
         </td>
@@ -289,15 +309,15 @@ that each row will be only be read and parsed from the input at most once.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1156', 1156)" onmouseover="showTip(event, '1156', 1156)">
-            SaveToString(separator, quote)
+          <code onmouseout="hideTip(event, '1346', 1346)" onmouseover="showTip(event, '1346', 1346)">
+            x.SaveToString(separator, quote)
           </code>
-          <div class="tip" id="1156">
+          <div class="tip" id="1346">
             <strong>Signature:</strong> (separator:char option * quote:char option) -&gt; string<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L359-359" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L362-362" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -309,10 +329,10 @@ that each row will be only be read and parsed from the input at most once.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1157', 1157)" onmouseover="showTip(event, '1157', 1157)">
-            Separators
+          <code onmouseout="hideTip(event, '1347', 1347)" onmouseover="showTip(event, '1347', 1347)">
+            x.Separators
           </code>
-          <div class="tip" id="1157">
+          <div class="tip" id="1347">
             <strong>Signature:</strong> string<br />
                                   </div>
         </td>
@@ -330,15 +350,15 @@ that each row will be only be read and parsed from the input at most once.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1158', 1158)" onmouseover="showTip(event, '1158', 1158)">
-            Skip(count)
+          <code onmouseout="hideTip(event, '1348', 1348)" onmouseover="showTip(event, '1348', 1348)">
+            x.Skip(count)
           </code>
-          <div class="tip" id="1158">
+          <div class="tip" id="1348">
             <strong>Signature:</strong> count:int -&gt; CsvFile&lt;&#39;RowType&gt;<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L392-392" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L395-395" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -350,15 +370,15 @@ that each row will be only be read and parsed from the input at most once.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1159', 1159)" onmouseover="showTip(event, '1159', 1159)">
-            SkipWhile(predicate)
+          <code onmouseout="hideTip(event, '1349', 1349)" onmouseover="showTip(event, '1349', 1349)">
+            x.SkipWhile(predicate)
           </code>
-          <div class="tip" id="1159">
+          <div class="tip" id="1349">
             <strong>Signature:</strong> predicate:Func&lt;&#39;RowType,bool&gt; -&gt; CsvFile&lt;&#39;RowType&gt;<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L397-397" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L400-400" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -371,15 +391,15 @@ that each row will be only be read and parsed from the input at most once.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1160', 1160)" onmouseover="showTip(event, '1160', 1160)">
-            Take(count)
+          <code onmouseout="hideTip(event, '1350', 1350)" onmouseover="showTip(event, '1350', 1350)">
+            x.Take(count)
           </code>
-          <div class="tip" id="1160">
+          <div class="tip" id="1350">
             <strong>Signature:</strong> count:int -&gt; CsvFile&lt;&#39;RowType&gt;<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L383-383" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L386-386" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -391,15 +411,15 @@ that each row will be only be read and parsed from the input at most once.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1161', 1161)" onmouseover="showTip(event, '1161', 1161)">
-            TakeWhile(predicate)
+          <code onmouseout="hideTip(event, '1351', 1351)" onmouseover="showTip(event, '1351', 1351)">
+            x.TakeWhile(predicate)
           </code>
-          <div class="tip" id="1161">
+          <div class="tip" id="1351">
             <strong>Signature:</strong> predicate:Func&lt;&#39;RowType,bool&gt; -&gt; CsvFile&lt;&#39;RowType&gt;<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L388-388" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L391-391" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -412,19 +432,39 @@ returns <c>true</c>, and then returns no further rows.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1162', 1162)" onmouseover="showTip(event, '1162', 1162)">
-            Truncate(count)
+          <code onmouseout="hideTip(event, '1352', 1352)" onmouseover="showTip(event, '1352', 1352)">
+            x.Truncate(count)
           </code>
-          <div class="tip" id="1162">
+          <div class="tip" id="1352">
             <strong>Signature:</strong> count:int -&gt; CsvFile&lt;&#39;RowType&gt;<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L401-401" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvRuntime.fs#L404-404" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Returns a csv that when enumerated returns at most N rows.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '1353', 1353)" onmouseover="showTip(event, '1353', 1353)">
+            x.TryGetColumnIndex(columnName)
+          </code>
+          <div class="tip" id="1353">
+            <strong>Signature:</strong> columnName:string -&gt; int option<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvFile.fs#L62-62" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the index of the column with the given name, or returns None if no column is found</p>
 
 
         </td>
@@ -440,15 +480,15 @@ returns <c>true</c>, and then returns no further rows.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1163', 1163)" onmouseover="showTip(event, '1163', 1163)">
-            AsyncLoad(...)
+          <code onmouseout="hideTip(event, '1354', 1354)" onmouseover="showTip(event, '1354', 1354)">
+            CsvFile.AsyncLoad(...)
           </code>
-          <div class="tip" id="1163">
-            <strong>Signature:</strong> (uri:string * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option * skipRows:int option) -&gt; Async&lt;CsvFile&gt;<br />
+          <div class="tip" id="1354">
+            <strong>Signature:</strong> (uri:string * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option * skipRows:int option * encoding:Encoding option) -&gt; Async&lt;CsvFile&gt;<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvFile.fs#L96-96" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvFile.fs#L99-99" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -460,15 +500,15 @@ returns <c>true</c>, and then returns no further rows.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1164', 1164)" onmouseover="showTip(event, '1164', 1164)">
-            Load(...)
+          <code onmouseout="hideTip(event, '1355', 1355)" onmouseover="showTip(event, '1355', 1355)">
+            CsvFile.Load(...)
           </code>
-          <div class="tip" id="1164">
-            <strong>Signature:</strong> (uri:string * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option * skipRows:int option) -&gt; CsvFile<br />
+          <div class="tip" id="1355">
+            <strong>Signature:</strong> (uri:string * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option * skipRows:int option * encoding:Encoding option) -&gt; CsvFile<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvFile.fs#L87-87" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvFile.fs#L95-95" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -480,15 +520,15 @@ returns <c>true</c>, and then returns no further rows.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1165', 1165)" onmouseover="showTip(event, '1165', 1165)">
-            Load(...)
+          <code onmouseout="hideTip(event, '1356', 1356)" onmouseover="showTip(event, '1356', 1356)">
+            CsvFile.Load(...)
           </code>
-          <div class="tip" id="1165">
+          <div class="tip" id="1356">
             <strong>Signature:</strong> (reader:TextReader * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option * skipRows:int option) -&gt; CsvFile<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvFile.fs#L74-74" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvFile.fs#L82-82" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -500,15 +540,15 @@ returns <c>true</c>, and then returns no further rows.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1166', 1166)" onmouseover="showTip(event, '1166', 1166)">
-            Load(...)
+          <code onmouseout="hideTip(event, '1357', 1357)" onmouseover="showTip(event, '1357', 1357)">
+            CsvFile.Load(...)
           </code>
-          <div class="tip" id="1166">
+          <div class="tip" id="1357">
             <strong>Signature:</strong> (stream:Stream * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option * skipRows:int option) -&gt; CsvFile<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvFile.fs#L65-65" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvFile.fs#L73-73" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -520,15 +560,15 @@ returns <c>true</c>, and then returns no further rows.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1167', 1167)" onmouseover="showTip(event, '1167', 1167)">
-            Parse(...)
+          <code onmouseout="hideTip(event, '1358', 1358)" onmouseover="showTip(event, '1358', 1358)">
+            CsvFile.Parse(...)
           </code>
-          <div class="tip" id="1167">
+          <div class="tip" id="1358">
             <strong>Signature:</strong> (text:string * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option * skipRows:int option) -&gt; CsvFile<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvFile.fs#L60-60" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/paket-files/fsharp/FSharp.Data/src/Csv/CsvFile.fs#L68-68" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -553,7 +593,7 @@ returns <c>true</c>, and then returns no further rows.</p>
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
             <li><a href="http://github.com/fslaborg/Deedle">Source Code on GitHub</a></li>
             <li><a href="http://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="http://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
+            <li><a href="https://fslab.org/Deedle/RELEASE_NOTES.html">Release notes</a></li>
             <li><a href="https://fslab.org/Deedle/design.html">Design notes</a></li>
             <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
             

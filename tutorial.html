@@ -26,11 +26,11 @@
     <div class="container">
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
-          <li><a href="https://fslab.org">fslab.org</a></li>
-          <li><a href="https://fslab.org/RProvider"><img height=" 16" width="16" src="https://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
-          <li><a href="https://fslab.org/FSharp.Charting/"><img height="16" width="16" src="https://fsharp.org/images/thumbs/FSharp.Charting.png" /> FSharp.Charting</a></li>
-          <li><a href="https://fslab.org/XPlot/"><img height="16" width="16" src="https://fslab.org/XPlot/img/logo.png" /> XPlot</a></li>
-          <li><a href="https://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="https://fsharp.org/images/thumbs/FSharp.Data.png" /> FSharp.Data</a></li>
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://fslab.org/RProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
+          <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
         <h3 class="muted"><a href="https://fslab.org/Deedle/index.html">Deedle</a></h3>
       </div>
@@ -39,14 +39,14 @@
         <div class="span9" id="main">
           
 <h1><a name="Deedle-in-10-minutes-using-F" class="anchor" href="#Deedle-in-10-minutes-using-F">Deedle in 10 minutes using F#</a></h1>
-<p>This document is a quick overview of the most important features of FSharp.Data frame library.
+<p>This document is a quick overview of the most important features of F# data frame library.
 You can also get this page as an <a href="https://github.com/fslaborg/Deedle/blob/master/docs/content/tutorial.fsx">F# script file</a>
 from GitHub and run the samples interactively.</p>
 <p>The first step is to install <code>Deedle.dll</code> <a href="https://www.nuget.org/packages/Deedle">from NuGet</a>.
 Next, we need to load the library - in F# Interactive, this is done by loading
 an <code>.fsx</code> file that loads the actual <code>.dll</code> with the library and registers
 pretty printers for types representing data frame and series. In this sample,
-we also need  <a href="https://fsharp.github.io/FSharp.Charting">FSharp.Charting</a>, which
+we also need  <a href="http://fsharp.github.io/FSharp.Charting">F# Charting</a>, which
 works similarly:</p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
@@ -111,9 +111,9 @@ to create a series:</p>
 <thead>
 <tr class="header">
 <th><p>Keys</p></th>
-<th><p>01/01/2013 00:00:00</p></th>
-<th><p>04/01/2013 00:00:00</p></th>
-<th><p>08/01/2013 00:00:00</p></th>
+<th><p>1/1/2013 12:00:00 AM</p></th>
+<th><p>1/4/2013 12:00:00 AM</p></th>
+<th><p>1/8/2013 12:00:00 AM</p></th>
 </tr>
 </thead>
 <tbody>
@@ -194,29 +194,29 @@ with 10 day value range and random values:</p>
 <thead>
 <tr class="header">
 <th><p>Keys</p></th>
-<th><p>01/01/2013 00:00:00</p></th>
-<th><p>02/01/2013 00:00:00</p></th>
-<th><p>03/01/2013 00:00:00</p></th>
-<th><p>04/01/2013 00:00:00</p></th>
-<th><p>05/01/2013 00:00:00</p></th>
+<th><p>1/1/2013 12:00:00 AM</p></th>
+<th><p>1/2/2013 12:00:00 AM</p></th>
+<th><p>1/3/2013 12:00:00 AM</p></th>
+<th><p>1/4/2013 12:00:00 AM</p></th>
+<th><p>1/5/2013 12:00:00 AM</p></th>
 <th><p> ... </p></th>
-<th><p>08/01/2013 00:00:00</p></th>
-<th><p>09/01/2013 00:00:00</p></th>
-<th><p>10/01/2013 00:00:00</p></th>
+<th><p>1/8/2013 12:00:00 AM</p></th>
+<th><p>1/9/2013 12:00:00 AM</p></th>
+<th><p>1/10/2013 12:00:00 AM</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td><p>Values</p></td>
-<td><p>.16</p></td>
-<td><p>.16</p></td>
-<td><p>.24</p></td>
-<td><p>.46</p></td>
-<td><p>.59</p></td>
+<td><p>.73</p></td>
+<td><p>.82</p></td>
+<td><p>.97</p></td>
+<td><p>.26</p></td>
+<td><p>.84</p></td>
 <td><p> ... </p></td>
-<td><p>.46</p></td>
-<td><p>.66</p></td>
-<td><p>.46</p></td>
+<td><p>.45</p></td>
+<td><p>.38</p></td>
+<td><p>.43</p></td>
 </tr>
 </tbody>
 </table>
@@ -243,54 +243,54 @@ the <code>first</code> series and another representing the <code>second</code> s
 </thead>
 <tbody>
 <tr class="odd">
-<td><p>01/01/2013 00:00:00</p></td>
+<td><p>1/1/2013 12:00:00 AM</p></td>
 <td><p>10</p></td>
-<td><p>.1554</p></td>
+<td><p>.731</p></td>
 </tr>
 <tr class="even">
-<td><p>02/01/2013 00:00:00</p></td>
+<td><p>1/2/2013 12:00:00 AM</p></td>
 <td><p>N/A</p></td>
-<td><p>.1617</p></td>
+<td><p>.8214</p></td>
 </tr>
 <tr class="odd">
-<td><p>03/01/2013 00:00:00</p></td>
+<td><p>1/3/2013 12:00:00 AM</p></td>
 <td><p>N/A</p></td>
-<td><p>.2374</p></td>
+<td><p>.9734</p></td>
 </tr>
 <tr class="even">
-<td><p>04/01/2013 00:00:00</p></td>
+<td><p>1/4/2013 12:00:00 AM</p></td>
 <td><p>20</p></td>
-<td><p>.4586</p></td>
+<td><p>.2608</p></td>
 </tr>
 <tr class="odd">
-<td><p>05/01/2013 00:00:00</p></td>
+<td><p>1/5/2013 12:00:00 AM</p></td>
 <td><p>N/A</p></td>
-<td><p>.5938</p></td>
+<td><p>.8351</p></td>
 </tr>
 <tr class="even">
-<td><p>06/01/2013 00:00:00</p></td>
+<td><p>1/6/2013 12:00:00 AM</p></td>
 <td><p>N/A</p></td>
-<td><p>.9421</p></td>
+<td><p>.072</p></td>
 </tr>
 <tr class="odd">
-<td><p>07/01/2013 00:00:00</p></td>
+<td><p>1/7/2013 12:00:00 AM</p></td>
 <td><p>N/A</p></td>
-<td><p>.1298</p></td>
+<td><p>.1742</p></td>
 </tr>
 <tr class="even">
-<td><p>08/01/2013 00:00:00</p></td>
+<td><p>1/8/2013 12:00:00 AM</p></td>
 <td><p>30</p></td>
-<td><p>.4635</p></td>
+<td><p>.4505</p></td>
 </tr>
 <tr class="odd">
-<td><p>09/01/2013 00:00:00</p></td>
+<td><p>1/9/2013 12:00:00 AM</p></td>
 <td><p>N/A</p></td>
-<td><p>.6603</p></td>
+<td><p>.3792</p></td>
 </tr>
 <tr class="even">
-<td><p>10/01/2013 00:00:00</p></td>
+<td><p>1/10/2013 12:00:00 AM</p></td>
 <td><p>N/A</p></td>
-<td><p>.462</p></td>
+<td><p>.4319</p></td>
 </tr>
 </tbody>
 </table>
@@ -389,7 +389,7 @@ names and types of properties of a record and creates a data frame with the same
 <tbody>
 <tr class="odd">
 <td><p>0</p></td>
-<td><p>07/11/2013 00:00:00</p></td>
+<td><p>11/7/2013 12:00:00 AM</p></td>
 <td><p>49.24</p></td>
 <td><p>49.87</p></td>
 <td><p> ... </p></td>
@@ -399,7 +399,7 @@ names and types of properties of a record and creates a data frame with the same
 </tr>
 <tr class="even">
 <td><p>1</p></td>
-<td><p>06/11/2013 00:00:00</p></td>
+<td><p>11/6/2013 12:00:00 AM</p></td>
 <td><p>50.26</p></td>
 <td><p>50.45</p></td>
 <td><p> ... </p></td>
@@ -409,7 +409,7 @@ names and types of properties of a record and creates a data frame with the same
 </tr>
 <tr class="odd">
 <td><p>2</p></td>
-<td><p>05/11/2013 00:00:00</p></td>
+<td><p>11/5/2013 12:00:00 AM</p></td>
 <td><p>47.79</p></td>
 <td><p>50.18</p></td>
 <td><p> ... </p></td>
@@ -419,7 +419,7 @@ names and types of properties of a record and creates a data frame with the same
 </tr>
 <tr class="even">
 <td><p>3</p></td>
-<td><p>04/11/2013 00:00:00</p></td>
+<td><p>11/4/2013 12:00:00 AM</p></td>
 <td><p>49.37</p></td>
 <td><p>49.75</p></td>
 <td><p> ... </p></td>
@@ -429,7 +429,7 @@ names and types of properties of a record and creates a data frame with the same
 </tr>
 <tr class="odd">
 <td><p>4</p></td>
-<td><p>01/11/2013 00:00:00</p></td>
+<td><p>11/1/2013 12:00:00 AM</p></td>
 <td><p>50.85</p></td>
 <td><p>52.09</p></td>
 <td><p> ... </p></td>
@@ -439,7 +439,7 @@ names and types of properties of a record and creates a data frame with the same
 </tr>
 <tr class="even">
 <td><p>5</p></td>
-<td><p>31/10/2013 00:00:00</p></td>
+<td><p>10/31/2013 12:00:00 AM</p></td>
 <td><p>47.16</p></td>
 <td><p>52.00</p></td>
 <td><p> ... </p></td>
@@ -449,7 +449,7 @@ names and types of properties of a record and creates a data frame with the same
 </tr>
 <tr class="odd">
 <td><p>6</p></td>
-<td><p>30/10/2013 00:00:00</p></td>
+<td><p>10/30/2013 12:00:00 AM</p></td>
 <td><p>50.00</p></td>
 <td><p>50.21</p></td>
 <td><p> ... </p></td>
@@ -459,7 +459,7 @@ names and types of properties of a record and creates a data frame with the same
 </tr>
 <tr class="even">
 <td><p>7</p></td>
-<td><p>29/10/2013 00:00:00</p></td>
+<td><p>10/29/2013 12:00:00 AM</p></td>
 <td><p>50.73</p></td>
 <td><p>50.79</p></td>
 <td><p> ... </p></td>
@@ -479,7 +479,7 @@ names and types of properties of a record and creates a data frame with the same
 </tr>
 <tr class="even">
 <td><p>367</p></td>
-<td><p>23/05/2012 00:00:00</p></td>
+<td><p>5/23/2012 12:00:00 AM</p></td>
 <td><p>31.37</p></td>
 <td><p>32.50</p></td>
 <td><p> ... </p></td>
@@ -489,7 +489,7 @@ names and types of properties of a record and creates a data frame with the same
 </tr>
 <tr class="odd">
 <td><p>368</p></td>
-<td><p>22/05/2012 00:00:00</p></td>
+<td><p>5/22/2012 12:00:00 AM</p></td>
 <td><p>32.61</p></td>
 <td><p>33.59</p></td>
 <td><p> ... </p></td>
@@ -499,7 +499,7 @@ names and types of properties of a record and creates a data frame with the same
 </tr>
 <tr class="even">
 <td><p>369</p></td>
-<td><p>21/05/2012 00:00:00</p></td>
+<td><p>5/21/2012 12:00:00 AM</p></td>
 <td><p>36.53</p></td>
 <td><p>36.66</p></td>
 <td><p> ... </p></td>
@@ -509,7 +509,7 @@ names and types of properties of a record and creates a data frame with the same
 </tr>
 <tr class="odd">
 <td><p>370</p></td>
-<td><p>18/05/2012 00:00:00</p></td>
+<td><p>5/18/2012 12:00:00 AM</p></td>
 <td><p>42.05</p></td>
 <td><p>45.00</p></td>
 <td><p> ... </p></td>
@@ -731,7 +731,7 @@ keys (using a list) or a range (using the slicing syntax):</p>
 </thead>
 <tbody>
 <tr class="odd">
-<td><p>02/01/2013</p></td>
+<td><p>1/2/2013</p></td>
 <td><p>27.25</p></td>
 <td><p>27.62</p></td>
 <td><p>-.37</p></td>
@@ -740,7 +740,7 @@ keys (using a list) or a range (using the slicing syntax):</p>
 <td><p>-.56</p></td>
 </tr>
 <tr class="even">
-<td><p>03/01/2013</p></td>
+<td><p>1/3/2013</p></td>
 <td><p>27.63</p></td>
 <td><p>27.25</p></td>
 <td><p>.38</p></td>
@@ -749,7 +749,7 @@ keys (using a list) or a range (using the slicing syntax):</p>
 <td><p>.11</p></td>
 </tr>
 <tr class="odd">
-<td><p>04/01/2013</p></td>
+<td><p>1/4/2013</p></td>
 <td><p>27.27</p></td>
 <td><p>26.74</p></td>
 <td><p>.53</p></td>
@@ -758,7 +758,7 @@ keys (using a list) or a range (using the slicing syntax):</p>
 <td><p>-.75</p></td>
 </tr>
 <tr class="even">
-<td><p>07/01/2013</p></td>
+<td><p>1/7/2013</p></td>
 <td><p>26.77</p></td>
 <td><p>26.69</p></td>
 <td><p>.08</p></td>
@@ -767,7 +767,7 @@ keys (using a list) or a range (using the slicing syntax):</p>
 <td><p>-.73</p></td>
 </tr>
 <tr class="odd">
-<td><p>08/01/2013</p></td>
+<td><p>1/8/2013</p></td>
 <td><p>26.75</p></td>
 <td><p>26.55</p></td>
 <td><p>.2</p></td>
@@ -776,7 +776,7 @@ keys (using a list) or a range (using the slicing syntax):</p>
 <td><p>.45</p></td>
 </tr>
 <tr class="even">
-<td><p>09/01/2013</p></td>
+<td><p>1/9/2013</p></td>
 <td><p>26.72</p></td>
 <td><p>26.7</p></td>
 <td><p>.02</p></td>
@@ -785,7 +785,7 @@ keys (using a list) or a range (using the slicing syntax):</p>
 <td><p>-.92</p></td>
 </tr>
 <tr class="odd">
-<td><p>10/01/2013</p></td>
+<td><p>1/10/2013</p></td>
 <td><p>26.65</p></td>
 <td><p>26.46</p></td>
 <td><p>.19</p></td>
@@ -794,7 +794,7 @@ keys (using a list) or a range (using the slicing syntax):</p>
 <td><p>-.7</p></td>
 </tr>
 <tr class="even">
-<td><p>11/01/2013</p></td>
+<td><p>1/11/2013</p></td>
 <td><p>26.49</p></td>
 <td><p>26.83</p></td>
 <td><p>-.34</p></td>
@@ -812,7 +812,7 @@ keys (using a list) or a range (using the slicing syntax):</p>
 <td><p> ... </p></td>
 </tr>
 <tr class="even">
-<td><p>28/01/2013</p></td>
+<td><p>1/28/2013</p></td>
 <td><p>28.01</p></td>
 <td><p>27.91</p></td>
 <td><p>.1</p></td>
@@ -821,7 +821,7 @@ keys (using a list) or a range (using the slicing syntax):</p>
 <td><p>-.59</p></td>
 </tr>
 <tr class="odd">
-<td><p>29/01/2013</p></td>
+<td><p>1/29/2013</p></td>
 <td><p>27.82</p></td>
 <td><p>28.01</p></td>
 <td><p>-.19</p></td>
@@ -830,7 +830,7 @@ keys (using a list) or a range (using the slicing syntax):</p>
 <td><p>1.21</p></td>
 </tr>
 <tr class="even">
-<td><p>30/01/2013</p></td>
+<td><p>1/30/2013</p></td>
 <td><p>28.01</p></td>
 <td><p>27.85</p></td>
 <td><p>.16</p></td>
@@ -839,7 +839,7 @@ keys (using a list) or a range (using the slicing syntax):</p>
 <td><p>-.26</p></td>
 </tr>
 <tr class="odd">
-<td><p>31/01/2013</p></td>
+<td><p>1/31/2013</p></td>
 <td><p>27.79</p></td>
 <td><p>27.45</p></td>
 <td><p>.34</p></td>
@@ -897,29 +897,29 @@ can be used to ilustrate the idea):</p>
 <thead>
 <tr class="header">
 <th><p>Keys</p></th>
-<th><p>20/07/2018 00:00:00</p></th>
-<th><p>21/07/2018 00:00:00</p></th>
-<th><p>22/07/2018 00:00:00</p></th>
-<th><p>23/07/2018 00:00:00</p></th>
-<th><p>24/07/2018 00:00:00</p></th>
+<th><p>8/7/2018 12:00:00 AM</p></th>
+<th><p>8/8/2018 12:00:00 AM</p></th>
+<th><p>8/9/2018 12:00:00 AM</p></th>
+<th><p>8/10/2018 12:00:00 AM</p></th>
+<th><p>8/11/2018 12:00:00 AM</p></th>
 <th><p> ... </p></th>
-<th><p>27/07/2018 00:00:00</p></th>
-<th><p>28/07/2018 00:00:00</p></th>
-<th><p>29/07/2018 00:00:00</p></th>
+<th><p>8/14/2018 12:00:00 AM</p></th>
+<th><p>8/15/2018 12:00:00 AM</p></th>
+<th><p>8/16/2018 12:00:00 AM</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td><p>Values</p></td>
-<td><p>.1</p></td>
-<td><p>.97</p></td>
-<td><p>.09</p></td>
-<td><p>.3</p></td>
-<td><p>.26</p></td>
+<td><p>.83</p></td>
+<td><p>.77</p></td>
+<td><p>.43</p></td>
+<td><p>.5</p></td>
+<td><p>.59</p></td>
 <td><p> ... </p></td>
-<td><p>.7</p></td>
-<td><p>.7</p></td>
-<td><p>.68</p></td>
+<td><p>.69</p></td>
+<td><p>.16</p></td>
+<td><p>.17</p></td>
 </tr>
 </tbody>
 </table>
@@ -932,29 +932,29 @@ can be used to ilustrate the idea):</p>
 <thead>
 <tr class="header">
 <th><p>Keys</p></th>
-<th><p>20/07/2018 15:09:17</p></th>
-<th><p>21/07/2018 15:09:17</p></th>
-<th><p>22/07/2018 15:09:17</p></th>
-<th><p>23/07/2018 15:09:17</p></th>
-<th><p>24/07/2018 15:09:17</p></th>
+<th><p>8/7/2018 2:41:53 PM</p></th>
+<th><p>8/8/2018 2:41:53 PM</p></th>
+<th><p>8/9/2018 2:41:53 PM</p></th>
+<th><p>8/10/2018 2:41:53 PM</p></th>
+<th><p>8/11/2018 2:41:53 PM</p></th>
 <th><p> ... </p></th>
-<th><p>27/07/2018 15:09:17</p></th>
-<th><p>28/07/2018 15:09:17</p></th>
-<th><p>29/07/2018 15:09:17</p></th>
+<th><p>8/14/2018 2:41:53 PM</p></th>
+<th><p>8/15/2018 2:41:53 PM</p></th>
+<th><p>8/16/2018 2:41:53 PM</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td><p>Values</p></td>
-<td><p>.1</p></td>
-<td><p>.97</p></td>
-<td><p>.09</p></td>
-<td><p>.3</p></td>
-<td><p>.26</p></td>
+<td><p>.83</p></td>
+<td><p>.77</p></td>
+<td><p>.43</p></td>
+<td><p>.5</p></td>
+<td><p>.59</p></td>
 <td><p> ... </p></td>
-<td><p>.7</p></td>
-<td><p>.7</p></td>
-<td><p>.68</p></td>
+<td><p>.69</p></td>
+<td><p>.16</p></td>
+<td><p>.17</p></td>
 </tr>
 </tbody>
 </table>
@@ -1324,7 +1324,7 @@ together with means for all available numeric columns.</p>
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
             <li><a href="http://github.com/fslaborg/Deedle">Source Code on GitHub</a></li>
             <li><a href="http://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="http://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
+            <li><a href="https://fslab.org/Deedle/RELEASE_NOTES.html">Release notes</a></li>
             <li><a href="https://fslab.org/Deedle/design.html">Design notes</a></li>
             <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
             

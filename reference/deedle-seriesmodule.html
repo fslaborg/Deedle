@@ -134,7 +134,7 @@ integer offset (and ignore the keys of the series)
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '174', 174)" onmouseover="showTip(event, '174', 174)">
-            countKeys series
+            countKeys(series)
           </code>
           <div class="tip" id="174">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; int<br />
@@ -161,7 +161,7 @@ value available.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '175', 175)" onmouseover="showTip(event, '175', 175)">
-            countValues series
+            countValues(series)
           </code>
           <div class="tip" id="175">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; int<br />
@@ -188,7 +188,7 @@ missing values or not available values (such as values created from <code>null</
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '176', 176)" onmouseover="showTip(event, '176', 176)">
-            firstKey series
+            firstKey(series)
           </code>
           <div class="tip" id="176">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;K<br />
@@ -213,7 +213,7 @@ missing values or not available values (such as values created from <code>null</
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '177', 177)" onmouseover="showTip(event, '177', 177)">
-            firstValue series
+            firstValue(series)
           </code>
           <div class="tip" id="177">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V<br />
@@ -449,7 +449,7 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '186', 186)" onmouseover="showTip(event, '186', 186)">
-            keys series
+            keys(series)
           </code>
           <div class="tip" id="186">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;&#39;K&gt;<br />
@@ -474,7 +474,7 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '187', 187)" onmouseover="showTip(event, '187', 187)">
-            lastKey series
+            lastKey(series)
           </code>
           <div class="tip" id="187">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;K<br />
@@ -499,7 +499,7 @@ Uses exact lookup semantics for key lookup - use <code>lookupAll</code> for more
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '188', 188)" onmouseover="showTip(event, '188', 188)">
-            lastValue series
+            lastValue(series)
           </code>
           <div class="tip" id="188">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V<br />
@@ -581,7 +581,7 @@ Use the specified lookup semantics - for exact matching, use <code>getAll</code>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '191', 191)" onmouseover="showTip(event, '191', 191)">
-            observations series
+            observations(series)
           </code>
           <div class="tip" id="191">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;&#39;K * &#39;T&gt;<br />
@@ -608,7 +608,7 @@ all keys with missing values (such as values created from <code>null</code>,
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '192', 192)" onmouseover="showTip(event, '192', 192)">
-            observationsAll series
+            observationsAll(series)
           </code>
           <div class="tip" id="192">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;&#39;K * &#39;T option&gt;<br />
@@ -663,7 +663,7 @@ for some new sequence of keys.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '194', 194)" onmouseover="showTip(event, '194', 194)">
-            tryFirstValue series
+            tryFirstValue(series)
           </code>
           <div class="tip" id="194">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V option<br />
@@ -740,7 +740,7 @@ Uses exact lookup semantics for key lookup - use <code>tryLookup</code> for more
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '197', 197)" onmouseover="showTip(event, '197', 197)">
-            tryLastValue series
+            tryLastValue(series)
           </code>
           <div class="tip" id="197">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V option<br />
@@ -820,7 +820,7 @@ available, <code>None</code> is returned.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '200', 200)" onmouseover="showTip(event, '200', 200)">
-            values series
+            values(series)
           </code>
           <div class="tip" id="200">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;&#39;T&gt;<br />
@@ -845,7 +845,7 @@ available, <code>None</code> is returned.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '201', 201)" onmouseover="showTip(event, '201', 201)">
-            valuesAll series
+            valuesAll(series)
           </code>
           <div class="tip" id="201">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; seq&lt;&#39;T option&gt;<br />
@@ -934,7 +934,7 @@ a discriminated union listing various chunking and windowing conditions.
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '203', 203)" onmouseover="showTip(event, '203', 203)">
-            aggregateInto (...)
+            aggregateInto(...)
           </code>
           <div class="tip" id="203">
             <strong>Signature:</strong> aggregation:Aggregation&lt;&#39;K&gt; -&gt; keySelector:(DataSegment&lt;Series&lt;&#39;K,&#39;T&gt;&gt; -&gt; &#39;TNewKey) -&gt; f:(DataSegment&lt;Series&lt;&#39;K,&#39;T&gt;&gt; -&gt; OptionalValue&lt;&#39;R&gt;) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;TNewKey,&#39;R&gt;<br />
@@ -1112,7 +1112,7 @@ skips incomplete chunks - you can use <code>Series.chunkSizeInto</code> for more
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '208', 208)" onmouseover="showTip(event, '208', 208)">
-            chunkSize (arg1, arg2) series
+            chunkSize(arg1, arg2) series
           </code>
           <div class="tip" id="208">
             <strong>Signature:</strong> (int * Boundary) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt;<br />
@@ -1149,7 +1149,7 @@ or <code>Boundary.AtEnding</code> (to produce incomplete chunks at the end of se
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '209', 209)" onmouseover="showTip(event, '209', 209)">
-            chunkSizeInto (arg1, arg2) f series
+            chunkSizeInto(arg1, arg2) f series
           </code>
           <div class="tip" id="209">
             <strong>Signature:</strong> (int * Boundary) -&gt; f:(DataSegment&lt;Series&lt;&#39;K,&#39;T&gt;&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
@@ -1227,8 +1227,8 @@ to determine when a window should end.
             chunkWhileInto cond f series
           </code>
           <div class="tip" id="211">
-            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?636676) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?636676&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'T, '?636676                        <span>
+            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?634562) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?634562&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T, '?634562                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;ChunkWhileInto&quot;)&gt;]<br />
           </span>
@@ -1322,7 +1322,7 @@ key and value. The new key must support equality testing.
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '214', 214)" onmouseover="showTip(event, '214', 214)">
-            pairwise series
+            pairwise(series)
           </code>
           <div class="tip" id="214">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,(&#39;T * &#39;T)&gt;<br />
@@ -1369,8 +1369,8 @@ value for the first key).</p>
             pairwiseWith f series
           </code>
           <div class="tip" id="215">
-            <strong>Signature:</strong> f:(&#39;K -&gt; &#39;T * &#39;T -&gt; &#39;?636700) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?636700&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'T, '?636700                        <span>
+            <strong>Signature:</strong> f:(&#39;K -&gt; &#39;T * &#39;T -&gt; &#39;?634586) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?634586&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T, '?634586                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;PairwiseWith&quot;)&gt;]<br />
           </span>
@@ -1470,8 +1470,8 @@ keys of the series.
             windowDistInto distance f series
           </code>
           <div class="tip" id="218">
-            <strong>Signature:</strong> distance:^?636642 -&gt; f:(Series&lt;^K,&#39;T&gt; -&gt; &#39;?636645) -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,&#39;?636645&gt;<br />
-                          <strong>Type parameters:</strong> ^?636642, ^K, 'T, '?636645                        <span>
+            <strong>Signature:</strong> distance:^?634528 -&gt; f:(Series&lt;^K,&#39;T&gt; -&gt; &#39;?634531) -&gt; series:Series&lt;^K,&#39;T&gt; -&gt; Series&lt;^K,&#39;?634531&gt;<br />
+                          <strong>Type parameters:</strong> ^?634528, ^K, 'T, '?634531                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;WindowDistanceInto&quot;)&gt;]<br />
           </span>
@@ -1538,7 +1538,7 @@ This function skips incomplete chunks - you can use <code>Series.windowSizeInto<
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '220', 220)" onmouseover="showTip(event, '220', 220)">
-            windowSize (arg1, arg2) series
+            windowSize(arg1, arg2) series
           </code>
           <div class="tip" id="220">
             <strong>Signature:</strong> (int * Boundary) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,Series&lt;&#39;K,&#39;T&gt;&gt;<br />
@@ -1575,7 +1575,7 @@ or <code>Boundary.AtEnding</code> (to produce incomplete windows at the end of s
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '221', 221)" onmouseover="showTip(event, '221', 221)">
-            windowSizeInto (arg1, arg2) f series
+            windowSizeInto(arg1, arg2) f series
           </code>
           <div class="tip" id="221">
             <strong>Signature:</strong> (int * Boundary) -&gt; f:(DataSegment&lt;Series&lt;&#39;K,&#39;T&gt;&gt; -&gt; &#39;R) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
@@ -1653,8 +1653,8 @@ to determine when a window should end.
             windowWhileInto cond f series
           </code>
           <div class="tip" id="223">
-            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?636653) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?636653&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'T, '?636653                        <span>
+            <strong>Signature:</strong> cond:(&#39;K -&gt; &#39;K -&gt; bool) -&gt; f:(Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?634539) -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;?634539&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'T, '?634539                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;WindowWhileInto&quot;)&gt;]<br />
           </span>
@@ -1876,7 +1876,7 @@ specifying merging behavior.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '228', 228)" onmouseover="showTip(event, '228', 228)">
-            mergeAll series
+            mergeAll(series)
           </code>
           <div class="tip" id="228">
             <strong>Signature:</strong> series:seq&lt;Series&lt;&#39;K,&#39;V&gt;&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
@@ -2009,7 +2009,7 @@ Supported values are <code>Lookup.Exact</code>, <code>Lookup.ExactOrSmaller</cod
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '232', 232)" onmouseover="showTip(event, '232', 232)">
-            zipAlignInto (...)
+            zipAlignInto(...)
           </code>
           <div class="tip" id="232">
             <strong>Signature:</strong> kind:JoinKind -&gt; lookup:Lookup -&gt; op:(&#39;V1 option -&gt; &#39;V2 option -&gt; &#39;R option) -&gt; series1:Series&lt;&#39;K,&#39;V1&gt; -&gt; series2:Series&lt;&#39;K,&#39;V2&gt; -&gt; Series&lt;&#39;K,&#39;R&gt;<br />
@@ -2136,7 +2136,7 @@ The remaining functions provide different mechanism for filling the missing valu
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '235', 235)" onmouseover="showTip(event, '235', 235)">
-            dropMissing series
+            dropMissing(series)
           </code>
           <div class="tip" id="235">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
@@ -2239,7 +2239,7 @@ for the nearest greater key.
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '237', 237)" onmouseover="showTip(event, '237', 237)">
-            fillMissingBetween (...)
+            fillMissingBetween(...)
           </code>
           <div class="tip" id="237">
             <strong>Signature:</strong> (startKey:&#39;K * endKey:&#39;K) -&gt; direction:Direction -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
@@ -2451,7 +2451,7 @@ values are filled with the specified constant value.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '243', 243)" onmouseover="showTip(event, '243', 243)">
-            tryErrors series
+            tryErrors(series)
           </code>
           <div class="tip" id="243">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V tryval&gt; -&gt; Series&lt;&#39;K,exn&gt;<br />
@@ -2494,7 +2494,7 @@ with an exception <code>e</code> or <code>Success(v)</code> containing a value <
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '245', 245)" onmouseover="showTip(event, '245', 245)">
-            trySuccesses series
+            trySuccesses(series)
           </code>
           <div class="tip" id="245">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V tryval&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
@@ -2515,7 +2515,7 @@ contained in the source series. The input elements containing exceptions are ign
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '246', 246)" onmouseover="showTip(event, '246', 246)">
-            tryValues series
+            tryValues(series)
           </code>
           <div class="tip" id="246">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T tryval&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
@@ -2614,7 +2614,7 @@ values at exact keys will be returned; <code>NearestGreater</code> returns the n
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '248', 248)" onmouseover="showTip(event, '248', 248)">
-            lookupTimeAt (...)
+            lookupTimeAt(...)
           </code>
           <div class="tip" id="248">
             <strong>Signature:</strong> start:^K -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; lookup:Lookup -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,^V&gt;<br />
@@ -2776,8 +2776,8 @@ series, similar functionality can be implemented using <code>Series.groupBy</cod
             resampleInto keys dir f series
           </code>
           <div class="tip" id="252">
-            <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; dir:Direction -&gt; f:(&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;?636769) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;?636769&gt;<br />
-                          <strong>Type parameters:</strong> 'K, 'V, '?636769                      </div>
+            <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; dir:Direction -&gt; f:(&#39;K -&gt; Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;?634655) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;?634655&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V, '?634655                      </div>
         </td>
         <td class="xmldoc">
                       <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1432-1432" class="github-link">
@@ -2814,7 +2814,7 @@ single value. Note that this function may be called with empty series.
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '253', 253)" onmouseover="showTip(event, '253', 253)">
-            resampleUniform (...)
+            resampleUniform(...)
           </code>
           <div class="tip" id="253">
             <strong>Signature:</strong> fillMode:Lookup -&gt; keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; nextKey:(&#39;K2 -&gt; &#39;K2) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,Series&lt;&#39;K1,&#39;V&gt;&gt;<br />
@@ -2858,7 +2858,7 @@ space (which is then used for grouping based on equivalence)
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '254', 254)" onmouseover="showTip(event, '254', 254)">
-            resampleUniformInto (...)
+            resampleUniformInto(...)
           </code>
           <div class="tip" id="254">
             <strong>Signature:</strong> fillMode:Lookup -&gt; keyProj:(&#39;K1 -&gt; &#39;K2) -&gt; nextKey:(&#39;K2 -&gt; &#39;K2) -&gt; f:(Series&lt;&#39;K1,&#39;V&gt; -&gt; &#39;b) -&gt; series:Series&lt;&#39;K1,&#39;V&gt; -&gt; Series&lt;&#39;K2,&#39;b&gt;<br />
@@ -2911,8 +2911,8 @@ single value. The function may be called on empty series when <code>fillMode</co
             sampleTime interval dir series
           </code>
           <div class="tip" id="255">
-            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?636800,^?636801&gt; -&gt; Series&lt;^?636800,Series&lt;^?636800,^?636801&gt;&gt;<br />
-                          <strong>Type parameters:</strong> ^?636800, ^?636801                      </div>
+            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?634686,^?634687&gt; -&gt; Series&lt;^?634686,Series&lt;^?634686,^?634687&gt;&gt;<br />
+                          <strong>Type parameters:</strong> ^?634686, ^?634687                      </div>
         </td>
         <td class="xmldoc">
                       <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1682-1682" class="github-link">
@@ -2947,8 +2947,8 @@ used as the greatest keys in a chunk.
             sampleTimeAt start interval dir series
           </code>
           <div class="tip" id="256">
-            <strong>Signature:</strong> start:^?636803 -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?636803,^?636804&gt; -&gt; Series&lt;^?636803,Series&lt;^?636803,^?636804&gt;&gt;<br />
-                          <strong>Type parameters:</strong> ^?636803, ^?636804                      </div>
+            <strong>Signature:</strong> start:^?634689 -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; series:Series&lt;^?634689,^?634690&gt; -&gt; Series&lt;^?634689,Series&lt;^?634689,^?634690&gt;&gt;<br />
+                          <strong>Type parameters:</strong> ^?634689, ^?634690                      </div>
         </td>
         <td class="xmldoc">
                       <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1702-1702" class="github-link">
@@ -2981,11 +2981,11 @@ used as the greatest keys in a chunk.
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '257', 257)" onmouseover="showTip(event, '257', 257)">
-            sampleTimeAtInto (...)
+            sampleTimeAtInto(...)
           </code>
           <div class="tip" id="257">
-            <strong>Signature:</strong> start:^K -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?636798) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?636798&gt;<br />
-                          <strong>Type parameters:</strong> ^K, ^V, '?636798                      </div>
+            <strong>Signature:</strong> start:^K -&gt; interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?634684) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?634684&gt;<br />
+                          <strong>Type parameters:</strong> ^K, ^V, '?634684                      </div>
         </td>
         <td class="xmldoc">
                       <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1661-1661" class="github-link">
@@ -3022,8 +3022,8 @@ used as the greatest keys in a chunk.
             sampleTimeInto interval dir f series
           </code>
           <div class="tip" id="258">
-            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?636794) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?636794&gt;<br />
-                          <strong>Type parameters:</strong> ^K, ^V, '?636794                      </div>
+            <strong>Signature:</strong> interval:TimeSpan -&gt; dir:Direction -&gt; f:(Series&lt;^K,^V&gt; -&gt; &#39;?634680) -&gt; series:Series&lt;^K,^V&gt; -&gt; Series&lt;^K,&#39;?634680&gt;<br />
+                          <strong>Type parameters:</strong> ^K, ^V, '?634680                      </div>
         </td>
         <td class="xmldoc">
                       <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/SeriesModule.fs#L1638-1638" class="github-link">
@@ -3210,7 +3210,7 @@ just the value. See also <code>filterAll</code> and <code>filter</code> for more
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '263', 263)" onmouseover="showTip(event, '263', 263)">
-            flatten series
+            flatten(series)
           </code>
           <div class="tip" id="263">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T option&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
@@ -3240,8 +3240,8 @@ become ordinary values in the resulting series.</p>
             foldValues op init series
           </code>
           <div class="tip" id="264">
-            <strong>Signature:</strong> op:(&#39;?636586 -&gt; &#39;T -&gt; &#39;?636586) -&gt; init:&#39;?636586 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?636586<br />
-                          <strong>Type parameters:</strong> '?636586, 'T, 'K                        <span>
+            <strong>Signature:</strong> op:(&#39;?634472 -&gt; &#39;T -&gt; &#39;?634472) -&gt; init:&#39;?634472 -&gt; series:Series&lt;&#39;K,&#39;T&gt; -&gt; &#39;?634472<br />
+                          <strong>Type parameters:</strong> '?634472, 'T, 'K                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;FoldValues&quot;)&gt;]<br />
           </span>
@@ -3269,7 +3269,7 @@ individual values. The folding starts with the specified initial value.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '265', 265)" onmouseover="showTip(event, '265', 265)">
-            force series
+            force(series)
           </code>
           <div class="tip" id="265">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
@@ -3688,7 +3688,7 @@ a list of keys use <code>realign</code>.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '278', 278)" onmouseover="showTip(event, '278', 278)">
-            indexOrdinally series
+            indexOrdinally(series)
           </code>
           <div class="tip" id="278">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;int,&#39;T&gt;<br />
@@ -3769,7 +3769,7 @@ input sequence, the returned series will contain a missing value.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '281', 281)" onmouseover="showTip(event, '281', 281)">
-            rev series
+            rev(series)
           </code>
           <div class="tip" id="281">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
@@ -3794,7 +3794,7 @@ input sequence, the returned series will contain a missing value.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '282', 282)" onmouseover="showTip(event, '282', 282)">
-            sort series
+            sort(series)
           </code>
           <div class="tip" id="282">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,&#39;V&gt;<br />
@@ -3854,7 +3854,7 @@ value contained in the original input series.
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '284', 284)" onmouseover="showTip(event, '284', 284)">
-            sortByKey series
+            sortByKey(series)
           </code>
           <div class="tip" id="284">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;T&gt; -&gt; Series&lt;&#39;K,&#39;T&gt;<br />
@@ -3976,7 +3976,7 @@ the underlying virtualized source.</p>
             <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
             <li><a href="http://github.com/fslaborg/Deedle">Source Code on GitHub</a></li>
             <li><a href="http://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
-            <li><a href="http://github.com/fslaborg/Deedle/blob/master/RELEASE_NOTES.md">Release notes</a></li>
+            <li><a href="https://fslab.org/Deedle/RELEASE_NOTES.html">Release notes</a></li>
             <li><a href="https://fslab.org/Deedle/design.html">Design notes</a></li>
             <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
             
