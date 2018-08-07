@@ -1328,6 +1328,25 @@ module Frame =
       frame.IndexBuilder.Search( (frame.RowIndex, Vectors.Return 0), hasAllFlagVector, true)
     let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newRowIndex.AddressingScheme cmd)
     Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
+    
+  /// Creates a new data frame that contains only those rows of the original 
+  /// data frame for which the given column has a value (i.e., is not missing).
+  /// The resulting data frame has the same number of columns, but may have 
+  /// fewer rows (or no rows at all).
+  /// 
+  /// [category:Missing values]
+  [<CompiledName("DropSparseRowsBy")>]
+  let dropSparseRowsBy colKey (frame:Frame<'R, 'C>) = 
+    // Create a combined vector that has 'true' for rows which have some values
+    let hasAllFlagVector = 
+        frame.GetColumn(colKey).Vector.DataSequence
+        |> Seq.map (fun opt -> opt.HasValue)
+        |> Vector.ofValues
+    // Collect all rows that have at least some values
+    let newRowIndex, cmd = 
+        frame.IndexBuilder.Search( (frame.RowIndex, Vectors.Return 0), hasAllFlagVector, true)
+    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newRowIndex.AddressingScheme cmd)
+    Frame<_, _>(newRowIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   /// Creates a new data frame that contains only those columns of the original 
   /// data frame that are _dense_, meaning that they have a value for each row.
@@ -1557,7 +1576,12 @@ module Frame =
   [<CompiledName("NestBy")>]
   let nestBy (keySelector:_ -> 'K1) (frame:Frame<'K2, 'C>) = 
     let labels = (frame.RowKeys |> Seq.map keySelector)
-    frame.GroupByLabels labels frame.RowCount |> nest
+    if frame.RowCount <> (Seq.length labels) then
+        failwith "nestBy: Generated labels contain missing values and \
+            cannot be used for grouping. Make sure the keySelector function does \
+            not return null."
+    else
+        frame.GroupByLabels labels frame.RowCount |> nest
 
   /// Given a series of frames, returns a new data frame with two-level hierarchical
   /// row index, using the series keys as the first component. This function is the
