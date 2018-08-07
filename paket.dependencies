@@ -1,4 +1,5 @@
 source https://nuget.org/api/v2
+source https://ci.appveyor.com/nuget/fsharp-formatting
 
 nuget FsCheck 2.10.8
 nuget FSharp.Charting
@@ -8,8 +9,6 @@ nuget NUnit 3.9.0
 nuget NUnit.ConsoleRunner 3.8.0
 nuget FsUnit 3.0.0
 nuget RProvider
-nuget Nuget.CommandLine
-nuget FAKE 4.64.13
 nuget System.Reflection.Emit
 nuget System.Reflection.Emit.Lightweight
 nuget FSharp.Core 4.2.3
@@ -22,13 +21,12 @@ nuget DynamicInterop
 nuget System.ComponentModel.Composition
 nuget NetOffice.Core
 nuget NetOffice.Excel
+nuget FSharp.Formatting >= 3 prerelease
 
 github fsharp/FSharp.Data src/Net/Http.fs
 github fsharp/FSharp.Data src/CommonRuntime/IO.fs
 github fsharp/FSharp.Data src/CommonRuntime/Pluralizer.fs
 github fsharp/FSharp.Data src/CommonRuntime/NameUtils.fs
-source https://ci.appveyor.com/nuget/fsharp-formatting
-nuget FSharp.Formatting prerelease
 
 github fsharp/FSharp.Data src/CommonRuntime/TextConversions.fs
 github fsharp/FSharp.Data src/CommonRuntime/TextRuntime.fs
@@ -37,3 +35,21 @@ github fsharp/FSharp.Data src/CommonRuntime/StructuralInference.fs
 github fsharp/FSharp.Data src/Csv/CsvRuntime.fs
 github fsharp/FSharp.Data src/Csv/CsvFile.fs
 github fsharp/FSharp.Data src/Csv/CsvInference.fs
+
+// [ FAKE GROUP ]
+group Build
+    source https://api.nuget.org/v3/index.json
+
+    nuget Fake.Core.ReleaseNotes
+    nuget Fake.DotNet.Cli
+    nuget Fake.Tools.Git
+    nuget Fake.IO.FileSystem
+    nuget Fake.Core.Target
+    nuget NuGet.CommandLine
+    nuget Fake.BuildServer.AppVeyor
+    nuget Fake.BuildServer.Travis
+    nuget Fake.DotNet.AssemblyInfoFile
+    nuget Fake.DotNet.NuGet
+    nuget RProvider
+    nuget FSharp.Charting
+    nuget Fake.DotNet.Fsi

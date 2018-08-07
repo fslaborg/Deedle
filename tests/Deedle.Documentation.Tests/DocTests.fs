@@ -99,7 +99,7 @@ let ``Documentation generated correctly `` (file:string) =
         | CompileError(_, SourceError(_, _, _, msg)) ->
             not (msg.Contains("'datasets' is not defined") || msg.Contains("'base' is not defined") || 
               msg.Contains("'zoo' is not defined") || msg.Contains("'R' is not defined") ||
-              msg.Contains("Type System.Runtime.Remoting.ObjRef and the types derived from it"))
+              msg.Contains("System.Runtime.Remoting.ObjRef"))
         | EvaluationFailed _ -> false )
  
     elif (file.Contains("series.fsx") || file.Contains("tutorial.fsx")) && Type.GetType("Mono.Runtime") <> null then

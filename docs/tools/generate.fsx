@@ -21,11 +21,15 @@ let info =
 // --------------------------------------------------------------------------------------
 
 #load "formatters.fsx"
-open Fake
+#load "../../.fake/build.fsx/intellisense.fsx"
+#if !FAKE
+let execContext = Fake.Core.Context.FakeExecutionContext.Create false "generate.fsx" []
+Fake.Core.Context.setExecutionContext (Fake.Core.Context.RuntimeContext.Fake execContext)
+#endif
+open Fake.Core
 open System.IO
-open Fake.FileHelper
-open FSharp.Literate
-open FSharp.MetadataFormat
+open Fake.IO.FileSystemOperators
+open Fake.IO
 open FSharp.Formatting.Razor
 
 // When called from 'build.fsx', use the public project URL as <root>
@@ -37,7 +41,7 @@ let root = "file://" + (__SOURCE_DIRECTORY__ @@ "../output")
 #endif
 
 // Paths with template/source/output locations
-let bin        = __SOURCE_DIRECTORY__ @@ "../../bin"
+let bin        = __SOURCE_DIRECTORY__ @@ "../../bin/net45"
 let content    = __SOURCE_DIRECTORY__ @@ "../content"
 let output     = __SOURCE_DIRECTORY__ @@ "../output"
 let files      = __SOURCE_DIRECTORY__ @@ "../files"
@@ -52,14 +56,14 @@ let layoutRoots =
 
 // Copy static files and CSS + JS from F# Formatting
 let copyFiles () =
-  CopyRecursive files output true |> Log "Copying file: "
-  ensureDirectory (output @@ "content")
-  CopyRecursive (formatting @@ "styles") (output @@ "content") true 
-    |> Log "Copying styles and scripts: "
+  Shell.copyRecursive files output true |> Trace.logItems "Copying file: "
+  Directory.ensure (output @@ "content")
+  Shell.copyRecursive (formatting @@ "styles") (output @@ "content") true 
+    |> Trace.logItems "Copying styles and scripts: "
 
 // Based on https://github.com/fsprojects/ProjectScaffold/pull/135
 let references =
-  if isMono then
+  if Environment.isMono then
     // Workaround compiler errors in Razor-ViewEngine
     let d = RazorEngine.Compilation.ReferenceResolver.UseCurrentAssembliesReferenceResolver()
     let loadedList = d.GetReferences () |> Seq.map (fun r -> r.GetFile()) |> Seq.cache
@@ -81,7 +85,7 @@ let references =
 
 // Build API reference from XML comments
 let buildReference () =
-  CleanDir (output @@ "reference")
+  Shell.cleanDir (output @@ "reference")
   for lib in referenceBinaries do
     RazorMetadataFormat.Generate
       ( bin @@ lib, output @@ "reference", layoutRoots, 
@@ -92,7 +96,7 @@ let buildReference () =
 
 // Build documentation from `fsx` and `md` files in `docs/content`
 let buildDocumentation () =
-  CopyFile content (__SOURCE_DIRECTORY__ @@ "../../RELEASE_NOTES.md")
+  Shell.copyFile content (__SOURCE_DIRECTORY__ @@ "../../RELEASE_NOTES.md")
   let fsiEvaluator = Formatters.createFsiEvaluator root output "#.####"
   let subdirs = Directory.EnumerateDirectories(content, "*", SearchOption.AllDirectories)
   for dir in Seq.append [content] subdirs do
