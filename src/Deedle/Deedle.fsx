@@ -4,9 +4,9 @@
 #I "lib/net45"
 
 // Try various folders that people might like
-#I "bin"
-#I "../bin"
-#I "../../bin"
+#I "bin/net45"
+#I "../bin/net45"
+#I "../../bin/net45"
 #I "lib"
 // Reference Deedle
 #r "Deedle.dll"
