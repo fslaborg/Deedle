@@ -1523,28 +1523,32 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   
   member internal frame.GroupByLabels labels n =
     let offsets = [0 .. n-1]
+    // check if column with the labels has missing values
+    if n <> (Seq.length labels) then
+        failwith "GroupByLabels: Wrong number of labels. \
+                  Make sure that your frame does not contain missing values."
+    else
+        let relocs = 
+          labels 
+          |> Seq.zip offsets                                // seq of (srcloc, label)
+          |> Seq.zip frame.RowKeys                          // seq of (rowkey, (srcloc, label))
+          |> Seq.groupBy (fun (rk, (i, l)) -> l)            // seq of (label, seq of (rowkey, (srcloc, label)))
+          |> Seq.map (fun (k, s) -> s)                      // seq of (seq of (rowkey, (srcloc, label)))
+          |> Seq.concat                                     // seq of (rowkey, (srcloc, label))
+          |> Seq.zip offsets                                // seq of (dstloc, (rowkey, (srcloc, label)))
+          |> Seq.map (fun (dst, (rowkey, (src, grp))) -> 
+             (grp, rowkey), (dst, src))                     // seq of (label, rowkey), (dstloc, srcloc)
+          |> ReadOnlyCollection.ofSeq
 
-    let relocs = 
-      labels 
-      |> Seq.zip offsets                                // seq of (srcloc, label)
-      |> Seq.zip frame.RowKeys                          // seq of (rowkey, (srcloc, label))
-      |> Seq.groupBy (fun (rk, (i, l)) -> l)            // seq of (label, seq of (rowkey, (srcloc, label)))
-      |> Seq.map (fun (k, s) -> s)                      // seq of (seq of (rowkey, (srcloc, label)))
-      |> Seq.concat                                     // seq of (rowkey, (srcloc, label))
-      |> Seq.zip offsets                                // seq of (dstloc, (rowkey, (srcloc, label)))
-      |> Seq.map (fun (dst, (rowkey, (src, grp))) -> 
-         (grp, rowkey), (dst, src))                     // seq of (label, rowkey), (dstloc, srcloc)
-      |> ReadOnlyCollection.ofSeq
+        let addressify (a, b) = (frame.RowIndex.AddressAt <| int64 a, frame.RowIndex.AddressAt <| int64 b)
 
-    let addressify (a, b) = (frame.RowIndex.AddressAt <| int64 a, frame.RowIndex.AddressAt <| int64 b)
+        let keys = ReadOnlyCollection.map fst relocs 
+        let locs = ReadOnlyCollection.map (snd >> addressify) relocs
 
-    let keys = ReadOnlyCollection.map fst relocs 
-    let locs = ReadOnlyCollection.map (snd >> addressify) relocs
-
-    let newIndex = Index.ofKeys keys
-    let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 n, locs)
-    let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newIndex.AddressingScheme cmd)
-    Frame<_, _>(newIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
+        let newIndex = Index.ofKeys keys
+        let cmd = VectorConstruction.Relocate(VectorConstruction.Return 0, int64 n, locs)
+        let newData = frame.Data.Select(VectorHelpers.transformColumn frame.VectorBuilder newIndex.AddressingScheme cmd)
+        Frame<_, _>(newIndex, frame.ColumnIndex, newData, frame.IndexBuilder, frame.VectorBuilder)
 
   member internal frame.NestRowsBy<'TGroup when 'TGroup : equality>(labels:seq<'TGroup>) =
     let indexBuilder = frame.IndexBuilder
@@ -1575,8 +1579,15 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     Series<_, _>(newIndex, Vector.ofValues groups, vectorBuilder, indexBuilder)
 
   member frame.GroupRowsBy<'TGroup when 'TGroup : equality>(colKey) =
-    let col = frame.GetColumn<'TGroup>(colKey)    
-    frame.GroupByLabels col.Values frame.RowCount
+    let col = frame.GetColumn<'TGroup>(colKey)
+    let labels = col.Values
+    // check if column with labels has missing values
+    if frame.RowCount <> (Seq.length labels) then
+        failwith "GroupRowsBy: Specified column contains missing values and \
+            cannot be used for grouping. Remove missing values \
+            first (e.g., by using dropSparseRowsBy)."
+    else
+        frame.GroupByLabels labels frame.RowCount
 
   member frame.GroupRowsByIndex(keySelector:Func<_, _>) =
     let labels = frame.RowIndex.Keys |> Seq.map keySelector.Invoke
@@ -1584,8 +1595,14 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   member frame.GroupRowsUsing<'TGroup when 'TGroup : equality>(f:System.Func<_, _, 'TGroup>) =
     let labels = frame.Rows |> Series.map (fun k v -> f.Invoke(k, v)) |> Series.values
-    frame.GroupByLabels labels frame.RowCount    
-
+    // check if column with labels has missing values
+    if frame.RowCount <> (Seq.length labels) then
+        failwith "GroupRowsUsing: Generated labels contain missing values and \
+            cannot be used for grouping. Make sure the projection function does \
+            not return null or filter out the corresponding rows before grouping."
+    else
+        frame.GroupByLabels labels frame.RowCount
+   
   /// Returns a data frame whose rows are grouped by `groupBy` and whose columns specified
   /// in `aggBy` are aggregated according to `aggFunc`.
   ///
