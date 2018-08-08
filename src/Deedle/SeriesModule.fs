@@ -1768,6 +1768,13 @@ module Series =
   let merge (series1:Series<'K, 'V>) (series2:Series<'K, 'V>) =
    series1.Merge(series2)
 
+  /// Returns a new series which is intersection of two series by (key, value) pair.
+  ///
+  /// [category:Joining, merging and zipping]
+  [<CompiledName("Intersect")>]
+  let intersect (s1:Series<'K, 'T>) (s2:Series<'K, 'T>) =
+    s1.Intersect(s2)
+
   /// Merge two series with possibly overlapping keys. The `behavior` parameter specifies
   /// how to handle situation when a value is definedin both series.
   ///
