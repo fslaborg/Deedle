@@ -1616,11 +1616,11 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let keySet = HashSet(groupBy)
     let filterFunc k = keySet.Contains(k)
     let grpKeys = frame.ColumnKeys |> Seq.filter filterFunc
-    let labels = frame.Rows.Values |> Seq.map (Series.getAll grpKeys >> Series.values >> Array.ofSeq) 
+    let labels = frame.Rows.Values |> Seq.map (Series.getAll grpKeys >> Series.valuesAll >> Array.ofSeq) 
     let nested = frame.NestRowsBy(labels)
     nested
-    |> Series.map (fun _ f -> [for c in aggBy -> (c, aggFunc.Invoke(f.GetColumn<_>(c)) |> box)] )
-    |> Series.map (fun k v -> v |> Seq.append (k |> Seq.zip grpKeys) |> Series.ofObservations)
+    |> Series.map (fun _ f -> [for c in aggBy -> (c, aggFunc.Invoke(f.GetColumn<_>(c)) |> box |> Some)] )
+    |> Series.map (fun k v -> v |> Seq.append (k |> Seq.zip grpKeys) |> Series.ofOptionalObservations)
     |> Series.indexOrdinally
     |> FrameUtils.fromRows frame.IndexBuilder frame.VectorBuilder 
 
