@@ -506,12 +506,12 @@ and
     let newVec = vectorBuilder.Build(newIndex.AddressingScheme, vecCmd, [| series.Vector; another.Vector |])
     Series(newIndex, newVec, vectorBuilder, indexBuilder)
 
-
+  /// [category:Merging, joining and zipping]
   member series.Intersect(another:Series<'K, 'V>)=
-    let interesectIndex, _, _ = indexBuilder.Intersect( (series.Index, Vectors.Return 0), (another.Index, Vectors.Return 1) )
+    let intersectIndex, _, _ = indexBuilder.Intersect( (series.Index, Vectors.Return 0), (another.Index, Vectors.Return 1) )
 
     let keys, optValues =
-      [| for KeyValue(key, addr) in interesectIndex.Mappings do
+      [| for KeyValue(key, addr) in intersectIndex.Mappings do
           let optL = vector.GetValue(addr)
           let optR = another.Vector.GetValue(addr)
           if optL = optR then yield key, optL |]
