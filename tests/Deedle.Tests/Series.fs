@@ -809,9 +809,9 @@ let ``Can correctly append over 150 series`` () =
 
 [<Test>]
 let ``Can intersect series``() =
-  let s1 = series [ 0 => 0.0; 2 => 2.0; 4 => 4.0]
-  let s2 = series [ 0 => 0.0; 2 => 2.0; 4 => 5.0]
-  let e = series [ 0 => 0.0; 2 => 2.0;]
+  let s1 = series [ 0 => 0.0; 7 => 12.0; 2 => 2.0; 4 => 4.0;]
+  let s2 = series [ 0 => 0.0; 4 => 5.0 ; 3 => 3.0; 2 => 2.0;]
+  let e = series [ 0 => 0.0; 2 => 2.0; ]
 
   Series.intersect s1 s2 |> shouldEqual e
 

@@ -511,9 +511,9 @@ and
     let intersectIndex, _, _ = indexBuilder.Intersect( (series.Index, Vectors.Return 0), (another.Index, Vectors.Return 1) )
 
     let keys, optValues =
-      [| for KeyValue(key, addr) in intersectIndex.Mappings do
-          let optL = vector.GetValue(addr)
-          let optR = another.Vector.GetValue(addr)
+      [| for key in intersectIndex.Keys do
+          let optL = series.TryGet(key)
+          let optR = another.TryGet(key)
           if optL = optR then yield key, optL |]
       |> Array.unzip
     let newIndex = indexBuilder.Create<_>(keys, None)
