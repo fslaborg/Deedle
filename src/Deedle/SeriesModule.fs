@@ -1775,6 +1775,14 @@ module Series =
   let intersect (s1:Series<'K, 'T>) (s2:Series<'K, 'T>) =
     s1.Intersect(s2)
 
+
+  /// Compares two series and returns a new series of `Diff`s.
+  ///
+  /// [category:Joining, merging and zipping]
+  [<CompiledName("Compare")>]
+  let compare (s1:Series<'K, 'T>) (s2:Series<'K, 'T>) =
+    s1.Compare(s2)
+
   /// Merge two series with possibly overlapping keys. The `behavior` parameter specifies
   /// how to handle situation when a value is definedin both series.
   ///

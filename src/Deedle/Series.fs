@@ -521,6 +521,26 @@ and
     Series(newIndex, newVector, vectorBuilder, indexBuilder )
 
   /// [category:Merging, joining and zipping]
+  member series.Compare(another: Series<'K, 'V>)=
+    let unionIndex, _, _ = indexBuilder.Union( (series.Index, Vectors.Return 0), (another.Index, Vectors.Return 1) )
+
+    let keys, optValues =
+      [| for key in unionIndex.Keys do
+          let optL = series.TryGet(key)
+          let optR = another.TryGet(key)
+          if optL <> optR then
+            yield 
+              key,
+              match (optL.HasValue, optR.HasValue) with
+              | (true, false) -> Diff.Remove optL.Value
+              | (false, true) -> Diff.Add optR.Value
+              | _ -> Diff.Change (optL.Value, optR.Value) |]
+      |> Array.unzip
+    let newIndex = indexBuilder.Create<_>(keys, None)
+    let newVector = vectorBuilder.Create<Diff<'V>>(optValues)
+    Series(newIndex, newVector, vectorBuilder, indexBuilder )
+
+  /// [category:Merging, joining and zipping]
   member series.Zip<'V2>(otherSeries:Series<'K, 'V2>) =
     series.Zip(otherSeries, JoinKind.Outer, Lookup.Exact)
 
