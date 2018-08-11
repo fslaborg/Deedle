@@ -594,6 +594,10 @@ type Stats =
   /// [category:Series statistics]
   static member inline max (series:Series<'K, 'V>) = trySeriesExtreme max series
 
+  /// Returns the number of unique values in a series.
+  static member uniqueCount (series:Series<'K, 'V>) =
+    series.Values |> Seq.distinct |> Seq.length
+
   /// Returns the key and value of the greatest element in the series. The result
   /// is an optional value. When the series contains no values, the result is `None`.
   ///
@@ -746,6 +750,10 @@ type Stats =
     frame.GetColumns<float>() |> Series.map (fun _ s -> 
       let res = Stats.max s 
       defaultArg res nan )  
+
+  /// For each column, returns the number of unique values.
+  static member uniqueCount (frame: Frame<'R, 'C>) =
+    frame.Columns |> Series.map (fun _ -> Stats.uniqueCount)
 
   // ------------------------------------------------------------------------------------
   // Statistics applied to a single level of a multi-level indexed series
