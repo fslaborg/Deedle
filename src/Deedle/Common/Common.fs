@@ -161,6 +161,16 @@ type 'T tryval = TryValue<'T>
 type 'T opt = OptionalValue<'T>
 
 
+/// The type of statistic item.
+///
+/// [category:Primitive types and values]
+type StatisticItem = 
+  | Min
+  | Max
+  | Mean
+  | Std
+
+
 /// Represents different behaviors of key lookup in series. For unordered series,
 /// the only available option is `Lookup.Exact` which finds the exact key - methods
 /// fail or return missing value if the key is not available in the index. For ordered

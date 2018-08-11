@@ -628,6 +628,27 @@ type Stats =
       let b = quickSelectInplace (mid - 1) values
       (a + b) / 2.0
 
+  /// Returns the series of main statistic values of the series.
+  ///
+  /// [category:Series statistics]
+  static member describe (series:Series<'K, 'V>) = 
+    match series with
+    | :? Series<_, float> as floatSeries -> 
+       [|
+        (Min, Stats.min floatSeries);
+        (Max, Stats.max floatSeries);
+        (Mean, Some(Stats.mean floatSeries));
+        (Std, Some(Stats.stdDev floatSeries));
+        |] |> Array.toSeq |> Series.ofObservations
+    | _ -> 
+      [|
+        (Min, None);
+        (Max, None);
+        (Mean, None);
+        (Std, None);
+      |] |> Array.toSeq |> Series.ofObservations
+
+
   // ------------------------------------------------------------------------------------
   // Series interpolation
   // ------------------------------------------------------------------------------------
