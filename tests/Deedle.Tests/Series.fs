@@ -815,6 +815,14 @@ let ``Can intersect series``() =
 
   Series.intersect s1 s2 |> shouldEqual e
 
+[<Test>]
+let ``Can compare series``() =
+  let s1 = series [ 1 => 1.0; 2 => 2.0; 3 => 3.0 ]
+  let s2 = series [ 1 => 10.0; 2 => 2.0; 4 => 4.0 ]
+  let e = series [1 => Change(1.0, 10.0); 3 => Diff.Remove 3.0; 4 => Diff.Add 4.0; ]
+
+  Series.compare s1 s2 |> shouldEqual e
+
 // ------------------------------------------------------------------------------------------------
 // take, takeLast, skip, skipLast
 // ------------------------------------------------------------------------------------------------

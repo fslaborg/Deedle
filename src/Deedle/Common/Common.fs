@@ -31,6 +31,16 @@ type MissingValueException(key:obj, message) =
   /// The key that has been accessed
   member x.Key = key
 
+type Diff<'T> = 
+  | Change of 'T * 'T 
+  | Remove of 'T 
+  | Add of 'T
+  override x.ToString() =
+    match x with 
+    | Change(a, b) -> sprintf "%A -> %A" a b 
+    | Remove v -> sprintf "-%A" v
+    | Add v -> sprintf "+%A" v
+
 /// Value type that represents a potentially missing value. This is similar to 
 /// `System.Nullable<T>`, but does not restrict the contained value to be a value
 /// type, so it can be used for storing values of any types. When obtained from
