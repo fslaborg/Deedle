@@ -21,7 +21,7 @@ module StatsInternal =
   /// Apply transformation on series elements. The projection function `proj` always
   /// returns `float`, but may return `nan` to indicate that the value is not available.
   /// The resulting sequence should have the same number of values as the input sequence
-  let inline internal applySeriesProj (proj: float opt seq -> float[]) (series:Series<'K, float>) : Series<'K, float> =
+  let applySeriesProj (proj: float opt seq -> float[]) (series:Series<'K, float>) : Series<'K, float> =
     let newData = 
       series.Vector.DataSequence 
       |> proj 
@@ -38,7 +38,7 @@ module StatsInternal =
   ///   - `fupdate` takes the current state, incoming observation, 
   ///      and out-going observation to the next state
   ///   - `ftransf` takes the current state to the current output
-  let internal movingWindowFn winSize finit fupdate ftransf (source: seq<_>) =
+  let movingWindowFn winSize finit fupdate ftransf (source: seq<_>) =
     seq {
        let arr = Array.zeroCreate winSize 
        let r = ref (winSize - 1)
@@ -107,10 +107,10 @@ module StatsInternal =
   /// Apply moving window transformation based on `Sums` calculation. The `proj` function
   /// calculates the statistics from `Sums` value and the `moment` specifies which of the
   /// `Sums` properties are calculated during the processing.
-  let applyMovingSumsTransform moment winSize (proj: Sums -> float) series =
+  let inline applyMovingSumsTransform moment winSize (proj: Sums -> float) (series:Series<'K,'V>) =
     if winSize <= 0 then invalidArg "windowSize" "Window must be positive"
     let calcSparse = movingWindowFn winSize (initSumsSparse moment) (updateSumsSparse moment) proj >> Array.ofSeq
-    applySeriesProj calcSparse series
+    applySeriesProj calcSparse (series |> Series.mapValues float)
 
   /// Calculate variance from `Sums`; requires `moment=2`
   let varianceSums s =
@@ -150,7 +150,7 @@ module StatsInternal =
   /// such that the front is the min/max value. During the iteration, new value is
   /// added to the end (and all values that are greater/smaller than the new value
   /// are removed before it is appended).
-  let internal movingMinMaxHelper winSize cmp (s:seq<OptionalValue<_>>) = 
+  let inline movingMinMaxHelper winSize cmp (s:seq<OptionalValue<'V>>) = 
     let res = ResizeArray<_>()
     let i = ref 0
     let q = Deque()
@@ -162,9 +162,9 @@ module StatsInternal =
       while q.Count > 0 && !i >= fst q.First do q.RemoveFirst() |> ignore
       if v.HasValue then
         // remove from back any values >= (min) or <= (max) compared to current obs
-        while q.Count > 0 && (cmp (snd q.Last) v.Value) do q.RemoveLast() |> ignore
+        while q.Count > 0 && (cmp (snd q.Last) (float v.Value)) do q.RemoveLast() |> ignore
         // append new obs to back
-        q.Add( (!i + winSize, v.Value) )
+        q.Add( (!i + winSize, (float v.Value)) )
         // return min/max value at front
         res.Add(snd q.First)
       else
@@ -181,7 +181,7 @@ module StatsInternal =
   ///  - `initState` is the initial state of the computation
   //   - `fupdate` takes the current state and incoming observation to the next state
   //   - `ftransf` takes the current state to the current output
-  let inline internal expandingWindowFn initState fupdate ftransf (source: seq<_>) =
+  let expandingWindowFn initState fupdate ftransf (source: seq<_>) =
     source 
     |> Seq.scan fupdate initState
     |> Seq.skip 1
@@ -223,10 +223,10 @@ module StatsInternal =
 
   /// Given a series, calculates expanding moments (using online `updateMoments`)
   /// The specified `proj` function is used to calculate the resulting value
-  let internal applyExpandingMomentsTransform (proj: Moments -> float) series =
+  let inline applyExpandingMomentsTransform (proj: Moments -> float) (series:Series<'K,'V>) =
     let initMoments = {nobs = 0.0; sum = 0.0; M1 = 0.0; M2 = 0.0; M3 = 0.0; M4 = 0.0 }
     let calcSparse = expandingWindowFn initMoments updateMomentsSparse proj >> Array.ofSeq
-    applySeriesProj calcSparse series
+    applySeriesProj calcSparse (series |> Series.mapValues float)
 
   /// Calculates minimum or maximum over an expanding window
   let internal expandingMinMaxHelper cmp s =
@@ -354,7 +354,7 @@ type Stats =
   /// entire window contains missing values, the result is 0.
   ///
   /// [category:Moving windows]
-  static member movingCount size (series:Series<'K, float>) : Series<'K, float> =
+  static member inline movingCount size (series:Series<'K, 'V>) : Series<'K, float> =
     applyMovingSumsTransform 0 size (fun s -> s.nobs) series
 
   /// Returns a series that contains sums over a moving window of the specified size.
@@ -362,7 +362,7 @@ type Stats =
   /// entire window contains missing values, the result is 0.
   ///
   /// [category:Moving windows]
-  static member movingSum size (series:Series<'K, float>) : Series<'K, float> =
+  static member inline movingSum size (series:Series<'K, 'V>) : Series<'K, float> =
     applyMovingSumsTransform 1 size (fun s -> s.sum) series
 
   /// Returns a series that contains means over a moving window of the specified size.
@@ -370,7 +370,7 @@ type Stats =
   /// entire window contains missing values, the result is also missing.
   ///
   /// [category:Moving windows]
-  static member movingMean size (series:Series<'K, float>) : Series<'K, float> =
+  static member inline movingMean size (series:Series<'K, 'V>) : Series<'K, float> =
     applyMovingSumsTransform 1 size (fun s -> s.sum / s.nobs) series
 
   /// Returns a series that contains variance over a moving window of the specified size.
@@ -378,7 +378,7 @@ type Stats =
   /// entire window contains missing values, the result is also missing.
   ///
   /// [category:Moving windows]
-  static member movingVariance size (series:Series<'K, float>) : Series<'K, float> =
+  static member inline movingVariance size (series:Series<'K, 'V>) : Series<'K, float> =
     applyMovingSumsTransform 2 size varianceSums series
 
   /// Returns a series that contains standard deviations over a moving window of the specified size.
@@ -386,7 +386,7 @@ type Stats =
   /// entire window contains missing values, the result is also missing.
   ///
   /// [category:Moving windows]
-  static member movingStdDev size (series:Series<'K, float>) : Series<'K, float> =
+  static member inline movingStdDev size (series:Series<'K, 'V>) : Series<'K, float> =
     applyMovingSumsTransform 2 size (varianceSums >> sqrt) series
 
   /// Returns a series that contains skewness over a moving window of the specified size.
@@ -394,7 +394,7 @@ type Stats =
   /// entire window contains missing values, the result is also missing.
   ///
   /// [category:Moving windows]
-  static member movingSkew size (series:Series<'K, float>) : Series<'K, float> =
+  static member inline movingSkew size (series:Series<'K, 'V>) : Series<'K, float> =
     applyMovingSumsTransform 3 size skewSums series
 
   /// Returns a series that contains kurtosis over a moving window of the specified size.
@@ -402,7 +402,7 @@ type Stats =
   /// entire window contains missing values, the result is also missing.
   ///
   /// [category:Moving windows]
-  static member movingKurt size (series:Series<'K, float>) : Series<'K, float> =
+  static member inline movingKurt size (series:Series<'K, 'V>) : Series<'K, float> =
     applyMovingSumsTransform 4 size kurtSums series 
 
   /// Returns a series that contains minimum over a moving window of the specified size.
@@ -410,16 +410,16 @@ type Stats =
   /// values. If the entire window contains missing values, the result is missing.
   ///
   /// [category:Moving windows]
-  static member movingMin size (series:Series<'K, float>) : Series<'K, float> =
-    applySeriesProj (movingMinMaxHelper size (>=)) series
+  static member inline movingMin size (series:Series<'K, 'V>) : Series<'K, float> =
+    applySeriesProj (movingMinMaxHelper size (>=)) (series |> Series.mapValues float)
 
   /// Returns a series that contains maximum over a moving window of the specified size.
   /// The first `size-1` elements are calculated using smaller windows spanning over `1 .. size-1` 
   /// values. If the entire window contains missing values, the result is missing.
   ///
   /// [category:Moving windows]
-  static member movingMax size (series:Series<'K, float>) : Series<'K, float> =
-    applySeriesProj (movingMinMaxHelper size (<=)) series
+  static member inline movingMax size (series:Series<'K, 'V>) : Series<'K, float> =
+    applySeriesProj (movingMinMaxHelper size (<=)) (series |> Series.mapValues float)
 
   // ------------------------------------------------------------------------------------
   // Public - expanding window functions
@@ -429,7 +429,7 @@ type Stats =
   /// a given key is calculated from all elements with smaller keys).
   ///
   /// [category:Expanding windows]
-  static member expandingCount (series:Series<'K, float>) : Series<'K, float> =
+  static member inline expandingCount (series:Series<'K, 'V>) : Series<'K, float> =
     applyExpandingMomentsTransform (fun w -> w.nobs) series
 
   /// Returns a series that contains sums over expanding windows (the value for
@@ -437,7 +437,7 @@ type Stats =
   /// entire window contains no values, the result is 0.
   ///
   /// [category:Expanding windows]
-  static member expandingSum (series:Series<'K, float>) : Series<'K, float> =
+  static member inline expandingSum (series:Series<'K, 'V>) : Series<'K, float> =
     applyExpandingMomentsTransform (fun w -> w.sum) series
 
   /// Returns a series that contains means over expanding windows (the value for
@@ -445,7 +445,7 @@ type Stats =
   /// entire window contains no values, the result is missing.
   ///
   /// [category:Expanding windows]
-  static member expandingMean (series:Series<'K, float>) : Series<'K, float> =
+  static member inline expandingMean (series:Series<'K, 'V>) : Series<'K, float> =
     applyExpandingMomentsTransform (fun w -> 
       if w.nobs < 1.0 then nan else w.M1) series
 
@@ -454,7 +454,7 @@ type Stats =
   /// entire window contains fewer than 2 values, the result is missing.
   ///
   /// [category:Expanding windows]
-  static member expandingVariance (series:Series<'K, float>) : Series<'K, float> =
+  static member inline expandingVariance (series:Series<'K, 'V>) : Series<'K, float> =
     let toVar w = 
       if w.nobs < 2.0 then nan
       else w.M2 / (w.nobs - 1.0)
@@ -465,7 +465,7 @@ type Stats =
   /// entire window contains fewer than 2 values, the result is missing.
   ///
   /// [category:Expanding windows]
-  static member expandingStdDev (series:Series<'K, float>) : Series<'K, float> =
+  static member inline expandingStdDev (series:Series<'K, 'V>) : Series<'K, float> =
     let toStdDev w = 
       if w.nobs < 2.0 then nan
       else w.M2 / (w.nobs - 1.0) |> sqrt
@@ -476,7 +476,7 @@ type Stats =
   /// entire window contains fewer than 3 values, the result is missing.
   ///
   /// [category:Expanding windows]
-  static member expandingSkew (series:Series<'K, float>) : Series<'K, float> =
+  static member inline expandingSkew (series:Series<'K, 'V>) : Series<'K, float> =
     // population -> sample estimate    
     let toEstSkew w = 
       if w.nobs < 3.0 then nan else
@@ -489,7 +489,7 @@ type Stats =
   /// entire window contains fewer than 4 values, the result is missing.
   ///
   /// [category:Expanding windows]
-  static member expandingKurt (series:Series<'K, float>) : Series<'K, float> =
+  static member inline expandingKurt (series:Series<'K, 'V>) : Series<'K, float> =
     // population -> sample estimate
     let toEstKurt w = 
       if w.nobs < 4.0 then nan else
@@ -502,24 +502,24 @@ type Stats =
   /// smaller keys.
   ///
   /// [category:Expanding windows]
-  static member expandingMin (series:Series<'K, float>) : Series<'K, float> =
+  static member inline expandingMin (series:Series<'K, 'V>) : Series<'K, float> =
     let minFn s v =
       match v with
       | OptionalValue.Present x -> if System.Double.IsNaN(s) then x else min x s
       | OptionalValue.Missing   -> s
-    applySeriesProj ((Seq.scan minFn nan) >> (Seq.skip 1) >> Array.ofSeq) series
+    applySeriesProj ((Seq.scan minFn nan) >> (Seq.skip 1) >> Array.ofSeq) (series |> Series.mapValues float)
     
   /// Returns a series that contains maximum over an expanding window. The value
   /// for a key _k_ in the returned series is the maximum from all elements with
   /// smaller keys.
   ///
   /// [category:Expanding windows]
-  static member expandingMax (series:Series<'K, float>) : Series<'K, float> =
+  static member inline expandingMax (series:Series<'K, 'V>) : Series<'K, float> =
     let maxFn s v =
       match v with
       | OptionalValue.Present x -> if System.Double.IsNaN(s) then x else max x s
       | OptionalValue.Missing   -> s
-    applySeriesProj ((Seq.scan maxFn nan) >> (Seq.skip 1) >> Array.ofSeq) series
+    applySeriesProj ((Seq.scan maxFn nan) >> (Seq.skip 1) >> Array.ofSeq) (series |> Series.mapValues float)
 
 
   // ------------------------------------------------------------------------------------
