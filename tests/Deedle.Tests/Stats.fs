@@ -225,6 +225,10 @@ let ``sum returns NaN for empty series`` () =
 let ``sum does not return NaN for series with missing values`` () = 
   series [ 1 => nan; 2 => 1.0; 3 => 2.0 ] |> Stats.sum |> shouldEqual 3.0
 
+[<Test>]
+let ``unique count work``() = 
+  series [1 => 1; 2 => 2; 3 => 1] |> Stats.uniqueCount |> shouldEqual 2
+
 // ------------------------------------------------------------------------------------------------
 // Statistics on frames
 // ------------------------------------------------------------------------------------------------
