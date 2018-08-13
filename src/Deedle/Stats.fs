@@ -150,7 +150,7 @@ module StatsInternal =
   /// such that the front is the min/max value. During the iteration, new value is
   /// added to the end (and all values that are greater/smaller than the new value
   /// are removed before it is appended).
-  let inline movingMinMaxHelper winSize cmp (s:seq<OptionalValue<'V>>) = 
+  let movingMinMaxHelper winSize cmp (s:seq<OptionalValue<_>>) = 
     let res = ResizeArray<_>()
     let i = ref 0
     let q = Deque()
@@ -162,9 +162,9 @@ module StatsInternal =
       while q.Count > 0 && !i >= fst q.First do q.RemoveFirst() |> ignore
       if v.HasValue then
         // remove from back any values >= (min) or <= (max) compared to current obs
-        while q.Count > 0 && (cmp (snd q.Last) (float v.Value)) do q.RemoveLast() |> ignore
+        while q.Count > 0 && (cmp (snd q.Last) v.Value) do q.RemoveLast() |> ignore
         // append new obs to back
-        q.Add( (!i + winSize, (float v.Value)) )
+        q.Add( (!i + winSize, v.Value) )
         // return min/max value at front
         res.Add(snd q.First)
       else
