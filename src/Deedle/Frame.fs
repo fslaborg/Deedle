@@ -1287,7 +1287,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// [category:Formatting and raw data access]
   member frame.Format(count) =
     let half = count / 2
-    frame.Format(count, count)
+    frame.Format(half, half)
 
   /// Shows the data frame content in a human-readable format. The resulting string
   /// shows all columns, but a limited number of rows.
