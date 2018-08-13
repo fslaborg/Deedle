@@ -13,7 +13,7 @@ open Deedle.Internal
 
 // TODO: still to do, possibly: median, percentile, corr, cov
 
-module internal StatsHelpers =
+module StatsInternal =
   // ------------------------------------------------------------------------------------
   // Implementation internals - moving window functionality
   // ------------------------------------------------------------------------------------  
@@ -65,11 +65,11 @@ module internal StatsHelpers =
   /// When calculating moments, this record is used to keep track of the 
   /// count (`nobs`), sum of values (`sum`), sum of squares (`sum2`),
   /// sum of values to the power of 3 and 3 (`sum3` and `sum4`)
-  type internal Sums = { nobs: float; sum: float; sump2: float; sump3: float; sump4: float }
+  type Sums = { nobs: float; sum: float; sump2: float; sump3: float; sump4: float }
 
   /// Given an initial array of values, calculate the initial `Sums` value
   /// (only required elements of `Sums` are calculated based on `moment`)
-  let internal initSumsDense moment (init: float []) = 
+  let initSumsDense moment (init: float []) = 
     let count = init |> Array.length |> float
     let sum   = if moment < 1 then 0.0 else init |> Array.sum
     let sump2 = if moment < 2 then 0.0 else init |> Array.sumBy (fun x -> pown x 2)
@@ -80,7 +80,7 @@ module internal StatsHelpers =
   /// Given an existing `state` of type `Sums`, new incoming element and
   /// an old outgoing element, update the sums value
   /// (only required elements of `Sums` are calculated based on `moment`)
-  let internal updateSumsDense moment state curr outg =
+  let updateSumsDense moment state curr outg =
     let sum   = if moment < 1 then 0.0 else state.sum + curr - outg
     let sump2 = if moment < 2 then 0.0 else state.sump2 + (pown curr 2) - (pown outg 2)
     let sump3 = if moment < 3 then 0.0 else state.sump3 + (pown curr 3) - (pown outg 3)
@@ -89,14 +89,15 @@ module internal StatsHelpers =
 
   /// Pick only available values from the input array and call `initSumsDense`
   /// (no need to handle `nan` values, because those are returned as Missing by Deedle)
-  let internal initSumsSparse moment (init: float opt []) =
+  let inline initSumsSparse moment (init: 'V opt []) =
     init 
     |> Array.choose OptionalValue.asOption
+    |> Array.map float
     |> initSumsDense moment
 
   /// Update `Sums` value using `updateSumsDense`, but handle the case
   /// when removing/adding value that is missing (`OptionalValue.Missing`)
-  let internal updateSumsSparse moment state curr outg = 
+  let updateSumsSparse moment state curr outg = 
     match curr, outg with
     | OptionalValue.Present x, OptionalValue.Present y -> updateSumsDense moment state x y
     | OptionalValue.Present x, OptionalValue.Missing   -> { updateSumsDense moment state x 0.0 with nobs = state.nobs + 1.0 }
@@ -106,18 +107,18 @@ module internal StatsHelpers =
   /// Apply moving window transformation based on `Sums` calculation. The `proj` function
   /// calculates the statistics from `Sums` value and the `moment` specifies which of the
   /// `Sums` properties are calculated during the processing.
-  let internal applyMovingSumsTransform moment winSize (proj: Sums -> float) series =
+  let applyMovingSumsTransform moment winSize (proj: Sums -> float) series =
     if winSize <= 0 then invalidArg "windowSize" "Window must be positive"
     let calcSparse = movingWindowFn winSize (initSumsSparse moment) (updateSumsSparse moment) proj >> Array.ofSeq
     applySeriesProj calcSparse series
 
   /// Calculate variance from `Sums`; requires `moment=2`
-  let internal varianceSums s =
+  let varianceSums s =
     let v = (s.nobs * s.sump2 - s.sum * s.sum) / (s.nobs * s.nobs - s.nobs) 
     if v < 0.0 then nan else v
 
   /// Calculate skewness from `Sums`; requires `moment=3`
-  let internal skewSums s =
+  let skewSums s =
     let a = s.sum / s.nobs
     let b = s.sump2 / s.nobs - a * a
     let c = s.sump3 / s.nobs - a * a * a - 3.0 * a * b
@@ -126,7 +127,7 @@ module internal StatsHelpers =
     else (sqrt (s.nobs * (s.nobs - 1.0)) * c) / ((s.nobs - 2.0) * pown r 3)
   
   /// Calculate kurtosis from `Sums`; requires `moment=4`
-  let internal kurtSums s =
+  let kurtSums s =
     let a = s.sum / s.nobs
     let r = a * a
     let b = s.sump2 / s.nobs - r
@@ -188,7 +189,7 @@ module internal StatsHelpers =
 
   /// Represents the moments as calculated during online processing
   /// (`nobs` is the count, `sum` is the sum, `M1` to `M4` are moments)
-  type internal Moments = { 
+  type Moments = { 
     nobs : float 
     sum  : float 
     M1   : float
@@ -199,7 +200,7 @@ module internal StatsHelpers =
 
   /// Updates the moments using the Knuth/Welford algorithm for online stats updating
   /// (See: http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Online_algorithm)
-  let internal updateMoments state x =
+  let updateMoments state x =
     let { nobs = nobs; sum = sum; M1 = M1; M2 = M2; M3 = M3; M4 = M4 } = state
     let n1 = nobs
     let n = nobs + 1.0
@@ -215,7 +216,7 @@ module internal StatsHelpers =
     { nobs = n; sum = s; M1 = M1; M2 = M2; M3 = M3; M4 = M4 }   
 
   /// Updates the moments using `updateMoments`, but skips over missing values
-  let internal updateMomentsSparse state curr =     
+  let updateMomentsSparse state curr =     
     match curr with
     | OptionalValue.Present x -> updateMoments state x
     | OptionalValue.Missing   -> state
@@ -243,12 +244,12 @@ module internal StatsHelpers =
   // ------------------------------------------------------------------------------------
 
   /// Returns all values of a series as an array of `OptionalValue`s
-  let internal valuesAllOpt (series:Series<_, _>) =
+  let valuesAllOpt (series:Series<_, _>) =
     series.Vector.DataSequence |> Array.ofSeq
 
   /// Calculates minimum or maximum using the specified function 'f'
   /// Returns None when there are no values or Some.
-  let inline internal trySeriesExtreme f (series:Series<'K, 'V>) =
+  let inline trySeriesExtreme f (series:Series<'K, 'V>) =
     let mutable res = Unchecked.defaultof<_>
     let mutable initialized = false
     for v in series.Vector.DataSequence do
@@ -287,7 +288,7 @@ module internal StatsHelpers =
     select 0 (arr.Length - 1)
 
 
-open StatsHelpers
+open StatsInternal
 
 /// The `Stats` type contains functions for fast calculation of statistics over
 /// series and frames as well as over a moving and an expanding window in a series. 
@@ -535,9 +536,9 @@ type Stats =
   /// and `NaN` values. When there are no available values, the result is NaN.
   ///
   /// [category:Series statistics]
-  static member inline sum (series:Series<'K, float>) = 
+  static member inline sum (series:Series<'K, 'V>) = 
     series.Values |> Seq.fold (fun sum v -> 
-      if Double.IsNaN sum then v else sum + v) nan
+      if Double.IsNaN sum then float v else sum + (float v)) nan
 
   /// Sum that operates only any appropriate numeric type. When there are no available 
   /// values, the result is zero of the approriate numeric type.
@@ -550,7 +551,7 @@ type Stats =
   /// and `NaN` values. When there are no available values, the result is NaN.
   ///
   /// [category:Series statistics]
-  static member mean (series:Series<'K, float>) =
+  static member inline mean (series:Series<'K, 'V>) =
     let sums = initSumsSparse 1 (valuesAllOpt series)
     sums.sum / sums.nobs
 
@@ -558,28 +559,28 @@ type Stats =
   /// and `NaN` values. When there are less than 2 values, the result is NaN.
   ///
   /// [category:Series statistics]
-  static member variance (series:Series<'K, float>) =
+  static member inline variance (series:Series<'K, 'V>) =
     varianceSums (initSumsSparse 2 (valuesAllOpt series))
 
   /// Returns the standard deviation of the values in a series. The function skips over 
   /// missing values and `NaN` values. When there are less than 2 values, the result is NaN.
   ///
   /// [category:Series statistics]
-  static member stdDev (series:Series<'K, float>) =
+  static member inline stdDev (series:Series<'K, 'V>) =
     sqrt (varianceSums (initSumsSparse 2 (valuesAllOpt series)))
 
   /// Returns the skewness of the values in a series. The function skips over missing 
   /// values and `NaN` values. When there are less than 3 values, the result is NaN.
   ///
   /// [category:Series statistics]
-  static member skew (series:Series<'K, float>) =
+  static member inline skew (series:Series<'K, 'V>) =
     skewSums (initSumsSparse 3 (valuesAllOpt series))
 
   /// Returns the kurtosis of the values in a series. The function skips over missing 
   /// values and `NaN` values. When there are less than 4 values, the result is NaN.
   ///
   /// [category:Series statistics]
-  static member kurt (series:Series<'K, float>) =
+  static member inline kurt (series:Series<'K, 'V>) =
     kurtSums (initSumsSparse 4 (valuesAllOpt series))
 
   /// Returns the minimum of the values in a series. The result is an option value.
@@ -613,8 +614,8 @@ type Stats =
   /// Returns the median of the elements of the series.
   ///
   /// [category:Series statistics]
-  static member median (series:Series<'K, float>) = 
-    let values = Array.ofSeq series.Values 
+  static member inline median (series:Series<'K, 'V>) = 
+    let values = Array.ofSeq series.Values |> Array.map float
     let mid = values.Length / 2
     if values.Length = 0 then nan
     elif values.Length % 2 = 1 then quickSelectInplace mid values
@@ -756,7 +757,7 @@ type Stats =
   /// values and values created from `Double.NaN` etc.
   ///
   /// [category:Multi-level statistics]
-  static member levelCount (level:'K -> 'L) (series:Series<'K, 'V>) = 
+  static member inline levelCount (level:'K -> 'L) (series:Series<'K, 'V>) = 
     Series.applyLevel level Stats.count series
 
   /// For each group with equal keys at the level specified by `level`, 
@@ -764,7 +765,7 @@ type Stats =
   /// and `NaN` values. When there are no available values, the result is 0.
   ///
   /// [category:Multi-level statistics]
-  static member levelSum (level:'K -> 'L) (series:Series<'K, float>) = 
+  static member inline levelSum (level:'K -> 'L) (series:Series<'K, 'V>) = 
     Series.applyLevel level Stats.sum series
 
   /// For each group with equal keys at the level specified by `level`, 
@@ -772,14 +773,14 @@ type Stats =
   /// values and `NaN` values. When there are no available values, the result is NaN.
   ///
   /// [category:Multi-level statistics]
-  static member levelMean (level:'K -> 'L) (series:Series<'K, float>) = 
+  static member inline levelMean (level:'K -> 'L) (series:Series<'K, 'V>) = 
     Series.applyLevel level Stats.mean series
 
   /// For each group with equal keys at the level specified by `level`, 
   /// returns the median of the values in the group.
   ///
   /// [category:Multi-level statistics]
-  static member levelMedian (level:'K -> 'L) (series:Series<'K, float>) = 
+  static member inline levelMedian (level:'K -> 'L) (series:Series<'K, 'V>) = 
     Series.applyLevel level Stats.median series
 
   /// For each group with equal keys at the level specified by `level`, 
@@ -787,7 +788,7 @@ type Stats =
   /// missing values and `NaN` values. When there are less than 2 values, the result is NaN.
   ///
   /// [category:Multi-level statistics]
-  static member levelStdDev (level:'K -> 'L) (series:Series<'K, float>) = 
+  static member inline levelStdDev (level:'K -> 'L) (series:Series<'K, 'V>) = 
     Series.applyLevel level Stats.stdDev series
 
   /// For each group with equal keys at the level specified by `level`, 
@@ -795,7 +796,7 @@ type Stats =
   /// values and `NaN` values. When there are less than 2 values, the result is NaN.
   ///
   /// [category:Multi-level statistics]
-  static member levelVariance (level:'K -> 'L) (series:Series<'K, float>) = 
+  static member inline levelVariance (level:'K -> 'L) (series:Series<'K, 'V>) = 
     Series.applyLevel level Stats.variance series
 
   /// For each group with equal keys at the level specified by `level`, 
@@ -803,7 +804,7 @@ type Stats =
   /// values and `NaN` values. When there are less than 3 values, the result is NaN.
   ///
   /// [category:Multi-level statistics]
-  static member levelSkew (level:'K -> 'L) (series:Series<'K, float>) = 
+  static member inline levelSkew (level:'K -> 'L) (series:Series<'K, 'V>) = 
     Series.applyLevel level Stats.skew series
 
   /// For each group with equal keys at the level specified by `level`, 
@@ -811,5 +812,5 @@ type Stats =
   /// and `NaN` values. When there are less than 4 values, the result is NaN.
   ///
   /// [category:Multi-level statistics]
-  static member levelKurt (level:'K -> 'L) (series:Series<'K, float>) = 
+  static member inline levelKurt (level:'K -> 'L) (series:Series<'K, 'V>) = 
     Series.applyLevel level Stats.kurt series
