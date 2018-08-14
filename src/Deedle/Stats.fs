@@ -631,21 +631,23 @@ type Stats =
   /// Returns the series of main statistic values of the series.
   ///
   /// [category:Series statistics]
-  static member describe (series:Series<'K, 'V>) = 
+  static member inline describe (series:Series<'K, 'V>) = 
     match series with
     | :? Series<_, float> as floatSeries -> 
        [|
-        (Min, Stats.min floatSeries);
-        (Max, Stats.max floatSeries);
-        (Mean, Some(Stats.mean floatSeries));
-        (Std, Some(Stats.stdDev floatSeries));
+        ("min", Stats.min floatSeries);
+        ("max", Stats.max floatSeries);
+        ("mean", Some(Stats.mean floatSeries));
+        ("std", Some(Stats.stdDev floatSeries));
+        ("unique", Some(float(Stats.uniqueCount floatSeries)));
         |] |> Array.toSeq |> Series.ofObservations
     | _ -> 
       [|
-        (Min, None);
-        (Max, None);
-        (Mean, None);
-        (Std, None);
+        ("min", None);
+        ("max", None);
+        ("mean", None);
+        ("std", None);
+        ("unique", Some(float(Stats.uniqueCount series)));
       |] |> Array.toSeq |> Series.ofObservations
 
 

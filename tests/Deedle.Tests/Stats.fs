@@ -89,11 +89,12 @@ let ``describe works`` ()=
   let s = Series.ofValues [ 0.0; 1.0; 2.0; 3.0; 4.0 ]
   let desc = Stats.describe s
 
-  desc.Get(Min)  |> should equal (Stats.min s)
-  desc.Get(Max)  |> should equal (Stats.max s)
-  desc.Get(Mean) |> should equal (Some(Stats.mean s))
+  desc.Get("min")  |> should equal (Stats.min s)
+  desc.Get("max")  |> should equal (Stats.max s)
+  desc.Get("mean") |> should equal (Some(Stats.mean s))
+  desc.Get("unique") |> should equal (Some(float(Stats.uniqueCount s)))
 
-  (Option.get (desc.Get(Std)))  |> should beWithin  ((Stats.stdDev s) +/- 1e-9)
+  (Option.get (desc.Get("std")))  |> should beWithin  ((Stats.stdDev s) +/- 1e-9)
 
 [<Test>]
 let ``Moving skew works`` () =
