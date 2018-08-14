@@ -160,7 +160,6 @@ type 'T tryval = TryValue<'T>
 /// [category:Primitive types and values]
 type 'T opt = OptionalValue<'T>
 
-
 /// Represents different behaviors of key lookup in series. For unordered series,
 /// the only available option is `Lookup.Exact` which finds the exact key - methods
 /// fail or return missing value if the key is not available in the index. For ordered

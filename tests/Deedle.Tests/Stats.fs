@@ -85,6 +85,18 @@ let ``Moving stddev works`` () =
   s3 |> Stats.movingStdDev 2 |> Stats.sum |> should beWithin (e3 +/- 1e-9)
 
 [<Test>]
+let ``describe works`` ()=
+  let s = Series.ofValues [ 0.0; 1.0; 2.0; 3.0; 4.0 ]
+  let desc = Stats.describe s
+
+  desc.Get("min")  |> should equal (Stats.min s)
+  desc.Get("max")  |> should equal (Stats.max s)
+  desc.Get("mean") |> should equal (Some(Stats.mean s))
+  desc.Get("unique") |> should equal (Some(float(Stats.uniqueCount s)))
+
+  (Option.get (desc.Get("std")))  |> should beWithin  ((Stats.stdDev s) +/- 1e-9)
+
+[<Test>]
 let ``Moving skew works`` () =
   let s1 = Series.ofValues [ 0.0; -1.0; Double.NaN; 3.0; -5.0; 4.0; 8.0 ]
   let s2 = Series.ofValues [ 0.0; -1.0; 2.0; 3.0; -5.0; 4.0; 8.0 ]
