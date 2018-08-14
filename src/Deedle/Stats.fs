@@ -656,7 +656,7 @@ type Stats =
   ///  - `keyDiff` - A function representing "subtraction" between two keys
   ///
   /// [category:Series interoploation]
-  static member inline interpolateLinear keys (keyDiff:'K->'K->float) (series:Series<'K, float>) =
+  static member inline interpolateLinear keys (keyDiff:'K->'K->float) (series:Series<'K, 'V>) =
     let linearF k a b =
       match a, b with
       | Some x, Some y -> 
@@ -665,7 +665,7 @@ type Stats =
       | Some x, _      -> snd x
       | _, Some y      -> snd y
       | _              -> raise <| new ArgumentException("Unexpected code path in interpolation")
-    series |> Stats.interpolate keys linearF
+    series |> Series.mapValues float |> Stats.interpolate keys linearF
 
   // ------------------------------------------------------------------------------------
   // Statistics calculated over the entire frames' float column series
