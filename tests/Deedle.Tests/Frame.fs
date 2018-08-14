@@ -811,6 +811,48 @@ let ``AppendN works on non-primitives`` () =
   df2.RowCount |> shouldEqual df.RowCount
 
 // ------------------------------------------------------------------------------------------------
+// Operations - concat
+// ------------------------------------------------------------------------------------------------
+
+[<Test>]
+let ``Can concat frames with identical columns`` () = 
+  let df1 = Frame.ofColumns [ "A" => series [ for i in 1 .. 5 -> i, i ];
+                              "B" => series [ for i in 1 .. 5 -> i, (i + 5) ]]
+  let df2 = Frame.ofColumns [ "A" => series [ for i in 6 .. 10 -> i, i ];
+                              "B" => series [ for i in 6 .. 10 -> i, (i + 5) ]]
+  let expected = Frame.ofColumns [ "A" => series [ for i in 1 .. 10 -> i, i ];
+                                   "B" => series [ for i in 1 .. 10 -> i, (i + 5) ]]
+  let actual = Frame.concat [df1; df2]                             
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Concat works on overlapping frames with missing values`` () =
+  let df1 = Frame.ofColumns [ "A" => series [ for i in 1 .. 5 -> i, i ];
+                            "B" => series [ for i in 2 .. 5 -> i, (i + 5) ]]
+  let df2 = Frame.ofColumns [ "A" => series [ for i in 6 .. 9 -> i, i ];
+                            "B" => series [ for i in 6 .. 10 -> i, (i + 5) ]]
+  let expected = Frame.ofColumns [ "A" => series [ for i in 1 .. 9 -> i, i ];
+                            "B" => series [ for i in 2 .. 10 -> i, (i + 5) ]]
+  let actual = Frame.concat [df1; df2]                        
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Concat fails on overlapping row keys`` () =
+  let df1 = Frame.ofColumns [ "A" => series [ for i in 1 .. 5 -> i, i ];
+                            "B" => series [ for i in 2 .. 5 -> i, (i + 5) ]]
+  let df2 = Frame.ofColumns [ "A" => series [ for i in 6 .. 9 -> i, i ];
+                            "B" => series [ for i in 6 .. 10 -> i, (i + 5) ]]
+  (fun () -> Frame.concat [df1; df2] |> ignore) |> should throw (typeof<System.Exception>)
+
+[<Test>]
+let ``Concat fails for non-identical columns`` () = 
+  let df1 = Frame.ofColumns [ "A" => series [ for i in 1 .. 5 -> i, i ];
+                            "B" => series [ for i in 2 .. 5 -> i, (i + 5) ]]
+  let df2 = Frame.ofColumns [ "A" => series [ for i in 6 .. 9 -> i, i ];
+                            "B" => series [ for i in 6 .. 10 -> i, (i + 5) ]]
+  (fun () -> Frame.concat [df1; df2] |> ignore) |> should throw (typeof<System.Exception>)
+
+// ------------------------------------------------------------------------------------------------
 // Operations - zip
 // ------------------------------------------------------------------------------------------------
 
