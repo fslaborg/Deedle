@@ -27,7 +27,7 @@ type SeriesStatsExtensions =
   /// Returns the sum of the elements of the series of float values.
   /// [category:Statistics]
   [<Extension>]
-  static member Sum(series:Series<'K, float>) = Stats.sum series
+  static member inline Sum(series:Series<'K, 'V>) = Stats.sum series
 
   /// Returns the sum of the elements of the series of numeric values.
   /// [category:Statistics]
@@ -37,41 +37,41 @@ type SeriesStatsExtensions =
   /// Returns the smallest of all elements of the series.
   /// [category:Statistics]
   [<Extension>]
-  static member Min(series:Series<'K, 'V>) = Stats.min series |> Option.get
+  static member inline Min(series:Series<'K, 'V>) = Stats.min series |> Option.get
 
   /// Returns the greatest of all elements of the series.
   /// [category:Statistics]
   [<Extension>]
-  static member Max(series:Series<'K, 'V>) = Stats.max series |> Option.get
+  static member inline Max(series:Series<'K, 'V>) = Stats.max series |> Option.get
 
   /// Returns the mean of the elements of the series.
   /// [category:Statistics]
   [<Extension>]
-  static member Mean(series:Series<'K, float>) = Stats.mean series
+  static member inline Mean(series:Series<'K, 'V>) = Stats.mean series
 
   /// Returns the standard deviation of the elements of the series.
   /// [category:Statistics]
   [<Extension>]
-  static member StdDev(series:Series<'K, float>) = Stats.stdDev series
+  static member inline StdDev(series:Series<'K, 'V>) = Stats.stdDev series
 
   /// Returns the skewness of the elements of the series.
   /// [category:Statistics]
   [<Extension>]
-  static member Skewness(series:Series<'K, float>) = Stats.skew series
+  static member inline Skewness(series:Series<'K, 'V>) = Stats.skew series
 
   /// Returns the kurtosis of the elements of the series.
   /// [category:Statistics]
   [<Extension>]
-  static member Kurtosis(series:Series<'K, float>) = Stats.kurt series
+  static member inline Kurtosis(series:Series<'K, 'V>) = Stats.kurt series
 
   [<Extension>]
   [<Obsolete("Use StdDev instead")>]
-  static member StandardDeviation(series:Series<'K, float>) = Stats.stdDev series
+  static member inline StandardDeviation(series:Series<'K, 'V>) = Stats.stdDev series
 
   /// Returns the median of the elements of the series.
   /// [category:Statistics]
   [<Extension>]
-  static member Median(series:Series<'K, float>) = Stats.median series
+  static member inline Median(series:Series<'K, 'V>) = Stats.median series
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `groupSelector` and then returns a new series containing
@@ -85,7 +85,7 @@ type SeriesStatsExtensions =
   ///
   /// [category:Statistics]
   [<Extension>]
-  static member MeanLevel(series:Series<'K1, float>, groupSelector:Func<'K1, 'K2>) = 
+  static member inline MeanLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) = 
     Series.applyLevel groupSelector.Invoke Stats.mean series
 
   /// Groups the elements of the input series in groups based on the keys
@@ -99,7 +99,7 @@ type SeriesStatsExtensions =
   ///  - `groupSelector` - A delegate that returns a new group key, based on the key in the input series
   ///
   /// [category:Statistics]
-  static member StdDevLevel(series:Series<'K1, float>, groupSelector:Func<'K1, 'K2>) = 
+  static member inline StdDevLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) = 
     Series.applyLevel groupSelector.Invoke Stats.stdDev series
 
   /// Groups the elements of the input series in groups based on the keys
@@ -114,7 +114,7 @@ type SeriesStatsExtensions =
   ///
   /// [category:Statistics]
   [<Extension>]
-  static member MedianLevel(series:Series<'K1, float>, groupSelector:Func<'K1, 'K2>) = 
+  static member inline MedianLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) = 
       Series.applyLevel groupSelector.Invoke Stats.median series
 
   /// Groups the elements of the input series in groups based on the keys
@@ -129,7 +129,7 @@ type SeriesStatsExtensions =
   ///
   /// [category:Statistics]
   [<Extension>]
-  static member inline SumLevel(series:Series<'K1, float>, groupSelector:Func<'K1, 'K2>) = 
+  static member inline SumLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) = 
     Series.applyLevel groupSelector.Invoke Stats.sum series
 
   /// Groups the elements of the input series in groups based on the keys
@@ -170,6 +170,6 @@ type SeriesStatsExtensions =
   ///
   /// [category:Calculations, aggregation and statistics]
   [<Extension>]
-  static member InterpolateLinear(series:Series<'K, float>, keys:'K seq, keyDiff:Func<'K,'K,float>): Series<'K,float> = 
+  static member inline InterpolateLinear(series:Series<'K, 'V>, keys:'K seq, keyDiff:Func<'K,'K,float>): Series<'K,float> = 
     series |> Stats.interpolateLinear keys (fun a b -> keyDiff.Invoke(a,b))   
 
