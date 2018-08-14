@@ -655,26 +655,16 @@ type Stats =
   /// Returns the series of main statistic values of the series.
   ///
   /// [category:Series statistics]
-  static member inline describe (series:Series<'K, 'V>) = 
-    match series with
-    | :? Series<_, float> as floatSeries -> 
-       [|
-        ("min", Stats.tryMin floatSeries);
-        ("max", Stats.tryMax floatSeries);
-        ("mean", Some(Stats.mean floatSeries));
-        ("std", Some(Stats.stdDev floatSeries));
-        ("unique", Some(float(Stats.uniqueCount floatSeries)));
-        |] |> Array.toSeq |> Series.ofObservations
-    | _ -> 
-      [|
-        ("min", None);
-        ("max", None);
-        ("mean", None);
-        ("std", None);
-        ("unique", Some(float(Stats.uniqueCount series)));
-      |] |> Array.toSeq |> Series.ofObservations
-
-
+  static member inline describe (series:Series<'K, 'V>) =
+    [
+      "min", Stats.min series
+      "max", Stats.max series
+      "mean", Stats.mean series
+      "std", Stats.stdDev series
+      "unique", Stats.uniqueCount series |> float
+    ]
+    |> Series.ofObservations
+   
   // ------------------------------------------------------------------------------------
   // Series interpolation
   // ------------------------------------------------------------------------------------
