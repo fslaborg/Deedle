@@ -170,6 +170,6 @@ type SeriesStatsExtensions =
   ///
   /// [category:Calculations, aggregation and statistics]
   [<Extension>]
-  static member InterpolateLinear(series:Series<'K, float>, keys:'K seq, keyDiff:Func<'K,'K,float>): Series<'K,float> = 
+  static member inline InterpolateLinear(series:Series<'K, 'V>, keys:'K seq, keyDiff:Func<'K,'K,float>): Series<'K,float> = 
     series |> Stats.interpolateLinear keys (fun a b -> keyDiff.Invoke(a,b))   
 
