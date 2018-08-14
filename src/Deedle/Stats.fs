@@ -587,13 +587,37 @@ type Stats =
   /// When the series contains no values, the result is `None`.
   ///
   /// [category:Series statistics]
-  static member inline min (series:Series<'K, 'V>) = trySeriesExtreme min series
+  static member inline tryMin (series:Series<'K, 'V>) =
+    trySeriesExtreme min series
 
   /// Returns the maximum of the values in a series. The result is an option value.
   /// When the series contains no values, the result is `None`.
   ///
   /// [category:Series statistics]
-  static member inline max (series:Series<'K, 'V>) = trySeriesExtreme max series
+  static member inline tryMax (series:Series<'K, 'V>) =
+    trySeriesExtreme max series
+
+  /// Returns the minimum of the values in a series. The result is an float value.
+  /// When the series contains no values, the result is NaN.
+  ///
+  /// [category:Series statistics]
+  static member inline min (series:Series<'K, 'V>) =
+    let values = series.Values
+    if values |> Seq.isEmpty then
+      nan
+    else
+      values |> Seq.map float |> Seq.min
+
+  /// Returns the maximum of the values in a series. The result is an float value.
+  /// When the series contains no values, the result is NaN.
+  ///
+  /// [category:Series statistics]
+  static member inline max (series:Series<'K, 'V>) =
+    let values = series.Values
+    if values |> Seq.isEmpty then
+      nan
+    else
+      values |> Seq.map float |> Seq.max
 
   /// Returns the number of unique values in a series.
   static member inline uniqueCount (series:Series<'K, 'V>) =
@@ -635,8 +659,8 @@ type Stats =
     match series with
     | :? Series<_, float> as floatSeries -> 
        [|
-        ("min", Stats.min floatSeries);
-        ("max", Stats.max floatSeries);
+        ("min", Stats.tryMin floatSeries);
+        ("max", Stats.tryMax floatSeries);
         ("mean", Some(Stats.mean floatSeries));
         ("std", Some(Stats.stdDev floatSeries));
         ("unique", Some(float(Stats.uniqueCount floatSeries)));
@@ -761,9 +785,7 @@ type Stats =
   ///
   /// [category:Frame statistics]
   static member min (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ s -> 
-      let res = Stats.min s 
-      defaultArg res nan )  
+    frame.GetColumns<float>() |> Series.map (fun _ s -> Stats.min s)  
 
   /// For each numerical column, returns the maximal values as a series.
   /// The function skips over missing and `NaN` values. When there are no values,
@@ -771,9 +793,7 @@ type Stats =
   ///
   /// [category:Frame statistics]
   static member max (frame:Frame<'R, 'C>) = 
-    frame.GetColumns<float>() |> Series.map (fun _ s -> 
-      let res = Stats.max s 
-      defaultArg res nan )  
+    frame.GetColumns<float>() |> Series.map (fun _ s -> Stats.max s)  
 
   /// For each column, returns the number of unique values.
   static member uniqueCount (frame: Frame<'R, 'C>) =

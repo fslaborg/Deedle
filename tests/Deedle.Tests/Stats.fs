@@ -89,8 +89,8 @@ let ``describe works`` ()=
   let s = Series.ofValues [ 0.0; 1.0; 2.0; 3.0; 4.0 ]
   let desc = Stats.describe s
 
-  desc.Get("min")  |> should equal (Stats.min s)
-  desc.Get("max")  |> should equal (Stats.max s)
+  desc.Get("min")  |> should equal (Stats.tryMin s)
+  desc.Get("max")  |> should equal (Stats.tryMax s)
   desc.Get("mean") |> should equal (Some(Stats.mean s))
   desc.Get("unique") |> should equal (Some(float(Stats.uniqueCount s)))
 

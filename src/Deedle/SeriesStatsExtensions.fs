@@ -37,12 +37,12 @@ type SeriesStatsExtensions =
   /// Returns the smallest of all elements of the series.
   /// [category:Statistics]
   [<Extension>]
-  static member inline Min(series:Series<'K, 'V>) = Stats.min series |> Option.get
+  static member inline Min(series:Series<'K, 'V>) = Stats.tryMin series |> Option.get
 
   /// Returns the greatest of all elements of the series.
   /// [category:Statistics]
   [<Extension>]
-  static member inline Max(series:Series<'K, 'V>) = Stats.max series |> Option.get
+  static member inline Max(series:Series<'K, 'V>) = Stats.tryMax series |> Option.get
 
   /// Returns the mean of the elements of the series.
   /// [category:Statistics]
@@ -145,7 +145,7 @@ type SeriesStatsExtensions =
   /// [category:Statistics]
   [<Extension>]
   static member inline MinLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) = 
-    Series.applyLevelOptional groupSelector.Invoke Stats.min series
+    Series.applyLevelOptional groupSelector.Invoke Stats.tryMin series
 
   /// Groups the elements of the input series in groups based on the keys
   /// produced by `groupSelector` and then returns a new series containing
@@ -160,7 +160,7 @@ type SeriesStatsExtensions =
   /// [category:Statistics]
   [<Extension>]
   static member inline MaxLevel(series:Series<'K1, 'V>, groupSelector:Func<'K1, 'K2>) = 
-    Series.applyLevelOptional groupSelector.Invoke Stats.max series
+    Series.applyLevelOptional groupSelector.Invoke Stats.tryMax series
 
   /// Linearly interpolates an ordered series given a new sequence of keys. 
   ///
