@@ -91,10 +91,9 @@ let ``describe works`` ()=
 
   desc.Get("min")  |> should equal (Stats.min s)
   desc.Get("max")  |> should equal (Stats.max s)
-  desc.Get("mean") |> should equal (Some(Stats.mean s))
-  desc.Get("unique") |> should equal (Some(float(Stats.uniqueCount s)))
-
-  (Option.get (desc.Get("std")))  |> should beWithin  ((Stats.stdDev s) +/- 1e-9)
+  desc.Get("mean") |> should equal (Stats.mean s)
+  desc.Get("unique") |> should equal (Stats.uniqueCount s |> float)
+  desc.Get("std")  |> should beWithin  ((Stats.stdDev s) +/- 1e-9)
 
 [<Test>]
 let ``Moving skew works`` () =
