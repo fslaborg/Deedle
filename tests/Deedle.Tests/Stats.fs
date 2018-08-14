@@ -30,191 +30,229 @@ open Deedle
 let ``Moving count works`` () =
   let s1 = Series.ofValues [ 0.0; 1.0; Double.NaN; 3.0; 4.0 ]
   let s2 = Series.ofValues [ 0.0; 1.0; 2.0; 3.0; 4.0 ]
+  let s3 = Series.ofValues [ 0; 1; 2; 3; 4 ]
 
   let e1 = 6.0
   let e2 = 8.0
+  let e3 = 8.0
 
   s1 |> Stats.movingCount 2 |> Stats.sum |> should beWithin (e1 +/- 1e-9)
   s2 |> Stats.movingCount 2 |> Stats.sum |> should beWithin (e2 +/- 1e-9)
- 
+  s3 |> Stats.movingCount 2 |> Stats.sum |> should beWithin (e3 +/- 1e-9)
+
 [<Test>]
 let ``Moving sum works`` () =
   let s1 = Series.ofValues [ 0.0; 1.0; Double.NaN; 3.0; 4.0 ]
   let s2 = Series.ofValues [ 0.0; 1.0; 2.0; 3.0; 4.0 ]
+  let s3 = Series.ofValues [ 0; 1; 2; 3; 4 ]
 
   let e1 = 12.0
   let e2 = 16.0
+  let e3 = 16.0
 
   s1 |> Stats.movingSum 2 |> Stats.sum |> should beWithin (e1 +/- 1e-9)
   s2 |> Stats.movingSum 2 |> Stats.sum |> should beWithin (e2 +/- 1e-9)
+  s3 |> Stats.movingSum 2 |> Stats.sum |> should beWithin (e3 +/- 1e-9)
 
 [<Test>]
 let ``Moving mean works`` () =
   let s1 = Series.ofValues [ 0.0; 1.0; Double.NaN; 3.0; 4.0 ]
   let s2 = Series.ofValues [ 0.0; 1.0; 2.0; 3.0; 4.0 ]
+  let s3 = Series.ofValues [ 0; 1; 2; 3; 4 ]
 
   // using pandas as an oracle
   let e1 = 8.0
   let e2 = 8.0
+  let e3 = 8.0
 
   s1 |> Stats.movingMean 2 |> Stats.sum |> should beWithin (e1 +/- 1e-9)
   s2 |> Stats.movingMean 2 |> Stats.sum |> should beWithin (e2 +/- 1e-9)
+  s3 |> Stats.movingMean 2 |> Stats.sum |> should beWithin (e3 +/- 1e-9)
 
 [<Test>]
 let ``Moving stddev works`` () =
   let s1 = Series.ofValues [ 0.0; 1.0; Double.NaN; 3.0; 4.0 ]
   let s2 = Series.ofValues [ 0.0; 1.0; 2.0; 3.0; 4.0 ]
+  let s3 = Series.ofValues [ 0; 1; 2; 3; 4 ]
 
   // using pandas as an oracle
   let e1 = 1.4142135623730951
   let e2 = 2.8284271247461903
+  let e3 = 2.8284271247461903
 
   s1 |> Stats.movingStdDev 2 |> Stats.sum |> should beWithin (e1 +/- 1e-9)
   s2 |> Stats.movingStdDev 2 |> Stats.sum |> should beWithin (e2 +/- 1e-9)
+  s3 |> Stats.movingStdDev 2 |> Stats.sum |> should beWithin (e3 +/- 1e-9)
 
 [<Test>]
 let ``Moving skew works`` () =
   let s1 = Series.ofValues [ 0.0; -1.0; Double.NaN; 3.0; -5.0; 4.0; 8.0 ]
   let s2 = Series.ofValues [ 0.0; -1.0; 2.0; 3.0; -5.0; 4.0; 8.0 ]
+  let s3 = Series.ofValues [ 0; -1; 2; 3; -5; 4; 8 ]
 
   // using pandas as an oracle
   let e1 = -2.7081486342972996
   let e2 = -4.6963310471597577
+  let e3 = -4.6963310471597577
 
   s1 |> Stats.movingSkew 3 |> Stats.sum |> should beWithin (e1 +/- 1e-9)
   s2 |> Stats.movingSkew 3 |> Stats.sum |> should beWithin (e2 +/- 1e-9)
+  s3 |> Stats.movingSkew 3 |> Stats.sum |> should beWithin (e3 +/- 1e-9)
 
 [<Test>]
 let ``Moving min works`` () =
   let s1 = Series.ofValues [ 0.0; -1.0; Double.NaN; 3.0; -5.0; 4.0; 8.0 ]
   let s2 = Series.ofValues [ 0.0; -1.0; 2.0; 3.0; -5.0; 4.0; 8.0 ]
+  let s3 = Series.ofValues [ 0; -1; 2; 3; -5; 4; 8 ]
 
   // using pandas as an oracle
   let e1 = -18.0
   let e2 = -18.0
+  let e3 = -18.0
 
   s1 |> Stats.movingMin 3 |> Stats.sum |> should beWithin (e1 +/- 1e-9)
   s2 |> Stats.movingMin 3 |> Stats.sum |> should beWithin (e2 +/- 1e-9)
+  s3 |> Stats.movingMin 3 |> Stats.sum |> should beWithin (e3 +/- 1e-9)
 
 [<Test>]
 let ``Moving max works`` () =
   let s1 = Series.ofValues [ 0.0; -1.0; Double.NaN; 3.0; -5.0; 4.0; 8.0 ]
   let s2 = Series.ofValues [ 0.0; -1.0; 2.0; 3.0; -5.0; 4.0; 8.0 ]
+  let s3 = Series.ofValues [ 0; -1; 2; 3; -5; 4; 8 ]
 
   // using pandas as an oracle
   let e1 = 18.0
   let e2 = 20.0
+  let e3 = 20.0
 
   s1 |> Stats.movingMax 3 |> Stats.sum |> should beWithin (e1 +/- 1e-9)
   s2 |> Stats.movingMax 3 |> Stats.sum |> should beWithin (e2 +/- 1e-9)
+  s3 |> Stats.movingMax 3 |> Stats.sum |> should beWithin (e3 +/- 1e-9)
 
 [<Test>]
 let ``Moving kurt works`` () =
   let s1 = Series.ofValues [ 0.0; -1.0; Double.NaN; 3.0; -5.0; 4.0; 8.0 ]
   let s2 = Series.ofValues [ 0.0; -1.0; 2.0; 3.0; -5.0; 4.0; 8.0 ]
+  let s3 = Series.ofValues [ 0; -1; 2; 3; -5; 4; 8 ]
 
   // using pandas as an oracle
   let e1 = 1.9686908218659251
   let e2 = 1.3147969613040118
+  let e3 = 1.3147969613040118
 
   s1 |> Stats.movingKurt 4 |> Stats.sum |> should beWithin (e1 +/- 1e-9)
   s2 |> Stats.movingKurt 4 |> Stats.sum |> should beWithin (e2 +/- 1e-9)
+  s3 |> Stats.movingKurt 4 |> Stats.sum |> should beWithin (e3 +/- 1e-9)
 
 [<Test>]
 let ``Expanding mean works`` () =
   let s1 = Series.ofValues [ 0.0; 1.0; Double.NaN; 3.0; 4.0 ]
   let s2 = Series.ofValues [ 0.0; 1.0; 2.0; 3.0; 4.0 ]
+  let s3 = Series.ofValues [ 0; 1; 2; 3; 4 ]
 
   // using pandas as an oracle
   let e1 = 4.333333333333333
   let e2 = 5.0
+  let e3 = 5.0
 
   s1 |> Stats.expandingMean |> Stats.sum |> should beWithin (e1 +/- 1e-9)
   s2 |> Stats.expandingMean |> Stats.sum |> should beWithin (e2 +/- 1e-9)
+  s3 |> Stats.expandingMean |> Stats.sum |> should beWithin (e3 +/- 1e-9)
 
 [<Test>]
 let ``Expanding stddev works`` () =
   let s1 = Series.ofValues [ 0.0; 1.0; Double.NaN; 3.0; 4.0 ]
   let s2 = Series.ofValues [ 0.0; 1.0; 2.0; 3.0; 4.0 ]
+  let s3 = Series.ofValues [ 0; 1; 2; 3; 4 ]
 
   // using pandas as an  oracle
   let e1 = 4.7674806523755962
   let e2 = 4.5792400600065433
+  let e3 = 4.5792400600065433
 
   s1 |> Stats.expandingStdDev |> Stats.sum |> should beWithin (e1 +/- 1e-9)
   s2 |> Stats.expandingStdDev |> Stats.sum |> should beWithin (e2 +/- 1e-9)
+  s3 |> Stats.expandingStdDev |> Stats.sum |> should beWithin (e3 +/- 1e-9)
 
 [<Test>]
 let ``Expanding skew works`` () =
   let s1 = Series.ofValues [ 0.0; -1.0; Double.NaN; 3.0; -5.0; 4.0; 8.0 ]
   let s2 = Series.ofValues [ 0.0; -1.0; 2.0; 3.0; -5.0; 4.0; 8.0 ]
+  let s3 = Series.ofValues [ 0; -1; 2; 3; -5; 4; 8 ]
 
   // using pandas as an  oracle
   let e1 =  0.25348662300133284
   let e2 = -0.99638293603701233
+  let e3 = -0.99638293603701233
 
   s1 |> Stats.expandingSkew |> Stats.sum |> should beWithin (e1 +/- 1e-9)
   s2 |> Stats.expandingSkew |> Stats.sum |> should beWithin (e2 +/- 1e-9)
+  s3 |> Stats.expandingSkew |> Stats.sum |> should beWithin (e3 +/- 1e-9)
 
 [<Test>]
 let ``Expanding kurt works`` () =
   let s1 = Series.ofValues [ 0.0; -1.0; Double.NaN; 3.0; -5.0; 4.0; 8.0 ]
   let s2 = Series.ofValues [ 0.0; -1.0; 2.0; 3.0; -5.0; 4.0; 8.0 ]
+  let s3 = Series.ofValues [ 0; -1; 2; 3; -5; 4; 8 ]
 
   // using pandas as an  oracle
   let e1 = 0.90493406707689539
   let e2 = -1.4288501854055262
+  let e3 = -1.4288501854055262
 
   s1 |> Stats.expandingKurt |> Stats.sum |> should beWithin (e1 +/- 1e-9)
   s2 |> Stats.expandingKurt |> Stats.sum |> should beWithin (e2 +/- 1e-9)
+  s3 |> Stats.expandingKurt |> Stats.sum |> should beWithin (e3 +/- 1e-9)
 
 [<Test>]
 let ``Expanding min works`` () =
   let s1 = Series.ofValues [ 0.0; -1.0; Double.NaN; 3.0; -5.0; 4.0; 8.0 ]
   let s2 = Series.ofValues [ 0.0; -1.0; 2.0; 3.0; -5.0; 4.0; 8.0 ]
+  let s3 = Series.ofValues [ 0; -1; 2; 3; -5; 4; 8 ]
 
   let e1 = -18.0
   let e2 = -18.0
+  let e3 = -18.0
 
   s1 |> Stats.expandingMin |> Stats.sum |> should beWithin (e1 +/- 1e-9)
   s2 |> Stats.expandingMin |> Stats.sum |> should beWithin (e2 +/- 1e-9)
+  s3 |> Stats.expandingMin |> Stats.sum |> should beWithin (e3 +/- 1e-9)
 
 [<Test>]
 let ``Expanding max works`` () =
   let s1 = Series.ofValues [ 0.0; -1.0; Double.NaN; 3.0; -5.0; 4.0; 8.0 ]
   let s2 = Series.ofValues [ 0.0; -1.0; 2.0; 3.0; -5.0; 4.0; 8.0 ]
+  let s3 = Series.ofValues [ 0; -1; 2; 3; -5; 4; 8 ]
 
   let e1 = 18.0
   let e2 = 20.0
+  let e3 = 20.0
 
   s1 |> Stats.expandingMax |> Stats.sum |> should beWithin (e1 +/- 1e-9)
   s2 |> Stats.expandingMax |> Stats.sum |> should beWithin (e2 +/- 1e-9)
+  s3 |> Stats.expandingMax |> Stats.sum |> should beWithin (e3 +/- 1e-9)
 
 [<Test>]
-let ``Basic level statistics works on sample float input`` () = 
+let ``Basic level statistics works on sample input`` () = 
   let s1 = series [(1,0) => nan; (1,1) => 2.0; (2,0) => 3.0; (2,1) => 4.0 ]  
+  let s2 = series [(1,1) => 2; (2,0) => 3; (2,1) => 4 ]  
+
   s1 |> Stats.levelCount fst |> shouldEqual <| series [ 1 => 1; 2 => 2 ]
   s1 |> Stats.levelSum fst |> shouldEqual <| series [ 1 => 2.0; 2 => 7.0 ]
   s1 |> Stats.levelMean fst |> shouldEqual <| series [ 1 => 2.0; 2 => 3.5 ]
+  s2 |> Stats.levelCount fst |> shouldEqual <| series [ 1 => 1; 2 => 2 ]
+  s2 |> Stats.levelSum fst |> shouldEqual <| series [ 1 => 2.0; 2 => 7.0 ]
+  s2 |> Stats.levelMean fst |> shouldEqual <| series [ 1 => 2.0; 2 => 3.5 ]
 
 [<Test>]
-let ``Basic level statistics works on sample integer input`` () = 
-  let s1 = series [(1,1) => 2; (2,0) => 3; (2,1) => 4 ]  
-  s1 |> Stats.levelCount fst |> shouldEqual <| series [ 1 => 1; 2 => 2 ]
-  s1 |> Stats.levelSum fst |> shouldEqual <| series [ 1 => 2.0; 2 => 7.0 ]
-  s1 |> Stats.levelMean fst |> shouldEqual <| series [ 1 => 2.0; 2 => 3.5 ]  
-
-[<Test>]
-let ``Advanced level statistics works on sample float input`` () = 
+let ``Advanced level statistics works on sample input`` () = 
   let s1 = series [(1,0) => 1.0; (1,1) => 2.0; (1,2) => 3.0; (1,4) => 4.0; (2,0) => 3.0; (2,1) => 4.0 ]  
+  let s2 = series [(1,0) => 1; (1,1) => 2; (1,2) => 3; (1,4) => 4; (2,0) => 3; (2,1) => 4 ]  
+
   s1 |> Stats.levelKurt fst |> Stats.sum |> should beWithin (-1.2 +/- 1e-9)
   s1 |> Stats.levelSkew fst |> Stats.sum |> should beWithin (0.0 +/- 1e-9)
-
-[<Test>]
-let ``Advanced level statistics works on sample integer input`` () = 
-  let s1 = series [(1,0) => 1; (1,1) => 2; (1,2) => 3; (1,4) => 4; (2,0) => 3; (2,1) => 4 ]  
-  s1 |> Stats.levelKurt fst |> Stats.sum |> should beWithin (-1.2 +/- 1e-9)
-  s1 |> Stats.levelSkew fst |> Stats.sum |> should beWithin (0.0 +/- 1e-9)  
+  s2 |> Stats.levelKurt fst |> Stats.sum |> should beWithin (-1.2 +/- 1e-9)
+  s2 |> Stats.levelSkew fst |> Stats.sum |> should beWithin (0.0 +/- 1e-9)
 
 [<Test>]
 let ``Moving minimum works with nan values`` () =
@@ -223,12 +261,18 @@ let ``Moving minimum works with nan values`` () =
 
 [<Test>]
 let ``maxBy and minBy work`` () =
-  let s = series [ 0 => 1.0; 1 => nan; 2 => 5.0 ]
-  s |> Stats.maxBy id |> shouldEqual (Some (2, 5.0))
-  s |> Stats.minBy id |> shouldEqual (Some (0, 1.0))
+  let s1 = series [ 0 => 1.0; 1 => nan; 2 => 5.0 ]
+  let s2 = series [ 0 => 1; 2 => 5 ]
 
-  s |> Stats.maxBy (fun x -> -x) |> shouldEqual (Some (0, 1.0))
-  s |> Stats.minBy (fun x -> -x) |> shouldEqual (Some (2, 5.0))
+  s1 |> Stats.maxBy id |> shouldEqual (Some (2, 5.0))
+  s1 |> Stats.minBy id |> shouldEqual (Some (0, 1.0))
+  s2 |> Stats.maxBy id |> shouldEqual (Some (2, 5))
+  s2 |> Stats.minBy id |> shouldEqual (Some (0, 1))
+
+  s1 |> Stats.maxBy (fun x -> -x) |> shouldEqual (Some (0, 1.0))
+  s1 |> Stats.minBy (fun x -> -x) |> shouldEqual (Some (2, 5.0))
+  s2 |> Stats.maxBy (fun x -> -x) |> shouldEqual (Some (0, 1))
+  s2 |> Stats.minBy (fun x -> -x) |> shouldEqual (Some (2, 5))
 
 [<Test>]
 let ``sum returns NaN for empty series`` () = 
