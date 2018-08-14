@@ -44,8 +44,8 @@ stores mean extremes and median of the input series:
 (*** define-output: ozinfo ***)
 series [
   "Mean" => round (Stats.mean ozone)
-  "Max" => Option.get (Stats.max ozone)
-  "Min" => Option.get (Stats.min ozone)
+  "Max" => Stats.max ozone
+  "Min" => Stats.min ozone
   "Median" => Stats.median ozone ]
 
 (*** include-it: ozinfo ***)
