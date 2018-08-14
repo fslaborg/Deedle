@@ -596,7 +596,7 @@ type Stats =
   static member inline max (series:Series<'K, 'V>) = trySeriesExtreme max series
 
   /// Returns the number of unique values in a series.
-  static member uniqueCount (series:Series<'K, 'V>) =
+  static member inline uniqueCount (series:Series<'K, 'V>) =
     series.Values |> Seq.distinct |> Seq.length
 
   /// Returns the key and value of the greatest element in the series. The result
