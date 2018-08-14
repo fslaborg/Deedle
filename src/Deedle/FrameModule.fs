@@ -1460,6 +1460,42 @@ module Frame =
   [<CompiledName("Merge")>]
   let merge (frame1:Frame<'R, 'C>) frame2 = mergeAll [frame1; frame2]
 
+  /// Concatenate a sequence of data frames with identical column keys and
+  /// non-overlapping row keys by appending matching columns. This is a special
+  /// case of `mergeAll`, but implemented more efficiently. Exceptions are
+  /// thrown if row and column keys do not meet above requirements.
+  ///
+  /// Note that the rows are *not* automatically reindexed to avoid overlaps.
+  /// This means that when a frame has rows indexed with ordinal numbers, you
+  /// may need to explicitly reindex the row keys before calling append.
+  ///
+  /// [category:Joining, merging and zipping]
+  [<CompiledName("Concat")>]
+  let concat (dfs:Frame<_,_> seq) =
+    let colKeys =
+        dfs
+        |> Seq.map (fun df ->
+            List.ofSeq df.ColumnKeys
+            |> List.sort)
+        |> Seq.distinct
+    try
+        let cols =
+            Seq.exactlyOne colKeys
+            |> Seq.map (fun columnname ->
+                let mergedColumn =
+                    dfs
+                    |> Seq.map (getCol columnname)
+                    |> Series.mergeAll
+                (columnname, mergedColumn))
+        let names, values = cols |> List.ofSeq |> List.unzip
+        FrameUtils.fromColumns IndexBuilder.Instance VectorBuilder.Instance (Series(names, values))
+    with
+        | :? System.ArgumentException ->
+            failwith "Frame.concat: Column keys of all frames must be identical."
+        | :? System.InvalidOperationException ->
+            failwith "Frame.concat: Frames must not have overlapping row keys."
+
+
   /// Aligns two data frames using both column index and row index and apply the specified operation
   /// on values of a specified type that are available in both data frames. The parameters `columnKind`,
   /// and `rowKind` can be specified to determine how the alginment works (similarly to `Join`).
