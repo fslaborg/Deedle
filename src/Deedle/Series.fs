@@ -507,7 +507,7 @@ and
     Series(newIndex, newVec, vectorBuilder, indexBuilder)
 
   /// [category:Merging, joining and zipping]
-  member series.Replace(keys:'K[], value: 'V) = 
+  member series.Replace(keys:'K[], value) = 
     series.Select(fun kvp -> 
       if (Array.exists (fun v -> v = kvp.Key) keys) then
         value
