@@ -507,6 +507,24 @@ and
     Series(newIndex, newVec, vectorBuilder, indexBuilder)
 
   /// [category:Merging, joining and zipping]
+  member series.Replace(keys:'K[], value: 'V) = 
+    series.Select(fun kvp -> 
+      if (Array.exists (fun v -> v = kvp.Key) keys) then
+        value
+      else
+        kvp.Value
+    )
+
+  /// [category:Merging, joining and zipping]
+  member series.Replace(key:'K, value) = 
+    series.Select(fun kvp -> 
+      if kvp.Key = key then
+        value
+      else
+        kvp.Value
+    )
+
+  /// [category:Merging, joining and zipping]
   member series.Intersect(another:Series<'K, 'V>)=
     let intersectIndex, _, _ = indexBuilder.Intersect( (series.Index, Vectors.Return 0), (another.Index, Vectors.Return 1) )
 
