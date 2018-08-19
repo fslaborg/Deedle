@@ -823,6 +823,21 @@ let ``Can compare series``() =
 
   Series.compare s1 s2 |> shouldEqual e
 
+
+[<Test>]
+let ``Can replace for one key``() =
+  let s = series [ 1 => 1.0; 2 => 2.0; 3 => 3.0 ]
+  let e = series [ 1 => 4.0; 2 => 2.0; 3 => 3.0 ]
+
+  s.Replace(1, 4.0) |> shouldEqual e
+
+[<Test>]
+let ``Can replace for many keys``() =
+  let s = series [ 1 => 1.0; 2 => 2.0; 3 => 3.0 ]
+  let e = series [ 1 => 4.0; 2 => 4.0; 3 => 3.0 ]
+
+  s.Replace([|1; 2|], 4.0) |> shouldEqual e
+
 // ------------------------------------------------------------------------------------------------
 // take, takeLast, skip, skipLast
 // ------------------------------------------------------------------------------------------------
