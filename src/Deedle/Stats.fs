@@ -664,6 +664,27 @@ type Stats =
       "unique", Stats.uniqueCount series |> float
     ]
     |> Series.ofObservations
+  
+  /// Returns the series of quantiles of the series.
+  ///
+  /// [category:Series statistics]
+  static member inline quantile (quantiles:float[], series:Series<'K, float>) =
+    let vals = series.Values |> Seq.sort |> Seq.toArray
+    let valsLength = vals |> Array.length
+    
+    quantiles
+    |> Array.map(fun q ->
+      let floatIndex = q * float(valsLength - 1)
+      if floatIndex % 1.0 = 0.0 then
+        string q, vals.[int(floatIndex)]
+      else
+        let index = int(floatIndex)
+        let l = vals.[index]
+        let r = vals.[index + 1]
+
+        string q, l + (r - l) * (floatIndex % 1.0)
+    )
+    |> Series.ofObservations
    
   // ------------------------------------------------------------------------------------
   // Series interpolation

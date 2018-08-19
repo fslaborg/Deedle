@@ -96,6 +96,15 @@ let ``describe works`` ()=
   desc.Get("std")  |> should beWithin  ((Stats.stdDev s) +/- 1e-9)
 
 [<Test>]
+let ``quantile works`` () = 
+  let s1 = Series.ofValues [ 1.0; 2.0; 3.0; 4.0 ]
+  let quantile = Stats.quantile ([|0.25; 0.5; 0.75|], s1)
+
+  quantile.Get("0.25")  |> should beWithin (1.75 +/- 1e-9)
+  quantile.Get("0.5")  |> should beWithin (2.5 +/- 1e-9)
+  quantile.Get("0.75")  |> should beWithin (3.25 +/- 1e-9)
+
+[<Test>]
 let ``Moving skew works`` () =
   let s1 = Series.ofValues [ 0.0; -1.0; Double.NaN; 3.0; -5.0; 4.0; 8.0 ]
   let s2 = Series.ofValues [ 0.0; -1.0; 2.0; 3.0; -5.0; 4.0; 8.0 ]
