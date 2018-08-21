@@ -569,8 +569,8 @@ module Frame =
   /// in individual rows.
   ///
   /// [category:Grouping, windowing and chunking]
-  [<CompiledName("Pivot")>]
-  let pivot (frame:Frame<'R, 'C>) =
+  [<CompiledName("Melt")>]
+  let melt (frame:Frame<'R, 'C>) =
     let rowKeys = frame.RowIndex.Keys
     let colKeys = frame.ColumnIndex.Keys
 
@@ -609,18 +609,18 @@ module Frame =
   /// in individual rows.
   ///
   /// [category:Grouping, windowing and chunking]  
-  [<Obsolete("The Frame.Stack method has been renamed to Frame.Pivot")>]
+  [<Obsolete("The Frame.Stack method has been renamed to Frame.Melt")>]
   [<CompiledName("Stack")>]
-  let stack (frame:Frame<'R, 'C>) = pivot frame
+  let stack (frame:Frame<'R, 'C>) = melt frame
 
-  /// This function is the opposite of `stack`. It takes a data frame
+  /// This function is the opposite of `melt`. It takes a data frame
   /// with three columns named `Row`, `Column` and `Value` and reconstructs
   /// a data frame by using `Row` and `Column` as row and column index keys,
   /// respectively.
   ///
   /// [category:Grouping, windowing and chunking]
-  [<CompiledName("Melt")>]
-  let melt (frame:Frame<'O, string>) : Frame<'R, 'C> =
+  [<CompiledName("Pivot")>]
+  let pivot (frame:Frame<'O, string>) : Frame<'R, 'C> =
     FrameUtils.fromValues frame.Rows.Values 
       (fun row -> row.GetAs<'C>("Column"))
       (fun row -> row.GetAs<'R>("Row"))
@@ -632,9 +632,9 @@ module Frame =
   /// respectively.
   ///
   /// [category:Grouping, windowing and chunking]
-  [<Obsolete("The Frame.UnStack method has been renamed to Frame.Melt")>]
+  [<Obsolete("The Frame.UnStack method has been renamed to Frame.Pivot")>]
   [<CompiledName("UnStack")>]
-  let unstack (frame:Frame<'O, string>) : Frame<'R, 'C> = melt frame
+  let unstack (frame:Frame<'O, string>) : Frame<'R, 'C> = pivot frame
 
   // ----------------------------------------------------------------------------------------------
   // Sorting and index manipulation
