@@ -39,6 +39,7 @@ let randomOrder = series [ 2 => 2.0; 3 => 3.0; 1 => 1.0 ]
 let ascendingMissing = series [ 0 => nan; 1 => 1.0; 2 => 2.0; 3 => 3.0 ]
 let descendingMissing = series [ 0 => nan; 3 => 3.0; 2 => 2.0; 1 => 1.0 ]
 let randomOrderMissing = series [ 2 => 2.0; 3 => 3.0; 0 => nan; 1 => 1.0 ]
+let lastValueMissing = series [ 2 => 2.0; 3 => 3.0; 0 => 4.0; 1 => nan ]
 
 [<Test>]  
 let ``Can access elements in ordered and unordered series`` () =
@@ -79,6 +80,14 @@ let ``Can get first and last key of an unordered series`` () =
 [<Test>]
 let ``Can get key range of an ordered series`` () =
   ordered.KeyRange |> shouldEqual (1, 5)
+
+[<Test>]
+let ``Series.tryLastValue works correclty on a series`` () =
+  ascendingMissing |> Series.tryLastValue |> shouldEqual (Some 3.0)  
+
+[<Test>]
+let ``Series.tryLastValue works correclty on a series with last missing value`` () =  
+  lastValueMissing |> Series.tryLastValue |> shouldEqual None
 
 // ------------------------------------------------------------------------------------------------
 // Value conversions
