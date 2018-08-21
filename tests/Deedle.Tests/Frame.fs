@@ -742,6 +742,18 @@ let ``Applying (+) on frame & series expands non-numeric columns`` () =
   (f1 - s2).GetColumn<string>("S2") |> Series.tryGet 2 
   |> shouldEqual None
 
+[<Test>]
+let ``Applying (+) on frame & frame with uncommon columns will result missing values`` () =
+  let df1 = frame [ "a" => Series.ofValues [ 1; 2]
+                    "b" => Series.ofValues [ 3; 4; 5] ]
+  let df2 = frame [ "b" => Series.ofValues [ 1; 2]
+                    "c" => Series.ofValues [ 3; 4] ]
+  let actual = df1 + df2
+  actual?a.TryGetAt(0) |> shouldEqual OptionalValue.Missing
+  actual?c.TryGetAt(0) |> shouldEqual OptionalValue.Missing
+  actual?b.TryGetAt(0) |> shouldEqual (OptionalValue 4.0)
+  actual?b.TryGetAt(2) |> shouldEqual OptionalValue.Missing
+
 // ------------------------------------------------------------------------------------------------
 // Operations - append
 // ------------------------------------------------------------------------------------------------
@@ -1044,7 +1056,7 @@ let ``Left join fills missing values - search for previous when there is missing
 let ``Left zip fills missing values - search for previous when there is no exact key`` () =
   let miss = Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => Double.NaN; ] ]
   let full = Frame.ofColumns [ "A" => series [ 1 => 2.0; 3 => 3.0 ] ]
-  let joined = full.Zip<float, _, _>(miss, JoinKind.Inner, JoinKind.Left, Lookup.ExactOrSmaller, fun a b -> a + b)
+  let joined = full.Zip<float, _, _>(miss, JoinKind.Inner, JoinKind.Left, Lookup.ExactOrSmaller, false, fun a b -> a + b)
   let expected = series [ 1 => 3.0; 3 => 4.0 ]
   joined?A |> shouldEqual expected
 
@@ -1052,7 +1064,7 @@ let ``Left zip fills missing values - search for previous when there is no exact
 let ``Left zip only fills missing values in joined series`` () =
   let miss = Frame.ofColumns [ "A" => series [ 1 => 1.0; 2 => Double.NaN; ] ]
   let full = Frame.ofColumns [ "A" => series [ 1 => 2.0; 2 => 3.0 ] ]
-  let joined = miss.Zip<float, _, _>(full, JoinKind.Inner, JoinKind.Left, Lookup.ExactOrSmaller, fun a b -> a + b)
+  let joined = miss.Zip<float, _, _>(full, JoinKind.Inner, JoinKind.Left, Lookup.ExactOrSmaller, false, fun a b -> a + b)
   let expected = series [ 1 => 3.0; 2 => Double.NaN ]
   joined?A |> shouldEqual expected
 

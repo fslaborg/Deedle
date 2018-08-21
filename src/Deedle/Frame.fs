@@ -186,6 +186,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// on values of a specified type that are available in both data frames. The parameters `columnKind`,
   /// and `rowKind` can be specified to determine how the alginment works (similarly to `Join`).
   /// Column keys are always matched using `Lookup.Exact`, but `lookup` determines lookup for rows.
+  /// The parameter `pointwise` can be specified to determine the outcome of unmatched column.
   ///
   /// Once aligned, the call `df1.Zip<T>(df2, f)` applies the specifed function `f` on all `T` values
   /// that are available in corresponding locations in both frames. For values of other types, the 
@@ -197,6 +198,8 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   ///  - `rowKind` - Specifies how to align rows (inner, outer, left or right join)
   ///  - `lookup` - Specifies how to find matching value for a row (when using left or right join on rows)
   ///    Supported values are `Lookup.Exact`, `Lookup.ExactOrSmaller` and `Lookup.ExactOrGreater`.
+  ///  - `pointwise` - Specifies how to handle columns that are not matched. Set true to make unmatched 
+  ///    column missing. Set false to left unmatched column unchanged.
   ///  - `op` - A function that is applied to aligned values. The `Zip` operation is generic
   ///    in the type of this function and the type of function is used to determine which 
   ///    values in the frames are zipped and which are left unchanged.
