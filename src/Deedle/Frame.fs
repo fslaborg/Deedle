@@ -202,7 +202,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   ///    values in the frames are zipped and which are left unchanged.
   ///
   /// [category:Joining, zipping and appending]
-  member frame1.Zip<'V1, 'V2, 'V3>(otherFrame:Frame<'TRowKey, 'TColumnKey>, columnKind, rowKind, lookup, op:Func<'V1, 'V2, 'V3>) =
+  member frame1.Zip<'V1, 'V2, 'V3>(otherFrame:Frame<'TRowKey, 'TColumnKey>, columnKind, rowKind, lookup, pointwise, op:Func<'V1, 'V2, 'V3>) =
     
     // Create transformations to join the rows (using the same logic as Join)
     // and make functions that transform vectors (when they are only available in first/second frame)
@@ -234,8 +234,16 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
               | _ -> failwith "Zip: Got invalid vector while zipping" ))
             frame1.VectorBuilder.Build(rowIndex.AddressingScheme, res, [| lvVect; lrVect |]).
               Select(function Choice3Of3 v -> v | _ -> failwith "Zip: Produced invalid vector") :> IVector
-        | OptionalValue.Present v, _ -> f1trans v
-        | _, OptionalValue.Present v -> f2trans v
+        | OptionalValue.Present v, _ ->
+          if pointwise then
+            Array.create (int rowIndex.KeyCount) None |> Vector.ofOptionalValues :> IVector
+          else
+            f1trans v
+        | _, OptionalValue.Present v ->
+          if pointwise then
+            Array.create (int rowIndex.KeyCount) None |> Vector.ofOptionalValues :> IVector
+          else
+            f2trans v
         | _ -> failwith "zipAlignInto: join failed." )
     Frame<_, _>(rowIndex, newColumns.Index, newColumns.Vector, indexBuilder, vectorBuilder)
 
@@ -255,7 +263,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   ///
   /// [category:Joining, zipping and appending]
   member frame1.Zip<'V1, 'V2, 'V3>(otherFrame:Frame<'TRowKey, 'TColumnKey>, op:Func<'V1, 'V2, 'V3>) =
-    frame1.Zip<'V1, 'V2, 'V3>(otherFrame, JoinKind.Outer, JoinKind.Outer, Lookup.Exact, op)
+    frame1.Zip<'V1, 'V2, 'V3>(otherFrame, JoinKind.Outer, JoinKind.Outer, Lookup.Exact, false, op)
 
   /// Join two data frames. The columns of the joined frames must not overlap and their
   /// rows are aligned and transformed according to the specified join kind.
@@ -985,7 +993,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   // Apply operation 'op' to all columns that exist in both frames and are convertible to 'T
   static member inline internal PointwiseFrameFrame<'T>(frame1:Frame<'TRowKey, 'TColumnKey>, frame2:Frame<'TRowKey, 'TColumnKey>, op:'T -> 'T -> 'T) =
-    frame1.Zip<'T, 'T, 'T>(frame2, JoinKind.Outer, JoinKind.Outer, Lookup.Exact, fun a b -> op a b)
+    frame1.Zip<'T, 'T, 'T>(frame2, JoinKind.Outer, JoinKind.Outer, Lookup.Exact, true, fun a b -> op a b)
 
   // Apply operation 'op' with 'scalar' on the right to all columns convertible to 'T
   static member inline private ScalarOperationR<'T>(frame:Frame<'TRowKey, 'TColumnKey>, scalar:'T, op:'T -> 'T -> 'T) : Frame<'TRowKey, 'TColumnKey> =
