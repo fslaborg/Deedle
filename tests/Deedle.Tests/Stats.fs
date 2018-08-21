@@ -96,6 +96,15 @@ let ``describe works`` ()=
   desc.Get("std")  |> should beWithin  ((Stats.stdDev s) +/- 1e-9)
 
 [<Test>]
+let ``quantile works`` () = 
+  let s1 = Series.ofValues [ 1.0; 2.0; 3.0; 4.0 ]
+  let quantile = Stats.quantile ([|0.25; 0.5; 0.75|], s1)
+
+  quantile.Get("0.25")  |> should beWithin (1.75 +/- 1e-9)
+  quantile.Get("0.5")  |> should beWithin (2.5 +/- 1e-9)
+  quantile.Get("0.75")  |> should beWithin (3.25 +/- 1e-9)
+
+[<Test>]
 let ``Moving skew works`` () =
   let s1 = Series.ofValues [ 0.0; -1.0; Double.NaN; 3.0; -5.0; 4.0; 8.0 ]
   let s2 = Series.ofValues [ 0.0; -1.0; 2.0; 3.0; -5.0; 4.0; 8.0 ]
@@ -393,4 +402,20 @@ let ``Median is the same as in Math.NET``() =
     let input = Array.filter (Double.IsNaN >> not) input
     let expected = Statistics.Median(input)
     let actual = Series.ofValues input |> Stats.median
+    actual |> should beWithin (expected +/- 1e-9) )
+
+[<Test>]
+let ``Quantile is the same as in Math.NET``() =
+  Check.QuickThrowOnFailure(fun (input:float[]) -> 
+    let tau = 0.5
+    let input = Array.filter (Double.IsNaN >> not) input
+    let expected = ArrayStatistics.QuantileCustomInplace (input, tau, QuantileDefinition.R7)
+
+    let quantile = Stats.quantile ([|tau|], (Series.ofValues input))
+    let quantileValue = quantile.TryGet(string tau)
+    let actual =
+       match quantileValue with
+       | OptionalValue.Missing -> nan
+       | _ -> quantileValue.Value
+
     actual |> should beWithin (expected +/- 1e-9) )

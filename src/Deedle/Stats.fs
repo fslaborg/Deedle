@@ -664,6 +664,39 @@ type Stats =
       "unique", Stats.uniqueCount series |> float
     ]
     |> Series.ofObservations
+  
+  /// Returns the series of quantiles of the series. Excel version of quantile,
+  /// equivalent to QuantileDefinition.R7 from Math.Net
+  ///
+  /// [category:Series statistics]
+  static member inline quantile (quantiles:float[], series:Series<'K, 'V>) =
+    let vals = series.Values |> Seq.toArray |> Array.map float |> Array.sort
+    let valsLength = vals |> Array.length
+
+    if valsLength = 0  then
+      quantiles |> Array.map(fun q -> string q, nan) |> Series.ofObservations
+    else
+      quantiles
+      |> Array.map(fun q ->
+        let quantile = 
+          if q < 0.0 || q > 1.0 then
+            nan
+          else if q = 0.0 || valsLength = 1 then
+            (Array.min vals)
+          else if q = 1.0 then
+            (Array.max vals)
+          else
+            let floatIndex = q * float(valsLength - 1) + 1.0
+            let index = int(floatIndex)
+
+            let l = vals.[index - 1]
+            let r = vals.[index]
+
+            l + (r - l) * (floatIndex % 1.0)
+        
+        string q, quantile
+      )
+      |> Series.ofObservations
    
   // ------------------------------------------------------------------------------------
   // Series interpolation
