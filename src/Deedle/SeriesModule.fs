@@ -386,8 +386,8 @@ module Series =
   /// Returns the last value of the series if one exists.
   /// [category:Accessing series data and lookup]
   [<CompiledName("TryGetLastValue")>]
-  let tryLastValue (series:Series< 'K , 'V >) = 
-    if series.KeyCount > 0 then series |> getAt (series.KeyCount-1) |> Some else None
+  let tryLastValue (series:Series< 'K , 'V >) =
+    if series.KeyCount > 0 then series |> tryGetAt (series.KeyCount-1) else None
 
   /// Returns the first value of the series. This fails if the first value is missing.
   /// [category:Accessing series data and lookup]
