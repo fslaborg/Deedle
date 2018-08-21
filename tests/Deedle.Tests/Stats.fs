@@ -403,3 +403,19 @@ let ``Median is the same as in Math.NET``() =
     let expected = Statistics.Median(input)
     let actual = Series.ofValues input |> Stats.median
     actual |> should beWithin (expected +/- 1e-9) )
+
+[<Test>]
+let ``Quantile is the same as in Math.NET``() =
+  Check.QuickThrowOnFailure(fun (input:float[]) -> 
+    let tau = 0.5
+    let input = Array.filter (Double.IsNaN >> not) input
+    let expected = ArrayStatistics.QuantileCustomInplace (input, tau, QuantileDefinition.R7)
+
+    let quantile = Stats.quantile ([|tau|], (Series.ofValues input))
+    let quantileValue = quantile.TryGet(string tau)
+    let actual =
+       match quantileValue with
+       | OptionalValue.Missing -> nan
+       | _ -> quantileValue.Value
+
+    actual |> should beWithin (expected +/- 1e-9) )
