@@ -62,7 +62,7 @@
 /// `pivotTable` implements the pivoting operation [as documented in the 
 /// tutorials](../frame.html#pivot).
 ///
-/// The `pivot` and `melt` functions turn the data frame into a single data frame
+/// The `melt` and `unmelt` functions turn the data frame into a single data frame
 /// containing columns `Row`, `Column` and `Value` containing the data of the original
 /// frame; `melt` can be used to turn this representation back into an original frame.
 ///
@@ -619,8 +619,8 @@ module Frame =
   /// respectively.
   ///
   /// [category:Grouping, windowing and chunking]
-  [<CompiledName("Pivot")>]
-  let pivot (frame:Frame<'O, string>) : Frame<'R, 'C> =
+  [<CompiledName("Unmelt")>]
+  let unmelt (frame:Frame<'O, string>) : Frame<'R, 'C> =
     FrameUtils.fromValues frame.Rows.Values 
       (fun row -> row.GetAs<'C>("Column"))
       (fun row -> row.GetAs<'R>("Row"))
@@ -632,9 +632,9 @@ module Frame =
   /// respectively.
   ///
   /// [category:Grouping, windowing and chunking]
-  [<Obsolete("The Frame.UnStack method has been renamed to Frame.Pivot")>]
+  [<Obsolete("The Frame.UnStack method has been renamed to Frame.Unmelt")>]
   [<CompiledName("UnStack")>]
-  let unstack (frame:Frame<'O, string>) : Frame<'R, 'C> = pivot frame
+  let unstack (frame:Frame<'O, string>) : Frame<'R, 'C> = unmelt frame
 
   // ----------------------------------------------------------------------------------------------
   // Sorting and index manipulation
