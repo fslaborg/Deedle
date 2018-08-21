@@ -57,7 +57,8 @@ and
   do
     if index.AddressingScheme <> vector.AddressingScheme then
        invalidOp "Index and vector of a series should share addressing scheme!"
-    if index :? Deedle.Indices.Linear.LinearIndex<'K> then
+    if index :? Deedle.Indices.Linear.LinearIndex<'K> &&
+      vector :? Deedle.Vectors.ArrayVector.ArrayVector<'V> then
       if index.KeyCount <> vector.Length then
         invalidOp "Index and vector of a series should have the same length!"
 

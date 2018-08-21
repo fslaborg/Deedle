@@ -405,20 +405,19 @@ let ``Can access Columns of a virtual frame without evaluating the data`` () =
   s1.AccessList |> shouldEqual [10L]
   s2.AccessList |> shouldEqual []
 
-// TODO: Fix the following test case which was commented out for fixing issue 330
-//
-//[<Test>]
-//let ``Can add computed series as a new column to a frame with the same index``() = 
-//  let s1, s2, f = createNumericFrame()
-//  let times = f |> Frame.mapRows (fun _ row -> 
-//    let t = row.GetAs<int64>("Dense")
-//    DateTimeOffset(DateTime(2000,1,1).AddTicks(t * 1233456789L), TimeSpan.FromHours(1.0)) )
-//  f.AddColumn("Times", times)
-//  f.GetRow<obj>(5000001L).["Dense"] |> shouldEqual (box 5000001L)
-//  f.GetRow<obj>(5000001L).TryGet("Sparse") |> shouldEqual OptionalValue.Missing
-//  (f.GetRow<obj>(5000001L).["Times"] |> unbox<DateTimeOffset>).Year |> shouldEqual 2019
-//  set s1.AccessList |> shouldEqual <| set [5000001L]
-//  set s2.AccessList |> shouldEqual <| set [5000001L]
+// TODO: Fix the following test case which creates ObjectSeries with 3 keys and 2 values (issue 330)
+[<Test>]
+let ``Can add computed series as a new column to a frame with the same index``() = 
+  let s1, s2, f = createNumericFrame()
+  let times = f |> Frame.mapRows (fun _ row -> 
+    let t = row.GetAs<int64>("Dense")
+    DateTimeOffset(DateTime(2000,1,1).AddTicks(t * 1233456789L), TimeSpan.FromHours(1.0)) )
+  f.AddColumn("Times", times)
+  f.GetRow<obj>(5000001L).["Dense"] |> shouldEqual (box 5000001L)
+  f.GetRow<obj>(5000001L).TryGet("Sparse") |> shouldEqual OptionalValue.Missing
+  (f.GetRow<obj>(5000001L).["Times"] |> unbox<DateTimeOffset>).Year |> shouldEqual 2019
+  set s1.AccessList |> shouldEqual <| set [5000001L]
+  set s2.AccessList |> shouldEqual <| set [5000001L]
 
 [<Test>]
 let ``Can index frame by an ordered column computed using series transform`` () =
