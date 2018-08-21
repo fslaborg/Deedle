@@ -29,6 +29,7 @@ let sortedByVal = series [ 2 => "bye"; 1 => "ciao"; 3 => "hi"; 5 => "nazdar" ]
 
 let ordered = series [ 1 => "hi"; 2 => "bye"; 3 => "ciao"; 5 => "nazdar" ]
 let missing = series [ 1 => "hi"; 2 => null; 3 => "ciao"; 5 => "nazdar" ]
+let empty:Series<string,int> = Series([])
 let usCulture = CultureInfo.GetCultureInfo("en-us")
 let parseDateUSA s = DateTime.Parse(s,usCulture)
 
@@ -50,6 +51,10 @@ let ``Can access elements in ordered and unordered series`` () =
 let ``Accessing missing value or using out of range key throws`` () =
   (fun () -> missing.[2] |> ignore) |> should throw typeof<MissingValueException>
   (fun () -> missing.[7] |> ignore) |> should throw typeof<KeyNotFoundException>
+
+[<Test>]  
+let ``Accessing empty series by index throws IndexOutOfRangeException`` () =
+  (fun () -> empty.GetAt(0) |> ignore) |> should throw typeof<IndexOutOfRangeException>
 
 [<Test>]  
 let ``Can access elements by address`` () =

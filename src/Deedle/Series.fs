@@ -239,7 +239,7 @@ and
   ///    can be used when the current series is ordered.
   ///
   /// [category:Accessors and slicing]
-  member series.GetItems(keys, lookup) =    
+  member series.GetItems(keys, lookup) =
     let newIndex = indexBuilder.Create<_>((keys:seq<_>), None)
     let cmd = indexBuilder.Reindex(index, newIndex, lookup, Vectors.Return 0, fun addr -> series.Vector.GetValue(addr).HasValue)
     let newVector = vectorBuilder.Build(newIndex.AddressingScheme, cmd, [| vector |])
@@ -279,7 +279,6 @@ and
     let newVector = vectorBuilder.Build(newIndex.AddressingScheme, levelCmd, [| vector |])
     Series(newIndex, newVector, vectorBuilder, indexBuilder)
     
-
   /// Attempts to get a value at the specified 'key'
   ///
   /// [category:Accessors and slicing]
@@ -292,7 +291,7 @@ and
 
   ///
   /// [category:Accessors and slicing]
-  member x.GetObservation(key) = 
+  member x.GetObservation(key) =
     let addr = index.Locate(key) 
     if addr = Address.invalid then keyNotFound key
     let value = vector.GetValue(addr) 
@@ -301,7 +300,7 @@ and
 
   ///
   /// [category:Accessors and slicing]
-  member x.TryGet(key) = 
+  member x.TryGet(key) =
     let addr = x.Index.Locate(key) 
     if addr = Address.invalid then OptionalValue.Missing 
     else x.Vector.GetValue(addr)
@@ -322,12 +321,15 @@ and
     x.Vector.GetValue(x.Index.AddressAt(int64 index))
 
   /// [category:Accessors and slicing]
-  member x.GetKeyAt(index : int) = 
+  member x.GetKeyAt(index : int) =
     x.Index.KeyAt(x.Index.AddressAt(int64 index))
 
   /// [category:Accessors and slicing]
-  member x.GetAt(index : int) = 
-    x.TryGetAt(index).Value
+  member x.GetAt(index : int) =
+    if x.Index.IsEmpty then
+      raise (new IndexOutOfRangeException("Series is empty"))
+    else
+      x.TryGetAt(index).Value
 
   ///
   /// [category:Accessors and slicing]
