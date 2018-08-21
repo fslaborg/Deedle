@@ -597,13 +597,13 @@ let ``Can use tryval and extract data if there are no exceptions`` () =
   data |> shouldEqual s
 
 // ------------------------------------------------------------------------------------------------
-// Stack & unstack
+// Pivot & Melt
 // ------------------------------------------------------------------------------------------------
 
 [<Test>]
-let ``Can stack frame with 200x500 data frame``() = 
+let ``Can pivot frame with 200x500 data frame``() = 
   let big = frame [ for d in 0 .. 200 -> string d => series [ for i in 0 .. 500 -> string i => 1.0 ] ]
-  let stacked = Frame.stack big 
+  let stacked = Frame.pivot big 
   stacked |> Frame.countRows |> shouldEqual 100701
 
 [<Test>]
@@ -611,15 +611,15 @@ let ``Values in a stacked frame can be expanded`` () =
   let df = 
     [ "a" => series [ 0 => 1.0; 1 => 2.0; 2 => 3.0 ]; 
       "b" => series [ 0 => 5.0; 1 => 6.0; 2 => nan ] ] |> frame
-  let res = df |> Frame.zip (fun a b -> a, b) df |> Frame.stack |> Frame.expandCols ["Value"]
+  let res = df |> Frame.zip (fun a b -> a, b) df |> Frame.pivot |> Frame.expandCols ["Value"]
   let actual = res.Rows.[0].As<obj>() 
   let expected = series [ "Row" => box 0; "Column" => box "a"; "Value.Item1" => box 1.0; "Value.Item2" => box 1.0]
   actual |> shouldEqual expected
 
 [<Test>]
-let ``Frame.stack preserves type of values`` () = 
+let ``Frame.pivot preserves type of values`` () = 
   let df = frame [ "S1" =?> series [1 => 1]; "S2" =?> series [1 => 1.0 ]]
-  let res = df |> Frame.stack 
+  let res = df |> Frame.pivot 
   let colTypes = res.GetFrameData().Columns |> Seq.map (fun (ty,_) -> ty.Name) |> List.ofSeq
   colTypes |> shouldEqual ["Int32"; "String"; "Double"]
 
