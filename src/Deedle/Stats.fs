@@ -671,10 +671,6 @@ type Stats =
   /// [category:Series statistics]
   static member inline quantile (quantiles:float[], series:Series<'K, 'V>) =
     let vals = series.Values |> Seq.toArray |> Array.map float |> Array.sort
-
-    if quantiles |> Array.exists (fun v -> v > 1.0 || v < 0.0) then
-      invalidArg "quantiles"  "Values should be in [0, 1]"
-
     let valsLength = vals |> Array.length
 
     if valsLength = 0  then
@@ -682,15 +678,23 @@ type Stats =
     else
       quantiles
       |> Array.map(fun q ->
-        let floatIndex = q * float(valsLength - 1)
-        if floatIndex % 1.0 = 0.0 then
-          string q, float vals.[int(floatIndex)]
-        else
-          let index = int(floatIndex)
-          let l = float vals.[index]
-          let r = float vals.[index + 1]
+        let quantile = 
+          if q < 0.0 || q > 1.0 then
+            nan
+          else if q = 0.0 || valsLength = 1 then
+            (Array.min vals)
+          else if q = 1.0 then
+            (Array.max vals)
+          else
+            let floatIndex = q * float(valsLength - 1) + 1.0
+            let index = int(floatIndex)
 
-          string q, l + (r - l) * (floatIndex % 1.0)
+            let l = vals.[index - 1]
+            let r = vals.[index]
+
+            l + (r - l) * (floatIndex % 1.0)
+        
+        string q, quantile
       )
       |> Series.ofObservations
    
