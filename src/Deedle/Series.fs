@@ -240,13 +240,10 @@ and
   ///
   /// [category:Accessors and slicing]
   member series.GetItems(keys, lookup) =
-    if series.Index.IsEmpty then
-      raise (new IndexOutOfRangeException("Series is empty"))
-    else
-      let newIndex = indexBuilder.Create<_>((keys:seq<_>), None)
-      let cmd = indexBuilder.Reindex(index, newIndex, lookup, Vectors.Return 0, fun addr -> series.Vector.GetValue(addr).HasValue)
-      let newVector = vectorBuilder.Build(newIndex.AddressingScheme, cmd, [| vector |])
-      Series(newIndex, newVector, vectorBuilder, indexBuilder)
+    let newIndex = indexBuilder.Create<_>((keys:seq<_>), None)
+    let cmd = indexBuilder.Reindex(index, newIndex, lookup, Vectors.Return 0, fun addr -> series.Vector.GetValue(addr).HasValue)
+    let newVector = vectorBuilder.Build(newIndex.AddressingScheme, cmd, [| vector |])
+    Series(newIndex, newVector, vectorBuilder, indexBuilder)
 
   ///
   /// [category:Accessors and slicing]
@@ -259,14 +256,11 @@ and
   ///
   /// [category:Accessors and slicing]
   member x.GetObservation(key, lookup) =
-    if x.Index.IsEmpty then
-      raise (new IndexOutOfRangeException("Series is empty"))
-    else
-      let mapping = index.Lookup(key, lookup, fun addr -> vector.GetValue(addr).HasValue) 
-      if not mapping.HasValue then keyNotFound key
-      let value = vector.GetValue(snd mapping.Value) 
-      if not value.HasValue then missingVal key
-      KeyValuePair(fst mapping.Value, value.Value)
+    let mapping = index.Lookup(key, lookup, fun addr -> vector.GetValue(addr).HasValue) 
+    if not mapping.HasValue then keyNotFound key
+    let value = vector.GetValue(snd mapping.Value) 
+    if not value.HasValue then missingVal key
+    KeyValuePair(fst mapping.Value, value.Value)
 
   ///
   /// [category:Accessors and slicing]
@@ -281,12 +275,9 @@ and
   ///
   /// [category:Accessors and slicing]
   member x.GetByLevel(key:ICustomLookup<'K>) =
-    if x.Index.IsEmpty then
-      raise (new IndexOutOfRangeException("Series is empty"))
-    else
-      let newIndex, levelCmd = indexBuilder.LookupLevel((index, Vectors.Return 0), key)
-      let newVector = vectorBuilder.Build(newIndex.AddressingScheme, levelCmd, [| vector |])
-      Series(newIndex, newVector, vectorBuilder, indexBuilder)
+    let newIndex, levelCmd = indexBuilder.LookupLevel((index, Vectors.Return 0), key)
+    let newVector = vectorBuilder.Build(newIndex.AddressingScheme, levelCmd, [| vector |])
+    Series(newIndex, newVector, vectorBuilder, indexBuilder)
     
   /// Attempts to get a value at the specified 'key'
   ///
@@ -301,14 +292,11 @@ and
   ///
   /// [category:Accessors and slicing]
   member x.GetObservation(key) =
-    if x.Index.IsEmpty then
-      raise (new IndexOutOfRangeException("Series is empty"))
-    else
-      let addr = index.Locate(key) 
-      if addr = Address.invalid then keyNotFound key
-      let value = vector.GetValue(addr) 
-      if not value.HasValue then missingVal key
-      KeyValuePair(key, value.Value)
+    let addr = index.Locate(key) 
+    if addr = Address.invalid then keyNotFound key
+    let value = vector.GetValue(addr) 
+    if not value.HasValue then missingVal key
+    KeyValuePair(key, value.Value)
 
   ///
   /// [category:Accessors and slicing]
@@ -320,15 +308,12 @@ and
   ///
   /// [category:Accessors and slicing]
   member x.Get(key) = 
-    if x.Index.IsEmpty then
-      raise (new IndexOutOfRangeException("Series is empty"))
-    else
-      let addr = x.Index.Locate(key) 
-      if addr = Address.invalid then keyNotFound key
-      else 
-        match x.Vector.GetValue(addr) with
-        | OptionalValue.Missing   -> missingVal key
-        | OptionalValue.Present v -> v
+    let addr = x.Index.Locate(key) 
+    if addr = Address.invalid then keyNotFound key
+    else 
+      match x.Vector.GetValue(addr) with
+      | OptionalValue.Missing   -> missingVal key
+      | OptionalValue.Present v -> v
 
   ///
   /// [category:Accessors and slicing]
@@ -337,10 +322,7 @@ and
 
   /// [category:Accessors and slicing]
   member x.GetKeyAt(index : int) =
-    if x.Index.IsEmpty then
-      raise (new IndexOutOfRangeException("Series is empty"))
-    else
-      x.Index.KeyAt(x.Index.AddressAt(int64 index))
+    x.Index.KeyAt(x.Index.AddressAt(int64 index))
 
   /// [category:Accessors and slicing]
   member x.GetAt(index : int) =

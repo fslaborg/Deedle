@@ -52,12 +52,8 @@ let ``Accessing missing value or using out of range key throws`` () =
   (fun () -> missing.[7] |> ignore) |> should throw typeof<KeyNotFoundException>
 
 [<Test>]  
-let ``Accessing empty series throws IndexOutOfRangeException`` () =
+let ``Accessing empty series by index throws IndexOutOfRangeException`` () =
   (fun () -> empty.GetAt(0) |> ignore) |> should throw typeof<IndexOutOfRangeException>
-  (fun () -> empty.GetKeyAt(0) |> ignore) |> should throw typeof<IndexOutOfRangeException>  
-  (fun () -> empty.Get("foo") |> ignore) |> should throw typeof<IndexOutOfRangeException>
-  (fun () -> empty.Get("foo", Lookup.Exact) |> ignore) |> should throw typeof<IndexOutOfRangeException>
-  (fun () -> empty.GetObservation("foo", Lookup.Exact) |> ignore) |> should throw typeof<IndexOutOfRangeException>  
 
 [<Test>]  
 let ``Can access elements by address`` () =
