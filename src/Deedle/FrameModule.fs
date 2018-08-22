@@ -62,9 +62,9 @@
 /// `pivotTable` implements the pivoting operation [as documented in the 
 /// tutorials](../frame.html#pivot).
 ///
-/// The `stack` and `unstack` functions turn the data frame into a single data frame
+/// The `melt` and `unmelt` functions turn the data frame into a single data frame
 /// containing columns `Row`, `Column` and `Value` containing the data of the original
-/// frame; `unstack` can be used to turn this representation back into an original frame.
+/// frame; `melt` can be used to turn this representation back into an original frame.
 ///
 /// A simple windowing functions that are exposed for an entire frame operations are
 /// `window` and `windowInto`. For more complex windowing operations, you currently have
@@ -569,8 +569,8 @@ module Frame =
   /// in individual rows.
   ///
   /// [category:Grouping, windowing and chunking]
-  [<CompiledName("Stack")>]
-  let stack (frame:Frame<'R, 'C>) =
+  [<CompiledName("Melt")>]
+  let melt (frame:Frame<'R, 'C>) =
     let rowKeys = frame.RowIndex.Keys
     let colKeys = frame.ColumnIndex.Keys
 
@@ -604,6 +604,27 @@ module Frame =
       |> Vector.ofValues
     Frame(rowIndex, colIndex, data, frame.IndexBuilder, frame.VectorBuilder)
 
+  /// Returns a data frame with three columns named `Row`, `Column`
+  /// and `Value` that contains the data of the original data frame 
+  /// in individual rows.
+  ///
+  /// [category:Grouping, windowing and chunking]  
+  [<Obsolete("The Frame.Stack method has been renamed to Frame.Melt")>]
+  [<CompiledName("Stack")>]
+  let stack (frame:Frame<'R, 'C>) = melt frame
+
+  /// This function is the opposite of `melt`. It takes a data frame
+  /// with three columns named `Row`, `Column` and `Value` and reconstructs
+  /// a data frame by using `Row` and `Column` as row and column index keys,
+  /// respectively.
+  ///
+  /// [category:Grouping, windowing and chunking]
+  [<CompiledName("Unmelt")>]
+  let unmelt (frame:Frame<'O, string>) : Frame<'R, 'C> =
+    FrameUtils.fromValues frame.Rows.Values 
+      (fun row -> row.GetAs<'C>("Column"))
+      (fun row -> row.GetAs<'R>("Row"))
+      (fun row -> row.GetAs<obj>("Value"))
 
   /// This function is the opposite of `stack`. It takes a data frame
   /// with three columns named `Row`, `Column` and `Value` and reconstructs
@@ -611,12 +632,9 @@ module Frame =
   /// respectively.
   ///
   /// [category:Grouping, windowing and chunking]
-  [<CompiledName("Unstack")>]
-  let unstack (frame:Frame<'O, string>) : Frame<'R, 'C> =
-    FrameUtils.fromValues frame.Rows.Values 
-      (fun row -> row.GetAs<'C>("Column"))
-      (fun row -> row.GetAs<'R>("Row"))
-      (fun row -> row.GetAs<obj>("Value"))
+  [<Obsolete("The Frame.UnStack method has been renamed to Frame.Unmelt")>]
+  [<CompiledName("UnStack")>]
+  let unstack (frame:Frame<'O, string>) : Frame<'R, 'C> = unmelt frame
 
   // ----------------------------------------------------------------------------------------------
   // Sorting and index manipulation
