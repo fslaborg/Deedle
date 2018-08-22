@@ -414,7 +414,7 @@ module internal FrameUtils =
         member x.ToVector() = Vector.ofOptionalValues (data.ToArray()) :> IVector }
 
   /// Load data from a CSV file using F# Data API
-  let readCsv (reader:TextReader) hasHeaders inferTypes inferRows schema (missingValues:string[] option) separators culture maxRows =
+  let readCsv (reader:TextReader) hasHeaders inferTypes inferRows schema (missingValues:string[] option) separators culture maxRows preferOptions =
     // When called from F#, the optional arguments will be `None`, but when called
     // from C#, we get `Some default(T)` and so we need to check for both here!
     let inferRows = defaultArg inferRows 100
@@ -425,10 +425,10 @@ module internal FrameUtils =
     let cultureInfo = System.Globalization.CultureInfo.GetCultureInfo(culture)
     let missingValues = defaultArg missingValues TextConversions.DefaultMissingValues
     let missingValues = if missingValues = null then TextConversions.DefaultMissingValues else missingValues
+    let preferOptionals = defaultArg preferOptions false
 
     // Default parameters that cannot be overriden (Frames can always contain NAs)
-    let safeMode = false
-    let preferOptionals = true
+    let safeMode = false    
 
     // If the stream does not support seeking, we read the entire dataset into memory
     // because we need to iterate over the stream twice; once for inferring the schema
