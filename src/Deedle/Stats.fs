@@ -656,6 +656,7 @@ type Stats =
   ///
   /// [category:Series statistics]
   static member inline describe (series:Series<'K, 'V>) =
+    let quantileResult = Stats.quantile ([|0.25; 0.5; 0.75|], series)
     [
       "min", Stats.min series
       "max", Stats.max series
@@ -664,7 +665,8 @@ type Stats =
       "unique", Stats.uniqueCount series |> float
     ]
     |> Series.ofObservations
-  
+    |> Series.merge quantileResult
+     
   /// Returns the series of quantiles of the series. Excel version of quantile,
   /// equivalent to QuantileDefinition.R7 from Math.Net
   ///
