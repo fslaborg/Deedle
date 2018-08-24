@@ -652,21 +652,6 @@ type Stats =
       let b = quickSelectInplace (mid - 1) values
       (a + b) / 2.0
 
-  /// Returns the series of main statistic values of the series.
-  ///
-  /// [category:Series statistics]
-  static member inline describe (series:Series<'K, 'V>) =
-    let quantileResult = Stats.quantile ([|0.25; 0.5; 0.75|], series)
-    [
-      "min", Stats.min series
-      "max", Stats.max series
-      "mean", Stats.mean series
-      "std", Stats.stdDev series
-      "unique", Stats.uniqueCount series |> float
-    ]
-    |> Series.ofObservations
-    |> Series.merge quantileResult
-     
   /// Returns the series of quantiles of the series. Excel version of quantile,
   /// equivalent to QuantileDefinition.R7 from Math.Net
   ///
@@ -699,6 +684,26 @@ type Stats =
         string q, quantile
       )
       |> Series.ofObservations
+
+  /// Returns the series of main statistic values of the series.
+  ///
+  /// [category:Series statistics]
+  static member inline describe (series:Series<'K, 'V>) =
+    let quantileResult = Stats.quantile ([|0.25; 0.5; 0.75|], series)
+    
+    Seq.concat [
+      [
+        "unique", Stats.uniqueCount series |> float
+        "mean", Stats.mean series
+        "std", Stats.stdDev series
+        "min", Stats.min series
+      ];
+      (Series.observations quantileResult |> Seq.toList);
+      [
+        "max", Stats.max series
+      ]
+    ]
+    |> Series.ofObservations
    
   // ------------------------------------------------------------------------------------
   // Series interpolation
