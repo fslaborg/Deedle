@@ -386,6 +386,16 @@ module Frame =
   let sliceRows (rows:seq<_>) (frame:Frame<'R, 'C>) = 
     frame.Rows.[rows]
 
+  /// Returns a frame consisting of the specified columns and rows from the original
+  /// data frame. The function uses exact key matching semantics.
+  ///
+  /// [category:Accessing frame data and lookup]
+  [<CompiledName("Slice")>]
+  let slice (columns:seq<_>) (rows:seq<_>) (frame:Frame<'R, 'C>) = 
+    frame
+    |> sliceCols columns
+    |> sliceRows rows
+
   /// Creates a new data frame that contains all data from 
   /// the original data frame, together with an additional series.
   /// The operation uses left join and aligns new series to the 
