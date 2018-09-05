@@ -88,7 +88,7 @@ type Frame =
   static member ReadCsv
     ( location:string, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] inferTypes:Nullable<bool>, [<Optional>] inferRows:Nullable<int>,
       [<Optional>] schema, [<Optional>] separators, [<Optional>] culture, [<Optional>] maxRows:Nullable<int>,
-      [<Optional>] missingValues ) =
+      [<Optional>] missingValues, [<Optional>] preferOptions ) =
     use reader = new StreamReader(location)
     FrameUtils.readCsv 
       reader 
@@ -98,6 +98,7 @@ type Frame =
       (Some schema) (Some missingValues)
       (if separators = null then None else Some separators) (Some culture)
       (if maxRows.HasValue then Some maxRows.Value else None)
+      (Some preferOptions)
 
 
   /// Load data frame from a CSV file. The operation automatically reads column names from the 
@@ -404,9 +405,9 @@ module ``F# Frame extensions`` =
     /// [category:Input and output]
     static member ReadCsv<'R when 'R : equality>
         ( path:string, indexCol, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, 
-          ?culture, ?maxRows, ?missingValues ) : Frame<'R, _> =
+          ?culture, ?maxRows, ?missingValues, ?preferOptions ) : Frame<'R, _> =
       use reader = new StreamReader(path)
-      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows
+      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions
       |> Frame.indexRows indexCol
 
     /// Load data frame from a CSV file. The operation automatically reads column names from the 
@@ -436,9 +437,9 @@ module ``F# Frame extensions`` =
     /// [category:Input and output]
     static member ReadCsv
         ( path:string, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, 
-          ?culture, ?maxRows, ?missingValues ) =
+          ?culture, ?maxRows, ?missingValues, ?preferOptions ) =
       use reader = new StreamReader(path)
-      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows
+      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions
 
     /// Load data frame from a CSV file. The operation automatically reads column names from the 
     /// CSV file (if they are present) and infers the type of values for each column. Columns
@@ -467,8 +468,8 @@ module ``F# Frame extensions`` =
     /// [category:Input and output]
     static member ReadCsv
         ( stream:Stream, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, ?separators, 
-          ?culture, ?maxRows, ?missingValues ) =
-      FrameUtils.readCsv (new StreamReader(stream)) hasHeaders inferTypes inferRows schema missingValues separators culture maxRows
+          ?culture, ?maxRows, ?missingValues, ?preferOptions ) =
+      FrameUtils.readCsv (new StreamReader(stream)) hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions
 
     /// Load data frame from a CSV file. The operation automatically reads column names from the 
     /// CSV file (if they are present) and infers the type of values for each column. Columns
@@ -497,8 +498,8 @@ module ``F# Frame extensions`` =
     /// [category:Input and output]
     static member ReadCsv
         ( reader:TextReader, ?hasHeaders, ?inferTypes, ?inferRows, ?schema, 
-          ?separators, ?culture, ?maxRows, ?missingValues ) =
-      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows
+          ?separators, ?culture, ?maxRows, ?missingValues, ?preferOptions ) =
+      FrameUtils.readCsv reader hasHeaders inferTypes inferRows schema missingValues separators culture maxRows preferOptions
 
     /// Creates a frame with ordinal Integer index from a sequence of rows.
     /// The column indices of individual rows are unioned, so if a row has fewer
