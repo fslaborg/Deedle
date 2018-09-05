@@ -94,6 +94,9 @@ let ``describe works`` ()=
   desc.Get("mean") |> should equal (Stats.mean s)
   desc.Get("unique") |> should equal (Stats.uniqueCount s |> float)
   desc.Get("std")  |> should beWithin  ((Stats.stdDev s) +/- 1e-9)
+  desc.Get("0.25")  |> should beWithin  (1.0 +/- 1e-9)
+  desc.Get("0.5")  |> should beWithin  (2.0 +/- 1e-9)
+  desc.Get("0.75")  |> should beWithin  (3.0 +/- 1e-9)
 
 [<Test>]
 let ``quantile works`` () = 
