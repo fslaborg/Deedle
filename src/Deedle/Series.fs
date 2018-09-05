@@ -513,6 +513,13 @@ and
     let newVec = vectorBuilder.Build(newIndex.AddressingScheme, vecCmd, [| series.Vector; another.Vector |])
     Series(newIndex, newVec, vectorBuilder, indexBuilder)
 
+
+  /// Replace series values given in keys with value.
+  ///
+  /// ## Parameters
+  ///  - `keys` - An array of keys to be used for replacing of the series
+  ///  - `value` - A value to replace any values for `keys`
+  ///
   /// [category:Merging, joining and zipping]
   member series.Replace(keys:'K[], value) = 
     series.Select(fun kvp -> 
@@ -522,6 +529,12 @@ and
         kvp.Value
     )
 
+  /// Replace series values given in keys with value.
+  ///
+  /// ## Parameters
+  ///  - `key` - A key to be used for replacing of the series
+  ///  - `value` - A value to replace value for `key`
+  ///
   /// [category:Merging, joining and zipping]
   member series.Replace(key:'K, value) = 
     series.Select(fun kvp -> 

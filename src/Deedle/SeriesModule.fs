@@ -1768,6 +1768,28 @@ module Series =
   let merge (series1:Series<'K, 'V>) (series2:Series<'K, 'V>) =
    series1.Merge(series2)
 
+  /// Replace series value given in key with value.
+  ///
+  /// ## Parameters
+  ///  - `key` - A key to be used for replacing of the series
+  ///  - `value` - A value to replace value for `key`
+  /// 
+  /// [category:Joining, merging and zipping]
+  [<CompiledName("Replace")>]
+  let replace (key: 'K) (value: 'V ) (series:Series<'K, 'V>) = 
+    series.Replace(key, value)
+
+  /// Replace series values given in keys with value.
+  ///
+  /// ## Parameters
+  ///  - `keys` - An array of keys to be used for replacing of the series
+  ///  - `value` - A value to replace any values for `keys`
+  ///
+  /// [category:Joining, merging and zipping]
+  [<CompiledName("replaceArray")>]
+  let replaceArray (keys: 'K []) (value: 'V ) (series:Series<'K, 'V>) = 
+    series.Replace(keys, value)
+
   /// Returns a new series which is intersection of two series by (key, value) pair.
   ///
   /// [category:Joining, merging and zipping]
