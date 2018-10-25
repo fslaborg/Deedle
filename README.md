@@ -24,3 +24,13 @@ is available in the [API Reference](http://fslab.org/Deedle/reference/index.html
  * [`Series` module](http://fslab.org/Deedle/reference/deedle-seriesmodule.html) for working with data and time-series values
  * [`Frame` module](http://fslab.org/Deedle/reference/deedle-framemodule.html) for data frame manipulation
  * [`Stats` module](http://fslab.org/Deedle/reference/deedle-stats.html) for statistical functions, moving windows and a lot more.
+
+Maintainers
+-----------
+
+* @alexpantyukhin
+* @zyzhu 
+
+All fsprojects and fslaborg projects have @fsprojectsgit as a backup maintainer who can help recruit new maintainers should things go cold.
+
+
