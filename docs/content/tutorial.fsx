@@ -13,7 +13,7 @@ The first step is to install `Deedle.dll` [from NuGet](https://www.nuget.org/pac
 Next, we need to load the library - in F# Interactive, this is done by loading 
 an `.fsx` file that loads the actual `.dll` with the library and registers 
 pretty printers for types representing data frame and series. In this sample, 
-we also need  [F# Charting](http://fsharp.github.io/FSharp.Charting), which 
+we also need  [F# Charting](https://fslab.org/FSharp.Charting/), which 
 works similarly:
 
 *)
