@@ -107,6 +107,54 @@ let ``Can read CSV file that contains custom missing value formats`` () =
   actual.Rows.[0].TryGetAs<float>("Second").HasValue |> shouldEqual false
 
 [<Test>]
+let ``Can read CSV file without headers when inferTypes = true`` () =
+  let csv =
+    "1.0,2.0,3.0\n" +
+    "4.0,5.0,6.0\n" +
+    "7.0,8.0,9.0"
+  use reader = new System.IO.StringReader(csv)
+  let actual = Frame.ReadCsv(reader,hasHeaders=false,inferTypes=true) 
+  actual.ColumnKeys
+  |> Seq.toArray
+  |> shouldEqual [| "Column1"; "Column2"; "Column3" |]
+
+[<Test>]
+let ``Can read CSV file without headers when inferTypes = false`` () =
+  let csv =
+    "1.0,2.0,3.0\n" +
+    "4.0,5.0,6.0\n" +
+    "7.0,8.0,9.0"
+  use reader = new System.IO.StringReader(csv)
+  let actual = Frame.ReadCsv(reader,hasHeaders=false,inferTypes=false) 
+  actual.ColumnKeys
+  |> Seq.toArray
+  |> shouldEqual [| "Column1"; "Column2"; "Column3" |]
+
+[<Test>]
+let ``Can read CSV file with missing column keys when inferTypes = true`` () =
+  let csv =
+    "a,,\n" +
+    "1.0,2.0,3.0\n" +
+    "3.0,4.0,5.0"
+  use reader = new System.IO.StringReader(csv)
+  let actual = Frame.ReadCsv(reader,hasHeaders=true,inferTypes=true) 
+  actual.ColumnKeys
+  |> Seq.toArray
+  |> shouldEqual [| "a"; "Column2"; "Column3" |]
+
+[<Test>]
+let ``Can read CSV file with missing column keys when inferTypes = false`` () =
+  let csv =
+    "a,,\n" +
+    "1.0,2.0,3.0\n" +
+    "3.0,4.0,5.0"
+  use reader = new System.IO.StringReader(csv)
+  let actual = Frame.ReadCsv(reader,hasHeaders=true,inferTypes=false) 
+  actual.ColumnKeys
+  |> Seq.toArray
+  |> shouldEqual [| "a"; "Column2"; "Column3" |]
+
+[<Test>]
 let ``Can save MSFT data as CSV to a TextWriter and read it afterwards (with default args)`` () =
   let builder = new System.Text.StringBuilder()
   use writer = new System.IO.StringWriter(builder)

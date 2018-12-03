@@ -452,7 +452,14 @@ module internal FrameUtils =
           let headers =
             match data.Headers with
             | None -> [| for i in 1 .. data.NumberOfColumns -> sprintf "Column%d" i |]
-            | Some headers -> headers
+            | Some headers ->
+                headers
+                |> Array.mapi
+                    (fun i header ->
+                        if String.IsNullOrWhiteSpace header
+                        then sprintf "Column%d" (i + 1)
+                        else header)
+
           headers |> Array.map (fun c -> PrimitiveInferedProperty.Create(c, typeof<string>, true, None))
 
     // We create `IResizeVector` instance for each of the columns (with appropriate parsing function)
