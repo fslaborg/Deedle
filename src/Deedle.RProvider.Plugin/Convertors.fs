@@ -5,7 +5,6 @@ open Deedle
 open Deedle.Internal
 open Deedle.Indices
 open RDotNet
-open RDotNet.ActivePatterns
 open RProvider
 open RProvider.``base``
 open RProvider.zoo

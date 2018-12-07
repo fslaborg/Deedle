@@ -9,7 +9,6 @@ module internal Reflection =
   open System.Linq
   open System.Reflection
   open System.Linq.Expressions
-  open Microsoft.FSharp.Reflection
   open Microsoft.FSharp
   open Microsoft.FSharp.Quotations
   open System.Collections

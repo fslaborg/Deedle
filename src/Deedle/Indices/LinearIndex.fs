@@ -6,15 +6,12 @@
 namespace Deedle.Indices.Linear
 
 open System
-open System.Linq
 open System.Collections.Generic
 open Deedle
-open Deedle.Keys
 open Deedle.Addressing
 open Deedle.Internal
 open Deedle.Indices
 open Deedle.VectorHelpers
-open System.Diagnostics
 open System.Collections.ObjectModel
 
 /// LinearIndex + ArrayVector use linear addressing (address is just an offset)

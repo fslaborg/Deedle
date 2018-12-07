@@ -6,7 +6,6 @@
 namespace FSharp.Data
 
 open System
-open System.Globalization
 
 [<Class>]
 type internal TextConversions =
