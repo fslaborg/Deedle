@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Stats.fs" />
+    <Compile Include="SeriesStatsExtensions.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Deedle\Deedle.fsproj" />
+  </ItemGroup>
+</Project>

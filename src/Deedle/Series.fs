@@ -67,9 +67,9 @@ and
   let mutable valueCount = -1 
 
   /// Returns the vector builder associated with this series
-  member internal x.VectorBuilder = vectorBuilder
+  member x.VectorBuilder = vectorBuilder
   /// Returns the index builder associated with this series
-  member internal x.IndexBuilder = indexBuilder
+  member x.IndexBuilder = indexBuilder
 
   // ----------------------------------------------------------------------------------------------
   // Series data

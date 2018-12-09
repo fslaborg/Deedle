@@ -10,6 +10,8 @@ src/Deedle.RProvider.Plugin/bin
 src/Deedle.RProvider.Plugin/obj
 src/Deedle.Excel/bin
 src/Deedle.Excel/obj
+src/Deedle.Stats/bin
+src/Deedle.Stats/obj
 *.suo
 tests/Deedle.Tests/obj
 tests/Deedle.Tests/bin

@@ -18,6 +18,7 @@ open FsCheck
 open NUnit.Framework
 
 open Deedle
+open Deedle.Stats
 
 // ------------------------------------------------------------------------------------------------
 // Statistics

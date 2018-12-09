@@ -1,4 +1,4 @@
-﻿namespace Deedle 
+﻿namespace Deedle.Stats 
 
 open System
 open System.Linq
@@ -8,6 +8,7 @@ open System.Runtime.InteropServices
 open System.Runtime.CompilerServices
 open Microsoft.FSharp.Quotations
 
+open Deedle
 open Deedle.Keys
 open Deedle.Indices
 open Deedle.Internal

@@ -1,8 +1,9 @@
-﻿namespace Deedle
+﻿namespace Deedle.Stats
 
 open System
 open System.Collections.Generic
 
+open Deedle
 open Deedle.Vectors
 open Deedle.Internal
 

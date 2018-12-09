@@ -13,6 +13,7 @@ open System
 open FsUnit
 open NUnit.Framework
 open Deedle
+open Deedle.Stats
 open Deedle.Ranges
 open Deedle.Addressing
 open Deedle.Virtual

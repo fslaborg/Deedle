@@ -18,6 +18,7 @@ open FsUnit
 open FsCheck
 open NUnit.Framework
 open Deedle
+open Deedle.Stats
 
 // ------------------------------------------------------------------------------------------------
 // Input and output (CSV files, IDataReader)

@@ -15,6 +15,7 @@ open FsUnit
 open FsCheck
 open NUnit.Framework
 open Deedle
+open Deedle.Stats
 open Deedle.Delayed
 open Deedle.Internal
 open Deedle.Indices

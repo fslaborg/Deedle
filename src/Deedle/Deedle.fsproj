@@ -76,11 +76,9 @@
     <Compile Include="SeriesModule.fs" />
     <Compile Include="SeriesExtensions.fs" />
     <Compile Include="Frame.fs" />
-    <Compile Include="Stats.fs" />
     <Compile Include="FrameUtils.fs" />
     <Compile Include="FrameModule.fs" />
     <Compile Include="FrameExtensions.fs" />
-    <Compile Include="SeriesStatsExtensions.fs" />
     <Compile Include="DelayedSeries.fs" />
     <Compile Include="VirtualFrame.fs" />
     <None Include="paket.references" />

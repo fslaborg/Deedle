@@ -1164,26 +1164,6 @@ module Frame =
   let reduceValues (op:'T -> 'T -> 'T) (frame:Frame<'R, 'C>) = 
     frame.GetColumns<'T>() |> Series.map (fun _ -> Series.reduceValues op) 
 
-  /// Returns a row of the data frame which has the greatest value of the
-  /// specified `column`. The row is returned as an optional value (which is
-  /// `None` for empty frame) and contains a key together with an object
-  /// series representing the row.
-  ///
-  /// [category:Frame transformations]
-  [<CompiledName("MaxRowBy")>]
-  let inline maxRowBy column (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Stats.maxBy (fun row -> row.GetAs<float>(column))
-
-  /// Returns a row of the data frame which has the smallest value of the
-  /// specified `column`. The row is returned as an optional value (which is
-  /// `None` for empty frame) and contains a key together with an object
-  /// series representing the row.
-  ///
-  /// [category:Frame transformations]
-  [<CompiledName("MinRowBy")>]
-  let inline minRowBy column (frame:Frame<'R, 'C>) = 
-    frame.Rows |> Stats.minBy (fun row -> row.GetAs<float>(column))
-
   /// Returns a frame with columns shifted by the specified offset. When the offset is 
   /// positive, the values are shifted forward and first `offset` keys are dropped. When the
   /// offset is negative, the values are shifted backwards and the last `offset` keys are dropped.

@@ -8,6 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\PerformanceTools\Deedle.PerfTest.Core\Deedle.PerfTest.Core.fsproj" />
     <ProjectReference Include="..\..\src\Deedle\Deedle.fsproj" />
+    <ProjectReference Include="..\..\src\Deedle.Stats\Deedle.Stats.fsproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="../Common/FsUnit.fs">
