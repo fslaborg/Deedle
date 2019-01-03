@@ -64,7 +64,7 @@ The following parameters can be used:
  * `inferTypes` - Specifies whether the method should attempt to infer types
    of columns automatically (set this to `false` if you want to specify schema)
  * `inferRows` - If `inferTypes=true`, this parameter specifies the number of
-   rows to use for type inference. The default value is 0, meaninig all rows.
+   rows to use for type inference. The default value is 100. Value 0 means all rows.
  * `schema` - A string that specifies CSV schema. See the documentation for 
    information about the schema format.
  * `separators` - A string that specifies one or more (single character) separators
