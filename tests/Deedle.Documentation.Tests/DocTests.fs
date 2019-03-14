@@ -15,7 +15,7 @@
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #load "../Common/FsUnit.fs"
 #else
-module FSharp.Data.Tests.DocumentationTests
+module Deedle.Tests.DocumentationTests
 #endif
 
 open NUnit.Framework

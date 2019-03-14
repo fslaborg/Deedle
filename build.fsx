@@ -65,7 +65,7 @@ BuildServer.install [
 ]
 
 
-let dotnetSdk = lazy DotNet.install DotNet.Versions.Release_2_1_302
+let dotnetSdk = lazy DotNet.install DotNet.Versions.Release_2_1_402
 let inline dtntWorkDir wd =
     DotNet.Options.lift dotnetSdk.Value
     >> DotNet.Options.withWorkingDirectory wd
@@ -111,7 +111,8 @@ let testProjs =
       "tests/Deedle.CSharp.Tests/Deedle.CSharp.Tests.csproj" 
       "tests/Deedle.Documentation.Tests/Deedle.Documentation.Tests.fsproj"
       "tests/Deedle.PerfTests/Deedle.PerfTests.fsproj"
-      "tests/Deedle.RPlugin.Tests/Deedle.RPlugin.Tests.fsproj"  ]
+      // "tests/Deedle.RPlugin.Tests/Deedle.RPlugin.Tests.fsproj"  
+    ]
 
 let testCoreProjs = 
     [ "tests/Deedle.Tests/Deedle.Tests.fsproj" 
@@ -248,7 +249,7 @@ Target.create "NuGet" (fun _ ->
 // Generate the documentation
 
 Target.create "GenerateDocs" (fun _ ->
-  let (exitCode, messages) = Fsi.exec (fun p -> { p with WorkingDirectory="docs/tools"; Define="RELEASE"; }) "docs/tools/generate.fsx" []
+  let (exitCode, messages) = Fsi.exec (fun p -> { p with WorkingDirectory="docs/tools"; Define="RELEASE"; }) "generate.fsx" []
   if exitCode = 0 then () else 
     failwith (messages |> String.concat Environment.NewLine)
 )

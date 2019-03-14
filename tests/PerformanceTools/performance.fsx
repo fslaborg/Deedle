@@ -54,7 +54,7 @@ Target "GenerateRelChart" (fun _ ->
     avgs.Rows
     |> Series.mapValues (fun row -> row.As<float>() / baseline * 100.0)
     |> Frame.ofRows
-    |> Frame.stack
+    |> Frame.melt
     |> Frame.indexRowsUsing (fun row -> row.GetAs<string>("Column"), row.GetAs<string>("Row"))
     |> Frame.sortRowsByKey
     |> Frame.getCol "Value"

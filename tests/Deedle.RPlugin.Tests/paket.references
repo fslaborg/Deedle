@@ -4,3 +4,4 @@ Microsoft.NET.Test.Sdk
 NUnit3TestAdapter
 System.ComponentModel.Composition
 FsUnit
+RProvider

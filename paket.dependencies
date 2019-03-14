@@ -1,3 +1,5 @@
+version 5.198.0
+
 source https://nuget.org/api/v2
 source https://ci.appveyor.com/nuget/fsharp-formatting
 
@@ -8,10 +10,10 @@ nuget MathNet.Numerics 4.5.1
 nuget NUnit 3.9.0
 nuget NUnit.ConsoleRunner 3.8.0
 nuget FsUnit 3.0.0
-nuget RProvider
+nuget RProvider 1.1.21
 nuget System.Reflection.Emit
 nuget System.Reflection.Emit.Lightweight
-nuget FSharp.Core 4.2.3
+nuget FSharp.Core 4.3.4
 nuget Microsoft.NET.Test.Sdk 15.8.0
 nuget NUnit3TestAdapter 3.9.0
 nuget Microsoft.CSharp
@@ -50,6 +52,4 @@ group Build
     nuget Fake.BuildServer.Travis
     nuget Fake.DotNet.AssemblyInfoFile
     nuget Fake.DotNet.NuGet
-    nuget RProvider
-    nuget FSharp.Charting
     nuget Fake.DotNet.Fsi

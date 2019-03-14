@@ -289,7 +289,7 @@ let ``Take 500k elements from a 1M element series`` () =
 
 [<Test; PerfTest(Iterations=10)>]
 let ``Stack values of a 1000x1000 frame`` () = 
-  let df = frame1000x1000 |> Frame.stack
+  let df = frame1000x1000 |> Frame.melt
   df.RowCount |> shouldEqual 1000000
 
 [<Test;PerfTest(Iterations=5)>]
