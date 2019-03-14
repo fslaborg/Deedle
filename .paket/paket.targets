@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <!-- Enable the restore command to run before builds -->
-    <RestorePackages Condition=" '$(RestorePackages)' == '' ">true</RestorePackages>
+    <RestorePackages Condition=" '$(RestorePackages)' == '' ">false</RestorePackages>
     <!-- Download Paket.exe if it does not already exist -->
     <DownloadPaket Condition=" '$(DownloadPaket)' == '' ">true</DownloadPaket>
     <PaketToolsPath>$(MSBuildThisFileDirectory)</PaketToolsPath>
