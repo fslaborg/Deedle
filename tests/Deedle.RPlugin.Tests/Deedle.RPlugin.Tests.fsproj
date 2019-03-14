@@ -2,8 +2,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\netfx.props" />
   <PropertyGroup>
-    <TargetFrameworks>net45</TargetFrameworks>  
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworks>net451</TargetFrameworks>  
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>    
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../Common/FsUnit.fs">
@@ -18,30 +18,7 @@
       <HintPath>..\..\bin\net45\Deedle.dll</HintPath>
     </Reference>
     <Reference Include="Deedle.RProvider.Plugin">
-      <HintPath>..\..\bin\net45\Deedle.RProvider.Plugin.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="DynamicInterop">
-      <HintPath>..\..\packages\DynamicInterop\lib\net40\DynamicInterop.dll</HintPath>
-    </Reference>
-    <Reference Include="RDotNet">
-      <HintPath>..\..\packages\R.NET.Community\lib\net40\RDotNet.dll</HintPath>
-    </Reference>
-    <Reference Include="RDotNet.FSharp">
-      <HintPath>..\..\packages\R.NET.Community.FSharp\lib\net40\RDotNet.FSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="RDotNet.NativeLibrary">
-      <HintPath>..\..\packages\R.NET.Community\lib\net40\RDotNet.NativeLibrary.dll</HintPath>
-    </Reference>
-    <Reference Include="RProvider">
-      <HintPath>..\..\packages\RProvider\lib\net40\RProvider.dll</HintPath>
-    </Reference>
-    <Reference Include="RProvider.DesignTime">
-      <HintPath>..\..\packages\RProvider\lib\net40\RProvider.DesignTime.dll</HintPath>
-    </Reference>
-    <Reference Include="RProvider.Runtime">
-      <HintPath>..\..\packages\RProvider\lib\net40\RProvider.Runtime.dll</HintPath>
+      <HintPath>..\..\bin\net451\Deedle.RProvider.Plugin.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

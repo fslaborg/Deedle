@@ -1,9 +1,8 @@
 ﻿#if INTERACTIVE
-#load "../../bin/Deedle.fsx"
-#r "../../bin/RProvider.dll"
-#r "../../bin/RProvider.Runtime.dll"
-#r "../../bin/RDotNet.dll"
-#r "../../packages/NUnit/lib/nunit.framework.dll"
+#load "../../bin/net45/Deedle.fsx"
+#load "../../bin/net451/RProvider.fsx"
+#r "../../packages/NUnit/lib/net45/nunit.framework.dll"
+#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
 #load "../Common/FsUnit.fs"
 #else
 module Deedle.RPlugin.Tests
@@ -39,7 +38,7 @@ let ``Can get frame containing subset of columns and pass it to R``() =
 
 [<Test>]
 let ``Can pass numerical stacked frames to R``() = 
-  let df1 = frame [ 10 => series [ 1 => 1.0 ]; 11 => series [ 2 => 2.0] ] |> Frame.stack
+  let df1 = frame [ 10 => series [ 1 => 1.0 ]; 11 => series [ 2 => 2.0] ] |> Frame.melt
   R.assign("df", df1) |> ignore
   let df2 : Frame<int, string> = R.get("df").GetValue()
   df1 |> shouldEqual df2
