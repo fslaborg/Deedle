@@ -1,5 +1,27 @@
 # Release Notes
 
+## 2.0.0 - 2019-03-13
+* Breaking changes of Stats.min and Stats.max [#422](https://github.com/fslaborg/Deedle/pull/422)
+* Inline stats functions [#418](https://github.com/fslaborg/Deedle/pull/418)
+* Fix error handling of group by column when dealing with missing value [253](https://github.com/fslaborg/Deedle/pull/405) and [380](https://github.com/fslaborg/Deedle/pull/380)
+* Fix aggregateRowsBy with missing value [375](https://github.com/fslaborg/Deedle/pull/408)
+* Fix format function [#416](https://github.com/fslaborg/Deedle/pull/416)
+* Fix arithmetic operator on frames [#432](https://github.com/fslaborg/Deedle/pull/434)
+* Fix wrong exception for empty Series [#365](https://github.com/fslaborg/Deedle/pull/437)
+* Fix tryLastValue using tryGetAt [#339](https://github.com/fslaborg/Deedle/pull/438)
+* Fix bug in ReadCsv missingValues parameters [#439](https://github.com/fslaborg/Deedle/pull/440)
+* Fix handling of missing column keys in case when inferTypes is false [#63](https://github.com/fslaborg/Deedle/pull/450)
+* Add Frame.dropSparseRowsBy [#404](https://github.com/fslaborg/Deedle/pull/404)
+* Add Series.intersect [#407](https://github.com/fslaborg/Deedle/pull/407)
+* Add Series.compare [#411](https://github.com/fslaborg/Deedle/pull/411)
+* Add Series.uniqueCount [#413](https://github.com/fslaborg/Deedle/pull/413)
+* Add Series.describe [#414](https://github.com/fslaborg/Deedle/pull/414) and [$422](https://github.com/fslaborg/Deedle/pull/442)
+* Add Series.replace [#427](https://github.com/fslaborg/Deedle/pull/427)
+* Add Stats.quantile for series [#428](https://github.com/fslaborg/Deedle/pull/428)
+* Add Frame.slice [#445](https://github.com/fslaborg/Deedle/pull/445)
+* Removed compiler warning from ReadCsv [#426](https://github.com/fslaborg/Deedle/pull/426)
+* Rename stack/unstack to melt/unmelt [#436](https://github.com/fslaborg/Deedle/pull/436)
+
 ## 2.0.0-beta01 - 2018-08-04
 * Support for netstandard2.0 [#382](https://github.com/fslaborg/Deedle/pull/382), [#393](https://github.com/fslaborg/Deedle/pull/393) and [#391](https://github.com/fslaborg/Deedle/pull/391)
 * Excel support [#255](https://github.com/fslaborg/Deedle/pull/255) and [#399](https://github.com/fslaborg/Deedle/pull/399)
