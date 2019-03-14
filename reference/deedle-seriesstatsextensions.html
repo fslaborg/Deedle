@@ -27,7 +27,7 @@
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
           <li><a href="http://fslab.org/RProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="https://fslab.org/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
           <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
@@ -73,12 +73,12 @@ series containing floating-point values, that is <code>Series&lt;'K, float&gt;</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1116', 1116)" onmouseover="showTip(event, '1116', 1116)">
+          <code onmouseout="hideTip(event, '1160', 1160)" onmouseover="showTip(event, '1160', 1160)">
             SeriesStatsExtensions.InterpolateLinear(...)
           </code>
-          <div class="tip" id="1116">
-            <strong>Signature:</strong> (series:Series&lt;&#39;K,float&gt; * keys:seq&lt;&#39;K&gt; * keyDiff:Func&lt;&#39;K,&#39;K,float&gt;) -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K                        <span>
+          <div class="tip" id="1160">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K,^V&gt; * keys:seq&lt;&#39;K&gt; * keyDiff:Func&lt;&#39;K,&#39;K,float&gt;) -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K, ^V                        <span>
             <strong>Attributes:</strong><br />
 [&lt;Extension&gt;]<br />
           </span>
@@ -111,12 +111,12 @@ series containing floating-point values, that is <code>Series&lt;'K, float&gt;</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1117', 1117)" onmouseover="showTip(event, '1117', 1117)">
+          <code onmouseout="hideTip(event, '1161', 1161)" onmouseover="showTip(event, '1161', 1161)">
             SeriesStatsExtensions.Kurtosis(series)
           </code>
-          <div class="tip" id="1117">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
-                          <strong>Type parameters:</strong> 'K                        <span>
+          <div class="tip" id="1161">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,^V&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'K, ^V                        <span>
             <strong>Attributes:</strong><br />
 [&lt;Extension&gt;]<br />
           </span>
@@ -135,10 +135,10 @@ series containing floating-point values, that is <code>Series&lt;'K, float&gt;</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1118', 1118)" onmouseover="showTip(event, '1118', 1118)">
+          <code onmouseout="hideTip(event, '1162', 1162)" onmouseover="showTip(event, '1162', 1162)">
             SeriesStatsExtensions.Max(series)
           </code>
-          <div class="tip" id="1118">
+          <div class="tip" id="1162">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V<br />
                           <strong>Type parameters:</strong> 'K, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -159,10 +159,10 @@ series containing floating-point values, that is <code>Series&lt;'K, float&gt;</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1119', 1119)" onmouseover="showTip(event, '1119', 1119)">
+          <code onmouseout="hideTip(event, '1163', 1163)" onmouseover="showTip(event, '1163', 1163)">
             SeriesStatsExtensions.MaxLevel(...)
           </code>
-          <div class="tip" id="1119">
+          <div class="tip" id="1163">
             <strong>Signature:</strong> (series:Series&lt;&#39;K1,&#39;V&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'V, 'K2                        <span>
             <strong>Attributes:</strong><br />
@@ -191,12 +191,12 @@ the greatest element of each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1120', 1120)" onmouseover="showTip(event, '1120', 1120)">
+          <code onmouseout="hideTip(event, '1164', 1164)" onmouseover="showTip(event, '1164', 1164)">
             SeriesStatsExtensions.Mean(series)
           </code>
-          <div class="tip" id="1120">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
-                          <strong>Type parameters:</strong> 'K                        <span>
+          <div class="tip" id="1164">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,^V&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'K, ^V                        <span>
             <strong>Attributes:</strong><br />
 [&lt;Extension&gt;]<br />
           </span>
@@ -215,12 +215,12 @@ the greatest element of each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1121', 1121)" onmouseover="showTip(event, '1121', 1121)">
+          <code onmouseout="hideTip(event, '1165', 1165)" onmouseover="showTip(event, '1165', 1165)">
             SeriesStatsExtensions.MeanLevel(...)
           </code>
-          <div class="tip" id="1121">
-            <strong>Signature:</strong> (series:Series&lt;&#39;K1,float&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2                        <span>
+          <div class="tip" id="1165">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K1,^V&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K1, ^V, 'K2                        <span>
             <strong>Attributes:</strong><br />
 [&lt;Extension&gt;]<br />
           </span>
@@ -247,12 +247,12 @@ the mean of each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1122', 1122)" onmouseover="showTip(event, '1122', 1122)">
+          <code onmouseout="hideTip(event, '1166', 1166)" onmouseover="showTip(event, '1166', 1166)">
             SeriesStatsExtensions.Median(series)
           </code>
-          <div class="tip" id="1122">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
-                          <strong>Type parameters:</strong> 'K                        <span>
+          <div class="tip" id="1166">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,^V&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'K, ^V                        <span>
             <strong>Attributes:</strong><br />
 [&lt;Extension&gt;]<br />
           </span>
@@ -271,12 +271,12 @@ the mean of each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1123', 1123)" onmouseover="showTip(event, '1123', 1123)">
+          <code onmouseout="hideTip(event, '1167', 1167)" onmouseover="showTip(event, '1167', 1167)">
             SeriesStatsExtensions.MedianLevel(...)
           </code>
-          <div class="tip" id="1123">
-            <strong>Signature:</strong> (series:Series&lt;&#39;K1,float&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2                        <span>
+          <div class="tip" id="1167">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K1,^V&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K1, ^V, 'K2                        <span>
             <strong>Attributes:</strong><br />
 [&lt;Extension&gt;]<br />
           </span>
@@ -303,10 +303,10 @@ the median of each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1124', 1124)" onmouseover="showTip(event, '1124', 1124)">
+          <code onmouseout="hideTip(event, '1168', 1168)" onmouseover="showTip(event, '1168', 1168)">
             SeriesStatsExtensions.Min(series)
           </code>
-          <div class="tip" id="1124">
+          <div class="tip" id="1168">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V<br />
                           <strong>Type parameters:</strong> 'K, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -327,10 +327,10 @@ the median of each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1125', 1125)" onmouseover="showTip(event, '1125', 1125)">
+          <code onmouseout="hideTip(event, '1169', 1169)" onmouseover="showTip(event, '1169', 1169)">
             SeriesStatsExtensions.MinLevel(...)
           </code>
-          <div class="tip" id="1125">
+          <div class="tip" id="1169">
             <strong>Signature:</strong> (series:Series&lt;&#39;K1,&#39;V&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'K1, 'V, 'K2                        <span>
             <strong>Attributes:</strong><br />
@@ -359,10 +359,10 @@ the smallest element of each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1126', 1126)" onmouseover="showTip(event, '1126', 1126)">
+          <code onmouseout="hideTip(event, '1170', 1170)" onmouseover="showTip(event, '1170', 1170)">
             SeriesStatsExtensions.NumSum(series)
           </code>
-          <div class="tip" id="1126">
+          <div class="tip" id="1170">
             <strong>Signature:</strong> series:Series&lt;&#39;K,^V&gt; -&gt; ^V<br />
                           <strong>Type parameters:</strong> 'K, ^V                        <span>
             <strong>Attributes:</strong><br />
@@ -383,12 +383,12 @@ the smallest element of each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1127', 1127)" onmouseover="showTip(event, '1127', 1127)">
+          <code onmouseout="hideTip(event, '1171', 1171)" onmouseover="showTip(event, '1171', 1171)">
             SeriesStatsExtensions.Skewness(series)
           </code>
-          <div class="tip" id="1127">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
-                          <strong>Type parameters:</strong> 'K                        <span>
+          <div class="tip" id="1171">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,^V&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'K, ^V                        <span>
             <strong>Attributes:</strong><br />
 [&lt;Extension&gt;]<br />
           </span>
@@ -407,12 +407,12 @@ the smallest element of each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1128', 1128)" onmouseover="showTip(event, '1128', 1128)">
+          <code onmouseout="hideTip(event, '1172', 1172)" onmouseover="showTip(event, '1172', 1172)">
             SeriesStatsExtensions.StdDev(series)
           </code>
-          <div class="tip" id="1128">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
-                          <strong>Type parameters:</strong> 'K                        <span>
+          <div class="tip" id="1172">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,^V&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'K, ^V                        <span>
             <strong>Attributes:</strong><br />
 [&lt;Extension&gt;]<br />
           </span>
@@ -431,12 +431,12 @@ the smallest element of each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1129', 1129)" onmouseover="showTip(event, '1129', 1129)">
+          <code onmouseout="hideTip(event, '1173', 1173)" onmouseover="showTip(event, '1173', 1173)">
             SeriesStatsExtensions.StdDevLevel(...)
           </code>
-          <div class="tip" id="1129">
-            <strong>Signature:</strong> (series:Series&lt;&#39;K1,float&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2                      </div>
+          <div class="tip" id="1173">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K1,^V&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K1, ^V, 'K2                      </div>
         </td>
         <td class="xmldoc">
                       <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/SeriesStatsExtensions.fs#L102-102" class="github-link">
@@ -459,12 +459,12 @@ the standard deviation of each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1130', 1130)" onmouseover="showTip(event, '1130', 1130)">
+          <code onmouseout="hideTip(event, '1174', 1174)" onmouseover="showTip(event, '1174', 1174)">
             SeriesStatsExtensions.Sum(series)
           </code>
-          <div class="tip" id="1130">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
-                          <strong>Type parameters:</strong> 'K                        <span>
+          <div class="tip" id="1174">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,^V&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'K, ^V                        <span>
             <strong>Attributes:</strong><br />
 [&lt;Extension&gt;]<br />
           </span>
@@ -483,12 +483,12 @@ the standard deviation of each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1131', 1131)" onmouseover="showTip(event, '1131', 1131)">
+          <code onmouseout="hideTip(event, '1175', 1175)" onmouseover="showTip(event, '1175', 1175)">
             SeriesStatsExtensions.SumLevel(...)
           </code>
-          <div class="tip" id="1131">
-            <strong>Signature:</strong> (series:Series&lt;&#39;K1,float&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K1, 'K2                        <span>
+          <div class="tip" id="1175">
+            <strong>Signature:</strong> (series:Series&lt;&#39;K1,^V&gt; * groupSelector:Func&lt;&#39;K1,&#39;K2&gt;) -&gt; Series&lt;&#39;K2,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K1, ^V, 'K2                        <span>
             <strong>Attributes:</strong><br />
 [&lt;Extension&gt;]<br />
           </span>
@@ -524,12 +524,12 @@ the sum of each group.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1132', 1132)" onmouseover="showTip(event, '1132', 1132)">
+          <code onmouseout="hideTip(event, '1176', 1176)" onmouseover="showTip(event, '1176', 1176)">
             SeriesStatsExtensions.StandardDeviation(...)
           </code>
-          <div class="tip" id="1132">
-            <strong>Signature:</strong> series:Series&lt;&#39;K,float&gt; -&gt; float<br />
-                          <strong>Type parameters:</strong> 'K                        <span>
+          <div class="tip" id="1176">
+            <strong>Signature:</strong> series:Series&lt;&#39;K,^V&gt; -&gt; float<br />
+                          <strong>Type parameters:</strong> 'K, ^V                        <span>
             <strong>Attributes:</strong><br />
 [&lt;Extension&gt;]<br />
 [&lt;Obsolete(&quot;Use StdDev instead&quot;)&gt;]<br />

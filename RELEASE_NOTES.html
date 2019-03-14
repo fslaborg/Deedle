@@ -28,7 +28,7 @@
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
           <li><a href="http://fslab.org/RProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="https://fslab.org/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
           <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
@@ -39,6 +39,29 @@
         <div class="span9" id="main">
           
 <h1><a name="Release-Notes" class="anchor" href="#Release-Notes">Release Notes</a></h1>
+<h2><a name="2-0-0-2019-03-13" class="anchor" href="#2-0-0-2019-03-13">2.0.0 - 2019-03-13</a></h2>
+<ul>
+<li>Breaking changes of Stats.min and Stats.max <a href="https://github.com/fslaborg/Deedle/pull/422">#422</a></li>
+<li>Inline stats functions <a href="https://github.com/fslaborg/Deedle/pull/418">#418</a></li>
+<li>Fix error handling of group by column when dealing with missing value <a href="https://github.com/fslaborg/Deedle/pull/405">253</a> and <a href="https://github.com/fslaborg/Deedle/pull/380">380</a></li>
+<li>Fix aggregateRowsBy with missing value <a href="https://github.com/fslaborg/Deedle/pull/408">375</a></li>
+<li>Fix format function <a href="https://github.com/fslaborg/Deedle/pull/416">#416</a></li>
+<li>Fix arithmetic operator on frames <a href="https://github.com/fslaborg/Deedle/pull/434">#432</a></li>
+<li>Fix wrong exception for empty Series <a href="https://github.com/fslaborg/Deedle/pull/437">#365</a></li>
+<li>Fix tryLastValue using tryGetAt <a href="https://github.com/fslaborg/Deedle/pull/438">#339</a></li>
+<li>Fix bug in ReadCsv missingValues parameters <a href="https://github.com/fslaborg/Deedle/pull/440">#439</a></li>
+<li>Fix handling of missing column keys in case when inferTypes is false <a href="https://github.com/fslaborg/Deedle/pull/450">#63</a></li>
+<li>Add Frame.dropSparseRowsBy <a href="https://github.com/fslaborg/Deedle/pull/404">#404</a></li>
+<li>Add Series.intersect <a href="https://github.com/fslaborg/Deedle/pull/407">#407</a></li>
+<li>Add Series.compare <a href="https://github.com/fslaborg/Deedle/pull/411">#411</a></li>
+<li>Add Series.uniqueCount <a href="https://github.com/fslaborg/Deedle/pull/413">#413</a></li>
+<li>Add Series.describe <a href="https://github.com/fslaborg/Deedle/pull/414">#414</a> and <a href="https://github.com/fslaborg/Deedle/pull/442">$422</a></li>
+<li>Add Series.replace <a href="https://github.com/fslaborg/Deedle/pull/427">#427</a></li>
+<li>Add Stats.quantile for series <a href="https://github.com/fslaborg/Deedle/pull/428">#428</a></li>
+<li>Add Frame.slice <a href="https://github.com/fslaborg/Deedle/pull/445">#445</a></li>
+<li>Removed compiler warning from ReadCsv <a href="https://github.com/fslaborg/Deedle/pull/426">#426</a></li>
+<li>Rename stack/unstack to melt/unmelt <a href="https://github.com/fslaborg/Deedle/pull/436">#436</a></li>
+</ul>
 <h2><a name="2-0-0-beta01-2018-08-04" class="anchor" href="#2-0-0-beta01-2018-08-04">2.0.0-beta01 - 2018-08-04</a></h2>
 <ul>
 <li>Support for netstandard2.0 <a href="https://github.com/fslaborg/Deedle/pull/382">#382</a>, <a href="https://github.com/fslaborg/Deedle/pull/393">#393</a> and <a href="https://github.com/fslaborg/Deedle/pull/391">#391</a></li>

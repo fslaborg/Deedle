@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>StatsInternal - Deedle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="BlueMountain Capital, FsLab.Org">
+
+    <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <link type="text/css" rel="stylesheet" href="https://fslab.org/Deedle/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="https://fslab.org/Deedle/content/deedle.css" />
+    <script type="text/javascript" src="https://fslab.org/Deedle/content/tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://fslab.org/RProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="https://fslab.org/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
+          <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
+        </ul>
+        <h3 class="muted"><a href="https://fslab.org/Deedle/index.html">Deedle</a></h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+
+
+
+<h1>StatsInternal</h1>
+<p>
+  <span>Namespace: Deedle</span><br />
+  </p>
+<div class="xmldoc">
+</div>
+
+<!-- Render nested types and modules, if there are any -->
+  <h2>Nested types and modules</h2>
+  <div>
+      <table class="table table-bordered type-list">
+    <thead>
+      <tr><td>Type</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-statsinternal-moments.html">Moments</a>
+          </td>
+          <td class="xmldoc">
+          <p>Represents the moments as calculated during online processing
+(<code>nobs</code> is the count, <code>sum</code> is the sum, <code>M1</code> to <code>M4</code> are moments)</p>
+
+
+          </td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="deedle-statsinternal-sums.html">Sums</a>
+          </td>
+          <td class="xmldoc">
+          <p>When calculating moments, this record is used to keep track of the
+count (<code>nobs</code>), sum of values (<code>sum</code>), sum of squares (<code>sum2</code>),
+sum of values to the power of 3 and 3 (<code>sum3</code> and <code>sum4</code>)</p>
+
+
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+  <h3>Functions and values</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Function or value</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '295', 295)" onmouseover="showTip(event, '295', 295)">
+            applyExpandingMomentsTransform(...)
+          </code>
+          <div class="tip" id="295">
+            <strong>Signature:</strong> proj:(Moments -&gt; float) -&gt; series:Series&lt;&#39;K,^V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K, ^V                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L226-226" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Given a series, calculates expanding moments (using online <code>updateMoments</code>)
+The specified <code>proj</code> function is used to calculate the resulting value</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '296', 296)" onmouseover="showTip(event, '296', 296)">
+            applyMovingSumsTransform(...)
+          </code>
+          <div class="tip" id="296">
+            <strong>Signature:</strong> moment:int -&gt; winSize:int -&gt; proj:(Sums -&gt; float) -&gt; series:Series&lt;&#39;K,^V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K, ^V                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L110-110" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Apply moving window transformation based on <a href="deedle-statsinternal-sums.html" title="Sums"><code>Sums</code></a> calculation. The <code>proj</code> function
+calculates the statistics from <a href="deedle-statsinternal-sums.html" title="Sums"><code>Sums</code></a> value and the <code>moment</code> specifies which of the
+<a href="deedle-statsinternal-sums.html" title="Sums"><code>Sums</code></a> properties are calculated during the processing.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '297', 297)" onmouseover="showTip(event, '297', 297)">
+            applySeriesProj proj series
+          </code>
+          <div class="tip" id="297">
+            <strong>Signature:</strong> proj:(seq&lt;float opt&gt; -&gt; float []) -&gt; series:Series&lt;&#39;K,float&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L24-24" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Apply transformation on series elements. The projection function <code>proj</code> always
+returns <code>float</code>, but may return <code>nan</code> to indicate that the value is not available.
+The resulting sequence should have the same number of values as the input sequence</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '298', 298)" onmouseover="showTip(event, '298', 298)">
+            expandingWindowFn(...)
+          </code>
+          <div class="tip" id="298">
+            <strong>Signature:</strong> initState:&#39;?674039 -&gt; fupdate:(&#39;?674039 -&gt; &#39;?674040 -&gt; &#39;?674039) -&gt; ftransf:(&#39;?674039 -&gt; &#39;?674041) -&gt; source:seq&lt;&#39;?674040&gt; -&gt; seq&lt;&#39;?674041&gt;<br />
+                          <strong>Type parameters:</strong> '?674039, '?674040, '?674041                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L184-184" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Helper for expanding window calculations</p>
+<h2>Parameters</h2>
+<ul>
+<li><code>initState</code> is the initial state of the computation</li>
+</ul>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '299', 299)" onmouseover="showTip(event, '299', 299)">
+            initSumsDense moment init
+          </code>
+          <div class="tip" id="299">
+            <strong>Signature:</strong> moment:int -&gt; init:float [] -&gt; Sums<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L72-72" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Given an initial array of values, calculate the initial <a href="deedle-statsinternal-sums.html" title="Sums"><code>Sums</code></a> value
+(only required elements of <a href="deedle-statsinternal-sums.html" title="Sums"><code>Sums</code></a> are calculated based on <code>moment</code>)</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '300', 300)" onmouseover="showTip(event, '300', 300)">
+            initSumsSparse moment init
+          </code>
+          <div class="tip" id="300">
+            <strong>Signature:</strong> moment:int -&gt; init:^V opt [] -&gt; Sums<br />
+                          <strong>Type parameters:</strong> ^V                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L92-92" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Pick only available values from the input array and call <code>initSumsDense</code>
+(no need to handle <code>nan</code> values, because those are returned as Missing by Deedle)</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '301', 301)" onmouseover="showTip(event, '301', 301)">
+            kurtSums(s)
+          </code>
+          <div class="tip" id="301">
+            <strong>Signature:</strong> s:Sums -&gt; float<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L130-130" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Calculate kurtosis from <a href="deedle-statsinternal-sums.html" title="Sums"><code>Sums</code></a>; requires <code>moment=4</code></p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '302', 302)" onmouseover="showTip(event, '302', 302)">
+            movingMinMaxHelper winSize cmp s
+          </code>
+          <div class="tip" id="302">
+            <strong>Signature:</strong> winSize:int -&gt; cmp:(float -&gt; float -&gt; bool) -&gt; s:seq&lt;OptionalValue&lt;float&gt;&gt; -&gt; float []<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L153-153" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>O(n) moving min/max calculator</p>
+<p>Keeps double-ended queue of values sorted acording to the specified order,
+such that the front is the min/max value. During the iteration, new value is
+added to the end (and all values that are greater/smaller than the new value
+are removed before it is appended).</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '303', 303)" onmouseover="showTip(event, '303', 303)">
+            movingWindowFn(...)
+          </code>
+          <div class="tip" id="303">
+            <strong>Signature:</strong> winSize:int -&gt; finit:(&#39;?674014 [] -&gt; &#39;?674015) -&gt; fupdate:(&#39;?674015 -&gt; &#39;?674014 -&gt; &#39;?674014 -&gt; &#39;?674015) -&gt; ftransf:(&#39;?674015 -&gt; float) -&gt; source:seq&lt;&#39;?674014&gt; -&gt; seq&lt;float&gt;<br />
+                          <strong>Type parameters:</strong> '?674014, '?674015                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L41-41" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Helper for moving window calculations (adopted from <code>Seq.windowed</code> in F# code base)
+When calling <code>finit</code>, we do not copy the array - this is fine, because the function
+is internal (and the only use in <code>applyMovingSumsTransform</code> is correct)</p>
+<h1>Parameters</h1>
+<ul>
+<li><code>winSize</code> - The size of the window to create</li>
+<li><code>finit</code> takes the first fully populated window array to an initial state</li>
+<li>
+<code>fupdate</code> takes the current state, incoming observation, 
+and out-going observation to the next state
+</li>
+<li><code>ftransf</code> takes the current state to the current output</li>
+</ul>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '304', 304)" onmouseover="showTip(event, '304', 304)">
+            quickSelectInplace n arr
+          </code>
+          <div class="tip" id="304">
+            <strong>Signature:</strong> n:int -&gt; arr:float [] -&gt; float<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L263-263" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the nth smallest element from the specified array.
+(QuickSelect implementation based on: <a href="http://en.wikipedia.org/wiki/Quickselect)">http://en.wikipedia.org/wiki/Quickselect)</a></p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '305', 305)" onmouseover="showTip(event, '305', 305)">
+            skewSums(s)
+          </code>
+          <div class="tip" id="305">
+            <strong>Signature:</strong> s:Sums -&gt; float<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L121-121" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Calculate skewness from <a href="deedle-statsinternal-sums.html" title="Sums"><code>Sums</code></a>; requires <code>moment=3</code></p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '306', 306)" onmouseover="showTip(event, '306', 306)">
+            trySeriesExtreme f series
+          </code>
+          <div class="tip" id="306">
+            <strong>Signature:</strong> f:(&#39;V -&gt; &#39;V -&gt; &#39;V) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V option<br />
+                          <strong>Type parameters:</strong> 'V, 'K                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L252-252" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Calculates minimum or maximum using the specified function 'f'
+Returns None when there are no values or Some.</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '307', 307)" onmouseover="showTip(event, '307', 307)">
+            updateMoments state x
+          </code>
+          <div class="tip" id="307">
+            <strong>Signature:</strong> state:Moments -&gt; x:float -&gt; Moments<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L203-203" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Updates the moments using the Knuth/Welford algorithm for online stats updating
+(See: <a href="http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Online_algorithm)">http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Online_algorithm)</a></p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '308', 308)" onmouseover="showTip(event, '308', 308)">
+            updateMomentsSparse state curr
+          </code>
+          <div class="tip" id="308">
+            <strong>Signature:</strong> state:Moments -&gt; curr:float opt -&gt; Moments<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L219-219" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Updates the moments using <code>updateMoments</code>, but skips over missing values</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '309', 309)" onmouseover="showTip(event, '309', 309)">
+            updateSumsDense moment state curr outg
+          </code>
+          <div class="tip" id="309">
+            <strong>Signature:</strong> moment:int -&gt; state:Sums -&gt; curr:float -&gt; outg:float -&gt; Sums<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L83-83" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Given an existing <code>state</code> of type <a href="deedle-statsinternal-sums.html" title="Sums"><code>Sums</code></a>, new incoming element and
+an old outgoing element, update the sums value
+(only required elements of <a href="deedle-statsinternal-sums.html" title="Sums"><code>Sums</code></a> are calculated based on <code>moment</code>)</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '310', 310)" onmouseover="showTip(event, '310', 310)">
+            updateSumsSparse moment state curr outg
+          </code>
+          <div class="tip" id="310">
+            <strong>Signature:</strong> moment:int -&gt; state:Sums -&gt; curr:float opt -&gt; outg:float opt -&gt; Sums<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L100-100" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Update <a href="deedle-statsinternal-sums.html" title="Sums"><code>Sums</code></a> value using <code>updateSumsDense</code>, but handle the case
+when removing/adding value that is missing (<code>OptionalValue.Missing</code>)</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '311', 311)" onmouseover="showTip(event, '311', 311)">
+            valuesAllOpt(series)
+          </code>
+          <div class="tip" id="311">
+            <strong>Signature:</strong> series:Series&lt;&#39;?674059,&#39;?674060&gt; -&gt; OptionalValue&lt;&#39;?674060&gt; []<br />
+                          <strong>Type parameters:</strong> '?674059, '?674060                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L247-247" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns all values of a series as an array of <a href="deedle-optionalvalue.html" title="OptionalValue"><code>OptionalValue</code></a>s</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '312', 312)" onmouseover="showTip(event, '312', 312)">
+            varianceSums(s)
+          </code>
+          <div class="tip" id="312">
+            <strong>Signature:</strong> s:Sums -&gt; float<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L116-116" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Calculate variance from <a href="deedle-statsinternal-sums.html" title="Sums"><code>Sums</code></a>; requires <code>moment=2</code></p>
+
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+        </div>
+        <div class="span3">
+          <a href="https://fslab.org/Deedle/index.html">
+            <img src="https://fslab.org/Deedle/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          </a>
+
+          <ul class="nav nav-list" id="menu">
+            <li class="nav-header">Deedle</li>
+            <li><a href="https://fslab.org/Deedle/index.html">Home page</a></li>
+            <li class="divider"></li>
+            <li><a href="https://nuget.org/packages/Deedle">Get Library via NuGet</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/fslaborg/Deedle/blob/master/LICENSE.md">License (BSD)</a></li>
+            <li><a href="https://fslab.org/Deedle/RELEASE_NOTES.html">Release notes</a></li>
+            <li><a href="https://fslab.org/Deedle/design.html">Design notes</a></li>
+            <li><a href="http://stackoverflow.com/questions/tagged/deedle">Ask a question!</a></li>
+            
+            <li class="nav-header">Using from F#</li>
+            <li>
+              <a href="https://fslab.org/Deedle/tutorial.html">Quick start tutorial</a>
+            </li>
+            <li>
+              <a href="https://fslab.org/Deedle/series.html">Working with time series</a>
+            </li>
+            <li>
+              <a href="https://fslab.org/Deedle/frame.html">Working with data frames</a>
+            </li>
+            <li>
+              <a href="https://fslab.org/Deedle/stats.html">Statistics &amp; calculations</a>
+            </li>
+            <li>
+              <a href="https://fslab.org/Deedle/rinterop.html">Using Deedle with R</a>
+            </li>
+
+            <li class="nav-header">Using from C#</li>
+            <li><a href="https://fslab.org/Deedle/csharpintro.html">Getting started</a></li>
+            <li>
+              <a href="https://fslab.org/Deedle/csharpseries.html">Working with data series</a>
+            </li>
+            <li>
+              <a href="https://fslab.org/Deedle/csharpframe.html">Working with data frames</a>
+            </li>
+
+            <li class="nav-header">Documentation</li>
+            <li><a href="https://fslab.org/Deedle/reference/index.html">API Reference</a></li>
+            <li class="divider"></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-seriesmodule.html">Series module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-framemodule.html">Frame module</a></li>
+            <li><a href="https://fslab.org/Deedle/reference/deedle-stats.html">Stats module</a></li>
+
+            <li class="nav-header">Samples</li>
+            <li><a href="https://fslab.org/Deedle/lazysource.html">Lazy data loading</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/fslaborg/Deedle"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <script>
+      (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+          (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+      })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+      ga('create', 'UA-45379232-1', 'bluemountaincapital.github.io');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>

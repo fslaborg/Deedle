@@ -27,7 +27,7 @@
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
           <li><a href="http://fslab.org/RProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="https://fslab.org/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
           <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
@@ -145,7 +145,7 @@ or rows. Finally, <code>toArray2D</code> returns the frame data as a 2D array.</
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L401-401" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L411-411" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -287,7 +287,7 @@ values (such as <code>nan</code>, <code>null</code>, etc.)</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L414-414" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L424-424" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -405,8 +405,8 @@ missing values where the conversion fails.</p>
             getRow row frame
           </code>
           <div class="tip" id="49">
-            <strong>Signature:</strong> row:&#39;R -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?633206&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?633206                        <span>
+            <strong>Signature:</strong> row:&#39;R -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?673609&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?673609                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;GetRow&quot;)&gt;]<br />
           </span>
@@ -486,8 +486,8 @@ with nearest greater/smaller key. For exact semantics, you can use <code>getCol<
             lookupRow row lookup frame
           </code>
           <div class="tip" id="52">
-            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?633226&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?633226                        <span>
+            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?673629&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?673629                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;LookupRow&quot;)&gt;]<br />
           </span>
@@ -521,7 +521,7 @@ nearest greater/smaller key. For exact semantics, you can use <code>getRow</code
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L428-428" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L438-438" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -570,9 +570,35 @@ individual row of the frame.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '55', 55)" onmouseover="showTip(event, '55', 55)">
-            sliceCols columns frame
+            slice columns rows frame
           </code>
           <div class="tip" id="55">
+            <strong>Signature:</strong> columns:seq&lt;&#39;C&gt; -&gt; rows:seq&lt;&#39;R&gt; -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;CompiledName(&quot;Slice&quot;)&gt;]<br />
+          </span>
+          </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L394-394" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a frame consisting of the specified columns and rows from the original
+data frame. The function uses exact key matching semantics.</p>
+
+
+              <p>CompiledName: <code>Slice</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '56', 56)" onmouseover="showTip(event, '56', 56)">
+            sliceCols columns frame
+          </code>
+          <div class="tip" id="56">
             <strong>Signature:</strong> columns:seq&lt;&#39;C&gt; -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R                        <span>
             <strong>Attributes:</strong><br />
@@ -595,10 +621,10 @@ data frame. The function uses exact key matching semantics.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '56', 56)" onmouseover="showTip(event, '56', 56)">
+          <code onmouseout="hideTip(event, '57', 57)" onmouseover="showTip(event, '57', 57)">
             sliceRows rows frame
           </code>
-          <div class="tip" id="56">
+          <div class="tip" id="57">
             <strong>Signature:</strong> rows:seq&lt;&#39;R&gt; -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -621,10 +647,10 @@ data frame. The function uses exact key matching semantics.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '57', 57)" onmouseover="showTip(event, '57', 57)">
+          <code onmouseout="hideTip(event, '58', 58)" onmouseover="showTip(event, '58', 58)">
             toArray2D(frame)
           </code>
-          <div class="tip" id="57">
+          <div class="tip" id="58">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; float [,]<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -633,7 +659,7 @@ data frame. The function uses exact key matching semantics.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L436-436" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L446-446" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -647,10 +673,10 @@ Missing data are represented as <code>Double.NaN</code> in the returned array.</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '58', 58)" onmouseover="showTip(event, '58', 58)">
+          <code onmouseout="hideTip(event, '59', 59)" onmouseover="showTip(event, '59', 59)">
             tryLookupCol column lookup frame
           </code>
-          <div class="tip" id="58">
+          <div class="tip" id="59">
             <strong>Signature:</strong> column:&#39;C -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;R,&#39;V&gt; option<br />
                           <strong>Type parameters:</strong> 'C, 'R, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -673,12 +699,12 @@ column doesn't exist.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '59', 59)" onmouseover="showTip(event, '59', 59)">
+          <code onmouseout="hideTip(event, '60', 60)" onmouseover="showTip(event, '60', 60)">
             tryLookupColObservation(...)
           </code>
-          <div class="tip" id="59">
-            <strong>Signature:</strong> column:&#39;C -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; (&#39;C * Series&lt;&#39;R,&#39;?633222&gt;) option<br />
-                          <strong>Type parameters:</strong> 'C, 'R, '?633222                        <span>
+          <div class="tip" id="60">
+            <strong>Signature:</strong> column:&#39;C -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; (&#39;C * Series&lt;&#39;R,&#39;?673625&gt;) option<br />
+                          <strong>Type parameters:</strong> 'C, 'R, '?673625                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;TryLookupColObservation&quot;)&gt;]<br />
           </span>
@@ -699,12 +725,12 @@ doesn't exist.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '60', 60)" onmouseover="showTip(event, '60', 60)">
+          <code onmouseout="hideTip(event, '61', 61)" onmouseover="showTip(event, '61', 61)">
             tryLookupRow row lookup frame
           </code>
-          <div class="tip" id="60">
-            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?633230&gt; option<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?633230                        <span>
+          <div class="tip" id="61">
+            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;?673633&gt; option<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?673633                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;TryLookupRow&quot;)&gt;]<br />
           </span>
@@ -725,12 +751,12 @@ row doesn't exit.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '61', 61)" onmouseover="showTip(event, '61', 61)">
+          <code onmouseout="hideTip(event, '62', 62)" onmouseover="showTip(event, '62', 62)">
             tryLookupRowObservation row lookup frame
           </code>
-          <div class="tip" id="61">
-            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; (&#39;R * Series&lt;&#39;C,&#39;?633234&gt;) option<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?633234                        <span>
+          <div class="tip" id="62">
+            <strong>Signature:</strong> row:&#39;R -&gt; lookup:Lookup -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; (&#39;R * Series&lt;&#39;C,&#39;?673637&gt;) option<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?673637                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;TryLookupRowObservation&quot;)&gt;]<br />
           </span>
@@ -783,10 +809,10 @@ the specified offset. This can be used e.g. to get previous value for each key u
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '62', 62)" onmouseover="showTip(event, '62', 62)">
+          <code onmouseout="hideTip(event, '63', 63)" onmouseover="showTip(event, '63', 63)">
             diff offset frame
           </code>
-          <div class="tip" id="62">
+          <div class="tip" id="63">
             <strong>Signature:</strong> offset:int -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -795,7 +821,7 @@ the specified offset. This can be used e.g. to get previous value for each key u
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1198-1198" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1226-1226" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -826,10 +852,10 @@ when negative, subtracts the future values from the current values.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '63', 63)" onmouseover="showTip(event, '63', 63)">
+          <code onmouseout="hideTip(event, '64', 64)" onmouseover="showTip(event, '64', 64)">
             filterCols f frame
           </code>
-          <div class="tip" id="63">
+          <div class="tip" id="64">
             <strong>Signature:</strong> f:(&#39;C -&gt; ObjectSeries&lt;&#39;R&gt; -&gt; bool) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R                        <span>
             <strong>Attributes:</strong><br />
@@ -838,7 +864,7 @@ when negative, subtracts the future values from the current values.
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1041-1041" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1069-1069" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -858,10 +884,10 @@ with the column key and object series that represents the column data.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '64', 64)" onmouseover="showTip(event, '64', 64)">
+          <code onmouseout="hideTip(event, '65', 65)" onmouseover="showTip(event, '65', 65)">
             filterColValues f frame
           </code>
-          <div class="tip" id="64">
+          <div class="tip" id="65">
             <strong>Signature:</strong> f:(ObjectSeries&lt;&#39;R&gt; -&gt; bool) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -870,7 +896,7 @@ with the column key and object series that represents the column data.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1055-1055" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1083-1083" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -891,10 +917,10 @@ if you need to access the column key).</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '65', 65)" onmouseover="showTip(event, '65', 65)">
+          <code onmouseout="hideTip(event, '66', 66)" onmouseover="showTip(event, '66', 66)">
             filterRows f frame
           </code>
-          <div class="tip" id="65">
+          <div class="tip" id="66">
             <strong>Signature:</strong> f:(&#39;R -&gt; ObjectSeries&lt;&#39;C&gt; -&gt; bool) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -903,7 +929,7 @@ if you need to access the column key).</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L951-951" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L979-979" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -923,10 +949,10 @@ with the row key and object series that represents the row data.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '66', 66)" onmouseover="showTip(event, '66', 66)">
+          <code onmouseout="hideTip(event, '67', 67)" onmouseover="showTip(event, '67', 67)">
             filterRowsBy column value frame
           </code>
-          <div class="tip" id="66">
+          <div class="tip" id="67">
             <strong>Signature:</strong> column:&#39;C -&gt; value:&#39;V -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'V, 'R                        <span>
             <strong>Attributes:</strong><br />
@@ -935,7 +961,7 @@ with the row key and object series that represents the row data.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L982-982" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1010-1010" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -960,10 +986,10 @@ to match including the actual type.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '67', 67)" onmouseover="showTip(event, '67', 67)">
+          <code onmouseout="hideTip(event, '68', 68)" onmouseover="showTip(event, '68', 68)">
             filterRowValues f frame
           </code>
-          <div class="tip" id="67">
+          <div class="tip" id="68">
             <strong>Signature:</strong> f:(ObjectSeries&lt;&#39;C&gt; -&gt; bool) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R                        <span>
             <strong>Attributes:</strong><br />
@@ -972,7 +998,7 @@ to match including the actual type.
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L965-965" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L993-993" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -993,15 +1019,15 @@ if you need to access the row key).</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '68', 68)" onmouseover="showTip(event, '68', 68)">
+          <code onmouseout="hideTip(event, '69', 69)" onmouseover="showTip(event, '69', 69)">
             map f frame
           </code>
-          <div class="tip" id="68">
-            <strong>Signature:</strong> f:(&#39;R -&gt; &#39;C -&gt; &#39;?633430 -&gt; &#39;?633431) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'R, 'C, '?633430, '?633431                      </div>
+          <div class="tip" id="69">
+            <strong>Signature:</strong> f:(&#39;R -&gt; &#39;C -&gt; &#39;?673843 -&gt; &#39;?673844) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C, '?673843, '?673844                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1121-1121" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1149-1149" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1020,19 +1046,19 @@ to the appropriate type for input to the mapping function.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '69', 69)" onmouseover="showTip(event, '69', 69)">
+          <code onmouseout="hideTip(event, '70', 70)" onmouseover="showTip(event, '70', 70)">
             mapColKeys f frame
           </code>
-          <div class="tip" id="69">
-            <strong>Signature:</strong> f:(&#39;C -&gt; &#39;?633420) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;?633420&gt;<br />
-                          <strong>Type parameters:</strong> 'C, '?633420, 'R                        <span>
+          <div class="tip" id="70">
+            <strong>Signature:</strong> f:(&#39;C -&gt; &#39;?673833) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;?673833&gt;<br />
+                          <strong>Type parameters:</strong> 'C, '?673833, 'R                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;SelectColumnKeys&quot;)&gt;]<br />
           </span>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1094-1094" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1122-1122" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1051,19 +1077,19 @@ specified function on the column keys of the original data frame.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '70', 70)" onmouseover="showTip(event, '70', 70)">
+          <code onmouseout="hideTip(event, '71', 71)" onmouseover="showTip(event, '71', 71)">
             mapCols f frame
           </code>
-          <div class="tip" id="70">
-            <strong>Signature:</strong> f:(&#39;C -&gt; ObjectSeries&lt;&#39;R&gt; -&gt; &#39;?633411) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?633412,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'C, 'R, '?633411, '?633412                        <span>
+          <div class="tip" id="71">
+            <strong>Signature:</strong> f:(&#39;C -&gt; ObjectSeries&lt;&#39;R&gt; -&gt; &#39;?673824) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?673825,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R, '?673824, '?673825                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;SelectColumns&quot;)&gt;]<br />
           </span>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1068-1068" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1096-1096" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1083,19 +1109,19 @@ with the column key and object series that represents the column data.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '71', 71)" onmouseover="showTip(event, '71', 71)">
+          <code onmouseout="hideTip(event, '72', 72)" onmouseover="showTip(event, '72', 72)">
             mapColValues f frame
           </code>
-          <div class="tip" id="71">
-            <strong>Signature:</strong> f:(ObjectSeries&lt;&#39;R&gt; -&gt; &#39;?633415) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?633416,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> 'R, '?633415, '?633416, 'C                        <span>
+          <div class="tip" id="72">
+            <strong>Signature:</strong> f:(ObjectSeries&lt;&#39;R&gt; -&gt; &#39;?673828) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;?673829,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'R, '?673828, '?673829, 'C                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;SelectColumnValues&quot;)&gt;]<br />
           </span>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1082-1082" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1110-1110" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1116,10 +1142,10 @@ if you need to access the column key).</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '72', 72)" onmouseover="showTip(event, '72', 72)">
+          <code onmouseout="hideTip(event, '73', 73)" onmouseover="showTip(event, '73', 73)">
             mapRowKeys f frame
           </code>
-          <div class="tip" id="72">
+          <div class="tip" id="73">
             <strong>Signature:</strong> f:(&#39;R1 -&gt; &#39;R2) -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;&#39;R2,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R1, 'R2, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -1128,7 +1154,7 @@ if you need to access the column key).</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1026-1026" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1054-1054" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1147,10 +1173,10 @@ specified function on the row keys of the original data frame.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '73', 73)" onmouseover="showTip(event, '73', 73)">
+          <code onmouseout="hideTip(event, '74', 74)" onmouseover="showTip(event, '74', 74)">
             mapRows f frame
           </code>
-          <div class="tip" id="73">
+          <div class="tip" id="74">
             <strong>Signature:</strong> f:(&#39;R -&gt; ObjectSeries&lt;&#39;C&gt; -&gt; &#39;V) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;R,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -1159,7 +1185,7 @@ specified function on the row keys of the original data frame.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1000-1000" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1028-1028" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1179,10 +1205,10 @@ with the row key and object series that represents the row data.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '74', 74)" onmouseover="showTip(event, '74', 74)">
+          <code onmouseout="hideTip(event, '75', 75)" onmouseover="showTip(event, '75', 75)">
             mapRowValues f frame
           </code>
-          <div class="tip" id="74">
+          <div class="tip" id="75">
             <strong>Signature:</strong> f:(ObjectSeries&lt;&#39;C&gt; -&gt; &#39;V) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;R,&#39;V&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'V, 'R                        <span>
             <strong>Attributes:</strong><br />
@@ -1191,7 +1217,7 @@ with the row key and object series that represents the row data.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1014-1014" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1042-1042" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1212,19 +1238,19 @@ if you need to access the row key).</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '75', 75)" onmouseover="showTip(event, '75', 75)">
+          <code onmouseout="hideTip(event, '76', 76)" onmouseover="showTip(event, '76', 76)">
             mapValues f frame
           </code>
-          <div class="tip" id="75">
-            <strong>Signature:</strong> f:(&#39;?633423 -&gt; &#39;?633424) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
-                          <strong>Type parameters:</strong> '?633423, '?633424, 'R, 'C                        <span>
+          <div class="tip" id="76">
+            <strong>Signature:</strong> f:(&#39;?673836 -&gt; &#39;?673837) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> '?673836, '?673837, 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompiledName(&quot;MapValues&quot;)&gt;]<br />
           </span>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1110-1110" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1138-1138" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1241,10 +1267,10 @@ if you need to access the row key).</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '76', 76)" onmouseover="showTip(event, '76', 76)">
+          <code onmouseout="hideTip(event, '77', 77)" onmouseover="showTip(event, '77', 77)">
             maxRowBy column frame
           </code>
-          <div class="tip" id="76">
+          <div class="tip" id="77">
             <strong>Signature:</strong> column:&#39;C -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; (&#39;R * ObjectSeries&lt;&#39;C&gt;) option<br />
                           <strong>Type parameters:</strong> 'C, 'R                        <span>
             <strong>Attributes:</strong><br />
@@ -1253,7 +1279,7 @@ if you need to access the row key).</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1146-1146" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1174-1174" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1269,10 +1295,10 @@ series representing the row.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '77', 77)" onmouseover="showTip(event, '77', 77)">
+          <code onmouseout="hideTip(event, '78', 78)" onmouseover="showTip(event, '78', 78)">
             minRowBy column frame
           </code>
-          <div class="tip" id="77">
+          <div class="tip" id="78">
             <strong>Signature:</strong> column:&#39;C -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; (&#39;R * ObjectSeries&lt;&#39;C&gt;) option<br />
                           <strong>Type parameters:</strong> 'C, 'R                        <span>
             <strong>Attributes:</strong><br />
@@ -1281,7 +1307,7 @@ series representing the row.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1156-1156" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1184-1184" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1297,10 +1323,10 @@ series representing the row.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '78', 78)" onmouseover="showTip(event, '78', 78)">
+          <code onmouseout="hideTip(event, '79', 79)" onmouseover="showTip(event, '79', 79)">
             reduceValues op frame
           </code>
-          <div class="tip" id="78">
+          <div class="tip" id="79">
             <strong>Signature:</strong> op:(&#39;T -&gt; &#39;T -&gt; &#39;T) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;C,&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'T, 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -1309,7 +1335,7 @@ series representing the row.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1136-1136" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1164-1164" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1335,10 +1361,10 @@ in each column using <code>Series.reduceValues</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '79', 79)" onmouseover="showTip(event, '79', 79)">
+          <code onmouseout="hideTip(event, '80', 80)" onmouseover="showTip(event, '80', 80)">
             shift offset frame
           </code>
-          <div class="tip" id="79">
+          <div class="tip" id="80">
             <strong>Signature:</strong> offset:int -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -1347,7 +1373,7 @@ in each column using <code>Series.reduceValues</code>.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1176-1176" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1204-1204" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1377,10 +1403,10 @@ use <code>Frame.diff</code> which will be a little bit faster.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '80', 80)" onmouseover="showTip(event, '80', 80)">
+          <code onmouseout="hideTip(event, '81', 81)" onmouseover="showTip(event, '81', 81)">
             skip count frame
           </code>
-          <div class="tip" id="80">
+          <div class="tip" id="81">
             <strong>Signature:</strong> count:int -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -1389,7 +1415,7 @@ use <code>Frame.diff</code> which will be a little bit faster.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L925-925" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L953-953" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1404,10 +1430,10 @@ to the original number of rows.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '81', 81)" onmouseover="showTip(event, '81', 81)">
+          <code onmouseout="hideTip(event, '82', 82)" onmouseover="showTip(event, '82', 82)">
             skipLast count frame
           </code>
-          <div class="tip" id="81">
+          <div class="tip" id="82">
             <strong>Signature:</strong> count:int -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -1416,7 +1442,7 @@ to the original number of rows.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L936-936" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L964-964" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1431,10 +1457,10 @@ original number of rows.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '82', 82)" onmouseover="showTip(event, '82', 82)">
+          <code onmouseout="hideTip(event, '83', 83)" onmouseover="showTip(event, '83', 83)">
             take count frame
           </code>
-          <div class="tip" id="82">
+          <div class="tip" id="83">
             <strong>Signature:</strong> count:int -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -1443,7 +1469,7 @@ original number of rows.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L903-903" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L931-931" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1457,10 +1483,10 @@ original frame; <code>count</code> must be smaller or equal to the original numb
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '83', 83)" onmouseover="showTip(event, '83', 83)">
+          <code onmouseout="hideTip(event, '84', 84)" onmouseover="showTip(event, '84', 84)">
             takeLast count frame
           </code>
-          <div class="tip" id="83">
+          <div class="tip" id="84">
             <strong>Signature:</strong> count:int -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -1469,7 +1495,7 @@ original frame; <code>count</code> must be smaller or equal to the original numb
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L914-914" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L942-942" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1498,9 +1524,9 @@ from the row index.</p>
 specified sequence of columns and aggregates each group into a single value;
 <code>pivotTable</code> implements the pivoting operation <a href="../frame.html#pivot">as documented in the
 tutorials</a>.</p>
-<p>The <code>stack</code> and <code>unstack</code> functions turn the data frame into a single data frame
+<p>The <code>melt</code> and <code>unmelt</code> functions turn the data frame into a single data frame
 containing columns <code>Row</code>, <code>Column</code> and <code>Value</code> containing the data of the original
-frame; <code>unstack</code> can be used to turn this representation back into an original frame.</p>
+frame; <code>melt</code> can be used to turn this representation back into an original frame.</p>
 <p>A simple windowing functions that are exposed for an entire frame operations are
 <code>window</code> and <code>windowInto</code>. For more complex windowing operations, you currently have
 to use <code>mapRows</code> or <code>mapCols</code> and apply windowing on individual series.</p>
@@ -1516,10 +1542,10 @@ to use <code>mapRows</code> or <code>mapCols</code> and apply windowing on indiv
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '84', 84)" onmouseover="showTip(event, '84', 84)">
+          <code onmouseout="hideTip(event, '85', 85)" onmouseover="showTip(event, '85', 85)">
             aggregateRowsBy(...)
           </code>
-          <div class="tip" id="84">
+          <div class="tip" id="85">
             <strong>Signature:</strong> groupBy:seq&lt;&#39;C&gt; -&gt; aggBy:seq&lt;&#39;C&gt; -&gt; aggFunc:(Series&lt;&#39;R,&#39;V1&gt; -&gt; &#39;V2) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;int,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R, 'V1, 'V2                        <span>
             <strong>Attributes:</strong><br />
@@ -1528,7 +1554,7 @@ to use <code>mapRows</code> or <code>mapCols</code> and apply windowing on indiv
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L509-509" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L519-519" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1548,10 +1574,10 @@ in <code>aggBy</code> are aggregated according to <code>aggFunc</code>.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '85', 85)" onmouseover="showTip(event, '85', 85)">
+          <code onmouseout="hideTip(event, '86', 86)" onmouseover="showTip(event, '86', 86)">
             groupRowsBy column frame
           </code>
-          <div class="tip" id="85">
+          <div class="tip" id="86">
             <strong>Signature:</strong> column:&#39;C -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;(&#39;K * &#39;R),&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R, 'K                        <span>
             <strong>Attributes:</strong><br />
@@ -1560,7 +1586,7 @@ in <code>aggBy</code> are aggregated according to <code>aggFunc</code>.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L459-459" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L469-469" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1576,10 +1602,10 @@ explicitly specify the type of the column.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '86', 86)" onmouseover="showTip(event, '86', 86)">
+          <code onmouseout="hideTip(event, '87', 87)" onmouseover="showTip(event, '87', 87)">
             groupRowsByBool column frame
           </code>
-          <div class="tip" id="86">
+          <div class="tip" id="87">
             <strong>Signature:</strong> column:&#39;C -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;(bool * &#39;R),&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R                        <span>
             <strong>Attributes:</strong><br />
@@ -1588,7 +1614,7 @@ explicitly specify the type of the column.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L488-488" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L498-498" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1602,10 +1628,10 @@ This function assumes that the values of the specified column are of type <code>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '87', 87)" onmouseover="showTip(event, '87', 87)">
+          <code onmouseout="hideTip(event, '88', 88)" onmouseover="showTip(event, '88', 88)">
             groupRowsByIndex keySelector frame
           </code>
-          <div class="tip" id="87">
+          <div class="tip" id="88">
             <strong>Signature:</strong> keySelector:(&#39;R -&gt; &#39;K) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;(&#39;K * &#39;R),&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'K, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -1614,7 +1640,7 @@ This function assumes that the values of the specified column are of type <code>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L496-496" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L506-506" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1629,10 +1655,10 @@ here the first level is formed by the newly created keys.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '88', 88)" onmouseover="showTip(event, '88', 88)">
+          <code onmouseout="hideTip(event, '89', 89)" onmouseover="showTip(event, '89', 89)">
             groupRowsByInt column frame
           </code>
-          <div class="tip" id="88">
+          <div class="tip" id="89">
             <strong>Signature:</strong> column:&#39;C -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;(int * &#39;R),&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R                        <span>
             <strong>Attributes:</strong><br />
@@ -1641,7 +1667,7 @@ here the first level is formed by the newly created keys.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L474-474" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L484-484" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1655,10 +1681,10 @@ This function assumes that the values of the specified column are of type <code>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '89', 89)" onmouseover="showTip(event, '89', 89)">
+          <code onmouseout="hideTip(event, '90', 90)" onmouseover="showTip(event, '90', 90)">
             groupRowsByObj column frame
           </code>
-          <div class="tip" id="89">
+          <div class="tip" id="90">
             <strong>Signature:</strong> column:&#39;C -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;(obj * &#39;R),&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R                        <span>
             <strong>Attributes:</strong><br />
@@ -1667,7 +1693,7 @@ This function assumes that the values of the specified column are of type <code>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L467-467" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L477-477" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1681,10 +1707,10 @@ This function assumes that the values of the specified column are of type <code>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '90', 90)" onmouseover="showTip(event, '90', 90)">
+          <code onmouseout="hideTip(event, '91', 91)" onmouseover="showTip(event, '91', 91)">
             groupRowsByString column frame
           </code>
-          <div class="tip" id="90">
+          <div class="tip" id="91">
             <strong>Signature:</strong> column:&#39;C -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;(string * &#39;R),&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R                        <span>
             <strong>Attributes:</strong><br />
@@ -1693,7 +1719,7 @@ This function assumes that the values of the specified column are of type <code>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L481-481" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L491-491" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1707,10 +1733,10 @@ This function assumes that the values of the specified column are of type <code>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '91', 91)" onmouseover="showTip(event, '91', 91)">
+          <code onmouseout="hideTip(event, '92', 92)" onmouseover="showTip(event, '92', 92)">
             groupRowsUsing selector frame
           </code>
-          <div class="tip" id="91">
+          <div class="tip" id="92">
             <strong>Signature:</strong> selector:(&#39;R -&gt; ObjectSeries&lt;&#39;C&gt; -&gt; &#39;K) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;(&#39;K * &#39;R),&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C, 'K                        <span>
             <strong>Attributes:</strong><br />
@@ -1719,7 +1745,7 @@ This function assumes that the values of the specified column are of type <code>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L449-449" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L459-459" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1735,10 +1761,37 @@ keys.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '92', 92)" onmouseover="showTip(event, '92', 92)">
+          <code onmouseout="hideTip(event, '93', 93)" onmouseover="showTip(event, '93', 93)">
+            melt(frame)
+          </code>
+          <div class="tip" id="93">
+            <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;int,string&gt;<br />
+                          <strong>Type parameters:</strong> 'R, 'C                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;CompiledName(&quot;Melt&quot;)&gt;]<br />
+          </span>
+          </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L583-583" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a data frame with three columns named <code>Row</code>, <code>Column</code>
+and <code>Value</code> that contains the data of the original data frame
+in individual rows.</p>
+
+
+              <p>CompiledName: <code>Melt</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '94', 94)" onmouseover="showTip(event, '94', 94)">
             pivotTable rowGrp colGrp op frame
           </code>
-          <div class="tip" id="92">
+          <div class="tip" id="94">
             <strong>Signature:</strong> rowGrp:(&#39;R -&gt; ObjectSeries&lt;&#39;C&gt; -&gt; &#39;RNew) -&gt; colGrp:(&#39;R -&gt; ObjectSeries&lt;&#39;C&gt; -&gt; &#39;CNew) -&gt; op:(Frame&lt;&#39;R,&#39;C&gt; -&gt; &#39;T) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;RNew,&#39;CNew&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C, 'RNew, 'CNew, 'T                        <span>
             <strong>Attributes:</strong><br />
@@ -1747,7 +1800,7 @@ keys.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L529-529" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L539-539" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1770,19 +1823,24 @@ land in each bucket.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '93', 93)" onmouseover="showTip(event, '93', 93)">
+          <code onmouseout="hideTip(event, '95', 95)" onmouseover="showTip(event, '95', 95)">
             stack(frame)
           </code>
-          <div class="tip" id="93">
+          <div class="tip" id="95">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;int,string&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
+[&lt;Obsolete(&quot;The Frame.Stack method has been renamed to Frame.Melt&quot;)&gt;]<br />
 [&lt;CompiledName(&quot;Stack&quot;)&gt;]<br />
           </span>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L573-573" class="github-link">
+              <div class="alert alert-warning">
+              <strong>WARNING: </strong> This API is obsolete
+              <p>The Frame.Stack method has been renamed to Frame.Melt</p>
+              </div> 
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L624-624" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1797,19 +1855,52 @@ in individual rows.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '94', 94)" onmouseover="showTip(event, '94', 94)">
-            unstack(frame)
+          <code onmouseout="hideTip(event, '96', 96)" onmouseover="showTip(event, '96', 96)">
+            unmelt(frame)
           </code>
-          <div class="tip" id="94">
+          <div class="tip" id="96">
             <strong>Signature:</strong> frame:Frame&lt;&#39;O,string&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'O, 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
-[&lt;CompiledName(&quot;Unstack&quot;)&gt;]<br />
+[&lt;CompiledName(&quot;Unmelt&quot;)&gt;]<br />
           </span>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L615-615" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L633-633" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>This function is the opposite of <code>melt</code>. It takes a data frame
+with three columns named <code>Row</code>, <code>Column</code> and <code>Value</code> and reconstructs
+a data frame by using <code>Row</code> and <code>Column</code> as row and column index keys,
+respectively.</p>
+
+
+              <p>CompiledName: <code>Unmelt</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '97', 97)" onmouseover="showTip(event, '97', 97)">
+            unstack(frame)
+          </code>
+          <div class="tip" id="97">
+            <strong>Signature:</strong> frame:Frame&lt;&#39;O,string&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'O, 'R, 'C                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;Obsolete(&quot;The Frame.UnStack method has been renamed to Frame.Unmelt&quot;)&gt;]<br />
+[&lt;CompiledName(&quot;UnStack&quot;)&gt;]<br />
+          </span>
+          </div>
+        </td>
+        <td class="xmldoc">
+              <div class="alert alert-warning">
+              <strong>WARNING: </strong> This API is obsolete
+              <p>The Frame.UnStack method has been renamed to Frame.Unmelt</p>
+              </div> 
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L647-647" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1819,16 +1910,16 @@ a data frame by using <code>Row</code> and <code>Column</code> as row and column
 respectively.</p>
 
 
-              <p>CompiledName: <code>Unstack</code></p>
+              <p>CompiledName: <code>UnStack</code></p>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '95', 95)" onmouseover="showTip(event, '95', 95)">
+          <code onmouseout="hideTip(event, '98', 98)" onmouseover="showTip(event, '98', 98)">
             window size frame
           </code>
-          <div class="tip" id="95">
+          <div class="tip" id="98">
             <strong>Signature:</strong> size:int -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;R,Frame&lt;&#39;R,&#39;C&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -1837,7 +1928,7 @@ respectively.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L547-547" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L557-557" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1857,10 +1948,10 @@ This function skips incomplete chunks.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '96', 96)" onmouseover="showTip(event, '96', 96)">
+          <code onmouseout="hideTip(event, '99', 99)" onmouseover="showTip(event, '99', 99)">
             windowInto size f frame
           </code>
-          <div class="tip" id="96">
+          <div class="tip" id="99">
             <strong>Signature:</strong> size:int -&gt; f:(Frame&lt;&#39;R,&#39;C&gt; -&gt; &#39;c) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;R,&#39;c&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C, 'c                        <span>
             <strong>Attributes:</strong><br />
@@ -1869,7 +1960,7 @@ This function skips incomplete chunks.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L562-562" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L572-572" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1914,10 +2005,10 @@ used to perform group by operation and return the result as a series of frems.</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '97', 97)" onmouseover="showTip(event, '97', 97)">
+          <code onmouseout="hideTip(event, '100', 100)" onmouseover="showTip(event, '100', 100)">
             applyLevel levelSel op frame
           </code>
-          <div class="tip" id="97">
+          <div class="tip" id="100">
             <strong>Signature:</strong> levelSel:(&#39;R -&gt; &#39;K) -&gt; op:(Series&lt;&#39;R,&#39;T&gt; -&gt; &#39;T) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;K,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'K, 'T, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -1926,7 +2017,7 @@ used to perform group by operation and return the result as a series of frems.</
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1535-1535" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1582-1582" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1942,10 +2033,10 @@ you want to reduce values using a simpler function <code>'T -&gt; 'T -&gt; 'T</c
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '98', 98)" onmouseover="showTip(event, '98', 98)">
+          <code onmouseout="hideTip(event, '101', 101)" onmouseover="showTip(event, '101', 101)">
             nest(frame)
           </code>
-          <div class="tip" id="98">
+          <div class="tip" id="101">
             <strong>Signature:</strong> frame:Frame&lt;(&#39;R1 * &#39;R2),&#39;C&gt; -&gt; Series&lt;&#39;R1,Frame&lt;&#39;R2,&#39;C&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'R1, 'R2, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -1954,7 +2045,7 @@ you want to reduce values using a simpler function <code>'T -&gt; 'T -&gt; 'T</c
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1547-1547" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1594-1594" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1970,10 +2061,10 @@ can be used if you want to perform a transformation individually on each group
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '99', 99)" onmouseover="showTip(event, '99', 99)">
+          <code onmouseout="hideTip(event, '102', 102)" onmouseover="showTip(event, '102', 102)">
             nestBy keySelector frame
           </code>
-          <div class="tip" id="99">
+          <div class="tip" id="102">
             <strong>Signature:</strong> keySelector:(&#39;K2 -&gt; &#39;K1) -&gt; frame:Frame&lt;&#39;K2,&#39;C&gt; -&gt; Series&lt;&#39;K1,Frame&lt;&#39;K2,&#39;C&gt;&gt;<br />
                           <strong>Type parameters:</strong> 'K2, 'K1, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -1982,7 +2073,7 @@ can be used if you want to perform a transformation individually on each group
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1558-1558" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1605-1605" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -1997,10 +2088,10 @@ of frames (indexed by the second-level).</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '100', 100)" onmouseover="showTip(event, '100', 100)">
+          <code onmouseout="hideTip(event, '103', 103)" onmouseover="showTip(event, '103', 103)">
             reduceLevel levelSel op frame
           </code>
-          <div class="tip" id="100">
+          <div class="tip" id="103">
             <strong>Signature:</strong> levelSel:(&#39;R -&gt; &#39;K) -&gt; op:(&#39;T -&gt; &#39;T -&gt; &#39;T) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;K,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'K, 'T, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2009,7 +2100,7 @@ of frames (indexed by the second-level).</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1512-1512" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1559-1559" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2024,10 +2115,10 @@ an entire group of values at once, you can use <code>applyLevel</code> instead.<
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '101', 101)" onmouseover="showTip(event, '101', 101)">
+          <code onmouseout="hideTip(event, '104', 104)" onmouseover="showTip(event, '104', 104)">
             unnest(series)
           </code>
-          <div class="tip" id="101">
+          <div class="tip" id="104">
             <strong>Signature:</strong> series:Series&lt;&#39;R1,Frame&lt;&#39;R2,&#39;C&gt;&gt; -&gt; Frame&lt;(&#39;R1 * &#39;R2),&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R1, 'R2, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2036,7 +2127,7 @@ an entire group of values at once, you can use <code>applyLevel</code> instead.<
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1568-1568" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1620-1620" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2074,10 +2165,10 @@ with more flexible row key matching (as in <code>joinAlign</code>)</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '102', 102)" onmouseover="showTip(event, '102', 102)">
+          <code onmouseout="hideTip(event, '105', 105)" onmouseover="showTip(event, '105', 105)">
             join kind frame1 frame2
           </code>
-          <div class="tip" id="102">
+          <div class="tip" id="105">
             <strong>Signature:</strong> kind:JoinKind -&gt; frame1:Frame&lt;&#39;R,&#39;C&gt; -&gt; frame2:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2086,7 +2177,7 @@ with more flexible row key matching (as in <code>joinAlign</code>)</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1386-1386" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1433-1433" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2112,10 +2203,10 @@ data frame.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '103', 103)" onmouseover="showTip(event, '103', 103)">
+          <code onmouseout="hideTip(event, '106', 106)" onmouseover="showTip(event, '106', 106)">
             joinAlign kind lookup frame1 frame2
           </code>
-          <div class="tip" id="103">
+          <div class="tip" id="106">
             <strong>Signature:</strong> kind:JoinKind -&gt; lookup:Lookup -&gt; frame1:Frame&lt;&#39;R,&#39;C&gt; -&gt; frame2:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2124,7 +2215,7 @@ data frame.
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1407-1407" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1454-1454" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2157,10 +2248,10 @@ exactly matching key or when there are missing values.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '104', 104)" onmouseover="showTip(event, '104', 104)">
+          <code onmouseout="hideTip(event, '107', 107)" onmouseover="showTip(event, '107', 107)">
             merge frame1 frame2
           </code>
-          <div class="tip" id="104">
+          <div class="tip" id="107">
             <strong>Signature:</strong> frame1:Frame&lt;&#39;R,&#39;C&gt; -&gt; frame2:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2169,7 +2260,7 @@ exactly matching key or when there are missing values.
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1442-1442" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1489-1489" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2193,10 +2284,10 @@ keys before calling append.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '105', 105)" onmouseover="showTip(event, '105', 105)">
+          <code onmouseout="hideTip(event, '108', 108)" onmouseover="showTip(event, '108', 108)">
             mergeAll(frames)
           </code>
-          <div class="tip" id="105">
+          <div class="tip" id="108">
             <strong>Signature:</strong> frames:seq&lt;Frame&lt;&#39;R,&#39;C&gt;&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2205,7 +2296,7 @@ keys before calling append.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1420-1420" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1467-1467" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2224,10 +2315,10 @@ keys before calling append.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '106', 106)" onmouseover="showTip(event, '106', 106)">
+          <code onmouseout="hideTip(event, '109', 109)" onmouseover="showTip(event, '109', 109)">
             zip op frame1 frame2
           </code>
-          <div class="tip" id="106">
+          <div class="tip" id="109">
             <strong>Signature:</strong> op:(&#39;V1 -&gt; &#39;V2 -&gt; &#39;V) -&gt; frame1:Frame&lt;&#39;R,&#39;C&gt; -&gt; frame2:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'V1, 'V2, 'V, 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2236,7 +2327,7 @@ keys before calling append.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1488-1488" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1535-1535" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2267,10 +2358,10 @@ values in the frames are zipped and which are left unchanged.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '107', 107)" onmouseover="showTip(event, '107', 107)">
+          <code onmouseout="hideTip(event, '110', 110)" onmouseover="showTip(event, '110', 110)">
             zipAlign(...)
           </code>
-          <div class="tip" id="107">
+          <div class="tip" id="110">
             <strong>Signature:</strong> columnKind:JoinKind -&gt; rowKind:JoinKind -&gt; lookup:Lookup -&gt; op:(&#39;V1 -&gt; &#39;V2 -&gt; &#39;V) -&gt; frame1:Frame&lt;&#39;R,&#39;C&gt; -&gt; frame2:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'V1, 'V2, 'V, 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2279,7 +2370,7 @@ values in the frames are zipped and which are left unchanged.
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1465-1465" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1512-1512" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2336,10 +2427,10 @@ functions drop these missing values and return a frame with no missing values.</
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '108', 108)" onmouseover="showTip(event, '108', 108)">
+          <code onmouseout="hideTip(event, '111', 111)" onmouseover="showTip(event, '111', 111)">
             denseCols(frame)
           </code>
-          <div class="tip" id="108">
+          <div class="tip" id="111">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; ColumnSeries&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2348,7 +2439,7 @@ functions drop these missing values and return a frame with no missing values.</
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1356-1356" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1403-1403" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2364,10 +2455,10 @@ to <code>Columns</code>, but it skips columns that contain missing value in <em>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '109', 109)" onmouseover="showTip(event, '109', 109)">
+          <code onmouseout="hideTip(event, '112', 112)" onmouseover="showTip(event, '112', 112)">
             denseRows(frame)
           </code>
-          <div class="tip" id="109">
+          <div class="tip" id="112">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; RowSeries&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2376,7 +2467,7 @@ to <code>Columns</code>, but it skips columns that contain missing value in <em>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1365-1365" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1412-1412" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2392,10 +2483,10 @@ to <code>Rows</code>, but it skips rows that contain missing value in <em>any</e
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '110', 110)" onmouseover="showTip(event, '110', 110)">
+          <code onmouseout="hideTip(event, '113', 113)" onmouseover="showTip(event, '113', 113)">
             dropSparseCols(frame)
           </code>
-          <div class="tip" id="110">
+          <div class="tip" id="113">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2404,7 +2495,7 @@ to <code>Rows</code>, but it skips rows that contain missing value in <em>any</e
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1339-1339" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1386-1386" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2420,10 +2511,10 @@ fewer columns (or no columns at all).</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '111', 111)" onmouseover="showTip(event, '111', 111)">
+          <code onmouseout="hideTip(event, '114', 114)" onmouseover="showTip(event, '114', 114)">
             dropSparseRows(frame)
           </code>
-          <div class="tip" id="111">
+          <div class="tip" id="114">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2432,7 +2523,7 @@ fewer columns (or no columns at all).</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1318-1318" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1346-1346" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2448,10 +2539,38 @@ fewer rows (or no rows at all).</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '112', 112)" onmouseover="showTip(event, '112', 112)">
+          <code onmouseout="hideTip(event, '115', 115)" onmouseover="showTip(event, '115', 115)">
+            dropSparseRowsBy colKey frame
+          </code>
+          <div class="tip" id="115">
+            <strong>Signature:</strong> colKey:&#39;C -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
+                          <strong>Type parameters:</strong> 'C, 'R                        <span>
+            <strong>Attributes:</strong><br />
+[&lt;CompiledName(&quot;DropSparseRowsBy&quot;)&gt;]<br />
+          </span>
+          </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1367-1367" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Creates a new data frame that contains only those rows of the original
+data frame for which the given column has a value (i.e., is not missing).
+The resulting data frame has the same number of columns, but may have
+fewer rows (or no rows at all).</p>
+
+
+              <p>CompiledName: <code>DropSparseRowsBy</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '116', 116)" onmouseover="showTip(event, '116', 116)">
             fillMissing direction frame
           </code>
-          <div class="tip" id="112">
+          <div class="tip" id="116">
             <strong>Signature:</strong> direction:Direction -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2460,7 +2579,7 @@ fewer rows (or no rows at all).</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1286-1286" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1314-1314" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2487,10 +2606,10 @@ for the nearest greater key.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '113', 113)" onmouseover="showTip(event, '113', 113)">
+          <code onmouseout="hideTip(event, '117', 117)" onmouseover="showTip(event, '117', 117)">
             fillMissingUsing f frame
           </code>
-          <div class="tip" id="113">
+          <div class="tip" id="117">
             <strong>Signature:</strong> f:(Series&lt;&#39;R,&#39;T&gt; -&gt; &#39;R -&gt; &#39;T) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'T, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2499,7 +2618,7 @@ for the nearest greater key.
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1308-1308" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1336-1336" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2527,10 +2646,10 @@ series contains a missing value.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '114', 114)" onmouseover="showTip(event, '114', 114)">
+          <code onmouseout="hideTip(event, '118', 118)" onmouseover="showTip(event, '118', 118)">
             fillMissingWith value frame
           </code>
-          <div class="tip" id="114">
+          <div class="tip" id="118">
             <strong>Signature:</strong> value:&#39;T -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'T, 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2539,7 +2658,7 @@ series contains a missing value.
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1268-1268" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1296-1296" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2598,10 +2717,10 @@ functions.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '115', 115)" onmouseover="showTip(event, '115', 115)">
+          <code onmouseout="hideTip(event, '119', 119)" onmouseover="showTip(event, '119', 119)">
             fillErrorsWith value frame
           </code>
-          <div class="tip" id="115">
+          <div class="tip" id="119">
             <strong>Signature:</strong> value:&#39;T -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'T, 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2610,7 +2729,7 @@ functions.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1248-1248" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1276-1276" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2625,10 +2744,10 @@ to fill the error values with the specified default value.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '116', 116)" onmouseover="showTip(event, '116', 116)">
+          <code onmouseout="hideTip(event, '120', 120)" onmouseover="showTip(event, '120', 120)">
             tryMapRows f frame
           </code>
-          <div class="tip" id="116">
+          <div class="tip" id="120">
             <strong>Signature:</strong> f:(&#39;R -&gt; ObjectSeries&lt;&#39;C&gt; -&gt; &#39;V) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Series&lt;&#39;R,&#39;V tryval&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -2637,7 +2756,7 @@ to fill the error values with the specified default value.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1219-1219" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1247-1247" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2652,10 +2771,10 @@ function fails, the exception is wrapped using the <code>Error</code> case.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '117', 117)" onmouseover="showTip(event, '117', 117)">
+          <code onmouseout="hideTip(event, '121', 121)" onmouseover="showTip(event, '121', 121)">
             tryValues(frame)
           </code>
-          <div class="tip" id="117">
+          <div class="tip" id="121">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -2664,7 +2783,7 @@ function fails, the exception is wrapped using the <code>Error</code> case.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1228-1228" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L1256-1256" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2722,10 +2841,10 @@ applies the expansion to all columns of the data frame.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '118', 118)" onmouseover="showTip(event, '118', 118)">
+          <code onmouseout="hideTip(event, '122', 122)" onmouseover="showTip(event, '122', 122)">
             expandAllCols nesting frame
           </code>
-          <div class="tip" id="118">
+          <div class="tip" id="122">
             <strong>Signature:</strong> nesting:int -&gt; frame:Frame&lt;&#39;R,string&gt; -&gt; Frame&lt;&#39;R,string&gt;<br />
                           <strong>Type parameters:</strong> 'R                        <span>
             <strong>Attributes:</strong><br />
@@ -2734,7 +2853,7 @@ applies the expansion to all columns of the data frame.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L852-852" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L880-880" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2756,10 +2875,10 @@ properties.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '119', 119)" onmouseover="showTip(event, '119', 119)">
+          <code onmouseout="hideTip(event, '123', 123)" onmouseover="showTip(event, '123', 123)">
             expandCols names frame
           </code>
-          <div class="tip" id="119">
+          <div class="tip" id="123">
             <strong>Signature:</strong> names:seq&lt;string&gt; -&gt; frame:Frame&lt;&#39;R,string&gt; -&gt; Frame&lt;&#39;R,string&gt;<br />
                           <strong>Type parameters:</strong> 'R                        <span>
             <strong>Attributes:</strong><br />
@@ -2768,7 +2887,7 @@ properties.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L873-873" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L901-901" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2801,10 +2920,10 @@ tuple members and get a frame with columns <code>S.Item1</code> and <code>S.Item
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '120', 120)" onmouseover="showTip(event, '120', 120)">
+          <code onmouseout="hideTip(event, '124', 124)" onmouseover="showTip(event, '124', 124)">
             indexColsWith keys frame
           </code>
-          <div class="tip" id="120">
+          <div class="tip" id="124">
             <strong>Signature:</strong> keys:seq&lt;&#39;C2&gt; -&gt; frame:Frame&lt;&#39;R,&#39;C1&gt; -&gt; Frame&lt;&#39;R,&#39;C2&gt;<br />
                           <strong>Type parameters:</strong> 'C2, 'R, 'C1                        <span>
             <strong>Attributes:</strong><br />
@@ -2813,7 +2932,7 @@ tuple members and get a frame with columns <code>S.Item1</code> and <code>S.Item
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L737-737" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L765-765" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2833,10 +2952,10 @@ The specified column is removed from the resulting frame.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '121', 121)" onmouseover="showTip(event, '121', 121)">
+          <code onmouseout="hideTip(event, '125', 125)" onmouseover="showTip(event, '125', 125)">
             indexRows column frame
           </code>
-          <div class="tip" id="121">
+          <div class="tip" id="125">
             <strong>Signature:</strong> column:&#39;C -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;&#39;R2,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R1, 'R2                        <span>
             <strong>Attributes:</strong><br />
@@ -2845,7 +2964,7 @@ The specified column is removed from the resulting frame.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L655-655" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L683-683" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2869,10 +2988,10 @@ index. Note that the values in the column need to be unique.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '122', 122)" onmouseover="showTip(event, '122', 122)">
+          <code onmouseout="hideTip(event, '126', 126)" onmouseover="showTip(event, '126', 126)">
             indexRowsDate column frame
           </code>
-          <div class="tip" id="122">
+          <div class="tip" id="126">
             <strong>Signature:</strong> column:&#39;C -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;DateTime,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R1                        <span>
             <strong>Attributes:</strong><br />
@@ -2881,7 +3000,7 @@ index. Note that the values in the column need to be unique.
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L697-697" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L725-725" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2905,10 +3024,10 @@ index. Note that the values in the column need to be unique.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '123', 123)" onmouseover="showTip(event, '123', 123)">
+          <code onmouseout="hideTip(event, '127', 127)" onmouseover="showTip(event, '127', 127)">
             indexRowsDateOffs column frame
           </code>
-          <div class="tip" id="123">
+          <div class="tip" id="127">
             <strong>Signature:</strong> column:&#39;C -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;DateTimeOffset,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R1                        <span>
             <strong>Attributes:</strong><br />
@@ -2917,7 +3036,7 @@ index. Note that the values in the column need to be unique.
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L711-711" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L739-739" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2941,10 +3060,10 @@ index. Note that the values in the column need to be unique.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '124', 124)" onmouseover="showTip(event, '124', 124)">
+          <code onmouseout="hideTip(event, '128', 128)" onmouseover="showTip(event, '128', 128)">
             indexRowsInt column frame
           </code>
-          <div class="tip" id="124">
+          <div class="tip" id="128">
             <strong>Signature:</strong> column:&#39;C -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;int,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R1                        <span>
             <strong>Attributes:</strong><br />
@@ -2953,7 +3072,7 @@ index. Note that the values in the column need to be unique.
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L683-683" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L711-711" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -2977,10 +3096,10 @@ index. Note that the values in the column need to be unique.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '125', 125)" onmouseover="showTip(event, '125', 125)">
+          <code onmouseout="hideTip(event, '129', 129)" onmouseover="showTip(event, '129', 129)">
             indexRowsObj column frame
           </code>
-          <div class="tip" id="125">
+          <div class="tip" id="129">
             <strong>Signature:</strong> column:&#39;C -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;obj,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R1                        <span>
             <strong>Attributes:</strong><br />
@@ -2989,7 +3108,7 @@ index. Note that the values in the column need to be unique.
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L669-669" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L697-697" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3013,10 +3132,10 @@ index. Note that the values in the column need to be unique.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '126', 126)" onmouseover="showTip(event, '126', 126)">
+          <code onmouseout="hideTip(event, '130', 130)" onmouseover="showTip(event, '130', 130)">
             indexRowsOrdinally(frame)
           </code>
-          <div class="tip" id="126">
+          <div class="tip" id="130">
             <strong>Signature:</strong> frame:Frame&lt;&#39;TRowKey,&#39;TColumnKey&gt; -&gt; Frame&lt;int,&#39;TColumnKey&gt;<br />
                           <strong>Type parameters:</strong> 'TRowKey, 'TColumnKey                        <span>
             <strong>Attributes:</strong><br />
@@ -3025,7 +3144,7 @@ index. Note that the values in the column need to be unique.
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L763-763" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L791-791" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3040,10 +3159,10 @@ non-deterministic way, if the current row index is not ordered.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '127', 127)" onmouseover="showTip(event, '127', 127)">
+          <code onmouseout="hideTip(event, '131', 131)" onmouseover="showTip(event, '131', 131)">
             indexRowsString column frame
           </code>
-          <div class="tip" id="127">
+          <div class="tip" id="131">
             <strong>Signature:</strong> column:&#39;C -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;string,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R1                        <span>
             <strong>Attributes:</strong><br />
@@ -3052,7 +3171,7 @@ non-deterministic way, if the current row index is not ordered.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L725-725" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L753-753" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3076,10 +3195,10 @@ index. Note that the values in the column need to be unique.
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '128', 128)" onmouseover="showTip(event, '128', 128)">
+          <code onmouseout="hideTip(event, '132', 132)" onmouseover="showTip(event, '132', 132)">
             indexRowsUsing f frame
           </code>
-          <div class="tip" id="128">
+          <div class="tip" id="132">
             <strong>Signature:</strong> f:(ObjectSeries&lt;&#39;C&gt; -&gt; &#39;R2) -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;&#39;R2,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R2, 'R1                        <span>
             <strong>Attributes:</strong><br />
@@ -3088,7 +3207,7 @@ index. Note that the values in the column need to be unique.
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L775-775" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L803-803" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3107,10 +3226,10 @@ a function invoked on each row.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '129', 129)" onmouseover="showTip(event, '129', 129)">
+          <code onmouseout="hideTip(event, '133', 133)" onmouseover="showTip(event, '133', 133)">
             indexRowsWith keys frame
           </code>
-          <div class="tip" id="129">
+          <div class="tip" id="133">
             <strong>Signature:</strong> keys:seq&lt;&#39;R2&gt; -&gt; frame:Frame&lt;&#39;R1,&#39;C&gt; -&gt; Frame&lt;&#39;R2,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R2, 'R1, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -3119,7 +3238,7 @@ a function invoked on each row.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L750-750" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L778-778" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3138,10 +3257,10 @@ The rows of the frame are assigned keys according to the provided order.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '130', 130)" onmouseover="showTip(event, '130', 130)">
+          <code onmouseout="hideTip(event, '134', 134)" onmouseover="showTip(event, '134', 134)">
             realignRows keys frame
           </code>
-          <div class="tip" id="130">
+          <div class="tip" id="134">
             <strong>Signature:</strong> keys:seq&lt;&#39;R&gt; -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -3150,7 +3269,7 @@ The rows of the frame are assigned keys according to the provided order.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L636-636" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L664-664" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3173,10 +3292,10 @@ frame keys (because the rows are realigned).
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '131', 131)" onmouseover="showTip(event, '131', 131)">
+          <code onmouseout="hideTip(event, '135', 135)" onmouseover="showTip(event, '135', 135)">
             sortColsByKey(frame)
           </code>
-          <div class="tip" id="131">
+          <div class="tip" id="135">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -3185,7 +3304,7 @@ frame keys (because the rows are realigned).
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L835-835" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L863-863" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3200,10 +3319,10 @@ only available on indexed series such as alignment and inexact lookup.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '132', 132)" onmouseover="showTip(event, '132', 132)">
+          <code onmouseout="hideTip(event, '136', 136)" onmouseover="showTip(event, '136', 136)">
             sortRows colKey frame
           </code>
-          <div class="tip" id="132">
+          <div class="tip" id="136">
             <strong>Signature:</strong> colKey:&#39;C -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'R                        <span>
             <strong>Attributes:</strong><br />
@@ -3212,7 +3331,7 @@ only available on indexed series such as alignment and inexact lookup.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L804-804" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L832-832" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3226,10 +3345,10 @@ but whose rows are ordered on a particular column of the frame.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '133', 133)" onmouseover="showTip(event, '133', 133)">
+          <code onmouseout="hideTip(event, '137', 137)" onmouseover="showTip(event, '137', 137)">
             sortRowsBy colKey f frame
           </code>
-          <div class="tip" id="133">
+          <div class="tip" id="137">
             <strong>Signature:</strong> colKey:&#39;C -&gt; f:(&#39;T -&gt; &#39;V) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'T, 'V, 'R                        <span>
             <strong>Attributes:</strong><br />
@@ -3238,7 +3357,7 @@ but whose rows are ordered on a particular column of the frame.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L824-824" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L852-852" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3252,10 +3371,10 @@ but whose rows are ordered on a particular column of the frame.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '134', 134)" onmouseover="showTip(event, '134', 134)">
+          <code onmouseout="hideTip(event, '138', 138)" onmouseover="showTip(event, '138', 138)">
             sortRowsByKey(frame)
           </code>
-          <div class="tip" id="134">
+          <div class="tip" id="138">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -3264,7 +3383,7 @@ but whose rows are ordered on a particular column of the frame.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L794-794" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L822-822" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3279,10 +3398,10 @@ only available on indexed series such as alignment and inexact lookup.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '135', 135)" onmouseover="showTip(event, '135', 135)">
+          <code onmouseout="hideTip(event, '139', 139)" onmouseover="showTip(event, '139', 139)">
             sortRowsWith colKey compareFunc frame
           </code>
-          <div class="tip" id="135">
+          <div class="tip" id="139">
             <strong>Signature:</strong> colKey:&#39;C -&gt; compareFunc:(&#39;a -&gt; &#39;a -&gt; int) -&gt; frame:Frame&lt;&#39;R,&#39;C&gt; -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'C, 'a, 'R                        <span>
             <strong>Attributes:</strong><br />
@@ -3291,7 +3410,7 @@ only available on indexed series such as alignment and inexact lookup.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L814-814" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L842-842" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -3305,10 +3424,10 @@ but whose rows are ordered on a particular column of the frame.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '136', 136)" onmouseover="showTip(event, '136', 136)">
+          <code onmouseout="hideTip(event, '140', 140)" onmouseover="showTip(event, '140', 140)">
             transpose(frame)
           </code>
-          <div class="tip" id="136">
+          <div class="tip" id="140">
             <strong>Signature:</strong> frame:Frame&lt;&#39;R,&#39;TColumnKey&gt; -&gt; Frame&lt;&#39;TColumnKey,&#39;R&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'TColumnKey                        <span>
             <strong>Attributes:</strong><br />
@@ -3317,7 +3436,7 @@ but whose rows are ordered on a particular column of the frame.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L785-785" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameModule.fs#L813-813" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>

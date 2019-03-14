@@ -27,7 +27,7 @@
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
           <li><a href="http://fslab.org/RProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="https://fslab.org/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
           <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
@@ -68,10 +68,10 @@ global configuration for reflection-based expansion.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '621', 621)" onmouseover="showTip(event, '621', 621)">
+          <code onmouseout="hideTip(event, '661', 661)" onmouseover="showTip(event, '661', 661)">
             Frame.CustomExpanders
           </code>
-          <div class="tip" id="621">
+          <div class="tip" id="661">
             <strong>Signature:</strong> Dictionary&lt;Type,Func&lt;obj,seq&lt;string * Type * obj&gt;&gt;&gt;<br />
                                   </div>
         </td>
@@ -113,10 +113,10 @@ inappropriate). You can register custom expander as:</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '622', 622)" onmouseover="showTip(event, '622', 622)">
+          <code onmouseout="hideTip(event, '662', 662)" onmouseover="showTip(event, '662', 662)">
             Frame.NonExpandableInterfaces
           </code>
-          <div class="tip" id="622">
+          <div class="tip" id="662">
             <strong>Signature:</strong> ResizeArray&lt;Type&gt;<br />
                                   </div>
         </td>
@@ -136,10 +136,10 @@ should not be expanded. By default, this includes collections such as IList.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '623', 623)" onmouseover="showTip(event, '623', 623)">
+          <code onmouseout="hideTip(event, '663', 663)" onmouseover="showTip(event, '663', 663)">
             Frame.NonExpandableTypes
           </code>
-          <div class="tip" id="623">
+          <div class="tip" id="663">
             <strong>Signature:</strong> HashSet&lt;Type&gt;<br />
                                   </div>
         </td>
@@ -168,19 +168,15 @@ types that should not be expaneded. By default, this includes DateTime, string, 
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '624', 624)" onmouseover="showTip(event, '624', 624)">
+          <code onmouseout="hideTip(event, '664', 664)" onmouseover="showTip(event, '664', 664)">
             Frame.ReadCsv(...)
           </code>
-          <div class="tip" id="624">
-            <strong>Signature:</strong> (stream:Stream * hasHeaders:Nullable&lt;bool&gt; * inferTypes:Nullable&lt;bool&gt; * inferRows:Nullable&lt;int&gt; * schema:string * separators:string * culture:string * maxRows:Nullable&lt;int&gt; * missingValues:string []) -&gt; Frame&lt;int,string&gt;<br />
-                                    <span>
-            <strong>Attributes:</strong><br />
-[&lt;CompilerMessage(&quot;This method is not intended for use from F#.&quot;, 10001, IsHidden = true, IsError = false)&gt;]<br />
-          </span>
-          </div>
+          <div class="tip" id="664">
+            <strong>Signature:</strong> (stream:Stream * hasHeaders:Nullable&lt;bool&gt; * inferTypes:Nullable&lt;bool&gt; * inferRows:Nullable&lt;int&gt; * schema:string * separators:string * culture:string * maxRows:Nullable&lt;int&gt; * missingValues:string []) -&gt; bool option -&gt; Frame&lt;int,string&gt;<br />
+                                  </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L131-131" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L130-130" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -229,19 +225,15 @@ as missing when reading the file. The default value is: "NaN"; "NA"; "#N/A"; ":"
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '625', 625)" onmouseover="showTip(event, '625', 625)">
+          <code onmouseout="hideTip(event, '665', 665)" onmouseover="showTip(event, '665', 665)">
             Frame.ReadCsv(...)
           </code>
-          <div class="tip" id="625">
-            <strong>Signature:</strong> (location:string * hasHeaders:Nullable&lt;bool&gt; * inferTypes:Nullable&lt;bool&gt; * inferRows:Nullable&lt;int&gt; * schema:string * separators:string * culture:string * maxRows:Nullable&lt;int&gt; * missingValues:string []) -&gt; Frame&lt;int,string&gt;<br />
-                                    <span>
-            <strong>Attributes:</strong><br />
-[&lt;CompilerMessage(&quot;This method is not intended for use from F#.&quot;, 10001, IsHidden = true, IsError = false)&gt;]<br />
-          </span>
-          </div>
+          <div class="tip" id="665">
+            <strong>Signature:</strong> (location:string * hasHeaders:Nullable&lt;bool&gt; * inferTypes:Nullable&lt;bool&gt; * inferRows:Nullable&lt;int&gt; * schema:string * separators:string * culture:string * maxRows:Nullable&lt;int&gt; * missingValues:string [] * preferOptions:bool) -&gt; Frame&lt;int,string&gt;<br />
+                                  </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L89-89" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L88-88" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -286,15 +278,15 @@ values in the CSV file (such as <code>"en-US"</code>). The default is invariant 
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '626', 626)" onmouseover="showTip(event, '626', 626)">
+          <code onmouseout="hideTip(event, '666', 666)" onmouseover="showTip(event, '666', 666)">
             Frame.ReadReader(reader)
           </code>
-          <div class="tip" id="626">
+          <div class="tip" id="666">
             <strong>Signature:</strong> reader:IDataReader -&gt; Frame&lt;int,string&gt;<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L152-152" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L151-151" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -318,10 +310,10 @@ by the data reader.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '627', 627)" onmouseover="showTip(event, '627', 627)">
+          <code onmouseout="hideTip(event, '667', 667)" onmouseover="showTip(event, '667', 667)">
             Frame.CreateEmpty()
           </code>
-          <div class="tip" id="627">
+          <div class="tip" id="667">
             <strong>Signature:</strong> unit -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'R, 'C                        <span>
             <strong>Attributes:</strong><br />
@@ -330,7 +322,7 @@ by the data reader.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L293-293" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L292-292" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -340,10 +332,10 @@ by the data reader.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '628', 628)" onmouseover="showTip(event, '628', 628)">
+          <code onmouseout="hideTip(event, '668', 668)" onmouseover="showTip(event, '668', 668)">
             Frame.FromArray2D(array)
           </code>
-          <div class="tip" id="628">
+          <div class="tip" id="668">
             <strong>Signature:</strong> (array:&#39;T [,]) -&gt; Frame&lt;int,int&gt;<br />
                           <strong>Type parameters:</strong> 'T                        <span>
             <strong>Attributes:</strong><br />
@@ -352,7 +344,7 @@ by the data reader.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L276-276" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L275-275" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -370,10 +362,10 @@ of the returned frame are indexed with the element's offset in the array.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '629', 629)" onmouseover="showTip(event, '629', 629)">
+          <code onmouseout="hideTip(event, '669', 669)" onmouseover="showTip(event, '669', 669)">
             Frame.FromColumns(cols)
           </code>
-          <div class="tip" id="629">
+          <div class="tip" id="669">
             <strong>Signature:</strong> cols:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt;<br />
                           <strong>Type parameters:</strong> 'TColKey, 'TRowKey, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -382,7 +374,7 @@ of the returned frame are indexed with the element's offset in the array.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L188-188" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L187-187" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -392,10 +384,10 @@ of the returned frame are indexed with the element's offset in the array.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '630', 630)" onmouseover="showTip(event, '630', 630)">
+          <code onmouseout="hideTip(event, '670', 670)" onmouseover="showTip(event, '670', 670)">
             Frame.FromColumns(cols)
           </code>
-          <div class="tip" id="630">
+          <div class="tip" id="670">
             <strong>Signature:</strong> cols:Series&lt;&#39;TColKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TRowKey,&#39;TColKey&gt;<br />
                           <strong>Type parameters:</strong> 'TColKey, 'TRowKey                        <span>
             <strong>Attributes:</strong><br />
@@ -404,7 +396,7 @@ of the returned frame are indexed with the element's offset in the array.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L184-184" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L183-183" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -414,10 +406,10 @@ of the returned frame are indexed with the element's offset in the array.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '631', 631)" onmouseover="showTip(event, '631', 631)">
+          <code onmouseout="hideTip(event, '671', 671)" onmouseover="showTip(event, '671', 671)">
             Frame.FromColumns(columns)
           </code>
-          <div class="tip" id="631">
+          <div class="tip" id="671">
             <strong>Signature:</strong> columns:seq&lt;KeyValuePair&lt;&#39;ColKey,ObjectSeries&lt;&#39;RowKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt;<br />
                           <strong>Type parameters:</strong> 'ColKey, 'RowKey                        <span>
             <strong>Attributes:</strong><br />
@@ -426,7 +418,7 @@ of the returned frame are indexed with the element's offset in the array.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L176-176" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L175-175" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -436,10 +428,10 @@ of the returned frame are indexed with the element's offset in the array.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '632', 632)" onmouseover="showTip(event, '632', 632)">
+          <code onmouseout="hideTip(event, '672', 672)" onmouseover="showTip(event, '672', 672)">
             Frame.FromColumns(columns)
           </code>
-          <div class="tip" id="632">
+          <div class="tip" id="672">
             <strong>Signature:</strong> columns:seq&lt;KeyValuePair&lt;&#39;ColKey,Series&lt;&#39;RowKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt;<br />
                           <strong>Type parameters:</strong> 'ColKey, 'RowKey, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -448,7 +440,7 @@ of the returned frame are indexed with the element's offset in the array.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L170-170" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L169-169" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -458,10 +450,10 @@ of the returned frame are indexed with the element's offset in the array.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '633', 633)" onmouseover="showTip(event, '633', 633)">
+          <code onmouseout="hideTip(event, '673', 673)" onmouseover="showTip(event, '673', 673)">
             Frame.FromColumns(cols)
           </code>
-          <div class="tip" id="633">
+          <div class="tip" id="673">
             <strong>Signature:</strong> cols:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;ColKey,int&gt;<br />
                           <strong>Type parameters:</strong> 'ColKey, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -470,7 +462,7 @@ of the returned frame are indexed with the element's offset in the array.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L166-166" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L165-165" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -480,10 +472,10 @@ of the returned frame are indexed with the element's offset in the array.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '634', 634)" onmouseover="showTip(event, '634', 634)">
+          <code onmouseout="hideTip(event, '674', 674)" onmouseover="showTip(event, '674', 674)">
             Frame.FromRecords(values)
           </code>
-          <div class="tip" id="634">
+          <div class="tip" id="674">
             <strong>Signature:</strong> values:seq&lt;&#39;T&gt; -&gt; Frame&lt;int,string&gt;<br />
                           <strong>Type parameters:</strong> 'T                        <span>
             <strong>Attributes:</strong><br />
@@ -492,7 +484,7 @@ of the returned frame are indexed with the element's offset in the array.</p>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L266-266" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L265-265" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -514,10 +506,10 @@ new { A = 2, B = "Another"}
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '635', 635)" onmouseover="showTip(event, '635', 635)">
+          <code onmouseout="hideTip(event, '675', 675)" onmouseover="showTip(event, '675', 675)">
             Frame.FromRecords(series)
           </code>
-          <div class="tip" id="635">
+          <div class="tip" id="675">
             <strong>Signature:</strong> series:Series&lt;&#39;K,&#39;R&gt; -&gt; Frame&lt;&#39;K,string&gt;<br />
                           <strong>Type parameters:</strong> 'K, 'R                        <span>
             <strong>Attributes:</strong><br />
@@ -526,7 +518,7 @@ new { A = 2, B = "Another"}
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L244-244" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L243-243" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -539,10 +531,10 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '636', 636)" onmouseover="showTip(event, '636', 636)">
+          <code onmouseout="hideTip(event, '676', 676)" onmouseover="showTip(event, '676', 676)">
             Frame.FromRowKeys(keys)
           </code>
-          <div class="tip" id="636">
+          <div class="tip" id="676">
             <strong>Signature:</strong> keys:seq&lt;&#39;K&gt; -&gt; Frame&lt;&#39;K,string&gt;<br />
                           <strong>Type parameters:</strong> 'K                        <span>
             <strong>Attributes:</strong><br />
@@ -551,7 +543,7 @@ over the specified type parameter <code>'T</code> and turns its properties to co
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L297-297" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L296-296" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -561,10 +553,10 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '637', 637)" onmouseover="showTip(event, '637', 637)">
+          <code onmouseout="hideTip(event, '677', 677)" onmouseover="showTip(event, '677', 677)">
             Frame.FromRows(rows)
           </code>
-          <div class="tip" id="637">
+          <div class="tip" id="677">
             <strong>Signature:</strong> rows:Series&lt;&#39;TColKey,Series&lt;&#39;TRowKey,&#39;V&gt;&gt; -&gt; Frame&lt;&#39;TColKey,&#39;TRowKey&gt;<br />
                           <strong>Type parameters:</strong> 'TColKey, 'TRowKey, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -573,7 +565,7 @@ over the specified type parameter <code>'T</code> and turns its properties to co
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L216-216" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L215-215" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -583,10 +575,10 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '638', 638)" onmouseover="showTip(event, '638', 638)">
+          <code onmouseout="hideTip(event, '678', 678)" onmouseover="showTip(event, '678', 678)">
             Frame.FromRows(rows)
           </code>
-          <div class="tip" id="638">
+          <div class="tip" id="678">
             <strong>Signature:</strong> rows:Series&lt;&#39;TColKey,ObjectSeries&lt;&#39;TRowKey&gt;&gt; -&gt; Frame&lt;&#39;TColKey,&#39;TRowKey&gt;<br />
                           <strong>Type parameters:</strong> 'TColKey, 'TRowKey                        <span>
             <strong>Attributes:</strong><br />
@@ -595,7 +587,7 @@ over the specified type parameter <code>'T</code> and turns its properties to co
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L212-212" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L211-211" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -605,10 +597,10 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '639', 639)" onmouseover="showTip(event, '639', 639)">
+          <code onmouseout="hideTip(event, '679', 679)" onmouseover="showTip(event, '679', 679)">
             Frame.FromRows(rows)
           </code>
-          <div class="tip" id="639">
+          <div class="tip" id="679">
             <strong>Signature:</strong> rows:seq&lt;KeyValuePair&lt;&#39;RowKey,ObjectSeries&lt;&#39;ColKey&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt;<br />
                           <strong>Type parameters:</strong> 'RowKey, 'ColKey                        <span>
             <strong>Attributes:</strong><br />
@@ -617,7 +609,7 @@ over the specified type parameter <code>'T</code> and turns its properties to co
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L204-204" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L203-203" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -627,10 +619,10 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '640', 640)" onmouseover="showTip(event, '640', 640)">
+          <code onmouseout="hideTip(event, '680', 680)" onmouseover="showTip(event, '680', 680)">
             Frame.FromRows(rows)
           </code>
-          <div class="tip" id="640">
+          <div class="tip" id="680">
             <strong>Signature:</strong> rows:seq&lt;KeyValuePair&lt;&#39;RowKey,Series&lt;&#39;ColKey,&#39;V&gt;&gt;&gt; -&gt; Frame&lt;&#39;RowKey,&#39;ColKey&gt;<br />
                           <strong>Type parameters:</strong> 'RowKey, 'ColKey, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -639,7 +631,7 @@ over the specified type parameter <code>'T</code> and turns its properties to co
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L198-198" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L197-197" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -649,10 +641,10 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '641', 641)" onmouseover="showTip(event, '641', 641)">
+          <code onmouseout="hideTip(event, '681', 681)" onmouseover="showTip(event, '681', 681)">
             Frame.FromRows(rows)
           </code>
-          <div class="tip" id="641">
+          <div class="tip" id="681">
             <strong>Signature:</strong> rows:seq&lt;Series&lt;&#39;ColKey,&#39;V&gt;&gt; -&gt; Frame&lt;int,&#39;ColKey&gt;<br />
                           <strong>Type parameters:</strong> 'ColKey, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -661,7 +653,7 @@ over the specified type parameter <code>'T</code> and turns its properties to co
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L194-194" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L193-193" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -671,19 +663,19 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '642', 642)" onmouseover="showTip(event, '642', 642)">
+          <code onmouseout="hideTip(event, '682', 682)" onmouseover="showTip(event, '682', 682)">
             Frame.FromValues(values)
           </code>
-          <div class="tip" id="642">
-            <strong>Signature:</strong> (values:seq&lt;&#39;?630456 * &#39;?630457 * &#39;?630458&gt;) -&gt; Frame&lt;&#39;?630456,&#39;?630457&gt;<br />
-                          <strong>Type parameters:</strong> '?630456, '?630457, '?630458                        <span>
+          <div class="tip" id="682">
+            <strong>Signature:</strong> (values:seq&lt;&#39;?670764 * &#39;?670765 * &#39;?670766&gt;) -&gt; Frame&lt;&#39;?670764,&#39;?670765&gt;<br />
+                          <strong>Type parameters:</strong> '?670764, '?670765, '?670766                        <span>
             <strong>Attributes:</strong><br />
 [&lt;CompilerMessage(&quot;This method is not intended for use from F#.&quot;, 10001, IsHidden = true, IsError = false)&gt;]<br />
           </span>
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L238-238" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L237-237" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -695,10 +687,10 @@ over the specified type parameter <code>'T</code> and turns its properties to co
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '643', 643)" onmouseover="showTip(event, '643', 643)">
+          <code onmouseout="hideTip(event, '683', 683)" onmouseover="showTip(event, '683', 683)">
             Frame.FromValues(...)
           </code>
-          <div class="tip" id="643">
+          <div class="tip" id="683">
             <strong>Signature:</strong> (values:seq&lt;&#39;T&gt; * colSel:Func&lt;&#39;T,&#39;C&gt; * rowSel:Func&lt;&#39;T,&#39;R&gt; * valSel:Func&lt;&#39;T,&#39;V&gt;) -&gt; Frame&lt;&#39;R,&#39;C&gt;<br />
                           <strong>Type parameters:</strong> 'T, 'C, 'R, 'V                        <span>
             <strong>Attributes:</strong><br />
@@ -707,7 +699,7 @@ over the specified type parameter <code>'T</code> and turns its properties to co
           </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L233-233" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/FrameExtensions.fs#L232-232" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
