@@ -105,6 +105,13 @@ namespace Deedle.CSharp.Tests
 
 			Assert.AreEqual(expected, actual);
 		}
+
+        [Test]
+        public static void FunctionFromModuleStatsWorksFineInCSharp()
+        {
+            var sum = Enumerable.Range(1, 3).ToOrdinalSeries().Sum();
+            Assert.AreEqual(6, sum);
+        }
 	}
 /*
   class Program
