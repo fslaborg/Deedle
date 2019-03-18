@@ -8,10 +8,10 @@ install:
 matrix:
   include:
     - mono: latest
-      dotnet: 2.1.302
+      dotnet: 2.1.402
       os: linux
     - mono: latest
-      dotnet: 2.1.302
+      dotnet: 2.1.402
       os: osx
 
 before_install:
