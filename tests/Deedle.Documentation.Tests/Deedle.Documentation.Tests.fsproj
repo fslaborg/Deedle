@@ -11,9 +11,11 @@
     <Compile Include="DocTests.fs" />
     <None Include="paket.references" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FSharp.Core" Version="4.5.2" />
+  </ItemGroup>  
   <Target Name = "CopyFiles" AfterTargets="build">
-    <Copy SourceFiles="..\..\packages\FSharp.Core\lib\net45\FSharp.Core.dll" DestinationFolder="$(OutputPath)" />
-    <Copy SourceFiles="..\..\packages\FSharp.Core\lib\net45\FSharp.Core.sigdata" DestinationFolder="$(OutputPath)" />
+   <Copy SourceFiles="..\..\packages\FSharp.Core\lib\net45\FSharp.Core.sigdata" DestinationFolder="$(OutputPath)" />
     <Copy SourceFiles="..\..\packages\FSharp.Core\lib\net45\FSharp.Core.optdata" DestinationFolder="$(OutputPath)" />
   </Target>
   <ItemGroup>
