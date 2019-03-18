@@ -10,7 +10,7 @@ nuget MathNet.Numerics 4.5.1
 nuget NUnit 3.9.0
 nuget NUnit.ConsoleRunner 3.8.0
 nuget FsUnit 3.0.0
-nuget RProvider 1.1.21
+nuget RProvider 1.1.22
 nuget System.Reflection.Emit
 nuget System.Reflection.Emit.Lightweight
 nuget FSharp.Core 4.3.4
