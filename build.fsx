@@ -107,7 +107,8 @@ Target.create "CleanDocs" (fun _ ->
 // Build library & test project
 
 let testProjs = 
-    [ "tests/Deedle.Tests/Deedle.Tests.fsproj" 
+    [
+      "tests/Deedle.Tests/Deedle.Tests.fsproj" 
       "tests/Deedle.CSharp.Tests/Deedle.CSharp.Tests.csproj" 
       "tests/Deedle.Documentation.Tests/Deedle.Documentation.Tests.fsproj"
       "tests/Deedle.PerfTests/Deedle.PerfTests.fsproj"
