@@ -521,7 +521,7 @@ type Stats =
       match v with
       | OptionalValue.Present x -> if System.Double.IsNaN(s) then x else max x s
       | OptionalValue.Missing   -> s
-    applySeriesProj ((Seq.scan maxFn nan) >> (Seq.skip 1) >> Array.ofSeq) (series |> Series.mapValues float)
+    applySeriesProj ((Seq.scan maxFn nan) >> (Seq.skip 1) >> Array.ofSeq) (series |> Series.mapValues toFloat)
 
 
   // ------------------------------------------------------------------------------------
