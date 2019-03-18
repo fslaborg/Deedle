@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using NUnit.Framework;
 using Deedle;
@@ -105,6 +102,44 @@ namespace Deedle.CSharp.Tests
 
 			Assert.AreEqual(expected, actual);
 		}
+
+        [Test]
+        public static void FunctionsFromModuleStatsWorkFineInCSharp()
+        {
+            var s1 = new[] { 0.0, -1.0, 2.0, 3.0, -5.0, 4.0, 8.0 }.ToOrdinalSeries();
+
+            var delta = 1e-9;
+
+            var e1 = 20.0;
+            var r1 = Stats.expandingMax(s1).Sum();
+
+            Assert.AreEqual(e1, r1, delta);
+
+            var e2 = -18.0;
+            var r2 = Stats.expandingMin(s1).Sum();
+
+            Assert.AreEqual(e2, r2, delta);
+
+            var emin = -5.0;
+            var emax = 8.0;
+
+            var min = s1.Min();
+            var max = s1.Max();
+
+            Assert.AreEqual(emin, min);
+            Assert.AreEqual(emax, max);
+
+            var rsmx = Stats.movingMax(3, s1).Sum();
+            var rsmn = Stats.movingMin(3, s1).Sum();
+
+            Assert.AreEqual(e1, rsmx, delta);
+            Assert.AreEqual(e2, rsmn, delta);
+
+            var s2 = Enumerable.Range(1, 3).ToOrdinalSeries();
+
+            Assert.AreEqual(6, s2.Sum());
+            Assert.AreEqual(2, s2.Mean());
+        }
 	}
 /*
   class Program

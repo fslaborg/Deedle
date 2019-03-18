@@ -17,7 +17,9 @@ module StatsInternal =
   // ------------------------------------------------------------------------------------
   // Implementation internals - moving window functionality
   // ------------------------------------------------------------------------------------  
-
+  
+  let toFloat : obj -> float = Convert.ToDouble
+  
   /// Apply transformation on series elements. The projection function `proj` always
   /// returns `float`, but may return `nan` to indicate that the value is not available.
   /// The resulting sequence should have the same number of values as the input sequence
@@ -92,7 +94,7 @@ module StatsInternal =
   let inline initSumsSparse moment (init: 'V opt []) =
     init 
     |> Array.choose OptionalValue.asOption
-    |> Array.map float
+    |> Array.map toFloat
     |> initSumsDense moment
 
   /// Update `Sums` value using `updateSumsDense`, but handle the case
@@ -110,7 +112,7 @@ module StatsInternal =
   let inline applyMovingSumsTransform moment winSize (proj: Sums -> float) (series:Series<'K,'V>) =
     if winSize <= 0 then invalidArg "windowSize" "Window must be positive"
     let calcSparse = movingWindowFn winSize (initSumsSparse moment) (updateSumsSparse moment) proj >> Array.ofSeq
-    applySeriesProj calcSparse (series |> Series.mapValues float)
+    applySeriesProj calcSparse (series |> Series.mapValues toFloat)
 
   /// Calculate variance from `Sums`; requires `moment=2`
   let varianceSums s =
@@ -226,7 +228,7 @@ module StatsInternal =
   let inline applyExpandingMomentsTransform (proj: Moments -> float) (series:Series<'K,'V>) =
     let initMoments = {nobs = 0.0; sum = 0.0; M1 = 0.0; M2 = 0.0; M3 = 0.0; M4 = 0.0 }
     let calcSparse = expandingWindowFn initMoments updateMomentsSparse proj >> Array.ofSeq
-    applySeriesProj calcSparse (series |> Series.mapValues float)
+    applySeriesProj calcSparse (series |> Series.mapValues toFloat)
 
   /// Calculates minimum or maximum over an expanding window
   let internal expandingMinMaxHelper cmp s =
@@ -411,7 +413,7 @@ type Stats =
   ///
   /// [category:Moving windows]
   static member inline movingMin size (series:Series<'K, 'V>) : Series<'K, float> =
-    applySeriesProj (movingMinMaxHelper size (>=)) (series |> Series.mapValues float)
+    applySeriesProj (movingMinMaxHelper size (>=)) (series |> Series.mapValues toFloat)
 
   /// Returns a series that contains maximum over a moving window of the specified size.
   /// The first `size-1` elements are calculated using smaller windows spanning over `1 .. size-1` 
@@ -419,7 +421,7 @@ type Stats =
   ///
   /// [category:Moving windows]
   static member inline movingMax size (series:Series<'K, 'V>) : Series<'K, float> =
-    applySeriesProj (movingMinMaxHelper size (<=)) (series |> Series.mapValues float)
+    applySeriesProj (movingMinMaxHelper size (<=)) (series |> Series.mapValues toFloat)
 
   // ------------------------------------------------------------------------------------
   // Public - expanding window functions
@@ -507,7 +509,7 @@ type Stats =
       match v with
       | OptionalValue.Present x -> if System.Double.IsNaN(s) then x else min x s
       | OptionalValue.Missing   -> s
-    applySeriesProj ((Seq.scan minFn nan) >> (Seq.skip 1) >> Array.ofSeq) (series |> Series.mapValues float)
+    applySeriesProj ((Seq.scan minFn nan) >> (Seq.skip 1) >> Array.ofSeq) (series |> Series.mapValues toFloat)
     
   /// Returns a series that contains maximum over an expanding window. The value
   /// for a key _k_ in the returned series is the maximum from all elements with
@@ -519,7 +521,7 @@ type Stats =
       match v with
       | OptionalValue.Present x -> if System.Double.IsNaN(s) then x else max x s
       | OptionalValue.Missing   -> s
-    applySeriesProj ((Seq.scan maxFn nan) >> (Seq.skip 1) >> Array.ofSeq) (series |> Series.mapValues float)
+    applySeriesProj ((Seq.scan maxFn nan) >> (Seq.skip 1) >> Array.ofSeq) (series |> Series.mapValues toFloat)
 
 
   // ------------------------------------------------------------------------------------
@@ -538,7 +540,7 @@ type Stats =
   /// [category:Series statistics]
   static member inline sum (series:Series<'K, 'V>) = 
     series.Values |> Seq.fold (fun sum v -> 
-      if Double.IsNaN sum then float v else sum + (float v)) nan
+      if Double.IsNaN sum then toFloat v else sum + toFloat v) nan
 
   /// Sum that operates only any appropriate numeric type. When there are no available 
   /// values, the result is zero of the approriate numeric type.
@@ -606,7 +608,7 @@ type Stats =
     if values |> Seq.isEmpty then
       nan
     else
-      values |> Seq.map float |> Seq.min
+      values |> Seq.map toFloat |> Seq.min
 
   /// Returns the maximum of the values in a series. The result is an float value.
   /// When the series contains no values, the result is NaN.
@@ -617,7 +619,7 @@ type Stats =
     if values |> Seq.isEmpty then
       nan
     else
-      values |> Seq.map float |> Seq.max
+      values |> Seq.map toFloat |> Seq.max
 
   /// Returns the number of unique values in a series.
   static member inline uniqueCount (series:Series<'K, 'V>) =
@@ -643,7 +645,7 @@ type Stats =
   ///
   /// [category:Series statistics]
   static member inline median (series:Series<'K, 'V>) = 
-    let values = Array.ofSeq series.Values |> Array.map float
+    let values = Array.ofSeq series.Values |> Array.map toFloat
     let mid = values.Length / 2
     if values.Length = 0 then nan
     elif values.Length % 2 = 1 then quickSelectInplace mid values
@@ -657,7 +659,7 @@ type Stats =
   ///
   /// [category:Series statistics]
   static member inline quantile (quantiles:float[], series:Series<'K, 'V>) =
-    let vals = series.Values |> Seq.toArray |> Array.map float |> Array.sort
+    let vals = series.Values |> Seq.toArray |> Array.map toFloat |> Array.sort
     let valsLength = vals |> Array.length
 
     if valsLength = 0  then
@@ -742,7 +744,7 @@ type Stats =
       | Some x, _      -> snd x
       | _, Some y      -> snd y
       | _              -> raise <| new ArgumentException("Unexpected code path in interpolation")
-    series |> Series.mapValues float |> Stats.interpolate keys linearF
+    series |> Series.mapValues toFloat |> Stats.interpolate keys linearF
 
   // ------------------------------------------------------------------------------------
   // Statistics calculated over the entire frames' float column series
