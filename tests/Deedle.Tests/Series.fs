@@ -400,6 +400,18 @@ let ``Can perform linear interpolation``() =
   let i = s |> Stats.interpolateLinear [0;1;2;3;4] (fun a b -> float <| a - b)
   let e = series [ 0 => 0.0; 1 => 1.0; 2 => 2.0; 3 => 3.0; 4 => 4.0]
   i |> shouldEqual e
+
+[<Test>]
+let ``FillMissingWith nan shall still return series with missing value``() =
+  let s = Series.ofValues [ Double.NaN; 1.0; Double.NaN]
+  let actual = s |> Series.fillMissingWith(nan)
+  actual |> shouldEqual s
+
+[<Test>]
+let ``FillMissingUsing nan shall still return series with missing value``() =
+  let s = Series.ofValues [ Double.NaN; 1.0; Double.NaN]
+  let actual = s |> Series.fillMissingUsing(fun _ -> nan)
+  actual |> shouldEqual s
   
 // ------------------------------------------------------------------------------------------------
 // Sorting and reindexing

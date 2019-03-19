@@ -5,6 +5,7 @@
 /// contains missing values, then uses `OptionalValue<'T>[]`, otherwise uses just `'T[]`.
 /// --------------------------------------------------------------------------------------
 
+open System
 open Deedle
 open Deedle.Addressing
 open Deedle.Internal
@@ -132,11 +133,16 @@ type ArrayVectorBuilder() =
                   optionals <- optionals || (not newData.[i].HasValue)
 
               // Return as optional/non-optional, depending on if we filled everything
-              if optionals then av <| VectorOptional(newData)
-              else av <| VectorNonOptional(newData |> Array.map OptionalValue.get)
+              if optionals then 
+                VectorOptional(newData) |> av
+              else
+                VectorNonOptional(newData |> Array.map OptionalValue.get) |> av
 
-          | VectorOptional data, VectorFillMissing.Constant (:? 'T as fill) -> 
-              av <| VectorNonOptional(data |> Array.map (fun v -> if v.HasValue then v.Value else fill))
+          | VectorOptional data, VectorFillMissing.Constant (:? 'T as fill) ->
+              if typeof<'T> = typeof<Double> && Convert.ToDouble(fill) |> Double.IsNaN then
+                VectorOptional(data) |> av
+              else
+                VectorNonOptional(data |> Array.map (fun v -> if v.HasValue then v.Value else fill)) |> av
           | VectorOptional data, VectorFillMissing.Constant _ -> 
               invalidOp "Type mismatch - cannot fill values of the vector!"
               
