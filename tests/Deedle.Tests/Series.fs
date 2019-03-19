@@ -94,6 +94,15 @@ let ``Series.tryLastValue works correclty on a series`` () =
 let ``Series.tryLastValue works correclty on a series with last missing value`` () =  
   lastValueMissing |> Series.tryLastValue |> shouldEqual None
 
+[<Test>]
+let ``Series.valuesAll works correclty on a series with missing value`` () =
+  let floatSeries = [ 1.; nan; 2. ] |> Series.ofValues
+  let stringSeries = [ "1"; null; "2" ] |> Series.ofValues
+  let expected1 = seq [ 1.; 0.; 2. ]  
+  let expected2 = seq [ "1"; null; "2"]
+  floatSeries.ValuesAll |> shouldEqual expected1
+  stringSeries.ValuesAll |> shouldEqual expected2
+
 // ------------------------------------------------------------------------------------------------
 // Value conversions
 // ------------------------------------------------------------------------------------------------
