@@ -394,7 +394,7 @@ module Series =
   [<CompiledName("GetFirstValue")>]
   let firstValue (series:Series< 'K , 'V >) = series |> getAt 0
 
-  /// Returns the last value of the series if one exists.
+  /// Returns the first value of the series if one exists.
   /// [category:Accessing series data and lookup]
   [<CompiledName("TryGetFirstValue")>]
   let tryFirstValue (series:Series< 'K , 'V >) = 
