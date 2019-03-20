@@ -3,7 +3,6 @@
 open System
 open System.Collections.Generic
 
-open Deedle.Vectors
 open Deedle.Internal
 
 // ------------------------------------------------------------------------------------

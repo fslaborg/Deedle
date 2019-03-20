@@ -4,9 +4,6 @@
 namespace Deedle
 open System
 open System.Collections.Generic
-open System.Linq
-open Deedle.Keys
-open Deedle.Addressing
 open Deedle.Internal
 open Deedle.Vectors
 open Deedle.VectorHelpers

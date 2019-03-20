@@ -7,7 +7,6 @@ module internal Deedle.VectorHelpers
 
 open System
 open System.Reflection
-open System.Linq 
 open System.Linq.Expressions
 open System.Collections.Generic
 open Deedle

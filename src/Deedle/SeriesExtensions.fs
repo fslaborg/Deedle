@@ -6,10 +6,8 @@ open System.Collections.Generic
 open System.ComponentModel
 open System.Runtime.InteropServices
 open System.Runtime.CompilerServices
-open Microsoft.FSharp.Quotations
 
 open Deedle.Keys
-open Deedle.Indices
 open Deedle.Internal
 
 // --------------------------------------------------------------------------------------

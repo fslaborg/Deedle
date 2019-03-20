@@ -216,7 +216,6 @@ module Frame =
   open Deedle.Internal
   open Deedle.VectorHelpers
   open Deedle.Vectors
-  open Deedle.Addressing
 
   // ----------------------------------------------------------------------------------------------
   // Accessing frame data and lookup

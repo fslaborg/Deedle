@@ -1,7 +1,6 @@
 ﻿namespace Deedle 
 
 open Deedle.Internal
-open Deedle.Vectors
 open Deedle.Vectors.ArrayVector
 
 // ------------------------------------------------------------------------------------------------
