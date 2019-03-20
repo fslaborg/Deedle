@@ -1,5 +1,7 @@
 trigger:
   branches:
+    include:
+    - master
     exclude:
     - gh-pages
     - release
