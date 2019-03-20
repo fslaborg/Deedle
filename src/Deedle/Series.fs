@@ -114,7 +114,7 @@ and
   member x.ValuesAll = 
     index.Mappings
     |> Seq.mapl (fun idx kvp ->
-        vector.GetValueAtLocation(KnownLocation(kvp.Value, idx)).Value)
+        vector.GetValueAtLocation(KnownLocation(kvp.Value, idx)).ValueOrDefault)
 
   /// Returns a collection of observations that form this series. Note that this property
   /// skips over all missing (or NaN) values. Observations are returned as `KeyValuePair<K, V>` 
