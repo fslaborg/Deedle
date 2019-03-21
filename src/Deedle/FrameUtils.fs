@@ -215,10 +215,11 @@ module internal Reflection =
       [| for _, (input, body) in convertors ->
            let cast = Expression.Convert(body, typeof<IVector>)
            Expression.Lambda<Func<seq<'T>, IVector>>(cast, input).Compile() |]
+    let data = data |> Array.ofSeq
     let frameData =
       [| for convFunc in convertors -> convFunc.Invoke(data) |]
       |> vectorBuilder.Create
-    Frame<int, string>(Index.ofKeys [0 .. (Seq.length data) - 1], colIndex, frameData, IndexBuilder.Instance, VectorBuilder.Instance)
+    Frame<int, string>(Index.ofKeys [0 .. data.Length - 1], colIndex, frameData, IndexBuilder.Instance, VectorBuilder.Instance)
 
   /// Helper that makes it possible to call convertRecordSequence on untyped enumerable
   type ConvertRecordHelper =

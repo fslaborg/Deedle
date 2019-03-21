@@ -354,6 +354,18 @@ let ``Can read simple sequence of records using a specified column as index`` ()
   df.RowKeys |> Seq.head |> shouldEqual rows.[0].Date
 
 [<Test>]  
+let ``Can read simple sequence of records deterministically `` () =
+  let mutable n = 0
+  let values = 
+    seq { 
+      yield n, n
+      n <- n + 1
+      yield n, n
+      n <- n + 1 }
+  let expected = [|0, 0; 1, 1|] |> Frame.ofRecords
+  values |> Frame.ofRecords |> shouldEqual expected
+
+[<Test>]  
 let ``Can expand properties of a simple record sequence`` () =
   let df = frame [ "MSFT" => Series.ofValues (typedRows ()) ]
   let exp1 = df |> Frame.expandAllCols 1 
