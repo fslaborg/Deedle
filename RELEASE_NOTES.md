@@ -1,5 +1,11 @@
 # Release Notes
 
+## 2.0.1 - 2019-03-25
+* Fix linear interpolation [#458](https://github.com/fslaborg/Deedle/pull/458)
+* Fix FillMissingWith with nan [#461](https://github.com/fslaborg/Deedle/pull/461)
+* Fix InvalidOperationException from ValuesAll [#462](https://github.com/fslaborg/Deedle/pull/462)
+* Fix iterating seq multiple times in Frame.ofRecords [#406](https://github.com/fslaborg/Deedle/pull/406)
+   
 ## 2.0.0 - 2019-03-13
 * Breaking changes of Stats.min and Stats.max [#422](https://github.com/fslaborg/Deedle/pull/422)
 * Inline stats functions [#418](https://github.com/fslaborg/Deedle/pull/418)
