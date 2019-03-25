@@ -96,11 +96,11 @@ sum of values to the power of 3 and 3 (<code>sum3</code> and <code>sum4</code>)<
             applyExpandingMomentsTransform(...)
           </code>
           <div class="tip" id="295">
-            <strong>Signature:</strong> proj:(Moments -&gt; float) -&gt; series:Series&lt;&#39;K,^V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K, ^V                      </div>
+            <strong>Signature:</strong> proj:(Moments -&gt; float) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L226-226" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L227-227" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -117,11 +117,11 @@ The specified <code>proj</code> function is used to calculate the resulting valu
             applyMovingSumsTransform(...)
           </code>
           <div class="tip" id="296">
-            <strong>Signature:</strong> moment:int -&gt; winSize:int -&gt; proj:(Sums -&gt; float) -&gt; series:Series&lt;&#39;K,^V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
-                          <strong>Type parameters:</strong> 'K, ^V                      </div>
+            <strong>Signature:</strong> moment:int -&gt; winSize:int -&gt; proj:(Sums -&gt; float) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; Series&lt;&#39;K,float&gt;<br />
+                          <strong>Type parameters:</strong> 'K, 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L110-110" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L111-111" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -143,7 +143,7 @@ calculates the statistics from <a href="deedle-statsinternal-sums.html" title="S
                           <strong>Type parameters:</strong> 'K                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L24-24" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L25-25" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -161,11 +161,11 @@ The resulting sequence should have the same number of values as the input sequen
             expandingWindowFn(...)
           </code>
           <div class="tip" id="298">
-            <strong>Signature:</strong> initState:&#39;?674039 -&gt; fupdate:(&#39;?674039 -&gt; &#39;?674040 -&gt; &#39;?674039) -&gt; ftransf:(&#39;?674039 -&gt; &#39;?674041) -&gt; source:seq&lt;&#39;?674040&gt; -&gt; seq&lt;&#39;?674041&gt;<br />
-                          <strong>Type parameters:</strong> '?674039, '?674040, '?674041                      </div>
+            <strong>Signature:</strong> initState:&#39;?663164 -&gt; fupdate:(&#39;?663164 -&gt; &#39;?663165 -&gt; &#39;?663164) -&gt; ftransf:(&#39;?663164 -&gt; &#39;?663166) -&gt; source:seq&lt;&#39;?663165&gt; -&gt; seq&lt;&#39;?663166&gt;<br />
+                          <strong>Type parameters:</strong> '?663164, '?663165, '?663166                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L184-184" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L185-185" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -189,7 +189,7 @@ The resulting sequence should have the same number of values as the input sequen
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L72-72" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L73-73" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -206,11 +206,11 @@ The resulting sequence should have the same number of values as the input sequen
             initSumsSparse moment init
           </code>
           <div class="tip" id="300">
-            <strong>Signature:</strong> moment:int -&gt; init:^V opt [] -&gt; Sums<br />
-                          <strong>Type parameters:</strong> ^V                      </div>
+            <strong>Signature:</strong> moment:int -&gt; init:&#39;V opt [] -&gt; Sums<br />
+                          <strong>Type parameters:</strong> 'V                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L92-92" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L93-93" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -231,7 +231,7 @@ The resulting sequence should have the same number of values as the input sequen
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L130-130" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L131-131" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -251,7 +251,7 @@ The resulting sequence should have the same number of values as the input sequen
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L153-153" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L154-154" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -271,11 +271,11 @@ are removed before it is appended).</p>
             movingWindowFn(...)
           </code>
           <div class="tip" id="303">
-            <strong>Signature:</strong> winSize:int -&gt; finit:(&#39;?674014 [] -&gt; &#39;?674015) -&gt; fupdate:(&#39;?674015 -&gt; &#39;?674014 -&gt; &#39;?674014 -&gt; &#39;?674015) -&gt; ftransf:(&#39;?674015 -&gt; float) -&gt; source:seq&lt;&#39;?674014&gt; -&gt; seq&lt;float&gt;<br />
-                          <strong>Type parameters:</strong> '?674014, '?674015                      </div>
+            <strong>Signature:</strong> winSize:int -&gt; finit:(&#39;?663139 [] -&gt; &#39;?663140) -&gt; fupdate:(&#39;?663140 -&gt; &#39;?663139 -&gt; &#39;?663139 -&gt; &#39;?663140) -&gt; ftransf:(&#39;?663140 -&gt; float) -&gt; source:seq&lt;&#39;?663139&gt; -&gt; seq&lt;float&gt;<br />
+                          <strong>Type parameters:</strong> '?663139, '?663140                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L41-41" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L42-42" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -307,7 +307,7 @@ and out-going observation to the next state
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L263-263" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L264-264" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -328,7 +328,7 @@ and out-going observation to the next state
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L121-121" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L122-122" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -341,14 +341,32 @@ and out-going observation to the next state
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '306', 306)" onmouseover="showTip(event, '306', 306)">
-            trySeriesExtreme f series
+            toFloat(arg00)
           </code>
           <div class="tip" id="306">
+            <strong>Signature:</strong> arg00:obj -&gt; float<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L20-20" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '307', 307)" onmouseover="showTip(event, '307', 307)">
+            trySeriesExtreme f series
+          </code>
+          <div class="tip" id="307">
             <strong>Signature:</strong> f:(&#39;V -&gt; &#39;V -&gt; &#39;V) -&gt; series:Series&lt;&#39;K,&#39;V&gt; -&gt; &#39;V option<br />
                           <strong>Type parameters:</strong> 'V, 'K                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L252-252" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L253-253" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -361,15 +379,15 @@ Returns None when there are no values or Some.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '307', 307)" onmouseover="showTip(event, '307', 307)">
+          <code onmouseout="hideTip(event, '308', 308)" onmouseover="showTip(event, '308', 308)">
             updateMoments state x
           </code>
-          <div class="tip" id="307">
+          <div class="tip" id="308">
             <strong>Signature:</strong> state:Moments -&gt; x:float -&gt; Moments<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L203-203" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L204-204" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -382,15 +400,15 @@ Returns None when there are no values or Some.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '308', 308)" onmouseover="showTip(event, '308', 308)">
+          <code onmouseout="hideTip(event, '309', 309)" onmouseover="showTip(event, '309', 309)">
             updateMomentsSparse state curr
           </code>
-          <div class="tip" id="308">
+          <div class="tip" id="309">
             <strong>Signature:</strong> state:Moments -&gt; curr:float opt -&gt; Moments<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L219-219" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L220-220" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -402,15 +420,15 @@ Returns None when there are no values or Some.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '309', 309)" onmouseover="showTip(event, '309', 309)">
+          <code onmouseout="hideTip(event, '310', 310)" onmouseover="showTip(event, '310', 310)">
             updateSumsDense moment state curr outg
           </code>
-          <div class="tip" id="309">
+          <div class="tip" id="310">
             <strong>Signature:</strong> moment:int -&gt; state:Sums -&gt; curr:float -&gt; outg:float -&gt; Sums<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L83-83" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L84-84" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -424,15 +442,15 @@ an old outgoing element, update the sums value
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '310', 310)" onmouseover="showTip(event, '310', 310)">
+          <code onmouseout="hideTip(event, '311', 311)" onmouseover="showTip(event, '311', 311)">
             updateSumsSparse moment state curr outg
           </code>
-          <div class="tip" id="310">
+          <div class="tip" id="311">
             <strong>Signature:</strong> moment:int -&gt; state:Sums -&gt; curr:float opt -&gt; outg:float opt -&gt; Sums<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L100-100" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L101-101" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -445,15 +463,15 @@ when removing/adding value that is missing (<code>OptionalValue.Missing</code>)<
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '311', 311)" onmouseover="showTip(event, '311', 311)">
+          <code onmouseout="hideTip(event, '312', 312)" onmouseover="showTip(event, '312', 312)">
             valuesAllOpt(series)
           </code>
-          <div class="tip" id="311">
-            <strong>Signature:</strong> series:Series&lt;&#39;?674059,&#39;?674060&gt; -&gt; OptionalValue&lt;&#39;?674060&gt; []<br />
-                          <strong>Type parameters:</strong> '?674059, '?674060                      </div>
+          <div class="tip" id="312">
+            <strong>Signature:</strong> series:Series&lt;&#39;?663184,&#39;?663185&gt; -&gt; OptionalValue&lt;&#39;?663185&gt; []<br />
+                          <strong>Type parameters:</strong> '?663184, '?663185                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L247-247" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L248-248" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -465,15 +483,15 @@ when removing/adding value that is missing (<code>OptionalValue.Missing</code>)<
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '312', 312)" onmouseover="showTip(event, '312', 312)">
+          <code onmouseout="hideTip(event, '313', 313)" onmouseover="showTip(event, '313', 313)">
             varianceSums(s)
           </code>
-          <div class="tip" id="312">
+          <div class="tip" id="313">
             <strong>Signature:</strong> s:Sums -&gt; float<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L116-116" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Stats.fs#L117-117" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>

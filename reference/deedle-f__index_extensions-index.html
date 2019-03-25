@@ -60,35 +60,15 @@ using the built-in <code>LinearVector</code> type.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '588', 588)" onmouseover="showTip(event, '588', 588)">
-            Index.ofKeys(keys)
-          </code>
-          <div class="tip" id="588">
-            <strong>Signature:</strong> (keys:&#39;T list) -&gt; IIndex&lt;&#39;T&gt;<br />
-                          <strong>Type parameters:</strong> 'T                      </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/LinearIndex.fs#L680-680" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Create an index from a sequence of keys and check if they are sorted or not</p>
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
           <code onmouseout="hideTip(event, '589', 589)" onmouseover="showTip(event, '589', 589)">
             Index.ofKeys(keys)
           </code>
           <div class="tip" id="589">
-            <strong>Signature:</strong> (keys:&#39;T []) -&gt; IIndex&lt;&#39;T&gt;<br />
+            <strong>Signature:</strong> (keys:&#39;T list) -&gt; IIndex&lt;&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'T                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/LinearIndex.fs#L671-671" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/LinearIndex.fs#L677-677" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -104,11 +84,11 @@ using the built-in <code>LinearVector</code> type.</p>
             Index.ofKeys(keys)
           </code>
           <div class="tip" id="590">
-            <strong>Signature:</strong> keys:ReadOnlyCollection&lt;&#39;T&gt; -&gt; IIndex&lt;&#39;T&gt;<br />
+            <strong>Signature:</strong> (keys:&#39;T []) -&gt; IIndex&lt;&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'T                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/LinearIndex.fs#L662-662" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/LinearIndex.fs#L668-668" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -121,19 +101,18 @@ using the built-in <code>LinearVector</code> type.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '591', 591)" onmouseover="showTip(event, '591', 591)">
-            Index.ofUnorderedKeys(keys)
+            Index.ofKeys(keys)
           </code>
           <div class="tip" id="591">
-            <strong>Signature:</strong> (keys:&#39;T list) -&gt; IIndex&lt;&#39;T&gt;<br />
+            <strong>Signature:</strong> keys:ReadOnlyCollection&lt;&#39;T&gt; -&gt; IIndex&lt;&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'T                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/LinearIndex.fs#L685-685" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/LinearIndex.fs#L659-659" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Create an index from a sequence of keys and assume they are not sorted
-(the resulting index is also not sorted).</p>
+          <p>Create an index from a sequence of keys and check if they are sorted or not</p>
 
 
         </td>
@@ -145,11 +124,11 @@ using the built-in <code>LinearVector</code> type.</p>
             Index.ofUnorderedKeys(keys)
           </code>
           <div class="tip" id="592">
-            <strong>Signature:</strong> (keys:&#39;T []) -&gt; IIndex&lt;&#39;T&gt;<br />
+            <strong>Signature:</strong> (keys:&#39;T list) -&gt; IIndex&lt;&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'T                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/LinearIndex.fs#L676-676" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/LinearIndex.fs#L682-682" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -166,11 +145,32 @@ using the built-in <code>LinearVector</code> type.</p>
             Index.ofUnorderedKeys(keys)
           </code>
           <div class="tip" id="593">
+            <strong>Signature:</strong> (keys:&#39;T []) -&gt; IIndex&lt;&#39;T&gt;<br />
+                          <strong>Type parameters:</strong> 'T                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/LinearIndex.fs#L673-673" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Create an index from a sequence of keys and assume they are not sorted
+(the resulting index is also not sorted).</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '594', 594)" onmouseover="showTip(event, '594', 594)">
+            Index.ofUnorderedKeys(keys)
+          </code>
+          <div class="tip" id="594">
             <strong>Signature:</strong> keys:ReadOnlyCollection&lt;&#39;T&gt; -&gt; IIndex&lt;&#39;T&gt;<br />
                           <strong>Type parameters:</strong> 'T                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/LinearIndex.fs#L667-667" class="github-link">
+                      <a href="https://github.com/fslaborg/Deedle/tree/master/src/Deedle/Indices/LinearIndex.fs#L664-664" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
