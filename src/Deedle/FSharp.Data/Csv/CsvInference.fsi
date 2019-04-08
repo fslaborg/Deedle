@@ -11,4 +11,4 @@ open FSharp.Data.Runtime.StructuralTypes
 open FSharp.Data.Runtime.StructuralInference
 
 type CsvFile with
-  member InferColumnTypes : inferRows:int * missingValues:string [] * cultureInfo:CultureInfo * schema:string * assumeMissingValues:bool * preferOptionals:bool * ?unitsOfMeasureProvider:IUnitsOfMeasureProvider -> PrimitiveInferedProperty list
+   member InferColumnTypes : inferRows:int * missingValues:string [] * cultureInfo:CultureInfo * schema:string * assumeMissingValues:bool * preferOptionals:bool * ?unitsOfMeasureProvider:IUnitsOfMeasureProvider -> PrimitiveInferedProperty list

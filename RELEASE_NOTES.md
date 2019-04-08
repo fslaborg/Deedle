@@ -1,5 +1,8 @@
 # Release Notes
 
+## 2.0.2 - 2019-04-08
+* Fix missing signatures to control access of FSharp.Data implementations[#465](https://github.com/fslaborg/Deedle/issues/465)
+
 ## 2.0.1 - 2019-03-25
 * Fix linear interpolation [#458](https://github.com/fslaborg/Deedle/pull/458)
 * Fix FillMissingWith with nan [#461](https://github.com/fslaborg/Deedle/pull/461)

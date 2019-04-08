@@ -13,9 +13,12 @@ module internal CsvReader =
 
 type internal CsvFile<'RowType> =
   interface IDisposable
-  new : stringArrayToRow:Func<obj,string [],'RowType> * rowToStringArray:Func<'RowType,string []> * readerFunc:Func<TextReader> * separators:string * quote:char * hasHeaders:bool * ignoreErrors:bool * skipRows:int -> CsvFile<'RowType>
+  private new : rowToStringArray:Func<'RowType,string []> * disposer:IDisposable * rows:seq<'RowType> * headers:string [] option * numberOfColumns:int * separators:string * quote:char -> CsvFile<'RowType>
+  new : stringArrayToRow:Func<obj,string [],'RowType> * rowToStringArray:Func<'RowType,string []> * readerFunc:Func<TextReader> * separators:string * quote:char * hasHeaders:bool * ignoreErrors:bool * skipRows:int -> CsvFile<'RowType>  member Cache : unit -> CsvFile<'RowType>
+  member Append : rows:seq<'RowType> -> CsvFile<'RowType>
   member Cache : unit -> CsvFile<'RowType>
   member Filter : predicate:Func<'RowType,bool> -> CsvFile<'RowType>
+  member Map : mapping:Func<'RowType,'RowType> -> CsvFile<'RowType>
   member Save : writer:TextWriter * ?separator:char * ?quote:char -> unit
   member Save : stream:Stream * ?separator:char * ?quote:char -> unit
   member Save : path:string * ?separator:char * ?quote:char -> unit
@@ -30,4 +33,5 @@ type internal CsvFile<'RowType> =
   member Quote : char
   member Rows : seq<'RowType>
   member Separators : string
-  static member Create : stringArrayToRow:Func<obj,string [],'RowType> * rowToStringArray:Func<'RowType,string []> * reader:TextReader * separators:string * quote:char * hasHeaders:bool * ignoreErrors:bool * skipRows:int * cacheRows:bool -> CsvFile<'RowType>
+  member private mapRows : f:(seq<'RowType> -> #seq<'RowType>) -> CsvFile<'RowType>
+  member private withRows : rows:seq<'RowType> -> CsvFile<'RowType>

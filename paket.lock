@@ -919,19 +919,7 @@ NUGET
       FSharp.Compiler.Service (>= 25.0.1 < 26.0)
       Microsoft.AspNet.Razor (>= 3.2.6 < 4.0)
       System.ValueTuple (>= 4.5 < 5.0)
-GITHUB
-  remote: fsharp/FSharp.Data
-    src/CommonRuntime/IO.fs (33e6e825bc2978eb9ce6dd880f31d9e60d452699)
-    src/CommonRuntime/NameUtils.fs (33e6e825bc2978eb9ce6dd880f31d9e60d452699)
-    src/CommonRuntime/Pluralizer.fs (33e6e825bc2978eb9ce6dd880f31d9e60d452699)
-    src/CommonRuntime/StructuralInference.fs (33e6e825bc2978eb9ce6dd880f31d9e60d452699)
-    src/CommonRuntime/StructuralTypes.fs (33e6e825bc2978eb9ce6dd880f31d9e60d452699)
-    src/CommonRuntime/TextConversions.fs (33e6e825bc2978eb9ce6dd880f31d9e60d452699)
-    src/CommonRuntime/TextRuntime.fs (33e6e825bc2978eb9ce6dd880f31d9e60d452699)
-    src/Csv/CsvFile.fs (33e6e825bc2978eb9ce6dd880f31d9e60d452699)
-    src/Csv/CsvInference.fs (33e6e825bc2978eb9ce6dd880f31d9e60d452699)
-    src/Csv/CsvRuntime.fs (33e6e825bc2978eb9ce6dd880f31d9e60d452699)
-    src/Net/Http.fs (33e6e825bc2978eb9ce6dd880f31d9e60d452699)
+
 GROUP Build
 NUGET
   remote: https://api.nuget.org/v3/index.json

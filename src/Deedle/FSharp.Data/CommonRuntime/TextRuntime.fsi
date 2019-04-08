@@ -10,11 +10,15 @@ open System.Globalization
 
 [<Class>]
 type internal TextRuntime =
+  [<DefaultValue>]
+  static val mutable private cultureInfoCache: Collections.Generic.Dictionary<string,CultureInfo>
   static member AsyncMap : valueAsync:Async<'T> * mapping:Func<'T,'R> -> Async<'R>
   static member ConvertBoolean : text:string option -> bool option
   static member ConvertBooleanBack : value:bool option * use0and1:bool -> string
   static member ConvertDateTime : cultureStr:string * text:string option -> DateTime option
   static member ConvertDateTimeBack : cultureStr:string * value:DateTime option -> string
+  static member ConvertDateTimeOffset : cultureStr:string * text:string option -> DateTimeOffset option
+  static member ConvertDateTimeOffsetBack : cultureStr:string * value:DateTimeOffset option -> string
   static member ConvertDecimal : cultureStr:string * text:string option -> decimal option
   static member ConvertDecimalBack : cultureStr:string * value:decimal option -> string
   static member ConvertFloat : cultureStr:string * missingValuesStr:string * text:string option -> float option
@@ -27,8 +31,10 @@ type internal TextRuntime =
   static member ConvertIntegerBack : cultureStr:string * value:int option -> string
   static member ConvertString : text:string option -> string option
   static member ConvertStringBack : value:string option -> string
+  static member ConvertTimeSpan : cultureStr:string * text:string option -> TimeSpan option
+  static member ConvertTimeSpanBack : cultureStr:string * value:TimeSpan option -> string
   static member GetCulture : cultureStr:string -> CultureInfo
   static member GetMissingValues : missingValuesStr:string -> string []
   static member GetNonOptionalValue : name:string * opt:'T option * originalValue:string option -> 'T
-  static member NullableToOption : nullable:Nullable<'a> -> 'a option when 'a : (new : unit ->  'a) and 'a : struct and 'a :> ValueType
-  static member OptionToNullable : opt:'b option -> Nullable<'b> when 'b : (new : unit ->  'b) and 'b : struct and 'b :> ValueType
+  static member NullableToOption : nullable:Nullable<'a> -> 'a option when 'a : (new : unit -> 'a) and 'a : struct and 'a :> ValueType
+  static member OptionToNullable : opt:'b option -> Nullable<'b> when 'b : (new : unit -> 'b) and 'b : struct and 'b :> ValueType
