@@ -19,9 +19,11 @@ type internal CsvRow =
 
 and [<Class>] internal CsvFile =
   inherit CsvFile<CsvRow>
-  member internal GetColumnIndex : columnName:string -> int
-  static member AsyncLoad : uri:string * ?separators:string * ?quote:char * ?hasHeaders:bool * ?ignoreErrors:bool * ?skipRows:int -> Async<CsvFile>
+  private new : readerFunc:Func<TextReader> * ?separators:string * ?quote:char * ?hasHeaders:bool * ?ignoreErrors:bool * ?skipRows:int -> CsvFile
+  member GetColumnIndex : columnName:string -> int
+  member TryGetColumnIndex : columnName:string -> int option
+  static member AsyncLoad : uri:string * ?separators:string * ?quote:char * ?hasHeaders:bool * ?ignoreErrors:bool * ?skipRows:int * ?encoding:Text.Encoding -> Async<CsvFile>
   static member Load : stream:Stream * ?separators:string * ?quote:char * ?hasHeaders:bool * ?ignoreErrors:bool * ?skipRows:int -> CsvFile
   static member Load : reader:TextReader * ?separators:string * ?quote:char * ?hasHeaders:bool * ?ignoreErrors:bool * ?skipRows:int -> CsvFile
-  static member Load : uri:string * ?separators:string * ?quote:char * ?hasHeaders:bool * ?ignoreErrors:bool * ?skipRows:int -> CsvFile
+  static member Load : uri:string * ?separators:string * ?quote:char * ?hasHeaders:bool * ?ignoreErrors:bool * ?skipRows:int * ?encoding:Text.Encoding -> CsvFile
   static member Parse : text:string * ?separators:string * ?quote:char * ?hasHeaders:bool * ?ignoreErrors:bool * ?skipRows:int -> CsvFile

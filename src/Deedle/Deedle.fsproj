@@ -4,56 +4,29 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
     <OutputPath>../../bin/</OutputPath>
-  </PropertyGroup>
-  <!-- <ItemGroup><Compile Include="FSharp.Data\TextConversions.fsi" /><Compile Include="FSharp.Data\TextRuntime.fsi" /><Compile Include="FSharp.Data\StructuralTypes.fsi" /><Compile Include="FSharp.Data\StructuralInference.fsi" /><Compile Include="FSharp.Data\CsvRuntime.fsi" /><Compile Include="FSharp.Data\CsvFile.fsi" /><Compile Include="FSharp.Data\CsvInference.fsi" /><Compile Include="FSharp.Data\Stubs.fs" /></ItemGroup> -->
+  </PropertyGroup>  
   <ItemGroup>
     <Reference Include="System.Runtime" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\paket-files\fsharp\FSharp.Data\src\Net\Http.fs">
-      <Paket>True</Paket>
-      <Link>FSharp.Data/Http.fs</Link>
-    </Compile>
-    <Compile Include="..\..\paket-files\fsharp\FSharp.Data\src\CommonRuntime\IO.fs">
-      <Paket>True</Paket>
-      <Link>FSharp.Data/IO.fs</Link>
-    </Compile>
-    <Compile Include="..\..\paket-files\fsharp\FSharp.Data\src\CommonRuntime\Pluralizer.fs">
-      <Paket>True</Paket>
-      <Link>FSharp.Data/Pluralizer.fs</Link>
-    </Compile>
-    <Compile Include="..\..\paket-files\fsharp\FSharp.Data\src\CommonRuntime\NameUtils.fs">
-      <Paket>True</Paket>
-      <Link>FSharp.Data/NameUtils.fs</Link>
-    </Compile>
-    <Compile Include="..\..\paket-files\fsharp\FSharp.Data\src\CommonRuntime\TextConversions.fs">
-      <Paket>True</Paket>
-      <Link>FSharp.Data/TextConversions.fs</Link>
-    </Compile>
-    <Compile Include="..\..\paket-files\fsharp\FSharp.Data\src\CommonRuntime\TextRuntime.fs">
-      <Paket>True</Paket>
-      <Link>FSharp.Data/TextRuntime.fs</Link>
-    </Compile>
-    <Compile Include="..\..\paket-files\fsharp\FSharp.Data\src\CommonRuntime\StructuralTypes.fs">
-      <Paket>True</Paket>
-      <Link>FSharp.Data/StructuralTypes.fs</Link>
-    </Compile>
-    <Compile Include="..\..\paket-files\fsharp\FSharp.Data\src\CommonRuntime\StructuralInference.fs">
-      <Paket>True</Paket>
-      <Link>FSharp.Data/StructuralInference.fs</Link>
-    </Compile>
-    <Compile Include="..\..\paket-files\fsharp\FSharp.Data\src\Csv\CsvRuntime.fs">
-      <Paket>True</Paket>
-      <Link>FSharp.Data/CsvRuntime.fs</Link>
-    </Compile>
-    <Compile Include="..\..\paket-files\fsharp\FSharp.Data\src\Csv\CsvFile.fs">
-      <Paket>True</Paket>
-      <Link>FSharp.Data/CsvFile.fs</Link>
-    </Compile>
-    <Compile Include="..\..\paket-files\fsharp\FSharp.Data\src\Csv\CsvInference.fs">
-      <Paket>True</Paket>
-      <Link>FSharp.Data/CsvInference.fs</Link>
-    </Compile>
+    <Compile Include="FSharp.Data\Net\Http.fs" />
+    <Compile Include="FSharp.Data\CommonRuntime\TextConversions.fsi" />
+    <Compile Include="FSharp.Data\CommonRuntime\TextRuntime.fsi" />
+    <Compile Include="FSharp.Data\CommonRuntime\StructuralTypes.fsi" />
+    <Compile Include="FSharp.Data\CommonRuntime\StructuralInference.fsi" />
+    <Compile Include="FSharp.Data\CommonRuntime\IO.fs" />
+    <Compile Include="FSharp.Data\CommonRuntime\Pluralizer.fs" />
+    <Compile Include="FSharp.Data\CommonRuntime\NameUtils.fs" />
+    <Compile Include="FSharp.Data\CommonRuntime\TextConversions.fs" />
+    <Compile Include="FSharp.Data\CommonRuntime\TextRuntime.fs" />
+    <Compile Include="FSharp.Data\CommonRuntime\StructuralTypes.fs" />
+    <Compile Include="FSharp.Data\CommonRuntime\StructuralInference.fs" />
+    <Compile Include="FSharp.Data\Csv\CsvRuntime.fsi" />
+    <Compile Include="FSharp.Data\Csv\CsvFile.fsi" />
+    <Compile Include="FSharp.Data\Csv\CsvInference.fsi" />
+    <Compile Include="FSharp.Data\Csv\CsvRuntime.fs" />
+    <Compile Include="FSharp.Data\Csv\CsvFile.fs" />
+    <Compile Include="FSharp.Data\Csv\CsvInference.fs" />
     <Compile Include="Common\AssemblyInfo.fs" />
     <Compile Include="Common\Attributes.fs" />
     <Compile Include="Common\BinomialHeap.fs" />

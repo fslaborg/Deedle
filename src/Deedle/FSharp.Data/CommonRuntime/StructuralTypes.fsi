@@ -24,6 +24,7 @@ and [<RequireQualifiedAccess>] internal InferedTypeTag =
   | String
   | Json
   | DateTime
+  | TimeSpan
   | Guid
   | Collection
   | Heterogeneous
