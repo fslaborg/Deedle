@@ -1,5 +1,7 @@
-Deedle [![Build Status](https://travis-ci.org/fslaborg/Deedle.png?branch=mainline)](https://travis-ci.org/fslaborg/Deedle)
+Deedle 
+[![Build Status](https://travis-ci.org/fslaborg/Deedle.png?branch=mainline)](https://travis-ci.org/fslaborg/Deedle)
 [![Build Status](https://dev.azure.com/deedlefslab/Deedle/_apis/build/status/fslaborg.Deedle?branchName=master)](https://dev.azure.com/deedlefslab/Deedle/_build/latest?definitionId=1&branchName=master)
+[![Nuget Version](https://buildstats.info/nuget/Deedle)](https://www.nuget.org/packages/Deedle/)
 ======
 
 <img align="right" src="https://github.com/fslaborg/Deedle/raw/master/docs/files/images/logo.png" alt="Deedle" />
