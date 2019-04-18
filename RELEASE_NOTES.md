@@ -1,5 +1,8 @@
 # Release Notes
 
+## 2.0.3 - 2019-04-18
+* Additional target net461 in order to upgrade XPlot.GoogleCharts.Deedle
+
 ## 2.0.2 - 2019-04-08
 * Fix missing signatures to control access of FSharp.Data implementations[#465](https://github.com/fslaborg/Deedle/issues/465)
 
