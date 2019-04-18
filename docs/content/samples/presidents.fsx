@@ -4,7 +4,7 @@
 #nowarn "58"
 #I "../../../bin/net45/"
 #I "../../../packages/FSharp.Data/lib/net45"
-#I "../../../packages/FSharp.Charting/lib/net45"
+#I "../../../packages/FSharp.Charting/"
 
 #r "FSharp.Data.dll"
 #load "FSharp.Charting.fsx"

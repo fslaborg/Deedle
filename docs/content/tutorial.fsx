@@ -17,7 +17,7 @@ we also need  [F# Charting](https://fslab.org/FSharp.Charting/), which
 works similarly:
 
 *)
-#I "../../packages/FSharp.Charting/lib/net45"
+#I "../../packages/FSharp.Charting/"
 #I "../../packages/Deedle"
 #load "FSharp.Charting.fsx"
 #load "Deedle.fsx"

@@ -2,11 +2,10 @@
 // Load everything 
 // ----------------------------------------------------------------------------
 
-#I "../../../packages/FSharp.Charting/lib/net45"
 #r "../../../packages/MathNet.Numerics/lib/net40/MathNet.Numerics.dll"
 #load "../../../bin/net45/Deedle.fsx"
 #r "../../../packages/FSharp.Data/lib/net45/FSharp.Data.dll"
-#load "FSharp.Charting.fsx"
+#load "../../../packages/FSharp.Charting/FSharp.Charting.fsx"
 
 open System
 open Deedle
