@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\netfx.props" />
   <PropertyGroup>
-    <TargetFrameworks>net45</TargetFrameworks>
+    <TargetFrameworks>net45;net461</TargetFrameworks>
     <OutputPath>../../bin/</OutputPath>
   </PropertyGroup>
   <ItemGroup>
