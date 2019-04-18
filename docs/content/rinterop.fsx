@@ -88,7 +88,7 @@ the data, we use the [F# Charting library](https://github.com/fsharp/FSharp.Char
 
 *) 
 (*** define-output:mpgch ***)
-#load "../../packages/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
+#load "../../packages/FSharp.Charting/FSharp.Charting.fsx"
 open FSharp.Charting
 
 mtcars

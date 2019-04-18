@@ -2,7 +2,7 @@
 // Load everything 
 // ----------------------------------------------------------------------------
 
-#I "../../../packages/FSharp.Charting/lib/net45"
+#I "../../../packages/FSharp.Charting"
 #r "../../../packages/MathNet.Numerics/lib/net40/MathNet.Numerics.dll"
 #load "../../../bin/net45/Deedle.fsx"
 #r "../../../packages/FSharp.Data/lib/net45/FSharp.Data.dll"
