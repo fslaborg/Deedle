@@ -1,7 +1,7 @@
 language: csharp
 
 sudo: required
-dist: trusty
+dist: xenial
 install:
   - mozroots --import --sync
   - export FrameworkPathOverride=$(dirname $(which mono))/../lib/mono/4.5/
