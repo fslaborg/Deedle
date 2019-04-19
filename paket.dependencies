@@ -1,19 +1,18 @@
 version 5.203.2
 
-source https://nuget.org/api/v2
-source https://ci.appveyor.com/nuget/fsharp-formatting
+source https://api.nuget.org/v3/index.json
 
-nuget FsCheck 2.10.8
+nuget FsCheck
 nuget FSharp.Charting
 nuget FSharp.Data
-nuget MathNet.Numerics 4.5.1
+nuget MathNet.Numerics
 nuget NUnit 3.9.0
 nuget NUnit.ConsoleRunner 3.8.0
 nuget FsUnit 3.0.0
 nuget RProvider 1.1.22
 nuget System.Reflection.Emit
 nuget System.Reflection.Emit.Lightweight
-nuget FSharp.Core 4.3.4
+nuget FSharp.Core 4.5.2
 nuget Microsoft.NET.Test.Sdk 15.8.0
 nuget NUnit3TestAdapter 3.9.0
 nuget Microsoft.CSharp
@@ -23,7 +22,7 @@ nuget DynamicInterop
 nuget System.ComponentModel.Composition
 nuget NetOffice.Core
 nuget NetOffice.Excel
-nuget FSharp.Formatting >= 3 prerelease
+nuget FSharp.Formatting
 
 // [ FAKE GROUP ]
 group Build

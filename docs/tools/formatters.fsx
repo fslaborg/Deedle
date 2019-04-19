@@ -7,7 +7,7 @@ module Formatters
 #r "../../bin/net45/Deedle.dll"
 #load "../../packages/RProvider/RProvider.fsx"
 #r "../../packages/MathNet.Numerics/lib/net40/MathNet.Numerics.dll"
-#load "../../packages/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
+#load "../../packages/FSharp.Charting/FSharp.Charting.fsx"
 #r "../../packages/FSharp.Compiler.Service/lib/net45/FSharp.Compiler.Service.dll"
 
 // --------------------------------------------------------------------------------------

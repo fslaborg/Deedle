@@ -64,13 +64,39 @@ BuildServer.install [
     Travis.Installer
 ]
 
+let desiredSdkVersion = (DotNet.getSDKVersionFromGlobalJson ())
+let mutable sdkPath = None
+let getSdkPath() = (defaultArg sdkPath "dotnet")
+let installed =
+  try
+    DotNet.getVersion id <> null
+  with _ -> false
 
-let dotnetSdk = lazy DotNet.install DotNet.Versions.Release_2_1_402
-let inline dtntWorkDir wd =
-    DotNet.Options.lift dotnetSdk.Value
-    >> DotNet.Options.withWorkingDirectory wd
+printfn "Desired .NET SDK version = %s" desiredSdkVersion
+printfn "DotNetCli.isInstalled() = %b" installed
 
-let inline setSdk arg = DotNet.Options.lift dotnetSdk.Value arg
+let getPathForSdkVersion (sdkVersion) =
+  DotNet.install (fun v -> { v with Version = DotNet.Version sdkVersion }) (DotNet.Options.Create ())
+  |> fun o -> o.DotNetCliPath
+
+if installed then
+    let installedSdkVersion = DotNet.getVersion id
+    printfn "The installed default .NET SDK version reported by FAKE's 'DotNetCli.getVersion()' is %s" installedSdkVersion
+    if installedSdkVersion <> desiredSdkVersion then
+        match Environment.environVar "CI" with
+        | null ->
+            if installedSdkVersion > desiredSdkVersion then
+                printfn "*** You have .NET SDK version '%s' installed, assuming it is compatible with version '%s'" installedSdkVersion desiredSdkVersion
+            else
+                printfn "*** You have .NET SDK version '%s' installed, we expect at least version '%s'" installedSdkVersion desiredSdkVersion
+        | _ ->
+            printfn "*** The .NET SDK version '%s' will be installed (despite the fact that version '%s' is already installed) because we want precisely that version in CI" desiredSdkVersion installedSdkVersion
+            sdkPath <- Some (getPathForSdkVersion desiredSdkVersion)
+    else
+        sdkPath <- Some (getPathForSdkVersion installedSdkVersion)
+else
+    printfn "*** The .NET SDK version '%s' will be installed (no other version was found by FAKE helpers)" desiredSdkVersion
+    sdkPath <- Some (getPathForSdkVersion desiredSdkVersion)
 
 // Read release notes & version info from RELEASE_NOTES.md
 let release = ReleaseNotes.load "RELEASE_NOTES.md" 
@@ -130,59 +156,48 @@ let buildCoreProjs =
     [ "src/Deedle/Deedle.fsproj"    
       "src/Deedle.Excel/Deedle.Excel.fsproj" ]
 
+let setSdkPathAndVerbose (c: DotNet.Options) =
+  { c with
+      DotNetCliPath = getSdkPath ()
+      CustomParams = Some "/v:n" }
 
 Target.create "Build" ( fun _ ->
-        Environment.setEnvironVar "GenerateDocumentationFile" "true"
-        buildProjs 
-        |> Seq.iter (fun proj -> 
-                        DotNet.build ( fun b -> 
-                                            b.WithCommon( fun c -> {c with CustomParams = Some "/p:SourceLinkCreate=true"}) 
-                                            |> setSdk ) proj )
-)
+  Environment.setEnvironVar "GenerateDocumentationFile" "true"
+  for proj in buildProjs do  
+    DotNet.build (fun opts -> { opts with Common = { opts.Common with DotNetCliPath = getSdkPath ()
+                                                                      CustomParams = Some "/v:n /p:SourceLinkCreate=true" }
+                                          Configuration = DotNet.BuildConfiguration.Release }) proj )
+
 
 Target.create "BuildCore" ( fun _ ->
-        Environment.setEnvironVar "GenerateDocumentationFile" "true"
-        buildCoreProjs
-        |> Seq.iter (fun proj -> 
-                        DotNet.build ( fun b -> 
-                                            b.WithCommon( fun c -> {c with CustomParams = Some "/p:SourceLinkCreate=true"}) 
-                                            |> setSdk ) proj )
-)
+  Environment.setEnvironVar "GenerateDocumentationFile" "true"
+  for proj in buildCoreProjs do  
+    DotNet.build (fun opts -> { opts with Common = { opts.Common with DotNetCliPath = getSdkPath ()
+                                                                      CustomParams = Some "/v:n /p:SourceLinkCreate=true" }
+                                          Configuration = DotNet.BuildConfiguration.Release }) proj )
 
 // --------------------------------------------------------------------------------------
 // Run the unit tests using test runner & kill test runner when complete
 
 Target.create "BuildTests" (fun _ ->
-    testProjs
-    |> Seq.iter (fun proj -> 
-                        DotNet.build ( fun b -> 
-                                            b.WithCommon( fun c -> {c with CustomParams = Some "/v:n"}) 
-                                            |> setSdk ) proj )
-)
+  for proj in testProjs do
+    DotNet.build (fun opts -> { opts with Common = setSdkPathAndVerbose opts.Common
+                                          Configuration = DotNet.BuildConfiguration.Release }) proj )
 
 Target.create "RunTests" (fun _ ->
-    testProjs
-    |> Seq.iter (fun proj -> 
-                        DotNet.test ( fun b -> 
-                                            b.WithCommon( fun c -> {c with CustomParams = Some "/v:n"}) 
-                                            |> setSdk ) proj )
-)
+  for proj in testProjs do     
+    DotNet.test (fun opts -> { opts with  Configuration = DotNet.BuildConfiguration.Release
+                                          Common = setSdkPathAndVerbose opts.Common }) proj )
 
 Target.create "BuildCoreTests" (fun _ ->
-    testCoreProjs
-    |> Seq.iter (fun proj -> 
-                        DotNet.build ( fun b -> 
-                                            b.WithCommon( fun c -> {c with CustomParams = Some "/v:n"}) 
-                                            |> setSdk ) proj )
-)
+  for proj in testCoreProjs do
+    DotNet.build (fun opts -> { opts with Common = setSdkPathAndVerbose opts.Common
+                                          Configuration = DotNet.BuildConfiguration.Release }) proj )
 
 Target.create "RunCoreTests" (fun _ ->
-    testCoreProjs
-    |> Seq.iter (fun proj -> 
-                        DotNet.test ( fun b -> 
-                                            b.WithCommon( fun c -> {c with CustomParams = Some "/v:n"}) 
-                                            |> setSdk ) proj )
-)
+  for proj in testProjs do     
+    DotNet.test (fun opts -> { opts with  Configuration = DotNet.BuildConfiguration.Release
+                                          Common = setSdkPathAndVerbose opts.Common }) proj )
 
 // --------------------------------------------------------------------------------------
 // Build a NuGet package

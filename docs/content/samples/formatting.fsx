@@ -1,6 +1,6 @@
 (*** hide ***)
 #load "../../../bin/net45/Deedle.fsx"
-#load "../../../packages/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
+#load "../../../packages/FSharp.Charting/FSharp.Charting.fsx"
 #r "../../../packages/FSharp.Data/lib/net45/FSharp.Data.dll"
 open System
 open System.IO
