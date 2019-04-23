@@ -1630,11 +1630,12 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let nKeys = grpKeys |> Seq.length
     if nKeys = 0 then invalidOp "GroupBy columns do not exist in the data frame"
     let labels =
-      let x =
+      let columns =
         frame.Columns.[grpKeys].ValuesAll
         |> Array.ofSeq
-        |> Array.map(fun v -> v.ValuesAll |> Array.ofSeq)
-      Array.init (x.[0].Length) (fun i -> Array.init nKeys (fun j -> x.[j].[i]))
+        |> Array.map(fun v -> v.ValuesAll |> Array.ofSeq) 
+      // transpose columns arrays
+      Array.init frame.RowCount (fun i -> Array.init nKeys (fun j -> columns.[j].[i]))
     let nested = frame.NestRowsBy(labels)
     nested
     |> Series.map (fun _ f -> [for c in aggBy -> (c, aggFunc.Invoke(f.GetColumn<_>(c)) |> box)] )
