@@ -1627,13 +1627,21 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let keySet = HashSet(groupBy)
     let filterFunc k = keySet.Contains(k)
     let grpKeys = frame.ColumnKeys |> Seq.filter filterFunc
-    let labels = frame.Rows.Values |> Seq.map (Series.getAll grpKeys >> Series.valuesAll >> Array.ofSeq) 
+    let nKeys = grpKeys |> Seq.length
+    if nKeys = 0 then invalidOp "GroupBy columns do not exist in the data frame"
+    let labels =
+      let columns =
+        frame.Columns.[grpKeys].ValuesAll
+        |> Array.ofSeq
+        |> Array.map(fun v -> v.ValuesAll |> Array.ofSeq) 
+      // transpose columns arrays
+      Array.init frame.RowCount (fun i -> Array.init nKeys (fun j -> columns.[j].[i]))
     let nested = frame.NestRowsBy(labels)
     nested
-    |> Series.map (fun _ f -> [for c in aggBy -> (c, aggFunc.Invoke(f.GetColumn<_>(c)) |> box |> Some)] )
-    |> Series.map (fun k v -> v |> Seq.append (k |> Seq.zip grpKeys) |> Series.ofOptionalObservations)
+    |> Series.map (fun _ f -> [for c in aggBy -> (c, aggFunc.Invoke(f.GetColumn<_>(c)) |> box)] )
+    |> Series.map (fun k v -> v |> Seq.append (k |> Seq.zip grpKeys) |> Series.ofObservations)
     |> Series.indexOrdinally
-    |> FrameUtils.fromRows frame.IndexBuilder frame.VectorBuilder 
+    |> FrameUtils.fromRows frame.IndexBuilder frame.VectorBuilder
 
   /// Returns a data frame whose rows are indexed based on the specified column of the original
   /// data frame. The generic type parameter is (typically) needed to specify the type of the 
