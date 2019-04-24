@@ -1715,32 +1715,6 @@ Those provide necessary wrapping around <a href="deedle-vectors-virtual-ivirtual
     <tbody>
         <tr>
           <td class="type-name">
-            <a href="fsharp-data-csvfile.html">CsvFile</a>
-          </td>
-          <td class="xmldoc">
-          <p>Represents a CSV file. The lines are read on demand from <code>reader</code>.
-Columns are delimited by one of the chars passed by <code>separators</code> (defaults to just <code>,</code>), and
-to escape the separator chars, the <code>quote</code> character will be used (defaults to <code>"</code>).
-If <code>hasHeaders</code> is true (the default), the first line read by <code>reader</code> will not be considered part of data.
-If <code>ignoreErrors</code> is true (the default is false), rows with a different number of columns from the header row
-(or the first row if headers are not present) will be ignored.
-The first <code>skipRows</code> lines will be skipped.</p>
-
-
-          </td>
-        </tr>
-        <tr>
-          <td class="type-name">
-            <a href="fsharp-data-csvrow.html">CsvRow</a>
-          </td>
-          <td class="xmldoc">
-          <p>Represents a CSV row.</p>
-
-
-          </td>
-        </tr>
-        <tr>
-          <td class="type-name">
             <a href="fsharp-data-http.html">Http</a>
           </td>
           <td class="xmldoc">
@@ -1796,16 +1770,6 @@ resources with specified headers, query parameters and HTTP body</p>
           </td>
           <td class="xmldoc">
           
-          </td>
-        </tr>
-        <tr>
-          <td class="type-name">
-            <a href="fsharp-data-textconversions.html">TextConversions</a>
-          </td>
-          <td class="xmldoc">
-          <p>Conversions from string to string/int/int64/decimal/float/boolean/datetime/timespan/guid options</p>
-
-
           </td>
         </tr>
     </tbody>
@@ -1889,38 +1853,11 @@ resources with specified headers, query parameters and HTTP body</p>
     </div>
   <h2>FSharp.Data.Runtime Namespace</h2>
     <div>
-      <table class="table table-bordered type-list">
-    <thead>
-      <tr><td>Type</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td class="type-name">
-            <a href="fsharp-data-runtime-textruntime.html">TextRuntime</a>
-          </td>
-          <td class="xmldoc">
-          <p>Static helper methods called from the generated code for working with text</p>
-
-
-          </td>
-        </tr>
-    </tbody>
-  </table>
-  <table class="table table-bordered module-list">
+      <table class="table table-bordered module-list">
     <thead>
       <tr><td>Module</td><td>Description</td></tr>
     </thead>
     <tbody>
-        <tr>
-          <td class="module-name">
-            <a href="fsharp-data-runtime-csvinference.html">CsvInference</a>
-          </td>
-          <td class="xmldoc">
-          <p>Structural inference for CSV</p>
-
-
-          </td>
-        </tr>
         <tr>
           <td class="module-name">
             <a href="fsharp-data-runtime-io.html">IO</a>
@@ -1937,141 +1874,6 @@ resources with specified headers, query parameters and HTTP body</p>
           </td>
           <td class="xmldoc">
           <p>Tools for generating nice member names that follow F# &amp; .NET naming conventions</p>
-
-
-          </td>
-        </tr>
-        <tr>
-          <td class="module-name">
-            <a href="fsharp-data-runtime-structuralinference.html">StructuralInference</a>
-          </td>
-          <td class="xmldoc">
-          <p>Implements type inference for unstructured documents like XML or JSON</p>
-
-
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-    </div>
-  <h2>FSharp.Data.Runtime.StructuralTypes Namespace</h2>
-    <div>
-      <table class="table table-bordered type-list">
-    <thead>
-      <tr><td>Type</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td class="type-name">
-            <a href="fsharp-data-runtime-structuraltypes-bit.html">Bit</a>
-          </td>
-          <td class="xmldoc">
-          <p>Dummy type to represent that only one of "0" and "1" were found
-Will be generated as a 'bool', unless it's converted to another numerical type</p>
-
-
-          </td>
-        </tr>
-        <tr>
-          <td class="type-name">
-            <a href="fsharp-data-runtime-structuraltypes-bit0.html">Bit0</a>
-          </td>
-          <td class="xmldoc">
-          <p>Dummy type to represent that only "0" was found.
-Will be generated as 'int', unless it's converted to Bit.</p>
-
-
-          </td>
-        </tr>
-        <tr>
-          <td class="type-name">
-            <a href="fsharp-data-runtime-structuraltypes-bit1.html">Bit1</a>
-          </td>
-          <td class="xmldoc">
-          <p>Dummy type to represent that only "1" was found
-Will be generated as 'int', unless it's converted to Bit</p>
-
-
-          </td>
-        </tr>
-        <tr>
-          <td class="type-name">
-            <a href="fsharp-data-runtime-structuraltypes-inferedmultiplicity.html">InferedMultiplicity</a>
-          </td>
-          <td class="xmldoc">
-          <p>For heterogeneous types (types that have multiple possible forms
-such as differently named XML nodes or records and arrays mixed together)
-this type represents the number of occurrences of individual forms</p>
-
-
-          </td>
-        </tr>
-        <tr>
-          <td class="type-name">
-            <a href="fsharp-data-runtime-structuraltypes-inferedproperty.html">InferedProperty</a>
-          </td>
-          <td class="xmldoc">
-          <p>A property of a record has a name and type and may be optional</p>
-
-
-          </td>
-        </tr>
-        <tr>
-          <td class="type-name">
-            <a href="fsharp-data-runtime-structuraltypes-inferedtype.html">InferedType</a>
-          </td>
-          <td class="xmldoc">
-          <p>Represents inferred structural type. A type may be either primitive type
-(one of those listed by <code>primitiveTypes</code>) or it can be collection,
-(named) record and heterogeneous type. We also have <code>Null</code> type (which is
-a subtype of all non-primitive types) and universal <code>Top</code> type.</p>
-<ul>
-<li>
-<p>For collection, we infer the types of different things that appear in
-the collection and how many times they do.</p>
-</li>
-<li>
-<p>A heterogeneous type (sum type) is simply a choice containing one
-of multiple different possibilities</p>
-</li>
-</ul>
-<p>Why is collection not simply a list of Heterogeneous types? If we used that
-we would lose information about multiplicity and so we would not be able
-to generate nicer types!</p>
-
-
-          </td>
-        </tr>
-        <tr>
-          <td class="type-name">
-            <a href="fsharp-data-runtime-structuraltypes-inferedtypetag.html">InferedTypeTag</a>
-          </td>
-          <td class="xmldoc">
-          <p>For heterogeneous types, this represents the tag that defines the form
-(that is either primitive type, collection, named record etc.)</p>
-
-
-          </td>
-        </tr>
-        <tr>
-          <td class="type-name">
-            <a href="fsharp-data-runtime-structuraltypes-primitiveinferedproperty.html">PrimitiveInferedProperty</a>
-          </td>
-          <td class="xmldoc">
-          <p>Represents type information about a primitive property (used mainly in the CSV provider)
-This type captures the type, unit of measure and handling of missing values (if we
-infer that the value may be missing, we can generate option<T> or nullable<T>)</p>
-
-
-          </td>
-        </tr>
-        <tr>
-          <td class="type-name">
-            <a href="fsharp-data-runtime-structuraltypes-typewrapper.html">TypeWrapper</a>
-          </td>
-          <td class="xmldoc">
-          <p>Represents a transformation of a type</p>
 
 
           </td>
