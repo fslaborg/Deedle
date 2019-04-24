@@ -22,14 +22,31 @@ namespace Deedle.CSharp.Tests
 			return Frame.ReadCsv(file, inferRows:10);
 		}
 
-		[Test]
+        public static Frame<int, string> LoadMSFTStream([CallerFilePath] string source = "")
+        {
+            var file = Path.Combine(Path.GetDirectoryName(source), "..", "Deedle.Tests", "data", "MSFT.csv");
+            var sr = new StreamReader(file);
+            var csv = Frame.ReadCsv(sr.BaseStream);
+            sr.Close();
+            return csv;
+        }
+
+        [Test]
 		public static void CanSubtractNumericalValues()
 		{
 			var df = LoadMSFT();
 			var actual = df.Zip<float, float, float>(df, (n1, n2) => n1 - n2).GetAllValues<float>().Sum();
 			Assert.AreEqual(0.0, actual);
 		}
-	}
+
+        [Test]
+        public static void CanSubtractNumericalValuesStream()
+        {
+            var df = LoadMSFTStream();
+            var actual = df.Zip<float, float, float>(df, (n1, n2) => n1 - n2).GetAllValues<float>().Sum();
+            Assert.AreEqual(0.0, actual);
+        }
+    }
 
   /* ----------------------------------------------------------------------------------
    * Creating frames and getting frame data
@@ -182,5 +199,5 @@ namespace Deedle.CSharp.Tests
 				Assert.AreEqual(11.1, s1[1]);
 			}
 		}
-	}
+    }
 }

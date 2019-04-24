@@ -130,7 +130,7 @@ type Frame =
   static member ReadCsv
     ( stream:Stream, [<Optional>] hasHeaders:Nullable<bool>, [<Optional>] inferTypes:Nullable<bool>, [<Optional>] inferRows:Nullable<int>, 
       [<Optional>] schema, [<Optional>] separators, [<Optional>] culture, [<Optional>] maxRows:Nullable<int>,
-      [<Optional>] missingValues) =
+      [<Optional>] missingValues, [<Optional>] preferOptions:Nullable<bool>) =
     FrameUtils.readCsv 
       (new StreamReader(stream)) 
       (if hasHeaders.HasValue then Some hasHeaders.Value else None)
@@ -139,6 +139,7 @@ type Frame =
       (Some schema) (Some missingValues) 
       (if separators = null then None else Some separators) (Some culture)
       (if maxRows.HasValue then Some maxRows.Value else None)
+      (if preferOptions.HasValue then Some preferOptions.Value else None)
 
   // Note: The following is also used from F#
 
