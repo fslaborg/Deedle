@@ -3,10 +3,13 @@
   <Import Project="..\..\netfx.props" />
   <PropertyGroup>
     <TargetFrameworks>net451</TargetFrameworks>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <OutputPath>../../bin/</OutputPath>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>    
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Convertors.fs" />
     <Compile Include="Exports.fs" />
     <None Include="paket.references" />

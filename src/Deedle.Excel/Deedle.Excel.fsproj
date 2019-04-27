@@ -4,6 +4,9 @@
   <PropertyGroup>
     <TargetFrameworks>net45</TargetFrameworks>
     <OutputPath>../../bin/</OutputPath>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>    
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Runtime" />
@@ -13,7 +16,8 @@
       <Name>Deedle</Name>
     </ProjectReference>
   </ItemGroup>  
-  <ItemGroup>    
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.fs" />  
     <Compile Include="Excel.fs" />    
     <None Include="paket.references" />
     <None Include="Deedle.Excel.Sample.fsx">

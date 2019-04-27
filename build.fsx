@@ -103,14 +103,29 @@ let release = ReleaseNotes.load "RELEASE_NOTES.md"
 
 // Generate assembly info files with the right version & up-to-date information
 Target.create "AssemblyInfo" (fun _ ->
-  let fileName = "src/Deedle/Common/AssemblyInfo.fs"
-  AssemblyInfoFile.createFSharp fileName
+  AssemblyInfoFile.createFSharp "src/Deedle/Common/AssemblyInfo.fs"
       [ AssemblyInfo.Title project
         AssemblyInfo.Product project
         AssemblyInfo.Description summary
         AssemblyInfo.Version release.AssemblyVersion
         AssemblyInfo.InformationalVersion release.NugetVersion
         AssemblyInfo.FileVersion release.AssemblyVersion] 
+
+  AssemblyInfoFile.createFSharp "src/Deedle.RProvider.Plugin/AssemblyInfo.fs"
+      [ AssemblyInfo.Title rpluginProject
+        AssemblyInfo.Product rpluginProject
+        AssemblyInfo.Description rpluginSummary
+        AssemblyInfo.Version release.AssemblyVersion
+        AssemblyInfo.InformationalVersion release.NugetVersion
+        AssemblyInfo.FileVersion release.AssemblyVersion]
+
+  AssemblyInfoFile.createFSharp "src/Deedle.Excel/AssemblyInfo.fs"
+      [ AssemblyInfo.Title deedleExcelProject
+        AssemblyInfo.Product deedleExcelProject
+        AssemblyInfo.Description deedleExcelSummary
+        AssemblyInfo.Version release.AssemblyVersion
+        AssemblyInfo.InformationalVersion release.NugetVersion
+        AssemblyInfo.FileVersion release.AssemblyVersion]          
 )
 
 // --------------------------------------------------------------------------------------
