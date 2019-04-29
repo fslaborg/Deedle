@@ -5,15 +5,15 @@ open System.Reflection
 [<assembly: AssemblyTitleAttribute("Deedle.Excel")>]
 [<assembly: AssemblyProductAttribute("Deedle.Excel")>]
 [<assembly: AssemblyDescriptionAttribute("Deedle integration with Excel")>]
-[<assembly: AssemblyVersionAttribute("2.0.3")>]
-[<assembly: AssemblyInformationalVersionAttribute("2.0.3")>]
-[<assembly: AssemblyFileVersionAttribute("2.0.3")>]
+[<assembly: AssemblyVersionAttribute("2.0.4")>]
+[<assembly: AssemblyInformationalVersionAttribute("2.0.4")>]
+[<assembly: AssemblyFileVersionAttribute("2.0.4")>]
 do ()
 
 module internal AssemblyVersionInformation =
     let [<Literal>] AssemblyTitle = "Deedle.Excel"
     let [<Literal>] AssemblyProduct = "Deedle.Excel"
     let [<Literal>] AssemblyDescription = "Deedle integration with Excel"
-    let [<Literal>] AssemblyVersion = "2.0.3"
-    let [<Literal>] AssemblyInformationalVersion = "2.0.3"
-    let [<Literal>] AssemblyFileVersion = "2.0.3"
+    let [<Literal>] AssemblyVersion = "2.0.4"
+    let [<Literal>] AssemblyInformationalVersion = "2.0.4"
+    let [<Literal>] AssemblyFileVersion = "2.0.4"

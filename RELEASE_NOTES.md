@@ -1,5 +1,8 @@
 # Release Notes
 
+## 2.0.4 - 2019-04-29
+* Fix assembly version [#472](https://github.com/fslaborg/Deedle/issues/472)
+
 ## 2.0.3 - 2019-04-24
 * Fix missing preferoptions in C# extension Frame.Readcsv from stream [#471](https://github.com/fslaborg/Deedle/issues/471)
 * Optimize Frame.AggregateRowsBy [#469](https://github.com/fslaborg/Deedle/issues/469)
