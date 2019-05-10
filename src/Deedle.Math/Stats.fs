@@ -4,30 +4,38 @@ open MathNet.Numerics.Statistics
 open MathNet.Numerics.LinearAlgebra
 open Deedle
 
+type CorrelationMethod =
+  | Pearson
+  | Spearman
+
 type Stats =
 
-  static member pearsonCorrelationMatrix (df:Frame<'R, 'C>): Matrix<float> =
-    df
-    |> Frame.toArray2D
-    |> DenseMatrix.ofArray2
-    |> Matrix.transpose
-    |> fun x -> x.ToRowArrays()
-    |> Correlation.PearsonMatrix
+  static member corrMatrix (df:Frame<'R, 'C>, ?method:CorrelationMethod): Matrix<float> =
+    let method = defaultArg method CorrelationMethod.Pearson
+    let arr =
+      df
+      |> Frame.toArray2D
+      |> DenseMatrix.ofArray2
+      |> Matrix.transpose
+      |> fun x -> x.ToRowArrays()
+    match method with
+    | CorrelationMethod.Pearson -> Correlation.PearsonMatrix arr
+    | CorrelationMethod.Spearman -> Correlation.PearsonMatrix arr
 
-  static member pearsonCorrelationFrame (df:Frame<'R, 'C>): Frame<'C, 'C> =
-    df
-    |> Stats.pearsonCorrelationMatrix
+  static member corrFrame (df:Frame<'R, 'C>, ?method:CorrelationMethod): Frame<'C, 'C> =
+    let method = defaultArg method CorrelationMethod.Pearson
+    Stats.corrMatrix(df, method)
     |> Frame.ofMatrix df.ColumnKeys df.ColumnKeys
 
-  static member covarianceMatrix (df:Frame<'R, 'C>): Matrix<float> =
-    let corr = Stats.pearsonCorrelationMatrix df
+  static member covMatrix (df:Frame<'R, 'C>): Matrix<float> =
+    let corr = Stats.corrMatrix(df)
     let stdev = df |> Stats.stdDev |> Series.values |> Array.ofSeq
     let stdevDiag = DenseMatrix.ofDiagArray stdev
     stdevDiag.Multiply(corr).Multiply(stdevDiag) 
 
-  static member covarianceFrame (df:Frame<'R, 'C>): Frame<'C, 'C> =
+  static member covFrame (df:Frame<'R, 'C>): Frame<'C, 'C> =
     df
-    |> Stats.covarianceMatrix
+    |> Stats.covMatrix
     |> Frame.ofMatrix df.ColumnKeys df.ColumnKeys
 
   static member inline quantile (series:Series<'R, 'V>, tau:float): float =

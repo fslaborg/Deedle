@@ -23,8 +23,8 @@ let stockPrices =
 let stockReturns =
   stockPrices / (stockPrices |> Frame.shift 1) - 1
   |> Frame.dropSparseRows
-let cov = stockReturns |> Stats.covarianceFrame
-let corr = stockReturns |> Stats.pearsonCorrelationFrame
+let cov = stockReturns |> Stats.covFrame
+let corr = stockReturns |> Stats.corrFrame
 let weights =
   let nStocks = stockPrices.ColumnCount
   let w = Array.init nStocks (fun _ -> 1. / float nStocks)
