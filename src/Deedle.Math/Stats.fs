@@ -38,13 +38,8 @@ type Stats =
     |> Stats.covMatrix
     |> Frame.ofMatrix df.ColumnKeys df.ColumnKeys
 
-  static member inline quantile (series:Series<'R, 'V>, tau:float): float =
-    series.Values
-    |> Seq.map float
-    |> Array.ofSeq
-    |> fun x -> Statistics.Quantile(x, tau)
-
-  static member inline quantileCustom (series:Series<'R, 'V>, tau:float, definition:QuantileDefinition): float =
+  static member inline quantile (series:Series<'R, 'V>, tau:float, ?definition:QuantileDefinition): float =
+    let definition = defaultArg definition QuantileDefinition.Excel
     series.Values
     |> Seq.map float
     |> Array.ofSeq
@@ -69,15 +64,11 @@ type Stats =
     |> Frame.getNumericCols
     |> Series.mapValues Stats.median
 
-  static member quantile (df:Frame<'R, 'C>, tau:float): Series<'C, float> =
+  static member quantile (df:Frame<'R, 'C>, tau:float, ?definition:QuantileDefinition): Series<'C, float> =
+    let definition = defaultArg definition QuantileDefinition.Excel
     df
     |> Frame.getNumericCols
-    |> Series.mapValues(fun series -> Stats.quantile(series, tau))
-
-  static member quantileCustom (df:Frame<'R, 'C>, tau:float, definition:QuantileDefinition): Series<'C, float> =
-    df
-    |> Frame.getNumericCols
-    |> Series.mapValues(fun series -> Stats.quantileCustom(series, tau, definition))
+    |> Series.mapValues(fun series -> Stats.quantile(series, tau, definition))
 
   static member ranks (df:Frame<'R, 'C>): Frame<'R, 'C> =
     df
