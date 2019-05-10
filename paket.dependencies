@@ -6,6 +6,7 @@ nuget FsCheck
 nuget FSharp.Charting
 nuget FSharp.Data
 nuget MathNet.Numerics
+nuget MathNet.Numerics.FSharp
 nuget NUnit 3.9.0
 nuget NUnit.ConsoleRunner 3.8.0
 nuget FsUnit 3.0.0

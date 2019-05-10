@@ -49,6 +49,13 @@ let deedleExcelDescription = """
   which makes it possible to send Deedle Frames to Excel."""
 let deedleExcelTags = "Excel"
 
+let deedleMathProject = "Deedle.Math"
+let deedleMathSummary = "Deedle interop with Math.Net"
+let deedleMathDescription = """
+  This package installs the core Deedle package, NetOffice.Excel, and a Deedle extension
+  which makes it possible to send Deedle Frames to Excel."""
+let deedleMathTags = "F# fsharp deedle dataframe series statistics data science math"
+
 let gitHome = "https://github.com/fslaborg"
 let gitName = "Deedle"
 
@@ -125,7 +132,15 @@ Target.create "AssemblyInfo" (fun _ ->
         AssemblyInfo.Description deedleExcelSummary
         AssemblyInfo.Version release.AssemblyVersion
         AssemblyInfo.InformationalVersion release.NugetVersion
-        AssemblyInfo.FileVersion release.AssemblyVersion]          
+        AssemblyInfo.FileVersion release.AssemblyVersion]
+
+  AssemblyInfoFile.createFSharp "src/Deedle.Math/AssemblyInfo.fs"
+      [ AssemblyInfo.Title deedleMathProject
+        AssemblyInfo.Product deedleMathProject
+        AssemblyInfo.Description deedleMathSummary
+        AssemblyInfo.Version release.AssemblyVersion
+        AssemblyInfo.InformationalVersion release.NugetVersion
+        AssemblyInfo.FileVersion release.AssemblyVersion]                  
 )
 
 // --------------------------------------------------------------------------------------
@@ -150,6 +165,7 @@ Target.create "CleanDocs" (fun _ ->
 let testProjs = 
     [
       "tests/Deedle.Tests/Deedle.Tests.fsproj" 
+      "tests/Deedle.Math.Tests/Deedle.Math.Tests.fsproj"
       "tests/Deedle.CSharp.Tests/Deedle.CSharp.Tests.csproj" 
       "tests/Deedle.Documentation.Tests/Deedle.Documentation.Tests.fsproj"
       "tests/Deedle.PerfTests/Deedle.PerfTests.fsproj"
@@ -157,18 +173,23 @@ let testProjs =
     ]
 
 let testCoreProjs = 
-    [ "tests/Deedle.Tests/Deedle.Tests.fsproj" 
+    [ 
+      "tests/Deedle.Tests/Deedle.Tests.fsproj"
+      "tests/Deedle.Math.Tests/Deedle.Math.Tests.fsproj"
       "tests/Deedle.CSharp.Tests/Deedle.CSharp.Tests.csproj" 
       "tests/Deedle.Documentation.Tests/Deedle.Documentation.Tests.fsproj"
-      "tests/Deedle.PerfTests/Deedle.PerfTests.fsproj" ]      
+      "tests/Deedle.PerfTests/Deedle.PerfTests.fsproj"
+    ]      
 
 let buildProjs =
     [ "src/Deedle/Deedle.fsproj"
+      "src/Deedle.Math/Deedle.Math.fsproj"
       "src/Deedle.RProvider.Plugin/Deedle.RProvider.Plugin.fsproj"
       "src/Deedle.Excel/Deedle.Excel.fsproj" ]
 
 let buildCoreProjs =
-    [ "src/Deedle/Deedle.fsproj"    
+    [ "src/Deedle/Deedle.fsproj"
+      "src/Deedle.Math/Deedle.Math.fsproj"
       "src/Deedle.Excel/Deedle.Excel.fsproj" ]
 
 let setSdkPathAndVerbose (c: DotNet.Options) =
@@ -259,6 +280,24 @@ Target.create "NuGet" (fun _ ->
         ("nuget/Deedle.RPlugin.nuspec")
     NuGet.NuGetPack (fun p -> 
         { p with   
+            ToolPath = nugetExe
+            Authors = authors
+            Project = rpluginProject
+            Summary = rpluginSummary
+            Description = description + "\n\n" + rpluginDescription
+            Version = release.NugetVersion
+            ReleaseNotes = releaseNotes
+            Tags = tags + " " + rpluginTags
+            OutputPath = "bin"
+            Dependencies = 
+              [ "Deedle", release.NugetVersion
+                "MathNet.Numerics", NuGet.GetPackageVersion "packages" "MathNet.Numerics"
+                "MathNet.Numerics.FSharp", NuGet.GetPackageVersion "packages" "MathNet.Numerics.FSharp" ]
+            AccessKey = Environment.environVarOrDefault "nugetkey" ""
+            Publish = Environment.hasEnvironVar "nugetkey" })
+        ("nuget/Deedle.Math.nuspec")   
+    NuGet.NuGetPack (fun p -> 
+        { p with   
             Authors = authors
             Project = deedleExcelProject
             Summary = deedleExcelSummary
@@ -306,8 +345,9 @@ Target.create "ReleaseBinaries" (fun _ ->
     "temp/release/bin" |> Shell.cleanDir
     Shell.copyRecursive "bin" "temp/release/bin" true |> printfn "%A"
     !! "temp/release/bin/*.nupkg" |> File.deleteAll
-    "temp/release/bin/Deedle.fsx" |> Shell.moveFile "temp/release"
-    "temp/release/bin/RProvider.fsx" |> Shell.moveFile "temp/release"
+    "temp/release/bin/net45/Deedle.Math.fsx" |> Shell.moveFile "temp/release"
+    "temp/release/bin/net45/Deedle.fsx" |> Shell.moveFile "temp/release"
+    "temp/release/bin/net45/RProvider.fsx" |> Shell.moveFile "temp/release"
 
     Git.CommandHelper.runSimpleGitCommand "temp/release" "add bin/*" |> printfn "%s"
     let cmd = sprintf """commit -a -m "Update binaries for version %s""" release.NugetVersion

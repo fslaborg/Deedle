@@ -53,7 +53,9 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.RProvider.Plugin", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharp.DocSnippets", "docs\csharp\CSharp.DocSnippets.csproj", "{1700F933-C7B2-48E6-80F3-E1C1B677BA6D}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.Excel", "src\Deedle.Excel\Deedle.Excel.fsproj", "{8C50057D-29EF-41AD-B91A-84B49CDBD047}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Excel", "src\Deedle.Excel\Deedle.Excel.fsproj", "{8C50057D-29EF-41AD-B91A-84B49CDBD047}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Math", "src\Deedle.Math\Deedle.Math.fsproj", "{62ED9851-0A38-43DF-8C35-78F84EB13CB9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,6 +79,10 @@ Global
 		{8C50057D-29EF-41AD-B91A-84B49CDBD047}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C50057D-29EF-41AD-B91A-84B49CDBD047}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C50057D-29EF-41AD-B91A-84B49CDBD047}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62ED9851-0A38-43DF-8C35-78F84EB13CB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62ED9851-0A38-43DF-8C35-78F84EB13CB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62ED9851-0A38-43DF-8C35-78F84EB13CB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62ED9851-0A38-43DF-8C35-78F84EB13CB9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
