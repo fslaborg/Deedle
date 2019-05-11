@@ -4,7 +4,7 @@ open MathNet.Numerics.LinearAlgebra
 
 module Frame =
 
-  let ofMatrix (cols: 'C seq) (rows: 'R seq) (m: Matrix<'T>): Frame<'R, 'C> =
+  let ofMatrix (rows: 'R seq) (cols: 'C seq) (m: Matrix<'T>): Frame<'R, 'C> =
     m.ToArray()
     |> Frame.ofArray2D
     |> Frame.indexColsWith cols

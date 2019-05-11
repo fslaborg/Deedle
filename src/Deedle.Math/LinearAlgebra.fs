@@ -122,6 +122,12 @@ module ``Frame Matrix Extensions`` =
   
   type Matrix =
 
+    static member ofFrame (df:Frame<'R, 'C>) =
+      df |> Frame.toMatrix
+
+    static member toFrame (rows: 'R seq) (cols: 'C seq) (m:Matrix<float>) =
+      m |> Frame.ofMatrix rows cols
+
     static member dot (df:Frame<'R, 'C>, m2:Matrix<float>) =
       let m1 = df |> Frame.toMatrix
       m1.Multiply(m2)
@@ -182,20 +188,23 @@ module ``Frame Matrix Extensions`` =
           invalidOp "Mismatched Dimensions"
       m1.Multiply(m2)
 
+    static member dot (s1:Series<'C, float>, s2:Series<'C, float>) =
+      let m1 = s1.Values |> Array.ofSeq |> DenseMatrix.raw 1 s1.KeyCount
+      let m2 = s2.Values |> Array.ofSeq |> DenseMatrix.raw s2.KeyCount 1
+      m1.Multiply(m2)
+
     static member transpose (df:Frame<'R, 'C>) =
       df
       |> LinearAlgebra.transpose
-      |> Frame.ofMatrix df.RowKeys df.ColumnKeys
+      |> Frame.ofMatrix df.ColumnKeys df.RowKeys 
 
     static member inverse (df:Frame<'R, 'C>) =
       df
       |> LinearAlgebra.inverse
-      |> Frame.ofMatrix df.RowKeys df.ColumnKeys
 
     static member psudoInverse (df:Frame<'R, 'C>)=
       df
       |> LinearAlgebra.psudoInverse
-      |> Frame.ofMatrix df.RowKeys df.ColumnKeys
 
     static member normRows (df:Frame<'R, 'C>) =
       df
@@ -211,45 +220,50 @@ module ``Frame Matrix Extensions`` =
 type FrameExtensions =
   
   [<Extension>]
-  static member Dot(df1:Frame<'R, 'C>, df:Frame<'C, 'R>) = 
-    Matrix.dot(df1, df)
+  static member Dot(df:Frame<'C, 'R>, self:Frame<'R, 'C>) = 
+    Matrix.dot(self, df)
 
   [<Extension>]
-  static member Dot(df:Frame<'R, 'C>, s:Series<'C, float>) = 
-    Matrix.dot(df, s)
+  static member Dot(s:Series<'C, float>, self:Frame<'R, 'C>) = 
+    Matrix.dot(self, s)
 
   [<Extension>]
-  static member Dot(df:Frame<'R, 'C>, m:Matrix<float>) = 
-    Matrix.dot(df, m)
+  static member Dot(m:Matrix<float>, self:Frame<'R, 'C>) = 
+    Matrix.dot(self, m)
 
 [<Extension>]
 type SeriesExtensions =
 
   [<Extension>]
-  static member Dot(s:Series<'C, float>, df:Frame<'R, 'C>) = 
-    Matrix.dot(s, df)
+  static member Dot(df:Frame<'R, 'C>, self:Series<'C, float>) = 
+    Matrix.dot(self, df)
 
   [<Extension>]
-  static member Dot(s:Series<'C, float>, m:Matrix<float>) = 
-    Matrix.dot(s, m)
+  static member Dot(m:Matrix<float>, self:Series<'C, float>) = 
+    Matrix.dot(self, m)
+
+  [<Extension>]
+  static member Dot(m:Series<'C, float>, self:Series<'C, float>) = 
+    Matrix.dot(self, m)
+
 
 [<Extension>]
 type MatrixExtensions =
 
   [<Extension>]
-  static member Dot(m:Matrix<float>, df:Frame<'R, 'C>) = 
-    Matrix.dot(m, df)
+  static member Dot(df:Frame<'R, 'C>, self:Matrix<float>) = 
+    Matrix.dot(self, df)
 
   [<Extension>]
-  static member Dot(m1:Matrix<float>, m:Matrix<float>) = 
-    m1.Multiply(m)
+  static member Dot(m:Matrix<float>, self:Matrix<float>) = 
+    self.Multiply(m)
 
   [<Extension>]
-  static member Dot(m1:Matrix<float>, v:Vector<float>) = 
-    m1.Multiply(v)
+  static member Dot(v:Vector<float>, self:Matrix<float>) = 
+    self.Multiply(v)
 
   [<Extension>]
-  static member Dot(m:Matrix<float>, s:Series<'K, float>) = 
-    Matrix.dot(m, s)
+  static member Dot(s:Series<'K, float>, self:Matrix<float>) = 
+    Matrix.dot(self, s)
 
 
