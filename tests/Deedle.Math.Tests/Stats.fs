@@ -46,7 +46,7 @@ let ``Median is the same as in Math.NET``() =
 [<Test>]
 let ``Quantile is the same as in Math.NET``() =
   Check.QuickThrowOnFailure(fun (input:int[]) -> 
-    let expected = Statistics.Quantile(Array.map float input, 0.75)
+    let expected = Statistics.QuantileCustom(Array.map float input, 0.75, QuantileDefinition.Excel)
     let s = Series.ofValues (Array.map float input)
     if s.ValueCount < 1 then 
       Double.IsNaN(Stats.quantile(s, 0.75)) |> shouldEqual true
