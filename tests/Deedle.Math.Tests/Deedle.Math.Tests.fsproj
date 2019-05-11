@@ -11,6 +11,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Runtime" />
+    <Reference Include="System.Reflection" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="../Common/FsUnit.fs">
