@@ -1550,10 +1550,16 @@ module Series =
         match fillMode with
         | Lookup.ExactOrSmaller ->
             let res = reindexed.Get(k, fillMode)
-            Series([res.KeyRange |> snd], [res.[res.KeyRange |> snd]])
+            if res.ValueCount = 0 then
+              Series([], [])
+            else
+              Series([res.KeyRange |> snd], [res.[res.KeyRange |> snd]])
         | Lookup.ExactOrGreater ->
             let res = reindexed.Get(k, fillMode)
-            Series([res.KeyRange |> fst], [res.[res.KeyRange |> fst]]) 
+            if res.ValueCount = 0 then
+              Series([], [])
+            else
+              Series([res.KeyRange |> fst], [res.[res.KeyRange |> fst]]) 
         | _ -> Series([], [])  )
     |> mapValues f
 

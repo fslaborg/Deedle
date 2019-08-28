@@ -553,6 +553,23 @@ let ``Resample uniform - select value of nearest previous key or fill with earli
   actual |> shouldEqual expected
 
 [<Test>]
+let ``Resample uniform - select value of nearest previous key or fill with earlier with missing values`` () =
+  let input = [
+    DateTime(2019,1,1), 1.0
+    DateTime(2019,1,3), nan
+    DateTime(2019,1,5), 3.0] |> series
+  let expected = [
+    DateTime(2019,1,1), 1.0
+    DateTime(2019,1,2), 1.0
+    DateTime(2019,1,3), nan
+    DateTime(2019,1,4), nan
+    DateTime(2019,1,5), 3.0] |> series
+  let actual =
+    SeriesExtensions.ResampleUniform(
+      input, (fun (dt:DateTime) -> dt.Date), (fun dt -> dt.AddDays(1.0)))
+  actual |> shouldEqual expected
+
+[<Test>]
 let ``Series.sampleTime works when using forward direction`` () =
   let start = DateTime(2012, 2, 12)
   let input = generate start (TimeSpan.FromMinutes(5.37)) 50
