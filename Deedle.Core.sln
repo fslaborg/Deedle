@@ -38,7 +38,7 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.PerfTests", "tests\D
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Math", "src\Deedle.Math\Deedle.Math.fsproj", "{07A0B75A-92D6-421D-9E24-F89FF760462B}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Deedle.Math.Tests", "tests\Deedle.Math.Tests\Deedle.Math.Tests.fsproj", "{67251E35-DF05-43E5-B4D5-13F16CBBED65}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Deedle.Math.Tests", "tests\Deedle.Math.Tests\Deedle.Math.Tests.fsproj", "{67251E35-DF05-43E5-B4D5-13F16CBBED65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

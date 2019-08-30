@@ -43,8 +43,8 @@ let ``Can Transpose And Multiply Frame With Frame`` (name:string) =
     let frameB = testFrame.[name]
     let matrixC = frameA.Transpose().Dot(frameB)
 
-    matrixC.RowCount |> should equal frameA.RowCount
-    matrixC.ColumnCount |> should equal frameB.RowCount
+    matrixC.RowCount |> shouldEqual frameA.RowCount
+    matrixC.ColumnCount |> shouldEqual frameB.RowCount
 
     for i in [|0..matrixC.RowCount-1|] do
       for j in [|0..matrixC.ColumnCount-1|] do

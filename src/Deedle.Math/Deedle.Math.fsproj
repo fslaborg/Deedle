@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="Frame.fs" />
     <Compile Include="LinearAlgebra.fs" />
+    <Compile Include="Extensions.fs" />
     <Compile Include="Stats.fs" />
     <None Include="paket.references" />
     <None Include="Deedle.Math.fsx">

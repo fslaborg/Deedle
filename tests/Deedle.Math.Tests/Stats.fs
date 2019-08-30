@@ -21,8 +21,8 @@ open MathNet.Numerics.Statistics
 
 let stockPrices = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/stocks_weekly.csv") |> Frame.indexRowsDate "Dates"
 let stockReturns = stockPrices / (stockPrices |> Frame.shift 1) - 1 |> Frame.dropSparseRows
-let cov = stockReturns |> Stats.covFrame
-let corr = stockReturns |> Stats.corrFrame
+let cov = stockReturns |> Stats.cov
+let corr = stockReturns |> Stats.corr
 let weights =
   let nStocks = stockPrices.ColumnCount
   let w = Array.init nStocks (fun _ -> 1. / float nStocks)

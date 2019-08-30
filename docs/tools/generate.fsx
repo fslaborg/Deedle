@@ -4,7 +4,12 @@
 // --------------------------------------------------------------------------------------
 
 // Binaries that have XML documentation (in a corresponding generated XML file)
-let referenceBinaries = [ "Deedle.dll" ]
+let referenceBinaries = 
+  [ 
+    __SOURCE_DIRECTORY__ + "/../../bin/net45/Deedle.dll"
+    __SOURCE_DIRECTORY__ + "/../../bin/net45/Deedle.Math.dll"
+  ]
+
 // Web site location for the generated documentation
 let website = "https://fslab.org/Deedle"
 
@@ -42,6 +47,7 @@ let root = "file://" + (__SOURCE_DIRECTORY__ @@ "../output")
 
 // Paths with template/source/output locations
 let bin        = __SOURCE_DIRECTORY__ @@ "../../bin/net45"
+let packages   = __SOURCE_DIRECTORY__ @@ "../../packages"
 let content    = __SOURCE_DIRECTORY__ @@ "../content"
 let output     = __SOURCE_DIRECTORY__ @@ "../output"
 let files      = __SOURCE_DIRECTORY__ @@ "../files"
@@ -81,18 +87,24 @@ let references =
       Path.GetFullPath(formatting @@ "lib/net40/FSharp.Formatting.Razor.dll")
       Path.GetFullPath(formatting @@ "lib/net40/FSharp.MetadataFormat.dll") ]
     |> Some
-  else None
+  else
+    None
+
+let libDirs =
+  [
+     Path.GetFullPath(packages @@ "MathNet.Numerics.FSharp/lib/net45/")
+     Path.GetFullPath(packages @@ "MathNet.Numerics/lib/net40/")
+  ]
 
 // Build API reference from XML comments
 let buildReference () =
   Shell.cleanDir (output @@ "reference")
-  for lib in referenceBinaries do
-    RazorMetadataFormat.Generate
-      ( bin @@ lib, output @@ "reference", layoutRoots, 
-        parameters = ("root", root)::info,
-        sourceRepo = "https://github.com/fslaborg/Deedle/tree/master/",
-        sourceFolder = __SOURCE_DIRECTORY__.Substring(0, __SOURCE_DIRECTORY__.Length - "\docs\tools".Length),
-        ?assemblyReferences = references )
+  RazorMetadataFormat.Generate
+    ( referenceBinaries, output @@ "reference", layoutRoots,
+      parameters = ("root", root)::info,
+      sourceRepo = "https://github.com/fslaborg/Deedle/tree/master/",
+      sourceFolder = __SOURCE_DIRECTORY__.Substring(0, __SOURCE_DIRECTORY__.Length - "\docs\tools".Length), 
+      libDirs = libDirs)
 
 // Build documentation from `fsx` and `md` files in `docs/content`
 let buildDocumentation () =
