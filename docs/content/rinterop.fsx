@@ -1,5 +1,6 @@
 (*** hide ***)
 #nowarn "211"
+#r "netstandard"
 open System
 let airQuality = __SOURCE_DIRECTORY__ + "/data/airquality.csv"
 
