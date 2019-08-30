@@ -1,4 +1,5 @@
 ﻿(*** hide ***)
+#r "netstandard"
 #load "../../bin/net45/Deedle.fsx"
 open System
 

@@ -1,4 +1,5 @@
 (*** hide ***)
+#r "netstandard"
 #I "../../bin/net45"
 
 (**
