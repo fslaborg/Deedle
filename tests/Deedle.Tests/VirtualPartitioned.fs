@@ -673,12 +673,12 @@ let ``Can create frame with two virtual series`` () =
   let df = frame [ "Value" => ts; "Sin" => ts2 ]
   
   df.Format() |> ignore
-  df.GetRowAt<float>(ts.KeyCount/2) |> 
-    shouldEqual <| series ["Value" => 500000000.0; "Sin" => sin 500000000.0]
+  df.GetRowAt<float>(ts.KeyCount/2) - series ["Value" => 500000000.0; "Sin" => sin 500000000.0]
+  |> Stats.mean 
+  |> should beWithin (0.0 +/- 1e-5)
 
   accessedDataParts valSrc |> shouldEqual [0; 500; 999]
-
-
+  
 [<Test>]
 let ``Can use ColumnApply and 'abs' on a created frame`` () =
   let idxSrc, valSrc, ts = createTimeSeries 1000 (fun n -> 5000)
