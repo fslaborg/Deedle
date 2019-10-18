@@ -265,6 +265,17 @@ let ``Can perform numerical operations on series of integers`` () =
   (sn - sn).[3] |> shouldEqual 0
   (sn / sn).[3] |> shouldEqual 1
 
+[<Test>]
+let ``Can perform string concatenation operations on series of strings`` () =
+  let s1 = series [ 1 => "A"; 2 => "B"; 3 => "C" ]
+  let s2 = series [ 1 => "D"; 2 => "E"; 3 => "F" ]
+  let expected1 = series [ 1 => "AD"; 2 => "BE"; 3 => "CF" ]
+  let expected2 = series [ 1 => "AD"; 2 => "BD"; 3 => "CD" ]
+  let expected3 = series [ 1 => "DA"; 2 => "DB"; 3 => "DC" ]
+  s1 + s2 |> shouldEqual expected1
+  s1 + "D" |> shouldEqual expected2
+  "D" + s1 |> shouldEqual expected3
+
 // ------------------------------------------------------------------------------------------------
 // Operations - union, grouping, diff, etc.
 // ------------------------------------------------------------------------------------------------

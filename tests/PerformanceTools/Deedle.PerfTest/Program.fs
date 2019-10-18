@@ -4,6 +4,8 @@ open System
 open System.IO
 open System.Reflection
 open System.Diagnostics
+open FSharp.Data
+open FSharp.Compiler.SourceCodeServices
 
 // ------------------------------------------------------------------------------------------------
 // Helpers
@@ -25,9 +27,6 @@ module Utils =
 open Utils
 
 module internal Compiler = 
-  open FSharp.Data
-  open Microsoft.FSharp.Compiler.SourceCodeServices
-
   type PerfConfig = XmlProvider<"perf.config">
 
   let checker = FSharpChecker.Create()
