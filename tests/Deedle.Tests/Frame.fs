@@ -864,7 +864,7 @@ let ``Concatenate two frames of string values`` () =
                     "Y" => series [| 1 => "C"; 2 => "D"; 3 => "E"|] ]
   let df2 = frame [ "X" => series [| 1 => "F"; 2 => "G"|]
                     "Y" => series [| 1 => "H"; 2 => "I"; 3 => "J"|] ]
-  let combined = df1.Concat(df2)
+  let combined = df1.StrConcat(df2)
   combined.GetColumn<string>("X").TryGet(1) |> shouldEqual (OptionalValue "AF")
   combined.GetColumn<string>("Y").TryGet(2) |> shouldEqual (OptionalValue "DI")
   combined.GetColumn<string>("X").TryGet(3) |> shouldEqual OptionalValue.Missing

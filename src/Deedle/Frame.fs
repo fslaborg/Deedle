@@ -469,7 +469,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   /// Piecewise concatenate two frames of string values
   ///
   /// [category:Joining, merging and zipping]
-  member frame.Concat(df: Frame<'TRowKey, 'TColumnKey>) =
+  member frame.StrConcat(df: Frame<'TRowKey, 'TColumnKey>) =
      frame.Zip<string, string, string>(df, JoinKind.Outer, JoinKind.Outer, Lookup.Exact, true, fun a b -> (+) a b)
 
 

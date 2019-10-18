@@ -1537,9 +1537,9 @@ module Frame =
   /// Piecewise concatenate two frames of string values
   ///
   /// [category:Joining, merging and zipping]
-  [<CompiledName("Concat")>]
-  let concat (frame1:Frame<'R, 'C>) (frame2:Frame<'R, 'C>) : Frame<'R, 'C> =
-    frame1.Concat(frame2)
+  [<CompiledName("StrConcat")>]
+  let strConcat (frame1:Frame<'R, 'C>) (frame2:Frame<'R, 'C>) : Frame<'R, 'C> =
+    frame1.StrConcat(frame2)
 
 
   // ----------------------------------------------------------------------------------------------
