@@ -1,4 +1,5 @@
 (*** hide ***)
+#r "netstandard"
 #load "../../bin/net45/Deedle.fsx"
 #load "../../packages/FSharp.Charting/FSharp.Charting.fsx"
 open System

@@ -1,4 +1,5 @@
 (*** hide ***)
+#r "netstandard"
 #I "../../bin/net45"
 #load "Deedle.fsx"
 #I "../../packages/MathNet.Numerics/lib/net40"
