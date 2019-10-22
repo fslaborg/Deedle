@@ -466,6 +466,13 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
     let newData = vectorBuilder.Build(newColIndex.AddressingScheme, frameCmd, frameData)
     Frame(newRowIndex, newColIndex, newData, indexBuilder, vectorBuilder)
 
+  /// Piecewise concatenate two frames of string values
+  ///
+  /// [category:Joining, merging and zipping]
+  member frame.StrConcat(df: Frame<'TRowKey, 'TColumnKey>) =
+     frame.Zip<string, string, string>(df, JoinKind.Outer, JoinKind.Outer, Lookup.Exact, true, fun a b -> (+) a b)
+
+
   // ----------------------------------------------------------------------------------------------
   // Frame accessors
   // ----------------------------------------------------------------------------------------------
@@ -969,6 +976,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   static member (?) (frame:Frame<_, _>, column) : Series<'T, float> = 
     frame.GetColumn<float>(column)
 
+
   // ----------------------------------------------------------------------------------------------
   // Some operators
   // ----------------------------------------------------------------------------------------------
@@ -1028,7 +1036,7 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
 
   /// [category:Operators]
   static member (+) (frame1:Frame<'TRowKey, 'TColumnKey>, frame2:Frame<'TRowKey, 'TColumnKey>) =
-    Frame<'TRowKey, 'TColumnKey>.PointwiseFrameFrame<float>(frame1, frame2, (+))
+    Frame<'TRowKey, 'TColumnKey>.PointwiseFrameFrame<float>(frame1, frame2, (+))    
   /// [category:Operators]
   static member (-) (frame1:Frame<'TRowKey, 'TColumnKey>, frame2:Frame<'TRowKey, 'TColumnKey>) =
     Frame<'TRowKey, 'TColumnKey>.PointwiseFrameFrame<float>(frame1, frame2, (-))
@@ -1091,6 +1099,19 @@ and Frame<'TRowKey, 'TColumnKey when 'TRowKey : equality and 'TColumnKey : equal
   static member (/) (series:Series<'TRowKey, int>, frame:Frame<'TRowKey, 'TColumnKey>) =
     Frame<'TRowKey, 'TColumnKey>.PointwiseFrameSeriesL<float>(frame, Series.mapValues float series, (/))
 
+  // Binary operators taking string series on the left/right
+  /// [category:Operators]
+  static member (+) (frame:Frame<'TRowKey, 'TColumnKey>, series:Series<'TRowKey, string>) =
+    Frame<'TRowKey, 'TColumnKey>.PointwiseFrameSeriesR<string>(frame, series, (+))
+  /// [category:Operators]
+  static member (+) (series:Series<'TRowKey, string>, frame:Frame<'TRowKey, 'TColumnKey>) =
+    Frame<'TRowKey, 'TColumnKey>.PointwiseFrameSeriesL<string>(frame, series, (+))
+  /// [category:Operators]
+  static member (+) (frame:Frame<'TRowKey, 'TColumnKey>, scalar:string) =
+    Frame<'TRowKey, 'TColumnKey>.ScalarOperationR<string>(frame, scalar, (+))
+  /// [category:Operators]
+  static member (+) (scalar:string, frame:Frame<'TRowKey, 'TColumnKey>) =
+    Frame<'TRowKey, 'TColumnKey>.ScalarOperationL<string>(frame, scalar, (+))
     
   // Binary operators taking float/int scalar on the left/right (int is converted to float)
 

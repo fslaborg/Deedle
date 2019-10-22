@@ -831,6 +831,45 @@ let ``Applying (+) on frame & frame with uncommon columns will result missing va
   actual?b.TryGetAt(0) |> shouldEqual (OptionalValue 4.0)
   actual?b.TryGetAt(2) |> shouldEqual OptionalValue.Missing
 
+[<Test>]
+let ``Applying (+) on frame & string series`` () =
+  let df = frame [ "X" => series [| 1 => "A"; 2 => "B"|]
+                   "Y" => series [| 1 => "C"; 2 => "D"; 3 => "E"|] ]
+  let s = series [| 1 => "F"; 2 => "G"|]
+  let combined1 = df + s
+  let combined2 = s + df
+  combined1.GetColumn<string>("X").TryGet(1) |> shouldEqual (OptionalValue "AF")
+  combined1.GetColumn<string>("Y").TryGet(2) |> shouldEqual (OptionalValue "DG")
+  combined1.GetColumn<string>("Y").TryGet(3) |> shouldEqual OptionalValue.Missing
+  combined2.GetColumn<string>("X").TryGet(1) |> shouldEqual (OptionalValue "FA")
+  combined2.GetColumn<string>("Y").TryGet(2) |> shouldEqual (OptionalValue "GD")
+  combined2.GetColumn<string>("Y").TryGet(3) |> shouldEqual OptionalValue.Missing
+
+[<Test>]
+let ``Applying (+) on frame & string scalar`` () =
+  let df = frame [ "X" => series [| 1 => "A"; 2 => "B"|]
+                   "Y" => series [| 1 => "C"; 2 => "D"; 3 => "E"|] ]
+  let combined1 = df + "F"
+  let combined2 = "F" + df
+  combined1.GetColumn<string>("X").TryGet(1) |> shouldEqual (OptionalValue "AF")
+  combined1.GetColumn<string>("Y").TryGet(2) |> shouldEqual (OptionalValue "DF")
+  combined1.GetColumn<string>("X").TryGet(3) |> shouldEqual OptionalValue.Missing
+  combined2.GetColumn<string>("X").TryGet(1) |> shouldEqual (OptionalValue "FA")
+  combined2.GetColumn<string>("Y").TryGet(2) |> shouldEqual (OptionalValue "FD")
+  combined2.GetColumn<string>("X").TryGet(3) |> shouldEqual OptionalValue.Missing
+
+[<Test>]
+let ``Concatenate two frames of string values`` () =
+  let df1 = frame [ "X" => series [| 1 => "A"; 2 => "B"|]
+                    "Y" => series [| 1 => "C"; 2 => "D"; 3 => "E"|] ]
+  let df2 = frame [ "X" => series [| 1 => "F"; 2 => "G"|]
+                    "Y" => series [| 1 => "H"; 2 => "I"; 3 => "J"|] ]
+  let combined = df1.StrConcat(df2)
+  combined.GetColumn<string>("X").TryGet(1) |> shouldEqual (OptionalValue "AF")
+  combined.GetColumn<string>("Y").TryGet(2) |> shouldEqual (OptionalValue "DI")
+  combined.GetColumn<string>("X").TryGet(3) |> shouldEqual OptionalValue.Missing
+  ()
+
 // ------------------------------------------------------------------------------------------------
 // Operations - append
 // ------------------------------------------------------------------------------------------------

@@ -1534,6 +1534,14 @@ module Frame =
   let zip (op:'V1->'V2->'V) (frame1:Frame<'R, 'C>) (frame2:Frame<'R, 'C>) : Frame<'R, 'C> =
     zipAlign JoinKind.Inner JoinKind.Inner Lookup.Exact op frame1 frame2
 
+  /// Piecewise concatenate two frames of string values
+  ///
+  /// [category:Joining, merging and zipping]
+  [<CompiledName("StrConcat")>]
+  let strConcat (frame1:Frame<'R, 'C>) (frame2:Frame<'R, 'C>) : Frame<'R, 'C> =
+    frame1.StrConcat(frame2)
+
+
   // ----------------------------------------------------------------------------------------------
   // Hierarchical index operations
   // ----------------------------------------------------------------------------------------------
