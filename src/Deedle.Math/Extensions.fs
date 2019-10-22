@@ -10,72 +10,113 @@ open Deedle
 [<Extension>]
 type FrameExtensions =
   
-  // Matrix multiplication of frame and frame
+  // frame multiply frame
   // 
   [<Extension>]
-  static member Dot(df:Frame<'C, 'R>, self:Frame<'R, 'C>) = 
-    Matrix.dot(self, df)
-  
-  // Matrix multiplication of frame and series
-  // Returns a matrix
-  [<Extension>]
-  static member Dot(s:Series<'C, float>, self:Frame<'R, 'C>) = 
-    Matrix.dot(self, s)
+  static member Dot(df1:Frame<'C, 'R>, df2:Frame<'R, 'C>) = 
+    Matrix.dot(df1, df2)
 
-  // Matrix multiplication of frame and matrix
+  // frame multiply 
   // 
   [<Extension>]
-  static member Dot(m:Matrix<float>, self:Frame<'R, 'C>) = 
-    Matrix.dot(self, m)
+  static member Dot(df:Frame<'R, 'C>, s:Series<'C, float>) = 
+    Matrix.dot(df, s)
+
+  // frame multiply matrix
+  //
+  [<Extension>]
+  static member Dot(df:Frame<'R, 'C>, m:Matrix<float>) = 
+    Matrix.dot(df, m)
+
+  // frame multiply matrix
+  //
+  [<Extension>]
+  static member Dot(df:Frame<'R, 'C>, v:Vector<float>) = 
+    Matrix.dot(df, v)
 
 /// Matrix multiplications between series and frame/matrix
 ///
 /// [category:Matrix conversions and operators]  
 [<Extension>]
 type SeriesExtensions =
-  // Matrix multiplication of series and frame
+  // series multiply frame
   // 
   [<Extension>]
-  static member Dot(df:Frame<'R, 'C>, self:Series<'C, float>) = 
-    Matrix.dot(self, df)
+  static member Dot(s:Series<'C, float>, df:Frame<'R, 'C>) = 
+    Matrix.dot(s, df)
 
-  // Matrix multiplication of series and matrix
+  // series multiply series
   //
   [<Extension>]
-  static member Dot(m:Matrix<float>, self:Series<'C, float>) = 
-    Matrix.dot(self, m)
+  static member Dot(s1:Series<'C, float>, s2:Series<'C, float>) = 
+    Matrix.dot(s1, s2)
 
-  // Matrix multiplication of series and series
+  // series multiply matrix
   //
   [<Extension>]
-  static member Dot(m:Series<'C, float>, self:Series<'C, float>) = 
-    Matrix.dot(self, m)
+  static member Dot(s:Series<'K, float>, m:Matrix<float>) = 
+    Matrix.dot(s, m)
+
+  // series multiply matrix
+  //
+  [<Extension>]
+  static member Dot(s:Series<'K, float>, v:Vector<float>) = 
+    Matrix.dot(s, v)
 
 /// Dot oprators between Matrix<float> and Frame/Series
 ///
 /// [category:Matrix conversions and operators]  
 [<Extension>]
 type MatrixExtensions =
-  // Matrix multiplication of matrix and frame
-  //
+  // matrix multiply frame
+  // 
   [<Extension>]
-  static member Dot(df:Frame<'R, 'C>, self:Matrix<float>) = 
-    Matrix.dot(self, df)
+  static member Dot(m:Matrix<float>, df:Frame<'R, 'C>) = 
+    Matrix.dot(m, df)
 
-  // Matrix multiplication of matrix and matrix
+  // matrix multiply series
   //
   [<Extension>]
-  static member Dot(m:Matrix<float>, self:Matrix<float>) = 
-    self * m
+  static member Dot(m:Matrix<float>, s:Series<'C, float>) = 
+    Matrix.dot(m, s)
 
-  // Matrix multiplication of matrix and vector
+  // matrix multiply matrix
   //
   [<Extension>]
-  static member Dot(v:Vector<float>, self:Matrix<float>) = 
-    self * v
+  static member Dot(m1:Matrix<float>, m2:Matrix<float>) = 
+    m1 * m2
 
-  // Matrix multiplication of matrix and series
+  // matrix multiply matrix
   //
   [<Extension>]
-  static member Dot(s:Series<'K, float>, self:Matrix<float>) = 
-    Matrix.dot(self, s)
+  static member Dot(m:Matrix<float>, v:Vector<float>) = 
+    m * v
+
+/// Dot oprators between Matrix<float> and Frame/Series
+///
+/// [category:Vector conversions and operators]  
+[<Extension>]
+type VectorExtensions =
+  // vector multiply frame
+  //
+  [<Extension>]
+  static member Dot(v:Vector<float>, df:Frame<'R, 'C>) = 
+    Matrix.dot(v, df)
+
+  // vector multiply series
+  //
+  [<Extension>]
+  static member Dot(v:Vector<float>, s:Series<'C, float>) = 
+    Matrix.dot(v, s)
+
+  // vector multiply matrix
+  //
+  [<Extension>]
+  static member Dot(v:Vector<float>, m:Matrix<float>) = 
+    v * m
+
+  // vector multiply vector
+  //
+  [<Extension>]
+  static member Dot(v:Vector<float>, m:Vector<float>) = 
+    v * m

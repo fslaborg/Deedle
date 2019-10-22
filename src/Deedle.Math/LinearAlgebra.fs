@@ -197,16 +197,27 @@ type Matrix =
     | SeriesMatrixForm.ByRow -> x |> DenseMatrix.raw x.Length 1
     | _ -> invalidOp "Invalid matrix form option"
 
-  /// Convert series to match matrix dimension for matrix operations (check matrix column first)
+  /// Convert series to match matrix dimension for s multiply m operation
   ///
   /// [category: Conversions]
   static member ofSeries (s:Series<'K, float>, m:Matrix<float>) =
+    if s.KeyCount = m.ColumnCount then
+      Matrix.ofSeries(s, SeriesMatrixForm.ByColumn)
+    elif s.KeyCount = m.RowCount then
+      Matrix.ofSeries(s, SeriesMatrixForm.ByRow)
+    else
+      invalidOp "Mismatched Dimensions"
+
+  /// Convert series to match matrix dimension for m multiply s operation
+  ///
+  /// [category: Conversions]
+  static member ofSeries (m:Matrix<float>, s:Series<'K, float>) =
     if s.KeyCount = m.ColumnCount then
       Matrix.ofSeries(s, SeriesMatrixForm.ByRow)
     elif s.KeyCount = m.RowCount then
       Matrix.ofSeries(s, SeriesMatrixForm.ByColumn)
     else
-      invalidOp "Mismatched Dimensions"  
+      invalidOp "Mismatched Dimensions"
 
   /// Matrix multiplication of frame and matrix
   ///
@@ -221,6 +232,20 @@ type Matrix =
   static member dot (m1:Matrix<float>, df:Frame<'R, 'C>) =
     let m2 = df |> Frame.toMatrix
     m1 * m2
+
+  /// Matrix multiplication of vector and frame
+  ///
+  /// [category: Matrix multiplication]
+  static member dot (m1:Vector<float>, df:Frame<'R, 'C>) =
+    let m2 = df |> Frame.toMatrix
+    m1 * m2
+
+  /// Matrix multiplication of frame and vector
+  ///
+  /// [category: Matrix multiplication]
+  static member dot (df:Frame<'R, 'C>, m2:Vector<float>) =
+    let m1 = df |> Frame.toMatrix
+    m1 * m2
   
   /// Matrix multiplication of series and matrix
   ///
@@ -233,7 +258,21 @@ type Matrix =
   ///
   /// [category: Matrix multiplication]
   static member dot (m1:Matrix<float>, s:Series<'K, float>) =
-    let m2 = Matrix.ofSeries(s, m1)
+    let m2 = Matrix.ofSeries(m1, s)
+    m1 * m2
+
+  /// Matrix multiplication of vector and series
+  ///
+  /// [category: Matrix multiplication]
+  static member dot (m1:Vector<float>, s:Series<'R, float>) =
+    let m2 = Matrix.ofSeries(s, SeriesMatrixForm.ByColumn)
+    m1 * m2
+
+  /// Matrix multiplication of series and vector
+  ///
+  /// [category: Matrix multiplication]
+  static member dot (s:Series<'R, float>, m2:Vector<float>) =
+    let m1 = Matrix.ofSeries(s, SeriesMatrixForm.ByColumn)
     m1 * m2
 
   /// Matrix multiplication of frame and frame
@@ -250,7 +289,7 @@ type Matrix =
   /// [category: Matrix multiplication]
   static member dot (df:Frame<'R, 'C>, s:Series<'C, float>) =
     let m1 = df |> Frame.toMatrix
-    let m2 = Matrix.ofSeries(s, m1)
+    let m2 = Matrix.ofSeries(m1, s)
     m1 * m2
   
   /// Matrix multiplication of series and frame
