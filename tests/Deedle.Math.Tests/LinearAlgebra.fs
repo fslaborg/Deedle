@@ -57,26 +57,56 @@ let testMatrix =
 
 let testFrame =
   testMatrix
-  |> Array.map(fun (name, m) -> name, m |> Frame.ofMatrix [1..m.RowCount] [1..m.ColumnCount] )
+  |> Array.map(fun (name, m) ->
+    name, m |> Frame.ofMatrix [1..m.RowCount] [1..m.ColumnCount] )
   |> dict
 
 [<TestCase("Singular3x3")>]
 [<TestCase("Singular4x4")>]
 [<TestCase("Wide2x3")>]
 [<TestCase("Tall3x2")>]
-let ``Can Transpose And Multiply Frame With Frame`` (name:string) =
-    let frameA = testFrame.[name]
-    let frameB = testFrame.[name].Transpose()
-    let matrixC = frameA.Dot(frameB)
+let ``Frame can multiply with frame`` (name:string) =
+  let frameA = testFrame.[name]
+  let frameB = testFrame.[name].Transpose()
 
-    for i in [|0..matrixC.RowCount-1|] do
-      for j in [|0..matrixC.ColumnCount-1|] do
-        let s1 = frameA.GetRowAt<float>(i)
-        let s2 = frameB.GetColumnAt<float>(j)
-        s1.Dot(s2).Item(0,0) |> should beWithin (matrixC.Item(i,j) +/- 1e-5)
+  let matrixC = frameA.Dot(frameB)
+  for i in [|0..matrixC.RowCount-1|] do
+    for j in [|0..matrixC.ColumnCount-1|] do
+      let s1 = frameA.GetRowAt<float>(i)
+      let s2 = frameB.GetColumnAt<float>(j)
+      s1.Dot(s2) |> should beWithin (matrixC.Item(i,j) +/- 1e-5)
 
+[<TestCase("Singular3x3")>]
+[<TestCase("Singular4x4")>]
+[<TestCase("Wide2x3")>]
+[<TestCase("Tall3x2")>]
+let ``Frame can multiply with matrix``(name:string) =
+  let frameA = testFrame.[name]
+  let matrixB = testFrame.[name].ToMatrix().Transpose()
+
+  let matrixC = frameA.Dot(matrixB)
+  for i in [|0..matrixC.RowCount-1|] do
+    for j in [|0..matrixC.ColumnCount-1|] do
+      let s1 = frameA.GetRowAt<float>(i)
+      let s2 = matrixB.Column(j)
+      s1.Dot(s2) |> should beWithin (matrixC.Item(i,j) +/- 1e-5)
+  
+  let matrixD = matrixB.Dot(frameA)
+  for i in [|0..matrixD.RowCount-1|] do
+    for j in [|0..matrixD.ColumnCount-1|] do
+      let s1 = matrixB.Row(i)
+      let s2 = frameA.GetColumnAt<float>(j)      
+      s1.Dot(s2) |> should beWithin (matrixD.Item(i,j) +/- 1e-5)
+  
 let ``Series can multiply with vector``() =
   let frame = testFrame.["Singular3x3"]
   let x = DenseVector.ofArray [|1.0..3.0|]
-  Matrix.dot(frame.[1], x).Item(0) |> should beWithin (6.0 +/- 1e-5)
+
+  frame.[1].Dot(x) |> should beWithin (6.0 +/- 1e-5)
+  x.Dot(frame.[1]) |> should beWithin (6.0 +/- 1e-5)
+
+let ``Frame can multiply with vector``() =
+  let frame = testFrame.["Singular3x3"]
+  let x = DenseVector.ofArray [|1.0..3.0|]
+  frame.Dot(x).Item(0) |> should beWithin (9.0 +/- 1e-5)  
 

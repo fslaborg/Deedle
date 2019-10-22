@@ -21,17 +21,11 @@ open MathNet.Numerics.Statistics
 
 let stockPrices = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/stocks_weekly.csv") |> Frame.indexRowsDate "Dates"
 let stockReturns = stockPrices / (stockPrices |> Frame.shift 1) - 1 |> Frame.dropSparseRows
-let cov = stockReturns |> Stats.cov
-let corr = stockReturns |> Stats.corr
 let weights =
   let nStocks = stockPrices.ColumnCount
   let w = Array.init nStocks (fun _ -> 1. / float nStocks)
   Seq.zip stockPrices.ColumnKeys w
   |> Series.ofObservations
-let annualVol =
-  let vol = weights.Dot(cov).Dot(weights).Item(0,0)
-  let nObs = 52.
-  Math.Sqrt(vol * nObs)
 
 [<Test>]
 let ``Median is the same as in Math.NET``() =
@@ -54,5 +48,30 @@ let ``Quantile is the same as in Math.NET``() =
       Stats.quantile(s, 0.75) |> should beWithin (expected +/- 1e-9) )
 
 [<Test>]
-let ``Ex-ante vol of equally weighted portfolio works`` () =
-  annualVol |> should beWithin (0.13575 +/- 1e-6)
+let ``Ex-ante vol of equally weighted portfolio using normal covariance matrix works`` () =
+  let cov = stockReturns |> Stats.cov
+  let annualVol =
+    let vol = weights.Dot(cov).Dot(weights)
+    let nObs = 52.
+    Math.Sqrt(vol * nObs)
+  annualVol |> should beWithin (0.13575 +/- 1e-6)  
+
+[<Test>]
+let ``Ex-ante vol of equally weighted portfolio using exponentially weighted covariance matrix works`` () =
+  let halfLife = 52.0
+  let alpha = Math.Exp(Math.Log(0.5) / halfLife )
+  let cov = stockReturns |> Stats.ewCovMatrix alpha |> Series.lastValue
+  let annualVol =
+    let vol = weights.Dot(cov).Dot(weights)
+    let nObs = 52.
+    Math.Sqrt(vol * nObs)
+  annualVol |> should beWithin (0.14437 +/- 1e-6)
+
+[<Test>]
+let ``cov2Corr and corr2Cov work`` () =
+  let cov = stockReturns |> Stats.cov
+  let std, corr = cov |> Stats.cov2Corr
+  let actual = Stats.corr2Cov(std, corr).GetColumnAt<float>(0).GetAt(0)
+  let expected = cov.GetColumnAt<float>(0).GetAt(0)
+  actual |> should beWithin (expected +/- 1e-6)
+  

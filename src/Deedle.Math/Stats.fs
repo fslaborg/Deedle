@@ -19,10 +19,10 @@ type CorrelationMethod =
 /// [category:Statistical Analysis]
 type Stats =
 
-  /// Exponentially Weighted Standard Deviation
+  /// Exponentially weighted standard deviation
   ///
   /// [category: Exponentially Weighted]
-  static member emaStdDev alpha (x:Series<'K, float>) =
+  static member ewStdDev alpha (x:Series<'K, float>) =
     let x = x |> Series.dropMissing
     if x.KeyCount < 2 then
       x |> Series.mapValues(fun _ -> nan)
@@ -40,45 +40,61 @@ type Stats =
               |> Math.Sqrt
       Series(x.Keys, res)
 
-  /// Exponentially Weighted Covariance Matrix
-  ///
+  /// Exponentially weighted covariance matrix. 
+  /// alpha = Exp(Log(0.5) / halfLife)
   /// [category: Exponentially Weighted]
-  static member emaCovMatrix alpha (df:Frame<'R, 'C>): Series<'R, Matrix<float>> =
+  static member ewCovMatrix alpha (df:Frame<'R, 'C>) =
     let nCol = df.ColumnCount
     let matrix = df |> Frame.toMatrix
-    let res = Array.init df.RowCount (fun _ -> Matrix<float>.Build.Dense(nCol, nCol))
+    let res = Array.create df.RowCount (DenseMatrix.zero nCol nCol)
     for i in [|0..df.RowCount-1|] do
       if i = 0 then
         res.[i] <- Stats.covMatrix df
       else
         res.[i] <-
           let vector = matrix.Row(i)
-          let inc = vector.ToColumnMatrix().Multiply(vector.ToRowMatrix())
+          let inc = vector.ToColumnMatrix() * vector.ToRowMatrix()
           inc * (1. - alpha) + alpha * res.[i-1]
     Series(df.RowKeys, res)
+
+  /// Exponentially weighted covariance matrix frame. 
+  /// alpha = Exp(Log(0.5) / halfLife)
+  /// [category: Exponentially Weighted]
+  static member ewCov alpha (df:Frame<'R, 'C>) =
+    Stats.ewCovMatrix alpha df
+    |> Series.mapValues(fun v ->
+      v |> Frame.ofMatrix df.RowKeys df.ColumnKeys
+    )    
   
   /// Convert covariance matrix to correlation matrix
   ///
   /// [category: Correlation and Covariance]
-  static member cov2corr (cov:Matrix<float>) =
+  static member cov2Corr (covFrame:Frame<'R, 'R>) =
+    let cov = Matrix.ofFrame covFrame
+    let keys = covFrame.RowKeys |> Array.ofSeq
     let stdDev = cov.Diagonal() |> Vector.map Math.Sqrt
     let dInv =
       stdDev
       |> DenseMatrix.ofDiag
       |> Matrix.inverse
-    stdDev, dInv.Multiply(cov).Multiply(dInv)
-  
+    let stdDevSeries = stdDev.ToSeries(keys)
+    let corrFrame = dInv * cov * dInv |> Frame.ofMatrix keys keys
+    stdDevSeries, corrFrame    
+
   /// Convert standard deviation and correlation to covariance
   ///
   /// [category: Correlation and Covariance]
-  static member corr2Cov(sigma:Vector<float>, cov:Matrix<float>) =
+  static member corr2Cov(sigmaSeries:Series<'K, float>, corrFrame:Frame<'K, 'K>) =
+    let sigma = sigmaSeries.ToVector()
+    let corr = corrFrame.ToMatrix()
+    let keys = corrFrame.RowKeys
     let sigmaVector = sigma |> DenseMatrix.ofDiag
-    sigmaVector * cov * sigmaVector
+    sigmaVector * corr * sigmaVector |> Frame.ofMatrix keys keys
 
   /// Get correlation matrix
   ///
   /// [category: Correlation and Covariance]
-  static member corrMatrix (df:Frame<'R, 'C>, ?method:CorrelationMethod): Matrix<float> =
+  static member corrMatrix (df:Frame<'R, 'C>, ?method:CorrelationMethod) =
     let method = defaultArg method CorrelationMethod.Pearson
     let arr =
       df
@@ -93,7 +109,7 @@ type Stats =
   /// Get correlation frame
   ///
   /// [category: Correlation and Covariance]
-  static member corr (df:Frame<'R, 'C>, ?method:CorrelationMethod): Frame<'C, 'C> =
+  static member corr (df:Frame<'R, 'C>, ?method:CorrelationMethod) =
     let method = defaultArg method CorrelationMethod.Pearson
     Stats.corrMatrix(df, method)
     |> Frame.ofMatrix df.ColumnKeys df.ColumnKeys
@@ -101,17 +117,17 @@ type Stats =
   /// Get covariance matrix
   ///
   /// [category: Correlation and Covariance]
-  static member covMatrix (df:Frame<'R, 'C>): Matrix<float> =
+  static member covMatrix (df:Frame<'R, 'C>) =
     // Treat nan correlation as zero
     let corr = Stats.corrMatrix(df) |> Matrix.map(fun x -> if Double.IsNaN(x) then 0. else x)
     let stdev = df |> Stats.stdDev |> Series.values |> Array.ofSeq
     let stdevDiag = DenseMatrix.ofDiagArray stdev
-    stdevDiag.Multiply(corr).Multiply(stdevDiag) 
+    stdevDiag * corr * stdevDiag
 
   /// Get covariance frame
   ///
   /// [category: Correlation and Covariance]
-  static member cov (df:Frame<'R, 'C>): Frame<'C, 'C> =
+  static member cov (df:Frame<'R, 'C>) =
     df
     |> Stats.covMatrix
     |> Frame.ofMatrix df.ColumnKeys df.ColumnKeys
@@ -119,7 +135,7 @@ type Stats =
   /// Quantile
   ///
   /// [category: Descriptive Statistics]
-  static member inline quantile (series:Series<'R, 'V>, tau:float, ?definition:QuantileDefinition): float =
+  static member inline quantile (series:Series<'R, 'V>, tau:float, ?definition:QuantileDefinition) =
     let definition = defaultArg definition QuantileDefinition.Excel
     series.Values
     |> Seq.map float
@@ -129,7 +145,7 @@ type Stats =
   /// Ranks of Series
   ///
   /// [category: Descriptive Statistics]
-  static member inline ranks (series:Series<'R, 'V>): Series<'R, float> =
+  static member inline ranks (series:Series<'R, 'V>) =
     series.Values
     |> Seq.map float
     |> Array.ofSeq
@@ -140,7 +156,7 @@ type Stats =
   /// Median of Series
   ///
   /// [category: Descriptive Statistics]
-  static member inline median (series:Series<'R, 'V>): float =
+  static member inline median (series:Series<'R, 'V>) =
     series.Values
     |> Seq.map float
     |> Array.ofSeq
@@ -149,7 +165,7 @@ type Stats =
   /// Median of Frame
   ///
   /// [category: Descriptive Statistics]
-  static member median (df:Frame<'R, 'C>): Series<'C, float> =
+  static member median (df:Frame<'R, 'C>) =
     df
     |> Frame.getNumericCols
     |> Series.mapValues Stats.median
@@ -157,7 +173,7 @@ type Stats =
   /// Quantile of Frame
   ///
   /// [category: Descriptive Statistics]
-  static member quantile (df:Frame<'R, 'C>, tau:float, ?definition:QuantileDefinition): Series<'C, float> =
+  static member quantile (df:Frame<'R, 'C>, tau:float, ?definition:QuantileDefinition) =
     let definition = defaultArg definition QuantileDefinition.Excel
     df
     |> Frame.getNumericCols
@@ -166,7 +182,7 @@ type Stats =
   /// Ranks of Frame
   ///
   /// [category: Descriptive Statistics]
-  static member ranks (df:Frame<'R, 'C>): Frame<'R, 'C> =
+  static member ranks (df:Frame<'R, 'C>) =
     df
     |> Frame.getNumericCols
     |> Series.mapValues Stats.ranks
