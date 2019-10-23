@@ -53,7 +53,7 @@ let testMatrix =
            [| [| 1.0; 2.0; 3.0 |]
               [| 2.0; 2.0; 0.0 |]
               [| 3.0; 0.0; 3.0 |] |] |]
-    |> Array.map (fun (name, arr) -> name, DenseMatrix.ofArray2 (arr))
+    |> Array.map (fun (name, arr) -> name, DenseMatrix.ofArray2 arr)
 
 let testFrame =
   testMatrix
@@ -95,18 +95,31 @@ let ``Frame can multiply with matrix``(name:string) =
   for i in [|0..matrixD.RowCount-1|] do
     for j in [|0..matrixD.ColumnCount-1|] do
       let s1 = matrixB.Row(i)
-      let s2 = frameA.GetColumnAt<float>(j)      
+      let s2 = frameA.GetColumnAt<float>(j)
       s1.Dot(s2) |> should beWithin (matrixD.Item(i,j) +/- 1e-5)
-  
-let ``Series can multiply with vector``() =
-  let frame = testFrame.["Singular3x3"]
-  let x = DenseVector.ofArray [|1.0..3.0|]
 
-  frame.[1].Dot(x) |> should beWithin (6.0 +/- 1e-5)
-  x.Dot(frame.[1]) |> should beWithin (6.0 +/- 1e-5)
+let ``Frame can multiply with series``() =
+  let frame = testFrame.["Singular3x3"]
+  let s = frame.[1]
+  frame.Dot(s).Item(0) |> should beWithin (4.0 +/- 1e-5)
+  s.Dot(frame).Item(0) |> should beWithin (3.0 +/- 1e-5)
 
 let ``Frame can multiply with vector``() =
   let frame = testFrame.["Singular3x3"]
   let x = DenseVector.ofArray [|1.0..3.0|]
-  frame.Dot(x).Item(0) |> should beWithin (9.0 +/- 1e-5)  
+  frame.Dot(x).Item(0) |> should beWithin (9.0 +/- 1e-5)
+  x.Dot(frame).Item(0) |> should beWithin (6.0 +/- 1e-5)
+  
+let ``Series can multiply with vector``() =
+  let frame = testFrame.["Singular3x3"]
+  let s = frame.[1]
+  let x = DenseVector.ofArray [|1.0..3.0|]
+  s.Dot(x) |> should beWithin (6.0 +/- 1e-5)
+  x.Dot(s) |> should beWithin (6.0 +/- 1e-5)
 
+let ``Series can multiply with matrix``() =
+  let frame = testFrame.["Singular3x3"]
+  let s = frame.[1]
+  let m = frame.ToMatrix()
+  s.Dot(m).Item(0) |> should beWithin (6.0 +/- 1e-5)
+  m.Dot(s).Item(0) |> should beWithin (4.0 +/- 1e-5)

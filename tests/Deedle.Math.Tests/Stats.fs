@@ -23,8 +23,9 @@ let stockPrices = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/stocks_weekly.csv"
 let stockReturns = stockPrices / (stockPrices |> Frame.shift 1) - 1 |> Frame.dropSparseRows
 let weights =
   let nStocks = stockPrices.ColumnCount
-  let w = Array.init nStocks (fun _ -> 1. / float nStocks)
-  Seq.zip stockPrices.ColumnKeys w
+  let w = Array.create nStocks (1. / float nStocks)
+  (stockPrices.ColumnKeys, w)
+  ||> Seq.zip
   |> Series.ofObservations
 
 [<Test>]
@@ -58,9 +59,7 @@ let ``Ex-ante vol of equally weighted portfolio using normal covariance matrix w
 
 [<Test>]
 let ``Ex-ante vol of equally weighted portfolio using exponentially weighted covariance matrix works`` () =
-  let halfLife = 52.0
-  let alpha = Math.Exp(Math.Log(0.5) / halfLife )
-  let cov = stockReturns |> Stats.ewCovMatrix alpha |> Series.lastValue
+  let cov = Stats.ewCovMatrix(stockReturns, halfLife = 52.) |> Series.lastValue
   let annualVol =
     let vol = weights.Dot(cov).Dot(weights)
     let nObs = 52.

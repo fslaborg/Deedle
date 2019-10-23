@@ -7,7 +7,7 @@ open Deedle
 ///
 /// [category:Linear Algebra]
 type LinearAlgebra =
-  /// Convert frame into matrix and return transpose of matrix.
+  /// Transpose.
   /// Performance is faster than generic Frame.transpose as it only applies to frame of float values
   ///
   static member transpose (df:Frame<'R, 'C>) =
@@ -19,147 +19,147 @@ type LinearAlgebra =
       |> Matrix.transpose
       |> Frame.ofMatrix df.ColumnKeys df.RowKeys
 
-  /// Convert frame into matrix and return inverse of matrix
+  /// Inverse
   ///
   static member inverse (df:Frame<'R, 'C>) =
     df
     |> Frame.toMatrix
     |> Matrix.inverse
 
-  /// Convert frame into matrix and return pseudo-inverse of matrix
+  /// Pseudo-inverse of matrix
   ///
   static member pseudoInverse (df:Frame<'R, 'C>) =
     df
     |> Frame.toMatrix
     |> fun x -> x.PseudoInverse()
 
-  /// Convert frame into matrix and return conjugate of matrix
+  /// Conjugate
   ///
   static member conjugate (df:Frame<'R, 'C>) = 
     df
     |> Frame.toMatrix
     |> Matrix.conjugate
 
-  /// Convert frame into matrix and return conjugate tranpose of matrix
+  /// Conjugate tranpose
   ///
   static member conjugateTranspose (df:Frame<'R, 'C>) = 
     df
     |> Frame.toMatrix
     |> Matrix.conjugateTranspose
 
-  /// Convert frame into matrix and return norm of matrix
+  /// Norm
   ///
   static member norm (df:Frame<'R, 'C>) =
     df
     |> Frame.toMatrix
     |> Matrix.norm
 
-  /// Convert frame into matrix and return norm of rows
+  /// Norm of rows
   ///
   static member normRows (df:Frame<'R, 'C>) =
     df
     |> Frame.toMatrix
     |> Matrix.normRows
 
-  /// Convert frame into matrix and return norm of columns
+  /// Norm of columns
   ///
   static member normCols (df:Frame<'R, 'C>) =
     df
     |> Frame.toMatrix
     |> Matrix.normCols
   
-  /// Convert frame into matrix and return rank of matrix
+  /// Matrix rank
   ///
   static member rank (df:Frame<'R, 'C>) =
     df
     |> Frame.toMatrix
     |> Matrix.rank
 
-  /// Convert frame into matrix and return trace of matrix
+  /// Matrix trace
   ///
   static member trace (df:Frame<'R, 'C>) =
     df
     |> Frame.toMatrix
     |> Matrix.trace
 
-  /// Convert frame into matrix and return determinant of matrix
+  /// Matrix determinant
   ///
   static member determinant (df:Frame<'R, 'C>) =
     df
     |> Frame.toMatrix
     |> Matrix.determinant
 
-  /// Convert frame into matrix and return condition of matrix
+  /// Matrix condition
   ///
   static member condition (df:Frame<'R, 'C>) =
     df
     |> Frame.toMatrix
     |> Matrix.condition
 
-  /// Convert frame into matrix and return nullity of matrix
+  /// Matrix nullity
   ///
   static member nullity (df:Frame<'R, 'C>) =
     df
     |> Frame.toMatrix
     |> Matrix.nullity
 
-  /// Convert frame into matrix and return kernel of matrix
+  /// Matrix kernel
   ///
   static member kernel (df:Frame<'R, 'C>) =
     df
     |> Frame.toMatrix
     |> Matrix.kernel
 
-  /// Convert frame into matrix and return range of matrix
+  /// Matrix range
   ///
   static member range (df:Frame<'R, 'C>) =
     df
     |> Frame.toMatrix
     |> Matrix.range
 
-  /// Convert frame into matrix and check whether it's symmetric matrix
+  /// Check whether it is symmetric matrix
   ///
   static member isSymmetric (df:Frame<'R, 'C>) =
     df
     |> Frame.toMatrix
     |> Matrix.symmetric
 
-  /// Convert frame into matrix and check whether it's Hermitian matrix
+  /// Check whether it is Hermitian matrix
   ///
   static member isHermitian (df:Frame<'R, 'C>) =
     df
     |> Frame.toMatrix
     |> Matrix.hermitian
 
-  /// Convert frame into matrix and return cholesky decomposition of matrix
+  /// Cholesky decomposition
   ///
   static member cholesky (df:Frame<'R, 'C>) =
     df
     |> Frame.toMatrix
     |> Matrix.cholesky
 
-  /// Convert frame into matrix and return LU decomposition of matrix
+  /// LU decomposition
   ///
   static member lu (df:Frame<'R, 'C>) =
     df
     |> Frame.toMatrix
     |> Matrix.lu
   
-  /// Convert frame into matrix and return QR decomposition of matrix
+  /// QR decomposition
   ///
   static member qr (df:Frame<'R, 'C>) =
     df
     |> Frame.toMatrix
     |> Matrix.qr
 
-  /// Convert frame into matrix and return SVD decomposition of matrix
+  /// SVD decomposition
   ///
   static member svd (df:Frame<'R, 'C>) =
     df
     |> Frame.toMatrix
     |> Matrix.svd
 
-  /// Convert frame into matrix and return eigen values and eigen vectors of matrix
+  /// Eigen values and eigen vectors of matrix
   ///
   static member eigen (df:Frame<'R, 'C>) =
     df
