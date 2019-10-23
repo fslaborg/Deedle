@@ -60,11 +60,17 @@ let ``Ex-ante vol of equally weighted portfolio using normal covariance matrix w
 [<Test>]
 let ``Ex-ante vol of equally weighted portfolio using exponentially weighted covariance matrix works`` () =
   let cov = Stats.ewCovMatrix(stockReturns, halfLife = 52.) |> Series.lastValue
-  let annualVol =
+  let covFrame = Stats.ewCov(stockReturns, halfLife = 52.) |> Series.lastValue
+  let annualVol1 =
     let vol = weights.Dot(cov).Dot(weights)
     let nObs = 52.
     Math.Sqrt(vol * nObs)
-  annualVol |> should beWithin (0.14437 +/- 1e-6)
+  let annualVol2 =
+    let vol = weights.Dot(covFrame).Dot(weights)
+    let nObs = 52.
+    Math.Sqrt(vol * nObs)
+  annualVol1 |> should beWithin (0.14437 +/- 1e-6)
+  annualVol1 |> should beWithin (annualVol2 +/- 1e-6)
 
 [<Test>]
 let ``cov2Corr and corr2Cov work`` () =

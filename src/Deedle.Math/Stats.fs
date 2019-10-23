@@ -89,8 +89,8 @@ type Stats =
   /// [category: Exponentially Weighted]
   static member ewCov (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
     let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
-    Stats.ewCovMatrix(df, alpha)
-    |> Series.mapValues (Frame.ofMatrix df.RowKeys df.ColumnKeys)
+    Stats.ewCovMatrix(df, alpha = alpha)
+    |> Series.mapValues (Frame.ofMatrix df.ColumnKeys df.ColumnKeys)
   
   /// Convert covariance matrix to standard deviation series and correlation frame
   ///
