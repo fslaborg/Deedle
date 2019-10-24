@@ -27,7 +27,6 @@ module Utils =
 open Utils
 
 module internal Compiler = 
-
   type PerfConfig = XmlProvider<"perf.config">
 
   let checker = FSharpChecker.Create()

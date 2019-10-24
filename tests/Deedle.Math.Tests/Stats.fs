@@ -50,25 +50,25 @@ let ``Quantile is the same as in Math.NET``() =
 
 [<Test>]
 let ``Ex-ante vol of equally weighted portfolio using normal covariance matrix works`` () =
+  let nObsAnnual = 52.
   let cov = stockReturns |> Stats.cov
   let annualVol =
     let vol = weights.Dot(cov).Dot(weights)
-    let nObs = 52.
-    Math.Sqrt(vol * nObs)
+    Math.Sqrt(vol * nObsAnnual)
   annualVol |> should beWithin (0.13575 +/- 1e-6)  
 
 [<Test>]
 let ``Ex-ante vol of equally weighted portfolio using exponentially weighted covariance matrix works`` () =
-  let cov = Stats.ewCovMatrix(stockReturns, halfLife = 52.) |> Series.lastValue
-  let covFrame = Stats.ewCov(stockReturns, halfLife = 52.) |> Series.lastValue
+  let halfLife = 52.
+  let nObsAnnual = 52.
+  let cov = Stats.ewmCovMatrix(stockReturns, halfLife = halfLife) |> Series.lastValue
+  let covFrame = Stats.ewmCov(stockReturns, halfLife = halfLife) |> Series.lastValue
   let annualVol1 =
     let vol = weights.Dot(cov).Dot(weights)
-    let nObs = 52.
-    Math.Sqrt(vol * nObs)
+    Math.Sqrt(vol * nObsAnnual)
   let annualVol2 =
     let vol = weights.Dot(covFrame).Dot(weights)
-    let nObs = 52.
-    Math.Sqrt(vol * nObs)
+    Math.Sqrt(vol * nObsAnnual)
   annualVol1 |> should beWithin (0.14437 +/- 1e-6)
   annualVol1 |> should beWithin (annualVol2 +/- 1e-6)
 
@@ -80,3 +80,10 @@ let ``cov2Corr and corr2Cov work`` () =
   let expected = cov.GetColumnAt<float>(0).GetAt(0)
   actual |> should beWithin (expected +/- 1e-6)
   
+[<Test>]
+let ``ewmVariance and ewmCov's diagonal shall be identical `` () =
+  let varFrame = Stats.ewmVariance(stockReturns, halfLife = 52.)
+  let cov = Stats.ewmCovMatrix(stockReturns, halfLife = 52.) |> Series.lastValue
+  let varSeries1 = (varFrame |> Frame.takeLast 1).GetRowAt<float>(0)
+  let varSeries2 = Series(stockReturns.ColumnKeys, cov.Diagonal())
+  (varSeries1 - varSeries2) |> Stats.sum |> should beWithin (0. +/- 1e-10)
