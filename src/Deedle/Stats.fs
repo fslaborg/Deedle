@@ -522,6 +522,24 @@ type Stats =
       | OptionalValue.Missing   -> s
     applySeriesProj ((Seq.scan maxFn nan) >> (Seq.skip 1) >> Array.ofSeq) (series |> Series.mapValues toFloat)
 
+  /// Returns a series that contains an exponentially moving average over an expanding window.
+  ///
+  /// [category:Expanding windows]
+  static member inline expandingEma lambda (series:Series<'K, float>) : Series<'K, float> =
+    let fupdate yp y =
+      if y = OptionalValue.Missing && System.Double.IsNaN(yp) then
+        nan
+      elif System.Double.IsNaN(yp) then
+        y.Value
+      elif y = OptionalValue.Missing then
+        yp
+      else
+        lambda*y.Value + (1.-lambda)*yp
+
+    let vals = (series |> Series.mapValues toFloat).GetAllValues()
+    let emaVals = expandingWindowFn nan fupdate id vals
+    Series(series.Keys, emaVals)
+    
 
   // ------------------------------------------------------------------------------------
   // Public - standard statistics on series

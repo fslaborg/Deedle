@@ -256,6 +256,27 @@ let ``Expanding max works`` () =
   s3 |> Stats.expandingMax |> Stats.sum |> should beWithin (e3 +/- 1e-9)
 
 [<Test>]
+let ``Expanding ema works`` () =
+  let s1 = Series.ofValues [ 100.; 105.; 90.; 100.; 110.; 120. ]
+  let s2 = Series.ofValues [ 100.; nan; 90.; 100.; nan; 120. ]
+  let s3 = Series.ofValues [ nan; nan; nan; nan; nan; 1.; 2.; 3. ]
+
+  let s1Ema = s1 |> Stats.expandingEma 0.97
+  let s2Ema = s2 |> Stats.expandingEma 0.97
+  let s3Ema = s3 |> Stats.expandingEma 0.97
+
+  // pandas v0.24.2: series.ewm(alpha=0.97, adjust=False, ignore_na=True).mean()
+  let e1 = [ 100.; 104.85; 90.4455; 99.713365; 109.691401; 119.690742 ]
+  let e2 = [ 100.; 100.; 90.3; 99.709; 99.709; 119.39127 ]
+  let e3 = [ 1.; 1.9700; 2.9691 ]
+
+  [e1; e2; e3]
+  |> Seq.zip [s1Ema; s2Ema; s3Ema]
+  |> Seq.iter (fun (s, e) -> 
+    e |> Seq.zip (s.Values)
+    |> Seq.iter (fun (one, two) -> one |> should beWithin (two +/- 1e-6)))
+
+[<Test>]
 let ``Basic level statistics works on sample input`` () = 
   let s1 = series [(1,0) => nan; (1,1) => 2.0; (2,0) => 3.0; (2,1) => 4.0 ]  
   let s2 = series [(1,1) => 2; (2,0) => 3; (2,1) => 4 ]  
