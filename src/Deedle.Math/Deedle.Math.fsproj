@@ -13,6 +13,7 @@
     <Compile Include="LinearAlgebra.fs" />
     <Compile Include="Extensions.fs" />
     <Compile Include="Stats.fs" />
+    <Compile Include="Finance.fs" />
     <None Include="paket.references" />
     <None Include="Deedle.Math.fsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

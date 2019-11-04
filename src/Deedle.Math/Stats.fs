@@ -61,14 +61,11 @@ type Stats =
         let prev = res.[i-1]
         let curr = data.[i]
         res.[i] <-
-          if Double.IsNaN(prev) && Double.IsNaN(curr) then
-            nan
-          elif Double.IsNaN(prev) then
-            curr
-          elif Double.IsNaN(curr) then
-            prev
-          else
-            (1. - alpha) * prev + alpha * curr
+          match Double.IsNaN(prev), Double.IsNaN(curr) with
+          | true, true -> nan
+          | true, false -> curr
+          | false, true -> prev
+          | _ -> (1. - alpha) * prev + alpha * curr
     Series(x.Keys, res)
 
   /// Exponentially weighted moving average on frame
@@ -80,94 +77,6 @@ type Stats =
     |> Frame.getNumericCols
     |> Series.mapValues(fun series -> Stats.ewmMean(series, alpha = alpha))
     |> Frame.ofColumns
-
-  /// Exponentially weighted moving standard deviation on series
-  ///
-  /// [category: Exponentially Weighted Moving]
-  static member ewmStdDev (x:Series<'R, float>, ?com, ?span, ?halfLife, ?alpha) =
-    let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
-    let x = x |> Series.dropMissing
-    if x.KeyCount < 2 then
-      x |> Series.mapValues(fun _ -> nan)
-    else
-      let init = x |> Stats.stdDev
-      let data = x.Values |> Array.ofSeq
-      let res = Array.zeroCreate x.KeyCount
-      for i in [|0..x.KeyCount-1|] do
-        if i = 0 then
-          res.[i] <- init
-        else
-          res.[i] <- (
-              (1. - alpha) * res.[i-1] * res.[i-1] + 
-              alpha * data.[i] * data.[i] )
-              |> Math.Sqrt
-      Series(x.Keys, res)
-
-  /// Exponentially weighted moving standard deviation on frame
-  ///
-  /// [category: Exponentially Weighted Moving]
-  static member ewmStdDev (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
-    let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
-    df
-    |> Frame.getNumericCols
-    |> Series.mapValues(fun series -> Stats.ewmStdDev(series, alpha = alpha))
-    |> Frame.ofColumns
-
-  /// Exponentially weighted moving variance on series
-  static member ewmVariance (x:Series<'R, float>, ?com, ?span, ?halfLife, ?alpha) =
-    let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
-    Stats.ewmStdDev(x, alpha = alpha)
-    |> Series.mapValues(fun (v:float) -> v * v)
-
-  /// Exponentially weighted moving variance on frame
-  ///
-  /// [category: Exponentially Weighted Moving]
-  static member ewmVariance (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
-    let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
-    Stats.ewmStdDev(df, alpha = alpha)
-    |> Frame.mapValues(fun (v:float) -> v * v)
-
-  /// Exponentially weighted moving covariance matrix
-  /// 
-  /// [category: Exponentially Weighted Moving]
-  static member ewmCovMatrix (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
-    let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
-    let nCol = df.ColumnCount
-    let matrix = df |> Frame.toMatrix
-    let res = Array.create df.RowCount (DenseMatrix.zero nCol nCol)
-    for i in [|0..df.RowCount-1|] do
-      if i = 0 then
-        res.[i] <- Stats.covMatrix df
-      else
-        res.[i] <-
-          let vector = matrix.Row(i)
-          let inc = vector.ToColumnMatrix() * vector.ToRowMatrix()
-          (1. - alpha) * res.[i-1] + alpha * inc
-    Series(df.RowKeys, res)
-
-  /// Exponentially weighted moving covariance frame 
-  /// 
-  /// [category: Exponentially Weighted Moving]
-  static member ewmCov (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
-    let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
-    Stats.ewmCovMatrix(df, alpha = alpha)
-    |> Series.mapValues (Frame.ofMatrix df.ColumnKeys df.ColumnKeys)
-    
-  /// Exponentially weighted moving correlation matrix 
-  /// 
-  /// [category: Exponentially Weighted Moving]
-  static member ewmCorrMatrix (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
-    let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
-    Stats.ewmCov(df, alpha = alpha)
-    |> Series.mapValues (Stats.cov2Corr >> snd >> Matrix.ofFrame)
-
-  /// Exponentially weighted moving correlation frame 
-  /// 
-  /// [category: Exponentially Weighted Moving]
-  static member ewmCorr (df:Frame<'R, 'C>, ?com, ?span, ?halfLife, ?alpha) =
-    let alpha = StatsInternal.ewDecay(com, span, halfLife, alpha)
-    Stats.ewmCov(df, alpha = alpha)
-    |> Series.mapValues(fun v -> v |> Stats.cov2Corr |> snd)
 
   /// Convert covariance matrix to standard deviation series and correlation frame
   ///

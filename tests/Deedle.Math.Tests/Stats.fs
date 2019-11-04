@@ -21,12 +21,6 @@ open MathNet.Numerics.Statistics
 
 let stockPrices = Frame.ReadCsv(__SOURCE_DIRECTORY__ + "/data/stocks_weekly.csv") |> Frame.indexRowsDate "Dates"
 let stockReturns = stockPrices / (stockPrices |> Frame.shift 1) - 1 |> Frame.dropSparseRows
-let weights =
-  let nStocks = stockPrices.ColumnCount
-  let w = Array.create nStocks (1. / float nStocks)
-  (stockPrices.ColumnKeys, w)
-  ||> Seq.zip
-  |> Series.ofObservations
 
 [<Test>]
 let ``Median is the same as in Math.NET``() =
@@ -66,41 +60,9 @@ let ``ewmMean shall work `` () =
   actual3 - expected3 |> Stats.sum |> should beWithin (0. +/- 1e-6)
 
 [<Test>]
-let ``Ex-ante vol of equally weighted portfolio using normal covariance matrix works`` () =
-  let nObsAnnual = 52.
-  let cov = stockReturns |> Stats.cov
-  let annualVol =
-    let vol = weights.Dot(cov).Dot(weights)
-    Math.Sqrt(vol * nObsAnnual)
-  annualVol |> should beWithin (0.13575 +/- 1e-6)  
-
-[<Test>]
-let ``Ex-ante vol of equally weighted portfolio using exponentially weighted covariance matrix works`` () =
-  let halfLife = 52.
-  let nObsAnnual = 52.
-  let cov = Stats.ewmCovMatrix(stockReturns, halfLife = halfLife) |> Series.lastValue
-  let covFrame = Stats.ewmCov(stockReturns, halfLife = halfLife) |> Series.lastValue
-  let annualVol1 =
-    let vol = weights.Dot(cov).Dot(weights)
-    Math.Sqrt(vol * nObsAnnual)
-  let annualVol2 =
-    let vol = weights.Dot(covFrame).Dot(weights)
-    Math.Sqrt(vol * nObsAnnual)
-  annualVol1 |> should beWithin (0.14437 +/- 1e-6)
-  annualVol1 |> should beWithin (annualVol2 +/- 1e-6)
-
-[<Test>]
 let ``cov2Corr and corr2Cov work`` () =
   let cov = stockReturns |> Stats.cov
   let std, corr = cov |> Stats.cov2Corr
   let actual = Stats.corr2Cov(std, corr).GetColumnAt<float>(0).GetAt(0)
   let expected = cov.GetColumnAt<float>(0).GetAt(0)
   actual |> should beWithin (expected +/- 1e-6)
-  
-[<Test>]
-let ``ewmVariance and ewmCov's diagonal shall be identical `` () =
-  let varFrame = Stats.ewmVariance(stockReturns, halfLife = 52.)
-  let cov = Stats.ewmCovMatrix(stockReturns, halfLife = 52.) |> Series.lastValue
-  let varSeries1 = (varFrame |> Frame.takeLast 1).GetRowAt<float>(0)
-  let varSeries2 = Series(stockReturns.ColumnKeys, cov.Diagonal())
-  (varSeries1 - varSeries2) |> Stats.sum |> should beWithin (0. +/- 1e-10)
